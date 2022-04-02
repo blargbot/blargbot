@@ -1,4 +1,4 @@
-import { VarsTable } from '@blargbot/domain/stores';
+import { BotVariableStore } from '@blargbot/domain/stores';
 import { mapping } from '@blargbot/mapping';
 import { UpdateType, Version, VersionManager } from '@hunteroi/versioning';
 
@@ -8,7 +8,7 @@ const mapUpdateType = mapping.choice(
 );
 
 export class VersionStateManager {
-    public constructor(private readonly db: VarsTable) { }
+    public constructor(private readonly db: BotVariableStore) { }
 
     public async getVersion(): Promise<string> {
         const version = await this.getFromStorage();

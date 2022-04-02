@@ -1,12 +1,12 @@
 import { guard } from '@blargbot/cluster/utils';
-import { GuildsTable, UsersTable } from '@blargbot/domain/stores';
+import { GuildStore, UserStore } from '@blargbot/domain/stores';
 import { Client as Discord, KnownMessage } from 'eris';
 
 export class PrefixManager {
     public constructor(
         private readonly defaultPrefix: string,
-        private readonly guilds: GuildsTable,
-        private readonly users: UsersTable,
+        private readonly guilds: GuildStore,
+        private readonly users: UserStore,
         private readonly discord: Discord
     ) {
     }

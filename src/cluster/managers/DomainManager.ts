@@ -1,9 +1,9 @@
-import { VarsTable } from '@blargbot/domain/stores';
+import { BotVariableStore } from '@blargbot/domain/stores';
 
 export class DomainManager {
     private whitelist: Record<string, boolean>;
 
-    public constructor(private readonly db: VarsTable) {
+    public constructor(private readonly db: BotVariableStore) {
         this.whitelist = {};
     }
 

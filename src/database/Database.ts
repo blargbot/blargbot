@@ -1,5 +1,5 @@
 import { sleep } from '@blargbot/core/utils';
-import { ChatLogIndicesTable, ChatLogsTable, DumpsTable, EventsTable, GuildsTable, SuggestionsTable, SuggestorsTable, TagsTable, TagVariablesTable, UsersTable, VarsTable } from '@blargbot/domain/stores';
+import { BotVariableStore, ChatLogIndexStore, ChatLogStore, DumpStore, EventStore, GuildStore, SuggesterStore, SuggestionStore, TagStore, TagVariableStore, UserStore } from '@blargbot/domain/stores';
 import { Logger } from '@blargbot/logger';
 import Airtable from 'airtable';
 import { AirtableBase } from 'airtable/lib/airtable_base';
@@ -8,47 +8,47 @@ import { auth as CassandraAuth, Client as Cassandra } from 'cassandra-driver';
 
 import { PostgresDb, RethinkDb } from './clients';
 import { DatabaseOptions } from './DatabaseOptions';
-import { AirtableSuggestionsTable } from './stores/AirtableSuggestionsTable';
-import { AirtableSuggestorsTable } from './stores/AirtableSuggestorsTable';
-import { CassandraDbChatLogsTable } from './stores/CassandraDbChatLogsTable';
-import { CassandraDbDumpsTable } from './stores/CassandraDbDumpsTable';
-import { PostgresDbTagVariablesTable } from './stores/PostgresDbTagVariablesTable';
-import { RethinkDbChatLogIndicesTable } from './stores/RethinkDbChatLogIndicesTable';
-import { RethinkDbEventsTable } from './stores/RethinkDbEventsTable';
-import { RethinkDbGuildsTable } from './stores/RethinkDbGuildsTable';
-import { RethinkDbTagTable } from './stores/RethinkDbTagTable';
-import { RethinkDbUsersTable } from './stores/RethinkDbUsersTable';
-import { RethinkDbVarsTable } from './stores/RethinkDbVarsTable';
+import { AirtableSuggesterStore } from './stores/AirtableSuggesterStore';
+import { AirtableSuggestionStore } from './stores/AirtableSuggestionStore';
+import { CassandraDbChatLogStore } from './stores/CassandraDbChatLogStore';
+import { CassandraDbDumpStore } from './stores/CassandraDbDumpStore';
+import { PostgresDbTagVariableStore } from './stores/PostgresDbTagVariableStore';
+import { RethinkDbBotVariableStore } from './stores/RethinkDbBotVariableStore';
+import { RethinkDbChatLogIndexStore } from './stores/RethinkDbChatLogIndexStore';
+import { RethinkDbEventStore } from './stores/RethinkDbEventStore';
+import { RethinkDbGuildStore } from './stores/RethinkDbGuildStore';
+import { RethinkDbTagStore } from './stores/RethinkDbTagStore';
+import { RethinkDbUserStore } from './stores/RethinkDbUserStore';
 
 export class Database {
     readonly #rethinkDb: RethinkDb;
     readonly #cassandra: Cassandra;
     readonly #postgres: PostgresDb;
-    readonly #guilds: RethinkDbGuildsTable;
-    readonly #users: RethinkDbUsersTable;
-    readonly #vars: RethinkDbVarsTable;
-    readonly #events: RethinkDbEventsTable;
-    readonly #tags: RethinkDbTagTable;
-    readonly #logIndex: RethinkDbChatLogIndicesTable;
-    readonly #chatlogs: CassandraDbChatLogsTable;
-    readonly #dumps: CassandraDbDumpsTable;
-    readonly #tagVariables: PostgresDbTagVariablesTable;
+    readonly #guilds: RethinkDbGuildStore;
+    readonly #users: RethinkDbUserStore;
+    readonly #vars: RethinkDbBotVariableStore;
+    readonly #events: RethinkDbEventStore;
+    readonly #tags: RethinkDbTagStore;
+    readonly #logIndex: RethinkDbChatLogIndexStore;
+    readonly #chatlogs: CassandraDbChatLogStore;
+    readonly #dumps: CassandraDbDumpStore;
+    readonly #tagVariables: PostgresDbTagVariableStore;
     readonly #airtable: AirtableBase;
-    readonly #suggestors: AirtableSuggestorsTable;
-    readonly #suggestions: AirtableSuggestionsTable;
+    readonly #suggestors: AirtableSuggesterStore;
+    readonly #suggestions: AirtableSuggestionStore;
     readonly #logger: Logger;
 
-    public get guilds(): GuildsTable { return this.#guilds; }
-    public get users(): UsersTable { return this.#users; }
-    public get vars(): VarsTable { return this.#vars; }
-    public get events(): EventsTable { return this.#events; }
-    public get tags(): TagsTable { return this.#tags; }
-    public get chatlogIndex(): ChatLogIndicesTable { return this.#logIndex; }
-    public get chatlogs(): ChatLogsTable { return this.#chatlogs; }
-    public get dumps(): DumpsTable { return this.#dumps; }
-    public get tagVariables(): TagVariablesTable { return this.#tagVariables; }
-    public get suggestors(): SuggestorsTable { return this.#suggestors; }
-    public get suggestions(): SuggestionsTable { return this.#suggestions; }
+    public get guilds(): GuildStore { return this.#guilds; }
+    public get users(): UserStore { return this.#users; }
+    public get vars(): BotVariableStore { return this.#vars; }
+    public get events(): EventStore { return this.#events; }
+    public get tags(): TagStore { return this.#tags; }
+    public get chatlogIndex(): ChatLogIndexStore { return this.#logIndex; }
+    public get chatlogs(): ChatLogStore { return this.#chatlogs; }
+    public get dumps(): DumpStore { return this.#dumps; }
+    public get tagVariables(): TagVariableStore { return this.#tagVariables; }
+    public get suggestors(): SuggesterStore { return this.#suggestors; }
+    public get suggestions(): SuggestionStore { return this.#suggestions; }
 
     public constructor(options: DatabaseOptions) {
         this.#airtable = new Airtable({
@@ -66,17 +66,17 @@ export class Database {
             )
         });
         this.#logger = options.logger;
-        this.#guilds = new RethinkDbGuildsTable(this.#rethinkDb, this.#logger, options.shouldCacheGuild);
-        this.#users = new RethinkDbUsersTable(this.#rethinkDb, this.#logger, options.shouldCacheUser);
-        this.#vars = new RethinkDbVarsTable(this.#rethinkDb, this.#logger);
-        this.#events = new RethinkDbEventsTable(this.#rethinkDb, this.#logger);
-        this.#tags = new RethinkDbTagTable(this.#rethinkDb, this.#logger);
-        this.#logIndex = new RethinkDbChatLogIndicesTable(this.#rethinkDb, this.#logger);
-        this.#chatlogs = new CassandraDbChatLogsTable(this.#cassandra, this.#logger);
-        this.#dumps = new CassandraDbDumpsTable(this.#cassandra, this.#logger);
-        this.#tagVariables = new PostgresDbTagVariablesTable(this.#postgres, this.#logger);
-        this.#suggestors = new AirtableSuggestorsTable(this.#airtable, this.#logger);
-        this.#suggestions = new AirtableSuggestionsTable(this.#airtable, this.#logger);
+        this.#guilds = new RethinkDbGuildStore(this.#rethinkDb, this.#logger, options.shouldCacheGuild);
+        this.#users = new RethinkDbUserStore(this.#rethinkDb, this.#logger, options.shouldCacheUser);
+        this.#vars = new RethinkDbBotVariableStore(this.#rethinkDb, this.#logger);
+        this.#events = new RethinkDbEventStore(this.#rethinkDb, this.#logger);
+        this.#tags = new RethinkDbTagStore(this.#rethinkDb, this.#logger);
+        this.#logIndex = new RethinkDbChatLogIndexStore(this.#rethinkDb, this.#logger);
+        this.#chatlogs = new CassandraDbChatLogStore(this.#cassandra, this.#logger);
+        this.#dumps = new CassandraDbDumpStore(this.#cassandra, this.#logger);
+        this.#tagVariables = new PostgresDbTagVariableStore(this.#postgres, this.#logger);
+        this.#suggestors = new AirtableSuggesterStore(this.#airtable, this.#logger);
+        this.#suggestions = new AirtableSuggestionStore(this.#airtable, this.#logger);
     }
 
     public async connect(): Promise<void> {
