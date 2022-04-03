@@ -235,7 +235,7 @@ function subtagDocs(context: CommandContext, subtag: Subtag): EmbedOptions {
     };
 }
 async function lookupSubtag(context: CommandContext, input: string): Promise<Subtag | string | undefined> {
-    input = input.replace(/[{}]/, '').toLowerCase();
+    input = input.replace(/[{}]/g, '').toLowerCase();
     const matchedSubtags = [...context.cluster.subtags.list(subtag => !subtag.hidden && (subtag.name.includes(input) || subtag.aliases.some(a => a.includes(input))))];
 
     if (matchedSubtags.length === 1)

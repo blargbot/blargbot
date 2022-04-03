@@ -4,13 +4,13 @@ export const smartSplit = Object.assign(function smartSplit(source: string, limi
     inverse(source: string[]) {
         const results = [];
         for (const item of source) {
-            const escaped = item.replace(/["\\]/g, m => `\\${m}`);
+            const escaped = item.replace(/["'\\]/g, m => `\\${m}`);
             if (escaped.length === 0)
                 results.push('""');
             else if (escaped.includes(' '))
                 results.push(`"${escaped}"`);
             else
-                results.push(escaped.replace(/'/g, '\\\''));
+                results.push(escaped);
 
         }
         return results.join(' ');
