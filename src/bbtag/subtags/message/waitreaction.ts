@@ -20,8 +20,8 @@ export class WaitReactionSubtag extends CompiledSubtag {
                 'the channel Id, the message Id, the user id and the reaction, in that order. ' +
                 '\n\n`userIDs` defaults to the current user if left blank or omitted.' +
                 '\n`reactions` defaults to any reaction if left blank or omitted.' +
-                '\n`condition` must return `true` or `false`, defaults to `true` if left blank or omitted' +
-                '\n`timeout` is a number of seconds. This defaults to 60 if left blank or omitted, and is limited to 300' +
+                '\n`condition` must return `true` or `false`' +
+                '\n`timeout` is a number of seconds. This is limited to 300' +
                 '\n\n While inside the `condition` parameter, none of the following subtags may be used: `' + bbtag.overrides.waitreaction.join(', ') + '`' +
                 '\nAlso, the current message becomes the message the reaction was added to, and the user becomes the person who sent the message. ' +
                 'This means that `{channelid}`, `{messageid}`, `{userid}` and all related subtags will change their values.' +

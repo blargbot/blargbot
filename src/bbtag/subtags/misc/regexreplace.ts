@@ -9,7 +9,7 @@ export class RegexReplaceSubtag extends RegexSubtag {
             category: SubtagType.MISC,
             description: 'Any bbtag in `regex` will not be resolved. Please consider using `{apply}` for a dynamic regex. ' +
                 '`regex` will only succeed to compile if it is deemed a safe regular expression ' +
-                '(safe regexes do not run in exponential time for any input) and is less than 2000 characters long.',
+                '(safe regexes do not run in exponential time for any input)',
             definition: [
                 {
                     parameters: ['~regex#50000', 'replaceWith'],

@@ -45,9 +45,20 @@ function parseArgument(parameter: SubtagSignatureParameterOptions): SubtagSignat
         parameter = parameter.slice(1);
     }
 
-    const match = /^(?<name>.*?)(?::(?<defaultValue>.*?))?(?:#(?<maxLength>\d+))?$/.exec(parameter)?.groups ?? {} as Record<string, string | undefined>;
-    const { defaultValue = '', maxLength = '1000000' } = match;
-    let name = match.name ?? parameter;
+    let startDefault = parameter.indexOf(':');
+    if (startDefault === -1)
+        startDefault = parameter.length + 1;
+    let startMaxLength = parameter.lastIndexOf('#');
+    if (startMaxLength === -1)
+        startMaxLength = parameter.length + 1;
+
+    let name = parameter.slice(0, Math.min(startDefault, startMaxLength));
+    let defaultValue = parameter.slice(startDefault + 1, startMaxLength);
+    let maxLength = parse.int(parameter.slice(startMaxLength + 1), false);
+    if (maxLength === undefined) {
+        maxLength = 1_000_000;
+        defaultValue = parameter.slice(startDefault + 1);
+    }
     let required = true;
     let greedy: number | false = false;
     switch (name[name.length - 1]) {
@@ -77,7 +88,7 @@ function parseArgument(parameter: SubtagSignatureParameterOptions): SubtagSignat
         autoResolve,
         required,
         defaultValue,
-        maxLength: parseInt(maxLength)
+        maxLength: maxLength
     };
 
     return greedy === false ? result : createParameterGroup([result], greedy);

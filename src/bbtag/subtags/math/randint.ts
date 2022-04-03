@@ -14,7 +14,7 @@ export class RandIntSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['min?:0', 'max'],
-                    description: 'Chooses a random whole number between `min` and `max` (inclusive). `min` defaults to 0.',
+                    description: 'Chooses a random whole number between `min` and `max` (inclusive).',
                     exampleCode: 'You rolled a {randint;1;6}.',
                     exampleOut: 'You rolled a 5.',
                     returns: 'number',

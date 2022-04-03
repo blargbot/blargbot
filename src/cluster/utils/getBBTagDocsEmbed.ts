@@ -6,6 +6,7 @@ import { codeBlock, humanize, quote } from '@blargbot/core/utils';
 import { EmbedField, EmbedOptions } from 'eris';
 
 import { CommandContext } from '../command';
+import { guard } from './guard';
 
 interface CategoryChoice {
     label: string;
@@ -183,8 +184,8 @@ function toField(subtag: Subtag, signature: SubtagSignature, index: number): Emb
     let description = codeBlock(bbtag.stringifyParameters(signature.subtagName ?? subtag.name, signature.parameters));
     const defaultDesc = signature.parameters
         .flatMap<SubtagSignatureValueParameter>(p => 'nested' in p ? p.nested : [p])
-        .filter(param => param.defaultValue !== '')
-        .map(param => `\`${param.name}\` defaults to \`${param.defaultValue}\` if ${param.required ? 'left blank' : 'omitted or left blank'}`)
+        .map(getParameterModifiers)
+        .filter(guard.hasValue)
         .join('\n');
     if (defaultDesc.length > 0)
         description += defaultDesc + '\n\n';
@@ -196,6 +197,18 @@ function toField(subtag: Subtag, signature: SubtagSignature, index: number): Emb
         description += `**Example user input:**${quote(signature.exampleIn)}`;
     description += `**Example output:**${quote(signature.exampleOut)}`;
     return { name: index === 0 ? '  **Usage**' : '\u200b', value: description.trim() };
+}
+
+function getParameterModifiers(parameter: SubtagSignatureValueParameter): string | undefined {
+    const modifiers = [];
+    if (parameter.maxLength !== 1_000_000)
+        modifiers.push(`can at most be ${parameter.maxLength} characters long`);
+    if (parameter.defaultValue !== '')
+        modifiers.push(`defaults to \`${parameter.defaultValue}\` if ${parameter.required ? '' : 'omitted or'} left blank.`);
+    if (modifiers.length === 0)
+        return undefined;
+
+    return `\`${parameter.name}\` ${humanize.smartJoin(modifiers, ', ', ', and ')}`;
 }
 
 function subtagDocs(context: CommandContext, subtag: Subtag): EmbedOptions {

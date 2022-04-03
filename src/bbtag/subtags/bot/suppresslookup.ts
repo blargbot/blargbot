@@ -12,8 +12,8 @@ export class SuppressLookupSubtag extends CompiledSubtag {
             category: SubtagType.BOT,
             definition: [
                 {
-                    parameters: ['value?'],
-                    description: 'Sets whether error messages in the lookup system (query canceled, nothing found) should be suppressed. `value` must be a boolean, and defaults to `true`.',
+                    parameters: ['value?:true'],
+                    description: 'Sets whether error messages in the lookup system (query canceled, nothing found) should be suppressed. `value` must be a boolean',
                     exampleCode: '{suppresslookup}',
                     exampleOut: '',
                     returns: 'nothing',

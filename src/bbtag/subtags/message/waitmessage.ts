@@ -18,8 +18,8 @@ export class WaitMessageSubtag extends CompiledSubtag {
                 'the channel Id, then the message Id. ' +
                 '\n\n`channels` defaults to the current channel.' +
                 '\n`users` defaults to the current user.' +
-                '\n`condition` must return `true` or `false` and defaults to `true`' +
-                '\n`timeout` is a number of seconds. This defaults to 60 and is limited to 300' +
+                '\n`condition` must return `true` or `false`' +
+                '\n`timeout` is a number of seconds. This is limited to 300' +
                 '\n\n While inside the `condition` parameter, none of the following subtags may be used: `' + bbtag.overrides.waitmessage.join(', ') + '`' +
                 '\nAlso, the current message becomes the users message that is to be checked. This means that ' +
                 '`{channelid}`, `{messageid}`, `{userid}` and all related subtags will change their values.',
