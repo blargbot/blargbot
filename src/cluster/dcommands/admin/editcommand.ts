@@ -10,6 +10,7 @@ export class EditCommandCommand extends GuildCommand {
         super({
             name: 'editcommand',
             category: CommandType.ADMIN,
+            cannotDisable: true,
             definitions: [
                 {
                     parameters: 'list',
