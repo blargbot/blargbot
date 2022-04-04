@@ -13,6 +13,7 @@ export class OutputsRoute extends BaseRoute {
 
     public async getOutput(id: string): Promise<ApiResponse> {
         const dump = await this.api.worker.request('getDump', id);
+
         if (dump === undefined)
             return this.notFound();
         return this.ok(dump);

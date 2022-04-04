@@ -735,6 +735,7 @@ export interface ParsedDump {
     readonly content?: string;
     readonly embeds: unknown[] | null;
     readonly channelid?: string;
+    readonly expiry: number;
 }
 
 export const enum ChatlogType {

@@ -2,6 +2,7 @@ import { Dump, DumpsTable, ParsedDump } from '@blargbot/core/types';
 import { Logger } from '@blargbot/logger';
 import { mapping } from '@blargbot/mapping';
 import { Client as Cassandra } from 'cassandra-driver';
+import Long from 'long';
 import { Duration } from 'moment-timezone';
 
 export class CassandraDbDumpsTable implements DumpsTable {
@@ -23,7 +24,7 @@ export class CassandraDbDumpsTable implements DumpsTable {
 
     public async getById(id: string): Promise<ParsedDump | undefined> {
         const res = await this.cassandra.execute(
-            'SELECT id, content, embeds, channelid ' +
+            'SELECT id, content, embeds, channelid, TTL(content) as expiry ' +
             'FROM message_outputs ' +
             'WHERE id = :id ' +
             'LIMIT 1',
@@ -54,9 +55,12 @@ export class CassandraDbDumpsTable implements DumpsTable {
     }
 }
 
+const mapLongToString = mapping.instanceof(Long).map(v => v.toString());
+
 const mapDump = mapping.object<ParsedDump>({
-    id: mapping.string,
+    id: mapLongToString,
     content: mapping.string,
-    embeds: mapping.json(mapping.array(mapping.unknown)),
-    channelid: mapping.string
+    embeds: mapping.json(mapping.array(mapping.unknown)).nullish.map(v => v ?? null),
+    channelid: mapLongToString.nullish.map(v => v ?? undefined),
+    expiry: mapping.number
 });

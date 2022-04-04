@@ -13,6 +13,7 @@ export class ApiGetDumpHandler extends WorkerPoolEventService<ApiConnection, 'ge
 
     protected async getDump(id: string): Promise<ParsedDump | undefined> {
         const dump = await this.master.database.dumps.getById(id);
+        this.master.logger.info('Dump: ', dump);
         return dump;
     }
 }
