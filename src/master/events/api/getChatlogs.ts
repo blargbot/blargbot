@@ -1,6 +1,6 @@
 import { ApiConnection } from '@blargbot/api';
 import { WorkerPoolEventService } from '@blargbot/core/serviceTypes';
-import { ChatlogUser, ExpandedChatlogIndex } from '@blargbot/core/types';
+import { ChatLogIndex, ChatLogUser } from '@blargbot/domain/models/chatLogs';
 import { Master } from '@blargbot/master';
 
 export class ApiGetChatLogsHandler extends WorkerPoolEventService<ApiConnection, 'getChatLogs'> {
@@ -11,7 +11,7 @@ export class ApiGetChatLogsHandler extends WorkerPoolEventService<ApiConnection,
             async ({ data, reply }) => reply(await this.getLogs(data)));
     }
 
-    protected async getLogs(id: string): Promise<ExpandedChatlogIndex | undefined> {
+    protected async getLogs(id: string): Promise<ChatLogIndex | undefined> {
         const logIndex = await this.master.database.chatlogIndex.get(id);
         if (logIndex === undefined) {
             return undefined;
@@ -21,7 +21,7 @@ export class ApiGetChatLogsHandler extends WorkerPoolEventService<ApiConnection,
         this.master.logger.info(logIndex);
 
         const messages = await this.master.database.chatlogs.getAll(logIndex.channel, logIndex.ids);
-        const userCache = new Map<string, ChatlogUser>();
+        const userCache = new Map<string, ChatLogUser>();
 
         this.master.logger.info(messages);
 
