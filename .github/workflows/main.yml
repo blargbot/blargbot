@@ -5,6 +5,7 @@ on:
     branches: ["**"]
   pull_request:
     branches: [master]
+  workflow_dispatch: ~
 
 jobs:
   build:
@@ -31,6 +32,11 @@ jobs:
           sudo apt-get install build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev graphicsmagick
         continue-on-error: true
 
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          languages: javascript
+
       - name: Install packages
         run: yarn install
 
@@ -43,6 +49,9 @@ jobs:
       - name: Test
         id: test
         run: yarn coverage --reporter spec
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
 
       - name: Upload coverage
         if: always() && steps.test.outcome != 'skipped' && hashFiles('coverage/index.html') != ''

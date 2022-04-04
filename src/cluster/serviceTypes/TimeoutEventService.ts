@@ -1,5 +1,5 @@
 import { BaseService } from '@blargbot/core/serviceTypes';
-import { EventOptionsTypeMap, StoredEvent } from '@blargbot/core/types';
+import { EventOptionsTypeMap, StoredEvent } from '@blargbot/domain/models';
 import { Logger } from '@blargbot/logger';
 
 import { TimeoutManager } from '../managers/TimeoutManager';

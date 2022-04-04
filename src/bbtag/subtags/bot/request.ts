@@ -3,18 +3,18 @@ import { mapping } from '@blargbot/mapping';
 import fetch, { BodyInit } from 'node-fetch';
 
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError } from '../../errors';
 import { SubtagType } from '../../utils';
 
 const domainRegex = /^https?:\/\/(.+?)(?:\/.?|$)/i;
 
-export class RequestSubtag extends DefinedSubtag {
+export class RequestSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'request',
             category: SubtagType.BOT,
-            desc: 'Only certain whitelisted domains can be used for `url`. See [here](https://blargbot.xyz/domains) for the list.' +
+            description: 'Only certain whitelisted domains can be used for `url`. See [here](https://blargbot.xyz/domains) for the list.' +
                 'The output is a JSON object with the following structure. It is recommended to use {jsonget} to navigate it.\n' +
                 '```json\n{\n  "body": {}, // the body of the request\n  "status": 200, // the HTTP status code\n  "statusText": "OK", // the human readable translation of the status code\n' +
                 '  "date": "Thu, 1 Jan 1970 00:00:00 GMT", // the date sent in the headers\n  "contentType": "application/json", // the content type of the response\n' +

@@ -2,16 +2,16 @@ import { Lazy } from '@blargbot/core/Lazy';
 import { parse } from '@blargbot/core/utils';
 
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { NotAnArrayError, NotANumberError } from '../../errors';
 import { bbtag, SubtagType } from '../../utils';
 
-export class SpliceSubtag extends DefinedSubtag {
+export class SpliceSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'splice',
             category: SubtagType.ARRAY,
-            desc: 'If used with a variable this will modify the original array.\nReturns an array of removed items.',
+            description: 'If used with a variable this will modify the original array.\nReturns an array of removed items.',
             definition: [
                 {
                     parameters: ['array', 'start', 'deleteCount?:0'],

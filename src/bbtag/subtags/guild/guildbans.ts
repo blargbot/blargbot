@@ -1,19 +1,19 @@
 import { ApiError, DiscordRESTError } from 'eris';
 
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError } from '../../errors';
 import { SubtagType } from '../../utils';
 
-export class GuildBansSubtag extends DefinedSubtag {
+export class GuildBansSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'guildbans',
             category: SubtagType.GUILD,
-            desc: 'Returns an array of banned users in the current guild.',
             definition: [
                 {
                     parameters: [],
+                    description: 'Returns an array of banned users in the current guild.',
                     exampleCode: 'This guild has {length;{guildbans}} banned users.',
                     exampleOut: 'This guild has 123 banned users.',
                     returns: 'id[]',

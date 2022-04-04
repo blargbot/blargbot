@@ -1,11 +1,12 @@
+import { SubtagSignature, SubtagSignatureValueParameter } from '@blargbot/bbtag';
 import { limits } from '@blargbot/bbtag/limits';
 import { Subtag } from '@blargbot/bbtag/Subtag';
-import { SubtagHandlerValueParameter, SubtagSignatureDetails } from '@blargbot/bbtag/types';
 import { bbtag, SubtagType, tagTypeDetails } from '@blargbot/bbtag/utils';
 import { codeBlock, humanize, quote } from '@blargbot/core/utils';
 import { EmbedField, EmbedOptions } from 'eris';
 
 import { CommandContext } from '../command';
+import { guard } from './guard';
 
 interface CategoryChoice {
     label: string;
@@ -20,7 +21,7 @@ export async function getBBTagDocsEmbed(context: CommandContext, topic: string |
     if (typeof embed === 'string')
         return embed;
     embed.title = `BBTag documentation${embed.title ?? ''}`;
-    embed.url = context.cluster.util.websiteLink(`tags${embed.url ?? ''}`);
+    embed.url = context.cluster.util.websiteLink(`bbtag/subtags${embed.url ?? ''}`);
     embed.color ??= 0xefff00;
     return embed;
 }
@@ -31,7 +32,7 @@ async function getTopicBody(context: CommandContext, topic: string | undefined):
     switch (words[0]?.toLowerCase()) {
         case undefined:
         case 'index': return {
-            description: 'Blargbot is equipped with a system of tags called BBTag, designed to mimic a programming language while still remaining simple. You can use this system as the building-blocks to create your own advanced command system, whether it be through public tags or guild-specific custom commands.\n\nCustomizing can prove difficult via discord, fortunately there is an online [BBTag IDE](' + context.util.websiteLink('tags/editor') + ') which should make developing a little easier.',
+            description: 'Blargbot is equipped with a system of tags called BBTag, designed to mimic a programming language while still remaining simple. You can use this system as the building-blocks to create your own advanced command system, whether it be through public tags or guild-specific custom commands.\n\nCustomizing can prove difficult via discord, fortunately there is an online [BBTag IDE](' + context.util.websiteLink('bbtag/editor') + ') which should make developing a little easier.',
             fields: [
                 {
                     name: 'Topics',
@@ -179,26 +180,35 @@ async function getTopicBody(context: CommandContext, topic: string | undefined):
     }
 }
 
-function toField(subtag: Subtag, signature: SubtagSignatureDetails, index: number): EmbedField {
-    let description = codeBlock(bbtag.stringifyParameters(subtag.name, signature.parameters));
+function toField(subtag: Subtag, signature: SubtagSignature, index: number): EmbedField {
+    let description = codeBlock(bbtag.stringifyParameters(signature.subtagName ?? subtag.name, signature.parameters));
     const defaultDesc = signature.parameters
-        .flatMap<SubtagHandlerValueParameter>(p => 'nested' in p ? p.nested : [p])
-        .filter(param => param.defaultValue !== '')
-        .map(param => `\`${param.name}\` defaults to \`${param.defaultValue}\` if ${param.required ? 'left blank' : 'omitted or left blank'}`)
+        .flatMap<SubtagSignatureValueParameter>(p => 'nested' in p ? p.nested : [p])
+        .map(getParameterModifiers)
+        .filter(guard.hasValue)
         .join('\n');
     if (defaultDesc.length > 0)
         description += defaultDesc + '\n\n';
 
-    if (signature.description !== undefined)
-        description += `${signature.description}\n`;
+    description += `${signature.description}\n`;
     description += '\n';
-    if (signature.exampleCode !== undefined)
-        description += `**Example code:**${quote(signature.exampleCode)}`;
+    description += `**Example code:**${quote(signature.exampleCode)}`;
     if (signature.exampleIn !== undefined)
         description += `**Example user input:**${quote(signature.exampleIn)}`;
-    if (signature.exampleOut !== undefined)
-        description += `**Example output:**${quote(signature.exampleOut)}`;
+    description += `**Example output:**${quote(signature.exampleOut)}`;
     return { name: index === 0 ? '  **Usage**' : '\u200b', value: description.trim() };
+}
+
+function getParameterModifiers(parameter: SubtagSignatureValueParameter): string | undefined {
+    const modifiers = [];
+    if (parameter.maxLength !== 1_000_000)
+        modifiers.push(`can at most be ${parameter.maxLength} characters long`);
+    if (parameter.defaultValue !== '')
+        modifiers.push(`defaults to \`${parameter.defaultValue}\` if ${parameter.required ? '' : 'omitted or'} left blank.`);
+    if (modifiers.length === 0)
+        return undefined;
+
+    return `\`${parameter.name}\` ${humanize.smartJoin(modifiers, ', ', ', and ')}`;
 }
 
 function subtagDocs(context: CommandContext, subtag: Subtag): EmbedOptions {
@@ -209,8 +219,8 @@ function subtagDocs(context: CommandContext, subtag: Subtag): EmbedOptions {
         description.push('**This subtag is deprecated**');
     if (subtag.aliases.length > 0)
         description.push('**Aliases:**', codeBlock(subtag.aliases.join(', ')));
-    if (subtag.desc !== undefined)
-        description.push(subtag.desc);
+    if (subtag.description !== undefined)
+        description.push(subtag.description);
 
     const fields = subtag.signatures.map((sig, index) => toField(subtag, sig, index));
     const limitField: EmbedField = { name: '__Usage limits__', value: '' };
@@ -226,7 +236,7 @@ function subtagDocs(context: CommandContext, subtag: Subtag): EmbedOptions {
     if (limitField.value.length > 0)
         fields.push(limitField);
 
-    return subtag.enrichDocs({
+    return {
         title: ` - {${subtag.name}}`,
         url: `/#${encodeURIComponent(subtag.name)}`,
         description: description.length === 0 ? undefined : description.join('\n'),
@@ -235,10 +245,10 @@ function subtagDocs(context: CommandContext, subtag: Subtag): EmbedOptions {
         footer: {
             text: `For detailed info about the argument syntax, use: ${context.prefix}${context.commandName} docs arguments`
         }
-    });
+    };
 }
 async function lookupSubtag(context: CommandContext, input: string): Promise<Subtag | string | undefined> {
-    input = input.replace(/[{}]/, '').toLowerCase();
+    input = input.replace(/[{}]/g, '').toLowerCase();
     const matchedSubtags = [...context.cluster.subtags.list(subtag => !subtag.hidden && (subtag.name.includes(input) || subtag.aliases.some(a => a.includes(input))))];
 
     if (matchedSubtags.length === 1)

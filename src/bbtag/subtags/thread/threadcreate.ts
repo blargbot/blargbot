@@ -1,14 +1,14 @@
 import { guard, parse } from '@blargbot/core/utils';
 import { mapping } from '@blargbot/mapping';
-import { GuildFeature } from 'discord-api-types';
+import { GuildFeature } from 'discord-api-types/v9';
 import { Constants, CreateThreadOptions, DiscordRESTError, KnownMessage } from 'eris';
 
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError, ChannelNotFoundError, InvalidChannelError, MessageNotFoundError } from '../../errors';
 import { SubtagType } from '../../utils';
 
-export class ThreadCreateSubtag extends DefinedSubtag {
+export class ThreadCreateSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'threadcreate',

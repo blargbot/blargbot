@@ -1,9 +1,9 @@
-import { BaseGlobalCommand, CommandContext } from '@blargbot/cluster/command';
+import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { avatarColours, CommandType, humanize, randChoose } from '@blargbot/cluster/utils';
 import eris, { EmbedOptions } from 'eris';
 import moment from 'moment-timezone';
 
-export class StatsCommand extends BaseGlobalCommand {
+export class StatsCommand extends GlobalCommand {
     public constructor() {
         super({
             name: 'stats',

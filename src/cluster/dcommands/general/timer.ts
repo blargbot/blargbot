@@ -1,8 +1,8 @@
-import { BaseGlobalCommand, CommandContext } from '@blargbot/cluster/command';
+import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType, guard } from '@blargbot/cluster/utils';
 import moment, { Duration } from 'moment-timezone';
 
-export class TimerCommand extends BaseGlobalCommand {
+export class TimerCommand extends GlobalCommand {
     public constructor() {
         super({
             name: 'timer',

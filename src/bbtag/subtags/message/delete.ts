@@ -1,21 +1,21 @@
 import { guard } from '@blargbot/core/utils';
 
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '../../errors';
 import { SubtagType } from '../../utils';
 
-export class DeleteSubtag extends DefinedSubtag {
+export class DeleteSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'delete',
-            desc: 'Only ccommands can delete other messages.',
+            description: 'Only ccommands can delete other messages.',
             category: SubtagType.MESSAGE,
             definition: [
                 {
                     parameters: [],
                     description: 'Deletes the message that invoked the command',
-                    exampleIn: '{//;The message that triggered this will be deleted} {delete}',
+                    exampleCode: '{//;The message that triggered this will be deleted} {delete}',
                     exampleOut: '(the message got deleted idk how to do examples for this)',
                     returns: 'nothing',
                     execute: (ctx) => this.deleteMessage(ctx, ctx.channel.id, ctx.message.id)
@@ -23,7 +23,7 @@ export class DeleteSubtag extends DefinedSubtag {
                 {
                     parameters: ['messageId'],
                     description: 'Deletes the specified `messageId` from the current channel.',
-                    exampleIn: '{//;The message with ID `111111111111111111` will be deleted}\n{delete;111111111111111111}',
+                    exampleCode: '{//;The message with ID `111111111111111111` will be deleted}\n{delete;111111111111111111}',
                     exampleOut: '(the message `111111111111111111` got deleted idk how to do examples for this)',
                     returns: 'nothing',
                     execute: (ctx, [messageId]) => this.deleteMessage(ctx, ctx.channel.id, messageId.value)
@@ -31,7 +31,7 @@ export class DeleteSubtag extends DefinedSubtag {
                 {
                     parameters: ['channel', 'messageId'],
                     description: 'Deletes the specified `messageId` from channel `channel`.',
-                    exampleIn: '{//;The message with ID `2222222222222222` from channel `1111111111111111` will be deleted}\n{delete;111111111111111111;2222222222222222}',
+                    exampleCode: '{//;The message with ID `2222222222222222` from channel `1111111111111111` will be deleted}\n{delete;111111111111111111;2222222222222222}',
                     exampleOut: '(the message `2222222222222222` from channel `1111111111111111` got deleted)',
                     returns: 'nothing',
                     execute: (ctx, [channel, messageId]) => this.deleteMessage(ctx, channel.value, messageId.value)

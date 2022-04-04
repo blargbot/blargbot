@@ -1,17 +1,17 @@
 import { parse } from '@blargbot/core/utils';
 
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError, NotAnArrayError, RoleNotFoundError, UserNotFoundError } from '../../errors';
 import { bbtag, SubtagType } from '../../utils';
 
-export class UserSetRolesSubtag extends DefinedSubtag {
+export class UserSetRolesSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'usersetroles',
             aliases: ['setroles'],
             category: SubtagType.USER,
-            desc: '`roleArray` must be an array formatted like `["role1", "role2"]`',
+            description: '`roleArray` must be an array formatted like `["role1", "role2"]`',
             definition: [
                 {
                     parameters: ['roleArray?'],

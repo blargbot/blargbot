@@ -1,7 +1,7 @@
-import { BaseGlobalImageCommand, CommandContext } from '@blargbot/cluster/command';
+import { CommandContext, GlobalImageCommand } from '@blargbot/cluster/command';
 import { ImageResult } from '@blargbot/image/types';
 
-export class SonicSaysCommand extends BaseGlobalImageCommand {
+export class SonicSaysCommand extends GlobalImageCommand {
     public constructor() {
         super({
             name: 'sonicsays',

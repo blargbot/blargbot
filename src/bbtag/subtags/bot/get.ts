@@ -1,12 +1,12 @@
 import { parse } from '@blargbot/core/utils';
 
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError, NotANumberError } from '../../errors';
 import { tagVariableScopes } from '../../tagVariables';
 import { SubtagType } from '../../utils';
 
-export class GetSubtag extends DefinedSubtag {
+export class GetSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'get',
@@ -27,6 +27,8 @@ export class GetSubtag extends DefinedSubtag {
                     parameters: ['name', 'index'],
                     description: 'When variable `name` is an array this will return the element at index `index`.' +
                         ' If `index` is empty the entire array will be returned. If variable is not an array it will return the whole variable.',
+                    exampleCode: '{set;myArray;["abc","def","ghi"]}{get;myArray;1}',
+                    exampleOut: 'def',
                     returns: 'json|nothing',
                     execute: async (ctx, [name, index]) => await this.getArray(ctx, name.value, index.value)
                 }

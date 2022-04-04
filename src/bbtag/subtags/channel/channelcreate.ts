@@ -3,16 +3,16 @@ import { mapping } from '@blargbot/mapping';
 import { ApiError, Constants, CreateChannelOptions, DiscordRESTError } from 'eris';
 
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError } from '../../errors';
 import { SubtagType } from '../../utils';
 
-export class ChannelCreateSubtag extends DefinedSubtag {
+export class ChannelCreateSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'channelcreate',
             category: SubtagType.CHANNEL,
-            desc: '`type` is either `text`, `voice`, `category`, `news` or `store`.\n',
+            description: '`type` is either `text`, `voice`, `category`, `news` or `store`.\n',
             definition: [
                 {
                     parameters: ['name', 'type?:text', 'options?:{}'],

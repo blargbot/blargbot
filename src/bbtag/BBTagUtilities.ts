@@ -1,8 +1,8 @@
 import { Configuration } from '@blargbot/config';
 import { BaseUtilities } from '@blargbot/core/BaseUtilities';
-import { Database } from '@blargbot/core/database';
 import { ModuleLoader } from '@blargbot/core/modules';
 import { ChoiceQueryResult, EntityPickQueryOptions } from '@blargbot/core/types';
+import { Database } from '@blargbot/database';
 import { Logger } from '@blargbot/logger';
 import { Client as Discord, Guild, KnownChannel, KnownMessage, Member, Role, User } from 'eris';
 import { Duration } from 'moment-timezone';

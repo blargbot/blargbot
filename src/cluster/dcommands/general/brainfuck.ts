@@ -1,8 +1,8 @@
-import { BaseGlobalCommand, CommandContext } from '@blargbot/cluster/command';
+import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType } from '@blargbot/cluster/utils';
 import Brainfuck from 'brainfuck-node';
 
-export class BrainfuckCommand extends BaseGlobalCommand {
+export class BrainfuckCommand extends GlobalCommand {
     private readonly client: Brainfuck;
 
     public constructor() {

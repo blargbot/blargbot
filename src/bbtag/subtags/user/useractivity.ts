@@ -1,15 +1,15 @@
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { UserNotFoundError } from '../../errors';
 import { SubtagType } from '../../utils';
 
-export class UserActivitySubtag extends DefinedSubtag {
+export class UserActivitySubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'useractivity',
             aliases: ['usergame'],
             category: SubtagType.USER,
-            desc: 'If no game is being played, this will return \'nothing\'',
+            description: 'If no game is being played, this will return \'nothing\'',
             definition: [
                 {
                     parameters: [],

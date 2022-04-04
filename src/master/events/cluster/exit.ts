@@ -1,5 +1,4 @@
 import { ClusterConnection } from '@blargbot/cluster';
-import { codeBlock } from '@blargbot/cluster/utils';
 import { WorkerPoolEventService } from '@blargbot/core/serviceTypes';
 import { WorkerState } from '@blargbot/core/worker';
 import { Master } from '@blargbot/master';
@@ -22,7 +21,14 @@ export class ClusterExitHandler extends WorkerPoolEventService<ClusterConnection
             .join('\n');
         void this.master.util.send(
             this.master.config.discord.channels.shardlog,
-            `Cluster ${worker.id} has died.\n\nLast 5 console outputs:${codeBlock(logString, 'md')}`.slice(0, 2000));
+            {
+                content: `Cluster ${worker.id} has died.\n\nLast 5 console outputs:`,
+                files: [{
+                    file: logString,
+                    name: `cluster ${worker.id}.log`
+                }]
+            }
+        );
 
         const diedAt = moment();
         this.master.logger.cluster(`Cluster ${worker.id} has died, respawning...`);

@@ -1,6 +1,6 @@
 import { SetSubtag } from '@blargbot/bbtag/subtags/bot/set';
-import { SubtagVariableType } from '@blargbot/core/types';
 import { snowflake } from '@blargbot/core/utils';
+import { SubtagVariableType } from '@blargbot/domain/models';
 import { expect } from 'chai';
 
 import { argument } from '../../mock';

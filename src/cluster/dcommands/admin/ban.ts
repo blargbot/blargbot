@@ -1,11 +1,11 @@
-import { BaseGuildCommand } from '@blargbot/cluster/command';
+import { GuildCommand } from '@blargbot/cluster/command';
 import { GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType, humanize, parse } from '@blargbot/cluster/utils';
-import { FlagResult } from '@blargbot/core/types';
+import { FlagResult } from '@blargbot/domain/models';
 import { Member } from 'eris';
 import moment from 'moment-timezone';
 
-export class BanCommand extends BaseGuildCommand {
+export class BanCommand extends GuildCommand {
     public constructor() {
         super({
             name: 'ban',

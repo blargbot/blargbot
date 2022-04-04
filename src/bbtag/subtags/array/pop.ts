@@ -1,9 +1,9 @@
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { NotAnArrayError } from '../../errors';
 import { bbtag, SubtagType } from '../../utils';
 
-export class PopSubtag extends DefinedSubtag {
+export class PopSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'pop',

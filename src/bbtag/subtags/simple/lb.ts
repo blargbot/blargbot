@@ -1,12 +1,12 @@
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { SubtagType } from '../../utils';
 
-export class LbSubtag extends DefinedSubtag {
+export class LbSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'lb',
             category: SubtagType.SIMPLE,
-            desc: 'Will be replaced by `{` on execution.',
+            description: 'Will be replaced by `{` on execution.',
             definition: [
                 {
                     parameters: [],

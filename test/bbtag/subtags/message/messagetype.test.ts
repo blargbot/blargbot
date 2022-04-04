@@ -1,6 +1,6 @@
 import { MessageTypeSubtag } from '@blargbot/bbtag/subtags/message/messagetype';
 import { snowflake } from '@blargbot/core/utils';
-import { MessageType } from 'discord-api-types';
+import { MessageType } from 'discord-api-types/v9';
 
 import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite';
 import { createGetMessagePropTestCases } from './_getMessagePropTest';

@@ -2,17 +2,17 @@ import { guard } from '@blargbot/core/utils';
 import { GuildChannel } from 'eris';
 
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError, ChannelNotFoundError } from '../../errors';
 import { SubtagType } from '../../utils';
 
-export class ChannelPosSubtag extends DefinedSubtag {
+export class ChannelPosSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'channelpos',
             aliases: ['categorypos'],
             category: SubtagType.CHANNEL,
-            desc: 'The position is the index per channel type (text, voice or category) in the channel list.',
+            description: 'The position is the index per channel type (text, voice or category) in the channel list.',
             definition: [
                 {
                     parameters: [],

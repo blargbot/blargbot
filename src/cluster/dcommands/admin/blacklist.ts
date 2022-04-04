@@ -1,10 +1,10 @@
-import { BaseGuildCommand } from '@blargbot/cluster/command';
+import { GuildCommand } from '@blargbot/cluster/command';
 import { GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType } from '@blargbot/cluster/utils';
 import { guard } from '@blargbot/core/utils';
 import { KnownChannel } from 'eris';
 
-export class BlacklistCommandBase extends BaseGuildCommand {
+export class BlacklistCommandBase extends GuildCommand {
     public constructor() {
         super({
             name: 'blacklist',

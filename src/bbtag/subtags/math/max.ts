@@ -1,9 +1,9 @@
 import { parse } from '@blargbot/core/utils';
 
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { bbtag, SubtagType } from '../../utils';
 
-export class MaxSubtag extends DefinedSubtag {
+export class MaxSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'max',

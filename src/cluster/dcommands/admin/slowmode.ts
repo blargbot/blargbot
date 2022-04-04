@@ -1,9 +1,9 @@
-import { BaseGuildCommand } from '@blargbot/cluster/command';
+import { GuildCommand } from '@blargbot/cluster/command';
 import { CommandType } from '@blargbot/cluster/utils';
 import { guard } from '@blargbot/core/utils';
 import { ApiError, DiscordRESTError, KnownChannel } from 'eris';
 
-export class SlowmodeCommand extends BaseGuildCommand {
+export class SlowmodeCommand extends GuildCommand {
     public constructor() {
         super({
             name: 'slowmode',

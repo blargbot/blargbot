@@ -1,10 +1,10 @@
 import { Cluster } from '@blargbot/cluster';
-import { BaseGlobalCommand } from '@blargbot/cluster/command';
+import { GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType, randInt } from '@blargbot/cluster/utils';
 import { EmbedOptions } from 'eris';
 import { Handler as Wolken } from 'wolken';
 
-export class CatCommand extends BaseGlobalCommand {
+export class CatCommand extends GlobalCommand {
     private readonly client: Wolken;
 
     public constructor(cluster: Cluster) {

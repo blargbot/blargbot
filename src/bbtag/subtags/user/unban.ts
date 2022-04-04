@@ -1,9 +1,9 @@
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError, UserNotFoundError } from '../../errors';
 import { SubtagType } from '../../utils';
 
-export class UnbanSubtag extends DefinedSubtag {
+export class UnbanSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'unban',

@@ -1,19 +1,19 @@
 import { guard } from '@blargbot/core/utils';
 
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { SubtagType } from '../../utils';
 
-export class ChannelCategoriesSubtag extends DefinedSubtag {
+export class ChannelCategoriesSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'channelcategories',
             category: SubtagType.CHANNEL,
-            desc: 'Returns an array of category IDs on the current guild.',
             aliases: ['categories'],
             definition: [
                 {
                     parameters: [],
+                    description: 'Returns an array of category IDs on the current guild.',
                     exampleCode: 'This guild has {length;{categories}} categories.',
                     exampleOut: 'This guild has 7 categories.',
                     returns: 'id[]',

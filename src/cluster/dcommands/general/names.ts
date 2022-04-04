@@ -1,9 +1,9 @@
-import { BaseGlobalCommand, CommandContext } from '@blargbot/cluster/command';
+import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType, pluralise as p } from '@blargbot/cluster/utils';
 import { EmbedOptions, User } from 'eris';
 import moment from 'moment-timezone';
 
-export class NamesCommand extends BaseGlobalCommand {
+export class NamesCommand extends GlobalCommand {
     public constructor() {
         super({
             name: 'names',

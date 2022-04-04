@@ -1,7 +1,8 @@
-import { SubtagSignatureDetails, SubtagType } from '@blargbot/bbtag';
-import { BaseCommand, CommandContext, ScopedCommandBase } from '@blargbot/cluster/command';
+import { Subtag } from '@blargbot/bbtag';
+import { Command, CommandContext, ScopedCommand } from '@blargbot/cluster/command';
 import { CommandType, ModerationType } from '@blargbot/cluster/utils';
-import { CommandPermissions, EvalRequest, EvalResult, FlagDefinition, FlagResult, GlobalEvalResult, GuildSourceCommandTag, IMiddleware, MasterEvalRequest, NamedGuildCommandTag, SendPayload, StoredGuildSettings } from '@blargbot/core/types';
+import { EvalRequest, EvalResult, GlobalEvalResult, IMiddleware, MasterEvalRequest, SendPayload } from '@blargbot/core/types';
+import { CommandPermissions, FlagDefinition, FlagResult, GuildSourceCommandTag, NamedGuildCommandTag, StoredGuildSettings } from '@blargbot/domain/models';
 import { ImageResult } from '@blargbot/image/types';
 import { Guild, KnownChannel, KnownGuildTextableChannel, KnownMessage, KnownPrivateChannel, KnownTextableChannel, Member, Role, Shard, User, Webhook } from 'eris';
 import { Duration } from 'moment-timezone';
@@ -75,7 +76,7 @@ export type CommandGetCoreResult<T = unknown> =
 
 export type CommandManagerTypeMap = {
     custom: NamedGuildCommandTag;
-    default: BaseCommand;
+    default: Command;
 };
 
 export type CommandManagers = { [P in keyof CommandManagerTypeMap]: ICommandManager<CommandManagerTypeMap[P]> }
@@ -252,14 +253,7 @@ export interface SubtagListResult {
     [tagName: string]: SubtagDetails | undefined;
 }
 
-export interface SubtagDetails {
-    readonly category: SubtagType;
-    readonly name: string;
-    readonly signatures: readonly SubtagSignatureDetails[];
-    readonly deprecated: boolean | string;
-    readonly staff: boolean;
-    readonly aliases: readonly string[];
-}
+export type SubtagDetails = Omit<Subtag, 'execute' | 'hidden'>;
 
 export interface GuildDetails {
     readonly id: string;
@@ -438,7 +432,7 @@ export interface CommandBinderStateLookupCache {
 
 export interface CommandBinderState<TContext extends CommandContext> {
     readonly context: TContext;
-    readonly command: ScopedCommandBase<TContext>;
+    readonly command: ScopedCommand<TContext>;
     readonly arguments: ReadonlyArray<CommandBinderDeferred | CommandBinderSuccess>;
     readonly flags: FlagResult;
     readonly argIndex: number;

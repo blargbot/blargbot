@@ -2,7 +2,8 @@ import { SendContent } from '@blargbot/core/types';
 import { codeBlock, humanize } from '@blargbot/core/utils';
 import moment from 'moment-timezone';
 
-import { ExecutionResult, SubtagCall } from '../types';
+import { SubtagCall } from '../language';
+import { ExecutionResult } from '../types';
 import { stringify } from './stringify';
 
 export function createDebugOutput(result: ExecutionResult): SendContent {

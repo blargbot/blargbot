@@ -1,7 +1,7 @@
-import { BaseGlobalCommand, CommandContext } from '@blargbot/cluster/command';
+import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType, randChoose, randInt, repeat } from '@blargbot/cluster/utils';
 
-export class SyntaxCommand extends BaseGlobalCommand {
+export class SyntaxCommand extends GlobalCommand {
     public constructor() {
         super({
             name: 'syntax',

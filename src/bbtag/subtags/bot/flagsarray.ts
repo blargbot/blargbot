@@ -1,16 +1,16 @@
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { SubtagType } from '../../utils';
 
-export class FlagsArraySubtag extends DefinedSubtag {
+export class FlagsArraySubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'flagsarray',
             category: SubtagType.BOT,
-            desc: 'Returns an array of all flags provided.',
             definition: [
                 {
                     parameters: [],
+                    description: 'Returns an array of all flags provided.',
                     exampleCode: '{flagsarray}',
                     exampleIn: 'Hello -dc world',
                     exampleOut: '["_","d","c"]',

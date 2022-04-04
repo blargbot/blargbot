@@ -2,16 +2,16 @@ import { Member } from 'eris';
 import moment from 'moment-timezone';
 
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError, UserNotFoundError } from '../../errors';
 import { SubtagType } from '../../utils';
 
-export class UserBoostDataSubtag extends DefinedSubtag {
+export class UserBoostDataSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'userboostdate',
             category: SubtagType.USER,
-            desc: 'See the [moment documentation](http://momentjs.com/docs/#/displaying/format/) for more information about formats. ' +
+            description: 'See the [moment documentation](http://momentjs.com/docs/#/displaying/format/) for more information about formats. ' +
                 'If user is not boosting the guild, returns `User not boosting`',
             definition: [
                 {

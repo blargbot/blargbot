@@ -1,10 +1,10 @@
-import { BaseGuildCommand } from '@blargbot/cluster/command';
+import { GuildCommand } from '@blargbot/cluster/command';
 import { GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType } from '@blargbot/cluster/utils';
 import { humanize } from '@blargbot/core/utils';
 import { Webhook } from 'eris';
 
-export class ChangelogCommand extends BaseGuildCommand {
+export class ChangelogCommand extends GuildCommand {
     public constructor() {
         super({
             name: 'changelog',

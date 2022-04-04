@@ -1,6 +1,6 @@
 import { BBTagContext } from '@blargbot/bbtag';
 import { BBTagRuntimeError, ChannelNotFoundError } from '@blargbot/bbtag/errors';
-import { APIChannel } from 'discord-api-types';
+import { APIChannel } from 'discord-api-types/v9';
 import { KnownGuildChannel } from 'eris';
 
 import { SubtagTestCase, SubtagTestContext } from '../SubtagTestSuite';

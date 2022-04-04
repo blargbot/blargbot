@@ -1,8 +1,8 @@
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError } from '../../errors';
 import { bbtag, SubtagType } from '../../utils';
 
-export class JsonSubtag extends DefinedSubtag {
+export class JsonSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'json',

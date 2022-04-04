@@ -1,12 +1,13 @@
 import { Configuration } from '@blargbot/config/Configuration';
-import { DMContext, SendContent, SendContext, SendPayload, StoredUser } from '@blargbot/core/types';
+import { DMContext, SendContent, SendContext, SendPayload } from '@blargbot/core/types';
+import { Database } from '@blargbot/database';
+import { StoredUser } from '@blargbot/domain/models';
 import { Logger } from '@blargbot/logger';
 import { Snowflake } from 'catflake';
 import { ApiError, ChannelInteraction, Client as Discord, DiscordRESTError, EmbedAuthor, EmbedOptions, ExtendedUser, Guild, KnownChannel, KnownGuildChannel, KnownMessage, KnownTextableChannel, Member, Message, Role, User, UserChannelInteraction, Webhook } from 'eris';
 import moment from 'moment-timezone';
 
 import { BaseClient } from './BaseClient';
-import { Database } from './database';
 import { Emote } from './Emote';
 import { metrics } from './Metrics';
 import { guard, humanize, parse, snowflake } from './utils';
@@ -66,7 +67,7 @@ export class BaseUtilities {
             return {
                 icon_url: target.avatarURL,
                 name: target.nick ?? target.username,
-                url: this.websiteLink(`user/${target.id}`)
+                url: this.websiteLink(`users/${target.id}`)
             };
         } else if (target instanceof Guild) {
             return {
@@ -77,7 +78,7 @@ export class BaseUtilities {
             return {
                 icon_url: target.avatarURL,
                 name: target.username ?? 'UNKNOWN',
-                url: this.websiteLink(`user/${target.userid}`)
+                url: this.websiteLink(`users/${target.userid}`)
             };
         }
 
@@ -139,16 +140,16 @@ export class BaseUtilities {
             && (payload.embeds?.length ?? 0) === 0
             && (files?.length ?? 0) === 0
             && (payload.components?.length ?? 0) === 0) {
-            this.logger.error('Tried to send an empty message!');
+            this.logger.warn('Tried to send an empty message!');
             throw new Error('No content');
         }
 
         if (!guard.checkEmbedSize(payload.embeds)) {
-            const id = await this.generateOutputPage(payload, channel);
-            const output = this.websiteLink('/output');
+            const id = await this.generateDumpPage(payload, channel);
+            const output = this.websiteLink(`/dumps/${id}`);
             payload.content = 'Oops! I tried to send a message that was too long. If you think this is a bug, please report it!\n' +
                 '\n' +
-                `To see what I would have said, please visit ${output}${id.toString()}`;
+                `To see what I would have said, please visit ${output}`;
             if (payload.embeds !== undefined)
                 delete payload.embeds;
         } else if (payload.content !== undefined && !guard.checkMessageSize(payload.content)) {
@@ -315,16 +316,17 @@ export class BaseUtilities {
         return tag;
     }
 
-    public async generateOutputPage(payload: SendContent | string, channel?: KnownTextableChannel): Promise<Snowflake> {
+    public async generateDumpPage(payload: SendContent | string, channel?: KnownTextableChannel): Promise<Snowflake> {
         if (typeof payload === 'string')
             payload = { content: payload };
 
         const id = snowflake.create();
         await this.database.dumps.add({
-            id: id.toString(),
+            id: id,
             content: payload.content ?? undefined,
-            embeds: JSON.stringify(payload.embeds),
-            channelid: channel?.id
+            embeds: payload.embeds,
+            channelid: snowflake.parse(channel?.id),
+            expiry: 604800
         });
         return id;
     }

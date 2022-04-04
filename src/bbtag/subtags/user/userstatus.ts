@@ -1,14 +1,14 @@
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { UserNotFoundError } from '../../errors';
 import { SubtagType } from '../../utils';
 
-export class UserStatusSubtag extends DefinedSubtag {
+export class UserStatusSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'userstatus',
             category: SubtagType.USER,
-            desc: 'Returned status can be one of `online`, `idle`, `dnd` or `offline`',
+            description: 'Returned status can be one of `online`, `idle`, `dnd` or `offline`',
             definition: [
                 {
                     parameters: [],

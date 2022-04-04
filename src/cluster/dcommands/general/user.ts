@@ -1,9 +1,9 @@
-import { BaseGlobalCommand, CommandContext } from '@blargbot/cluster/command';
+import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType, discord, guard, parse } from '@blargbot/cluster/utils';
 import { Activity, Constants, EmbedOptions, Member, User } from 'eris';
 import moment from 'moment-timezone';
 
-export class UserCommand extends BaseGlobalCommand {
+export class UserCommand extends GlobalCommand {
     public constructor() {
         super({
             name: 'user',

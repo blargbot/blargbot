@@ -1,6 +1,6 @@
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
 import { ChannelDeleteSubtag } from '@blargbot/bbtag/subtags/channel/channeldelete';
-import { OverwriteType } from 'discord-api-types';
+import { OverwriteType } from 'discord-api-types/v9';
 import { ApiError, Constants } from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite';

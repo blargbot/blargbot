@@ -1,12 +1,13 @@
-import { Database } from '@blargbot/core/database';
 import { Emote } from '@blargbot/core/Emote';
 import { ModuleLoader } from '@blargbot/core/modules';
 import { Timer } from '@blargbot/core/Timer';
-import { ChoiceQueryResult, EntityPickQueryOptions, FlagDefinition, FlagResult, NamedGuildCommandTag, StoredTag } from '@blargbot/core/types';
+import { ChoiceQueryResult, EntityPickQueryOptions } from '@blargbot/core/types';
 import { guard, hasFlag, humanize, parse } from '@blargbot/core/utils';
 import { discord } from '@blargbot/core/utils/discord';
+import { Database } from '@blargbot/database';
+import { FlagDefinition, FlagResult, NamedGuildCommandTag, StoredTag } from '@blargbot/domain/models';
 import { Logger } from '@blargbot/logger';
-import { Base, Client as Discord, Constants, Guild, KnownGuildChannel, KnownGuildTextableChannel, Member, Permission, Role, User } from 'eris';
+import { Base, Client as Discord, Constants, Guild, KnownChannel, KnownGuildChannel, KnownGuildTextableChannel, KnownThreadChannel, Member, Permission, Role, User } from 'eris';
 import { Duration, Moment } from 'moment-timezone';
 import ReadWriteLock from 'rwlock';
 
@@ -14,13 +15,14 @@ import { BBTagEngine } from './BBTagEngine';
 import { BBTagUtilities } from './BBTagUtilities';
 import { VariableCache } from './Caching';
 import { BBTagRuntimeError, SubtagStackOverflowError, UnknownSubtagError } from './errors';
-import { limits } from './limits';
+import { Statement, SubtagCall } from './language';
+import { limits, RuntimeLimit } from './limits';
 import { ScopeManager } from './ScopeManager';
 import { Subtag } from './Subtag';
 import { SubtagCallStack } from './SubtagCallStack';
 import { TagCooldownManager } from './TagCooldownManager';
 import { tagVariableScopes } from './tagVariables';
-import { BBTagContextMessage, BBTagContextOptions, BBTagContextState, BBTagRuntimeScope, BBTagRuntimeState, FindEntityOptions, LocatedRuntimeError, RuntimeDebugEntry, RuntimeLimit, SerializedBBTagContext, Statement, SubtagCall } from './types';
+import { BBTagContextMessage, BBTagContextOptions, BBTagContextState, BBTagRuntimeScope, BBTagRuntimeState, FindEntityOptions, LocatedRuntimeError, RuntimeDebugEntry, SerializedBBTagContext } from './types';
 
 function serializeEntity(entity: { id: string; }): { id: string; serialized: string; } {
     return { id: entity.id, serialized: JSON.stringify(entity) };
@@ -300,6 +302,18 @@ export class BBTagContext implements BBTagContextOptions {
         );
     }
 
+    public async queryThread(query: string | undefined, options: FindEntityOptions = {}): Promise<KnownThreadChannel | undefined> {
+        if (guard.isThreadChannel(this.channel) && (query === '' || query === undefined || query === this.channel.id))
+            return this.channel;
+        return await this.queryEntity(
+            query ?? '', 'channel', 'Thread',
+            async (id) => threadsOnly(await this.util.getChannel(this.guild, id)),
+            async (query) => threadsOnly(await this.util.findChannels(this.guild, query)),
+            async (options) => await this.util.queryChannel(options),
+            options
+        );
+    }
+
     private async queryEntity<T extends Base & { id: string; }>(
         queryString: string,
         cacheKey: FilteredKeys<BBTagContextState['query'], Record<string, string | undefined>>,
@@ -377,10 +391,9 @@ export class BBTagContext implements BBTagContextOptions {
             throw new Error(`Failed to send: ${text}`);
         } catch (err: unknown) {
             if (err instanceof Error) {
-                if (err.message !== 'No content') {
-                    throw err;
-                }
-                return undefined;
+                if (err.message === 'No content')
+                    return undefined;
+                throw err;
             }
             this.logger.error(`Failed to send: ${text}`, err);
             throw new Error(`Failed to send: ${text}`);
@@ -491,4 +504,14 @@ export class BBTagContext implements BBTagContextOptions {
                 }, {})
         };
     }
+}
+
+function threadsOnly(channel: KnownChannel | undefined): KnownThreadChannel | undefined
+function threadsOnly(channel: KnownChannel[]): KnownThreadChannel[]
+function threadsOnly(channel: KnownChannel | KnownChannel[] | undefined): KnownThreadChannel | KnownThreadChannel[] | undefined {
+    if (Array.isArray(channel))
+        return channel.filter(guard.isThreadChannel);
+    if (channel === undefined || guard.isThreadChannel(channel))
+        return channel;
+    return undefined;
 }

@@ -1,17 +1,18 @@
 import { bbtag } from '@blargbot/bbtag';
 import { Cluster } from '@blargbot/cluster';
-import { BaseGuildCommand } from '@blargbot/cluster/command';
+import { GuildCommand } from '@blargbot/cluster/command';
 import { CommandResult, CustomCommandShrinkwrap, GuildCommandContext, GuildShrinkwrap, ICommand, SignedGuildShrinkwrap } from '@blargbot/cluster/types';
 import { codeBlock, CommandType, getBBTagDocsEmbed, guard, humanize, parse } from '@blargbot/cluster/utils';
 import { Configuration } from '@blargbot/config';
-import { FlagDefinition, NamedGuildCommandTag, NamedGuildSourceCommandTag, SendContent, SendPayload } from '@blargbot/core/types';
+import { SendContent, SendPayload } from '@blargbot/core/types';
+import { FlagDefinition, NamedGuildCommandTag, NamedGuildSourceCommandTag } from '@blargbot/domain/models';
 import { mapping } from '@blargbot/mapping';
 import { createHmac } from 'crypto';
 import { EmbedOptions, FileContent, Role } from 'eris';
 import moment, { Duration } from 'moment-timezone';
 import fetch from 'node-fetch';
 
-export class CustomCommandCommand extends BaseGuildCommand {
+export class CustomCommandCommand extends GuildCommand {
     public static readonly reservedCommandNames = new Set<string>(['ccommand', 'editcommand']);
 
     public constructor(cluster: Cluster) {
@@ -24,8 +25,8 @@ export class CustomCommandCommand extends BaseGuildCommand {
                 + 'disable them entirely. If the command content is "null" (without the quotations), blargbot will have no output '
                 + 'whatsoever, allowing you to disable any built-in command you wish. You cannot overwrite the \'ccommand\' command. '
                 + 'For more in-depth command customization, see the `editcommand` command.\n'
-                + `For more information about BBTag, visit <${cluster.util.websiteLink('/tags')}>.\n`
-                + `By creating a custom command, you acknowledge that you agree to the Terms of Service (<${cluster.util.websiteLink('/tags/tos')}>)`,
+                + `For more information about BBTag, visit <${cluster.util.websiteLink('/bbtag/subtags')}>.\n`
+                + `By creating a custom command, you acknowledge that you agree to the Terms of Service (<${cluster.util.websiteLink('/bbtag/subtags/tos')}>)`,
             definitions: [
                 {
                     parameters: 'test|eval|exec|vtest',

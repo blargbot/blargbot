@@ -1,8 +1,8 @@
-import { BaseGuildCommand } from '@blargbot/cluster/command';
+import { GuildCommand } from '@blargbot/cluster/command';
 import { GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType } from '@blargbot/cluster/utils';
 
-export class PrefixCommand extends BaseGuildCommand {
+export class PrefixCommand extends GuildCommand {
     public constructor() {
         super({
             name: 'prefix',

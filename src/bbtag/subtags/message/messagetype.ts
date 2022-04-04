@@ -1,14 +1,14 @@
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { ChannelNotFoundError, MessageNotFoundError } from '../../errors';
 import { SubtagType } from '../../utils';
 
-export class MessageTypeSubtag extends DefinedSubtag {
+export class MessageTypeSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'messagetype',
             category: SubtagType.MESSAGE,
-            desc: 'For more info about message types, visit the [discord docs]().',
+            description: 'For more info about message types, visit the [discord docs]().',
             definition: [
                 {
                     parameters: [],

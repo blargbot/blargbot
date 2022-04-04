@@ -2,7 +2,8 @@ import { humanize } from '@blargbot/core/utils';
 
 import { BBTagContext } from '../../BBTagContext';
 import { BBTagRuntimeError } from '../../errors';
-import { RuntimeLimitRule, SubtagCall } from '../../types';
+import { SubtagCall } from '../../language';
+import { RuntimeLimitRule } from '../RuntimeLimitRule';
 
 export class DisabledInRule implements RuntimeLimitRule {
     private readonly subtags: readonly string[];

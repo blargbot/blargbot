@@ -1,8 +1,8 @@
-import { BaseGuildCommand } from '@blargbot/cluster/command';
+import { GuildCommand } from '@blargbot/cluster/command';
 import { GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType } from '@blargbot/cluster/utils';
 
-export class ReasonCommand extends BaseGuildCommand {
+export class ReasonCommand extends GuildCommand {
     public constructor() {
         super({
             name: 'reason',

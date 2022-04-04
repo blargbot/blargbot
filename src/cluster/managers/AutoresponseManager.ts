@@ -2,7 +2,7 @@ import { bbtag } from '@blargbot/bbtag';
 import { Cluster } from '@blargbot/cluster';
 import { WhitelistResponse } from '@blargbot/cluster/types';
 import { codeBlock, guard, humanize } from '@blargbot/cluster/utils';
-import { GuildTriggerTag } from '@blargbot/core/types';
+import { GuildTriggerTag } from '@blargbot/domain/models';
 import { mapping } from '@blargbot/mapping';
 import { KnownGuildTextableChannel, KnownMessage, Message, PartialEmoji, User } from 'eris';
 
@@ -91,7 +91,7 @@ ${codeBlock(code, 'js')}`
             authorizerId: tag.authorizer,
             inputRaw: msg.content,
             isCC: true,
-            rootTagName: 'autoresponse',
+            rootTagName: `_autoresponse_${id}`,
             silent: id === 'everything'
         });
 

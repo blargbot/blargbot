@@ -3,12 +3,12 @@ import { CommandContext } from '@blargbot/cluster/command';
 import { CommandGetCoreResult, CommandSignature, ICommand } from '@blargbot/cluster/types';
 import { guard, humanize } from '@blargbot/cluster/utils';
 import { metrics } from '@blargbot/core/Metrics';
-import { CommandPermissions, FlagDefinition, NamedGuildCommandTag, StoredTag } from '@blargbot/core/types';
+import { CommandPermissions, FlagDefinition, NamedGuildCommandTag, StoredTag } from '@blargbot/domain/models';
 import { Guild, KnownTextableChannel, User } from 'eris';
 
-import { BaseCommandManager } from './BaseCommandManager';
+import { CommandManager } from './CommandManager';
 
-export class CustomCommandManager extends BaseCommandManager<NamedGuildCommandTag> {
+export class CustomCommandManager extends CommandManager<NamedGuildCommandTag> {
     public readonly size: number = 0;
 
     public constructor(cluster: Cluster) {

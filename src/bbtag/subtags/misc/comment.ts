@@ -1,16 +1,16 @@
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { SubtagType } from '../../utils';
 
-export class CommentSubtag extends DefinedSubtag {
+export class CommentSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'comment',
             aliases: ['//'],
             category: SubtagType.MISC,
-            desc: 'A subtag that just gets removed. Useful for documenting your code.',
             definition: [
                 {
                     parameters: ['~anything*'],
+                    description: 'Does nothing. Your code is simply ignored.',
                     exampleCode: 'This is a sentence. {//;This is a comment.}',
                     exampleOut: 'This is a sentence.',
                     returns: 'nothing',

@@ -1,6 +1,6 @@
 import { Configuration } from '@blargbot/config';
 import { BaseUtilities } from '@blargbot/core/BaseUtilities';
-import { Database } from '@blargbot/core/database';
+import { Database } from '@blargbot/database';
 import { Logger } from '@blargbot/logger';
 import { Client as Discord, ClientOptions as DiscordOptions, OAuthTeamMemberState } from 'eris';
 
@@ -24,32 +24,27 @@ export class BaseClient {
 
         this.database = new Database({
             logger: this.logger,
-            discord: this.discord,
             rethink: this.config.rethink,
             cassandra: this.config.cassandra,
             postgres: this.config.postgres,
-            airtable: this.config.airtable
+            airtable: this.config.airtable,
+            shouldCacheGuild: id => this.discord.guilds.has(id),
+            shouldCacheUser: id => this.discord.users.has(id)
         });
     }
 
+    protected async connectDiscordGateway(): Promise<void> {
+        const shards = getRange(this.discord.options.firstShardID ?? 0, this.discord.options.lastShardID ?? 0);
+        const remainingShards = new Set(shards);
+        await Promise.all([
+            new Promise(resolve => this.discord.once('ready', resolve)).then(() => this.logger.init('discord connected')),
+            createShardReadyWaiter(this.discord, remainingShards, this.logger),
+            this.discord.connect()
+        ]);
+    }
+
     public async start(): Promise<void> {
-        const promises = [
-            this.database.connect().then(() => this.logger.init('database connected'))
-        ];
-
-        if (this.discord.options.maxShards !== undefined) {
-            const shards = getRange(this.discord.options.firstShardID ?? 0, this.discord.options.lastShardID ?? 0);
-            const remainingShards = new Set(shards);
-
-            promises.push(
-                new Promise(resolve => this.discord.once('ready', resolve)).then(() => this.logger.init('discord connected')),
-                createShardReadyWaiter(this.discord, remainingShards, this.logger),
-                this.discord.connect()
-            );
-        }
-
-        await Promise.all(promises);
-
+        await this.database.connect().then(() => this.logger.init('database connected'));
         const application = await this.discord.getOAuthApplication();
         this.#owners = application.team?.members.filter(m => m.membership_state === OAuthTeamMemberState.ACCEPTED).map(m => m.user.id)
             ?? [application.owner.id];

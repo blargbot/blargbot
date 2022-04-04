@@ -1,22 +1,23 @@
 import { bbtag } from '@blargbot/bbtag';
 import { Cluster, ClusterUtilities } from '@blargbot/cluster';
-import { BaseGuildCommand, CommandContext } from '@blargbot/cluster/command';
+import { CommandContext, GuildCommand } from '@blargbot/cluster/command';
 import { GuildCommandContext } from '@blargbot/cluster/types';
 import { codeBlock, CommandType, getBBTagDocsEmbed, guard, humanize, parse, pluralise as p } from '@blargbot/cluster/utils';
-import { SendContent, SendPayload, StoredTag } from '@blargbot/core/types';
+import { SendContent, SendPayload } from '@blargbot/core/types';
+import { StoredTag } from '@blargbot/domain/models';
 import { EmbedField, EmbedOptions, FileContent, User } from 'eris';
 import moment, { Duration } from 'moment-timezone';
 import fetch from 'node-fetch';
 
-export class TagCommand extends BaseGuildCommand {
+export class TagCommand extends GuildCommand {
     public constructor(cluster: Cluster) {
         super({
             name: 'tag',
             aliases: ['t'],
             category: CommandType.GENERAL,
             description: 'Tags are a system of public commands that anyone can create or run, using the BBTag language.\n\n'
-                + `For more information about BBTag, visit <${cluster.util.websiteLink('/tags')}>.\n`
-                + `By creating a tag, you acknowledge that you agree to the Terms of Service (<${cluster.util.websiteLink('/tags/tos')}>)`,
+                + `For more information about BBTag, visit <${cluster.util.websiteLink('/bbtag')}>.\n`
+                + `By creating a tag, you acknowledge that you agree to the Terms of Service (<${cluster.util.websiteLink('/bbtag/tos')}>)`,
             definitions: [
                 {
                     parameters: '{tagName} {~args+?}',
@@ -760,7 +761,7 @@ export class TagCommand extends BaseGuildCommand {
                     author: {
                         name: humanize.fullName(user),
                         icon_url: user.avatarURL,
-                        url: context.util.websiteLink(`user/${user.id}`)
+                        url: context.util.websiteLink(`users/${user.id}`)
                     },
                     timestamp: new Date(),
                     footer: {

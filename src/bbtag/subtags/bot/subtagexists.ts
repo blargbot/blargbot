@@ -1,7 +1,7 @@
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { SubtagType } from '../../utils';
 
-export class SubtagExistsSubtag extends DefinedSubtag {
+export class SubtagExistsSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'subtagexists',
@@ -10,7 +10,7 @@ export class SubtagExistsSubtag extends DefinedSubtag {
                 {
                     parameters: ['subtag'],
                     description: 'Checks to see if `subtag` exists.',
-                    exampleIn: '{subtagexists;ban} {subtagexists;AllenKey}',
+                    exampleCode: '{subtagexists;ban} {subtagexists;AllenKey}',
                     exampleOut: 'true false',
                     returns: 'boolean',
                     execute: (ctx, [subtag]) => ctx.subtags.get(subtag.value) !== undefined

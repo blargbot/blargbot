@@ -6,6 +6,8 @@
         "@blargbot/bbtag": "workspace:^",
         "@blargbot/config": "workspace:^",
         "@blargbot/core": "workspace:^",
+        "@blargbot/database": "workspace:^",
+        "@blargbot/domain": "workspace:^",
         "@blargbot/logger": "workspace:^",
         "chai": "^4.3.6",
         "chai-bytes": "^0.1.2",
@@ -20,7 +22,7 @@
         "@types/chai": "^4.3.0",
         "@types/chai-datetime": "^0.0.37",
         "@types/eris": "workspace:^",
-        "@types/mocha": "workspace:^",
-        "discord-api-types": "^0.25.2"
+        "@types/mocha": "^9.1.0",
+        "discord-api-types": "^0.30.0"
     }
 }

@@ -1,15 +1,15 @@
 import { parse } from '@blargbot/core/utils';
 
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { bbtag, SubtagType } from '../../utils';
 
-export class CommitSubtag extends DefinedSubtag {
+export class CommitSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'commit',
             category: SubtagType.BOT,
-            desc:
+            description:
                 'For optimization reasons, variables are not stored in the database immediately when you use `{set}`. ' +
                 'Instead they are cached, and will be saved to the database when the tag finishes. If you have some `variables` that ' +
                 'you need to be saved to the database immediately, use this to force an update right now.\nThis comes at a slight ' +

@@ -2,7 +2,7 @@ import { parse } from '@blargbot/core/utils';
 import moment from 'moment-timezone';
 
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError, NotANumberError, UserNotFoundError } from '../../errors';
 import { SubtagType } from '../../utils';
 
@@ -13,12 +13,12 @@ const errorMap = {
     'moderatorTooLow': 'User has no permissions'
 };
 
-export class BanSubtag extends DefinedSubtag {
+export class BanSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'ban',
             category: SubtagType.USER,
-            desc: '`daysToDelete` is the number of days to delete messages for. `duration`',
+            description: '`daysToDelete` is the number of days to delete messages for. `duration`',
             definition: [
                 {
                     parameters: ['user', 'daysToDelete?:1'],

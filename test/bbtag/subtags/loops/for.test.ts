@@ -6,7 +6,7 @@ import { ForSubtag } from '@blargbot/bbtag/subtags/loops/for';
 import { IfSubtag } from '@blargbot/bbtag/subtags/misc/if';
 import { OperatorSubtag } from '@blargbot/bbtag/subtags/misc/operator';
 import { BBTagRuntimeState } from '@blargbot/bbtag/types';
-import { SubtagVariableType } from '@blargbot/core/types';
+import { SubtagVariableType } from '@blargbot/domain/models';
 import { expect } from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite';

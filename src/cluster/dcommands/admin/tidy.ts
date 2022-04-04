@@ -1,11 +1,11 @@
-import { BaseGuildCommand, SingleThreadMiddleware } from '@blargbot/cluster/command';
+import { GuildCommand, SingleThreadMiddleware } from '@blargbot/cluster/command';
 import { GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType } from '@blargbot/cluster/utils';
 import { createSafeRegExp, guard, pluralise as p } from '@blargbot/core/utils';
 import { ApiError, DiscordRESTError, KnownMessage, KnownTextableChannel, User } from 'eris';
 import moment, { Moment } from 'moment-timezone';
 
-export class TidyCommand extends BaseGuildCommand {
+export class TidyCommand extends GuildCommand {
     public constructor() {
         super({
             name: 'tidy',

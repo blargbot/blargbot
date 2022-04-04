@@ -1,7 +1,7 @@
-import { BaseGlobalImageCommand, CommandContext } from '@blargbot/cluster/command';
+import { CommandContext, GlobalImageCommand } from '@blargbot/cluster/command';
 import { ImageResult } from '@blargbot/image/types';
 
-export class ShitCommand extends BaseGlobalImageCommand {
+export class ShitCommand extends GlobalImageCommand {
     public constructor() {
         super({
             name: 'shit',

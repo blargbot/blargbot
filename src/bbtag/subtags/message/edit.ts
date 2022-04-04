@@ -1,23 +1,38 @@
 import { guard, parse } from '@blargbot/core/utils';
-import { EmbedField, EmbedOptions } from 'eris';
+import { EmbedOptions } from 'eris';
 
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '../../errors';
 import { SubtagType } from '../../utils';
 
-export class EditSubtag extends DefinedSubtag {
+export class EditSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'edit',
             category: SubtagType.MESSAGE,
-            desc: '`text` and `embed` can both be set to `_delete` to remove either the message content or embed.' +
+            description: '`text` and `embed` can both be set to `_delete` to remove either the message content or embed.' +
                 'Please note that `embed` is the JSON for an embed object or an array of embed objects, don\'t put `{embed}` there, as nothing will show. Only messages created by the bot may be edited.',
-            definition: [//! Overwritten
+            definition: [
                 {
                     parameters: ['messageId', 'text|embed'],
                     returns: 'nothing',
+                    description: 'Edits `messageID` in the current channel to say `text` or `embed`',
+                    exampleCode: '{edit;111111111111111111;{embedbuild;title:Hello world}}',
+                    exampleOut: '',
                     execute: (ctx, [messageId, content]) => this.edit(ctx, ctx.channel.id, messageId.value, content.value)
+                },
+                {
+                    parameters: ['messageId', 'text', 'embed'],
+                    description: 'Edits `messageID` in the current channel to say `text` and `embed`',
+                    exampleCode: '{edit;111111111111111111;Hello world;{embedbuild;title:Foo bar}}',
+                    exampleOut: ''
+                },
+                {
+                    parameters: ['channel', 'messageId', 'text|embed'],
+                    description: 'Edits `messageID` in `channelID` to say `text` or `embed`',
+                    exampleCode: '{edit;111111111111111111;222222222222222222;Hello world}',
+                    exampleOut: ''
                 },
                 {
                     parameters: ['messageId|channelId', 'messageId|text', '(text|embed)|(embed)'],
@@ -34,8 +49,11 @@ export class EditSubtag extends DefinedSubtag {
                     }
                 },
                 {
-                    parameters: ['channelId', 'messageID', 'text', 'embed'],
+                    parameters: ['channel', 'messageID', 'text', 'embed'],
                     returns: 'nothing',
+                    description: 'Edits `messageID` in `channelID` to say `text` and `embed`',
+                    exampleCode: '{edit;111111111111111111;222222222222222222;Hello world;{embedbuild;title:Foo bar}}',
+                    exampleOut: '',
                     execute: (ctx, [channelId, messageId, text, embed]) => this.edit(ctx, channelId.value, messageId.value, text.value, embed.value)
                 }
             ]
@@ -90,46 +108,5 @@ export class EditSubtag extends DefinedSubtag {
         } catch (err: unknown) {
             context.logger.error('Failed to edit message', err);
         }
-    }
-
-    public enrichDocs(embed: EmbedOptions): EmbedOptions {
-        const limitField = <EmbedField>embed.fields?.pop();
-
-        embed.fields = [
-            {
-                name: 'Usage',
-                value: '```\n{edit;<messageID>;<text|embed>}```\n' +
-                    'Edits `messageID` in the current channel to say `text` or `embed`.\n\n' +
-                    '**Example code:**\n' +
-                    '> {edit;111111111111111111;{embedbuild;title:Hello world}}\n**Example out:**\n' +
-                    '> (the message got edited idk how to do examples for this)'
-            },
-            {
-                name: '\u200b',
-                value: '```\n{edit;<channelID>;<messageID>;<text|embed>}```\n' +
-                    'Edits `messageID` in `channelID` to say `text` or `embed`.\n\n' +
-                    '**Example code:**\n' +
-                    '> {edit;111111111111111111;222222222222222222;Hello world}\n**Example out:**\n' +
-                    '> (the message got edited idk how to do examples for this)'
-            },
-            {
-                name: '\u200b',
-                value: '```\n{edit;<messageID>;<text>;<embed>}```\n' +
-                    'Edits `messageID` in the current channel to say `text` and `embed`.\n\n' +
-                    '**Example code:**\n' +
-                    '> {edit;111111111111111111;Hello world;{embedbuild;title:Foo bar}}\n**Example out:**\n' +
-                    ' (the message got edited idk how to do examples for this)'
-            },
-            {
-                name: '\u200b',
-                value: '```\n{edit;<channelID>;<messageID>;<text>;<embed>}```\n' +
-                    'Edits `messageID` in `channelID` to say `text` and `embed`.\n\n' +
-                    '**Example code:**\n' +
-                    '> {edit;111111111111111111;222222222222222222;Hello world;{embedbuild;title:Foo bar}}\n**Example out:**\n' +
-                    '> (the message got edited idk how to do examples for this)'
-            }
-        ];
-        embed.fields.push(limitField);
-        return embed;
     }
 }

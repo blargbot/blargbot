@@ -1,9 +1,9 @@
 import { createHash } from 'crypto';
 
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { SubtagType } from '../../utils';
 
-export class Md5Subtag extends DefinedSubtag {
+export class Md5Subtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'md5',

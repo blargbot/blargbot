@@ -1,8 +1,8 @@
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { SubtagType } from '../../utils';
 
-export class DumpSubtag extends DefinedSubtag {
+export class DumpSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'dump',
@@ -21,7 +21,7 @@ export class DumpSubtag extends DefinedSubtag {
     }
 
     public async createDump(context: BBTagContext, text: string): Promise<string> {
-        const id = await context.util.generateOutputPage(text, context.channel);
-        return context.util.websiteLink(`output/${id.toString()}`);
+        const id = await context.util.generateDumpPage(text, context.channel);
+        return context.util.websiteLink(`dumps/${id}`);
     }
 }

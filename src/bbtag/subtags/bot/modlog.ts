@@ -1,16 +1,16 @@
 import { parse } from '@blargbot/core/utils';
 
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { UserNotFoundError } from '../../errors';
 import { SubtagType } from '../../utils';
 
-export class ModlogSubtag extends DefinedSubtag {
+export class ModlogSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'modlog',
             category: SubtagType.BOT,
-            desc: 'If `moderator` is not provided or left empty, it will default to blargbot.',
+            description: 'If `moderator` is not provided or left empty, it will default to blargbot.',
             definition: [
                 {
                     parameters: ['action', 'user', 'moderator?', 'reason?', 'color?'],

@@ -1,10 +1,10 @@
-import { BaseGuildCommand } from '@blargbot/cluster/command';
+import { GuildCommand } from '@blargbot/cluster/command';
 import { GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType, humanize } from '@blargbot/cluster/utils';
 import { guard, pluralise as p } from '@blargbot/core/utils';
 import { ApiError, DiscordRESTError, KnownChannel } from 'eris';
 
-export class ModlogCommand extends BaseGuildCommand {
+export class ModlogCommand extends GuildCommand {
     public constructor() {
         super({
             name: 'modlog',

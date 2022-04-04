@@ -1,9 +1,9 @@
 import { decode } from 'html-entities';
 
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { SubtagType } from '../../utils';
 
-export class HtmlDecodeSubtag extends DefinedSubtag {
+export class HtmlDecodeSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'htmldecode',

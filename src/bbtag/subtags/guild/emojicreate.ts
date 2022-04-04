@@ -3,7 +3,7 @@ import { DiscordRESTError } from 'eris';
 import fetch from 'node-fetch';
 
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError } from '../../errors';
 import { bbtag, SubtagType } from '../../utils';
 
@@ -13,7 +13,7 @@ interface EmojiCreateOptions {
     roles: string[];
 }
 
-export class EmojiCreateSubtag extends DefinedSubtag {
+export class EmojiCreateSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'emojicreate',

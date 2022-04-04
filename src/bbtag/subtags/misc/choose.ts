@@ -1,11 +1,11 @@
 import { parse } from '@blargbot/core/utils';
 
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { SubtagArgument } from '../../arguments';
+import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError, NotANumberError } from '../../errors';
-import { SubtagArgument } from '../../types';
 import { SubtagType } from '../../utils';
 
-export class ChooseSubtag extends DefinedSubtag {
+export class ChooseSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'choose',

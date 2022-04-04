@@ -1,24 +1,27 @@
 import { parse } from '@blargbot/core/utils';
-import { EmbedOptions } from 'eris';
 
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { SubtagArgumentArray } from '../../arguments';
+import { CompiledSubtag } from '../../compilation';
 import { InvalidOperatorError, NotABooleanError, NotANumberError } from '../../errors';
-import { SubtagArgumentArray } from '../../types';
 import { bbtag, LogicOperator, NumericOperator, OrdinalOperator, StringOperator, SubtagType } from '../../utils';
 
-export class OperatorSubtag extends DefinedSubtag {
+export class OperatorSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'operator',
             aliases: Object.keys(bbtag.operators),
             category: SubtagType.MISC,
-            definition: [//! overwritten
+            definition: [
                 {
                     parameters: ['values+'],
-                    description: '',
                     returns: 'boolean|number',
                     execute: (_, values) => this.applyOperation(values)
-                }
+                },
+                ...Object.entries(operatorDefinitions).map(([op, def]) => ({
+                    ...def,
+                    subtagName: op,
+                    parameters: ['values+']
+                } as const))
             ]
         });
     }
@@ -74,50 +77,110 @@ export class OperatorSubtag extends DefinedSubtag {
         });
         return bbtag.operate(operator, parsed);
     }
-
-    public enrichDocs(docs: EmbedOptions): EmbedOptions {
-        const numericOperationDesc = `\`${Object.keys(bbtag.numericOperators).join(', ')}\`\n` +
-            'Numeric operators have the exact same behaviour as the operators in `{math}`. ' +
-            'All `values` need to be `numbers`, if an argument is an array (of one level) it will be flattened.' +
-            '\n**Examples**:```\n' +
-            '{+;1;2;3} = 6\n{*;1;2;3;4} = 24\n{/;5} = 5 (5 / 1)\n- {^;2;6;2} = (2^6)^2 = 64^2 = 4096\n' +
-            '{+;[1,2,3,4];5;[6,7,8]} = 36\n{+;[1,2,3];["hello", "world"]} = `Not a number`\n```';
-
-        const logicOperationDesc = `\`${Object.keys(bbtag.logicOperators).join(', ')}\`\n` +
-            'Logic operators have the exact same behaviour as the operators in `{logic}`, with the exception of `^` (described below).' +
-            ' All `values` need to be valid booleans.' +
-            '\n**Examples**:```\n' +
-            '{&&;false;true} = false\n{||;false;true} = true\n{!;true;false;true} = false (this only considers the first value)' +
-            '\n{xor;false;true} = true\n{xor;true;true} = false\n{^;false;true} = `Not a number` (don\'t do this! ^ is used for numeric operations!!)\n```';
-        const comparisonOperationDesc = `\`${Object.keys(bbtag.comparisonOperators).join(', ')}\`` +
-            '\nComparison operators behave in a similar way to `{bool}`, but can accept more than two values. If an argument is an array, this array will be flattened (except for `startswith, includes, contains and endswith`). Because it can accept more than two values the logic is a little different. `{==;1;2;3;4}` would mean `1 === 2 && 2 === 3 && 3 === 4`. For `startswith, includes, contains and endswith` this translates to the following:\n- `{includes;abc;a;b;c} = "abc".includes("a") && "abc".includes("b") && "abc".includes("c")`\n**Examples**:```\n' +
-            '{==;true;true} = true\n{>;3;2;1} = true\n{startswith;Hello world!;Hello;He} = true\n{!=;blargbot;bad} = true\n' +
-            '{>;3;1;2} = false\n{==;[1,2,3];[1,2,3]} = false\n{==;\'[1,2,3];\'[1,2,3]} = true\n```' +
-            '\nBecause the arrays inside `{==;[1,2,3];[1,2,3]}` get flattened, this will result in `{==;1;2;3;1;2;3}`, which returns `false`. If you want to compare arrays, an additional character needs to be added, like: \n`{==;\'[1,2,3];\'[1,2,3]}`';
-
-        docs.fields = [{
-            name: '**Arguments:**',
-            value: '```\n{<operator>;<...values>}```\nExecutes `operator` on the given `values`. Operators are described below.'
-
-        },
-        {
-            name: 'Numeric operators:',
-            value: numericOperationDesc
-        },
-        {
-            name: 'Logic operators',
-            value: logicOperationDesc
-        },
-        {
-            name: 'Comparison operators',
-            value: comparisonOperationDesc
-        }
-        ];
-
-        return docs;
-
-    }
 }
+
+const operatorDefinitions: { [P in keyof typeof bbtag['operators']]: { description: string; exampleCode: string; exampleOut: string; } } = {
+    '%': {
+        description: 'Returns the remainder after dividing each pair of `value`s.',
+        exampleCode: '{%;24;5} {%;24;5;3} {%;19;5;4}',
+        exampleOut: '4 1 0'
+    },
+    '*': {
+        description: 'Returns the result from multiplying all the `value`s together',
+        exampleCode: '{*;1;2;3;4}',
+        exampleOut: '24'
+    },
+    '+': {
+        description: 'Returns the result from summing all the `values`s together',
+        exampleCode: '{+;1;2;3;4}',
+        exampleOut: '10'
+    },
+    '-': {
+        description: 'Returns the result from subtracting all the `value`s from the first',
+        exampleCode: '{-;4;3;2;1}',
+        exampleOut: '-2'
+    },
+    '/': {
+        description: 'Returns the result from dividing the first `value` by all the rest',
+        exampleCode: '{/;5} {/;120;5;4;3}',
+        exampleOut: '5 2'
+    },
+    '^': {
+        description: 'Returns the result of raising the first `value` to the power of all the rest',
+        exampleCode: '{^;2;3} {^;2;2;2;2}',
+        exampleOut: '8 256'
+    },
+    '<': {
+        description: 'Returns `true` if each `value` is less than the value after it, otherwise `false`',
+        exampleCode: '{<;a} {<;a;b;c;c} {<;1;2;3;4;2} {<;a;b;c;d}',
+        exampleOut: 'false false false true'
+    },
+    '<=': {
+        description: 'Returns `true` if each `value` is less than or equal to the value after it, otherwise `false`',
+        exampleCode: '{<=;a} {<=;a;b;c;c} {<;1;2;3;4;2} {<=;a;b;c;d}',
+        exampleOut: 'false true false true'
+    },
+    '!=': {
+        description: 'Returns `true` if all pairs of `value`s are not equal',
+        exampleCode: '{!=;a;b;c} {!=;a;b;a} {!=;a;a;b}',
+        exampleOut: 'true true false'
+    },
+    '==': {
+        description: 'Returns `true` if all `value`s are equal, otherwise `false`',
+        exampleCode: '{==;a;b;c} {==;a;b;a} {==;a;a;b} {==;a;a;a;a;a}',
+        exampleOut: 'false false false true'
+    },
+    '>': {
+        description: 'Returns `true` if each `value` is greater than the value after it, otherwise `false`',
+        exampleCode: '{>;a} {>;c;c;b;a} {>;2;4;3;2;1} {>;d;c;b;a}',
+        exampleOut: 'false false false true'
+    },
+    '>=': {
+        description: 'Returns `true` if each `value` is greater than or equal to the value after it, otherwise `false`',
+        exampleCode: '{>=;a} {>=;c;c;b;a} {>=;2;4;3;2;1} {>=;d;c;b;a}',
+        exampleOut: 'false true false true'
+    },
+    '!': {
+        description: 'Inverts a boolean `value`. All values after the first one are ignored.',
+        exampleCode: '{!;true} {!;false}',
+        exampleOut: 'false true'
+    },
+    '&&': {
+        description: 'Returns `true` if all of the `value`s are `true`, otherwise `false`',
+        exampleCode: '{&&;true;true} {&&;true;false;true}',
+        exampleOut: 'true false'
+    },
+    '||': {
+        description: 'Returns `true` if any of the `value`s are `true`, otherwise `false`',
+        exampleCode: '{||;false;false} {||;true;false;true}',
+        exampleOut: 'false true'
+    },
+    'xor': {
+        description: 'Returns `true` if exactly 1 of the `value`s are `true`, otherwise `false`',
+        exampleCode: '{^;false;false} {^;true;false;true} {^;false;true;false}',
+        exampleOut: 'false false true'
+    },
+    'contains': {
+        description: 'Returns `true` if the first `value` contains all the rest. If the first `value` is an array then the array must contain all the remaining values.',
+        exampleCode: '{contains;abcdefghi;abc} {contains;["abc","def","ghi"];","}',
+        exampleOut: 'true false'
+    },
+    'includes': {
+        description: 'Returns `true` if the first `value` contains all the rest. If the first `value` is an array then the array must contain all the remaining values.',
+        exampleCode: '{includes;abcdefghi;abc} {includes;["abc","def","ghi"];","}',
+        exampleOut: 'true false'
+    },
+    'endswith': {
+        description: 'Returns `true` if the first `value` ends with all the rest. If the first `value` is an array then the last element must equal all the remaining values.',
+        exampleCode: '{endswith;abcdefghi;ghi;fghi;hi} {endswith;["abc","def","ghi"];"]}',
+        exampleOut: 'true false'
+    },
+    'startswith': {
+        description: 'Returns `true` if the first `value` starts with all the rest. If the first `value` is an array then the first element must equal all the remaining values.',
+        exampleCode: '{startswith;abcdefghi;a;abcd;abc} {startswith;["abc","def","ghi"];["}',
+        exampleOut: 'true false'
+    }
+};
 
 function generatePairs(array: string[]): Array<[string, string]> {
     const pairedArrays: Array<[string, string]> = [];

@@ -1,5 +1,5 @@
 import { ChannelsSubtag } from '@blargbot/bbtag/subtags/channel/channels';
-import { ChannelType } from 'discord-api-types';
+import { ChannelType } from 'discord-api-types/v9';
 
 import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite';
 import { createGetChannelPropTestCases } from './_getChannelPropTest';

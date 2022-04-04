@@ -1,4 +1,4 @@
-import { BaseGlobalCommand, CommandContext } from '@blargbot/cluster/command';
+import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType } from '@blargbot/cluster/utils';
 import { humanize } from '@blargbot/core/utils';
 import { EmbedOptions } from 'eris';
@@ -11,7 +11,7 @@ const hour = [undefined, 'hour', 'hours'];
 const minute = [undefined, 'minute', 'minutes'];
 const second = [undefined, 'second', 'seconds'];
 
-export class InfoCommand extends BaseGlobalCommand {
+export class InfoCommand extends GlobalCommand {
     public constructor() {
         super({
             name: 'info',

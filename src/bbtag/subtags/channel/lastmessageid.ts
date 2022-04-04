@@ -1,16 +1,16 @@
 import { guard } from '@blargbot/core/utils';
 
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError, ChannelNotFoundError } from '../../errors';
 import { SubtagType } from '../../utils';
 
-export class LastMessageIdSubtag extends DefinedSubtag {
+export class LastMessageIdSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'lastmessageid',
             category: SubtagType.CHANNEL,
-            desc: 'Returns nothing if the channel doesn\'t have any messages.',
+            description: 'Returns nothing if the channel doesn\'t have any messages.',
             definition: [
                 {
                     parameters: [],

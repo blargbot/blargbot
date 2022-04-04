@@ -1,10 +1,10 @@
 import { parse } from '@blargbot/core/utils';
 
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError, NotANumberError } from '../../errors';
 import { SubtagType } from '../../utils';
 
-export class RealPadSubtag extends DefinedSubtag {
+export class RealPadSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'realpad',
@@ -19,8 +19,8 @@ export class RealPadSubtag extends DefinedSubtag {
                     execute: (_, [text, length]) => this.realPad(text.value, length.value, ' ', 'right')
                 },
                 {
-                    parameters: ['text', 'length', 'filler', 'direction?:right'],
-                    description: 'Pads `text` using `filler` until it has `length` characters. `filler` is applied to the  `direction` of `text`. `filler` defaults to space.',
+                    parameters: ['text', 'length', 'filler: ', 'direction?:right'],
+                    description: 'Pads `text` using `filler` until it has `length` characters. `filler` is applied to the  `direction` of `text`.',
                     exampleCode: '{realpad;ABC;6;0;left}',
                     exampleOut: '000ABC',
                     returns: 'string',

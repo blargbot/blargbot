@@ -1,10 +1,10 @@
 import { parse } from '@blargbot/core/utils';
 
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { SubtagType } from '../../utils';
 
-export class QuietSubtag extends DefinedSubtag {
+export class QuietSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'quiet',

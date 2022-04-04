@@ -1,21 +1,21 @@
-import { BBTagContext, BBTagEngine, Subtag } from '@blargbot/bbtag';
+import { BBTagContext, BBTagContextOptions, BBTagEngine, BBTagRuntimeScope, LocatedRuntimeError, SourceMarker, Subtag, SubtagCall } from '@blargbot/bbtag';
 import { BBTagUtilities, InjectionContext } from '@blargbot/bbtag/BBTagUtilities';
 import { BBTagRuntimeError, NotEnoughArgumentsError, TooManyArgumentsError } from '@blargbot/bbtag/errors';
 import { BaseRuntimeLimit } from '@blargbot/bbtag/limits/BaseRuntimeLimit';
-import { BBTagContextOptions, BBTagRuntimeScope, LocatedRuntimeError, SourceMarker, SubtagCall, SubtagResult } from '@blargbot/bbtag/types';
 import { bbtag, SubtagType } from '@blargbot/bbtag/utils';
-import { Database } from '@blargbot/core/database';
 import { ModuleLoader } from '@blargbot/core/modules';
 import { Timer } from '@blargbot/core/Timer';
-import { GuildCommandTag, GuildTable, StoredTag, SubtagVariableType, TagsTable, TagVariablesTable, UserTable } from '@blargbot/core/types';
 import { pluralise as p, repeat, snowflake } from '@blargbot/core/utils';
+import { Database } from '@blargbot/database';
+import { GuildCommandTag, StoredTag, SubtagVariableType } from '@blargbot/domain/models';
+import { GuildStore, TagStore, TagVariableStore, UserStore } from '@blargbot/domain/stores';
 import { Logger } from '@blargbot/logger';
 import { expect } from 'chai';
 import * as chai from 'chai';
 import chaiBytes from 'chai-bytes';
 import chaiDateTime from 'chai-datetime';
 import chaiExclude from 'chai-exclude';
-import { APIChannel, APIGuild, APIGuildMember, APIMessage, APIRole, APIUser, ChannelType, GuildDefaultMessageNotifications, GuildExplicitContentFilter, GuildMFALevel, GuildNSFWLevel, GuildPremiumTier, GuildVerificationLevel } from 'discord-api-types';
+import { APIChannel, APIGuild, APIGuildMember, APIMessage, APIRole, APITextChannel, APIThreadChannel, APIUser, ChannelType, GuildDefaultMessageNotifications, GuildExplicitContentFilter, GuildMFALevel, GuildNSFWLevel, GuildPremiumTier, GuildVerificationLevel } from 'discord-api-types/v9';
 import { BaseData, Channel, Client as Discord, ClientOptions as DiscordOptions, Collection, Constants, DiscordHTTPError, DiscordRESTError, ExtendedUser, Guild, KnownChannel, KnownChannelMap, KnownGuildTextableChannel, KnownTextableChannel, Member, Message, Role, Shard, ShardManager, User } from 'eris';
 import * as fs from 'fs';
 import { ClientRequest, IncomingMessage } from 'http';
@@ -95,10 +95,10 @@ export class SubtagTestContext {
     public readonly discord = this.createMock(Discord);
     public readonly logger = this.createMock<Logger>(undefined, false);
     public readonly database = this.createMock(Database);
-    public readonly tagVariablesTable = this.createMock<TagVariablesTable>();
-    public readonly tagsTable = this.createMock<TagsTable>();
-    public readonly guildTable = this.createMock<GuildTable>();
-    public readonly userTable = this.createMock<UserTable>();
+    public readonly tagVariablesTable = this.createMock<TagVariableStore>();
+    public readonly tagsTable = this.createMock<TagStore>();
+    public readonly guildTable = this.createMock<GuildStore>();
+    public readonly userTable = this.createMock<UserStore>();
     public readonly limit = this.createMock(BaseRuntimeLimit);
     public readonly discordOptions: DiscordOptions;
     public isStaff = false;
@@ -138,8 +138,8 @@ export class SubtagTestContext {
     };
 
     public readonly channels = {
-        command: SubtagTestContext.createApiChannel({ id: snowflake.create().toString(), name: 'commands' }),
-        general: SubtagTestContext.createApiChannel({ id: snowflake.create().toString(), name: 'general' })
+        command: SubtagTestContext.createApiChannel({ id: snowflake.create().toString(), name: 'commands' }) as APITextChannel | APIThreadChannel,
+        general: SubtagTestContext.createApiChannel({ id: snowflake.create().toString(), name: 'general' }) as APITextChannel | APIThreadChannel
     };
 
     public readonly guild = SubtagTestContext.createApiGuild(
@@ -186,19 +186,19 @@ export class SubtagTestContext {
         const isVariableType = argument.isTypeof('string').and((v): v is SubtagVariableType => Object.values(SubtagVariableType).includes(v)).value;
 
         this.tagVariablesTable.setup(m => m.get(argument.isTypeof('string').value, isVariableType, argument.isTypeof('string').value), false)
-            .thenCall((...args: Parameters<TagVariablesTable['get']>) => this.tagVariables[`${args[1]}.${args[2]}.${args[0]}`]);
+            .thenCall((...args: Parameters<TagVariableStore['get']>) => this.tagVariables[`${args[1]}.${args[2]}.${args[0]}`]);
         if (this.testCase.setupSaveVariables !== false) {
             this.tagVariablesTable.setup(m => m.upsert(anything() as never, isVariableType, argument.isTypeof('string').value), false)
-                .thenCall((...args: Parameters<TagVariablesTable['upsert']>) => {
+                .thenCall((...args: Parameters<TagVariableStore['upsert']>) => {
                     for (const [name, value] of Object.entries(args[0]))
                         this.tagVariables[`${args[1]}.${args[2]}.${name}`] = value;
                 });
         }
 
         this.tagsTable.setup(m => m.get(argument.isTypeof('string').value), false)
-            .thenCall((...args: Parameters<TagsTable['get']>) => this.tags[args[0]]);
+            .thenCall((...args: Parameters<TagStore['get']>) => this.tags[args[0]]);
         this.guildTable.setup(m => m.getCommand(this.guild.id, argument.isTypeof('string').value), false)
-            .thenCall((...args: Parameters<GuildTable['getCommand']>) => this.ccommands[args[1]]);
+            .thenCall((...args: Parameters<GuildStore['getCommand']>) => this.ccommands[args[1]]);
 
         this.discord.setup(m => m.shards, false).thenReturn(this.shards.instance);
         this.discord.setup(m => m.guildShardMap, false).thenReturn({});
@@ -426,12 +426,16 @@ export class SubtagTestContext {
     }
 
     public createChannel<T extends ChannelType>(settings: RequireIds<APIChannel> & { type: T; }): KnownChannelMap[T]
+    public createChannel(settings: RequireIds<APITextChannel>): APITextChannel
     public createChannel(settings: RequireIds<APIChannel>): KnownChannel
     public createChannel(settings: RequireIds<APIChannel>): KnownChannel {
         const data = SubtagTestContext.createApiChannel(settings);
         return Channel.from(<BaseData><unknown>data, this.discord.instance);
     }
 
+    public static createApiChannel<T extends ChannelType>(settings: RequireIds<Extract<APIChannel, { type: T; }>> & { type: T; }): Extract<APIChannel, { type: T; }>;
+    public static createApiChannel(settings: RequireIds<APITextChannel>): APITextChannel;
+    public static createApiChannel(settings: RequireIds<APIChannel>): APIChannel;
     public static createApiChannel(settings: RequireIds<APIChannel>): APIChannel {
         return {
             name: 'Test Channel',
@@ -512,7 +516,7 @@ export class TestDataSubtag extends Subtag {
         });
     }
 
-    protected async * executeCore(_: unknown, __: unknown, subtag: SubtagCall): SubtagResult {
+    protected async * executeCore(_: unknown, __: unknown, subtag: SubtagCall): AsyncIterable<string> {
         if (subtag.args.length !== 1)
             throw new RangeError(`Subtag ${this.name} must be given 1 argument!`);
         const key = subtag.args[0].source;
@@ -550,7 +554,7 @@ export class AssertSubtag extends Subtag {
         });
     }
 
-    protected async * executeCore(context: BBTagContext, subtagName: string, subtag: SubtagCall): SubtagResult {
+    protected async * executeCore(context: BBTagContext, subtagName: string, subtag: SubtagCall): AsyncIterable<string> {
         yield await this.assertion(context, subtagName, subtag);
     }
 }
@@ -604,7 +608,7 @@ export class EchoArgsSubtag extends Subtag {
         });
     }
 
-    protected async * executeCore(_: BBTagContext, __: string, subtag: SubtagCall): SubtagResult {
+    protected async * executeCore(_: BBTagContext, __: string, subtag: SubtagCall): AsyncIterable<string> {
         await Promise.resolve();
         yield '[';
         yield JSON.stringify(subtag.name.source);

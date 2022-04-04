@@ -1,10 +1,10 @@
 import { guard } from '@blargbot/core/utils';
 
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { SubtagType } from '../../utils';
 
-export class FlagSetSubtag extends DefinedSubtag {
+export class FlagSetSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'flagset',

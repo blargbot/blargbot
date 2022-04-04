@@ -1,4 +1,4 @@
-import { MessageFilter } from '@blargbot/core/types';
+import { MessageFilter } from '@blargbot/domain/models';
 import { KnownMessage } from 'eris';
 
 import { testRegexSafe } from '../createRegExp';

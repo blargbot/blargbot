@@ -1,6 +1,6 @@
 import { BBTagContext } from '../../BBTagContext';
 import { StaffOnlyError } from '../../errors';
-import { RuntimeLimitRule } from '../../types';
+import { RuntimeLimitRule } from '../RuntimeLimitRule';
 
 export const staffOnlyRule: RuntimeLimitRule = Object.seal({
     async check(context: BBTagContext) {

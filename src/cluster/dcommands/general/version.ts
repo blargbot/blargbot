@@ -1,7 +1,7 @@
-import { BaseGlobalCommand, CommandContext } from '@blargbot/cluster/command';
+import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType } from '@blargbot/cluster/utils';
 
-export class VersionCommand extends BaseGlobalCommand {
+export class VersionCommand extends GlobalCommand {
     public constructor() {
         super({
             name: 'version',

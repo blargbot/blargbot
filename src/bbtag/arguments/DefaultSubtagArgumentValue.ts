@@ -1,4 +1,6 @@
-import { Statement, SubtagArgument, SubtagHandlerValueParameter } from '../types';
+import { Statement } from '../language';
+import { SubtagSignatureValueParameter } from '../types';
+import { SubtagArgument } from './SubtagArgument';
 
 export class DefaultSubtagArgumentValue implements SubtagArgument {
     public readonly isCached = true;
@@ -13,7 +15,7 @@ export class DefaultSubtagArgumentValue implements SubtagArgument {
     }
     public get raw(): string { return this.parameter.defaultValue; }
 
-    public constructor(public readonly parameter: SubtagHandlerValueParameter) {
+    public constructor(public readonly parameter: SubtagSignatureValueParameter) {
     }
 
     public wait(): Promise<string> {

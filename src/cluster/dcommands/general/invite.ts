@@ -1,7 +1,7 @@
-import { BaseGlobalCommand, CommandContext } from '@blargbot/cluster/command';
+import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType } from '@blargbot/cluster/utils';
 
-export class InviteCommand extends BaseGlobalCommand {
+export class InviteCommand extends GlobalCommand {
     public constructor() {
         super({
             name: 'invite',
@@ -21,8 +21,6 @@ export class InviteCommand extends BaseGlobalCommand {
         return [
             'Invite me to your guild!',
             `<${context.util.websiteLink('invite')}>`,
-            'Don\'t need the moderation functions? Use this link instead:',
-            `<${context.util.websiteLink('minvite')}>`,
             'Join my support guild!',
             'https://discord.gg/015GVxZxI8rtlJgXF`'
         ].join('\n');

@@ -1,10 +1,10 @@
-import { BaseGlobalCommand } from '@blargbot/cluster/command';
+import { GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType, randInt } from '@blargbot/cluster/utils';
 import { mapping } from '@blargbot/mapping';
 import { EmbedOptions } from 'eris';
 import fetch, { Response } from 'node-fetch';
 
-export class CommitCommand extends BaseGlobalCommand {
+export class CommitCommand extends GlobalCommand {
     public constructor() {
         super({
             name: 'commit',

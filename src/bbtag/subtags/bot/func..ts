@@ -1,9 +1,9 @@
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { UnknownSubtagError } from '../../errors';
 import { SubtagType } from '../../utils';
 
-export class FunctionInvokeSubtag extends DefinedSubtag {
+export class FunctionInvokeSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'func.',

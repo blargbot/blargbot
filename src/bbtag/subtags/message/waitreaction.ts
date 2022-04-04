@@ -2,26 +2,26 @@ import { Emote } from '@blargbot/core/Emote';
 import { clamp, discord, guard, parse } from '@blargbot/core/utils';
 
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError, NotANumberError, UserNotFoundError } from '../../errors';
 import { bbtag, SubtagType } from '../../utils';
 
 const defaultCondition = bbtag.parse('true');
 
-export class WaitReactionSubtag extends DefinedSubtag {
+export class WaitReactionSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'waitreaction',
             category: SubtagType.MESSAGE,
             aliases: ['waitreact'],
-            desc: 'Pauses the command until one of the given `users` adds any given `reaction` on any of the given `messages`. ' +
+            description: 'Pauses the command until one of the given `users` adds any given `reaction` on any of the given `messages`. ' +
                 'When a `reaction` is added, `condition` will be run to determine if the reaction can be accepted. ' +
                 'If no reaction has been accepted within `timeout` then the subtag returns `Wait timed out`, otherwise it returns an array containing ' +
                 'the channel Id, the message Id, the user id and the reaction, in that order. ' +
                 '\n\n`userIDs` defaults to the current user if left blank or omitted.' +
                 '\n`reactions` defaults to any reaction if left blank or omitted.' +
-                '\n`condition` must return `true` or `false`, defaults to `true` if left blank or omitted' +
-                '\n`timeout` is a number of seconds. This defaults to 60 if left blank or omitted, and is limited to 300' +
+                '\n`condition` must return `true` or `false`' +
+                '\n`timeout` is a number of seconds. This is limited to 300' +
                 '\n\n While inside the `condition` parameter, none of the following subtags may be used: `' + bbtag.overrides.waitreaction.join(', ') + '`' +
                 '\nAlso, the current message becomes the message the reaction was added to, and the user becomes the person who sent the message. ' +
                 'This means that `{channelid}`, `{messageid}`, `{userid}` and all related subtags will change their values.' +

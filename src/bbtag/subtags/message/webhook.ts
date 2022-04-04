@@ -2,16 +2,16 @@ import { parse } from '@blargbot/core/utils';
 import { DiscordHTTPError, DiscordRESTError } from 'eris';
 
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError } from '../../errors';
 import { SubtagType } from '../../utils';
 
-export class WebhookSubtag extends DefinedSubtag {
+export class WebhookSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'webhook',
             category: SubtagType.MESSAGE,
-            desc: 'Please assign your webhook credentials to private variables! Do not leave them in your code.\n`embed` can be an array of embed objects.',
+            description: 'Please assign your webhook credentials to private variables! Do not leave them in your code.\n`embed` can be an array of embed objects.',
             definition: [
                 {
                     parameters: ['id', 'token'], //! Idk why allowing users to use 2 args is even a thing, it will just error because the message is empty

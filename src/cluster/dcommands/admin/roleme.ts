@@ -1,11 +1,12 @@
 import { bbtag } from '@blargbot/bbtag';
-import { BaseGuildCommand } from '@blargbot/cluster/command';
+import { GuildCommand } from '@blargbot/cluster/command';
 import { GuildCommandContext } from '@blargbot/cluster/types';
 import { codeBlock, CommandType, guard } from '@blargbot/cluster/utils';
-import { GuildRolemeEntry, SendContent } from '@blargbot/core/types';
+import { SendContent } from '@blargbot/core/types';
+import { GuildRolemeEntry } from '@blargbot/domain/models';
 import { Constants, EmbedOptions } from 'eris';
 
-export class RolemeCommand extends BaseGuildCommand {
+export class RolemeCommand extends GuildCommand {
     public constructor() {
         super({
             name: 'roleme',
@@ -322,7 +323,7 @@ export class RolemeCommand extends BaseGuildCommand {
                 { name: 'Roles removed', value: toRemove, inline: true },
                 { name: 'Channels', value: roleme.channels.length === 0 ? 'Anywhere' : roleme.channels.map(c => `<#${c}>`).join('\n'), inline: true },
                 ...roleme.output === undefined ? [] : [
-                    { name: 'KnownMessage', value: `**Author:** <@${roleme.output.author}>\n**Authorizer:** <@${roleme.output.authorizer ?? roleme.output.author}>`, inline: true }
+                    { name: 'Message', value: `**Author:** <@${roleme.output.author}>\n**Authorizer:** <@${roleme.output.authorizer ?? roleme.output.author}>`, inline: true }
                 ]
             ]
         };

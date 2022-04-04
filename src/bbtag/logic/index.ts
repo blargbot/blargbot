@@ -7,3 +7,4 @@ export * from './StringSubtagLogic';
 export * from './StringifyIterableSubtagLogic';
 export * from './StringifySubtagLogic';
 export * from './SubtagLogicWrapper';
+export * from './SubtagLogic';

@@ -1,7 +1,7 @@
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { bbtag, SubtagType } from '../../utils';
 
-export class IsArraySubtag extends DefinedSubtag {
+export class IsArraySubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'isarray',

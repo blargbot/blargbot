@@ -3,7 +3,7 @@ import { IMiddleware } from '@blargbot/core/types';
 
 import { CommandContext } from '../CommandContext';
 import { compileHandler } from '../compilation';
-import { ScopedCommandBase } from '../ScopedCommandBase';
+import { ScopedCommand } from '../ScopedCommand';
 
 export class InvokeCommandHandlerMiddleware<TContext extends CommandContext> implements IMiddleware<TContext, CommandResult> {
     public readonly name: string;
@@ -11,7 +11,7 @@ export class InvokeCommandHandlerMiddleware<TContext extends CommandContext> imp
 
     public get debugView(): string { return this.handler.debugView; }
 
-    public constructor(signatures: ReadonlyArray<CommandSignatureHandler<TContext>>, command: ScopedCommandBase<TContext>) {
+    public constructor(signatures: ReadonlyArray<CommandSignatureHandler<TContext>>, command: ScopedCommand<TContext>) {
         this.handler = compileHandler(signatures, command);
         this.name = command.name;
     }

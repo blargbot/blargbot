@@ -6,7 +6,6 @@ export enum SubtagType {
     ARRAY,
     JSON,
     MATH,
-    LANG,
     LOOPS,
     BOT,
     MESSAGE,
@@ -38,11 +37,6 @@ export const tagTypeDetails: SubtagPropertiesSet = {
         name: 'Math',
         desc: 'Subtags designed for mathematical purposes.'
     },
-    [SubtagType.LANG]: {
-        name: 'Lang',
-        desc: 'Lang',
-        hidden: true
-    },
     [SubtagType.LOOPS]: {
         name: 'Loops',
         desc: 'Subtags that iterate over arrays/strings.'
@@ -52,7 +46,7 @@ export const tagTypeDetails: SubtagPropertiesSet = {
         desc: 'Subtags that integrate with blargbots custom functions.'
     },
     [SubtagType.MESSAGE]: {
-        name: 'KnownMessage',
+        name: 'Message',
         desc: 'Subtags that interact with messages.'
     },
     [SubtagType.CHANNEL]: {

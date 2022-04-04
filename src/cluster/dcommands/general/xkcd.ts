@@ -1,10 +1,10 @@
-import { BaseGlobalCommand, CommandContext } from '@blargbot/cluster/command';
+import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType, randInt } from '@blargbot/cluster/utils';
 import { mapping } from '@blargbot/mapping';
 import { EmbedOptions } from 'eris';
 import fetch from 'node-fetch';
 
-export class XKCDCommand extends BaseGlobalCommand {
+export class XKCDCommand extends GlobalCommand {
     public constructor() {
         super({
             name: 'xkcd',

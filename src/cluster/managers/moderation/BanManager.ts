@@ -1,6 +1,6 @@
 import { BanResult, KickResult, MassBanResult, UnbanResult } from '@blargbot/cluster/types';
 import { humanize } from '@blargbot/cluster/utils';
-import { UnbanEventOptions } from '@blargbot/core/types';
+import { UnbanEventOptions } from '@blargbot/domain/models';
 import { mapping } from '@blargbot/mapping';
 import { ApiError, AuditLogActionType, DiscordRESTError, Guild, GuildAuditLog, Member, User } from 'eris';
 import moment, { Duration } from 'moment-timezone';

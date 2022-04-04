@@ -3,11 +3,11 @@ import { DiscordRESTError } from 'eris';
 import fetch from 'node-fetch';
 
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError } from '../../errors';
 import { SubtagType } from '../../utils';
 
-export class GuildSetIconSubtag extends DefinedSubtag {
+export class GuildSetIconSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'guildseticon',

@@ -1,7 +1,7 @@
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { SubtagType } from '../../utils';
 
-export class Base64EncodeSubtag extends DefinedSubtag {
+export class Base64EncodeSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'base64encode',

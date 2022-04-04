@@ -9,11 +9,10 @@ export class ClusterWorker extends BaseWorker<ClusterIPCContract> {
     public readonly cluster: Cluster;
 
     public constructor(
-        process: NodeJS.Process,
         logger: Logger,
         public readonly config: Configuration
     ) {
-        super(process, logger);
+        super(logger);
         const clusterId = envNumber(this.env, 'CLUSTER_ID');
 
         this.logger.init(`CLUSTER ${clusterId} (pid ${this.id}) PROCESS INITIALIZED`);
@@ -30,6 +29,11 @@ export class ClusterWorker extends BaseWorker<ClusterIPCContract> {
     public async start(): Promise<void> {
         await this.cluster.start();
         super.start();
+    }
+
+    public async stop(): Promise<void> {
+        await this.cluster.images.killAll();
+        await super.stop();
     }
 }
 

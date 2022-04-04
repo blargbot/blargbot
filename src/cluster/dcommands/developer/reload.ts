@@ -1,9 +1,9 @@
-import { BaseGlobalCommand } from '@blargbot/cluster/command';
+import { GlobalCommand } from '@blargbot/cluster/command';
 import { ICommandManager } from '@blargbot/cluster/types';
 import { CommandType, pluralise as p } from '@blargbot/cluster/utils';
 import { ModuleLoader } from '@blargbot/core/modules';
 
-export class ReloadCommand extends BaseGlobalCommand {
+export class ReloadCommand extends GlobalCommand {
     public constructor() {
         super({
             name: 'reload',

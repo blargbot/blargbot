@@ -8,6 +8,7 @@ export * from './CustomCommandLimit';
 export * from './EverythingAutoResponseLimit';
 export * from './GeneralAutoResponseLimit';
 export * from './TagLimit';
+export * from './RuntimeLimit';
 export { rules };
 
 export const limits = {

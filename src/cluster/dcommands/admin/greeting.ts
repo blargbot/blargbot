@@ -1,11 +1,11 @@
 import { bbtag } from '@blargbot/bbtag';
-import { BaseGuildCommand } from '@blargbot/cluster/command';
+import { GuildCommand } from '@blargbot/cluster/command';
 import { GuildCommandContext } from '@blargbot/cluster/types';
 import { codeBlock, CommandType, guard } from '@blargbot/cluster/utils';
 import { SendContent } from '@blargbot/core/types';
 import { KnownChannel } from 'eris';
 
-export class GreetingCommand extends BaseGuildCommand {
+export class GreetingCommand extends GuildCommand {
     public constructor() {
         super({
             name: 'greeting',
@@ -44,7 +44,7 @@ export class GreetingCommand extends BaseGuildCommand {
                 },
                 {
                     parameters: 'info',
-                    description: 'Shows information about the current farewell message',
+                    description: 'Shows information about the current greeting message',
                     execute: (ctx) => this.getInfo(ctx)
                 }
             ]

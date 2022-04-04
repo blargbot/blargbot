@@ -1,11 +1,11 @@
 import { bbtag } from '@blargbot/bbtag';
-import { BaseGuildCommand } from '@blargbot/cluster/command';
+import { GuildCommand } from '@blargbot/cluster/command';
 import { GuildCommandContext } from '@blargbot/cluster/types';
 import { codeBlock, CommandType, guard } from '@blargbot/cluster/utils';
 import { SendContent } from '@blargbot/core/types';
 import { humanize } from '@blargbot/core/utils';
 
-export class IntervalCommand extends BaseGuildCommand {
+export class IntervalCommand extends GuildCommand {
     public constructor() {
         super({
             name: 'interval',
@@ -38,7 +38,7 @@ export class IntervalCommand extends BaseGuildCommand {
                 },
                 {
                     parameters: 'info',
-                    description: 'Shows information about the current farewell message',
+                    description: 'Shows information about the current interval',
                     execute: (ctx) => this.getInfo(ctx)
                 }
             ]

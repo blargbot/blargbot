@@ -3,11 +3,11 @@ import { mapping } from '@blargbot/mapping';
 import { ApiError, DiscordRESTError, EditChannelOptions } from 'eris';
 
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError } from '../../errors';
 import { SubtagType } from '../../utils';
 
-export class ChannelEditSubtag extends DefinedSubtag {
+export class ChannelEditSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'channeledit',

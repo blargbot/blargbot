@@ -1,15 +1,15 @@
 import { Cluster } from '@blargbot/cluster';
-import { BaseGuildCommand } from '@blargbot/cluster/command';
+import { GuildCommand } from '@blargbot/cluster/command';
 import { GuildCommandContext } from '@blargbot/cluster/types';
 import { codeBlock, CommandType, defaultStaff, guard, guildSettings, parse } from '@blargbot/cluster/utils';
 import { EmbedOptions, Guild } from 'eris';
 
-export class SettingsCommand extends BaseGuildCommand {
+export class SettingsCommand extends GuildCommand {
     public constructor(cluster: Cluster) {
         super({
             name: 'settings',
             category: CommandType.ADMIN,
-            description: `Gets or sets the settings for the current guild. Visit ${cluster.util.websiteLink('/commands/settings')} for key documentation.`,
+            description: `Gets or sets the settings for the current guild. Visit ${cluster.util.websiteLink('/guilds/settings')} for key documentation.`,
             definitions: [
                 {
                     parameters: 'list',

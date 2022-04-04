@@ -1,8 +1,8 @@
-import { BaseGlobalCommand } from '@blargbot/cluster/command';
+import { GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType, randInt } from '@blargbot/cluster/utils';
 import { User } from 'eris';
 
-export class ShipCommand extends BaseGlobalCommand {
+export class ShipCommand extends GlobalCommand {
     public constructor() {
         super({
             name: 'ship',

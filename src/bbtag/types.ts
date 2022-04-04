@@ -1,12 +1,12 @@
 import { Emote } from '@blargbot/core/Emote';
-import { FlagDefinition, NamedGuildCommandTag, StoredTag } from '@blargbot/core/types';
+import { FlagDefinition, NamedGuildCommandTag, StoredTag } from '@blargbot/domain/models';
 import { Attachment, Embed, EmbedOptions, FileContent, KnownGuildTextableChannel, KnownMessage, Message, User } from 'eris';
 import ReadWriteLock from 'rwlock';
 
-import { BBTagContext } from './BBTagContext';
 import { VariableCache } from './Caching';
 import { BBTagRuntimeError } from './errors';
-import type { limits } from './limits';
+import { SourceMarker, Statement, SubtagCall } from './language';
+import type { limits, RuntimeLimit } from './limits';
 import { ScopeManager } from './ScopeManager';
 import { SubtagCallStack } from './SubtagCallStack';
 import { TagCooldownManager } from './TagCooldownManager';
@@ -22,41 +22,7 @@ export interface AnalysisResult {
     readonly message: string;
 }
 
-export interface SubtagCall {
-    readonly name: Statement;
-    readonly args: readonly Statement[];
-    readonly start: SourceMarker;
-    readonly end: SourceMarker;
-    readonly source: string;
-}
-
-export interface Statement {
-    readonly values: ReadonlyArray<string | SubtagCall>;
-    readonly start: SourceMarker;
-    readonly end: SourceMarker;
-    readonly source: string;
-}
-
-export const enum SourceTokenType {
-    CONTENT,
-    STARTSUBTAG,
-    ENDSUBTAG,
-    ARGUMENTDELIMITER
-}
-
-export interface SourceMarker {
-    readonly index: number;
-    readonly line: number;
-    readonly column: number;
-}
 export type BBTagArray = { n?: string; v: JArray; };
-
-export interface SourceToken {
-    type: SourceTokenType;
-    content: string;
-    start: SourceMarker;
-    end: SourceMarker;
-}
 
 export interface BBTagRuntimeScope {
     // Everything here should be immutable types.
@@ -153,15 +119,6 @@ export interface RuntimeDebugEntry {
     text: string;
 }
 
-export interface RuntimeLimit {
-    addRules(rulekey: string | string[], ...rules: RuntimeLimitRule[]): this;
-    readonly scopeName: string;
-    check(context: BBTagContext, subtagName: string): Awaitable<void>;
-    rulesFor(subtagName: string): string[];
-    serialize(): SerializedRuntimeLimit;
-    load(state: SerializedRuntimeLimit): void;
-}
-
 export const enum BBTagRuntimeState {
     /** Indicates bbtag should continue to be executed */
     RUNNING,
@@ -215,37 +172,16 @@ export interface ExecutionResult {
         values: JObject;
     };
 }
-export interface SubtagHandlerCallSignature extends SubtagSignatureDetails {
-    readonly implementation: SubtagLogic<SubtagResult>;
-}
 
-export type SubtagResult = AsyncIterable<string | undefined>;
+export type SubtagSignatureValueParameter =
+    | OptionalSubtagSignatureParameter
+    | RequiredSubtagSignatureParameter
 
-export interface SubtagLogic<T> {
-    execute(context: BBTagContext, args: SubtagArgumentArray, call: SubtagCall): T;
-}
+export type SubtagSignatureParameter =
+    | SubtagSignatureValueParameter
+    | SubtagSignatureParameterGroup
 
-export interface CompositeSubtagHandler extends SubtagHandler {
-    readonly handlers: readonly ConditionalSubtagHandler[];
-}
-
-export interface ConditionalSubtagHandler extends SubtagHandler {
-    canHandle(call: SubtagCall): boolean;
-}
-
-export interface SubtagHandler {
-    execute(context: BBTagContext, subtagName: string, call: SubtagCall): SubtagResult;
-}
-
-export type SubtagHandlerValueParameter =
-    | OptionalSubtagHandlerParameter
-    | RequiredSubtagHandlerParameter
-
-export type SubtagHandlerParameter =
-    | SubtagHandlerValueParameter
-    | SubtagHandlerParameterGroup
-
-export interface OptionalSubtagHandlerParameter {
+export interface OptionalSubtagSignatureParameter {
     readonly name: string;
     readonly required: false;
     readonly autoResolve: boolean;
@@ -253,7 +189,7 @@ export interface OptionalSubtagHandlerParameter {
     readonly maxLength: number;
 }
 
-export interface RequiredSubtagHandlerParameter {
+export interface RequiredSubtagSignatureParameter {
     readonly name: string;
     readonly required: true;
     readonly autoResolve: boolean;
@@ -261,24 +197,18 @@ export interface RequiredSubtagHandlerParameter {
     readonly maxLength: number;
 }
 
-export interface SubtagHandlerParameterGroup {
+export interface SubtagSignatureParameterGroup {
     readonly minRepeats: number;
-    readonly nested: readonly RequiredSubtagHandlerParameter[];
+    readonly nested: readonly RequiredSubtagSignatureParameter[];
 }
 
-export interface SubtagSignatureDetails<TArgs = SubtagHandlerParameter> {
-    readonly parameters: readonly TArgs[];
-    readonly description?: string;
-    readonly exampleCode?: string;
+export interface SubtagSignature {
+    readonly subtagName?: string;
+    readonly parameters: readonly SubtagSignatureParameter[];
+    readonly description: string;
+    readonly exampleCode: string;
     readonly exampleIn?: string;
-    readonly exampleOut?: string;
-    readonly returns: keyof SubtagReturnTypeMap;
-}
-
-interface SubtagHandlerDefinition<Type extends keyof SubtagReturnTypeMap>
-    extends SubtagSignatureDetails<string | SubtagHandlerDefinitionParameterGroup>,
-    SubtagLogic<Awaitable<SubtagReturnTypeMap[Type]>> {
-    readonly returns: Type;
+    readonly exampleOut: string;
 }
 
 type AwaitableIterable<T> = (Iterable<T> | AsyncIterable<T>); // To exclude string
@@ -310,7 +240,7 @@ type SubtagReturnTypeMapHelper = Omit<SubtagReturnTypeAtomicMap, 'nothing'>
     & SubtagReturnTypeUnion<['json[]', 'nothing']>
     & SubtagReturnTypeUnion<['json', 'nothing']>
     & {
-        'unknown': SubtagResult;
+        'unknown': AsyncIterable<string | undefined>;
         'nothing': void;
         'error': never;
         'loop': AwaitableIterable<string>;
@@ -320,49 +250,15 @@ export type SubtagReturnTypeMap = {
     [P in keyof SubtagReturnTypeMapHelper]: SubtagReturnTypeMapHelper[P]
 }
 
-export type AnySubtagHandlerDefinition = { [P in keyof SubtagReturnTypeMap]: SubtagHandlerDefinition<P> }[keyof SubtagReturnTypeMap];
-
-export interface SubtagHandlerDefinitionParameterGroup {
-    readonly minCount?: number;
-    readonly repeat: readonly string[];
-}
-
 export interface SubtagOptions {
     readonly name: string;
     readonly aliases?: readonly string[];
     readonly category: SubtagType;
-    readonly desc?: string;
+    readonly description?: string;
     readonly deprecated?: string | boolean;
     readonly staff?: boolean;
     readonly hidden?: boolean;
-    readonly signatures: readonly SubtagSignatureDetails[];
-}
-
-export interface RuntimeLimitRule {
-    check(context: BBTagContext, subtagName: string): Awaitable<void>;
-    displayText(subtagName: string, scopeName: string): string;
-    state(): JToken;
-    load(state: JToken): void;
-}
-export interface SubtagArgument {
-    readonly parameter: SubtagHandlerValueParameter;
-    readonly isCached: boolean;
-    readonly value: string;
-    readonly code: Statement;
-    readonly raw: string;
-    wait(): Promise<string>;
-    execute(): Promise<string>;
-}
-
-export interface SubtagArgumentArray extends ReadonlyArray<SubtagArgument> {
-    readonly subtagName: string;
-}
-
-export interface ArgumentResolver {
-    readonly minArgs: number;
-    readonly maxArgs: number;
-    isExactMatch(subtag: SubtagCall): boolean;
-    resolve(context: BBTagContext, subtagName: string, subtag: SubtagCall): Iterable<SubtagArgument>;
+    readonly signatures: readonly SubtagSignature[];
 }
 
 export type SubtagPropertiesSet = { [key in SubtagType]: SubtagProperties; }

@@ -1,5 +1,7 @@
+import { SubtagArgumentArray } from '../arguments';
 import { BBTagContext } from '../BBTagContext';
-import { SubtagArgumentArray, SubtagCall, SubtagLogic, SubtagResult } from '../types';
+import { SubtagCall } from '../language';
+import { SubtagLogic } from './SubtagLogic';
 import { SubtagLogicWrapper } from './SubtagLogicWrapper';
 
 export class ArrayOrValueSubtagLogicWrapper<T extends { toString(): string; }> extends SubtagLogicWrapper {
@@ -7,7 +9,7 @@ export class ArrayOrValueSubtagLogicWrapper<T extends { toString(): string; }> e
         super();
     }
 
-    protected async *getResults(context: BBTagContext, args: SubtagArgumentArray, subtag: SubtagCall): SubtagResult {
+    protected async *getResults(context: BBTagContext, args: SubtagArgumentArray, subtag: SubtagCall): AsyncIterable<string | undefined> {
         const values = await this.logic.execute(context, args, subtag);
         if (values === undefined)
             return;

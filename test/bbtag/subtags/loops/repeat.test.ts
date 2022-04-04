@@ -5,7 +5,7 @@ import { RepeatSubtag } from '@blargbot/bbtag/subtags/loops/repeat';
 import { IncrementSubtag } from '@blargbot/bbtag/subtags/math/increment';
 import { IfSubtag } from '@blargbot/bbtag/subtags/misc/if';
 import { BBTagRuntimeState } from '@blargbot/bbtag/types';
-import { SubtagVariableType } from '@blargbot/core/types';
+import { SubtagVariableType } from '@blargbot/domain/models';
 import { expect } from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite';

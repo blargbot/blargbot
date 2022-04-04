@@ -1,7 +1,7 @@
 import { Cluster } from '@blargbot/cluster';
-import { BaseSocialWolkeCommand } from '@blargbot/cluster/command';
+import { WolkenCommand } from '@blargbot/cluster/command';
 
-export class CryCommand extends BaseSocialWolkeCommand {
+export class CryCommand extends WolkenCommand {
     public constructor(cluster: Cluster) {
         super('cry', {
             search: 'cry',

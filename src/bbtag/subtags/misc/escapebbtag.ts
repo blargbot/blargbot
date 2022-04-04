@@ -1,11 +1,12 @@
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { SubtagType } from '../../utils';
 
-export class EscapeBbtagSubtag extends DefinedSubtag {
+export class EscapeBbtagSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'escapebbtag',
             category: SubtagType.MISC,
+            aliases: ['escape'],
             definition: [
                 {
                     parameters: ['~input*'],

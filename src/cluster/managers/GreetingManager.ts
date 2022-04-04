@@ -1,8 +1,8 @@
-import { ExecutionResult } from '@blargbot/bbtag/types';
+import { ExecutionResult } from '@blargbot/bbtag';
 import { Cluster } from '@blargbot/cluster';
 import { snowflake } from '@blargbot/cluster/utils';
-import { GuildTriggerTag } from '@blargbot/core/types';
 import { guard } from '@blargbot/core/utils';
+import { GuildTriggerTag } from '@blargbot/domain/models';
 import { Guild, KnownGuildTextableChannel, Member } from 'eris';
 import moment from 'moment-timezone';
 

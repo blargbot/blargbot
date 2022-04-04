@@ -1,16 +1,16 @@
 import moment from 'moment-timezone';
 
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { UserNotFoundError } from '../../errors';
 import { SubtagType } from '../../utils';
 
-export class UserJoinedAtSubtag extends DefinedSubtag {
+export class UserJoinedAtSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'userjoinedat',
             category: SubtagType.USER,
-            desc: 'For a list of formats see the [moment documentation](http://momentjs.com/docs/#/displaying/format/) for more information.',
+            description: 'For a list of formats see the [moment documentation](http://momentjs.com/docs/#/displaying/format/) for more information.',
             definition: [
                 {
                     parameters: ['format?:YYYY-MM-DDTHH:mm:ssZ'],

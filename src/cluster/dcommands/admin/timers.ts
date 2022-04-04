@@ -1,10 +1,10 @@
-import { BaseGlobalCommand, CommandContext } from '@blargbot/cluster/command';
+import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { codeBlock, CommandType, guard, humanize, pluralise as p } from '@blargbot/cluster/utils';
 import { SendPayload } from '@blargbot/core/types';
 import { EmbedField, EmbedOptions } from 'eris';
 import moment from 'moment-timezone';
 
-export class TimersCommand extends BaseGlobalCommand {
+export class TimersCommand extends GlobalCommand {
     public constructor() {
         super({
             name: 'timers',

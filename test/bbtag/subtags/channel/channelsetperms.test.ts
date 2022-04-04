@@ -1,6 +1,6 @@
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
 import { ChannelSetPermsSubtag } from '@blargbot/bbtag/subtags/channel/channelsetperms';
-import { OverwriteType } from 'discord-api-types';
+import { OverwriteType } from 'discord-api-types/v9';
 import { ApiError, Constants, PublicThreadChannel } from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite';

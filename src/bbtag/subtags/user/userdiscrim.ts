@@ -1,14 +1,14 @@
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { UserNotFoundError } from '../../errors';
 import { SubtagType } from '../../utils';
 
-export class UserDiscrimSubtag extends DefinedSubtag {
+export class UserDiscrimSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'userdiscrim',
             category: SubtagType.USER,
-            desc: 'If no game is being played, this will return \'nothing\'',
+            description: 'If no game is being played, this will return \'nothing\'',
             definition: [
                 {
                     parameters: [],

@@ -11,7 +11,7 @@ export class RegexSplitSubtag extends RegexSubtag {
                     parameters: ['text', '~regex#50000'],
                     description: 'Splits the given text using the given `regex` as the split rule. Any bbtag in `regex` will not be resolved. Please consider using `{apply}` for a dynamic regex. ' +
                         '`regex` will only succeed to compile if it is deemed a safe regular expression ' +
-                        '(safe regexes do not run in exponential time for any input) and is less than 2000 characters long.',
+                        '(safe regexes do not run in exponential time for any input)',
                     exampleCode: '{regexsplit;Hello      there, I       am hungry;/[\\s,]+/}',
                     exampleOut: '["Hello","there","I","am","hungry"]',
                     returns: 'string[]',

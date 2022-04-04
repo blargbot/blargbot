@@ -2,18 +2,18 @@ import { guard } from '@blargbot/core/utils';
 import Color from 'color';
 
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError } from '../../errors';
 import { bbtag, SubtagType } from '../../utils';
 
 export type ColorFormat = keyof typeof colorConverters;
 
-export class ColorSubtag extends DefinedSubtag {
+export class ColorSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'color',
             category: SubtagType.MISC,
-            desc: 'If `inputFormat` is omitted or left empty, the format of `color` is automatically calculated, but might be innaccurate. For accuracy and known `color` formats use `inputFormat`. It converts all ways between `rgb`, `hsl`, `hsv`, `hwb`, `cmyk`, `ansi16`, `hex` strings, and CSS `keyword`s (will round to closest).', //TODO document the other formats too perhaps? As these are supported/working. (lab, lch, ansi256, hcg, apple, gray, xyz)
+            description: 'If `inputFormat` is omitted or left empty, the format of `color` is automatically calculated, but might be innaccurate. For accuracy and known `color` formats use `inputFormat`. It converts all ways between `rgb`, `hsl`, `hsv`, `hwb`, `cmyk`, `ansi16`, `hex` strings, and CSS `keyword`s (will round to closest).', //TODO document the other formats too perhaps? As these are supported/working. (lab, lch, ansi256, hcg, apple, gray, xyz)
             definition: [
                 {
                     parameters: ['color', 'outputFormat?:hex'],

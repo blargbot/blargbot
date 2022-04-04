@@ -1,5 +1,6 @@
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
 import { ChannelCategorySubtag } from '@blargbot/bbtag/subtags/channel/channelcategory';
+import { APITextChannel } from 'discord-api-types/v9';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 import { createGetChannelPropTestCases } from './_getChannelPropTest';
@@ -18,7 +19,7 @@ runSubtagTests({
                 {
                     expected: '8237642839674943',
                     setup(channel) {
-                        channel.parent_id = '8237642839674943';
+                        (channel as APITextChannel).parent_id = '8237642839674943';
                     }
                 }
             ]

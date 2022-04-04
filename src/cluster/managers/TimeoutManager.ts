@@ -1,4 +1,4 @@
-import { EventType, EventTypeMap, StoredEvent, StoredEventOptions } from '@blargbot/core/types';
+import { EventType, EventTypeMap, StoredEvent, StoredEventOptions } from '@blargbot/domain/models';
 import EventEmitter from 'eventemitter3';
 import moment, { Duration, duration } from 'moment-timezone';
 

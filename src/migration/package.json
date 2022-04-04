@@ -6,6 +6,7 @@
         "@blargbot/cluster": "workspace:^",
         "@blargbot/config": "workspace:^",
         "@blargbot/core": "workspace:^",
+        "@blargbot/domain": "workspace:^",
         "@blargbot/logger": "workspace:^",
         "@blargbot/mapping": "workspace:^",
         "eris": "^0.16.1",

@@ -1,6 +1,6 @@
 import { createHash, getHashes } from 'crypto';
 
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError } from '../../errors';
 import { SubtagType } from '../../utils';
 
@@ -14,7 +14,7 @@ const allowedHashes = new Set([
 
 export const supportedHashes = getHashes().filter(h => allowedHashes.has(h));
 
-export class HashSubtag extends DefinedSubtag {
+export class HashSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'hash',
@@ -39,8 +39,8 @@ export class HashSubtag extends DefinedSubtag {
                         'If it starts with `text:` then it will be treated as plaintext. ' +
                         'The hash result will be returned as a hex number.\n' +
                         `Supported \`algorithm\`s are: ${supportedHashes.map(a => `\`${a}\``).join(', ')}`,
-                    exampleCode: '{hash;sha256;',
-                    exampleOut: 'The hash of brown is 94011702.',
+                    exampleCode: '{hash;sha256;brown}',
+                    exampleOut: 'The hash of brown is 5eb67f9f8409b9c3f739735633cbdf92121393d0e13bd0f464b1b2a6a15ad2dc',
                     returns: 'string',
                     execute: (_, [algorithm, text]) => this.computeStrongHash(algorithm.value, text.value)
                 }

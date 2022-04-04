@@ -11,5 +11,5 @@ logger.setGlobal();
 const avatars = config.general.isProd !== true ? devAvatars : prdAvatars;
 
 Error.stackTraceLimit = 100;
-void new MasterWorker(process, logger, config, { avatars, holidays })
+void new MasterWorker(logger, config, { avatars, holidays })
     .start();

@@ -1,17 +1,17 @@
 import { Role } from 'eris';
 
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError, RoleNotFoundError, UserNotFoundError } from '../../errors';
 import { bbtag, SubtagType } from '../../utils';
 
-export class RoleAddSubtag extends DefinedSubtag {
+export class RoleAddSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'roleadd',
             category: SubtagType.ROLE,
             aliases: ['addrole'],
-            desc: '`role` can be either a roleID or role mention.',
+            description: '`role` can be either a roleID or role mention.',
             definition: [
                 {
                     parameters: ['role'],

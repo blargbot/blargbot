@@ -71,7 +71,7 @@ export class ClusterBBTagUtilities extends BaseUtilities implements BBTagUtiliti
             source: context.guild.id,
             channel: context.channel.id,
             endtime: moment().add(timeout).valueOf(),
-            context: context.serialize(),
+            context: JSON.stringify(context.serialize()),
             content: content
         });
     }

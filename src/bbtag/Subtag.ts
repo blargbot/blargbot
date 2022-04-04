@@ -1,10 +1,10 @@
 import { metrics } from '@blargbot/core/Metrics';
 import { Timer } from '@blargbot/core/Timer';
 import { abstract } from '@blargbot/core/utils';
-import { EmbedOptions } from 'eris';
 
 import { BBTagContext } from './BBTagContext';
-import { SubtagCall, SubtagOptions, SubtagResult, SubtagSignatureDetails } from './types';
+import { SubtagCall } from './language';
+import { SubtagOptions, SubtagSignature } from './types';
 import { SubtagType } from './utils';
 
 @abstract
@@ -12,19 +12,17 @@ export abstract class Subtag implements SubtagOptions {
     public readonly name: string;
     public readonly aliases: readonly string[];
     public readonly category: SubtagType;
-    public readonly isTag: true;
-    public readonly desc: string | undefined;
+    public readonly description: string | undefined;
     public readonly deprecated: string | boolean;
     public readonly staff: boolean;
-    public readonly signatures: readonly SubtagSignatureDetails[];
+    public readonly signatures: readonly SubtagSignature[];
     public readonly hidden: boolean;
 
     public constructor(options: SubtagOptions) {
         this.name = options.name;
         this.aliases = options.aliases ?? [];
         this.category = options.category;
-        this.isTag = true;
-        this.desc = options.desc;
+        this.description = options.description;
         this.deprecated = options.deprecated ?? false;
         this.staff = options.staff ?? false;
         this.hidden = options.hidden ?? false;
@@ -32,7 +30,7 @@ export abstract class Subtag implements SubtagOptions {
     }
 
     @abstract.sealed
-    public async * execute(context: BBTagContext, subtagName: string, subtag: SubtagCall): SubtagResult {
+    public async * execute(context: BBTagContext, subtagName: string, subtag: SubtagCall): AsyncIterable<string | undefined> {
         const timer = new Timer().start();
         try {
             yield* this.executeCore(context, subtagName, subtag);
@@ -44,9 +42,5 @@ export abstract class Subtag implements SubtagOptions {
         }
     }
 
-    protected abstract executeCore(context: BBTagContext, subtagName: string, subtag: SubtagCall): SubtagResult;
-
-    public enrichDocs(docs: EmbedOptions): EmbedOptions {
-        return docs;
-    }
+    protected abstract executeCore(context: BBTagContext, subtagName: string, subtag: SubtagCall): AsyncIterable<string | undefined>;
 }

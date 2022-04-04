@@ -1,7 +1,7 @@
 import { BBTagRuntimeError, NotAnArrayError } from '@blargbot/bbtag/errors';
 import { JsonSubtag } from '@blargbot/bbtag/subtags/json/json';
 import { JsonSortSubtag } from '@blargbot/bbtag/subtags/json/jsonsort';
-import { SubtagVariableType } from '@blargbot/core/types';
+import { SubtagVariableType } from '@blargbot/domain/models';
 import { expect } from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite';

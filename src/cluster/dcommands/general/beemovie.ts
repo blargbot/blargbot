@@ -1,4 +1,4 @@
-import { BaseGlobalCommand, CommandContext } from '@blargbot/cluster/command';
+import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType, randChoose } from '@blargbot/cluster/utils';
 import script from '@blargbot/res/beemovie.json';
 
@@ -10,7 +10,7 @@ const scriptMap = script.reduce<{ characterLines: typeof script; allLines: typeo
     return a;
 }, { characterLines: [], allLines: [] });
 
-export class BeemovieCommand extends BaseGlobalCommand {
+export class BeemovieCommand extends GlobalCommand {
     public constructor() {
         super({
             name: 'beemovie',

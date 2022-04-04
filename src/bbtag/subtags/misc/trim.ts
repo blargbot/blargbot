@@ -1,7 +1,7 @@
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { SubtagType } from '../../utils';
 
-export class TrimSubtag extends DefinedSubtag {
+export class TrimSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'trim',

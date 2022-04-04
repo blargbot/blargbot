@@ -1,11 +1,11 @@
-import { BaseGlobalCommand, CommandContext } from '@blargbot/cluster/command';
+import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType } from '@blargbot/cluster/utils';
 import { SendPayload } from '@blargbot/core/types';
 import { humanize, parse } from '@blargbot/core/utils';
 import { ImageFormat, User } from 'eris';
 import fetch from 'node-fetch';
 
-export class AvatarCommand extends BaseGlobalCommand {
+export class AvatarCommand extends GlobalCommand {
     public constructor() {
         super({
             name: 'avatar',

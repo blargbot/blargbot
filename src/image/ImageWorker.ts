@@ -9,8 +9,8 @@ import { BaseImageGenerator } from './BaseImageGenerator';
 export class ImageWorker extends BaseWorker<ImageIPCContract> {
     public readonly renderers: ModuleLoader<BaseImageGenerator<keyof ImageGeneratorMap>>;
 
-    public constructor(process: NodeJS.Process, public readonly config: Configuration, logger: Logger) {
-        super(process, logger);
+    public constructor(public readonly config: Configuration, logger: Logger) {
+        super(logger);
         this.logger.init(`IMAGE WORKER (pid ${this.id}) PROCESS INITIALIZED`);
 
         this.renderers = new ModuleLoader<BaseImageGenerator<keyof ImageGeneratorMap>>(`${__dirname}/generators`, BaseImageGenerator, [this], this.logger, g => [g.key]);

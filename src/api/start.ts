@@ -6,4 +6,4 @@ Error.stackTraceLimit = 100;
 const logger = createLogger(config, `API${process.env.WORKER_ID ?? ''}`);
 logger.setGlobal();
 
-void new ApiWorker(process, config, logger).start();
+void new ApiWorker(config, logger).start();

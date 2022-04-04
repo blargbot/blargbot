@@ -1,5 +1,5 @@
 import { UserActivityTypeSubtag } from '@blargbot/bbtag/subtags/user/useractivitytype';
-import { ActivityType } from 'discord-api-types';
+import { ActivityType } from 'discord-api-types/v9';
 import moment from 'moment-timezone';
 
 import { runSubtagTests } from '../SubtagTestSuite';
@@ -22,7 +22,7 @@ runSubtagTests({
                             activities: [{
                                 created_at: moment().unix(),
                                 name: 'My test game',
-                                type: ActivityType.Game
+                                type: ActivityType.Playing
                             }]
                         });
                     }
@@ -105,7 +105,7 @@ runSubtagTests({
                             activities: [{
                                 created_at: moment().unix(),
                                 name: 'My test game',
-                                type: ActivityType.Game
+                                type: ActivityType.Playing
                             }]
                         });
                     }

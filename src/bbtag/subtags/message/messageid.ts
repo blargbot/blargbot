@@ -1,16 +1,16 @@
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { SubtagType } from '../../utils';
 
-export class MessageIdSubtag extends DefinedSubtag {
+export class MessageIdSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'messageid',
             category: SubtagType.MESSAGE,
-            desc: 'Returns the ID of the invoking message.',
             definition: [
                 {
                     parameters: [],
+                    description: 'Returns the ID of the invoking message.',
                     exampleCode: 'The message id was {messageid}',
                     exampleOut: 'The message id was 111111111111111111',
                     returns: 'id',

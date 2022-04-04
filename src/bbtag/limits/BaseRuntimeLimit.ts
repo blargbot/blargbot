@@ -1,7 +1,9 @@
 import { BBTagContext } from '../BBTagContext';
-import { RuntimeLimit, RuntimeLimitRule, SerializedRuntimeLimit } from '../types';
+import { SerializedRuntimeLimit } from '../types';
 import { limits } from './index';
 import { disabledRule } from './rules';
+import { RuntimeLimit } from './RuntimeLimit';
+import { RuntimeLimitRule } from './RuntimeLimitRule';
 
 export abstract class BaseRuntimeLimit implements RuntimeLimit {
     readonly #rules: Record<string, RuntimeLimitRuleCollection | undefined>;

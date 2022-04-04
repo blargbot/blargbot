@@ -1,8 +1,8 @@
-import { BaseGlobalCommand, CommandContext } from '@blargbot/cluster/command';
+import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType, guard } from '@blargbot/cluster/utils';
 import { Constants, EmbedField, EmbedOptions } from 'eris';
 
-export class PatchCommand extends BaseGlobalCommand {
+export class PatchCommand extends GlobalCommand {
     public constructor() {
         super({
             name: 'patch',

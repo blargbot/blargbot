@@ -1,7 +1,7 @@
-import { Database } from '@blargbot/core/database';
 import { ModuleLoader } from '@blargbot/core/modules';
 import { Timer } from '@blargbot/core/Timer';
 import { discord, parse, sleep } from '@blargbot/core/utils';
+import { Database } from '@blargbot/database';
 import { Logger } from '@blargbot/logger';
 import { Client as Discord } from 'eris';
 import moment from 'moment-timezone';
@@ -10,9 +10,10 @@ import { inspect } from 'util';
 import { BBTagContext } from './BBTagContext';
 import { BBTagUtilities, InjectionContext } from './BBTagUtilities';
 import { BBTagRuntimeError, InternalServerError, SubtagStackOverflowError, TagCooldownError } from './errors';
+import { Statement, SubtagCall } from './language';
 import { Subtag } from './Subtag';
 import { TagCooldownManager } from './TagCooldownManager';
-import { AnalysisResults, BBTagContextOptions, BBTagRuntimeState, ExecutionResult, Statement, SubtagCall } from './types';
+import { AnalysisResults, BBTagContextOptions, BBTagRuntimeState, ExecutionResult } from './types';
 import { bbtag as bbtagUtil } from './utils';
 
 export class BBTagEngine {

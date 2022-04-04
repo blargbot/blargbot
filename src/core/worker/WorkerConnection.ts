@@ -68,7 +68,7 @@ export abstract class WorkerConnection<Contracts extends IPCContracts> {
             throw new Error(`Failed to start ${this.worker} worker (ID: ${this.id})`);
 
         for (const code of ['exit', 'close', 'disconnect', 'kill', 'error'] as const)
-            process.on(code, data => this.logger.worker(this.worker, 'worker ( ID:', this.id, 'PID:', process.pid ?? 'NOT RUNNING', ') sent', code, data));
+            process.on(code, data => this.logger.worker(this.worker, 'worker ( ID:', this.id, 'PID:', process.pid ?? '???', ') sent', code, data));
 
         try {
             const result = await new Promise<unknown>((resolve, reject) => {

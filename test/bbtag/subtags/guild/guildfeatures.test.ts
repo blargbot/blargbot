@@ -1,5 +1,5 @@
 import { GuildFeaturesSubtag } from '@blargbot/bbtag/subtags/guild/guildfeatures';
-import { GuildFeature } from 'discord-api-types';
+import { GuildFeature } from 'discord-api-types/v9';
 import { Constants } from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite';

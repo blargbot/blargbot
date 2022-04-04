@@ -1,16 +1,16 @@
 import { Constants } from 'eris';
 
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { ChannelNotFoundError } from '../../errors';
 import { SubtagType } from '../../utils';
 
-export class ChannelTypeSubtag extends DefinedSubtag {
+export class ChannelTypeSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'channeltype',
             category: SubtagType.CHANNEL,
-            desc: 'Possible results: ' + Object.values(channelTypes).map(t => '`' + t + '`').join(', '),
+            description: 'Possible results: ' + Object.values(channelTypes).map(t => '`' + t + '`').join(', '),
             definition: [
                 {
                     parameters: [],

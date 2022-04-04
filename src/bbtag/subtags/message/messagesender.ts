@@ -1,9 +1,9 @@
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { ChannelNotFoundError, MessageNotFoundError } from '../../errors';
 import { SubtagType } from '../../utils';
 
-export class MessageSenderSubtag extends DefinedSubtag {
+export class MessageSenderSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'messagesender',
@@ -21,16 +21,16 @@ export class MessageSenderSubtag extends DefinedSubtag {
                 {
                     parameters: ['messageid'],
                     description: 'Returns the id of the author of `messageid` in the current channel.',
-                    exampleCode: 'KnownMessage 1111111111111 was sent by {sender;1111111111111}',
-                    exampleOut: 'KnownMessage 1111111111111 was sent by 2222222222222',
+                    exampleCode: 'Message 1111111111111 was sent by {sender;1111111111111}',
+                    exampleOut: 'Message 1111111111111 was sent by 2222222222222',
                     returns: 'id',
                     execute: (ctx, [messageId]) => this.getMessageSender(ctx, ctx.channel.id, messageId.value, false)
                 },
                 {
                     parameters: ['channel', 'messageid', 'quiet?'],
                     description: 'Returns the id of the author of `messageid` in `channel`. If `quiet` is provided and `channel` cannot be found, this will return nothing.',
-                    exampleCode: 'KnownMessage 1111111111111 in #support was sent by {sender;support;1111111111111}',
-                    exampleOut: 'KnownMessage 1111111111111 in #support was sent by 2222222222222',
+                    exampleCode: 'Message 1111111111111 in #support was sent by {sender;support;1111111111111}',
+                    exampleOut: 'Message 1111111111111 in #support was sent by 2222222222222',
                     returns: 'id',
                     execute: (ctx, [channel, message, quiet]) => this.getMessageSender(ctx, channel.value, message.value, quiet.value !== '')
                 }

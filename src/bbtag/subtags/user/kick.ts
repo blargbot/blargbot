@@ -1,14 +1,14 @@
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError, UserNotFoundError } from '../../errors';
 import { SubtagType } from '../../utils';
 
-export class KickSubtag extends DefinedSubtag {
+export class KickSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'kick',
             category: SubtagType.USER,
-            desc: 'If the kick is successful, `Success` will be returned, otherwise the error will be given. ',
+            description: 'If the kick is successful, `Success` will be returned, otherwise the error will be given. ',
             definition: [
                 {
                     parameters: ['user'],

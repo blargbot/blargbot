@@ -1,9 +1,9 @@
-import { BaseGuildCommand } from '@blargbot/cluster/command';
+import { GuildCommand } from '@blargbot/cluster/command';
 import { GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType } from '@blargbot/cluster/utils';
 import { User } from 'eris';
 
-export class RemoveVotebanCommand extends BaseGuildCommand {
+export class RemoveVotebanCommand extends GuildCommand {
     public constructor() {
         super({
             name: 'removevoteban',

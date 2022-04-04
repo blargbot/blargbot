@@ -1,5 +1,6 @@
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
 import { ChannelPosSubtag } from '@blargbot/bbtag/subtags/channel/channelpos';
+import { APITextChannel } from 'discord-api-types/v9';
 import { Constants } from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite';
@@ -19,7 +20,7 @@ runSubtagTests({
                 {
                     expected: '324',
                     setup(channel) {
-                        channel.position = 324;
+                        (channel as APITextChannel).position = 324;
                     }
                 }
             ]

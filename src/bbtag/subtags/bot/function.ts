@@ -1,10 +1,10 @@
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError } from '../../errors';
-import { Statement } from '../../types';
+import { Statement } from '../../language';
 import { SubtagType } from '../../utils';
 
-export class FunctionSubtag extends DefinedSubtag {
+export class FunctionSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'function',

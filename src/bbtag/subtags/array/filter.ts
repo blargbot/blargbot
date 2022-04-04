@@ -1,11 +1,12 @@
 import { parse } from '@blargbot/core/utils';
 
+import { SubtagArgument } from '../../arguments';
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
-import { BBTagRuntimeState, SubtagArgument } from '../../types';
+import { CompiledSubtag } from '../../compilation';
+import { BBTagRuntimeState } from '../../types';
 import { bbtag, SubtagType } from '../../utils';
 
-export class FilterSubtag extends DefinedSubtag {
+export class FilterSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'filter',

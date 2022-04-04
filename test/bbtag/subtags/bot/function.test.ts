@@ -1,6 +1,6 @@
+import { Statement } from '@blargbot/bbtag';
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
 import { FunctionSubtag } from '@blargbot/bbtag/subtags/bot/function';
-import { Statement } from '@blargbot/bbtag/types';
 import { expect } from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite';

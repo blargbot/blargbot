@@ -1,7 +1,7 @@
-import { BaseGlobalCommand } from '@blargbot/cluster/command';
+import { GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType, randChoose } from '@blargbot/cluster/utils';
 
-export class InsultCommand extends BaseGlobalCommand {
+export class InsultCommand extends GlobalCommand {
     public constructor() {
         super({
             name: 'insult',

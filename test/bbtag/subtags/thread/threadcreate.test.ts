@@ -1,7 +1,7 @@
 import { BBTagRuntimeError, ChannelNotFoundError, InvalidChannelError, MessageNotFoundError } from '@blargbot/bbtag/errors';
 import { EscapeBbtagSubtag } from '@blargbot/bbtag/subtags/misc/escapebbtag';
 import { ThreadCreateSubtag } from '@blargbot/bbtag/subtags/thread/threadcreate';
-import { ChannelType, GuildFeature } from 'discord-api-types';
+import { ChannelType, GuildFeature } from 'discord-api-types/v9';
 import { ApiError, KnownMessage, Message, PrivateThreadChannel, PublicThreadChannel, VoiceChannel } from 'eris';
 
 import { argument } from '../../mock';

@@ -2,11 +2,10 @@ import gm from 'gm';
 import Jimp from 'jimp';
 import fetch from 'node-fetch';
 import path from 'path';
-import phantom from 'phantom';
 import { inspect } from 'util';
 
 import { ImageWorker } from './ImageWorker';
-import { ImageGeneratorMap, ImageResult, MagickSource, PhantomOptions, PhantomTransformOptions, TextOptions } from './types';
+import { ImageGeneratorMap, ImageResult, MagickSource, TextOptions } from './types';
 
 const im = gm.subClass({ imageMagick: true });
 const imgDir = path.join(path.dirname(require.resolve('@blargbot/res/package')), 'img');
@@ -146,92 +145,6 @@ export abstract class BaseImageGenerator<T extends keyof ImageGeneratorMap> {
             }
             image.setFormat('png');
         });
-    }
-
-    protected async renderPhantom(file: string, options: PhantomOptions): Promise<Buffer>
-    protected async renderPhantom<T>(file: string, options: PhantomTransformOptions<T>): Promise<Buffer>
-    protected async renderPhantom(file: string, options: Partial<PhantomTransformOptions<unknown>>): Promise<Buffer> {
-        const { replacements, scale = 1, format = 'PNG', transform, transformArg } = options;
-        const instance = await phantom.create(['--ignore-ssl-errors=true', '--ssl-protocol=TLSv1']);
-        const page = await instance.createPage();
-
-        const dPath = this.getLocalResourcePath(file).replace(/\\/g, '/').replace(/^\w:/, '');
-        await page.on('onConsoleMessage', (msg) => this.worker.logger.debug('[IM]', msg));
-        await page.on('onResourceError', (resourceError) => this.worker.logger.error(`${resourceError.url}: ${resourceError.errorString}`));
-        await page.open(dPath);
-        await page.on('viewportSize', { width: 1440, height: 900 });
-        await page.on('zoomFactor', scale);
-
-        const rect = await page.evaluate(phantomGetrect, replacements);
-
-        if (rect !== undefined) {
-            await page.on('clipRect', {
-                top: rect.top,
-                left: rect.left,
-                width: rect.width * scale,
-                height: rect.height * scale
-            });
-        }
-
-        if (transform !== undefined)
-            await page.evaluate(transform, transformArg);
-
-        await page.evaluate(phantomResize);
-
-        const base64 = await page.renderBase64(format);
-        instance.exit();
-        return Buffer.from(base64);
-    }
-}
-
-// This method is turned into a string and run on the phantom instance, not in node
-function phantomGetrect(replacements: PhantomOptions['replacements']): { top: number; left: number; width: number; height: number; } | undefined {
-    if (replacements !== undefined) {
-        for (const [key, value] of Object.entries(replacements)) {
-            const thing = document.getElementById(key);
-            if (thing !== null)
-                thing.innerText = value;
-        }
-    }
-    try {
-        const workspace = document.getElementById('workspace');
-        return workspace?.getBoundingClientRect();
-    } catch (err: unknown) {
-        // eslint-disable-next-line no-console
-        console.error(err);
-        return { top: 0, left: 0, width: 300, height: 300 };
-    }
-}
-
-function phantomResize(): void {
-    let el;
-    let i;
-    const elements = document.getElementsByClassName('resize');
-    const wrapper = document.getElementById('wrapper');
-    if (elements.length < 0 || wrapper === null) {
-        return;
-    }
-
-    const resizeText = function (el: HTMLElement): void {
-        const elNewFontSize = `${parseInt(el.style.fontSize.slice(0, -2)) - 1}px`;
-        // eslint-disable-next-line no-console
-        console.log(elNewFontSize); // console inside the phantom browser, not the blargbot console
-        el.style.fontSize = elNewFontSize;
-    };
-
-    for (i = 0; i < elements.length; i++) {
-        el = elements[i];
-        if (el instanceof HTMLElement) {
-            if (el.style.fontSize === '')
-                el.style.fontSize = '65px';
-
-            let ii = 0;
-            while (el.scrollHeight > wrapper.clientHeight) {
-                resizeText(el);
-                if (++ii === 1000)
-                    break;
-            }
-        }
     }
 }
 

@@ -1,25 +1,25 @@
 import { clamp, guard, parse } from '@blargbot/core/utils';
 
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError, ChannelNotFoundError, NotANumberError, UserNotFoundError } from '../../errors';
 import { bbtag, SubtagType } from '../../utils';
 
 const defaultCondition = bbtag.parse('true');
 
-export class WaitMessageSubtag extends DefinedSubtag {
+export class WaitMessageSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'waitmessage',
             category: SubtagType.MESSAGE,
-            desc: 'Pauses the command until one of the given users sends a message in any of the given channels. ' +
+            description: 'Pauses the command until one of the given users sends a message in any of the given channels. ' +
                 'When a message is sent, `condition` will be run to determine if the message can be accepted. ' +
                 'If no message has been accepted within `timeout` then the subtag returns `Wait timed out`, otherwise it returns an array containing ' +
                 'the channel Id, then the message Id. ' +
                 '\n\n`channels` defaults to the current channel.' +
                 '\n`users` defaults to the current user.' +
-                '\n`condition` must return `true` or `false` and defaults to `true`' +
-                '\n`timeout` is a number of seconds. This defaults to 60 and is limited to 300' +
+                '\n`condition` must return `true` or `false`' +
+                '\n`timeout` is a number of seconds. This is limited to 300' +
                 '\n\n While inside the `condition` parameter, none of the following subtags may be used: `' + bbtag.overrides.waitmessage.join(', ') + '`' +
                 '\nAlso, the current message becomes the users message that is to be checked. This means that ' +
                 '`{channelid}`, `{messageid}`, `{userid}` and all related subtags will change their values.',

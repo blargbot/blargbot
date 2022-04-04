@@ -1,7 +1,7 @@
 import { NotAnArrayError } from '@blargbot/bbtag/errors';
 import { ShuffleSubtag } from '@blargbot/bbtag/subtags/array/shuffle';
 import { GetSubtag } from '@blargbot/bbtag/subtags/bot/get';
-import { SubtagVariableType } from '@blargbot/core/types';
+import { SubtagVariableType } from '@blargbot/domain/models';
 import { expect } from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite';

@@ -5,23 +5,27 @@ import { IPCMessageEmitter } from './IPCMessageEmitter';
 
 export abstract class BaseWorker<Contracts extends IPCContracts> {
     protected readonly ipc: IPCMessageEmitter;
-    public get id(): number { return this.process.pid; }
-    public get env(): NodeJS.ProcessEnv { return this.process.env; }
-    public get memoryUsage(): NodeJS.MemoryUsage { return this.process.memoryUsage(); }
+    public get id(): number { return process.pid; }
+    public get env(): NodeJS.ProcessEnv { return process.env; }
+    public get memoryUsage(): NodeJS.MemoryUsage { return process.memoryUsage(); }
 
     public constructor(
-        private readonly process: NodeJS.Process,
         public readonly logger: Logger
     ) {
         this.ipc = new IPCMessageEmitter(process);
 
-        this.process.on('unhandledRejection', (err) =>
-            this.logger.error('Unhandled Promise Rejection: Promise', err));
+        process.on('exit', () => logger.fatal('Process is exiting', new Error().stack?.slice(5)));
+        process.on('unhandledRejection', err => this.logger.error('Unhandled rejection', err));
+        process.on('disconnect', () => {
+            logger.fatal('The parent process has disconnected!');
+            process.exit();
+        });
 
         this.on('stop', async ({ reply }) => {
+            logger.fatal(`Stop command received. PID ${this.id}`);
             await this.stop();
             reply(undefined);
-            this.process.exit();
+            process.exit();
         });
 
         this.logger.addPostHook(log => {

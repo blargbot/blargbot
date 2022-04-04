@@ -1,5 +1,7 @@
+import { SubtagArgumentArray } from '../arguments';
 import { BBTagContext } from '../BBTagContext';
-import { SubtagArgumentArray, SubtagCall, SubtagLogic } from '../types';
+import { SubtagCall } from '../language';
+import { SubtagLogic } from './SubtagLogic';
 import { SubtagLogicWrapper } from './SubtagLogicWrapper';
 
 export class IgnoreSubtagLogic<T> extends SubtagLogicWrapper {

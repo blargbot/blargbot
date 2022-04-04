@@ -1,16 +1,16 @@
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { SubtagType } from '../../utils';
 
-export class GuildIdSubtag extends DefinedSubtag {
+export class GuildIdSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'guildid',
             category: SubtagType.GUILD,
-            desc: 'Returns the id of the current guild.',
             definition: [
                 {
                     parameters: [],
+                    description: 'Returns the id of the current guild.',
                     exampleCode: 'The guild\'s id is {guildid}',
                     exampleOut: 'The guild\'s id is 1234567890123456',
                     returns: 'id',

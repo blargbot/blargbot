@@ -1,10 +1,10 @@
-import { BaseGlobalCommand, CommandContext } from '@blargbot/cluster/command';
+import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { ClusterStats, ShardStats } from '@blargbot/cluster/types';
 import { CommandType, discord, guard, humanize, snowflake } from '@blargbot/cluster/utils';
 import { EmbedOptions } from 'eris';
 import moment from 'moment-timezone';
 
-export class ShardsCommand extends BaseGlobalCommand {
+export class ShardsCommand extends GlobalCommand {
     public constructor() {
         super({
             name: 'shards',
