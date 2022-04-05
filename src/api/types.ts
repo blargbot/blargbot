@@ -1,5 +1,4 @@
 import { ClusterStats, CommandListResult, GuildPermissionDetails, ICommandDetails, SubtagDetails, SubtagListResult } from '@blargbot/cluster/types';
-import { ChatLogIndex } from '@blargbot/domain/models/chatLogs';
 import { Request, Response } from 'express';
 import { NextFunction, RouteParameters } from 'express-serve-static-core';
 
@@ -13,7 +12,6 @@ export type ApiIPCContracts = {
     'getCommandList': { masterGets: undefined; workerGets: CommandListResult; };
     'getCommand': { masterGets: string; workerGets: ICommandDetails | undefined; };
     'getClusterStats': { masterGets: undefined; workerGets: Record<number, ClusterStats | undefined>; };
-    'getChatLogs': { masterGets: string; workerGets: ChatLogIndex | undefined; };
 }
 
 export interface ApiOptions {
