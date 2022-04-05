@@ -172,7 +172,7 @@ export class AutoResponseCommand extends GuildCommand {
         if (accessError !== undefined)
             return accessError;
 
-        const ars = await context.database.guilds.getAutoresponses(context.channel.guild.id);
+        const ars = await context.database.guilds.getAutoresponses(context.channel.guild.id) ?? {};
 
         const embed: EmbedOptions & Required<Pick<EmbedOptions, 'fields'>> = {
             fields: [],
@@ -231,7 +231,7 @@ export class AutoResponseCommand extends GuildCommand {
         if (accessError !== undefined)
             return accessError;
 
-        const ars = await context.database.guilds.getAutoresponses(context.channel.guild.id);
+        const ars = await context.database.guilds.getAutoresponses(context.channel.guild.id) ?? {};
         const tag: GuildTriggerTag = {
             content: '{//;No content set yet.}',
             author: context.author.id

@@ -136,7 +136,7 @@ ${codeBlock(code, 'js')}`
     }
 
     private async * findAutoresponses(msg: Message<KnownGuildTextableChannel>, everything: boolean): AsyncGenerator<{ command: GuildTriggerTag; id: `${number}` | 'everything'; }> {
-        const ars = await this.cluster.database.guilds.getAutoresponses(msg.channel.guild.id);
+        const ars = await this.cluster.database.guilds.getAutoresponses(msg.channel.guild.id) ?? {};
         if (everything) {
             if (ars.everything !== undefined)
                 yield { command: ars.everything, id: 'everything' };

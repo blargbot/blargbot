@@ -199,9 +199,12 @@ export class RethinkDbGuildStore implements GuildStore {
         return result;
     }
 
-    public async getAutoresponses(guildId: string, skipCache?: boolean): Promise<GuildAutoresponses> {
+    public async getAutoresponses(guildId: string, skipCache?: boolean): Promise<GuildAutoresponses | undefined> {
         const guild = await this.#table.get(guildId, skipCache);
-        return guild?.autoresponse ?? {};
+        if (guild === undefined)
+            return undefined;
+
+        return guild.autoresponse ?? {};
     }
 
     public async getAutoresponse(guildId: string, id: number, skipCache?: boolean): Promise<GuildFilteredAutoresponse | undefined>
@@ -272,7 +275,10 @@ export class RethinkDbGuildStore implements GuildStore {
 
     public async getRolemes(guildId: string, skipCache?: boolean): Promise<{ readonly [id: string]: GuildRolemeEntry | undefined; } | undefined> {
         const guild = await this.#table.get(guildId, skipCache);
-        return guild?.roleme;
+        if (guild === undefined)
+            return undefined;
+
+        return guild.roleme ?? {};
     }
 
     public async getRoleme(guildId: string, id: number, skipCache?: boolean): Promise<GuildRolemeEntry | undefined> {
@@ -295,7 +301,10 @@ export class RethinkDbGuildStore implements GuildStore {
 
     public async getCensors(guildId: string, skipCache?: boolean): Promise<GuildCensors | undefined> {
         const guild = await this.#table.get(guildId, skipCache);
-        return guild?.censor;
+        if (guild === undefined)
+            return undefined;
+
+        return guild.censor ?? {};
     }
 
     public async getCensor(guildId: string, id: number, skipCache?: boolean): Promise<GuildCensor | undefined> {

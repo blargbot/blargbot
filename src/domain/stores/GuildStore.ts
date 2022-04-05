@@ -23,7 +23,7 @@ export interface GuildStore {
     getAutoresponse(guildId: string, index: number, skipCache?: boolean): Promise<GuildFilteredAutoresponse | undefined>;
     getAutoresponse(guildId: string, index: 'everything', skipCache?: boolean): Promise<GuildTriggerTag | undefined>;
     getAutoresponse(guildId: string, index: number | 'everything', skipCache?: boolean): Promise<GuildTriggerTag | GuildFilteredAutoresponse | undefined>;
-    getAutoresponses(guildId: string, skipCache?: boolean): Promise<GuildAutoresponses>;
+    getAutoresponses(guildId: string, skipCache?: boolean): Promise<GuildAutoresponses | undefined>;
     setAutoresponse(guildId: string, index: number, autoresponse: GuildFilteredAutoresponse | undefined): Promise<boolean>;
     setAutoresponse(guildId: string, index: 'everything', autoresponse: GuildTriggerTag | undefined): Promise<boolean>;
     setAutoresponse(guildId: string, index: number | 'everything', autoresponse: undefined): Promise<boolean>;
