@@ -8,10 +8,14 @@ export class TagsRoute extends BaseRoute {
     public constructor(private readonly api: Api) {
         super('/tags');
 
+        this.addRoute('/', {
+            post: req => this.createTag(req.body, this.getUserId(req))
+        });
+
         this.addRoute('/:tagName', {
             get: req => this.getTag(req.params.tagName),
             patch: req => this.editTag(req.params.tagName, req.body, this.getUserId(req)),
-            post: req => this.setTag(req.params.tagName, req.body, this.getUserId(req)),
+            put: req => this.setTag(req.params.tagName, req.body, this.getUserId(req)),
             delete: req => this.deleteTag(req.params.tagName, this.getUserId(req))
         });
     }
@@ -32,16 +36,36 @@ export class TagsRoute extends BaseRoute {
         if (author === undefined)
             return this.unauthorized();
 
-        const mapped = mapCreateTag(body);
+        const mapped = mapUpdateTag(body);
         if (!mapped.valid)
             return this.badRequest();
 
         const current = await this.api.database.tags.get(tagName);
-        if (current !== undefined && current.author !== author)
-            return this.forbidden(`The tag ${tagName} is owned by someone else`);
+        if (current === undefined)
+            return await this.#createTag(tagName, mapped.value.content ?? '', author);
+        return await this.#editTag(tagName, mapped.value, author, current);
+    }
 
+    public async createTag(body: unknown, author: string | undefined): Promise<ApiResponse> {
+        if (author === undefined)
+            return this.unauthorized();
+
+        const mapped = mapCreateTag(body);
+        if (!mapped.valid)
+            return this.badRequest();
+
+        const { name: tagName, content } = mapped.value;
+
+        const exists = await this.api.database.tags.get(tagName);
+        if (exists !== undefined)
+            return this.forbidden(`A tag with the name ${tagName} already exists`);
+
+        return await this.#createTag(tagName, content, author);
+    }
+
+    async #createTag(tagName: string, content: string, author: string): Promise<ApiResponse> {
         const tag: StoredTag = {
-            ...mapped.value,
+            content: content,
             author: author,
             lastmodified: new Date(),
             name: tagName,
@@ -67,15 +91,22 @@ export class TagsRoute extends BaseRoute {
         if (current === undefined)
             return this.notFound();
 
+        return await this.#editTag(tagName, mapped.value, author, current);
+    }
+
+    async #editTag(tagName: string, update: Partial<StoredTag>, author: string, current: StoredTag): Promise<ApiResponse> {
         if (current.author !== author)
             return this.forbidden(`You are not the author of the tag ${tagName}`);
 
-        const tag: Partial<StoredTag> = {
-            ...mapped.value,
-            author: author
-        };
+        const tag: Partial<StoredTag> = { ...update, author: author };
         if (tag.name !== undefined && tag.name !== tagName && await this.api.database.tags.get(tag.name) !== undefined)
             return this.badRequest(`The tag ${tag.name} already exists`);
+
+        if (update.name !== undefined && update.name !== tagName) {
+            await this.api.database.tags.delete(tagName);
+            tagName = update.name;
+            await this.api.database.tags.add({ ...current, name: tagName });
+        }
 
         if (!await this.api.database.tags.update(tagName, tag))
             return this.internalServerError('Failed to update');
@@ -102,7 +133,8 @@ export class TagsRoute extends BaseRoute {
 }
 
 const mapCreateTag = mapping.object({
-    content: mapping.string
+    content: mapping.string,
+    name: mapping.string
 });
 
 const mapUpdateTag = mapping.object({
