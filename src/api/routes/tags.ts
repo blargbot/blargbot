@@ -9,14 +9,14 @@ export class TagsRoute extends BaseRoute {
         super('/tags');
 
         this.addRoute('/', {
-            post: req => this.createTag(req.body, this.getUserId(req))
+            post: req => this.createTag(req.body, this.getUserId(req, false))
         });
 
         this.addRoute('/:tagName', {
             get: req => this.getTag(req.params.tagName),
-            patch: req => this.editTag(req.params.tagName, req.body, this.getUserId(req)),
-            put: req => this.setTag(req.params.tagName, req.body, this.getUserId(req)),
-            delete: req => this.deleteTag(req.params.tagName, this.getUserId(req))
+            patch: req => this.editTag(req.params.tagName, req.body, this.getUserId(req, false)),
+            put: req => this.setTag(req.params.tagName, req.body, this.getUserId(req, false)),
+            delete: req => this.deleteTag(req.params.tagName, this.getUserId(req, false))
         });
     }
 
@@ -32,10 +32,7 @@ export class TagsRoute extends BaseRoute {
         });
     }
 
-    public async setTag(tagName: string, body: unknown, author: string | undefined): Promise<ApiResponse> {
-        if (author === undefined)
-            return this.unauthorized();
-
+    public async setTag(tagName: string, body: unknown, author: string): Promise<ApiResponse> {
         const mapped = mapUpdateTag(body);
         if (!mapped.valid)
             return this.badRequest();
@@ -46,10 +43,7 @@ export class TagsRoute extends BaseRoute {
         return await this.#editTag(tagName, mapped.value, author, current);
     }
 
-    public async createTag(body: unknown, author: string | undefined): Promise<ApiResponse> {
-        if (author === undefined)
-            return this.unauthorized();
-
+    public async createTag(body: unknown, author: string): Promise<ApiResponse> {
         const mapped = mapCreateTag(body);
         if (!mapped.valid)
             return this.badRequest();
@@ -79,10 +73,7 @@ export class TagsRoute extends BaseRoute {
         return this.created(tag);
     }
 
-    public async editTag(tagName: string, body: unknown, author: string | undefined): Promise<ApiResponse> {
-        if (author === undefined)
-            return this.unauthorized();
-
+    public async editTag(tagName: string, body: unknown, author: string): Promise<ApiResponse> {
         const mapped = mapUpdateTag(body);
         if (!mapped.valid)
             return this.badRequest();

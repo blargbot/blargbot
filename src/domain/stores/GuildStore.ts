@@ -26,7 +26,7 @@ export interface GuildStore {
     getAutoresponses(guildId: string, skipCache?: boolean): Promise<GuildAutoresponses | undefined>;
     setAutoresponse(guildId: string, index: number, autoresponse: GuildFilteredAutoresponse | undefined): Promise<boolean>;
     setAutoresponse(guildId: string, index: 'everything', autoresponse: GuildTriggerTag | undefined): Promise<boolean>;
-    setAutoresponse(guildId: string, index: number | 'everything', autoresponse: undefined): Promise<boolean>;
+    setAutoresponse<T extends number | 'everything'>(guildId: string, index: T, autoresponse: undefined | (T extends number ? GuildFilteredAutoresponse : GuildTriggerTag)): Promise<boolean>;
     getChannelSetting<K extends keyof ChannelSettings>(guildId: string, channelId: string, key: K, skipCache?: boolean): Promise<ChannelSettings[K] | undefined>;
     setChannelSetting<K extends keyof ChannelSettings>(guildId: string, channelId: string, key: K, value: ChannelSettings[K]): Promise<boolean>;
     getRolemes(guildId: string, skipCache?: boolean): Promise<{ readonly [id: string]: GuildRolemeEntry | undefined; } | undefined>;

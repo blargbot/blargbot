@@ -1,40 +1,74 @@
-import { Request, RequestHandler, Router } from 'express';
+import { Request, RequestHandler, Response, Router } from 'express';
 import asyncRouter from 'express-promise-router';
+import { RouteParameters } from 'express-serve-static-core';
 
 import Security from './Security';
-import { ApiResponse, RequestHandlers } from './types';
+import { ApiResponse, AsyncRequestHandler, RequestHandlers } from './types';
+
+export type AsyncRequestMiddleware<Route extends string, This> = (this: This, req: Request<RouteParameters<Route>>, res: Response, next: () => Awaitable<ApiResponse>) => Awaitable<ApiResponse>;
 
 export class BaseRoute {
     private readonly router: Router;
     public readonly paths: ReadonlyArray<`/${string}`>;
     public readonly handle: RequestHandler = (...args) => this.router(...args);
+    protected readonly middleware: Array<AsyncRequestMiddleware<string, this>>;
 
     public constructor(...paths: Array<`/${string}`>) {
         this.paths = paths;
         this.router = asyncRouter();
+        this.middleware = [];
     }
 
-    protected addRoute<Route extends `/${string}`>(route: Route, handlers: RequestHandlers<Route>): this {
+    protected addRoute<Route extends `/${string}`>(route: Route, handlers: RequestHandlers<Route>, ...middleware: Array<AsyncRequestMiddleware<Route, this>>): this {
         const router = this.router.route(route);
+        const callMiddleware = (
+            middleware: Array<AsyncRequestMiddleware<Route, this>>,
+            req: Request<RouteParameters<Route>>,
+            res: Response,
+            handler: AsyncRequestHandler<Route>,
+            index: number
+        ): Awaitable<ApiResponse> => {
+            if (index >= middleware.length)
+                return handler(req, res);
+            return middleware[index].call(this, req, res, () => callMiddleware(middleware, req, res, handler, index + 1));
+        };
+
         for (const [method, handler] of Object.entries(handlers)) {
-            router[method](async (req, res, next) => {
+            if (handler === undefined)
+                continue;
+            router[method](async (req, res) => {
                 try {
-                    const result = await handler?.(req, res, next);
-                    await result?.execute(res);
+                    const result = await callMiddleware(
+                        [...this.middleware, ...middleware] as Array<AsyncRequestMiddleware<Route, this>>,
+                        req,
+                        res,
+                        handler,
+                        0
+                    );
+                    await result.execute(res);
                 } catch (err: unknown) {
-                    await this.internalServerError(err).execute(res);
+                    if (err instanceof UnauthenticatedError)
+                        await this.unauthorized().execute(res);
+                    else
+                        await this.internalServerError(err).execute(res);
                 }
             });
         }
         return this;
     }
 
-    protected getUserId(request: Request): string | undefined {
+    protected getUserId(request: Request, allowUndef: false): string;
+    protected getUserId(request: Request, allowUndef?: true): string | undefined;
+    protected getUserId(request: Request, allowUndef = true): string | undefined {
         const token = request.header('Authorization');
         if (token === undefined)
             return undefined;
-
-        return Security.validateToken(token) ?? undefined;
+        const id = Security.validateToken(token);
+        if (id !== null)
+            return id;
+        if (allowUndef)
+            return undefined;
+        throw new UnauthenticatedError();
     }
 
     protected status(status: number, body?: unknown): ApiResponse {
@@ -77,4 +111,8 @@ export class BaseRoute {
     protected internalServerError<T>(body?: Awaited<T>): ApiResponse {
         return this.status(500, body);
     }
+}
+
+class UnauthenticatedError extends Error {
+
 }

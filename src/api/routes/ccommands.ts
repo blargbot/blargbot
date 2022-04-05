@@ -8,35 +8,27 @@ export class CCommandsRoute extends BaseRoute {
     public constructor(private readonly api: Api) {
         super('/guilds');
 
+        this.middleware.push(async (req, _, next) => await this.checkAccess(req.params.guildId, this.getUserId(req)) ?? await next());
+
         this.addRoute('/:guildId/ccommands', {
-            get: (req) => this.listCCommands(req.params.guildId, this.getUserId(req)),
-            post: (req) => this.createCommand(req.params.guildId, req.body, this.getUserId(req))
+            get: (req) => this.listCCommands(req.params.guildId),
+            post: (req) => this.createCommand(req.params.guildId, req.body, this.getUserId(req, false))
         });
+
         this.addRoute('/:guildId/ccommands/:commandName', {
-            get: (req) => this.getCommand(req.params.guildId, req.params.commandName, this.getUserId(req)),
-            delete: (req) => this.deleteCommand(req.params.guildId, req.params.commandName, this.getUserId(req)),
-            put: (req) => this.setCommand(req.params.guildId, req.params.commandName, req.body, this.getUserId(req)),
-            patch: (req) => this.editCommand(req.params.guildId, req.params.commandName, req.body, this.getUserId(req))
+            get: (req) => this.getCommand(req.params.guildId, req.params.commandName),
+            delete: (req) => this.deleteCommand(req.params.guildId, req.params.commandName),
+            put: (req) => this.setCommand(req.params.guildId, req.params.commandName, req.body, this.getUserId(req, false)),
+            patch: (req) => this.editCommand(req.params.guildId, req.params.commandName, req.body, this.getUserId(req, false))
         });
     }
 
-    public async listCCommands(guildId: string, userId: string | undefined): Promise<ApiResponse> {
-        if (userId === undefined)
-            return this.unauthorized();
-
-        const member = await this.api.util.getMember(guildId, userId);
-        if (member === undefined)
-            return this.notFound();
-
+    public async listCCommands(guildId: string): Promise<ApiResponse> {
         const ccommands = await this.api.database.guilds.getCustomCommandNames(guildId);
         return this.ok(ccommands);
     }
 
-    public async getCommand(guildId: string, commandName: string, userId: string | undefined): Promise<ApiResponse> {
-        const error = await this.checkCCommandAccess(guildId, userId);
-        if (error !== undefined)
-            return error;
-
+    public async getCommand(guildId: string, commandName: string): Promise<ApiResponse> {
         const command = await this.api.database.guilds.getCommand(guildId, commandName);
         if (command === undefined)
             return this.notFound();
@@ -44,14 +36,7 @@ export class CCommandsRoute extends BaseRoute {
         return this.ok(command);
     }
 
-    public async setCommand(guildId: string, commandName: string, body: unknown, author: string | undefined): Promise<ApiResponse> {
-        if (author === undefined)
-            return this.unauthorized();
-
-        const error = await this.checkCCommandAccess(guildId, author);
-        if (error !== undefined)
-            return error;
-
+    public async setCommand(guildId: string, commandName: string, body: unknown, author: string): Promise<ApiResponse> {
         const mapped = mapUpdateCommand(body);
         if (!mapped.valid)
             return this.badRequest();
@@ -62,14 +47,7 @@ export class CCommandsRoute extends BaseRoute {
         return await this.#editCommand(guildId, commandName, mapped.value, author, current);
     }
 
-    public async createCommand(guildId: string, body: unknown, author: string | undefined): Promise<ApiResponse> {
-        if (author === undefined)
-            return this.unauthorized();
-
-        const error = await this.checkCCommandAccess(guildId, author);
-        if (error !== undefined)
-            return error;
-
+    public async createCommand(guildId: string, body: unknown, author: string): Promise<ApiResponse> {
         const mapped = mapCreateCommand(body);
         if (!mapped.valid)
             return this.badRequest();
@@ -91,14 +69,7 @@ export class CCommandsRoute extends BaseRoute {
         return this.created({ name: commandName, content, author });
     }
 
-    public async editCommand(guildId: string, commandName: string, body: unknown, author: string | undefined): Promise<ApiResponse> {
-        if (author === undefined)
-            return this.unauthorized();
-
-        const error = await this.checkCCommandAccess(guildId, author);
-        if (error !== undefined)
-            return error;
-
+    public async editCommand(guildId: string, commandName: string, body: unknown, author: string): Promise<ApiResponse> {
         const mapped = mapUpdateCommand(body);
         if (!mapped.valid)
             return this.badRequest();
@@ -132,11 +103,7 @@ export class CCommandsRoute extends BaseRoute {
         return this.ok(await this.api.database.guilds.getCommand(guildId, commandName));
     }
 
-    public async deleteCommand(guildId: string, commandName: string, author: string | undefined): Promise<ApiResponse> {
-        const error = await this.checkCCommandAccess(guildId, author);
-        if (error !== undefined)
-            return error;
-
+    public async deleteCommand(guildId: string, commandName: string): Promise<ApiResponse> {
         const success = await this.api.database.guilds.setCommand(guildId, commandName, undefined);
         if (!success)
             return this.notFound();
@@ -144,7 +111,7 @@ export class CCommandsRoute extends BaseRoute {
         return this.noContent();
     }
 
-    private async checkCCommandAccess(guildId: string, userId: string | undefined): Promise<ApiResponse | undefined> {
+    private async checkAccess(guildId: string, userId: string | undefined): Promise<ApiResponse | undefined> {
         if (userId === undefined)
             return this.unauthorized();
 

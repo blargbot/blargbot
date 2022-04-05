@@ -1,6 +1,6 @@
 import { ClusterStats, CommandListResult, GuildPermissionDetails, ICommandDetails, SubtagDetails, SubtagListResult } from '@blargbot/cluster/types';
 import { Request, Response } from 'express';
-import { NextFunction, RouteParameters } from 'express-serve-static-core';
+import { RouteParameters } from 'express-serve-static-core';
 
 import { ApiWorker } from './ApiWorker';
 
@@ -23,5 +23,5 @@ export interface ApiResponse {
 }
 
 export type RequestMethods = 'all' | 'get' | 'post' | 'put' | 'delete' | 'patch' | 'options' | 'head'
-export type AsyncRequestHandler<Route extends string> = (req: Request<RouteParameters<Route>>, res: Response, next: NextFunction) => Awaitable<ApiResponse>;
+export type AsyncRequestHandler<Route extends string> = (req: Request<RouteParameters<Route>>, res: Response) => Awaitable<ApiResponse>;
 export type RequestHandlers<Route extends string> = { [P in RequestMethods]?: AsyncRequestHandler<Route> }
