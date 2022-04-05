@@ -16,9 +16,9 @@ export class DiscordMessageCreateHandler extends DiscordEventService<'messageCre
     ) {
         super(cluster.discord, 'messageCreate', cluster.logger, (msg) => this.execute(msg));
         this.middleware = [
+            new ChatLogMiddleware(cluster.moderation.chatLog),
             new IgnoreSelfMiddleware(cluster.logger, cluster.discord),
             new UpsertUserMiddleware(cluster.database.users),
-            new ChatLogMiddleware(cluster.moderation.chatLog),
             new CensorMiddleware(cluster.moderation.censors),
             new ChannelBlacklistMiddleware(cluster.util),
             new RolemesMiddleware(cluster.rolemes),

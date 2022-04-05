@@ -8,13 +8,10 @@ export class TagsRoute extends BaseRoute {
     public constructor(private readonly api: Api) {
         super('/tags');
 
-        this.addRoute('/', {
-            post: req => this.createTag(req.body, this.getUserId(req))
-        });
-
         this.addRoute('/:tagName', {
             get: req => this.getTag(req.params.tagName),
-            put: req => this.editTag(req.params.tagName, req.body, this.getUserId(req)),
+            patch: req => this.editTag(req.params.tagName, req.body, this.getUserId(req)),
+            post: req => this.setTag(req.params.tagName, req.body, this.getUserId(req)),
             delete: req => this.deleteTag(req.params.tagName, this.getUserId(req))
         });
     }
@@ -31,22 +28,20 @@ export class TagsRoute extends BaseRoute {
         });
     }
 
-    public async createTag(body: unknown, author: string | undefined): Promise<ApiResponse> {
+    public async setTag(tagName: string, body: unknown, author: string | undefined): Promise<ApiResponse> {
         if (author === undefined)
-            return this.badRequest();
+            return this.unauthorized();
 
         const mapped = mapCreateTag(body);
         if (!mapped.valid)
             return this.badRequest();
 
-        const { name: tagName, ...rest } = mapped.value;
-
-        const exists = await this.api.database.tags.get(tagName);
-        if (exists !== undefined)
-            return this.forbidden(`A tag with the name ${tagName} already exists`);
+        const current = await this.api.database.tags.get(tagName);
+        if (current !== undefined && current.author !== author)
+            return this.forbidden(`The tag ${tagName} is owned by someone else`);
 
         const tag: StoredTag = {
-            ...rest,
+            ...mapped.value,
             author: author,
             lastmodified: new Date(),
             name: tagName,
@@ -62,7 +57,7 @@ export class TagsRoute extends BaseRoute {
 
     public async editTag(tagName: string, body: unknown, author: string | undefined): Promise<ApiResponse> {
         if (author === undefined)
-            return this.badRequest();
+            return this.unauthorized();
 
         const mapped = mapUpdateTag(body);
         if (!mapped.valid)
@@ -90,7 +85,7 @@ export class TagsRoute extends BaseRoute {
 
     public async deleteTag(name: string, author: string | undefined): Promise<ApiResponse> {
         if (author === undefined)
-            return this.badRequest();
+            return this.unauthorized();
 
         const tag = await this.api.database.tags.get(name);
         if (tag === undefined)
@@ -107,8 +102,7 @@ export class TagsRoute extends BaseRoute {
 }
 
 const mapCreateTag = mapping.object({
-    content: mapping.string,
-    name: mapping.string
+    content: mapping.string
 });
 
 const mapUpdateTag = mapping.object({

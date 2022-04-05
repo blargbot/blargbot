@@ -51,7 +51,7 @@ export class BaseRoute {
     }
 
     protected badRequest<T>(body?: Awaited<T>): ApiResponse {
-        return this.status(401, body);
+        return this.status(400, body);
     }
 
     protected ok<T>(body: Awaited<T>): ApiResponse {

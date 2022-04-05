@@ -14,7 +14,7 @@ export abstract class BaseService {
     protected makeSafeCaller<Args extends unknown[]>(body: (...args: Args) => Awaitable<unknown>, logger: Logger, serviceType: string): (...args: Args) => void {
         const callSafe = async (...args: Args): Promise<void> => {
             try {
-                logger.debug(`Executing ${serviceType} ${this.name}`);
+                logger.verbose(`Executing ${serviceType} ${this.name}`);
                 await body(...args);
             } catch (err: unknown) {
                 logger.error(`${serviceType} ${this.name} threw an error`, err);

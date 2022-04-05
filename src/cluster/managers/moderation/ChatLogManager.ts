@@ -73,9 +73,21 @@ export class ChatLogManager {
     public async createIndex(options: ChatLogSearchOptions): Promise<ChatLogIndex<ChatLog>> {
         const chatlogs = await this.cluster.database.chatlogs.findAll(options);
         const key = snowflake.create().toString();
-        const result = {
+
+        const channel = await this.cluster.util.getChannel(options.channelId);
+
+        let channelName = '';
+        let guildName = '';
+        if (channel !== undefined && guard.isGuildChannel(channel)) {
+            channelName = channel.name;
+            guildName = channel.guild.name;
+        }
+
+        const result: ChatLogIndex = {
             keycode: key,
             channel: options.channelId,
+            channelName,
+            guildName,
             ids: chatlogs.map(l => l.id.toString()),
             limit: options.count,
             types: options.types,

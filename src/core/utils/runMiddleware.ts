@@ -36,5 +36,5 @@ export function runMiddleware<Context, Result>(middleware: ReadonlyArray<IMiddle
 }
 
 function logCompletion(name: string, options: MiddlewareOptions): void {
-    options.logger.debug('[', options.id, ']', name, 'completed after', performance.now() - options.start, 'ms');
+    options.logger.verbose('[', options.id, ']', name, 'completed after', performance.now() - options.start, 'ms');
 }
