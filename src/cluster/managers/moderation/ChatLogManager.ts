@@ -1,7 +1,7 @@
 import { Cluster } from '@blargbot/cluster';
 import { guard, snowflake } from '@blargbot/cluster/utils';
 import { ChatLog, ChatLogIndex, ChatLogSearchOptions, ChatLogType } from '@blargbot/domain/models';
-import { GuildChannel, KnownMessage, Message, PossiblyUncachedMessage, PossiblyUncachedTextableChannel } from 'eris';
+import { KnownMessage, Message, PossiblyUncachedMessage, PossiblyUncachedTextableChannel } from 'eris';
 
 export class ChatLogManager {
     public constructor(
@@ -78,12 +78,12 @@ export class ChatLogManager {
 
         let channelName = '';
         let guildName = '';
-        if (channel !== undefined && channel instanceof GuildChannel) {
+        if (channel !== undefined && guard.isGuildChannel(channel)) {
             channelName = channel.name;
             guildName = channel.guild.name;
         }
 
-        const result = {
+        const result: ChatLogIndex = {
             keycode: key,
             channel: options.channelId,
             channelName,

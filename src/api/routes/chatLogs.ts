@@ -58,7 +58,7 @@ export class ChatLogsRoute extends BaseRoute {
             }
         }
 
-        const expandedLogs: ExpandedChatlogIndex = {
+        const expandedLogs: ExpandedChatLogIndex = {
             ...logIndex,
             messages: [...messages],
             parsedUsers: Object.fromEntries(userCache.entries())
@@ -68,7 +68,7 @@ export class ChatLogsRoute extends BaseRoute {
     }
 }
 
-interface ExpandedChatlogIndex extends ChatLogIndex {
+interface ExpandedChatLogIndex extends ChatLogIndex {
     readonly messages: readonly ChatLog[];
     readonly parsedUsers: Record<string, ChatLogUser>;
 }
