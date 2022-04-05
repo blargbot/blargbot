@@ -21,7 +21,7 @@ export class CCommandsRoute extends BaseRoute {
 
     public async listCCommands(guildId: string, userId: string | undefined): Promise<ApiResponse> {
         if (userId === undefined)
-            return this.badRequest();
+            return this.unauthorized();
 
         const member = await this.api.util.getMember(guildId, userId);
         if (member === undefined)
@@ -45,7 +45,7 @@ export class CCommandsRoute extends BaseRoute {
 
     public async createCommand(guildId: string, body: unknown, author: string | undefined): Promise<ApiResponse> {
         if (author === undefined)
-            return this.badRequest();
+            return this.unauthorized();
 
         const error = await this.checkCCommandAccess(guildId, author);
         if (error !== undefined)
@@ -75,7 +75,7 @@ export class CCommandsRoute extends BaseRoute {
 
     public async editCommand(guildId: string, commandName: string, body: unknown, author: string | undefined): Promise<ApiResponse> {
         if (author === undefined)
-            return this.badRequest();
+            return this.unauthorized();
 
         const error = await this.checkCCommandAccess(guildId, author);
         if (error !== undefined)
@@ -125,7 +125,7 @@ export class CCommandsRoute extends BaseRoute {
 
     private async checkCCommandAccess(guildId: string, userId: string | undefined): Promise<ApiResponse | undefined> {
         if (userId === undefined)
-            return this.badRequest();
+            return this.unauthorized();
 
         const perms = await this.api.worker.request('getGuildPermission', { userId, guildId });
         if (perms === undefined)
