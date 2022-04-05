@@ -102,13 +102,15 @@ export class TagsRoute extends BaseRoute {
         if (tag.name !== undefined && tag.name !== tagName && await this.api.database.tags.get(tag.name) !== undefined)
             return this.badRequest(`The tag ${tag.name} already exists`);
 
+        let success = false;
         if (update.name !== undefined && update.name !== tagName) {
             await this.api.database.tags.delete(tagName);
             tagName = update.name;
             await this.api.database.tags.add({ ...current, name: tagName });
+            success = true;
         }
 
-        if (!await this.api.database.tags.update(tagName, tag))
+        if (!await this.api.database.tags.update(tagName, tag) || success)
             return this.internalServerError('Failed to update');
 
         return this.ok(await this.api.database.tags.get(tag.name ?? tagName));

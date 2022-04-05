@@ -1,7 +1,7 @@
 import { Api } from '@blargbot/api/Api';
 import { BaseRoute } from '@blargbot/api/BaseRoute';
 import { ApiResponse } from '@blargbot/api/types';
-import { GuildSourceCommandTag, NamedGuildSourceCommandTag } from '@blargbot/domain/models';
+import { GuildCommandTag, NamedGuildSourceCommandTag } from '@blargbot/domain/models';
 import { mapping } from '@blargbot/mapping';
 
 export class CCommandsRoute extends BaseRoute {
@@ -15,7 +15,8 @@ export class CCommandsRoute extends BaseRoute {
         this.addRoute('/:guildId/ccommands/:commandName', {
             get: (req) => this.getCommand(req.params.guildId, req.params.commandName, this.getUserId(req)),
             delete: (req) => this.deleteCommand(req.params.guildId, req.params.commandName, this.getUserId(req)),
-            put: (req) => this.editCommand(req.params.guildId, req.params.commandName, req.body, this.getUserId(req))
+            put: (req) => this.setCommand(req.params.guildId, req.params.commandName, req.body, this.getUserId(req)),
+            patch: (req) => this.editCommand(req.params.guildId, req.params.commandName, req.body, this.getUserId(req))
         });
     }
 
@@ -43,6 +44,24 @@ export class CCommandsRoute extends BaseRoute {
         return this.ok(command);
     }
 
+    public async setCommand(guildId: string, commandName: string, body: unknown, author: string | undefined): Promise<ApiResponse> {
+        if (author === undefined)
+            return this.unauthorized();
+
+        const error = await this.checkCCommandAccess(guildId, author);
+        if (error !== undefined)
+            return error;
+
+        const mapped = mapUpdateCommand(body);
+        if (!mapped.valid)
+            return this.badRequest();
+
+        const current = await this.api.database.guilds.getCommand(guildId, commandName);
+        if (current === undefined)
+            return await this.#createCommand(guildId, commandName, mapped.value.content ?? '', author);
+        return await this.#editCommand(guildId, commandName, mapped.value, author, current);
+    }
+
     public async createCommand(guildId: string, body: unknown, author: string | undefined): Promise<ApiResponse> {
         if (author === undefined)
             return this.unauthorized();
@@ -55,22 +74,21 @@ export class CCommandsRoute extends BaseRoute {
         if (!mapped.valid)
             return this.badRequest();
 
-        const { name: commandName, ...rest } = mapped.value;
+        const { name: commandName, content } = mapped.value;
 
-        const command: Mutable<GuildSourceCommandTag> = {
-            ...rest,
-            author
-        };
-
-        const exists = await this.api.database.guilds.getCommand(guildId, commandName);
-        if (exists !== undefined)
+        const current = await this.api.database.guilds.getCommand(guildId, commandName);
+        if (current !== undefined)
             return this.forbidden(`A custom command with the name ${commandName} already exists`);
 
-        const success = await this.api.database.guilds.setCommand(guildId, commandName, command);
+        return await this.#createCommand(guildId, commandName, content, author);
+    }
+
+    async #createCommand(guildId: string, commandName: string, content: string, author: string): Promise<ApiResponse> {
+        const success = await this.api.database.guilds.setCommand(guildId, commandName, { content, author });
         if (!success)
             return this.internalServerError('Failed to create custom command');
 
-        return this.created({ ...command, name: commandName });
+        return this.created({ name: commandName, content, author });
     }
 
     public async editCommand(guildId: string, commandName: string, body: unknown, author: string | undefined): Promise<ApiResponse> {
@@ -85,26 +103,29 @@ export class CCommandsRoute extends BaseRoute {
         if (!mapped.valid)
             return this.badRequest();
 
-        const exists = await this.api.database.guilds.getCommand(guildId, commandName);
-        if (exists === undefined)
+        const current = await this.api.database.guilds.getCommand(guildId, commandName);
+        if (current === undefined)
             return this.forbidden(`There is no custom command with the name ${commandName}`);
-        if ('alias' in exists)
+
+        return await this.#editCommand(guildId, commandName, mapped.value, author, current);
+    }
+
+    async #editCommand(guildId: string, commandName: string, update: Partial<NamedGuildSourceCommandTag>, author: string, current: GuildCommandTag): Promise<ApiResponse> {
+        if ('alias' in current)
             return this.forbidden(`Custom command ${commandName} is an imported tag and cannot be edited`);
 
-        const command: Partial<Mutable<NamedGuildSourceCommandTag>> = {
-            ...mapped.value,
-            author
-        };
-
+        let success = false;
+        const command = { ...update, author };
         if (command.name !== undefined && command.name !== commandName) {
             if (!await this.api.database.guilds.renameCommand(guildId, commandName, command.name))
                 return this.badRequest(`A custom command with the name ${command.name} already exists`);
             commandName = command.name;
+            success = true;
         }
 
         delete command.name;
 
-        const success = await this.api.database.guilds.updateCommand(guildId, commandName, command);
+        success = await this.api.database.guilds.updateCommand(guildId, commandName, command) || success;
         if (!success)
             return this.internalServerError('Failed to update custom command');
 
