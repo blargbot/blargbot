@@ -1,6 +1,9 @@
-import { Request, RequestHandler, Response, Router } from 'express';
+import { Api } from '@blargbot/api/Api';
+import { Request, Response, Router } from 'express';
 import asyncRouter from 'express-promise-router';
 import { RouteParameters } from 'express-serve-static-core';
+import { IncomingMessage } from 'http';
+import { WebSocketServer } from 'ws';
 
 import Security from './Security';
 import { ApiResponse, AsyncRequestHandler, RequestHandlers } from './types';
@@ -10,13 +13,45 @@ export type AsyncRequestMiddleware<Route extends string, This> = (this: This, re
 export class BaseRoute {
     private readonly router: Router;
     public readonly paths: ReadonlyArray<`/${string}`>;
-    public readonly handle: RequestHandler = (...args) => this.router(...args);
     protected readonly middleware: Array<AsyncRequestMiddleware<string, this>>;
+    readonly #websockets: Map<`/${string}`, Array<(socket: WebSocket, request: IncomingMessage) => void>>;
 
     public constructor(...paths: Array<`/${string}`>) {
         this.paths = paths;
         this.router = asyncRouter();
         this.middleware = [];
+        this.#websockets = new Map();
+    }
+
+    public install(api: Api): void {
+        for (const path of this.paths)
+            this.installAt(api, path);
+    }
+
+    protected installAt(api: Api, path: `/${string}`): void {
+        api.app.use(path, this.router);
+
+        for (const [route, handlers] of this.#websockets.entries()) {
+            const wss = new WebSocketServer({
+                noServer: true,
+                path: `${path}${route}`.replace(/\/$/, '')
+            });
+
+            api.server.on('upgrade', (req, sock, head) =>
+                wss.handleUpgrade(req, sock, head, (ws, req) =>
+                    wss.emit('connection', ws, req)));
+
+            for (const handler of handlers)
+                wss.on('connection', handler);
+        }
+    }
+
+    protected addWebsocket<Route extends `/${string}`>(route: Route, handler: (this: this, socket: WebSocket, request: IncomingMessage) => void): this {
+        let handlers = this.#websockets.get(route.toLowerCase());
+        if (handlers === undefined)
+            this.#websockets.set(route.toLowerCase(), handlers = []);
+        handlers.push(handler.bind(this));
+        return this;
     }
 
     protected addRoute<Route extends `/${string}`>(route: Route, handlers: RequestHandlers<Route>, ...middleware: Array<AsyncRequestMiddleware<Route, this>>): this {

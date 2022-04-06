@@ -36,10 +36,10 @@ export class Master extends BaseClient {
         });
 
         this.worker = options.worker;
-        this.logHistory = new ClusterLogManager(30);
-        this.clusterStats = new ClusterStatsManager();
-        this.clusters = new ClusterPool(this.config.discord.shards, this.logger);
         this.api = new ApiPool(this.logger);
+        this.logHistory = new ClusterLogManager(30);
+        this.clusterStats = new ClusterStatsManager(this.api);
+        this.clusters = new ClusterPool(this.config.discord.shards, this.logger);
         this.eventHandlers = new ModuleLoader(`${__dirname}/events`, BaseService, [this, options], this.logger, e => e.name);
         this.services = new ModuleLoader(`${__dirname}/services`, BaseService, [this, options], this.logger, e => e.name);
 

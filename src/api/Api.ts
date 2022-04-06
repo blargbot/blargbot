@@ -3,7 +3,7 @@ import { BaseClient } from '@blargbot/core/BaseClient';
 import { ModuleLoader } from '@blargbot/core/modules';
 import { Logger } from '@blargbot/logger';
 import express, { Express } from 'express';
-import http from 'http';
+import { createServer, Server } from 'http';
 
 import { ApiWorker } from './ApiWorker';
 import { BaseRoute } from './BaseRoute';
@@ -12,7 +12,7 @@ import { ApiOptions } from './types';
 export class Api extends BaseClient {
     public readonly worker: ApiWorker;
     public readonly app: Express;
-    public readonly server: http.Server;
+    public readonly server: Server;
 
     public constructor(
         logger: Logger,
@@ -33,12 +33,12 @@ export class Api extends BaseClient {
             next();
         });
 
-        this.server = http.createServer(this.app);
+        this.server = createServer(this.app);
     }
 
     public async start(): Promise<void> {
-        const routes = new ModuleLoader<BaseRoute>(`${__dirname}/routes`, BaseRoute, [this], this.logger, module => module.paths);
-        routes.on('link', (module, path) => this.app.use(path, module.handle));
+        const routes = new ModuleLoader<BaseRoute>(`${__dirname}/routes`, BaseRoute, [this], this.logger);
+        routes.on('link', module => module.install(this));
         await routes.init();
 
         await super.start();

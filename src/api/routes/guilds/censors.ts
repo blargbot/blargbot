@@ -1,9 +1,9 @@
 import { parse } from '@blargbot/core/utils';
 import { mapping } from '@blargbot/mapping';
 
-import { Api } from '../Api';
-import { BaseRoute } from '../BaseRoute';
-import { ApiResponse } from '../types';
+import { Api } from '../../Api';
+import { BaseRoute } from '../../BaseRoute';
+import { ApiResponse } from '../../types';
 
 type CensorRuleType = 'kick' | 'ban' | 'delete';
 

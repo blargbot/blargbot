@@ -1,10 +1,9 @@
+import { Api } from '@blargbot/api';
+import { BaseRoute } from '@blargbot/api/BaseRoute';
+import { ApiResponse } from '@blargbot/api/types';
 import { parse } from '@blargbot/core/utils';
 import { GuildTriggerTag } from '@blargbot/domain/models';
 import { mapping } from '@blargbot/mapping';
-
-import { Api } from '../Api';
-import { BaseRoute } from '../BaseRoute';
-import { ApiResponse } from '../types';
 
 export class AutoresponsesRoute extends BaseRoute {
     public constructor(private readonly api: Api) {

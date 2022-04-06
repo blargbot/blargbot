@@ -481,10 +481,12 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/express-serve-static-core", "npm:4.17.28"],\
             ["@types/jsonwebtoken", "npm:8.5.8"],\
             ["@types/node-fetch", "npm:2.6.1"],\
+            ["@types/ws", "npm:8.5.3"],\
             ["express", "npm:4.17.3"],\
             ["express-promise-router", "virtual:095fcb10883c40f470ac6e6afe01baaad608ecd7018d2aa01600e1b94a63e74e03d9c60d9c4b5eae313115c2ddfa875282bf27ef0d1c898d09652020afc63115#npm:4.1.1"],\
             ["jsonwebtoken", "npm:8.5.1"],\
-            ["node-fetch", "virtual:f8064d0caada6a20bc16e3338ff697ccdf569969ece20c0e9f2d497ceb8f8f4f968ac59bbba11d632ccf5d879ab88e71fbb2e0f5846cb33f2446eff7e63fc611#npm:2.6.7"]\
+            ["node-fetch", "virtual:f8064d0caada6a20bc16e3338ff697ccdf569969ece20c0e9f2d497ceb8f8f4f968ac59bbba11d632ccf5d879ab88e71fbb2e0f5846cb33f2446eff7e63fc611#npm:2.6.7"],\
+            ["ws", "virtual:a7d19b7302aa9b32f436a27530ea4f91ce19983ef51064fa122e7d7d7f93aaf0d0d67a5a3e31be6c34e6a3e11a54946655f948f72806e0b7bbd90593f2b209b3#npm:8.5.0"]\
           ],\
           "linkType": "SOFT"\
         }]\
@@ -2680,6 +2682,16 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/wolken", "workspace:definitions/wolken"]\
           ],\
           "linkType": "SOFT"\
+        }]\
+      ]],\
+      ["@types/ws", [\
+        ["npm:8.5.3", {\
+          "packageLocation": "./.yarn/cache/@types-ws-npm-8.5.3-ae52c483f1-0ce46f850d.zip/node_modules/@types/ws/",\
+          "packageDependencies": [\
+            ["@types/ws", "npm:8.5.3"],\
+            ["@types/node", "npm:17.0.23"]\
+          ],\
+          "linkType": "HARD"\
         }]\
       ]],\
       ["@types/xml2js", [\

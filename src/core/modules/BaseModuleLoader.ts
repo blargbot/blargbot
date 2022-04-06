@@ -130,11 +130,11 @@ export abstract class BaseModuleLoader<TModule> extends EventEmitter<ModuleLoade
             case 'object': {
                 if (!guard.hasValue(rawModule))
                     break;
-                const result = this.tryActivate(rawModule);
+                const result = this.tryActivate(rawModule, fileName);
                 if (guard.hasValue(result))
                     return [result];
                 const values = Object.values(rawModule)
-                    .map(m => this.tryActivate(m))
+                    .map(m => this.tryActivate(m, fileName))
                     .filter(guard.hasValue);
                 if (values.length > 0)
                     return values;
@@ -144,7 +144,7 @@ export abstract class BaseModuleLoader<TModule> extends EventEmitter<ModuleLoade
         return [];
     }
 
-    protected abstract tryActivate(rawModule: unknown): ModuleResult<TModule> | undefined;
+    protected abstract tryActivate(rawModule: unknown, fileName: string): ModuleResult<TModule> | undefined;
 
     private async * findFiles(): AsyncGenerator<string> {
         const directories = [this.#root];

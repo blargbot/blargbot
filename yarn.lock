@@ -276,10 +276,12 @@ __metadata:
     "@types/express-serve-static-core": ^4.17.28
     "@types/jsonwebtoken": ^8.5.8
     "@types/node-fetch": ^2.6.1
+    "@types/ws": ^8.5.3
     express: ^4.17.3
     express-promise-router: ^4.1.1
     jsonwebtoken: ^8.5.1
     node-fetch: ^2.6.7
+    ws: ^8.5.0
   languageName: unknown
   linkType: soft
 
@@ -1920,6 +1922,15 @@ __metadata:
   resolution: "@types/wolken@workspace:definitions/wolken"
   languageName: unknown
   linkType: soft
+
+"@types/ws@npm:^8.5.3":
+  version: 8.5.3
+  resolution: "@types/ws@npm:8.5.3"
+  dependencies:
+    "@types/node": "*"
+  checksum: 0ce46f850d41383fcdc2149bcacc86d7232fa7a233f903d2246dff86e31701a02f8566f40af5f8b56d1834779255c04ec6ec78660fe0f9b2a69cf3d71937e4ae
+  languageName: node
+  linkType: hard
 
 "@types/xml2js@npm:^0.4.9":
   version: 0.4.9
@@ -8982,7 +8993,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ws@npm:^8.2.3":
+"ws@npm:^8.2.3, ws@npm:^8.5.0":
   version: 8.5.0
   resolution: "ws@npm:8.5.0"
   peerDependencies:
