@@ -3,7 +3,6 @@ import { BotVariableStore, ChatLogIndexStore, ChatLogStore, DumpStore, EventStor
 import { Logger } from '@blargbot/logger';
 import Airtable from 'airtable';
 import { AirtableBase } from 'airtable/lib/airtable_base';
-import AirtableError from 'airtable/lib/airtable_error';
 import { auth as CassandraAuth, Client as Cassandra } from 'cassandra-driver';
 
 import { PostgresDb, RethinkDb } from './clients';
