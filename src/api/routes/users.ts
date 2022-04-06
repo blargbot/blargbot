@@ -11,11 +11,10 @@ export class UsersRoute extends BaseRoute {
         });
     }
 
-    public async getUser(userId: string | undefined): Promise<ApiResponse> {
-        if (userId === undefined)
-            return this.unauthorized();
-
+    public async getUser(userId: string): Promise<ApiResponse> {
         const user = await this.api.util.getUser(userId);
+        if (user === undefined)
+            return this.notFound();
 
         return this.ok(user);
     }

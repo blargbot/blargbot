@@ -8,7 +8,7 @@ export class RolemesRoute extends BaseRoute {
     public constructor(private readonly api: Api) {
         super('/guilds');
 
-        this.middleware.push(async (req, _, next) => await this.checkAccess(req.params.guildId, this.getUserId(req)) ?? await next());
+        this.middleware.push(async (req, _, next) => await this.checkAccess(req.params.guildId, this.getUserId(req, true)) ?? await next());
 
         this.addRoute('/:guildId/rolemes', {
             get: (req) => this.listRolemes(req.params.guildId)
@@ -16,7 +16,7 @@ export class RolemesRoute extends BaseRoute {
 
         this.addRoute('/:guildId/rolemes/:id/output', {
             get: (req) => this.getRoleme(req.params.guildId, req.params.id),
-            put: (req) => this.setRoleme(req.params.guildId, req.params.id, req.body, this.getUserId(req, false)),
+            put: (req) => this.setRoleme(req.params.guildId, req.params.id, req.body, this.getUserId(req)),
             delete: (req) => this.deleteRoleme(req.params.guildId, req.params.id)
         });
     }

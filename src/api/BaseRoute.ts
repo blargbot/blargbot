@@ -92,9 +92,9 @@ export class BaseRoute {
         return this;
     }
 
-    protected getUserId(request: Request, allowUndef: false): string;
-    protected getUserId(request: Request, allowUndef?: true): string | undefined;
-    protected getUserId(request: Request, allowUndef = true): string | undefined {
+    protected getUserId(request: Request): string;
+    protected getUserId(request: Request, allowUndef: boolean): string | undefined;
+    protected getUserId(request: Request, allowUndef = false): string | undefined {
         const token = request.header('Authorization');
         if (token === undefined)
             return undefined;
@@ -123,7 +123,7 @@ export class BaseRoute {
         return this.status(400, body);
     }
 
-    protected ok<T>(body: Awaited<T>): ApiResponse {
+    protected ok<T>(body: Awaited<Exclude<T, undefined>>): ApiResponse {
         return this.status(200, body);
     }
 

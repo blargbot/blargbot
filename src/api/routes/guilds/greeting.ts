@@ -7,11 +7,11 @@ export class GreetingRoute extends BaseRoute {
     public constructor(private readonly api: Api) {
         super('/guilds');
 
-        this.middleware.push(async (req, _, next) => await this.checkAccess(req.params.guildId, this.getUserId(req)) ?? await next());
+        this.middleware.push(async (req, _, next) => await this.checkAccess(req.params.guildId, this.getUserId(req, true)) ?? await next());
 
         this.addRoute('/:guildId/greeting', {
             get: (req) => this.getGreeting(req.params.guildId),
-            put: (req) => this.setGreeting(req.params.guildId, req.body, this.getUserId(req, false)),
+            put: (req) => this.setGreeting(req.params.guildId, req.body, this.getUserId(req)),
             delete: (req) => this.deleteGreeting(req.params.guildId)
         });
     }

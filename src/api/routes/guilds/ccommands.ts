@@ -8,18 +8,18 @@ export class CCommandsRoute extends BaseRoute {
     public constructor(private readonly api: Api) {
         super('/guilds');
 
-        this.middleware.push(async (req, _, next) => await this.checkAccess(req.params.guildId, this.getUserId(req)) ?? await next());
+        this.middleware.push(async (req, _, next) => await this.checkAccess(req.params.guildId, this.getUserId(req, true)) ?? await next());
 
         this.addRoute('/:guildId/ccommands', {
             get: (req) => this.listCCommands(req.params.guildId),
-            post: (req) => this.createCommand(req.params.guildId, req.body, this.getUserId(req, false))
+            post: (req) => this.createCommand(req.params.guildId, req.body, this.getUserId(req))
         });
 
         this.addRoute('/:guildId/ccommands/:commandName', {
             get: (req) => this.getCommand(req.params.guildId, req.params.commandName),
             delete: (req) => this.deleteCommand(req.params.guildId, req.params.commandName),
-            put: (req) => this.setCommand(req.params.guildId, req.params.commandName, req.body, this.getUserId(req, false)),
-            patch: (req) => this.editCommand(req.params.guildId, req.params.commandName, req.body, this.getUserId(req, false))
+            put: (req) => this.setCommand(req.params.guildId, req.params.commandName, req.body, this.getUserId(req)),
+            patch: (req) => this.editCommand(req.params.guildId, req.params.commandName, req.body, this.getUserId(req))
         });
     }
 
@@ -100,7 +100,11 @@ export class CCommandsRoute extends BaseRoute {
         if (!success)
             return this.internalServerError('Failed to update custom command');
 
-        return this.ok(await this.api.database.guilds.getCommand(guildId, commandName));
+        const newCommand = await this.api.database.guilds.getCommand(guildId, commandName);
+        if (newCommand === undefined)
+            return this.notFound();
+
+        return this.ok(newCommand);
     }
 
     public async deleteCommand(guildId: string, commandName: string): Promise<ApiResponse> {

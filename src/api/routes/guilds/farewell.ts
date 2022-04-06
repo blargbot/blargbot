@@ -7,11 +7,11 @@ export class FarewellRoute extends BaseRoute {
     public constructor(private readonly api: Api) {
         super('/guilds');
 
-        this.middleware.push(async (req, _, next) => await this.checkAccess(req.params.guildId, this.getUserId(req)) ?? await next());
+        this.middleware.push(async (req, _, next) => await this.checkAccess(req.params.guildId, this.getUserId(req, true)) ?? await next());
 
         this.addRoute('/:guildId/farewell', {
             get: (req) => this.getFarewell(req.params.guildId),
-            put: (req) => this.setFarewell(req.params.guildId, req.body, this.getUserId(req, false)),
+            put: (req) => this.setFarewell(req.params.guildId, req.body, this.getUserId(req)),
             delete: (req) => this.deleteFarewell(req.params.guildId)
         });
     }

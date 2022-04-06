@@ -11,7 +11,7 @@ export class CensorsRoute extends BaseRoute {
     public constructor(private readonly api: Api) {
         super('/guilds');
 
-        this.middleware.push(async (req, _, next) => await this.checkAccess(req.params.guildId, this.getUserId(req)) ?? await next());
+        this.middleware.push(async (req, _, next) => await this.checkAccess(req.params.guildId, this.getUserId(req, true)) ?? await next());
 
         this.addRoute('/:guildId/censors', {
             get: (req) => this.listCensors(req.params.guildId)
@@ -20,13 +20,13 @@ export class CensorsRoute extends BaseRoute {
         for (const type of ['delete', 'ban', 'kick'] as const) {
             this.addRoute(`/:guildId/censors/${type}Message`, {
                 get: (req) => this.getCensorDefaultMessage(req.params.guildId, type),
-                put: (req) => this.setCensorDefaultMessage(req.params.guildId, type, req.body, this.getUserId(req, false)),
+                put: (req) => this.setCensorDefaultMessage(req.params.guildId, type, req.body, this.getUserId(req)),
                 delete: (req) => this.deleteCensorDefaultMessage(req.params.guildId, type)
             });
 
             this.addRoute(`/:guildId/censors/:id/${type}Message`, {
                 get: (req) => this.getCensorMessage(req.params.guildId, req.params.id, type),
-                put: (req) => this.setCensorMessage(req.params.guildId, req.params.id, type, req.body, this.getUserId(req, false)),
+                put: (req) => this.setCensorMessage(req.params.guildId, req.params.id, type, req.body, this.getUserId(req)),
                 delete: (req) => this.deleteCensorMessage(req.params.guildId, req.params.id, type)
             });
         }
@@ -35,6 +35,9 @@ export class CensorsRoute extends BaseRoute {
     public async getCensorDefaultMessage(guildId: string, type: CensorRuleType): Promise<ApiResponse> {
         const censors = await this.api.database.guilds.getCensors(guildId);
         const result = censors?.rule?.[`${type}Message`];
+        if (result === undefined)
+            return this.notFound();
+
         return this.ok(result);
     }
 

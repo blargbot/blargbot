@@ -9,7 +9,7 @@ export class AutoresponsesRoute extends BaseRoute {
     public constructor(private readonly api: Api) {
         super('/guilds');
 
-        this.middleware.push(async (req, _, next) => await this.checkAccess(req.params.guildId, this.getUserId(req)) ?? await next());
+        this.middleware.push(async (req, _, next) => await this.checkAccess(req.params.guildId, this.getUserId(req, true)) ?? await next());
 
         this.addRoute('/:guildId/autoresponses', {
             get: (req) => this.listAutoresponses(req.params.guildId)
@@ -17,7 +17,7 @@ export class AutoresponsesRoute extends BaseRoute {
 
         this.addRoute('/:guildId/autoresponses/:id', {
             get: (req) => this.getAutoresponse(req.params.guildId, req.params.id),
-            patch: (req) => this.editAutoresponse(req.params.guildId, req.params.id, req.body, this.getUserId(req, false))
+            patch: (req) => this.editAutoresponse(req.params.guildId, req.params.id, req.body, this.getUserId(req))
         });
     }
 

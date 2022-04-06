@@ -9,14 +9,14 @@ export class TagsRoute extends BaseRoute {
         super('/tags');
 
         this.addRoute('/', {
-            post: req => this.createTag(req.body, this.getUserId(req, false))
+            post: req => this.createTag(req.body, this.getUserId(req))
         });
 
         this.addRoute('/:tagName', {
             get: req => this.getTag(req.params.tagName),
-            patch: req => this.editTag(req.params.tagName, req.body, this.getUserId(req, false)),
-            put: req => this.setTag(req.params.tagName, req.body, this.getUserId(req, false)),
-            delete: req => this.deleteTag(req.params.tagName, this.getUserId(req, false))
+            patch: req => this.editTag(req.params.tagName, req.body, this.getUserId(req)),
+            put: req => this.setTag(req.params.tagName, req.body, this.getUserId(req)),
+            delete: req => this.deleteTag(req.params.tagName, this.getUserId(req))
         });
     }
 
@@ -104,13 +104,14 @@ export class TagsRoute extends BaseRoute {
         if (!await this.api.database.tags.update(tagName, tag) || success)
             return this.internalServerError('Failed to update');
 
-        return this.ok(await this.api.database.tags.get(tag.name ?? tagName));
+        const newTag = await this.api.database.tags.get(tag.name ?? tagName);
+        if (newTag === undefined)
+            return this.notFound();
+
+        return this.ok(newTag);
     }
 
-    public async deleteTag(name: string, author: string | undefined): Promise<ApiResponse> {
-        if (author === undefined)
-            return this.unauthorized();
-
+    public async deleteTag(name: string, author: string): Promise<ApiResponse> {
         const tag = await this.api.database.tags.get(name);
         if (tag === undefined)
             return this.notFound();

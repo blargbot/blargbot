@@ -13,18 +13,12 @@ export class GuildsRoute extends BaseRoute {
         });
     }
 
-    public async getGuilds(userId: string | undefined): Promise<ApiResponse> {
-        if (userId === undefined)
-            return this.forbidden();
-
+    public async getGuilds(userId: string): Promise<ApiResponse> {
         const result = await this.api.worker.request('getGuildPermissionList', { userId });
         return this.ok(result);
     }
 
-    public async getGuild(guildId: string, userId: string | undefined): Promise<ApiResponse> {
-        if (userId === undefined)
-            return this.forbidden();
-
+    public async getGuild(guildId: string, userId: string): Promise<ApiResponse> {
         const result = await this.api.worker.request('getGuildPermission', { userId, guildId });
         if (result === undefined)
             return this.notFound();
