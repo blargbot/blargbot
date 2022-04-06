@@ -14,14 +14,15 @@ export class CommandsRoute extends BaseRoute {
     }
 
     public async listCommands(): Promise<ApiResponse> {
-        const subtags = await this.api.worker.request('getCommandList', undefined);
-        return this.ok(subtags);
+        const commands = await this.api.worker.request('getCommandList', undefined);
+        return this.ok(commands);
     }
 
     public async getCommand(name: string): Promise<ApiResponse> {
-        const subtag = await this.api.worker.request('getCommand', name);
-        if (subtag === undefined)
+        const command = await this.api.worker.request('getCommand', name);
+        if (command === undefined)
             return this.notFound();
-        return this.ok(subtag);
+        return this.ok(command);
     }
+
 }

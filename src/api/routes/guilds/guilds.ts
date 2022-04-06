@@ -8,9 +8,16 @@ export class GuildsRoute extends BaseRoute {
 
         this.addRoute('/', {
             get: (req) => this.getGuilds(this.getUserId(req))
+        }).addRoute('/settings', {
+            get: () => this.getGuildSettings()
         }).addRoute('/:guildId', {
             get: (req) => this.getGuild(req.params.guildId, this.getUserId(req))
         });
+    }
+
+    public async getGuildSettings(): Promise<ApiResponse> {
+        const settings = await this.api.worker.request('getGuildSettings', undefined);
+        return this.ok(settings);
     }
 
     public async getGuilds(userId: string): Promise<ApiResponse> {

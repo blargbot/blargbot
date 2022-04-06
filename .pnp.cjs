@@ -753,6 +753,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/cluster", "workspace:src/cluster"],\
             ["@blargbot/config", "workspace:src/config"],\
             ["@blargbot/core", "workspace:src/core"],\
+            ["@blargbot/domain", "workspace:src/domain"],\
             ["@blargbot/logger", "workspace:src/logger"],\
             ["@blargbot/res", "workspace:src/res"],\
             ["@types/eris", "workspace:definitions/eris"],\

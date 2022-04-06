@@ -1,8 +1,6 @@
-import { GuildSettingDescriptor } from '@blargbot/cluster/types';
-import { StoredGuildSettings } from '@blargbot/domain/models';
+import { GuildSettingDocs } from '@blargbot/domain/models';
 
-// prefix excluded as it is an array of strings
-export const guildSettings: { [P in Exclude<keyof StoredGuildSettings, 'prefix'>]-?: GuildSettingDescriptor<P> } = {
+export const guildSettings: GuildSettingDocs = {
     makelogs: {
         key: 'makelogs',
         name: 'Make ChatLogs',

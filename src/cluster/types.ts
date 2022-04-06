@@ -2,7 +2,7 @@ import { Subtag } from '@blargbot/bbtag';
 import { Command, CommandContext, ScopedCommand } from '@blargbot/cluster/command';
 import { CommandType, ModerationType } from '@blargbot/cluster/utils';
 import { EvalRequest, EvalResult, GlobalEvalResult, IMiddleware, MasterEvalRequest, SendPayload } from '@blargbot/core/types';
-import { CommandPermissions, FlagDefinition, FlagResult, GuildSourceCommandTag, NamedGuildCommandTag, StoredGuildSettings } from '@blargbot/domain/models';
+import { CommandPermissions, FlagDefinition, FlagResult, GuildSettingDocs, GuildSourceCommandTag, NamedGuildCommandTag } from '@blargbot/domain/models';
 import { ImageResult } from '@blargbot/image/types';
 import { Guild, KnownChannel, KnownGuildTextableChannel, KnownMessage, KnownPrivateChannel, KnownTextableChannel, Member, Role, Shard, User, Webhook } from 'eris';
 import { Duration } from 'moment-timezone';
@@ -27,6 +27,7 @@ export type ClusterIPCContract = {
     'clusterStats': { masterGets: ClusterStats; workerGets: never; };
     'getClusterStats': { masterGets: undefined; workerGets: Record<number, ClusterStats | undefined>; };
     'getCommandList': { masterGets: CommandListResult; workerGets: undefined; };
+    'getGuildSettings': { masterGets: GuildSettingDocs; workerGets: undefined; };
     'getCommand': { masterGets: ICommandDetails | undefined; workerGets: string; };
     'metrics': { masterGets: metric[]; workerGets: undefined; };
 }
@@ -334,18 +335,6 @@ export interface CommandProperties {
     readonly defaultPerms: bigint;
     readonly isVisible: (util: ClusterUtilities, location?: Guild | KnownTextableChannel, user?: User) => boolean | Promise<boolean>;
     readonly color: number;
-}
-
-export type GuildSettingTypeName<T> =
-    T extends string ? 'string' | 'channel' | 'role' | 'permission' :
-    T extends number ? 'float' | 'int' :
-    T extends boolean ? 'bool' : never
-
-export type GuildSettingDescriptor<T extends keyof StoredGuildSettings = keyof StoredGuildSettings> = {
-    key: T;
-    name: string;
-    desc: string;
-    type: GuildSettingTypeName<StoredGuildSettings[T]>;
 }
 
 export interface SubtagVariableProperties {

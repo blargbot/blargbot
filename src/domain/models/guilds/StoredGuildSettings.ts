@@ -22,3 +22,21 @@ export interface StoredGuildSettings {
     readonly staffperms?: string;
     readonly tableflip?: boolean;
 }
+
+export type GuildSettingDocs = {
+    [P in keyof StoredGuildSettings as GetConfigurableSettingKey<P>]-?: GuildSettingDescriptor<P>
+}
+
+type GetConfigurableSettingKey<T extends keyof StoredGuildSettings> = GuildSettingTypeName<StoredGuildSettings[T]> extends never ? never : T;
+
+type GuildSettingTypeName<T> =
+    | (T extends string ? 'string' | 'channel' | 'role' | 'permission' : never)
+    | (T extends number ? 'float' | 'int' : never)
+    | (T extends boolean ? 'bool' : never)
+
+type GuildSettingDescriptor<T extends keyof StoredGuildSettings = keyof StoredGuildSettings> = {
+    readonly key: T;
+    readonly name: string;
+    readonly desc: string;
+    readonly type: GuildSettingTypeName<StoredGuildSettings[T]>;
+}

@@ -523,6 +523,7 @@ __metadata:
     "@blargbot/cluster": "workspace:^"
     "@blargbot/config": "workspace:^"
     "@blargbot/core": "workspace:^"
+    "@blargbot/domain": "workspace:^"
     "@blargbot/logger": "workspace:^"
     "@blargbot/res": "workspace:^"
     "@types/eris": "workspace:^"
