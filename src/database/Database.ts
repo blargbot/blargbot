@@ -85,16 +85,7 @@ export class Database {
         await Promise.all([
             this.retryConnect('rethinkDb', () => this.#rethinkDb.connect(), 5000, 10),
             this.retryConnect('cassandra', () => this.#cassandra.connect(), 5000, 10),
-            this.retryConnect('postgresdb', () => this.#postgres.connect(), 5000, 10),
-            this.retryConnect('airtable', async () => {
-                try {
-                    await this.#airtable.makeRequest({ path: '/_' });
-                } catch (err: unknown) {
-                    if (err instanceof AirtableError && err.message.startsWith('Could not find table _ in application'))
-                        return;
-                    throw err;
-                }
-            }, 5000, 10)
+            this.retryConnect('postgresdb', () => this.#postgres.connect(), 5000, 10)
         ]);
 
         await Promise.all([
