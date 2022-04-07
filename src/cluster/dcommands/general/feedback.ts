@@ -1,4 +1,4 @@
-import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
+import { CommandContext, GlobalCommand, SendTypingMiddleware } from '@blargbot/cluster/command';
 import { CommandType, guard } from '@blargbot/cluster/utils';
 import { humanize } from '@blargbot/core/utils';
 import { FlagResult } from '@blargbot/domain/models';
@@ -39,6 +39,8 @@ export class FeedbackCommand extends GlobalCommand {
                 { flag: 'o', word: 'other', description: 'Signify your feedack is for other functionality' }
             ]
         });
+
+        this.middleware.push(new SendTypingMiddleware());
     }
 
     public async submitFeedback(context: CommandContext, description: string, flags: FlagResult): Promise<string> {
@@ -68,8 +70,6 @@ export class FeedbackCommand extends GlobalCommand {
             case 'GUILD': return this.blacklistedError(context, 'GUILD');
             case 'USER': return this.blacklistedError(context, 'USER');
         }
-
-        await context.channel.sendTyping();
 
         const suggestion = await context.database.suggestions.get(caseNumber);
 

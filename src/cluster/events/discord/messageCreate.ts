@@ -1,5 +1,5 @@
 import { Cluster } from '@blargbot/cluster';
-import { CommandLoggerMiddleware, ErrorMiddleware, RollingRatelimitMiddleware, SendTypingMiddleware } from '@blargbot/cluster/command';
+import { CommandLoggerMiddleware, ErrorMiddleware, RollingRatelimitMiddleware } from '@blargbot/cluster/command';
 import { guard, humanize, runMiddleware, snowflake } from '@blargbot/cluster/utils';
 import { DiscordEventService } from '@blargbot/core/serviceTypes';
 import { IMiddleware } from '@blargbot/core/types';
@@ -35,8 +35,7 @@ export class DiscordMessageCreateHandler extends DiscordEventService<'messageCre
                     penalty: moment.duration(5, 's'),
                     key: ctx => ctx.author.id
                 }),
-                new CommandLoggerMiddleware(),
-                new SendTypingMiddleware()
+                new CommandLoggerMiddleware()
             ]),
             new CleverbotMiddleware(cluster.util)
         ];

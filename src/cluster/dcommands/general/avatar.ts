@@ -1,4 +1,4 @@
-import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
+import { GlobalCommand, SendTypingMiddleware } from '@blargbot/cluster/command';
 import { CommandType } from '@blargbot/cluster/utils';
 import { SendPayload } from '@blargbot/core/types';
 import { humanize, parse } from '@blargbot/core/utils';
@@ -14,12 +14,12 @@ export class AvatarCommand extends GlobalCommand {
                 {
                     parameters: '',
                     description: 'Gets your avatar',
-                    execute: (ctx, _, flags) => this.getAvatar(ctx, ctx.author, flags.f?.merge().value, flags.s?.merge().value)
+                    execute: (ctx, _, flags) => this.getAvatar(ctx.author, flags.f?.merge().value, flags.s?.merge().value)
                 },
                 {
                     parameters: '{user:user+}',
                     description: 'Gets the avatar of the user you chose',
-                    execute: (ctx, [user], flags) => this.getAvatar(ctx, user.asUser, flags.f?.merge().value, flags.s?.merge().value)
+                    execute: (_, [user], flags) => this.getAvatar(user.asUser, flags.f?.merge().value, flags.s?.merge().value)
                 }
             ],
             flags: [
@@ -27,9 +27,11 @@ export class AvatarCommand extends GlobalCommand {
                 { flag: 's', word: 'size', description: `The file size. Can be ${humanize.smartJoin(allowedImageSizes, ', ', ' or ')}.` }
             ]
         });
+
+        this.middleware.push(new SendTypingMiddleware());
     }
 
-    public async getAvatar(context: CommandContext, user: User, format: string | undefined, size: string | number | undefined): Promise<SendPayload> {
+    public async getAvatar(user: User, format: string | undefined, size: string | number | undefined): Promise<SendPayload> {
         if (format !== undefined && !allowedFormats.includes(format))
             return this.error(`${format} is not a valid format! Supported formats are ${humanize.smartJoin(allowedFormats, ', ', ' and ')}`);
 
@@ -40,7 +42,6 @@ export class AvatarCommand extends GlobalCommand {
 
         const avatarUrl = user.dynamicAvatarURL(format, parsedSize ?? 512);
 
-        await context.channel.sendTyping();
         const avatar = await fetch(avatarUrl);
 
         return {

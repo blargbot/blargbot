@@ -1,13 +1,10 @@
-import { CommandContext, GlobalCommand, RatelimitMiddleware, SingleThreadMiddleware } from '@blargbot/cluster/command';
-import { CommandType } from '@blargbot/cluster/utils';
+import { CommandContext, GlobalImageCommand } from '@blargbot/cluster/command';
 import { ImageResult } from '@blargbot/image/types';
-import { duration } from 'moment-timezone';
 
-export class FreeCommand extends GlobalCommand {
+export class FreeCommand extends GlobalImageCommand {
     public constructor() {
         super({
             name: 'free',
-            category: CommandType.IMAGE,
             definitions: [
                 {
                     parameters: '{caption+}',
@@ -19,22 +16,9 @@ export class FreeCommand extends GlobalCommand {
                 { flag: 'b', word: 'bottom', description: 'The bottom caption.' }
             ]
         });
-
-        this.middleware.push(new SingleThreadMiddleware(c => c.channel.id));
-        this.middleware.push(new RatelimitMiddleware(duration(5, 'seconds'), c => c.author.id));
     }
 
     public async render(context: CommandContext, caption: string, bottomText: string | undefined): Promise<string | ImageResult> {
-        await context.channel.sendTyping();
-
-        const result = await context.cluster.images.render('free', {
-            top: caption,
-            bottom: bottomText
-        });
-
-        if (result === undefined || result.data.length === 0)
-            return this.error('Something went wrong while trying to render that!');
-
-        return result;
+        return await this.renderImage(context, 'free', { top: caption, bottom: bottomText });
     }
 }
