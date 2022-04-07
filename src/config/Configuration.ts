@@ -108,6 +108,8 @@ export interface WebsiteConfiguration {
 export interface AirtableConfiguration {
     readonly base: string;
     readonly key: string;
+    readonly public: string;
+    readonly suggestions: string;
 }
 
 export interface SentryConfiguration {
