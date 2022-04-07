@@ -61,13 +61,13 @@ export class BaseUtilities {
             return {
                 icon_url: target.avatarURL,
                 name: humanize.fullName(target),
-                url: this.websiteLink(target === this.discord.user ? undefined : `user/${target.id}`)
+                url: target === this.discord.user ? undefined : `https://discord.com/users/${target.id}`
             };
         } else if (target instanceof Member) {
             return {
                 icon_url: target.avatarURL,
                 name: target.nick ?? target.username,
-                url: this.websiteLink(`users/${target.id}`)
+                url: `https://discord.com/users/${target.id}`
             };
         } else if (target instanceof Guild) {
             return {
@@ -78,7 +78,7 @@ export class BaseUtilities {
             return {
                 icon_url: target.avatarURL,
                 name: target.username ?? 'UNKNOWN',
-                url: this.websiteLink(`users/${target.userid}`)
+                url: `https://discord.com/users/${target.userid}`
             };
         }
 

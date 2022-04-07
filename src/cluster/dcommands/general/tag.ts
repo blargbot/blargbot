@@ -761,7 +761,7 @@ export class TagCommand extends GuildCommand {
                     author: {
                         name: humanize.fullName(user),
                         icon_url: user.avatarURL,
-                        url: context.util.websiteLink(`users/${user.id}`)
+                        url: `https://discord.com/users/${user.id}`
                     },
                     timestamp: new Date(),
                     footer: {
