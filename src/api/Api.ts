@@ -29,7 +29,8 @@ export class Api extends BaseClient {
         this.app.use(express.json());
         this.app.use((req, resp, next) => {
             const requestStr = `${req.method} ${req.url}`;
-            resp.once('finish', () => this.logger.website(`[${resp.statusCode} ${resp.statusMessage}]`, requestStr));
+            const start = performance.now();
+            resp.once('finish', () => this.logger.website(`[${resp.statusCode} ${resp.statusMessage}][${Math.round(performance.now() - start)}ms]`, requestStr));
             next();
         });
 

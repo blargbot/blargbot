@@ -87,7 +87,8 @@ export class CassandraDbChatLogStore implements ChatLogStore {
             id: snowflake.create().toString(),
             msgtime: new Date(),
             type: type,
-            embeds: JSON.stringify(message.embeds)
+            embeds: JSON.stringify(message.embeds),
+            attachment: JSON.stringify(message.attachments)
         };
         await this.#db.execute(
             'INSERT INTO chatlogs (id, content, attachment, userid, msgid, channelid, guildid, msgtime, type, embeds)\n' +
@@ -138,7 +139,10 @@ export class CassandraDbChatLogStore implements ChatLogStore {
 const mapLongToString = mapping.instanceof(Long).map(v => v.toString());
 
 const mapChatLog = mapping.object<ChatLog>({
-    attachment: mapping.string.nullish.map(v => v ?? undefined),
+    attachments: ['attachment', mapping.choice(
+        mapping.json(mapping.array(mapping.string)),
+        mapping.string.nullish.map(s => typeof s === 'string' ? [s] : [])
+    )],
     channelid: mapLongToString,
     content: mapping.string,
     embeds: mapping.json(mapping.array(mapping.typeof('object'))),

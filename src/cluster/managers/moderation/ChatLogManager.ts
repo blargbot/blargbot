@@ -21,7 +21,7 @@ export class ChatLogManager {
             guildid: message.channel.guild.id,
             msgid: message.id,
             userid: message.author.id,
-            attachment: message.attachments[0]?.url
+            attachments: message.attachments.map(a => a.url)
         }, ChatLogType.CREATE);
     }
 
@@ -34,7 +34,7 @@ export class ChatLogManager {
                 content: message.content,
                 embeds: message.embeds,
                 userid: message.author.id,
-                attachment: message.attachments[0]?.url
+                attachments: message.attachments.map(a => a.url)
             }
             : await this.cluster.database.chatlogs.getByMessageId(message.id);
         if (chatlog === undefined)
@@ -47,7 +47,7 @@ export class ChatLogManager {
             guildid: message.channel.guild.id,
             msgid: message.id,
             userid: chatlog.userid,
-            attachment: chatlog.attachment
+            attachments: chatlog.attachments
         }, ChatLogType.DELETE);
     }
 
@@ -62,7 +62,7 @@ export class ChatLogManager {
             guildid: message.channel.guild.id,
             msgid: message.id,
             userid: message.author.id,
-            attachment: message.attachments[0]?.url
+            attachments: message.attachments.map(a => a.url)
         }, ChatLogType.UPDATE);
     }
 
