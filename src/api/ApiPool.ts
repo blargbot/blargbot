@@ -5,7 +5,13 @@ import { ApiConnection } from './ApiConnection';
 
 export class ApiPool extends WorkerPool<ApiConnection> {
     public constructor(logger: Logger) {
-        super('Api', 1, 60000, logger, RespawnStrategy.KILL_THEN_SPAWN);
+        super({
+            type: 'Api',
+            workerCount: 1,
+            defaultTimeout: 60000,
+            logger,
+            respawnStrategy: RespawnStrategy.KILL_THEN_SPAWN
+        });
     }
 
     protected createWorker(id: number): ApiConnection {

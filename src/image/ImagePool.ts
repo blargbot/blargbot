@@ -9,7 +9,12 @@ export class ImagePool extends WorkerPool<ImageConnection> {
     private nextWorker: number;
 
     public constructor(private readonly clusterId: number, config: ImageWorkerConfiguration, logger: Logger) {
-        super('Image', config.perCluster, config.spawnTime, logger);
+        super({
+            type: 'Image',
+            workerCount: config.perCluster,
+            defaultTimeout: config.spawnTime,
+            logger
+        });
         this.nextWorker = 0;
     }
 

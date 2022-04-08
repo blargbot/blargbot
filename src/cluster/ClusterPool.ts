@@ -10,10 +10,13 @@ export class ClusterPool extends WorkerPool<ClusterConnection> {
         public readonly config: ClusterWorkerConfiguration,
         logger: Logger
     ) {
-        super('Cluster',
-            Math.ceil(config.max / config.perCluster),
-            config.spawnTime,
-            logger);
+        super({
+            type: 'Cluster',
+            workerCount: Math.ceil(config.max / config.perCluster),
+            defaultTimeout: config.spawnTime + 5000 * config.perCluster,
+            logger,
+            maxConcurrentSpawning: config.concurrency ?? 1
+        });
     }
 
     public getForGuild(guildId: string): ClusterConnection {

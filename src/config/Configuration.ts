@@ -86,6 +86,7 @@ export interface ClusterWorkerConfiguration {
     readonly max: number;
     readonly perCluster: number;
     readonly spawnTime: number;
+    readonly concurrency?: number;
 }
 
 export interface ApiWorkerConfiguration {

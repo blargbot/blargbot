@@ -3,6 +3,7 @@ import { getRange } from '@blargbot/core/utils';
 import { Logger } from '@blargbot/logger';
 import EventEmitter from 'eventemitter3';
 
+import { Semaphore } from '../Semaphore';
 import { WorkerConnection, WorkerState } from './WorkerConnection';
 
 export const enum RespawnStrategy {
@@ -10,29 +11,41 @@ export const enum RespawnStrategy {
     KILL_THEN_SPAWN
 }
 
+export interface WorkerPoolOptions {
+    readonly type: string;
+    readonly workerCount: number;
+    readonly defaultTimeout: number;
+    readonly logger: Logger;
+    readonly respawnStrategy?: RespawnStrategy;
+    readonly maxConcurrentSpawning?: number;
+}
+
 export abstract class WorkerPool<Worker extends WorkerConnection<IPCContracts>> {
+    public readonly workerCount: number;
+    public readonly type: string;
+    public readonly defaultTimeout: number;
+    public readonly logger: Logger;
     readonly #workers: Map<number, Worker>;
     readonly #events: EventEmitter;
     readonly #inProgress: Map<number, boolean>;
     readonly #respawnStrategy: RespawnStrategy;
+    readonly #lock: Semaphore;
 
     public *[Symbol.iterator](): IterableIterator<Worker | undefined> {
         for (let i = 0; i < this.workerCount; i++)
             yield this.#workers.get(i);
     }
 
-    public constructor(
-        public readonly type: string,
-        public readonly workerCount: number,
-        public readonly defaultTimeout: number,
-        public readonly logger: Logger,
-        respawnStrategy = RespawnStrategy.SPAWN_THEN_KILL
-
-    ) {
+    public constructor(options: WorkerPoolOptions) {
+        this.workerCount = options.workerCount;
+        this.type = options.type;
+        this.defaultTimeout = options.defaultTimeout;
+        this.logger = options.logger;
         this.#workers = new Map();
         this.#events = new EventEmitter();
         this.#inProgress = new Map();
-        this.#respawnStrategy = respawnStrategy;
+        this.#respawnStrategy = options.respawnStrategy ?? RespawnStrategy.SPAWN_THEN_KILL;
+        this.#lock = new Semaphore(options.maxConcurrentSpawning ?? Infinity);
     }
 
     public on(type: string, handler: (worker: Worker) => void): this {
@@ -77,21 +90,26 @@ export abstract class WorkerPool<Worker extends WorkerConnection<IPCContracts>> 
 
         this.#inProgress.set(id, true);
         try {
-            const worker = this.createWorker(id);
-            const oldWorker = this.#workers.get(id);
-            this.#workers.delete(id);
-            if (oldWorker !== undefined && this.#respawnStrategy === RespawnStrategy.KILL_THEN_SPAWN)
-                await this.#killWorker(oldWorker);
+            await this.#lock.wait();
+            try {
+                const worker = this.createWorker(id);
+                const oldWorker = this.#workers.get(id);
+                this.#workers.delete(id);
+                if (oldWorker !== undefined && this.#respawnStrategy === RespawnStrategy.KILL_THEN_SPAWN)
+                    await this.#killWorker(oldWorker);
 
-            this.#events.emit('spawningworker', worker);
-            await worker.connect(timeoutMs);
-            this.#workers.set(id, worker);
-            this.#events.emit('spawnedworker', worker);
+                this.#events.emit('spawningworker', worker);
+                await worker.connect(timeoutMs);
+                this.#workers.set(id, worker);
+                this.#events.emit('spawnedworker', worker);
 
-            if (oldWorker !== undefined && this.#respawnStrategy === RespawnStrategy.SPAWN_THEN_KILL)
-                await this.#killWorker(oldWorker);
+                if (oldWorker !== undefined && this.#respawnStrategy === RespawnStrategy.SPAWN_THEN_KILL)
+                    await this.#killWorker(oldWorker);
 
-            return worker;
+                return worker;
+            } finally {
+                this.#lock.release();
+            }
         } finally {
             this.#inProgress.set(id, false);
         }
