@@ -245,24 +245,28 @@ class Context {
         return await this.state.outputMessage;
     }
 
-    async sendOutputForced(text, files) {
+    async getAllowedMentions() {
         let disableEveryone = true;
         if (this.isCC) {
-            let s = await r.table('guild').get(this.msg.guild.id);
+            let s = await bu.getGuild(this.msg.guild.id);
             disableEveryone = s.settings.disableeveryone === true || !this.state.allowedMentions.everybody;
 
             console.log('Allowed mentions:', this.state.allowedMentions, disableEveryone);
         }
+        return {
+            everyone: !disableEveryone,
+            roles: !!this.isCC ? this.state.allowedMentions.roles : false,
+            users: !!this.isCC ? this.state.allowedMentions.users : false
+        };
+    }
+
+    async sendOutputForced(text, files) {
         let response = await bu.send(this.msg,
             {
                 content: this.outputModify(this, text),
                 embed: this.state.embed,
                 nsfw: this.state.nsfw,
-                allowedMentions: {
-                    everyone: !disableEveryone,
-                    roles: !!this.isCC ? this.state.allowedMentions.roles : false,
-                    users: !!this.isCC ? this.state.allowedMentions.users : false
-                }
+                allowedMentions: await this.getAllowedMentions()
             }, files || this.state.file);
 
         if (response && response.channel) {
