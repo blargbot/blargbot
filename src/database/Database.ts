@@ -20,7 +20,7 @@ import { RethinkDbTagStore } from './stores/RethinkDbTagStore';
 import { RethinkDbUserStore } from './stores/RethinkDbUserStore';
 
 export class Database {
-    readonly #rethinkDb: RethinkDb;
+    readonly #rethink: RethinkDb;
     readonly #cassandra: Cassandra;
     readonly #postgres: PostgresDb;
     readonly #guilds: RethinkDbGuildStore;
@@ -53,7 +53,7 @@ export class Database {
         this.#airtable = new Airtable({
             apiKey: options.airtable.key
         }).base(options.airtable.base);
-        this.#rethinkDb = new RethinkDb(options.rethink);
+        this.#rethink = new RethinkDb(options.rethink);
         this.#postgres = new PostgresDb(options.logger, options.postgres);
         this.#cassandra = new Cassandra({
             localDataCenter: 'datacenter1',
@@ -65,12 +65,12 @@ export class Database {
             )
         });
         this.#logger = options.logger;
-        this.#guilds = new RethinkDbGuildStore(this.#rethinkDb, this.#logger, options.shouldCacheGuild);
-        this.#users = new RethinkDbUserStore(this.#rethinkDb, this.#logger, options.shouldCacheUser);
-        this.#vars = new RethinkDbBotVariableStore(this.#rethinkDb, this.#logger);
-        this.#events = new RethinkDbEventStore(this.#rethinkDb, this.#logger);
-        this.#tags = new RethinkDbTagStore(this.#rethinkDb, this.#logger);
-        this.#logIndex = new RethinkDbChatLogIndexStore(this.#rethinkDb, this.#logger);
+        this.#guilds = new RethinkDbGuildStore(this.#rethink, this.#logger, options.shouldCacheGuild);
+        this.#users = new RethinkDbUserStore(this.#rethink, this.#logger, options.shouldCacheUser);
+        this.#vars = new RethinkDbBotVariableStore(this.#rethink, this.#logger);
+        this.#events = new RethinkDbEventStore(this.#rethink, this.#logger);
+        this.#tags = new RethinkDbTagStore(this.#rethink, this.#logger);
+        this.#logIndex = new RethinkDbChatLogIndexStore(this.#rethink, this.#logger);
         this.#chatlogs = new CassandraDbChatLogStore(this.#cassandra, this.#logger);
         this.#dumps = new CassandraDbDumpStore(this.#cassandra, this.#logger);
         this.#tagVariables = new PostgresDbTagVariableStore(this.#postgres, this.#logger);
@@ -82,7 +82,7 @@ export class Database {
         this.connect = () => Promise.resolve();
 
         await Promise.all([
-            this.retryConnect('rethinkDb', () => this.#rethinkDb.connect(), 5000, 10),
+            this.retryConnect('rethinkDb', () => this.#rethink.connect(), 5000, 10),
             this.retryConnect('cassandra', () => this.#cassandra.connect(), 5000, 10),
             this.retryConnect('postgresdb', () => this.#postgres.connect(), 5000, 10)
         ]);

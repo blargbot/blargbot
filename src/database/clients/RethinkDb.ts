@@ -1,10 +1,9 @@
 import { RethinkConfiguration } from '@blargbot/config/Configuration';
 import * as r from 'rethinkdb';
-import { Connection, Cursor, Expression, Query, Time } from 'rethinkdb';
+import { Cursor, Expression, Query, Time } from 'rethinkdb';
 
 export class RethinkDb {
-    #connectionPromise?: Promise<r.Connection>;
-    #connection?: r.Connection;
+    #connection?: Promise<r.Connection>;
     readonly #options: RethinkConfiguration;
 
     public constructor(options: RethinkConfiguration) {
@@ -14,8 +13,7 @@ export class RethinkDb {
     public async query<T>(query: Query<T>): Promise<T>
     public async query<T>(query: Query<T | undefined>): Promise<T | undefined>
     public async query<T>(query: Query<T | undefined>): Promise<T | undefined> {
-        const connection = this.#connection ?? await this.connect();
-        return await query(r).run(connection);
+        return await query(r).run(await this.#getConnection());
     }
 
     public async queryAll<T>(query: Query<Cursor<T>>): Promise<T[]> {
@@ -39,31 +37,31 @@ export class RethinkDb {
         }
     }
 
-    public async connect(): Promise<Connection> {
-        if (this.#connectionPromise === undefined) {
-            this.#connectionPromise = r.connect({
+    public async connect(): Promise<void> {
+        await this.#getConnection();
+    }
+
+    #getConnection(): Promise<r.Connection> {
+        return this.#connection ??= this.#connect();
+    }
+
+    async #connect(): Promise<r.Connection> {
+        try {
+            const connection = await r.connect({
                 timeout: 10000,
                 ...this.#options
-            }).then(conn => this.#connection = conn);
+            });
+            connection.on('close', () => this.#connection = undefined);
+            return connection;
+        } catch (err: unknown) {
+            this.#connection = undefined;
+            throw err;
         }
-
-        return await this.#connectionPromise;
     }
 
     public async disconnect(): Promise<void> {
-        if (this.#connection === undefined) {
-            if (this.#connectionPromise === undefined) {
-                return;
-            }
-
-            await this.#connectionPromise;
-        }
-
-        if (this.#connection !== undefined) {
-            await this.#connection.close();
-            this.#connection = undefined;
-            this.#connectionPromise = undefined;
-        }
+        const connection = await this.#connection;
+        await connection?.close();
     }
 
     public epochTime(time: number): Expression<Time> {
@@ -71,11 +69,11 @@ export class RethinkDb {
     }
 
     public updateExpr<T>(value: T): T {
-        return <T>hackySanitize(value, false);
+        return hackySanitize(value, false);
     }
 
     public addExpr<T>(value: T): T {
-        return <T>hackySanitize(value, true);
+        return hackySanitize(value, true);
     }
 
     public setExpr(value?: undefined): Expression<undefined>
@@ -112,6 +110,7 @@ export class RethinkDb {
     }
 }
 
+function hackySanitize<T>(value: T, removeUndef: boolean): T;
 function hackySanitize(value: unknown, removeUndef: boolean): unknown {
     switch (typeof value) {
         case 'undefined':

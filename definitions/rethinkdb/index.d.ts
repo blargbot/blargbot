@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-empty-interface, @typescript-eslint/naming-convention */
+import EventEmitter from 'events';
 
 export module 'rethinkdb' {
     import { ConnectionOptions as TLSConnectionOptions } from 'tls';
@@ -84,7 +84,7 @@ export module 'rethinkdb' {
         name?: string;
     }
 
-    export interface Connection {
+    export interface Connection extends EventEmitter {
         open: boolean;
 
         close(cb: (err: Error) => void): void;
@@ -100,8 +100,6 @@ export module 'rethinkdb' {
         server(): Promise<ServerResult>;
 
         use(dbName: string): void;
-        addListener(event: string, cb: (...args: unknown[]) => unknown): void;
-        on(event: string, cb: (...args: unknown[]) => unknown): void;
     }
 
     export interface Db {
