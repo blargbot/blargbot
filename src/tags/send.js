@@ -45,20 +45,11 @@ module.exports =
                 }
             }
             try {
-                let disableEveryone = true;
-                if (context.isCC) {
-                    let s = await r.table('guild').get(context.msg.guild.id);
-                    disableEveryone = s.settings.disableeveryone === true || !context.state.allowedMentions.everybody;
-                }
                 let sent = await bu.send(channel.id, {
                     content: message,
                     embed: embed,
                     nsfw: context.state.nsfw,
-                    allowedMentions: {
-                        everyone: !disableEveryone,
-                        roles: !!context.isCC ? context.state.allowedMentions.roles : false,
-                        users: !!context.isCC ? context.state.allowedMentions.users : false
-                    }
+                    allowedMentions: await context.getAllowedMentions()
                 }, file);
 
                 if (!sent) throw new Error('Send unsuccessful');
