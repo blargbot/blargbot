@@ -482,6 +482,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/jsonwebtoken", "npm:8.5.8"],\
             ["@types/node-fetch", "npm:2.6.1"],\
             ["@types/ws", "npm:8.5.3"],\
+            ["discord-api-types", "npm:0.30.0"],\
             ["express", "npm:4.17.3"],\
             ["express-promise-router", "virtual:095fcb10883c40f470ac6e6afe01baaad608ecd7018d2aa01600e1b94a63e74e03d9c60d9c4b5eae313115c2ddfa875282bf27ef0d1c898d09652020afc63115#npm:4.1.1"],\
             ["jsonwebtoken", "npm:8.5.1"],\

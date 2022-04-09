@@ -21,6 +21,7 @@
         "@types/express-serve-static-core": "^4.17.28",
         "@types/jsonwebtoken": "^8.5.8",
         "@types/node-fetch": "^2.6.1",
-        "@types/ws": "^8.5.3"
+        "@types/ws": "^8.5.3",
+        "discord-api-types": "^0.30.0"
     }
 }

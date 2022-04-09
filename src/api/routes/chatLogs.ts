@@ -3,6 +3,7 @@ import { BaseRoute } from '@blargbot/api/BaseRoute';
 import { ApiResponse } from '@blargbot/api/types';
 import { parse } from '@blargbot/core/utils';
 import { ChatLog, ChatLogChannel, ChatLogIndex, ChatLogRole, ChatLogUser } from '@blargbot/domain/models';
+import { APIEmbed } from 'discord-api-types/v9';
 
 export class ChatLogsRoute extends BaseRoute {
     public constructor(private readonly api: Api) {
@@ -34,21 +35,35 @@ export class ChatLogsRoute extends BaseRoute {
         return this.ok(result);
     }
 
-    private async parseTags(message: ChatLog, index: ExpandedChatLogIndex): Promise<void> {
-        index.parsedUsers[message.userid] ??= await this.getChatLogUser(message.userid);
-        index.parsedChannels[message.channelid] ??= await this.getChatLogChannel(message.channelid);
+    private async parseTagsInString(content: string, guildId: string, index: ExpandedChatLogIndex): Promise<void> {
         const tagRegex = /<[^<>\s]+>/g;
         let match;
-        while ((match = tagRegex.exec(message.content)) !== null) {
+        while ((match = tagRegex.exec(content)) !== null) {
             let id: string | undefined;
             if ((id = parse.entityId(match[0], '@&')) !== undefined)
-                index.parsedRoles[id] ??= await this.getChatLogRole(message.guildid, id);
+                index.parsedRoles[id] ??= await this.getChatLogRole(guildId, id);
             else if ((id = parse.entityId(match[0], '@!')) !== undefined)
                 index.parsedUsers[id] ??= await this.getChatLogUser(id);
             else if ((id = parse.entityId(match[0], '@')) !== undefined)
                 index.parsedUsers[id] ??= await this.getChatLogUser(id);
             else if ((id = parse.entityId(match[0], '#')) !== undefined)
                 index.parsedChannels[id] ??= await this.getChatLogChannel(id);
+        }
+    }
+
+    private async parseTags(message: ChatLog, index: ExpandedChatLogIndex): Promise<void> {
+        index.parsedUsers[message.userid] ??= await this.getChatLogUser(message.userid);
+        index.parsedChannels[message.channelid] ??= await this.getChatLogChannel(message.channelid);
+        await this.parseTagsInString(message.content, message.guildid, index);
+        for (const embed of message.embeds as APIEmbed[]) {
+            if (embed.title !== undefined)
+                await this.parseTagsInString(embed.title, message.guildid, index);
+            if (embed.description !== undefined)
+                await this.parseTagsInString(embed.description, message.guildid, index);
+            for (const field of embed.fields ?? []) {
+                await this.parseTagsInString(field.name, message.guildid, index);
+                await this.parseTagsInString(field.value, message.guildid, index);
+            }
         }
     }
 
