@@ -65,7 +65,8 @@ export class ChatLogsRoute extends BaseRoute {
         const channel = await this.api.util.getChannel(id);
         return {
             id,
-            name: channel === undefined ? undefined : 'name' in channel ? channel.name : undefined
+            name: channel === undefined ? undefined : 'name' in channel ? channel.name : undefined,
+            type: channel?.type
         };
     }
 
