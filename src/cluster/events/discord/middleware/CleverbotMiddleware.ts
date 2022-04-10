@@ -14,13 +14,14 @@ export class CleverbotMiddleware implements IMiddleware<KnownMessage, boolean> {
         if (await next())
             return true;
 
-        if (guard.isGuildMessage(context)) {
-            if (!new RegExp(`^<@!?${this.util.discord.user.id}>`).test(context.content))
-                return false;
+        if (!guard.isGuildMessage(context))
+            return false;
 
-            if (await this.util.database.guilds.getSetting(context.channel.guild.id, 'nocleverbot') === true)
-                return false;
-        }
+        if (!new RegExp(`^<@!?${this.util.discord.user.id}>`).test(context.content))
+            return false;
+
+        if (await this.util.database.guilds.getSetting(context.channel.guild.id, 'nocleverbot') === true)
+            return false;
 
         await this.reply(context);
         return true;
