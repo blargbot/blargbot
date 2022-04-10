@@ -7,6 +7,7 @@ import { BaseService } from '@blargbot/core/serviceTypes';
 import { EvalResult } from '@blargbot/core/types';
 import { ImagePool } from '@blargbot/image';
 import { Logger } from '@blargbot/logger';
+import { GatewayIntentBits } from 'discord-api-types/v9';
 import moment, { duration, Moment } from 'moment-timezone';
 import { inspect } from 'util';
 
@@ -65,17 +66,15 @@ export class Cluster extends BaseClient {
             defaultImageFormat: 'png',
             defaultImageSize: 512,
             messageLimit: 5,
-            intents: [
-                'guilds',
-                'guildMembers',
-                'guildBans',
-                'guildPresences',
-                'guildMessages',
-                'guildMessageReactions',
-                'guildEmojisAndStickers',
-                'directMessages',
-                'directMessageReactions'
-            ]
+            intents: GatewayIntentBits.Guilds
+                | GatewayIntentBits.GuildMembers
+                | GatewayIntentBits.GuildBans
+                | GatewayIntentBits.GuildPresences
+                | GatewayIntentBits.GuildMessages
+                | GatewayIntentBits.GuildMessageReactions
+                | GatewayIntentBits.GuildEmojisAndStickers
+                | GatewayIntentBits.DirectMessages
+                | GatewayIntentBits.DirectMessageReactions
         });
 
         this.id = options.id;

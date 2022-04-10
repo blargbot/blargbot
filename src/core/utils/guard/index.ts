@@ -15,6 +15,7 @@ import * as isPrivateMessage from './isPrivateMessage';
 import * as isTextableChannel from './isTextableChannel';
 import * as isThreadableChannel from './isThreadableChannel';
 import * as isThreadChannel from './isThreadChannel';
+import * as isUncached from './isUncached';
 import * as isUrl from './isUrl';
 import * as isVoiceChannel from './isVoiceChannel';
 import * as isWellKnownChannel from './isWellKnownChannel';
@@ -44,6 +45,7 @@ export const guard = {
     ...notNull,
     ...notUndefined,
     ...testMessageFilter,
+    ...isUncached,
     ...isUrl,
     ...hasInvite,
     ...isThreadableChannel,

@@ -8,8 +8,7 @@ import { CommandType } from '../../utils';
 export class ServerCommand extends GuildCommand {
     public constructor() {
         super({
-            name: 'server',
-            aliases: ['guild'],
+            name: 'bot',
             category: CommandType.ADMIN,
             definitions: [
                 {

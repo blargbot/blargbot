@@ -60,7 +60,6 @@ export class PrefixManager {
         prefixes.push(`<@${this.discord.user.id}>`, `<@!${this.discord.user.id}>`);
         if (guard.isGuildMessage(message))
             prefixes.push(...await this.getGuildPrefixes(message.channel.guild.id));
-
         else
             prefixes.push('');
 

@@ -366,18 +366,30 @@ export class BaseUtilities {
     public async getChannel(channelId: string): Promise<KnownChannel | undefined>;
     public async getChannel(guild: string | Guild, channelId: string): Promise<KnownGuildChannel | undefined>;
     public async getChannel(...args: [string] | [string | Guild, string]): Promise<KnownChannel | undefined> {
-        const _args = args.length === 2 ? args : [undefined, args[0]] as const;
+        const [guildVal, channelVal] = args.length === 2 ? args : [undefined, args[0]] as const;
 
-        const guild = _args[0];
-        const channelId = parse.entityId(_args[1], '@!?', true) ?? '';
+        const channelId = parse.entityId(channelVal, '@!?', true) ?? '';
         if (channelId === '')
             return undefined;
 
+        if (guildVal === undefined)
+            return this.discord.getChannel(channelId) ?? await this.#getChannel(channelId);
+        const guild = typeof guildVal === 'string' ? await this.getGuild(guildVal) : guildVal;
+        if (guild === undefined)
+            return undefined;
+        const channel = guild.channels.get(channelId) ?? await this.#getChannel(channelId);
+        return channel !== undefined && guard.isGuildChannel(channel) ? channel : undefined;
+    }
+
+    async #getChannel(channelId: string): Promise<KnownChannel | undefined> {
         try {
-            if (guild === undefined)
-                return this.discord.getChannel(channelId) ?? await this.discord.getRESTChannel(channelId);
-            const _guild = typeof guild === 'string' ? await this.getGuild(guild) : guild;
-            return _guild?.channels.get(channelId) ?? await this.discord.getRESTChannel(channelId);
+            const channel = await this.discord.getRESTChannel(channelId);
+            if (guard.isPrivateChannel(channel)) {
+                if (this.discord.privateChannels.get(channel.id) !== channel)
+                    this.discord.privateChannels.set(channel.id, channel);
+            } else if (channel.guild.channels.get(channel.id) !== channel)
+                channel.guild.channels.set(channel.id, channel);
+            return channel;
         } catch (err: unknown) {
             if (err instanceof DiscordRESTError && err.code === ApiError.UNKNOWN_CHANNEL)
                 return undefined;
