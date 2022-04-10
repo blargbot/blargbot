@@ -61,7 +61,7 @@ export function runMiddleware<Context, Result>(middleware: ReadonlyArray<IMiddle
         const current = middleware[index];
         const name = current.name === undefined ? current.constructor.name : `${current.constructor.name}(${current.name})`;
 
-        options.logger.debug('[', options.id, ']', name, 'started after', performance.now() - options.start, 'ms');
+        options.logger.middleware('[', options.id, ']', name, 'started after', performance.now() - options.start, 'ms');
         let result;
         try {
             result = current.execute(context, Object.assign(() => runMiddleware(context, index + 1), options));
@@ -79,5 +79,5 @@ export function runMiddleware<Context, Result>(middleware: ReadonlyArray<IMiddle
 }
 
 function logCompletion(name: string, options: MiddlewareOptions): void {
-    options.logger.verbose('[', options.id, ']', name, 'completed after', performance.now() - options.start, 'ms');
+    options.logger.middleware('[', options.id, ']', name, 'completed after', performance.now() - options.start, 'ms');
 }

@@ -21,7 +21,8 @@ export type LogLevel =
     | 'log'
     | 'dir'
     | 'database'
-    | 'module';
+    | 'module'
+    | 'middleware';
 
 export type LogMethods = { [P in LogLevel]: (...args: unknown[]) => void }
 

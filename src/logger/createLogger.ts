@@ -40,6 +40,7 @@ const logLevels: Record<LogLevel, { color: typeof CatLoggr['_chalk']; isError?: 
     bbtag: { color: CatLoggr._chalk.black.bgGreen },
     adebug: { color: CatLoggr._chalk.cyan.bgBlack },
     debug: { color: CatLoggr._chalk.magenta.bgBlack },
+    middleware: { color: CatLoggr._chalk.magenta.bgBlack },
     log: { color: CatLoggr._chalk.magenta.bgBlack },
     dir: { color: CatLoggr._chalk.magenta.bgBlack },
     verbose: { color: CatLoggr._chalk.black.bgCyan },
