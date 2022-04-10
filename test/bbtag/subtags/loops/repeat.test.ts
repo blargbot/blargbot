@@ -5,7 +5,7 @@ import { RepeatSubtag } from '@blargbot/bbtag/subtags/loops/repeat';
 import { IncrementSubtag } from '@blargbot/bbtag/subtags/math/increment';
 import { IfSubtag } from '@blargbot/bbtag/subtags/misc/if';
 import { BBTagRuntimeState } from '@blargbot/bbtag/types';
-import { SubtagVariableType } from '@blargbot/domain/models';
+import { TagVariableType } from '@blargbot/domain/models';
 import { expect } from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite';
@@ -27,14 +27,14 @@ runSubtagTests({
             subtags: [new IncrementSubtag()],
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
-                ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.index`] = '0';
+                ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.index`] = '0';
             },
             postSetup(bbctx, ctx) {
                 ctx.limit.setup(m => m.check(bbctx, 'repeat:loops')).verifiable(8).thenResolve(undefined);
             },
             async assert(bbctx, _, ctx) {
                 expect((await bbctx.variables.get('index')).value).to.equal(8);
-                expect(ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.index`]).to.equal(8);
+                expect(ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.index`]).to.equal(8);
             }
         },
         {
@@ -57,14 +57,14 @@ runSubtagTests({
             subtags: [new GetSubtag(), new IfSubtag(), new ReturnSubtag(), new IncrementSubtag()],
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
-                ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.index`] = '0';
+                ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.index`] = '0';
             },
             postSetup(bbctx, ctx) {
                 ctx.limit.setup(m => m.check(bbctx, 'repeat:loops')).verifiable(6).thenResolve(undefined);
             },
             async assert(bbctx, _, ctx) {
                 expect((await bbctx.variables.get('index')).value).to.equal(6);
-                expect(ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.index`]).to.equal(6);
+                expect(ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.index`]).to.equal(6);
                 expect(bbctx.data.state).to.equal(BBTagRuntimeState.ABORT);
             }
         },
@@ -77,7 +77,7 @@ runSubtagTests({
             subtags: [new IncrementSubtag()],
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
-                ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.index`] = '0';
+                ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.index`] = '0';
             },
             postSetup(bbctx, ctx) {
                 let i = 0;
@@ -89,7 +89,7 @@ runSubtagTests({
             },
             async assert(bbctx, _, ctx) {
                 expect((await bbctx.variables.get('index')).value).to.equal(4);
-                expect(ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.index`]).to.equal(4);
+                expect(ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.index`]).to.equal(4);
             }
         }
     ]

@@ -4,7 +4,8 @@ import { SubtagArgument } from '../../arguments';
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError } from '../../errors';
-import { tagVariableScopes } from '../../tagVariables';
+import { getLock } from '../../getLock';
+import { tagVariableScopeProviders } from '../../tagVariableScopeProviders';
 import { SubtagType } from '../../utils';
 
 export class LockSubtag extends CompiledSubtag {
@@ -69,15 +70,12 @@ export class LockSubtag extends CompiledSubtag {
         if (key.length === 0)
             throw new BBTagRuntimeError('Key cannot be empty');
 
-        const lockScope = tagVariableScopes.find((s) => key.startsWith(s.prefix));
-        if (lockScope === undefined)
+        const provider = tagVariableScopeProviders.find((s) => key.startsWith(s.prefix));
+        if (provider === undefined)
             throw new Error('Missing default variable scope!');
 
-        const lock = lockScope.getLock(
-            context,
-            key.substring(lockScope.prefix.length)
-        );
-
+        const scope = provider.getScope(context);
+        const lock = getLock(scope, key.substring(provider.prefix.length));
         const release = await lockAsync(lock, `${mode}Lock`);
         try {
             context.scopes.local.inLock = true;

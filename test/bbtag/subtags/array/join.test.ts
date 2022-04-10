@@ -1,7 +1,7 @@
 import { NotAnArrayError } from '@blargbot/bbtag/errors';
 import { JoinSubtag } from '@blargbot/bbtag/subtags/array/join';
 import { GetSubtag } from '@blargbot/bbtag/subtags/bot/get';
-import { SubtagVariableType } from '@blargbot/domain/models';
+import { TagVariableType } from '@blargbot/domain/models';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 
@@ -24,7 +24,7 @@ runSubtagTests({
             expected: 'this~is~arr1',
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
-                ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.arr1`] = ['this', 'is', 'arr1'];
+                ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.arr1`] = ['this', 'is', 'arr1'];
             }
         },
         {
@@ -35,7 +35,7 @@ runSubtagTests({
             ],
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
-                ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.var1`] = 'This is var1';
+                ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.var1`] = 'This is var1';
             }
         },
         {
@@ -44,7 +44,7 @@ runSubtagTests({
             subtags: [new GetSubtag()],
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
-                ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.arr1`] = ['this', 'is', 'arr1'];
+                ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.arr1`] = ['this', 'is', 'arr1'];
             }
         }
     ]

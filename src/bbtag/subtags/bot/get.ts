@@ -3,7 +3,7 @@ import { parse } from '@blargbot/core/utils';
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError, NotANumberError } from '../../errors';
-import { tagVariableScopes } from '../../tagVariables';
+import { tagVariableScopeProviders } from '../../tagVariableScopeProviders';
 import { SubtagType } from '../../utils';
 
 export class GetSubtag extends CompiledSubtag {
@@ -16,7 +16,7 @@ export class GetSubtag extends CompiledSubtag {
                     parameters: ['name'],
                     description: 'Returns the stored variable `varName`.\n' +
                         'You can use a character prefix to determine the scope of your variable.\n' +
-                        'Valid scopes are: ' + tagVariableScopes.map((s) => `${s.prefix.length === 0 ? 'no prefix' : `\`${s.prefix}\``} (${s.name})`).join(', ') +
+                        'Valid scopes are: ' + tagVariableScopeProviders.map((s) => `${s.prefix.length === 0 ? 'no prefix' : `\`${s.prefix}\``} (${s.name})`).join(', ') +
                         '. For more information, use `b!t docs variable` or `b!cc docs variable`',
                     exampleCode: '{set;var1;This is local var1}\n{set;~var2;This is temporary var2}\n{get;var1}\n{get;~var2}',
                     exampleOut: 'This is local var1\nThis is temporary var2',

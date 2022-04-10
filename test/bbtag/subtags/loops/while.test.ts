@@ -8,7 +8,7 @@ import { IncrementSubtag } from '@blargbot/bbtag/subtags/math/increment';
 import { IfSubtag } from '@blargbot/bbtag/subtags/misc/if';
 import { OperatorSubtag } from '@blargbot/bbtag/subtags/misc/operator';
 import { BBTagRuntimeState } from '@blargbot/bbtag/types';
-import { SubtagVariableType } from '@blargbot/domain/models';
+import { TagVariableType } from '@blargbot/domain/models';
 import { expect } from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite';
@@ -23,14 +23,14 @@ runSubtagTests({
             subtags: [new GetSubtag(), new IncrementSubtag(), new OperatorSubtag()],
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
-                ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.index`] = '0';
+                ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.index`] = '0';
             },
             postSetup(bbctx, ctx) {
                 ctx.limit.setup(m => m.check(bbctx, 'while:loops')).verifiable(10).thenResolve(undefined);
             },
             async assert(bbctx, _, ctx) {
                 expect((await bbctx.variables.get('index')).value).to.equal(10);
-                expect(ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.index`]).to.equal(10);
+                expect(ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.index`]).to.equal(10);
             }
         },
         {
@@ -39,14 +39,14 @@ runSubtagTests({
             subtags: [new GetSubtag(), new IncrementSubtag()],
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
-                ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.index`] = '0';
+                ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.index`] = '0';
             },
             postSetup(bbctx, ctx) {
                 ctx.limit.setup(m => m.check(bbctx, 'while:loops')).verifiable(10).thenResolve(undefined);
             },
             async assert(bbctx, _, ctx) {
                 expect((await bbctx.variables.get('index')).value).to.equal(10);
-                expect(ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.index`]).to.equal(10);
+                expect(ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.index`]).to.equal(10);
             }
         },
         {
@@ -55,14 +55,14 @@ runSubtagTests({
             subtags: [new GetSubtag(), new IncrementSubtag()],
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
-                ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.index`] = '0';
+                ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.index`] = '0';
             },
             postSetup(bbctx, ctx) {
                 ctx.limit.setup(m => m.check(bbctx, 'while:loops')).verifiable(10).thenResolve(undefined);
             },
             async assert(bbctx, _, ctx) {
                 expect((await bbctx.variables.get('index')).value).to.equal(10);
-                expect(ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.index`]).to.equal(10);
+                expect(ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.index`]).to.equal(10);
             }
         },
         {
@@ -71,14 +71,14 @@ runSubtagTests({
             subtags: [new GetSubtag(), new IncrementSubtag()],
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
-                ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.index`] = '0';
+                ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.index`] = '0';
             },
             postSetup(bbctx, ctx) {
                 ctx.limit.setup(m => m.check(bbctx, 'while:loops')).verifiable(10).thenResolve(undefined);
             },
             async assert(bbctx, _, ctx) {
                 expect((await bbctx.variables.get('index')).value).to.equal(10);
-                expect(ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.index`]).to.equal(10);
+                expect(ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.index`]).to.equal(10);
             }
         },
         {
@@ -87,14 +87,14 @@ runSubtagTests({
             subtags: [new GetSubtag(), new IncrementSubtag()],
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
-                ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.index`] = '0';
+                ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.index`] = '0';
             },
             postSetup(bbctx, ctx) {
                 ctx.limit.setup(m => m.check(bbctx, 'while:loops')).verifiable(5).thenResolve(undefined);
             },
             async assert(bbctx, _, ctx) {
                 expect((await bbctx.variables.get('index')).value).to.equal(10);
-                expect(ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.index`]).to.equal(10);
+                expect(ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.index`]).to.equal(10);
             }
         },
         {
@@ -103,14 +103,14 @@ runSubtagTests({
             subtags: [new GetSubtag(), new DecrementSubtag()],
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
-                ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.index`] = '10';
+                ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.index`] = '10';
             },
             postSetup(bbctx, ctx) {
                 ctx.limit.setup(m => m.check(bbctx, 'while:loops')).verifiable(10).thenResolve(undefined);
             },
             async assert(bbctx, _, ctx) {
                 expect((await bbctx.variables.get('index')).value).to.equal(0);
-                expect(ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.index`]).to.equal(0);
+                expect(ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.index`]).to.equal(0);
             }
         },
         {
@@ -119,14 +119,14 @@ runSubtagTests({
             subtags: [new GetSubtag(), new SetSubtag(), new OperatorSubtag()],
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
-                ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.index`] = '1';
+                ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.index`] = '1';
             },
             postSetup(bbctx, ctx) {
                 ctx.limit.setup(m => m.check(bbctx, 'while:loops')).verifiable(10).thenResolve(undefined);
             },
             async assert(bbctx, _, ctx) {
                 expect((await bbctx.variables.get('index')).value).to.equal('1024');
-                expect(ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.index`]).to.equal('1024');
+                expect(ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.index`]).to.equal('1024');
             }
         },
         {
@@ -138,7 +138,7 @@ runSubtagTests({
             subtags: [new GetSubtag(), new IncrementSubtag()],
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
-                ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.index`] = '0';
+                ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.index`] = '0';
             },
             postSetup(bbctx, ctx) {
                 let i = 0;
@@ -150,7 +150,7 @@ runSubtagTests({
             },
             async assert(bbctx, _, ctx) {
                 expect((await bbctx.variables.get('index')).value).to.equal(4);
-                expect(ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.index`]).to.equal(4);
+                expect(ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.index`]).to.equal(4);
             }
         },
         {
@@ -162,7 +162,7 @@ runSubtagTests({
             subtags: [new GetSubtag(), new IncrementSubtag()],
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
-                ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.index`] = '0';
+                ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.index`] = '0';
             },
             postSetup(bbctx, ctx) {
                 let i = 0;
@@ -174,7 +174,7 @@ runSubtagTests({
             },
             async assert(bbctx, _, ctx) {
                 expect((await bbctx.variables.get('index')).value).to.equal(4);
-                expect(ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.index`]).to.equal(4);
+                expect(ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.index`]).to.equal(4);
             }
         },
         {
@@ -186,7 +186,7 @@ runSubtagTests({
             subtags: [new GetSubtag(), new IncrementSubtag()],
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
-                ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.index`] = '0';
+                ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.index`] = '0';
             },
             postSetup(bbctx, ctx) {
                 let i = 0;
@@ -198,7 +198,7 @@ runSubtagTests({
             },
             async assert(bbctx, _, ctx) {
                 expect((await bbctx.variables.get('index')).value).to.equal(4);
-                expect(ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.index`]).to.equal(4);
+                expect(ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.index`]).to.equal(4);
             }
         },
         {
@@ -207,14 +207,14 @@ runSubtagTests({
             subtags: [new GetSubtag(), new IfSubtag(), new ReturnSubtag(), new IncrementSubtag()],
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
-                ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.index`] = '0';
+                ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.index`] = '0';
             },
             postSetup(bbctx, ctx) {
                 ctx.limit.setup(m => m.check(bbctx, 'while:loops')).verifiable(6).thenResolve(undefined);
             },
             async assert(bbctx, _, ctx) {
                 expect((await bbctx.variables.get('index')).value).to.equal(6);
-                expect(ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.index`]).to.equal(6);
+                expect(ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.index`]).to.equal(6);
                 expect(bbctx.data.state).to.equal(BBTagRuntimeState.ABORT);
             }
         }

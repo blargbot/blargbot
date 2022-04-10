@@ -1,6 +1,6 @@
 import { JsonSubtag } from '@blargbot/bbtag/subtags/json/json';
 import { JsonCleanSubtag } from '@blargbot/bbtag/subtags/json/jsonclean';
-import { SubtagVariableType } from '@blargbot/domain/models';
+import { TagVariableType } from '@blargbot/domain/models';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 
@@ -33,7 +33,7 @@ runSubtagTests({
             expected: '[{"x":{}}]',
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
-                ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.arr1`] = ['{"x":"{}"}'];
+                ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.arr1`] = ['{"x":"{}"}'];
             }
         },
         {
@@ -41,7 +41,7 @@ runSubtagTests({
             expected: '{"a":{"x":{}}}',
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
-                ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.obj1`] = { a: '{"x":"{}"}' };
+                ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.obj1`] = { a: '{"x":"{}"}' };
             }
         },
         {
@@ -49,7 +49,7 @@ runSubtagTests({
             expected: '{"a":{"x":{}}}',
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
-                ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.var1`] = '{"a":"{\\"x\\":\\"{}\\"}"}';
+                ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.var1`] = '{"a":"{\\"x\\":\\"{}\\"}"}';
             }
         },
         {

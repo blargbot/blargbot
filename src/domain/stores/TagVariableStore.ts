@@ -1,6 +1,7 @@
-import { SubtagVariableType } from '../models';
+import { TagVariableScope } from '../models';
 
 export interface TagVariableStore {
-    upsert(values: Record<string, JToken | undefined>, type: SubtagVariableType, scope: string): Promise<void>;
-    get(name: string, type: SubtagVariableType, scope: string): Promise<JToken | undefined>;
+    upsert(values: Record<string, JToken | undefined>, scope: TagVariableScope): Promise<void>;
+    get(name: string, scope: TagVariableScope): Promise<JToken | undefined>;
+    clearScope(scope: TagVariableScope): Promise<void>;
 }

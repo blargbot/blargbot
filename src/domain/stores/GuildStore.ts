@@ -1,6 +1,7 @@
 import { ChannelSettings, CommandPermissions, GuildAnnounceOptions, GuildAutoresponses, GuildCensor, GuildCensors, GuildCommandTag, GuildDetails, GuildFilteredAutoresponse, GuildImportedCommandTag, GuildModlogEntry, GuildRolemeEntry, GuildSourceCommandTag, GuildTriggerTag, GuildVotebans, NamedGuildCommandTag, StoredGuild, StoredGuildEventLogConfig, StoredGuildEventLogType, StoredGuildSettings } from '../models';
 
 export interface GuildStore {
+    reset(guild: GuildDetails): Promise<void>;
     getRoleme(guildId: string, id: number, skipCache?: boolean): Promise<GuildRolemeEntry | undefined>;
     setRoleme(guildId: string, id: number, roleme: GuildRolemeEntry | undefined): Promise<boolean>;
     updateModlogCase(guildId: string, caseid: number, modlog: Partial<Omit<GuildModlogEntry, 'caseid'>>): Promise<boolean>;

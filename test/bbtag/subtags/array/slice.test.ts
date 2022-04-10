@@ -1,6 +1,6 @@
 import { NotAnArrayError, NotANumberError } from '@blargbot/bbtag/errors';
 import { SliceSubtag } from '@blargbot/bbtag/subtags/array/slice';
-import { SubtagVariableType } from '@blargbot/domain/models';
+import { TagVariableType } from '@blargbot/domain/models';
 import { expect } from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite';
@@ -51,10 +51,10 @@ runSubtagTests({
             expected: '[2,3,4]',
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
-                ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.arr1`] = [1, 2, 3, 4];
+                ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.arr1`] = [1, 2, 3, 4];
             },
             async assert(bbctx, _, ctx) {
-                expect(ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.arr1`]).to.deep.equal([1, 2, 3, 4]);
+                expect(ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.arr1`]).to.deep.equal([1, 2, 3, 4]);
                 expect((await bbctx.variables.get('arr1')).value).to.deep.equal([1, 2, 3, 4]);
             }
         },
@@ -63,10 +63,10 @@ runSubtagTests({
             expected: '[2,3]',
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
-                ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.arr1`] = [1, 2, 3, 4];
+                ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.arr1`] = [1, 2, 3, 4];
             },
             async assert(bbctx, _, ctx) {
-                expect(ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.arr1`]).to.deep.equal([1, 2, 3, 4]);
+                expect(ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.arr1`]).to.deep.equal([1, 2, 3, 4]);
                 expect((await bbctx.variables.get('arr1')).value).to.deep.equal([1, 2, 3, 4]);
             }
         }

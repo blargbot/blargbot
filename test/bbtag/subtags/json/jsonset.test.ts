@@ -1,7 +1,7 @@
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
 import { JsonSubtag } from '@blargbot/bbtag/subtags/json/json';
 import { JsonSetSubtag } from '@blargbot/bbtag/subtags/json/jsonset';
-import { SubtagVariableType } from '@blargbot/domain/models';
+import { TagVariableType } from '@blargbot/domain/models';
 import { expect } from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite';
@@ -78,7 +78,7 @@ runSubtagTests({
             setupSaveVariables: false,
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
-                ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.jsonVar`] = { test: 123, other: JSON.stringify({ myProp: 123 }) };
+                ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.jsonVar`] = { test: 123, other: JSON.stringify({ myProp: 123 }) };
             },
             async assert(bbctx) {
                 expect((await bbctx.variables.get('jsonVar')).value).to.deep.equal({ test: 123, other: { myProp: '10' } });

@@ -1,6 +1,6 @@
 import { IsArraySubtag } from '@blargbot/bbtag/subtags/array/isarray';
 import { GetSubtag } from '@blargbot/bbtag/subtags/bot/get';
-import { SubtagVariableType } from '@blargbot/domain/models';
+import { TagVariableType } from '@blargbot/domain/models';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 
@@ -19,7 +19,7 @@ runSubtagTests({
             subtags: [new GetSubtag()],
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
-                ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.arr1`] = ['this', 'is', 'arr1'];
+                ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.arr1`] = ['this', 'is', 'arr1'];
             }
         }
     ]

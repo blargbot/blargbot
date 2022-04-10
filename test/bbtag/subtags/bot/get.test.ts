@@ -1,6 +1,6 @@
 import { BBTagRuntimeError, NotANumberError } from '@blargbot/bbtag/errors';
 import { GetSubtag } from '@blargbot/bbtag/subtags/bot/get';
-import { SubtagVariableType } from '@blargbot/domain/models';
+import { TagVariableType } from '@blargbot/domain/models';
 
 import { runSubtagTests, SubtagTestCase, SubtagTestContext } from '../SubtagTestSuite';
 
@@ -9,31 +9,31 @@ runSubtagTests({
     argCountBounds: { min: 1, max: 2 },
     cases: [
         ...generateTestCases(false, 'testTag', [
-            { args: ['myVariableName'], key: `${SubtagVariableType.LOCAL}.testTag.myVariableName`, value: 'LOCAL_TAG value', expected: 'LOCAL_TAG value' },
+            { args: ['myVariableName'], key: `${TagVariableType.LOCAL}.testTag.myVariableName`, value: 'LOCAL_TAG value', expected: 'LOCAL_TAG value' },
             { args: ['~myVariableName'], key: undefined, value: undefined, expected: '' },
-            { args: ['*myVariableName'], key: `${SubtagVariableType.GLOBAL}..myVariableName`, value: 'GLOBAL value', expected: 'GLOBAL value' },
-            { args: ['@myVariableName'], key: `${SubtagVariableType.AUTHOR}.823764823946284623234.myVariableName`, value: 'AUTHOR value', expected: 'AUTHOR value' },
-            { args: ['_myVariableName'], key: `${SubtagVariableType.TAGGUILD}.23904768237436873424.myVariableName`, value: 'GUILD_TAG value', expected: 'GUILD_TAG value' },
-            { args: ['myVariableName'], key: `${SubtagVariableType.LOCAL}.testTag.myVariableName`, value: 'LOCAL_TAG value', expected: 'LOCAL_TAG value' },
-            { args: ['*myVariableName'], key: `${SubtagVariableType.GLOBAL}..myVariableName`, value: ['a', 'b', 'c'], expected: '{"v":["a","b","c"],"n":"*myVariableName"}' },
-            { args: ['*myVariableName', '0'], key: `${SubtagVariableType.GLOBAL}..myVariableName`, value: ['a', 'b', 'c'], expected: 'a' },
-            { args: ['*myVariableName', '1'], key: `${SubtagVariableType.GLOBAL}..myVariableName`, value: ['a', 'b', 'c'], expected: 'b' },
-            { args: ['*myVariableName', '2'], key: `${SubtagVariableType.GLOBAL}..myVariableName`, value: ['a', 'b', 'c'], expected: 'c' },
-            { args: ['*myVariableName', '2'], key: `${SubtagVariableType.GLOBAL}..myVariableName`, value: 'This isnt an array', expected: 'This isnt an array' },
-            { args: ['*myVariableName', 'abc'], key: `${SubtagVariableType.GLOBAL}..myVariableName`, value: 'This isnt an array', expected: 'This isnt an array' }
+            { args: ['*myVariableName'], key: `${TagVariableType.GLOBAL}..myVariableName`, value: 'GLOBAL value', expected: 'GLOBAL value' },
+            { args: ['@myVariableName'], key: `${TagVariableType.AUTHOR}.823764823946284623234.myVariableName`, value: 'AUTHOR value', expected: 'AUTHOR value' },
+            { args: ['_myVariableName'], key: `${TagVariableType.TAGGUILD}.23904768237436873424.myVariableName`, value: 'GUILD_TAG value', expected: 'GUILD_TAG value' },
+            { args: ['myVariableName'], key: `${TagVariableType.LOCAL}.testTag.myVariableName`, value: 'LOCAL_TAG value', expected: 'LOCAL_TAG value' },
+            { args: ['*myVariableName'], key: `${TagVariableType.GLOBAL}..myVariableName`, value: ['a', 'b', 'c'], expected: '{"v":["a","b","c"],"n":"*myVariableName"}' },
+            { args: ['*myVariableName', '0'], key: `${TagVariableType.GLOBAL}..myVariableName`, value: ['a', 'b', 'c'], expected: 'a' },
+            { args: ['*myVariableName', '1'], key: `${TagVariableType.GLOBAL}..myVariableName`, value: ['a', 'b', 'c'], expected: 'b' },
+            { args: ['*myVariableName', '2'], key: `${TagVariableType.GLOBAL}..myVariableName`, value: ['a', 'b', 'c'], expected: 'c' },
+            { args: ['*myVariableName', '2'], key: `${TagVariableType.GLOBAL}..myVariableName`, value: 'This isnt an array', expected: 'This isnt an array' },
+            { args: ['*myVariableName', 'abc'], key: `${TagVariableType.GLOBAL}..myVariableName`, value: 'This isnt an array', expected: 'This isnt an array' }
         ]),
         ...generateTestCases(true, 'testTag', [
-            { args: ['myVariableName'], key: `${SubtagVariableType.GUILDLOCAL}.23904768237436873424_testTag.myVariableName`, value: 'LOCAL_CC value', expected: 'LOCAL_CC value' },
+            { args: ['myVariableName'], key: `${TagVariableType.GUILDLOCAL}.23904768237436873424_testTag.myVariableName`, value: 'LOCAL_CC value', expected: 'LOCAL_CC value' },
             { args: ['~myVariableName'], key: undefined, value: undefined, expected: '' },
-            { args: ['*myVariableName'], key: `${SubtagVariableType.GLOBAL}..myVariableName`, value: 'GLOBAL value', expected: 'GLOBAL value' },
-            { args: ['@myVariableName'], key: `${SubtagVariableType.AUTHOR}.823764823946284623234.myVariableName`, value: 'AUTHOR value', expected: 'AUTHOR value' },
-            { args: ['_myVariableName'], key: `${SubtagVariableType.GUILD}.23904768237436873424.myVariableName`, value: 'GUILD_CC value', expected: 'GUILD_CC value' },
-            { args: ['*myVariableName'], key: `${SubtagVariableType.GLOBAL}..myVariableName`, value: ['a', 'b', 'c'], expected: '{"v":["a","b","c"],"n":"*myVariableName"}' },
-            { args: ['*myVariableName', '0'], key: `${SubtagVariableType.GLOBAL}..myVariableName`, value: ['a', 'b', 'c'], expected: 'a' },
-            { args: ['*myVariableName', '1'], key: `${SubtagVariableType.GLOBAL}..myVariableName`, value: ['a', 'b', 'c'], expected: 'b' },
-            { args: ['*myVariableName', '2'], key: `${SubtagVariableType.GLOBAL}..myVariableName`, value: ['a', 'b', 'c'], expected: 'c' },
-            { args: ['*myVariableName', '2'], key: `${SubtagVariableType.GLOBAL}..myVariableName`, value: 'This isnt an array', expected: 'This isnt an array' },
-            { args: ['*myVariableName', 'abc'], key: `${SubtagVariableType.GLOBAL}..myVariableName`, value: 'This isnt an array', expected: 'This isnt an array' }
+            { args: ['*myVariableName'], key: `${TagVariableType.GLOBAL}..myVariableName`, value: 'GLOBAL value', expected: 'GLOBAL value' },
+            { args: ['@myVariableName'], key: `${TagVariableType.AUTHOR}.823764823946284623234.myVariableName`, value: 'AUTHOR value', expected: 'AUTHOR value' },
+            { args: ['_myVariableName'], key: `${TagVariableType.GUILD}.23904768237436873424.myVariableName`, value: 'GUILD_CC value', expected: 'GUILD_CC value' },
+            { args: ['*myVariableName'], key: `${TagVariableType.GLOBAL}..myVariableName`, value: ['a', 'b', 'c'], expected: '{"v":["a","b","c"],"n":"*myVariableName"}' },
+            { args: ['*myVariableName', '0'], key: `${TagVariableType.GLOBAL}..myVariableName`, value: ['a', 'b', 'c'], expected: 'a' },
+            { args: ['*myVariableName', '1'], key: `${TagVariableType.GLOBAL}..myVariableName`, value: ['a', 'b', 'c'], expected: 'b' },
+            { args: ['*myVariableName', '2'], key: `${TagVariableType.GLOBAL}..myVariableName`, value: ['a', 'b', 'c'], expected: 'c' },
+            { args: ['*myVariableName', '2'], key: `${TagVariableType.GLOBAL}..myVariableName`, value: 'This isnt an array', expected: 'This isnt an array' },
+            { args: ['*myVariableName', 'abc'], key: `${TagVariableType.GLOBAL}..myVariableName`, value: 'This isnt an array', expected: 'This isnt an array' }
         ]),
         {
             code: '{get;*myVariableName;abc}',

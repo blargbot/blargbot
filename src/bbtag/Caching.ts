@@ -2,7 +2,7 @@ import { Timer } from '@blargbot/core/Timer';
 import { guard } from '@blargbot/core/utils';
 
 import { BBTagContext } from './BBTagContext';
-import { TagVariableScope } from './tagVariables';
+import { TagVariableScopeProvider } from './tagVariableScopeProviders';
 
 export interface VariableReference {
     readonly key: string;
@@ -25,7 +25,7 @@ export class VariableCache {
 
     public constructor(
         public readonly context: BBTagContext,
-        public readonly scopes: readonly TagVariableScope[]
+        public readonly scopeProviders: readonly TagVariableScopeProvider[]
     ) {
         this.#cache = {};
     }
@@ -45,13 +45,15 @@ export class VariableCache {
         if (!forced && entry !== undefined)
             return entry;
 
-        const scope = this.scopes.find(s => variable.startsWith(s.prefix));
-        if (scope === undefined)
+        const provider = this.scopeProviders.find(s => variable.startsWith(s.prefix));
+        if (provider === undefined)
             throw new Error('Missing default variable scope!');
 
-        const varName = variable.substring(scope.prefix.length);
+        const varName = variable.substring(provider.prefix.length);
+        const scope = provider.getScope(this.context);
         try {
-            return this.#cache[variable] = new CacheEntry(this.context, scope, varName, await scope.getter(this.context, varName));
+            const value = scope !== undefined ? await this.context.database.tagVariables.get(varName, scope) : undefined;
+            return this.#cache[variable] = new CacheEntry(this.context, provider, varName, value);
         } catch (err: unknown) {
             this.context.logger.error(err, this.context.isCC, this.context.rootTagName);
             throw err;
@@ -84,7 +86,7 @@ export class VariableCache {
         if (execRunning)
             this.context.execTimer.end();
         this.context.dbTimer.resume();
-        const pools = new Map<TagVariableScope, Record<string, JToken | undefined>>();
+        const pools = new Map<TagVariableScopeProvider, Record<string, JToken | undefined>>();
         for (const entry of this.#getCached(variables)) {
             if (!entry.changed)
                 continue;
@@ -97,13 +99,15 @@ export class VariableCache {
             entry.persist();
         }
 
-        for (const [scope, pool] of pools) {
+        for (const [provider, pool] of pools) {
             const timer = new Timer().start();
             const objectCount = Object.keys(pool).length;
-            this.context.logger.bbtag('Committing', objectCount, 'objects to the', scope.prefix, 'pool.');
-            await scope.setter(this.context, pool);
+            this.context.logger.bbtag('Committing', objectCount, 'objects to the', provider.prefix, 'pool.');
+            const scope = provider.getScope(this.context);
+            if (scope !== undefined)
+                await this.context.database.tagVariables.upsert(pool, scope);
             timer.end();
-            this.context.logger[timer.elapsed > 3000 ? 'info' : 'bbtag']('Commited', objectCount, 'objects to the', scope.prefix, 'pool in', timer.elapsed, 'ms.');
+            this.context.logger[timer.elapsed > 3000 ? 'info' : 'bbtag']('Commited', objectCount, 'objects to the', provider.prefix, 'pool in', timer.elapsed, 'ms.');
             this.context.dbObjectsCommitted += objectCount;
         }
         this.context.dbTimer.end();
@@ -121,7 +125,7 @@ class CacheEntry {
 
     public constructor(
         public readonly context: BBTagContext,
-        public readonly scope: TagVariableScope,
+        public readonly scope: TagVariableScopeProvider,
         public readonly key: string,
         value: JToken | undefined
     ) {

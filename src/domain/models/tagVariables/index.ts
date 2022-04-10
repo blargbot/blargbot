@@ -1,2 +1,3 @@
 export * from './BBTagVariable';
-export * from './SubtagVariableType';
+export * from './TagVariableType';
+export * from './TagVariableScope';

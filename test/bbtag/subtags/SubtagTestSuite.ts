@@ -5,9 +5,9 @@ import { BaseRuntimeLimit } from '@blargbot/bbtag/limits/BaseRuntimeLimit';
 import { bbtag, SubtagType } from '@blargbot/bbtag/utils';
 import { ModuleLoader } from '@blargbot/core/modules';
 import { Timer } from '@blargbot/core/Timer';
-import { pluralise as p, repeat, snowflake } from '@blargbot/core/utils';
+import { guard, pluralise as p, repeat, snowflake } from '@blargbot/core/utils';
 import { Database } from '@blargbot/database';
-import { GuildCommandTag, StoredTag, SubtagVariableType } from '@blargbot/domain/models';
+import { GuildCommandTag, StoredTag, TagVariableType } from '@blargbot/domain/models';
 import { GuildStore, TagStore, TagVariableStore, UserStore } from '@blargbot/domain/stores';
 import { Logger } from '@blargbot/logger';
 import { expect } from 'chai';
@@ -106,7 +106,7 @@ export class SubtagTestContext {
 
     public readonly ccommands: Record<string, GuildCommandTag>;
     public readonly tags: Record<string, StoredTag>;
-    public readonly tagVariables: Record<`${SubtagVariableType}.${string}.${string}`, JToken | undefined>;
+    public readonly tagVariables: Record<`${TagVariableType}.${string}.${string}`, JToken | undefined>;
     public readonly rootScope: BBTagRuntimeScope = { functions: {}, inLock: false, isTag: true };
 
     public readonly options: Mutable<Partial<BBTagContextOptions>>;
@@ -183,15 +183,13 @@ export class SubtagTestContext {
         this.database.setup(m => m.users, false).thenReturn(this.userTable.instance);
         this.database.setup(m => m.tags, false).thenReturn(this.tagsTable.instance);
 
-        const isVariableType = argument.isTypeof('string').and((v): v is SubtagVariableType => Object.values(SubtagVariableType).includes(v)).value;
-
-        this.tagVariablesTable.setup(m => m.get(argument.isTypeof('string').value, isVariableType, argument.isTypeof('string').value), false)
-            .thenCall((...args: Parameters<TagVariableStore['get']>) => this.tagVariables[`${args[1]}.${args[2]}.${args[0]}`]);
+        this.tagVariablesTable.setup(m => m.get(argument.isTypeof('string').value, anything() as never), false)
+            .thenCall((...args: Parameters<TagVariableStore['get']>) => this.tagVariables[`${args[1].type}.${[args[1].entityId, args[1].name].filter(guard.hasValue).join('_')}.${args[0]}`]);
         if (this.testCase.setupSaveVariables !== false) {
-            this.tagVariablesTable.setup(m => m.upsert(anything() as never, isVariableType, argument.isTypeof('string').value), false)
+            this.tagVariablesTable.setup(m => m.upsert(anything() as never, anything() as never), false)
                 .thenCall((...args: Parameters<TagVariableStore['upsert']>) => {
                     for (const [name, value] of Object.entries(args[0]))
-                        this.tagVariables[`${args[1]}.${args[2]}.${name}`] = value;
+                        this.tagVariables[`${args[1].type}.${[args[1].entityId, args[1].name].filter(guard.hasValue).join('_')}.${name}`] = value;
                 });
         }
 

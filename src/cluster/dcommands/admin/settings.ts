@@ -12,7 +12,7 @@ export class SettingsCommand extends GuildCommand {
             description: `Gets or sets the settings for the current guild. Visit ${cluster.util.websiteLink('/guilds/settings')} for key documentation.`,
             definitions: [
                 {
-                    parameters: 'list',
+                    parameters: '',
                     execute: ctx => this.list(ctx),
                     description: 'Gets the current settings for this guild'
                 },

@@ -19,6 +19,23 @@ export class RethinkDbGuildStore implements GuildStore {
         this.#table.watchChanges(shouldCache);
     }
 
+    public async reset(guild: GuildDetails): Promise<void> {
+        await this.#table.set(guild.id, this.#initialState(guild));
+    }
+
+    #initialState(guild: GuildDetails): StoredGuild {
+        return {
+            guildid: guild.id,
+            active: true,
+            name: guild.name,
+            settings: {},
+            channels: {},
+            commandperms: {},
+            ccommands: {},
+            modlog: []
+        };
+    }
+
     async #getRootProp<Key extends keyof StoredGuild>(prop: Key, guildId: string, skipCache?: boolean): Promise<StoredGuild[Key] | undefined> {
         const guild = await this.#table.get(guildId, skipCache);
         return guild?.[prop];
@@ -478,16 +495,7 @@ export class RethinkDbGuildStore implements GuildStore {
     public async upsert(guild: GuildDetails): Promise<'inserted' | 'updated' | false> {
         const current = await this.#table.get(guild.id, true);
         if (current === undefined) {
-            if (await this.#table.insert({
-                guildid: guild.id,
-                active: true,
-                name: guild.name,
-                settings: {},
-                channels: {},
-                commandperms: {},
-                ccommands: {},
-                modlog: []
-            })) {
+            if (await this.#table.insert(this.#initialState(guild))) {
                 return 'inserted';
             }
         } else {

@@ -4,7 +4,7 @@ import { ReturnSubtag } from '@blargbot/bbtag/subtags/bot/return';
 import { ForeachSubtag } from '@blargbot/bbtag/subtags/loops/foreach';
 import { IfSubtag } from '@blargbot/bbtag/subtags/misc/if';
 import { BBTagRuntimeState } from '@blargbot/bbtag/types';
-import { SubtagVariableType } from '@blargbot/domain/models';
+import { TagVariableType } from '@blargbot/domain/models';
 import { expect } from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite';
@@ -23,15 +23,15 @@ runSubtagTests({
             subtags: [new GetSubtag()],
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
-                ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.arr1`] = ['this', 'is', 'arr1'];
-                ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.a`] = 'initial';
+                ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.arr1`] = ['this', 'is', 'arr1'];
+                ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.a`] = 'initial';
             },
             postSetup(bbctx, ctx) {
                 ctx.limit.setup(m => m.check(bbctx, 'foreach:loops')).verifiable(3).thenResolve(undefined);
             },
             async assert(bbctx, _, ctx) {
                 expect((await bbctx.variables.get('a')).value).to.equal('initial');
-                expect(ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.a`]).to.equal('initial');
+                expect(ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.a`]).to.equal('initial');
             }
         },
         {
@@ -40,15 +40,15 @@ runSubtagTests({
             subtags: [new GetSubtag()],
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
-                ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.arr1`] = ['this', 'is', 'arr1'];
-                ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.a`] = 'initial';
+                ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.arr1`] = ['this', 'is', 'arr1'];
+                ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.a`] = 'initial';
             },
             postSetup(bbctx, ctx) {
                 ctx.limit.setup(m => m.check(bbctx, 'foreach:loops')).verifiable(3).thenResolve(undefined);
             },
             async assert(bbctx, _, ctx) {
                 expect((await bbctx.variables.get('a')).value).to.equal('initial');
-                expect(ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.a`]).to.equal('initial');
+                expect(ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.a`]).to.equal('initial');
             }
         },
         {
@@ -57,15 +57,15 @@ runSubtagTests({
             subtags: [new GetSubtag()],
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
-                ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.var1`] = 'this is var1';
-                ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.a`] = 'initial';
+                ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.var1`] = 'this is var1';
+                ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.a`] = 'initial';
             },
             postSetup(bbctx, ctx) {
                 ctx.limit.setup(m => m.check(bbctx, 'foreach:loops')).verifiable(12).thenResolve(undefined);
             },
             async assert(bbctx, _, ctx) {
                 expect((await bbctx.variables.get('a')).value).to.equal('initial');
-                expect(ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.a`]).to.equal('initial');
+                expect(ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.a`]).to.equal('initial');
             }
         },
         {
@@ -74,15 +74,15 @@ runSubtagTests({
             subtags: [new GetSubtag(), new IfSubtag(), new ReturnSubtag()],
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
-                ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.var1`] = 'this is var1';
-                ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.a`] = 'initial';
+                ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.var1`] = 'this is var1';
+                ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.a`] = 'initial';
             },
             postSetup(bbctx, ctx) {
                 ctx.limit.setup(m => m.check(bbctx, 'foreach:loops')).verifiable(4).thenResolve(undefined);
             },
             async assert(bbctx, _, ctx) {
                 expect((await bbctx.variables.get('a')).value).to.equal('initial');
-                expect(ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.a`]).to.equal('initial');
+                expect(ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.a`]).to.equal('initial');
                 expect(bbctx.data.state).to.equal(BBTagRuntimeState.ABORT);
             }
         },
@@ -95,8 +95,8 @@ runSubtagTests({
             subtags: [new GetSubtag()],
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
-                ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.arr1`] = ['this', 'is', 'arr1'];
-                ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.a`] = 'initial';
+                ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.arr1`] = ['this', 'is', 'arr1'];
+                ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.a`] = 'initial';
             },
             postSetup(bbctx, ctx) {
                 let i = 0;
@@ -108,7 +108,7 @@ runSubtagTests({
             },
             async assert(bbctx, _, ctx) {
                 expect((await bbctx.variables.get('a')).value).to.equal('initial');
-                expect(ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.a`]).to.equal('initial');
+                expect(ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.a`]).to.equal('initial');
             }
         }
     ]

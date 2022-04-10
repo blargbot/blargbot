@@ -1,6 +1,6 @@
 import { ConcatSubtag } from '@blargbot/bbtag/subtags/array/concat';
 import { GetSubtag } from '@blargbot/bbtag/subtags/bot/get';
-import { SubtagVariableType } from '@blargbot/domain/models';
+import { TagVariableType } from '@blargbot/domain/models';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 
@@ -16,8 +16,8 @@ runSubtagTests({
             subtags: [new GetSubtag()],
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
-                ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.arr1`] = ['this', 'is', 'arr1'];
-                ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.arr2`] = ['this', 'is', 'arr2'];
+                ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.arr1`] = ['this', 'is', 'arr1'];
+                ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.arr2`] = ['this', 'is', 'arr2'];
             }
         }
     ]

@@ -1,8 +1,8 @@
 import { guard } from '@blargbot/core/utils';
-import { BBTagVariable, SubtagVariableType } from '@blargbot/domain/models';
+import { BBTagVariable, TagVariableScope, TagVariableType } from '@blargbot/domain/models';
 import { TagVariableStore } from '@blargbot/domain/stores';
 import { Logger } from '@blargbot/logger';
-import { ENUM, STRING, TEXT } from 'sequelize';
+import { ENUM, Op, STRING, TEXT, WhereOptions } from 'sequelize';
 
 import { PostgresDb } from '../clients';
 import { PostgresDbTable } from '../tables/PostgresDbTable';
@@ -21,7 +21,7 @@ export class PostgresDbTagVariableStore implements TagVariableStore {
                 allowNull: false
             },
             type: {
-                type: ENUM(...Object.values(SubtagVariableType)),
+                type: ENUM(...Object.values(TagVariableType)),
                 primaryKey: true,
                 allowNull: false
             },
@@ -37,13 +37,37 @@ export class PostgresDbTagVariableStore implements TagVariableStore {
         });
     }
 
-    public async upsert(values: Record<string, JToken | undefined>, type: SubtagVariableType, scope: string): Promise<void> {
+    public async clearScope(scope: TagVariableScope): Promise<void> {
+        let where: WhereOptions<BBTagVariable>;
+        if (scope.entityId === undefined) {
+            where = {
+                type: scope.type
+            };
+        } else if (scope.name !== undefined) {
+            where = {
+                type: scope.type,
+                scope: `${scope.entityId}_${scope.name}`
+            };
+        } else {
+            where = {
+                type: scope.type,
+                scope: {
+                    [Op.like]: {
+                        [Op.any]: [scope.entityId, `${scope.entityId}\\_%`]
+                    }
+                }
+            };
+        }
+        await this.#table.destroy({ where });
+    }
+
+    public async upsert(values: Record<string, JToken | undefined>, scope: TagVariableScope): Promise<void> {
         const trans = await this.postgres.transaction();
         for (const [key, value] of Object.entries(values)) {
             const query = {
                 name: key.substring(0, 255),
-                scope: scope,
-                type: type
+                scope: [scope.entityId, scope.name].filter(guard.hasValue).join('_'),
+                type: scope.type
             };
             try {
                 if (guard.hasValue(value))
@@ -57,12 +81,12 @@ export class PostgresDbTagVariableStore implements TagVariableStore {
         return await trans.commit();
     }
 
-    public async get(name: string, type: SubtagVariableType, scope: string): Promise<JToken | undefined> {
+    public async get(name: string, scope: TagVariableScope): Promise<JToken | undefined> {
         const record = await this.#table.get({
             where: {
                 name: name.substring(0, 255),
-                type: type,
-                scope: scope
+                scope: [scope.entityId, scope.name].filter(guard.hasValue).join('_'),
+                type: scope.type
             }
         });
 

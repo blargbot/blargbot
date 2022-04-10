@@ -1,7 +1,7 @@
 import { NotAnArrayError } from '@blargbot/bbtag/errors';
 import { ShuffleSubtag } from '@blargbot/bbtag/subtags/array/shuffle';
 import { GetSubtag } from '@blargbot/bbtag/subtags/bot/get';
-import { SubtagVariableType } from '@blargbot/domain/models';
+import { TagVariableType } from '@blargbot/domain/models';
 import { expect } from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite';
@@ -37,7 +37,7 @@ runSubtagTests({
             ],
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
-                ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.var1`] = 'this is var1';
+                ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.var1`] = 'this is var1';
             }
         },
         {
@@ -57,10 +57,10 @@ runSubtagTests({
             setupSaveVariables: false,
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
-                ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.arr1`] = [1, 2, 3, 4, 5, 6];
+                ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.arr1`] = [1, 2, 3, 4, 5, 6];
             },
             async assert(bbctx, _, ctx) {
-                expect(ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.arr1`]).to.deep.equal([1, 2, 3, 4, 5, 6]);
+                expect(ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.arr1`]).to.deep.equal([1, 2, 3, 4, 5, 6]);
                 const result = (await bbctx.variables.get('arr1')).value;
                 expect(result).to.not.deep.equal([1, 2, 3, 4, 5, 6]);
                 expect(result).to.have.members([1, 2, 3, 4, 5, 6]);

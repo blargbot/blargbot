@@ -1,7 +1,7 @@
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
 import { JsonSubtag } from '@blargbot/bbtag/subtags/json/json';
 import { JsonGetSubtag } from '@blargbot/bbtag/subtags/json/jsonget';
-import { SubtagVariableType } from '@blargbot/domain/models';
+import { TagVariableType } from '@blargbot/domain/models';
 
 import { runSubtagTests, SubtagTestCase } from '../SubtagTestSuite';
 
@@ -52,7 +52,7 @@ function* generateTestCases(source: JToken, path: string, expected: string): Ite
         expected: expected,
         setup(ctx) {
             ctx.options.tagName = 'testTag';
-            ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.myJsonVar`] = source;
+            ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.myJsonVar`] = source;
         }
     };
 }

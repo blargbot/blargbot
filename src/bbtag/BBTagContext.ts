@@ -21,7 +21,7 @@ import { ScopeManager } from './ScopeManager';
 import { Subtag } from './Subtag';
 import { SubtagCallStack } from './SubtagCallStack';
 import { TagCooldownManager } from './TagCooldownManager';
-import { tagVariableScopes } from './tagVariables';
+import { tagVariableScopeProviders } from './tagVariableScopeProviders';
 import { BBTagContextMessage, BBTagContextOptions, BBTagContextState, BBTagRuntimeScope, BBTagRuntimeState, FindEntityOptions, LocatedRuntimeError, RuntimeDebugEntry, SerializedBBTagContext } from './types';
 
 function serializeEntity(entity: { id: string; }): { id: string; serialized: string; } {
@@ -114,7 +114,7 @@ export class BBTagContext implements BBTagContextOptions {
         this.debug = [];
         this.scopes = options.scopes ?? new ScopeManager();
         this.callStack = options.callStack ?? new SubtagCallStack();
-        this.variables = options.variables ?? new VariableCache(this, tagVariableScopes);
+        this.variables = options.variables ?? new VariableCache(this, tagVariableScopeProviders);
         this.execTimer = new Timer();
         this.dbTimer = new Timer();
         this.dbObjectsCommitted = 0;

@@ -1,7 +1,7 @@
 import { NotANumberError } from '@blargbot/bbtag/errors';
 import { JsonSubtag } from '@blargbot/bbtag/subtags/json/json';
 import { JsonStringifySubtag } from '@blargbot/bbtag/subtags/json/jsonstringify';
-import { SubtagVariableType } from '@blargbot/domain/models';
+import { TagVariableType } from '@blargbot/domain/models';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 
@@ -81,7 +81,7 @@ runSubtagTests({
 }`,
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
-                ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.myVar`] = { abc: 123, def: { ghi: [1, 2, 3] } };
+                ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.myVar`] = { abc: 123, def: { ghi: [1, 2, 3] } };
             }
         },
         {

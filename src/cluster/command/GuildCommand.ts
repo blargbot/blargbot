@@ -9,7 +9,7 @@ export abstract class GuildCommand extends ScopedCommand<GuildCommandContext> {
         return guard.isGuildCommandContext(context);
     }
 
-    protected handleInvalidContext(context: CommandContext): Promise<CommandResult> | CommandResult {
+    protected handleInvalidContext(context: CommandContext): Awaitable<CommandResult> {
         return this.error(`\`${context.prefix}${context.commandName}\` can only be used on guilds.`);
     }
 }

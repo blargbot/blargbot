@@ -13,7 +13,7 @@ export * from './SubtagModuleLoader';
 export * from './ScopeManager';
 export * from './SubtagCallStack';
 export * from './TagCooldownManager';
-export * from './tagVariables';
+export * from './tagVariableScopeProviders';
 export * from './types';
 export * from './getLock';
 export * from './compilation';

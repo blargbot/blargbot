@@ -39,7 +39,7 @@ export abstract class ScopedCommand<TContext extends CommandContext> extends Com
     }
 
     protected abstract guardContext(context: CommandContext): context is TContext;
-    protected abstract handleInvalidContext(context: CommandContext): Promise<CommandResult> | CommandResult;
+    protected abstract handleInvalidContext(context: CommandContext): Awaitable<CommandResult>;
 
     public async execute(context: CommandContext, next: NextMiddleware<CommandResult>): Promise<CommandResult> {
         if (!this.guardContext(context))

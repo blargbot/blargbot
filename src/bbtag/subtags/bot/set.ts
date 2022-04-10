@@ -1,6 +1,6 @@
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
-import { tagVariableScopes } from '../../tagVariables';
+import { tagVariableScopeProviders } from '../../tagVariableScopeProviders';
 import { bbtag, SubtagType } from '../../utils';
 
 export class SetSubtag extends CompiledSubtag {
@@ -22,7 +22,7 @@ export class SetSubtag extends CompiledSubtag {
                     description:
                         'Stores `value` under `name`. These variables are saved between sessions. ' +
                         'You can use a character prefix to determine the scope of your variable.\n' +
-                        'Valid scopes are: ' + tagVariableScopes.map((s) => `${s.prefix.length === 0 ? 'no prefix' : `\`${s.prefix}\``} (${s.name})`).join(', ') +
+                        'Valid scopes are: ' + tagVariableScopeProviders.map((s) => `${s.prefix.length === 0 ? 'no prefix' : `\`${s.prefix}\``} (${s.name})`).join(', ') +
                         '.\nFor performance reasons, variables are not immediately stored to the database. See `{commit}` and `{rollback}`' +
                         'for more information, or use `b!t docs variable` or `b!cc docs variable`',
                     exampleCode:

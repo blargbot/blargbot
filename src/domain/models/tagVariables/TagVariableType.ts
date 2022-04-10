@@ -1,4 +1,4 @@
-export enum SubtagVariableType {
+export enum TagVariableType {
     LOCAL = 'LOCAL_TAG',
     AUTHOR = 'AUTHOR',
     GUILD = 'GUILD_CC',

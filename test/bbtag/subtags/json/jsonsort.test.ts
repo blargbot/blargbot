@@ -1,7 +1,7 @@
 import { BBTagRuntimeError, NotAnArrayError } from '@blargbot/bbtag/errors';
 import { JsonSubtag } from '@blargbot/bbtag/subtags/json/json';
 import { JsonSortSubtag } from '@blargbot/bbtag/subtags/json/jsonsort';
-import { SubtagVariableType } from '@blargbot/domain/models';
+import { TagVariableType } from '@blargbot/domain/models';
 import { expect } from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite';
@@ -26,7 +26,7 @@ runSubtagTests({
             setupSaveVariables: false,
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
-                ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.arrayVar`] = [
+                ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.arrayVar`] = [
                     { points: 10, name: 'Blargbot' },
                     { points: 3, name: 'UNO' },
                     { points: 6, name: 'Stupid cat' },
@@ -48,7 +48,7 @@ runSubtagTests({
             setupSaveVariables: false,
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
-                ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.arrayVar`] = [
+                ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.arrayVar`] = [
                     { points: 10, name: 'Blargbot' },
                     { points: 3, name: 'UNO' },
                     { points: 6, name: 'Stupid cat' },
@@ -73,7 +73,7 @@ runSubtagTests({
             setupSaveVariables: false,
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
-                ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.arrayVar`] = [
+                ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.arrayVar`] = [
                     { points: 10, name: 'Blargbot' },
                     { test: 3, name: 'UNO' },
                     { points: 6, name: 'Stupid cat' },
@@ -90,7 +90,7 @@ runSubtagTests({
             setupSaveVariables: false,
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
-                ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.arrayVar`] = [
+                ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.arrayVar`] = [
                     { points: 10, name: 'Blargbot' },
                     { points: 3, name: 'UNO' },
                     { points: 6, name: 'Stupid cat' },
@@ -107,7 +107,7 @@ runSubtagTests({
             setupSaveVariables: false,
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
-                ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.testVar`] = 'xyz';
+                ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.testVar`] = 'xyz';
             }
         }
     ]

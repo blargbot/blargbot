@@ -1,6 +1,6 @@
 import { SetSubtag } from '@blargbot/bbtag/subtags/bot/set';
-import { snowflake } from '@blargbot/core/utils';
-import { SubtagVariableType } from '@blargbot/domain/models';
+import { guard, snowflake } from '@blargbot/core/utils';
+import { TagVariableScope, TagVariableType } from '@blargbot/domain/models';
 import { expect } from 'chai';
 
 import { argument } from '../../mock';
@@ -17,7 +17,7 @@ runSubtagTests({
             },
             {
                 prefix: '',
-                db: { scope: 'testTag', type: SubtagVariableType.LOCAL },
+                db: { name: 'testTag', type: TagVariableType.LOCAL },
                 varName: 'varName',
                 setup(ctx) {
                     ctx.options.tagName = 'testTag';
@@ -25,7 +25,7 @@ runSubtagTests({
             },
             {
                 prefix: '',
-                db: { scope: '234983689742643223984_testTag', type: SubtagVariableType.GUILDLOCAL },
+                db: { entityId: '234983689742643223984', name: 'testTag', type: TagVariableType.GUILDLOCAL },
                 varName: 'varName',
                 setup(ctx) {
                     ctx.options.tagName = 'testTag';
@@ -35,7 +35,7 @@ runSubtagTests({
             },
             {
                 prefix: '@',
-                db: { scope: '23987462839463642947', type: SubtagVariableType.AUTHOR },
+                db: { entityId: '23987462839463642947', type: TagVariableType.AUTHOR },
                 varName: 'varName',
                 setup(ctx) {
                     ctx.users.command.id = '23987462839463642947';
@@ -43,12 +43,12 @@ runSubtagTests({
             },
             {
                 prefix: '*',
-                db: { scope: '', type: SubtagVariableType.GLOBAL },
+                db: { type: TagVariableType.GLOBAL },
                 varName: 'varName'
             },
             {
                 prefix: '_',
-                db: { scope: '234983689742643223984', type: SubtagVariableType.GUILD },
+                db: { entityId: '234983689742643223984', type: TagVariableType.GUILD },
                 varName: 'varName',
                 setup(ctx) {
                     ctx.guild.id = ctx.roles.everyone.id = '234983689742643223984';
@@ -57,7 +57,7 @@ runSubtagTests({
             },
             {
                 prefix: '_',
-                db: { scope: '234983689742643223984', type: SubtagVariableType.TAGGUILD },
+                db: { entityId: '234983689742643223984', type: TagVariableType.TAGGUILD },
                 varName: 'varName',
                 setup(ctx) {
                     ctx.guild.id = ctx.roles.everyone.id = '234983689742643223984';
@@ -75,7 +75,7 @@ runSubtagTests({
     ]
 });
 
-function* createTestCases(setups: Array<{ varName: string; prefix: string; db?: { type: SubtagVariableType; scope: string; }; setup?: SubtagTestCase['setup']; }>, cases: Array<{ args: string[]; value: JToken | undefined; }>): Generator<SubtagTestCase> {
+function* createTestCases(setups: Array<{ varName: string; prefix: string; db?: TagVariableScope; setup?: SubtagTestCase['setup']; }>, cases: Array<{ args: string[]; value: JToken | undefined; }>): Generator<SubtagTestCase> {
     for (const { varName, prefix, db, setup } of setups) {
         for (const { args, value } of cases) {
             yield {
@@ -95,9 +95,9 @@ function* createTestCases(setups: Array<{ varName: string; prefix: string; db?: 
                 setupSaveVariables: false,
                 async setup(ctx, ...args) {
                     if (db !== undefined) {
-                        ctx.tagVariablesTable.setup(m => m.upsert(argument.isDeepEqual({ [varName]: value }), db.type, db.scope))
+                        ctx.tagVariablesTable.setup(m => m.upsert(argument.isDeepEqual({ [varName]: value }), db))
                             .thenResolve(undefined);
-                        ctx.tagVariables[`${db.type}.${db.scope}.${varName}`] = snowflake.create().toString();
+                        ctx.tagVariables[`${db.type}.${[db.entityId, db.name].filter(guard.hasValue).join('_')}.${varName}`] = snowflake.create().toString();
                     }
                     await setup?.call(this, ctx, ...args);
                 },
@@ -112,7 +112,7 @@ function* createTestCases(setups: Array<{ varName: string; prefix: string; db?: 
                 setupSaveVariables: false,
                 async setup(ctx, ...args) {
                     if (db !== undefined) {
-                        ctx.tagVariables[`${db.type}.${db.scope}.${varName}`] = value === undefined ? undefined : JSON.parse(JSON.stringify(value));
+                        ctx.tagVariables[`${db.type}.${[db.entityId, db.name].filter(guard.hasValue).join('_')}.${varName}`] = value === undefined ? undefined : JSON.parse(JSON.stringify(value));
                     }
                     await setup?.call(this, ctx, ...args);
                 },

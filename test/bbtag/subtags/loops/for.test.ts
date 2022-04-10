@@ -6,7 +6,7 @@ import { ForSubtag } from '@blargbot/bbtag/subtags/loops/for';
 import { IfSubtag } from '@blargbot/bbtag/subtags/misc/if';
 import { OperatorSubtag } from '@blargbot/bbtag/subtags/misc/operator';
 import { BBTagRuntimeState } from '@blargbot/bbtag/types';
-import { SubtagVariableType } from '@blargbot/domain/models';
+import { TagVariableType } from '@blargbot/domain/models';
 import { expect } from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite';
@@ -21,14 +21,14 @@ runSubtagTests({
             subtags: [new GetSubtag()],
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
-                ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.index`] = 'initial';
+                ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.index`] = 'initial';
             },
             postSetup(bbctx, ctx) {
                 ctx.limit.setup(m => m.check(bbctx, 'for:loops')).verifiable(10).thenResolve(undefined);
             },
             async assert(bbctx, _, ctx) {
                 expect((await bbctx.variables.get('index')).value).to.equal('initial');
-                expect(ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.index`]).to.equal('initial');
+                expect(ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.index`]).to.equal('initial');
             }
         },
         {
@@ -37,14 +37,14 @@ runSubtagTests({
             subtags: [new GetSubtag()],
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
-                ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.index`] = 'initial';
+                ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.index`] = 'initial';
             },
             postSetup(bbctx, ctx) {
                 ctx.limit.setup(m => m.check(bbctx, 'for:loops')).verifiable(5).thenResolve(undefined);
             },
             async assert(bbctx, _, ctx) {
                 expect((await bbctx.variables.get('index')).value).to.equal('initial');
-                expect(ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.index`]).to.equal('initial');
+                expect(ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.index`]).to.equal('initial');
             }
         },
         {
@@ -53,14 +53,14 @@ runSubtagTests({
             subtags: [new GetSubtag()],
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
-                ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.index`] = 'initial';
+                ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.index`] = 'initial';
             },
             postSetup(bbctx, ctx) {
                 ctx.limit.setup(m => m.check(bbctx, 'for:loops')).verifiable(10).thenResolve(undefined);
             },
             async assert(bbctx, _, ctx) {
                 expect((await bbctx.variables.get('index')).value).to.equal('initial');
-                expect(ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.index`]).to.equal('initial');
+                expect(ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.index`]).to.equal('initial');
             }
         },
         {
@@ -69,14 +69,14 @@ runSubtagTests({
             subtags: [new GetSubtag(), new SetSubtag(), new OperatorSubtag()],
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
-                ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.index`] = 'initial';
+                ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.index`] = 'initial';
             },
             postSetup(bbctx, ctx) {
                 ctx.limit.setup(m => m.check(bbctx, 'for:loops')).verifiable(10).thenResolve(undefined);
             },
             async assert(bbctx, _, ctx) {
                 expect((await bbctx.variables.get('index')).value).to.equal('initial');
-                expect(ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.index`]).to.equal('initial');
+                expect(ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.index`]).to.equal('initial');
             }
         },
         {
@@ -88,14 +88,14 @@ runSubtagTests({
             subtags: [new SetSubtag()],
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
-                ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.index`] = 'initial';
+                ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.index`] = 'initial';
             },
             postSetup(bbctx, ctx) {
                 ctx.limit.setup(m => m.check(bbctx, 'for:loops')).verifiable(1).thenResolve(undefined);
             },
             async assert(bbctx, _, ctx) {
                 expect((await bbctx.variables.get('index')).value).to.equal('initial');
-                expect(ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.index`]).to.equal('initial');
+                expect(ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.index`]).to.equal('initial');
             }
         },
         {
@@ -149,7 +149,7 @@ runSubtagTests({
             subtags: [new GetSubtag()],
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
-                ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.index`] = 'initial';
+                ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.index`] = 'initial';
             },
             postSetup(bbctx, ctx) {
                 let i = 0;
@@ -161,7 +161,7 @@ runSubtagTests({
             },
             async assert(bbctx, _, ctx) {
                 expect((await bbctx.variables.get('index')).value).to.equal('initial');
-                expect(ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.index`]).to.equal('initial');
+                expect(ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.index`]).to.equal('initial');
             }
         },
         {
@@ -170,14 +170,14 @@ runSubtagTests({
             subtags: [new GetSubtag(), new IfSubtag(), new ReturnSubtag()],
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
-                ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.index`] = 'initial';
+                ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.index`] = 'initial';
             },
             postSetup(bbctx, ctx) {
                 ctx.limit.setup(m => m.check(bbctx, 'for:loops')).verifiable(6).thenResolve(undefined);
             },
             async assert(bbctx, _, ctx) {
                 expect((await bbctx.variables.get('index')).value).to.equal('initial');
-                expect(ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.index`]).to.equal('initial');
+                expect(ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.index`]).to.equal('initial');
                 expect(bbctx.data.state).to.equal(BBTagRuntimeState.ABORT);
             }
         }

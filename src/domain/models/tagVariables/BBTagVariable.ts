@@ -1,8 +1,8 @@
-import { SubtagVariableType } from './SubtagVariableType';
+import { TagVariableType } from './TagVariableType';
 
 export interface BBTagVariable {
     readonly name: string;
-    readonly type: SubtagVariableType;
+    readonly type: TagVariableType;
     readonly scope: string;
     content: string;
 }
