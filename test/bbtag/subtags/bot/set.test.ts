@@ -95,7 +95,7 @@ function* createTestCases(setups: Array<{ varName: string; prefix: string; db?: 
                 setupSaveVariables: false,
                 async setup(ctx, ...args) {
                     if (db !== undefined) {
-                        ctx.tagVariablesTable.setup(m => m.upsert(argument.isDeepEqual({ [varName]: value }), db))
+                        ctx.tagVariablesTable.setup(m => m.upsert(argument.isDeepEqual({ [varName]: value }), argument.isDeepEqual(db)))
                             .thenResolve(undefined);
                         ctx.tagVariables[`${db.type}.${[db.entityId, db.name].filter(guard.hasValue).join('_')}.${varName}`] = snowflake.create().toString();
                     }
