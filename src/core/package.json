@@ -26,7 +26,7 @@
         "require-reload": "^0.2.2",
         "rethinkdb": "^2.4.2",
         "safe-regex": "^2.1.1",
-        "sequelize": "^6.17.0",
+        "sequelize": "^6.19.0",
         "twemoji": "^14.0.2",
         "unorm": "^1.6.0"
     },
