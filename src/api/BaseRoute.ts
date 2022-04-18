@@ -11,14 +11,14 @@ import { ApiResponse, AsyncRequestHandler, RequestHandlers } from './types';
 export type AsyncRequestMiddleware<Route extends string, This> = (this: This, req: Request<RouteParameters<Route>>, res: Response, next: () => Awaitable<ApiResponse>) => Awaitable<ApiResponse>;
 
 export class BaseRoute {
-    private readonly router: Router;
+    readonly #routerBuildSteps: Array<(api: Api, router: Router) => void>;
     public readonly paths: ReadonlyArray<`/${string}`>;
     protected readonly middleware: Array<AsyncRequestMiddleware<string, this>>;
     readonly #websockets: Map<`/${string}`, Array<(socket: WebSocket, request: IncomingMessage) => void>>;
 
     public constructor(...paths: Array<`/${string}`>) {
         this.paths = paths;
-        this.router = asyncRouter();
+        this.#routerBuildSteps = [];
         this.middleware = [];
         this.#websockets = new Map();
     }
@@ -29,7 +29,11 @@ export class BaseRoute {
     }
 
     protected installAt(api: Api, path: `/${string}`): void {
-        api.app.use(path, this.router);
+        const router = asyncRouter();
+        for (const step of this.#routerBuildSteps)
+            step(api, router);
+
+        api.app.use(path, router);
 
         for (const [route, handlers] of this.#websockets.entries()) {
             const wss = new WebSocketServer({
@@ -55,40 +59,44 @@ export class BaseRoute {
     }
 
     protected addRoute<Route extends `/${string}`>(route: Route, handlers: RequestHandlers<Route>, ...middleware: Array<AsyncRequestMiddleware<Route, this>>): this {
-        const router = this.router.route(route);
-        const callMiddleware = (
-            middleware: Array<AsyncRequestMiddleware<Route, this>>,
-            req: Request<RouteParameters<Route>>,
-            res: Response,
-            handler: AsyncRequestHandler<Route>,
-            index: number
-        ): Awaitable<ApiResponse> => {
-            if (index >= middleware.length)
-                return handler(req, res);
-            return middleware[index].call(this, req, res, () => callMiddleware(middleware, req, res, handler, index + 1));
-        };
+        this.#routerBuildSteps.push((api, coreRouter) => {
+            const router = coreRouter.route(route);
+            const callMiddleware = (
+                middleware: Array<AsyncRequestMiddleware<Route, this>>,
+                req: Request<RouteParameters<Route>>,
+                res: Response,
+                handler: AsyncRequestHandler<Route>,
+                index: number
+            ): Awaitable<ApiResponse> => {
+                if (index >= middleware.length)
+                    return handler(req, res);
+                return middleware[index].call(this, req, res, () => callMiddleware(middleware, req, res, handler, index + 1));
+            };
 
-        for (const [method, handler] of Object.entries(handlers)) {
-            if (handler === undefined)
-                continue;
-            router[method](async (req, res) => {
-                try {
-                    const result = await callMiddleware(
-                        [...this.middleware, ...middleware] as Array<AsyncRequestMiddleware<Route, this>>,
-                        req,
-                        res,
-                        handler,
-                        0
-                    );
-                    await result.execute(res);
-                } catch (err: unknown) {
-                    if (err instanceof UnauthenticatedError)
-                        await this.unauthorized().execute(res);
-                    else
+            for (const [method, handler] of Object.entries(handlers)) {
+                if (handler === undefined)
+                    continue;
+                router[method](async (req, res) => {
+                    try {
+                        const result = await callMiddleware(
+                            [...this.middleware, ...middleware] as Array<AsyncRequestMiddleware<Route, this>>,
+                            req,
+                            res,
+                            handler,
+                            0
+                        );
+                        await result.execute(res);
+                    } catch (err: unknown) {
+                        if (err instanceof UnauthenticatedError) {
+                            await this.unauthorized().execute(res);
+                            return;
+                        }
+                        api.logger.error('Error while handling', req.originalUrl, err);
                         await this.internalServerError(err).execute(res);
-                }
-            });
-        }
+                    }
+                });
+            }
+        });
         return this;
     }
 
