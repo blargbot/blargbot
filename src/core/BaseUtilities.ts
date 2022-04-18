@@ -4,7 +4,7 @@ import { Database } from '@blargbot/database';
 import { StoredUser } from '@blargbot/domain/models';
 import { Logger } from '@blargbot/logger';
 import { Snowflake } from 'catflake';
-import { ApiError, ChannelInteraction, Client as Discord, DiscordRESTError, EmbedAuthor, EmbedOptions, ExtendedUser, Guild, KnownChannel, KnownGuildChannel, KnownMessage, KnownTextableChannel, Member, Message, Role, User, UserChannelInteraction, Webhook } from 'eris';
+import { AnyGuildChannel, ApiError, ChannelInteraction, Client as Discord, Collection, DiscordRESTError, EmbedAuthor, EmbedOptions, ExtendedUser, Guild, GuildChannel, KnownChannel, KnownGuildChannel, KnownMessage, KnownTextableChannel, Member, Message, Role, User, UserChannelInteraction, Webhook } from 'eris';
 import moment from 'moment-timezone';
 
 import { BaseClient } from './BaseClient';
@@ -373,24 +373,27 @@ export class BaseUtilities {
             return undefined;
 
         if (guildVal === undefined)
-            return this.discord.getChannel(channelId) ?? await this.#getChannel(channelId);
+            return this.discord.getChannel(channelId) ?? await this.#getRestChannel(channelId);
         const guild = typeof guildVal === 'string' ? await this.getGuild(guildVal) : guildVal;
         if (guild === undefined)
             return undefined;
-        const channel = guild.channels.get(channelId) ?? await this.#getChannel(channelId);
+        const channel = guild.channels.get(channelId) ?? await this.#getRestChannel(channelId);
         return channel !== undefined && guard.isGuildChannel(channel) ? channel : undefined;
     }
 
-    async #getChannel(channelId: string): Promise<KnownChannel | undefined> {
+    async #getRestChannel(channelId: string): Promise<KnownChannel | undefined> {
         try {
             const channel = await this.discord.getRESTChannel(channelId);
             if (guard.isPrivateChannel(channel)) {
                 if (this.discord.privateChannels.get(channel.id) !== channel)
                     this.discord.privateChannels.set(channel.id, channel);
             } else {
-                const guild = this.discord.guilds.get(channel.guild.id);
-                if (guild !== undefined && guild.channels.get(channel.id) !== channel)
-                    guild.channels.set(channel.id, channel);
+                if (guard.isUncached(channel.guild)) {
+                    channel.guild = await this.getGuild(channel.guild.id) ?? channel.guild;
+                    channel.guild.channels ??= new Collection(GuildChannel as new (...args: unknown[]) => AnyGuildChannel);
+                }
+                if (channel.guild.channels.get(channel.id) !== channel)
+                    channel.guild.channels.set(channel.id, channel);
             }
             return channel;
         } catch (err: unknown) {
