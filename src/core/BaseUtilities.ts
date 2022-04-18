@@ -4,7 +4,7 @@ import { Database } from '@blargbot/database';
 import { StoredUser } from '@blargbot/domain/models';
 import { Logger } from '@blargbot/logger';
 import { Snowflake } from 'catflake';
-import { ApiError, ChannelInteraction, Client as Discord, DiscordRESTError, EmbedAuthor, EmbedOptions, ExtendedUser, Guild, KnownChannel, KnownGuildChannel, KnownMessage, KnownTextableChannel, Member, Message, Role, User, UserChannelInteraction, Webhook } from 'eris';
+import { ApiError, ChannelInteraction, Client as Discord, Collection, DiscordRESTError, EmbedAuthor, EmbedOptions, ExtendedUser, Guild, KnownChannel, KnownGuildChannel, KnownMessage, KnownTextableChannel, Member, Message, PrivateChannel, Role, User, UserChannelInteraction, Webhook } from 'eris';
 import moment from 'moment-timezone';
 
 import { BaseClient } from './BaseClient';
@@ -384,10 +384,7 @@ export class BaseUtilities {
     async #getChannel(channelId: string): Promise<KnownChannel | undefined> {
         try {
             const channel = await this.discord.getRESTChannel(channelId);
-            if (guard.isPrivateChannel(channel)) {
-                if (this.discord.privateChannels.get(channel.id) !== channel)
-                    this.discord.privateChannels.set(channel.id, channel);
-            } else if (channel.guild.channels.get(channel.id) !== channel)
+            if (!guard.isPrivateChannel(channel) && channel.guild.channels.get(channel.id) !== channel)
                 channel.guild.channels.set(channel.id, channel);
             return channel;
         } catch (err: unknown) {
