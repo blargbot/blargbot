@@ -384,8 +384,14 @@ export class BaseUtilities {
     async #getChannel(channelId: string): Promise<KnownChannel | undefined> {
         try {
             const channel = await this.discord.getRESTChannel(channelId);
-            if (!guard.isPrivateChannel(channel) && channel.guild.channels.get(channel.id) !== channel)
-                channel.guild.channels.set(channel.id, channel);
+            if (guard.isPrivateChannel(channel)) {
+                if (this.discord.privateChannels.get(channel.id) !== channel)
+                    this.discord.privateChannels.set(channel.id, channel);
+            } else {
+                const guild = this.discord.guilds.get(channel.guild.id);
+                if (guild !== undefined && guild.channels.get(channel.id) !== channel)
+                    guild.channels.set(channel.id, channel);
+            }
             return channel;
         } catch (err: unknown) {
             if (err instanceof DiscordRESTError && err.code === ApiError.UNKNOWN_CHANNEL)
