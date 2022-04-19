@@ -1,4 +1,4 @@
-import { Api } from '@blargbot/api';
+import { Api } from '@blargbot/api/Api';
 import { BaseRoute } from '@blargbot/api/BaseRoute';
 import { ApiResponse } from '@blargbot/api/types';
 import { StoredTag } from '@blargbot/domain/models';
@@ -9,14 +9,14 @@ export class TagsRoute extends BaseRoute {
         super('/tags');
 
         this.addRoute('/', {
-            post: req => this.createTag(req.body, this.getUserId(req))
+            post: ({ request }) => this.createTag(request.body, this.getUserId(request))
         });
 
         this.addRoute('/:tagName', {
-            get: req => this.getTag(req.params.tagName),
-            patch: req => this.editTag(req.params.tagName, req.body, this.getUserId(req)),
-            put: req => this.setTag(req.params.tagName, req.body, this.getUserId(req)),
-            delete: req => this.deleteTag(req.params.tagName, this.getUserId(req))
+            get: ({ request }) => this.getTag(request.params.tagName),
+            patch: ({ request }) => this.editTag(request.params.tagName, request.body, this.getUserId(request)),
+            put: ({ request }) => this.setTag(request.params.tagName, request.body, this.getUserId(request)),
+            delete: ({ request }) => this.deleteTag(request.params.tagName, this.getUserId(request))
         });
     }
 

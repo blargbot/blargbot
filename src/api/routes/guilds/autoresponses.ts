@@ -1,4 +1,4 @@
-import { Api } from '@blargbot/api';
+import { Api } from '@blargbot/api/Api';
 import { BaseRoute } from '@blargbot/api/BaseRoute';
 import { ApiResponse } from '@blargbot/api/types';
 import { parse } from '@blargbot/core/utils';
@@ -12,12 +12,12 @@ export class AutoresponsesRoute extends BaseRoute {
         this.middleware.push(async (req, _, next) => await this.checkAccess(req.params.guildId, this.getUserId(req, true)) ?? await next());
 
         this.addRoute('/:guildId/autoresponses', {
-            get: (req) => this.listAutoresponses(req.params.guildId)
+            get: ({ request }) => this.listAutoresponses(request.params.guildId)
         });
 
         this.addRoute('/:guildId/autoresponses/:id', {
-            get: (req) => this.getAutoresponse(req.params.guildId, req.params.id),
-            patch: (req) => this.editAutoresponse(req.params.guildId, req.params.id, req.body, this.getUserId(req))
+            get: ({ request }) => this.getAutoresponse(request.params.guildId, request.params.id),
+            patch: ({ request }) => this.editAutoresponse(request.params.guildId, request.params.id, request.body, this.getUserId(request))
         });
     }
 

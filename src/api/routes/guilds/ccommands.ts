@@ -11,15 +11,15 @@ export class CCommandsRoute extends BaseRoute {
         this.middleware.push(async (req, _, next) => await this.checkAccess(req.params.guildId, this.getUserId(req, true)) ?? await next());
 
         this.addRoute('/:guildId/ccommands', {
-            get: (req) => this.listCCommands(req.params.guildId),
-            post: (req) => this.createCommand(req.params.guildId, req.body, this.getUserId(req))
+            get: ({ request }) => this.listCCommands(request.params.guildId),
+            post: ({ request }) => this.createCommand(request.params.guildId, request.body, this.getUserId(request))
         });
 
         this.addRoute('/:guildId/ccommands/:commandName', {
-            get: (req) => this.getCommand(req.params.guildId, req.params.commandName),
-            delete: (req) => this.deleteCommand(req.params.guildId, req.params.commandName),
-            put: (req) => this.setCommand(req.params.guildId, req.params.commandName, req.body, this.getUserId(req)),
-            patch: (req) => this.editCommand(req.params.guildId, req.params.commandName, req.body, this.getUserId(req))
+            get: ({ request }) => this.getCommand(request.params.guildId, request.params.commandName),
+            delete: ({ request }) => this.deleteCommand(request.params.guildId, request.params.commandName),
+            put: ({ request }) => this.setCommand(request.params.guildId, request.params.commandName, request.body, this.getUserId(request)),
+            patch: ({ request }) => this.editCommand(request.params.guildId, request.params.commandName, request.body, this.getUserId(request))
         });
     }
 

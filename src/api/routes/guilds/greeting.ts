@@ -1,4 +1,4 @@
-import { Api } from '@blargbot/api';
+import { Api } from '@blargbot/api/Api';
 import { BaseRoute } from '@blargbot/api/BaseRoute';
 import { ApiResponse } from '@blargbot/api/types';
 import { mapping } from '@blargbot/mapping';
@@ -10,9 +10,9 @@ export class GreetingRoute extends BaseRoute {
         this.middleware.push(async (req, _, next) => await this.checkAccess(req.params.guildId, this.getUserId(req, true)) ?? await next());
 
         this.addRoute('/:guildId/greeting', {
-            get: (req) => this.getGreeting(req.params.guildId),
-            put: (req) => this.setGreeting(req.params.guildId, req.body, this.getUserId(req)),
-            delete: (req) => this.deleteGreeting(req.params.guildId)
+            get: ({ request }) => this.getGreeting(request.params.guildId),
+            put: ({ request }) => this.setGreeting(request.params.guildId, request.body, this.getUserId(request)),
+            delete: ({ request }) => this.deleteGreeting(request.params.guildId)
         });
     }
 

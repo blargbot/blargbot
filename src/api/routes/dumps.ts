@@ -1,4 +1,5 @@
-import { Api } from '../Api';
+import { Api } from '@blargbot/api/Api';
+
 import { BaseRoute } from '../BaseRoute';
 import { ApiResponse } from '../types';
 
@@ -7,7 +8,7 @@ export class DumpsRoute extends BaseRoute {
         super('/dumps');
 
         this.addRoute('/:id', {
-            get: req => this.getDump(req.params.id)
+            get: ({ request }) => this.getDump(request.params.id)
         });
     }
 

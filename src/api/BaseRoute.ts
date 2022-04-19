@@ -1,26 +1,21 @@
 import { Api } from '@blargbot/api/Api';
-import { Request, Response, Router } from 'express';
+import { Lazy } from '@blargbot/core/Lazy';
 import asyncRouter from 'express-promise-router';
-import { RouteParameters } from 'express-serve-static-core';
+import { IRoute } from 'express-serve-static-core';
 import { IncomingMessage } from 'http';
 import { WebSocketServer } from 'ws';
 
 import Security from './Security';
-import { ApiResponse, AsyncRequestHandler, RequestHandlers } from './types';
-
-export type AsyncRequestMiddleware<Route extends string, This> = (this: This, req: Request<RouteParameters<Route>>, res: Response, next: () => Awaitable<ApiResponse>) => Awaitable<ApiResponse>;
+import { ApiResponse, AsyncRequestContext, AsyncRequestHandler, AsyncRequestMiddleware, AsyncWebsocketHandler, RequestHandlers, RequestMethods } from './types';
 
 export class BaseRoute {
-    readonly #routerBuildSteps: Array<(api: Api, router: Router) => void>;
+    readonly #installSteps: Array<(api: Api, path: string) => void>;
     public readonly paths: ReadonlyArray<`/${string}`>;
-    protected readonly middleware: Array<AsyncRequestMiddleware<string, this>>;
-    readonly #websockets: Map<`/${string}`, Array<(socket: WebSocket, request: IncomingMessage) => void>>;
-
+    protected readonly middleware: Array<AsyncRequestMiddleware<this, string>>;
     public constructor(...paths: Array<`/${string}`>) {
         this.paths = paths;
-        this.#routerBuildSteps = [];
+        this.#installSteps = [];
         this.middleware = [];
-        this.#websockets = new Map();
     }
 
     public install(api: Api): void {
@@ -29,81 +24,68 @@ export class BaseRoute {
     }
 
     protected installAt(api: Api, path: `/${string}`): void {
-        const router = asyncRouter();
-        for (const step of this.#routerBuildSteps)
-            step(api, router);
+        for (const step of this.#installSteps)
+            step(api, path);
+    }
 
-        api.app.use(path, router);
+    #bindWebsocket(api: Api, path: string, handler: AsyncWebsocketHandler<this>): void {
+        const wss = new WebSocketServer({
+            noServer: true,
+            path: path.replace(/\/$/, '')
+        });
 
-        for (const [route, handlers] of this.#websockets.entries()) {
-            const wss = new WebSocketServer({
-                noServer: true,
-                path: `${path}${route}`.replace(/\/$/, '')
+        api.server.on('upgrade', (req, sock, head) =>
+            wss.handleUpgrade(req, sock, head, (ws, req) =>
+                wss.emit('connection', ws, req)));
+
+        wss.on('connection', (socket, request) => {
+            void handler.call(this, { socket, request, api });
+        });
+    }
+
+    #bindRoute<Route extends `/${string}`>(api: Api, router: IRoute<Route>, method: RequestMethods, middleware: Array<AsyncRequestMiddleware<this, Route>>, handler: AsyncRequestHandler<this, Route>): void {
+        const getResult = createMiddlewareCaller<this, Route>(this, () => [...this.middleware, ...middleware], handler);
+        router[method](async (request, response) => {
+            try {
+                const result = await getResult({ request, response, api });
+                await result.execute(response);
+            } catch (err: unknown) {
+                if (err instanceof UnauthenticatedError) {
+                    await this.unauthorized().execute(response);
+                    return;
+                }
+                api.logger.error('Error while handling', request.originalUrl, err);
+                await this.internalServerError(err).execute(response);
+            }
+        });
+    }
+
+    protected addRoute<Route extends `/${string}`>(route: Route, handlers: RequestHandlers<this, Route>, ...middleware: Array<AsyncRequestMiddleware<this, Route>>): this {
+        this.#installSteps.push((api, baseRoute) => {
+            const fullPath = baseRoute + route;
+            const { ws, ...http } = handlers;
+
+            if (ws !== undefined)
+                this.#bindWebsocket(api, fullPath, ws);
+
+            const router = new Lazy(() => {
+                const router = asyncRouter();
+                api.app.use(baseRoute, router);
+                return router.route(route);
             });
-
-            api.server.on('upgrade', (req, sock, head) =>
-                wss.handleUpgrade(req, sock, head, (ws, req) =>
-                    wss.emit('connection', ws, req)));
-
-            for (const handler of handlers)
-                wss.on('connection', handler);
-        }
-    }
-
-    protected addWebsocket<Route extends `/${string}`>(route: Route, handler: (this: this, socket: WebSocket, request: IncomingMessage) => void): this {
-        let handlers = this.#websockets.get(route.toLowerCase());
-        if (handlers === undefined)
-            this.#websockets.set(route.toLowerCase(), handlers = []);
-        handlers.push(handler.bind(this));
-        return this;
-    }
-
-    protected addRoute<Route extends `/${string}`>(route: Route, handlers: RequestHandlers<Route>, ...middleware: Array<AsyncRequestMiddleware<Route, this>>): this {
-        this.#routerBuildSteps.push((api, coreRouter) => {
-            const router = coreRouter.route(route);
-            const callMiddleware = (
-                middleware: Array<AsyncRequestMiddleware<Route, this>>,
-                req: Request<RouteParameters<Route>>,
-                res: Response,
-                handler: AsyncRequestHandler<Route>,
-                index: number
-            ): Awaitable<ApiResponse> => {
-                if (index >= middleware.length)
-                    return handler(req, res);
-                return middleware[index].call(this, req, res, () => callMiddleware(middleware, req, res, handler, index + 1));
-            };
-
-            for (const [method, handler] of Object.entries(handlers)) {
+            for (const [method, handler] of Object.entries(http)) {
                 if (handler === undefined)
                     continue;
-                router[method](async (req, res) => {
-                    try {
-                        const result = await callMiddleware(
-                            [...this.middleware, ...middleware] as Array<AsyncRequestMiddleware<Route, this>>,
-                            req,
-                            res,
-                            handler,
-                            0
-                        );
-                        await result.execute(res);
-                    } catch (err: unknown) {
-                        if (err instanceof UnauthenticatedError) {
-                            await this.unauthorized().execute(res);
-                            return;
-                        }
-                        api.logger.error('Error while handling', req.originalUrl, err);
-                        await this.internalServerError(err).execute(res);
-                    }
-                });
+                this.#bindRoute(api, router.value, method, middleware, handler);
             }
         });
         return this;
     }
 
-    protected getUserId(request: Request): string;
-    protected getUserId(request: Request, allowUndef: boolean): string | undefined;
-    protected getUserId(request: Request, allowUndef = false): string | undefined {
-        const token = request.header('Authorization');
+    protected getUserId(request: IncomingMessage): string;
+    protected getUserId(request: IncomingMessage, allowUndef: boolean): string | undefined;
+    protected getUserId(request: IncomingMessage, allowUndef = false): string | undefined {
+        const token = request.headers.authorization;
         if (token === undefined)
             return undefined;
         const id = Security.validateToken(token);
@@ -158,4 +140,17 @@ export class BaseRoute {
 
 class UnauthenticatedError extends Error {
 
+}
+
+function createMiddlewareCaller<This, Route extends string>(
+    thisArg: This,
+    getMiddleware: () => ReadonlyArray<AsyncRequestMiddleware<This, string> | AsyncRequestMiddleware<This, Route>>,
+    handler: AsyncRequestHandler<This, Route>
+): (context: AsyncRequestContext<Route>) => Awaitable<ApiResponse> {
+    const callMiddleware = (context: AsyncRequestContext<Route>, index: number, middleware: ReadonlyArray<AsyncRequestMiddleware<This, string> | AsyncRequestMiddleware<This, Route>>): Awaitable<ApiResponse> => {
+        if (index >= middleware.length)
+            return handler.call(thisArg, context);
+        return middleware[index].call(thisArg, context.request, context.response, () => callMiddleware(context, index + 1, middleware));
+    };
+    return (context) => callMiddleware(context, 0, getMiddleware());
 }

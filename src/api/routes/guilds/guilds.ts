@@ -1,4 +1,4 @@
-import { Api } from '@blargbot/api';
+import { Api } from '@blargbot/api/Api';
 import { BaseRoute } from '@blargbot/api/BaseRoute';
 import { ApiResponse } from '@blargbot/api/types';
 
@@ -7,11 +7,11 @@ export class GuildsRoute extends BaseRoute {
         super('/guilds');
 
         this.addRoute('/', {
-            get: (req) => this.getGuilds(this.getUserId(req))
+            get: ({ request }) => this.getGuilds(this.getUserId(request))
         }).addRoute('/settings', {
             get: () => this.getGuildSettings()
         }).addRoute('/:guildId', {
-            get: (req) => this.getGuild(req.params.guildId, this.getUserId(req))
+            get: ({ request }) => this.getGuild(request.params.guildId, this.getUserId(request))
         });
     }
 

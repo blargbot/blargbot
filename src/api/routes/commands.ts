@@ -1,4 +1,4 @@
-import { Api } from '@blargbot/api';
+import { Api } from '@blargbot/api/Api';
 import { BaseRoute } from '@blargbot/api/BaseRoute';
 import { ApiResponse } from '@blargbot/api/types';
 
@@ -9,7 +9,7 @@ export class CommandsRoute extends BaseRoute {
         this.addRoute('/', {
             get: () => this.listCommands()
         }).addRoute('/:commandName', {
-            get: (req) => this.getCommand(req.params.commandName)
+            get: ({ request }) => this.getCommand(request.params.commandName)
         });
     }
 

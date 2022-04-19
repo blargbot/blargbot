@@ -1,4 +1,4 @@
-import { Api } from '@blargbot/api';
+import { Api } from '@blargbot/api/Api';
 import { BaseRoute } from '@blargbot/api/BaseRoute';
 import { ApiResponse } from '@blargbot/api/types';
 import { tagTypeDetails } from '@blargbot/bbtag/utils';
@@ -10,7 +10,7 @@ export class SubtagsRoute extends BaseRoute {
         this.addRoute('/', {
             get: () => this.listSubtags()
         }).addRoute('/:subtagName', {
-            get: (req) => this.getSubtag(req.params.subtagName)
+            get: ({ request }) => this.getSubtag(request.params.subtagName)
         }).addRoute('/meta/categories', {
             get: () => this.getCategories()
         });

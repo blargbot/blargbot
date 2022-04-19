@@ -1,4 +1,4 @@
-import { Api } from '@blargbot/api';
+import { Api } from '@blargbot/api/Api';
 import { BaseRoute } from '@blargbot/api/BaseRoute';
 import { ApiResponse } from '@blargbot/api/types';
 
@@ -7,7 +7,7 @@ export class UsersRoute extends BaseRoute {
         super('/users');
 
         this.addRoute('/@me', {
-            get: req => this.getUser(this.getUserId(req))
+            get: ({ request }) => this.getUser(this.getUserId(request))
         });
     }
 

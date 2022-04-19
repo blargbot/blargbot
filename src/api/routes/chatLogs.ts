@@ -1,4 +1,4 @@
-import { Api } from '@blargbot/api';
+import { Api } from '@blargbot/api/Api';
 import { BaseRoute } from '@blargbot/api/BaseRoute';
 import { ApiResponse } from '@blargbot/api/types';
 import { parse } from '@blargbot/core/utils';
@@ -10,7 +10,7 @@ export class ChatLogsRoute extends BaseRoute {
         super('/chatlogs');
 
         this.addRoute('/:id', {
-            get: (req) => this.getLogs(req.params.id)
+            get: ({ request }) => this.getLogs(request.params.id)
         });
     }
 

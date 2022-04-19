@@ -1,4 +1,4 @@
-import { Api } from '@blargbot/api';
+import { Api } from '@blargbot/api/Api';
 import { BaseRoute } from '@blargbot/api/BaseRoute';
 import { ApiResponse } from '@blargbot/api/types';
 import { mapping } from '@blargbot/mapping';
@@ -10,9 +10,9 @@ export class IntervalRoute extends BaseRoute {
         this.middleware.push(async (req, _, next) => await this.checkAccess(req.params.guildId, this.getUserId(req, true)) ?? await next());
 
         this.addRoute('/:guildId/interval', {
-            get: (req) => this.getInterval(req.params.guildId),
-            put: (req) => this.setInterval(req.params.guildId, req.body, this.getUserId(req)),
-            delete: (req) => this.deleteInterval(req.params.guildId)
+            get: ({ request }) => this.getInterval(request.params.guildId),
+            put: ({ request }) => this.setInterval(request.params.guildId, request.body, this.getUserId(request)),
+            delete: ({ request }) => this.deleteInterval(request.params.guildId)
         });
     }
 

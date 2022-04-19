@@ -1,4 +1,5 @@
-import { Api } from '../Api';
+import { Api } from '@blargbot/api/Api';
+
 import { BaseRoute } from '../BaseRoute';
 import { ApiResponse } from '../types';
 
@@ -7,7 +8,7 @@ export class FeedbackRoute extends BaseRoute {
         super('/feedback');
 
         this.addRoute('/:id/url', {
-            get: (req) => this.getFeedbackUrl(req.params.id)
+            get: ({ request }) => this.getFeedbackUrl(request.params.id)
         });
     }
 

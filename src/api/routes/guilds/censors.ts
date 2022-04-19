@@ -1,7 +1,7 @@
+import { Api } from '@blargbot/api/Api';
 import { parse } from '@blargbot/core/utils';
 import { mapping } from '@blargbot/mapping';
 
-import { Api } from '../../Api';
 import { BaseRoute } from '../../BaseRoute';
 import { ApiResponse } from '../../types';
 
@@ -14,20 +14,20 @@ export class CensorsRoute extends BaseRoute {
         this.middleware.push(async (req, _, next) => await this.checkAccess(req.params.guildId, this.getUserId(req, true)) ?? await next());
 
         this.addRoute('/:guildId/censors', {
-            get: (req) => this.listCensors(req.params.guildId)
+            get: ({ request }) => this.listCensors(request.params.guildId)
         });
 
         for (const type of ['delete', 'ban', 'kick'] as const) {
             this.addRoute(`/:guildId/censors/${type}Message`, {
-                get: (req) => this.getCensorDefaultMessage(req.params.guildId, type),
-                put: (req) => this.setCensorDefaultMessage(req.params.guildId, type, req.body, this.getUserId(req)),
-                delete: (req) => this.deleteCensorDefaultMessage(req.params.guildId, type)
+                get: ({ request }) => this.getCensorDefaultMessage(request.params.guildId, type),
+                put: ({ request }) => this.setCensorDefaultMessage(request.params.guildId, type, request.body, this.getUserId(request)),
+                delete: ({ request }) => this.deleteCensorDefaultMessage(request.params.guildId, type)
             });
 
             this.addRoute(`/:guildId/censors/:id/${type}Message`, {
-                get: (req) => this.getCensorMessage(req.params.guildId, req.params.id, type),
-                put: (req) => this.setCensorMessage(req.params.guildId, req.params.id, type, req.body, this.getUserId(req)),
-                delete: (req) => this.deleteCensorMessage(req.params.guildId, req.params.id, type)
+                get: ({ request }) => this.getCensorMessage(request.params.guildId, request.params.id, type),
+                put: ({ request }) => this.setCensorMessage(request.params.guildId, request.params.id, type, request.body, this.getUserId(request)),
+                delete: ({ request }) => this.deleteCensorMessage(request.params.guildId, request.params.id, type)
             });
         }
     }

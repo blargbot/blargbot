@@ -26,7 +26,7 @@ export class AuthRoute extends BaseRoute {
         super('/auth');
 
         this.addRoute('/validate', {
-            post: (req) => this.validate(req)
+            post: ({ request }) => this.validate(request)
         });
     }
 
