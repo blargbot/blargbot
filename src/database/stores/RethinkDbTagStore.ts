@@ -30,7 +30,7 @@ export class RethinkDbTagStore implements TagStore {
     public async byAuthor(userId: string, skip: number, take: number): Promise<readonly string[]> {
         return await this.#table.queryAll(t =>
             t.getAll(userId, { index: 'author' })
-                .orderBy({ index: 'name' })
+                .orderBy('name')
                 .getField('name')
                 .skip(skip)
                 .limit(take));

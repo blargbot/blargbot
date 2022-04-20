@@ -7,7 +7,7 @@ import { discord } from '@blargbot/core/utils/discord';
 import { Database } from '@blargbot/database';
 import { FlagDefinition, FlagResult, NamedGuildCommandTag, StoredTag } from '@blargbot/domain/models';
 import { Logger } from '@blargbot/logger';
-import { Base, Client as Discord, Constants, Guild, KnownChannel, KnownGuildChannel, KnownGuildTextableChannel, KnownThreadChannel, Member, Permission, Role, User } from 'eris';
+import { Client as Discord, Constants, Guild, KnownChannel, KnownGuildChannel, KnownGuildTextableChannel, KnownThreadChannel, Member, Permission, Role, User } from 'eris';
 import { Duration, Moment } from 'moment-timezone';
 import ReadWriteLock from 'rwlock';
 
@@ -264,6 +264,9 @@ export class BBTagContext implements BBTagContextOptions {
     public async queryUser(query: string | undefined, options: FindEntityOptions = {}): Promise<User | undefined> {
         if (query === '' || query === undefined || query === this.user.id)
             return this.user;
+        const user = await this.util.getUser(query);
+        if (user !== undefined)
+            return user;
         const member = await this.queryMember(query, options);
         return member?.user;
     }
@@ -314,7 +317,7 @@ export class BBTagContext implements BBTagContextOptions {
         );
     }
 
-    private async queryEntity<T extends Base & { id: string; }>(
+    private async queryEntity<T extends { id: string; }>(
         queryString: string,
         cacheKey: FilteredKeys<BBTagContextState['query'], Record<string, string | undefined>>,
         type: string,
