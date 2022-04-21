@@ -1,5 +1,6 @@
 import { IServiceProvider, ServiceProvider, ServiceResolver, ServiceResolvers } from '../serviceProviders';
 import { Type } from '../types';
+import { GetTypes } from '../types/Type';
 import { IServiceContainer } from './IServiceContainer';
 import { ServiceLifetime } from './ServiceLifetime';
 import { ServiceResolutionError } from './ServiceResolutionError';
@@ -19,9 +20,9 @@ export class ServiceContainer implements IServiceContainer {
         return this;
     }
 
-    public addConstructor<T, Args extends readonly unknown[]>(serviceType: Type<T>, implementation: new (...args: Args) => T, args: { readonly [P in keyof Args]: Type<Args[P]>; }, lifetime?: ServiceLifetime): this;
+    public addConstructor<T, Args extends readonly Type[]>(serviceType: Type<T>, implementation: new (...args: GetTypes<Args>) => T, args: Args, lifetime?: ServiceLifetime): this;
     public addConstructor<T>(serviceType: Type<T>, implementation: new () => T, lifetime?: ServiceLifetime): this;
-    public addConstructor<T, Args extends readonly unknown[]>(implementation: new (...args: Args) => T, args: { readonly [P in keyof Args]: Type<Args[P]>; }, lifetime?: ServiceLifetime): this;
+    public addConstructor<T, Args extends readonly Type[]>(implementation: new (...args: GetTypes<Args>) => T, args: Args, lifetime?: ServiceLifetime): this;
     public addConstructor<T>(implementation: new () => T, lifetime?: ServiceLifetime): this;
     public addConstructor(...args: Parameters<typeof splitAddCtorArgs>): this {
         const [type, impl, dep, lifetime = ServiceLifetime.TRANSIENT] = splitAddCtorArgs(...args);
@@ -35,6 +36,22 @@ export class ServiceContainer implements IServiceContainer {
             if (!this.#resolvers.has(type.id))
                 this.#unknownTypes.add(type.id);
         }
+        return this;
+    }
+
+    public discover<T, Args extends readonly Type[]>(type: new (...args: GetTypes<Args>) => T, lifetime?: ServiceLifetime): this {
+        const interfaces = Type.implements(type);
+        const args = Type.constructorArgs(type);
+        if (args === undefined)
+            return this;
+        let t = type as (new (...args: never) => unknown) | null | undefined;
+        while (typeof t === 'function' && t !== Object) {
+            this.addConstructor(Type.instanceOf(t), type, args as Args, lifetime);
+            const baseProto = Object.getPrototypeOf(t.prototype) as ({ constructor: new (...args: never) => unknown; }) | null | undefined;
+            t = baseProto?.constructor;
+        }
+        for (const iType of interfaces)
+            this.addConstructor(iType, type, args as Args, lifetime);
         return this;
     }
 

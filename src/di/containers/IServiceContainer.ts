@@ -1,12 +1,13 @@
 import { IServiceProvider } from '../serviceProviders';
 import { Type } from '../types';
+import { GetTypes } from '../types/Type';
 import { ServiceLifetime } from './ServiceLifetime';
 
 export interface IServiceContainer {
-    addConstructor<T, Args extends readonly unknown[]>(
+    addConstructor<T, Args extends readonly Type[]>(
         serviceType: Type<T>,
-        implementation: new (...args: Args) => T,
-        args: { readonly [P in keyof Args]: Type<Args[P]> },
+        implementation: new (...args: GetTypes<Args>) => T,
+        args: Args,
         lifetime?: ServiceLifetime
     ): this;
     addConstructor<T>(
@@ -14,9 +15,9 @@ export interface IServiceContainer {
         implementation: new () => T,
         lifetime?: ServiceLifetime
     ): this;
-    addConstructor<T, Args extends readonly unknown[]>(
-        implementation: new (...args: Args) => T,
-        args: { readonly [P in keyof Args]: Type<Args[P]> },
+    addConstructor<T, Args extends readonly Type[]>(
+        implementation: new (...args: GetTypes<Args>) => T,
+        args: Args,
         lifetime?: ServiceLifetime
     ): this;
     addConstructor<T>(
@@ -25,6 +26,8 @@ export interface IServiceContainer {
     ): this;
 
     addConstructors<T>(serviceType: Type<T>, implementations: Iterable<new () => T>, lifetime?: ServiceLifetime): this;
+
+    discover(type: new (...args: never) => unknown, lifetime?: ServiceLifetime): this;
 
     addFactory<T>(
         serviceType: Type<T>,

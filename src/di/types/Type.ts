@@ -1,4 +1,5 @@
 import { IServiceProvider } from '../serviceProviders';
+import { CachedIterable, MappedIterable } from '../util';
 import { CompoundKeyMap } from './CompoundKeyMap';
 
 const ctorGuard: unique symbol = Symbol();
@@ -25,7 +26,7 @@ function orderSymbols(a: symbol, b: symbol): number {
         - getOrAdd(symbolOrderMap, b, () => symbolOrderMap.size);
 }
 
-class TypeDef<T> extends Invariant<T> {
+class TypeDef<T = unknown> extends Invariant<T> {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     public static readonly any = new TypeDef<any>(ctorGuard, 'any');
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -275,12 +276,41 @@ class ReadonlyArrayType<T> extends TypeDef<readonly T[]> {
     }
 }
 
-export class Type<T> extends Invariant<T> {
+export class Type<T = unknown> extends Invariant<T> {
     static readonly #cache = new Map<symbol, Type<unknown>>();
+    static readonly #implementsCache = new Map<symbol, Set<symbol>>();
+    static readonly #dependencyCache = new Map<symbol, readonly symbol[]>();
 
     static #from<T>(definition: TypeDef<T>): Type<T>
-    static #from(definition: TypeDef<unknown>): Type<unknown> {
+    static #from(definition: TypeDef): Type {
         return getOrAdd(this.#cache, definition.id, () => new Type(ctorGuard, definition));
+    }
+
+    public static implements<T>(type: Type<T>): <Impl extends T>(target: new (...args: never) => Impl) => void;
+    public static implements<T extends ClassLike<unknown, never>>(target: T): Iterable<Type>;
+    public static implements(arg: Type | ClassLike<unknown, unknown[]>): Iterable<Type> | ((target: new (...args: never) => unknown) => void) {
+        if (arg instanceof Type) {
+            return target => {
+                getOrAdd(Type.#implementsCache, Type.instanceOf(target).id, () => new Set<symbol>()).add(arg.id);
+                return target;
+            };
+        }
+        const ids = Type.#implementsCache.get(Type.instanceOf(arg).id) ?? new Set<symbol>();
+        return new CachedIterable(new MappedIterable(ids, id => Type.get(id)));
+    }
+
+    public static constructorArgs<Args extends readonly Type[]>(args: Args): <T extends new (...args: GetTypes<Args>) => unknown>(target: T) => void;
+    public static constructorArgs<Args extends readonly unknown[]>(target: new (...args: Args) => unknown): ToTypes<Args> | undefined;
+    public static constructorArgs(arg: Type[] | ClassLike<unknown, never>): readonly Type[] | undefined | ((target: new (...args: unknown[]) => unknown) => void) {
+        if (Array.isArray(arg)) {
+            return target => {
+                this.#dependencyCache.set(Type.instanceOf(target).id, arg.map(a => a.id));
+                return target;
+            };
+        }
+
+        const ctorArgs = this.#dependencyCache.get(Type.instanceOf(arg).id);
+        return ctorArgs?.map(id => Type.get(id));
     }
 
     public static get(id: symbol): Type<unknown> {
@@ -431,8 +461,9 @@ export class Type<T> extends Invariant<T> {
 }
 
 export type GetType<T> = T extends Type<infer R> ? R : unknown;
-export type GetTypes<T extends readonly unknown[]> = { [P in keyof T]: T[P] extends Type<infer R> ? R : unknown }
-export type GetTypeArgs<T extends new (...args: never) => unknown> = T extends new (...args: infer Args) => unknown ? { readonly [P in keyof Args]: Type<Args[P]> } : never;
+export type GetTypes<T extends readonly unknown[]> = { readonly [P in keyof T]: T[P] extends Type<infer R> ? R : unknown }
+export type ToTypes<T extends readonly unknown[]> = { readonly [P in keyof T]: Type<T[P]>; }
+export type GetTypeArgs<T extends new (...args: never) => unknown> = T extends new (...args: infer Args) => unknown ? { readonly [P in keyof Args]: Type<Args[P]> } : readonly never[];
 export type ClassLike<T, Args extends readonly unknown[]> =
     | (new (...args: Args) => T)
     | (abstract new (...args: Args) => T)
