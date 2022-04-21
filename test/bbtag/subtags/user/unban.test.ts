@@ -15,6 +15,9 @@ runSubtagTests({
                 { start: 0, end: 11, error: new UserNotFoundError('abc') }
             ],
             postSetup(bbctx, ctx) {
+                ctx.util.setup(m => m.getUser('abc'))
+                    .verifiable(1)
+                    .thenResolve(undefined);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, 'abc'))
                     .verifiable(1)
                     .thenResolve([]);
@@ -27,6 +30,9 @@ runSubtagTests({
                 const member = ctx.createMock(Member);
                 const user = ctx.createMock(User);
                 member.setup(m => m.user).thenReturn(user.instance);
+                ctx.util.setup(m => m.getUser('other user'))
+                    .verifiable(1)
+                    .thenResolve(undefined);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
                     .verifiable(1)
                     .thenResolve([member.instance]);
@@ -46,6 +52,9 @@ runSubtagTests({
                 const member = ctx.createMock(Member);
                 const user = ctx.createMock(User);
                 member.setup(m => m.user).thenReturn(user.instance);
+                ctx.util.setup(m => m.getUser('other user'))
+                    .verifiable(1)
+                    .thenResolve(undefined);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
                     .verifiable(1)
                     .thenResolve([member.instance]);
@@ -62,6 +71,9 @@ runSubtagTests({
                 const member = ctx.createMock(Member);
                 const user = ctx.createMock(User);
                 member.setup(m => m.user).thenReturn(user.instance);
+                ctx.util.setup(m => m.getUser('other user'))
+                    .verifiable(1)
+                    .thenResolve(undefined);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
                     .verifiable(1)
                     .thenResolve([member.instance]);
@@ -81,6 +93,9 @@ runSubtagTests({
                 const member = ctx.createMock(Member);
                 const user = ctx.createMock(User);
                 member.setup(m => m.user).thenReturn(user.instance);
+                ctx.util.setup(m => m.getUser('other user'))
+                    .verifiable(1)
+                    .thenResolve(undefined);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
                     .verifiable(1)
                     .thenResolve([member.instance]);
@@ -97,6 +112,9 @@ runSubtagTests({
                 const member = ctx.createMock(Member);
                 const user = ctx.createMock(User);
                 member.setup(m => m.user).thenReturn(user.instance);
+                ctx.util.setup(m => m.getUser('other user'))
+                    .verifiable(1)
+                    .thenResolve(undefined);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
                     .verifiable(1)
                     .thenResolve([member.instance]);
@@ -113,6 +131,9 @@ runSubtagTests({
                 const member = ctx.createMock(Member);
                 const user = ctx.createMock(User);
                 member.setup(m => m.user).thenReturn(user.instance);
+                ctx.util.setup(m => m.getUser('other user'))
+                    .verifiable(1)
+                    .thenResolve(undefined);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
                     .verifiable(1)
                     .thenResolve([member.instance]);
@@ -129,6 +150,9 @@ runSubtagTests({
                 const member = ctx.createMock(Member);
                 const user = ctx.createMock(User);
                 member.setup(m => m.user).thenReturn(user.instance);
+                ctx.util.setup(m => m.getUser('other user'))
+                    .verifiable(1)
+                    .thenResolve(undefined);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
                     .verifiable(1)
                     .thenResolve([member.instance]);

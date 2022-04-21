@@ -31,6 +31,7 @@ export function* createGetUserPropTestCasesIter(options: GetUserPropTestData): G
             { start: 0, end: options.generateCode('unknown user').length, error: new UserNotFoundError('unknown user') }
         ],
         setup(ctx) {
+            ctx.util.setup(m => m.getUser('unknown user'), false).thenResolve(undefined);
             ctx.util.setup(m => m.findMembers(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id).value, 'unknown user'))
                 .verifiable(1)
                 .thenResolve([]);
@@ -44,6 +45,7 @@ export function* createGetUserPropTestCasesIter(options: GetUserPropTestData): G
                 { start: 0, end: options.generateCode('unknown user', '').length, error: new UserNotFoundError('unknown user') }
             ],
             setup(ctx) {
+                ctx.util.setup(m => m.getUser('unknown user'), false).thenResolve(undefined);
                 ctx.util.setup(m => m.findMembers(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id).value, 'unknown user'))
                     .verifiable(1)
                     .thenResolve([]);
@@ -56,6 +58,7 @@ export function* createGetUserPropTestCasesIter(options: GetUserPropTestData): G
                 { start: 0, end: options.generateCode('unknown user', 'q').length, error: new UserNotFoundError('unknown user').withDisplay(options.quiet) }
             ],
             setup(ctx) {
+                ctx.util.setup(m => m.getUser('unknown user'), false).thenResolve(undefined);
                 ctx.util.setup(m => m.findMembers(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id).value, 'unknown user'))
                     .verifiable(1)
                     .thenResolve([]);
@@ -95,6 +98,7 @@ function createTestCase(data: GetUserPropTestData, testCase: GetUserPropTestCase
             if (member === undefined)
                 throw new Error('Cannot find the member under test');
             if (args[0] !== undefined && args[0] !== '') {
+                ctx.util.setup(m => m.getUser(args[0] as string), false).thenResolve(undefined);
                 ctx.util.setup(m => m.findMembers(member.guild, args[0]))
                     .thenResolve([member]);
             }

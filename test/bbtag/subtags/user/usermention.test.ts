@@ -68,6 +68,7 @@ runSubtagTests({
                 otherUser.setup(m => m.id).thenReturn('098765434512212678');
                 otherUser.setup(m => m.mention).thenReturn('<@098765434512212678>');
 
+                ctx.util.setup(m => m.getUser('098765434512212678')).verifiable(1).thenResolve(undefined);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, '098765434512212678')).verifiable(1).thenResolve([otherMember.instance]);
             },
             assert(ctx) {

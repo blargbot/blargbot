@@ -125,6 +125,7 @@ runSubtagTests({
                 const user = ctx.createMock(User);
                 member.setup(m => m.user).thenReturn(user.instance);
                 user.setup(m => m.id).thenReturn('289374634729826479828');
+                ctx.util.setup(m => m.getUser('289374634729826479828')).thenResolve(undefined);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, '289374634729826479828')).thenResolve([member.instance]);
             }
         },
@@ -149,6 +150,7 @@ runSubtagTests({
                 const user = ctx.createMock(User);
                 member.setup(m => m.user).thenReturn(user.instance);
                 user.setup(m => m.id).thenReturn('289374634729826479828');
+                ctx.util.setup(m => m.getUser('289374634729826479828')).thenResolve(undefined);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, '289374634729826479828')).thenResolve([member.instance]);
             }
         },
@@ -173,18 +175,21 @@ runSubtagTests({
                 const user1 = ctx.createMock(User);
                 member1.setup(m => m.user).thenReturn(user1.instance);
                 user1.setup(m => m.id).thenReturn('289374634729826479828');
+                ctx.util.setup(m => m.getUser('289374634729826479828')).thenResolve(undefined);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, '289374634729826479828')).thenResolve([member1.instance]);
 
                 const member2 = ctx.createMock(Member);
                 const user2 = ctx.createMock(User);
                 member2.setup(m => m.user).thenReturn(user2.instance);
                 user2.setup(m => m.id).thenReturn('328762389764234374');
+                ctx.util.setup(m => m.getUser('328762389764234374')).thenResolve(undefined);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, '328762389764234374')).thenResolve([member2.instance]);
 
                 const member3 = ctx.createMock(Member);
                 const user3 = ctx.createMock(User);
                 member3.setup(m => m.user).thenReturn(user3.instance);
                 user3.setup(m => m.id).thenReturn('23894767278934620893');
+                ctx.util.setup(m => m.getUser('23894767278934620893')).thenResolve(undefined);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, '23894767278934620893')).thenResolve([member3.instance]);
             }
         },
@@ -215,6 +220,7 @@ runSubtagTests({
                 const user = ctx.createMock(User);
                 member.setup(m => m.user).thenReturn(user.instance);
                 user.setup(m => m.id).thenReturn('289374634729826479828');
+                ctx.util.setup(m => m.getUser('289374634729826479828')).thenResolve(undefined);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, '289374634729826479828')).thenResolve([member.instance]);
             }
         },
@@ -245,6 +251,7 @@ runSubtagTests({
                 const user = ctx.createMock(User);
                 member.setup(m => m.user).thenReturn(user.instance);
                 user.setup(m => m.id).thenReturn('289374634729826479828');
+                ctx.util.setup(m => m.getUser('289374634729826479828')).thenResolve(undefined);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, '289374634729826479828')).thenResolve([member.instance]);
             }
         },
@@ -275,6 +282,7 @@ runSubtagTests({
                 const user = ctx.createMock(User);
                 member.setup(m => m.user).thenReturn(user.instance);
                 user.setup(m => m.id).thenReturn('289374634729826479828');
+                ctx.util.setup(m => m.getUser('289374634729826479828')).thenResolve(undefined);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, '289374634729826479828')).thenResolve([member.instance]);
             }
         },
@@ -305,6 +313,7 @@ runSubtagTests({
                 const user = ctx.createMock(User);
                 member.setup(m => m.user).thenReturn(user.instance);
                 user.setup(m => m.id).thenReturn('289374634729826479828');
+                ctx.util.setup(m => m.getUser('289374634729826479828')).thenResolve(undefined);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, '289374634729826479828')).thenResolve([member.instance]);
             }
         },
@@ -335,6 +344,7 @@ runSubtagTests({
                 const user = ctx.createMock(User);
                 member.setup(m => m.user).thenReturn(user.instance);
                 user.setup(m => m.id).thenReturn('289374634729826479828');
+                ctx.util.setup(m => m.getUser('289374634729826479828')).thenResolve(undefined);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, '289374634729826479828')).thenResolve([member.instance]);
             }
         },
@@ -365,6 +375,7 @@ runSubtagTests({
                 const user = ctx.createMock(User);
                 member.setup(m => m.user).thenReturn(user.instance);
                 user.setup(m => m.id).thenReturn('289374634729826479828');
+                ctx.util.setup(m => m.getUser('289374634729826479828')).thenResolve(undefined);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, '289374634729826479828')).thenResolve([member.instance]);
             }
         },
@@ -385,6 +396,7 @@ runSubtagTests({
                 const member = ctx.createMock(Member);
                 const user = ctx.createMock(User);
                 member.setup(m => m.user).thenReturn(user.instance);
+                ctx.util.setup(m => m.getUser('289374634729826479828')).thenResolve(undefined);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, '289374634729826479828')).thenResolve([member.instance]);
             }
         }

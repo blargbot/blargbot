@@ -99,7 +99,9 @@ runSubtagTests({
                 }, ctx.users.other));
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '2938453289453240')).thenResolve([]);
+                ctx.util.setup(m => m.getUser('other')).thenResolve(undefined);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, 'other')).thenResolve([otherUser]);
+                ctx.util.setup(m => m.getUser(otherUser.id)).thenResolve(undefined);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, otherUser.id)).thenResolve([otherUser]);
                 ctx.util.setup(m => m.getMessage(bbctx.channel, message.id, true)).thenResolve(message);
                 ctx.discord.setup(m => m.removeMessageReaction(bbctx.channel.id, message.id, '🤔', otherUser.id)).verifiable(1).thenResolve(undefined);
@@ -137,7 +139,9 @@ runSubtagTests({
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, 'general')).thenResolve([general]);
                 ctx.util.setup(m => m.findChannels(bbctx.guild, general.id)).thenResolve([general]);
+                ctx.util.setup(m => m.getUser('other')).thenResolve(undefined);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, 'other')).thenResolve([otherUser]);
+                ctx.util.setup(m => m.getUser(otherUser.id)).thenResolve(undefined);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, otherUser.id)).thenResolve([otherUser]);
                 ctx.util.setup(m => m.getMessage(general, message.id, true)).thenResolve(message);
                 ctx.discord.setup(m => m.removeMessageReaction(general.id, message.id, '🤔', otherUser.id)).verifiable(1).thenResolve(undefined);
@@ -171,7 +175,9 @@ runSubtagTests({
                 }, ctx.users.other));
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '2938453289453240')).thenResolve([]);
+                ctx.util.setup(m => m.getUser('other')).thenResolve(undefined);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, 'other')).thenResolve([otherUser]);
+                ctx.util.setup(m => m.getUser(otherUser.id)).thenResolve(undefined);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, otherUser.id)).thenResolve([otherUser]);
                 ctx.util.setup(m => m.getMessage(bbctx.channel, message.id, true)).thenResolve(message);
                 ctx.discord.setup(m => m.removeMessageReaction(bbctx.channel.id, message.id, '🤔', otherUser.id)).verifiable(1).thenResolve(undefined);
@@ -205,6 +211,7 @@ runSubtagTests({
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, 'general')).thenResolve([general]);
                 ctx.util.setup(m => m.findChannels(bbctx.guild, general.id)).thenResolve([general]);
+                ctx.util.setup(m => m.getUser('🤔')).thenResolve(undefined);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, '🤔')).thenResolve([]);
                 ctx.util.setup(m => m.getMessage(general, message.id, true)).thenResolve(message);
                 ctx.discord.setup(m => m.removeMessageReaction(general.id, message.id, '🤔', ctx.users.command.id)).verifiable(1).thenResolve(undefined);
@@ -241,7 +248,9 @@ runSubtagTests({
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, 'general')).thenResolve([general]);
                 ctx.util.setup(m => m.findChannels(bbctx.guild, general.id)).thenResolve([general]);
+                ctx.util.setup(m => m.getUser('other')).thenResolve(undefined);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, 'other')).thenResolve([otherUser]);
+                ctx.util.setup(m => m.getUser(otherUser.id)).thenResolve(undefined);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, otherUser.id)).thenResolve([otherUser]);
                 ctx.util.setup(m => m.getMessage(general, message.id, true)).thenResolve(message);
                 ctx.discord.setup(m => m.removeMessageReaction(general.id, message.id, '🤔', otherUser.id)).verifiable(1).thenResolve(undefined);
@@ -280,7 +289,9 @@ runSubtagTests({
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, 'general')).thenResolve([general]);
                 ctx.util.setup(m => m.findChannels(bbctx.guild, general.id)).thenResolve([general]);
+                ctx.util.setup(m => m.getUser('other')).thenResolve(undefined);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, 'other')).thenResolve([otherUser]);
+                ctx.util.setup(m => m.getUser(otherUser.id)).thenResolve(undefined);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, otherUser.id)).thenResolve([otherUser]);
                 ctx.util.setup(m => m.getMessage(general, message.id, true)).thenResolve(message);
             }
@@ -304,6 +315,7 @@ runSubtagTests({
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, 'general')).thenResolve([general]);
                 ctx.util.setup(m => m.findChannels(bbctx.guild, general.id)).thenResolve([]);
+                ctx.util.setup(m => m.getUser('other')).thenResolve(undefined);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, 'other')).thenResolve([otherUser]);
             }
         },
@@ -326,6 +338,7 @@ runSubtagTests({
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, 'general')).thenResolve([general]);
                 ctx.util.setup(m => m.findChannels(bbctx.guild, general.id)).thenResolve([general]);
+                ctx.util.setup(m => m.getUser('other')).thenResolve(undefined);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, 'other')).thenResolve([otherUser]);
             }
         },
@@ -348,6 +361,7 @@ runSubtagTests({
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, 'general')).thenResolve([general]);
                 ctx.util.setup(m => m.findChannels(bbctx.guild, general.id)).thenResolve([general]);
+                ctx.util.setup(m => m.getUser('other')).thenResolve(undefined);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, 'other')).thenResolve([otherUser]);
                 ctx.util.setup(m => m.getMessage(general, '2938453289453240', true)).thenResolve(undefined);
             }
@@ -388,6 +402,7 @@ runSubtagTests({
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, 'general')).thenResolve([general]);
                 ctx.util.setup(m => m.findChannels(bbctx.guild, general.id)).thenResolve([general]);
+                ctx.util.setup(m => m.getUser('other')).thenResolve(undefined);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, 'other')).thenResolve([otherUser]);
                 ctx.util.setup(m => m.getMessage(general, message.id, true)).thenResolve(message);
             }
@@ -427,7 +442,9 @@ runSubtagTests({
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, 'general')).thenResolve([general]);
                 ctx.util.setup(m => m.findChannels(bbctx.guild, general.id)).thenResolve([general]);
+                ctx.util.setup(m => m.getUser('other')).thenResolve(undefined);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, 'other')).thenResolve([otherUser]);
+                ctx.util.setup(m => m.getUser(otherUser.id)).thenResolve(undefined);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, otherUser.id)).thenResolve([otherUser]);
                 ctx.util.setup(m => m.getMessage(general, message.id, true)).thenResolve(message);
                 ctx.discord.setup(m => m.removeMessageReaction(general.id, message.id, '🤔', otherUser.id)).verifiable(1).thenResolve(undefined);
@@ -469,7 +486,9 @@ runSubtagTests({
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, 'general')).thenResolve([general]);
                 ctx.util.setup(m => m.findChannels(bbctx.guild, general.id)).thenResolve([general]);
+                ctx.util.setup(m => m.getUser('other')).thenResolve(undefined);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, 'other')).thenResolve([otherUser]);
+                ctx.util.setup(m => m.getUser(otherUser.id)).thenResolve(undefined);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, otherUser.id)).thenResolve([]);
                 ctx.util.setup(m => m.getMessage(general, message.id, true)).thenResolve(message);
             }
@@ -508,7 +527,9 @@ runSubtagTests({
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, 'general')).thenResolve([general]);
                 ctx.util.setup(m => m.findChannels(bbctx.guild, general.id)).thenResolve([general]);
+                ctx.util.setup(m => m.getUser('other')).thenResolve(undefined);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, 'other')).thenResolve([otherUser]);
+                ctx.util.setup(m => m.getUser(otherUser.id)).thenResolve(undefined);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, otherUser.id)).thenResolve([otherUser]);
                 ctx.util.setup(m => m.getMessage(general, message.id, true)).thenResolve(message);
                 ctx.discord.setup(m => m.removeMessageReaction(general.id, message.id, 'fakeemote:192612896213677963', otherUser.id)).verifiable(1)
@@ -550,7 +571,9 @@ runSubtagTests({
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, 'general')).thenResolve([general]);
                 ctx.util.setup(m => m.findChannels(bbctx.guild, general.id)).thenResolve([general]);
+                ctx.util.setup(m => m.getUser('other')).thenResolve(undefined);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, 'other')).thenResolve([otherUser]);
+                ctx.util.setup(m => m.getUser(otherUser.id)).thenResolve(undefined);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, otherUser.id)).thenResolve([otherUser]);
                 ctx.util.setup(m => m.getMessage(general, message.id, true)).thenResolve(message);
                 ctx.discord.setup(m => m.removeMessageReaction(general.id, message.id, '🤔', otherUser.id)).verifiable(1)
