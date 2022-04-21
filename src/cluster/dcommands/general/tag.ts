@@ -643,8 +643,8 @@ export class TagCommand extends GuildCommand {
         if (typeof match !== 'object')
             return match;
 
-        if (context.util.isBotOwner(context.author.id)
-            && match.tag !== undefined
+        if (match.tag !== undefined
+            && !context.util.isBotOwner(context.author.id)
             && match.tag.author !== context.author.id) {
             return this.error(`You don't own the \`${match.name}\` tag!`);
         }
