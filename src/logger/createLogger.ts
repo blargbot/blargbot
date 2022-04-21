@@ -20,7 +20,18 @@ export function createLogger(config: Configuration, workerId: string): Logger {
     if (config.sentry.base !== '')
         logger.addPreHook(createSentryPreHook(config, workerId) as unknown as ArgHookCallback);
 
-    return logger as unknown as Logger;
+    const _logger = logger as unknown as Logger;
+
+    const setGlobal = _logger.setGlobal.bind(logger);
+    _logger.setGlobal = function (...args) {
+        _logger.setGlobal = setGlobal;
+        const res = _logger.setGlobal(...args);
+
+        process.on('uncaughtExceptionMonitor', ex => _logger.error('Uncaught exception', ex));
+        return res;
+    };
+
+    return _logger;
 }
 
 const logLevels: Record<LogLevel, { color: typeof CatLoggr['_chalk']; isError?: boolean; isTrace?: boolean; }> = {

@@ -5,6 +5,7 @@
         "@blargbot/config": "workspace:^",
         "@blargbot/core": "workspace:^",
         "@blargbot/database": "workspace:^",
+        "@blargbot/di": "workspace:^",
         "@blargbot/domain": "workspace:^",
         "@blargbot/logger": "workspace:^",
         "@blargbot/mapping": "workspace:^",

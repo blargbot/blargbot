@@ -9,7 +9,6 @@ import { Duration } from 'moment-timezone';
 import { metric } from 'prom-client';
 
 import { ClusterUtilities } from './ClusterUtilities';
-import { ClusterWorker } from './ClusterWorker';
 
 export type ClusterIPCContract = {
     'shardReady': { masterGets: number; workerGets: never; };
@@ -302,7 +301,6 @@ export interface ShardStats {
 }
 export interface ClusterOptions {
     id: number;
-    worker: ClusterWorker;
     shardCount: number;
     firstShardId: number;
     lastShardId: number;

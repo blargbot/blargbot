@@ -249,7 +249,8 @@ function subtagDocs(context: CommandContext, subtag: Subtag): EmbedOptions {
 }
 async function lookupSubtag(context: CommandContext, input: string): Promise<Subtag | string | undefined> {
     input = input.replace(/[{}]/g, '').toLowerCase();
-    const matchedSubtags = [...context.cluster.subtags.list(subtag => !subtag.hidden && (subtag.name.includes(input) || subtag.aliases.some(a => a.includes(input))))];
+    const matchedSubtags = [...context.cluster.bbtag.subtags.values()]
+        .filter(subtag => !subtag.hidden && (subtag.name.includes(input) || subtag.aliases.some(a => a.includes(input))));
 
     if (matchedSubtags.length === 1)
         return matchedSubtags[0];
@@ -300,7 +301,9 @@ async function subtagsEmbed(context: CommandContext, input?: string): Promise<Em
     if (matchedCategories.length === 1) {
         const category = matchedCategories[0];
         const props = tagTypeDetails[category];
-        const subtags = [...context.cluster.subtags.list(s => s.category === category && !s.hidden && s.deprecated === false)].map(t => t.name);
+        const subtags = [...context.cluster.bbtag.subtags.values()]
+            .filter(s => s.category === category && !s.hidden && s.deprecated === false)
+            .map(t => t.name);
         return {
             description: `**${props.name} Subtags** - ${props.desc}\n` +
                 codeBlock(subtags.join(', '))
@@ -333,7 +336,9 @@ async function subtagsEmbed(context: CommandContext, input?: string): Promise<Em
         case 'SUCCESS': {
             const category = queryResponse.value;
             const props = tagTypeDetails[category];
-            const subtags = [...context.cluster.subtags.list(s => s.category === category && !s.hidden && s.deprecated === false)].map(t => t.name);
+            const subtags = [...context.cluster.bbtag.subtags.values()]
+                .filter(s => s.category === category && !s.hidden && s.deprecated === false)
+                .map(t => t.name);
             return {
                 description: `**${props.name} Subtags** - ${props.desc}\n` +
                     codeBlock(subtags.join(', '))
@@ -377,7 +382,8 @@ async function categoriesEmbed(context: CommandContext, categories: SubtagType[]
         case 'SUCCESS': {
             const category = queryResponse.value;
             if (category === 'all') {
-                const subtags = [...context.cluster.subtags.list(s => !s.hidden && s.deprecated === false)];
+                const subtags = [...context.cluster.bbtag.subtags.values()]
+                    .filter(s => !s.hidden && s.deprecated === false);
                 return {
                     title: 'BBTag documentation - All subtags',
                     fields: categories.map(c => {
@@ -389,7 +395,9 @@ async function categoriesEmbed(context: CommandContext, categories: SubtagType[]
                 };
             }
             const props = tagTypeDetails[category];
-            const subtags = [...context.cluster.subtags.list(s => s.category === category && !s.hidden && s.deprecated === false)].map(t => t.name);
+            const subtags = [...context.cluster.bbtag.subtags.values()]
+                .filter(s => s.category === category && !s.hidden && s.deprecated === false)
+                .map(t => t.name);
             return {
                 description: `**${props.name} Subtags** - ${props.desc}\n` +
                     codeBlock(subtags.join(', '))

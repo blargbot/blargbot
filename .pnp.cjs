@@ -81,6 +81,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:src/database"\
       },\
       {\
+        "name": "@blargbot/di",\
+        "reference": "workspace:src/di"\
+      },\
+      {\
         "name": "@blargbot/domain",\
         "reference": "workspace:src/domain"\
       },\
@@ -128,6 +132,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@blargbot/core", ["workspace:src/core"]],\
       ["@blargbot/core-tests", ["workspace:test/core"]],\
       ["@blargbot/database", ["workspace:src/database"]],\
+      ["@blargbot/di", ["workspace:src/di"]],\
       ["@blargbot/domain", ["workspace:src/domain"]],\
       ["@blargbot/image", ["workspace:src/image"]],\
       ["@blargbot/logger", ["workspace:src/logger"]],\
@@ -500,6 +505,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/config", "workspace:src/config"],\
             ["@blargbot/core", "workspace:src/core"],\
             ["@blargbot/database", "workspace:src/database"],\
+            ["@blargbot/di", "workspace:src/di"],\
             ["@blargbot/domain", "workspace:src/domain"],\
             ["@blargbot/logger", "workspace:src/logger"],\
             ["@blargbot/mapping", "workspace:src/mapping"],\
@@ -557,6 +563,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/config", "workspace:src/config"],\
             ["@blargbot/core", "workspace:src/core"],\
             ["@blargbot/database", "workspace:src/database"],\
+            ["@blargbot/di", "workspace:src/di"],\
             ["@blargbot/domain", "workspace:src/domain"],\
             ["@blargbot/image", "workspace:src/image"],\
             ["@blargbot/logger", "workspace:src/logger"],\
@@ -592,7 +599,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         ["workspace:src/config", {\
           "packageLocation": "./src/config/",\
           "packageDependencies": [\
-            ["@blargbot/config", "workspace:src/config"]\
+            ["@blargbot/config", "workspace:src/config"],\
+            ["@blargbot/di", "workspace:src/di"]\
           ],\
           "linkType": "SOFT"\
         }]\
@@ -686,6 +694,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "SOFT"\
         }]\
       ]],\
+      ["@blargbot/di", [\
+        ["workspace:src/di", {\
+          "packageLocation": "./src/di/",\
+          "packageDependencies": [\
+            ["@blargbot/di", "workspace:src/di"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
       ["@blargbot/domain", [\
         ["workspace:src/domain", {\
           "packageLocation": "./src/domain/",\
@@ -728,6 +745,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["@blargbot/logger", "workspace:src/logger"],\
             ["@blargbot/config", "workspace:src/config"],\
+            ["@blargbot/di", "workspace:src/di"],\
             ["@sentry/node", "npm:6.19.6"],\
             ["@sentry/tracing", "npm:6.19.6"],\
             ["cat-loggr", "npm:1.2.2"]\

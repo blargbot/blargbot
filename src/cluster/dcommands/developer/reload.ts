@@ -15,11 +15,6 @@ export class ReloadCommand extends GlobalCommand {
                     execute: (ctx, [commands]) => this.reloadModules(ctx.cluster.commands, commands.asStrings, 'command')
                 },
                 {
-                    parameters: 'subtags {subtags[0]}',
-                    description: 'Reloads the given subtags, or all subtags if none were given',
-                    execute: (ctx, [subtags]) => this.reloadModules(ctx.cluster.subtags, subtags.asStrings, 'subtag')
-                },
-                {
                     parameters: 'events {events[0]}',
                     description: 'Reloads the given events, or all events if none were given',
                     execute: (ctx, [events]) => this.reloadModules(ctx.cluster.events, events.asStrings, 'event')

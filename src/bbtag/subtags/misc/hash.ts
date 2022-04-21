@@ -12,9 +12,9 @@ const allowedHashes = new Set([
     'whirlpool'
 ]);
 
-export const supportedHashes = getHashes().filter(h => allowedHashes.has(h));
-
 export class HashSubtag extends CompiledSubtag {
+    public static methods: readonly string[] = getHashes().filter(h => allowedHashes.has(h));
+
     public constructor() {
         super({
             name: 'hash',
@@ -38,7 +38,7 @@ export class HashSubtag extends CompiledSubtag {
                         'Perfoms a hash on the given `text`. If the `text` starts with `buffer:` then it will first be decoded as a base64 string. ' +
                         'If it starts with `text:` then it will be treated as plaintext. ' +
                         'The hash result will be returned as a hex number.\n' +
-                        `Supported \`algorithm\`s are: ${supportedHashes.map(a => `\`${a}\``).join(', ')}`,
+                        `Supported \`algorithm\`s are: ${HashSubtag.methods.map(a => `\`${a}\``).join(', ')}`,
                     exampleCode: '{hash;sha256;brown}',
                     exampleOut: 'The hash of brown is 5eb67f9f8409b9c3f739735633cbdf92121393d0e13bd0f464b1b2a6a15ad2dc',
                     returns: 'string',
@@ -57,7 +57,7 @@ export class HashSubtag extends CompiledSubtag {
     }
 
     public computeStrongHash(algorithm: string, text: string): string {
-        if (!supportedHashes.includes(algorithm.toLowerCase()))
+        if (!HashSubtag.methods.includes(algorithm.toLowerCase()))
             throw new BBTagRuntimeError('Unsupported hash', `${algorithm} is not a supported hash algorithm`);
 
         const data = text.startsWith('buffer:') ? Buffer.from(text.slice(7), 'base64')

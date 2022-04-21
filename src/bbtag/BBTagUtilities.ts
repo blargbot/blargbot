@@ -1,6 +1,5 @@
 import { Configuration } from '@blargbot/config';
 import { BaseUtilities } from '@blargbot/core/BaseUtilities';
-import { ModuleLoader } from '@blargbot/core/modules';
 import { ChoiceQueryResult, EntityPickQueryOptions } from '@blargbot/core/types';
 import { Database } from '@blargbot/database';
 import { Logger } from '@blargbot/logger';
@@ -15,7 +14,7 @@ export interface InjectionContext {
     readonly discord: Discord;
     readonly logger: Logger;
     readonly database: Database;
-    readonly subtags: ModuleLoader<Subtag>;
+    readonly subtags: Iterable<Subtag>;
     readonly config: Configuration;
     readonly util: BBTagUtilities;
 }

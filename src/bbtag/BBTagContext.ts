@@ -1,5 +1,4 @@
 import { Emote } from '@blargbot/core/Emote';
-import { ModuleLoader } from '@blargbot/core/modules';
 import { Timer } from '@blargbot/core/Timer';
 import { ChoiceQueryResult, EntityPickQueryOptions } from '@blargbot/core/types';
 import { guard, hasFlag, humanize, parse } from '@blargbot/core/utils';
@@ -70,7 +69,7 @@ export class BBTagContext implements BBTagContextOptions {
     public get logger(): Logger { return this.engine.logger; }
     public get util(): BBTagUtilities { return this.engine.util; }
     public get discord(): Discord { return this.engine.discord; }
-    public get subtags(): ModuleLoader<Subtag> { return this.engine.subtags; }
+    public get subtags(): ReadonlyMap<string, Subtag> { return this.engine.subtags; }
     public get cooldownEnd(): Moment { return this.cooldowns.get(this); }
 
     public get bot(): Member {

@@ -1,4 +1,4 @@
-import { BBTagEngine, Subtag, SubtagModuleLoader } from '@blargbot/bbtag';
+import { BBTagEngine, subtags } from '@blargbot/bbtag';
 import { ClusterOptions } from '@blargbot/cluster/types';
 import { Configuration } from '@blargbot/config';
 import { BaseClient } from '@blargbot/core/BaseClient';
@@ -20,7 +20,6 @@ export class Cluster extends BaseClient {
     public readonly id: number;
     public readonly createdAt: Moment;
     public readonly worker: ClusterWorker;
-    public readonly subtags: ModuleLoader<Subtag>;
     public readonly services: ModuleLoader<BaseService>;
     public readonly util: ClusterUtilities;
     public readonly timeouts: TimeoutManager;
@@ -43,6 +42,7 @@ export class Cluster extends BaseClient {
     public readonly version: VersionStateManager;
 
     public constructor(
+        worker: ClusterWorker,
         logger: Logger,
         config: Configuration,
         options: ClusterOptions
@@ -78,8 +78,8 @@ export class Cluster extends BaseClient {
         });
 
         this.id = options.id;
+        this.worker = worker;
         this.createdAt = Object.freeze(moment());
-        this.worker = options.worker;
         this.domains = new DomainManager(this.database.vars);
         this.images = new ImagePool(this.id, config.discord.images, this.logger);
         this.prefixes = new PrefixManager(this.config.discord.defaultPrefix, this.database.guilds, this.database.users, this.discord);
@@ -87,7 +87,6 @@ export class Cluster extends BaseClient {
             custom: new CustomCommandManager(this),
             default: new DefaultCommandManager(`${__dirname}/dcommands`, this)
         });
-        this.subtags = new SubtagModuleLoader(this.logger);
         this.events = new ModuleLoader(`${__dirname}/events`, BaseService, [this], this.logger, e => e.name);
         this.services = new ModuleLoader(`${__dirname}/services`, BaseService, [this], this.logger, e => e.name);
         this.util = new ClusterUtilities(this);
@@ -103,8 +102,9 @@ export class Cluster extends BaseClient {
             database: this.database,
             discord: this.discord,
             logger: this.logger,
-            subtags: this.subtags,
-            util: new ClusterBBTagUtilities(this)
+            util: new ClusterBBTagUtilities(this),
+            subtags: Object.values(subtags.all)
+                .map(subtag => new subtag())
         });
         this.intervals = new IntervalManager(this, duration(10, 's'));
         this.rolemes = new RolemeManager(this);
@@ -124,8 +124,7 @@ export class Cluster extends BaseClient {
         await Promise.all([
             super.start(),
             this.connectDiscordGateway(),
-            this.commands.load(),
-            this.subtags.init()
+            this.commands.load()
         ]);
 
         await this.services.init();

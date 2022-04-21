@@ -3,7 +3,6 @@ import { BBTagUtilities, InjectionContext } from '@blargbot/bbtag/BBTagUtilities
 import { BBTagRuntimeError, NotEnoughArgumentsError, TooManyArgumentsError } from '@blargbot/bbtag/errors';
 import { BaseRuntimeLimit } from '@blargbot/bbtag/limits/BaseRuntimeLimit';
 import { bbtag, SubtagType } from '@blargbot/bbtag/utils';
-import { ModuleLoader } from '@blargbot/core/modules';
 import { Timer } from '@blargbot/core/Timer';
 import { guard, pluralise as p, repeat, snowflake } from '@blargbot/core/utils';
 import { Database } from '@blargbot/database';
@@ -211,11 +210,7 @@ export class SubtagTestContext {
         this.discord.setup(m => m.guilds, false).thenReturn(new Collection(Guild));
         this.discord.setup(m => m.users, false).thenReturn(new Collection(User));
 
-        const subtagLoader = this.createMock<ModuleLoader<Subtag>>(ModuleLoader);
-        const subtagMap = new Map([...subtags].flatMap(s => [s.name, ...s.aliases].map(n => [n, s])));
-        subtagLoader.setup(m => m.get(argument.isTypeof('string').value), false).thenCall((name: string) => subtagMap.get(name));
-
-        this.dependencies.setup(c => c.subtags, false).thenReturn(subtagLoader.instance);
+        this.dependencies.setup(c => c.subtags, false).thenReturn(subtags);
     }
 
     // eslint-disable-next-line @typescript-eslint/ban-types

@@ -1,4 +1,3 @@
-import { ModuleLoader } from '@blargbot/core/modules';
 import { Timer } from '@blargbot/core/Timer';
 import { discord, parse, sleep } from '@blargbot/core/utils';
 import { Database } from '@blargbot/database';
@@ -22,12 +21,28 @@ export class BBTagEngine {
     public get logger(): Logger { return this.dependencies.logger; }
     public get database(): Database { return this.dependencies.database; }
     public get util(): BBTagUtilities { return this.dependencies.util; }
-    public get subtags(): ModuleLoader<Subtag> { return this.dependencies.subtags; }
+    public readonly subtags: ReadonlyMap<string, Subtag>;
 
     public constructor(
         public readonly dependencies: InjectionContext
     ) {
         this.cooldowns = new TagCooldownManager();
+        const subtags = new Map<string, Subtag>();
+        this.subtags = subtags;
+        for (const subtag of dependencies.subtags) {
+            const current = subtags.get(subtag.name);
+            if (current?.name === subtag.name)
+                throw new Error(`Duplicate subtag with name ${JSON.stringify(subtag.name)} found`);
+            subtags.set(subtag.name, subtag);
+
+            for (const alias of subtag.aliases) {
+                const current = subtags.get(alias);
+                if (current === undefined)
+                    subtags.set(alias, subtag);
+                else if (current.name !== alias)
+                    throw new Error(`Duplicate subtag with alias ${JSON.stringify(alias)} found`);
+            }
+        }
     }
 
     public async execute(source: string, options: BBTagContextOptions): Promise<ExecutionResult>

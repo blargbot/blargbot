@@ -1,10 +1,10 @@
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { HashSubtag, supportedHashes } from '@blargbot/bbtag/subtags/misc/hash';
+import { HashSubtag } from '@blargbot/bbtag/subtags/misc/hash';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
 
 function hashMissing(algorithm: string): boolean {
-    return !supportedHashes.includes(algorithm);
+    return !HashSubtag.methods.includes(algorithm);
 }
 
 runSubtagTests({

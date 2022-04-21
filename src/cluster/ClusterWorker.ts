@@ -17,9 +17,8 @@ export class ClusterWorker extends BaseWorker<ClusterIPCContract> {
 
         this.logger.init(`CLUSTER ${clusterId} (pid ${this.id}) PROCESS INITIALIZED`);
 
-        this.cluster = new Cluster(logger, config, {
+        this.cluster = new Cluster(this, logger, config, {
             id: clusterId,
-            worker: this,
             shardCount: envNumber(this.env, 'SHARDS_MAX'),
             firstShardId: envNumber(this.env, 'SHARDS_FIRST'),
             lastShardId: envNumber(this.env, 'SHARDS_LAST')
