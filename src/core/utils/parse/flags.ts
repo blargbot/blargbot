@@ -22,7 +22,8 @@ export function parseFlags(definitions: Iterable<FlagDefinition>, text: string, 
                 currentGroup.push({ start, end, value });
             }
         } else if (value.startsWith('--')) {
-            const flag = flagMap.get(value.slice(2));
+            const flagStr = value.split(' ')[0];
+            const flag = flagMap.get(flagStr.slice(2));
             if (flag === undefined) {
                 currentGroup.push({ start, end, value });
             } else if (currentFlag !== flag) {
@@ -30,9 +31,12 @@ export function parseFlags(definitions: Iterable<FlagDefinition>, text: string, 
                 currentFlag = flag;
                 currentGroup = [];
             }
+            if (flagStr.length < value.length)
+                currentGroup.push({ start: start + flagStr.length + 1, end, value: value.slice(flagStr.length + 1) });
         } else {
             let flagMatched = !strict;
-            for (const char of value.slice(1)) {
+            const flagStr = value.split(' ')[0];
+            for (const char of flagStr.slice(1)) {
                 flagMatched ||= flagKeys.has(char);
                 if (guard.isLetter(char) && currentFlag !== char && (!strict || flagKeys.has(char))) {
                     flagMatched = true;
@@ -43,6 +47,8 @@ export function parseFlags(definitions: Iterable<FlagDefinition>, text: string, 
             }
             if (!flagMatched)
                 currentGroup.push({ start, end, value });
+            else if (flagStr.length < value.length)
+                currentGroup.push({ start: start + flagStr.length + 1, end, value: value.slice(flagStr.length + 1) });
         }
     }
 
