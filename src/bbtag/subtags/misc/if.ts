@@ -34,7 +34,7 @@ export class IfSubtag extends CompiledSubtag {
                 },
                 {
                     parameters: ['value1', 'evaluator', 'value2', '~then'],
-                    description: '`Value1` is evaluated against `value2` using `evaluator, if the resulting value is `true` then the tag returns `then`.',
+                    description: '`Value1` is evaluated against `value2` using `evaluator`, if the resulting value is `true` then the tag returns `then`.',
                     exampleCode: '{if;{userid};==;103347843934212096;Hi stupid cat!}',
                     exampleOut: 'Hi stupid cat!',
                     returns: 'string',
@@ -42,7 +42,7 @@ export class IfSubtag extends CompiledSubtag {
                 },
                 {
                     parameters: ['value1', 'evaluator', 'value2', '~then', '~else'],
-                    description: '`Value1` is evaluated against `value2` using `evaluator, if the resulting value is `true` then the tag returns `then`, otherwise it returns `else`',
+                    description: '`Value1` is evaluated against `value2` using `evaluator`, if the resulting value is `true` then the tag returns `then`, otherwise it returns `else`',
                     exampleCode: '{if;{userid};==;103347843934212096;Hi stupid cat!;Who are you stranger?}',
                     exampleOut: 'Who are you stranger?',
                     returns: 'string',
