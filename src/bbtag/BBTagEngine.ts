@@ -103,7 +103,8 @@ export class BBTagEngine {
                         v[c.key] = c.value;
                     return v;
                 }, {})
-            }
+            },
+            loadedSources: Object.keys(context.data.cache)
         };
     }
 

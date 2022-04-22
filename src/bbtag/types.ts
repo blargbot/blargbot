@@ -155,22 +155,23 @@ export interface BBTagContextOptions {
 }
 
 export interface ExecutionResult {
-    source: string;
-    tagName: string;
-    input: string;
-    content: string;
-    errors: LocatedRuntimeError[];
-    debug: RuntimeDebugEntry[];
-    duration: {
-        total: number;
-        database: number;
-        active: number;
-        subtag: Record<string, number[] | undefined>;
+    readonly source: string;
+    readonly tagName: string;
+    readonly input: string;
+    readonly content: string;
+    readonly errors: LocatedRuntimeError[];
+    readonly debug: RuntimeDebugEntry[];
+    readonly duration: {
+        readonly total: number;
+        readonly database: number;
+        readonly active: number;
+        readonly subtag: { readonly [subtag: string]: readonly number[] | undefined; };
     };
-    database: {
-        committed: number;
-        values: JObject;
+    readonly database: {
+        readonly committed: number;
+        readonly values: JObject;
     };
+    readonly loadedSources: readonly string[];
 }
 
 export type SubtagSignatureValueParameter =

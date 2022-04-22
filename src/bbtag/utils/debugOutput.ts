@@ -33,6 +33,7 @@ export function createDebugOutput(result: ExecutionResult): SendContent {
                     tagName: result.tagName,
                     userInput: result.input,
                     code: result.source,
+                    loadedSources: result.loadedSources,
                     debug: result.debug.map(e => ({
                         details: e.text,
                         subtag: subtagLocation(e.subtag)
