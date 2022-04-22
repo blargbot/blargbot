@@ -127,7 +127,9 @@ export class FarewellCommand extends GuildCommand {
         switch (result) {
             case 'CHANNEL_MISSING': return this.error('I wasnt able to locate a channel to sent the message in!');
             case 'CODE_MISSING': return this.error('There isnt a farewell message set!');
-            default: return bbtag.createDebugOutput(result);
+            default:
+                await context.sendDM(bbtag.createDebugOutput(result));
+                return this.info('Ive sent the debug output in a DM');
         }
     }
 }

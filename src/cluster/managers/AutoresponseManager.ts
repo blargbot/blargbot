@@ -101,10 +101,7 @@ ${codeBlock(code, 'js')}`
             return;
 
         delete this.#debugOutput[key];
-        await this.cluster.util.send(debugCtx.channelId, {
-            ...bbtag.createDebugOutput(result),
-            messageReference: { messageID: debugCtx.messageId }
-        });
+        await this.cluster.util.sendDM(msg.author, bbtag.createDebugOutput(result));
     }
 
     public async handleWhitelistApproval(message: KnownMessage, emoji: PartialEmoji, user: User): Promise<void> {

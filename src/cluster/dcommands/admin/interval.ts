@@ -108,7 +108,9 @@ export class IntervalCommand extends GuildCommand {
             case 'MISSING_AUTHORIZER': return this.error('I couldnt find the user who authorizes the interval!');
             case 'MISSING_CHANNEL': return this.error('I wasnt able to figure out which channel to run the interval in!');
             case 'TOO_LONG': return this.error(`The interval took longer than the max allowed time (${humanize.duration(context.cluster.intervals.timeLimit)})`);
-            default: return bbtag.createDebugOutput(result);
+            default:
+                await context.sendDM(bbtag.createDebugOutput(result));
+                return this.info('Ive sent the debug output in a DM');
         }
     }
 }

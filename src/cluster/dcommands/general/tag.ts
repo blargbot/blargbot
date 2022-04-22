@@ -192,7 +192,11 @@ export class TagCommand extends GuildCommand {
             cooldown: match.cooldown
         });
 
-        return debug ? bbtag.createDebugOutput(result) : undefined;
+        if (!debug)
+            return undefined;
+
+        await context.sendDM(bbtag.createDebugOutput(result));
+        return this.info('Ive sent the debug output in a DM');
     }
 
     public async runRaw(
@@ -210,7 +214,11 @@ export class TagCommand extends GuildCommand {
             authorId: context.author.id
         });
 
-        return debug ? bbtag.createDebugOutput(result) : undefined;
+        if (!debug)
+            return undefined;
+
+        await context.sendDM(bbtag.createDebugOutput(result));
+        return this.info('Ive sent the debug output in a DM');
     }
 
     public async createTag(context: GuildCommandContext, tagName: string | undefined, content: string | undefined): Promise<string | undefined> {

@@ -284,7 +284,8 @@ export class RolemeCommand extends GuildCommand {
             return this.error(`Roleme ${id} doesnt have a custom message`);
 
         const result = await context.cluster.rolemes.invokeMessage(context.message, roleme);
-        return bbtag.createDebugOutput(result);
+        await context.sendDM(bbtag.createDebugOutput(result));
+        return this.info('Ive sent the debug output in a DM');
     }
 
     public async setAuthorizer(context: GuildCommandContext, id: number): Promise<string> {

@@ -169,7 +169,11 @@ export class CustomCommandCommand extends GuildCommand {
             authorId: context.author.id
         });
 
-        return debug ? bbtag.createDebugOutput(result) : undefined;
+        if (!debug)
+            return undefined;
+
+        await context.sendDM(bbtag.createDebugOutput(result));
+        return this.info('Ive sent the debug output in a DM');
     }
 
     public async showDocs(context: GuildCommandContext, topic: string | undefined): Promise<SendPayload | string> {
@@ -209,7 +213,11 @@ export class CustomCommandCommand extends GuildCommand {
             cooldown: match.cooldown
         });
 
-        return debug ? bbtag.createDebugOutput(result) : undefined;
+        if (!debug)
+            return undefined;
+
+        await context.sendDM(bbtag.createDebugOutput(result));
+        return this.info('Ive sent the debug output in a DM');
     }
 
     public async createCommand(context: GuildCommandContext, commandName: string | undefined, content: string | undefined): Promise<string | undefined> {

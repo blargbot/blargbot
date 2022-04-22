@@ -69,10 +69,7 @@ export class CensorManager extends ModerationManagerBase {
             const debugCtx = this.#debugOutput[key];
             if (debugCtx !== undefined) {
                 delete this.#debugOutput[key];
-                await this.cluster.util.send(debugCtx.channelId, {
-                    ...bbtag.createDebugOutput(result),
-                    messageReference: { messageID: debugCtx.messageId }
-                });
+                await this.cluster.util.sendDM(message.author, bbtag.createDebugOutput(result));
             }
         }
 

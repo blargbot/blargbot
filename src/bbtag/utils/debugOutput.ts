@@ -1,12 +1,12 @@
-import { SendContent } from '@blargbot/core/types';
 import { codeBlock, humanize } from '@blargbot/core/utils';
+import { FileContent } from 'eris';
 import moment from 'moment-timezone';
 
 import { SubtagCall } from '../language';
 import { ExecutionResult } from '../types';
 import { stringify } from './stringify';
 
-export function createDebugOutput(result: ExecutionResult): SendContent {
+export function createDebugOutput(result: ExecutionResult): { content: string; files: FileContent[]; } {
     const performance: Record<string, unknown> = {};
     for (const [key, times] of Object.entries(result.duration.subtag)) {
         if (times !== undefined && times.length > 0) {
