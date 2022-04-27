@@ -10,7 +10,7 @@
         "@blargbot/logger": "workspace:^",
         "@blargbot/mapping": "workspace:^",
         "brainfuck-node": "^1.0.2",
-        "color": "^4.2.1",
+        "color": "^4.2.3",
         "eris": "^0.16.1",
         "html-entities": "^2.3.3",
         "moment-timezone": "^0.5.34",

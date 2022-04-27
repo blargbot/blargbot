@@ -22,6 +22,6 @@
         "@types/long": "workspace:^",
         "@types/pg": "^8.6.5",
         "@types/rethinkdb": "workspace:^",
-        "@types/sequelize": "^4.28.11"
+        "@types/sequelize": "^4.28.12"
     }
 }

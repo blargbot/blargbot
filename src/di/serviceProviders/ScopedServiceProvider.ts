@@ -35,11 +35,11 @@ export class ScopedServiceProvider implements IServiceProvider {
     }
 
     public getService<T>(type: Type<T>): T {
-        return new ResolutionServiceProvider(this, this.#resolvers, this.#rootScope, this.#currentScope).getService(type);
+        return new ResolutionServiceProvider(this.#resolvers, this.#rootScope, this.#currentScope).getService(type);
     }
 
     public getServices<T>(type: Type<T>): Iterable<T> {
-        return new ResolutionServiceProvider(this, this.#resolvers, this.#rootScope, this.#currentScope).getServices(type);
+        return new ResolutionServiceProvider(this.#resolvers, this.#rootScope, this.#currentScope).getServices(type);
     }
 
     public withScope(callback: (provider: IServiceProvider) => void): void

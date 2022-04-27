@@ -5,8 +5,8 @@
     "dependencies": {
         "@blargbot/config": "workspace:^",
         "@blargbot/di": "workspace:^",
-        "@sentry/node": "^6.19.6",
-        "@sentry/tracing": "^6.19.6",
+        "@sentry/node": "^6.19.7",
+        "@sentry/tracing": "^6.19.7",
         "cat-loggr": "^1.2.2"
     }
 }
