@@ -25,6 +25,7 @@ bot.on('ready', async function () {
 
     let g;
     if (g = bot.guilds.get('194232473931087872')) {
+        await bu.ensureMembers(g);
         let police = g.members.filter(m => m.roles.includes('280159905825161216')).map(m => m.id);
         await r.table('vars').get('police').replace({
             value: police, varname: 'police'

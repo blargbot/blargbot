@@ -616,6 +616,20 @@ bu.getChannel = async function (msg, query, options = {}) {
 };
 
 /**
+ * @param {import('eris').Guild} guild
+ * @returns {Promise<void>}
+ */
+bu.ensureMembers = async function (guild) {
+    if (!guild || guild[ensureMembersKey])
+        return;
+
+    // We only ever need to call this once, in theory all member updates should be sent via the gateway
+    guild[ensureMembersKey] = true;
+    await guild.fetchAllMembers();
+};
+const ensureMembersKey = Symbol();
+
+/**
  * Gets a user from a name (smartly)
  * @param {Message<import('eris').AnyGuildChannel>} msg - the message
  * @param {string} query - the name of the channel
@@ -638,6 +652,7 @@ bu.getUser = async function (msg, query, options = {}) {
     }
 
     const normQuery = query.toLowerCase();
+    await bu.ensureMembers(msg.channel.guild);
     const memberList = findBestEntity(msg.channel.guild.members.values(), member => {
         if (query === member.username && discrim === member.discriminator) return Infinity;
         const names = [member.username, member.nick || member.username];
@@ -904,42 +919,42 @@ bu.issueWarning = async function (user, guild, count, params) {
     const member = guild.members.get(user.id);
     if (member && bu.isBotHigher(member)) {
         if (
-			storedGuild.settings.banat &&
-			storedGuild.settings.banat > 0 &&
-			warningCount >= storedGuild.settings.banat
-		) {
-			if (!bu.bans[guild.id]) bu.bans[guild.id] = {};
-			bu.bans[guild.id][user.id] = {
-				mod: bot.user,
-				type: 'Auto-Ban',
-				reason: `Exceeded Warning Limit (${warningCount}/${storedGuild.settings.banat})`,
-			};
-			try {
-				await guild.banMember(
-					user.id,
-					0,
-					`[ Auto-Ban ] Exceeded warning limit (${warningCount}/${storedGuild.settings.banat})`
-				);
-			} catch (e) {
-				error = e;
-			}
-			storedGuild.warnings.users[user.id] = undefined;
-			type = 1;
-		} else if (
-			storedGuild.settings.kickat && storedGuild.settings.kickat > 0 &&
-			(!storedGuild.settings.actonlimitsonly || oldCount < storedGuild.settings.kickat) &&
-			warningCount >= storedGuild.settings.kickat
-		) {
-			try {
-				await guild.kickMember(
-					user.id,
-					`[ Auto-Kick ] Exceeded warning limit (${warningCount}/${storedGuild.settings.kickat})`
-				);
-			} catch (e) {
-				error = e;
-			}
-			type = 2;
-		}
+            storedGuild.settings.banat &&
+            storedGuild.settings.banat > 0 &&
+            warningCount >= storedGuild.settings.banat
+        ) {
+            if (!bu.bans[guild.id]) bu.bans[guild.id] = {};
+            bu.bans[guild.id][user.id] = {
+                mod: bot.user,
+                type: 'Auto-Ban',
+                reason: `Exceeded Warning Limit (${warningCount}/${storedGuild.settings.banat})`,
+            };
+            try {
+                await guild.banMember(
+                    user.id,
+                    0,
+                    `[ Auto-Ban ] Exceeded warning limit (${warningCount}/${storedGuild.settings.banat})`
+                );
+            } catch (e) {
+                error = e;
+            }
+            storedGuild.warnings.users[user.id] = undefined;
+            type = 1;
+        } else if (
+            storedGuild.settings.kickat && storedGuild.settings.kickat > 0 &&
+            (!storedGuild.settings.actonlimitsonly || oldCount < storedGuild.settings.kickat) &&
+            warningCount >= storedGuild.settings.kickat
+        ) {
+            try {
+                await guild.kickMember(
+                    user.id,
+                    `[ Auto-Kick ] Exceeded warning limit (${warningCount}/${storedGuild.settings.kickat})`
+                );
+            } catch (e) {
+                error = e;
+            }
+            type = 2;
+        }
     }
     await r.table('guild').get(guild.id).update({
         warnings: r.literal(storedGuild.warnings)
@@ -1238,7 +1253,7 @@ async function getAudit(guildId, type) {
     }
 }
 
-bu.getAudit = async function(guildId, targetId, type) {
+bu.getAudit = async function (guildId, targetId, type) {
     if (!auditCache[guildId]) {
         auditCache[guildId] = {};
     }

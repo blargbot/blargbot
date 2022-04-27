@@ -16,6 +16,9 @@ module.exports =
             'This guild has {length;{guildmembers}} members.',
             'This guild has 123 members.'
         )
-        .whenArgs(0, async (_, context) => JSON.stringify(context.guild.members.map(m => m.user.id)))
+        .whenArgs(0, async (_, context) => {
+            await bu.ensureMembers(context.guild);
+            JSON.stringify(context.guild.members.map(m => m.user.id));
+        })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

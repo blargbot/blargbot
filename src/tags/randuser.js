@@ -17,6 +17,7 @@ module.exports =
             'abalabahaha is a lovely person! stupid cat isn\'t as good.'
         )
         .whenArgs(0, async function (subtag, context) {
+            await bu.ensureMembers(context.guild);
             let members = context.guild.members.map(m => m);
             return members[bu.getRandomInt(0, members.length - 1)].user.id;
         })
