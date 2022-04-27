@@ -11,7 +11,7 @@ export class MapSubtag extends CompiledSubtag {
             category: SubtagType.ARRAY,
             definition: [
                 {
-                    parameters: ['variable', 'array', '~code'],
+                    parameters: ['variable', 'array#10000000', '~code'],
                     description: 'Provides a way to populate an array by executing a function on each of its elements,' +
                         ' more info [here](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map)\n' +
                         'For every element in `array`, a variable called `variable` will be set to the current element. The output of `function`' +

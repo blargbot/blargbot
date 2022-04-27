@@ -11,7 +11,7 @@ export class ForeachSubtag extends CompiledSubtag {
             category: SubtagType.LOOPS,
             definition: [
                 {
-                    parameters: ['variable', 'array', '~code'],
+                    parameters: ['variable', 'array#10000000', '~code'],
                     description: 'For every element in `array`, a variable called `variable` will be set and then `code` will be run.\n' +
                         'If `element` is not an array, it will iterate over each character intead.',
                     exampleCode: '{set;~array;apples;oranges;c#}\n{foreach;~element;~array;I like {get;~element}{newline}}',

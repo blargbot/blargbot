@@ -13,7 +13,7 @@ export class FilterSubtag extends CompiledSubtag {
             category: SubtagType.LOOPS,
             definition: [
                 {
-                    parameters: ['variable', 'array', '~code'],
+                    parameters: ['variable', 'array#10000000', '~code'],
                     description: 'For every element in `array`, a variable called `variable` will be set and `code` will be executed. Returns a new array containing all the elements that returned the value `true`.' +
                         '\n\n While inside the `code` parameter, none of the following subtags may be used: `' + bbtag.overrides.filter.join(', ') + '`',
                     exampleCode: '{set;~array;apples;apple juice;grapefruit}\n{filter;~element;~array;{bool;{get;~element};startswith;apple}}',
