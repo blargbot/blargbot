@@ -106,7 +106,7 @@ export class BBTagContext implements BBTagContextOptions {
         this.cooldown = options.cooldown ?? 0;
         this.cooldowns = options.cooldowns ?? new TagCooldownManager();
         this.locks = options.locks ?? {};
-        this.limit = typeof options.limit === 'string' ? new limits[options.limit]() : options.limit;
+        this.limit = typeof options.limit === 'string' ? new limits[options.limit](this.guild) : options.limit;
         this.silent = options.silent ?? false;
         this.flaggedInput = parse.flags(this.flags, this.inputRaw);
         this.errors = [];

@@ -1,11 +1,13 @@
+import { mapping } from '@blargbot/mapping';
+
 import { BBTagContext } from '../../BBTagContext';
 import { BBTagRuntimeError } from '../../errors';
 import { RuntimeLimitRule } from '../RuntimeLimitRule';
 
 export class UseCountRule implements RuntimeLimitRule {
-    readonly #initial: number;
     readonly #type: string;
     readonly #makeError: (subtagName: string) => BBTagRuntimeError;
+    #initial: number;
     #remaining: number;
 
     public constructor(count: number, type = 'uses', error: string | ((subtagName: string) => BBTagRuntimeError) = 'Usage') {
@@ -26,14 +28,21 @@ export class UseCountRule implements RuntimeLimitRule {
         return `Maximum ${this.#initial} ${this.#type}`;
     }
 
-    public state(): number {
-        return this.#remaining;
+    public state(): [number, number] {
+        return [this.#remaining, this.#initial];
     }
 
     public load(state: JToken): void {
-        if (typeof state !== 'number')
+        const mapped = mapState(state);
+        if (!mapped.valid)
             throw new Error(`Invalid state ${JSON.stringify(state)}`);
 
-        this.#remaining = state;
+        this.#remaining = mapped.value[0];
+        this.#initial = mapped.value[1];
     }
 }
+
+const mapState = mapping.tuple<[number, number]>([
+    mapping.number,
+    mapping.number
+]);

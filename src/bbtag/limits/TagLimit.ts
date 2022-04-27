@@ -1,3 +1,5 @@
+import { Guild } from 'eris';
+
 import { BBTagRuntimeError, TooManyLoopsError } from '../errors';
 import { GlobalLimit } from './GlobalLimit';
 import { disabledRule, UseCountRule } from './rules';
@@ -5,7 +7,7 @@ import { disabledRule, UseCountRule } from './rules';
 export class TagLimit extends GlobalLimit {
     public readonly scopeName = 'tags';
 
-    public constructor() {
+    public constructor(guild?: Guild) {
         super('tagLimit');
 
         this.addRules('ban', disabledRule)
@@ -49,9 +51,9 @@ export class TagLimit extends GlobalLimit {
                 'repeat:loops',
                 'while:loops'
             ], new UseCountRule(10000, 'loops', () => new TooManyLoopsError(10000)))
-            .addRules('foreach:loops', new UseCountRule(100000, 'loops', () => new TooManyLoopsError(100000)))
-            .addRules('map:loops', new UseCountRule(100000, 'loops', () => new TooManyLoopsError(100000)))
-            .addRules('filter:loops', new UseCountRule(100000, 'loops', () => new BBTagRuntimeError('Max safeloops reached')))
+            .addRules('foreach:loops', new UseCountRule((guild?.memberCount ?? 0) + 100000, 'loops', () => new TooManyLoopsError(100000)))
+            .addRules('map:loops', new UseCountRule((guild?.memberCount ?? 0) + 100000, 'loops', () => new TooManyLoopsError(100000)))
+            .addRules('filter:loops', new UseCountRule((guild?.memberCount ?? 0) + 100000, 'loops', () => new BBTagRuntimeError('Max safeloops reached')))
             .addRules('dump', new UseCountRule(5));
     }
 
