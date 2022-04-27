@@ -492,7 +492,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["express-promise-router", "virtual:095fcb10883c40f470ac6e6afe01baaad608ecd7018d2aa01600e1b94a63e74e03d9c60d9c4b5eae313115c2ddfa875282bf27ef0d1c898d09652020afc63115#npm:4.1.1"],\
             ["jsonwebtoken", "npm:8.5.1"],\
             ["node-fetch", "virtual:f8064d0caada6a20bc16e3338ff697ccdf569969ece20c0e9f2d497ceb8f8f4f968ac59bbba11d632ccf5d879ab88e71fbb2e0f5846cb33f2446eff7e63fc611#npm:2.6.7"],\
-            ["ws", "virtual:a7d19b7302aa9b32f436a27530ea4f91ce19983ef51064fa122e7d7d7f93aaf0d0d67a5a3e31be6c34e6a3e11a54946655f948f72806e0b7bbd90593f2b209b3#npm:8.5.0"]\
+            ["ws", "virtual:978eb343e1081dfa9c53e1b7feaa6a83fa8453f7bae42215e1acabb1304be28255977aaa5bf1359c29678f16ebc70e57e92dd680c15d68a2f1a1ada671e9730a#npm:8.5.0"]\
           ],\
           "linkType": "SOFT"\
         }]\
@@ -517,7 +517,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["brainfuck-node", "npm:1.0.2"],\
             ["color", "npm:4.2.3"],\
             ["discord-api-types", "npm:0.30.0"],\
-            ["eris", "npm:0.16.1"],\
+            ["eris", "patch:eris@npm%3A0.16.1#.yarn/patches/eris-npm-0.16.1-a7d19b7302.patch::version=0.16.1&hash=f02022&locator=blargbot%40workspace%3A."],\
             ["html-entities", "npm:2.3.3"],\
             ["moment-timezone", "npm:0.5.34"],\
             ["node-fetch", "virtual:f8064d0caada6a20bc16e3338ff697ccdf569969ece20c0e9f2d497ceb8f8f4f968ac59bbba11d632ccf5d879ab88e71fbb2e0f5846cb33f2446eff7e63fc611#npm:2.6.7"],\
@@ -546,7 +546,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["chai-datetime", "npm:1.8.0"],\
             ["chai-exclude", "virtual:94580678571635b8fa683d1ccf0d1493f27441684157cd3c71327884aaa620119eb99f1b6fb9168cfe69174ff44ca73b71d597b5e675b7d6ecf9ae214b4d650b#npm:2.1.0"],\
             ["discord-api-types", "npm:0.30.0"],\
-            ["eris", "npm:0.16.1"],\
+            ["eris", "patch:eris@npm%3A0.16.1#.yarn/patches/eris-npm-0.16.1-a7d19b7302.patch::version=0.16.1&hash=f02022&locator=blargbot%40workspace%3A."],\
             ["mocha", "npm:9.2.2"],\
             ["moment-timezone", "npm:0.5.34"],\
             ["ts-mockito", "npm:2.6.1"]\
@@ -581,7 +581,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["brainfuck-node", "npm:1.0.2"],\
             ["crypto", "npm:1.0.1"],\
             ["discord-api-types", "npm:0.30.0"],\
-            ["eris", "npm:0.16.1"],\
+            ["eris", "patch:eris@npm%3A0.16.1#.yarn/patches/eris-npm-0.16.1-a7d19b7302.patch::version=0.16.1&hash=f02022&locator=blargbot%40workspace%3A."],\
             ["eventemitter3", "npm:4.0.7"],\
             ["moment-timezone", "npm:0.5.34"],\
             ["node-fetch", "virtual:f8064d0caada6a20bc16e3338ff697ccdf569969ece20c0e9f2d497ceb8f8f4f968ac59bbba11d632ccf5d879ab88e71fbb2e0f5846cb33f2446eff7e63fc611#npm:2.6.7"],\
@@ -633,7 +633,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["catflake", "npm:1.0.0"],\
             ["color", "npm:4.2.3"],\
             ["cron", "npm:1.8.2"],\
-            ["eris", "npm:0.16.1"],\
+            ["eris", "patch:eris@npm%3A0.16.1#.yarn/patches/eris-npm-0.16.1-a7d19b7302.patch::version=0.16.1&hash=f02022&locator=blargbot%40workspace%3A."],\
             ["eventemitter3", "npm:4.0.7"],\
             ["limax", "npm:3.0.0"],\
             ["long", "npm:2.4.0"],\
@@ -777,7 +777,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/res", "workspace:src/res"],\
             ["@types/eris", "workspace:definitions/eris"],\
             ["@types/node-fetch", "npm:2.6.1"],\
-            ["eris", "npm:0.16.1"],\
+            ["eris", "patch:eris@npm%3A0.16.1#.yarn/patches/eris-npm-0.16.1-a7d19b7302.patch::version=0.16.1&hash=f02022&locator=blargbot%40workspace%3A."],\
             ["moment-timezone", "npm:0.5.34"],\
             ["node-fetch", "virtual:f8064d0caada6a20bc16e3338ff697ccdf569969ece20c0e9f2d497ceb8f8f4f968ac59bbba11d632ccf5d879ab88e71fbb2e0f5846cb33f2446eff7e63fc611#npm:2.6.7"],\
             ["strip-ansi", "npm:6.0.1"]\
@@ -798,7 +798,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/mapping", "workspace:src/mapping"],\
             ["@types/eris", "workspace:definitions/eris"],\
             ["@types/rethinkdb", "workspace:definitions/rethinkdb"],\
-            ["eris", "npm:0.16.1"],\
+            ["eris", "patch:eris@npm%3A0.16.1#.yarn/patches/eris-npm-0.16.1-a7d19b7302.patch::version=0.16.1&hash=f02022&locator=blargbot%40workspace%3A."],\
             ["rethinkdb", "npm:2.4.2"]\
           ],\
           "linkType": "SOFT"\
@@ -2304,7 +2304,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./definitions/eris/",\
           "packageDependencies": [\
             ["@types/eris", "workspace:definitions/eris"],\
-            ["eris", "npm:0.16.1"]\
+            ["eris", "patch:eris@npm%3A0.16.1#.yarn/patches/eris-npm-0.16.1-a7d19b7302.patch::version=0.16.1&hash=f02022&locator=blargbot%40workspace%3A."]\
           ],\
           "linkType": "SOFT"\
         }]\
@@ -4826,13 +4826,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["eris", [\
-        ["npm:0.16.1", {\
-          "packageLocation": "./.yarn/cache/eris-npm-0.16.1-a7d19b7302-86fe740001.zip/node_modules/eris/",\
+        ["patch:eris@npm%3A0.16.1#.yarn/patches/eris-npm-0.16.1-a7d19b7302.patch::version=0.16.1&hash=f02022&locator=blargbot%40workspace%3A.", {\
+          "packageLocation": "./.yarn/cache/eris-patch-978eb343e1-7d25e3fe31.zip/node_modules/eris/",\
           "packageDependencies": [\
-            ["eris", "npm:0.16.1"],\
+            ["eris", "patch:eris@npm%3A0.16.1#.yarn/patches/eris-npm-0.16.1-a7d19b7302.patch::version=0.16.1&hash=f02022&locator=blargbot%40workspace%3A."],\
             ["opusscript", "npm:0.0.8"],\
             ["tweetnacl", "npm:1.0.3"],\
-            ["ws", "virtual:a7d19b7302aa9b32f436a27530ea4f91ce19983ef51064fa122e7d7d7f93aaf0d0d67a5a3e31be6c34e6a3e11a54946655f948f72806e0b7bbd90593f2b209b3#npm:8.5.0"]\
+            ["ws", "virtual:978eb343e1081dfa9c53e1b7feaa6a83fa8453f7bae42215e1acabb1304be28255977aaa5bf1359c29678f16ebc70e57e92dd680c15d68a2f1a1ada671e9730a#npm:8.5.0"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -10695,10 +10695,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],\
           "linkType": "SOFT"\
         }],\
-        ["virtual:a7d19b7302aa9b32f436a27530ea4f91ce19983ef51064fa122e7d7d7f93aaf0d0d67a5a3e31be6c34e6a3e11a54946655f948f72806e0b7bbd90593f2b209b3#npm:8.5.0", {\
-          "packageLocation": "./.yarn/__virtual__/ws-virtual-a89e2cf01e/0/cache/ws-npm-8.5.0-8e99728c84-76f2f90e40.zip/node_modules/ws/",\
+        ["virtual:978eb343e1081dfa9c53e1b7feaa6a83fa8453f7bae42215e1acabb1304be28255977aaa5bf1359c29678f16ebc70e57e92dd680c15d68a2f1a1ada671e9730a#npm:8.5.0", {\
+          "packageLocation": "./.yarn/__virtual__/ws-virtual-76b2acd3b2/0/cache/ws-npm-8.5.0-8e99728c84-76f2f90e40.zip/node_modules/ws/",\
           "packageDependencies": [\
-            ["ws", "virtual:a7d19b7302aa9b32f436a27530ea4f91ce19983ef51064fa122e7d7d7f93aaf0d0d67a5a3e31be6c34e6a3e11a54946655f948f72806e0b7bbd90593f2b209b3#npm:8.5.0"],\
+            ["ws", "virtual:978eb343e1081dfa9c53e1b7feaa6a83fa8453f7bae42215e1acabb1304be28255977aaa5bf1359c29678f16ebc70e57e92dd680c15d68a2f1a1ada671e9730a#npm:8.5.0"],\
             ["@types/bufferutil", null],\
             ["@types/utf-8-validate", null],\
             ["bufferutil", null],\

@@ -1,0 +1,13 @@
+diff --git a/lib/gateway/Shard.js b/lib/gateway/Shard.js
+index 655ad14c53604787964381a88a90a440e845a7d7..e72f05f6af0de2cd6fcd1c83a6000298dd8363cd 100644
+--- a/lib/gateway/Shard.js
++++ b/lib/gateway/Shard.js
+@@ -843,7 +843,7 @@ class Shard extends EventEmitter {
+             }
+             case "MESSAGE_CREATE": {
+                 const channel = this.client.getChannel(packet.d.channel_id);
+-                if(channel) { // MESSAGE_CREATE just when deleting o.o
++                if(channel && channel.messages) { // MESSAGE_CREATE just when deleting o.o
+                     channel.lastMessageID = packet.d.id;
+                     /**
+                     * Fired when a message is created
