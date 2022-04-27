@@ -20,7 +20,8 @@ export class GuildMembersSubtag extends CompiledSubtag {
         });
     }
 
-    public getMembers(context: BBTagContext): string[] {
+    public async getMembers(context: BBTagContext): Promise<string[]> {
+        await context.util.ensureMemberCache(context.channel.guild);
         return context.guild.members.map(m => m.user.id);
     }
 }

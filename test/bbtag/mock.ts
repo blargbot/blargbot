@@ -1,3 +1,4 @@
+import { Base } from 'eris';
 import { instance, verify, when } from 'ts-mockito';
 import { Matcher } from 'ts-mockito/lib/matcher/type/Matcher';
 import { StrictEqualMatcher } from 'ts-mockito/lib/matcher/type/StrictEqualMatcher';
@@ -186,17 +187,23 @@ class MethodNotConfiguredStub extends AbstractMethodStub implements MethodStub {
         const strArgs = args.map(a => {
             if (a === undefined)
                 return 'undefined';
-            if (!isProxy(a)) {
-                try {
-                    return JSON.stringify(a, (_, value) => typeof value === 'bigint' ? value.toString() : value as unknown);
-                } catch (err: unknown) {
-                    if (!(err instanceof MethodNotConfiguredError))
-                        throw err;
-                }
+            if (isProxy(a)) {
+                const proto = Object.getPrototypeOf(a) as object;
+                return `<PROXY ${proto.constructor.name}>`;
             }
-
-            const proto = Object.getPrototypeOf(a) as object;
-            return `<PROXY ${proto.constructor.name}>`;
+            if (a instanceof Base) {
+                const b: Base & { name?: string; } = a;
+                if ('name' in b && typeof b.name === 'string')
+                    return `<Eris.${a.constructor.name} ${b.id} (${JSON.stringify(b.name)})>`;
+                return `<Eris.${a.constructor.name} ${a.id}>`;
+            }
+            try {
+                return JSON.stringify(a, (_, value) => typeof value === 'bigint' ? value.toString() : value as unknown);
+            } catch (err: unknown) {
+                if (!(err instanceof MethodNotConfiguredError))
+                    throw err;
+                return `<${(a as object).constructor.name}>`;
+            }
         });
 
         throw new MethodNotConfiguredError(`The '${this.name}' method hasnt been configured to accept the arguments: [${strArgs.join(',')}]`);

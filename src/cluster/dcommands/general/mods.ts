@@ -48,6 +48,7 @@ export class ModsCommand extends GuildCommand {
 
         const isUserStaff = await context.util.isUserStaff(context.channel.guild);
 
+        await context.util.ensureMemberCache(context.channel.guild);
         for (const member of context.channel.guild.members.values()) {
             if (member.user.bot || !isUserStaff(member) || !filter(member.status ?? 'offline'))
                 continue;

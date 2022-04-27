@@ -11,6 +11,9 @@ runSubtagTests({
             code: '{randuser}',
             assert(_, result, ctx) {
                 expect(result).to.be.oneOf(Object.values(ctx.users).map(u => u.id));
+            },
+            postSetup(bbctx, ctx) {
+                ctx.util.setup(m => m.ensureMemberCache(bbctx.guild)).thenResolve(undefined);
             }
         }
     ]

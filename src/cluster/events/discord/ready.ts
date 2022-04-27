@@ -19,6 +19,7 @@ export class DiscordReadyHandler extends DiscordEventService<'ready'> {
                 continue;
 
             const members = guild.memberCount;
+            await this.cluster.util.ensureMemberCache(guild);
             const users = guild.members.filter(m => !m.user.bot).length;
             const bots = guild.members.filter(m => m.user.bot).length;
             const percent = Math.floor(bots / members * 10000) / 100;

@@ -540,6 +540,17 @@ export class BaseUtilities {
         }
     }
 
+    readonly #ensuredGuilds = new WeakSet<Guild>();
+    public async ensureMemberCache(guild: Guild): Promise<void> {
+        if (this.#ensuredGuilds.has(guild))
+            return;
+
+        this.#ensuredGuilds.add(guild);
+        const initialSize = guild.members.size;
+        await guild.fetchAllMembers();
+        this.logger.info('Cached', guild.members.size - initialSize, 'members in guild', guild.id, '. Member cache now has', guild.members.size, 'entries');
+    }
+
     public async findMembers(guild: string | Guild, query?: string): Promise<Member[]> {
         if (typeof guild === 'string')
             guild = await this.getGuild(guild) ?? guild;
@@ -547,13 +558,16 @@ export class BaseUtilities {
         if (typeof guild === 'string')
             return [];
 
-        if (query === undefined)
+        if (query === undefined) {
+            await this.ensureMemberCache(guild);
             return [...guild.members.values()];
+        }
 
         const member = await this.getMember(guild, query);
         if (member !== undefined)
             return [member];
 
+        await this.ensureMemberCache(guild);
         return findBest(guild.members.values(), m => this.memberMatchScore(m, query));
     }
 

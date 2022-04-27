@@ -34,8 +34,8 @@ export class BotStaffManager {
             return { staff: staff?.value ?? [], support: support?.value ?? [] };
         }
 
-        const staff = userIdsWithRole(guild, this.cluster.config.discord.roles.staff);
-        const support = userIdsWithRole(guild, this.cluster.config.discord.roles.support);
+        const staff = await this.#userIdsWithRole(guild, this.cluster.config.discord.roles.staff);
+        const support = await this.#userIdsWithRole(guild, this.cluster.config.discord.roles.support);
 
         await Promise.all([
             this.cluster.database.vars.set('police', { value: staff }),
@@ -44,8 +44,8 @@ export class BotStaffManager {
 
         return { staff, support };
     }
-}
-
-function userIdsWithRole(guild: Guild, roleId: string): string[] {
-    return guild.members.filter(m => m.roles.includes(roleId)).map(m => m.id);
+    async #userIdsWithRole(guild: Guild, roleId: string): Promise<string[]> {
+        await this.cluster.util.ensureMemberCache(guild);
+        return guild.members.filter(m => m.roles.includes(roleId)).map(m => m.id);
+    }
 }

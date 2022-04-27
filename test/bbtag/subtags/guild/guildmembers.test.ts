@@ -14,6 +14,9 @@ runSubtagTests({
                 ctx.users.command.id = '329467864239864324';
                 ctx.users.other.id = '237846384639462874';
                 ctx.users.bot.id = '23746392746789426394';
+            },
+            postSetup(bbctx, ctx) {
+                ctx.util.setup(m => m.ensureMemberCache(bbctx.guild)).thenResolve(undefined);
             }
         }
     ]
