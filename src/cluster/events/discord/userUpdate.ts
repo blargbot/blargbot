@@ -1,5 +1,6 @@
 import { Cluster } from '@blargbot/cluster';
 import { guard } from '@blargbot/cluster/utils';
+import { Lazy } from '@blargbot/core/Lazy';
 import { DiscordEventService } from '@blargbot/core/serviceTypes';
 import { PartialUser, User } from 'eris';
 
@@ -12,18 +13,43 @@ export class DiscordUserUpdateHandler extends DiscordEventService<'userUpdate'> 
         if (!guard.hasValue(user) || user.id === this.cluster.discord.user.id)
             return;
 
-        const promises: Array<Promise<unknown>> = [this.cluster.database.users.upsert(user)];
+        const promises: Array<Promise<unknown>> = [this.#updateDb(user)];
         if (!guard.hasValue(oldUser)) {
             await Promise.all(promises);
             return;
         }
 
+        const fullOldUser = new Lazy(() => new User({ ...oldUser }, this.cluster.discord));
         if (oldUser.username !== user.username || oldUser.discriminator !== user.discriminator)
-            promises.push(this.cluster.moderation.eventLog.userTagUpdated(user, new User({ ...oldUser }, this.cluster.discord)));
+            promises.push(this.#modlogTagUpdate(user, fullOldUser.value));
 
         if (oldUser.avatar !== user.avatar)
-            promises.push(this.cluster.moderation.eventLog.userAvatarUpdated(user, new User({ ...oldUser }, this.cluster.discord)));
+            promises.push(this.#modlogAvatarUpdate(user, fullOldUser.value));
 
         await Promise.all(promises);
+    }
+
+    async #updateDb(user: User): Promise<void> {
+        try {
+            await this.cluster.database.users.upsert(user);
+        } catch (ex: unknown) {
+            this.cluster.logger.error('Error while updating the db for a user', ex);
+        }
+    }
+
+    async #modlogTagUpdate(user: User, oldUser: User): Promise<void> {
+        try {
+            await this.cluster.moderation.eventLog.userTagUpdated(user, oldUser);
+        } catch (ex: unknown) {
+            this.cluster.logger.error('Error while evaluating modlog for a user tag update', ex);
+        }
+    }
+
+    async #modlogAvatarUpdate(user: User, oldUser: User): Promise<void> {
+        try {
+            await this.cluster.moderation.eventLog.userAvatarUpdated(user, oldUser);
+        } catch (ex: unknown) {
+            this.cluster.logger.error('Error while evaluating modlog for a user avatar update', ex);
+        }
     }
 }
