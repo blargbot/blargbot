@@ -21,9 +21,10 @@ module.exports =
         .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenArgs(1, async function (subtag, context, args) {
             let role = context.guild.roles.get(args[0]);
-            if (role)
-                return context.guild.members.filter(m => m.roles.includes(role.id)).length;
-            return Builder.errors.noRoleFound(subtag, context);
+            if (!role)
+                return Builder.errors.noRoleFound(subtag, context);
+            await bu.ensureMembers(context.guild);
+            return context.guild.members.filter(m => m.roles.includes(role.id)).length;
         })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();
