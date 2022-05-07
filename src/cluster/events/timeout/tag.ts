@@ -1,4 +1,4 @@
-import { bbtag, BBTagContext, rules, SerializedBBTagContext } from '@blargbot/bbtag';
+import { BBTagContext, rules, SerializedBBTagContext } from '@blargbot/bbtag';
 import { Cluster } from '@blargbot/cluster';
 import { TimeoutEventService } from '@blargbot/cluster/serviceTypes';
 import { StoredEvent } from '@blargbot/domain/models';
@@ -15,7 +15,6 @@ export class TimeoutTagEventService extends TimeoutEventService<'tag'> {
         context.limit.addRules(['timer', 'output'], rules.disabledRule);
         context.data.stackSize--;
 
-        const ast = bbtag.parse(event.content);
-        await context.engine.eval(ast, context);
+        await context.engine.execute(event.content, context);
     }
 }
