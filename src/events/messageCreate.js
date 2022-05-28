@@ -499,7 +499,7 @@ function defaultMember(msg, tag) {
 }
 
 const autoresponseMetrics = {
-    lastResponse: Date.now(),
+    timeout: null,
     bucket: {}
 };
 
@@ -511,11 +511,13 @@ function recordAutoresponse(msg, ar) {
 
     autoresponseMetrics.bucket[key]++;
 
-    if (Date.now() - autoresponseMetrics.lastResponse >= 60000) {
-        console.info('Autoresponse Usage Summary (5m):', autoresponseMetrics.bucket);
+    if (!autoresponseMetrics.timeout) {
+        autoresponseMetrics.timeout = setTimeout(() => {
+            console.info('Autoresponse Usage Summary (5m):', autoresponseMetrics.bucket);
 
-        autoresponseMetrics.bucket = {};
-        autoresponseMetrics.lastResponse = Date.now();
+            autoresponseMetrics.bucket = {};
+            autoresponseMetrics.timeout = null;
+        }, 60000);
     }
 }
 
