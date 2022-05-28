@@ -540,7 +540,7 @@ async function handleAutoresponse(msg, storedGuild, everything = false) {
             if (!defaultMember(m, tag)) return;
             recordAutoresponse(msg, {
                 ...ars.everything,
-                executes: ars.evertying.executes + ' (everything)'
+                executes: ars.everything.executes + ' (everything)'
             });
 
             await bbEngine.runTag({
