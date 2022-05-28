@@ -498,6 +498,27 @@ function defaultMember(msg, tag) {
     return true;
 }
 
+const autoresponseMetrics = {
+    lastResponse: Date.now(),
+    bucket: {}
+};
+
+function recordAutoresponse(msg, ar) {
+    const key = `${msg.guild.id}${ar.executes}`;
+    if (!autoresponseMetrics.bucket[key]) {
+        autoresponseMetrics.bucket[key] = 0;
+    }
+
+    autoresponseMetrics.bucket[key]++;
+
+    if (Date.now() - autoresponseMetrics.lastResponse >= 60000 * 5) {
+        console.info('Autoresponse Usage Summary (5m):', autoresponseMetrics.bucket);
+
+        autoresponseMetrics.bucket = 0;
+        autoresponseMetrics.lastResponse = Date.now();
+    }
+}
+
 async function handleAutoresponse(msg, storedGuild, everything = false) {
     if (!arWhitelist.includes(msg.guild.id)) return; // selective whitelist for now
     if (!msg.member && msg.author.discriminator !== '0000') {
@@ -549,6 +570,7 @@ async function handleAutoresponse(msg, storedGuild, everything = false) {
                 } else cont = m.content.includes(ar.term);
 
                 if (cont && storedGuild.ccommands[ar.executes]) {
+                    recordAutoresponse(msg, ar);
                     const tag = storedGuild.ccommands[ar.executes];
                     if (!defaultMember(msg, tag)) return;
                     await bbEngine.runTag({
