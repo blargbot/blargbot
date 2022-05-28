@@ -511,7 +511,7 @@ function recordAutoresponse(msg, ar) {
 
     autoresponseMetrics.bucket[key]++;
 
-    if (Date.now() - autoresponseMetrics.lastResponse >= 60000 * 5) {
+    if (Date.now() - autoresponseMetrics.lastResponse >= 60000) {
         console.info('Autoresponse Usage Summary (5m):', autoresponseMetrics.bucket);
 
         autoresponseMetrics.bucket = {};
@@ -536,6 +536,11 @@ async function handleAutoresponse(msg, storedGuild, everything = false) {
         if (everything && ars.everything && storedGuild.ccommands[ars.everything.executes]) {
             const tag = storedGuild.ccommands[ars.everything.executes];
             if (!defaultMember(m, tag)) return;
+            recordAutoresponse(msg, {
+                ...ars.everything,
+                executes: ars.evertying.executes + ' (everything)'
+            });
+
             await bbEngine.runTag({
                 msg: m,
                 limits: new bbtag.limits.autoresponse_everything(),
