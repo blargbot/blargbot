@@ -2837,10 +2837,10 @@ env-paths@^2.2.0:
   resolved "https://registry.yarnpkg.com/env-paths/-/env-paths-2.2.1.tgz#420399d416ce1fbe9bc0a07c62fa68d67fd0f8f2"
   integrity sha512-+h1lkLKhZMTYjog1VEpJNG7NZJWcuc2DDk/qsqSTRRCOXiLjeQ1d1/udrUGhqMxUgAlwKNZ0cf2uqan5GLuS2A==
 
-eris@^0.16.0:
-  version "0.16.0"
-  resolved "https://registry.yarnpkg.com/eris/-/eris-0.16.0.tgz#0737b7bfc3f225b026bc31996c3d2ef61256e4e9"
-  integrity sha512-q46t8/6D88SLo20w29xycDvd67r9EpBOel/DKqRTfNms0XARPJpngITtFL9J6qRaRIkBr8PDeqpbO5gwNeSThw==
+eris@^0.16.1:
+  version "0.16.1"
+  resolved "https://registry.yarnpkg.com/eris/-/eris-0.16.1.tgz#44b0a9220944fc73dd74538cd614826bfbfcde61"
+  integrity sha512-fqjgaddSvUlUjA7s85OvZimLrgCwX58Z6FXOIxdNFJdT6XReJ/LOWZKdew2CaalM8BvN2JKzn98HmKYb3zMhKg==
   dependencies:
     ws "^8.2.3"
   optionalDependencies:
