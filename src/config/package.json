@@ -1,8 +1,5 @@
 {
     "name": "@blargbot/config",
     "version": "1.0.0",
-    "private": true,
-    "dependencies": {
-        "@blargbot/di": "workspace:^"
-    }
+    "private": true
 }
