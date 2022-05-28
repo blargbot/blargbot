@@ -9,7 +9,7 @@ import { KnownGuildTextableChannel, KnownMessage, Message, PartialEmoji, User } 
 export class AutoresponseManager {
     readonly #guilds: Set<string>;
     readonly #debugOutput: Record<string, { channelId: string; messageId: string; } | undefined>;
-    #executionCounts: Record<string, number | undefined>;
+    #executionCounts?: Record<string, number | undefined>;
 
     public get guilds(): ReadonlySet<string> { return this.#guilds; }
 
@@ -19,13 +19,16 @@ export class AutoresponseManager {
         this.#executionCounts = {};
 
         setInterval(() => {
-            cluster.logger.info('Autoresponse usage summary', this.#executionCounts);
-            this.#executionCounts = {};
+            if (this.#executionCounts !== undefined) {
+                cluster.logger.info('Autoresponse usage summary', this.#executionCounts);
+                this.#executionCounts = undefined;
+            }
         }, 60000);
     }
 
     #logAutoresponses(guildId: string, arId: `${number}` | 'everything'): void {
         const key = `${guildId}|${arId}`;
+        this.#executionCounts ??= {};
         this.#executionCounts[key] = (this.#executionCounts[key] ?? 0) + 1;
     }
 
