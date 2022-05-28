@@ -58,13 +58,13 @@ export class ModsCommand extends GuildCommand {
 
         const fields: EmbedField[] = [];
         if (byStatus.online.length > 0)
-            fields.push({ name: `<${context.config.discord.emotes.online}> Online`, value: byStatus.online.join('\n'), inline: true });
+            fields.push({ name: `<${context.config.discord.emotes.online}> Online`, value: byStatus.online.map(m => m.mention).join('\n'), inline: true });
         if (byStatus.idle.length > 0)
-            fields.push({ name: `<${context.config.discord.emotes.away}> Away`, value: byStatus.idle.join('\n'), inline: true });
+            fields.push({ name: `<${context.config.discord.emotes.away}> Away`, value: byStatus.idle.map(m => m.mention).join('\n'), inline: true });
         if (byStatus.dnd.length > 0)
-            fields.push({ name: `<${context.config.discord.emotes.busy}> Do not disturb`, value: byStatus.dnd.join('\n'), inline: true });
+            fields.push({ name: `<${context.config.discord.emotes.busy}> Do not disturb`, value: byStatus.dnd.map(m => m.mention).join('\n'), inline: true });
         if (byStatus.offline.length > 0)
-            fields.push({ name: `<${context.config.discord.emotes.offline}> Offline`, value: byStatus.offline.join('\n'), inline: true });
+            fields.push({ name: `<${context.config.discord.emotes.offline}> Offline`, value: byStatus.offline.map(m => m.mention).join('\n'), inline: true });
 
         return {
             author: context.util.embedifyAuthor(context.channel.guild),
