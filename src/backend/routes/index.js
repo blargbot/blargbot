@@ -44,6 +44,13 @@ router.get('/update', (req, res) => {
     res.render('update');
 });
 
+router.get('/migration', (req, res) => {
+    res.locals.user = req.user;
+    req.session.returnTo = req.path;
+
+    res.render('migration');
+});
+
 router.get('/privacy', (req, res) => {
     res.locals.user = req.user;
     req.session.returnTo = req.path;
