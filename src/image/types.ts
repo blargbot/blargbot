@@ -49,9 +49,8 @@ export interface ImageResult<T = Buffer> {
 
 export interface ImageGeneratorMap extends CommandMap {
     'truth': TruthOptions;
-    'triggered': TriggeredOptions;
     'starVsTheForcesOf': StarVsTheForcesOfOptions;
-    'retarded': RetardedOptions;
+    'stupid': StupidOptions;
     'pixelate': PixelateOptions;
     'free': FreeOptions;
     'distort': DistortOptions;
@@ -66,21 +65,11 @@ export interface TruthOptions {
     text: string;
 }
 
-export interface TriggeredOptions {
-    avatar: string;
-    inverted: boolean;
-    horizontal: boolean;
-    vertical: boolean;
-    sepia: boolean;
-    blur: boolean;
-    greyscale: boolean;
-}
-
 export interface StarVsTheForcesOfOptions {
     avatar: string;
 }
 
-export interface RetardedOptions {
+export interface StupidOptions {
     text: string;
     avatar?: string;
 }

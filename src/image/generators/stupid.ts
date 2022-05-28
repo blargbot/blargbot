@@ -1,14 +1,14 @@
 import { BaseImageGenerator } from '@blargbot/image/BaseImageGenerator';
 import { ImageWorker } from '@blargbot/image/ImageWorker';
-import { ImageResult, RetardedOptions } from '@blargbot/image/types';
+import { ImageResult, StupidOptions } from '@blargbot/image/types';
 import Jimp from 'jimp';
 
-export class RetardedGenerator extends BaseImageGenerator<'retarded'> {
+export class StupidGenerator extends BaseImageGenerator<'stupid'> {
     public constructor(worker: ImageWorker) {
-        super('retarded', worker);
+        super('stupid', worker);
     }
 
-    public async execute({ text, avatar }: RetardedOptions): Promise<ImageResult> {
+    public async execute({ text, avatar }: StupidOptions): Promise<ImageResult> {
         const caption = await this.renderJimpText(text, {
             font: 'ARCENA.ttf',
             fill: 'black',
@@ -17,7 +17,7 @@ export class RetardedGenerator extends BaseImageGenerator<'retarded'> {
             size: '272x60'
         });
 
-        const img = await this.getLocalJimp('retarded.png');
+        const img = await this.getLocalJimp('stupid.png');
         if (avatar !== undefined) {
             const avatarImg = await this.getRemoteJimp(avatar);
             const smallAvatar = avatarImg.clone();
@@ -31,7 +31,7 @@ export class RetardedGenerator extends BaseImageGenerator<'retarded'> {
 
         return {
             data: await img.getBufferAsync(Jimp.MIME_PNG),
-            fileName: 'retarded.png'
+            fileName: 'stupid.png'
         };
     }
 }
