@@ -514,7 +514,7 @@ function recordAutoresponse(msg, ar) {
     if (Date.now() - autoresponseMetrics.lastResponse >= 60000 * 5) {
         console.info('Autoresponse Usage Summary (5m):', autoresponseMetrics.bucket);
 
-        autoresponseMetrics.bucket = 0;
+        autoresponseMetrics.bucket = {};
         autoresponseMetrics.lastResponse = Date.now();
     }
 }
