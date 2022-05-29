@@ -17,7 +17,7 @@ export class DonateCommand extends GlobalCommand {
     }
 
     public async donateDetails(context: CommandContext): Promise<string> {
-        const ownerId = context.cluster.ownerIds[0];
+        const ownerId = context.cluster.ownerIds.reduce((p, c) => p < c ? p : c);
         const owner = await context.util.getUser(ownerId);
         await context.sendDM({
             embeds: [
