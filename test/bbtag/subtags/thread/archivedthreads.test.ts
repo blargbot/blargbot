@@ -1,13 +1,13 @@
-import { ChannelNotFoundError, InvalidChannelError } from '@blargbot/bbtag/errors';
-import { ArchivedThreadsSubtag } from '@blargbot/bbtag/subtags/thread/archivedthreadchannels';
+import { ChannelNotFoundError, InvalidChannelError, NotABooleanError } from '@blargbot/bbtag/errors';
+import { ArchivedThreadChannelsSubtag } from '@blargbot/bbtag/subtags/thread/archivedthreadchannels';
 import { ChannelType } from 'discord-api-types/v9';
-import { PublicThreadChannel, VoiceChannel } from 'eris';
+import { PrivateThreadChannel, PublicThreadChannel, VoiceChannel } from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 
 runSubtagTests({
-    subtag: new ArchivedThreadsSubtag(),
-    argCountBounds: { min: 0, max: 1 },
+    subtag: new ArchivedThreadChannelsSubtag(),
+    argCountBounds: { min: 0, max: 2 },
     cases: [
         {
             code: '{archivedthreadchannels}',
@@ -98,6 +98,36 @@ runSubtagTests({
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '329876424623746234')).thenResolve([channel.instance]);
             }
+        },
+        {
+            code: '{archivedthreadchannels;;true}',
+            expected: '["2349823947638497","394875398475475957","349857380950645734"]',
+            setup(ctx) {
+                const thread1 = ctx.createMock(PrivateThreadChannel);
+                const thread2 = ctx.createMock(PrivateThreadChannel);
+                const thread3 = ctx.createMock(PrivateThreadChannel);
+
+                thread1.setup(m => m.id).thenReturn('2349823947638497');
+                thread2.setup(m => m.id).thenReturn('394875398475475957');
+                thread3.setup(m => m.id).thenReturn('349857380950645734');
+
+                ctx.discord.setup(m => m.getArchivedThreads(ctx.channels.command.id, 'private', undefined)).thenResolve({
+                    hasMore: false,
+                    members: [],
+                    threads: [
+                        thread1.instance,
+                        thread2.instance,
+                        thread3.instance
+                    ]
+                });
+            }
+        },
+        {
+            code: '{archivedthreadchannels;;notaboolean}',
+            expected: '`Not a boolean`',
+            errors: [
+                { start: 0, end: 37, error: new NotABooleanError('notaboolean') }
+            ]
         }
     ]
 });

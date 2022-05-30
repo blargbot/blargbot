@@ -2,7 +2,7 @@ import { BBTagRuntimeError, ChannelNotFoundError, InvalidChannelError, MessageNo
 import { EscapeBbtagSubtag } from '@blargbot/bbtag/subtags/misc/escapebbtag';
 import { ThreadCreateSubtag } from '@blargbot/bbtag/subtags/thread/threadcreate';
 import { ChannelType, GuildFeature } from 'discord-api-types/v9';
-import { ApiError, KnownMessage, Message, PrivateThreadChannel, PublicThreadChannel, VoiceChannel } from 'eris';
+import { ApiError, Constants, KnownMessage, Message, PrivateThreadChannel, PublicThreadChannel, VoiceChannel } from 'eris';
 
 import { argument } from '../../mock';
 import { runSubtagTests } from '../SubtagTestSuite';
@@ -18,6 +18,10 @@ runSubtagTests({
             code: '{threadcreate;28397468239463948;{escapebbtag;{"name":"My thread"}}}',
             subtags: [new EscapeBbtagSubtag()],
             expected: '31298746236478234',
+            setup(ctx) {
+                ctx.roles.command.permissions = Constants.Permissions.createPublicThreads.toString();
+                ctx.roles.bot.permissions = Constants.Permissions.createPublicThreads.toString();
+            },
             postSetup(bbctx, ctx) {
                 const result = ctx.createMock(PrivateThreadChannel);
                 result.setup(m => m.id).thenReturn('31298746236478234');
@@ -39,6 +43,10 @@ runSubtagTests({
             code: '{threadcreate;28397468239463948;928376462496394243;{escapebbtag;{"name":"My thread"}}}',
             subtags: [new EscapeBbtagSubtag()],
             expected: '31298746236478234',
+            setup(ctx) {
+                ctx.roles.command.permissions = Constants.Permissions.createPublicThreads.toString();
+                ctx.roles.bot.permissions = Constants.Permissions.createPublicThreads.toString();
+            },
             postSetup(bbctx, ctx) {
                 const result = ctx.createMock(PublicThreadChannel);
                 result.setup(m => m.id).thenReturn('31298746236478234');
@@ -62,6 +70,10 @@ runSubtagTests({
             code: '{threadcreate;28397468239463948;{escapebbtag;{"name":"My thread","autoArchiveDuration":60,"private":true}}}',
             subtags: [new EscapeBbtagSubtag()],
             expected: '31298746236478234',
+            setup(ctx) {
+                ctx.roles.command.permissions = Constants.Permissions.createPrivateThreads.toString();
+                ctx.roles.bot.permissions = Constants.Permissions.createPrivateThreads.toString();
+            },
             postSetup(bbctx, ctx) {
                 const result = ctx.createMock(PrivateThreadChannel);
                 result.setup(m => m.id).thenReturn('31298746236478234');
@@ -83,6 +95,10 @@ runSubtagTests({
             code: '{threadcreate;28397468239463948;928376462496394243;{escapebbtag;{"name":"My thread","autoArchiveDuration":60,"private":true}}}',
             subtags: [new EscapeBbtagSubtag()],
             expected: '31298746236478234',
+            setup(ctx) {
+                ctx.roles.command.permissions = Constants.Permissions.createPrivateThreads.toString();
+                ctx.roles.bot.permissions = Constants.Permissions.createPrivateThreads.toString();
+            },
             postSetup(bbctx, ctx) {
                 const result = ctx.createMock(PublicThreadChannel);
                 result.setup(m => m.id).thenReturn('31298746236478234');
@@ -220,6 +236,42 @@ runSubtagTests({
             }
         },
         {
+            code: '{threadcreate;28397468239463948;928376462496394243;{escapebbtag;{"name":"My thread","private":true}}}',
+            subtags: [new EscapeBbtagSubtag()],
+            expected: '`Authorizer cannot create private threads`',
+            errors: [
+                { start: 0, end: 101, error: new BBTagRuntimeError('Authorizer cannot create private threads') }
+            ],
+            postSetup(bbctx, ctx) {
+                const channel = bbctx.guild.channels.get(ctx.channels.general.id);
+                if (channel === undefined)
+                    throw new Error('Failed to get channel under test');
+
+                const message = ctx.createMock<KnownMessage>(Message);
+
+                ctx.util.setup(m => m.getMessage(channel, '928376462496394243')).thenResolve(message.instance);
+                ctx.util.setup(m => m.findChannels(bbctx.guild, '28397468239463948')).thenResolve([channel]);
+            }
+        },
+        {
+            code: '{threadcreate;28397468239463948;928376462496394243;{escapebbtag;{"name":"My thread"}}}',
+            subtags: [new EscapeBbtagSubtag()],
+            expected: '`Authorizer cannot create public threads`',
+            errors: [
+                { start: 0, end: 86, error: new BBTagRuntimeError('Authorizer cannot create public threads') }
+            ],
+            postSetup(bbctx, ctx) {
+                const channel = bbctx.guild.channels.get(ctx.channels.general.id);
+                if (channel === undefined)
+                    throw new Error('Failed to get channel under test');
+
+                const message = ctx.createMock<KnownMessage>(Message);
+
+                ctx.util.setup(m => m.getMessage(channel, '928376462496394243')).thenResolve(message.instance);
+                ctx.util.setup(m => m.findChannels(bbctx.guild, '28397468239463948')).thenResolve([channel]);
+            }
+        },
+        {
             code: '{threadcreate;28397468239463948;{escapebbtag;{"name":"My thread","autoArchiveDuration":60,"private":true}}}',
             subtags: [new EscapeBbtagSubtag()],
             expected: '`No channel found`',
@@ -324,34 +376,16 @@ runSubtagTests({
             }
         },
         {
-            code: '{threadcreate;28397468239463948;{escapebbtag;{"name":"My thread"}}}',
-            subtags: [new EscapeBbtagSubtag()],
-            expected: '`Failed to create thread: Some error message`',
-            errors: [
-                { start: 0, end: 67, error: new BBTagRuntimeError('Failed to create thread: Some error message') }
-            ],
-            postSetup(bbctx, ctx) {
-                const err = ctx.createRESTError(ApiError.MISSING_PERMISSIONS, 'Some error message');
-                const channel = bbctx.guild.channels.get(ctx.channels.general.id);
-                if (channel === undefined)
-                    throw new Error('Failed to get channel under test');
-
-                ctx.util.setup(m => m.findChannels(bbctx.guild, '28397468239463948')).thenResolve([channel]);
-                ctx.discord.setup(m => m.createThreadWithoutMessage(channel.id, argument.isDeepEqual({
-                    name: 'My thread',
-                    autoArchiveDuration: 1440,
-                    invitable: true,
-                    type: ChannelType.GuildPublicThread
-                }))).thenReject(err);
-            }
-        },
-        {
             code: '{threadcreate;28397468239463948;928376462496394243;{escapebbtag;{"name":"My thread"}}}',
             subtags: [new EscapeBbtagSubtag()],
             expected: '`Failed to create thread: Some error message`',
             errors: [
                 { start: 0, end: 86, error: new BBTagRuntimeError('Failed to create thread: Some error message') }
             ],
+            setup(ctx) {
+                ctx.roles.command.permissions = Constants.Permissions.createPublicThreads.toString();
+                ctx.roles.bot.permissions = Constants.Permissions.createPublicThreads.toString();
+            },
             postSetup(bbctx, ctx) {
                 const err = ctx.createRESTError(ApiError.MISSING_PERMISSIONS, 'Some error message');
                 const channel = bbctx.guild.channels.get(ctx.channels.general.id);

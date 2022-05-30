@@ -11,3 +11,41 @@ index 655ad14c53604787964381a88a90a440e845a7d7..e72f05f6af0de2cd6fcd1c83a6000298
                      channel.lastMessageID = packet.d.id;
                      /**
                      * Fired when a message is created
+diff --git a/index.d.ts b/index.d.ts
+index 9aedba5eec19be5bafdebffd918a056dc4d62002..1f7c0f6a7fd7d9c992f7cf9bc3e1530ea692afd4 100644
+--- a/index.d.ts
++++ b/index.d.ts
+@@ -1806,7 +1806,7 @@ declare namespace Eris {
+       allGuild:                2080899262n;
+       allText:                 518349388881n;
+       allVoice:                554385278737n;
+-      all:                     1073741823999n;
++      all:                     1099511627775n;
+     };
+     PremiumTiers: {
+       NONE:   0;
+diff --git a/lib/Constants.js b/lib/Constants.js
+index f2c17d19f688a0f92a4c141399d6daee5db51fc3..5e1d90b51b9d58fb5b6cf7ee05d35a866cd7f1d4 100644
+--- a/lib/Constants.js
++++ b/lib/Constants.js
+@@ -409,6 +409,7 @@ Permissions.allText = Permissions.createInstantInvite
+     | Permissions.useExternalEmojis
+     | Permissions.manageRoles
+     | Permissions.manageWebhooks
++    | Permissions.manageThreads
+     | Permissions.useApplicationCommands
+     | Permissions.createPublicThreads
+     | Permissions.createPrivateThreads
+diff --git a/lib/structures/ThreadChannel.js b/lib/structures/ThreadChannel.js
+index 22ef21fbb83334f54ee52b4ac4d680d6568579d7..4a0a015a0ed26e7e5ff59e4886d12d72aac14323 100644
+--- a/lib/structures/ThreadChannel.js
++++ b/lib/structures/ThreadChannel.js
+@@ -32,7 +32,7 @@ class ThreadChannel extends GuildChannel {
+         this.messages = new Collection(Message, messageLimit == null ? client.options.messageLimit : messageLimit);
+         this.members = new Collection(ThreadMember);
+         this.lastMessageID = data.last_message_id || null;
+-        this.ownerID = data.ownerID;
++        this.ownerID = data.owner_id;
+         this.update(data);
+     }
+ 

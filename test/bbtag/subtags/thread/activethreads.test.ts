@@ -1,16 +1,16 @@
 import { ChannelNotFoundError, InvalidChannelError } from '@blargbot/bbtag/errors';
-import { ThreadChannelsSubtag } from '@blargbot/bbtag/subtags/thread/threadchannels';
+import { ActiveThreadChannelsSubtag } from '@blargbot/bbtag/subtags/thread/activethreadchannels';
 import { ChannelType } from 'discord-api-types/v9';
 import { PublicThreadChannel, VoiceChannel } from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 
 runSubtagTests({
-    subtag: new ThreadChannelsSubtag(),
+    subtag: new ActiveThreadChannelsSubtag(),
     argCountBounds: { min: 0, max: 1 },
     cases: [
         {
-            code: '{threadchannels}',
+            code: '{activethreadchannels}',
             expected: '[]',
             setup(ctx) {
                 ctx.discord.setup(m => m.getActiveGuildThreads(ctx.guild.id)).thenResolve({
@@ -20,7 +20,7 @@ runSubtagTests({
             }
         },
         {
-            code: '{threadchannels}',
+            code: '{activethreadchannels}',
             expected: '["2349823947638497","394875398475475957","349857380950645734"]',
             setup(ctx) {
                 const thread1 = ctx.createMock(PublicThreadChannel);
@@ -42,7 +42,7 @@ runSubtagTests({
             }
         },
         {
-            code: '{threadchannels;329876424623746234}',
+            code: '{activethreadchannels;329876424623746234}',
             expected: '["394875398475475957","349857380950645734"]',
             setup(ctx) {
                 ctx.channels.general.id = '329876424623746234';
@@ -76,20 +76,20 @@ runSubtagTests({
             }
         },
         {
-            code: '{threadchannels;329876424623746234}',
+            code: '{activethreadchannels;329876424623746234}',
             expected: '`No channel found`',
             errors: [
-                { start: 0, end: 35, error: new ChannelNotFoundError('329876424623746234') }
+                { start: 0, end: 41, error: new ChannelNotFoundError('329876424623746234') }
             ],
             postSetup(bbctx, ctx) {
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '329876424623746234')).thenResolve([]);
             }
         },
         {
-            code: '{threadchannels;329876424623746234}',
+            code: '{activethreadchannels;329876424623746234}',
             expected: '`Channel cannot be a voice channel`',
             errors: [
-                { start: 0, end: 35, error: new InvalidChannelError(ChannelType.GuildVoice, '329876424623746234') }
+                { start: 0, end: 41, error: new InvalidChannelError(ChannelType.GuildVoice, '329876424623746234') }
             ],
             postSetup(bbctx, ctx) {
                 const channel = ctx.createMock(VoiceChannel);
