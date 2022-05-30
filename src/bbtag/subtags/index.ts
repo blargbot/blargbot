@@ -9,7 +9,6 @@ import * as message from './message';
 import * as misc from './misc';
 import * as role from './role';
 import * as simple from './simple';
-import * as thread from './thread';
 import * as user from './user';
 
 export {
@@ -24,7 +23,6 @@ export {
     misc,
     role,
     simple,
-    thread,
     user
 };
 
@@ -40,7 +38,6 @@ export const all = {
     ...misc,
     ...role,
     ...simple,
-    ...thread,
     ...user
 };
 
