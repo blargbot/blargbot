@@ -40,6 +40,7 @@ export class ClusterPool extends WorkerPool<ClusterConnection> {
             id,
             this.shardRange(id),
             this.config.max,
+            this.config.maxMemory,
             this.logger
         );
 

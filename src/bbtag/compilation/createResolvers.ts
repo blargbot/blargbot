@@ -100,7 +100,7 @@ function createResolver(
         isExactMatch(subtag) {
             return subtag.args.length === argCount;
         },
-        * resolve(context, subtagName, call) {
+        * resolve(context, call) {
             const args = new Set(call.args);
             for (const item of parameterMap) {
                 const arg = call.args[item.argIndex] as Statement | undefined;
@@ -108,11 +108,11 @@ function createResolver(
                     yield item.default;
                 else {
                     args.delete(arg);
-                    yield new ExecutingSubtagArgumentValue(item.default.parameter, context, subtagName, call, arg);
+                    yield new ExecutingSubtagArgumentValue(item.default.parameter, context, call, arg);
                 }
             }
             for (const arg of args)
-                yield new ExecutingSubtagArgumentValue(excessArg, context, subtagName, call, arg);
+                yield new ExecutingSubtagArgumentValue(excessArg, context, call, arg);
         }
     };
 }
@@ -141,9 +141,9 @@ function createVariableResolver(
             const argCount = subtag.args.length;
             return argCount >= minCount && (argCount - minCount) % greedy.length === 0;
         },
-        resolve(context, subtagName, call) {
+        resolve(context, call) {
             const resolver = resolverCache[call.args.length] ??= createResolver(call.args.length, parameters, beforeGreedy, greedy, afterGreedy);
-            return resolver.resolve(context, subtagName, call);
+            return resolver.resolve(context, call);
         }
     };
 }

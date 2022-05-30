@@ -49,7 +49,7 @@ export class InfoCommand extends GlobalCommand {
         return {
             author: context.util.embedifyAuthor(context.discord.user),
             title: 'About me!',
-            description: `I am a multipurpose bot with new features implemented regularly, written in typescript using [eris](https://abal.moe/Eris/).
+            description: `I am a multipurpose bot with new features implemented regularly, written in typescript using [Eris](https://abal.moe/Eris/).
                     
 🎂 I am currently ${ageStr} old!`,
             fields: [

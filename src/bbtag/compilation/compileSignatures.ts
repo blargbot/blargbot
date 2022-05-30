@@ -33,9 +33,9 @@ export function compileSignatures(signatures: readonly SubtagSignatureCallable[]
             if (handler !== undefined)
                 return handler.execute(context, subtagName, call);
             if (call.args.length < min.minArgs)
-                return resolveAndThrow(context, subtagName, call, min, new NotEnoughArgumentsError(min.minArgs, call.args.length));
+                return resolveAndThrow(context, call, min, new NotEnoughArgumentsError(min.minArgs, call.args.length));
             if (call.args.length > max.maxArgs)
-                return resolveAndThrow(context, subtagName, call, max, new TooManyArgumentsError(max.maxArgs, call.args.length));
+                return resolveAndThrow(context, call, max, new TooManyArgumentsError(max.maxArgs, call.args.length));
 
             throw new Error(`Missing handler for ${call.args.length} arguments!`);
         }
@@ -49,7 +49,7 @@ function createConditionalHandler(signature: SubtagSignatureCallable, resolver: 
         },
         async * execute(context, subtagName, call) {
             const args = [];
-            for (const arg of resolver.resolve(context, subtagName, call)) {
+            for (const arg of resolver.resolve(context, call)) {
                 args.push(arg);
                 if (arg.parameter.autoResolve)
                     await arg.execute();
@@ -68,8 +68,8 @@ const initialResolver: ArgumentResolver = {
     }
 };
 
-async function* resolveAndThrow(context: BBTagContext, subtagName: string, call: SubtagCall, resolver: ArgumentResolver, error: BBTagRuntimeError): AsyncIterable<undefined> {
-    for (const arg of resolver.resolve(context, subtagName, call)) {
+async function* resolveAndThrow(context: BBTagContext, call: SubtagCall, resolver: ArgumentResolver, error: BBTagRuntimeError): AsyncIterable<undefined> {
+    for (const arg of resolver.resolve(context, call)) {
         if (arg.parameter.autoResolve) {
             await arg.execute();
             yield undefined;

@@ -319,7 +319,6 @@ __metadata:
     "@blargbot/config": "workspace:^"
     "@blargbot/core": "workspace:^"
     "@blargbot/database": "workspace:^"
-    "@blargbot/di": "workspace:^"
     "@blargbot/domain": "workspace:^"
     "@blargbot/logger": "workspace:^"
     "@blargbot/mapping": "workspace:^"
@@ -347,7 +346,6 @@ __metadata:
     "@blargbot/config": "workspace:^"
     "@blargbot/core": "workspace:^"
     "@blargbot/database": "workspace:^"
-    "@blargbot/di": "workspace:^"
     "@blargbot/domain": "workspace:^"
     "@blargbot/image": "workspace:^"
     "@blargbot/logger": "workspace:^"
@@ -381,8 +379,6 @@ __metadata:
 "@blargbot/config@workspace:^, @blargbot/config@workspace:src/config":
   version: 0.0.0-use.local
   resolution: "@blargbot/config@workspace:src/config"
-  dependencies:
-    "@blargbot/di": "workspace:^"
   languageName: unknown
   linkType: soft
 
@@ -469,12 +465,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@blargbot/di@workspace:^, @blargbot/di@workspace:src/di":
-  version: 0.0.0-use.local
-  resolution: "@blargbot/di@workspace:src/di"
-  languageName: unknown
-  linkType: soft
-
 "@blargbot/domain@workspace:^, @blargbot/domain@workspace:src/domain":
   version: 0.0.0-use.local
   resolution: "@blargbot/domain@workspace:src/domain"
@@ -512,7 +502,6 @@ __metadata:
   resolution: "@blargbot/logger@workspace:src/logger"
   dependencies:
     "@blargbot/config": "workspace:^"
-    "@blargbot/di": "workspace:^"
     "@sentry/node": ^6.19.7
     "@sentry/tracing": ^6.19.7
     cat-loggr: ^1.2.2

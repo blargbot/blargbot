@@ -6,5 +6,5 @@ export interface ArgumentResolver {
     readonly minArgs: number;
     readonly maxArgs: number;
     isExactMatch(subtag: SubtagCall): boolean;
-    resolve(context: BBTagContext, subtagName: string, subtag: SubtagCall): Iterable<SubtagArgument>;
+    resolve(context: BBTagContext, subtag: SubtagCall): Iterable<SubtagArgument>;
 }
