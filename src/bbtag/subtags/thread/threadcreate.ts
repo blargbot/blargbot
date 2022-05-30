@@ -50,21 +50,21 @@ export class ThreadCreateSubtag extends CompiledSubtag {
 
         const input = mappingOptions.value;
 
-        switch (input.autoArchiveDuration) {
-            case 4320:
-                if (!guildFeatures.includes(GuildFeature.ThreeDayThreadArchive))
-                    throw new BBTagRuntimeError('Guild does not have 3 day threads');
-                break;
-            case 10080:
-                if (!guildFeatures.includes(GuildFeature.SevenDayThreadArchive))
-                    throw new BBTagRuntimeError('Guild does not have 7 day threads');
-                break;
-        }
+        if (input.autoArchiveDuration === 4320 && !guildFeatures.includes(GuildFeature.ThreeDayThreadArchive))
+            throw new BBTagRuntimeError('Guild does not have 3 day threads');
+
+        if (input.autoArchiveDuration === 10080 && !guildFeatures.includes(GuildFeature.SevenDayThreadArchive))
+            throw new BBTagRuntimeError('Guild does not have 7 day threads');
 
         if (input.private && !guildFeatures.includes(GuildFeature.PrivateThreads))
             throw new BBTagRuntimeError('Guild cannot have private threads');
 
-        const type = input.private === true
+        if (!input.private && !context.hasPermission(channel, 'createPublicThreads'))
+            throw new BBTagRuntimeError('Authorizer cannot create public threads');
+        if (input.private && !context.hasPermission(channel, 'createPrivateThreads'))
+            throw new BBTagRuntimeError('Authorizer cannot create private threads');
+
+        const type = input.private
             ? Constants.ChannelTypes.GUILD_PRIVATE_THREAD
             : Constants.ChannelTypes.GUILD_PUBLIC_THREAD;
 
@@ -78,11 +78,11 @@ export class ThreadCreateSubtag extends CompiledSubtag {
                 ? await channel.createThreadWithoutMessage({ ...options, invitable: true, type })
                 : await channel.createThreadWithMessage(message.id, options);
             return threadChannel.id;
-        } catch (e: unknown) {
-            if (!(e instanceof DiscordRESTError))
-                throw e;
+        } catch (err: unknown) {
+            if (!(err instanceof DiscordRESTError))
+                throw err;
 
-            throw new BBTagRuntimeError(`Failed to create thread: ${e.message}`);
+            throw new BBTagRuntimeError(`Failed to create thread: ${err.message}`);
         }
     }
 }

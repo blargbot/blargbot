@@ -3,7 +3,7 @@ import { DiscordRESTError } from 'eris';
 
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
-import { BBTagRuntimeError } from '../../errors';
+import { BBTagRuntimeError, ChannelNotFoundError } from '../../errors';
 import { SubtagType } from '../../utils';
 
 export class DeleteThreadSubtag extends CompiledSubtag {
@@ -14,23 +14,33 @@ export class DeleteThreadSubtag extends CompiledSubtag {
             aliases: ['threadelete', 'threaddelete'],
             definition: [
                 {
-                    parameters: [],
-                    description: 'Deletes the current thread and returns `true` if successful.',
+                    parameters: ['threadChannel?'],
+                    description: '`threadChannel` defaults to the current channel.\n\nDeletes `threadChannel` and returns `true` if successful.',
                     exampleCode: '{deletethread}',
-                    exampleOut: '(thread was deleted)',
+                    exampleOut: 'true',
                     returns: 'boolean',
-                    execute: (ctx) => this.deleteThread(ctx)
+                    execute: (ctx, [channel]) => this.deleteThread(ctx, channel.value)
                 }
             ]
         });
     }
 
-    public async deleteThread(context: BBTagContext): Promise<boolean> {
-        if (!guard.isThreadChannel(context.channel))
-            throw new BBTagRuntimeError('Not a thread channel');
+    public async deleteThread(
+        context: BBTagContext,
+        threadStr: string
+    ): Promise<boolean> {
+        const threadChannel = await context.queryThread(threadStr);
 
+        if (threadChannel === undefined)
+            throw new ChannelNotFoundError(threadStr);
+        if (!guard.isThreadChannel(threadChannel))
+            throw new BBTagRuntimeError('Not a thread channel');
+        if (!context.hasPermission(threadChannel, 'manageThreads'))
+            throw new BBTagRuntimeError('Authorizer cannot delete threads');
+        if (!threadChannel.permissionsOf(context.discord.user.id).has('manageThreads'))
+            throw new BBTagRuntimeError('Bot cannot delete threads');
         try {
-            await context.channel.delete(context.auditReason());
+            await threadChannel.delete(context.auditReason());
             return true;
         } catch (err: unknown) {
             if (!(err instanceof DiscordRESTError))
@@ -39,4 +49,5 @@ export class DeleteThreadSubtag extends CompiledSubtag {
             throw new BBTagRuntimeError(`Failed to delete thread: ${err.message}`);
         }
     }
+
 }
