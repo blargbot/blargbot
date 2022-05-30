@@ -65,7 +65,6 @@ export interface ChannelsConfiguration {
     readonly shardlog: string;
     readonly changelog: string;
     readonly joinlog: string;
-    readonly errorlog: string;
     readonly autoresponse: string;
     readonly feedback: string;
     readonly suggestions: string;
