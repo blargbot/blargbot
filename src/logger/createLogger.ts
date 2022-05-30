@@ -60,20 +60,20 @@ const logLevels: Record<LogLevel, { color: typeof CatLoggr['_chalk']; isError?: 
 };
 
 function createSentryPreHook(config: Configuration, workerId: string): PreHookCallback {
-    const sentry = new Sentry.Hub(new Sentry.NodeClient({
+    Sentry.init({
         dsn: config.sentry.base,
         environment: config.general.isProd !== true ? 'development' : 'production',
         integrations: [
             new Sentry.Integrations.Http({ tracing: true })
         ],
         tracesSampleRate: config.sentry.sampleRate
-    }));
+    });
 
-    sentry.setTag('worker', workerId);
-    return (...args) => sentryPreHook(sentry, ...args);
+    Sentry.setTag('worker', workerId);
+    return (...args) => sentryPreHook(...args);
 }
 
-function sentryPreHook(sentry: Sentry.Hub, ...[{ error: isError, args, level, context, shard }]: Parameters<PreHookCallback>): null {
+function sentryPreHook(...[{ error: isError, args, level, context, shard }]: Parameters<PreHookCallback>): null {
     if (!isError)
         return null;
 
@@ -81,7 +81,7 @@ function sentryPreHook(sentry: Sentry.Hub, ...[{ error: isError, args, level, co
     const error = args.find((v): v is Error => v instanceof Error)
         ?? args.splice(0, args.length).join(' ');
 
-    sentry.withScope(scope => sendToSentry(sentry, scope, <Sentry.Severity>level, error, {
+    Sentry.withScope(scope => sendToSentry(scope, <Sentry.Severity>level, error, {
         ...context,
         shard: shard,
         args
@@ -90,11 +90,7 @@ function sentryPreHook(sentry: Sentry.Hub, ...[{ error: isError, args, level, co
     return null;
 }
 
-function sendToSentry(sentry: Sentry.Hub, scope: Sentry.Scope, level: Sentry.Severity, error: string | Error, context: object): void {
-    if (typeof error !== 'string') {
-        scope.setLevel(level);
-        sentry.captureException(error, context);
-    } else {
-        sentry.captureMessage(error, level, context);
-    }
+function sendToSentry(scope: Sentry.Scope, level: Sentry.Severity, error: string | Error, context: object): void {
+    scope.setLevel(level);
+    Sentry.captureException(error, context);
 }
