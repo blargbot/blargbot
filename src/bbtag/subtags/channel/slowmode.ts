@@ -1,5 +1,5 @@
 import { parse } from '@blargbot/core/utils';
-import { ApiError, DiscordRESTError } from 'eris';
+import { DiscordRESTError } from 'eris';
 
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
@@ -66,10 +66,7 @@ export class SlowmodeSubtag extends CompiledSubtag {
             if (!(err instanceof DiscordRESTError))
                 throw err;
 
-            if (err.code === ApiError.MISSING_PERMISSIONS)
-                throw new BBTagRuntimeError('Missing required permissions');
-
-            throw new BBTagRuntimeError(`Failed to edit channel: ${err.message}`);
+            throw new BBTagRuntimeError('Missing required permissions', err.message);
         }
     }
 }

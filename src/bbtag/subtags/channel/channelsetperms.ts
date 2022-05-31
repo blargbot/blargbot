@@ -1,5 +1,5 @@
 import { guard, parse } from '@blargbot/core/utils';
-import { ApiError, Constants, DiscordRESTError } from 'eris';
+import { Constants, DiscordRESTError } from 'eris';
 
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
@@ -70,7 +70,7 @@ export class ChannelSetPermsSubtag extends CompiledSubtag {
             if (!(err instanceof DiscordRESTError))
                 throw err;
 
-            throw new BBTagRuntimeError(`Failed to edit channel: ${err.code === ApiError.MISSING_PERMISSIONS ? 'no perms' : err.message}`);
+            throw new BBTagRuntimeError('Failed to edit channel: no perms', err.message);
         }
     }
 

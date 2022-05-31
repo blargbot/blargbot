@@ -29,7 +29,7 @@ runSubtagTests({
             code: '{guildbans}',
             expected: '`Missing required permissions`',
             errors: [
-                { start: 0, end: 11, error: new BBTagRuntimeError('Missing required permissions') }
+                { start: 0, end: 11, error: new BBTagRuntimeError('Missing required permissions', 'Test REST error') }
             ],
             setup(ctx) {
                 const error = ctx.createRESTError(ApiError.MISSING_PERMISSIONS);

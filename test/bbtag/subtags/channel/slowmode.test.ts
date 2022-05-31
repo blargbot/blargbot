@@ -72,7 +72,7 @@ runSubtagTests({
             code: '{slowmode;2342543235325252345}',
             expected: '`Missing required permissions`',
             errors: [
-                { start: 0, end: 30, error: new BBTagRuntimeError('Missing required permissions') }
+                { start: 0, end: 30, error: new BBTagRuntimeError('Missing required permissions', 'Test REST error') }
             ],
             postSetup(bbctx, ctx) {
                 const err = ctx.createRESTError(ApiError.MISSING_PERMISSIONS);
@@ -86,9 +86,9 @@ runSubtagTests({
         },
         {
             code: '{slowmode;2342543235325252345}',
-            expected: '`Failed to edit channel: Some other error message`',
+            expected: '`Missing required permissions`',
             errors: [
-                { start: 0, end: 30, error: new BBTagRuntimeError('Failed to edit channel: Some other error message') }
+                { start: 0, end: 30, error: new BBTagRuntimeError('Missing required permissions', 'Some other error message') }
             ],
             postSetup(bbctx, ctx) {
                 const err = ctx.createRESTError(ApiError.NOT_AUTHORIZED, 'Some other error message');

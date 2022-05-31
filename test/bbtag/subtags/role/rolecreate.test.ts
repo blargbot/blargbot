@@ -217,7 +217,7 @@ runSubtagTests({
             code: '{rolecreate;My role name;red;3297864;true;true}',
             expected: '`Failed to create role: no perms`',
             errors: [
-                { start: 0, end: 47, error: new BBTagRuntimeError('Failed to create role: no perms') }
+                { start: 0, end: 47, error: new BBTagRuntimeError('Failed to create role: no perms', 'Test REST error') }
             ],
             setup(ctx) {
                 const err = ctx.createRESTError(ApiError.MISSING_PERMISSIONS);
@@ -232,9 +232,9 @@ runSubtagTests({
         },
         {
             code: '{rolecreate;My role name;red;3297864;true;true}',
-            expected: '`Failed to create role: Some other error message`',
+            expected: '`Failed to create role: no perms`',
             errors: [
-                { start: 0, end: 47, error: new BBTagRuntimeError('Failed to create role: Some other error message') }
+                { start: 0, end: 47, error: new BBTagRuntimeError('Failed to create role: no perms', 'Some other error message') }
             ],
             setup(ctx) {
                 const err = ctx.createRESTError(ApiError.NOT_AUTHORIZED, 'Some other error message');

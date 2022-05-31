@@ -123,7 +123,7 @@ runSubtagTests({
             code: '{rolesetmentionable;3298746326924}',
             expected: '`Failed to edit role: no perms`',
             errors: [
-                { start: 0, end: 34, error: new BBTagRuntimeError('Failed to edit role: no perms') }
+                { start: 0, end: 34, error: new BBTagRuntimeError('Failed to edit role: no perms', 'Test REST error') }
             ],
             setup(ctx) {
                 ctx.roles.bot.id = '3298746326924';
@@ -142,9 +142,9 @@ runSubtagTests({
         },
         {
             code: '{rolesetmentionable;3298746326924}',
-            expected: '`Failed to edit role: Some other error message`',
+            expected: '`Failed to edit role: no perms`',
             errors: [
-                { start: 0, end: 34, error: new BBTagRuntimeError('Failed to edit role: Some other error message') }
+                { start: 0, end: 34, error: new BBTagRuntimeError('Failed to edit role: no perms', 'Some other error message') }
             ],
             setup(ctx) {
                 ctx.roles.bot.id = '3298746326924';

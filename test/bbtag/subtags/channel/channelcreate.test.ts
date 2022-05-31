@@ -230,7 +230,7 @@ runSubtagTests({
             code: '{channelcreate;My new channel}',
             expected: '`Failed to create channel: no perms`',
             errors: [
-                { start: 0, end: 30, error: new BBTagRuntimeError('Failed to create channel: no perms') }
+                { start: 0, end: 30, error: new BBTagRuntimeError('Failed to create channel: no perms', 'Test REST error') }
             ],
             setup(ctx) {
                 const err = ctx.createRESTError(ApiError.MISSING_PERMISSIONS);
@@ -248,9 +248,9 @@ runSubtagTests({
         },
         {
             code: '{channelcreate;My new channel}',
-            expected: '`Failed to create channel: Some other error message`',
+            expected: '`Failed to create channel: no perms`',
             errors: [
-                { start: 0, end: 30, error: new BBTagRuntimeError('Failed to create channel: Some other error message') }
+                { start: 0, end: 30, error: new BBTagRuntimeError('Failed to create channel: no perms', 'Some other error message') }
             ],
             setup(ctx) {
                 const err = ctx.createRESTError(ApiError.NOT_AUTHORIZED, 'Some other error message');

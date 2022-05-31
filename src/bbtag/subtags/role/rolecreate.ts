@@ -1,5 +1,5 @@
 import { parse } from '@blargbot/core/utils';
-import { ApiError, DiscordRESTError, RoleOptions } from 'eris';
+import { DiscordRESTError, RoleOptions } from 'eris';
 
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
@@ -63,7 +63,7 @@ export class RoleCreateSubtag extends CompiledSubtag {
             if (!(err instanceof DiscordRESTError))
                 throw err;
 
-            throw new BBTagRuntimeError(`Failed to create role: ${err.code === ApiError.MISSING_PERMISSIONS ? 'no perms' : err.message}`);
+            throw new BBTagRuntimeError('Failed to create role: no perms', err.message);
         }
     }
 }

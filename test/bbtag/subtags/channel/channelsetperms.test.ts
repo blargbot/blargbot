@@ -236,7 +236,7 @@ runSubtagTests({
             code: '{channelsetperms;12835768123756132;role;12876318236836323;129837;832764}',
             expected: '`Failed to edit channel: no perms`',
             errors: [
-                { start: 0, end: 72, error: new BBTagRuntimeError('Failed to edit channel: no perms') }
+                { start: 0, end: 72, error: new BBTagRuntimeError('Failed to edit channel: no perms', 'Test REST error') }
             ],
             postSetup(bbctx, ctx) {
                 const channel = bbctx.guild.channels.get(ctx.channels.general.id);
@@ -251,9 +251,9 @@ runSubtagTests({
         },
         {
             code: '{channelsetperms;12835768123756132;role;12876318236836323;129837;832764}',
-            expected: '`Failed to edit channel: Some other error message`',
+            expected: '`Failed to edit channel: no perms`',
             errors: [
-                { start: 0, end: 72, error: new BBTagRuntimeError('Failed to edit channel: Some other error message') }
+                { start: 0, end: 72, error: new BBTagRuntimeError('Failed to edit channel: no perms', 'Some other error message') }
             ],
             postSetup(bbctx, ctx) {
                 const channel = bbctx.guild.channels.get(ctx.channels.general.id);
