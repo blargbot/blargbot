@@ -1,6 +1,6 @@
 {
     "name": "blargbot",
-    "packageManager": "yarn@3.2.0",
+    "packageManager": "yarn@3.2.1",
     "private": true,
     "description": "blargbot is multipurpose discord bot. Coded in node.js using [Eris](https://github.com/abalabahaha/eris), blargbot hopes to bring commands and services to your discord.",
     "main": "index.js",
@@ -22,7 +22,7 @@
         "mocha": "^9.2.2",
         "nyc": "^15.1.0",
         "ts-node": "^10.8.0",
-        "typescript": "^4.6.3",
+        "typescript": "^4.7.2",
         "yarn": "^1.22.18"
     },
     "scripts": {

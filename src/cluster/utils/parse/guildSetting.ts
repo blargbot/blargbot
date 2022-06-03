@@ -78,6 +78,6 @@ export async function guildSetting<T extends Exclude<keyof StoredGuildSettings, 
             };
         }
         default:
-            return def.type;
+            return def;
     }
 }
