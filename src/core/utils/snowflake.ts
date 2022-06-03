@@ -40,7 +40,7 @@ function create(date?: number | string | bigint): Snowflake {
     return catflake._generate(date);
 }
 
-function deconstruct(snowflake: Snowflake): BigInt {
+function deconstruct(snowflake: Snowflake): bigint {
     const decon = catflake.deconstruct(snowflake);
     return decon.timestamp.valueOf();
 }
