@@ -94,6 +94,7 @@ const mapOptions = mapping.json(
                     .map(v => Constants.PermissionOverwriteTypes[v.toUpperCase()])
             })
         ).optional,
-        reason: mapping.string.optional
+        reason: mapping.string.optional,
+        position: [undefined]
     })
 );

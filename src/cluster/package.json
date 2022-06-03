@@ -15,7 +15,7 @@
         "@hunteroi/versioning": "^1.3.0",
         "brainfuck-node": "^1.0.2",
         "crypto": "^1.0.1",
-        "eris": "^0.16.1",
+        "eris": "^0.17.0",
         "eventemitter3": "^4.0.7",
         "moment-timezone": "^0.5.34",
         "node-fetch": "^2.6.7",

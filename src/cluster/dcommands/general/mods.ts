@@ -1,7 +1,7 @@
 import { GuildCommand } from '@blargbot/cluster/command';
 import { GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType } from '@blargbot/cluster/utils';
-import { EmbedField, EmbedOptions, Member, Status } from 'eris';
+import { EmbedField, EmbedOptions, Member, UserStatus } from 'eris';
 
 export class ModsCommand extends GuildCommand {
     public constructor() {
@@ -38,8 +38,8 @@ export class ModsCommand extends GuildCommand {
         });
     }
 
-    public async listMods(context: GuildCommandContext, filter: (status: Status) => boolean): Promise<EmbedOptions> {
-        const byStatus: { [P in Status]: Member[] } = {
+    public async listMods(context: GuildCommandContext, filter: (status: UserStatus) => boolean): Promise<EmbedOptions> {
+        const byStatus: { [P in UserStatus]: Member[] } = {
             online: [],
             idle: [],
             dnd: [],

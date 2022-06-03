@@ -83,7 +83,8 @@ const mapChannelOptions = mapping.json(
         icon: [undefined],
         invitable: [undefined],
         ownerID: [undefined],
-        videoQualityMode: [undefined]
+        videoQualityMode: [undefined],
+        position: [undefined]
     })
 );
 
@@ -104,6 +105,7 @@ const mapThreadOptions = mapping.json(
         rtcRegion: [undefined],
         topic: [undefined],
         userLimit: [undefined],
-        videoQualityMode: [undefined]
+        videoQualityMode: [undefined],
+        position: [undefined]
     })
 );

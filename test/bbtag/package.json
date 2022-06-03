@@ -13,7 +13,7 @@
         "chai-bytes": "^0.1.2",
         "chai-datetime": "^1.8.0",
         "chai-exclude": "^2.1.0",
-        "eris": "^0.16.1",
+        "eris": "^0.17.0",
         "mocha": "^9.2.2",
         "moment-timezone": "^0.5.34",
         "ts-mockito": "^2.6.1"

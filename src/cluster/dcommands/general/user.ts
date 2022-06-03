@@ -80,7 +80,6 @@ function getStatusEmote(context: CommandContext, member: Member): string {
         case 'dnd': return context.config.discord.emotes.busy;
         case 'idle': return context.config.discord.emotes.away;
         case 'online': return context.config.discord.emotes.online;
-        case 'offline':
         case undefined: return context.config.discord.emotes.offline;
     }
 }

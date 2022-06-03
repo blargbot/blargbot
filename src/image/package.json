@@ -20,7 +20,7 @@
         "@types/blargbot-image-api": "workspace:^",
         "@types/color-thief-jimp": "workspace:^",
         "@types/gifencoder": "^2.0.1",
-        "@types/gm": "^1.18.11",
+        "@types/gm": "^1.18.12",
         "@types/node-fetch": "^2.6.1"
     }
 }

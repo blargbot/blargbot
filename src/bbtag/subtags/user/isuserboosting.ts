@@ -45,6 +45,6 @@ export class IsUserBoostingSubtag extends CompiledSubtag {
     }
 
     public isUserBoosting(member: Member): boolean {
-        return typeof member.premiumSince === 'string';
+        return typeof member.premiumSince === 'number';
     }
 }
