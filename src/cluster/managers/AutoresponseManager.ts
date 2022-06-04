@@ -152,7 +152,7 @@ ${codeBlock(code, 'js')}`
     private async * findAutoresponses(msg: Message<KnownGuildTextableChannel>, everything: boolean): AsyncGenerator<{ command: GuildTriggerTag; id: `${number}` | 'everything'; }> {
         const ars = await this.cluster.database.guilds.getAutoresponses(msg.channel.guild.id) ?? {};
         if (everything) {
-            if (ars.everything !== undefined)
+            if (ars.everything !== undefined && ars.everything !== null)
                 yield { command: ars.everything, id: 'everything' };
             return;
         }
@@ -161,7 +161,7 @@ ${codeBlock(code, 'js')}`
             return;
 
         for (const [id, ar] of Object.entries(ars.filtered)) {
-            if (ar !== undefined && guard.testMessageFilter(ar, msg)) {
+            if (ar !== undefined && ar !== null && guard.testMessageFilter(ar, msg)) {
                 yield { command: ar, id: <`${number}`>id };
             }
         }
