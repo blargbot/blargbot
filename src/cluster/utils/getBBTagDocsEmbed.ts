@@ -301,7 +301,7 @@ async function subtagsEmbed(context: CommandContext, input?: string): Promise<Em
     if (matchedCategories.length === 1) {
         const category = matchedCategories[0];
         const props = tagTypeDetails[category];
-        const subtags = [...context.cluster.bbtag.subtags.values()]
+        const subtags = [...new Set(context.cluster.bbtag.subtags.values())]
             .filter(s => s.category === category && !s.hidden && s.deprecated === false)
             .map(t => t.name);
         return {

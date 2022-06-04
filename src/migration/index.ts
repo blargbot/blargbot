@@ -55,7 +55,9 @@ async function migrateChangelog(discord: Discord, rethink: r.Connection, logger:
                     await channel.createMessage('Hi! Ive recently received an update to how changelogs work. This channel was subscribed, so I have migrated it to the new method! You can unsubscribe by running `b!changelog unsubscribe`');
                 } catch (ex: unknown) {
                     logger.error('[migrateChangelog] Guild:', guildId, 'Channel:', channelId, ex);
-                    await channel.createMessage('Hi! Ive recently received an update to how changelogs work. This channel was subscribed, but I wasnt able to update it to the new method. Please run `b!changelog subscribe` to fix this!');
+                    try {
+                        await channel.createMessage('Hi! Ive recently received an update to how changelogs work. This channel was subscribed, but I wasnt able to update it to the new method. Please run `b!changelog subscribe` to fix this!');
+                    } catch { /* NO-OP */ }
                 }
             }
             delete unmigrated[guildId];
