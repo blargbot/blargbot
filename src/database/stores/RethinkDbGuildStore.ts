@@ -233,9 +233,9 @@ export class RethinkDbGuildStore implements GuildStore {
             return undefined;
 
         if (id === 'everything')
-            return guild.autoresponse.everything;
+            return guild.autoresponse.everything ?? undefined;
 
-        return guild.autoresponse.filtered?.[id];
+        return guild.autoresponse.filtered?.[id] ?? undefined;
     }
 
     public async setAutoresponse(guildId: string, id: number, autoresponse: GuildFilteredAutoresponse | undefined): Promise<boolean>
