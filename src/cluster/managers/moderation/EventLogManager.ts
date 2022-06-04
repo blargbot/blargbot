@@ -188,7 +188,6 @@ export class EventLogManager {
                         await this.logEvent('avatarupdate', channel, embed);
                 })
         );
-
     }
 
     private async getContentEmbedField(guildId: string, name: string, content: string | undefined, timestamp: Moment | undefined, contentCount = 1): Promise<EmbedField> {
