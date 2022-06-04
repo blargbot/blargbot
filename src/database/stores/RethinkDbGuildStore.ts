@@ -650,7 +650,7 @@ export class RethinkDbGuildStore implements GuildStore {
 
         await this.#table.update(guildId, g => ({
             nextModlogId: g('nextModlogId').default(
-                g('modlog').default([]).max('caseid').default(0)
+                g('modlog').default([]).max('caseid')('caseid').default(0)
             ).add(1)
         }));
 

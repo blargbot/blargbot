@@ -348,7 +348,7 @@ export module 'rethinkdb' {
         mod(this: Expression<number>, n: number): Expression<number>;
 
         max(this: Expression<readonly number[]>): Expression<number>;
-        max<R extends readonly unknown[], K extends PropertyNamesOfType<R[number], number>>(this: Expression<R>, name: K): Expression<number>;
+        max<R extends readonly unknown[], K extends PropertyNamesOfType<R[number], number>>(this: Expression<R>, name: K): Expression<R[number]>;
 
         distance(this: Expression<Geometry>, geometry: Geometry, options?: DistanceOptions): Expression<number>;
 
