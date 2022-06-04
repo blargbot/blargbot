@@ -58,7 +58,7 @@ export const metrics = {
     async getAggregated(): Promise<Prometheus.Registry> {
         const c = [...metrics.registryCache];
         c.unshift(await Prometheus.register.getMetricsAsJSON());
-        return await aggregate(c);
+        return aggregate(c);
     }
 };
 

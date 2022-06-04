@@ -99,9 +99,8 @@ export class BaseRoute {
     protected status(status: number, body?: unknown, contentType?: string): ApiResponse {
         return {
             execute(res) {
-                if (contentType) {
+                if (contentType !== undefined)
                     res.set('Content-Type', contentType);
-                }
                 res.status(status)
                     .send(body);
             }
