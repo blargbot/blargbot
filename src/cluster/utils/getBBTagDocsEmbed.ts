@@ -249,7 +249,7 @@ function subtagDocs(context: CommandContext, subtag: Subtag): EmbedOptions {
 }
 async function lookupSubtag(context: CommandContext, input: string): Promise<Subtag | string | undefined> {
     input = input.replace(/[{}]/g, '').toLowerCase();
-    const matchedSubtags = [...context.cluster.bbtag.subtags.values()]
+    const matchedSubtags = [...new Set(context.cluster.bbtag.subtags.values())]
         .filter(subtag => !subtag.hidden && (subtag.name.includes(input) || subtag.aliases.some(a => a.includes(input))));
 
     if (matchedSubtags.length === 1)
@@ -336,7 +336,7 @@ async function subtagsEmbed(context: CommandContext, input?: string): Promise<Em
         case 'SUCCESS': {
             const category = queryResponse.value;
             const props = tagTypeDetails[category];
-            const subtags = [...context.cluster.bbtag.subtags.values()]
+            const subtags = [...new Set(context.cluster.bbtag.subtags.values())]
                 .filter(s => s.category === category && !s.hidden && s.deprecated === false)
                 .map(t => t.name);
             return {
@@ -382,7 +382,7 @@ async function categoriesEmbed(context: CommandContext, categories: SubtagType[]
         case 'SUCCESS': {
             const category = queryResponse.value;
             if (category === 'all') {
-                const subtags = [...context.cluster.bbtag.subtags.values()]
+                const subtags = [...new Set(context.cluster.bbtag.subtags.values())]
                     .filter(s => !s.hidden && s.deprecated === false);
                 return {
                     title: 'BBTag documentation - All subtags',
@@ -395,7 +395,7 @@ async function categoriesEmbed(context: CommandContext, categories: SubtagType[]
                 };
             }
             const props = tagTypeDetails[category];
-            const subtags = [...context.cluster.bbtag.subtags.values()]
+            const subtags = [...new Set(context.cluster.bbtag.subtags.values())]
                 .filter(s => s.category === category && !s.hidden && s.deprecated === false)
                 .map(t => t.name);
             return {
