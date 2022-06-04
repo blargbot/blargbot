@@ -95,7 +95,7 @@ export class EventLogManager {
         const embed = this.eventLogEmbed('Message Updated', message.author, 0x771daf, {
             fields: [
                 { name: 'Message Id', value: message.id, inline: true },
-                { name: 'Channel', value: message.channel.toString(), inline: true },
+                { name: 'Channel', value: `<#${message.channel.id}>`, inline: true },
                 await this.getContentEmbedField(guildId, 'Old Message', oldMessage?.content, lastUpdate, 2),
                 await this.getContentEmbedField(guildId, 'New Message', message.content, lastUpdate, 2)
             ]
@@ -163,8 +163,10 @@ export class EventLogManager {
 
         await Promise.all(
             this.cluster.discord.guilds
-                .filter(g => g.members.get(user.id) != undefined)
                 .map(async guild => {
+                    if (await this.cluster.util.getMember(guild, user.id) === undefined)
+                        return;
+
                     const channel = await this.getLogChannel('nameupdate', guild.id);
                     if (channel !== undefined && !await this.isExempt(guild.id, user.id))
                         await this.logEvent('nameupdate', channel, embed);
@@ -181,8 +183,10 @@ export class EventLogManager {
 
         await Promise.all(
             this.cluster.discord.guilds
-                .filter(g => g.members.get(user.id) != undefined)
                 .map(async guild => {
+                    if (await this.cluster.util.getMember(guild, user.id) === undefined)
+                        return;
+
                     const channel = await this.getLogChannel('avatarupdate', guild.id);
                     if (channel !== undefined && !await this.isExempt(guild.id, user.id))
                         await this.logEvent('avatarupdate', channel, embed);
