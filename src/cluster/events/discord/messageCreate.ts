@@ -42,8 +42,12 @@ export class DiscordMessageCreateHandler extends DiscordEventService<'messageCre
     }
 
     public async execute(message: Message<PossiblyUncachedTextableChannel>): Promise<void> {
-        if (!guard.isGuildChannel(message.channel) || message.channel.guild.id !== '194232473931087872')
+        if (!guard.isGuildChannel(message.channel))
             return;
+        
+        if (!(process.env.CLUSTER_ID === "0" || message.channel.guild.id === '194232473931087872')) {
+            return;
+        }
 
         if (guard.isUncached(message.channel)) {
             this.cluster.logger.debug('Got a message in an uncached channel, probably a DM. Resolving it now');
