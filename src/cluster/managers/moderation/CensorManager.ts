@@ -105,10 +105,11 @@ export class CensorManager extends ModerationManagerBase {
         const channels = exemptions.channel ?? [];
         const users = exemptions.user ?? [];
         const roles = exemptions.role ?? [];
+        const userRoles = (message.member.roles as string[] | null) ?? [];
 
         return channels.includes(message.channel.id)
             || users.includes(message.author.id)
-            || roles.some(r => message.member.roles.includes(r));
+            || roles.some(r => userRoles.includes(r));
     }
 
     public setDebug(guildId: string, id: number, userId: string, channelId: string, messageId: string, type: 'ban' | 'delete' | 'kick'): void {
