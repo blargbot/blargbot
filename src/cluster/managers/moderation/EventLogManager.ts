@@ -85,6 +85,10 @@ export class EventLogManager {
         const guildId = guard.isGuildMessage(message) ? message.channel.guild.id : undefined;
         if (guildId === undefined)
             return;
+        
+        if (message.content === oldMessage?.content) {
+            return;
+        }
 
         const logChannel = await this.getLogChannel('messageupdate', guildId);
         if (logChannel === undefined || await this.isExempt(guildId, message.author.id))
