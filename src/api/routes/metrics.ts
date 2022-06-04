@@ -1,6 +1,6 @@
 import { metrics } from '@blargbot/core/Metrics';
-import { Api } from '../Api';
 
+import { Api } from '../Api';
 import { BaseRoute } from '../BaseRoute';
 
 export class MetricsRoute extends BaseRoute {
@@ -12,7 +12,7 @@ export class MetricsRoute extends BaseRoute {
                 const retrievedMetrics = await this.api.worker.request('getMetrics', undefined);
                 metrics.registryCache = Object.values(retrievedMetrics);
                 const register = await metrics.getAggregated();
-                
+
                 return this.ok(await register.metrics(), register.contentType);
             }
         });

@@ -16,7 +16,7 @@ export class ClusterGetGuildPermssionListHandler extends ClusterEventService<'ge
 
     protected async getGuildPermissionList(userId: string): Promise<GuildPermissionDetails[]> {
         const members = await Promise.all(this.cluster.discord.guilds
-            .filter(g => g.members.get(userId) != undefined)
+            .filter(g => g.members.get(userId) !== undefined)
             .map(g => this.cluster.util.getMember(g, userId)));
 
         return await Promise.all(members.filter(guard.hasValue)

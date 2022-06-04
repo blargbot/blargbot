@@ -9,8 +9,8 @@ import { Logger } from '@blargbot/logger';
 import { MasterOptions } from '@blargbot/master/types';
 import moment from 'moment-timezone';
 import fetch from 'node-fetch';
-import { inspect } from 'util';
 import { metric } from 'prom-client';
+import { inspect } from 'util';
 
 import { ClusterLogManager, ClusterStatsManager } from './managers';
 import { MasterWorker } from './MasterWorker';

@@ -14,6 +14,6 @@ export class ClusterMetricsHandler extends ClusterEventService<'metrics'> {
 
     public async getMetrics(): Promise<metric[]> {
         metrics.userGauge.set(this.cluster.discord.users.size);
-        return (await metrics.getAggregated()).getMetricsAsJSON();
+        return await (await metrics.getAggregated()).getMetricsAsJSON();
     }
 }
