@@ -10,7 +10,7 @@ export interface StoredGuildSettings {
     readonly disablenoperms?: boolean;
     readonly dmhelp?: boolean;
     readonly farewellchan?: string;
-    readonly greetChan?: string;
+    readonly greetchan?: string;
     readonly kickat?: number;
     readonly kickoverride?: string;
     readonly makelogs?: boolean;

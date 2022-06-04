@@ -15,7 +15,7 @@ export class GreetingManager {
         if (greeting === undefined)
             return 'CODE_MISSING';
 
-        const channelId = await this.cluster.database.guilds.getSetting(member.guild.id, 'greetChan');
+        const channelId = await this.cluster.database.guilds.getSetting(member.guild.id, 'greetchan');
         const channel = this.findChannel(member.guild, channelId);
         if (channel === undefined)
             return 'CHANNEL_MISSING';
@@ -76,7 +76,7 @@ export class GreetingManager {
                 return undefined;
             guild = _guild;
         }
-        const channelId = await this.cluster.database.guilds.getSetting(guild.id, 'greetChan');
+        const channelId = await this.cluster.database.guilds.getSetting(guild.id, 'greetchan');
         return this.findChannel(guild, channelId);
     }
 

@@ -119,7 +119,7 @@ export class GreetingCommand extends GuildCommand {
         if (!guard.isTextableChannel(channel))
             return this.error('The greeting channel must be a text channel!');
 
-        await context.database.guilds.setSetting(context.channel.guild.id, 'greetChan', channel.id);
+        await context.database.guilds.setSetting(context.channel.guild.id, 'greetchan', channel.id);
         return this.success(`Greeting messages will now be sent in ${channel.mention}`);
     }
 

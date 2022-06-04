@@ -62,7 +62,7 @@ export class SettingsCommand extends GuildCommand {
                             name: 'Channels',
                             value: settingGroup([
                                 ['farewellchan', resolveChannel(guild, settings.farewellchan) ?? 'Default Channel'],
-                                ['greetChan', resolveChannel(guild, settings.greetChan) ?? 'Default Channel'],
+                                ['greetchan', resolveChannel(guild, settings.greetchan) ?? 'Default Channel'],
                                 ['modlog', resolveChannel(guild, settings.modlog)]
                             ])
                         },

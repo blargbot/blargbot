@@ -121,8 +121,8 @@ export const guildSettings: GuildSettingDocs = {
         desc: 'Sets the channel for the farewell message to be sent in',
         type: 'channel'
     },
-    greetChan: {
-        key: 'greetChan',
+    greetchan: {
+        key: 'greetchan',
         name: 'Greeting channel',
         desc: 'Sets the channel for the greeting message to be sent in',
         type: 'channel'
