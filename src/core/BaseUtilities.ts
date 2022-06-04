@@ -140,7 +140,7 @@ export class BaseUtilities {
             && (payload.embeds?.length ?? 0) === 0
             && (files?.length ?? 0) === 0
             && (payload.components?.length ?? 0) === 0) {
-            throw new Error('No content');
+            return undefined;
         }
 
         if (!guard.checkEmbedSize(payload.embeds)) {
