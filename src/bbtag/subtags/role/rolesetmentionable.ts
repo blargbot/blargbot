@@ -1,5 +1,5 @@
 import { parse } from '@blargbot/core/utils';
-import { ApiError, DiscordRESTError } from 'eris';
+import { DiscordRESTError } from 'eris';
 
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
@@ -63,7 +63,7 @@ export class RoleSetMentionableSubtag extends CompiledSubtag {
             if (quiet)
                 return;
 
-            throw new BBTagRuntimeError(`Failed to edit role: ${err.code === ApiError.MISSING_PERMISSIONS ? 'no perms' : err.message}`);
+            throw new BBTagRuntimeError('Failed to edit role: no perms', err.message);
         }
     }
 }

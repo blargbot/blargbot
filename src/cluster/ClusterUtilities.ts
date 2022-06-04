@@ -59,7 +59,7 @@ export class ClusterUtilities extends BaseUtilities {
                 return selectData.slice(this.page * pageSize, (this.page + 1) * pageSize);
             },
             page: 0,
-            lastPage: Math.floor(selectData.length / pageSize),
+            lastPage: Math.floor((selectData.length - 1) / pageSize),
             placeholder: options.placeholder,
             prevId: snowflake.create().toString(),
             nextId: snowflake.create().toString(),
@@ -750,7 +750,7 @@ function createChoiceBody(options: ChoiceComponentOptions): Pick<AdvancedMessage
     const prev: InteractionButton = {
         type: Constants.ComponentTypes.BUTTON,
         custom_id: options.prevId,
-        emoji: { name: 'bigarrowleft', id: '876227640976097351' }, // TODO config
+        emoji: { name: '⬅' },
         style: Constants.ButtonStyles.PRIMARY,
         disabled: options.page === 0
     };
@@ -758,7 +758,7 @@ function createChoiceBody(options: ChoiceComponentOptions): Pick<AdvancedMessage
     const next: InteractionButton = {
         type: Constants.ComponentTypes.BUTTON,
         custom_id: options.nextId,
-        emoji: { name: 'bigarrowright', id: '876227816998461511' }, // TODO config
+        emoji: { name: '➡' },
         style: Constants.ButtonStyles.PRIMARY,
         disabled: options.page === options.lastPage
     };

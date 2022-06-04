@@ -1,4 +1,4 @@
-import { ApiError, DiscordRESTError } from 'eris';
+import { DiscordRESTError } from 'eris';
 
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
@@ -27,10 +27,10 @@ export class GuildBansSubtag extends CompiledSubtag {
         try {
             return (await context.guild.getBans()).map(u => u.user.id);
         } catch (err: unknown) {
-            if (err instanceof DiscordRESTError && err.code === ApiError.MISSING_PERMISSIONS)
-                throw new BBTagRuntimeError('Missing required permissions');
+            if (!(err instanceof DiscordRESTError))
+                throw err;
 
-            throw err;
+            throw new BBTagRuntimeError('Missing required permissions', err.message);
         }
     }
 }

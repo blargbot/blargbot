@@ -1,10 +1,9 @@
 import { Timer } from '@blargbot/core/Timer';
-import { discord, parse, sleep } from '@blargbot/core/utils';
+import { sleep } from '@blargbot/core/utils';
 import { Database } from '@blargbot/database';
 import { Logger } from '@blargbot/logger';
 import { Client as Discord } from 'eris';
 import moment from 'moment-timezone';
-import { inspect } from 'util';
 
 import { BBTagContext } from './BBTagContext';
 import { BBTagUtilities, InjectionContext } from './BBTagUtilities';
@@ -129,7 +128,7 @@ export class BBTagEngine {
             } catch (err: unknown) {
                 yield err instanceof BBTagRuntimeError
                     ? context.addError(err, bbtag)
-                    : this.logError(context, err, subtag.name, bbtag);
+                    : this.logError(context, err, bbtag);
             } finally {
                 context.callStack.pop();
             }
@@ -168,40 +167,11 @@ export class BBTagEngine {
         return joinResults(results);
     }
 
-    private async logError(context: BBTagContext, error: unknown, subtagName: string, bbtag: SubtagCall): Promise<string> {
+    private logError(context: BBTagContext, error: unknown, bbtag: SubtagCall): string {
         if (error instanceof RangeError)
             throw error;
 
         this.logger.error(error);
-        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-        let description = `${error}`;
-        const descLimit = discord.getLimit('embed.description');
-        if (description.length > descLimit)
-            description = `${description.substring(0, descLimit - 15)}... (truncated)`;
-
-        await this.util.send(this.util.config.discord.channels.errorlog, {
-            embeds: [
-                {
-                    title: 'A tag error occurred',
-                    description: description,
-                    color: parse.color('red'),
-                    fields: [
-                        { name: 'SubTag', value: subtagName, inline: true },
-                        { name: 'Arguments', value: JSON.stringify(bbtag.args.map(bbtagUtil.stringify).map(c => c.length < 100 ? c : `${c.slice(0, 97)}...`)) },
-                        { name: 'Tag Name', value: context.rootTagName, inline: true },
-                        { name: 'Location', value: `${bbtagUtil.stringifyRange(bbtag)}`, inline: true },
-                        { name: 'Channel | Guild', value: `${context.channel.id} | ${context.guild.id}`, inline: true },
-                        { name: 'CCommand', value: context.isCC ? 'Yes' : 'No', inline: true }
-                    ]
-                }
-            ],
-            files: [
-                {
-                    file: inspect(error),
-                    name: 'error.txt'
-                }
-            ]
-        });
         return context.addError(new InternalServerError(error), bbtag);
     }
 

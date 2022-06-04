@@ -1,6 +1,6 @@
 {
     "name": "blargbot",
-    "packageManager": "yarn@3.2.0",
+    "packageManager": "yarn@3.2.1",
     "private": true,
     "description": "blargbot is multipurpose discord bot. Coded in node.js using [Eris](https://github.com/abalabahaha/eris), blargbot hopes to bring commands and services to your discord.",
     "main": "index.js",
@@ -10,19 +10,19 @@
         "definitions/*"
     ],
     "devDependencies": {
-        "@types/node": "^16.11.31",
-        "@typescript-eslint/eslint-plugin": "^5.21.0",
-        "@typescript-eslint/parser": "^5.21.0",
-        "@yarnpkg/sdks": "^3.0.0-rc.3",
+        "@types/node": "^16.11.38",
+        "@typescript-eslint/eslint-plugin": "^5.27.0",
+        "@typescript-eslint/parser": "^5.27.0",
+        "@yarnpkg/sdks": "^3.0.0-rc.6",
         "cross-env": "^7.0.3",
         "del-cli": "^4.0.1",
-        "eslint": "^8.14.0",
+        "eslint": "^8.16.0",
         "eslint-plugin-import": "^2.26.0",
         "eslint-plugin-simple-import-sort": "^7.0.0",
         "mocha": "^9.2.2",
         "nyc": "^15.1.0",
-        "ts-node": "^10.7.0",
-        "typescript": "^4.6.3",
+        "ts-node": "^10.8.0",
+        "typescript": "^4.7.2",
         "yarn": "^1.22.18"
     },
     "scripts": {
@@ -57,7 +57,6 @@
         }
     },
     "resolutions": {
-        "@types/mocha@^9.1.0": "patch:@types/mocha@npm:9.1.0#.yarn/patches/@types-mocha-npm-9.1.0-8ac56cd8d3.patch",
-        "eris@^0.16.1": "patch:eris@npm:0.16.1#.yarn/patches/eris-npm-0.16.1-a7d19b7302.patch"
+        "@types/mocha@^9.1.0": "patch:@types/mocha@npm:9.1.0#.yarn/patches/@types-mocha-npm-9.1.0-8ac56cd8d3.patch"
     }
 }

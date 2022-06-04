@@ -68,7 +68,7 @@ runSubtagTests({
             code: '{channelsetpos;239874692346327846;123}',
             expected: '`Failed to move channel: no perms`',
             errors: [
-                { start: 0, end: 38, error: new BBTagRuntimeError('Failed to move channel: no perms') }
+                { start: 0, end: 38, error: new BBTagRuntimeError('Failed to move channel: no perms', 'Test REST error') }
             ],
             postSetup(bbctx, ctx) {
                 const err = ctx.createRESTError(ApiError.MISSING_PERMISSIONS);
@@ -82,9 +82,9 @@ runSubtagTests({
         },
         {
             code: '{channelsetpos;239874692346327846;123}',
-            expected: '`Failed to move channel: Some other error message`',
+            expected: '`Failed to move channel: no perms`',
             errors: [
-                { start: 0, end: 38, error: new BBTagRuntimeError('Failed to move channel: Some other error message') }
+                { start: 0, end: 38, error: new BBTagRuntimeError('Failed to move channel: no perms', 'Some other error message') }
             ],
             postSetup(bbctx, ctx) {
                 const err = ctx.createRESTError(ApiError.NOT_AUTHORIZED, 'Some other error message');

@@ -37,6 +37,9 @@ export class Emote {
         }).replaceAll(discordEmoteRegex, emote => {
             emotes.push(new Emote(emote, undefined, false));
             return '';
+        }).replaceAll(keycapEmote, emote => {
+            emotes.push(new Emote(emote, undefined, false));
+            return '';
         });
         twemoji.parse(text, {
             callback(codepoint) {
@@ -83,6 +86,7 @@ export class Emote {
 
 const guildEmoteRegex = /<(?<animated>a?):(?<name>[\w_]{1,32}):(?<id>\d{17,23})>/g;
 const guildApiEmoteRegex = /(?<name>[\w_]{1,32}):(?<id>\d{17,23})/g;
+const keycapEmote = /[#*0-9]\uFE0F?\u20E3/g;
 const discordEmotes = Object.values(discordEmoteData)
     .flat()
     .flatMap(entry => 'diversityChildren' in entry ? [entry, ...entry.diversityChildren ?? []] : [entry])

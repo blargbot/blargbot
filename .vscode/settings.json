@@ -7,9 +7,9 @@
   },
   "npm.packageManager": "yarn",
   "files.eol": "\n",
-  "explorer.experimental.fileNesting.enabled": true,
-  "explorer.experimental.fileNesting.expand": false,
-  "explorer.experimental.fileNesting.patterns": {
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.expand": false,
+  "explorer.fileNesting.patterns": {
     "*.ts": "$(capture).js, $(capture).d.ts",
     "*.mts": "$(capture).mjs, $(capture).d.mts, $(capture).js, $(capture).d.ts",
     "*.cts": "$(capture).cjs, $(capture).d.cts, $(capture).js, $(capture).d.ts",

@@ -59,7 +59,7 @@ runSubtagTests({
             code: '{roledelete;3298746326924}',
             expected: '`Failed to delete role: no perms`',
             errors: [
-                { start: 0, end: 26, error: new BBTagRuntimeError('Failed to delete role: no perms') }
+                { start: 0, end: 26, error: new BBTagRuntimeError('Failed to delete role: no perms', 'Test REST error') }
             ],
             setup(ctx) {
                 ctx.roles.other.id = '3298746326924';
@@ -78,9 +78,9 @@ runSubtagTests({
         },
         {
             code: '{roledelete;3298746326924}',
-            expected: '`Failed to delete role: Some other error message`',
+            expected: '`Failed to delete role: no perms`',
             errors: [
-                { start: 0, end: 26, error: new BBTagRuntimeError('Failed to delete role: Some other error message') }
+                { start: 0, end: 26, error: new BBTagRuntimeError('Failed to delete role: no perms', 'Some other error message') }
             ],
             setup(ctx) {
                 ctx.roles.other.id = '3298746326924';

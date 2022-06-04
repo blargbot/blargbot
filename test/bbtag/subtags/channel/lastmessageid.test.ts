@@ -40,7 +40,7 @@ runSubtagTests({
                 { start: 0, end: 15, error: new BBTagRuntimeError('Channel must be a textable channel') }
             ],
             setup(ctx) {
-                ctx.channels.command.type = Constants.ChannelTypes.GUILD_VOICE;
+                ctx.channels.command.type = Constants.ChannelTypes.GUILD_STORE;
             }
         }
     ]

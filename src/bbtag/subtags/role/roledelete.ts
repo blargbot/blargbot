@@ -1,4 +1,4 @@
-import { ApiError, DiscordRESTError } from 'eris';
+import { DiscordRESTError } from 'eris';
 
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
@@ -51,7 +51,7 @@ export class RoleDeleteSubtag extends CompiledSubtag {
             if (quiet)
                 return;
 
-            throw new BBTagRuntimeError(`Failed to delete role: ${err.code === ApiError.MISSING_PERMISSIONS ? 'no perms' : err.message}`);
+            throw new BBTagRuntimeError('Failed to delete role: no perms', err.message);
         }
     }
 }

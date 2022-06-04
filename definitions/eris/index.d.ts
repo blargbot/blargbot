@@ -9,6 +9,7 @@ export module 'eris' {
 
     export type KnownChannel =
         | TextChannel
+        | TextVoiceChannel
         | PrivateChannel
         | VoiceChannel
         | GroupChannel
@@ -28,7 +29,7 @@ export module 'eris' {
     export type KnownThreadChannel = Extract<KnownChannel, ThreadChannel>;
     export type KnownTextableChannel = Extract<KnownChannel, Textable>;
     export type KnownVoiceChannel = Extract<KnownChannel, VoiceChannel>;
-    export type KnownThreadableChannel = Exclude<GuildTextableChannel, KnownThreadChannel>;
+    export type KnownThreadableChannel = Exclude<GuildTextableChannel, KnownThreadChannel | TextVoiceChannel>;
     export type KnownPrivateChannel = Extract<KnownChannel, PrivateChannel>;
     export type KnownCategoryChannel = Extract<KnownChannel, CategoryChannel>;
 

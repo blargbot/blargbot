@@ -1,17 +1,20 @@
 import { Constants, KnownChannel, KnownThreadableChannel } from 'eris';
 
+type ChannelType = typeof Constants['ChannelTypes'];
+const isThreadableMap: Record<ChannelType[keyof ChannelType], boolean> = {
+    [Constants.ChannelTypes.DM]: false,
+    [Constants.ChannelTypes.GROUP_DM]: false,
+    [Constants.ChannelTypes.GUILD_CATEGORY]: false,
+    [Constants.ChannelTypes.GUILD_NEWS]: true,
+    [Constants.ChannelTypes.GUILD_NEWS_THREAD]: false,
+    [Constants.ChannelTypes.GUILD_PRIVATE_THREAD]: false,
+    [Constants.ChannelTypes.GUILD_PUBLIC_THREAD]: false,
+    [Constants.ChannelTypes.GUILD_STAGE_VOICE]: false,
+    [Constants.ChannelTypes.GUILD_STORE]: false,
+    [Constants.ChannelTypes.GUILD_TEXT]: true,
+    [Constants.ChannelTypes.GUILD_VOICE]: false
+};
+
 export function isThreadableChannel<T extends KnownChannel>(channel: T): channel is T & KnownThreadableChannel {
-    switch (channel.type) {
-        case Constants.ChannelTypes.DM: return false;
-        case Constants.ChannelTypes.GROUP_DM: return false;
-        case Constants.ChannelTypes.GUILD_CATEGORY: return false;
-        case Constants.ChannelTypes.GUILD_NEWS: return true;
-        case Constants.ChannelTypes.GUILD_NEWS_THREAD: return false;
-        case Constants.ChannelTypes.GUILD_PRIVATE_THREAD: return false;
-        case Constants.ChannelTypes.GUILD_PUBLIC_THREAD: return false;
-        case Constants.ChannelTypes.GUILD_STAGE_VOICE: return false;
-        case Constants.ChannelTypes.GUILD_STORE: return false;
-        case Constants.ChannelTypes.GUILD_TEXT: return true;
-        case Constants.ChannelTypes.GUILD_VOICE: return false;
-    }
+    return isThreadableMap[channel.type];
 }

@@ -1,6 +1,6 @@
 import { guard } from '@blargbot/core/utils';
 import { mapping } from '@blargbot/mapping';
-import { ApiError, Constants, CreateChannelOptions, DiscordRESTError } from 'eris';
+import { Constants, CreateChannelOptions, DiscordRESTError } from 'eris';
 
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
@@ -63,7 +63,7 @@ export class ChannelCreateSubtag extends CompiledSubtag {
             if (!(err instanceof DiscordRESTError))
                 throw err;
 
-            throw new BBTagRuntimeError(`Failed to create channel: ${err.code === ApiError.MISSING_PERMISSIONS ? 'no perms' : err.message}`);
+            throw new BBTagRuntimeError('Failed to create channel: no perms', err.message);
         }
     }
 }
@@ -94,6 +94,7 @@ const mapOptions = mapping.json(
                     .map(v => Constants.PermissionOverwriteTypes[v.toUpperCase()])
             })
         ).optional,
-        reason: mapping.string.optional
+        reason: mapping.string.optional,
+        position: [undefined]
     })
 );

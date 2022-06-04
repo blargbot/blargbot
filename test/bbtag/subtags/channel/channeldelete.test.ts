@@ -70,7 +70,7 @@ runSubtagTests({
             code: '{channeldelete;2384762844234324}',
             expected: '`Failed to edit channel: no perms`',
             errors: [
-                { start: 0, end: 32, error: new BBTagRuntimeError('Failed to edit channel: no perms') }
+                { start: 0, end: 32, error: new BBTagRuntimeError('Failed to edit channel: no perms', 'Test REST error') }
             ],
             setup(ctx) {
                 const err = ctx.createRESTError(ApiError.MISSING_PERMISSIONS);
@@ -81,9 +81,9 @@ runSubtagTests({
         },
         {
             code: '{channeldelete;2384762844234324}',
-            expected: '`Failed to edit channel: Some other error message`',
+            expected: '`Failed to edit channel: no perms`',
             errors: [
-                { start: 0, end: 32, error: new BBTagRuntimeError('Failed to edit channel: Some other error message') }
+                { start: 0, end: 32, error: new BBTagRuntimeError('Failed to edit channel: no perms', 'Some other error message') }
             ],
             setup(ctx) {
                 const err = ctx.createRESTError(ApiError.NOT_AUTHORIZED, 'Some other error message');

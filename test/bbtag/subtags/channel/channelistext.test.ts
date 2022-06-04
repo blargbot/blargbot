@@ -16,7 +16,7 @@ runSubtagTests({
             },
             cases: Object.entries({
                 ['GUILD_TEXT']: true,
-                ['GUILD_VOICE']: false,
+                ['GUILD_VOICE']: true,
                 ['GUILD_CATEGORY']: false,
                 ['GUILD_NEWS']: true,
                 ['GUILD_STORE']: false,

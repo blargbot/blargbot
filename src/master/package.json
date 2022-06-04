@@ -10,7 +10,7 @@
         "@blargbot/domain": "workspace:^",
         "@blargbot/logger": "workspace:^",
         "@blargbot/res": "workspace:^",
-        "eris": "^0.16.1",
+        "eris": "^0.17.0",
         "moment-timezone": "^0.5.34",
         "node-fetch": "^2.6.7",
         "strip-ansi": "^6.0.1"

@@ -524,9 +524,11 @@ export class CustomCommandCommand extends GuildCommand {
     }
 
     public async installCommands(context: GuildCommandContext, shrinkwrapUrl?: string): Promise<string> {
-        shrinkwrapUrl ??= context.message.attachments[0]?.url;
-        if (shrinkwrapUrl === undefined)
-            return this.error('You have to upload the installation file, or give me a URL to one.');
+        if (shrinkwrapUrl === undefined) {
+            if (context.message.attachments.length === 0)
+                return this.error('You have to upload the installation file, or give me a URL to one.');
+            shrinkwrapUrl = context.message.attachments[0].url;
+        }
 
         const content = await requestSafe(shrinkwrapUrl);
         const signedShrinkwrap = mapSignedGuildShrinkwrap(content);
