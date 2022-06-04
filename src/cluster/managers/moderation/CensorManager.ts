@@ -1,7 +1,7 @@
 import { bbtag } from '@blargbot/bbtag';
 import { guard, ModerationType } from '@blargbot/cluster/utils';
 import { GuildCensor, GuildCensorExceptions, GuildTriggerTag } from '@blargbot/domain/models';
-import { KnownGuildTextableChannel, Message } from 'eris';
+import { KnownGuildTextableChannel, Member, Message } from 'eris';
 import moment from 'moment-timezone';
 
 import { ModerationManager } from '../ModerationManager';
@@ -105,7 +105,7 @@ export class CensorManager extends ModerationManagerBase {
         const channels = exemptions.channel ?? [];
         const users = exemptions.user ?? [];
         const roles = exemptions.role ?? [];
-        const userRoles = (message.member.roles as string[] | null) ?? [];
+        const userRoles = ((message.member as Member | null)?.roles as string[] | null) ?? [];
 
         return channels.includes(message.channel.id)
             || users.includes(message.author.id)
