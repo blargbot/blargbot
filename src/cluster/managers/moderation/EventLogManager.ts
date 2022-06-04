@@ -163,10 +163,8 @@ export class EventLogManager {
 
         await Promise.all(
             this.cluster.discord.guilds
+                .filter(g => g.members.get(user.id) != undefined)
                 .map(async guild => {
-                    if (await this.cluster.util.getMember(guild, user.id) === undefined)
-                        return;
-
                     const channel = await this.getLogChannel('nameupdate', guild.id);
                     if (channel !== undefined && !await this.isExempt(guild.id, user.id))
                         await this.logEvent('nameupdate', channel, embed);
@@ -183,10 +181,8 @@ export class EventLogManager {
 
         await Promise.all(
             this.cluster.discord.guilds
+                .filter(g => g.members.get(user.id) != undefined)
                 .map(async guild => {
-                    if (await this.cluster.util.getMember(guild, user.id) === undefined)
-                        return;
-
                     const channel = await this.getLogChannel('avatarupdate', guild.id);
                     if (channel !== undefined && !await this.isExempt(guild.id, user.id))
                         await this.logEvent('avatarupdate', channel, embed);
