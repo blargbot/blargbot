@@ -648,13 +648,15 @@ export class RethinkDbGuildStore implements GuildStore {
         if (guild === undefined)
             return undefined;
 
-        await this.#table.update(guildId, g => ({
+        const newGuild = await this.#table.update(guildId, g => ({
             nextModlogId: g('nextModlogId').default(
                 g('modlog').default([]).max('caseid')('caseid').default(0)
             ).add(1)
-        }));
+        }), true);
 
-        return guild.nextModlogId;
+        console.log(guild.nextModlogId, newGuild?.nextModlogId);
+
+        return newGuild?.nextModlogId;
     }
 
     public async getModlogCase(guildId: string, caseId?: number, skipCache?: boolean): Promise<GuildModlogEntry | undefined> {
