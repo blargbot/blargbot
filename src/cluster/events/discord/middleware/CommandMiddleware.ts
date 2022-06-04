@@ -19,7 +19,7 @@ export class CommandMiddleware implements IMiddleware<KnownMessage, boolean> {
 
         const commandText = message.content.slice(prefix.length);
         const parts = humanize.smartSplit(commandText, 2);
-        const commandName = parts[0].toLowerCase();
+        const commandName = (parts[0] ?? '').toLowerCase();
         const argsString = parts[1] ?? '';
 
         const command = await this.cluster.commands.get(commandName, message.channel, message.author);
