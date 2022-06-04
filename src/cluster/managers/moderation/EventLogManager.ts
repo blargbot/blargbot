@@ -85,13 +85,13 @@ export class EventLogManager {
         const guildId = guard.isGuildMessage(message) ? message.channel.guild.id : undefined;
         if (guildId === undefined)
             return;
-        
-        if (message.content === oldMessage?.content) {
-            return;
-        }
 
         const logChannel = await this.getLogChannel('messageupdate', guildId);
         if (logChannel === undefined || await this.isExempt(guildId, message.author.id))
+            return;
+
+        const oldContent = oldMessage?.content ?? (await this.cluster.database.chatlogs.getByMessageId(message.id))?.content;
+        if (message.content === oldContent)
             return;
 
         const lastUpdate = moment(message.editedTimestamp ?? message.createdAt);
@@ -100,7 +100,7 @@ export class EventLogManager {
             fields: [
                 { name: 'Message Id', value: message.id, inline: true },
                 { name: 'Channel', value: `<#${message.channel.id}>`, inline: true },
-                await this.getContentEmbedField(guildId, 'Old Message', oldMessage?.content, lastUpdate, 2),
+                await this.getContentEmbedField(guildId, 'Old Message', oldContent, lastUpdate, 2),
                 await this.getContentEmbedField(guildId, 'New Message', message.content, lastUpdate, 2)
             ]
         });
@@ -167,7 +167,7 @@ export class EventLogManager {
 
         await Promise.all(
             this.cluster.discord.guilds
-                .filter(g => g.members.get(user.id) != undefined)
+                .filter(g => g.members.get(user.id) !== undefined)
                 .map(async guild => {
                     const channel = await this.getLogChannel('nameupdate', guild.id);
                     if (channel !== undefined && !await this.isExempt(guild.id, user.id))
@@ -185,7 +185,7 @@ export class EventLogManager {
 
         await Promise.all(
             this.cluster.discord.guilds
-                .filter(g => g.members.get(user.id) != undefined)
+                .filter(g => g.members.get(user.id) !== undefined)
                 .map(async guild => {
                     const channel = await this.getLogChannel('avatarupdate', guild.id);
                     if (channel !== undefined && !await this.isExempt(guild.id, user.id))
