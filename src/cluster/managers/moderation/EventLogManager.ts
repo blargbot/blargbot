@@ -91,7 +91,7 @@ export class EventLogManager {
             return;
 
         const oldContent = oldMessage?.content ?? (await this.cluster.database.chatlogs.getByMessageId(message.id))?.content;
-        if (message.content === oldContent)
+        if (oldContent === undefined || message.content === oldContent)
             return;
 
         const lastUpdate = moment(message.editedTimestamp ?? message.createdAt);
