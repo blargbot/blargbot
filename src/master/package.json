@@ -13,6 +13,7 @@
         "eris": "^0.17.0",
         "moment-timezone": "^0.5.34",
         "node-fetch": "^2.6.7",
+        "prom-client": "^14.0.1",
         "strip-ansi": "^6.0.1"
     },
     "devDependencies": {
