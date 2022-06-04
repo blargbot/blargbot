@@ -48,6 +48,7 @@ export class BaseClient {
         const application = await this.discord.getOAuthApplication();
         this.#owners = application.team?.members.filter(m => m.membership_state === OAuthTeamMemberState.ACCEPTED).map(m => m.user.id)
             ?? [application.owner.id];
+        this.logger.init('Loaded', this.#owners, 'user(s) as owners');
     }
 }
 
