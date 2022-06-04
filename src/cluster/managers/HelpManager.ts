@@ -17,6 +17,9 @@ export class HelpManager {
         const allNames = new Set<string>();
         const groupedCommands: Record<string, string[] | undefined> = {};
         for await (const command of this.commands.list(channel, author)) {
+            if (command.hidden)
+                continue;
+
             const name = [command.name, ...command.aliases].find(n => allNames.size < allNames.add(n).size);
             if (name === undefined)
                 continue;
