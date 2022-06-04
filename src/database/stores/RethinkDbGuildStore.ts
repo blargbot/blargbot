@@ -654,8 +654,6 @@ export class RethinkDbGuildStore implements GuildStore {
             ).add(1)
         }), true);
 
-        console.log(guild.nextModlogId, newGuild?.nextModlogId);
-
         return newGuild?.nextModlogId;
     }
 
