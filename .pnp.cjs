@@ -487,6 +487,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["express-promise-router", "virtual:095fcb10883c40f470ac6e6afe01baaad608ecd7018d2aa01600e1b94a63e74e03d9c60d9c4b5eae313115c2ddfa875282bf27ef0d1c898d09652020afc63115#npm:4.1.1"],\
             ["jsonwebtoken", "npm:8.5.1"],\
             ["node-fetch", "virtual:644263357c3808bc44f433a693fe388a0c8cd7253a76268de48af4ee58a719d112af996231f3c01e175a9d4db65884c068df3876ec1060da68b36b8d0a9b8225#npm:2.6.7"],\
+            ["prom-client", "npm:14.0.1"],\
             ["ws", "virtual:095fcb10883c40f470ac6e6afe01baaad608ecd7018d2aa01600e1b94a63e74e03d9c60d9c4b5eae313115c2ddfa875282bf27ef0d1c898d09652020afc63115#npm:8.7.0"]\
           ],\
           "linkType": "SOFT"\
@@ -762,6 +763,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["eris", "npm:0.17.0"],\
             ["moment-timezone", "npm:0.5.34"],\
             ["node-fetch", "virtual:644263357c3808bc44f433a693fe388a0c8cd7253a76268de48af4ee58a719d112af996231f3c01e175a9d4db65884c068df3876ec1060da68b36b8d0a9b8225#npm:2.6.7"],\
+            ["prom-client", "npm:14.0.1"],\
             ["strip-ansi", "npm:6.0.1"]\
           ],\
           "linkType": "SOFT"\

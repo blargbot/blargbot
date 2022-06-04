@@ -4,6 +4,7 @@ import { Request, Response } from 'express';
 import { IRoute, IRouterHandler, RouteParameters } from 'express-serve-static-core';
 import { IncomingMessage } from 'http';
 import { WebSocket } from 'ws';
+import { metric } from 'prom-client';
 
 import { Api } from './Api';
 import { ApiWorker } from './ApiWorker';
@@ -17,6 +18,7 @@ export type ApiIPCContracts = {
     'getGuildSettings': { masterGets: undefined; workerGets: GuildSettingDocs; };
     'getCommand': { masterGets: string; workerGets: ICommandDetails | undefined; };
     'clusterStats': { masterGets: never; workerGets: Record<number, ClusterStats | undefined>; };
+    'getMetrics': { masterGets: undefined; workerGets: Record<number | string, metric[]>; };
 }
 
 export interface ApiOptions {

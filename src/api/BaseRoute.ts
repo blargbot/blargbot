@@ -96,9 +96,12 @@ export class BaseRoute {
         throw new UnauthenticatedError();
     }
 
-    protected status(status: number, body?: unknown): ApiResponse {
+    protected status(status: number, body?: unknown, contentType?: string): ApiResponse {
         return {
             execute(res) {
+                if (contentType) {
+                    res.set('Content-Type', contentType);
+                }
                 res.status(status)
                     .send(body);
             }
@@ -113,8 +116,8 @@ export class BaseRoute {
         return this.status(400, body);
     }
 
-    protected ok<T>(body: Awaited<Exclude<T, undefined>>): ApiResponse {
-        return this.status(200, body);
+    protected ok<T>(body: Awaited<Exclude<T, undefined>>, contentType?: string): ApiResponse {
+        return this.status(200, body, contentType);
     }
 
     protected created<T>(body: Awaited<T>): ApiResponse {

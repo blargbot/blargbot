@@ -10,6 +10,7 @@ import { MasterOptions } from '@blargbot/master/types';
 import moment from 'moment-timezone';
 import fetch from 'node-fetch';
 import { inspect } from 'util';
+import { metric } from 'prom-client';
 
 import { ClusterLogManager, ClusterStatsManager } from './managers';
 import { MasterWorker } from './MasterWorker';
@@ -22,6 +23,8 @@ export class Master extends BaseClient {
     public readonly logHistory: ClusterLogManager;
     public readonly clusterStats: ClusterStatsManager;
     public readonly api: ApiPool;
+
+    public readonly metrics: Record<number, metric[]>;
 
     public constructor(
         logger: Logger,
@@ -39,6 +42,7 @@ export class Master extends BaseClient {
         this.api = new ApiPool(this.logger);
         this.logHistory = new ClusterLogManager(30);
         this.clusterStats = new ClusterStatsManager(this.api);
+        this.metrics = {};
         this.clusters = new ClusterPool(this.config.discord.shards, this.logger);
         this.eventHandlers = new ModuleLoader(`${__dirname}/events`, BaseService, [this, options], this.logger, e => e.name);
         this.services = new ModuleLoader(`${__dirname}/services`, BaseService, [this, options], this.logger, e => e.name);
