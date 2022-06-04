@@ -17,6 +17,5 @@ export class ClusterConnection extends WorkerConnection<ClusterIPCContract> {
         this.env.SHARDS_MAX = shardCount.toString();
         this.env.SHARDS_FIRST = shardRange[0].toString();
         this.env.SHARDS_LAST = shardRange[1].toString();
-        this.env.FORCE_COLOR = '1';
     }
 }
