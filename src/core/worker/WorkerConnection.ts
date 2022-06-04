@@ -42,6 +42,8 @@ export abstract class WorkerConnection<Contracts extends IPCContracts> {
         this.args = [...process.execArgv];
         // eslint-disable-next-line @typescript-eslint/naming-convention
         this.env = { ...process.env, WORKER_ID: id.toString() };
+        this.env.FORCE_COLOR = '1';
+
         this.#killed = false;
 
         this.on('alive', () => this.logger.worker(this.worker, 'worker ( ID:', this.id, ') is alive'));
