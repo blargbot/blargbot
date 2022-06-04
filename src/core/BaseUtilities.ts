@@ -4,7 +4,7 @@ import { Database } from '@blargbot/database';
 import { StoredUser } from '@blargbot/domain/models';
 import { Logger } from '@blargbot/logger';
 import { Snowflake } from 'catflake';
-import { AnyGuildChannel, ApiError, ChannelInteraction, Client as Discord, Collection, DiscordRESTError, EmbedAuthor, EmbedOptions, ExtendedUser, Guild, GuildChannel, KnownChannel, KnownGuildChannel, KnownMessage, KnownTextableChannel, Member, Message, Role, User, UserChannelInteraction, Webhook } from 'eris';
+import { AnyGuildChannel, ApiError, ChannelInteraction, Client as Discord, Collection, DiscordRESTError, EmbedAuthor, EmbedOptions, ExtendedUser, Guild, GuildChannel, KnownChannel, KnownGuildChannel, KnownMessage, KnownTextableChannel, Member, Message, RequestHandler, Role, User, UserChannelInteraction, Webhook } from 'eris';
 import moment from 'moment-timezone';
 
 import { BaseClient } from './BaseClient';
@@ -810,3 +810,21 @@ function findBest<T>(options: Iterable<T>, evaluator: (value: T) => number): T[]
     return result.sort((a, b) => b.score - a.score)
         .map(r => r.option);
 }
+
+// eslint-disable-next-line @typescript-eslint/unbound-method
+const erisRequest = RequestHandler.prototype.request;
+RequestHandler.prototype.request = function (...args) {
+    try {
+        let url;
+        if (args[1].includes('webhook')) {
+            url = '/webhooks';
+        } else {
+            url = args[1].replace(/reactions\/.+(\/|$)/g, 'reactions/_reaction/').replace(/\d+/g, '_id');
+        }
+        metrics.httpsRequests.labels(args[0], url).inc();
+    } catch (err: unknown) {
+        // eslint-disable-next-line no-console
+        console.error(err);
+    }
+    return erisRequest.call(this, ...args);
+};
