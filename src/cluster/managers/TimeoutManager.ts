@@ -55,9 +55,8 @@ export class TimeoutManager {
                 continue;
             }
 
-            const type = event.type;
             try {
-                this.#emitter.emit(type, event);
+                this.#emitter.emit(event.type, event);
             } catch (err: unknown) {
                 this.cluster.logger.error('Error while processing timeout', event.type, event.id, err);
             }

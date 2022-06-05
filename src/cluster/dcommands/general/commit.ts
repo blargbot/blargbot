@@ -13,7 +13,7 @@ export class CommitCommand extends GlobalCommand {
                 {
                     parameters: '{commitNumber:integer?}',
                     description: 'Gets a random or specified blargbot commit.',
-                    execute: (_, [commitNumber]) => this.getCommit(commitNumber.asInteger)
+                    execute: (_, [commitNumber]) => this.getCommit(commitNumber.asOptionalInteger)
                 }
             ]
         });

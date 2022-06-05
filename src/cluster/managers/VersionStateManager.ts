@@ -1,6 +1,6 @@
 import { BotVariableStore } from '@blargbot/domain/stores';
 import { mapping } from '@blargbot/mapping';
-import { UpdateType, Version, VersionManager } from '@hunteroi/versioning';
+import { UpdateType, Version } from '@hunteroi/versioning';
 
 const mapUpdateType = mapping.choice(
     mapping.in<UpdateType>('major', 'minor'),
@@ -17,16 +17,15 @@ export class VersionStateManager {
 
     public async updateVersion(type: string): Promise<void> {
         const version = await this.getFromStorage();
-        const manager = new VersionManager(version);
 
         const mapped = mapUpdateType(type);
         if (!mapped.valid) {
             throw new Error('Invalid update type');
         }
 
-        manager.update(mapped.value);
+        version.update(mapped.value);
 
-        await this.db.set('version', version);
+        await this.db.set('version', { major: version.major, minor: version.minor, patch: version.patch });
     }
 
     private async getFromStorage(): Promise<Version> {
