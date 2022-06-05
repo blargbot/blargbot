@@ -140,7 +140,14 @@ class NormalizedCommandTag implements ICommand<NamedGuildCommandTag> {
             };
         }
 
-        if (this.implementation.author === this.tag?.author) {
+        if (this.tag === undefined) {
+            const oldAuthor = await context.util.getUser(this.implementation.author);
+            return `❌ When the command \`${context.commandName}\` was imported, the tag \`${this.implementation.alias}\` ` +
+                `was owned by **${humanize.fullName(oldAuthor)}** (${this.implementation.author}) but it no longer exists. ` +
+                'To continue using this command, please re-create the tag and re-import it.';
+        }
+
+        if (this.implementation.author === this.tag.author || !guard.hasValue(this.implementation.author)) {
             await context.database.tags.incrementUses(this.tag.name);
             const cooldown = Math.max(this.tag.cooldown ?? 0, this.implementation.cooldown ?? 0);
             return {
@@ -153,13 +160,8 @@ class NormalizedCommandTag implements ICommand<NamedGuildCommandTag> {
             };
         }
 
-        const oldAuthor = await context.util.getUser(this.implementation.author);
-        if (this.tag === undefined)
-            return `❌ When the command \`${context.commandName}\` was imported, the tag \`${this.implementation.alias}\` ` +
-                `was owned by **${humanize.fullName(oldAuthor)}** (${this.implementation.author}) but it no longer exists. ` +
-                'To continue using this command, please re-create the tag and re-import it.';
-
         const newAuthor = await context.util.getUser(this.tag.author);
+        const oldAuthor = await context.util.getUser(this.implementation.author);
         return `❌ When the command \`${context.commandName}\` was imported, the tag \`${this.implementation.alias}\` ` +
             `was owned by **${humanize.fullName(oldAuthor)}** (${this.implementation.author}) but it is ` +
             `now owned by **${humanize.fullName(newAuthor)}** (${this.tag.author}). ` +
