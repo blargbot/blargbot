@@ -56,17 +56,17 @@ export class BaseUtilities {
         return `${scheme}://${host}${port}/${path ?? ''}`;
     }
 
-    public embedifyAuthor(target: Member | User | Guild | StoredUser): EmbedAuthor {
+    public embedifyAuthor(target: Member | User | Guild | StoredUser, includeId = false): EmbedAuthor {
         if (target instanceof User) {
             return {
                 icon_url: target.avatarURL,
-                name: humanize.fullName(target),
+                name: `${humanize.fullName(target)} ${includeId ? `(${target.id})` : ''}`,
                 url: target === this.discord.user ? undefined : `https://discord.com/users/${target.id}`
             };
         } else if (target instanceof Member) {
             return {
                 icon_url: target.avatarURL,
-                name: target.nick ?? target.username,
+                name: `${target.nick ?? target.username} ${includeId ? `(${target.id})` : ''}`,
                 url: `https://discord.com/users/${target.id}`
             };
         } else if (target instanceof Guild) {
@@ -77,7 +77,7 @@ export class BaseUtilities {
         } else if ('userid' in target) {
             return {
                 icon_url: target.avatarURL,
-                name: target.username ?? 'UNKNOWN',
+                name: `${target.username ?? 'UNKNOWN'} ${includeId ? `(${target.userid})` : ''}`,
                 url: `https://discord.com/users/${target.userid}`
             };
         }
