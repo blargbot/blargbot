@@ -470,7 +470,7 @@ export class ClusterUtilities extends BaseUtilities {
                     `${codeBlock(items.join(separator), 'fix')}\n` +
                     `Type a number between **1 and ${pageCount}** to view that page.`,
                 parse: message => {
-                    const pageNumber = parse.int(message.content) + 1;
+                    const pageNumber = parse.int(message.content) - 1;
                     if (isNaN(pageNumber))
                         return { success: false };
                     return { success: true, value: pageNumber };
