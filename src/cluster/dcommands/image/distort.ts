@@ -1,5 +1,6 @@
 import { CommandContext, GlobalImageCommand } from '@blargbot/cluster/command';
 import { guard } from '@blargbot/cluster/utils';
+import { parse } from '@blargbot/core/utils/parse';
 import { ImageResult } from '@blargbot/image/types';
 import { User } from 'eris';
 
@@ -36,6 +37,7 @@ export class DistortCommand extends GlobalImageCommand {
     }
 
     public async render(context: CommandContext, url: string): Promise<ImageResult | string> {
+        url = parse.url(url);
         if (!guard.isUrl(url))
             return this.error(`${url} is not a valid url!`);
 

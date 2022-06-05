@@ -1,5 +1,6 @@
 import { CommandContext, GlobalImageCommand } from '@blargbot/cluster/command';
 import { guard, humanize } from '@blargbot/core/utils';
+import { parse } from '@blargbot/core/utils/parse';
 import { ImageResult, ValidFont } from '@blargbot/image/types';
 
 export class CaptionCommand extends GlobalImageCommand {
@@ -52,6 +53,7 @@ export class CaptionCommand extends GlobalImageCommand {
         if (!Object.keys(fontLookup).includes(fontName))
             return this.error(`${fontName} is not a supported font! Use \`${context.prefix}caption list\` to see all available fonts`);
 
+        url = parse.url(url);
         if (!guard.isUrl(url))
             return this.error(`${url} is not a valid url!`);
 

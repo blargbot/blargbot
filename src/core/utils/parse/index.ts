@@ -9,6 +9,7 @@ import { parseFloat } from './parseFloat';
 import { parseInt } from './parseInt';
 import { parseString } from './parseString';
 import { parseTime } from './parseTime';
+import { parseUrl } from './parseUrl';
 
 export const parse = {
     flags: parseFlags,
@@ -21,5 +22,6 @@ export const parse = {
     bigInt: parseBigInt,
     boolean: parseBoolean,
     string: parseString,
-    time: parseTime
+    time: parseTime,
+    url: parseUrl
 };

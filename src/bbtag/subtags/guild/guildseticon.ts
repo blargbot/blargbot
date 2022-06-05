@@ -1,4 +1,5 @@
 import { guard } from '@blargbot/core/utils';
+import { parse } from '@blargbot/core/utils/parse';
 import { DiscordRESTError } from 'eris';
 import fetch from 'node-fetch';
 
@@ -31,6 +32,7 @@ export class GuildSetIconSubtag extends CompiledSubtag {
         if (!context.hasPermission('manageGuild'))
             throw new BBTagRuntimeError('Author cannot modify the guild');
 
+        image = parse.url(image);
         if (guard.isUrl(image)) {
             const res = await fetch(image);
             const contentType = res.headers.get('content-type');

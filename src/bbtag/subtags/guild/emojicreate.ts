@@ -1,4 +1,5 @@
 import { guard } from '@blargbot/core/utils';
+import { parse } from '@blargbot/core/utils/parse';
 import { DiscordRESTError } from 'eris';
 import fetch from 'node-fetch';
 
@@ -61,11 +62,12 @@ export class EmojiCreateSubtag extends CompiledSubtag {
         if (options.name === '')
             throw new BBTagRuntimeError('Name was not provided');
 
-        if (guard.isUrl(options.image)) {
-            const res = await fetch(options.image);
+        const image: string = parse.url(options.image);
+        if (guard.isUrl(image)) {
+            const res = await fetch(image);
             const contentType = res.headers.get('content-type');
             options.image = `data:${contentType ?? ''};base64,${(await res.buffer()).toString('base64')}`;
-        } else if (!options.image.startsWith('data:')) {
+        } else if (!image.startsWith('data:')) {
             throw new BBTagRuntimeError('Image was not a buffer or a URL');
         }
 
