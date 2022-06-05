@@ -81,7 +81,8 @@ export class SendSubtag extends CompiledSubtag {
                 throw err;
             if (err instanceof DiscordRESTError)
                 throw new BBTagRuntimeError(`Failed to send: ${err.message}`);
-            context.logger.error('Failed to send!', err);
+            if (!(err instanceof Error && err.message === 'No content'))
+                context.logger.error('Failed to send!', err);
             throw new BBTagRuntimeError('Failed to send: UNKNOWN');
         }
 
