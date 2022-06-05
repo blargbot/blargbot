@@ -104,7 +104,8 @@ export class BaseUtilities {
         let files = payload.files;
         delete payload.files;
 
-        const replyToExecuting = payload.replyToExecuting !== undefined ? delete payload.replyToExecuting : true;
+        const replyToExecuting = payload.replyToExecuting ?? true;
+        delete payload.replyToExecuting;
         if (payload.messageReference === undefined && replyToExecuting && context instanceof Message)
             payload.messageReference = { failIfNotExists: false, messageID: context.id };
 
