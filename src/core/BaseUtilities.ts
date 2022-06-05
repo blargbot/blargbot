@@ -426,6 +426,9 @@ export class BaseUtilities {
         const normalizedQuery = query.toLowerCase();
 
         if (guard.isGuildChannel(channel)) {
+            if (!guard.hasValue(channel.name))
+                return 0;
+
             const normalizedName = channel.name.toLowerCase();
             if (channel.name === query) return Infinity;
             if (channel.name.startsWith(query)) return 1000;
