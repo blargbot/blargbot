@@ -443,7 +443,7 @@ export class BaseUtilities {
             return undefined;
 
         try {
-            return await this.discord.getRESTUser(userId);
+            return this.discord.users.get(userId) ?? await this.discord.getRESTUser(userId);
         } catch (err: unknown) {
             if (err instanceof DiscordRESTError) {
                 switch (err.code) {
