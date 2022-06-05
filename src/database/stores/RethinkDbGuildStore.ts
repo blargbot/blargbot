@@ -1,5 +1,5 @@
 import { guard } from '@blargbot/core/utils';
-import { ChannelSettings, CommandPermissions, GuildAnnounceOptions, GuildAutoresponses, GuildCensor, GuildCensorExceptions, GuildCensors, GuildCommandTag, GuildDetails, GuildFilteredAutoresponse, GuildModlogEntry, GuildRolemeEntry, GuildTriggerTag, GuildVotebans, NamedGuildCommandTag, StoredGuild, StoredGuildEventLogConfig, StoredGuildEventLogType, StoredGuildSettings } from '@blargbot/domain/models';
+import { ChannelSettings, CommandPermissions, GuildAnnounceOptions, GuildAutoresponses, GuildCensor, GuildCensorExceptions, GuildCensors, GuildCommandTag, GuildDetails, GuildFilteredAutoresponse, GuildModlogEntry, GuildRolemeEntry, GuildTriggerTag, GuildVoteban, GuildVotebans, NamedGuildCommandTag, StoredGuild, StoredGuildEventLogConfig, StoredGuildEventLogType, StoredGuildSettings } from '@blargbot/domain/models';
 import { GuildStore } from '@blargbot/domain/stores';
 import { Logger } from '@blargbot/logger';
 import { UpdateData } from 'rethinkdb';
@@ -108,8 +108,8 @@ export class RethinkDbGuildStore implements GuildStore {
     }
 
     public async getVoteBans(guildId: string, skipCache?: boolean): Promise<GuildVotebans | undefined>
-    public async getVoteBans(guildId: string, target: string, skipCache?: boolean): Promise<readonly string[] | undefined>
-    public async getVoteBans(...args: [string, boolean?] | [string, string, boolean?]): Promise<GuildVotebans | readonly string[] | undefined> {
+    public async getVoteBans(guildId: string, target: string, skipCache?: boolean): Promise<readonly GuildVoteban[] | undefined>
+    public async getVoteBans(...args: [string, boolean?] | [string, string, boolean?]): Promise<GuildVotebans | readonly GuildVoteban[] | undefined> {
         let guildId: string;
         let target: string | undefined;
         let skipCache: boolean | undefined;
@@ -134,7 +134,7 @@ export class RethinkDbGuildStore implements GuildStore {
             return undefined;
 
         if (target !== undefined)
-            return guild.votebans?.[target]?.map(vb => vb.id);
+            return guild.votebans?.[target];
 
         return guild.votebans ?? {};
     }

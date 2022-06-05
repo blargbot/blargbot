@@ -1,6 +1,7 @@
 import { GuildCommand } from '@blargbot/cluster/command';
 import { GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType, discord, pluralise as p } from '@blargbot/cluster/utils';
+import { guard } from '@blargbot/core/utils';
 import { EmbedOptions, Member } from 'eris';
 
 export class VoteBanCommand extends GuildCommand {
@@ -54,14 +55,15 @@ export class VoteBanCommand extends GuildCommand {
 
     public async getVotes(context: GuildCommandContext, user: Member): Promise<EmbedOptions> {
         const votes = await context.database.guilds.getVoteBans(context.channel.guild.id, user.id) ?? [];
+        const voteLines = votes.map(v => guard.hasValue(v.reason) ? `<@${v.id}> - ${v.reason}` : `<@${v.id}>`);
 
         return {
             author: context.util.embedifyAuthor(user),
             color: discord.getMemberColor(user),
             title: this.info('Vote ban signatures'),
-            description: votes.length === 0 ? `No one has voted to ban ${user.mention} yet.`
-                : votes.length > 20 ? `${votes.slice(0, 15).map(v => `<@${v}>`).join('\n')}\n... and ${votes.length - 15} more`
-                    : votes.map(v => `<@${v}>`).join('\n')
+            description: voteLines.length === 0 ? `No one has voted to ban ${user.mention} yet.`
+                : voteLines.length > 20 ? `${voteLines.slice(0, 15).join('\n')}\n... and ${votes.length - 15} more`
+                    : voteLines.join('\n')
         };
     }
 
