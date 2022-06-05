@@ -26,8 +26,5 @@ function intCore(s: string | number, args: [boolean, number?] | [number?]): numb
         }
     }
 
-    const result = global.parseInt(s.replace(/[,.](?=.*[,.])/g, '').replace(',', '.'), radix);
-    if (Math.abs(result) > Number.MAX_SAFE_INTEGER)
-        return NaN;
-    return result;
+    return global.parseInt(s.replace(/[,.](?=.*[,.])/g, '').replace(',', '.'), radix);
 }
