@@ -497,7 +497,7 @@ export class ClusterUtilities extends BaseUtilities {
         this.logger.log(stats);
 
         const promises = [];
-        if (this.config.general.botlisttoken.length > 0) {
+        if (this.config.general.botlisttoken.length > 0 && guard.hasValue(this.user)) {
             promises.push(
                 fetch(`https://discord.bots.gg/api/v1/bots/${this.user.id}/stats`, {
                     method: 'POST',
@@ -511,7 +511,7 @@ export class ClusterUtilities extends BaseUtilities {
             );
         }
 
-        if (this.config.general.carbontoken.length > 0) {
+        if (this.config.general.carbontoken.length > 0 && guard.hasValue(this.user)) {
             promises.push(
                 fetch('https://www.carbonitex.net/discord/data/botdata.php', {
                     method: 'POST',
@@ -529,7 +529,7 @@ export class ClusterUtilities extends BaseUtilities {
             );
         }
 
-        if (this.config.general.botlistorgtoken.length > 0) {
+        if (this.config.general.botlistorgtoken.length > 0 && guard.hasValue(this.user)) {
             const shards = [];
             for (const shard of this.discord.shards.values()) {
                 shards[shard.id] = this.discord.guilds.filter(g => g.shard.id === shard.id);
