@@ -15,7 +15,7 @@ export class TimeSubtag extends CompiledSubtag {
                 'See [here](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones) for a list of timezone codes.',
             definition: [
                 {
-                    parameters: ['format?:YYYY-MM-DDTHH:mm:ssZ', 'time?:now', 'parseFormat?:X', 'fromTimezone?:Etc/UTC', 'toTimezone?:Etc/UTC'],
+                    parameters: ['format?:YYYY-MM-DDTHH:mm:ssZ', 'time?:now', 'parseFormat?', 'fromTimezone?:Etc/UTC', 'toTimezone?:Etc/UTC'],
                     description: '`time` is in `fromTimezone` and converted to `toTimezone` using `format`.',
                     exampleCode: 'Time Berlin (as toTimezone): {time;HH:mm;;;;Europe/Berlin}\n' +
                         'Time Berlin from UTC 12:00: {time;HH:mm;12:00;HH:mm;;Europe/Berlin}\n' +
