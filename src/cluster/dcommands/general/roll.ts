@@ -9,15 +9,15 @@ export class RollCommand extends GlobalCommand {
             category: CommandType.GENERAL,
             definitions: [
                 {
-                    parameters: '{dice=1d20} {modifier:integer?}',
+                    parameters: '{dice=1d20} {modifier:integer?} {details*}',
                     description: 'Rolls the dice you tell it to, and adds the modifier',
-                    execute: (ctx, [dice, modifier]) => this.rollDice(ctx, dice.asString, modifier.asOptionalInteger)
+                    execute: (ctx, [dice, modifier, details]) => this.rollDice(ctx, dice.asString, modifier.asOptionalInteger, details.asOptionalString)
                 }
             ]
         });
     }
 
-    public rollDice(context: CommandContext, dice: string, modifier?: number): EmbedOptions | string {
+    public rollDice(context: CommandContext, dice: string, modifier?: number, details?: string): EmbedOptions | string {
         switch (dice.toLowerCase()) {
             case 'cat': return {
                 author: context.util.embedifyAuthor(context.author),
@@ -72,7 +72,7 @@ export class RollCommand extends GlobalCommand {
         return {
             author: context.util.embedifyAuthor(context.author),
             title: `🎲 ${rollCount} ${p(rollCount, 'roll')} of a ${faceCount} sided dice:`,
-            description: `${rolls.join(', ')}\n${modifierText}**Total**: ${total}${natText}`
+            description: `${details ?? ''}\n${rolls.join(', ')}\n${modifierText}**Total**: ${total}${natText}`
         };
     }
 }
