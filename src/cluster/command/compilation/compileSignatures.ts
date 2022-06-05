@@ -1,5 +1,4 @@
 import { CommandDefinition, CommandGreedyParameter, CommandHandlerDefinition, CommandLiteralParameter, CommandParameter, CommandSignatureHandler, CommandSingleParameter, CommandVariableType, CommandVariableTypeName } from '@blargbot/cluster/types';
-import { guard } from '@blargbot/cluster/utils';
 
 import { CommandContext } from '../CommandContext';
 import { parseParameterType } from './parameterType';
@@ -55,7 +54,7 @@ function parseParameters(parameters: string): CommandParameter[] {
                 result.push(parameter);
                 break;
             default: {
-                if (!guard.isLetter(parameters[i]) && parameters[i] !== '\\')
+                if (!/[a-zA-Z]/.test(parameters[i]) && parameters[i] !== '\\')
                     throw new Error('Literals must start with a letter');
                 ({ parameter, i } = readLiteral(parameters, i));
                 result.push(parameter);

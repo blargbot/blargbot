@@ -24,7 +24,7 @@ export class FlagSetSubtag extends CompiledSubtag {
     }
 
     public isFlagSet(context: BBTagContext, flagName: string): boolean {
-        if (!guard.isLetter(flagName) && flagName !== '_')
+        if (!guard.isFlagChar(flagName) && flagName !== '_')
             return false;
 
         return context.flaggedInput[flagName] !== undefined;

@@ -38,7 +38,7 @@ export function parseFlags(definitions: Iterable<FlagDefinition>, text: string, 
             const flagStr = value.split(' ')[0];
             for (const char of flagStr.slice(1)) {
                 flagMatched ||= flagKeys.has(char);
-                if (guard.isLetter(char) && currentFlag !== char && (!strict || flagKeys.has(char))) {
+                if (guard.isFlagChar(char) && currentFlag !== char && (!strict || flagKeys.has(char))) {
                     flagMatched = true;
                     pushFlagGroup(resultGroups, currentFlag, currentGroup);
                     currentFlag = char;

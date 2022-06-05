@@ -24,7 +24,7 @@ export class FlagSubtag extends CompiledSubtag {
     }
 
     public getFlag(context: BBTagContext, flagName: string): string | undefined {
-        if (!guard.isLetter(flagName) && flagName !== '_')
+        if (!guard.isFlagChar(flagName) && flagName !== '_')
             return undefined;
 
         return context.flaggedInput[flagName]?.merge().value;

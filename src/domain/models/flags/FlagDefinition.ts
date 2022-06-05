@@ -1,5 +1,5 @@
 export interface FlagDefinition {
-    readonly flag: Letter;
+    readonly flag: Alphanumeric;
     readonly word: string;
     readonly description: string;
 }
