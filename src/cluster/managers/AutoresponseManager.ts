@@ -85,7 +85,7 @@ ${codeBlock(code, 'js')}`
     }
 
     public async execute(msg: KnownMessage, everything: boolean): Promise<void> {
-        if (msg.author.discriminator === '0000' || !guard.isGuildMessage(msg))
+        if (!guard.isGuildMessage(msg))
             return;
 
         if (!this.#guilds.has(msg.channel.guild.id))
