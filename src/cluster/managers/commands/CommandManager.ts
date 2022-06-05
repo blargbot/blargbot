@@ -44,7 +44,7 @@ export abstract class CommandManager<T> implements ICommandManager<T> {
     protected async checkPermissions(
         user: User,
         location: Guild | KnownGuildTextableChannel,
-        permissions: CommandPermissions
+        permissions: Required<CommandPermissions>
     ): Promise<PermissionCheckResult> {
         if (this.cluster.util.isBotOwner(user.id))
             return { state: 'ALLOWED' };
@@ -53,7 +53,7 @@ export abstract class CommandManager<T> implements ICommandManager<T> {
         if (blacklistReason !== undefined)
             return { state: 'BLACKLISTED', detail: blacklistReason };
 
-        if (permissions.disabled === true || permissions.hidden === true)
+        if (permissions.disabled || permissions.hidden)
             // Command is disabled
             return { state: 'DISABLED' };
 
@@ -80,7 +80,7 @@ export abstract class CommandManager<T> implements ICommandManager<T> {
             return { state: 'ALLOWED' };
 
         let result: PermissionCheckResult = { state: 'ALLOWED' };
-        if (permissions.permission !== undefined) {
+        if (permissions.permission !== '0') {
             // User has any of the permissions for this command
             const perm = parse.bigInt(permissions.permission);
             if (perm !== undefined) {
@@ -91,7 +91,7 @@ export abstract class CommandManager<T> implements ICommandManager<T> {
         }
 
         const adminrole = await this.cluster.util.database.guilds.getSetting(member.guild.id, 'adminrole');
-        const roleIds = [adminrole, ...permissions.roles ?? []]
+        const roleIds = [adminrole, ...permissions.roles]
             .map(r => {
                 if (r === undefined)
                     return undefined;
