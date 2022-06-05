@@ -51,12 +51,9 @@ export class UserHasRoleSubtag extends CompiledSubtag {
         if (!guard.hasValue(member.guild) || !guard.hasValue(member.roles))
             return false;
 
-        for (const role of roleArr) {
-            if (member.guild.roles.get(role) === undefined) {
-                throw new RoleNotFoundError(role)
-                    .withDisplay(quiet ? 'false' : undefined);
-            }
-        }
+        if (roleArr.every(role => member.guild.roles.get(role) === undefined))
+            throw new RoleNotFoundError(roleStr)
+                .withDisplay(quiet ? 'false' : undefined);
 
         return roleArr.some(r => member.roles.includes(r));
     }
