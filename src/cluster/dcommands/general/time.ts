@@ -20,7 +20,7 @@ export class TimeCommand extends GlobalCommand {
                     execute: (ctx, [user]) => this.getUserTime(ctx, user.asUser)
                 },
                 {
-                    parameters: '{timezone}',
+                    parameters: 'in {timezone}',
                     description: 'Gets the current time in the timezone',
                     execute: (_, [timezone]) => this.getTime(timezone.asString)
                 },

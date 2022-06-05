@@ -11,7 +11,7 @@ export function parseFlags(definitions: Iterable<FlagDefinition>, text: string, 
     const flagKeys = new Set<string>(defArr.map(d => d.flag));
 
     for (const { start, end, value } of humanize.smartSplitRanges(text)) {
-        if (!/^--?[a-z]|^--$/i.test(value)) {
+        if (!/^--?[a-z0-9]|^--$/i.test(value)) {
             currentGroup.push({ start, end, value });
         } else if (value === '--') {
             if (currentFlag !== '_') {
@@ -38,7 +38,7 @@ export function parseFlags(definitions: Iterable<FlagDefinition>, text: string, 
             const flagStr = value.split(' ')[0];
             for (const char of flagStr.slice(1)) {
                 flagMatched ||= flagKeys.has(char);
-                if (guard.isLetter(char) && currentFlag !== char && (!strict || flagKeys.has(char))) {
+                if (guard.isFlagChar(char) && currentFlag !== char && (!strict || flagKeys.has(char))) {
                     flagMatched = true;
                     pushFlagGroup(resultGroups, currentFlag, currentGroup);
                     currentFlag = char;

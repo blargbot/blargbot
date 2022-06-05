@@ -101,10 +101,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:src/master"\
       },\
       {\
-        "name": "@blargbot/migration",\
-        "reference": "workspace:src/migration"\
-      },\
-      {\
         "name": "@blargbot/res",\
         "reference": "workspace:src/res"\
       },\
@@ -133,7 +129,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@blargbot/logger", ["workspace:src/logger"]],\
       ["@blargbot/mapping", ["workspace:src/mapping"]],\
       ["@blargbot/master", ["workspace:src/master"]],\
-      ["@blargbot/migration", ["workspace:src/migration"]],\
       ["@blargbot/res", ["workspace:src/res"]],\
       ["@types/blargbot-image-api", ["workspace:definitions/blargbot-image-api"]],\
       ["@types/brainfuck-node", ["workspace:definitions/brainfuck-node"]],\
@@ -765,25 +760,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["node-fetch", "virtual:644263357c3808bc44f433a693fe388a0c8cd7253a76268de48af4ee58a719d112af996231f3c01e175a9d4db65884c068df3876ec1060da68b36b8d0a9b8225#npm:2.6.7"],\
             ["prom-client", "npm:14.0.1"],\
             ["strip-ansi", "npm:6.0.1"]\
-          ],\
-          "linkType": "SOFT"\
-        }]\
-      ]],\
-      ["@blargbot/migration", [\
-        ["workspace:src/migration", {\
-          "packageLocation": "./src/migration/",\
-          "packageDependencies": [\
-            ["@blargbot/migration", "workspace:src/migration"],\
-            ["@blargbot/cluster", "workspace:src/cluster"],\
-            ["@blargbot/config", "workspace:src/config"],\
-            ["@blargbot/core", "workspace:src/core"],\
-            ["@blargbot/domain", "workspace:src/domain"],\
-            ["@blargbot/logger", "workspace:src/logger"],\
-            ["@blargbot/mapping", "workspace:src/mapping"],\
-            ["@types/eris", "workspace:definitions/eris"],\
-            ["@types/rethinkdb", "workspace:definitions/rethinkdb"],\
-            ["eris", "npm:0.17.0"],\
-            ["rethinkdb", "npm:2.4.2"]\
           ],\
           "linkType": "SOFT"\
         }]\

@@ -1,4 +1,4 @@
-import { ChannelSettings, CommandPermissions, GuildAnnounceOptions, GuildAutoresponses, GuildCensor, GuildCensors, GuildCommandTag, GuildDetails, GuildFilteredAutoresponse, GuildImportedCommandTag, GuildModlogEntry, GuildRolemeEntry, GuildSourceCommandTag, GuildTriggerTag, GuildVotebans, NamedGuildCommandTag, StoredGuild, StoredGuildEventLogConfig, StoredGuildEventLogType, StoredGuildSettings } from '../models';
+import { ChannelSettings, CommandPermissions, GuildAnnounceOptions, GuildAutoresponses, GuildCensor, GuildCensors, GuildCommandTag, GuildDetails, GuildFilteredAutoresponse, GuildImportedCommandTag, GuildModlogEntry, GuildRolemeEntry, GuildSourceCommandTag, GuildTriggerTag, GuildVoteban, GuildVotebans, NamedGuildCommandTag, StoredGuild, StoredGuildEventLogConfig, StoredGuildEventLogType, StoredGuildSettings } from '../models';
 
 export interface GuildStore {
     reset(guild: GuildDetails): Promise<void>;
@@ -17,7 +17,7 @@ export interface GuildStore {
     getAnnouncements(guildId: string, skipCache?: boolean): Promise<GuildAnnounceOptions | undefined>;
     clearVoteBans(guildId: string, userId?: string): Promise<void>;
     getVoteBans(guildId: string, skipCache?: boolean): Promise<GuildVotebans | undefined>;
-    getVoteBans(guildId: string, target: string, skipCache?: boolean): Promise<readonly string[] | undefined>;
+    getVoteBans(guildId: string, target: string, skipCache?: boolean): Promise<readonly GuildVoteban[] | undefined>;
     hasVoteBanned(guildId: string, target: string, signee: string, skipCache?: boolean): Promise<boolean>;
     addVoteBan(guildId: string, target: string, signee: string, reason?: string): Promise<number | false>;
     removeVoteBan(guildId: string, target: string, signee: string): Promise<number | false>;

@@ -538,23 +538,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@blargbot/migration@workspace:src/migration":
-  version: 0.0.0-use.local
-  resolution: "@blargbot/migration@workspace:src/migration"
-  dependencies:
-    "@blargbot/cluster": "workspace:^"
-    "@blargbot/config": "workspace:^"
-    "@blargbot/core": "workspace:^"
-    "@blargbot/domain": "workspace:^"
-    "@blargbot/logger": "workspace:^"
-    "@blargbot/mapping": "workspace:^"
-    "@types/eris": "workspace:^"
-    "@types/rethinkdb": "workspace:^"
-    eris: ^0.17.0
-    rethinkdb: ^2.4.2
-  languageName: unknown
-  linkType: soft
-
 "@blargbot/res@workspace:^, @blargbot/res@workspace:src/res":
   version: 0.0.0-use.local
   resolution: "@blargbot/res@workspace:src/res"

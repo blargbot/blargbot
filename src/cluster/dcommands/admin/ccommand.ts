@@ -770,7 +770,7 @@ const mapCustomCommandShrinkwrap = mapping.object<CustomCommandShrinkwrap>({
         mapping.object<FlagDefinition>({
             description: mapping.string,
             word: mapping.string,
-            flag: mapping.in(...guard.isLetter.letters)
+            flag: mapping.in(...guard.isFlagChar.accept)
         })
     ).optional,
     help: mapping.string.optional,

@@ -6,7 +6,7 @@ export interface Suggestion {
     Type: string[];
     Title: string;
     Description: string;
-    KnownMessage: string;
+    Message: string;
     Channel: string;
     Author: string[];
     Edits?: number;

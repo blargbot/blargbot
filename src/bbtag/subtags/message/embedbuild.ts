@@ -45,7 +45,7 @@ export class EmbedBuildSubtag extends CompiledSubtag {
             const key = entry.substring(0, splitAt);
             const value = entry.substring(splitAt + 1);
 
-            this.setField(embed, key, value);
+            this.setField(embed, key.trim(), value);
         }
 
         if (embed.fields !== undefined) {

@@ -92,7 +92,7 @@ export class FeedbackCommand extends GlobalCommand {
             Type: subTypes,
             Title: title,
             Description: description,
-            KnownMessage: context.message.id,
+            Message: context.message.id,
             Channel: context.channel.id,
             Edits: (suggestion.Edits ?? 0) + 1,
             'Last Edited': moment().valueOf()
@@ -157,7 +157,7 @@ export class FeedbackCommand extends GlobalCommand {
             Type: subTypes,
             Author: [suggestor],
             Channel: context.channel.id,
-            KnownMessage: context.message.id
+            Message: context.message.id
             /* eslint-enable @typescript-eslint/naming-convention */
         });
         if (record === undefined)

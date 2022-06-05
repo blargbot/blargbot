@@ -17,7 +17,8 @@ export class IsUserBoostingSubtag extends CompiledSubtag {
                     exampleCode: '{if;{isuserboosting};Yes you are boosting;You should consider boosting}',
                     exampleOut: 'You should consider boosting',
                     returns: 'boolean',
-                    execute: (ctx) => this.isUserBoosting(ctx.member)
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                    execute: (ctx) => this.isUserBoosting(ctx.member!)
                 },
                 {
                     parameters: ['user', 'quiet?'],

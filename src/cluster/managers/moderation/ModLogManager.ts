@@ -239,7 +239,7 @@ export class ModLogManager {
         if (Array.isArray(user)) {
             embed.description = user.map(u => `${u.username}#${u.discriminator} (${u.id})`).join('\n');
         } else
-            embed.author = this.cluster.util.embedifyAuthor(user);
+            embed.author = this.cluster.util.embedifyAuthor(user, true);
 
         const modlogMessage = await this.cluster.util.send(modlogChannelId, { embeds: [embed] });
         await this.cluster.database.guilds.addModlogCase(guildId, {

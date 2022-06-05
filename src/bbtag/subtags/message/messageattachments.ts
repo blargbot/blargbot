@@ -57,6 +57,6 @@ export class MessageAttachmentsSubtag extends CompiledSubtag {
                 .withDisplay(quiet ? '[]' : undefined);
         }
 
-        return message.attachments.map(a => a.id);
+        return message.attachments.map(a => a.url);
     }
 }

@@ -26,7 +26,7 @@ export class ExecSubtag extends CompiledSubtag {
     }
 
     public async execTag(context: BBTagContext, name: string, args: string[]): Promise<string> {
-        const tagName = name.toLowerCase();
+        const tagName = name;
         const tag = await context.getTag('tag', tagName, (key) => context.database.tags.get(key));
 
         if (tag === null)

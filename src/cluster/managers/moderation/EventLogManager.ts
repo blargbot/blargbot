@@ -295,7 +295,7 @@ function toEmbedAuthor(util: BaseUtilities, user: string | User | undefined): Em
         case 'string': return {
             name: `${humanize.fullName({})} (${user})`
         };
-        case 'object': return util.embedifyAuthor(user);
+        case 'object': return util.embedifyAuthor(user, true);
     }
 }
 

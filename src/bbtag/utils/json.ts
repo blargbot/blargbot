@@ -91,6 +91,8 @@ export const json = Object.freeze({
     getPathKeys(path: string | readonly string[]): readonly string[] {
         if (typeof path !== 'string')
             return path;
+        if (path === '')
+            return [];
         return path.split('.');
     },
     parse(value: string): JToken | undefined {

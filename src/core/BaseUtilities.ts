@@ -56,18 +56,18 @@ export class BaseUtilities {
         return `${scheme}://${host}${port}/${path ?? ''}`;
     }
 
-    public embedifyAuthor(target: Member | User | Guild | StoredUser): EmbedAuthor {
+    public embedifyAuthor(target: Member | User | Guild | StoredUser, includeId = false): EmbedAuthor {
         if (target instanceof User) {
             return {
                 icon_url: target.avatarURL,
-                name: humanize.fullName(target),
-                url: target === this.discord.user ? undefined : `https://discord.com/users/${target.id}`
+                name: `${humanize.fullName(target)} ${includeId ? `(${target.id})` : ''}`
+                // url: target === this.discord.user ? undefined : `https://discord.com/users/${target.id}`
             };
         } else if (target instanceof Member) {
             return {
                 icon_url: target.avatarURL,
-                name: target.nick ?? target.username,
-                url: `https://discord.com/users/${target.id}`
+                name: `${target.nick ?? target.username} ${includeId ? `(${target.id})` : ''}`
+                // url: `https://discord.com/users/${target.id}`
             };
         } else if (target instanceof Guild) {
             return {
@@ -77,8 +77,8 @@ export class BaseUtilities {
         } else if ('userid' in target) {
             return {
                 icon_url: target.avatarURL,
-                name: target.username ?? 'UNKNOWN',
-                url: `https://discord.com/users/${target.userid}`
+                name: `${target.username ?? 'UNKNOWN'} ${includeId ? `(${target.userid})` : ''}`
+                // url: `https://discord.com/users/${target.userid}`
             };
         }
 
@@ -104,7 +104,8 @@ export class BaseUtilities {
         let files = payload.files;
         delete payload.files;
 
-        const replyToExecuting = payload.replyToExecuting !== undefined ? delete payload.replyToExecuting : true;
+        const replyToExecuting = payload.replyToExecuting ?? true;
+        delete payload.replyToExecuting;
         if (payload.messageReference === undefined && replyToExecuting && context instanceof Message)
             payload.messageReference = { failIfNotExists: false, messageID: context.id };
 
@@ -443,7 +444,7 @@ export class BaseUtilities {
             return undefined;
 
         try {
-            return await this.discord.getRESTUser(userId);
+            return this.discord.users.get(userId) ?? await this.discord.getRESTUser(userId);
         } catch (err: unknown) {
             if (err instanceof DiscordRESTError) {
                 switch (err.code) {
