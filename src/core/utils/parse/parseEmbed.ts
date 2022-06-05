@@ -5,6 +5,7 @@ import Color from 'color';
 import { EmbedOptions } from 'eris';
 
 import { parseColor } from './parseColor';
+import { parseInt } from './parseInt';
 
 export function parseEmbed(embedText: undefined, allowMalformed?: true): undefined;
 export function parseEmbed(embedText: string | undefined, allowMalformed?: true): Array<EmbedOptions | MalformedEmbed> | undefined;
@@ -33,14 +34,14 @@ const mapEmbedCore = mapping.object<EmbedOptions>({
     }, { strict: false }).optional,
     color: mapping.choice<number[]>(
         mapping.number,
-        v => {
-            if (typeof v !== 'string')
-                return mapping.failed;
+        mapping.string.chain(v => {
             const parsed = parseColor(v);
-            if (parsed === undefined)
-                return mapping.failed;
-            return mapping.success(parsed);
-        },
+            return parsed === undefined ? mapping.failed : mapping.success(parsed);
+        }),
+        mapping.string.chain(s => {
+            const parsed = parseInt(s, false);
+            return parsed === undefined ? mapping.failed : mapping.success(parsed);
+        }),
         mapping.tuple<[number, number, number]>([
             mapping.number,
             mapping.number,
