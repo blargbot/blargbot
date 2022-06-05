@@ -6,6 +6,7 @@ export class RegexMatchSubtag extends RegexSubtag {
         super({
             name: 'regexmatch',
             category: SubtagType.ARRAY, //? Why?
+            aliases: ['match'],
             definition: [
                 {
                     parameters: ['text', '~regex#50000'],
