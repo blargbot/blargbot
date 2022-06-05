@@ -23,7 +23,11 @@ import { TagCooldownManager } from './TagCooldownManager';
 import { tagVariableScopeProviders } from './tagVariableScopeProviders';
 import { BBTagContextMessage, BBTagContextOptions, BBTagContextState, BBTagRuntimeScope, BBTagRuntimeState, FindEntityOptions, LocatedRuntimeError, RuntimeDebugEntry, SerializedBBTagContext } from './types';
 
-function serializeEntity(entity: { id: string; }): { id: string; serialized: string; } {
+function serializeEntity(entity: { id: string; }): { id: string; serialized: string; }
+function serializeEntity(entity?: { id: string; }): { id: string; serialized: string; } | undefined
+function serializeEntity(entity?: { id: string; }): { id: string; serialized: string; } | undefined {
+    if (entity === undefined)
+        return undefined;
     return { id: entity.id, serialized: JSON.stringify(entity) };
 }
 
@@ -62,7 +66,7 @@ export class BBTagContext implements BBTagContextOptions {
     public get parent(): BBTagContext | undefined { return this.#parent; }
     public get totalDuration(): Duration { return this.execTimer.duration.add(this.dbTimer.duration); }
     public get channel(): KnownGuildTextableChannel { return this.message.channel; }
-    public get member(): Member { return this.message.member; }
+    public get member(): Member | undefined { return (this.message.member as Member | null) ?? undefined; }
     public get guild(): Guild { return this.message.channel.guild; }
     public get user(): User { return this.message.author; }
     public get database(): Database { return this.engine.database; }
@@ -271,7 +275,7 @@ export class BBTagContext implements BBTagContextOptions {
     }
 
     public async queryMember(query: string | undefined, options: FindEntityOptions = {}): Promise<Member | undefined> {
-        if (query === '' || query === undefined || query === this.member.id)
+        if (query === '' || query === undefined || query === this.member?.id)
             return this.member;
         return await this.queryEntity(
             query, 'user', 'User',
@@ -332,7 +336,7 @@ export class BBTagContext implements BBTagContextOptions {
         const noLookup = options.noLookup === true || this.scopes.local.quiet === true;
         const entities = await find(queryString);
         if (entities.length <= 1 || this.data.query.count >= 5 || noLookup)
-            return entities.length === 1 ? entities[0] : undefined;
+            return entities.length === 1 ? entities[0] ?? undefined : undefined;
 
         const result = await query({ context: this.channel, actors: this.authorId, choices: entities, filter: queryString });
         const noErrors = options.noErrors === true || this.scopes.local.noLookupErrors === true;
@@ -433,9 +437,9 @@ export class BBTagContext implements BBTagContextOptions {
                 throw new Error('Channel must be a guild channel to work with BBTag');
             if (!guard.isTextableChannel(channel))
                 throw new Error('Channel must be able to send and receive messages to work with BBTag');
-            const member = await engine.util.getMember(channel.guild.id, obj.msg.member.id);
+            const member = await engine.util.getMember(channel.guild.id, obj.msg.member?.id ?? '');
             if (member === undefined)
-                throw new Error(`User ${obj.msg.member.id} doesnt exist on ${channel.guild.id} any more`);
+                throw new Error(`User ${obj.msg.member?.id ?? ''} doesnt exist on ${channel.guild.id} any more`);
 
             message = {
                 id: obj.msg.id,

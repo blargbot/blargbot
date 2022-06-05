@@ -1,3 +1,5 @@
+import { guard } from '@blargbot/core/utils';
+
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
 import { UserNotFoundError } from '../../errors';
@@ -41,6 +43,9 @@ export class UserRolesSubtag extends CompiledSubtag {
             throw new UserNotFoundError(userId)
                 .withDisplay(quiet ? '' : undefined);
         }
+
+        if (!guard.hasValue(member.guild) || !guard.hasValue(member.roles))
+            return [];
 
         return member.roles;
     }

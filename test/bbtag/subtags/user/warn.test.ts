@@ -11,7 +11,8 @@ runSubtagTests({
             code: '{warn}',
             expected: '1',
             postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.warn(bbctx.member, bbctx.user, 1, 'Tag Warning'))
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                ctx.util.setup(m => m.warn(bbctx.member!, bbctx.user, 1, 'Tag Warning'))
                     .verifiable(1)
                     .thenResolve(1);
             }
@@ -20,7 +21,8 @@ runSubtagTests({
             code: '{warn}',
             expected: '7',
             postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.warn(bbctx.member, bbctx.user, 1, 'Tag Warning'))
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                ctx.util.setup(m => m.warn(bbctx.member!, bbctx.user, 1, 'Tag Warning'))
                     .verifiable(1)
                     .thenResolve(7);
             }
@@ -29,7 +31,8 @@ runSubtagTests({
             code: '{warn;}',
             expected: '2',
             postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.warn(bbctx.member, bbctx.user, 1, 'Tag Warning'))
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                ctx.util.setup(m => m.warn(bbctx.member!, bbctx.user, 1, 'Tag Warning'))
                     .verifiable(1)
                     .thenResolve(2);
             }
@@ -52,7 +55,8 @@ runSubtagTests({
             code: '{warn;;6}',
             expected: '29',
             postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.warn(bbctx.member, bbctx.user, 6, 'Tag Warning'))
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                ctx.util.setup(m => m.warn(bbctx.member!, bbctx.user, 6, 'Tag Warning'))
                     .verifiable(1)
                     .thenResolve(29);
             }
@@ -75,7 +79,8 @@ runSubtagTests({
             code: '{warn;;;My custom reason}',
             expected: '16',
             postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.warn(bbctx.member, bbctx.user, 1, 'My custom reason'))
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                ctx.util.setup(m => m.warn(bbctx.member!, bbctx.user, 1, 'My custom reason'))
                     .verifiable(1)
                     .thenResolve(16);
             }

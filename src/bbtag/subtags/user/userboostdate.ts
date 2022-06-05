@@ -20,7 +20,8 @@ export class UserBoostDataSubtag extends CompiledSubtag {
                     exampleCode: 'Your account started boosting this guild on {userboostdate;YYYY/MM/DD HH:mm:ss}',
                     exampleOut: 'Your account started boosting this guild on 2020/02/27 00:00:00',
                     returns: 'string',
-                    execute: (ctx, [format]) => this.getUserBoostDate(ctx.member, format.value)
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                    execute: (ctx, [format]) => this.getUserBoostDate(ctx.member!, format.value)
                 },
                 {
                     parameters: ['format:YYYY-MM-DDTHH:mm:ssZ', 'user', 'quiet?'],

@@ -52,7 +52,7 @@ export interface SerializedBBTagContext {
         timestamp: number;
         content: string;
         channel: { id: string; serialized: string; };
-        member: { id: string; serialized: string; };
+        member?: { id: string; serialized: string; };
         attachments: Attachment[];
         embeds: Embed[];
     };
