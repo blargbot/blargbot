@@ -176,11 +176,12 @@ export class RethinkDbGuildStore implements GuildStore {
         if (guild === undefined)
             return false;
 
-        const updated = await this.#table.update(guildId, g => ({
+        const newVoteBans = guild.votebans?.[target]?.filter(b => b.id !== signee) ?? [];
+        const updated = await this.#table.update(guildId, {
             votebans: {
-                [target]: g('votebans').default({})(target).default([]).filter(b => b('id').eq(signee))
+                [target]: newVoteBans
             }
-        }));
+        });
 
         if (!updated)
             return false;
