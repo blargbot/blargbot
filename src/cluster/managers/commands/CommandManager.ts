@@ -53,7 +53,7 @@ export abstract class CommandManager<T> implements ICommandManager<T> {
         if (blacklistReason !== undefined)
             return { state: 'BLACKLISTED', detail: blacklistReason };
 
-        if (permissions.disabled === true)
+        if (permissions.disabled === true || permissions.hidden === true)
             // Command is disabled
             return { state: 'DISABLED' };
 
