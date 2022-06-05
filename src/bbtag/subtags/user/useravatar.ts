@@ -37,12 +37,14 @@ export class UserAvatarSubtag extends CompiledSubtag {
     ): Promise<string> {
         quiet ||= context.scopes.local.quiet ?? false;
         const member = await context.queryMember(userId, { noLookup: quiet });
+        if (member !== undefined)
+            return member.avatarURL;
 
-        if (member === undefined) {
-            throw new UserNotFoundError(userId)
-                .withDisplay(quiet ? '' : undefined);
-        }
+        const user = await context.util.getUser(userId);
+        if (user !== undefined)
+            return user.avatarURL;
 
-        return member.avatarURL;
+        throw new UserNotFoundError(userId)
+            .withDisplay(quiet ? '' : undefined);
     }
 }
