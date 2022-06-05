@@ -187,7 +187,7 @@ export class AutoResponseCommand extends GuildCommand {
             };
         };
 
-        if (ars.everything !== undefined)
+        if (ars.everything !== undefined && ars.everything !== null)
             embed.fields.push(arField('everything', 'everything'));
 
         if (ars.filtered !== undefined) {
@@ -238,7 +238,7 @@ export class AutoResponseCommand extends GuildCommand {
         };
 
         if (isEverything) {
-            if (ars.everything !== undefined)
+            if (ars.everything !== undefined && ars.everything !== null)
                 return this.error('An autoresponse that responds to everything already exists!');
             if (pattern !== undefined)
                 return this.error('Autoresponses that respond to everything cannot have a pattern');
@@ -246,7 +246,7 @@ export class AutoResponseCommand extends GuildCommand {
             return this.success(`Your autoresponse has been added! Use \`${context.prefix}autoresponse set everything <bbtag>\` to change the code that it runs`);
         }
 
-        const ids = Object.entries(ars.filtered ?? {}).filter(ar => ar[1] !== undefined).map(ar => parseInt(ar[0]));
+        const ids = Object.entries(ars.filtered ?? {}).filter(ar => guard.hasValue(ar[1])).map(ar => parseInt(ar[0]));
         if (ids.length >= 20)
             return this.error('You already have 20 autoresponses!');
 
