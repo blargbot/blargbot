@@ -378,6 +378,7 @@ export class BBTagContext implements BBTagContextOptions {
             const response = await this.engine.util.send(this.message,
                 {
                     content: text,
+                    replyToExecuting: false,
                     embeds: this.data.embeds !== undefined ? this.data.embeds : undefined,
                     nsfw: this.data.nsfw,
                     allowedMentions: {
