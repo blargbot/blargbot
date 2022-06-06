@@ -192,7 +192,8 @@ export class BBTagContext implements BBTagContextOptions {
     public withChild<T>(options: Partial<BBTagContextOptions>, action: (context: BBTagContext) => T): T {
         const context = new BBTagContext(this.engine, {
             ...this,
-            ...options
+            ...options,
+            silent: false // regression bug, this wasnt copied in the old codebase :(
         });
         context.#parent = this;
 
