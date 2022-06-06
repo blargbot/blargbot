@@ -2,7 +2,6 @@ import { parse } from '@blargbot/core/utils';
 
 import { BBTagContext } from '../BBTagContext';
 import { BBTagRuntimeError } from '../errors';
-import { BBTagArray } from '../types';
 import { tagArray } from './tagArray';
 
 export interface JsonResolveResult {
@@ -12,12 +11,7 @@ export interface JsonResolveResult {
 
 export const json = Object.freeze({
     async resolveObj(context: BBTagContext, input: string): Promise<JsonResolveResult> {
-        let obj: BBTagArray | JToken | undefined;
-        const arr = tagArray.deserialize(input);
-        if (arr !== undefined)
-            return { variable: arr.n, object: arr.v };
-
-        obj = this.parse(input);
+        let obj = this.parse(input);
         if (typeof obj === 'object' && obj !== null)
             return { variable: undefined, object: obj };
 
@@ -108,7 +102,7 @@ export const json = Object.freeze({
 });
 
 function getProp(target: JToken | undefined, prop: string): JToken | undefined {
-    if (tagArray.isTagArray(target))
+    if (tagArray.isTagArray(target) && /^\d+$/.test(prop))
         target = target.v;
 
     switch (typeof target) {
