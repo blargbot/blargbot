@@ -74,6 +74,12 @@ export abstract class CommandManager<T> implements ICommandManager<T> {
             // Guild owners/admins can use all commands
             return { state: 'ALLOWED' };
 
+        const adminrole = await this.cluster.util.database.guilds.getSetting(member.guild.id, 'adminrole');
+        if (adminrole !== undefined && member.roles.includes(adminrole)) {
+            // Guild admins can use all commands
+            return { state: 'ALLOWED' };
+        }
+
         const staffPerms = parse.bigInt(await this.cluster.util.database.guilds.getSetting(guild.id, 'staffperms') ?? defaultStaff);
         if (staffPerms !== undefined && this.cluster.util.hasPerms(member, staffPerms))
             // User has any of the permissions that identify them as a staff member
@@ -90,12 +96,8 @@ export abstract class CommandManager<T> implements ICommandManager<T> {
             }
         }
 
-        const adminrole = await this.cluster.util.database.guilds.getSetting(member.guild.id, 'adminrole');
-        const roleIds = [adminrole, ...permissions.roles]
+        const roleIds = [...permissions.roles]
             .map(r => {
-                if (r === undefined)
-                    return undefined;
-
                 const id = parse.entityId(r, '@&', true);
                 if (id !== undefined)
                     return member.guild.roles.get(id)?.id;
