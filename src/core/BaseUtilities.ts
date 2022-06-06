@@ -13,7 +13,7 @@ import { metrics } from './Metrics';
 import { guard, humanize, parse, snowflake } from './utils';
 
 export class BaseUtilities {
-    public get user(): ExtendedUser | undefined { return this.client.discord.user; }
+    public get user(): ExtendedUser { return this.client.discord.user; }
     public get discord(): Discord { return this.client.discord; }
     public get database(): Database { return this.client.database; }
     public get logger(): Logger { return this.client.logger; }
@@ -120,13 +120,12 @@ export class BaseUtilities {
         }
 
         // Stringifies embeds if we lack permissions to send embeds
-        if (payload.embeds !== undefined
-            && guard.isGuildChannel(channel)
-            && guard.hasValue(this.user)
-            && channel.permissionsOf(this.user.id).has('embedLinks') !== true
-        ) {
-            payload.content = `${payload.content ?? ''}${humanize.embed(payload.embeds)}`;
-            delete payload.embeds;
+        if (payload.embeds !== undefined && guard.isGuildChannel(channel)) {
+            const member = await this.getMember(channel.guild, this.user.id);
+            if (member !== undefined && channel.permissionsOf(member).has('embedLinks') !== true) {
+                payload.content = `${payload.content ?? ''}${humanize.embed(payload.embeds)}`;
+                delete payload.embeds;
+            }
         }
 
         payload.content = payload.content?.trim();

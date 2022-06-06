@@ -42,11 +42,14 @@ If you are the owner of this server, here are a few things to know.
 ❓ If you have any questions, comments, or concerns, please do \`${prefix}feedback <feedback>\`. Thanks!
 👍 I hope you enjoy my services! 👍`;
 
-        for (const channel of guild.channels.filter(guard.isTextableChannel).values()) {
-            if (await this.cluster.util.send(channel, welcomeMessage) !== undefined) {
-                break;
+        const member = await this.cluster.util.getMember(guild, this.discord.user.id);
+        if (member !== undefined) {
+            for (const channel of guild.channels.filter(guard.isTextableChannel).values()) {
+                if (channel.permissionsOf(member).has('sendMessages') && await this.cluster.util.send(channel, welcomeMessage) !== undefined) {
+                    break;
+                }
             }
         }
-
     }
+
 }
