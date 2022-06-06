@@ -4,7 +4,7 @@ export const smartSplit = Object.assign(function smartSplit(source: string, limi
     inverse(source: string[]) {
         const results = [];
         for (const item of source) {
-            const escaped = item.replace(/["'\\]/g, m => `\\${m}`);
+            const escaped = item.replace(/["\\]/g, m => `\\${m}`);
             if (escaped.length === 0)
                 results.push('""');
             else if (escaped.includes(' '))
@@ -60,8 +60,7 @@ function* smartSplitIter(source: string): Generator<SmartSplitItem> {
                     builder.push(i);
                 break;
             }
-            case '"':
-            case '\'': {
+            case '"': {
                 start ??= i;
                 const char = source[i];
                 if (quote === char)
