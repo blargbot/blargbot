@@ -3,7 +3,7 @@ import { CommandGetCoreResult, CommandGetResult, ICommand, ICommandManager, Perm
 import { defaultStaff, guard } from '@blargbot/cluster/utils';
 import { parse } from '@blargbot/core/utils';
 import { CommandPermissions } from '@blargbot/domain/models';
-import { Guild, KnownGuildTextableChannel, User } from 'eris';
+import { Collection, Guild, KnownGuildTextableChannel, Role, User } from 'eris';
 
 export abstract class CommandManager<T> implements ICommandManager<T> {
     public abstract readonly size: number;
@@ -75,7 +75,8 @@ export abstract class CommandManager<T> implements ICommandManager<T> {
             return { state: 'ALLOWED' };
 
         const adminrole = await this.cluster.util.database.guilds.getSetting(member.guild.id, 'adminrole');
-        if (adminrole !== undefined && member.roles.includes(adminrole)) {
+        const adminroleId = findRoleId(member.guild.roles, adminrole);
+        if (adminroleId !== undefined && member.roles.includes(adminroleId)) {
             // Guild admins can use all commands
             return { state: 'ALLOWED' };
         }
@@ -89,7 +90,7 @@ export abstract class CommandManager<T> implements ICommandManager<T> {
         if (permissions.permission !== '0') {
             // User has any of the permissions for this command
             const perm = parse.bigInt(permissions.permission);
-            if (perm !== undefined) {
+            if (perm !== undefined && perm !== 0n) {
                 if (this.cluster.util.hasPerms(member, perm))
                     return { state: 'ALLOWED' };
                 result = { state: 'MISSING_PERMISSIONS', detail: perm };
@@ -97,14 +98,8 @@ export abstract class CommandManager<T> implements ICommandManager<T> {
         }
 
         const roleIds = [...permissions.roles]
-            .map(r => {
-                const id = parse.entityId(r, '@&', true);
-                if (id !== undefined)
-                    return member.guild.roles.get(id)?.id;
-
-                const norm = r.toLowerCase();
-                return member.guild.roles.find(r => r.name.toLowerCase() === norm)?.id;
-            }).filter(guard.hasValue);
+            .map(findRoleId.bind(undefined, member.guild.roles))
+            .filter(guard.hasValue);
 
         if (roleIds.length > 0) {
             // User has one of the roles this command is linked to or the admin role?
@@ -115,4 +110,16 @@ export abstract class CommandManager<T> implements ICommandManager<T> {
 
         return result;
     }
+}
+
+function findRoleId(roles: Collection<Role>, roleSetting: string | undefined): string | undefined {
+    if (roleSetting === undefined)
+        return undefined;
+
+    const id = parse.entityId(roleSetting, '@&', true);
+    if (id !== undefined)
+        return roles.get(id)?.id;
+
+    const norm = roleSetting.toLowerCase();
+    return roles.find(r => r.name.toLowerCase() === norm)?.id;
 }
