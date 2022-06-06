@@ -3,7 +3,8 @@ const holidays = require('../../holidays.json');
 
 const games = [
   // { name: 'Important Update About Recent Events: https://blargbot.xyz/update' }
-  { name: 'Migration Plan for June 4th: https://blargbot.xyz/migration' }
+  // { name: 'Migration Plan for June 4th: https://blargbot.xyz/migration' }
+  { name: 'Old version of blargbot. Do not use.' }
   // { name: `with tiny bits of string!` },
   // { name: `with a mouse!` },
   // { name: `with a laser pointer!`, type: 3 },
