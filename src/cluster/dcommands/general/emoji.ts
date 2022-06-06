@@ -2,10 +2,17 @@ import { GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType } from '@blargbot/cluster/utils';
 import { Emote } from '@blargbot/core/Emote';
 import { SendPayload } from '@blargbot/core/types';
+import { mapping } from '@blargbot/mapping';
 import { FileContent } from 'eris';
 import fetch from 'node-fetch';
+import path from 'path';
 import svg2png from 'svg2png';
 import twemoji from 'twemoji';
+
+// the .base property is undocumented in the types. Doing this allows us to use it, but detect if it is removed in the future.
+const twemojiMap = mapping.object({ base: mapping.string });
+const mapped = twemojiMap(twemoji);
+const twemojiBase = mapped.valid ? mapped.value.base : 'https://twemoji.maxcdn.com/v/14.0.2/';
 
 export class EmojiCommand extends GlobalCommand {
     public constructor() {
@@ -41,7 +48,7 @@ export class EmojiCommand extends GlobalCommand {
         }
 
         const codePoint = twemoji.convert.toCodePoint(parsedEmoji.name);
-        const file = await fetch(`https://twemoji.maxcdn.com/svg/${codePoint}.svg`);
+        const file = await fetch(path.join(twemojiBase, `svg/${codePoint}.svg`));
         if (!file.status.toString().startsWith('2'))
             return this.error('Failed to get image for emoji');
 
