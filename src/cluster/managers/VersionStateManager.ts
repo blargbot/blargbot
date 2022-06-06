@@ -25,7 +25,7 @@ export class VersionStateManager {
 
         version.update(mapped.value);
 
-        await this.db.set('version', { major: version.major, minor: version.minor, patch: version.patch });
+        await this.db.set('version', version);
     }
 
     private async getFromStorage(): Promise<Version> {
