@@ -37,6 +37,7 @@ export abstract class Subtag implements SubtagOptions {
         } finally {
             timer.end();
             metrics.subtagLatency.labels(this.name).observe(timer.elapsed);
+            metrics.subtagCounter.labels(this.name).inc();
             const debugPerf = context.data.subtags[this.name] ??= [];
             debugPerf.push(timer.elapsed);
         }
