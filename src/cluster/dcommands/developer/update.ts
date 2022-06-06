@@ -62,19 +62,20 @@ export class UpdateCommand extends GlobalCommand {
             await context.channel.sendTyping();
             const result = cleanConsole(await execCommandline(command));
             const content = this.success(`Command: \`${command}\``);
-            const file = {
+            const files = result.length === 0 ? [] : [{
                 file: Buffer.from(result),
                 name: 'output.txt'
-            };
-            await (message?.channel.editMessage(message.id, { content, file }) ?? context.reply({ content, files: [file] }));
+            }];
+            await (message?.channel.editMessage(message.id, { content, file: files }) ?? context.reply({ content, files }));
             return result;
         } catch (err: unknown) {
             const content = this.error(`Command: \`${command}\``);
-            const file = {
-                file: Buffer.from(cleanConsole(err instanceof Error ? err.toString() : Object.prototype.toString.call(err))),
+            const result = cleanConsole(err instanceof Error ? err.toString() : Object.prototype.toString.call(err));
+            const files = result.length === 0 ? [] : [{
+                file: Buffer.from(result),
                 name: 'output.txt'
-            };
-            await (message?.channel.editMessage(message.id, { content, file }) ?? context.reply({ content, files: [file] }));
+            }];
+            await (message?.channel.editMessage(message.id, { content, file: files }) ?? context.reply({ content, files }));
             throw err;
         }
     }
