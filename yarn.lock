@@ -352,7 +352,7 @@ __metadata:
     "@blargbot/logger": "workspace:^"
     "@blargbot/mapping": "workspace:^"
     "@blargbot/res": "workspace:^"
-    "@hunteroi/versioning": ^1.3.0
+    "@hunteroi/versioning": ^1.3.2
     "@types/brainfuck-node": "workspace:^"
     "@types/eris": "workspace:^"
     "@types/md5": ^2.3.2
@@ -595,10 +595,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hunteroi/versioning@npm:^1.3.0":
-  version: 1.3.0
-  resolution: "@hunteroi/versioning@npm:1.3.0"
-  checksum: 8c906fed9740a9c95637c05acd8d404d25b82fce142624908444fdd320dd72535e667ecb360afd9ed5ca705ce7f453003264c50d12f53e4a36ebc8aeaed3068b
+"@hunteroi/versioning@npm:^1.3.2":
+  version: 1.3.2
+  resolution: "@hunteroi/versioning@npm:1.3.2"
+  checksum: 2de4af37558520bf2fe27959b9fdcfd3eb3162af34d49e208107572eaf5b59a43a6dce089ee93454a499ee0162ad04785c0734481c645c5712b8f01ee0bdb046
   languageName: node
   linkType: hard
 

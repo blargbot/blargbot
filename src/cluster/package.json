@@ -12,7 +12,7 @@
         "@blargbot/logger": "workspace:^",
         "@blargbot/mapping": "workspace:^",
         "@blargbot/res": "workspace:^",
-        "@hunteroi/versioning": "^1.3.0",
+        "@hunteroi/versioning": "^1.3.2",
         "brainfuck-node": "^1.0.2",
         "crypto": "^1.0.1",
         "eris": "^0.17.0",

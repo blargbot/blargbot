@@ -558,7 +558,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/logger", "workspace:src/logger"],\
             ["@blargbot/mapping", "workspace:src/mapping"],\
             ["@blargbot/res", "workspace:src/res"],\
-            ["@hunteroi/versioning", "npm:1.3.0"],\
+            ["@hunteroi/versioning", "npm:1.3.2"],\
             ["@types/brainfuck-node", "workspace:definitions/brainfuck-node"],\
             ["@types/eris", "workspace:definitions/eris"],\
             ["@types/md5", "npm:2.3.2"],\
@@ -832,10 +832,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["@hunteroi/versioning", [\
-        ["npm:1.3.0", {\
-          "packageLocation": "./.yarn/cache/@hunteroi-versioning-npm-1.3.0-416bddc1fe-8c906fed97.zip/node_modules/@hunteroi/versioning/",\
+        ["npm:1.3.2", {\
+          "packageLocation": "./.yarn/cache/@hunteroi-versioning-npm-1.3.2-a6e9e07a7c-2de4af3755.zip/node_modules/@hunteroi/versioning/",\
           "packageDependencies": [\
-            ["@hunteroi/versioning", "npm:1.3.0"]\
+            ["@hunteroi/versioning", "npm:1.3.2"]\
           ],\
           "linkType": "HARD"\
         }]\
