@@ -339,7 +339,7 @@ export class BBTagContext implements BBTagContextOptions {
         if (entities.length <= 1 || this.data.query.count >= 5 || noLookup)
             return entities.length === 1 ? entities[0] ?? undefined : undefined;
 
-        const result = await query({ context: this.channel, actors: this.authorId, choices: entities, filter: queryString });
+        const result = await query({ context: this.channel, actors: this.user.id, choices: entities, filter: queryString });
         const noErrors = options.noErrors === true || this.scopes.local.noLookupErrors === true;
         switch (result.state) {
             case 'FAILED':
