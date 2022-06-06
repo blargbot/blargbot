@@ -13,7 +13,7 @@ export abstract class CronService extends BaseService {
         super();
         this.#cronJob = new CronJob({
             ...options,
-            onTick: this.makeSafeCaller(this.execute.bind(this), this.logger, 'CronJob')
+            onTick: this.makeSafeCaller(() => this.execute(), this.logger, 'CronJob')
         });
     }
 

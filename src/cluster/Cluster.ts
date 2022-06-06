@@ -88,7 +88,7 @@ export class Cluster extends BaseClient {
             default: new DefaultCommandManager(`${__dirname}/dcommands`, this)
         });
         this.events = new ModuleLoader(`${__dirname}/events`, BaseService, [this], this.logger, e => e.name);
-        this.services = new ModuleLoader(`${__dirname}/services`, BaseService, [this], this.logger, e => e.name);
+        this.services = new ModuleLoader(`${__dirname}/services`, BaseService, [this, options], this.logger, e => e.name);
         this.util = new ClusterUtilities(this);
         this.timeouts = new TimeoutManager(this);
         this.autoresponses = new AutoresponseManager(this);

@@ -1,6 +1,7 @@
 import { Configuration } from '@blargbot/config';
 import { BaseWorker } from '@blargbot/core/worker';
 import { Logger } from '@blargbot/logger';
+import holidays from '@blargbot/res/holidays.json';
 
 import { Cluster } from './Cluster';
 import { ClusterIPCContract } from './types';
@@ -21,7 +22,8 @@ export class ClusterWorker extends BaseWorker<ClusterIPCContract> {
             id: clusterId,
             shardCount: envNumber(this.env, 'SHARDS_MAX'),
             firstShardId: envNumber(this.env, 'SHARDS_FIRST'),
-            lastShardId: envNumber(this.env, 'SHARDS_LAST')
+            lastShardId: envNumber(this.env, 'SHARDS_LAST'),
+            holidays
         });
     }
 

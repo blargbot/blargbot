@@ -300,10 +300,11 @@ export interface ShardStats {
     readonly time: number;
 }
 export interface ClusterOptions {
-    id: number;
-    shardCount: number;
-    firstShardId: number;
-    lastShardId: number;
+    readonly id: number;
+    readonly shardCount: number;
+    readonly firstShardId: number;
+    readonly lastShardId: number;
+    readonly holidays: Record<string, string>;
 }
 
 export interface ClusterPoolOptions {

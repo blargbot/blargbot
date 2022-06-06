@@ -1,29 +1,29 @@
 import { CronService } from '@blargbot/core/serviceTypes';
 import { randChoose } from '@blargbot/core/utils';
-import { Master } from '@blargbot/master';
-import { MasterOptions } from '@blargbot/master/types';
 import { ActivityPartial, BotActivityType, Constants } from 'eris';
 import moment from 'moment-timezone';
 
+import { Cluster } from '../Cluster';
+import { ClusterOptions } from '../types';
+
 export class StatusInterval extends CronService {
-    readonly #holidays: Record<string, string | undefined>;
+    public readonly holidays: Record<string, string | undefined>;
     public readonly type = 'discord';
 
     public constructor(
-        public readonly master: Master,
-        { holidays }: MasterOptions
+        public readonly cluster: Cluster,
+        { holidays }: ClusterOptions
     ) {
-        super({ cronTime: '*/15 * * * *' }, master.logger);
-        this.#holidays = holidays;
+        super({ cronTime: '*/15 * * * *' }, cluster.logger);
+        this.holidays = holidays;
     }
 
     public execute(): void {
+        this.logger.info('!=! Performing the status interval !=!');
         const date = moment().format('MM-DD');
-        const holiday = this.#holidays[date];
-        if (holiday === undefined)
-            this.master.discord.editStatus(randChoose(games));
-        else
-            this.master.discord.editStatus({ type: Constants.ActivityTypes.GAME, name: holiday });
+        const holiday = this.holidays[date];
+        const status = holiday === undefined ? randChoose(games) : { type: Constants.ActivityTypes.GAME, name: holiday };
+        this.cluster.discord.editStatus('online', [status]);
     }
 }
 
