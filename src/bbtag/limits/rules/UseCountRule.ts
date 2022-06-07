@@ -15,7 +15,7 @@ export class UseCountRule implements RuntimeLimitRule {
         this.#remaining = count;
         this.#type = type;
         this.#makeError = typeof error === 'string'
-            ? (subtagName) => new BBTagRuntimeError(`${error} limit reached for {${subtagName}}`)
+            ? (subtagName) => new BBTagRuntimeError(`${error} limit reached for ${subtagName}`)
             : error;
     }
 
