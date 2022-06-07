@@ -8,7 +8,7 @@ runSubtagTests({
     subtag: new EmojiDeleteSubtag(),
     argCountBounds: { min: 1, max: 1 },
     setup(ctx) {
-        ctx.roles.command.permissions = Constants.Permissions.manageEmojisAndStickers.toString();
+        ctx.roles.authorizer.permissions = Constants.Permissions.manageEmojisAndStickers.toString();
     },
     cases: [
         {
@@ -25,7 +25,7 @@ runSubtagTests({
                 { start: 0, end: 29, error: new BBTagRuntimeError('Author cannot delete emojis') }
             ],
             setup(ctx) {
-                ctx.roles.command.permissions = '0';
+                ctx.roles.authorizer.permissions = '0';
             }
         },
         {

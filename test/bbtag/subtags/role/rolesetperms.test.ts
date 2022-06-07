@@ -10,8 +10,8 @@ runSubtagTests({
     subtag: new RoleSetPermsSubtag(),
     argCountBounds: { min: 1, max: 3 },
     setup(ctx) {
-        ctx.roles.command.permissions = Constants.Permissions.manageRoles.toString();
-        ctx.members.command.roles.push(ctx.roles.top.id);
+        ctx.roles.authorizer.permissions = Constants.Permissions.manageRoles.toString();
+        ctx.members.authorizer.roles.push(ctx.roles.top.id);
     },
     cases: [
         ...createGetRolePropTestCases({
@@ -64,7 +64,7 @@ runSubtagTests({
                     title: 'Author is admin',
                     expected: '',
                     setup(_, ctx) {
-                        ctx.roles.command.permissions = Constants.Permissions.administrator.toString();
+                        ctx.roles.authorizer.permissions = Constants.Permissions.administrator.toString();
                     },
                     postSetup(role, _, ctx) {
                         ctx.discord.setup(m => m.editRole(ctx.guild.id, role.id, argument.isDeepEqual({ permissions: 239748n }), 'Command User#0000'))
@@ -75,7 +75,7 @@ runSubtagTests({
                     title: 'Author has permissions',
                     expected: '',
                     setup(_, ctx) {
-                        ctx.roles.command.permissions = (Constants.Permissions.all & ~Constants.Permissions.administrator).toString();
+                        ctx.roles.authorizer.permissions = (Constants.Permissions.all & ~Constants.Permissions.administrator).toString();
                     },
                     postSetup(role, _, ctx) {
                         ctx.discord.setup(m => m.editRole(ctx.guild.id, role.id, argument.isDeepEqual({ permissions: 239748n }), 'Command User#0000'))
@@ -86,7 +86,7 @@ runSubtagTests({
                     title: 'Author has partial permissions',
                     expected: '',
                     setup(_, ctx) {
-                        ctx.roles.command.permissions = (
+                        ctx.roles.authorizer.permissions = (
                             Constants.Permissions.manageRoles
                             | Constants.Permissions.viewAuditLog
                             | Constants.Permissions.readMessageHistory
@@ -106,7 +106,7 @@ runSubtagTests({
                 { start: 0, end: 28, error: new BBTagRuntimeError('Author cannot edit roles') }
             ],
             setup(ctx) {
-                ctx.roles.command.permissions = '0';
+                ctx.roles.authorizer.permissions = '0';
             }
         },
         {

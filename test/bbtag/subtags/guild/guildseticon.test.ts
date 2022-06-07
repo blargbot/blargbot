@@ -10,7 +10,7 @@ runSubtagTests({
     subtag: new GuildSetIconSubtag(),
     argCountBounds: { min: 1, max: 1 },
     setup(ctx) {
-        ctx.roles.command.permissions = Constants.Permissions.manageGuild.toString();
+        ctx.roles.authorizer.permissions = Constants.Permissions.manageGuild.toString();
     },
     cases: [
         {
@@ -49,7 +49,7 @@ runSubtagTests({
                 { start: 0, end: 48, error: new BBTagRuntimeError('Author cannot modify the guild') }
             ],
             setup(ctx) {
-                ctx.roles.command.permissions = '0';
+                ctx.roles.authorizer.permissions = '0';
             }
         },
         {

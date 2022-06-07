@@ -10,7 +10,7 @@ runSubtagTests({
     subtag: new EmojiCreateSubtag(),
     argCountBounds: { min: 2, max: 3 },
     setup(ctx) {
-        ctx.roles.command.permissions = Constants.Permissions.manageEmojisAndStickers.toString();
+        ctx.roles.authorizer.permissions = Constants.Permissions.manageEmojisAndStickers.toString();
     },
     cases: [
         {
@@ -110,7 +110,7 @@ runSubtagTests({
                 { start: 0, end: 61, error: new BBTagRuntimeError('Author cannot create emojis') }
             ],
             setup(ctx) {
-                ctx.roles.command.permissions = '0';
+                ctx.roles.authorizer.permissions = '0';
             }
         },
         {

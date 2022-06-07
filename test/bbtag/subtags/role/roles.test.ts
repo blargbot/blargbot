@@ -13,6 +13,7 @@ runSubtagTests({
             setup(ctx) {
                 ctx.roles.top.id = '2938476294246234';
                 ctx.roles.command.id = '394085735375349785';
+                ctx.roles.authorizer.id = '394085735375349786';
                 ctx.roles.other.id = '340987563405745430';
                 ctx.roles.bot.id = '394850730479533405';
                 ctx.roles.everyone.id = '923874043782332894732';

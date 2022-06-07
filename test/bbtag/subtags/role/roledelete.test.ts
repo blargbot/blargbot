@@ -9,8 +9,8 @@ runSubtagTests({
     subtag: new RoleDeleteSubtag(),
     argCountBounds: { min: 1, max: 2 },
     setup(ctx) {
-        ctx.roles.command.permissions = Constants.Permissions.manageRoles.toString();
-        ctx.members.command.roles.push(ctx.roles.top.id);
+        ctx.roles.authorizer.permissions = Constants.Permissions.manageRoles.toString();
+        ctx.members.authorizer.roles.push(ctx.roles.top.id);
     },
     cases: [
         ...createGetRolePropTestCases({
@@ -34,7 +34,7 @@ runSubtagTests({
                 { start: 0, end: 26, error: new BBTagRuntimeError('Author cannot delete roles') }
             ],
             setup(ctx) {
-                ctx.roles.command.permissions = '0';
+                ctx.roles.authorizer.permissions = '0';
             }
         },
         {

@@ -112,9 +112,9 @@ export class SubtagTestContext {
 
     public readonly roles = {
         everyone: SubtagTestContext.createApiRole({ id: snowflake.create().toString() }),
-        top: SubtagTestContext.createApiRole({ id: snowflake.create().toString(), position: 4, name: 'Top Role' }),
+        top: SubtagTestContext.createApiRole({ id: snowflake.create().toString(), position: 5, name: 'Top Role' }),
         command: SubtagTestContext.createApiRole({ id: snowflake.create().toString(), position: 3, name: 'Command User' }),
-        authorizer: SubtagTestContext.createApiRole({ id: snowflake.create().toString(), position: 3, name: 'Command Authorizer' }),
+        authorizer: SubtagTestContext.createApiRole({ id: snowflake.create().toString(), position: 4, name: 'Command Authorizer' }),
         other: SubtagTestContext.createApiRole({ id: snowflake.create().toString(), position: 2, name: 'Other User' }),
         bot: SubtagTestContext.createApiRole({ id: snowflake.create().toString(), position: 1, name: 'Bot' })
     };

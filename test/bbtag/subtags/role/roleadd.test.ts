@@ -9,7 +9,7 @@ runSubtagTests({
     subtag: new RoleAddSubtag(),
     argCountBounds: { min: 1, max: 3 },
     setup(ctx) {
-        ctx.roles.command.permissions = Constants.Permissions.manageRoles.toString();
+        ctx.roles.authorizer.permissions = Constants.Permissions.manageRoles.toString();
     },
     cases: [
         {
@@ -17,7 +17,7 @@ runSubtagTests({
             expected: 'true',
             setup(ctx) {
                 ctx.roles.other.id = '3298746326924';
-                ctx.discord.setup(m => m.editGuildMember(ctx.guild.id, ctx.users.command.id, argument.isDeepEqual({ roles: [ctx.roles.command.id, ctx.roles.other.id] }), 'Command User#0000'))
+                ctx.discord.setup(m => m.editGuildMember(ctx.guild.id, ctx.users.command.id, argument.isDeepEqual({ roles: [ctx.roles.authorizer.id, ctx.roles.other.id] }), 'Command User#0000'))
                     .thenResolve();
             }
         },
@@ -35,7 +35,7 @@ runSubtagTests({
             setup(ctx) {
                 ctx.roles.other.id = '3298746326924';
                 ctx.roles.bot.id = '9238476938485';
-                ctx.discord.setup(m => m.editGuildMember(ctx.guild.id, ctx.users.command.id, argument.isDeepEqual({ roles: [ctx.roles.command.id, ctx.roles.other.id, ctx.roles.bot.id] }), 'Command User#0000'))
+                ctx.discord.setup(m => m.editGuildMember(ctx.guild.id, ctx.users.command.id, argument.isDeepEqual({ roles: [ctx.roles.authorizer.id, ctx.roles.other.id, ctx.roles.bot.id] }), 'Command User#0000'))
                     .thenResolve();
             }
         },
@@ -45,7 +45,7 @@ runSubtagTests({
             setup(ctx) {
                 ctx.roles.other.id = '3298746326924';
                 ctx.roles.bot.id = '9238476938485';
-                ctx.discord.setup(m => m.editGuildMember(ctx.guild.id, ctx.users.command.id, argument.isDeepEqual({ roles: [ctx.roles.command.id, ctx.roles.other.id] }), 'Command User#0000'))
+                ctx.discord.setup(m => m.editGuildMember(ctx.guild.id, ctx.users.command.id, argument.isDeepEqual({ roles: [ctx.roles.authorizer.id, ctx.roles.other.id] }), 'Command User#0000'))
                     .thenResolve();
             }
         },
@@ -56,7 +56,7 @@ runSubtagTests({
                 { start: 0, end: 23, error: new BBTagRuntimeError('Author cannot add roles') }
             ],
             setup(ctx) {
-                ctx.roles.command.permissions = '0';
+                ctx.roles.authorizer.permissions = '0';
             }
         },
         {

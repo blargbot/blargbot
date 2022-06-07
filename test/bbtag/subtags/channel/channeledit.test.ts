@@ -11,7 +11,7 @@ runSubtagTests({
     subtag: new ChannelEditSubtag(),
     argCountBounds: { min: 1, max: 2 },
     setup(ctx) {
-        ctx.roles.command.permissions = Constants.Permissions.manageChannels.toString();
+        ctx.roles.authorizer.permissions = Constants.Permissions.manageChannels.toString();
     },
     cases: [
         {
@@ -185,7 +185,7 @@ runSubtagTests({
                 { start: 0, end: 30, error: new BBTagRuntimeError('Author cannot edit this channel') }
             ],
             setup(ctx) {
-                ctx.roles.command.permissions = '0';
+                ctx.roles.authorizer.permissions = '0';
             },
             postSetup(bbctx, ctx) {
                 const channel = bbctx.guild.channels.get(ctx.channels.general.id);

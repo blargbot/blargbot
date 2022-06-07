@@ -11,7 +11,7 @@ runSubtagTests({
     subtag: new ChannelCreateSubtag(),
     argCountBounds: { min: 1, max: 3 },
     setup(ctx) {
-        ctx.roles.command.permissions = Constants.Permissions.administrator.toString();
+        ctx.roles.authorizer.permissions = Constants.Permissions.administrator.toString();
     },
     cases: [
         {
@@ -187,7 +187,7 @@ runSubtagTests({
                 { start: 0, end: 124, error: new BBTagRuntimeError('Author missing requested permissions') }
             ],
             setup(ctx: SubtagTestContext) {
-                ctx.roles.command.permissions = Constants.Permissions.manageChannels.toString();
+                ctx.roles.authorizer.permissions = Constants.Permissions.manageChannels.toString();
             }
         },
         {
@@ -197,7 +197,7 @@ runSubtagTests({
                 { start: 0, end: 31, error: new BBTagRuntimeError('Author cannot create channels') }
             ],
             setup(ctx) {
-                ctx.roles.command.permissions = '0';
+                ctx.roles.authorizer.permissions = '0';
             }
         },
         {

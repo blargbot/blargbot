@@ -10,8 +10,8 @@ runSubtagTests({
     subtag: new UserSetRolesSubtag(),
     argCountBounds: { min: 0, max: 3 },
     setup(ctx) {
-        ctx.roles.command.permissions = Constants.Permissions.manageRoles.toString();
-        ctx.members.command.roles.push(ctx.roles.top.id);
+        ctx.roles.authorizer.permissions = Constants.Permissions.manageRoles.toString();
+        ctx.members.authorizer.roles.push(ctx.roles.top.id);
     },
     cases: [
         {

@@ -10,7 +10,7 @@ runSubtagTests({
     subtag: new ChannelDeleteSubtag(),
     argCountBounds: { min: 1, max: 1 },
     setup(ctx) {
-        ctx.roles.command.permissions = Constants.Permissions.manageChannels.toString();
+        ctx.roles.authorizer.permissions = Constants.Permissions.manageChannels.toString();
     },
     cases: [
         ...createGetChannelPropTestCases({
@@ -34,7 +34,7 @@ runSubtagTests({
             code: '{channeldelete;2384762844234324}',
             expected: '',
             setup(ctx) {
-                ctx.roles.command.permissions = Constants.Permissions.administrator.toString();
+                ctx.roles.authorizer.permissions = Constants.Permissions.administrator.toString();
                 ctx.channels.command.id = '2384762844234324';
                 ctx.message.channel_id = ctx.channels.command.id;
                 ctx.discord.setup(m => m.deleteChannel('2384762844234324', 'Command User#0000')).thenResolve(undefined);
@@ -45,9 +45,9 @@ runSubtagTests({
             code: '{channeldelete;2384762844234324}',
             expected: '',
             setup(ctx) {
-                ctx.roles.command.permissions = '0';
+                ctx.roles.authorizer.permissions = '0';
                 ctx.channels.command.permission_overwrites = [
-                    { id: ctx.roles.command.id, type: OverwriteType.Role, allow: Constants.Permissions.manageChannels.toString(), deny: '0' }
+                    { id: ctx.roles.authorizer.id, type: OverwriteType.Role, allow: Constants.Permissions.manageChannels.toString(), deny: '0' }
                 ];
                 ctx.channels.command.id = '2384762844234324';
                 ctx.message.channel_id = ctx.channels.command.id;
@@ -61,7 +61,7 @@ runSubtagTests({
                 { start: 0, end: 32, error: new BBTagRuntimeError('Author cannot edit this channel') }
             ],
             setup(ctx) {
-                ctx.roles.command.permissions = '0';
+                ctx.roles.authorizer.permissions = '0';
                 ctx.channels.command.id = '2384762844234324';
                 ctx.message.channel_id = ctx.channels.command.id;
             }

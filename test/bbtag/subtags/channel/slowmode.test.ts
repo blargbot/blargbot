@@ -9,7 +9,7 @@ runSubtagTests({
     subtag: new SlowmodeSubtag(),
     argCountBounds: { min: 0, max: 2 },
     setup(ctx) {
-        ctx.roles.command.permissions = Constants.Permissions.manageChannels.toString();
+        ctx.roles.authorizer.permissions = Constants.Permissions.manageChannels.toString();
     },
     cases: [
         {

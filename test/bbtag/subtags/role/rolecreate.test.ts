@@ -9,7 +9,7 @@ runSubtagTests({
     subtag: new RoleCreateSubtag(),
     argCountBounds: { min: 1, max: 5 },
     setup(ctx) {
-        ctx.roles.command.permissions = Constants.Permissions.all.toString();
+        ctx.roles.authorizer.permissions = Constants.Permissions.all.toString();
     },
     cases: [
         {
@@ -189,7 +189,7 @@ runSubtagTests({
                 { start: 0, end: 47, error: new BBTagRuntimeError('Author cannot create roles') }
             ],
             setup(ctx) {
-                ctx.roles.command.permissions = (
+                ctx.roles.authorizer.permissions = (
                     Constants.Permissions.all
                     & ~Constants.Permissions.administrator
                     & ~Constants.Permissions.manageRoles

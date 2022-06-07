@@ -42,7 +42,7 @@ export class CustomCommandLimit extends GlobalLimit {
             .addRules('dm', staffOnlyRule, new UseCountRule(1))
             .addRules('send', staffOnlyRule, new UseCountRule(10))
             .addRules('edit', new UseCountRule(10))
-            .addRules('delete', new UseCountRule(11))
+            .addRules('delete', new UseCountRule(21))
             .addRules('reactremove', new UseCountRule(10))
             .addRules('reactremove:requests', new UseCountRule(40, 'requests', 'Request'))
             .addRules('timer', new UseCountRule(3))

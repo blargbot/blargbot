@@ -41,7 +41,7 @@ export class TagLimit extends GlobalLimit {
             .addRules('timer', disabledRule)
             .addRules('usersetnick', disabledRule)
             .addRules('edit', new UseCountRule(10))
-            .addRules('delete', new UseCountRule(11))
+            .addRules('delete', new UseCountRule(16))
             .addRules('reactremove', new UseCountRule(10))
             .addRules('reactremove:requests', new UseCountRule(40, 'requests', 'Request'))
             .addRules('waitmessage', new UseCountRule(5))
