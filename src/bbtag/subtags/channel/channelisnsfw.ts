@@ -43,6 +43,6 @@ export class ChannelIsNsfwSubtag extends CompiledSubtag {
             throw new ChannelNotFoundError(channelStr)
                 .withDisplay(quiet ? '' : undefined);
         }
-        return !guard.isThreadChannel(channel) && guard.isTextableChannel(channel) && channel.nsfw;
+        return !guard.isThreadChannel(channel) && guard.isTextableChannel(channel) && channel.nsfw || false;
     }
 }
