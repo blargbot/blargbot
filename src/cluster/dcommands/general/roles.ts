@@ -24,7 +24,7 @@ export class RolesCommand extends GuildCommand {
             title: 'Roles',
             description: [...context.channel.guild.roles.values()]
                 .sort((a, b) => b.position - a.position)
-                .map(r => r.mention)
+                .map(r => `${r.mention} (${r.id})`)
                 .join('\n')
         };
     }
