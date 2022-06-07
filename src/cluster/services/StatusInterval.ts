@@ -1,5 +1,4 @@
 import { CronService } from '@blargbot/core/serviceTypes';
-import { randChoose } from '@blargbot/core/utils';
 import { ActivityPartial, BotActivityType, Constants } from 'eris';
 import moment from 'moment-timezone';
 
@@ -21,9 +20,15 @@ export class StatusInterval extends CronService {
     public execute(): void {
         this.logger.info('!=! Performing the status interval !=!');
         const date = moment().format('MM-DD');
+        const cronId = Math.round(moment().valueOf() / moment.duration(15, 'minutes').asMilliseconds());
         const holiday = this.holidays[date];
-        const status = holiday === undefined ? randChoose(games) : { type: Constants.ActivityTypes.GAME, name: holiday };
+        const status = holiday === undefined ? games[(1103515245 * cronId + 12345) % games.length] : { type: Constants.ActivityTypes.GAME, name: holiday };
         this.cluster.discord.editStatus('online', [status]);
+    }
+
+    public start(): void {
+        super.start();
+        this.execute();
     }
 }
 
