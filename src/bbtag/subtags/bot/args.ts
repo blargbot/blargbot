@@ -74,7 +74,8 @@ export class ArgsSubtag extends CompiledSubtag {
             throw new NotANumberError(end);
 
         // TODO This behaviour should be documented
-        [from, to] = [from, to].sort();
+        if (from > to)
+            from = [to, to = from][0];
 
         if (context.input.length <= from || from < 0)
             throw new NotEnoughArgumentsError(from, context.input.length);
