@@ -17,16 +17,16 @@ export class TimeSubtag extends CompiledSubtag {
                 {
                     parameters: ['format?:YYYY-MM-DDTHH:mm:ssZ', 'time?:now', 'parseFormat?', 'fromTimezone?:Etc/UTC', 'toTimezone?:Etc/UTC'],
                     description: '`time` is in `fromTimezone` and converted to `toTimezone` using `format`.',
-                    exampleCode: 'Time Berlin (as toTimezone): {time;HH:mm;;;;Europe/Berlin}\n' +
-                        'Time Berlin from UTC 12:00: {time;HH:mm;12:00;HH:mm;;Europe/Berlin}\n' +
-                        'Time Berlin (as fromTimezone): {time;HH:mm;;;Europe/Berlin}\n' +
-                        'Time Berlin (as fromTimezone and empty toTimezone): {time;HH:mm;;;Europe/Berlin;}\n' +
-                        'Time New York from Berlin (12:00 in Berlin): {time;HH:mm;12:00;HH:mm;Europe/Berlin;America/New_York}',
+                    exampleCode: 'Berlin (as toTimezone): {time;HH:mm;;;;Europe/Berlin}\n' +
+                        'Berlin from UTC 12:00: {time;HH:mm;12:00;HH:mm;;Europe/Berlin}\n' +
+                        'Berlin (as fromTimezone): {time;HH:mm;;;Europe/Berlin}\n' +
+                        'Berlin (as fromTimezone and empty toTimezone): {time;HH:mm;;;Europe/Berlin;}\n' +
+                        'New York from Berlin (12:00 in Berlin): {time;HH:mm;12:00;HH:mm;Europe/Berlin;America/New_York}',
                     exampleOut: 'Time Berlin (as toTimezone): 23:33\n' +
-                        'Time Berlin from UTC 12:00: 13:00\n' +
-                        'Time Berlin (as fromTimezone): 23:33\n' +
-                        'Time Berlin (as fromTimezone and empty toTimezone): 21:33\n' +
-                        'Time New York from Berlin (12:00 in Berlin): 06:00',
+                        'Berlin from UTC 12:00: 13:00\n' +
+                        'Berlin (as fromTimezone): 23:33\n' +
+                        'Berlin (as fromTimezone and empty toTimezone): 21:33\n' +
+                        'New York from Berlin (12:00 in Berlin): 06:00',
                     returns: 'string',
                     execute: (_, [format, time, parseFormat, fromTimezone, toTimezone]) => this.changeTimezone(time.value, parseFormat.value, fromTimezone.value, format.value, toTimezone.value)
                 }
