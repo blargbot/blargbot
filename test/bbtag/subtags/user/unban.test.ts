@@ -30,6 +30,9 @@ runSubtagTests({
                 const member = ctx.createMock(Member);
                 const user = ctx.createMock(User);
                 member.setup(m => m.user).thenReturn(user.instance);
+                const authorizer = bbctx.guild.members.get(ctx.users.command.id)?.user;
+                if (authorizer === undefined)
+                    throw new Error('Authorizer missing');
                 ctx.util.setup(m => m.getUser('other user'))
                     .verifiable(1)
                     .thenResolve(undefined);
@@ -37,7 +40,7 @@ runSubtagTests({
                     .verifiable(1)
                     .thenResolve([member.instance]);
 
-                ctx.util.setup(x => x.unban(bbctx.guild, user.instance, bbctx.user, true, 'Tag Unban'))
+                ctx.util.setup(x => x.unban(bbctx.guild, user.instance, bbctx.user, authorizer, 'Tag Unban'))
                     .verifiable(1)
                     .thenResolve('success');
             }
@@ -52,6 +55,9 @@ runSubtagTests({
                 const member = ctx.createMock(Member);
                 const user = ctx.createMock(User);
                 member.setup(m => m.user).thenReturn(user.instance);
+                const authorizer = bbctx.guild.members.get(ctx.users.command.id)?.user;
+                if (authorizer === undefined)
+                    throw new Error('Authorizer missing');
                 ctx.util.setup(m => m.getUser('other user'))
                     .verifiable(1)
                     .thenResolve(undefined);
@@ -59,7 +65,7 @@ runSubtagTests({
                     .verifiable(1)
                     .thenResolve([member.instance]);
 
-                ctx.util.setup(x => x.unban(bbctx.guild, user.instance, bbctx.user, true, 'Tag Unban'))
+                ctx.util.setup(x => x.unban(bbctx.guild, user.instance, bbctx.user, authorizer, 'Tag Unban'))
                     .verifiable(1)
                     .thenResolve('noPerms');
             }
@@ -71,6 +77,9 @@ runSubtagTests({
                 const member = ctx.createMock(Member);
                 const user = ctx.createMock(User);
                 member.setup(m => m.user).thenReturn(user.instance);
+                const authorizer = bbctx.guild.members.get(ctx.users.command.id)?.user;
+                if (authorizer === undefined)
+                    throw new Error('Authorizer missing');
                 ctx.util.setup(m => m.getUser('other user'))
                     .verifiable(1)
                     .thenResolve(undefined);
@@ -78,7 +87,7 @@ runSubtagTests({
                     .verifiable(1)
                     .thenResolve([member.instance]);
 
-                ctx.util.setup(x => x.unban(bbctx.guild, user.instance, bbctx.user, true, 'Tag Unban'))
+                ctx.util.setup(x => x.unban(bbctx.guild, user.instance, bbctx.user, authorizer, 'Tag Unban'))
                     .verifiable(1)
                     .thenResolve('notBanned');
             }
@@ -93,6 +102,9 @@ runSubtagTests({
                 const member = ctx.createMock(Member);
                 const user = ctx.createMock(User);
                 member.setup(m => m.user).thenReturn(user.instance);
+                const authorizer = bbctx.guild.members.get(ctx.users.command.id)?.user;
+                if (authorizer === undefined)
+                    throw new Error('Authorizer missing');
                 ctx.util.setup(m => m.getUser('other user'))
                     .verifiable(1)
                     .thenResolve(undefined);
@@ -100,7 +112,7 @@ runSubtagTests({
                     .verifiable(1)
                     .thenResolve([member.instance]);
 
-                ctx.util.setup(x => x.unban(bbctx.guild, user.instance, bbctx.user, true, 'Tag Unban'))
+                ctx.util.setup(x => x.unban(bbctx.guild, user.instance, bbctx.user, authorizer, 'Tag Unban'))
                     .verifiable(1)
                     .thenResolve('moderatorNoPerms');
             }
@@ -112,6 +124,9 @@ runSubtagTests({
                 const member = ctx.createMock(Member);
                 const user = ctx.createMock(User);
                 member.setup(m => m.user).thenReturn(user.instance);
+                const authorizer = bbctx.guild.members.get(ctx.users.command.id)?.user;
+                if (authorizer === undefined)
+                    throw new Error('Authorizer missing');
                 ctx.util.setup(m => m.getUser('other user'))
                     .verifiable(1)
                     .thenResolve(undefined);
@@ -119,7 +134,7 @@ runSubtagTests({
                     .verifiable(1)
                     .thenResolve([member.instance]);
 
-                ctx.util.setup(x => x.unban(bbctx.guild, user.instance, bbctx.user, true, 'My reason here'))
+                ctx.util.setup(x => x.unban(bbctx.guild, user.instance, bbctx.user, authorizer, 'My reason here'))
                     .verifiable(1)
                     .thenResolve('success');
             }
@@ -131,6 +146,9 @@ runSubtagTests({
                 const member = ctx.createMock(Member);
                 const user = ctx.createMock(User);
                 member.setup(m => m.user).thenReturn(user.instance);
+                const authorizer = bbctx.guild.members.get(ctx.users.authorizer.id)?.user;
+                if (authorizer === undefined)
+                    throw new Error('Authorizer missing');
                 ctx.util.setup(m => m.getUser('other user'))
                     .verifiable(1)
                     .thenResolve(undefined);
@@ -138,7 +156,7 @@ runSubtagTests({
                     .verifiable(1)
                     .thenResolve([member.instance]);
 
-                ctx.util.setup(x => x.unban(bbctx.guild, user.instance, bbctx.user, false, 'My reason here'))
+                ctx.util.setup(x => x.unban(bbctx.guild, user.instance, bbctx.user, authorizer, 'My reason here'))
                     .verifiable(1)
                     .thenResolve('success');
             }
@@ -150,6 +168,9 @@ runSubtagTests({
                 const member = ctx.createMock(Member);
                 const user = ctx.createMock(User);
                 member.setup(m => m.user).thenReturn(user.instance);
+                const authorizer = bbctx.guild.members.get(ctx.users.command.id)?.user;
+                if (authorizer === undefined)
+                    throw new Error('Authorizer missing');
                 ctx.util.setup(m => m.getUser('other user'))
                     .verifiable(1)
                     .thenResolve(undefined);
@@ -157,7 +178,7 @@ runSubtagTests({
                     .verifiable(1)
                     .thenResolve([member.instance]);
 
-                ctx.util.setup(x => x.unban(bbctx.guild, user.instance, bbctx.user, true, 'My reason here'))
+                ctx.util.setup(x => x.unban(bbctx.guild, user.instance, bbctx.user, authorizer, 'My reason here'))
                     .verifiable(1)
                     .thenResolve('success');
             }

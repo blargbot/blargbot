@@ -85,7 +85,7 @@ export class CensorManager extends ModerationManagerBase {
         if (parsedAntiMention === 0 || isNaN(parsedAntiMention) || message.mentions.length + message.roleMentions.length < parsedAntiMention)
             return false;
 
-        switch (await this.manager.bans.ban(message.channel.guild, message.author, this.cluster.discord.user, false, 1, 'Mention spam', moment.duration(Infinity))) {
+        switch (await this.manager.bans.ban(message.channel.guild, message.author, this.cluster.discord.user, this.cluster.discord.user, 1, 'Mention spam', moment.duration(Infinity))) {
             case 'success':
             case 'memberTooHigh':
             case 'alreadyBanned':

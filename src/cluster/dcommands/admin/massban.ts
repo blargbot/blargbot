@@ -29,7 +29,7 @@ export class MassBanCommand extends GuildCommand {
 
         const reason = flags.r?.merge().value ?? '';
 
-        const result = await context.cluster.moderation.bans.massBan(context.channel.guild, userIds, context.author, true, deleteDays, reason);
+        const result = await context.cluster.moderation.bans.massBan(context.channel.guild, userIds, context.author, context.author, deleteDays, reason);
         if (Array.isArray(result))
             return this.error(`The following user(s) have been banned:${result.map(humanize.fullName).map(u => `\n**${u}**`).join('')}`);
 

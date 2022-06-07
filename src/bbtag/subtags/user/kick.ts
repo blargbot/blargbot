@@ -36,7 +36,7 @@ export class KickSubtag extends CompiledSubtag {
         context: BBTagContext,
         userStr: string,
         reason: string,
-        noperms: boolean
+        noPerms: boolean
     ): Promise<string> {
         const member = await context.queryMember(userStr, { noLookup: true /* TODO why? */ });
         if (member === undefined)
@@ -45,7 +45,8 @@ export class KickSubtag extends CompiledSubtag {
         if (reason === '')
             reason = 'Tag Kick';
 
-        const response = await context.util.kick(member, context.user, !noperms, reason);
+        const authorizer = noPerms ? context.authorizer?.user ?? context.user : context.user;
+        const response = await context.util.kick(member, context.user, authorizer, reason);
 
         switch (response) {
             case 'success': //Successful

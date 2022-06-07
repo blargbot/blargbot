@@ -26,7 +26,7 @@ export class BanSubtag extends CompiledSubtag {
                     exampleCode: '{ban;Stupid cat;4}',
                     exampleOut: 'true',
                     returns: 'boolean|number',
-                    execute: (ctx, [user, deleteDays]) => this.banMember(ctx, user.value, deleteDays.value, '', '', '')
+                    execute: (ctx, [user, deleteDays]) => this.banMember(ctx, user.value, deleteDays.value, '', '', false)
                 },
                 {
                     parameters: ['user', 'daysToDelete:1', 'reason', 'timeToUnban?'],
@@ -34,7 +34,7 @@ export class BanSubtag extends CompiledSubtag {
                     exampleCode: '{ban;Stupid cat;;Not clicking enough kittens;30d}',
                     exampleOut: 'true (stupid cat will be unbanned after 30d)',
                     returns: 'boolean|number',
-                    execute: (ctx, [user, deleteDays, reason, unbanAfter]) => this.banMember(ctx, user.value, deleteDays.value, reason.value, unbanAfter.value, '')
+                    execute: (ctx, [user, deleteDays, reason, unbanAfter]) => this.banMember(ctx, user.value, deleteDays.value, reason.value, unbanAfter.value, false)
                 },
                 {
                     parameters: ['user', 'daysToDelete:1', 'reason', 'timeToUnban', 'noPerms'],
@@ -43,7 +43,7 @@ export class BanSubtag extends CompiledSubtag {
                     exampleCode: '{ban;Stupid cat;;For being stupid;;anythingcangohere}',
                     exampleOut: 'true (anyone can use this cc regardless of perms)',
                     returns: 'boolean|number',
-                    execute: (ctx, [user, deleteDays, reason, unbanAfter, noPerms]) => this.banMember(ctx, user.value, deleteDays.value, reason.value, unbanAfter.value, noPerms.value)
+                    execute: (ctx, [user, deleteDays, reason, unbanAfter, noPerms]) => this.banMember(ctx, user.value, deleteDays.value, reason.value, unbanAfter.value, noPerms.value !== '')
                 }
             ]
         });
@@ -55,7 +55,7 @@ export class BanSubtag extends CompiledSubtag {
         daysToDeleteStr: string,
         reason: string,
         timeToUnbanStr: string,
-        nopermsStr: string
+        noPerms: boolean
     ): Promise<boolean | number> {
         const user = await context.queryUser(userStr, {
             noLookup: true, noErrors: context.scopes.local.noLookupErrors ?? false
@@ -68,7 +68,6 @@ export class BanSubtag extends CompiledSubtag {
             throw new NotANumberError(daysToDeleteStr)
                 .withDisplay('false');
         }
-        const noPerms = nopermsStr !== '' ? true : false;
         let duration = moment.duration(Infinity);
 
         if (timeToUnbanStr !== '')
@@ -77,7 +76,8 @@ export class BanSubtag extends CompiledSubtag {
         if (reason === '')
             reason = 'Tag Ban';
 
-        const response = await context.util.ban(context.guild, user, context.user, !noPerms, daysToDelete, reason, duration);
+        const authorizer = noPerms ? context.authorizer?.user ?? context.user : context.user;
+        const response = await context.util.ban(context.guild, user, context.user, authorizer, daysToDelete, reason, duration);
         if (response === 'success' || response === 'alreadyBanned')
             return duration.asMilliseconds() < Infinity ? duration.asMilliseconds() : true;
         throw new BBTagRuntimeError(errorMap[response]);

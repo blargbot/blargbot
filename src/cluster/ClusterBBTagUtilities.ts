@@ -45,16 +45,16 @@ export class ClusterBBTagUtilities extends BaseUtilities implements BBTagUtiliti
         return result.warnings;
     }
 
-    public ban(guild: Guild, user: User, moderator: User, checkModerator: boolean, deleteDays: number, reason: string, duration: moment.Duration): Promise<'success' | 'alreadyBanned' | 'noPerms' | 'memberTooHigh' | 'moderatorNoPerms' | 'moderatorTooLow'> {
-        return this.cluster.moderation.bans.ban(guild, user, moderator, checkModerator, deleteDays, reason, duration);
+    public ban(guild: Guild, user: User, moderator: User, authorizer: User, deleteDays: number, reason: string, duration: moment.Duration): Promise<'success' | 'alreadyBanned' | 'noPerms' | 'memberTooHigh' | 'moderatorNoPerms' | 'moderatorTooLow'> {
+        return this.cluster.moderation.bans.ban(guild, user, moderator, authorizer, deleteDays, reason, duration);
     }
 
-    public unban(guild: Guild, user: User, moderator: User, checkModerator: boolean, reason?: string): Promise<'success' | 'noPerms' | 'moderatorNoPerms' | 'notBanned'> {
-        return this.cluster.moderation.bans.unban(guild, user, moderator, checkModerator, reason);
+    public unban(guild: Guild, user: User, moderator: User, authorizer: User, reason?: string): Promise<'success' | 'noPerms' | 'moderatorNoPerms' | 'notBanned'> {
+        return this.cluster.moderation.bans.unban(guild, user, moderator, authorizer, reason);
     }
 
-    public kick(member: Member, moderator: User, checkModerator: boolean, reason?: string): Promise<'success' | 'noPerms' | 'memberTooHigh' | 'moderatorNoPerms' | 'moderatorTooLow'> {
-        return this.cluster.moderation.bans.kick(member, moderator, checkModerator, reason);
+    public kick(member: Member, moderator: User, authorizer: User, reason?: string): Promise<'success' | 'noPerms' | 'memberTooHigh' | 'moderatorNoPerms' | 'moderatorTooLow'> {
+        return this.cluster.moderation.bans.kick(member, moderator, authorizer, reason);
     }
 
     public awaitReaction(messages: string[], filter: (reaction: AwaitReactionsResponse) => Awaitable<boolean>, timeoutMs: number): Promise<AwaitReactionsResponse | undefined> {

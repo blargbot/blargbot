@@ -114,6 +114,7 @@ export class SubtagTestContext {
         everyone: SubtagTestContext.createApiRole({ id: snowflake.create().toString() }),
         top: SubtagTestContext.createApiRole({ id: snowflake.create().toString(), position: 4, name: 'Top Role' }),
         command: SubtagTestContext.createApiRole({ id: snowflake.create().toString(), position: 3, name: 'Command User' }),
+        authorizer: SubtagTestContext.createApiRole({ id: snowflake.create().toString(), position: 3, name: 'Command Authorizer' }),
         other: SubtagTestContext.createApiRole({ id: snowflake.create().toString(), position: 2, name: 'Other User' }),
         bot: SubtagTestContext.createApiRole({ id: snowflake.create().toString(), position: 1, name: 'Bot' })
     };
@@ -121,6 +122,7 @@ export class SubtagTestContext {
     public readonly users = {
         owner: SubtagTestContext.createApiUser({ id: snowflake.create().toString(), username: 'Guild owner' }),
         command: SubtagTestContext.createApiUser({ id: snowflake.create().toString(), username: 'Command User' }),
+        authorizer: SubtagTestContext.createApiUser({ id: snowflake.create().toString(), username: 'Command Authorizer' }),
         other: SubtagTestContext.createApiUser({ id: snowflake.create().toString(), username: 'Other user' }),
         bot: SubtagTestContext.createApiUser({
             id: '134133271750639616',
@@ -132,6 +134,7 @@ export class SubtagTestContext {
     public readonly members = {
         owner: SubtagTestContext.createApiGuildMember({ roles: [] }, this.users.owner),
         command: SubtagTestContext.createApiGuildMember({ roles: [this.roles.command.id] }, this.users.command),
+        authorizer: SubtagTestContext.createApiGuildMember({ roles: [this.roles.authorizer.id] }, this.users.authorizer),
         other: SubtagTestContext.createApiGuildMember({ roles: [this.roles.other.id] }, this.users.other),
         bot: SubtagTestContext.createApiGuildMember({ roles: [this.roles.bot.id] }, this.users.bot)
     };
@@ -265,6 +268,7 @@ export class SubtagTestContext {
 
         const context = new BBTagContext(engine, {
             authorId: message.author.id,
+            authorizerId: this.users.authorizer.id,
             inputRaw: '',
             isCC: false,
             limit: this.limit.instance,

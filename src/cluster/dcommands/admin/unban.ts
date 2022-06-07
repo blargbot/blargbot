@@ -29,7 +29,7 @@ export class UnbanCommand extends GuildCommand {
 
         const reason = flags.r?.merge().value;
 
-        switch (await context.cluster.moderation.bans.unban(context.channel.guild, user, context.author, true, reason)) {
+        switch (await context.cluster.moderation.bans.unban(context.channel.guild, user, context.author, context.author, reason)) {
             case 'notBanned': return this.error(`**${humanize.fullName(user)}** is not currently banned!`);
             case 'noPerms': return this.error(`I don't have permission to unban **${humanize.fullName(user)}**! Make sure I have the \`ban members\` permission and try again.`);
             case 'moderatorNoPerms': return this.error(`You don't have permission to unban **${humanize.fullName(user)}**! Make sure you have the \`ban members\` permission or one of the permissions specified in the \`ban override\` setting and try again.`);

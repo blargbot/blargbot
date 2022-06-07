@@ -33,7 +33,7 @@ export class BanCommand extends GuildCommand {
         const reason = flags.r?.merge().value ?? '';
         const duration = (flags.t !== undefined ? parse.duration(flags.t.merge().value) : undefined) ?? moment.duration(Infinity);
 
-        switch (await context.cluster.moderation.bans.ban(context.channel.guild, member.user, context.author, true, days, reason, duration)) {
+        switch (await context.cluster.moderation.bans.ban(context.channel.guild, member.user, context.author, context.author, days, reason, duration)) {
             case 'alreadyBanned': return this.error(`**${humanize.fullName(member.user)}** is already banned!`);
             case 'memberTooHigh': return this.error(`I don't have permission to ban **${humanize.fullName(member.user)}**! Their highest role is above my highest role.`);
             case 'moderatorTooLow': return this.error(`You don't have permission to ban **${humanize.fullName(member.user)}**! Their highest role is above your highest role.`);

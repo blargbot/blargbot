@@ -22,7 +22,7 @@ export class KickCommand extends GuildCommand {
     }
 
     public async kick(context: GuildCommandContext, member: Member, reason: string | undefined): Promise<string> {
-        switch (await context.cluster.moderation.bans.kick(member, context.author, true, reason)) {
+        switch (await context.cluster.moderation.bans.kick(member, context.author, context.author, reason)) {
             case 'memberTooHigh': return this.error(`I don't have permission to kick **${humanize.fullName(member.user)}**! Their highest role is above my highest role.`);
             case 'moderatorTooLow': return this.error(`You don't have permission to kick **${humanize.fullName(member.user)}**! Their highest role is above your highest role.`);
             case 'noPerms': return this.error(`I don't have permission to kick **${humanize.fullName(member.user)}**! Make sure I have the \`kick members\` permission and try again.`);

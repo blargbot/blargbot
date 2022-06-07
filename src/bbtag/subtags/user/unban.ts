@@ -15,7 +15,7 @@ export class UnbanSubtag extends CompiledSubtag {
                     exampleCode: '{unban;@user} @user was unbanned!',
                     exampleOut: '@user was unbanned!',
                     returns: 'boolean',
-                    execute: (ctx, [user]) => this.unbanUser(ctx, user.value, '', '')
+                    execute: (ctx, [user]) => this.unbanUser(ctx, user.value, '', false)
                 },
                 {
                     parameters: ['user', 'reason', 'noPerms?'],
@@ -25,7 +25,7 @@ export class UnbanSubtag extends CompiledSubtag {
                     exampleCode: '{unban;@stupid cat;I made a mistake} @stupid cat has been unbanned',
                     exampleOut: 'true @stupid cat has been unbanned',
                     returns: 'boolean',
-                    execute: (ctx, [user, reason, noPerms]) => this.unbanUser(ctx, user.value, reason.value, noPerms.value)
+                    execute: (ctx, [user, reason, noPerms]) => this.unbanUser(ctx, user.value, reason.value, noPerms.value !== '')
                 }
             ]
         });
@@ -35,10 +35,9 @@ export class UnbanSubtag extends CompiledSubtag {
         context: BBTagContext,
         userStr: string,
         reason: string,
-        nopermsStr: string
+        noPerms: boolean
     ): Promise<boolean> {
         const user = await context.queryUser(userStr, { noErrors: context.scopes.local.noLookupErrors });
-        const noPerms = nopermsStr !== '';
 
         if (user === undefined)
             throw new UserNotFoundError(userStr);
@@ -46,7 +45,8 @@ export class UnbanSubtag extends CompiledSubtag {
         if (reason === '')
             reason = 'Tag Unban';
 
-        const result = await context.util.unban(context.guild, user, context.user, !noPerms, reason);
+        const authorizer = noPerms ? context.authorizer?.user ?? context.user : context.user;
+        const result = await context.util.unban(context.guild, user, context.user, authorizer, reason);
 
         switch (result) {
             case 'success': return true;

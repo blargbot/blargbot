@@ -20,8 +20,8 @@ export class BanManager extends ModerationManagerBase {
         this.ignoreLeaves = new Set();
     }
 
-    public async ban(guild: Guild, user: User, moderator: User, checkModerator: boolean, deleteDays: number, reason: string, duration: Duration): Promise<BanResult> {
-        const result = await this.tryBanUser(guild, user.id, moderator, checkModerator, undefined, deleteDays, reason);
+    public async ban(guild: Guild, user: User, moderator: User, authorizer: User, deleteDays: number, reason: string, duration: Duration): Promise<BanResult> {
+        const result = await this.tryBanUser(guild, user.id, moderator, authorizer, undefined, deleteDays, reason);
         if (result !== 'success') {
             if (typeof result === 'string')
                 return result;
@@ -45,7 +45,7 @@ export class BanManager extends ModerationManagerBase {
         return 'success';
     }
 
-    public async massBan(guild: Guild, userIds: readonly string[], moderator: User, checkModerator: boolean, deleteDays: number, reason: string): Promise<MassBanResult> {
+    public async massBan(guild: Guild, userIds: readonly string[], moderator: User, authorizer: User, deleteDays: number, reason: string): Promise<MassBanResult> {
         if (userIds.length === 0)
             return 'noUsers';
 
@@ -53,16 +53,14 @@ export class BanManager extends ModerationManagerBase {
         if (self?.permissions.has('banMembers') !== true)
             return 'noPerms';
 
-        if (checkModerator) {
-            const permMessage = await this.checkModerator(guild, undefined, moderator.id, 'banMembers', 'banoverride');
-            if (permMessage !== undefined)
-                return permMessage;
-        }
+        const permMessage = await this.checkModerator(guild, undefined, authorizer.id, 'banMembers', 'banoverride');
+        if (permMessage !== undefined)
+            return permMessage;
 
         const guildBans = new Set((await guild.getBans()).map(b => b.user.id));
         const banResults = await Promise.all(userIds.map(async userId => ({
             userId,
-            result: await this.tryBanUser(guild, userId, moderator, checkModerator, guildBans, deleteDays, reason)
+            result: await this.tryBanUser(guild, userId, moderator, authorizer, guildBans, deleteDays, reason)
         })));
 
         const bannedIds = new Set(banResults.filter(r => r.result === 'success').map(r => r.userId));
@@ -81,16 +79,14 @@ export class BanManager extends ModerationManagerBase {
         return banned;
     }
 
-    private async tryBanUser(guild: Guild, userId: string, moderator: User, checkModerator: boolean, alreadyBanned: Set<string> | undefined, deleteDays: number, reason: string): Promise<BanResult | { error: unknown; }> {
+    private async tryBanUser(guild: Guild, userId: string, moderator: User, authorizer: User, alreadyBanned: Set<string> | undefined, deleteDays: number, reason: string): Promise<BanResult | { error: unknown; }> {
         const self = guild.members.get(this.cluster.discord.user.id);
         if (self?.permissions.has('banMembers') !== true)
             return 'noPerms';
 
-        if (checkModerator) {
-            const permMessage = await this.checkModerator(guild, userId, moderator.id, 'banMembers', 'banoverride');
-            if (permMessage !== undefined)
-                return permMessage;
-        }
+        const permMessage = await this.checkModerator(guild, userId, authorizer.id, 'banMembers', 'banoverride');
+        if (permMessage !== undefined)
+            return permMessage;
 
         const member = await this.cluster.util.getMember(guild, userId);
         if (member !== undefined && !this.cluster.util.isBotHigher(member))
@@ -110,16 +106,14 @@ export class BanManager extends ModerationManagerBase {
         return 'success';
     }
 
-    public async unban(guild: Guild, user: User, moderator: User, checkModerator: boolean, reason?: string): Promise<UnbanResult> {
+    public async unban(guild: Guild, user: User, moderator: User, authorizer: User, reason?: string): Promise<UnbanResult> {
         const self = guild.members.get(this.cluster.discord.user.id);
         if (self?.permissions.has('banMembers') !== true)
             return 'noPerms';
 
-        if (checkModerator) {
-            const permMessage = await this.checkModerator(guild, undefined, moderator.id, 'banMembers', 'banoverride');
-            if (permMessage !== undefined)
-                return permMessage;
-        }
+        const permMessage = await this.checkModerator(guild, undefined, authorizer.id, 'banMembers', 'banoverride');
+        if (permMessage !== undefined)
+            return permMessage;
 
         const bans = await guild.getBans();
         if (bans.every(b => b.user.id !== user.id))
@@ -132,16 +126,14 @@ export class BanManager extends ModerationManagerBase {
         return 'success';
     }
 
-    public async kick(member: Member, moderator: User, checkModerator: boolean, reason?: string): Promise<KickResult> {
+    public async kick(member: Member, moderator: User, authorizer: User, reason?: string): Promise<KickResult> {
         const self = member.guild.members.get(this.cluster.discord.user.id);
         if (self?.permissions.has('kickMembers') !== true)
             return 'noPerms';
 
-        if (checkModerator) {
-            const permMessage = await this.checkModerator(member.guild, member.id, moderator.id, 'kickMembers', 'kickoverride');
-            if (permMessage !== undefined)
-                return permMessage;
-        }
+        const permMessage = await this.checkModerator(member.guild, member.id, authorizer.id, 'kickMembers', 'kickoverride');
+        if (permMessage !== undefined)
+            return permMessage;
 
         if (!this.cluster.util.isBotHigher(member))
             return 'memberTooHigh';
@@ -169,7 +161,7 @@ export class BanManager extends ModerationManagerBase {
         const mapResult = mapDuration(event.duration);
         const duration = mapResult.valid ? humanize.duration(mapResult.value) : 'some time';
 
-        await this.unban(guild, user, this.cluster.discord.user, false, `Automatically unbanned after ${duration}.`);
+        await this.unban(guild, user, this.cluster.discord.user, this.cluster.discord.user, `Automatically unbanned after ${duration}.`);
     }
 
     public async userBanned(guild: Guild, user: User): Promise<void> {
