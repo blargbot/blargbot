@@ -109,9 +109,9 @@ export class HelpManager {
             });
         }
 
-        if (allSignatures.length > signatures.length) {
+        if (allSignatures.length > signatures.length + page * 10) {
             fields.push({
-                name: `... and ${allSignatures.length - signatures.length} more`,
+                name: `... and ${allSignatures.length - signatures.length - page * 10} more`,
                 value: `Use \`${prefix}help ${name} ${page + 2}\` for more`
             });
         }
