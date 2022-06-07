@@ -279,6 +279,12 @@ export class CensorCommand extends GuildCommand {
     public async list(context: GuildCommandContext): Promise<EmbedOptions> {
         const censors = await context.database.guilds.getCensors(context.channel.guild.id) ?? {};
 
+        if (censors.list?.[NaN] !== undefined) {
+            const newid = Math.max(-1, ...Object.keys(censors.list).map(parseInt).filter(x => !isNaN(x))) + 1;
+            await context.database.guilds.setCensor(context.channel.guild.id, newid, censors.list[NaN]);
+            await context.database.guilds.setCensor(context.channel.guild.id, NaN, undefined);
+        }
+
         const users = censors.exception?.user ?? [];
         const roles = censors.exception?.role ?? [];
         const channels = censors.exception?.channel ?? [];
