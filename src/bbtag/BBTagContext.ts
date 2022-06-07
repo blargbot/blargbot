@@ -302,7 +302,10 @@ export class BBTagContext implements BBTagContextOptions {
             return this.channel;
         return await this.queryEntity(
             query, 'channel', 'Channel',
-            async (id) => await this.util.getChannel(this.guild, id),
+            async (id) => {
+                const channel = await this.util.getChannel(this.guild, id);
+                return channel !== undefined && guard.isGuildChannel(channel) && channel.guild.id === this.guild.id ? channel : undefined;
+            },
             async (query) => await this.util.findChannels(this.guild, query),
             async (options) => await this.util.queryChannel(options),
             options

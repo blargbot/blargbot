@@ -415,7 +415,7 @@ export class BaseUtilities {
             return allChannels;
 
         const channel = await this.getChannel(guild, query);
-        if (channel !== undefined)
+        if (channel !== undefined && guard.isGuildChannel(channel) && channel.guild.id === guild.id)
             return [channel];
 
         return findBest(allChannels, (c) => this.channelMatchScore(c, query));
