@@ -49,7 +49,7 @@ export class BBTagEngine {
     public async execute(source: string, options: BBTagContextOptions | BBTagContext, caller?: SubtagCall): Promise<ExecutionResult> {
         this.logger.bbtag(`Start running ${options.isCC ? 'CC' : 'tag'} ${options.rootTagName ?? ''}`);
         const timer = new Timer().start();
-        const bbtag = bbtagUtil.parse(source);
+        const bbtag = bbtagUtil.parse(source, options instanceof BBTagContext);
         this.logger.bbtag(`Parsed bbtag in ${timer.poll(true)}ms`);
         const context = options instanceof BBTagContext ? options : new BBTagContext(this, { cooldowns: this.cooldowns, ...options });
         this.logger.bbtag(`Created context in ${timer.poll(true)}ms`);
@@ -58,7 +58,6 @@ export class BBTagEngine {
             const remaining = moment.duration(context.cooldownEnd.diff(moment()));
             if (context.data.stackSize === 0)
                 await context.sendOutput(`This ${context.isCC ? 'custom command' : 'tag'} is currently under cooldown. Please try again <t:${moment().add(remaining).unix()}:R>.`);
-            context.data.state = BBTagRuntimeState.ABORT;
             content = context.addError(new TagCooldownError(context.tagName, context.isCC, remaining), caller);
         } else if (context.data.stackSize > 200) {
             context.data.state = BBTagRuntimeState.ABORT;
@@ -74,9 +73,9 @@ export class BBTagEngine {
             });
             context.execTimer.end();
             this.logger.bbtag(`Tag run complete in ${timer.poll(true)}ms`);
-            await context.variables.persist();
-            this.logger.bbtag(`Saved variables in ${timer.poll(true)}ms`);
             if (context.data.stackSize === 0) {
+                await context.variables.persist();
+                this.logger.bbtag(`Saved variables in ${timer.poll(true)}ms`);
                 await context.sendOutput(content);
                 this.logger.bbtag(`Sent final output in ${timer.poll(true)}ms`);
             }

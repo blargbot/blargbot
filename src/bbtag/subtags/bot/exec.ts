@@ -36,16 +36,15 @@ export class ExecSubtag extends CompiledSubtag {
         if (args.length > 1)
             input = humanize.smartSplit.inverse(bbtag.tagArray.flattenArray(args).map(x => parse.string(x)));
 
-        return await context.withStack(() => context.withScope(true, () => context.withChild({
+        return await context.withScope(true, () => context.withChild({
             tagName,
             cooldown: tag.cooldown ?? 0,
             inputRaw: input
         }, async context => {
-            const ast = bbtag.parse(tag.content, true);
-            const result = await context.engine.eval(ast, context);
+            const result = await context.engine.execute(tag.content, context);
             if (context.data.state === BBTagRuntimeState.RETURN)
                 context.data.state = BBTagRuntimeState.RUNNING;
-            return result;
-        })));
+            return result.content;
+        }));
     }
 }
