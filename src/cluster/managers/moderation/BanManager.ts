@@ -115,9 +115,13 @@ export class BanManager extends ModerationManagerBase {
         if (permMessage !== undefined)
             return permMessage;
 
-        const bans = await guild.getBans();
-        if (bans.every(b => b.user.id !== user.id))
-            return 'notBanned';
+        try {
+            await guild.getBan(user.id);
+        } catch (err: unknown) {
+            if (err instanceof DiscordRESTError && err.code === ApiError.UNKNOWN_BAN)
+                return 'notBanned';
+            throw err;
+        }
 
         this.ignoreUnbans.add(`${guild.id}:${user.id}`);
         await guild.unbanMember(user.id, `[${humanize.fullName(moderator)}] ${reason ?? ''}`);
