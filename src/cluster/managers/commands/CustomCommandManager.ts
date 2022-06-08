@@ -152,7 +152,7 @@ class NormalizedCommandTag implements ICommand<NamedGuildCommandTag> {
             const cooldown = Math.max(this.tag.cooldown ?? 0, this.implementation.cooldown ?? 0);
             return {
                 author: this.tag.author,
-                authorizer: this.tag.authorizer,
+                authorizer: this.implementation.authorizer,
                 content: this.tag.content,
                 cooldown: cooldown <= 0 ? undefined : cooldown,
                 flags: this.tag.flags,
