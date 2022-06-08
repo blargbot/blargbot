@@ -12,7 +12,7 @@ export class RolemeManager {
     }
 
     public async execute(message: KnownMessage): Promise<void> {
-        if (!guard.isGuildMessage(message))
+        if (!guard.isGuildMessage(message) || !guard.hasValue(message.member))
             return;
 
         const rolemes = await this.cluster.database.guilds.getRolemes(message.channel.guild.id);

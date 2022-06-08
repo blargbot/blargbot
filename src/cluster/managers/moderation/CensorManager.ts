@@ -1,7 +1,7 @@
 import { bbtag } from '@blargbot/bbtag';
 import { guard, ModerationType } from '@blargbot/cluster/utils';
 import { GuildCensor, GuildCensorExceptions, GuildTriggerTag } from '@blargbot/domain/models';
-import { KnownGuildTextableChannel, Member, Message } from 'eris';
+import { KnownGuildTextableChannel, Message } from 'eris';
 import moment from 'moment-timezone';
 
 import { ModerationManager } from '../ModerationManager';
@@ -35,6 +35,9 @@ export class CensorManager extends ModerationManagerBase {
         } catch {
             // NOOP
         }
+
+        if (guard.hasValue(message.member))
+            return true;
 
         const result = await this.manager.warns.warn(message.member, this.cluster.discord.user, censor.weight, censor.reason ?? 'Said a blacklisted phrase.');
         let tag: GuildTriggerTag | undefined;
@@ -105,7 +108,7 @@ export class CensorManager extends ModerationManagerBase {
         const channels = exemptions.channel ?? [];
         const users = exemptions.user ?? [];
         const roles = exemptions.role ?? [];
-        const userRoles = ((message.member as Member | null)?.roles as string[] | null) ?? [];
+        const userRoles = guard.hasValue(message.member) ? message.member.roles : [];
 
         return channels.includes(message.channel.id)
             || users.includes(message.author.id)
