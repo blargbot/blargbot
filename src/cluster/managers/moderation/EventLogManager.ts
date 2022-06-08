@@ -119,9 +119,9 @@ export class EventLogManager {
         const moderator = audit?.member ?? undefined;
         await this.logEvent(`role:${roleId}`, channel, this.eventLogEmbed('Special Role Removed', member.user, 0, {
             fields: [
-                { name: 'Role', value: `<@&${roleId}> (${roleId})`, inline: true },
-                ...moderator !== undefined ? [{ name: 'Updated By', value: `<@${moderator.id}> (${moderator.id})`, inline: true }] : [],
-                ...reason !== undefined ? [{ name: 'Reason', value: reason, inline: true }] : []
+                { name: 'Role', value: `<@&${roleId}> (${roleId})` },
+                ...moderator !== undefined ? [{ name: 'Updated By', value: `<@${moderator.id}> (${moderator.id})` }] : [],
+                ...reason !== undefined ? [{ name: 'Reason', value: reason }] : []
             ]
         }));
     }
@@ -138,9 +138,9 @@ export class EventLogManager {
         const moderator = audit?.member ?? undefined;
         await this.logEvent(`role:${roleId}`, channel, this.eventLogEmbed('Special Role Added', member.user, 0, {
             fields: [
-                { name: 'Role', value: `<@&${roleId}> (${roleId})`, inline: true },
-                ...moderator !== undefined ? [{ name: 'Updated By', value: `<@${moderator.id}> (${moderator.id})`, inline: true }] : [],
-                ...reason !== undefined ? [{ name: 'Reason', value: reason, inline: true }] : []
+                { name: 'Role', value: `<@&${roleId}> (${roleId})` },
+                ...moderator !== undefined ? [{ name: 'Updated By', value: `<@${moderator.id}> (${moderator.id})` }] : [],
+                ...reason !== undefined ? [{ name: 'Reason', value: reason }] : []
             ]
         }));
     }
