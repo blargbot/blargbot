@@ -1,6 +1,6 @@
 import { Cluster } from '@blargbot/cluster';
 import { guard, humanize, ModlogColour } from '@blargbot/cluster/utils';
-import { EmbedField, EmbedOptions, Guild, User } from 'eris';
+import { DiscordRESTError, EmbedField, EmbedOptions, Guild, User } from 'eris';
 import { Duration } from 'moment-timezone';
 
 export class ModLogManager {
@@ -241,7 +241,16 @@ export class ModLogManager {
         } else
             embed.author = this.cluster.util.embedifyAuthor(user, true);
 
-        const modlogMessage = await this.cluster.util.send(modlogChannelId, { embeds: [embed] });
+        let modlogMessage;
+        try {
+            modlogMessage = await this.cluster.util.send(modlogChannelId, { embeds: [embed] });
+        } catch (err: unknown) {
+            if (err instanceof Error && err.message === 'Channel not found')
+                await this.cluster.database.guilds.setSetting(guildId, 'modlog', undefined);
+            else
+                throw err;
+        }
+
         await this.cluster.database.guilds.addModlogCase(guildId, {
             caseid: caseId,
             modid: moderator?.id,
