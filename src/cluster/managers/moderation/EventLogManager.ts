@@ -113,8 +113,8 @@ export class EventLogManager {
             return;
 
         const now = moment();
-        const auditEvents = await tryGetAuditLogs(member.guild, 50, undefined, AuditLogActionType.ROLE_UPDATE);
-        const audit = auditEvents?.entries.find(e => e.target === member && moment(e.createdAt).isAfter(now.add(-1, 'second')));
+        const auditEvents = await tryGetAuditLogs(member.guild, 50, undefined, AuditLogActionType.MEMBER_ROLE_UPDATE);
+        const audit = auditEvents?.entries.find(e => e.targetID === member.id && moment(e.createdAt).isAfter(now.add(-1, 'second')));
         const reason = audit?.reason ?? undefined;
         const moderator = audit?.member ?? undefined;
         await this.logEvent(`role:${roleId}`, channel, this.eventLogEmbed('Special Role Removed', member.user, 0, {
@@ -132,8 +132,8 @@ export class EventLogManager {
             return;
 
         const now = moment();
-        const auditEvents = await tryGetAuditLogs(member.guild, 50, undefined, AuditLogActionType.ROLE_UPDATE);
-        const audit = auditEvents?.entries.find(e => e.target === member && moment(e.createdAt).isAfter(now.add(-1, 'second')));
+        const auditEvents = await tryGetAuditLogs(member.guild, 50, undefined, AuditLogActionType.MEMBER_ROLE_UPDATE);
+        const audit = auditEvents?.entries.find(e => e.targetID === member.id && moment(e.createdAt).isAfter(now.add(-1, 'second')));
         const reason = audit?.reason ?? undefined;
         const moderator = audit?.member ?? undefined;
         await this.logEvent(`role:${roleId}`, channel, this.eventLogEmbed('Special Role Added', member.user, 0, {
