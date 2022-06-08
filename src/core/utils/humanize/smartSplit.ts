@@ -47,8 +47,9 @@ function* smartSplitIterLimit(source: string, limit: number): Generator<string> 
     }
 }
 
+const quoteBounds = new Set([' ', undefined]);
 function* smartSplitIter(source: string): Generator<SmartSplitItem> {
-    let quote: string | undefined;
+    let inQuote = false;
     let builder: number[] = [];
     let start: number | undefined;
 
@@ -62,17 +63,15 @@ function* smartSplitIter(source: string): Generator<SmartSplitItem> {
             }
             case '"': {
                 start ??= i;
-                const char = source[i];
-                if (quote === char)
-                    quote = undefined;
-                else if (quote === undefined)
-                    quote = char;
+                // check before open quote or after close quote is a space or out of bounds
+                if (quoteBounds.has(source[i + (inQuote ? 1 : -1)]))
+                    inQuote = !inQuote;
                 else
                     builder.push(i);
                 break;
             }
             case ' ': {
-                if (quote !== undefined)
+                if (inQuote)
                     builder.push(i);
                 else if (start !== undefined) {
                     yield createSplitItem(source, builder, start, i);
