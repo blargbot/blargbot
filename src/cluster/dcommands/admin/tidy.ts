@@ -22,7 +22,8 @@ export class TidyCommand extends GuildCommand {
                         attachments: flags.a !== undefined,
                         users: flags.u?.merge().raw.split(',').map(s => s.trim()),
                         query: flags.q?.merge().raw ?? '',
-                        invert: flags.I !== undefined
+                        invert: flags.I !== undefined,
+                        confirm: flags.y !== undefined
                     })
                 }
             ],
@@ -34,7 +35,8 @@ export class TidyCommand extends GuildCommand {
                 { flag: 'a', word: 'attachments', description: 'Remove messages containing attachments.' },
                 { flag: 'u', word: 'user', description: 'Removes messages from the users specified. Separate users by commas' },
                 { flag: 'q', word: 'query', description: 'Removes messages that match the provided query as a regex.' },
-                { flag: 'I', word: 'invert', description: 'Reverses the effects of all the flag filters.' }
+                { flag: 'I', word: 'invert', description: 'Reverses the effects of all the flag filters.' },
+                { flag: 'y', word: 'yes', description: 'Bypasses the confirmation' }
             ]
         });
 
@@ -71,7 +73,7 @@ export class TidyCommand extends GuildCommand {
             ? `${messages.length} ${p(messages.length, 'message')} after searching through ${searched} ${p(searched, 'message')}`
             : `${messages.length} ${p(messages.length, 'message')}`;
 
-        const confirmed = await context.util.queryConfirm({
+        const confirmed = options.confirm || await context.util.queryConfirm({
             context: context.message,
             actors: context.author,
             prompt: this.info(`I am about to attempt to delete ${queryText}. Are you sure you wish to continue?\n${buildSummary(messages)}`),
@@ -119,6 +121,7 @@ interface TidyOptions {
     users: string[] | undefined;
     query: string;
     invert: boolean;
+    confirm: boolean;
 }
 
 interface DeleteResult {
