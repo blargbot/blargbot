@@ -29,7 +29,7 @@ function getGuildLookupCache<TContext extends GuildCommandContext>(context: TCon
         findUser: createLookup(
             'user',
             'a user',
-            async query => (await context.util.findMembers(context.channel.guild, query)).map(m => m.user),
+            async query => await context.util.findUsers(context.channel.guild, query),
             async (options, query) => {
                 const result = await context.queryUser({ choices: options, filter: query });
                 return result.state === 'SUCCESS' ? result.value : undefined;

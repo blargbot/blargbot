@@ -463,6 +463,16 @@ export class BaseUtilities {
         }
     }
 
+    public async findUsers(guild: Guild | string, query?: string): Promise<User[]> {
+        if (query !== undefined) {
+            const user = await this.getUser(query);
+            if (user !== undefined)
+                return [user];
+        }
+        const members = await this.findMembers(guild, query);
+        return members.map(m => m.user);
+    }
+
     public async getGuild(guildId: string): Promise<Guild | undefined> {
         guildId = parse.entityId(guildId) ?? '';
         if (guildId === '')
