@@ -1,6 +1,6 @@
 import { Cluster } from '@blargbot/cluster';
 import { guard, humanize, ModlogColour } from '@blargbot/cluster/utils';
-import { DiscordRESTError, EmbedField, EmbedOptions, Guild, User } from 'eris';
+import { EmbedField, EmbedOptions, Guild, User } from 'eris';
 import { Duration } from 'moment-timezone';
 
 export class ModLogManager {
