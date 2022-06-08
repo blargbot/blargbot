@@ -29,6 +29,6 @@ export class CapitalizeSubtag extends CompiledSubtag {
 
     public capitalize(text: string, lowercase: boolean): string {
         const rest = text.slice(1);
-        return text[0].toUpperCase() + (lowercase ? rest.toLowerCase() : rest);
+        return text.slice(0, 1).toUpperCase() + (lowercase ? rest.toLowerCase() : rest);
     }
 }
