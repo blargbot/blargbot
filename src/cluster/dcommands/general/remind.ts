@@ -1,6 +1,7 @@
 import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType, guard } from '@blargbot/cluster/utils';
-import moment, { Duration } from 'moment-timezone';
+import { parse } from '@blargbot/core/utils';
+import moment from 'moment-timezone';
 
 export class TimerCommand extends GlobalCommand {
     public constructor() {
@@ -9,20 +10,22 @@ export class TimerCommand extends GlobalCommand {
             aliases: ['remindme'],
             category: CommandType.GENERAL,
             flags: [
-                { flag: 'c', word: 'channel', description: 'Sets the reminder to appear in the current channel rather than a DM' }
+                { flag: 'c', word: 'channel', description: 'Sets the reminder to appear in the current channel rather than a DM' },
+                { flag: 't', word: 'time', description: 'The time before the user is to be reminded, formatted as \'1 day 2 hours 3 minutes and 4 seconds\', \'1d 2h 3m 4s\', or some other combination' }
             ],
             definitions: [
                 {
-                    parameters: '{~message+} in {duration:duration+}',
+                    parameters: '{~message+}',
                     description: 'Reminds you about something after a period of time in a DM.',
-                    execute: (ctx, [message, duration], { c: channel }) => this.addTimer(ctx, duration.asDuration, message.asString, channel !== undefined)
+                    execute: (ctx, [message], { c: channel, t: time }) => this.addTimer(ctx, time?.merge().value ?? '0s', message.asString, channel !== undefined)
                 }
             ]
         });
     }
 
-    public async addTimer(context: CommandContext, duration: Duration, message: string, inChannel: boolean): Promise<string> {
-        if (duration.asMilliseconds() <= 0)
+    public async addTimer(context: CommandContext, durationStr: string, message: string, inChannel: boolean): Promise<string> {
+        const duration = parse.duration(durationStr);
+        if (duration === undefined || duration.asMilliseconds() <= 0)
             return this.error('I cant set a timer for 0 seconds!');
 
         if (message.length === 0)
