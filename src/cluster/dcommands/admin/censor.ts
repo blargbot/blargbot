@@ -117,7 +117,7 @@ export class CensorCommand extends GuildCommand {
         if (weight < 0)
             weight = 0;
 
-        const id = Math.max(...Object.keys(censors?.list ?? {}).map(parseInt), 0) + 1;
+        const id = Math.max(...Object.keys(censors?.list ?? {}).map(x => parseInt(x)), 0) + 1;
         await context.database.guilds.setCensor(context.channel.guild.id, id, {
             regex: options.isRegex,
             decancer: options.decancer,
@@ -280,7 +280,7 @@ export class CensorCommand extends GuildCommand {
         const censors = await context.database.guilds.getCensors(context.channel.guild.id) ?? {};
 
         if (censors.list?.[NaN] !== undefined) {
-            const newid = Math.max(-1, ...Object.keys(censors.list).map(parseInt).filter(x => !isNaN(x))) + 1;
+            const newid = Math.max(-1, ...Object.keys(censors.list).map(x => parseInt(x)).filter(x => !isNaN(x))) + 1;
             await context.database.guilds.setCensor(context.channel.guild.id, newid, censors.list[NaN]);
             await context.database.guilds.setCensor(context.channel.guild.id, NaN, undefined);
         }
