@@ -35,8 +35,8 @@ export class ClusterBBTagUtilities extends BaseUtilities implements BBTagUtiliti
         return this.cluster.util.queryChannel(options);
     }
 
-    public async warn(member: Member, moderator: User, count: number, reason?: string): Promise<number> {
-        const result = await this.cluster.moderation.warns.warn(member, moderator, count, reason);
+    public async warn(member: Member, moderator: User, authorizer: User, count: number, reason?: string): Promise<number> {
+        const result = await this.cluster.moderation.warns.warn(member, moderator, authorizer, count, reason);
         return result.warnings;
     }
 

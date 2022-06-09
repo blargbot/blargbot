@@ -39,7 +39,7 @@ export class CensorManager extends ModerationManagerBase {
         if (guard.hasValue(message.member))
             return true;
 
-        const result = await this.manager.warns.warn(message.member, this.cluster.discord.user, censor.weight, censor.reason ?? 'Said a blacklisted phrase.');
+        const result = await this.manager.warns.warn(message.member, this.cluster.discord.user, this.cluster.discord.user, censor.weight, censor.reason ?? 'Said a blacklisted phrase.');
         let tag: GuildTriggerTag | undefined;
         let type: 'ban' | 'delete' | 'kick';
         switch (result.type) {

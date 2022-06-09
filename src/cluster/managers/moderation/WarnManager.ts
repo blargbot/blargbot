@@ -11,7 +11,7 @@ export class WarnManager extends ModerationManagerBase {
         super(manager);
     }
 
-    public async warn(member: Member, moderator: User, count: number, reason?: string): Promise<WarnResult> {
+    public async warn(member: Member, moderator: User, authorizer: User, count: number, reason?: string): Promise<WarnResult> {
         if (count === 0)
             return { type: ModerationType.WARN, warnings: 0, state: 'countZero' };
         if (count < 0)
@@ -35,7 +35,7 @@ export class WarnManager extends ModerationManagerBase {
         if (banAt > 0 && (!actOnLimitsOnly || oldCount < banAt) && newCount >= banAt) {
             result = {
                 type: ModerationType.BAN,
-                state: await this.manager.bans.ban(member.guild, member.user, moderator, moderator, 1, `[ Auto-Ban ] Exceeded ban limit (${newCount}/${banAt})`, moment.duration(Infinity)),
+                state: await this.manager.bans.ban(member.guild, member.user, moderator, authorizer, 1, `[ Auto-Ban ] Exceeded ban limit (${newCount}/${banAt})`, moment.duration(Infinity)),
                 warnings: newCount
             };
             if (result.state === 'success')
@@ -43,7 +43,7 @@ export class WarnManager extends ModerationManagerBase {
         } else if (kickAt > 0 && (!actOnLimitsOnly || oldCount < kickAt) && newCount >= kickAt) {
             result = {
                 type: ModerationType.KICK,
-                state: await this.manager.bans.kick(member, moderator, moderator, `[ Auto-Kick ] Exceeded warning limit (${newCount}/${kickAt})`),
+                state: await this.manager.bans.kick(member, moderator, authorizer, `[ Auto-Kick ] Exceeded warning limit (${newCount}/${kickAt})`),
                 warnings: newCount
             };
         }

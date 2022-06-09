@@ -16,7 +16,7 @@ export abstract class ModerationManagerBase {
     protected async checkModerator(guild: Guild, targetId: undefined, moderatorId: string, permission: keyof Constants['Permissions'], overrideKey?: keyof StoredGuildSettings): Promise<'moderatorNoPerms' | undefined>;
     protected async checkModerator(guild: Guild, targetId: string | undefined, moderatorId: string, permission: keyof Constants['Permissions'], overrideKey?: keyof StoredGuildSettings): Promise<'moderatorNoPerms' | 'moderatorTooLow' | undefined>;
     protected async checkModerator(guild: Guild, targetId: string | undefined, moderatorId: string, permission: keyof Constants['Permissions'], overrideKey?: keyof StoredGuildSettings): Promise<'moderatorNoPerms' | 'moderatorTooLow' | undefined> {
-        if (guild.ownerID === moderatorId || targetId === moderatorId)
+        if (guild.ownerID === moderatorId || moderatorId === this.cluster.discord.user.id)
             return undefined;
 
         const moderatorMember = await this.cluster.util.getMember(guild, moderatorId);
