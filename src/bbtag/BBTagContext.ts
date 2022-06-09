@@ -6,7 +6,7 @@ import { discord } from '@blargbot/core/utils/discord';
 import { Database } from '@blargbot/database';
 import { FlagDefinition, FlagResult, NamedGuildCommandTag, StoredTag } from '@blargbot/domain/models';
 import { Logger } from '@blargbot/logger';
-import { Client as Discord, Constants, Guild, KnownChannel, KnownGuildChannel, KnownGuildTextableChannel, KnownThreadChannel, Member, Permission, Role, User } from 'eris';
+import { Client as Discord, Constants, Guild, KnownChannel, KnownGuildChannel, KnownGuildTextableChannel, KnownMessage, KnownTextableChannel, KnownThreadChannel, Member, Message, Permission, Role, User } from 'eris';
 import { Duration, Moment } from 'moment-timezone';
 import ReadWriteLock from 'rwlock';
 
@@ -322,6 +322,15 @@ export class BBTagContext implements BBTagContextOptions {
             async (options) => await this.util.queryChannel(options),
             options
         );
+    }
+
+    public async getMessage(channel: KnownChannel, messageId: string, force?: boolean): Promise<KnownMessage | undefined>
+    public async getMessage<T extends KnownTextableChannel>(channel: T, messageId: string, force?: boolean): Promise<Message<T> | undefined>
+    public async getMessage(channel: KnownChannel, messageId: string, force = false): Promise<KnownMessage | undefined> {
+        if (!force && channel.id === this.channel.id && (messageId === this.message.id || messageId === '') && this.message instanceof Message)
+            return this.message;
+
+        return await this.util.getMessage(channel, messageId, force);
     }
 
     private async queryEntity<T extends { id: string; }>(

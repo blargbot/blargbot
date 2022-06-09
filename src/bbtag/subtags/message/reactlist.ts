@@ -55,7 +55,7 @@ export class ReactListSubtag extends CompiledSubtag {
         if (channel === undefined)
             throw new ChannelNotFoundError(channelStr);
 
-        const message = await context.util.getMessage(channel, messageId, true);
+        const message = await context.getMessage(channel, messageId, true);
         if (message === undefined)
             throw new MessageNotFoundError(channel.id, messageId);
 
@@ -100,7 +100,7 @@ export class ReactListSubtag extends CompiledSubtag {
     }
 
     public async getReactions(context: BBTagContext, messageId: string): Promise<string[]> {
-        const msg = await context.util.getMessage(context.channel, messageId, true);
+        const msg = await context.getMessage(context.channel, messageId, true);
         if (msg === undefined)
             throw new MessageNotFoundError(context.channel.id, messageId);
         return Object.keys(msg.reactions);

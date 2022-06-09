@@ -85,7 +85,7 @@ export class EditSubtag extends CompiledSubtag {
             }
         }
 
-        const message = await context.util.getMessage(channel, messageStr);
+        const message = await context.getMessage(channel, messageStr);
         if (message === undefined)
             throw new MessageNotFoundError(channel.id, messageStr);
         if (message.author.id !== context.discord.user.id)

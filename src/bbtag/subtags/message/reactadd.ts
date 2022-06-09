@@ -52,7 +52,7 @@ export class ReactAddSubtag extends CompiledSubtag {
         if (channel === undefined)
             throw new ChannelNotFoundError(channelStr);
 
-        const message = messageId === undefined ? undefined : await context.util.getMessage(channel, messageId);
+        const message = messageId === undefined ? undefined : await context.getMessage(channel, messageId);
         if (message === undefined && messageId !== undefined)
             throw new MessageNotFoundError(channel.id, messageId);
 

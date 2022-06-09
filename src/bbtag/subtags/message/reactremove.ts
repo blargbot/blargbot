@@ -50,7 +50,7 @@ export class ReactRemoveSubtag extends CompiledSubtag {
         if (!permissions.has('manageMessages'))
             throw new BBTagRuntimeError('I need to be able to Manage Messages to remove reactions');
 
-        const message = await context.util.getMessage(channel, messageId, true);
+        const message = await context.getMessage(channel, messageId, true);
         if (message === undefined)
             throw new MessageNotFoundError(channel.id, messageId);
 

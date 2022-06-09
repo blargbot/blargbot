@@ -73,7 +73,7 @@ export class MessageTimeSubtag extends CompiledSubtag {
         if (channel === undefined)
             throw new ChannelNotFoundError(channelStr);
 
-        const message = await context.util.getMessage(channel, messageStr);
+        const message = await context.getMessage(channel, messageStr);
         if (message === undefined)
             throw new MessageNotFoundError(channel.id, messageStr);
         return moment(message.timestamp).format(format);

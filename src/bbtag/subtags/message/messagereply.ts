@@ -45,7 +45,7 @@ export class MessageReplySubtag extends CompiledSubtag {
                 .withDisplay(quiet ? '' : undefined);
         }
 
-        const message = await context.util.getMessage(channel, messageStr);
+        const message = await context.getMessage(channel, messageStr);
         if (message === undefined) {
             throw new MessageNotFoundError(channel.id, messageStr)
                 .withDisplay(quiet ? '' : undefined);

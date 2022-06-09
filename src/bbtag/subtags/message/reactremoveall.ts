@@ -27,7 +27,7 @@ export class ReactRemoveAllSubtag extends CompiledSubtag {
         if (channel === undefined)
             throw new ChannelNotFoundError(channelStr);
 
-        const message = await context.util.getMessage(channel, messageId);
+        const message = await context.getMessage(channel, messageId);
         if (message === undefined)
             throw new MessageNotFoundError(channel.id, messageId);
 
