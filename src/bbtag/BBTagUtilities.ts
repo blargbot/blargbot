@@ -26,7 +26,7 @@ export interface BBTagUtilities extends BaseUtilities {
     queryRole(options: EntityPickQueryOptions<Role>): Promise<ChoiceQueryResult<Role>>;
     queryChannel<T extends KnownChannel>(options: EntityPickQueryOptions<T>): Promise<ChoiceQueryResult<T>>;
 
-    warn(member: Member, moderator: User, authorizer: User, count: number, reason?: string): Promise<number>;
+    warn(member: Member, moderator: User, count: number, reason?: string): Promise<number>;
     pardon(member: Member, moderator: User, count: number, reason?: string): Promise<number>;
     ban(guild: Guild, user: User, moderator: User, authorizer: User, deleteDays: number, reason: string, duration: Duration): Promise<'success' | 'alreadyBanned' | 'noPerms' | 'memberTooHigh' | 'moderatorNoPerms' | 'moderatorTooLow'>;
     unban(guild: Guild, user: User, moderator: User, authorizer: User, reason?: string): Promise<'success' | 'notBanned' | 'noPerms' | 'moderatorNoPerms'>;

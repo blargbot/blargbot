@@ -48,7 +48,6 @@ export class WarnSubtag extends CompiledSubtag {
         if (isNaN(count))
             throw new NotANumberError(countStr);
 
-        const authorizer = context.authorizer?.user ?? context.user;
-        return await context.util.warn(member, context.user, authorizer, count, reason !== '' ? reason : 'Tag Warning');
+        return await context.util.warn(member, context.user, count, reason !== '' ? reason : 'Tag Warning');
     }
 }
