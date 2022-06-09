@@ -24,7 +24,7 @@ export class BaseUtilities {
     ) {
     }
 
-    private async getSendChannel(context: SendContext): Promise<KnownTextableChannel> {
+    async #getSendChannel(context: SendContext): Promise<KnownTextableChannel> {
         // Process context into a channel and maybe a message
         switch (typeof context) {
             // Id provided, get channel object
@@ -91,7 +91,7 @@ export class BaseUtilities {
     public async send(context: SendContext, payload: SendPayload): Promise<KnownMessage | undefined> {
         metrics.sendCounter.inc();
 
-        let channel = await this.getSendChannel(context);
+        let channel = await this.#getSendChannel(context);
         const author = typeof context === 'object' && 'author' in context ? context.author : undefined;
 
         if (typeof payload === 'string')
