@@ -55,22 +55,26 @@ export class HelpManager {
 
     public async viewCommand(channel: KnownTextableChannel, author: User, prefix: string, commandName: string, page: number): Promise<SendPayload> {
         const result = await this.commands.get(commandName, channel, author);
+        const description = [];
         switch (result.state) {
-            case 'ALLOWED': break;
+            case 'NOT_FOUND':
+                return `❌ The command \`${commandName}\` could not be found`;
+            case 'ALLOWED':
+                break;
             case 'BLACKLISTED':
             case 'DISABLED':
-            case 'NOT_FOUND':
             case 'NOT_IN_GUILD':
-                return `❌ The command \`${commandName}\` could not be found`;
             case 'MISSING_PERMISSIONS':
             case 'MISSING_ROLE':
-                return `❌ You dont have permission to run the \`${commandName}\` command`;
+                description.push(codeBlock(`❌ You cannot use ${prefix}${commandName}`));
+                break;
         }
 
-        let name = result.detail.name;
+        const { detail: { command } } = result;
+        let name = command.name;
         if (name.toLowerCase() !== commandName.toLowerCase()) {
-            const byName = await this.commands.get(result.detail.name, channel, author);
-            if (byName.state !== 'ALLOWED' || byName.detail.implementation !== result.detail.implementation)
+            const byName = await this.commands.get(command.name, channel, author);
+            if (byName.state !== 'ALLOWED' || command.implementation !== command.implementation)
                 name = commandName;
         }
 
@@ -78,7 +82,8 @@ export class HelpManager {
             return '❌ Page the page number must be 1 or higher';
 
         const fields: EmbedField[] = [];
-        const { detail: command } = result;
+        if (command.description !== undefined && command.description.length > 0)
+            description.push(command.description);
 
         const aliases = [...command.aliases].filter(a => a !== name);
 
@@ -121,7 +126,7 @@ export class HelpManager {
                 {
                     title: `Help for ${name}`,
                     url: this.util.websiteLink(`/commands#${command.name}`),
-                    description: command.description,
+                    description: description.join('\n'),
                     color: getColor(command.category),
                     fields: fields
                 }

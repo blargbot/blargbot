@@ -67,8 +67,11 @@ export type PermissionCheckResult =
 
 export type CommandGetResult<T = unknown> =
     | Result<'NOT_FOUND'>
-    | Exclude<PermissionCheckResult, { state: 'ALLOWED'; }>
-    | Result<'ALLOWED', ICommand<T>>;
+    | {
+        [P in PermissionCheckResult['state']]: Extract<PermissionCheckResult, { state: P; }> extends Result<infer State, infer Detail>
+        ? Result<State, { readonly command: ICommand<T>; readonly reason: Detail; }>
+        : never
+    }[PermissionCheckResult['state']]
 
 export type CommandGetCoreResult<T = unknown> =
     | CommandGetResult<T>

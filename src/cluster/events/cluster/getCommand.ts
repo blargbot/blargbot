@@ -14,17 +14,19 @@ export class ClusterGetCommandHandler extends ClusterEventService<'getCommand'> 
         if (result.state !== 'ALLOWED')
             return undefined;
 
+        const command = result.detail.command;
+
         return {
-            aliases: result.detail.aliases,
-            category: result.detail.category,
-            description: result.detail.description,
-            disabled: result.detail.disabled,
-            flags: result.detail.flags,
-            hidden: result.detail.hidden,
-            name: result.detail.name,
-            permission: result.detail.permission,
-            roles: result.detail.roles,
-            signatures: result.detail.signatures
+            aliases: command.aliases,
+            category: command.category,
+            description: command.description,
+            disabled: command.disabled,
+            flags: command.flags,
+            hidden: command.hidden,
+            name: command.name,
+            permission: command.permission,
+            roles: command.roles,
+            signatures: command.signatures
         };
     }
 }

@@ -19,25 +19,30 @@ export abstract class CommandManager<T> implements ICommandManager<T> {
     public abstract configure(user: User, names: string[], guild: Guild, permissions: Partial<CommandPermissions>): Promise<readonly string[]>;
 
     public async get(name: string, location?: Guild | KnownGuildTextableChannel, user?: User): Promise<CommandGetResult<T>> {
-        const result = await this.getCore(name.toLowerCase(), location, user);
-        if (result.state !== 'FOUND')
-            return result;
+        const findResult = await this.getCore(name.toLowerCase(), location, user);
+        if (findResult.state !== 'FOUND')
+            return findResult;
 
+        const command = findResult.detail;
         if (user === undefined || location === undefined)
-            return { state: 'ALLOWED', detail: result.detail };
+            return { state: 'ALLOWED', detail: { command, reason: undefined } };
 
-        const permsResult = await this.checkPermissions(user, location, result.detail);
-        if (permsResult.state !== 'ALLOWED')
-            return permsResult;
-
-        return { state: 'ALLOWED', detail: result.detail };
+        const { state, detail: reason } = await this.checkPermissions(user, location, command);
+        switch (state) {
+            case 'ALLOWED': return { state, detail: { command, reason } };
+            case 'BLACKLISTED': return { state, detail: { command, reason } };
+            case 'DISABLED': return { state, detail: { command, reason } };
+            case 'MISSING_PERMISSIONS': return { state, detail: { command, reason } };
+            case 'MISSING_ROLE': return { state, detail: { command, reason } };
+            case 'NOT_IN_GUILD': return { state, detail: { command, reason } };
+        }
     }
 
     public async *list(location?: Guild | KnownGuildTextableChannel, user?: User): AsyncGenerator<ICommand<T>> {
         for await (const name of await this.allCommandNames(location)) {
             const result = await this.get(name, location, user);
             if (result.state === 'ALLOWED')
-                yield result.detail;
+                yield result.detail.command;
         }
     }
 

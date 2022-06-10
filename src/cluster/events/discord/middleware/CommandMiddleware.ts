@@ -22,11 +22,11 @@ export class CommandMiddleware implements IMiddleware<KnownMessage, boolean> {
         const commandName = (parts[0] ?? '').toLowerCase();
         const argsString = parts[1] ?? '';
 
-        const command = await this.cluster.commands.get(commandName, message.channel, message.author);
-        switch (command.state) {
+        const result = await this.cluster.commands.get(commandName, message.channel, message.author);
+        switch (result.state) {
             case 'ALLOWED': {
-                const context = new CommandContext(this.cluster, message, commandText, prefix, commandName, argsString, command.detail);
-                const output = await runMiddleware([...this.middleware, command.detail], context, next, () => undefined);
+                const context = new CommandContext(this.cluster, message, commandText, prefix, commandName, argsString, result.detail.command);
+                const output = await runMiddleware([...this.middleware, result.detail.command], context, next, () => undefined);
                 if (output !== undefined)
                     await context.reply(output);
 
@@ -37,13 +37,13 @@ export class CommandMiddleware implements IMiddleware<KnownMessage, boolean> {
             case 'NOT_IN_GUILD':
                 return await next();
             case 'BLACKLISTED':
-                await this.cluster.util.send(message, `❌ You have been blacklisted from the bot for the following reason: ${command.detail}`);
+                await this.cluster.util.send(message, `❌ You have been blacklisted from the bot for the following reason: ${result.detail.reason}`);
                 return true;
             case 'MISSING_ROLE':
-                await this.cluster.util.send(message, `❌ You need the role ${humanize.smartJoin(command.detail.map(r => `<@&${r}>`), ', ', ' or ')} in order to use this command!`);
+                await this.cluster.util.send(message, `❌ You need the role ${humanize.smartJoin(result.detail.reason.map(r => `<@&${r}>`), ', ', ' or ')} in order to use this command!`);
                 return true;
             case 'MISSING_PERMISSIONS': {
-                const permissions = humanize.permissions(command.detail, true).map(m => `- \`${m}\``);
+                const permissions = humanize.permissions(result.detail.reason, true).map(m => `- \`${m}\``);
                 await this.cluster.util.send(message, `❌ You need ${p(permissions.length, 'the following permission', 'any of the following permissions')} to use this command:\n${permissions.join('\n')}`);
                 return true;
             }
