@@ -373,6 +373,7 @@ export interface WarnDetails {
     readonly count: number;
     readonly banAt?: number;
     readonly kickAt?: number;
+    readonly timeoutAt?: number;
 }
 
 export interface WarnResultBase<ModType extends ModerationType, TResult extends string> {
@@ -384,6 +385,7 @@ export interface WarnResultBase<ModType extends ModerationType, TResult extends 
 export type WarnResult =
     | WarnResultBase<ModerationType.BAN, BanResult>
     | WarnResultBase<ModerationType.KICK, KickResult>
+    | WarnResultBase<ModerationType.TIMEOUT, TimeoutResult>
     | WarnResultBase<ModerationType.WARN, 'success' | 'countNaN' | 'countNegative' | 'countZero'>;
 
 export interface PardonResult {

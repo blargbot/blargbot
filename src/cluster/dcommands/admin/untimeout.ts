@@ -26,7 +26,7 @@ export class UnTimeoutCommand extends GuildCommand {
             case 'notTimedOut': return this.error(`**${humanize.fullName(member.user)}** is not currently timed out.`);
             case 'noPerms': return this.error(`I don't have permission to timeout **${humanize.fullName(member.user)}**! Make sure I have the \`moderate members\` permission and try again.`);
             case 'moderatorNoPerms': return this.error(`You don't have permission to timeout **${humanize.fullName(member.user)}**! Make sure you have the \`moderate members\` permission or one of the permissions specified in the \`timeout override\` setting and try again.`);
-            case 'success': return this.success(`**${humanize.fullName(member.user)}** has been timed out.`);
+            case 'success': return this.success(`**${humanize.fullName(member.user)}** timeout has been removed.`);
         }
     }
 }

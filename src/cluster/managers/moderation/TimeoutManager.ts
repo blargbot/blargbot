@@ -1,5 +1,7 @@
 import { TimeoutResult, UnTimeoutResult } from '@blargbot/cluster/types';
 import { humanize } from '@blargbot/cluster/utils';
+import { UnTimeoutEventOptions } from '@blargbot/domain/models/events/UntimeoutEventOptions';
+import { mapping } from '@blargbot/mapping';
 import { Guild, Member, User } from 'eris';
 import moment, { Duration } from 'moment-timezone';
 
@@ -26,6 +28,15 @@ export class TimeoutManager extends ModerationManagerBase {
         }
 
         await this.modLog.logTimeout(guild, member.user, duration, moderator, reason);
+        const data = {
+            source: guild.id,
+            guild: guild.id,
+            user: member.id,
+            duration: JSON.stringify(duration),
+            endtime: moment().add(duration).valueOf()
+        };
+        await this.cluster.timeouts.insert('untimeout', data);
+
         return 'success';
     }
 
@@ -50,6 +61,21 @@ export class TimeoutManager extends ModerationManagerBase {
         return 'success';
     }
 
+    public async timeoutExpired(event: UnTimeoutEventOptions): Promise<void> {
+        const guild = this.cluster.discord.guilds.get(event.guild);
+        if (guild === undefined)
+            return;
+
+        const member = await this.cluster.util.getMember(guild, event.user);
+        if (member === undefined)
+            return;
+
+        const mapResult = mapDuration(event.duration);
+        const duration = mapResult.valid ? humanize.duration(mapResult.value) : 'some time';
+
+        await this.removeTimeout(member, this.cluster.discord.user, this.cluster.discord.user, `Automatically removed timeout after ${duration}.`);
+    }
+
     private async tryTimeoutUser(guild: Guild, userId: string, moderator: User, authorizer: User, duration: Duration, reason: string): Promise<TimeoutResult | { error: unknown; }> {
         const self = guild.members.get(this.cluster.discord.user.id);
         if (self?.permissions.has('moderateMembers') !== true) {
@@ -64,7 +90,7 @@ export class TimeoutManager extends ModerationManagerBase {
         if (member !== undefined && !this.cluster.util.isBotHigher(member))
             return 'memberTooHigh';
 
-        if (member?.communicationDisabledUntil !== null)
+        if (member?.communicationDisabledUntil !== null && moment(member?.communicationDisabledUntil) > moment())
             return 'alreadyTimedOut';
 
         this.ignoreTimeouts.add(`${guild.id}:${userId}`);
@@ -77,3 +103,5 @@ export class TimeoutManager extends ModerationManagerBase {
         return 'success';
     }
 }
+
+const mapDuration = mapping.json(mapping.duration);

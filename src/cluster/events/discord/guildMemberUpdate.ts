@@ -22,10 +22,10 @@ export class DiscordMemberUpdateHandler extends DiscordEventService<'guildMember
             promises.push(this.cluster.moderation.eventLog.nicknameUpdated(member, oldMember.nick ?? undefined));
 
         if (member.communicationDisabledUntil !== oldMember.communicationDisabledUntil) {
-            if (member.communicationDisabledUntil !== null)
-                promises.push(this.cluster.moderation.eventLog.userTimedOut(member));
-            else
+            if (member.communicationDisabledUntil === null)
                 promises.push(this.cluster.moderation.eventLog.userUnTimedOut(member));
+            else
+                promises.push(this.cluster.moderation.eventLog.userTimedOut(member));
         }
 
         for (const pair of join(member.roles, oldMember.roles)) {

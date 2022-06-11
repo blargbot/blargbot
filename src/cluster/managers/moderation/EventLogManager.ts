@@ -22,7 +22,7 @@ export class EventLogManager {
 
     public async userUnTimedOut(member: Member): Promise<void> {
         const channel = await this.getLogChannel('memberuntimeout', member.guild.id);
-        if (channel !== undefined && !await this.isExempt(member.guild.id, member.user.id) && member.communicationDisabledUntil !== null) {
+        if (channel !== undefined && !await this.isExempt(member.guild.id, member.user.id)) {
             await this.logEvent('memberuntimeout', channel, this.eventLogEmbed('User\'s communications are enabled', member.user, ModlogColour.UNTIMEOUT));
         }
     }

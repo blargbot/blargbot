@@ -87,7 +87,7 @@ export const guildSettings: GuildSettingDocs = {
     },
     timeoutat: {
         key: 'timeoutat',
-        name: 'Time out at',
+        name: 'Time Out at',
         desc: 'The number of warnings before a timeout. Set to 0 or below to disable.',
         type: 'int'
     },

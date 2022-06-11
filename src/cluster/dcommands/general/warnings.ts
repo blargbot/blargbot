@@ -24,12 +24,15 @@ export class WarningsCommand extends GuildCommand {
     }
 
     public async warnings(context: GuildCommandContext, member: Member): Promise<string> {
-        const { count, banAt, kickAt } = await context.cluster.moderation.warns.details(member);
+        const { count, banAt, kickAt, timeoutAt } = await context.cluster.moderation.warns.details(member);
         const result: string[] = [
             count > 0
                 ? this.warning(`**${humanize.fullName(member.user)}** has accumulated ${count} ${p(count, 'warning')}.`)
                 : this.congrats(`**${humanize.fullName(member.user)}** doesn't have any warnings!`)
         ];
+
+        if (timeoutAt !== undefined)
+            result.push(`- ${timeoutAt - count} more warnings before being timed out.`);
 
         if (kickAt !== undefined)
             result.push(`- ${kickAt - count} more warnings before being kicked.`);

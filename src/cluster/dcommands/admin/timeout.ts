@@ -15,7 +15,7 @@ export class TimeoutCommand extends GuildCommand {
                 {
                     flag: 't',
                     word: 'time',
-                    description: 'The amount of time to mute for, formatted as \'1 day 2 hours 3 minutes and 4 seconds\', \'1d2h3m4s\', or some other combination.'
+                    description: 'The amount of time to mute for, formatted as \'1 day 2 hours 3 minutes and 4 seconds\', \'1d2h3m4s\', or some other combination.\nMaximum allowed time is 28 days.'
                 }
             ],
             definitions: [
