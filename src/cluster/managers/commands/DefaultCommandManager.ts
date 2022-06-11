@@ -40,7 +40,7 @@ export class DefaultCommandManager extends CommandManager<Command> {
             : guard.isGuildChannel(location) ? location.guild
                 : undefined;
 
-        const permissions = guild === undefined ? {} : { ...await this.cluster.database.guilds.getCommandPerms(guild.id, name) };
+        const permissions = guild === undefined ? {} : { ...await this.cluster.database.guilds.getCommandPerms(guild.id, command.name) };
         if (command.cannotDisable)
             permissions.disabled = false;
 

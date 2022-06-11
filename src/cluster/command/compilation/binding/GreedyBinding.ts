@@ -109,40 +109,42 @@ function memoize(
 function aggregateResults(
     results: CommandBinderParseResult[]
 ): CommandBinderParseResult {
-    const deferred: Array<Exclude<CommandBinderParseResult, { success: false; }>> = [];
-    const successful: CommandArgument[] = [];
+    const deferred: Array<{ result: Exclude<CommandBinderParseResult, { success: false; }>; i: number; }> = [];
+    const successful: Array<{ i: number; result: CommandArgument; }> = [];
 
-    for (const result of results) {
+    const indexed = results.map((result, i) => ({ result, i }));
+
+    for (const { result, i } of indexed) {
         switch (result.success) {
             case false: return result;
-            case true: successful.push(result.value);
+            case true: successful.push({ i, result: result.value });
             // fallthrough
-            case 'deferred': deferred.push(result);
+            case 'deferred': deferred.push({ i, result });
         }
     }
 
     if (deferred.length === successful.length)
-        return { success: true, value: populateMissingArgumentAccessors(createAggregated(successful)) };
+        return { success: true, value: populateMissingArgumentAccessors(createAggregated(successful.sort((a, b) => a.i - b.i).map(x => x.result))) };
 
     return {
         success: 'deferred',
         async getValue() {
-            const results: CommandArgument[] = [];
-            for (const result of deferred) {
+            const results: Array<{ i: number; result: CommandArgument; }> = [];
+            for (const { result, i } of deferred) {
                 switch (result.success) {
                     case true:
-                        results.push(result.value);
+                        results.push({ i, result: result.value });
                         break;
                     case 'deferred': {
                         const value = await result.getValue();
                         switch (value.success) {
                             case false: return { success: false, error: value.error };
-                            case true: results.push(value.value);
+                            case true: results.push({ i, result: value.value });
                         }
                     }
                 }
             }
-            return { success: true, value: populateMissingArgumentAccessors(createAggregated(successful)) };
+            return { success: true, value: populateMissingArgumentAccessors(createAggregated([...successful, ...results].sort((a, b) => a.i - b.i).map(x => x.result))) };
         }
     };
 }
