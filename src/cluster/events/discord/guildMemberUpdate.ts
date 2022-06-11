@@ -21,6 +21,13 @@ export class DiscordMemberUpdateHandler extends DiscordEventService<'guildMember
         if (oldMember.nick !== member.nick)
             promises.push(this.cluster.moderation.eventLog.nicknameUpdated(member, oldMember.nick ?? undefined));
 
+        if (member.communicationDisabledUntil !== oldMember.communicationDisabledUntil) {
+            if (member.communicationDisabledUntil !== null)
+                promises.push(this.cluster.moderation.eventLog.userTimedOut(member));
+            else
+                promises.push(this.cluster.moderation.eventLog.userUnTimedOut(member));
+        }
+
         for (const pair of join(member.roles, oldMember.roles)) {
             if (pair[0] === pair[1])
                 continue;

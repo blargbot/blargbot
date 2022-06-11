@@ -8,6 +8,42 @@ export class ModLogManager {
 
     }
 
+    public async logTimeout(guild: Guild, user: User, duration: Duration, moderator?: User, reason?: string): Promise<void> {
+        await this.logAction({
+            type: 'Timeout',
+            guildId: guild.id,
+            user,
+            color: ModlogColour.TIMEOUT,
+            moderator,
+            reason,
+            fields: [{
+                name: 'User',
+                value: `${humanize.fullName(user)} (${user.id})`,
+                inline: true
+            }, {
+                name: 'Duration',
+                value: humanize.duration(duration),
+                inline: true
+            }]
+        });
+    }
+
+    public async logUnTimeout(guild: Guild, user: User, moderator?: User, reason?: string): Promise<void> {
+        await this.logAction({
+            type: 'Timeout Removal',
+            guildId: guild.id,
+            user,
+            color: ModlogColour.UNTIMEOUT,
+            moderator,
+            reason,
+            fields: [{
+                name: 'User',
+                value: `${humanize.fullName(user)} (${user.id})`,
+                inline: true
+            }]
+        });
+    }
+
     public async logSoftban(guild: Guild, user: User, duration: Duration, moderator?: User, reason?: string): Promise<void> {
         await this.logAction({
             type: 'Soft Ban',

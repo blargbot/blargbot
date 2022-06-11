@@ -1,5 +1,5 @@
 import { Cluster } from '@blargbot/cluster';
-import { discord, guard, humanize } from '@blargbot/cluster/utils';
+import { discord, guard, humanize, ModlogColour } from '@blargbot/cluster/utils';
 import { BaseUtilities } from '@blargbot/core/BaseUtilities';
 import { StoredGuildEventLogType } from '@blargbot/domain/models';
 import { ApiError, AuditLogActionType, DiscordRESTError, EmbedAuthor, EmbedField, EmbedOptions, Guild, GuildAuditLog, KnownGuildTextableChannel, KnownMessage, Member, Message, OldMessage, PossiblyUncachedMessage, PossiblyUncachedTextableChannel, User } from 'eris';
@@ -9,16 +9,34 @@ export class EventLogManager {
     public constructor(private readonly cluster: Cluster) {
     }
 
+    public async userTimedOut(member: Member): Promise<void> {
+        const channel = await this.getLogChannel('membertimeout', member.guild.id);
+        if (channel !== undefined && !await this.isExempt(member.guild.id, member.user.id) && member.communicationDisabledUntil !== null) {
+            await this.logEvent('membertimeout', channel, this.eventLogEmbed('User\'s communications are disabled', member.user, ModlogColour.TIMEOUT, {
+                fields: [
+                    { name: 'Until', value: `<t:${moment(member.communicationDisabledUntil).unix()}>`, inline: true }
+                ]
+            }));
+        }
+    }
+
+    public async userUnTimedOut(member: Member): Promise<void> {
+        const channel = await this.getLogChannel('memberuntimeout', member.guild.id);
+        if (channel !== undefined && !await this.isExempt(member.guild.id, member.user.id) && member.communicationDisabledUntil !== null) {
+            await this.logEvent('memberuntimeout', channel, this.eventLogEmbed('User\'s communications are enabled', member.user, ModlogColour.UNTIMEOUT));
+        }
+    }
+
     public async userBanned(guild: Guild, user: User): Promise<void> {
         const channel = await this.getLogChannel('memberban', guild.id);
         if (channel !== undefined && !await this.isExempt(guild.id, user.id))
-            await this.logEvent('memberban', channel, this.eventLogEmbed('User was banned', user, 0xcc0c1c));
+            await this.logEvent('memberban', channel, this.eventLogEmbed('User was banned', user, ModlogColour.BAN));
     }
 
     public async userUnbanned(guild: Guild, user: User): Promise<void> {
         const channel = await this.getLogChannel('memberunban', guild.id);
         if (channel !== undefined && !await this.isExempt(guild.id, user.id))
-            await this.logEvent('memberunban', channel, this.eventLogEmbed('User Was Unbanned', user, 0x17c914));
+            await this.logEvent('memberunban', channel, this.eventLogEmbed('User Was Unbanned', user, ModlogColour.UNBAN));
     }
 
     public async userJoined(member: Member): Promise<void> {

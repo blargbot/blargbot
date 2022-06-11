@@ -21,6 +21,8 @@ export interface StoredGuildSettings {
     readonly social?: boolean;
     readonly staffperms?: string;
     readonly tableflip?: boolean;
+    readonly timeoutat?: number;
+    readonly timeoutoverride?: string;
 }
 
 export type GuildSettingDocs = {

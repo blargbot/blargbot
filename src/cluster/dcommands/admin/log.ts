@@ -149,6 +149,8 @@ const eventDescriptions: { [key in Exclude<StoredGuildEventLogType, `role:${stri
     memberban: 'Triggered when a member is banned',
     memberjoin: 'Triggered when someone joins',
     memberleave: 'Triggered when someone leaves',
+    membertimeout: 'Triggered when someone is timed out',
+    memberuntimeout: 'Triggered when someone\'s timeout is removed',
     memberunban: 'Triggered when someone is unbanned',
     messagedelete: 'Triggered when someone deletes a message they sent',
     messageupdate: 'Triggered when someone updates a message they sent',

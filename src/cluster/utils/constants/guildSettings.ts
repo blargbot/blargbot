@@ -55,6 +55,12 @@ export const guildSettings: GuildSettingDocs = {
         desc: 'The numeric value of permissions that designate a staff member. If a user has any of the permissions and permoverride is enabled, allows them to execute any command regardless of role. See <a href=https://discordapi.com/permissions.html>here</a> for a permission calculator.',
         type: 'permission'
     },
+    timeoutoverride: {
+        key: 'timeoutoverride',
+        name: 'Timeout override',
+        desc: 'Same as staffperms, but allows users to use the timeout command regardless of permissions',
+        type: 'permission'
+    },
     kickoverride: {
         key: 'kickoverride',
         name: 'Kick override',
@@ -77,6 +83,12 @@ export const guildSettings: GuildSettingDocs = {
         key: 'kickat',
         name: 'Kick at',
         desc: 'The number of warnings before a kick. Set to 0 or below to disable.',
+        type: 'int'
+    },
+    timeoutat: {
+        key: 'timeoutat',
+        name: 'Time out at',
+        desc: 'The number of warnings before a timeout. Set to 0 or below to disable.',
         type: 'int'
     },
     actonlimitsonly: {

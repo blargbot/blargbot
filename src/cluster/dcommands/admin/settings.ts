@@ -70,6 +70,7 @@ export class SettingsCommand extends GuildCommand {
                             name: 'Permission',
                             value: settingGroup([
                                 ['staffperms', settings.staffperms ?? defaultStaff.toString()],
+                                ['timeoutoverride', settings.timeoutoverride],
                                 ['kickoverride', settings.kickoverride],
                                 ['banoverride', settings.banoverride]
                             ])
@@ -77,6 +78,7 @@ export class SettingsCommand extends GuildCommand {
                         {
                             name: 'Warnings',
                             value: settingGroup([
+                                ['timeoutat', settings.timeoutat],
                                 ['kickat', settings.kickat],
                                 ['banat', settings.banat],
                                 ['actonlimitsonly', settings.actonlimitsonly]

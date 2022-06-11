@@ -9,4 +9,6 @@ export type StoredGuildEventLogType =
     | 'memberleave'
     | 'memberunban'
     | 'memberban'
-    | 'kick';
+    | 'kick'
+    | 'membertimeout'
+    | 'memberuntimeout';
