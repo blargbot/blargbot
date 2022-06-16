@@ -37,6 +37,10 @@ export class ModLogManager {
                 //NOOP
             }
         }
+
+        if (user === moderator)
+            moderator = this.cluster.discord.user;
+
         await this.logAction({
             type: 'Ban',
             guildId: guild.id,
@@ -80,6 +84,9 @@ export class ModLogManager {
     }
 
     public async logKick(guild: Guild, user: User, moderator?: User, reason?: string): Promise<void> {
+        if (user === moderator)
+            moderator = this.cluster.discord.user;
+
         await this.logAction({
             type: 'Kick',
             guildId: guild.id,
