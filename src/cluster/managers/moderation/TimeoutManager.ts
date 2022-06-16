@@ -9,13 +9,8 @@ import { ModerationManager } from '../ModerationManager';
 import { ModerationManagerBase } from './ModerationManagerBase';
 
 export class TimeoutManager extends ModerationManagerBase {
-    private readonly ignoreTimeouts: Set<`${string}:${string}`>;
-    private readonly ignoreUnTimeouts: Set<`${string}:${string}`>;
-
     public constructor(manager: ModerationManager) {
         super(manager);
-        this.ignoreTimeouts = new Set();
-        this.ignoreUnTimeouts = new Set();
     }
 
     public async timeout(member: Member, moderator: User, authorizer: User, duration: Duration, reason: string): Promise<TimeoutResult> {
@@ -54,7 +49,6 @@ export class TimeoutManager extends ModerationManagerBase {
         if (permMessage !== undefined)
             return permMessage;
 
-        this.ignoreUnTimeouts.add(`${guild.id}:${member.id}`);
         await guild.editMember(member.id, { communicationDisabledUntil: null }, `[${humanize.fullName(moderator)}] ${reason}`);
         await this.modLog.logUnTimeout(guild, member.user, moderator, reason);
 
@@ -93,11 +87,9 @@ export class TimeoutManager extends ModerationManagerBase {
         if (member?.communicationDisabledUntil !== null && moment(member?.communicationDisabledUntil) > moment())
             return 'alreadyTimedOut';
 
-        this.ignoreTimeouts.add(`${guild.id}:${userId}`);
         try {
             await guild.editMember(userId, { communicationDisabledUntil: moment().add(duration).toDate() }, `[${humanize.fullName(moderator)}] ${reason}`);
         } catch (err: unknown) {
-            this.ignoreTimeouts.delete(`${guild.id}:${userId}`);
             return { error: err };
         }
         return 'success';

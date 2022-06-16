@@ -41,7 +41,7 @@ export class CensorManager extends ModerationManagerBase {
 
         const result = await this.manager.warns.warn(message.member, this.cluster.discord.user, this.cluster.discord.user, censor.weight, censor.reason ?? 'Said a blacklisted phrase.');
         let tag: GuildTriggerTag | undefined;
-        let type: 'ban' | 'delete' | 'kick';
+        let type: 'ban' | 'delete' | 'kick' | 'timeout';
         switch (result.type) {
             case ModerationType.BAN:
                 tag = censor.banMessage ?? censors.rule?.banMessage;
@@ -50,6 +50,10 @@ export class CensorManager extends ModerationManagerBase {
             case ModerationType.KICK:
                 tag = censor.kickMessage ?? censors.rule?.kickMessage;
                 type = 'kick';
+                break;
+            case ModerationType.TIMEOUT:
+                tag = censor.timeoutMessage ?? censors.rule?.timeoutMessage;
+                type = 'timeout';
                 break;
             case ModerationType.WARN:
                 tag = censor.deleteMessage ?? censors.rule?.deleteMessage;
@@ -115,11 +119,11 @@ export class CensorManager extends ModerationManagerBase {
             || roles.some(r => userRoles.includes(r));
     }
 
-    public setDebug(guildId: string, id: number, userId: string, channelId: string, messageId: string, type: 'ban' | 'delete' | 'kick'): void {
+    public setDebug(guildId: string, id: number, userId: string, channelId: string, messageId: string, type: 'ban' | 'delete' | 'kick' | 'timeout'): void {
         this.#debugOutput[this.getDebugKey(guildId, id, userId, type)] = { channelId, messageId };
     }
 
-    private getDebugKey(guildId: string, id: number, userId: string, type: 'ban' | 'delete' | 'kick'): string {
+    private getDebugKey(guildId: string, id: number, userId: string, type: 'ban' | 'delete' | 'kick' | 'timeout'): string {
         return `${guildId}|${id}|${userId}|${type}`;
     }
 }

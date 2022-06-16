@@ -22,9 +22,21 @@ export class EventLogManager {
 
     public async userUnTimedOut(member: Member): Promise<void> {
         const channel = await this.getLogChannel('memberuntimeout', member.guild.id);
-        if (channel !== undefined && !await this.isExempt(member.guild.id, member.user.id)) {
-            await this.logEvent('memberuntimeout', channel, this.eventLogEmbed('User\'s communications are enabled', member.user, ModlogColour.UNTIMEOUT));
-        }
+        if (channel === undefined || await this.isExempt(member.guild.id, member.id))
+            return;
+
+        const now = moment();
+        const auditEvents = await tryGetAuditLogs(member.guild, 50, undefined, AuditLogActionType.MEMBER_UPDATE);
+        const audit = auditEvents?.entries.find(e => e.targetID === member.id && moment(e.createdAt).isAfter(now.add(-1, 'second')));
+        const reason = audit?.reason ?? undefined;
+        const moderator = audit?.member ?? undefined;
+
+        await this.logEvent('memberuntimeout', channel, this.eventLogEmbed('User\'s communications are enabled', member.user, ModlogColour.UNTIMEOUT, {
+            fields: [
+                ...moderator !== undefined ? [{ name: 'Updated By', value: `<@${moderator.id}> (${moderator.id})` }] : [],
+                ...reason !== undefined ? [{ name: 'Reason', value: reason }] : []
+            ]
+        }));
     }
 
     public async userBanned(guild: Guild, user: User): Promise<void> {
