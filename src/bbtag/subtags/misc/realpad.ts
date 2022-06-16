@@ -36,7 +36,7 @@ export class RealPadSubtag extends CompiledSubtag {
         filler: string,
         directionStr: string
     ): string {
-        const length = parse.int(lengthStr, false);
+        const length = parse.int(lengthStr);
         if (length === undefined)
             throw new NotANumberError(lengthStr);
 

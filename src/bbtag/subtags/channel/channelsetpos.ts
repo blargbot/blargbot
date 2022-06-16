@@ -34,7 +34,7 @@ export class ChannelSetPosSubtag extends CompiledSubtag {
         if (!context.hasPermission(channel, 'manageChannels'))
             throw new BBTagRuntimeError('Author cannot move this channel');
 
-        const pos = parse.int(posStr, false);
+        const pos = parse.int(posStr);
         if (pos === undefined)
             throw new NotANumberError(posStr);
 

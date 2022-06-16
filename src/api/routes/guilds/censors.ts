@@ -60,7 +60,7 @@ export class CensorsRoute extends BaseRoute {
     }
 
     public async getCensorMessage(guildId: string, idStr: string, type: CensorRuleType): Promise<ApiResponse> {
-        const id = parse.int(idStr, false);
+        const id = parse.int(idStr, { strict: true });
         if (id === undefined)
             return this.badRequest();
 
@@ -73,7 +73,7 @@ export class CensorsRoute extends BaseRoute {
     }
 
     public async setCensorMessage(guildId: string, idStr: string, type: CensorRuleType, body: unknown, userId: string): Promise<ApiResponse> {
-        const id = parse.int(idStr, false);
+        const id = parse.int(idStr, { strict: true });
         if (id === undefined)
             return this.badRequest();
 
@@ -93,7 +93,7 @@ export class CensorsRoute extends BaseRoute {
     }
 
     public async deleteCensorMessage(guildId: string, idStr: string, type: CensorRuleType): Promise<ApiResponse> {
-        const id = parse.int(idStr, false);
+        const id = parse.int(idStr, { strict: true });
         if (id === undefined)
             return this.badRequest();
 

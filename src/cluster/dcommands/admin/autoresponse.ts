@@ -311,8 +311,8 @@ export class AutoResponseCommand extends GuildCommand {
     }
 
     private async getAutoresponse(context: GuildCommandContext, id: string): Promise<{ id: number; ar: GuildFilteredAutoresponse; } | { id: 'everything'; ar: GuildTriggerTag; } | undefined> {
-        const _id = id === 'everything' ? id : parse.int(id);
-        if (typeof _id === 'number' && isNaN(_id))
+        const _id = id === 'everything' ? id : parse.int(id, { strict: true });
+        if (_id === undefined)
             return undefined;
 
         if (_id === 'everything') {

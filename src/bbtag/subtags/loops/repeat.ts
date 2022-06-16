@@ -30,7 +30,7 @@ export class RepeatSubtag extends CompiledSubtag {
         amountStr: string,
         code: SubtagArgument
     ): AsyncIterable<string> {
-        const amount = parse.int(amountStr, false) ?? parse.int(context.scopes.local.fallback ?? '', false);
+        const amount = parse.int(amountStr) ?? parse.int(context.scopes.local.fallback ?? '');
         if (amount === undefined)
             throw new NotANumberError(amountStr);
         if (amount < 0)

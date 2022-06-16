@@ -42,7 +42,7 @@ export class PardonSubtag extends CompiledSubtag {
         if (member === undefined)
             throw new UserNotFoundError(userStr);
 
-        const count = parse.int(countStr, false);
+        const count = parse.int(countStr);
         if (count === undefined)
             throw new NotANumberError(countStr);
 

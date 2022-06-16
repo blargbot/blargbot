@@ -34,7 +34,10 @@ export class ClusterMevalHandler extends WorkerPoolEventService<ClusterConnectio
                 return results;
             }
             default: {
-                const clusterId = parse.int(type.slice(7));
+                const clusterId = parse.int(type.slice(7), { strict: true });
+                if (clusterId === undefined)
+                    return { success: false, error: `Cluster ${type.slice(7)} doesnt exist!` };
+
                 return await this.getClusterResult(clusterId, { userId, code });
             }
         }

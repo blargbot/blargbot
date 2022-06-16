@@ -22,6 +22,6 @@ export class ParseIntSubtag extends CompiledSubtag {
     }
 
     public parseInt(number: string): number {
-        return parse.int(number);
+        return parse.int(number) ?? NaN;
     }
 }

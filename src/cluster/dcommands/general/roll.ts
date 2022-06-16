@@ -41,10 +41,10 @@ export class RollCommand extends GlobalCommand {
         const match = /^(\d+) ?d ?(\d+)$/.exec(dice);
         if (match === null || match.length !== 3)
             return this.error(`\`${dice}\` is not a valid dice!`);
-        const rollCount = parse.int(match[1]);
-        const faceCount = parse.int(match[2]);
+        const rollCount = parse.int(match[1], { strict: true });
+        const faceCount = parse.int(match[2], { strict: true });
 
-        if (isNaN(rollCount) || rollCount < 1 || isNaN(faceCount) || faceCount < 2)
+        if (rollCount === undefined || rollCount < 1 || faceCount === undefined || faceCount < 2)
             return this.error(`\`${dice}\` is not a valid dice!`);
 
         if (rollCount > maxRolls || faceCount > maxFaces)

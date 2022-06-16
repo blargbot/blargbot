@@ -25,7 +25,7 @@ export class SpaceSubtag extends CompiledSubtag {
     }
 
     public getSpaces(ctx: BBTagContext, countStr: string): string {
-        const count = parse.int(countStr, false) ?? parse.int(ctx.scopes.local.fallback ?? '', false);
+        const count = parse.int(countStr) ?? parse.int(ctx.scopes.local.fallback ?? '');
         if (count === undefined)
             throw new NotANumberError(countStr);
 

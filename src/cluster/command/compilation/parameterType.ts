@@ -102,14 +102,14 @@ const parameterTypes: ParameterTypeFactories = {
         return { success: true, value: createCommandArgument('bigint', result) };
     }),
     integer: buildParameter('integer', (value) => {
-        const result = parse.int(value);
-        if (isNaN(result))
+        const result = parse.int(value, { strict: true });
+        if (result === undefined)
             return { success: false, error: { parseFailed: { attemptedValue: value, types: ['an integer'] } } };
         return { success: true, value: createCommandArgument('integer', result) };
     }),
     number: buildParameter('number', (value) => {
         const result = parse.float(value);
-        if (isNaN(result))
+        if (result === undefined)
             return { success: false, error: { parseFailed: { attemptedValue: value, types: ['a number'] } } };
         return { success: true, value: createCommandArgument('number', result) };
     }),

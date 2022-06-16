@@ -55,7 +55,7 @@ export class SlowmodeSubtag extends CompiledSubtag {
             time = parse.int(channelStr);
         }
 
-        if (isNaN(time))
+        if (time === undefined)
             time = 0;
 
         time = Math.min(time, 21600);

@@ -29,12 +29,12 @@ export class RandIntSubtag extends CompiledSubtag {
         minStr: string,
         maxStr: string
     ): number {
-        const fallback = new Lazy(() => parse.int(context.scopes.local.fallback ?? '', false));
-        const min = parse.int(minStr, false) ?? fallback.value;
+        const fallback = new Lazy(() => parse.int(context.scopes.local.fallback ?? ''));
+        const min = parse.int(minStr) ?? fallback.value;
         if (min === undefined)
             throw new NotANumberError(minStr);
 
-        const max = parse.int(maxStr, false) ?? fallback.value;
+        const max = parse.int(maxStr) ?? fallback.value;
         if (max === undefined)
             throw new NotANumberError(maxStr);
 

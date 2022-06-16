@@ -42,16 +42,16 @@ export class SpliceSubtag extends CompiledSubtag {
         replaceItems: string[]
     ): Promise<JArray> {
         const arr = await bbtag.tagArray.deserializeOrGetArray(context, arrStr);
-        const fallback = new Lazy(() => parse.int(context.scopes.local.fallback ?? '', false));
+        const fallback = new Lazy(() => parse.int(context.scopes.local.fallback ?? ''));
 
         if (arr === undefined)
             throw new NotAnArrayError(arrStr);
 
-        const start = parse.int(startStr, false) ?? fallback.value;
+        const start = parse.int(startStr) ?? fallback.value;
         if (start === undefined)
             throw new NotANumberError(startStr);
 
-        const delCount = parse.int(countStr, false) ?? fallback.value;
+        const delCount = parse.int(countStr) ?? fallback.value;
         if (delCount === undefined)
             throw new NotANumberError(countStr);
 

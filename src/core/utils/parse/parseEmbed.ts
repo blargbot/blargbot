@@ -39,7 +39,7 @@ const mapEmbedCore = mapping.object<EmbedOptions>({
             return parsed === undefined ? mapping.failed : mapping.success(parsed);
         }),
         mapping.string.chain(s => {
-            const parsed = parseInt(s, false);
+            const parsed = parseInt(s);
             return parsed === undefined ? mapping.failed : mapping.success(parsed);
         }),
         mapping.tuple<[number, number, number]>([
@@ -47,7 +47,7 @@ const mapEmbedCore = mapping.object<EmbedOptions>({
             mapping.number,
             mapping.number
         ]).map(v => Color.rgb(...v).value()),
-        mapping.regex<`#${number}`>(/^#\d+$/).map(v => parseInt(v.slice(1), 16))
+        mapping.regex<`#${number}`>(/^#\d+$/).map(v => parseInt(v.slice(1), { radix: 16 }) ?? NaN)
     ).optional,
     description: mapping.string.optional,
     fields: mapping.array(mapping.object<Exclude<EmbedOptions['fields'], undefined>[number]>({

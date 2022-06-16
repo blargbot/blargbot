@@ -58,10 +58,10 @@ export class OperatorSubtag extends CompiledSubtag {
     }
 
     public applyNumericOperation(operator: NumericOperator, values: string[]): number {
-        return bbtag.tagArray.flattenArray(values).map((arg) => {
+        return bbtag.tagArray.flattenArray(values).map((arg: JToken | undefined) => {
             if (typeof arg === 'string')
                 arg = parse.float(arg);
-            if (typeof arg !== 'number' || isNaN(arg))
+            if (typeof arg !== 'number')
                 throw new NotANumberError(arg);
             return arg;
         }).reduce(bbtag.operators[operator]);

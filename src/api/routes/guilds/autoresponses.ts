@@ -30,7 +30,7 @@ export class AutoresponsesRoute extends BaseRoute {
     }
 
     public async getAutoresponse(guildId: string, id: string): Promise<ApiResponse> {
-        const key = id === 'everything' ? id : parse.int(id, false);
+        const key = id === 'everything' ? id : parse.int(id, { strict: true });
         if (key === undefined)
             return this.badRequest();
 
@@ -43,7 +43,7 @@ export class AutoresponsesRoute extends BaseRoute {
 
     public async editAutoresponse(guildId: string, id: string, body: unknown, userId: string): Promise<ApiResponse> {
         const mapped = mapUpdate(body);
-        const key = id === 'everything' ? id : parse.int(id, false);
+        const key = id === 'everything' ? id : parse.int(id, { strict: true });
         if (key === undefined || !mapped.valid)
             return this.badRequest();
 

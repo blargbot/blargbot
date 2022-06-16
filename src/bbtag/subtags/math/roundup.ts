@@ -24,7 +24,7 @@ export class RoundUpSubtag extends CompiledSubtag {
     }
 
     public roundup(value: string): number {
-        const number = parse.float(value, false);
+        const number = parse.float(value);
         if (number === undefined)
             throw new NotANumberError(value);
         return Math.ceil(number);

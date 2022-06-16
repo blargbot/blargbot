@@ -26,17 +26,17 @@ export class SliceSubtag extends CompiledSubtag {
 
     public async slice(context: BBTagContext, array: string, startStr: string, endStr: string): Promise<JArray> {
         const arr = await bbtag.tagArray.deserializeOrGetArray(context, array);
-        const fallback = new Lazy<number>(() => parse.int(context.scopes.local.fallback ?? ''));
+        const fallback = new Lazy(() => parse.int(context.scopes.local.fallback ?? ''));
 
         if (arr === undefined)
             throw new NotAnArrayError(array);
 
-        const start = parse.int(startStr, false) ?? fallback.value;
-        if (isNaN(start))
+        const start = parse.int(startStr) ?? fallback.value;
+        if (start === undefined)
             throw new NotANumberError(startStr);
 
-        const end = parse.int(endStr, false) ?? fallback.value;
-        if (isNaN(end))
+        const end = parse.int(endStr) ?? fallback.value;
+        if (end === undefined)
             throw new NotANumberError(endStr);
 
         return arr.v.slice(start, end);

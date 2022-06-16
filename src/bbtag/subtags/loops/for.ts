@@ -37,9 +37,9 @@ export class ForSubtag extends CompiledSubtag {
         code: SubtagArgument
     ): AsyncIterable<string> {
         const errors = [];
-        const initial = parse.float(initialStr);
-        const limit = parse.float(limitStr);
-        const increment = parse.float(incrementStr);
+        const initial = parse.float(initialStr) ?? NaN;
+        const limit = parse.float(limitStr) ?? NaN;
+        const increment = parse.float(incrementStr) ?? NaN;
 
         if (isNaN(initial)) errors.push(new BBTagRuntimeError('Initial must be a number'));
         if (!bbtag.isComparisonOperator(operator)) errors.push(new InvalidOperatorError(operator));
@@ -55,7 +55,7 @@ export class ForSubtag extends CompiledSubtag {
                 yield await code.execute();
 
                 const varEntry = await context.variables.get(varName);
-                i = parse.float(parse.string(varEntry.value));
+                i = parse.float(parse.string(varEntry.value)) ?? NaN;
 
                 if (isNaN(i))
                     throw new NotANumberError(varEntry.value);

@@ -173,5 +173,5 @@ function setArrayProp<T>(arr: T[], prop: string, value: T): void {
 function toArrayKey(key: string): 'length' | number | undefined {
     if (key === 'length')
         return 'length';
-    return parse.int(key, false);
+    return parse.int(key);
 }

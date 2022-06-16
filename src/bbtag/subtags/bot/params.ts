@@ -52,7 +52,7 @@ export class ParamsSubtag extends CompiledSubtag {
             throw new BBTagRuntimeError('{params} can only be used inside {function}');
 
         const i = parse.int(index);
-        if (isNaN(i))
+        if (i === undefined)
             throw new NotANumberError(index);
 
         if (params.length <= i || i < 0)
@@ -70,13 +70,13 @@ export class ParamsSubtag extends CompiledSubtag {
         if (params === undefined)
             throw new BBTagRuntimeError('{params} can only be used inside {function}');
 
-        let from = parse.int(start, false);
+        let from = parse.int(start);
         if (from === undefined)
             throw new NotANumberError(start);
 
         let to = end.toLowerCase() === 'n'
             ? params.length
-            : parse.int(end, false);
+            : parse.int(end);
 
         if (to === undefined)
             throw new NotANumberError(end);

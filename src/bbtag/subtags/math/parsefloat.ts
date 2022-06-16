@@ -22,6 +22,6 @@ export class ParseFloatSubtag extends CompiledSubtag {
     }
 
     public parseFloat(number: string): number {
-        return parse.float(number);
+        return parse.float(number) ?? NaN;
     }
 }

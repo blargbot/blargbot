@@ -1,17 +1,24 @@
-export function parseFloat(s: string | number, allowNaN?: true): number;
-export function parseFloat(s: string | number, allowNaN: false): number | undefined
-export function parseFloat(s: string | number, allowNaN?: boolean): number | undefined {
-    const result = floatCore(s);
-    if (!isNaN(result))
-        return result;
-    if (allowNaN === false)
+export interface ParseFloatOptions {
+    readonly strict?: boolean;
+}
+
+export function parseFloat(s: string | number, options: ParseFloatOptions = {}): number | undefined {
+    const result = floatCore(s, options);
+    if (isNaN(result))
         return undefined;
-    return NaN;
+    return result;
 
 }
 
-function floatCore(s: string | number): number {
+function floatCore(s: string | number, options: ParseFloatOptions): number {
     if (typeof s === 'number')
         return s;
-    return global.parseFloat(s.replace(/[,.](?=.*[,.])/g, '').replace(',', '.'));
+
+    s = s.replace(/[,.](?=.*[,.])/g, '').replace(',', '.');
+    if (options.strict === true && !floatTest.test(s))
+        return NaN;
+
+    return global.parseFloat(s);
 }
+
+const floatTest = /^\d+(?:\.\d+)?$/;

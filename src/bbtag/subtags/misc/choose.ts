@@ -26,7 +26,7 @@ export class ChooseSubtag extends CompiledSubtag {
         choice: string,
         options: SubtagArgument[]
     ): Promise<string> | string {
-        const index = parse.int(choice, false);
+        const index = parse.int(choice);
 
         if (index === undefined)
             throw new NotANumberError(choice);

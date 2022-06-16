@@ -65,7 +65,7 @@ export class WaitMessageSubtag extends CompiledSubtag {
         const users = await this.bulkLookup(userStr, i => context.queryUser(i, { noLookup: true }), UserNotFoundError)
             ?? [context.user];
 
-        const timeout = clamp(parse.float(timeoutStr), 0, 300);
+        const timeout = clamp(parse.float(timeoutStr) ?? NaN, 0, 300);
         if (isNaN(timeout))
             throw new NotANumberError(timeoutStr);
 

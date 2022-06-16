@@ -45,7 +45,7 @@ export class WarnSubtag extends CompiledSubtag {
         if (member === undefined)
             throw new UserNotFoundError(userStr);
 
-        if (isNaN(count))
+        if (count === undefined)
             throw new NotANumberError(countStr);
 
         return await context.util.warn(member, context.user, count, reason !== '' ? reason : 'Tag Warning');

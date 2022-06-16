@@ -22,7 +22,7 @@ export class RolemesRoute extends BaseRoute {
     }
 
     public async getRoleme(guildId: string, idStr: string): Promise<ApiResponse> {
-        const id = parse.int(idStr, false);
+        const id = parse.int(idStr, { strict: true });
         if (id === undefined)
             return this.badRequest();
 
@@ -34,7 +34,7 @@ export class RolemesRoute extends BaseRoute {
     }
 
     public async setRoleme(guildId: string, idStr: string, body: unknown, userId: string): Promise<ApiResponse> {
-        const id = parse.int(idStr, false);
+        const id = parse.int(idStr, { strict: true });
         if (id === undefined)
             return this.badRequest();
 
@@ -54,7 +54,7 @@ export class RolemesRoute extends BaseRoute {
     }
 
     public async deleteRoleme(guildId: string, idStr: string): Promise<ApiResponse> {
-        const id = parse.int(idStr, false);
+        const id = parse.int(idStr, { strict: true });
         if (id === undefined)
             return this.badRequest();
 

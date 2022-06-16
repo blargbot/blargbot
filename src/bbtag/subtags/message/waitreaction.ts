@@ -83,7 +83,7 @@ export class WaitReactionSubtag extends CompiledSubtag {
             parsedReactions = undefined;
         }
 
-        const timeout = clamp(parse.float(timeoutStr), 0, 300);
+        const timeout = clamp(parse.float(timeoutStr) ?? NaN, 0, 300);
         if (isNaN(timeout))
             throw new NotANumberError(timeoutStr);
 

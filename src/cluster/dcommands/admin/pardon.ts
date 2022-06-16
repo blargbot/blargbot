@@ -31,7 +31,7 @@ export class PardonCommand extends GuildCommand {
 
     public async pardon(context: GuildCommandContext, member: Member, flags: FlagResult): Promise<string> {
         const reason = flags.r?.merge().value;
-        const count = parse.int(flags.c?.merge().value ?? 1);
+        const count = parse.int(flags.c?.merge().value ?? 1, { strict: true }) ?? NaN;
 
         const result = await context.cluster.moderation.warns.pardon(member, context.author, count, reason);
         switch (result.state) {

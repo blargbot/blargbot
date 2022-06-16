@@ -31,7 +31,7 @@ export class WarnCommand extends GuildCommand {
 
     public async warn(context: GuildCommandContext, member: Member, flags: FlagResult): Promise<string> {
         const reason = flags.r?.merge().value;
-        const count = parse.int(flags.c?.merge().value ?? 1);
+        const count = parse.int(flags.c?.merge().value ?? 1, { strict: true }) ?? NaN;
 
         const result = await context.cluster.moderation.warns.warn(member, context.author, context.discord.user, count, reason);
         const preamble = `**${humanize.fullName(member.user)}** has been given ${count} ${p(count, 'warning')}.`;

@@ -54,7 +54,7 @@ function parseArgument(parameter: SubtagSignatureParameterOptions): SubtagSignat
 
     let name = parameter.slice(0, Math.min(startDefault, startMaxLength));
     let defaultValue = parameter.slice(startDefault + 1, startMaxLength);
-    let maxLength = parse.int(parameter.slice(startMaxLength + 1), false);
+    let maxLength = parse.int(parameter.slice(startMaxLength + 1), { strict: true });
     if (maxLength === undefined) {
         maxLength = 1_000_000;
         defaultValue = parameter.slice(startDefault + 1);

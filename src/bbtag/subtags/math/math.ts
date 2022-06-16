@@ -31,11 +31,11 @@ export class MathSubtag extends CompiledSubtag {
         if (!bbtag.isNumericOperator(operator))
             throw new InvalidOperatorError(operator);
 
-        return bbtag.tagArray.flattenArray(args).map((arg) => {
+        return bbtag.tagArray.flattenArray(args).map((arg: JToken | undefined) => {
             const argRaw = arg;
             if (typeof arg === 'string')
                 arg = parse.float(arg);
-            if (typeof arg !== 'number' || isNaN(arg))
+            if (typeof arg !== 'number')
                 throw new NotANumberError(argRaw);
             return arg;
         }).reduce(bbtag.numericOperators[operator]);

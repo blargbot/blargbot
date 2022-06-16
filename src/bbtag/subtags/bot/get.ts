@@ -52,7 +52,7 @@ export class GetSubtag extends CompiledSubtag {
         if (indexStr === '')
             return { v: result.value, n: result.key };
 
-        const index = parse.int(indexStr, false);
+        const index = parse.int(indexStr);
         if (index === undefined)
             throw new NotANumberError(indexStr);
 

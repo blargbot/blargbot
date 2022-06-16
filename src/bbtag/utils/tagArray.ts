@@ -25,7 +25,7 @@ export const tagArray = Object.freeze({
             value = value.replace(
                 /([[,]\s*)(\d+)\s*\.\.\.\s*(\d+)(\s*[\],])/gi,
                 (_, ...[before, from, to, after]: string[]) =>
-                    before + getRange(parse.int(from), parse.int(to)).join(',') + after);
+                    before + getRange(parse.int(from) ?? NaN, parse.int(to) ?? NaN).join(',') + after);
             result = mapBBTagArrayOrJson(value);
         }
 

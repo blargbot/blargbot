@@ -48,7 +48,7 @@ export class ArgsSubtag extends CompiledSubtag {
 
     public getArg(context: BBTagContext, index: string): string {
         const i = parse.int(index);
-        if (isNaN(i))
+        if (i === undefined)
             throw new NotANumberError(index);
 
         if (context.input.length <= i || i < 0)
@@ -62,13 +62,13 @@ export class ArgsSubtag extends CompiledSubtag {
         start: string,
         end: string
     ): string {
-        let from = parse.int(start, false);
+        let from = parse.int(start);
         if (from === undefined)
             throw new NotANumberError(start);
 
         let to = end.toLowerCase() === 'n'
             ? context.input.length
-            : parse.int(end, false);
+            : parse.int(end);
 
         if (to === undefined)
             throw new NotANumberError(end);

@@ -31,7 +31,7 @@ export class RoleSetPosSubtag extends CompiledSubtag {
             throw new BBTagRuntimeError('Author cannot edit roles');
 
         const role = await context.queryRole(roleStr, { noLookup: quiet });
-        const pos = parse.int(positionStr, false);
+        const pos = parse.int(positionStr);
         if (pos === undefined)
             throw new NotANumberError(positionStr);
 

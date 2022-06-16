@@ -31,12 +31,12 @@ export class BaseNumberSubtag extends CompiledSubtag {
         originStr: string,
         radixStr: string
     ): string {
-        const fallback = new Lazy(() => parse.int(context.scopes.local.fallback ?? '', false));
-        let origin = parse.int(originStr, false) ?? fallback.value;
+        const fallback = new Lazy(() => parse.int(context.scopes.local.fallback ?? ''));
+        let origin = parse.int(originStr) ?? fallback.value;
         if (origin === undefined)
             throw new NotANumberError(originStr);
 
-        let radix = parse.int(radixStr, false) ?? fallback.value;
+        let radix = parse.int(radixStr) ?? fallback.value;
         if (radix === undefined)
             throw new NotANumberError(radixStr);
 
@@ -46,7 +46,7 @@ export class BaseNumberSubtag extends CompiledSubtag {
         if (!between(origin, 2, 36, true) || !between(radix, 2, 36, true))
             throw new BBTagRuntimeError('Base must be between 2 and 36');
 
-        const value = parse.int(valueStr, false, origin) ?? fallback.value;
+        const value = parse.int(valueStr, { radix: origin }) ?? fallback.value;
         if (value === undefined)
             throw new NotANumberError(valueStr);
         return value.toString(radix);

@@ -43,7 +43,7 @@ export class AbsSubtag extends CompiledSubtag {
             .map(s => {
                 switch (typeof s) {
                     case 'string': {
-                        const result = parse.float(s, false);
+                        const result = parse.float(s);
                         if (result === undefined)
                             throw new NotANumberError(s);
                         return result;

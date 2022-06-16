@@ -24,7 +24,7 @@ export class JsonStringifySubtag extends CompiledSubtag {
         });
     }
     public async jsonStringify(context: BBTagContext, input: string, indentStr: string): Promise<string> {
-        const indent = parse.int(indentStr, false);
+        const indent = parse.int(indentStr);
         if (indent === undefined)
             throw new NotANumberError(indentStr);
 

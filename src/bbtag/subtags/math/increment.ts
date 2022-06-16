@@ -33,7 +33,7 @@ export class IncrementSubtag extends CompiledSubtag {
     }
 
     public async increment(context: BBTagContext, varName: string, amountStr: string, floorStr: string): Promise<number> {
-        let amount = parse.float(amountStr, false);
+        let amount = parse.float(amountStr);
         if (amount === undefined)
             throw new NotANumberError(amountStr);
 
@@ -42,7 +42,7 @@ export class IncrementSubtag extends CompiledSubtag {
             throw new NotABooleanError(floorStr);
 
         const valueRaw = await context.variables.get(varName);
-        let value = NaN;
+        let value: number | undefined;
         switch (typeof valueRaw.value) {
             case 'string':
                 value = parse.float(valueRaw.value);
@@ -51,7 +51,7 @@ export class IncrementSubtag extends CompiledSubtag {
                 value = valueRaw.value;
                 break;
         }
-        if (isNaN(value))
+        if (value === undefined)
             throw new NotANumberError(valueRaw.value);
 
         if (floor) {

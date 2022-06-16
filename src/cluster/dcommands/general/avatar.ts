@@ -35,7 +35,7 @@ export class AvatarCommand extends GlobalCommand {
         if (format !== undefined && !allowedFormats.includes(format))
             return this.error(`${format} is not a valid format! Supported formats are ${humanize.smartJoin(allowedFormats, ', ', ' and ')}`);
 
-        const parsedSize = typeof size === 'string' ? size = parse.int(size) : size;
+        const parsedSize = typeof size === 'string' ? size = parse.int(size, { strict: true }) : size;
 
         if (parsedSize !== undefined && !allowedImageSizes.includes(parsedSize))
             return this.error(`${size ?? parsedSize} is not a valid image size! Supported sizes are ${humanize.smartJoin(allowedImageSizes, ', ', ' and ')}`);

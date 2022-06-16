@@ -24,7 +24,7 @@ export class RoundDownSubtag extends CompiledSubtag {
     }
 
     public rounddown(value: string): number {
-        const number = parse.float(value, false);
+        const number = parse.float(value);
         if (number === undefined)
             throw new NotANumberError(value);
         return Math.floor(number);

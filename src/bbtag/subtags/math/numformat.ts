@@ -36,10 +36,11 @@ export class NumFormatSubtag extends CompiledSubtag {
         thousands: string
     ): string {
         const number = parse.float(numberStr);
-        if (isNaN(number)) return 'NaN';
+        if (number === undefined)
+            return 'NaN';
         let roundto = parse.int(roundToStr);
         const options: Intl.NumberFormatOptions = {}; // create formatter options
-        if (!isNaN(roundto)) {
+        if (roundto !== undefined) {
             roundto = Math.min(20, Math.max(-21, roundto));
             const trunclen = Math.trunc(number).toString().length;
             if (roundto >= 0) {

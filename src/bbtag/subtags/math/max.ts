@@ -1,4 +1,4 @@
-import { parse } from '@blargbot/core/utils';
+import { guard, parse } from '@blargbot/core/utils';
 
 import { CompiledSubtag } from '../../compilation';
 import { bbtag, SubtagType } from '../../utils';
@@ -24,10 +24,11 @@ export class MaxSubtag extends CompiledSubtag {
     public max(values: string[]): number {
         const flattenedArgs = bbtag.tagArray.flattenArray(values);
         const parsedArgs = flattenedArgs.map(arg => parse.float(arg?.toString() ?? ''));
+        const filteredArgs = parsedArgs.filter(guard.hasValue);
 
-        if (parsedArgs.filter(isNaN).length > 0)
+        if (filteredArgs.length < parsedArgs.length)
             return NaN;
 
-        return Math.max(...parsedArgs);
+        return Math.max(...filteredArgs);
     }
 }

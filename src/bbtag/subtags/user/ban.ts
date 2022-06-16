@@ -63,7 +63,7 @@ export class BanSubtag extends CompiledSubtag {
 
         if (user === undefined)
             throw new UserNotFoundError(userStr);
-        const daysToDelete = parse.int(daysToDeleteStr, false);
+        const daysToDelete = parse.int(daysToDeleteStr);
         if (daysToDelete === undefined) {
             throw new NotANumberError(daysToDeleteStr)
                 .withDisplay('false');
