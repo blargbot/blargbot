@@ -50,8 +50,8 @@ export class RolemeManager {
             limit: 'customCommandLimit',
             inputRaw: '',
             isCC: true,
-            authorId: tag.author,
-            authorizerId: tag.authorizer
+            authorId: tag.author ?? undefined,
+            authorizerId: tag.authorizer ?? undefined
         });
     }
 }

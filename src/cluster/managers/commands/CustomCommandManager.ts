@@ -68,7 +68,7 @@ export class CustomCommandManager extends CommandManager<NamedGuildCommandTag> {
 interface CustomCommandDetails {
     readonly content: string;
     readonly tagVars: boolean;
-    readonly author: string;
+    readonly author: string | undefined;
     readonly authorizer: string | undefined;
     readonly flags: readonly FlagDefinition[] | undefined;
     readonly cooldown: number | undefined;
@@ -131,8 +131,8 @@ class NormalizedCommandTag implements ICommand<NamedGuildCommandTag> {
     private async getDetails(context: CommandContext): Promise<string | CustomCommandDetails> {
         if (!guard.isGuildImportedCommandTag(this.implementation)) {
             return {
-                author: this.implementation.author,
-                authorizer: this.implementation.authorizer,
+                author: this.implementation.author ?? undefined,
+                authorizer: this.implementation.authorizer ?? undefined,
                 content: this.implementation.content,
                 cooldown: this.implementation.cooldown,
                 flags: this.implementation.flags,
@@ -141,9 +141,9 @@ class NormalizedCommandTag implements ICommand<NamedGuildCommandTag> {
         }
 
         if (this.tag === undefined) {
-            const oldAuthor = await context.util.getUser(this.implementation.author);
+            const oldAuthor = await context.util.getUser(this.implementation.author ?? '');
             return `❌ When the command \`${context.commandName}\` was imported, the tag \`${this.implementation.alias}\` ` +
-                `was owned by **${humanize.fullName(oldAuthor)}** (${this.implementation.author}) but it no longer exists. ` +
+                `was owned by **${humanize.fullName(oldAuthor)}** (${this.implementation.author ?? '????'}) but it no longer exists. ` +
                 'To continue using this command, please re-create the tag and re-import it.';
         }
 
@@ -152,7 +152,7 @@ class NormalizedCommandTag implements ICommand<NamedGuildCommandTag> {
             const cooldown = Math.max(this.tag.cooldown ?? 0, this.implementation.cooldown ?? 0);
             return {
                 author: this.tag.author,
-                authorizer: this.implementation.authorizer,
+                authorizer: this.implementation.authorizer ?? undefined,
                 content: this.tag.content,
                 cooldown: cooldown <= 0 ? undefined : cooldown,
                 flags: this.tag.flags,

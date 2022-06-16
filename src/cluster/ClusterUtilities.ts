@@ -579,7 +579,8 @@ export class ClusterUtilities extends BaseUtilities {
     ): Promise<boolean | ((member: Member) => boolean)> {
         let member;
         if (args.length === 2) {
-            if (args[0] === args[1]) return true;
+            if (args[0] === args[1])
+                return true;
             member = await this.getMember(args[1], args[0]);
         } else if (args[0] instanceof Member) {
             member = args[0];

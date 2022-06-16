@@ -22,6 +22,6 @@ export class TagAuthorSubtag extends CompiledSubtag {
     }
 
     public getAuthor(context: BBTagContext): string {
-        return context.authorId;
+        return context.authorId ?? context.guild.id;
     }
 }

@@ -11,6 +11,7 @@ runSubtagTests({
     cases: [
         {
             code: '{request;https://httpbin.org/status/200}',
+            timeout: 10000,
             setup(ctx) {
                 ctx.util.setup(m => m.canRequestDomain('httpbin.org')).thenReturn(true);
             },
@@ -32,6 +33,7 @@ runSubtagTests({
         {
             code: '{request;https://httpbin.org/post;{escapebbtag;{"method":"post"}}}',
             subtags: [new EscapeBbtagSubtag()],
+            timeout: 10000,
             setup(ctx) {
                 ctx.util.setup(m => m.canRequestDomain('httpbin.org')).thenReturn(true);
             },
@@ -68,6 +70,7 @@ runSubtagTests({
         {
             code: '{request;https://httpbin.org/post;{escapebbtag;{"method":"post","headers":{"x-test":true}}};{escapebbtag;{"age":123}}}',
             subtags: [new EscapeBbtagSubtag()],
+            timeout: 10000,
             setup(ctx) {
                 ctx.util.setup(m => m.canRequestDomain('httpbin.org')).thenReturn(true);
             },
@@ -107,6 +110,7 @@ runSubtagTests({
         {
             code: '{request;https://httpbin.org/post;{escapebbtag;{"method":"post","headers":{"x-test":true}}};{escapebbtag;This isnt json}}',
             subtags: [new EscapeBbtagSubtag()],
+            timeout: 10000,
             setup(ctx) {
                 ctx.util.setup(m => m.canRequestDomain('httpbin.org')).thenReturn(true);
             },
@@ -144,6 +148,7 @@ runSubtagTests({
         {
             code: '{request;https://httpbin.org/post;{escapebbtag;{"method":"post","headers":{"x-test":true,"content-type":"text/plain"}}};{escapebbtag;{"age":123}}}',
             subtags: [new EscapeBbtagSubtag()],
+            timeout: 10000,
             setup(ctx) {
                 ctx.util.setup(m => m.canRequestDomain('httpbin.org')).thenReturn(true);
             },
@@ -183,6 +188,7 @@ runSubtagTests({
         {
             code: '{request;https://httpbin.org/get;{escapebbtag;{"method":"get","headers":{"x-test":true}}};{escapebbtag;{"age":123}}}',
             subtags: [new EscapeBbtagSubtag()],
+            timeout: 10000,
             setup(ctx) {
                 ctx.util.setup(m => m.canRequestDomain('httpbin.org')).thenReturn(true);
             },
@@ -215,6 +221,7 @@ runSubtagTests({
         },
         {
             code: '{request;https://cdn.discordapp.com/attachments/604763099727134750/940689576853385247/e88c2e966c6ca78f2268fa8aed4621ab1.png}',
+            timeout: 10000,
             setup(ctx) {
                 ctx.util.setup(m => m.canRequestDomain('cdn.discordapp.com')).thenReturn(true);
             },
@@ -239,6 +246,7 @@ runSubtagTests({
             errors: [
                 { start: 0, end: 124, error: new BBTagRuntimeError('403 Forbidden') }
             ],
+            timeout: 10000,
             setup(ctx) {
                 ctx.util.setup(m => m.canRequestDomain('cdn.discordapp.com')).thenReturn(true);
             }
@@ -256,6 +264,7 @@ runSubtagTests({
             errors: [
                 { start: 0, end: 25, error: new BBTagRuntimeError('Domain is not whitelisted: test.com') }
             ],
+            timeout: 10000,
             setup(ctx) {
                 ctx.util.setup(m => m.canRequestDomain('test.com')).thenReturn(false);
             }
@@ -266,6 +275,7 @@ runSubtagTests({
             errors: [
                 { start: 0, end: 149, error: new BBTagRuntimeError('', 'Invalid request options "this isnt a valid option"') }
             ],
+            timeout: 10000,
             setup(ctx) {
                 ctx.util.setup(m => m.canRequestDomain('cdn.discordapp.com')).thenReturn(true);
             }

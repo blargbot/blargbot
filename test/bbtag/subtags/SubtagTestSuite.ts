@@ -56,6 +56,7 @@ export interface SubtagTestCase {
     readonly subtags?: readonly Subtag[];
     readonly skip?: boolean | (() => Awaitable<boolean>);
     readonly retries?: number;
+    readonly timeout?: number;
     readonly setupSaveVariables?: boolean;
 }
 
@@ -662,9 +663,13 @@ export class SubtagTestSuite<TestCase extends SubtagTestCase> {
             const subtag = this.#subtag;
             const config = this.#config;
             for (const testCase of this.#testCases) {
-                it(getTestName(testCase), function () {
+                const test = it(getTestName(testCase), function () {
                     return runTestCase(this, subtag, testCase, config);
-                }).retries(testCase.retries ?? 0);
+                });
+                if (testCase.retries !== undefined)
+                    test.retries(testCase.retries);
+                if (testCase.timeout !== undefined)
+                    test.timeout(testCase.timeout);
             }
 
             otherTests?.();

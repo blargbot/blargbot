@@ -63,8 +63,8 @@ export interface SerializedBBTagContext {
     flags: readonly FlagDefinition[];
     tagName: string;
     rootTagName: string;
-    author: string;
-    authorizer: string;
+    author: string | undefined;
+    authorizer: string | undefined;
     tagVars: boolean;
     tempVars: JObject;
     limit: SerializedRuntimeLimit;
@@ -139,7 +139,7 @@ export interface BBTagContextOptions {
     readonly flags?: readonly FlagDefinition[];
     readonly isCC: boolean;
     readonly tagVars?: boolean;
-    readonly authorId: string;
+    readonly authorId?: string;
     readonly authorizerId?: string;
     readonly rootTagName?: string;
     readonly tagName?: string;

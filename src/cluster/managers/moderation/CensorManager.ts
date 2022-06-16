@@ -64,8 +64,8 @@ export class CensorManager extends ModerationManagerBase {
                 limit: 'customCommandLimit',
                 inputRaw: message.content,
                 isCC: true,
-                authorId: tag.author,
-                authorizerId: tag.authorizer
+                authorId: tag.author ?? undefined,
+                authorizerId: tag.authorizer ?? undefined
             });
 
             const key = this.getDebugKey(message.channel.guild.id, parseInt(id), message.author.id, type);

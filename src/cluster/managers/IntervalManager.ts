@@ -54,13 +54,16 @@ export class IntervalManager {
     public async invoke(guild: Guild, interval: GuildTriggerTag): Promise<ExecutionResult | 'TOO_LONG' | 'FAILED' | 'MISSING_AUTHORIZER' | 'MISSING_CHANNEL'>
     public async invoke(guild: Guild, interval?: GuildTriggerTag): Promise<ExecutionResult | 'NO_INTERVAL' | 'TOO_LONG' | 'FAILED' | 'MISSING_AUTHORIZER' | 'MISSING_CHANNEL'> {
         interval ??= await this.cluster.database.guilds.getInterval(guild.id);
-        if (interval === undefined) return 'NO_INTERVAL';
+        if (interval === undefined)
+            return 'NO_INTERVAL';
 
         const id = interval.authorizer ?? interval.author;
-        const member = await this.cluster.util.getMember(guild, id);
-        if (member === undefined) return 'MISSING_AUTHORIZER';
+        const member = await this.cluster.util.getMember(guild, id ?? '');
+        if (member === undefined)
+            return 'MISSING_AUTHORIZER';
         const channel = guild.channels.find(guard.isTextableChannel);
-        if (channel === undefined) return 'MISSING_CHANNEL';
+        if (channel === undefined)
+            return 'MISSING_CHANNEL';
 
         return await Promise.race([
             this.invokeCore(member, channel, interval),
@@ -85,8 +88,8 @@ export class IntervalManager {
                 inputRaw: '',
                 isCC: true,
                 rootTagName: '_interval',
-                authorId: interval.author,
-                authorizerId: interval.authorizer,
+                authorId: interval.author ?? undefined,
+                authorizerId: interval.authorizer ?? undefined,
                 silent: true
             });
             this.cluster.logger.log('Interval on guild', member.guild.id, 'executed in', result.duration.total);

@@ -207,8 +207,8 @@ export class CustomCommandCommand extends GuildCommand {
             isCC: true,
             limit: 'customCommandLimit',
             rootTagName: match.name,
-            authorId: match.author,
-            authorizerId: match.authorizer,
+            authorId: match.author ?? undefined,
+            authorizerId: match.authorizer ?? undefined,
             flags: match.flags,
             cooldown: match.cooldown
         });
@@ -352,9 +352,9 @@ export class CustomCommandCommand extends GuildCommand {
             return match;
 
         const response = [];
-        const author = await context.database.users.get(match.author);
+        const author = await context.database.users.get(match.author ?? '');
         response.push(this.success(`The custom command \`${match.name}\` was made by **${humanize.fullName(author)}**`));
-        if (match.authorizer !== undefined && match.authorizer !== match.author) {
+        if (guard.hasValue(match.authorizer) && match.authorizer !== match.author) {
             const authorizer = await context.database.users.get(match.authorizer);
             response.push(`and is authorized by **${humanize.fullName(authorizer)}**`);
         }

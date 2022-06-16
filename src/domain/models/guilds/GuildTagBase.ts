@@ -1,4 +1,4 @@
 export interface GuildTagBase {
-    readonly author: string;
-    readonly authorizer?: string;
+    readonly author?: string | null;
+    readonly authorizer?: string | null;
 }

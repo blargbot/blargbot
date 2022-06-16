@@ -38,7 +38,7 @@ export class GreetingManager {
 
     private async execute(command: GuildTriggerTag, channel: KnownGuildTextableChannel, member: Member, name: string): Promise<ExecutionResult> {
         return await this.cluster.bbtag.execute(command.content, {
-            authorId: command.author,
+            authorId: command.author ?? undefined,
             inputRaw: '',
             isCC: true,
             limit: 'customCommandLimit',
@@ -52,7 +52,7 @@ export class GreetingManager {
                 member: member,
                 createdAt: moment().valueOf()
             },
-            authorizerId: command.authorizer,
+            authorizerId: command.authorizer ?? undefined,
             tagVars: false,
             rootTagName: name
         });

@@ -41,9 +41,9 @@ export class BBTagContext implements BBTagContextOptions {
     public readonly flags: readonly FlagDefinition[];
     public readonly isCC: boolean;
     public readonly tagVars: boolean;
-    public readonly authorId: string;
+    public readonly authorId: string | undefined;
     public readonly authorizer: Member | undefined;
-    public readonly authorizerId: string;
+    public readonly authorizerId: string | undefined;
     public readonly rootTagName: string;
     public readonly tagName: string;
     public readonly cooldown: number;
@@ -101,8 +101,9 @@ export class BBTagContext implements BBTagContextOptions {
         this.tagVars = options.tagVars ?? !this.isCC;
         this.authorId = options.authorId;
         this.authorizerId = options.authorizerId ?? this.authorId;
-        this.authorizer = this.guild.members.get(this.authorizerId);
-        this.permission = this.authorizer === undefined ? new Permission(0n)
+        this.authorizer = this.guild.members.get(this.authorizerId ?? '');
+        this.permission = this.authorizer === undefined
+            ? this.authorizerId === undefined ? new Permission(8n) : new Permission(0n)
             : this.authorizer.permissions.has('administrator') ? new Permission(Constants.Permissions.all)
                 : this.authorizer.permissions;
         this.rootTagName = options.rootTagName ?? options.tagName ?? 'unknown';
