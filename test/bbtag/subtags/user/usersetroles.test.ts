@@ -70,7 +70,7 @@ runSubtagTests({
                 { start: 0, end: 14, error: new BBTagRuntimeError('Author cannot remove roles') }
             ],
             setup(ctx) {
-                ctx.roles.command.permissions = '0';
+                ctx.roles.authorizer.permissions = '0';
             }
         },
         {

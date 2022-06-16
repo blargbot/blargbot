@@ -25,14 +25,11 @@ runSubtagTests({
             expected: 'Success',
             postSetup(bbctx, ctx) {
                 const member = ctx.createMock(Member);
-                const authorizer = bbctx.guild.members.get(ctx.users.command.id)?.user;
-                if (authorizer === undefined)
-                    throw new Error('Authorizer missing');
                 ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
                     .verifiable(1)
                     .thenResolve([member.instance]);
 
-                ctx.util.setup(x => x.kick(member.instance, bbctx.user, authorizer, 'Tag Kick'))
+                ctx.util.setup(x => x.kick(member.instance, bbctx.user, bbctx.user, 'Tag Kick'))
                     .verifiable(1)
                     .thenResolve('success');
             }
@@ -45,14 +42,11 @@ runSubtagTests({
             ],
             postSetup(bbctx, ctx) {
                 const member = ctx.createMock(Member);
-                const authorizer = bbctx.guild.members.get(ctx.users.command.id)?.user;
-                if (authorizer === undefined)
-                    throw new Error('Authorizer missing');
                 ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
                     .verifiable(1)
                     .thenResolve([member.instance]);
 
-                ctx.util.setup(x => x.kick(member.instance, bbctx.user, authorizer, 'Tag Kick'))
+                ctx.util.setup(x => x.kick(member.instance, bbctx.user, bbctx.user, 'Tag Kick'))
                     .verifiable(1)
                     .thenResolve('noPerms');
             }
@@ -68,14 +62,11 @@ runSubtagTests({
                 const user = ctx.createMock(User);
                 member.setup(m => m.user).thenReturn(user.instance);
                 user.setup(m => m.username).thenReturn('other user');
-                const authorizer = bbctx.guild.members.get(ctx.users.command.id)?.user;
-                if (authorizer === undefined)
-                    throw new Error('Authorizer missing');
                 ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
                     .verifiable(1)
                     .thenResolve([member.instance]);
 
-                ctx.util.setup(x => x.kick(member.instance, bbctx.user, authorizer, 'Tag Kick'))
+                ctx.util.setup(x => x.kick(member.instance, bbctx.user, bbctx.user, 'Tag Kick'))
                     .verifiable(1)
                     .thenResolve('memberTooHigh');
             }
@@ -88,14 +79,11 @@ runSubtagTests({
             ],
             postSetup(bbctx, ctx) {
                 const member = ctx.createMock(Member);
-                const authorizer = bbctx.guild.members.get(ctx.users.command.id)?.user;
-                if (authorizer === undefined)
-                    throw new Error('Authorizer missing');
                 ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
                     .verifiable(1)
                     .thenResolve([member.instance]);
 
-                ctx.util.setup(x => x.kick(member.instance, bbctx.user, authorizer, 'Tag Kick'))
+                ctx.util.setup(x => x.kick(member.instance, bbctx.user, bbctx.user, 'Tag Kick'))
                     .verifiable(1)
                     .thenResolve('moderatorNoPerms');
             }
@@ -111,14 +99,11 @@ runSubtagTests({
                 const user = ctx.createMock(User);
                 member.setup(m => m.user).thenReturn(user.instance);
                 user.setup(m => m.username).thenReturn('other user');
-                const authorizer = bbctx.guild.members.get(ctx.users.command.id)?.user;
-                if (authorizer === undefined)
-                    throw new Error('Authorizer missing');
                 ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
                     .verifiable(1)
                     .thenResolve([member.instance]);
 
-                ctx.util.setup(x => x.kick(member.instance, bbctx.user, authorizer, 'Tag Kick'))
+                ctx.util.setup(x => x.kick(member.instance, bbctx.user, bbctx.user, 'Tag Kick'))
                     .verifiable(1)
                     .thenResolve('moderatorTooLow');
             }
@@ -128,14 +113,11 @@ runSubtagTests({
             expected: 'Success',
             postSetup(bbctx, ctx) {
                 const member = ctx.createMock(Member);
-                const authorizer = bbctx.guild.members.get(ctx.users.command.id)?.user;
-                if (authorizer === undefined)
-                    throw new Error('Authorizer missing');
                 ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
                     .verifiable(1)
                     .thenResolve([member.instance]);
 
-                ctx.util.setup(x => x.kick(member.instance, bbctx.user, authorizer, 'My reason here'))
+                ctx.util.setup(x => x.kick(member.instance, bbctx.user, bbctx.user, 'My reason here'))
                     .verifiable(1)
                     .thenResolve('success');
             }
@@ -162,14 +144,11 @@ runSubtagTests({
             expected: 'Success',
             postSetup(bbctx, ctx) {
                 const member = ctx.createMock(Member);
-                const authorizer = bbctx.guild.members.get(ctx.users.command.id)?.user;
-                if (authorizer === undefined)
-                    throw new Error('Authorizer missing');
                 ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
                     .verifiable(1)
                     .thenResolve([member.instance]);
 
-                ctx.util.setup(x => x.kick(member.instance, bbctx.user, authorizer, 'My reason here'))
+                ctx.util.setup(x => x.kick(member.instance, bbctx.user, bbctx.user, 'My reason here'))
                     .verifiable(1)
                     .thenResolve('success');
             }

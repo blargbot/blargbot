@@ -41,7 +41,7 @@ runSubtagTests({
                 ctx.util.setup(m => m.addReactions(message, argument.isDeepEqual(emotes))).thenResolve({ success: emotes, failed: [] });
                 ctx.util.setup(m => m.send(bbctx.message, argument.isDeepEqual({
                     content: '',
-                    replyToExecuting: true,
+                    replyToExecuting: false,
                     embeds: embeds,
                     files: files,
                     nsfw: 'This is the nsfw message',
@@ -84,7 +84,7 @@ runSubtagTests({
                 ctx.util.setup(m => m.addReactions(message, argument.isDeepEqual(emotes))).thenResolve({ success: emotes, failed: [] });
                 ctx.util.setup(m => m.send(bbctx.message, argument.isDeepEqual({
                     content: '',
-                    replyToExecuting: true,
+                    replyToExecuting: false,
                     embeds: embeds,
                     files: files,
                     nsfw: 'This is the nsfw message',
@@ -126,7 +126,7 @@ runSubtagTests({
                 ctx.util.setup(m => m.addReactions(message, argument.isDeepEqual(emotes))).thenResolve({ success: emotes, failed: [] });
                 ctx.util.setup(m => m.send(bbctx.message, argument.isDeepEqual({
                     content: 'This is my message content',
-                    replyToExecuting: true,
+                    replyToExecuting: false,
                     embeds: embeds,
                     files: files,
                     nsfw: 'This is the nsfw message',
@@ -169,7 +169,7 @@ runSubtagTests({
                 ctx.util.setup(m => m.addReactions(message, argument.isDeepEqual(emotes))).thenResolve({ success: emotes, failed: [] });
                 ctx.util.setup(m => m.send(bbctx.message, argument.isDeepEqual({
                     content: 'This is my message content',
-                    replyToExecuting: true,
+                    replyToExecuting: false,
                     embeds: embeds,
                     files: files,
                     nsfw: 'This is the nsfw message',
@@ -206,7 +206,7 @@ runSubtagTests({
                 ctx.util.setup(m => m.addReactions(message, argument.isDeepEqual([]))).thenResolve({ success: [], failed: [] });
                 ctx.util.setup(m => m.send(bbctx.message, argument.isDeepEqual({
                     content: 'This is my message content',
-                    replyToExecuting: true,
+                    replyToExecuting: false,
                     embeds: [],
                     files: undefined,
                     nsfw: undefined,

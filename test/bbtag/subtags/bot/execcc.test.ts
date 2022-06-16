@@ -21,6 +21,7 @@ runSubtagTests({
                 expect(ctx.input).to.deep.equal([]);
                 expect(ctx.scopes.local).to.not.equal(ctx.scopes.root);
                 expect(ctx.scopes.tag).to.not.equal(ctx.scopes.root);
+                expect(ctx.data.stackSize).to.equal(101);
                 ctx.data.embeds = [{ title: 'abc' }];
                 return 'Success!';
             })],
@@ -32,6 +33,7 @@ runSubtagTests({
                 ctx.options.tagName = 'test tag';
                 ctx.options.rootTagName = 'test tag';
                 ctx.options.inputRaw = 'This is some input text';
+                ctx.options.data = { stackSize: 100 };
                 ctx.ccommands['othersubtag'] = {
                     author: '212097368371683623',
                     content: '{assert}{eval}',
@@ -45,6 +47,7 @@ runSubtagTests({
                 expect(ctx.cooldown).to.equal(4);
                 expect(ctx.inputRaw).to.equal('This is some input text');
                 expect(ctx.scopes.local).to.equal(ctx.scopes.root);
+                expect(ctx.data.stackSize).to.equal(100);
                 expect(ctx.data.embeds).to.deep.equal([{ title: 'abc' }]);
                 expect(ctx.scopes.tag).to.equal(ctx.scopes.root);
             }
@@ -59,6 +62,7 @@ runSubtagTests({
                 expect(ctx.cooldown).to.equal(0);
                 expect(ctx.inputRaw).to.equal('');
                 expect(ctx.input).to.deep.equal([]);
+                expect(ctx.data.stackSize).to.equal(101);
                 expect(ctx.scopes.local).to.not.equal(ctx.scopes.root);
                 expect(ctx.scopes.tag).to.not.equal(ctx.scopes.root);
                 return 'Success!';
@@ -71,6 +75,7 @@ runSubtagTests({
                 ctx.options.tagName = 'test tag';
                 ctx.options.rootTagName = 'test tag';
                 ctx.options.inputRaw = 'This is some input text';
+                ctx.options.data = { stackSize: 100 };
                 ctx.ccommands['othersubtag'] = {
                     author: '212097368371683623',
                     content: '{assert}{eval}'
@@ -82,6 +87,7 @@ runSubtagTests({
                 expect(ctx.rootTagName).to.equal('test tag');
                 expect(ctx.cooldown).to.equal(4);
                 expect(ctx.inputRaw).to.equal('This is some input text');
+                expect(ctx.data.stackSize).to.equal(100);
                 expect(ctx.scopes.local).to.equal(ctx.scopes.root);
                 expect(ctx.scopes.tag).to.equal(ctx.scopes.root);
             }
@@ -96,6 +102,7 @@ runSubtagTests({
                 expect(ctx.cooldown).to.equal(7);
                 expect(ctx.inputRaw).to.equal('abc \\\\\\"def\\\\\\" ghi');
                 expect(ctx.input).to.deep.equal(['abc', '\\"def\\"', 'ghi']);
+                expect(ctx.data.stackSize).to.equal(101);
                 expect(ctx.scopes.local).to.not.equal(ctx.scopes.root);
                 expect(ctx.scopes.tag).to.not.equal(ctx.scopes.root);
                 return 'Success!';
@@ -108,6 +115,7 @@ runSubtagTests({
                 ctx.options.tagName = 'test tag';
                 ctx.options.rootTagName = 'test tag';
                 ctx.options.inputRaw = 'This is some input text';
+                ctx.options.data = { stackSize: 100 };
                 ctx.ccommands['othersubtag'] = {
                     author: '212097368371683623',
                     content: '{assert}{eval}',
@@ -120,6 +128,7 @@ runSubtagTests({
                 expect(ctx.rootTagName).to.equal('test tag');
                 expect(ctx.cooldown).to.equal(4);
                 expect(ctx.inputRaw).to.equal('This is some input text');
+                expect(ctx.data.stackSize).to.equal(100);
                 expect(ctx.scopes.local).to.equal(ctx.scopes.root);
                 expect(ctx.scopes.tag).to.equal(ctx.scopes.root);
             }

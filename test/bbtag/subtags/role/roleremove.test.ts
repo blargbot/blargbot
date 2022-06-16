@@ -18,7 +18,7 @@ runSubtagTests({
             setup(ctx) {
                 ctx.roles.other.id = '3298746326924';
                 ctx.members.command.roles.push(ctx.roles.other.id, ctx.roles.bot.id);
-                ctx.discord.setup(m => m.editGuildMember(ctx.guild.id, ctx.users.command.id, argument.isDeepEqual({ roles: [ctx.roles.authorizer.id, ctx.roles.bot.id] }), 'Command User#0000'))
+                ctx.discord.setup(m => m.editGuildMember(ctx.guild.id, ctx.users.command.id, argument.isDeepEqual({ roles: [ctx.roles.command.id, ctx.roles.bot.id] }), 'Command User#0000'))
                     .thenResolve();
             }
         },
@@ -36,7 +36,7 @@ runSubtagTests({
                 ctx.roles.other.id = '3298746326924';
                 ctx.roles.bot.id = '9238476938485';
                 ctx.members.command.roles.push(ctx.roles.other.id, ctx.roles.bot.id);
-                ctx.discord.setup(m => m.editGuildMember(ctx.guild.id, ctx.users.command.id, argument.isDeepEqual({ roles: [ctx.roles.authorizer.id] }), 'Command User#0000'))
+                ctx.discord.setup(m => m.editGuildMember(ctx.guild.id, ctx.users.command.id, argument.isDeepEqual({ roles: [ctx.roles.command.id] }), 'Command User#0000'))
                     .thenResolve();
             }
         },
@@ -47,7 +47,7 @@ runSubtagTests({
                 ctx.roles.other.id = '3298746326924';
                 ctx.roles.bot.id = '9238476938485';
                 ctx.members.command.roles.push(ctx.roles.other.id, ctx.roles.bot.id);
-                ctx.discord.setup(m => m.editGuildMember(ctx.guild.id, ctx.users.command.id, argument.isDeepEqual({ roles: [ctx.roles.authorizer.id, ctx.roles.bot.id] }), 'Command User#0000'))
+                ctx.discord.setup(m => m.editGuildMember(ctx.guild.id, ctx.users.command.id, argument.isDeepEqual({ roles: [ctx.roles.command.id, ctx.roles.bot.id] }), 'Command User#0000'))
                     .thenResolve();
             }
         },

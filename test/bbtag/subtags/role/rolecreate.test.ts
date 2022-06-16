@@ -210,7 +210,7 @@ runSubtagTests({
                 { start: 0, end: 47, error: new BBTagRuntimeError('Author missing requested permissions') }
             ],
             setup(ctx) {
-                ctx.roles.command.permissions = Constants.Permissions.manageRoles.toString();
+                ctx.roles.authorizer.permissions = Constants.Permissions.manageRoles.toString();
             }
         },
         {

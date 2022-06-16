@@ -46,7 +46,7 @@ export class DeleteSubtag extends CompiledSubtag {
         channelStr: string,
         messageId: string
     ): Promise<void> {
-        if (!(await context.isStaff || context.ownsMessage(messageId)))
+        if (!(context.ownsMessage(messageId) || await context.isStaff))
             throw new BBTagRuntimeError('Author must be staff to delete unrelated messages');
 
         const channel = await context.queryChannel(channelStr);

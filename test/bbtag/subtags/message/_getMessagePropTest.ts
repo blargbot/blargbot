@@ -42,6 +42,7 @@ function* createGetMessagePropTestCasesIter(options: GetMessagePropTestData): Ge
         },
         postSetup(bbctx, ctx) {
             ctx.util.setup(m => m.getMessage(bbctx.channel, '12345678998765432'), false).thenResolve(undefined);
+            ctx.util.setup(m => m.getMessage(bbctx.channel, '12345678998765432', false), false).thenResolve(undefined);
             ctx.util.setup(m => m.getMessage(bbctx.channel, '12345678998765432', true), false).thenResolve(undefined);
         }
     };
@@ -69,6 +70,7 @@ function* createGetMessagePropTestCasesIter(options: GetMessagePropTestData): Ge
             },
             postSetup(bbctx, ctx) {
                 ctx.util.setup(m => m.getMessage(bbctx.channel, '12345678998765432'), false).thenResolve(undefined);
+                ctx.util.setup(m => m.getMessage(bbctx.channel, '12345678998765432', false), false).thenResolve(undefined);
                 ctx.util.setup(m => m.getMessage(bbctx.channel, '12345678998765432', true), false).thenResolve(undefined);
             }
         };
@@ -141,6 +143,7 @@ function createTestCase(data: GetMessagePropTestData, testCase: GetMessagePropTe
             const messageQuery = args[1];
             if (messageQuery !== undefined && messageQuery !== '') {
                 ctx.util.setup(m => m.getMessage(channel, messageQuery), false).thenResolve(message);
+                ctx.util.setup(m => m.getMessage(channel, messageQuery, false), false).thenResolve(message);
                 ctx.util.setup(m => m.getMessage(channel, messageQuery, true), false).thenResolve(message);
             }
 

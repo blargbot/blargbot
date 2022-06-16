@@ -24,7 +24,7 @@ runSubtagTests({
         },
         {
             code: '{jsonkeys;{j;{"n":"abc","v":[{"test":{"a":0,"b":1}}]}}}',
-            expected: '["0"]',
+            expected: '["n","v"]',
             subtags: [new JsonSubtag()]
         },
         {

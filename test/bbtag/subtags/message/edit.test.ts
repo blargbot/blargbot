@@ -19,7 +19,7 @@ runSubtagTests({
                 ctx.message.channel_id = ctx.channels.command.id = '987654321123456789';
             },
             postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.getMessage(bbctx.channel, '12345678901234567')).thenResolve(undefined);
+                ctx.util.setup(m => m.getMessage(bbctx.channel, '12345678901234567', false)).thenResolve(undefined);
             },
             errors: [
                 { start: 0, end: 41, error: new MessageNotFoundError('987654321123456789', '12345678901234567') }
@@ -37,7 +37,7 @@ runSubtagTests({
                     embeds: [{ title: 'Original embed' }]
                 }, ctx.users.command));
 
-                ctx.util.setup(m => m.getMessage(bbctx.channel, '12345678901234567')).thenResolve(message);
+                ctx.util.setup(m => m.getMessage(bbctx.channel, '12345678901234567', false)).thenResolve(message);
             },
             errors: [
                 { start: 0, end: 41, error: new BBTagRuntimeError('I must be the message author') }
@@ -54,7 +54,7 @@ runSubtagTests({
                     content: 'Original message text'
                 }, ctx.users.bot));
 
-                ctx.util.setup(m => m.getMessage(bbctx.channel, '12345678901234567')).thenResolve(message);
+                ctx.util.setup(m => m.getMessage(bbctx.channel, '12345678901234567', false)).thenResolve(message);
             },
             errors: [
                 { start: 0, end: 32, error: new BBTagRuntimeError('Message cannot be empty') }
@@ -71,7 +71,7 @@ runSubtagTests({
                     embeds: [{ title: 'Original embed' }]
                 }, ctx.users.bot));
 
-                ctx.util.setup(m => m.getMessage(bbctx.channel, '12345678901234567')).thenResolve(message);
+                ctx.util.setup(m => m.getMessage(bbctx.channel, '12345678901234567', false)).thenResolve(message);
                 ctx.discord.setup(m => m.editMessage(bbctx.channel.id, message.id, argument.isDeepEqual({
                     content: 'New message text',
                     embeds: argument.exact(message.embeds)
@@ -90,7 +90,7 @@ runSubtagTests({
                     embeds: [{ title: 'Original embed' }]
                 }, ctx.users.bot));
 
-                ctx.util.setup(m => m.getMessage(bbctx.channel, '12345678901234567')).thenResolve(message);
+                ctx.util.setup(m => m.getMessage(bbctx.channel, '12345678901234567', false)).thenResolve(message);
                 ctx.discord.setup(m => m.editMessage(bbctx.channel.id, message.id, argument.isDeepEqual({
                     content: 'Original message text',
                     embeds: [{ title: 'New embed!' }]
@@ -109,7 +109,7 @@ runSubtagTests({
                     embeds: [{ title: 'Original embed' }]
                 }, ctx.users.bot));
 
-                ctx.util.setup(m => m.getMessage(bbctx.channel, '12345678901234567')).thenResolve(message);
+                ctx.util.setup(m => m.getMessage(bbctx.channel, '12345678901234567', false)).thenResolve(message);
                 ctx.discord.setup(m => m.editMessage(bbctx.channel.id, message.id, argument.isDeepEqual({
                     content: '{"title":false}',
                     embeds: argument.exact(message.embeds)
@@ -127,7 +127,7 @@ runSubtagTests({
                     embeds: [{ title: 'Original embed' }]
                 }, ctx.users.bot));
 
-                ctx.util.setup(m => m.getMessage(bbctx.channel, '12345678901234567')).thenResolve(message);
+                ctx.util.setup(m => m.getMessage(bbctx.channel, '12345678901234567', false)).thenResolve(message);
                 ctx.discord.setup(m => m.editMessage(bbctx.channel.id, message.id, argument.isDeepEqual({
                     content: '',
                     embeds: argument.exact(message.embeds)
@@ -147,7 +147,7 @@ runSubtagTests({
                 }, ctx.users.bot));
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '12345678901234567')).thenResolve([]);
-                ctx.util.setup(m => m.getMessage(bbctx.channel, '12345678901234567')).thenResolve(message);
+                ctx.util.setup(m => m.getMessage(bbctx.channel, '12345678901234567', false)).thenResolve(message);
                 ctx.discord.setup(m => m.editMessage(bbctx.channel.id, message.id, argument.isDeepEqual({
                     content: 'New message text',
                     embeds: [{ title: 'New embed!' }]
@@ -167,7 +167,7 @@ runSubtagTests({
                 }, ctx.users.bot));
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '12345678901234567')).thenResolve([]);
-                ctx.util.setup(m => m.getMessage(bbctx.channel, '12345678901234567')).thenResolve(message);
+                ctx.util.setup(m => m.getMessage(bbctx.channel, '12345678901234567', false)).thenResolve(message);
                 ctx.discord.setup(m => m.editMessage(bbctx.channel.id, message.id, argument.isDeepEqual({
                     content: '{"title":"New embed!"}',
                     embeds: [{ fields: [{ name: 'Malformed JSON', value: '"New message text"' }], malformed: true }]
@@ -187,7 +187,7 @@ runSubtagTests({
                 }, ctx.users.bot));
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '12345678901234567')).thenResolve([]);
-                ctx.util.setup(m => m.getMessage(bbctx.channel, '12345678901234567')).thenResolve(message);
+                ctx.util.setup(m => m.getMessage(bbctx.channel, '12345678901234567', false)).thenResolve(message);
             },
             errors: [
                 { start: 0, end: 40, error: new BBTagRuntimeError('Message cannot be empty') }
@@ -210,7 +210,7 @@ runSubtagTests({
                 }, ctx.users.bot));
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, channel.id)).thenResolve([channel]);
-                ctx.util.setup(m => m.getMessage(channel, '12345678901234567')).thenResolve(message);
+                ctx.util.setup(m => m.getMessage(channel, '12345678901234567', false)).thenResolve(message);
                 ctx.discord.setup(m => m.editMessage(channel.id, message.id, argument.isDeepEqual({
                     content: 'New message text',
                     embeds: argument.exact(message.embeds)
@@ -235,7 +235,7 @@ runSubtagTests({
                 }, ctx.users.bot));
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, channel.id)).thenResolve([channel]);
-                ctx.util.setup(m => m.getMessage(channel, '12345678901234567')).thenResolve(message);
+                ctx.util.setup(m => m.getMessage(channel, '12345678901234567', false)).thenResolve(message);
                 ctx.discord.setup(m => m.editMessage(channel.id, message.id, argument.isDeepEqual({
                     content: 'Original message text',
                     embeds: [{ title: 'New embed!' }]
@@ -260,7 +260,7 @@ runSubtagTests({
                 }, ctx.users.bot));
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, channel.id)).thenResolve([channel]);
-                ctx.util.setup(m => m.getMessage(channel, '12345678901234567')).thenResolve(message);
+                ctx.util.setup(m => m.getMessage(channel, '12345678901234567', false)).thenResolve(message);
                 ctx.discord.setup(m => m.editMessage(channel.id, message.id, argument.isDeepEqual({
                     content: '{"title":false}',
                     embeds: argument.exact(message.embeds)
@@ -284,7 +284,7 @@ runSubtagTests({
                 }, ctx.users.bot));
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, channel.id)).thenResolve([channel]);
-                ctx.util.setup(m => m.getMessage(channel, '12345678901234567')).thenResolve(message);
+                ctx.util.setup(m => m.getMessage(channel, '12345678901234567', false)).thenResolve(message);
                 ctx.discord.setup(m => m.editMessage(channel.id, message.id, argument.isDeepEqual({
                     content: '',
                     embeds: argument.exact(message.embeds)
@@ -309,7 +309,7 @@ runSubtagTests({
                 }, ctx.users.bot));
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, channel.id)).thenResolve([channel]);
-                ctx.util.setup(m => m.getMessage(channel, '12345678901234567')).thenResolve(message);
+                ctx.util.setup(m => m.getMessage(channel, '12345678901234567', false)).thenResolve(message);
                 ctx.discord.setup(m => m.editMessage(channel.id, message.id, argument.isDeepEqual({
                     content: 'New message text',
                     embeds: [{ title: 'New embed!' }]

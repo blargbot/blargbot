@@ -120,7 +120,7 @@ runSubtagTests({
                     channel_id: bbctx.channel.id
                 }, ctx.users.command));
 
-                ctx.util.setup(m => m.getMessage(bbctx.channel, message.id)).thenResolve(message);
+                ctx.util.setup(m => m.getMessage(bbctx.channel, message.id, false)).thenResolve(message);
                 ctx.util.setup(m => m.addReactions(message, argument.isDeepEqual([unicodeEmote]))).thenResolve({ success: [], failed: [unicodeEmote] });
             },
             errors: [

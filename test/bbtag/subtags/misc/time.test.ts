@@ -1,3 +1,4 @@
+import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
 import { TimeSubtag } from '@blargbot/bbtag/subtags/misc/time';
 import moment from 'moment-timezone';
 
@@ -30,18 +31,18 @@ runSubtagTests({
         { code: '{time;DD/MM/YYYY;;;}', expected: () => moment.tz('Etc/UTC').format('DD/MM/YYYY'), retries: 5 },
         { code: '{time;DD/MM/YYYY;;;;}', expected: () => moment.tz('Etc/UTC').format('DD/MM/YYYY'), retries: 5 },
 
-        { code: '{time;;1640995200}', expected: '2022-01-01T00:00:00+00:00' },
-        { code: '{time;;1640995200;}', expected: '2022-01-01T00:00:00+00:00' },
-        { code: '{time;;1640995200;;}', expected: '2022-01-01T00:00:00+00:00' },
-        { code: '{time;;1640995200;;;}', expected: '2022-01-01T00:00:00+00:00' },
-        { code: '{time;X;1640995200}', expected: '1640995200' },
-        { code: '{time;X;1640995200;}', expected: '1640995200' },
-        { code: '{time;X;1640995200;;}', expected: '1640995200' },
-        { code: '{time;X;1640995200;;;}', expected: '1640995200' },
-        { code: '{time;DD/MM/YYYY;1640995200}', expected: '01/01/2022' },
-        { code: '{time;DD/MM/YYYY;1640995200;}', expected: '01/01/2022' },
-        { code: '{time;DD/MM/YYYY;1640995200;;}', expected: '01/01/2022' },
-        { code: '{time;DD/MM/YYYY;1640995200;;;}', expected: '01/01/2022' },
+        { code: '{time;;1640995200}', expected: '`Invalid date`', errors: [{ start: 0, end: 18, error: new BBTagRuntimeError('Invalid date') }] },
+        { code: '{time;;1640995200;}', expected: '`Invalid date`', errors: [{ start: 0, end: 19, error: new BBTagRuntimeError('Invalid date') }] },
+        { code: '{time;;1640995200;;}', expected: '`Invalid date`', errors: [{ start: 0, end: 20, error: new BBTagRuntimeError('Invalid date') }] },
+        { code: '{time;;1640995200;;;}', expected: '`Invalid date`', errors: [{ start: 0, end: 21, error: new BBTagRuntimeError('Invalid date') }] },
+        { code: '{time;X;1640995200}', expected: '`Invalid date`', errors: [{ start: 0, end: 19, error: new BBTagRuntimeError('Invalid date') }] },
+        { code: '{time;X;1640995200;}', expected: '`Invalid date`', errors: [{ start: 0, end: 20, error: new BBTagRuntimeError('Invalid date') }] },
+        { code: '{time;X;1640995200;;}', expected: '`Invalid date`', errors: [{ start: 0, end: 21, error: new BBTagRuntimeError('Invalid date') }] },
+        { code: '{time;X;1640995200;;;}', expected: '`Invalid date`', errors: [{ start: 0, end: 22, error: new BBTagRuntimeError('Invalid date') }] },
+        { code: '{time;DD/MM/YYYY;1640995200}', expected: '`Invalid date`', errors: [{ start: 0, end: 28, error: new BBTagRuntimeError('Invalid date') }] },
+        { code: '{time;DD/MM/YYYY;1640995200;}', expected: '`Invalid date`', errors: [{ start: 0, end: 29, error: new BBTagRuntimeError('Invalid date') }] },
+        { code: '{time;DD/MM/YYYY;1640995200;;}', expected: '`Invalid date`', errors: [{ start: 0, end: 30, error: new BBTagRuntimeError('Invalid date') }] },
+        { code: '{time;DD/MM/YYYY;1640995200;;;}', expected: '`Invalid date`', errors: [{ start: 0, end: 31, error: new BBTagRuntimeError('Invalid date') }] },
 
         { code: '{time;;1640995200;X}', expected: '2022-01-01T00:00:00+00:00' },
         { code: '{time;;1640995200;X;}', expected: '2022-01-01T00:00:00+00:00' },

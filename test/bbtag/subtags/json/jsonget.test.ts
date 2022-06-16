@@ -7,7 +7,7 @@ import { runSubtagTests, SubtagTestCase } from '../SubtagTestSuite';
 
 runSubtagTests({
     subtag: new JsonGetSubtag(),
-    argCountBounds: { min: 2, max: 2 },
+    argCountBounds: { min: 1, max: 2 },
     cases: [
         ...generateTestCases({ array: [{ test: { abc: 123 } }] }, 'array.0.test', '{"abc":123}'),
         ...generateTestCases({ array: JSON.stringify([{ test: { abc: 123 } }]) }, 'array.0.test', '{"abc":123}'),
@@ -50,6 +50,14 @@ function* generateTestCases(source: JToken, path: string, expected: string): Ite
     yield {
         code: `{jsonget;myJsonVar;${path}}`,
         expected: expected,
+        setup(ctx) {
+            ctx.options.tagName = 'testTag';
+            ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.myJsonVar`] = source;
+        }
+    };
+    yield {
+        code: '{jsonget;myJsonVar}',
+        expected: typeof source === 'string' ? source : JSON.stringify(source),
         setup(ctx) {
             ctx.options.tagName = 'testTag';
             ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.myJsonVar`] = source;

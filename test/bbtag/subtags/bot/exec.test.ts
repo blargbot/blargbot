@@ -14,7 +14,7 @@ runSubtagTests({
             expected: 'Success!',
             subtags: [new AssertSubtag((ctx) => {
                 expect(ctx.parent).to.not.be.undefined;
-                expect(ctx.tagName).to.equal('othersubtag');
+                expect(ctx.tagName).to.equal('otherSubtag');
                 expect(ctx.rootTagName).to.equal('test tag');
                 expect(ctx.cooldown).to.equal(7);
                 expect(ctx.inputRaw).to.equal('');
@@ -34,7 +34,7 @@ runSubtagTests({
                 ctx.options.rootTagName = 'test tag';
                 ctx.options.inputRaw = 'This is some input text';
                 ctx.options.data = { stackSize: 100 };
-                ctx.tags['othersubtag'] = {
+                ctx.tags['otherSubtag'] = {
                     author: '212097368371683623',
                     content: '{assert}{eval}',
                     name: 'otherSubtag',
@@ -60,7 +60,7 @@ runSubtagTests({
             expected: 'Success!',
             subtags: [new AssertSubtag((ctx) => {
                 expect(ctx.parent).to.not.be.undefined;
-                expect(ctx.tagName).to.equal('othersubtag');
+                expect(ctx.tagName).to.equal('otherSubtag');
                 expect(ctx.rootTagName).to.equal('test tag');
                 expect(ctx.cooldown).to.equal(0);
                 expect(ctx.inputRaw).to.equal('');
@@ -79,7 +79,7 @@ runSubtagTests({
                 ctx.options.rootTagName = 'test tag';
                 ctx.options.inputRaw = 'This is some input text';
                 ctx.options.data = { stackSize: 100 };
-                ctx.tags['othersubtag'] = {
+                ctx.tags['otherSubtag'] = {
                     author: '212097368371683623',
                     content: '{assert}{eval}',
                     name: 'otherSubtag',
@@ -103,7 +103,7 @@ runSubtagTests({
             expected: 'Success!',
             subtags: [new AssertSubtag((ctx) => {
                 expect(ctx.parent).to.not.be.undefined;
-                expect(ctx.tagName).to.equal('othersubtag');
+                expect(ctx.tagName).to.equal('otherSubtag');
                 expect(ctx.rootTagName).to.equal('test tag');
                 expect(ctx.cooldown).to.equal(7);
                 expect(ctx.inputRaw).to.equal('abc \\\\\\"def\\\\\\" ghi');
@@ -122,7 +122,7 @@ runSubtagTests({
                 ctx.options.rootTagName = 'test tag';
                 ctx.options.inputRaw = 'This is some input text';
                 ctx.options.data = { stackSize: 100 };
-                ctx.tags['othersubtag'] = {
+                ctx.tags['otherSubtag'] = {
                     author: '212097368371683623',
                     content: '{assert}{eval}',
                     name: 'otherSubtag',
@@ -157,7 +157,7 @@ runSubtagTests({
             ],
             setup(ctx) {
                 ctx.options.data = { stackSize: 200 };
-                ctx.tags['othersubtag'] = {
+                ctx.tags['otherSubtag'] = {
                     author: '212097368371683623',
                     content: '{fail}',
                     name: 'otherSubtag',

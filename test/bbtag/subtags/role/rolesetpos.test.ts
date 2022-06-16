@@ -46,7 +46,7 @@ runSubtagTests({
                 { start: 0, end: 28, error: new BBTagRuntimeError('Author cannot edit roles') }
             ],
             setup(ctx) {
-                ctx.roles.command.permissions = '0';
+                ctx.roles.authorizer.permissions = '0';
             }
         },
         {

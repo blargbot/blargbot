@@ -1,5 +1,4 @@
 import { RoleSizeSubtag } from '@blargbot/bbtag/subtags/role/rolesize';
-import { RequestGuildMembersReturn } from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 import { createGetRolePropTestCases } from './_getRolePropTest';
@@ -16,10 +15,11 @@ runSubtagTests({
             cases: [
                 {
                     expected: '0',
-                    setup(role, ctx) {
+                    setup(role) {
                         role.id = '92348672342308424';
-                        ctx.shard.setup(m => m.requestGuildMembers(ctx.guild.id, undefined))
-                            .thenResolve(Object.values(ctx.members).map(m => ctx.createGuildMember(undefined, m, m.user)) as unknown as RequestGuildMembersReturn);
+                    },
+                    postSetup(_, bbctx, ctx) {
+                        ctx.util.setup(m => m.ensureMemberCache(bbctx.guild)).thenResolve(undefined);
                     }
                 },
                 {
@@ -28,9 +28,9 @@ runSubtagTests({
                         role.id = '29384723084374304';
                         ctx.users.other.id = '23908467240974';
                         ctx.members.other.roles.push(role.id);
-
-                        ctx.shard.setup(m => m.requestGuildMembers(ctx.guild.id, undefined))
-                            .thenResolve(Object.values(ctx.members).map(m => ctx.createGuildMember(undefined, m, m.user)) as unknown as RequestGuildMembersReturn);
+                    },
+                    postSetup(_, bbctx, ctx) {
+                        ctx.util.setup(m => m.ensureMemberCache(bbctx.guild)).thenResolve(undefined);
                     }
                 },
                 {
@@ -41,9 +41,9 @@ runSubtagTests({
                         ctx.users.bot.id = '98347593834657389';
                         ctx.members.other.roles.push(role.id);
                         ctx.members.bot.roles.push(role.id);
-
-                        ctx.shard.setup(m => m.requestGuildMembers(ctx.guild.id, undefined))
-                            .thenResolve(Object.values(ctx.members).map(m => ctx.createGuildMember(undefined, m, m.user)) as unknown as RequestGuildMembersReturn);
+                    },
+                    postSetup(_, bbctx, ctx) {
+                        ctx.util.setup(m => m.ensureMemberCache(bbctx.guild)).thenResolve(undefined);
                     }
                 }
             ]

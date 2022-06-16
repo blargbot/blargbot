@@ -252,7 +252,7 @@ export class SubtagTestContext {
         const guild = this.createGuild(this.guild);
         this.discord.instance.guilds.add(guild);
 
-        const authorizerId = this.options.authorizerId ?? this.options.authorId ?? this.users.command.id;
+        const authorizerId = this.options.authorizerId ?? this.options.authorId ?? this.users.authorizer.id;
         this.util.setup(m => m.isUserStaff(argument.isInstanceof(Member).and(m => m.id === authorizerId && m.guild === guild).value), false).thenResolve(this.isStaff);
 
         for (const channel of guild.channels.values())
@@ -268,7 +268,7 @@ export class SubtagTestContext {
 
         const context = new BBTagContext(engine, {
             authorId: message.author.id,
-            authorizerId: this.users.authorizer.id,
+            authorizerId: authorizerId,
             inputRaw: '',
             isCC: false,
             limit: this.limit.instance,

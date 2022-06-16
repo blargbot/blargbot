@@ -7,7 +7,7 @@ import { createGetUserPropTestCases } from './_getUserPropTest';
 
 runSubtagTests({
     subtag: new UserMentionSubtag(),
-    argCountBounds: { min: 0, max: 2 },
+    argCountBounds: { min: 0, max: 3 },
     cases: [
         ...createGetUserPropTestCases({
             quiet: '',
@@ -44,6 +44,26 @@ runSubtagTests({
                 }
             ]
         }),
+        {
+            code: '{usermention;12345678900987236;;false}',
+            expected: '<@12345678900987236>',
+            setup(ctx) {
+                ctx.users.command.id = '12345678900987236';
+            },
+            assert(ctx) {
+                expect(ctx.data.allowedMentions.users).to.deep.equal(['12345678900987236']);
+            }
+        },
+        {
+            code: '{usermention;12345678900987236;;true}',
+            expected: '<@12345678900987236>',
+            setup(ctx) {
+                ctx.users.command.id = '12345678900987236';
+            },
+            assert(ctx) {
+                expect(ctx.data.allowedMentions.users).to.deep.equal([]);
+            }
+        },
         {
             code: '{usermention;12345678900987236}{usermention;12345678900987236}',
             expected: '<@12345678900987236><@12345678900987236>',

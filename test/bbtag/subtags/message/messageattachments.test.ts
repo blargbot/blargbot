@@ -20,35 +20,35 @@ runSubtagTests({
                 },
                 {
                     title: '1 attachment',
-                    expected: '["12345678900987654432"]',
+                    expected: '["https://www.google.com/url"]',
                     setup(_, message) {
                         message.attachments.push({
                             filename: 'abc.txt',
                             id: '12345678900987654432',
-                            proxy_url: 'https://www.google.com/',
+                            proxy_url: 'https://www.google.com/proxy',
                             size: 12345,
-                            url: 'https://www.google.com/'
+                            url: 'https://www.google.com/url'
                         });
                     }
                 },
                 {
                     title: '2 attachments',
-                    expected: '["12345678900987654432","9871376826132933"]',
+                    expected: '["https://www.google.com/url","https://www.google.com/url2"]',
                     setup(_, message) {
                         message.attachments.push(
                             {
                                 filename: 'abc.txt',
                                 id: '12345678900987654432',
-                                proxy_url: 'https://www.google.com/',
+                                proxy_url: 'https://www.google.com/proxy',
                                 size: 12345,
-                                url: 'https://www.google.com/'
+                                url: 'https://www.google.com/url'
                             },
                             {
                                 filename: 'def.png',
                                 id: '9871376826132933',
-                                proxy_url: 'https://www.google.com/',
+                                proxy_url: 'https://www.google.com/proxy2',
                                 size: 65453,
-                                url: 'https://www.google.com/'
+                                url: 'https://www.google.com/url2'
                             }
                         );
                     }
