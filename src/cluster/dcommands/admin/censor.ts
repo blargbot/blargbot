@@ -348,7 +348,7 @@ function stringifyCensorEvent(event: GuildTriggerTag | undefined): string {
     if (event === undefined)
         return 'Not set';
 
-    return `Author: <@${event.author}>\nAuthorizer: <@${event.authorizer ?? event.author}>`;
+    return `Author: <@${event.author ?? 0}>\nAuthorizer: <@${event.authorizer ?? event.author ?? '????'}>`;
 }
 
 const allowedTypes = new Set(['kick', 'ban', 'delete'] as const);

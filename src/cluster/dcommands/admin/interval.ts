@@ -51,7 +51,7 @@ export class IntervalCommand extends GuildCommand {
             return this.error('No interval has been set yet!');
 
         const authorizer = interval.authorizer ?? interval.author;
-        return this.info(`The current interval was last edited by <@${interval.author}> (${interval.author}) and is authorized by <@${authorizer}> (${authorizer})`);
+        return this.info(`The current interval was last edited by <@${interval.author ?? 0}> (${interval.author ?? '????'}) and is authorized by <@${authorizer ?? 0}> (${authorizer ?? '????'})`);
     }
 
     public async setInterval(context: GuildCommandContext, code: string): Promise<string> {

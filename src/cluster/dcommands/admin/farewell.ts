@@ -56,7 +56,7 @@ export class FarewellCommand extends GuildCommand {
             return this.error('No farewell message has been set yet!');
 
         const authorizer = farewell.authorizer ?? farewell.author;
-        return this.info(`The current farewell was last edited by <@${farewell.author}> (${farewell.author}) and is authorized by <@${authorizer}> (${authorizer})`);
+        return this.info(`The current farewell was last edited by <@${farewell.author ?? 0}> (${farewell.author ?? '????'}) and is authorized by <@${authorizer ?? 0}> (${authorizer ?? '????'})`);
     }
 
     public async setFarewell(context: GuildCommandContext, message: string): Promise<string> {

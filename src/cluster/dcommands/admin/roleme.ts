@@ -324,7 +324,7 @@ export class RolemeCommand extends GuildCommand {
                 { name: 'Roles removed', value: toRemove, inline: true },
                 { name: 'Channels', value: roleme.channels.length === 0 ? 'Anywhere' : roleme.channels.map(c => `<#${c}>`).join('\n'), inline: true },
                 ...roleme.output === undefined ? [] : [
-                    { name: 'Message', value: `**Author:** <@${roleme.output.author}>\n**Authorizer:** <@${roleme.output.authorizer ?? roleme.output.author}>`, inline: true }
+                    { name: 'Message', value: `**Author:** <@${roleme.output.author ?? 0}>\n**Authorizer:** <@${roleme.output.authorizer ?? roleme.output.author ?? '????'}>`, inline: true }
                 ]
             ]
         };

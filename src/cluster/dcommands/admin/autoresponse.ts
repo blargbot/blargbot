@@ -220,8 +220,8 @@ export class AutoResponseCommand extends GuildCommand {
             title: match.id === 'everything' ? 'Everything autoresponse' : `Autoresponse #${match.id}`,
             fields: [
                 ...'term' in match.ar ? [{ name: `Trigger ${match.ar.regex ? 'regex' : 'text'}`, value: match.ar.term }] : [],
-                { name: 'Author', value: `<@${match.ar.author}> (${match.ar.author})`, inline: true },
-                { name: 'Authorizer', value: `<@${authorizer}> (${authorizer})`, inline: true }
+                { name: 'Author', value: `<@${match.ar.author ?? 0}> (${match.ar.author ?? '????'})`, inline: true },
+                { name: 'Authorizer', value: `<@${authorizer ?? 0}> (${authorizer ?? '????'})`, inline: true }
             ]
         };
     }

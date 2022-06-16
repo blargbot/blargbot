@@ -57,7 +57,7 @@ export class GreetingCommand extends GuildCommand {
             return this.error('No greeting message has been set yet!');
 
         const authorizer = greeting.authorizer ?? greeting.author;
-        return this.info(`The current greeting was last edited by <@${greeting.author}> (${greeting.author}) and is authorized by <@${authorizer}> (${authorizer})`);
+        return this.info(`The current greeting was last edited by <@${greeting.author ?? 0}> (${greeting.author ?? '????'}) and is authorized by <@${authorizer ?? 0}> (${authorizer ?? '????'})`);
     }
 
     public async setGreeting(context: GuildCommandContext, message: string): Promise<string> {
