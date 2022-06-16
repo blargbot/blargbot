@@ -390,7 +390,7 @@ export class RethinkDbGuildStore implements GuildStore {
         return true;
     }
 
-    public async setCensorRule(guildId: string, id: number | undefined, ruleType: 'delete' | 'kick' | 'ban', code: GuildTriggerTag | undefined): Promise<boolean> {
+    public async setCensorRule(guildId: string, id: number | undefined, ruleType: 'timeout' | 'delete' | 'kick' | 'ban', code: GuildTriggerTag | undefined): Promise<boolean> {
         const guild = await this.#table.get(guildId);
         if (guild === undefined)
             return false;
@@ -424,7 +424,7 @@ export class RethinkDbGuildStore implements GuildStore {
         return true;
     }
 
-    public async getCensorRule(guildId: string, id: number | undefined, ruleType: 'delete' | 'kick' | 'ban', skipCache?: boolean): Promise<GuildTriggerTag | undefined> {
+    public async getCensorRule(guildId: string, id: number | undefined, ruleType: 'timeout' | 'delete' | 'kick' | 'ban', skipCache?: boolean): Promise<GuildTriggerTag | undefined> {
         const guild = await this.#table.get(guildId, skipCache);
         const ruleMessage = `${ruleType}Message` as const;
         if (id === undefined)

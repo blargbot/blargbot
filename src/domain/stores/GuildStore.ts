@@ -37,8 +37,8 @@ export interface GuildStore {
     censorIgnoreUser(guildId: string, userId: string, ignored: boolean): Promise<boolean>;
     censorIgnoreChannel(guildId: string, channelId: string, ignored: boolean): Promise<boolean>;
     censorIgnoreRole(guildId: string, roleId: string, ignored: boolean): Promise<boolean>;
-    setCensorRule(guildId: string, id: number | undefined, ruleType: 'kick' | 'ban' | 'delete', code: GuildTriggerTag | undefined): Promise<boolean>;
-    getCensorRule(guildId: string, id: number | undefined, ruleType: 'kick' | 'ban' | 'delete', skipCache?: boolean): Promise<GuildTriggerTag | undefined>;
+    setCensorRule(guildId: string, id: number | undefined, ruleType: 'timeout' | 'kick' | 'ban' | 'delete', code: GuildTriggerTag | undefined): Promise<boolean>;
+    getCensorRule(guildId: string, id: number | undefined, ruleType: 'timeout' | 'kick' | 'ban' | 'delete', skipCache?: boolean): Promise<GuildTriggerTag | undefined>;
     getCustomCommands(guildId: string, skipCache?: boolean): Promise<readonly NamedGuildCommandTag[]>;
     getCustomCommandNames(guildId: string, skipCache?: boolean): Promise<readonly string[]>;
     get(guildId: string, skipCache?: boolean): Promise<StoredGuild | undefined>;

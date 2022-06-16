@@ -58,23 +58,23 @@ export class CensorCommand extends GuildCommand {
                     ]
                 },
                 {
-                    parameters: 'setmessage {id:integer?} {type:literal(delete|kick|ban)} {~code+?}',
-                    description: 'Sets the message so show when the given censor causes a user to be `kick`ed or `ban`ned, or the message is `delete`d\n' +
+                    parameters: 'setmessage {id:integer?} {type:literal(delete|timeout|kick|ban)} {~code+?}',
+                    description: 'Sets the message so show when the given censor causes a user to be granted a `timeout`, or to be `kick`ed or `ban`ned, or the message is `delete`d\n' +
                         'If `id` is not provided, the message will be the default message that gets shown if one isnt set for the censor that is triggered',
                     execute: (ctx, [id, type, code]) => this.setMessage(ctx, id.asOptionalInteger, type.asLiteral, code.asOptionalString)
                 },
                 {
-                    parameters: 'setauthorizer {id:integer?} {type:literal(delete|kick|ban)}',
+                    parameters: 'setauthorizer {id:integer?} {type:literal(delete|timeout|kick|ban)}',
                     description: 'Sets the custom censor message to use your permissions when executing.',
                     execute: (ctx, [id, type]) => this.setAuthorizer(ctx, id.asOptionalInteger, type.asLiteral)
                 },
                 {
-                    parameters: 'rawmessage {id:integer?} {type:literal(delete|kick|ban)}',
+                    parameters: 'rawmessage {id:integer?} {type:literal(delete|timeout|kick|ban)}',
                     description: 'Gets the raw code for the given censor',
                     execute: (ctx, [id, type]) => this.getRawMessage(ctx, id.asInteger, type.asLiteral)
                 },
                 {
-                    parameters: 'debug {id:integer} {type:literal(delete|kick|ban)}',
+                    parameters: 'debug {id:integer} {type:literal(delete|timeout|kick|ban)}',
                     description: 'Sets the censor to send you the debug output when it is next triggered by one of your messages. Make sure you arent exempt from censors!',
                     execute: (ctx, [id, type]) => this.setDebug(ctx, id.asInteger, type.asLiteral)
                 },
@@ -329,7 +329,8 @@ export class CensorCommand extends GuildCommand {
                 { name: `Trigger${censor.regex ? ' (Regex)' : ''}`, value: censor.term, inline: false },
                 { name: 'Weight', value: censor.weight.toString(), inline: true },
                 { name: 'Reason', value: censor.reason ?? 'Not set', inline: true },
-                { name: 'Ban message', value: stringifyCensorEvent(censor.deleteMessage), inline: true },
+                { name: 'Delete message', value: stringifyCensorEvent(censor.deleteMessage), inline: true },
+                { name: 'Timeout message', value: stringifyCensorEvent(censor.timeoutMessage), inline: true },
                 { name: 'Kick message', value: stringifyCensorEvent(censor.kickMessage), inline: true },
                 { name: 'Ban message', value: stringifyCensorEvent(censor.banMessage), inline: true }
             ]
@@ -351,4 +352,4 @@ function stringifyCensorEvent(event: GuildTriggerTag | undefined): string {
     return `Author: <@${event.author ?? 0}>\nAuthorizer: <@${event.authorizer ?? event.author ?? '????'}>`;
 }
 
-const allowedTypes = new Set(['kick', 'ban', 'delete'] as const);
+const allowedTypes = new Set(['timeout', 'kick', 'ban', 'delete'] as const);

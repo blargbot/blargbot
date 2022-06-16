@@ -110,7 +110,7 @@ export class SettingsCommand extends GuildCommand {
             return this.error(`'${value ?? '\u200b'}' is not a ${guildSettings[key].type}`);
 
         if (!await context.database.guilds.setSetting(context.channel.guild.id, key, parsed.value))
-            return this.error('Failed to set');
+            return this.error(`${value ?? '\u200b'} is already set for ${key}`);
 
         return this.success(`${guildSettings[key].name} is set to ${parsed.display ?? 'nothing'}`);
     }
