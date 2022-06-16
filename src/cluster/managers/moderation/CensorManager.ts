@@ -36,7 +36,7 @@ export class CensorManager extends ModerationManagerBase {
             // NOOP
         }
 
-        if (guard.hasValue(message.member))
+        if (!guard.hasValue(message.member))
             return true;
 
         const result = await this.manager.warns.warn(message.member, this.cluster.discord.user, this.cluster.discord.user, censor.weight, censor.reason ?? 'Said a blacklisted phrase.');
