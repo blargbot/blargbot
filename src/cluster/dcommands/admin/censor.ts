@@ -228,8 +228,8 @@ export class CensorCommand extends GuildCommand {
         });
 
         return this.success(id === undefined
-            ? `The default ${type} message has been set`
-            : `The ${type} message for censor ${id} has been set`
+            ? `The default ${type} message authorizer has been set`
+            : `The ${type} message authorizer for censor ${id} has been set`
         );
     }
 
