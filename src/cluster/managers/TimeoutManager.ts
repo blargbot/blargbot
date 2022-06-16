@@ -1,9 +1,9 @@
+import { parse } from '@blargbot/core/utils';
 import { EventType, EventTypeMap, StoredEvent, StoredEventOptions } from '@blargbot/domain/models';
 import EventEmitter from 'eventemitter3';
 import moment, { Duration, duration } from 'moment-timezone';
 
 import { Cluster } from '../Cluster';
-import { guard } from '../utils';
 
 export class TimeoutManager {
     #events: Map<string, StoredEvent>;
@@ -49,12 +49,6 @@ export class TimeoutManager {
             if (now.isBefore(event.endtime))
                 continue;
 
-            const shardId = this.getShardId(event);
-            if (!this.cluster.discord.shards.has(shardId)) {
-                this.#events.delete(event.id);
-                continue;
-            }
-
             try {
                 this.#emitter.emit(event.type, event);
             } catch (err: unknown) {
@@ -64,18 +58,10 @@ export class TimeoutManager {
         }
     }
 
-    private getShardId(event: StoredEventOptions): number {
-        if (event.channel !== undefined) {
-            const channel = this.cluster.discord.getChannel(event.channel);
-            if (channel !== undefined && guard.isGuildChannel(channel))
-                return channel.guild.shard.id;
-        }
-        if (event.guild !== undefined) {
-            const guild = this.cluster.discord.guilds.get(event.guild);
-            if (guild !== undefined)
-                return guild.shard.id;
-        }
-        return 0;
+    private shouldHandle(event: StoredEventOptions): boolean {
+        const source = parse.bigInt(event.source) ?? 0n;
+        const shardId = Number(source >> 22n) % this.cluster.config.discord.shards.max;
+        return this.cluster.discord.shards.has(shardId);
     }
 
     public async delete(event: string): Promise<boolean> {
@@ -98,6 +84,6 @@ export class TimeoutManager {
     public async obtain(duration: Duration): Promise<void> {
         this.#lastDuration = duration;
         const events = await this.cluster.database.events.between(0, moment().add(duration));
-        this.#events = new Map(events.map(e => [e.id, e]));
+        this.#events = new Map(events.filter(e => this.shouldHandle(e)).map(e => [e.id, e]));
     }
 }

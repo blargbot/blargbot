@@ -32,14 +32,13 @@ export class BanManager extends ModerationManagerBase {
             await this.modLog.logBan(guild, user, moderator, reason);
         } else {
             await this.modLog.logSoftban(guild, user, duration, moderator, reason);
-            const data = {
+            await this.cluster.timeouts.insert('unban', {
                 source: guild.id,
                 guild: guild.id,
                 user: user.id,
                 duration: JSON.stringify(duration),
                 endtime: moment().add(duration).valueOf()
-            };
-            await this.cluster.timeouts.insert('unban', data);
+            });
         }
 
         return 'success';
