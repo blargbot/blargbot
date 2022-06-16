@@ -173,7 +173,7 @@ async function* fetchMessages(context: GuildCommandContext): AsyncGenerator<Know
         for (const message of messages.values())
             yield message;
         lastId = messages[messages.length - 1].id;
-    } while (messages.length > 0);
+    } while (messages.length === 100);
 }
 
 function buildSummary(messages: Iterable<KnownMessage>): string {
