@@ -38,9 +38,6 @@ export class ModLogManager {
             }
         }
 
-        if (user === moderator)
-            moderator = this.cluster.discord.user;
-
         await this.logAction({
             type: 'Ban',
             guildId: guild.id,
@@ -84,9 +81,6 @@ export class ModLogManager {
     }
 
     public async logKick(guild: Guild, user: User, moderator?: User, reason?: string): Promise<void> {
-        if (user === moderator)
-            moderator = this.cluster.discord.user;
-
         await this.logAction({
             type: 'Kick',
             guildId: guild.id,
@@ -237,16 +231,22 @@ export class ModLogManager {
                 ...fields
             ]
         };
+        if (Array.isArray(user)) {
+            if (moderator !== undefined && user.includes(moderator))
+                moderator = this.cluster.discord.user;
+            embed.description = user.map(u => `${u.username}#${u.discriminator} (${u.id})`).join('\n');
+        } else {
+            if (moderator === user)
+                moderator = this.cluster.discord.user;
+            embed.author = this.cluster.util.embedifyAuthor(user, true);
+        }
+
         if (moderator !== undefined) {
             embed.footer = {
                 text: `${humanize.fullName(moderator)} (${moderator.id})`,
                 icon_url: moderator.avatarURL
             };
         }
-        if (Array.isArray(user)) {
-            embed.description = user.map(u => `${u.username}#${u.discriminator} (${u.id})`).join('\n');
-        } else
-            embed.author = this.cluster.util.embedifyAuthor(user, true);
 
         let modlogMessage;
         try {
