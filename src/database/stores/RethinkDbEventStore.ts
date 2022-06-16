@@ -34,7 +34,7 @@ export class RethinkDbEventStore implements EventStore {
     }
 
     public async list(source: string, pageNumber: number, pageSize: number): Promise<{ events: StoredEvent[]; total: number; }> {
-        const events = await this.#table.queryAll(t => t.filter({ source }).slice(pageNumber * pageSize, (pageNumber + 1) * pageSize));
+        const events = await this.#table.queryAll(t => t.filter({ source }).orderBy('endtime').slice(pageNumber * pageSize, (pageNumber + 1) * pageSize));
         const total = await this.#table.query(t => t.filter({ source }).count());
         return { events, total };
     }
