@@ -12,7 +12,7 @@ export class EventLogManager {
     public async userTimedOut(member: Member): Promise<void> {
         const channel = await this.getLogChannel('membertimeout', member.guild.id);
         if (channel !== undefined && !await this.isExempt(member.guild.id, member.user.id) && member.communicationDisabledUntil !== null) {
-            await this.logEvent('membertimeout', channel, this.eventLogEmbed('User\'s communications are disabled', member.user, ModlogColour.TIMEOUT, {
+            await this.logEvent('membertimeout', channel, this.eventLogEmbed('User Was Timed Out', member.user, ModlogColour.TIMEOUT, {
                 fields: [
                     { name: 'Until', value: `<t:${moment(member.communicationDisabledUntil).unix()}>`, inline: true }
                 ]
@@ -29,9 +29,9 @@ export class EventLogManager {
         const auditEvents = await tryGetAuditLogs(member.guild, 50, undefined, AuditLogActionType.MEMBER_UPDATE);
         const audit = auditEvents?.entries.find(e => e.targetID === member.id && moment(e.createdAt).isAfter(now.add(-1, 'second')));
         const reason = audit?.reason ?? undefined;
-        const moderator = audit?.member ?? undefined;
+        const moderator = audit?.user ?? undefined;
 
-        await this.logEvent('memberuntimeout', channel, this.eventLogEmbed('User\'s communications are enabled', member.user, ModlogColour.UNTIMEOUT, {
+        await this.logEvent('memberuntimeout', channel, this.eventLogEmbed('User Timeout Was Removed', member.user, ModlogColour.UNTIMEOUT, {
             fields: [
                 ...moderator !== undefined ? [{ name: 'Updated By', value: `<@${moderator.id}> (${moderator.id})` }] : [],
                 ...reason !== undefined ? [{ name: 'Reason', value: reason }] : []
@@ -146,7 +146,7 @@ export class EventLogManager {
         const auditEvents = await tryGetAuditLogs(member.guild, 50, undefined, AuditLogActionType.MEMBER_ROLE_UPDATE);
         const audit = auditEvents?.entries.find(e => e.targetID === member.id && moment(e.createdAt).isAfter(now.add(-1, 'second')));
         const reason = audit?.reason ?? undefined;
-        const moderator = audit?.member ?? undefined;
+        const moderator = audit?.user ?? undefined;
         await this.logEvent(`role:${roleId}`, channel, this.eventLogEmbed('Special Role Removed', member.user, 0, {
             fields: [
                 { name: 'Role', value: `<@&${roleId}> (${roleId})` },
@@ -165,7 +165,7 @@ export class EventLogManager {
         const auditEvents = await tryGetAuditLogs(member.guild, 50, undefined, AuditLogActionType.MEMBER_ROLE_UPDATE);
         const audit = auditEvents?.entries.find(e => e.targetID === member.id && moment(e.createdAt).isAfter(now.add(-1, 'second')));
         const reason = audit?.reason ?? undefined;
-        const moderator = audit?.member ?? undefined;
+        const moderator = audit?.user ?? undefined;
         await this.logEvent(`role:${roleId}`, channel, this.eventLogEmbed('Special Role Added', member.user, 0, {
             fields: [
                 { name: 'Role', value: `<@&${roleId}> (${roleId})` },
