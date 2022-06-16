@@ -89,18 +89,17 @@ export abstract class WorkerConnection<Contracts extends IPCContracts> {
     }
 
     public async kill(code: NodeJS.Signals | number = 'SIGTERM'): Promise<void> {
-        if (this.#ipc.process === undefined || !this.#ipc.process.connected)
-            throw new Error('The child process is not connected');
+        if (this.#ipc.process !== undefined) {
+            this.logger.worker('Killing', this.worker, 'worker ( ID:', this.id, 'PID:', this.#ipc.process.pid ?? 'NOT RUNNING');
 
-        this.logger.worker('Killing', this.worker, 'worker ( ID:', this.id, 'PID:', this.#ipc.process.pid ?? 'NOT RUNNING');
+            try {
+                await this.#ipc.request('stop', undefined);
+            } catch { /* NOOP */ }
 
-        try {
-            await this.#ipc.request('stop', undefined);
-        } catch { /* NOOP */ }
-
-        if (<boolean>this.#ipc.process.connected)
-            this.#ipc.process.kill(code);
-
+            try {
+                this.#ipc.process.kill(code);
+            } catch { /* NOOP */ }
+        }
         this.#killed = true;
     }
 

@@ -4,7 +4,7 @@ import { Logger } from '@blargbot/logger';
 import EventEmitter from 'eventemitter3';
 
 import { Semaphore } from '../Semaphore';
-import { WorkerConnection, WorkerState } from './WorkerConnection';
+import { WorkerConnection } from './WorkerConnection';
 
 export const enum RespawnStrategy {
     SPAWN_THEN_KILL,
@@ -77,8 +77,7 @@ export abstract class WorkerPool<Worker extends WorkerConnection<IPCContracts>> 
 
     async #killWorker(worker: Worker): Promise<void> {
         this.#events.emit('killingworker', worker);
-        if (worker.state === WorkerState.RUNNING)
-            await worker.kill();
+        await worker.kill(undefined);
         this.#events.emit('killedworker', worker);
     }
 
