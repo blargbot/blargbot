@@ -74,7 +74,7 @@ const wordApiMapping = mapping.object({
         definition: mapping.string,
         partOfSpeech: mapping.string,
         synonyms: mapping.array(mapping.string).optional
-    })),
+    }, { strict: false })),
     frequency: mapping.number,
     pronunciation: mapping.record(mapping.choice(mapping.in(undefined), mapping.string))
-});
+}, { strict: false });

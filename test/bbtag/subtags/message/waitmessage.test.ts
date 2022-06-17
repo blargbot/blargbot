@@ -349,23 +349,20 @@ runSubtagTests({
             }
         },
         {
-            code: '{waitmessage;21938762934928374;289374634729826479828;{eval}abc;310}',
-            expected: '`Wait timed out after 300000`',
+            code: '{waitmessage;21938762934928374;289374634729826479828;{eval} abc;310}',
+            expected: '`Condition must return \'true\' or \'false\'`',
             errors: [
                 { start: 53, end: 59, error: new MarkerError('eval', 53) },
-                { start: 53, end: 59, error: new MarkerError('eval', 53) },
-                { start: 0, end: 67, error: new BBTagRuntimeError('Wait timed out after 300000') }
+                { start: 0, end: 68, error: new BBTagRuntimeError('Condition must return \'true\' or \'false\'', 'Actually returned " abc"') }
             ],
             setup(ctx) {
                 ctx.channels.command.id = '9834653278429843564';
                 ctx.message.channel_id = ctx.channels.command.id;
             },
             postSetup(bbctx, ctx) {
-                const acceptedMessage = createFilterableMessage(ctx, bbctx.guild, '3982746234283749322', ctx.channels.command.id, '289374634729826479828');
-                const filterableMessage = createFilterableMessage(ctx, bbctx.guild, '5847658249242834983', ctx.channels.command.id, '289374634729826479828');
-                const rejectedMessage = createRejectedMessage(ctx);
+                const rejectedMessage = createFilterableMessage(ctx, bbctx.guild, '3982746234283749322', ctx.channels.command.id, '289374634729826479828');
                 ctx.util.setup(m => m.awaitMessage(argument.isDeepEqual(['21938762934928374']), anyCondition.value, 300000))
-                    .thenCall(createFakeAwaiterFactory(acceptedMessage.instance, [filterableMessage.instance, rejectedMessage.instance]));
+                    .thenCall(createFakeAwaiterFactory(undefined, [rejectedMessage.instance]));
 
                 const channel = ctx.createMock(TextChannel);
                 channel.setup(m => m.id).thenReturn('21938762934928374');

@@ -23,11 +23,17 @@ export class Awaiter<T> {
     }
 
     public async tryConsume(item: T): Promise<boolean> {
-        if (!await this.check(item))
-            return false;
-        this.pcs.resolve(item);
-        this.cleanup();
-        return true;
+        try {
+            if (!await this.check(item))
+                return false;
+            this.pcs.resolve(item);
+            this.cleanup();
+            return true;
+        } catch (ex: unknown) {
+            this.pcs.reject(ex);
+            this.cleanup();
+            return true;
+        }
     }
 
     public cancel(): void {

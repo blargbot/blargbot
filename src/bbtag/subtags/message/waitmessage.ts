@@ -70,8 +70,11 @@ export class WaitMessageSubtag extends CompiledSubtag {
             if (!userSet.has(message.author.id) || !guard.isGuildMessage(message))
                 return false;
 
-            const result = parse.boolean(await context.withChild({ message }, async context => await context.eval(condition)));
-            return result ?? false; //Feel like it should error if a non-boolean is returned
+            const resultStr = await context.withChild({ message }, async context => await context.eval(condition));
+            const result = parse.boolean(resultStr.trim());
+            if (result === undefined)
+                throw new BBTagRuntimeError('Condition must return \'true\' or \'false\'', `Actually returned ${JSON.stringify(resultStr)}`);
+            return result;
         }, timeout * 1000);
 
         if (result === undefined)
