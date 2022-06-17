@@ -93,12 +93,12 @@ ${codeBlock(code, 'js')}`
 
         const promises = [];
         for await (const ar of this.findAutoresponses(msg, everything))
-            promises.push(this.executeCore(msg, ar.id, ar.command));
+            promises.push(this.executeCore(msg, ar.id, ar.command, ar.args));
 
         await Promise.all(promises);
     }
 
-    private async executeCore(msg: Message<KnownGuildTextableChannel>, id: `${number}` | 'everything', tag: GuildTriggerTag): Promise<void> {
+    private async executeCore(msg: Message<KnownGuildTextableChannel>, id: `${number}` | 'everything', tag: GuildTriggerTag, args: string[]): Promise<void> {
         this.#logAutoresponses(msg.channel.guild.id, id);
 
         const result = await this.cluster.bbtag.execute(tag.content, {
@@ -106,7 +106,7 @@ ${codeBlock(code, 'js')}`
             limit: id === 'everything' ? 'everythingAutoResponseLimit' : 'generalAutoResponseLimit',
             authorId: tag.author ?? undefined,
             authorizerId: tag.authorizer ?? undefined,
-            inputRaw: msg.content,
+            inputRaw: humanize.smartSplit.inverse(args),
             isCC: true,
             rootTagName: `_autoresponse_${id}`,
             silent: id === 'everything'
@@ -149,11 +149,11 @@ ${codeBlock(code, 'js')}`
         await Promise.all(promises);
     }
 
-    private async * findAutoresponses(msg: Message<KnownGuildTextableChannel>, everything: boolean): AsyncGenerator<{ command: GuildTriggerTag; id: `${number}` | 'everything'; }> {
+    private async * findAutoresponses(msg: Message<KnownGuildTextableChannel>, everything: boolean): AsyncGenerator<{ command: GuildTriggerTag; id: `${number}` | 'everything'; args: string[]; }> {
         const ars = await this.cluster.database.guilds.getAutoresponses(msg.channel.guild.id) ?? {};
         if (everything) {
             if (ars.everything !== undefined && ars.everything !== null)
-                yield { command: ars.everything, id: 'everything' };
+                yield { command: ars.everything, id: 'everything', args: [msg.content] };
             return;
         }
 
@@ -161,8 +161,10 @@ ${codeBlock(code, 'js')}`
             return;
 
         for (const [id, ar] of Object.entries(ars.filtered)) {
-            if (ar !== undefined && ar !== null && guard.testMessageFilter(ar, msg)) {
-                yield { command: ar, id: <`${number}`>id };
+            if (ar !== undefined && ar !== null) {
+                const args = guard.matchMessageFilter(ar, msg);
+                if (args !== undefined)
+                    yield { command: ar, id: <`${number}`>id, args };
             }
         }
     }

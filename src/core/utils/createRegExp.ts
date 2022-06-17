@@ -17,9 +17,9 @@ export function createSafeRegExp(term: string): { state: 'success'; regex: RegEx
     return { state: 'success', regex: result };
 }
 
-export function testRegexSafe(term: string, text: string): boolean {
+export function matchRegexSafe(term: string, text: string): string[] | undefined {
     const result = createSafeRegExp(term);
     if (result.state !== 'success')
-        return false;
-    return result.regex.test(text);
+        return undefined;
+    return text.match(result.regex)?.map((s: string | undefined) => s ?? '') ?? undefined;
 }
