@@ -1,0 +1,40 @@
+{
+  "patrons": [
+    "Nex",
+    "196018922854678528",
+    "135556895086870528",
+    "196013641479225344",
+    "144906892307726336",
+    "154440828608184322",
+    "277596537515933696",
+    "318882324597047308",
+    "196351316681818112"
+  ],
+  "donators": [
+    "191793155685744640",
+    "235677262437941249",
+    "170844396877512704"
+  ],
+  "other": [
+    {
+      "user": "135556895086870528",
+      "decorator": "awesome",
+      "reason": "rewriting me into typescript"
+    },
+    {
+      "user": "278237925009784832",
+      "decorator": "incredible",
+      "reason": "rewriting me into typescript"
+    },
+    {
+      "user": "317592077066305536",
+      "decorator": "amazing",
+      "reason": "huge financial contributions ($1000)"
+    },
+    {
+      "user": "115076505549144067",
+      "decorator": "inspirational",
+      "reason": "????"
+    }
+  ]
+}

@@ -1,0 +1,61 @@
+name: main
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: [master]
+  workflow_dispatch: ~
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Add configuration files
+        run: |
+          echo "declare const config: import('./src/config/Configuration').Configuration;
+          export = config;" >> config.json.d.ts
+
+      - name: Install Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16
+          cache: yarn
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev graphicsmagick
+        continue-on-error: true
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          languages: javascript
+
+      - name: Install packages
+        run: yarn install
+
+      - name: Build
+        run: yarn build
+
+      - name: Lint
+        run: yarn lint
+
+      - name: Test
+        id: test
+        run: yarn coverage --reporter spec
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
+
+      - name: Upload coverage
+        if: always() && steps.test.outcome != 'skipped' && hashFiles('coverage/index.html') != ''
+        uses: actions/upload-artifact@v2
+        with:
+          name: coverage
+          path: coverage/

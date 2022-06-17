@@ -1,0 +1,26 @@
+{
+    "name": "@blargbot/image",
+    "version": "1.0.0",
+    "private": true,
+    "dependencies": {
+        "@blargbot/config": "workspace:^",
+        "@blargbot/core": "workspace:^",
+        "@blargbot/logger": "workspace:^",
+        "@blargbot/res": "workspace:^",
+        "@jimp/custom": "^0.16.1",
+        "@jimp/plugin-color": "^0.16.1",
+        "canvas": "^2.9.1",
+        "color-thief-jimp": "^2.0.2",
+        "gifencoder": "^2.0.1",
+        "gm": "^1.23.1",
+        "jimp": "^0.16.1",
+        "node-fetch": "^2.6.7"
+    },
+    "devDependencies": {
+        "@types/blargbot-image-api": "workspace:^",
+        "@types/color-thief-jimp": "workspace:^",
+        "@types/gifencoder": "^2.0.1",
+        "@types/gm": "^1.18.12",
+        "@types/node-fetch": "^2.6.1"
+    }
+}

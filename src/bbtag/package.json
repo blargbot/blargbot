@@ -1,0 +1,27 @@
+{
+    "name": "@blargbot/bbtag",
+    "version": "1.0.0",
+    "dependencies": {
+        "@blargbot/config": "workspace:^",
+        "@blargbot/core": "workspace:^",
+        "@blargbot/database": "workspace:^",
+        "@blargbot/domain": "workspace:^",
+        "@blargbot/logger": "workspace:^",
+        "@blargbot/mapping": "workspace:^",
+        "brainfuck-node": "^1.0.2",
+        "color": "^4.2.3",
+        "eris": "^0.17.0",
+        "html-entities": "^2.3.3",
+        "moment-timezone": "^0.5.34",
+        "node-fetch": "^2.6.7",
+        "rwlock": "^5.0.0"
+    },
+    "devDependencies": {
+        "@types/brainfuck-node": "workspace:^",
+        "@types/color": "^3.0.3",
+        "@types/eris": "workspace:^",
+        "@types/node-fetch": "^2.6.1",
+        "@types/rwlock": "^5.0.3",
+        "discord-api-types": "^0.30.0"
+    }
+}

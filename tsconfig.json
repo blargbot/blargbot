@@ -1,0 +1,28 @@
+{
+    "compilerOptions": {
+        "noImplicitAny": true,
+        "strict": true,
+        "module": "CommonJS",
+        "resolveJsonModule": true,
+        "esModuleInterop": true,
+        "target": "ESNext",
+        "strictNullChecks": true,
+        "sourceMap": true,
+        "noImplicitReturns": true,
+        "strictFunctionTypes": true,
+        "strictBindCallApply": true,
+        "strictPropertyInitialization": true,
+        "forceConsistentCasingInFileNames": true,
+        "experimentalDecorators": true,
+        "alwaysStrict": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "allowUnreachableCode": false,
+        "allowUnusedLabels": false,
+        "moduleResolution": "node",
+        "skipLibCheck": true,
+        "lib": [
+            "ES2021"
+        ]
+    }
+}

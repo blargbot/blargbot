@@ -1,0 +1,23 @@
+{
+    "name": "@blargbot/master",
+    "version": "1.0.0",
+    "private": true,
+    "dependencies": {
+        "@blargbot/api": "workspace:^",
+        "@blargbot/cluster": "workspace:^",
+        "@blargbot/config": "workspace:^",
+        "@blargbot/core": "workspace:^",
+        "@blargbot/domain": "workspace:^",
+        "@blargbot/logger": "workspace:^",
+        "@blargbot/res": "workspace:^",
+        "eris": "^0.17.0",
+        "moment-timezone": "^0.5.34",
+        "node-fetch": "^2.6.7",
+        "prom-client": "^14.0.1",
+        "strip-ansi": "^6.0.1"
+    },
+    "devDependencies": {
+        "@types/eris": "workspace:^",
+        "@types/node-fetch": "^2.6.1"
+    }
+}

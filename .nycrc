@@ -1,0 +1,32 @@
+{
+  "cache": false,
+  "check-coverage": true,
+  "extension": [
+    ".ts",
+    ".cts",
+    ".mts"
+  ],
+  "include": [
+    "src/bbtag/**/*.{js,ts,mjs,mts,cjs,cts}"
+  ],
+  "exclude": [
+    "coverage/**",
+    "node_modules/**",
+    "test/**",
+    "**/*.d.{ts,mts,cts}",
+    "**/*.test.{ts,mts,cts}",
+    "*.{ts,mts,cts}"
+  ],
+  "sourceMap": true,
+  "reporter": [
+    "html",
+    "text",
+    "text-summary"
+  ],
+  "all": true,
+  "instrument": true,
+  "branches": 80,
+  "lines": 80,
+  "functions": 80,
+  "statements": 80
+}

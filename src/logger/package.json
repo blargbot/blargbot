@@ -1,0 +1,11 @@
+{
+    "name": "@blargbot/logger",
+    "version": "1.0.0",
+    "private": true,
+    "dependencies": {
+        "@blargbot/config": "workspace:^",
+        "@sentry/node": "^6.19.7",
+        "@sentry/tracing": "^6.19.7",
+        "cat-loggr": "^1.2.2"
+    }
+}

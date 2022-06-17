@@ -1,0 +1,130 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "node: master",
+            "skipFiles": [
+                "<node_internals>/**",
+                "**/node_modules/**",
+                "**/.pnp.cjs",
+                "**/.pnp.loader.mjs"
+            ],
+            "autoAttachChildProcesses": true,
+            "console": "integratedTerminal",
+            "program": "${workspaceFolder}/src/master/start.ts",
+            "env": {
+                "NODE_OPTIONS": "--require ${workspaceFolder}/.pnp.cjs"
+            }
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "node: cluster",
+            "skipFiles": [
+                "<node_internals>/**",
+                "**/node_modules/**",
+                "**/.pnp.cjs",
+                "**/.pnp.loader.mjs"
+            ],
+            "autoAttachChildProcesses": true,
+            "console": "integratedTerminal",
+            "program": "${workspaceFolder}/src/cluster/start.ts",
+            "args": [
+                "--max-old-space-size=4096"
+            ],
+            "env": {
+                "NODE_OPTIONS": "--require ${workspaceFolder}/.pnp.cjs",
+                "CLUSTER_ID": "0",
+                "SHARDS_MAX": "1",
+                "SHARDS_FIRST": "0",
+                "SHARDS_LAST": "0"
+            }
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "node: api",
+            "skipFiles": [
+                "<node_internals>/**",
+                "**/node_modules/**",
+                "**/.pnp.cjs",
+                "**/.pnp.loader.mjs"
+            ],
+            "autoAttachChildProcesses": true,
+            "console": "integratedTerminal",
+            "program": "${workspaceFolder}/src/api/start.ts",
+            "env": {
+                "NODE_OPTIONS": "--require ${workspaceFolder}/.pnp.cjs"
+            }
+        },
+        {
+            "name": "node: current",
+            "type": "node",
+            "console": "integratedTerminal",
+            "program": "${file}",
+            "request": "launch",
+            "skipFiles": [
+                "<node_internals>/**",
+                "**/node_modules/**",
+                "**/.pnp.cjs",
+                "**/.pnp.loader.mjs"
+            ],
+            "autoAttachChildProcesses": true,
+            "env": {
+                "NODE_OPTIONS": "--require ${workspaceFolder}/.pnp.cjs"
+            },
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "mocha: all",
+            "console": "integratedTerminal",
+            "program": "${workspaceFolder}/.yarn/unplugged/mocha-npm-9.2.2-f7735febb8/node_modules/mocha/bin/_mocha",
+            "args": [
+                "--no-timeouts",
+                "--config",
+                "${workspaceFolder}/mocharc.json",
+                "--recursive"
+            ],
+            "skipFiles": [
+                "<node_internals>/**",
+                "**/node_modules/**",
+                "**/.pnp.cjs",
+                "**/.pnp.loader.mjs"
+            ],
+            "autoAttachChildProcesses": true,
+            "env": {
+                "NODE_OPTIONS": "--require ${workspaceFolder}/.pnp.cjs"
+            }
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "mocha: current",
+            "console": "integratedTerminal",
+            "program": "${workspaceFolder}/.yarn/unplugged/mocha-npm-9.2.2-f7735febb8/node_modules/mocha/bin/_mocha",
+            "args": [
+                "--no-timeouts",
+                "--config",
+                "${workspaceFolder}/mocharc.json",
+                "${file}"
+            ],
+            "skipFiles": [
+                "<node_internals>/**",
+                "**/node_modules/**",
+                "**/.pnp.cjs",
+                "**/.pnp.loader.mjs"
+            ],
+            "env": {
+                "NODE_OPTIONS": "--require ${workspaceFolder}/.pnp.cjs",
+                "TS_NODE_FILES": "true"
+            },
+            "autoAttachChildProcesses": true
+        }
+    ]
+}
