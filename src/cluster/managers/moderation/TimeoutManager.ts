@@ -16,7 +16,7 @@ export class TimeoutManager extends ModerationManagerBase {
         this.ignoreUnTimeouts = new Set();
     }
 
-    public async timeout(member: Member, moderator: User, authorizer: User, duration: Duration, reason: string): Promise<TimeoutResult> {
+    public async timeout(member: Member, moderator: User, authorizer: User, duration: Duration, reason?: string): Promise<TimeoutResult> {
         const guild = member.guild;
         const result = await this.tryTimeoutUser(guild, member.id, moderator, authorizer, duration, reason);
         if (result !== 'success') {
@@ -30,7 +30,7 @@ export class TimeoutManager extends ModerationManagerBase {
         return 'success';
     }
 
-    public async removeTimeout(member: Member, moderator: User, authorizer: User, reason: string): Promise<UnTimeoutResult> {
+    public async removeTimeout(member: Member, moderator: User, authorizer: User, reason?: string): Promise<UnTimeoutResult> {
         if (member.communicationDisabledUntil === null)
             return 'notTimedOut';
 
@@ -45,13 +45,13 @@ export class TimeoutManager extends ModerationManagerBase {
             return permMessage;
 
         this.ignoreUnTimeouts.add(`${guild.id}:${member.id}`);
-        await guild.editMember(member.id, { communicationDisabledUntil: null }, `[${humanize.fullName(moderator)}] ${reason}`);
+        await guild.editMember(member.id, { communicationDisabledUntil: null }, `[${humanize.fullName(moderator)}] ${reason ?? ''}`);
         await this.modLog.logUnTimeout(guild, member.user, moderator, reason);
 
         return 'success';
     }
 
-    private async tryTimeoutUser(guild: Guild, userId: string, moderator: User, authorizer: User, duration: Duration, reason: string): Promise<TimeoutResult | { error: unknown; }> {
+    private async tryTimeoutUser(guild: Guild, userId: string, moderator: User, authorizer: User, duration: Duration, reason?: string): Promise<TimeoutResult | { error: unknown; }> {
         const self = guild.members.get(this.cluster.discord.user.id);
         if (self?.permissions.has('moderateMembers') !== true) {
             return 'noPerms';
@@ -70,7 +70,7 @@ export class TimeoutManager extends ModerationManagerBase {
 
         this.ignoreTimeouts.add(`${guild.id}:${userId}`);
         try {
-            await guild.editMember(userId, { communicationDisabledUntil: moment().add(duration).toDate() }, `[${humanize.fullName(moderator)}] ${reason}`);
+            await guild.editMember(userId, { communicationDisabledUntil: moment().add(duration).toDate() }, `[${humanize.fullName(moderator)}] ${reason ?? ''}`);
         } catch (err: unknown) {
             this.ignoreTimeouts.delete(`${guild.id}:${userId}`);
             return { error: err };
