@@ -2,7 +2,7 @@ import { BaseRoute } from '@blargbot/api/BaseRoute';
 import { ApiResponse } from '@blargbot/api/types';
 import { config } from '@blargbot/config';
 import { mapping } from '@blargbot/mapping';
-import { Request } from 'express';
+import { Request } from 'express-serve-static-core';
 import fetch from 'node-fetch';
 
 import Security from '../Security';

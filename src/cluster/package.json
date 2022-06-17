@@ -30,9 +30,9 @@
         "@types/brainfuck-node": "workspace:^",
         "@types/eris": "workspace:^",
         "@types/md5": "^2.3.2",
-        "@types/node-fetch": "^2.6.1",
+        "@types/node-fetch": "^2.6.2",
         "@types/require-reload": "workspace:^",
-        "@types/sharp": "^0.30",
+        "@types/sharp": "^0.30.4",
         "@types/wolken": "workspace:^",
         "@types/xml2js": "^0.4.11",
         "discord-api-types": "^0.30.0"

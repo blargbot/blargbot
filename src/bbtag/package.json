@@ -20,7 +20,7 @@
         "@types/brainfuck-node": "workspace:^",
         "@types/color": "^3.0.3",
         "@types/eris": "workspace:^",
-        "@types/node-fetch": "^2.6.1",
+        "@types/node-fetch": "^2.6.2",
         "@types/rwlock": "^5.0.3",
         "discord-api-types": "^0.30.0"
     }

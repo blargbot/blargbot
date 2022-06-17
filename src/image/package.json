@@ -21,6 +21,6 @@
         "@types/color-thief-jimp": "workspace:^",
         "@types/gifencoder": "^2.0.1",
         "@types/gm": "^1.18.12",
-        "@types/node-fetch": "^2.6.1"
+        "@types/node-fetch": "^2.6.2"
     }
 }
