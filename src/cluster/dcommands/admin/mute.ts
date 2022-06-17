@@ -11,7 +11,7 @@ export class MuteCommand extends GuildCommand {
             name: 'mute',
             category: CommandType.ADMIN,
             flags: [
-                { flag: 'r', word: 'reason', description: 'The reason for the mute.' },
+                { flag: 'r', word: 'reason', description: 'The reason for the (un)mute.' },
                 {
                     flag: 't',
                     word: 'time',
@@ -29,9 +29,29 @@ export class MuteCommand extends GuildCommand {
                         'If mod-logging is enabled, the mute will be logged.\n' +
                         'You can also specify a length of time the user should be muted for, using formats such as `1 hour 2 minutes` or `1h2m`.',
                     execute: (ctx, [user], flags) => this.mute(ctx, user.asMember, flags)
+                },
+
+                {
+                    parameters: 'clear {user:member+}',
+                    description: 'Removes the special muted role from the user. \n' +
+                        'If mod-logging is enabled, the mute will be logged.',
+                    execute: (ctx, [user], flags) => this.unmute(ctx, user.asMember, flags)
                 }
             ]
         });
+    }
+
+    public async unmute(context: GuildCommandContext, member: Member, flags: FlagResult): Promise<string> {
+        const reason = flags.r?.merge().value;
+
+        switch (await context.cluster.moderation.mutes.unmute(member, context.author, reason)) {
+            case 'notMuted': return this.error(`${humanize.fullName(member.user)} is not currently muted`);
+            case 'noPerms': return this.error('I don\'t have permission to unmute users! Make sure I have the `manage roles` permission and try again.');
+            case 'moderatorNoPerms': return this.error('You don\'t have permission to unmute users! Make sure you have the `manage roles` permission and try again.');
+            case 'roleTooHigh': return this.error('I can\'t revoke the muted role! (it\'s higher than or equal to my top role)');
+            case 'moderatorTooLow': return this.error('You can\'t revoke the muted role! (it\'s higher than or equal to your top role)');
+            case 'success': return this.success(`**${humanize.fullName(member.user)}** has been unmuted`);
+        }
     }
 
     public async mute(context: GuildCommandContext, member: Member, flags: FlagResult): Promise<string> {
