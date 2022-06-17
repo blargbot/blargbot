@@ -436,23 +436,20 @@ runSubtagTests({
             }
         },
         {
-            code: '{waitreaction;328974628744623874;23897462384627348293436;;{eval}abc}',
-            expected: '`Wait timed out after 60000`',
+            code: '{waitreaction;328974628744623874;23897462384627348293436;;{eval} abc}',
+            expected: '`Condition must return \'true\' or \'false\'`',
             errors: [
                 { start: 58, end: 64, error: new MarkerError('eval', 58) },
-                { start: 58, end: 64, error: new MarkerError('eval', 58) },
-                { start: 0, end: 68, error: new BBTagRuntimeError('Wait timed out after 60000') }
+                { start: 0, end: 69, error: new BBTagRuntimeError('Condition must return \'true\' or \'false\'', 'Actually returned " abc"') }
             ],
             setup(ctx) {
                 ctx.channels.command.id = '2384792374232398472';
                 ctx.message.channel_id = ctx.channels.command.id;
             },
             postSetup(bbctx, ctx) {
-                const acceptedReaction = createFilterableReaction(ctx, bbctx.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
-                const filteredReaction = createFilterableReaction(ctx, bbctx.guild, '❌', '328974628744623874', '2384792374232398472', '23897462384627348293436');
-                const rejectedReaction = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
+                const rejectedReaction = createFilterableReaction(ctx, bbctx.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 ctx.util.setup(m => m.awaitReaction(argument.isDeepEqual(['328974628744623874']), anyCondition.value, 60000))
-                    .thenCall(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction, filteredReaction]));
+                    .thenCall(createFakeAwaiterFactory(undefined, [rejectedReaction]));
 
                 const member = ctx.createMock(Member);
                 const user = ctx.createMock(User);

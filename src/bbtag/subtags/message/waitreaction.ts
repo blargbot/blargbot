@@ -89,12 +89,15 @@ export class WaitReactionSubtag extends CompiledSubtag {
             if (!userSet.has(user.id) || !checkReaction(reaction) || !guard.isGuildMessage(message))
                 return false;
 
-            const result = await context.withScope(scope => {
+            const resultStr = await context.withScope(scope => {
                 scope.reaction = reaction.toString();
                 scope.reactUser = user.id;
                 return context.withChild({ message }, context => context.eval(condition));
             });
-            return parse.boolean(result, false);
+            const result = parse.boolean(resultStr.trim());
+            if (result === undefined)
+                throw new BBTagRuntimeError('Condition must return \'true\' or \'false\'', `Actually returned ${JSON.stringify(resultStr)}`);
+            return result;
         }, timeout * 1000);
 
         if (result === undefined)
