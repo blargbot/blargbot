@@ -3,6 +3,7 @@ import { clamp, guard, parse } from '@blargbot/core/utils';
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError, ChannelNotFoundError, NotANumberError, UserNotFoundError } from '../../errors';
+import { Statement } from '../../language';
 import { bbtag, SubtagType } from '../../utils';
 
 const defaultCondition = bbtag.parse('true');
@@ -30,18 +31,10 @@ export class WaitMessageSubtag extends CompiledSubtag {
                     exampleCode: '{waitmessage}',
                     exampleOut: '["111111111111111","2222222222222"]',
                     returns: 'id[]',
-                    execute: (ctx) => this.awaitMessage(ctx, '', '')
+                    execute: (ctx) => this.awaitMessage(ctx, '', '', defaultCondition, '60')
                 },
                 {
-                    parameters: ['channelIDs', 'userIDs?'],
-                    description: 'Pauses the command until one of `userIDs` sends a message in one of `channelIDs`',
-                    exampleCode: '{waitmessage;111111111111111;{userid;stupid cat}}',
-                    exampleOut: '["111111111111111", "103347843934212096"]',
-                    returns: 'id[]',
-                    execute: (ctx, [channelIDs, userIDs]) => this.awaitMessage(ctx, channelIDs.value, userIDs.value)
-                },
-                {
-                    parameters: ['channelIDs', 'userIDs', '~condition:true', 'timeout?:60'],
+                    parameters: ['channelIDs', 'userIDs?', '~condition?:true', 'timeout?:60'],
                     description: 'Pauses the command until `condition` returns true when one of `userIDs` sends a message in one of `channelIDs`.',
                     exampleCode: '{waitmessage;111111111111111;{userid;stupid cat};{bool;{username};startswith;stupid};50}',
                     exampleOut: '["111111111111111", "103347843934212096"]',
@@ -54,10 +47,10 @@ export class WaitMessageSubtag extends CompiledSubtag {
 
     public async awaitMessage(
         context: BBTagContext,
-        channelStr = '',
-        userStr = '',
-        condition = defaultCondition,
-        timeoutStr = '60'
+        channelStr: string,
+        userStr: string,
+        condition: Statement,
+        timeoutStr: string
     ): Promise<[channelId: string, messageId: string]> {
         const channels = await this.bulkLookup(channelStr, i => context.queryChannel(i, { noLookup: true }), ChannelNotFoundError)
             ?? [context.channel];
@@ -68,6 +61,9 @@ export class WaitMessageSubtag extends CompiledSubtag {
         const timeout = clamp(parse.float(timeoutStr) ?? NaN, 0, 300);
         if (isNaN(timeout))
             throw new NotANumberError(timeoutStr);
+
+        if (condition.values.length === 0)
+            condition = defaultCondition;
 
         const userSet = new Set(users.map(u => u.id));
         const result = await context.util.awaitMessage(channels.map(c => c.id), async message => {

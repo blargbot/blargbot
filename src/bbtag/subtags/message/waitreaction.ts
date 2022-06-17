@@ -4,6 +4,7 @@ import { clamp, discord, guard, parse } from '@blargbot/core/utils';
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError, NotANumberError, UserNotFoundError } from '../../errors';
+import { Statement } from '../../language';
 import { bbtag, SubtagType } from '../../utils';
 
 const defaultCondition = bbtag.parse('true');
@@ -36,19 +37,10 @@ export class WaitReactionSubtag extends CompiledSubtag {
                     exampleIn: '(reaction is added)',
                     exampleOut: '["111111111111111","12345678912345","3333333333333","🤔"]',
                     returns: 'id[]',
-                    execute: (ctx, [messages, userIDs]) => this.awaitReaction(ctx, messages.value, userIDs.value)
+                    execute: (ctx, [messages, userIDs]) => this.awaitReaction(ctx, messages.value, userIDs.value, '', defaultCondition, '60')
                 },
                 {
-                    parameters: ['messages', 'userIDs', 'reactions', '~condition?:true'],
-                    description: 'Waits for any of `reactions` on `messages` from `userIDs`, if `condition` returns `true` this will return the response array.',
-                    exampleCode: '{waitreaction;12345678912345;{userid;stupid cat};["🤔", "👀"];{bool;{reaction};==;👀}}',
-                    exampleIn: '(🤔 was reacted)\n(👀 was reacted)',
-                    exampleOut: '["111111111111111","12345678912345","3333333333333","👀"]',
-                    returns: 'string[]',
-                    execute: (ctx, [messages, userIDs, reactions, condition]) => this.awaitReaction(ctx, messages.value, userIDs.value, reactions.value, condition.code, '60')
-                },
-                {
-                    parameters: ['messages', 'userIDs', 'reactions', '~condition:true', 'timeout:60'],
+                    parameters: ['messages', 'userIDs', 'reactions', '~condition?:true', 'timeout?:60'],
                     description: 'Waits for any of `reactions` on `messages` from `userIDs`, if `condition` returns `true` this will return the response array. If no reaction was matched within `timeout`, `Wait timed out` will be returned.',
                     exampleCode: '{waitreaction;12345678912345;["{userid;stupid cat}","{userid;titansmasher}"];["🤔", "👀"];;120}',
                     exampleIn: '(some random user reacted with 🤔)\n(titansmasher reacted with 🤔)',
@@ -64,9 +56,9 @@ export class WaitReactionSubtag extends CompiledSubtag {
         context: BBTagContext,
         messageStr: string,
         userIDStr: string,
-        reactions = '',
-        condition = defaultCondition,
-        timeoutStr = '60'
+        reactions: string,
+        condition: Statement,
+        timeoutStr: string
     ): Promise<[channelId: string, messageId: string, userId: string, emoji: string]> {
         const messages = bbtag.tagArray.flattenArray([messageStr]).map(i => parse.string(i));
         const users = await this.bulkLookup(userIDStr, i => context.queryUser(i, { noErrors: true, noLookup: true }), UserNotFoundError)
@@ -86,6 +78,9 @@ export class WaitReactionSubtag extends CompiledSubtag {
         const timeout = clamp(parse.float(timeoutStr) ?? NaN, 0, 300);
         if (isNaN(timeout))
             throw new NotANumberError(timeoutStr);
+
+        if (condition.values.length === 0)
+            condition = defaultCondition;
 
         const userSet = new Set(users.map(u => u.id));
         const reactionSet = new Set(parsedReactions?.map(r => r.toString()));
