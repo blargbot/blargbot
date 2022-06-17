@@ -6,7 +6,7 @@ import { mapping } from '@blargbot/mapping';
 import { FileContent } from 'eris';
 import fetch from 'node-fetch';
 import path from 'path';
-import svg2png from 'svg2png';
+import sharp from 'sharp';
 import twemoji from 'twemoji';
 
 // the .base property is undocumented in the types. Doing this allows us to use it, but detect if it is removed in the future.
@@ -56,10 +56,10 @@ export class EmojiCommand extends GlobalCommand {
         if (svg)
             return { name: 'emoji.svg', file: body };
 
-        const buffer = await svg2png(body, {
-            width: size,
-            height: size
-        });
+        const buffer = await sharp(body)
+            .resize(size, size)
+            .png()
+            .toBuffer();
         return { name: 'emoji.png', file: buffer };
     }
 }

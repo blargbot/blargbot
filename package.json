@@ -51,9 +51,6 @@
     "dependenciesMeta": {
         "mocha@9.2.2": {
             "unplugged": true
-        },
-        "svg2png@4.1.1": {
-            "unplugged": true
         }
     },
     "resolutions": {

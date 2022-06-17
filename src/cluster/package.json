@@ -21,7 +21,7 @@
         "node-fetch": "^2.6.7",
         "prom-client": "^14.0.1",
         "require-reload": "^0.2.2",
-        "svg2png": "^4.1.1",
+        "sharp": "^0.30.6",
         "twemoji": "^14.0.2",
         "wolken": "^0.2.1",
         "xml2js": "^0.4.23"
@@ -32,7 +32,7 @@
         "@types/md5": "^2.3.2",
         "@types/node-fetch": "^2.6.1",
         "@types/require-reload": "workspace:^",
-        "@types/svg2png": "^4.1.1",
+        "@types/sharp": "^0.30",
         "@types/wolken": "workspace:^",
         "@types/xml2js": "^0.4.11",
         "discord-api-types": "^0.30.0"

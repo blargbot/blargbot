@@ -10,7 +10,9 @@
             "name": "node: master",
             "skipFiles": [
                 "<node_internals>/**",
-                "**/node_modules/**"
+                "**/node_modules/**",
+                "**/.pnp.cjs",
+                "**/.pnp.loader.mjs"
             ],
             "autoAttachChildProcesses": true,
             "console": "integratedTerminal",
@@ -25,7 +27,9 @@
             "name": "node: cluster",
             "skipFiles": [
                 "<node_internals>/**",
-                "**/node_modules/**"
+                "**/node_modules/**",
+                "**/.pnp.cjs",
+                "**/.pnp.loader.mjs"
             ],
             "autoAttachChildProcesses": true,
             "console": "integratedTerminal",
@@ -47,7 +51,9 @@
             "name": "node: api",
             "skipFiles": [
                 "<node_internals>/**",
-                "**/node_modules/**"
+                "**/node_modules/**",
+                "**/.pnp.cjs",
+                "**/.pnp.loader.mjs"
             ],
             "autoAttachChildProcesses": true,
             "console": "integratedTerminal",
@@ -64,7 +70,9 @@
             "request": "launch",
             "skipFiles": [
                 "<node_internals>/**",
-                "${workspaceFolder}/node_modules/**"
+                "**/node_modules/**",
+                "**/.pnp.cjs",
+                "**/.pnp.loader.mjs"
             ],
             "autoAttachChildProcesses": true,
             "env": {
@@ -85,7 +93,9 @@
             ],
             "skipFiles": [
                 "<node_internals>/**",
-                "**/node_modules/**"
+                "**/node_modules/**",
+                "**/.pnp.cjs",
+                "**/.pnp.loader.mjs"
             ],
             "autoAttachChildProcesses": true,
             "env": {
@@ -106,7 +116,9 @@
             ],
             "skipFiles": [
                 "<node_internals>/**",
-                "**/node_modules/**"
+                "**/node_modules/**",
+                "**/.pnp.cjs",
+                "**/.pnp.loader.mjs"
             ],
             "env": {
                 "NODE_OPTIONS": "--require ${workspaceFolder}/.pnp.cjs",
