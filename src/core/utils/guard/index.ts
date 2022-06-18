@@ -20,9 +20,9 @@ import * as isUrl from './isUrl';
 import * as isVoiceChannel from './isVoiceChannel';
 import * as isWellKnownChannel from './isWellKnownChannel';
 import * as isWellKnownMessage from './isWellKnownMessage';
+import * as testMessageFilter from './matchMessageFilter';
 import * as notNull from './notNull';
 import * as notUndefined from './notUndefined';
-import * as testMessageFilter from './testMessageFilter';
 
 export const guard = {
     ...checkEmbedSize,

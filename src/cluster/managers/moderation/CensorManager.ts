@@ -25,7 +25,7 @@ export class CensorManager extends ModerationManagerBase {
 
         const [id, censor] = Object.entries(censors.list ?? {})
             .filter((e): e is [string, GuildCensor] => e[1] !== undefined)
-            .find(c => guard.testMessageFilter(c[1], message)) ?? [];
+            .find(c => guard.matchMessageFilter(c[1], message) !== undefined) ?? [];
 
         if (censor === undefined || id === undefined)
             return false;
