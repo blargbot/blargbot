@@ -48,7 +48,14 @@ export class EmojiCommand extends GlobalCommand {
         }
 
         const codePoint = twemoji.convert.toCodePoint(parsedEmoji.name);
-        const file = await fetch(path.join(twemojiBase, `svg/${codePoint}.svg`));
+        let file = await fetch(path.join(twemojiBase, `svg/${codePoint}.svg`));
+        if (file.status === 404) {
+            if (codePoint.includes('-fe0f')) // remove variation selector-16 if present
+                file = await fetch(path.join(twemojiBase, `svg/${codePoint.replaceAll('-fe0f', '')}.svg`));
+
+            if (file.status === 404)
+                return this.error('I dont have an image for that emoji!');
+        }
         if (!file.status.toString().startsWith('2'))
             return this.error('Failed to get image for emoji');
 
