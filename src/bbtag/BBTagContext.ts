@@ -475,6 +475,7 @@ export class BBTagContext implements BBTagContextOptions {
             flags: obj.flags,
             rootTagName: obj.rootTagName,
             tagName: obj.tagName,
+            data: obj.data,
             authorId: obj.author,
             authorizerId: obj.authorizer,
             limit: limit,
@@ -505,6 +506,12 @@ export class BBTagContext implements BBTagContextOptions {
             isCC: this.isCC,
             scope: newScope,
             inputRaw: this.inputRaw,
+            data: {
+                allowedMentions: this.data.allowedMentions,
+                ownedMsgs: this.data.ownedMsgs,
+                query: this.data.query,
+                stackSize: this.data.stackSize
+            },
             flags: this.flags,
             rootTagName: this.rootTagName,
             tagName: this.tagName,

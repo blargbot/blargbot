@@ -60,6 +60,7 @@ export interface SerializedBBTagContext {
     scope: BBTagRuntimeScope;
     inputRaw: string;
     flags: readonly FlagDefinition[];
+    data: Pick<BBTagContextState, 'query' | 'ownedMsgs' | 'stackSize' | 'allowedMentions'>;
     tagName: string;
     rootTagName: string;
     author: string | undefined;
