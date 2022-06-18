@@ -477,7 +477,6 @@ export class BBTagContext implements BBTagContextOptions {
             tagName: obj.tagName,
             authorId: obj.author,
             authorizerId: obj.authorizer,
-            data: obj.data,
             limit: limit,
             tagVars: obj.tagVars
         });
@@ -492,7 +491,6 @@ export class BBTagContext implements BBTagContextOptions {
     }
 
     public serialize(): SerializedBBTagContext {
-        const newState = { ...this.data, cache: undefined, overrides: undefined };
         const newScope = { ...this.scopes.local };
         return {
             msg: {
@@ -505,7 +503,6 @@ export class BBTagContext implements BBTagContextOptions {
                 embeds: this.message.embeds
             },
             isCC: this.isCC,
-            data: newState,
             scope: newScope,
             inputRaw: this.inputRaw,
             flags: this.flags,

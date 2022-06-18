@@ -57,7 +57,6 @@ export interface SerializedBBTagContext {
         embeds: Embed[];
     };
     isCC: boolean;
-    data: Omit<BBTagContextState, 'cache'>;
     scope: BBTagRuntimeScope;
     inputRaw: string;
     flags: readonly FlagDefinition[];
