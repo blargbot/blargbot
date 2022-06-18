@@ -6,7 +6,7 @@ import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError, UserNotFoundError } from '../../errors';
 import { SubtagType } from '../../utils';
 
-export class UserBoostDataSubtag extends CompiledSubtag {
+export class UserBoostDateSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'userboostdate',
@@ -27,8 +27,8 @@ export class UserBoostDataSubtag extends CompiledSubtag {
                     parameters: ['format:YYYY-MM-DDTHH:mm:ssZ', 'user', 'quiet?'],
                     description: 'Returns the date that `user` started boosting the current guild using `format` for the output, in UTC+0. ' +
                         'If `quiet` is specified, if `user` can\'t be found it will simply return nothing.',
-                    exampleCode: '{if;{isuserboosting;stupid cat};stupid cat is boosting!; no boosting here :(}',
-                    exampleOut: 'stupid cat is boosting!',
+                    exampleCode: 'Stupid cat started boosting this guild on {userboostdate;YYYY/MM/DD HH:mm:ss;stupid cat}',
+                    exampleOut: 'Stupid cat started boosting this guild on 2020/02/27 00:00:00',
                     returns: 'string',
                     execute: (context, [format, user, quiet]) => this.findUserBoostDate(context, format.value, user.value, quiet.value !== '')
                 }
@@ -52,6 +52,6 @@ export class UserBoostDataSubtag extends CompiledSubtag {
         if (typeof user.premiumSince !== 'number')
             throw new BBTagRuntimeError('User not boosting');
 
-        return moment(user.premiumSince).format(format);
+        return moment(user.premiumSince).utcOffset(0).format(format);
     }
 }
