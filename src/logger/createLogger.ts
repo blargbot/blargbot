@@ -17,10 +17,10 @@ export function createLogger(config: Configuration, workerId: string): Logger {
         })
     });
 
-    // if (config.sentry.base !== '')
-    logger.addPreHook(createSentryPreHook(config, workerId) as unknown as ArgHookCallback);
-
     const _logger = logger as unknown as Logger;
+
+    if (config.sentry.base !== '')
+        logger.addPreHook(createSentryPreHook(config, workerId) as unknown as ArgHookCallback);
 
     const setGlobal = _logger.setGlobal.bind(logger);
     _logger.setGlobal = function (...args) {
@@ -84,6 +84,9 @@ function sentryPreHook(...[{ args, level, context, shard }]: Parameters<PreHookC
         error = new Error(args.splice(0, args.length).join(' '));
         // eslint-disable-next-line @typescript-eslint/unbound-method
         Error.captureStackTrace(error, CatLoggr.prototype._format);
+        const stack = error.stack?.split('\n');
+        stack?.splice(1, 1);
+        error.stack = stack?.join('\n');
     } else
         args.splice(args.indexOf(error), 1);
 
