@@ -52,7 +52,7 @@ export class ChatLogManager {
     }
 
     public async messageUpdated(message: Message<PossiblyUncachedTextableChannel>): Promise<void> {
-        if (!guard.isGuildMessage(message) || await this.cluster.database.guilds.getSetting(message.channel.guild.id, 'makelogs') !== true)
+        if (!guard.isGuildMessage(message) || await this.cluster.database.guilds.getSetting(message.channel.guild.id, 'makelogs') !== true || !guard.hasValue(message.author))
             return;
 
         await this.cluster.database.chatlogs.add({
