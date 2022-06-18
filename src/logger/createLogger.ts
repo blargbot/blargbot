@@ -17,8 +17,8 @@ export function createLogger(config: Configuration, workerId: string): Logger {
         })
     });
 
-    if (config.sentry.base !== '')
-        logger.addPreHook(createSentryPreHook(config, workerId) as unknown as ArgHookCallback);
+    // if (config.sentry.base !== '')
+    logger.addPreHook(createSentryPreHook(config, workerId) as unknown as ArgHookCallback);
 
     const _logger = logger as unknown as Logger;
 
@@ -84,14 +84,16 @@ function sentryPreHook(...[{ args, level, context, shard }]: Parameters<PreHookC
         error = new Error(args.splice(0, args.length).join(' '));
         // eslint-disable-next-line @typescript-eslint/unbound-method
         Error.captureStackTrace(error, CatLoggr.prototype._format);
-    }
+    } else
+        args.splice(args.indexOf(error), 1);
+
     const _error = error;
     Sentry.withScope(scope => sendToSentry(scope, sentryLevel, _error, { ...context, shard, args }));
 
     return null;
 }
 
-function sendToSentry(scope: Sentry.Scope, level: Sentry.Severity, error: string | Error, context: object): void {
+function sendToSentry(scope: Sentry.Scope, level: Sentry.Severity, error: Error, context: object): void {
     scope.setLevel(level);
     Sentry.captureException(error, context);
 }
