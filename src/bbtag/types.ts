@@ -57,10 +57,10 @@ export interface SerializedBBTagContext {
         embeds: Embed[];
     };
     isCC: boolean;
-    data: Omit<BBTagContextState, 'cache'>;
     scope: BBTagRuntimeScope;
     inputRaw: string;
     flags: readonly FlagDefinition[];
+    data: Pick<BBTagContextState, 'query' | 'ownedMsgs' | 'stackSize' | 'allowedMentions'>;
     tagName: string;
     rootTagName: string;
     author: string | undefined;
