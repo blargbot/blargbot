@@ -408,15 +408,15 @@ export class BBTagContext implements BBTagContextOptions {
                 this.data.ownedMsgs.push(response.id);
                 return response.id;
             }
-            throw new Error(`Failed to send: ${text}`);
+            throw new Error('Failed to send message');
         } catch (err: unknown) {
             if (err instanceof Error) {
                 if (err.message === 'No content')
                     return undefined;
                 throw err;
             }
-            this.logger.error(`Failed to send: ${text}`, err);
-            throw new Error(`Failed to send: ${text}`);
+            this.logger.error('Failed to send message', err);
+            throw new Error('Failed to send message');
         }
     }
 

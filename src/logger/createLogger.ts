@@ -17,10 +17,10 @@ export function createLogger(config: Configuration, workerId: string): Logger {
         })
     });
 
+    const _logger = logger as unknown as Logger;
+
     if (config.sentry.base !== '')
         logger.addPreHook(createSentryPreHook(config, workerId) as unknown as ArgHookCallback);
-
-    const _logger = logger as unknown as Logger;
 
     const setGlobal = _logger.setGlobal.bind(logger);
     _logger.setGlobal = function (...args) {
@@ -34,10 +34,10 @@ export function createLogger(config: Configuration, workerId: string): Logger {
     return _logger;
 }
 
-const logLevels: Record<LogLevel, { color: typeof CatLoggr['_chalk']; isError?: boolean; isTrace?: boolean; }> = {
-    fatal: { color: CatLoggr._chalk.red.bgBlack, isError: true },
-    error: { color: CatLoggr._chalk.black.bgRed, isError: true },
-    warn: { color: CatLoggr._chalk.black.bgYellow, isError: true },
+const logLevels: Record<LogLevel, { color: typeof CatLoggr['_chalk']; isError?: boolean; isTrace?: boolean; sentryLevel?: Sentry.Severity; }> = {
+    fatal: { color: CatLoggr._chalk.red.bgBlack, isError: true, sentryLevel: Sentry.Severity.Fatal },
+    error: { color: CatLoggr._chalk.black.bgRed, isError: true, sentryLevel: Sentry.Severity.Error },
+    warn: { color: CatLoggr._chalk.black.bgYellow, isError: true, sentryLevel: Sentry.Severity.Warning },
     website: { color: CatLoggr._chalk.black.bgCyan },
     ws: { color: CatLoggr._chalk.yellow.bgBlack },
     cluster: { color: CatLoggr._chalk.black.bgMagenta },
@@ -73,24 +73,30 @@ function createSentryPreHook(config: Configuration, workerId: string): PreHookCa
     return (...args) => sentryPreHook(...args);
 }
 
-function sentryPreHook(...[{ error: isError, args, level, context, shard }]: Parameters<PreHookCallback>): null {
-    if (!isError)
+function sentryPreHook(...[{ args, level, context, shard }]: Parameters<PreHookCallback>): null {
+    const sentryLevel = level in logLevels ? logLevels[level as keyof typeof logLevels].sentryLevel : undefined;
+    if (sentryLevel === undefined)
         return null;
 
     args = [...args as unknown[]];
-    const error = args.find((v): v is Error => v instanceof Error)
-        ?? args.splice(0, args.length).join(' ');
+    let error = args.find((v): v is Error => v instanceof Error);
+    if (error === undefined) {
+        error = new Error(args.splice(0, args.length).join(' '));
+        // eslint-disable-next-line @typescript-eslint/unbound-method
+        Error.captureStackTrace(error, CatLoggr.prototype._format);
+        const stack = error.stack?.split('\n');
+        stack?.splice(1, 1);
+        error.stack = stack?.join('\n');
+    } else
+        args.splice(args.indexOf(error), 1);
 
-    Sentry.withScope(scope => sendToSentry(scope, <Sentry.Severity>level, error, {
-        ...context,
-        shard: shard,
-        args
-    }));
+    const _error = error;
+    Sentry.withScope(scope => sendToSentry(scope, sentryLevel, _error, { ...context, shard, args }));
 
     return null;
 }
 
-function sendToSentry(scope: Sentry.Scope, level: Sentry.Severity, error: string | Error, context: object): void {
+function sendToSentry(scope: Sentry.Scope, level: Sentry.Severity, error: Error, context: object): void {
     scope.setLevel(level);
     Sentry.captureException(error, context);
 }
