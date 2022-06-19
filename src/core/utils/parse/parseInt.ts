@@ -36,4 +36,4 @@ function intCore(s: string | number, options: ParseIntOptions): number {
 const charset = '0123456789abcdefghijklmnopqrstuvwxyz0';
 const radixRegexes = charset
     .split('')
-    .map((_, i) => new RegExp(`^[${charset.slice(0, i)}]+$`, 'i'));
+    .map((_, i) => new RegExp(`^[+-]?[${charset.slice(0, i)}]+$`, 'i'));

@@ -21,4 +21,4 @@ function floatCore(s: string | number, options: ParseFloatOptions): number {
     return global.parseFloat(s);
 }
 
-const floatTest = /^\d+(?:\.\d+)?$/;
+const floatTest = /^[+-]?\d+(?:\.\d+)?$/;
