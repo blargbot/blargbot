@@ -1,11 +1,11 @@
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { UserBoostDataSubtag } from '@blargbot/bbtag/subtags/user/userboostdate';
+import { UserBoostDateSubtag } from '@blargbot/bbtag/subtags/user/userboostdate';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 import { createGetUserPropTestCases } from './_getUserPropTest';
 
 runSubtagTests({
-    subtag: new UserBoostDataSubtag(),
+    subtag: new UserBoostDateSubtag(),
     argCountBounds: { min: 0, max: 3 },
     cases: [
         {
