@@ -56,7 +56,7 @@ export class TimeOutSubtag extends CompiledSubtag {
         const clampedDelay = clampBy(delay, moment.duration(0), moment.duration(28, 'd'), d => d.asMilliseconds());
 
         const authorizer = noPerms ? context.authorizer?.user ?? context.user : context.user;
-        const response = clampedDelay.asMilliseconds() === 0
+        const response = clampedDelay.asMilliseconds() !== 0
             ? await context.util.timeout(member, context.user, authorizer, clampedDelay, reason)
             : await context.util.removeTimeout(member, context.user, authorizer, reason);
 
@@ -64,17 +64,17 @@ export class TimeOutSubtag extends CompiledSubtag {
             case 'success':
                 return 'Success';
             case 'notTimedOut':
-                throw new BBTagRuntimeError('User is not timed out', `${member.user.username} is not timed out out!`);
+                throw new BBTagRuntimeError('User is not timed out', `${member.user.username} is not timed out!`);
             case 'alreadyTimedOut':
                 throw new BBTagRuntimeError('User is already timed out', `${member.user.username} is already timed out!`);
             case 'noPerms':
-                throw new BBTagRuntimeError('Bot has no permissions', 'I don\'t have permission to (remove) time out users!');
+                throw new BBTagRuntimeError('Bot has no permissions', 'I don\'t have permission to (remove) time out (from) users!');
             case 'memberTooHigh':
-                throw new BBTagRuntimeError('Bot has no permissions', `I don't have permission to (remove) time out ${member.user.username}!`);
+                throw new BBTagRuntimeError('Bot has no permissions', `I don't have permission to (remove) time out (from) ${member.user.username}!`);
             case 'moderatorNoPerms':
-                throw new BBTagRuntimeError('User has no permissions', 'You don\'t have permission to (remove) time out users!');
+                throw new BBTagRuntimeError('User has no permissions', 'You don\'t have permission to (remove) time out (from) users!');
             case 'moderatorTooLow':
-                throw new BBTagRuntimeError('User has no permissions', `You don't have permission to (remove) time out ${member.user.username}!`);
+                throw new BBTagRuntimeError('User has no permissions', `You don't have permission to (remove) time out (from) ${member.user.username}!`);
         }
     }
 }
