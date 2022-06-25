@@ -106,7 +106,7 @@ ${codeBlock(code, 'js')}`
             limit: id === 'everything' ? 'everythingAutoResponseLimit' : 'generalAutoResponseLimit',
             authorId: tag.author ?? undefined,
             authorizerId: tag.authorizer ?? undefined,
-            inputRaw: humanize.smartSplit.inverse(args),
+            inputRaw: args.length === 1 ? msg.content : humanize.smartSplit.inverse(args),
             isCC: true,
             rootTagName: `_autoresponse_${id}`,
             silent: id === 'everything'
