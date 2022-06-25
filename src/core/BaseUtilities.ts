@@ -630,6 +630,11 @@ export class BaseUtilities {
         if (query === undefined)
             return webhooks;
 
+        const webhookId = parse.entityId(query) ?? '';
+        const byId = webhooks.find(w => w.id === webhookId);
+        if (byId !== undefined)
+            return [byId];
+
         return findBest(webhooks, w => this.webhookMatchScore(w, query));
     }
 
@@ -659,8 +664,8 @@ export class BaseUtilities {
             return [];
 
         const result = await Promise.all([
-            this.findMembers(guild),
-            this.findWebhooks(guild)
+            this.findMembers(guild, query),
+            this.findWebhooks(guild, query)
         ]);
 
         if (query === undefined)
