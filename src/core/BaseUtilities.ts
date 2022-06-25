@@ -630,6 +630,11 @@ export class BaseUtilities {
         if (query === undefined)
             return webhooks;
 
+        const webhookId = parse.entityId(query) ?? '';
+        const byId = webhooks.find(w => w.id === webhookId);
+        if (byId !== undefined)
+            return [byId];
+
         return findBest(webhooks, w => this.webhookMatchScore(w, query));
     }
 
@@ -658,15 +663,10 @@ export class BaseUtilities {
         if (typeof guild === 'string')
             return [];
 
-        const result = await Promise.all([
-            this.findMembers(guild),
-            this.findWebhooks(guild)
-        ]);
-
-        if (query === undefined)
-            return result.flat();
-
-        return findBest(result.flat(), s => s instanceof Member ? this.memberMatchScore(s, query) : this.webhookMatchScore(s, query));
+        return (await Promise.all([
+            this.findMembers(guild, query),
+            this.findWebhooks(guild, query)
+        ])).flat();
     }
 
     public memberMatchScore(member: Member, query: string): number {
