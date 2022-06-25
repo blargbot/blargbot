@@ -56,7 +56,7 @@ export class ParamsSubtag extends CompiledSubtag {
             throw new NotANumberError(index);
 
         if (params.length <= i || i < 0)
-            throw new NotEnoughArgumentsError(i, params.length);
+            throw new NotEnoughArgumentsError(i + 1, params.length);
 
         return params[i];
     }
@@ -86,7 +86,7 @@ export class ParamsSubtag extends CompiledSubtag {
             from = [to, to = from][0];
 
         if (params.length <= from || from < 0)
-            throw new NotEnoughArgumentsError(from, params.length);
+            throw new NotEnoughArgumentsError(from + 1, params.length);
 
         return params.slice(from, to).join(' ');
     }
