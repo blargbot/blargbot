@@ -663,15 +663,10 @@ export class BaseUtilities {
         if (typeof guild === 'string')
             return [];
 
-        const result = await Promise.all([
+        return (await Promise.all([
             this.findMembers(guild, query),
             this.findWebhooks(guild, query)
-        ]);
-
-        if (query === undefined)
-            return result.flat();
-
-        return findBest(result.flat(), s => s instanceof Member ? this.memberMatchScore(s, query) : this.webhookMatchScore(s, query));
+        ])).flat();
     }
 
     public memberMatchScore(member: Member, query: string): number {
