@@ -8,13 +8,10 @@ export function matchMessageFilter(filter: MessageFilter, message: KnownMessage)
     let content = message.content;
     if (filter.decancer === true)
         content = humanize.decancer(content);
-    if (filter.regex) {
-        const result = matchRegexSafe(filter.term, content);
-        if (result?.length === 1)
-            return [content];
-        return result;
-    }
+    if (filter.regex)
+        return matchRegexSafe(filter.term, content);
+
     if (content.toLowerCase().includes(filter.term.toLowerCase()))
-        return [content];
+        return [filter.term];
     return undefined;
 }
