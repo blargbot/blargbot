@@ -158,7 +158,12 @@ export class EventLogManager {
     }
 
     public async userTagUpdated(user: User, oldUser: User): Promise<void> {
+        let description = '';
+        if (oldUser.username !== user.username) description += 'Username changed.\n';
+        if (oldUser.discriminator !== user.discriminator) description += 'Discriminator changed.\n';
+
         const embed = this.eventLogEmbed('Username Updated', user, 0xd8af1a, {
+            description,
             fields: [
                 { name: 'Old Name', value: humanize.fullName(oldUser), inline: true },
                 { name: 'New Name', value: humanize.fullName(user), inline: true }
