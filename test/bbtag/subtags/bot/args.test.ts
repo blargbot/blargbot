@@ -33,14 +33,14 @@ runSubtagTests({
             code: '{args;7}',
             expected: '`Not enough arguments`',
             errors: [
-                { start: 0, end: 8, error: new NotEnoughArgumentsError(7, 5) }
+                { start: 0, end: 8, error: new NotEnoughArgumentsError(8, 5) }
             ]
         },
         {
             code: '{args;-1}',
             expected: '`Not enough arguments`',
             errors: [
-                { start: 0, end: 9, error: new NotEnoughArgumentsError(-1, 5) }
+                { start: 0, end: 9, error: new NotEnoughArgumentsError(0, 5) }
             ]
         },
         {
@@ -86,28 +86,28 @@ runSubtagTests({
             code: '{args;6;7}',
             expected: '`Not enough arguments`',
             errors: [
-                { start: 0, end: 10, error: new NotEnoughArgumentsError(6, 5) }
+                { start: 0, end: 10, error: new NotEnoughArgumentsError(7, 5) }
             ]
         },
         {
             code: '{args;7;6}',
             expected: '`Not enough arguments`',
             errors: [
-                { start: 0, end: 10, error: new NotEnoughArgumentsError(6, 5) }
+                { start: 0, end: 10, error: new NotEnoughArgumentsError(7, 5) }
             ]
         },
         {
             code: '{args;-1;2}',
             expected: '`Not enough arguments`',
             errors: [
-                { start: 0, end: 11, error: new NotEnoughArgumentsError(-1, 5) }
+                { start: 0, end: 11, error: new NotEnoughArgumentsError(0, 5) }
             ]
         },
         {
             code: '{args;2;-1}',
             expected: '`Not enough arguments`',
             errors: [
-                { start: 0, end: 11, error: new NotEnoughArgumentsError(-1, 5) }
+                { start: 0, end: 11, error: new NotEnoughArgumentsError(0, 5) }
             ]
         },
         {

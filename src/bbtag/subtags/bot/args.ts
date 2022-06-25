@@ -52,7 +52,7 @@ export class ArgsSubtag extends CompiledSubtag {
             throw new NotANumberError(index);
 
         if (context.input.length <= i || i < 0)
-            throw new NotEnoughArgumentsError(i, context.input.length);
+            throw new NotEnoughArgumentsError(i + 1, context.input.length);
 
         return context.input[i];
     }
@@ -78,7 +78,7 @@ export class ArgsSubtag extends CompiledSubtag {
             from = [to, to = from][0];
 
         if (context.input.length <= from || from < 0)
-            throw new NotEnoughArgumentsError(from, context.input.length);
+            throw new NotEnoughArgumentsError(from + 1, context.input.length);
 
         return context.input.slice(from, to).join(' ');
     }
