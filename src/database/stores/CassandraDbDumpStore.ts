@@ -28,7 +28,7 @@ export class CassandraDbDumpStore implements DumpStore {
     }
 
     public async get(id: string): Promise<Dump | undefined> {
-        const dump = await this.cassandra.execute('SELECT id, content, embeds, channelid, TTL(content) as expiry FROM message_outputs WHERE id = :id', { id }, { prepare: true });
+        const dump = await this.cassandra.execute('SELECT id, content, embeds, channelid, TTL(channelid) as expiry FROM message_outputs WHERE id = :id', { id }, { prepare: true });
         const mapped = mapDump(dump.rows[0]);
         return mapped.valid ? mapped.value : undefined;
     }
