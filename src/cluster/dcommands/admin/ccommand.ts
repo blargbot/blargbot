@@ -488,6 +488,16 @@ export class CustomCommandCommand extends GuildCommand {
                 continue;
 
             confirm.push(` - Export the custom command \`${commandName}\``);
+            shrinkwrap.cc[command.name] = {
+                content: command.content,
+                cooldown: command.cooldown,
+                disabled: command.disabled,
+                flags: command.flags,
+                help: command.help,
+                hidden: command.hidden,
+                permission: command.permission,
+                roles: command.roles
+            };
         }
 
         confirm.push(
