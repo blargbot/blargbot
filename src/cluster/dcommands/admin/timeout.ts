@@ -15,7 +15,8 @@ export class TimeoutCommand extends GuildCommand {
                 {
                     flag: 't',
                     word: 'time',
-                    description: 'The amount of time to mute for, formatted as \'1 day 2 hours 3 minutes and 4 seconds\', \'1d2h3m4s\', or some other combination.\nMaximum allowed time is 28 days.'
+                    description: 'The amount of time to mute for, formatted as \'1 day 2 hours 3 minutes and 4 seconds\', \'1d2h3m4s\', or some other combination.\n' +
+                        'Maximum allowed time is 28 days. Default is 1 day.'
                 }
             ],
             definitions: [
@@ -44,7 +45,7 @@ export class TimeoutCommand extends GuildCommand {
 
     public async timeout(context: GuildCommandContext, member: Member, flags: FlagResult): Promise<string> {
         const reason = flags.r?.merge().value ?? '';
-        const duration = (flags.t !== undefined ? parse.duration(flags.t.merge().value) : undefined) ?? moment.duration(28, 'd');
+        const duration = (flags.t !== undefined ? parse.duration(flags.t.merge().value) : undefined) ?? moment.duration(1, 'd');
         const clampedDuration = clampBy(duration, moment.duration(0), moment.duration(28, 'd'), d => d.asMilliseconds());
 
         switch (await context.cluster.moderation.timeouts.timeout(member, context.author, context.author, clampedDuration, reason)) {
