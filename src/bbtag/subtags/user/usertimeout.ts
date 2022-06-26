@@ -54,7 +54,7 @@ export class UserTimeOutSubtag extends CompiledSubtag {
     }
 
     private getUserCommunicationDisabledUntil(member: Member, format: string): string {
-        if (typeof member.communicationDisabledUntil !== 'string')
+        if (typeof member.communicationDisabledUntil !== 'number')
             throw new BBTagRuntimeError('User not timed out');
         return moment(member.communicationDisabledUntil).utcOffset(0).format(format);
     }
