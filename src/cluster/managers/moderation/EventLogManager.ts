@@ -244,16 +244,17 @@ export class EventLogManager {
             };
         }
 
+        const user = await this.cluster.util.getUser(chatlog.userid);
         return {
             id: message.id,
-            author: chatlog.userid.toString(),
-            authorId: chatlog.userid.toString(),
+            author: user,
+            authorId: chatlog.userid,
             content: chatlog.content,
-            channelId: chatlog.channelid.toString()
+            channelId: chatlog.channelid
         };
     }
 
-    private eventLogEmbed(title: string, user: User | string | undefined, colour: number, partial: Partial<EmbedOptions> = {}): EmbedOptions {
+    private eventLogEmbed(title: string, user: User | undefined, colour: number, partial: Partial<EmbedOptions> = {}): EmbedOptions {
         return {
             ...partial,
             title: `ℹ️ ${title}`,
@@ -294,12 +295,9 @@ export class EventLogManager {
     }
 }
 
-function toEmbedAuthor(util: BaseUtilities, user: string | User | undefined): EmbedAuthor | undefined {
+function toEmbedAuthor(util: BaseUtilities, user: User | undefined): EmbedAuthor | undefined {
     switch (typeof user) {
         case 'undefined': return undefined;
-        case 'string': return {
-            name: `${humanize.fullName({})} (${user})`
-        };
         case 'object': return util.embedifyAuthor(user, true);
     }
 }
@@ -316,7 +314,7 @@ async function tryGetAuditLogs(guild: Guild, limit?: number, before?: string, ty
 
 interface MessageDetails {
     id: string;
-    author: string | User | undefined;
+    author: User | undefined;
     authorId: string | undefined;
     content: string | undefined;
     channelId: string;
