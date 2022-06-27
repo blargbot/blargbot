@@ -185,8 +185,7 @@ export class BanManager extends ModerationManagerBase {
         const auditLogs = await tryGetAuditLogs(member.guild, 50, undefined, AuditLogActionType.MEMBER_KICK);
         for (const log of auditLogs?.entries.values() ?? []) {
             if (log.targetID === member.id && moment(log.createdAt).isAfter(now.add(-1, 'second'))) {
-                const moderator = log.member === undefined ? undefined : member.guild.members.get(log.member.id);
-                await this.modLog.logKick(member.guild, member.user, moderator?.user, log.reason ?? undefined);
+                await this.modLog.logKick(member.guild, member.user, log.user, log.reason ?? undefined);
                 break;
             }
         }
