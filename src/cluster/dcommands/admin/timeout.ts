@@ -5,6 +5,8 @@ import { FlagResult } from '@blargbot/domain/models';
 import { Member } from 'eris';
 import moment from 'moment-timezone';
 
+const maximumTimeoutDurationInSeconds = 2419190; // 28 days - 10s because Discord throws a RESTError when the duration is too close to 28d
+
 export class TimeoutCommand extends GuildCommand {
     public constructor() {
         super({
@@ -46,7 +48,7 @@ export class TimeoutCommand extends GuildCommand {
     public async timeout(context: GuildCommandContext, member: Member, flags: FlagResult): Promise<string> {
         const reason = flags.r?.merge().value ?? '';
         const duration = (flags.t !== undefined ? parse.duration(flags.t.merge().value) : undefined) ?? moment.duration(1, 'd');
-        const clampedDuration = clampBy(duration, moment.duration(0), moment.duration(28, 'd'), d => d.asMilliseconds());
+        const clampedDuration = clampBy(duration, moment.duration(0), moment.duration(maximumTimeoutDurationInSeconds, 's'), d => d.asMilliseconds());
 
         switch (await context.cluster.moderation.timeouts.timeout(member, context.author, context.author, clampedDuration, reason)) {
             case 'memberTooHigh': return this.error(`I don't have permission to timeout **${humanize.fullName(member.user)}**! Their highest role is above my highest role.`);

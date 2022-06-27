@@ -50,6 +50,28 @@ runSubtagTests({
             }
         },
         {
+            code: '{timeout;other user;29d}',
+            expected: 'Success',
+            postSetup(bbctx, ctx) {
+                const member = ctx.createMock(Member);
+
+                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
+                    .verifiable(1)
+                    .thenResolve([member.instance]);
+
+                ctx.util.setup(x => x.timeout(member.instance, bbctx.user, bbctx.user, isDuration(2419190000), 'Tag Timeout'))
+                    .verifiable(1)
+                    .thenResolve('success');
+            }
+        },
+        {
+            code: '{timeout;other user;-1d}',
+            expected: '`Invalid duration`',
+            errors: [
+                { start: 0, end: 24, error: new BBTagRuntimeError('Invalid duration') }
+            ]
+        },
+        {
             code: '{timeout;other user;0s}',
             expected: '`User is not timed out`',
             errors: [

@@ -70,7 +70,7 @@ export class TimeoutManager extends ModerationManagerBase {
 
         this.ignoreTimeouts.add(`${guild.id}:${userId}`);
         try {
-            await guild.editMember(userId, { communicationDisabledUntil: moment().add(duration).toDate() }, `[${humanize.fullName(moderator)}] ${reason ?? ''}`);
+            await guild.editMember(userId, { communicationDisabledUntil: moment().utc().add(duration).toDate() }, `[${humanize.fullName(moderator)}] ${reason ?? ''}`);
         } catch (err: unknown) {
             this.ignoreTimeouts.delete(`${guild.id}:${userId}`);
             return { error: err };
