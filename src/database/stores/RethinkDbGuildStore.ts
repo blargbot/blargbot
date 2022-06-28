@@ -725,12 +725,18 @@ export class RethinkDbGuildStore implements GuildStore {
         return true;
     }
 
-    public async setLogIgnores(guildId: string, userIds: string[]): Promise<boolean> {
+    public async setLogIgnores(guildId: string, userIds: string[], ignore: boolean): Promise<boolean> {
         const guild = await this.#table.get(guildId);
         if (guild === undefined)
             return false;
 
-        if (!await this.#table.update(guildId, r => ({ logIgnore: r('logIgnore').default([]).setUnion(userIds) })))
+        // if we are ignoring these `userIds`, then set the `logIgnore` to the union of the current `logIgnore` and the `userIds` (add them if theyre not already there)
+        // Otherwise, set the `logIgnore` to the difference of the current `logIgnore` and the `userIds` (remove them if they are there)
+        // `setUnion` and `setDifference` prevent duplicates as they treat the array as a `Set`, which is distinct
+        // https://rethinkdb.com/api/javascript/set_difference/
+        // https://rethinkdb.com/api/javascript/set_union
+        const method = ignore ? 'setUnion' : 'setDifference';
+        if (!await this.#table.update(guildId, r => ({ logIgnore: r('logIgnore').default([])[method](userIds) })))
             return false;
 
         setProp(guild, 'logIgnore', [...new Set([...guild.logIgnore ?? [], ...userIds])]);
