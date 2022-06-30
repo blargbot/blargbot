@@ -1,5 +1,5 @@
 import { BBTagRuntimeError, UserNotFoundError } from '@blargbot/bbtag/errors';
-import { TimeOutSubtag } from '@blargbot/bbtag/subtags/user/timeout';
+import { TimeoutSubtag } from '@blargbot/bbtag/subtags/user/timeout';
 import { Member, User } from 'eris';
 import moment, { Duration } from 'moment-timezone';
 
@@ -12,7 +12,7 @@ function isDuration(ms: number): Duration {
 }
 
 runSubtagTests({
-    subtag: new TimeOutSubtag(),
+    subtag: new TimeoutSubtag(),
     argCountBounds: { min: 2, max: 4 },
     cases: [
         {
@@ -59,7 +59,7 @@ runSubtagTests({
                     .verifiable(1)
                     .thenResolve([member.instance]);
 
-                ctx.util.setup(x => x.timeout(member.instance, bbctx.user, bbctx.user, isDuration(2419190000), 'Tag Timeout'))
+                ctx.util.setup(x => x.timeout(member.instance, bbctx.user, bbctx.user, isDuration(2505600000), 'Tag Timeout'))
                     .verifiable(1)
                     .thenResolve('success');
             }
@@ -87,7 +87,7 @@ runSubtagTests({
                     .verifiable(1)
                     .thenResolve([member.instance]);
 
-                ctx.util.setup(x => x.removeTimeout(member.instance, bbctx.user, bbctx.user, 'Tag Timeout'))
+                ctx.util.setup(x => x.clearTimeout(member.instance, bbctx.user, bbctx.user, 'Tag Timeout'))
                     .verifiable(1)
                     .thenResolve('notTimedOut');
             }

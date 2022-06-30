@@ -1,14 +1,11 @@
-import { clampBy, parse } from '@blargbot/core/utils';
-import moment from 'moment-timezone';
+import { parse } from '@blargbot/core/utils';
 
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError, UserNotFoundError } from '../../errors';
 import { SubtagType } from '../../utils';
 
-const maximumTimeoutDurationInSeconds = 2419190; // 28 days - 10s because Discord throws a RESTError when the duration is too close to 28d
-
-export class TimeOutSubtag extends CompiledSubtag {
+export class TimeoutSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'timeout',
@@ -55,12 +52,10 @@ export class TimeOutSubtag extends CompiledSubtag {
         if (reason === '')
             reason = 'Tag Timeout';
 
-        const clampedDuration = clampBy(delay, moment.duration(0), moment.duration(maximumTimeoutDurationInSeconds, 's'), d => d.asMilliseconds());
-
         const authorizer = noPerms ? context.authorizer?.user ?? context.user : context.user;
-        const response = clampedDuration.asMilliseconds() !== 0
-            ? await context.util.timeout(member, context.user, authorizer, clampedDuration, reason)
-            : await context.util.removeTimeout(member, context.user, authorizer, reason);
+        const response = delay.asMilliseconds() !== 0
+            ? await context.util.timeout(member, context.user, authorizer, delay, reason)
+            : await context.util.clearTimeout(member, context.user, authorizer, reason);
 
         switch (response) {
             case 'success':

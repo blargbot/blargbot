@@ -20,18 +20,20 @@ export class EventLogManager {
         }
     }
 
-    public async userUnTimedOut(member: Member): Promise<void> {
-        const channel = await this.getLogChannel('memberuntimeout', member.guild.id);
+    public async userTimeoutCleared(member: Member): Promise<void> {
+        const channel = await this.getLogChannel('membertimeoutclear', member.guild.id);
         if (channel === undefined || await this.isExempt(member.guild.id, member.id))
             return;
 
         const now = moment();
         const auditEvents = await tryGetAuditLogs(member.guild, 50, undefined, AuditLogActionType.MEMBER_UPDATE);
-        const audit = auditEvents?.entries.find(e => e.targetID === member.id && moment(e.createdAt).isAfter(now.add(-1, 'second')));
+        const audit = auditEvents?.entries.find(e => e.targetID === member.id
+            && moment(e.createdAt).isAfter(now.add(-1, 'second'))
+            && (e.after?.communicationDisabledUntil === null || (e.after?.communicationDisabledUntil as number) < (e.before?.communicationDisabledUntil as number)));
         const reason = audit?.reason ?? undefined;
         const moderator = audit?.user ?? undefined;
 
-        await this.logEvent('memberuntimeout', channel, this.eventLogEmbed('User Timeout Was Removed', member.user, ModlogColour.UNTIMEOUT, {
+        await this.logEvent('membertimeoutclear', channel, this.eventLogEmbed('User Timeout Was Removed', member.user, ModlogColour.TIMEOUTCLEAR, {
             fields: [
                 ...moderator !== undefined ? [{ name: 'Updated By', value: `<@${moderator.id}> (${moderator.id})` }] : [],
                 ...reason !== undefined ? [{ name: 'Reason', value: reason }] : []

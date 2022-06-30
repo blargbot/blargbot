@@ -6,7 +6,7 @@ import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError, UserNotFoundError } from '../../errors';
 import { SubtagType } from '../../utils';
 
-export class UserTimeOutSubtag extends CompiledSubtag {
+export class UserTimeoutSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'usertimeout',

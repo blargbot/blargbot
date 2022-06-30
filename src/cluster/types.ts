@@ -367,7 +367,7 @@ export type MassBanResult = User[] | Exclude<BanResult, 'success'> | 'noUsers';
 export type KickResult = 'success' | 'noPerms' | 'memberTooHigh' | 'moderatorNoPerms' | 'moderatorTooLow';
 export type UnbanResult = 'success' | 'notBanned' | 'noPerms' | 'moderatorNoPerms';
 export type TimeoutResult = 'success' | 'alreadyTimedOut' | 'noPerms' | 'moderatorNoPerms' | 'memberTooHigh' | 'moderatorTooLow';
-export type UnTimeoutResult = 'success' | 'notTimedOut' | 'noPerms' | 'moderatorNoPerms';
+export type TimeoutClearResult = 'success' | 'notTimedOut' | 'noPerms' | 'moderatorNoPerms';
 
 export interface WarnDetails {
     readonly count: number;

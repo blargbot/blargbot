@@ -15,8 +15,8 @@ export class ClusterBBTagUtilities extends BaseUtilities implements BBTagUtiliti
         return this.cluster.moderation.timeouts.timeout(member, moderator, authorizer, duration, reason);
     }
 
-    public removeTimeout(member: Member, moderator: User, authorizer: User, reason?: string | undefined): Promise<'noPerms' | 'success' | 'moderatorNoPerms' | 'notTimedOut'> {
-        return this.cluster.moderation.timeouts.removeTimeout(member, moderator, authorizer, reason);
+    public clearTimeout(member: Member, moderator: User, authorizer: User, reason?: string | undefined): Promise<'noPerms' | 'success' | 'moderatorNoPerms' | 'notTimedOut'> {
+        return this.cluster.moderation.timeouts.clearTimeout(member, moderator, authorizer, reason);
     }
 
     public addModlog(guild: Guild, action: string, user: User, moderator?: User, reason?: string, color?: number): Promise<void> {

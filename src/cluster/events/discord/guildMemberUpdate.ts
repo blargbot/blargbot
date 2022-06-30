@@ -31,8 +31,8 @@ export class DiscordMemberUpdateHandler extends DiscordEventService<'guildMember
                 promises.push(this.cluster.moderation.timeouts.userTimedOut(member.guild, member.user, duration));
                 promises.push(this.cluster.moderation.eventLog.userTimedOut(member));
             } else {
-                promises.push(this.cluster.moderation.timeouts.userUnTimedOut(member.guild, member.user));
-                promises.push(this.cluster.moderation.eventLog.userUnTimedOut(member));
+                promises.push(this.cluster.moderation.timeouts.userTimeoutCleared(member.guild, member.user));
+                promises.push(this.cluster.moderation.eventLog.userTimeoutCleared(member));
             }
         }
 

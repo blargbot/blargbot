@@ -28,12 +28,12 @@ export class ModLogManager {
         });
     }
 
-    public async logUnTimeout(guild: Guild, user: User, moderator?: User, reason?: string): Promise<void> {
+    public async logTimeoutClear(guild: Guild, user: User, moderator?: User, reason?: string): Promise<void> {
         await this.logAction({
-            type: 'Timeout Removal',
+            type: 'Timeout Clear',
             guildId: guild.id,
             user,
-            color: ModlogColour.UNTIMEOUT,
+            color: ModlogColour.TIMEOUTCLEAR,
             moderator,
             reason,
             fields: [{

@@ -31,7 +31,7 @@ export interface BBTagUtilities extends BaseUtilities {
     ban(guild: Guild, user: User, moderator: User, authorizer: User, deleteDays: number, reason: string, duration: Duration): Promise<'success' | 'alreadyBanned' | 'noPerms' | 'memberTooHigh' | 'moderatorNoPerms' | 'moderatorTooLow'>;
     unban(guild: Guild, user: User, moderator: User, authorizer: User, reason?: string): Promise<'success' | 'notBanned' | 'noPerms' | 'moderatorNoPerms'>;
     timeout(member: Member, moderator: User, authorizer: User, duration: Duration, reason?: string): Promise<'success' | 'alreadyTimedOut' | 'noPerms' | 'memberTooHigh' | 'moderatorNoPerms' | 'moderatorTooLow'>;
-    removeTimeout(member: Member, moderator: User, authorizer: User, reason?: string): Promise<'success' | 'notTimedOut' | 'noPerms' | 'moderatorNoPerms'>;
+    clearTimeout(member: Member, moderator: User, authorizer: User, reason?: string): Promise<'success' | 'notTimedOut' | 'noPerms' | 'moderatorNoPerms'>;
     kick(member: Member, moderator: User, authorizer: User, reason?: string): Promise<'success' | 'noPerms' | 'memberTooHigh' | 'moderatorNoPerms' | 'moderatorTooLow'>;
     addModlog(guild: Guild, action: string, user: User, moderator?: User, reason?: string, color?: number): Promise<void>;
 

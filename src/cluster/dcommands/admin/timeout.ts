@@ -1,11 +1,9 @@
 import { GuildCommand } from '@blargbot/cluster/command';
 import { GuildCommandContext } from '@blargbot/cluster/types';
-import { clampBy, CommandType, humanize, parse } from '@blargbot/cluster/utils';
+import { CommandType, humanize, parse } from '@blargbot/cluster/utils';
 import { FlagResult } from '@blargbot/domain/models';
 import { Member } from 'eris';
 import moment from 'moment-timezone';
-
-const maximumTimeoutDurationInSeconds = 2419190; // 28 days - 10s because Discord throws a RESTError when the duration is too close to 28d
 
 export class TimeoutCommand extends GuildCommand {
     public constructor() {
@@ -30,14 +28,14 @@ export class TimeoutCommand extends GuildCommand {
                 {
                     parameters: 'clear {user:member+}',
                     description: 'Removes the timeout of a user.\nIf mod-logging is enabled, the timeout removal will be logged.',
-                    execute: (ctx, [user], flags) => this.removeTimeout(ctx, user.asMember, flags.r?.merge().value ?? '')
+                    execute: (ctx, [user], flags) => this.clearTimeout(ctx, user.asMember, flags.r?.merge().value ?? '')
                 }
             ]
         });
     }
 
-    public async removeTimeout(context: GuildCommandContext, member: Member, reason: string): Promise<string> {
-        switch (await context.cluster.moderation.timeouts.removeTimeout(member, context.author, context.author, reason)) {
+    public async clearTimeout(context: GuildCommandContext, member: Member, reason: string): Promise<string> {
+        switch (await context.cluster.moderation.timeouts.clearTimeout(member, context.author, context.author, reason)) {
             case 'notTimedOut': return this.error(`**${humanize.fullName(member.user)}** is not currently timed out.`);
             case 'noPerms': return this.error(`I don't have permission to timeout **${humanize.fullName(member.user)}**! Make sure I have the \`moderate members\` permission and try again.`);
             case 'moderatorNoPerms': return this.error(`You don't have permission to timeout **${humanize.fullName(member.user)}**! Make sure you have the \`moderate members\` permission or one of the permissions specified in the \`timeout override\` setting and try again.`);
@@ -48,9 +46,8 @@ export class TimeoutCommand extends GuildCommand {
     public async timeout(context: GuildCommandContext, member: Member, flags: FlagResult): Promise<string> {
         const reason = flags.r?.merge().value ?? '';
         const duration = (flags.t !== undefined ? parse.duration(flags.t.merge().value) : undefined) ?? moment.duration(1, 'd');
-        const clampedDuration = clampBy(duration, moment.duration(0), moment.duration(maximumTimeoutDurationInSeconds, 's'), d => d.asMilliseconds());
 
-        switch (await context.cluster.moderation.timeouts.timeout(member, context.author, context.author, clampedDuration, reason)) {
+        switch (await context.cluster.moderation.timeouts.timeout(member, context.author, context.author, duration, reason)) {
             case 'memberTooHigh': return this.error(`I don't have permission to timeout **${humanize.fullName(member.user)}**! Their highest role is above my highest role.`);
             case 'moderatorTooLow': return this.error(`You don't have permission to timeout **${humanize.fullName(member.user)}**! Their highest role is above your highest role.`);
             case 'noPerms': return this.error(`I don't have permission to timeout **${humanize.fullName(member.user)}**! Make sure I have the \`moderate members\` permission and try again.`);

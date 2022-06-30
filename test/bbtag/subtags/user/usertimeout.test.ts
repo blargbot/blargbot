@@ -1,11 +1,11 @@
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { UserTimeOutSubtag } from '@blargbot/bbtag/subtags/user/usertimeout';
+import { UserTimeoutSubtag } from '@blargbot/bbtag/subtags/user/usertimeout';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 import { createGetUserPropTestCases } from './_getUserPropTest';
 
 runSubtagTests({
-    subtag: new UserTimeOutSubtag(),
+    subtag: new UserTimeoutSubtag(),
     argCountBounds: { min: 0, max: 3 },
     cases: [
         {

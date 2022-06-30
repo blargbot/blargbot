@@ -8,5 +8,5 @@ export enum ModlogColour {
     WARN = 0xd1be79,
     PARDON = 0x79d196,
     TIMEOUT = 0xe69138,
-    UNTIMEOUT = 0xb6d7a8
+    TIMEOUTCLEAR = 0xb6d7a8
 }
