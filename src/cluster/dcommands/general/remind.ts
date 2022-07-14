@@ -17,13 +17,16 @@ export class TimerCommand extends GlobalCommand {
                 {
                     parameters: '{~message+}',
                     description: 'Reminds you about something after a period of time in a DM.',
-                    execute: (ctx, [message], { c: channel, t: time }) => this.addTimer(ctx, time?.merge().value ?? '0s', message.asString, channel !== undefined)
+                    execute: (ctx, [message], { c: channel, t: time }) => this.addTimer(ctx, time?.merge().value, message.asString, channel !== undefined)
                 }
             ]
         });
     }
 
-    public async addTimer(context: CommandContext, durationStr: string, message: string, inChannel: boolean): Promise<string> {
+    public async addTimer(context: CommandContext, durationStr: string | undefined, message: string, inChannel: boolean): Promise<string> {
+        if (durationStr === undefined)
+            return this.error('The `-t` flag is required to set the duration of the reminder!');
+
         const duration = parse.duration(durationStr);
         if (duration === undefined || duration.asMilliseconds() <= 0)
             return this.error('I cant set a timer for 0 seconds!');
