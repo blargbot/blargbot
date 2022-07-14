@@ -1,8 +1,8 @@
 import { BanResult, KickResult, MassBanResult, UnbanResult } from '@blargbot/cluster/types';
-import { humanize } from '@blargbot/cluster/utils';
+import { humanize, sleep } from '@blargbot/cluster/utils';
 import { UnbanEventOptions } from '@blargbot/domain/models';
 import { mapping } from '@blargbot/mapping';
-import { ApiError, AuditLogActionType, DiscordRESTError, Guild, GuildAuditLog, Member, User } from 'eris';
+import { ApiError, AuditLogActionType, DiscordRESTError, Guild, GuildAuditLog, GuildAuditLogEntry, Member, User } from 'eris';
 import moment, { Duration } from 'moment-timezone';
 
 import { ModerationManager } from '../ModerationManager';
@@ -168,27 +168,39 @@ export class BanManager extends ModerationManagerBase {
     }
 
     public async userBanned(guild: Guild, user: User): Promise<void> {
-        if (!this.ignoreBans.delete(`${guild.id}:${user.id}`))
-            await this.modLog.logBan(guild, user);
+        if (this.ignoreBans.delete(`${guild.id}:${user.id}`))
+            return;
+
+        const log = await this.#findAuditLog(guild, user.id, AuditLogActionType.MEMBER_BAN_ADD);
+        await this.modLog.logBan(guild, user, log?.user, log?.reason ?? undefined);
     }
 
     public async userUnbanned(guild: Guild, user: User): Promise<void> {
-        if (!this.ignoreUnbans.delete(`${guild.id}:${user.id}`))
-            await this.modLog.logUnban(guild, user);
+        if (this.ignoreUnbans.delete(`${guild.id}:${user.id}`))
+            return;
+
+        const log = await this.#findAuditLog(guild, user.id, AuditLogActionType.MEMBER_BAN_REMOVE);
+        await this.modLog.logUnban(guild, user, log?.user, log?.reason ?? undefined);
     }
 
     public async userLeft(member: Member): Promise<void> {
         if (this.ignoreLeaves.delete(`${member.guild.id}:${member.id}`))
             return;
 
-        const now = moment();
-        const auditLogs = await tryGetAuditLogs(member.guild, 50, undefined, AuditLogActionType.MEMBER_KICK);
-        for (const log of auditLogs?.entries.values() ?? []) {
-            if (log.targetID === member.id && moment(log.createdAt).isAfter(now.add(-1, 'second'))) {
-                await this.modLog.logKick(member.guild, member.user, log.user, log.reason ?? undefined);
-                break;
-            }
-        }
+        const log = await this.#findAuditLog(member.guild, member.id, AuditLogActionType.MEMBER_KICK);
+        if (log === undefined) // no kick audit log, so they probably just left. Dont log.
+            return;
+
+        await this.modLog.logKick(member.guild, member.user, log.user, log.reason ?? undefined);
+    }
+
+    async #findAuditLog(guild: Guild, targetId: string, type: AuditLogActionType): Promise<GuildAuditLogEntry | undefined> {
+        const eventTime = moment().add(-30, 'seconds');
+        await sleep(2000); // To ensure the audit log has appeared
+        const auditLogs = await tryGetAuditLogs(guild, 50, undefined, type);
+        return auditLogs?.entries
+            .sort((a, b) => b.createdAt - a.createdAt)
+            .find(log => log.targetID === targetId && moment(log.createdAt).isAfter(eventTime));
     }
 }
 
