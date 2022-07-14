@@ -439,33 +439,7 @@ export class BBTagContext implements BBTagContextOptions {
     }
 
     public static async deserialize(engine: BBTagEngine, obj: SerializedBBTagContext): Promise<BBTagContext> {
-        let message: BBTagContextMessage | undefined;
-        try {
-            const msg = await engine.util.getMessage(obj.msg.channel.id, obj.msg.id);
-            if (msg === undefined || !guard.isGuildMessage(msg))
-                throw new Error('Channel must be a guild channel to work with BBTag');
-            message = msg;
-        } catch (err: unknown) {
-            const channel = await engine.util.getChannel(obj.msg.channel.id);
-            if (channel === undefined || !guard.isGuildChannel(channel))
-                throw new Error('Channel must be a guild channel to work with BBTag');
-            if (!guard.isTextableChannel(channel))
-                throw new Error('Channel must be able to send and receive messages to work with BBTag');
-            const member = await engine.util.getMember(channel.guild.id, obj.msg.member?.id ?? '');
-            if (member === undefined)
-                throw new Error(`User ${obj.msg.member?.id ?? ''} doesnt exist on ${channel.guild.id} any more`);
-
-            message = {
-                id: obj.msg.id,
-                createdAt: obj.msg.timestamp,
-                content: obj.msg.content,
-                channel: channel,
-                member,
-                author: member.user,
-                attachments: obj.msg.attachments,
-                embeds: obj.msg.embeds
-            };
-        }
+        const message = await this.#getOrFabricateMessage(engine, obj);
         const limit = new limits[obj.limit.type]();
         limit.load(obj.limit);
         const result = new BBTagContext(engine, {
@@ -527,6 +501,62 @@ export class BBTagContext implements BBTagContextOptions {
                     return p;
                 }, {})
         };
+    }
+
+    static async #getOrFabricateMessage(engine: BBTagEngine, obj: SerializedBBTagContext): Promise<BBTagContextMessage> {
+        const msg = await engine.util.getMessage(obj.msg.channel.id, obj.msg.id);
+        if (msg !== undefined) {
+            if (guard.isGuildMessage(msg))
+                return msg;
+            throw new Error('Channel must be a guild channel to work with BBTag');
+        }
+
+        const channel = await engine.util.getChannel(obj.msg.channel.id);
+        if (channel === undefined || !guard.isGuildChannel(channel))
+            throw new Error('Channel must be a guild channel to work with BBTag');
+
+        if (!guard.isTextableChannel(channel))
+            throw new Error('Channel must be able to send and receive messages to work with BBTag');
+
+        const member = await this.#getOrFabricateMember(engine, channel.guild, obj);
+        return {
+            id: obj.msg.id,
+            createdAt: obj.msg.timestamp,
+            content: obj.msg.content,
+            channel: channel,
+            member: member,
+            author: member.user,
+            attachments: obj.msg.attachments,
+            embeds: obj.msg.embeds
+        };
+    }
+
+    static async #getOrFabricateMember(engine: BBTagEngine, guild: Guild, obj: SerializedBBTagContext): Promise<Member> {
+        if (obj.msg.member === undefined)
+            throw new Error('No user id given');
+
+        const member = await engine.util.getMember(guild, obj.msg.member.id);
+        if (member !== undefined)
+            return member;
+
+        const user = await engine.util.getUser(obj.msg.member.id);
+        if (user === undefined)
+            throw new Error('No user found');
+
+        return new Member({
+            id: user.id,
+            avatar: null,
+            communication_disabled_until: null,
+            deaf: null,
+            flags: 0,
+            joined_at: null,
+            mute: false,
+            nick: null,
+            premium_since: null,
+            pending: false,
+            roles: [],
+            user: user.toJSON()
+        }, guild, engine.dependencies.discord);
     }
 }
 
