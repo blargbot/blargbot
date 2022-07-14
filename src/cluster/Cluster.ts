@@ -14,7 +14,7 @@ import { inspect } from 'util';
 import { ClusterBBTagUtilities } from './ClusterBBTagUtilities';
 import { ClusterUtilities } from './ClusterUtilities';
 import { ClusterWorker } from './ClusterWorker';
-import { AggregateCommandManager, AutoresponseManager, AwaiterManager, BotStaffManager, ContributorManager, CustomCommandManager, DefaultCommandManager, DomainManager, GreetingManager, HelpManager, IntervalManager, ModerationManager, PollManager, PrefixManager, RolemeManager, TimeoutManager, VersionStateManager } from './managers';
+import { AggregateCommandManager, AutoresponseManager, AwaiterManager, BotStaffManager, ContributorManager, CustomCommandManager, DefaultCommandManager, DomainManager, GreetingManager, GuildManager, HelpManager, IntervalManager, ModerationManager, PollManager, PrefixManager, RolemeManager, TimeoutManager, VersionStateManager } from './managers';
 
 export class Cluster extends BaseClient {
     public readonly id: number;
@@ -40,6 +40,7 @@ export class Cluster extends BaseClient {
     public readonly help: HelpManager;
     public readonly awaiter: AwaiterManager;
     public readonly version: VersionStateManager;
+    public readonly guilds: GuildManager;
 
     public constructor(
         worker: ClusterWorker,
@@ -80,6 +81,7 @@ export class Cluster extends BaseClient {
         this.id = options.id;
         this.worker = worker;
         this.createdAt = Object.freeze(moment());
+        this.guilds = new GuildManager(this);
         this.domains = new DomainManager(this.database.vars);
         this.images = new ImagePool(this.id, config.discord.images, this.logger);
         this.prefixes = new PrefixManager(this.config.discord.defaultPrefix, this.database.guilds, this.database.users, this.discord);
