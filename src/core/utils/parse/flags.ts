@@ -11,7 +11,7 @@ export function parseFlags(definitions: Iterable<FlagDefinition>, text: string, 
     const flagKeys = new Set<string>(defArr.map(d => d.flag));
 
     for (const { start, end, value } of humanize.smartSplitRanges(text)) {
-        if (!/^--?[a-z0-9]|^--$/i.test(value)) {
+        if (!/^--?[a-z0-9]|^--$/i.test(value) || text[start] !== value[0]) {
             currentGroup.push({ start, end, value });
         } else if (value === '--') {
             if (currentFlag !== '_') {
