@@ -16,7 +16,7 @@ export class TimezoneCommand extends GlobalCommand {
                 },
                 {
                     parameters: '{timezone}',
-                    description: 'Sets your current timezone',
+                    description: 'Sets your current timezone. A list of [allowed timezones can be found on wikipedia](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones#List) under the `TZ database name` column',
                     execute: (ctx, [timezone]) => this.setTimezone(ctx, ctx.author, timezone.asString)
                 }
             ]
