@@ -61,7 +61,7 @@ export abstract class DocumentationManager {
 
         const result = `${this.#id}|${userIdComp}|${pageGroupComp}|${pageNumberComp}|${details.documentationId}`;
         if (result.length > 100)
-            throw new Error('');
+            throw new Error(`Documentation id ${JSON.stringify(details.documentationId)} was too long, causing the custom_id to be ${result.length} chars long`);
         return result;
     }
 
