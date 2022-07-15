@@ -2,7 +2,7 @@ import { bbtag } from '@blargbot/bbtag';
 import { Cluster } from '@blargbot/cluster';
 import { GuildCommand } from '@blargbot/cluster/command';
 import { CommandResult, CustomCommandShrinkwrap, GuildCommandContext, GuildShrinkwrap, ICommand, SignedGuildShrinkwrap } from '@blargbot/cluster/types';
-import { codeBlock, CommandType, getBBTagDocsEmbed, guard, humanize, parse } from '@blargbot/cluster/utils';
+import { codeBlock, CommandType, guard, humanize, parse } from '@blargbot/cluster/utils';
 import { Configuration } from '@blargbot/config';
 import { SendContent, SendPayload } from '@blargbot/core/types';
 import { FlagDefinition, NamedGuildCommandTag, NamedGuildSourceCommandTag } from '@blargbot/domain/models';
@@ -12,8 +12,11 @@ import { EmbedOptions, FileContent, Role } from 'eris';
 import moment, { Duration } from 'moment-timezone';
 import fetch from 'node-fetch';
 
+import { BBTagDocumentationManager } from '../../managers/documentation/BBTagDocumentationManager';
+
 export class CustomCommandCommand extends GuildCommand {
     public static readonly reservedCommandNames = new Set<string>(['ccommand', 'editcommand']);
+    readonly #docs: BBTagDocumentationManager;
 
     public constructor(cluster: Cluster) {
         super({
@@ -152,6 +155,9 @@ export class CustomCommandCommand extends GuildCommand {
                 }
             ]
         });
+
+        this.#docs = new BBTagDocumentationManager(cluster, 'ccommand', 'cc');
+        cluster.discord.on('interactionCreate', i => this.#docs.handleInteraction(i));
     }
 
     public async runRaw(
@@ -176,13 +182,8 @@ export class CustomCommandCommand extends GuildCommand {
         return this.info('Ive sent the debug output in a DM');
     }
 
-    public async showDocs(context: GuildCommandContext, topic: string | undefined): Promise<SendPayload | string> {
-        const embed = await getBBTagDocsEmbed(context, topic);
-        if (embed === undefined)
-            return this.error(`Oops, I didnt recognise that topic! Try using \`${context.prefix}${context.commandName} docs\` for a list of all topics`);
-        if (typeof embed === 'string')
-            return embed;
-        return { embeds: [embed], isHelp: true };
+    public async showDocs(ctx: GuildCommandContext, topic: string | undefined): Promise<SendPayload> {
+        return await this.#docs.createMessageContent(topic ?? '', ctx.author, ctx.channel);
     }
 
     public async runCommand(
@@ -298,8 +299,10 @@ export class CustomCommandCommand extends GuildCommand {
     public async listCommands(context: GuildCommandContext): Promise<{ embeds: [EmbedOptions]; } | string | undefined> {
         const grouped: Record<string, string[]> = {};
         for await (const command of context.cluster.commands.custom.list(context.channel.guild)) {
-            for await (const role of this.getRoles(context, command)) {
-                (grouped[role] ??= []).push(command.name);
+            if (command.state === 'ALLOWED') {
+                for await (const role of this.getRoles(context, command.detail.command)) {
+                    (grouped[role] ??= []).push(command.detail.command.name);
+                }
             }
         }
         return {

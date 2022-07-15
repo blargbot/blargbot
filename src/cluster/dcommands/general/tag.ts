@@ -2,14 +2,18 @@ import { bbtag } from '@blargbot/bbtag';
 import { Cluster, ClusterUtilities } from '@blargbot/cluster';
 import { CommandContext, GuildCommand } from '@blargbot/cluster/command';
 import { GuildCommandContext } from '@blargbot/cluster/types';
-import { codeBlock, CommandType, getBBTagDocsEmbed, guard, humanize, parse, pluralise as p } from '@blargbot/cluster/utils';
+import { codeBlock, CommandType, guard, humanize, parse, pluralise as p } from '@blargbot/cluster/utils';
 import { SendContent, SendPayload } from '@blargbot/core/types';
 import { StoredTag } from '@blargbot/domain/models';
 import { EmbedField, EmbedOptions, FileContent, User } from 'eris';
 import moment, { Duration } from 'moment-timezone';
 import fetch from 'node-fetch';
 
+import { BBTagDocumentationManager } from '../../managers/documentation/BBTagDocumentationManager';
+
 export class TagCommand extends GuildCommand {
+    readonly #docs: BBTagDocumentationManager;
+
     public constructor(cluster: Cluster) {
         super({
             name: 'tag',
@@ -163,6 +167,9 @@ export class TagCommand extends GuildCommand {
                 }
             ]
         });
+
+        this.#docs = new BBTagDocumentationManager(cluster, 'tag');
+        cluster.discord.on('interactionCreate', i => this.#docs.handleInteraction(i));
     }
 
     public async runTag(
@@ -732,13 +739,8 @@ export class TagCommand extends GuildCommand {
         return { name: tag.name, tag };
     }
 
-    private async showDocs(ctx: GuildCommandContext, topic: string | undefined): Promise<SendPayload | string> {
-        const embed = await getBBTagDocsEmbed(ctx, topic);
-        if (embed === undefined)
-            return this.error(`Oops, I didnt recognise that topic! Try using \`${ctx.prefix}${ctx.commandName} docs\` for a list of all topics`);
-        if (typeof embed === 'string')
-            return embed;
-        return { embeds: [embed], isHelp: true };
+    private async showDocs(ctx: GuildCommandContext, topic: string | undefined): Promise<SendPayload> {
+        return await this.#docs.createMessageContent(topic ?? '', ctx.author, ctx.channel);
     }
 
     private async logChange(

@@ -14,7 +14,8 @@ import { inspect } from 'util';
 import { ClusterBBTagUtilities } from './ClusterBBTagUtilities';
 import { ClusterUtilities } from './ClusterUtilities';
 import { ClusterWorker } from './ClusterWorker';
-import { AggregateCommandManager, AutoresponseManager, AwaiterManager, BotStaffManager, ContributorManager, CustomCommandManager, DefaultCommandManager, DomainManager, GreetingManager, GuildManager, HelpManager, IntervalManager, ModerationManager, PollManager, PrefixManager, RolemeManager, TimeoutManager, VersionStateManager } from './managers';
+import { AggregateCommandManager, AutoresponseManager, AwaiterManager, BotStaffManager, ContributorManager, CustomCommandManager, DefaultCommandManager, DomainManager, GreetingManager, GuildManager, IntervalManager, ModerationManager, PollManager, PrefixManager, RolemeManager, TimeoutManager, VersionStateManager } from './managers';
+import { CommandDocumentationManager } from './managers/documentation/CommandDocumentationManager';
 
 export class Cluster extends BaseClient {
     public readonly id: number;
@@ -37,7 +38,7 @@ export class Cluster extends BaseClient {
     public readonly polls: PollManager;
     public readonly intervals: IntervalManager;
     public readonly rolemes: RolemeManager;
-    public readonly help: HelpManager;
+    public readonly help: CommandDocumentationManager;
     public readonly awaiter: AwaiterManager;
     public readonly version: VersionStateManager;
     public readonly guilds: GuildManager;
@@ -110,7 +111,7 @@ export class Cluster extends BaseClient {
         });
         this.intervals = new IntervalManager(this, duration(10, 's'));
         this.rolemes = new RolemeManager(this);
-        this.help = new HelpManager(this.commands, this.util);
+        this.help = new CommandDocumentationManager(this);
         this.awaiter = new AwaiterManager(this.logger);
         this.version = new VersionStateManager(this.database.vars);
 
@@ -118,6 +119,7 @@ export class Cluster extends BaseClient {
         this.services.on('remove', module => void module.stop());
         this.events.on('add', module => void module.start());
         this.events.on('remove', module => void module.stop());
+        this.discord.on('interactionCreate', i => this.help.handleInteraction(i));
     }
 
     public async start(): Promise<void> {

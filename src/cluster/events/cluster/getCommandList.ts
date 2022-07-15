@@ -11,7 +11,11 @@ export class ClusterGetCommandListHandler extends ClusterEventService<'getComman
 
     public async getCommandList(): Promise<CommandListResult> {
         const commands: CommandListResult = {};
-        for await (const c of this.cluster.commands.default.list()) {
+        for await (const result of this.cluster.commands.default.list()) {
+            if (result.state !== 'ALLOWED')
+                continue;
+
+            const c = result.detail.command;
             commands[c.name] = {
                 aliases: c.aliases,
                 category: c.category,

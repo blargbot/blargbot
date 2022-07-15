@@ -11,6 +11,5 @@ export * from './IntervalManager';
 export * from './awaiters';
 export * from './RolemeManager';
 export * from './TimeoutManager';
-export * from './HelpManager';
 export * from './commands';
 export * from './VersionStateManager';

@@ -10,12 +10,12 @@ export class HelpCommand extends GlobalCommand {
                 {
                     parameters: '',
                     description: 'Shows a list of all the available commands',
-                    execute: (ctx) => ctx.cluster.help.listCommands(ctx.channel, ctx.author, ctx.prefix)
+                    execute: (ctx) => ctx.cluster.help.createMessageContent('', ctx.author, ctx.channel)
                 },
                 {
-                    parameters: '{commandName} {page:integer=1}',
+                    parameters: '{commandName}',
                     description: 'Shows the help text for the given command',
-                    execute: (ctx, [commandName, page]) => ctx.cluster.help.viewCommand(ctx.channel, ctx.author, ctx.prefix, commandName.asString, page.asInteger - 1)
+                    execute: (ctx, [commandName]) => ctx.cluster.help.createMessageContent(commandName.asString, ctx.author, ctx.channel)
                 }
             ]
         }, true);

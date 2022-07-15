@@ -1,6 +1,6 @@
 import { Cluster } from '@blargbot/cluster';
 import { Command } from '@blargbot/cluster/command';
-import { CommandGetResult, CommandManagers, ICommand, ICommandManager } from '@blargbot/cluster/types';
+import { CommandGetResult, CommandManagers, ICommandManager } from '@blargbot/cluster/types';
 import { MessageIdQueue } from '@blargbot/core/MessageIdQueue';
 import { guard, humanize } from '@blargbot/core/utils';
 import { CommandPermissions, NamedGuildCommandTag } from '@blargbot/domain/models';
@@ -49,17 +49,37 @@ export class AggregateCommandManager implements ICommandManager, CommandManagers
         return { state: 'NOT_FOUND' };
     }
 
-    public async *list(location?: Guild | KnownTextableChannel, user?: User): AsyncGenerator<ICommand> {
-        const commandNames = new Set<string>();
+    public async *list(location?: Guild | KnownTextableChannel, user?: User): AsyncGenerator<CommandGetResult> {
+        const results = new Map<string, CommandGetResult[]>();
+
         for (const manager of this.managersArr) {
             for await (const command of manager.list(location, user)) {
-                for (const name of [command.name, ...command.aliases]) {
-                    if (commandNames.size < commandNames.add(name.toLowerCase()).size) {
-                        yield command;
+                switch (command.state) {
+                    case 'DISABLED':
+                    case 'MISSING_PERMISSIONS':
+                    case 'MISSING_ROLE':
+                    case 'ALLOWED': {
+                        for (const name of [command.detail.command.name, ...command.detail.command.aliases].map(s => s.toLowerCase())) {
+                            let res = results.get(name);
+                            if (res === undefined)
+                                results.set(name, res = []);
+                            res.push(command);
+                        }
                         break;
                     }
+                    case 'NOT_IN_GUILD':
+                    case 'BLACKLISTED':
+                    case 'NOT_FOUND':
+                        break;
                 }
             }
+        }
+
+        const yielded = new Set<CommandGetResult>();
+        for (const result of results.values()) {
+            const toYield = result.find(x => x.state === 'ALLOWED') ?? result[0];
+            if (yielded.size < yielded.add(toYield).size)
+                yield toYield;
         }
     }
 
