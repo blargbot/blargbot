@@ -247,7 +247,7 @@ export abstract class DocumentationManager {
         if (buttonRow.length > 0)
             components.push({ type: Constants.ComponentTypes.ACTION_ROW, components: buttonRow });
 
-        const page = documentation.type === 'paged' ? documentation.pages[pageNumber]
+        const page = documentation.type === 'paged' ? documentation.pages[pageNumber] ?? { embed: {} }
             : documentation;
 
         return {
