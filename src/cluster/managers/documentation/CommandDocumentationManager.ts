@@ -17,41 +17,37 @@ export class CommandDocumentationManager extends DocumentationTreeManager {
 
     protected async getTree(user: User, channel: KnownTextableChannel): Promise<Documentation> {
         const guild = guard.isGuildChannel(channel) ? channel.guild : undefined;
-        const groups = new Map<string, DocumentationGroup & { items: Mutable<DocumentationGroup['items']>; }>();
-        const categoryMap = new Map<string, string[]>();
+        const categories = new Map<string, DocumentationGroup & { items: Mutable<DocumentationGroup['items']>; }>();
         for await (const item of this.#cluster.commands.list(guild, user)) {
             if (item.state === 'NOT_FOUND')
                 continue;
 
             const command = item.detail.command;
-            const docs = this.#getCommandDocs(item);
-            const categories: string[] = [];
-            categoryMap.set(command.name, categories);
+            const commandDocumentation = this.#getCommandDocs(item);
 
-            for await (const category of this.#getCategories(channel, command)) {
-                categories.push(category.name);
-                let group = groups.get(category.id);
-                if (group === undefined) {
-                    groups.set(category.id, group = {
-                        id: category.id,
-                        name: category.name,
+            for await (const categoryDesc of this.#getCategories(channel, command)) {
+                let category = categories.get(categoryDesc.id);
+                if (category === undefined) {
+                    categories.set(categoryDesc.id, category = {
+                        id: categoryDesc.id,
+                        name: categoryDesc.name,
                         type: 'group',
                         items: [],
                         embed: {
-                            color: docs.embed.color
+                            color: commandDocumentation.embed.color
                         },
                         selectText: 'Pick a command'
                     });
                 }
 
-                group.items.push({
-                    ...docs,
-                    id: `${category.id}_${docs.id}`
+                category.items.push({
+                    ...commandDocumentation,
+                    id: `${categoryDesc.id}_${commandDocumentation.id}`
                 });
             }
         }
 
-        const sortedGroups = [...groups.values()]
+        const sortedCategories = [...categories.values()]
             .map(g => ({
                 ...g,
                 items: [...g.items].sort((a, b) => a.name < b.name ? -1 : 1),
@@ -74,13 +70,13 @@ export class CommandDocumentationManager extends DocumentationTreeManager {
             tags: [''],
             type: 'group',
             embed: {
-                fields: sortedGroups.filter(g => g.hidden !== true).map(g => ({
+                fields: sortedCategories.filter(g => g.hidden !== true).map(g => ({
                     name: `${g.name} commands`,
                     value: codeBlock(g.items.filter(i => i.hidden !== true).map(i => i.name).join(', '))
                 }))
             },
-            selectText: 'Pick a command group',
-            items: sortedGroups
+            selectText: 'Pick a command category',
+            items: sortedCategories
         };
     }
 

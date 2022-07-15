@@ -2,7 +2,6 @@ import { ActionRow, AdvancedMessageContent, Button, ComponentInteraction, Consta
 import moment from 'moment-timezone';
 
 import { Cluster } from '../../Cluster';
-import { humanize } from '../../utils';
 
 export type Documentation = DocumentationGroup | DocumentationLeaf | DocumentationPaged;
 
@@ -21,7 +20,7 @@ export interface DocumentationGroup extends DocumentationBase {
 }
 
 export interface DocumentationLeaf extends DocumentationBase {
-    readonly type: 'leaf';
+    readonly type: 'single';
     readonly embed: Pick<EmbedOptions, 'color' | 'description' | 'url' | 'image' | 'thumbnail' | 'fields'>;
 }
 
@@ -121,7 +120,7 @@ export abstract class DocumentationManager {
     }
 
     async #handleInteraction(interaction: KnownInteraction): Promise<void> {
-        if (!(interaction instanceof ComponentInteraction))
+        if (interaction.acknowledged || !(interaction instanceof ComponentInteraction))
             return;
 
         const idData = this.#tryReadCustomId(interaction.data.custom_id);
@@ -157,7 +156,7 @@ export abstract class DocumentationManager {
                             return await this.noMatches(interaction.data.values[0], user, channel);
                         return await this.#renderDocumentation(documentation, 0, 0, user, channel);
                     }
-                    case 'leaf':
+                    case 'single':
                         return await this.#renderDocumentation(documentation, idData.pageGroup, idData.pageNumber, user, channel);
                     case 'paged':
                         return await this.#renderDocumentation(documentation, idData.pageGroup, Number(interaction.data.values[0]), user, channel);
@@ -238,11 +237,11 @@ export abstract class DocumentationManager {
             buttonRow.push(prevPageGroup, nextPageGroup);
 
         if (gotoParent.disabled !== true)
-            buttonRow.splice(1, 0, gotoParent);
+            buttonRow.splice(1, 0, gotoParent); // between paging buttons
 
         const components: ActionRow[] = [];
 
-        if (selectOptions.length > (documentation.type === 'paged' ? 1 : 0))
+        if (pageSelect.options.some(opt => opt.default !== true))
             components.push({ type: Constants.ComponentTypes.ACTION_ROW, components: [pageSelect] });
 
         if (buttonRow.length > 0)
@@ -260,10 +259,7 @@ export abstract class DocumentationManager {
                 image: documentation.embed.image,
                 thumbnail: documentation.embed.thumbnail,
                 fields: page.embed.fields,
-                footer: {
-                    text: `${humanize.fullName(user)} (${user.id})`,
-                    icon_url: user.avatarURL
-                },
+                author: this.#cluster.util.embedifyAuthor(user),
                 timestamp: moment().toDate()
             },
             components

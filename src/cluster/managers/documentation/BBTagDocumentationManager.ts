@@ -216,7 +216,7 @@ export class BBTagDocumentationManager extends DocumentationTreeManager {
                 {
                     id: 'dynamic',
                     name: 'Dynamic',
-                    type: 'leaf',
+                    type: 'single',
                     embed: {
                         description: 'In bbtag, even the names of subtags can be dynamic. This can be achieved simply by placing subtags before the ' +
                             'first `;` of a subtag. \n e.g. ```{user{get;~action};{userid}}``` If `~action` is set to `name`, then this will run the `username` subtag, ' +
