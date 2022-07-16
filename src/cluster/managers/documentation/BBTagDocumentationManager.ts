@@ -306,7 +306,7 @@ export class BBTagDocumentationManager extends DocumentationTreeManager {
         }
 
         return {
-            name: parameters,
+            name: `Usage: ${parameters}`,
             embed: { fields }
         };
     }
