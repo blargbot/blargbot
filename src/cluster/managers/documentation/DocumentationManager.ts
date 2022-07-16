@@ -129,14 +129,19 @@ export abstract class DocumentationManager {
 
         const user = interaction.member?.user ?? interaction.user;
         if (user?.id !== idData.userId) {
-            await interaction.createMessage({ content: '❌ This isnt for you to use!', flags: Constants.MessageFlags.EPHEMERAL });
+            await interaction.createMessage({ content: '❌ This isn\'t for you to use!', flags: Constants.MessageFlags.EPHEMERAL });
             return;
         }
+
+        await interaction.editParent({
+            embeds: [{ title: 'Loading...' }],
+            components: []
+        });
 
         const channel = interaction.channel as KnownTextableChannel;
         const documentation = await this.getDocumentation(idData.documentationId, user, channel);
         if (documentation === undefined) {
-            await interaction.createMessage({ content: `❌ This ${this.#name} documentation isnt valid any more!`, flags: Constants.MessageFlags.EPHEMERAL });
+            await interaction.createMessage({ content: `❌ This ${this.#name} documentation isn't valid any more!`, flags: Constants.MessageFlags.EPHEMERAL });
             return;
         }
 

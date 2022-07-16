@@ -16,8 +16,8 @@ export abstract class DocumentationTreeManager extends DocumentationManager {
                 tags: [i.name, ...i.tags ?? []],
                 name: `${d.name} - ${i.name}`,
                 embed: {
-                    color: d.embed.color,
-                    ...i.embed
+                    ...i.embed,
+                    color: i.embed.color ?? d.embed.color
                 }
             }));
         });

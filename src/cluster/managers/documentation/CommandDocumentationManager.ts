@@ -70,10 +70,18 @@ export class CommandDocumentationManager extends DocumentationTreeManager {
             tags: [''],
             type: 'group',
             embed: {
-                fields: sortedCategories.filter(g => g.hidden !== true).map(g => ({
-                    name: `${g.name} commands`,
-                    value: codeBlock(g.items.filter(i => i.hidden !== true).map(i => i.name).join(', '))
-                }))
+                color: 0x7289da,
+                fields: [
+                    ...sortedCategories.filter(g => g.hidden !== true).map(g => ({
+                        name: `${g.name} commands`,
+                        value: codeBlock(g.items.filter(i => i.hidden !== true).map(i => i.name).join(', '))
+                    })),
+                    {
+                        name: '\u200B',
+                        value: `For more information about commands, do \`b!help <commandname>\` or visit <${this.#cluster.util.websiteLink('/commands')}>.\n` +
+                            `Want to support the bot? Donation links are available at <${this.#cluster.util.websiteLink('/donate')}> - all donations go directly towards recouping hosting costs.`
+                    }
+                ]
             },
             selectText: 'Pick a command category',
             items: sortedCategories
@@ -125,10 +133,13 @@ export class CommandDocumentationManager extends DocumentationTreeManager {
             pages.push({
                 name: usage,
                 embed: {
-                    fields: [{
-                        name: `ℹ️  ${usage}`,
-                        value: `${signature.notes.map(n => `> ${n}`).join('\n')}\n\n${signature.description}`.trim()
-                    }]
+                    fields: [
+                        ...fields,
+                        {
+                            name: `ℹ️  ${usage}`,
+                            value: `${signature.notes.map(n => `> ${n}`).join('\n')}\n\n${signature.description}`.trim()
+                        }
+                    ]
                 }
             });
         }
@@ -138,6 +149,7 @@ export class CommandDocumentationManager extends DocumentationTreeManager {
             name: command.name,
             type: 'paged',
             hidden: result.state !== 'ALLOWED',
+            tags: [command.name, ...command.aliases],
             embed: {
                 url: `/commands#${command.name}`,
                 description: description.join('\n'),

@@ -35,6 +35,7 @@ export class BBTagDocumentationManager extends DocumentationTreeManager {
             type: 'group',
             tags: [''],
             embed: {
+                color: 0xefff00,
                 description: `Blargbot is equipped with a system of tags called BBTag, designed to mimic a programming language while still remaining simple. You can use this system as the building-blocks to create your own advanced command system, whether it be through public tags or guild-specific custom commands.\n\nCustomizing can prove difficult via discord, fortunately there is an online [BBTag IDE](${this.#cluster.util.websiteLink('bbtag/editor')}) which should make developing a little easier.`,
                 fields: [
                     {
@@ -294,7 +295,7 @@ export class BBTagDocumentationManager extends DocumentationTreeManager {
             const limit = new limitClass();
             const text = limit.rulesFor(subtag.name).join('\n');
             if (text.length > 0)
-                fields.push({ name: `**Limits for ${limit.scopeName}:**`, value: codeBlock(text), inline: true });
+                fields.push({ name: `**Limits for ${limit.scopeName}:**`, value: codeBlock(text) });
         }
 
         if (signature.exampleIn !== undefined) {
