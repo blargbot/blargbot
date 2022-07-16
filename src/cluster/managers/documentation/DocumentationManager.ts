@@ -92,11 +92,11 @@ export abstract class DocumentationManager {
         if (hex.length % 2 === 1) // Buffer.from(str, 'hex') needs str to be even in length
             hex = '0' + hex;
         const buf = Buffer.from(hex, 'hex');
-        return buf.toString('base64').replaceAll('=', ''); // Might use another base, maybe base128 for even denser values
+        return buf.toString('base64url'); // Might use another base, maybe base128 for even denser values
     }
 
     #decompress(value: string): bigint {
-        const buf = Buffer.from(value, 'base64');
+        const buf = Buffer.from(value, 'base64url');
         const hex = buf.toString('hex');
         return BigInt('0x' + hex);
     }
