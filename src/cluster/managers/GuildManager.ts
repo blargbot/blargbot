@@ -38,7 +38,7 @@ export class GuildManager {
         await guild.leave();
     }
 
-    public async guildJoined(guild: Guild): Promise<void> {
+    public async guildLoaded(guild: Guild): Promise<void> {
         metrics.guildGauge.set(this.cluster.discord.guilds.size);
         const blacklist = await this.#getBlacklist();
         if (blacklist[guild.id] === true) {

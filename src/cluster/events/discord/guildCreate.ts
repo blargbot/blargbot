@@ -8,7 +8,7 @@ export class DiscordGuildCreateHandler extends DiscordEventService<'guildCreate'
     }
 
     public async execute(guild: Guild): Promise<void> {
-        await this.cluster.guilds.guildJoined(guild);
+        await this.cluster.guilds.guildLoaded(guild);
         await this.cluster.util.postStats();
     }
 
