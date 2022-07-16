@@ -49,7 +49,7 @@ export class GuildManager {
         if (await this.cluster.database.guilds.upsert(guild) === 'inserted') {
             await this.cluster.util.ensureMemberCache(guild);
             const users = guild.members.filter(m => !m.user.bot).length;
-            const bots = guild.members.filter(m => m.user.bot).length;
+            const bots = guild.members.size - users;
             const percent = Math.floor(bots / guild.members.size * 10000) / 100;
             const message = `:ballot_box_with_check: Guild: \`${guild.name}\` (\`${guild.id}\`)! ${percent >= 80 ? '- ***BOT GUILD***' : ''}\n` +
                 `    Total: **${guild.members.size}** | Users: **${users}** | Bots: **${bots}** | Percent: **${percent}**`;
