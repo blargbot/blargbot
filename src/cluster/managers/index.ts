@@ -2,7 +2,6 @@ export * from './AutoresponseManager';
 export * from './BotStaffManager';
 export * from './PrefixManager';
 export * from './GreetingManager';
-export * from './GuildManager';
 export * from './ModerationManager';
 export * from './DomainManager';
 export * from './ContributorManager';
