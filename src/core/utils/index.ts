@@ -21,4 +21,3 @@ export * from './repeat';
 export * from './runMiddleware';
 export * from './hasFlag';
 export * from './clamp';
-export * from './iter';

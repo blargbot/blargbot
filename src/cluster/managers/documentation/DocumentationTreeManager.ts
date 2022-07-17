@@ -23,8 +23,7 @@ export abstract class DocumentationTreeManager extends DocumentationManager {
         });
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    #matchScore(documentation: Documentation, term: string, _user: User, _channel: KnownTextableChannel): Awaitable<number> {
+    #matchScore(documentation: Documentation, term: string): Awaitable<number> {
         const normTerm = term.trim().toLowerCase();
         return (documentation.tags ?? [documentation.name]).map(x => x.toLowerCase())
             .map(normTitle => {
@@ -44,7 +43,7 @@ export abstract class DocumentationTreeManager extends DocumentationManager {
     protected async findDocumentation(term: string, user: User, channel: KnownTextableChannel): Promise<readonly Documentation[]> {
         const matches: Array<{ item: Documentation; score: number; }> = [];
         for await (const item of this.#getFlatTree(user, channel)) {
-            const score = await this.#matchScore(item, term, user, channel);
+            const score = await this.#matchScore(item, term);
             if (score > 0)
                 matches.push({ item, score });
         }
