@@ -13,43 +13,44 @@ export class ClusterMonitor extends IntervalService {
         super(10000, master.logger);
     }
 
-    public execute(cluster?: ClusterConnection): void {
-        if (cluster === undefined) {
-            return this.master.clusters.forEach((_, cluster) =>
-                cluster !== undefined ? this.execute(cluster) : undefined);
-        }
+    public async execute(): Promise<void> {
+        await this.master.clusters.forEach((_, cluster) => this.#checkCluster(cluster));
+    }
 
-        if (cluster.state !== WorkerState.RUNNING)
-            return;
-
-        const stats = this.master.clusterStats.get(cluster.id);
+    #getClusterIssues(cluster: ClusterConnection): string[] {
+        const stats = this.master.clusterStats.get(cluster);
         const now = moment();
         const cutoff = moment().add(-1, 'minute');
-        const alerts = [];
 
-        if (stats !== undefined) {
-            for (const shard of stats.shards) {
-                if (cutoff.isAfter(shard.time)) {
-                    const diff = moment.duration(now.diff(shard.time));
-                    const msg = `⏰ shard ${shard.id} unresponsive for ${diff.asSeconds()} seconds`;
-                    this.logger.cluster(msg);
-                    alerts.push(msg);
-                }
-            }
-        } else if (cluster.created.isBefore(cutoff)) {
-            const diff = moment.duration(now.diff(cluster.created));
-            const msg = `⏰ Cluster ${cluster.id} was created ${diff.asSeconds()} seconds ago but hasnt posted stats yet`;
-            this.logger.cluster(msg);
-            alerts.push(msg);
+        function secondsSince(time: number | moment.Moment): number {
+            return moment.duration(now.diff(time)).asSeconds();
         }
 
-        if (alerts.length === 0)
+        if (stats === undefined) {
+            if (cluster.created.isBefore(cutoff))
+                return [`⏰ Cluster ${cluster.id} was created ${secondsSince(cluster.created)} seconds ago but hasn't posted stats yet`];
+            return [];
+        }
+
+        if (cutoff.isAfter(stats.time))
+            return [`⏰ Cluster ${cluster.id} hasn't posted stats for ${secondsSince(stats.time)} seconds`];
+
+        return stats.shards.filter(s => cutoff.isAfter(s.time)).map(s => `⏰ shard ${s.id} unresponsive for ${secondsSince(s.time)} seconds`);
+    }
+
+    async #checkCluster(cluster?: ClusterConnection): Promise<void> {
+        if (cluster?.state !== WorkerState.RUNNING)
             return;
 
-        this.master.clusterStats.set(cluster.id, undefined);
-        void this.master.util.send(
-            this.master.config.discord.channels.shardlog,
-            `Respawning unresponsive cluster ${cluster.id}...\n${alerts.join('\n')}`);
-        void this.master.clusters.spawn(cluster.id);
+        const issues = this.#getClusterIssues(cluster);
+        if (issues.length === 0)
+            return;
+
+        await Promise.all([
+            this.master.util.send(
+                this.master.config.discord.channels.shardlog,
+                `Respawning unresponsive cluster ${cluster.id}...\n${issues.join('\n')}`),
+            this.master.clusters.spawn(cluster.id)
+        ]);
     }
 }
