@@ -11,6 +11,14 @@ export class ClusterBBTagUtilities extends BaseUtilities implements BBTagUtiliti
         super(cluster);
     }
 
+    public timeout(member: Member, moderator: User, authorizer: User, duration: Duration, reason?: string | undefined): Promise<'noPerms' | 'success' | 'alreadyTimedOut' | 'memberTooHigh' | 'moderatorNoPerms' | 'moderatorTooLow'> {
+        return this.cluster.moderation.timeouts.timeout(member, moderator, authorizer, duration, reason);
+    }
+
+    public clearTimeout(member: Member, moderator: User, authorizer: User, reason?: string | undefined): Promise<'noPerms' | 'success' | 'moderatorNoPerms' | 'notTimedOut'> {
+        return this.cluster.moderation.timeouts.clearTimeout(member, moderator, authorizer, reason);
+    }
+
     public addModlog(guild: Guild, action: string, user: User, moderator?: User, reason?: string, color?: number): Promise<void> {
         return this.cluster.moderation.modLog.logCustom(guild, action, user, moderator, reason, color);
     }

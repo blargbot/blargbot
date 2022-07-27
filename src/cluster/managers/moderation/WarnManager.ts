@@ -22,6 +22,9 @@ export class WarnManager extends ModerationManagerBase {
         const oldCount = await this.cluster.database.guilds.getWarnings(member.guild.id, member.id) ?? 0;
         const banAt = await this.cluster.database.guilds.getSetting(member.guild.id, 'banat') ?? Infinity;
         const kickAt = await this.cluster.database.guilds.getSetting(member.guild.id, 'kickat') ?? Infinity;
+        const timeoutAt = await this.cluster.database.guilds.getSetting(member.guild.id, 'timeoutat') ?? Infinity;
+        const duration = moment.duration(1, 'd');
+
         const actOnLimitsOnly = await this.cluster.database.guilds.getSetting(member.guild.id, 'actonlimitsonly') ?? false;
         let newCount = Math.max(0, oldCount + Math.max(count, 0));
         let result: WarnResult = {
@@ -44,6 +47,12 @@ export class WarnManager extends ModerationManagerBase {
             result = {
                 type: ModerationType.KICK,
                 state: await this.manager.bans.kick(member, moderator, authorizer, `[ Auto-Kick ] Exceeded warning limit (${newCount}/${kickAt})`),
+                warnings: newCount
+            };
+        } else if (timeoutAt > 0 && (!actOnLimitsOnly || oldCount < timeoutAt) && newCount >= timeoutAt) {
+            result = {
+                type: ModerationType.TIMEOUT,
+                state: await this.manager.timeouts.timeout(member, moderator, authorizer, duration, `[ Auto-Timeout ] Exceeded warning limit (${newCount}/${timeoutAt})`),
                 warnings: newCount
             };
         }
@@ -74,11 +83,13 @@ export class WarnManager extends ModerationManagerBase {
         const count = await this.cluster.database.guilds.getWarnings(member.guild.id, member.id) ?? 0;
         const banAt = await this.cluster.database.guilds.getSetting(member.guild.id, 'banat');
         const kickAt = await this.cluster.database.guilds.getSetting(member.guild.id, 'kickat');
+        const timeoutAt = await this.cluster.database.guilds.getSetting(member.guild.id, 'timeoutat');
 
         return {
             count: count,
             banAt: banAt === undefined || banAt <= 0 ? undefined : banAt,
-            kickAt: kickAt === undefined || kickAt <= 0 ? undefined : kickAt
+            kickAt: kickAt === undefined || kickAt <= 0 ? undefined : kickAt,
+            timeoutAt: timeoutAt === undefined || timeoutAt <= 0 ? undefined : timeoutAt
         };
     }
 }

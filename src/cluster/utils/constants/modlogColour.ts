@@ -6,5 +6,7 @@ export enum ModlogColour {
     UNMUTE = 0x1cdb68,
     MUTE = 0xd80f66,
     WARN = 0xd1be79,
-    PARDON = 0x79d196
+    PARDON = 0x79d196,
+    TIMEOUT = 0xe69138,
+    TIMEOUTCLEAR = 0xb6d7a8
 }

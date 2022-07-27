@@ -14,7 +14,7 @@ export class KickSubtag extends CompiledSubtag {
                     parameters: ['user'],
                     description: 'Kicks `user`.',
                     exampleCode: '{kick;stupid cat} @stupid cat was kicked!',
-                    exampleOut: 'Succes @stupid cat was kicked',
+                    exampleOut: 'Success @stupid cat was kicked!',
                     returns: 'string',
                     execute: (ctx, [user]) => this.kickMember(ctx, user.value, '', false)
                 },

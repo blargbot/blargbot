@@ -366,11 +366,14 @@ export type BanResult = 'success' | 'alreadyBanned' | 'noPerms' | 'memberTooHigh
 export type MassBanResult = User[] | Exclude<BanResult, 'success'> | 'noUsers';
 export type KickResult = 'success' | 'noPerms' | 'memberTooHigh' | 'moderatorNoPerms' | 'moderatorTooLow';
 export type UnbanResult = 'success' | 'notBanned' | 'noPerms' | 'moderatorNoPerms';
+export type TimeoutResult = 'success' | 'alreadyTimedOut' | 'noPerms' | 'moderatorNoPerms' | 'memberTooHigh' | 'moderatorTooLow';
+export type TimeoutClearResult = 'success' | 'notTimedOut' | 'noPerms' | 'moderatorNoPerms';
 
 export interface WarnDetails {
     readonly count: number;
     readonly banAt?: number;
     readonly kickAt?: number;
+    readonly timeoutAt?: number;
 }
 
 export interface WarnResultBase<ModType extends ModerationType, TResult extends string> {
@@ -382,6 +385,7 @@ export interface WarnResultBase<ModType extends ModerationType, TResult extends 
 export type WarnResult =
     | WarnResultBase<ModerationType.BAN, BanResult>
     | WarnResultBase<ModerationType.KICK, KickResult>
+    | WarnResultBase<ModerationType.TIMEOUT, TimeoutResult>
     | WarnResultBase<ModerationType.WARN, 'success' | 'countNaN' | 'countNegative' | 'countZero'>;
 
 export interface PardonResult {

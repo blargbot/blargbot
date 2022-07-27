@@ -5,3 +5,4 @@ export * from './EventLogManager';
 export * from './ModLogManager';
 export * from './MuteManager';
 export * from './WarnManager';
+export * from './TimeoutManager';

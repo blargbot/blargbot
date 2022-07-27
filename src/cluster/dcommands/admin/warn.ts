@@ -40,14 +40,16 @@ export class WarnCommand extends GuildCommand {
             case 'countNaN': return this.error(`${flags.c?.merge().value ?? ''} isnt a number!`);
             case 'countNegative': return this.error('I cant give a negative amount of warnings!');
             case 'countZero': return this.error('I cant give zero warnings!');
-            case 'alreadyBanned': return this.warning(preamble, 'They went over the limit for bans, but they were already banned.');
             case 'memberTooHigh': return this.warning(preamble, `They went over the limit for ${actionStr}s but they are above me so I couldnt ${actionStr} them.`);
             case 'moderatorTooLow': return this.warning(preamble, `They went over the limit for ${actionStr}s but they are above you so I didnt ${actionStr} them.`);
             case 'noPerms': return this.warning(preamble, `They went over the limit for ${actionStr}s but I dont have permission to ${actionStr} them.`);
             case 'moderatorNoPerms': return this.warning(preamble, `They went over the limit for ${actionStr}s but you dont have permission to ${actionStr} them.`);
+            case 'alreadyBanned': return this.warning(preamble, 'They went over the limit for bans, but they were already banned.');
+            case 'alreadyTimedOut': return this.warning(preamble, 'They went over the limit for timeouts, but they were already timed out.');
             case 'success': {
                 switch (result.type) {
                     case ModerationType.WARN: return this.success(`${preamble} They now have ${result.warnings} warnings.`);
+                    case ModerationType.TIMEOUT: return this.success(`${preamble} They want over the limit for timeouts and so have been timed out.`);
                     case ModerationType.BAN: return this.success(`${preamble} They went over the limit for bans and so have been banned.`);
                     case ModerationType.KICK: return this.success(`${preamble} They went over the limit for kicks and so have been kicked.`);
                 }
@@ -60,6 +62,7 @@ function getActionString(type: ModerationType): string {
     switch (type) {
         case ModerationType.BAN: return 'ban';
         case ModerationType.KICK: return 'kick';
+        case ModerationType.TIMEOUT: return 'timeout';
         case ModerationType.WARN: return 'warn';
     }
 }

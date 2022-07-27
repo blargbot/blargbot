@@ -5,7 +5,7 @@ import { mapping } from '@blargbot/mapping';
 import { BaseRoute } from '../../BaseRoute';
 import { ApiResponse } from '../../types';
 
-type CensorRuleType = 'kick' | 'ban' | 'delete';
+type CensorRuleType = 'timeout' | 'kick' | 'ban' | 'delete';
 
 export class CensorsRoute extends BaseRoute {
     public constructor(private readonly api: Api) {

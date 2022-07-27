@@ -14,3 +14,4 @@ export * from './TimeoutManager';
 export * from './HelpManager';
 export * from './commands';
 export * from './VersionStateManager';
+export * from './TimeoutManager';

@@ -22,7 +22,7 @@ export class UserIsBotSubtag extends CompiledSubtag {
                     parameters: ['user', 'quiet?'],
                     description: 'Returns whether a `user` is a bot. If `quiet` is specified, if `user` can\'t be found it will simply return nothing.',
                     exampleCode: 'Is Stupid cat a bot? {userisbot;Stupid cat}',
-                    exampleOut: 'Stupid cat\'s username is Stupid cat!',
+                    exampleOut: 'Is Stupid cat a bot? false',
                     returns: 'boolean',
                     execute: (ctx, [userId, quiet]) => this.getUserIsBot(ctx, userId.value, quiet.value !== '')
                 }

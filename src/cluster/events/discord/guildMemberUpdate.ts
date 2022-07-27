@@ -2,6 +2,7 @@ import { Cluster } from '@blargbot/cluster';
 import { guard } from '@blargbot/cluster/utils';
 import { DiscordEventService } from '@blargbot/core/serviceTypes';
 import { Member, OldMember } from 'eris';
+import moment from 'moment-timezone';
 
 export class DiscordMemberUpdateHandler extends DiscordEventService<'guildMemberUpdate'> {
     public constructor(protected readonly cluster: Cluster) {
@@ -20,6 +21,20 @@ export class DiscordMemberUpdateHandler extends DiscordEventService<'guildMember
 
         if (oldMember.nick !== member.nick)
             promises.push(this.cluster.moderation.eventLog.nicknameUpdated(member, oldMember.nick ?? undefined));
+
+        if (member.communicationDisabledUntil !== oldMember.communicationDisabledUntil) {
+            if (member.communicationDisabledUntil !== null) {
+                const now = moment();
+                const memberTimeoutEndDate = moment(member.communicationDisabledUntil);
+                const duration = moment.duration(memberTimeoutEndDate.diff(now));
+
+                promises.push(this.cluster.moderation.timeouts.userTimedOut(member.guild, member.user, duration));
+                promises.push(this.cluster.moderation.eventLog.userTimedOut(member));
+            } else {
+                promises.push(this.cluster.moderation.timeouts.userTimeoutCleared(member.guild, member.user));
+                promises.push(this.cluster.moderation.eventLog.userTimeoutCleared(member));
+            }
+        }
 
         for (const pair of join(member.roles, oldMember.roles)) {
             if (pair[0] === pair[1])
