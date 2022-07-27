@@ -20,13 +20,15 @@ export interface WorkerPoolOptions {
     readonly maxConcurrentSpawning?: number;
 }
 
+type WorkerPoolEvents = 'killingWorker' | 'killedWorker' | 'spawningWorker' | 'spawnedWorker'
+
 export abstract class WorkerPool<Worker extends WorkerConnection<IPCContracts>> {
     public readonly workerCount: number;
     public readonly type: string;
     public readonly defaultTimeout: number;
     public readonly logger: Logger;
     readonly #workers: Map<number, Worker>;
-    readonly #events: EventEmitter;
+    readonly #events: EventEmitter<{ [P in WorkerPoolEvents]: [Worker] }>;
     readonly #inProgress: Map<number, boolean>;
     readonly #respawnStrategy: RespawnStrategy;
     readonly #lock: Semaphore;
@@ -48,17 +50,17 @@ export abstract class WorkerPool<Worker extends WorkerConnection<IPCContracts>> 
         this.#lock = new Semaphore(options.maxConcurrentSpawning ?? Infinity);
     }
 
-    public on(type: string, handler: (worker: Worker) => void): this {
+    public on(type: WorkerPoolEvents, handler: (worker: Worker) => void): this {
         this.#events.on(type, handler);
         return this;
     }
 
-    public once(type: string, handler: (worker: Worker) => void): this {
+    public once(type: WorkerPoolEvents, handler: (worker: Worker) => void): this {
         this.#events.once(type, handler);
         return this;
     }
 
-    public off(type: string, handler: (worker: Worker) => void): this {
+    public off(type: WorkerPoolEvents, handler: (worker: Worker) => void): this {
         this.#events.off(type, handler);
         return this;
     }
@@ -76,9 +78,9 @@ export abstract class WorkerPool<Worker extends WorkerConnection<IPCContracts>> 
     }
 
     async #killWorker(worker: Worker): Promise<void> {
-        this.#events.emit('killingworker', worker);
+        this.#events.emit('killingWorker', worker);
         await worker.kill(undefined);
-        this.#events.emit('killedworker', worker);
+        this.#events.emit('killedWorker', worker);
     }
 
     public async spawn(id: number, timeoutMs = this.defaultTimeout): Promise<Worker> {
@@ -97,10 +99,10 @@ export abstract class WorkerPool<Worker extends WorkerConnection<IPCContracts>> 
                 if (oldWorker !== undefined && this.#respawnStrategy === RespawnStrategy.KILL_THEN_SPAWN)
                     await this.#killWorker(oldWorker);
 
-                this.#events.emit('spawningworker', worker);
+                this.#events.emit('spawningWorker', worker);
                 await worker.connect(timeoutMs);
                 this.#workers.set(id, worker);
-                this.#events.emit('spawnedworker', worker);
+                this.#events.emit('spawnedWorker', worker);
 
                 if (oldWorker !== undefined && this.#respawnStrategy === RespawnStrategy.SPAWN_THEN_KILL)
                     await this.#killWorker(oldWorker);

@@ -24,22 +24,22 @@ export abstract class WorkerPoolEventService<TWorker extends WorkerConnection<IP
     }
 
     public start(): void {
-        this.workers.on('spawningworker', this.#attach);
-        this.workers.on('killingworker', this.#detach);
+        this.workers.on('spawningWorker', this.#attach);
+        this.workers.on('killingWorker', this.#detach);
     }
 
     public stop(): void {
-        this.workers.off('spawningworker', this.#attach);
-        this.workers.off('killingworker', this.#detach);
+        this.workers.off('spawningWorker', this.#attach);
+        this.workers.off('killingWorker', this.#detach);
     }
 
-    private attach(worker: TWorker): void {
+    protected attach(worker: TWorker): void {
         const handler: ProcessMessageHandler = message => this.#execute({ ...message, worker });
         this.#handlers.set(worker, handler);
         worker.on(this.contract, handler);
     }
 
-    private detach(worker: TWorker): void {
+    protected detach(worker: TWorker): void {
         const handler = this.#handlers.get(worker);
         if (handler === undefined)
             return;
