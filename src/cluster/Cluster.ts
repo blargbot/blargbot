@@ -14,7 +14,7 @@ import { inspect } from 'util';
 import { ClusterBBTagUtilities } from './ClusterBBTagUtilities';
 import { ClusterUtilities } from './ClusterUtilities';
 import { ClusterWorker } from './ClusterWorker';
-import { AggregateCommandManager, AutoresponseManager, AwaiterManager, BotStaffManager, ContributorManager, CustomCommandManager, DefaultCommandManager, DomainManager, GreetingManager, GuildManager, HelpManager, IntervalManager, ModerationManager, PollManager, PrefixManager, RolemeManager, TimeoutManager, VersionStateManager } from './managers';
+import { AggregateCommandManager, AutoresponseManager, AwaiterManager, BotStaffManager, ContributorManager, CustomCommandManager, DefaultCommandManager, DomainManager, GreetingManager, GuildManager, IntervalManager, ModerationManager, PollManager, PrefixManager, RolemeManager, TimeoutManager, VersionStateManager } from './managers';
 import { CommandDocumentationManager } from './managers/documentation/CommandDocumentationManager';
 
 export class Cluster extends BaseClient {
