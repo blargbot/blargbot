@@ -14,6 +14,7 @@ export class CustomCommandLimit extends GlobalLimit {
             .addRules('unban', staffOnlyRule)
             .addRules('guildbans', staffOnlyRule)
             .addRules('kick', staffOnlyRule)
+            .addRules('timeout', staffOnlyRule)
             .addRules('modlog', staffOnlyRule)
             .addRules('pardon', staffOnlyRule)
             .addRules('warn', staffOnlyRule)

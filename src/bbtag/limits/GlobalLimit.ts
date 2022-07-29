@@ -14,6 +14,7 @@ export abstract class GlobalLimit extends BaseRuntimeLimit {
                 'edit',
                 'delete',
                 'kick',
+                'timeout',
                 'ban',
                 'reactadd',
                 'reactremove',
