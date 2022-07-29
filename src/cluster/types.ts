@@ -34,7 +34,7 @@ export type ClusterIPCContract = {
 export interface ICommandManager<T = unknown> {
     readonly size: number;
     get(name: string, location?: Guild | KnownTextableChannel, user?: User): Promise<CommandGetResult<T>>;
-    list(location?: Guild | KnownTextableChannel, user?: User): AsyncIterable<ICommand<T>>;
+    list(location?: Guild | KnownTextableChannel, user?: User): AsyncIterable<CommandGetResult<T>>;
     configure(user: User, names: readonly string[], guild: Guild, permissions: Partial<CommandPermissions>): Promise<readonly string[]>;
     load(commands?: Iterable<string> | boolean): Promise<void>;
 }
@@ -49,6 +49,7 @@ export interface ICommandDetails extends Required<CommandPermissions> {
 }
 
 export interface ICommand<T = unknown> extends ICommandDetails, IMiddleware<CommandContext, CommandResult> {
+    readonly id: string;
     readonly name: string;
     readonly implementation: T;
 }
@@ -225,7 +226,7 @@ export interface CommandSignatureHandler<TContext extends CommandContext> extend
 }
 
 export type CustomCommandShrinkwrap = {
-    readonly [P in Exclude<keyof GuildSourceCommandTag, 'author' | 'authorizer'>]: GuildSourceCommandTag[P]
+    readonly [P in Exclude<keyof GuildSourceCommandTag, 'author' | 'authorizer' | 'id'>]: GuildSourceCommandTag[P]
 }
 
 export interface GuildShrinkwrap {

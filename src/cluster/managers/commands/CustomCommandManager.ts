@@ -75,6 +75,7 @@ interface CustomCommandDetails {
 }
 
 class NormalizedCommandTag implements ICommand<NamedGuildCommandTag> {
+    public readonly id: string;
     public readonly name: string;
     public readonly aliases: readonly string[];
     public readonly category: string;
@@ -90,6 +91,7 @@ class NormalizedCommandTag implements ICommand<NamedGuildCommandTag> {
         public readonly implementation: NamedGuildCommandTag,
         public readonly tag: StoredTag | undefined
     ) {
+        this.id = implementation.name;
         this.name = implementation.name;
         this.aliases = [];
         this.category = 'Custom';

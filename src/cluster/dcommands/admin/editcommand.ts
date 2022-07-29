@@ -1,5 +1,5 @@
 import { GuildCommand } from '@blargbot/cluster/command';
-import { GuildCommandContext } from '@blargbot/cluster/types';
+import { GuildCommandContext, ICommand } from '@blargbot/cluster/types';
 import { codeBlock, CommandType } from '@blargbot/cluster/utils';
 import { guard } from '@blargbot/core/utils';
 import { CommandPermissions } from '@blargbot/domain/models';
@@ -55,11 +55,15 @@ export class EditCommandCommand extends GuildCommand {
         const lines = [];
         const commandNames = new Set<string>();
         const defaultPerms = new Map<unknown, string>();
-        for await (const command of context.cluster.commands.list()) {
-            defaultPerms.set(command.implementation, command.permission);
+        const commands: ICommand[] = [];
+        for await (const result of context.cluster.commands.list()) {
+            if (result.state === 'ALLOWED') {
+                defaultPerms.set(result.detail.command.implementation, result.detail.command.permission);
+                commands.push(result.detail.command);
+            }
         }
 
-        for await (const command of context.cluster.commands.list(context.channel, context.author)) {
+        for (const command of commands) {
             const name = [command.name, ...command.aliases].find(n => commandNames.size < commandNames.add(n).size);
             if (name === undefined)
                 continue;

@@ -1,5 +1,5 @@
 import { Cluster } from '@blargbot/cluster';
-import { CommandGetCoreResult, CommandGetResult, ICommand, ICommandManager, PermissionCheckResult } from '@blargbot/cluster/types';
+import { CommandGetCoreResult, CommandGetResult, ICommandManager, PermissionCheckResult } from '@blargbot/cluster/types';
 import { defaultStaff, guard } from '@blargbot/cluster/utils';
 import { parse } from '@blargbot/core/utils';
 import { CommandPermissions } from '@blargbot/domain/models';
@@ -38,11 +38,9 @@ export abstract class CommandManager<T> implements ICommandManager<T> {
         }
     }
 
-    public async *list(location?: Guild | KnownGuildTextableChannel, user?: User): AsyncGenerator<ICommand<T>> {
+    public async *list(location?: Guild | KnownGuildTextableChannel, user?: User): AsyncGenerator<CommandGetResult<T>> {
         for await (const name of await this.allCommandNames(location)) {
-            const result = await this.get(name, location, user);
-            if (result.state === 'ALLOWED')
-                yield result.detail.command;
+            yield await this.get(name, location, user);
         }
     }
 

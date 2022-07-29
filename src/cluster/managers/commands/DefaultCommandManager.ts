@@ -30,8 +30,11 @@ export class DefaultCommandManager extends CommandManager<Command> {
 
     protected async getCore(name: string, location?: Guild | KnownTextableChannel, user?: User): Promise<CommandGetCoreResult<Command>> {
         const command = this.modules.get(name);
-        if (command === undefined || !await command.isVisible(this.cluster.util, location, user))
+        if (command === undefined)
             return { state: 'NOT_FOUND' };
+
+        if (!await command.isVisible(this.cluster.util, location, user))
+            return { state: 'DISABLED', detail: { command: new NormalizedCommand(command, { disabled: true }), reason: undefined } };
 
         if (location === undefined)
             return { state: 'FOUND', detail: new NormalizedCommand(command, {}) };
@@ -72,6 +75,7 @@ export class DefaultCommandManager extends CommandManager<Command> {
 }
 
 class NormalizedCommand implements ICommand<Command> {
+    public readonly id: string;
     public readonly name: string;
     public readonly aliases: readonly string[];
     public readonly description: string | undefined;
@@ -87,6 +91,7 @@ class NormalizedCommand implements ICommand<Command> {
         public readonly implementation: Command,
         permissions: CommandPermissions
     ) {
+        this.id = implementation.name;
         this.name = implementation.name;
         this.aliases = implementation.aliases;
         this.description = implementation.description ?? undefined;
