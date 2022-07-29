@@ -20,22 +20,22 @@ export class ClusterMonitor extends IntervalService {
     #getClusterIssues(cluster: ClusterConnection): string[] {
         const stats = this.master.clusterStats.get(cluster);
         const now = moment();
-        const cutoff = moment().add(-1, 'minute');
 
         function secondsSince(time: number | moment.Moment): number {
             return moment.duration(now.diff(time)).asSeconds();
         }
 
         if (stats === undefined) {
-            if (cluster.created.isBefore(cutoff))
+            if (cluster.created.isBefore(now.add(-2, 'minute');))
                 return [`⏰ Cluster ${cluster.id} was created ${secondsSince(cluster.created)} seconds ago but hasn't posted stats yet`];
             return [];
         }
 
-        if (cutoff.isAfter(stats.time))
+        const shardCutoff = now.add(-1, 'minute');
+        if (shardCutoff.isAfter(stats.time))
             return [`⏰ Cluster ${cluster.id} hasn't posted stats for ${secondsSince(stats.time)} seconds`];
 
-        return stats.shards.filter(s => cutoff.isAfter(s.time)).map(s => `⏰ shard ${s.id} unresponsive for ${secondsSince(s.time)} seconds`);
+        return stats.shards.filter(s => shardCutoff.isAfter(s.time)).map(s => `⏰ shard ${s.id} unresponsive for ${secondsSince(s.time)} seconds`);
     }
 
     async #checkCluster(cluster?: ClusterConnection): Promise<void> {
