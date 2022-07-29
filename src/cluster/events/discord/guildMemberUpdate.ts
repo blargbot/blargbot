@@ -22,8 +22,8 @@ export class DiscordMemberUpdateHandler extends DiscordEventService<'guildMember
         if (oldMember.nick !== member.nick)
             promises.push(this.cluster.moderation.eventLog.nicknameUpdated(member, oldMember.nick ?? undefined));
 
-        if (member.communicationDisabledUntil !== oldMember.communicationDisabledUntil) {
-            if (member.communicationDisabledUntil !== null) {
+        if ((member.communicationDisabledUntil ?? null) !== (oldMember.communicationDisabledUntil ?? null)) {
+            if (typeof member.communicationDisabledUntil === 'number') {
                 const now = moment();
                 const memberTimeoutEndDate = moment(member.communicationDisabledUntil);
                 const duration = moment.duration(memberTimeoutEndDate.diff(now));

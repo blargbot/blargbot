@@ -14,6 +14,7 @@ export class TagLimit extends GlobalLimit {
             .addRules('unban', disabledRule)
             .addRules('guildbans', disabledRule)
             .addRules('kick', disabledRule)
+            .addRules('timeout', disabledRule)
             .addRules('modlog', disabledRule)
             .addRules('pardon', disabledRule)
             .addRules('warn', disabledRule)
