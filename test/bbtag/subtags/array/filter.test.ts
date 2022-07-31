@@ -2,6 +2,7 @@ import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
 import { FilterSubtag } from '@blargbot/bbtag/subtags/array/filter';
 import { GetSubtag } from '@blargbot/bbtag/subtags/bot/get';
 import { ReturnSubtag } from '@blargbot/bbtag/subtags/bot/return';
+import { CommentSubtag } from '@blargbot/bbtag/subtags/misc';
 import { IfSubtag } from '@blargbot/bbtag/subtags/misc/if';
 import { LengthSubtag } from '@blargbot/bbtag/subtags/misc/length';
 import { OperatorSubtag } from '@blargbot/bbtag/subtags/misc/operator';
@@ -57,6 +58,40 @@ runSubtagTests({
             code: '{filter;a;var1;{contains;aieou;{get;a}}}',
             expected: '["i","i","a"]',
             subtags: [new GetSubtag(), new OperatorSubtag()],
+            setup(ctx) {
+                ctx.options.tagName = 'testTag';
+                ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.var1`] = 'this is var1';
+                ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.a`] = 'initial';
+            },
+            postSetup(bbctx, ctx) {
+                ctx.limit.setup(m => m.check(bbctx, 'filter:loops')).verifiable(12).thenResolve(undefined);
+            },
+            async assert(bbctx, _, ctx) {
+                expect((await bbctx.variables.get('a')).value).to.equal('initial');
+                expect(ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.a`]).to.equal('initial');
+            }
+        },
+        {
+            code: '{filter;a;var1;{//;aaaaaa}    {contains;aieou;{get;a}}}',
+            expected: '["i","i","a"]',
+            subtags: [new GetSubtag(), new OperatorSubtag(), new CommentSubtag()],
+            setup(ctx) {
+                ctx.options.tagName = 'testTag';
+                ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.var1`] = 'this is var1';
+                ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.a`] = 'initial';
+            },
+            postSetup(bbctx, ctx) {
+                ctx.limit.setup(m => m.check(bbctx, 'filter:loops')).verifiable(12).thenResolve(undefined);
+            },
+            async assert(bbctx, _, ctx) {
+                expect((await bbctx.variables.get('a')).value).to.equal('initial');
+                expect(ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.a`]).to.equal('initial');
+            }
+        },
+        {
+            code: '{filter;a;var1;{contains;aieou;{get;a}}      {//;aaaaaa}}',
+            expected: '["i","i","a"]',
+            subtags: [new GetSubtag(), new OperatorSubtag(), new CommentSubtag()],
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
                 ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.var1`] = 'this is var1';
