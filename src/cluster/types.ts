@@ -346,7 +346,7 @@ export interface SubtagVariableProperties {
 
 export type WhitelistResponse = 'approved' | 'rejected' | 'requested' | 'alreadyApproved' | 'alreadyRejected';
 
-export type PollResponse = BasePollResponse<'OPTIONS_EMPTY' | 'TOO_SHORT' | 'FAILED_SEND' | 'NO_ANNOUNCE_PERMS'> | PollSuccess | PollInvalidOption;
+export type PollResponse = BasePollResponse<'OPTIONS_EMPTY' | 'TOO_SHORT' | 'FAILED_SEND' | 'NO_ANNOUNCE_PERMS' | 'ANNOUNCE_INVALID'> | PollSuccess | PollInvalidOption;
 
 export interface BasePollResponse<T extends string> {
     readonly state: T;

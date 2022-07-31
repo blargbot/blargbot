@@ -70,6 +70,7 @@ export class PollCommand extends GuildCommand {
         switch (result.state) {
             case 'FAILED_SEND': return this.error('I wasnt able to send the poll! Please make sure I have the right permissions and try again.');
             case 'NO_ANNOUNCE_PERMS': return this.error('Sorry, you dont have permissions to send announcements!');
+            case 'ANNOUNCE_INVALID': return this.error('Announcements on this server arent set up correctly. Please fix them before trying again.');
             case 'OPTIONS_EMPTY': return this.error('You must provide some emojis to use in the poll.');
             case 'OPTIONS_INVALID': return this.error('I dont have access to some of the emojis you used! Please use different emojis or add me to the server that the emojis are from.');
             case 'TOO_SHORT': return this.error(`${time.humanize()} is too short for a poll! Use a longer time`);

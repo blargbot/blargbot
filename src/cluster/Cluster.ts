@@ -14,7 +14,7 @@ import { inspect } from 'util';
 import { ClusterBBTagUtilities } from './ClusterBBTagUtilities';
 import { ClusterUtilities } from './ClusterUtilities';
 import { ClusterWorker } from './ClusterWorker';
-import { AggregateCommandManager, AutoresponseManager, AwaiterManager, BotStaffManager, ContributorManager, CustomCommandManager, DefaultCommandManager, DomainManager, GreetingManager, GuildManager, IntervalManager, ModerationManager, PollManager, PrefixManager, RolemeManager, TimeoutManager, VersionStateManager } from './managers';
+import { AggregateCommandManager, AnnouncementManager, AutoresponseManager, AwaiterManager, BotStaffManager, ContributorManager, CustomCommandManager, DefaultCommandManager, DomainManager, GreetingManager, GuildManager, IntervalManager, ModerationManager, PollManager, PrefixManager, RolemeManager, TimeoutManager, VersionStateManager } from './managers';
 import { CommandDocumentationManager } from './managers/documentation/CommandDocumentationManager';
 
 export class Cluster extends BaseClient {
@@ -42,6 +42,7 @@ export class Cluster extends BaseClient {
     public readonly awaiter: AwaiterManager;
     public readonly version: VersionStateManager;
     public readonly guilds: GuildManager;
+    public readonly announcements: AnnouncementManager;
 
     public constructor(
         worker: ClusterWorker,
@@ -114,6 +115,7 @@ export class Cluster extends BaseClient {
         this.help = new CommandDocumentationManager(this);
         this.awaiter = new AwaiterManager(this.logger);
         this.version = new VersionStateManager(this.database.vars);
+        this.announcements = new AnnouncementManager(this.database.guilds, this.util, this.commands.default);
 
         this.services.on('add', module => void module.start());
         this.services.on('remove', module => void module.stop());

@@ -1,3 +1,4 @@
+export * from './AnnouncementManager';
 export * from './AutoresponseManager';
 export * from './BotStaffManager';
 export * from './PrefixManager';
