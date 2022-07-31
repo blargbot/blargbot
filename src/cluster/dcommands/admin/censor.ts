@@ -71,7 +71,7 @@ export class CensorCommand extends GuildCommand {
                 {
                     parameters: 'rawmessage {id:integer?} {type:literal(delete|timeout|kick|ban)}',
                     description: 'Gets the raw code for the given censor',
-                    execute: (ctx, [id, type]) => this.getRawMessage(ctx, id.asInteger, type.asLiteral)
+                    execute: (ctx, [id, type]) => this.getRawMessage(ctx, id.asOptionalInteger, type.asLiteral)
                 },
                 {
                     parameters: 'debug {id:integer} {type:literal(delete|timeout|kick|ban)}',
