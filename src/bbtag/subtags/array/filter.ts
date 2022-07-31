@@ -31,7 +31,7 @@ export class FilterSubtag extends CompiledSubtag {
             for (const item of array) {
                 await context.limit.check(context, 'filter:loops');
                 await context.variables.set(varName, item);
-                if (parse.boolean(await code.execute()) === true)
+                if (parse.boolean((await code.execute()).trim()) === true)
                     yield item;
 
                 if (context.data.state !== BBTagRuntimeState.RUNNING)
