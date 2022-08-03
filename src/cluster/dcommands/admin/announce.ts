@@ -1,8 +1,8 @@
 import { GuildCommand } from '@blargbot/cluster/command';
 import { GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType, discord } from '@blargbot/cluster/utils';
-import { guard, humanize } from '@blargbot/core/utils';
-import { AllowedMentions, Constants, EmbedOptions, KnownChannel, KnownGuildTextableChannel, Role } from 'eris';
+import { humanize } from '@blargbot/core/utils';
+import { AllowedMentions, Constants, EmbedOptions, KnownChannel, Role } from 'eris';
 import moment from 'moment-timezone';
 
 export class AnnounceCommand extends GuildCommand {
@@ -36,33 +36,34 @@ export class AnnounceCommand extends GuildCommand {
     }
 
     public async reset(context: GuildCommandContext): Promise<string> {
-        await context.database.guilds.setAnnouncements(context.channel.guild.id, undefined);
+        await context.cluster.announcements.clearConfig(context.channel.guild);
         return this.success(`Announcement configuration reset! Do \`${context.prefix}announce configure\` to reconfigure it.`);
     }
 
-    public async configure(context: GuildCommandContext, channel: KnownChannel | undefined, role: Role | undefined): Promise<string | undefined> {
-        const result = await this.configureCore(context, channel, role);
-        switch (result) {
-            case true: return this.success('Your announcements have been configured!');
-            case false: return undefined;
-            default: return result;
+    public async configure(context: GuildCommandContext, channel: KnownChannel | undefined, role: Role | undefined): Promise<string> {
+        const result = await context.cluster.announcements.loadConfig(context.channel.guild, context.author, context.channel, { channel, role });
+        switch (result.state) {
+            case 'ChannelInvalid': return this.error('The announcement channel must be a text channel!');
+            case 'ChannelNotFound': return this.error('No channel is set up for announcements');
+            case 'ChannelNotInGuild': return this.error('The announcement channel must be on this server!');
+            case 'NotAllowed': return this.error('You cannot send announcements');
+            case 'RoleNotFound': return this.error('No role is set up for announcements');
+            case 'TimedOut': return this.error('You must configure a role and channel to use announcements!');
+            case 'Success': return this.success('Your announcements have been configured!');
         }
     }
 
     public async announce(context: GuildCommandContext, message: string): Promise<string> {
-        let config = await this.getConfigSafe(context);
-        if (config === undefined || config.channel === undefined || config.role === undefined) {
-            const result = await this.configureCore(context, undefined, undefined);
-            switch (result) {
-                case true: break;
-                case false: return this.error('You must configure a role and channel to use announcements!');
-                default: return result;
-            }
-            config = await this.getConfigSafe(context);
-            if (config === undefined || config.channel === undefined || config.role === undefined)
-                return this.error('Oops, seems like your config changes didnt save! Please try again.');
+        const configResult = await context.cluster.announcements.loadConfig(context.channel.guild, context.author, context.channel);
+        switch (configResult.state) {
+            case 'ChannelInvalid': return this.error('The announcement channel must be a text channel!');
+            case 'ChannelNotFound': return this.error('No channel is set up for announcements');
+            case 'ChannelNotInGuild': return this.error('The announcement channel must be on this server!');
+            case 'NotAllowed': return this.error('You cannot send announcements');
+            case 'RoleNotFound': return this.error('No role is set up for announcements');
+            case 'TimedOut': return this.error('You must configure a role and channel to use announcements!');
         }
-
+        const config = configResult.detail;
         const color = discord.getMemberColor(context.message.member);
         const mentions: AllowedMentions = config.role.id === config.role.guild.id
             ? { everyone: true }
@@ -98,73 +99,13 @@ export class AnnounceCommand extends GuildCommand {
     }
 
     public async showInfo(context: GuildCommandContext): Promise<string> {
-        const config = await this.getConfigSafe(context);
-        if (config === undefined)
+        const config = await context.cluster.announcements.getCurrentConfig(context.channel.guild);
+        if (config.channel === undefined && config.role === undefined)
             return this.info(`Announcements are not yet configured for this server. Please use \`${context.prefix}announce configure\` to set them up`);
 
-        if (config.channel === undefined || config.role === undefined) {
-            await this.reset(context);
-            const reason = config.channel === undefined ? config.role === undefined
-                ? 'Your announcement channel and role no longer exist'
-                : 'Your announcement channel no longer exists'
-                : 'Your announcement role no longer exists';
+        const channelStr = config.channel?.mention ?? '`<unconfigured>`';
+        const roleStr = config.role?.mention ?? '`<unconfigured>`';
 
-            return this.error(`${reason}. Please use \`${context.prefix}announce configure\` to reconfigure your announcements`);
-        }
-
-        return this.info(`Announcements will be sent in ${config.channel.mention} and will mention ${config.role.mention}`);
-    }
-
-    private async getConfigSafe(context: GuildCommandContext): Promise<{ channel: KnownGuildTextableChannel | undefined; role: Role | undefined; } | undefined> {
-        const config = await context.database.guilds.getAnnouncements(context.channel.guild.id);
-        if (config === undefined)
-            return undefined;
-
-        let channel = await context.util.getChannel(config.channel);
-        const role = await context.util.getRole(context.channel.guild.id, config.role);
-
-        if (channel === undefined || !guard.isGuildChannel(channel) || !guard.isTextableChannel(channel) || guard.isThreadChannel(channel) && channel.threadMetadata.archived)
-            channel = undefined;
-
-        return { channel, role };
-    }
-
-    private async configureCore(context: GuildCommandContext, channel: KnownChannel | undefined, role: Role | undefined): Promise<boolean | string> {
-        if (channel === undefined) {
-            const result = await context.queryChannel({
-                choices: context.channel.guild.channels.filter(guard.isTextableChannel).values(),
-                prompt: this.info('Please select the channel that announcements should be put in.')
-            });
-
-            if (result.state !== 'SUCCESS')
-                return false;
-
-            channel = result.value;
-
-            if (channel === undefined)
-                return false;
-        }
-
-        if (!guard.isGuildChannel(channel) || channel.guild !== context.channel.guild)
-            return this.error('The announcement channel must be on this server!');
-        if (!guard.isTextableChannel(channel))
-            return this.error('The announcement channel must be a text channel!');
-
-        if (role === undefined) {
-            const result = await context.queryRole({
-                prompt: this.info('Please select the role to mention when announcing.')
-            });
-
-            if (result.state !== 'SUCCESS')
-                return false;
-
-            role = result.value;
-        }
-
-        await context.database.guilds.setAnnouncements(context.channel.guild.id, {
-            channel: channel.id,
-            role: role.id
-        });
-        return true;
+        return this.info(`Announcements will be sent in ${channelStr} and will mention ${roleStr}`);
     }
 }

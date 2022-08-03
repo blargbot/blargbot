@@ -3,7 +3,7 @@ import { PollResponse } from '@blargbot/cluster/types';
 import { Emote } from '@blargbot/core/Emote';
 import { pluralise as p } from '@blargbot/core/utils';
 import { PollEventOptions } from '@blargbot/domain/models';
-import { KnownGuildTextableChannel, User } from 'eris';
+import { AllowedMentions, KnownGuildTextableChannel, User } from 'eris';
 import moment, { Duration } from 'moment-timezone';
 
 export class PollManager {
@@ -29,11 +29,30 @@ export class PollManager {
             return { state: 'OPTIONS_EMPTY' };
 
         const endTime = moment().add(duration);
+        let content: string | undefined = undefined;
+        const allowedMentions: AllowedMentions = {};
 
-        if (announce)
-            return { state: 'NO_ANNOUNCE_PERMS' }; // TODO Use an announcement manager
+        if (announce) {
+            const result = await this.cluster.announcements.loadConfig(channel.guild, author, channel);
+            switch (result.state) {
+                case 'ChannelInvalid': return { state: 'ANNOUNCE_INVALID' };
+                case 'ChannelNotFound': return { state: 'ANNOUNCE_INVALID' };
+                case 'ChannelNotInGuild': return { state: 'ANNOUNCE_INVALID' };
+                case 'NotAllowed': return { state: 'NO_ANNOUNCE_PERMS' };
+                case 'RoleNotFound': return { state: 'ANNOUNCE_INVALID' };
+                case 'TimedOut': return { state: 'FAILED_SEND' };
+            }
+            channel = result.detail.channel;
+            content = result.detail.role.mention;
+            if (result.detail.role.id === result.detail.role.guild.id)
+                allowedMentions.everyone = true;
+            else
+                allowedMentions.roles = [result.detail.role.id];
+        }
 
         const poll = await this.cluster.util.send(channel, {
+            content,
+            allowedMentions,
             embeds: [
                 {
                     author: {
