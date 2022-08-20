@@ -49,10 +49,10 @@ export abstract class DocumentationTreeManager extends DocumentationManager {
         }
 
         const exact = matches.filter(m => m.score === Number.MAX_SAFE_INTEGER);
-        if (exact.length === 1)
+        if (exact.length > 0)
             return exact.map(x => x.item);
 
-        return matches.sort((a, b) => a.score - b.score).map(x => x.item);
+        return matches.sort((a, b) => b.score - a.score).map(x => x.item);
     }
 
     protected async getDocumentation(documentationId: string, user: User, channel: KnownTextableChannel): Promise<Documentation | undefined> {
