@@ -45,14 +45,23 @@ export class CassandraDbChatLogStore implements ChatLogStore {
     }
 
     public async getAll(channelId: string, ids: string[]): Promise<ChatLog[]> {
-        const chatlogs = await this.#db.execute(
+        const batches = ids.reduce<string[][]>((b, c, i) => {
+            if (i % 100 === 0)
+                b.push([]);
+            b[b.length - 1].push(c);
+            return b;
+        }, []);
+
+        const chatlogs = await Promise.all(batches.map(ids => this.#db.execute(
             'SELECT * FROM chatlogs ' +
             'WHERE channelid = :channelid ' +
             'AND id IN :ids',
             { channelid: channelId, ids: ids },
-            { prepare: true, readTimeout: 200000 });
+            { prepare: true, readTimeout: 200000 })
+        ));
 
-        return chatlogs.rows.map(mapChatLog)
+        return chatlogs.flatMap(c => c.rows)
+            .map(mapChatLog)
             .filter((c): c is Extract<typeof c, { valid: true; }> => c.valid)
             .map(c => c.value);
     }
