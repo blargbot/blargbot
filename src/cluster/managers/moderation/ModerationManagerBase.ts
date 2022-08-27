@@ -29,7 +29,7 @@ export abstract class ModerationManagerBase {
         if (moderatorMember.permissions.has(permission))
             return undefined;
 
-        const staff = await this.getStaffPerms(guild, overrideKey);
+        const staff = await this.#getStaffPerms(guild, overrideKey);
         if (staff !== 0n && (moderatorMember.permissions.allow & staff) === 0n)
             return 'moderatorNoPerms';
 
@@ -57,7 +57,7 @@ export abstract class ModerationManagerBase {
         return discord.getMemberPosition(targetMember) < discord.getMemberPosition(moderatorMember);
     }
 
-    private async getStaffPerms(guild: Guild, overrideKey?: keyof StoredGuildSettings): Promise<bigint> {
+    async #getStaffPerms(guild: Guild, overrideKey?: keyof StoredGuildSettings): Promise<bigint> {
         if (overrideKey === undefined)
             return defaultStaff;
 

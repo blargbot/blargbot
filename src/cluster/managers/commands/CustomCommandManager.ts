@@ -108,7 +108,7 @@ class NormalizedCommandTag implements ICommand<NamedGuildCommandTag> {
         if (!guard.isGuildCommandContext(context))
             return;
 
-        const details = await this.getDetails(context);
+        const details = await this.#getDetails(context);
         if (typeof details === 'string') {
             await context.reply(details);
             return;
@@ -130,7 +130,7 @@ class NormalizedCommandTag implements ICommand<NamedGuildCommandTag> {
         return undefined;
     }
 
-    private async getDetails(context: CommandContext): Promise<string | CustomCommandDetails> {
+    async #getDetails(context: CommandContext): Promise<string | CustomCommandDetails> {
         if (!guard.isGuildImportedCommandTag(this.implementation)) {
             return {
                 author: this.implementation.author ?? undefined,

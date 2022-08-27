@@ -9,23 +9,23 @@ export class RollingArray<T> extends Array<T> {
 
     public push(...items: T[]): number {
         super.push(...items);
-        this.normalize();
+        this.#normalize();
         return this.length;
     }
 
     public splice(start: number, deleteCount: number, ...items: T[]): this {
         super.splice(start, deleteCount, ...items);
-        this.normalize();
+        this.#normalize();
         return this;
     }
 
     public unshift(...items: T[]): number {
         super.unshift(...items);
-        this.normalize(false);
+        this.#normalize(false);
         return this.length;
     }
 
-    private normalize(shift = true): void {
+    #normalize(shift = true): void {
         while (this.length > this.maxSize)
             shift ? this.shift() : this.pop();
     }

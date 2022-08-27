@@ -55,7 +55,7 @@ export class MuteCommand extends GuildCommand {
     }
 
     public async mute(context: GuildCommandContext, member: Member, flags: FlagResult): Promise<string> {
-        const muteAvailable = await this.checkMuteAvailable(context);
+        const muteAvailable = await this.#checkMuteAvailable(context);
         if (muteAvailable !== true)
             return muteAvailable;
 
@@ -79,7 +79,7 @@ export class MuteCommand extends GuildCommand {
         }
     }
 
-    private async checkMuteAvailable(context: GuildCommandContext): Promise<string | true> {
+    async #checkMuteAvailable(context: GuildCommandContext): Promise<string | true> {
         switch (await context.cluster.moderation.mutes.ensureMutedRole(context.channel.guild)) {
             case 'noPerms': return this.error('I don\'t have enough permissions to create a `muted` role! Make sure I have the `manage roles` permission and try again.');
             case 'unconfigured': return this.error('I created a `muted` role, but don\'t have permissions to configure it! Either configure it yourself, or make sure I have the `manage channel` permission, delete the `muted` role, and try again.');

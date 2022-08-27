@@ -129,7 +129,7 @@ class CacheEntry {
         public readonly key: string,
         value: JToken | undefined
     ) {
-        this.#initialValue = CacheEntry.captureValue(value);
+        this.#initialValue = CacheEntry.#captureValue(value);
         this.value = this.#initialValue.get();
 
         // eslint-disable-next-line @typescript-eslint/no-this-alias
@@ -141,14 +141,14 @@ class CacheEntry {
     }
 
     public persist(): void {
-        this.#initialValue = CacheEntry.captureValue(this.value);
+        this.#initialValue = CacheEntry.#captureValue(this.value);
     }
 
     public reset(): void {
         this.value = this.#initialValue.get();
     }
 
-    private static captureValue(value: undefined | JToken): ValueSource {
+    static #captureValue(value: undefined | JToken): ValueSource {
         if (typeof value !== 'object' || value === null) {
             return {
                 isEqual: current => current === value,

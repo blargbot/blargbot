@@ -7,9 +7,12 @@ import { AllowedMentions, KnownGuildTextableChannel, User } from 'eris';
 import moment, { Duration } from 'moment-timezone';
 
 export class PollManager {
+    readonly #cluster: Cluster;
+
     public constructor(
-        private readonly cluster: Cluster
+        cluster: Cluster
     ) {
+        this.#cluster = cluster;
     }
 
     public async createPoll(
@@ -33,7 +36,7 @@ export class PollManager {
         const allowedMentions: AllowedMentions = {};
 
         if (announce) {
-            const result = await this.cluster.announcements.loadConfig(channel.guild, author, channel);
+            const result = await this.#cluster.announcements.loadConfig(channel.guild, author, channel);
             switch (result.state) {
                 case 'ChannelInvalid': return { state: 'ANNOUNCE_INVALID' };
                 case 'ChannelNotFound': return { state: 'ANNOUNCE_INVALID' };
@@ -50,13 +53,13 @@ export class PollManager {
                 allowedMentions.roles = [result.detail.role.id];
         }
 
-        const poll = await this.cluster.util.send(channel, {
+        const poll = await this.#cluster.util.send(channel, {
             content,
             allowedMentions,
             embeds: [
                 {
                     author: {
-                        icon_url: this.cluster.util.embedifyAuthor(author).icon_url,
+                        icon_url: this.#cluster.util.embedifyAuthor(author).icon_url,
                         name: title
                     },
                     description: description,
@@ -70,9 +73,9 @@ export class PollManager {
         if (poll === undefined)
             return { state: 'FAILED_SEND' };
 
-        const reactions = await this.cluster.util.addReactions(poll, emojis);
+        const reactions = await this.#cluster.util.addReactions(poll, emojis);
 
-        await this.cluster.timeouts.insert('poll', {
+        await this.#cluster.timeouts.insert('poll', {
             endtime: endTime.valueOf(),
             source: channel.guild.id,
             channel: channel.id,
@@ -88,19 +91,19 @@ export class PollManager {
     }
 
     public async pollExpired(options: PollEventOptions): Promise<void> {
-        const message = await this.cluster.util.getMessage(options.channel, options.msg, true);
+        const message = await this.#cluster.util.getMessage(options.channel, options.msg, true);
         if (message === undefined)
             return;
 
         let author = message.embeds[0]?.author ?? undefined;
         if (author === undefined) {
-            const user = await this.cluster.util.getMember(options.guild, options.user)
-                ?? await this.cluster.util.getUser(options.user)
-                ?? await this.cluster.database.users.get(options.user);
+            const user = await this.#cluster.util.getMember(options.guild, options.user)
+                ?? await this.#cluster.util.getUser(options.user)
+                ?? await this.#cluster.database.users.get(options.user);
             if (user === undefined)
                 return;
             author = {
-                icon_url: this.cluster.util.embedifyAuthor(user).icon_url,
+                icon_url: this.#cluster.util.embedifyAuthor(user).icon_url,
                 name: options.content
             };
         }
@@ -123,7 +126,7 @@ export class PollManager {
                 ? `It was a tie between these choices at **${bestCount}** ${p(bestCount, 'vote')} each:\n\n${winners.join('')}`
                 : `At **${bestCount}** ${p(bestCount, 'vote')}, the winner is:\n\n${winners.join('')}`;
 
-        await this.cluster.util.send(message, {
+        await this.#cluster.util.send(message, {
             embeds: [
                 {
                     author: author,

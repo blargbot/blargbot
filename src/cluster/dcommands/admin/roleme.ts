@@ -78,7 +78,7 @@ export class RolemeCommand extends GuildCommand {
     }
 
     public async addRoleme(context: GuildCommandContext, phrase: string, options: RolemeOptions): Promise<string | undefined> {
-        const roleme = await this.buildRoleme(context, {
+        const roleme = await this.#buildRoleme(context, {
             message: phrase,
             add: options.addRoles ?? [],
             casesensitive: options.caseSensitive,
@@ -107,7 +107,7 @@ export class RolemeCommand extends GuildCommand {
         if (current === undefined)
             return this.error(`Roleme ${id} doesnt exist`);
 
-        const roleme = await this.buildRoleme(context, {
+        const roleme = await this.#buildRoleme(context, {
             message: phrase ?? current.message,
             add: options.addRoles ?? current.add,
             casesensitive: phrase === undefined ? current.casesensitive : options.caseSensitive,
@@ -128,7 +128,7 @@ export class RolemeCommand extends GuildCommand {
         return this.success(`Roleme \`${id}\` has been updated!`);
     }
 
-    private async buildRoleme(context: GuildCommandContext, roleme: GuildRolemeEntry): Promise<GuildRolemeEntry | 'TIMED_OUT' | 'NO_ROLES' | 'NO_TRIGGER' | 'FAILED' | 'INVALID_CHANNELS' | 'INVALID_ROLES'> {
+    async #buildRoleme(context: GuildCommandContext, roleme: GuildRolemeEntry): Promise<GuildRolemeEntry | 'TIMED_OUT' | 'NO_ROLES' | 'NO_TRIGGER' | 'FAILED' | 'INVALID_CHANNELS' | 'INVALID_ROLES'> {
         const result: Mutable<GuildRolemeEntry> = { casesensitive: false, channels: [], message: '', add: [], remove: [] };
 
         if (roleme.message !== '') {
@@ -191,12 +191,12 @@ export class RolemeCommand extends GuildCommand {
         }
 
         if (roleme.add.length === 0 && roleme.remove.length === 0) {
-            const toAdd = await this.requestRoles(context, 'add');
+            const toAdd = await this.#requestRoles(context, 'add');
             if (typeof toAdd === 'string')
                 return toAdd;
             result.add = toAdd;
 
-            const toRemove = await this.requestRoles(context, 'remove');
+            const toRemove = await this.#requestRoles(context, 'remove');
             if (typeof toRemove === 'string')
                 return toRemove;
             result.remove = toRemove;
@@ -353,7 +353,7 @@ export class RolemeCommand extends GuildCommand {
         };
     }
 
-    private async requestRoles(context: GuildCommandContext, mode: 'add' | 'remove'): Promise<string[] | 'TIMED_OUT' | 'FAILED'> {
+    async #requestRoles(context: GuildCommandContext, mode: 'add' | 'remove'): Promise<string[] | 'TIMED_OUT' | 'FAILED'> {
         const result = await context.util.queryText<string[]>({
             context: context.message,
             actors: context.author,

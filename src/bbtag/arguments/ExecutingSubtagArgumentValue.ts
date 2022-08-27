@@ -7,6 +7,7 @@ import { SubtagArgument } from './SubtagArgument';
 export class ExecutingSubtagArgumentValue implements SubtagArgument {
     #promise?: Promise<string>;
     #value?: string;
+    readonly #context: BBTagContext;
 
     public get isCached(): boolean { return this.#value !== undefined; }
     public get raw(): string { return this.code.source; }
@@ -18,24 +19,25 @@ export class ExecutingSubtagArgumentValue implements SubtagArgument {
 
     public constructor(
         public readonly parameter: SubtagSignatureValueParameter,
-        private readonly context: BBTagContext,
+        context: BBTagContext,
         public readonly call: SubtagCall,
         public readonly code: Statement
     ) {
+        this.#context = context;
     }
 
     public execute(): Promise<string> {
-        return this.#promise = this.executeInner();
+        return this.#promise = this.#executeInner();
     }
 
     public wait(): Promise<string> {
         return this.#promise ??= this.execute();
     }
 
-    private async executeInner(): Promise<string> {
-        const result = await this.context.eval(this.code);
+    async #executeInner(): Promise<string> {
+        const result = await this.#context.eval(this.code);
         if (result.length > this.parameter.maxLength) {
-            this.context.data.state = BBTagRuntimeState.ABORT;
+            this.#context.data.state = BBTagRuntimeState.ABORT;
             throw new ArgumentLengthError(this.call.args.indexOf(this.code), this.parameter.maxLength, result.length);
         }
         return this.#value = result.length === 0 ? this.parameter.defaultValue : result;

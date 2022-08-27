@@ -25,7 +25,7 @@ export class ChangelogCommand extends GuildCommand {
     }
 
     public async addFollower(context: GuildCommandContext): Promise<string> {
-        const current = await this.getCurrentSubscription(context);
+        const current = await this.#getCurrentSubscription(context);
         if (typeof current !== 'undefined')
             return this.info('This channel is already subscribed to my changelog updates!');
 
@@ -34,7 +34,7 @@ export class ChangelogCommand extends GuildCommand {
     }
 
     public async removeFollower(context: GuildCommandContext): Promise<string> {
-        const current = await this.getCurrentSubscription(context);
+        const current = await this.#getCurrentSubscription(context);
         if (typeof current !== 'object')
             return current ?? this.info('This channel is not subscribed to my changelog updates!');
 
@@ -42,7 +42,7 @@ export class ChangelogCommand extends GuildCommand {
         return this.success('This channel will no longer get my changelog updates!');
     }
 
-    private async getCurrentSubscription(context: GuildCommandContext): Promise<Webhook | string | undefined> {
+    async #getCurrentSubscription(context: GuildCommandContext): Promise<Webhook | string | undefined> {
         const self = context.channel.guild.members.get(context.discord.user.id);
         if (self?.permissions.has('manageWebhooks') !== true)
             return this.error('I need the manage webhooks permission to subscribe this channel to changelogs!');

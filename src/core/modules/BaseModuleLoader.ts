@@ -52,10 +52,10 @@ export abstract class BaseModuleLoader<TModule> extends EventEmitter<ModuleLoade
     }
 
     public async init(): Promise<void> {
-        this.load(await toArray(this.findFiles()));
+        this.#load(await toArray(this.#findFiles()));
     }
 
-    private load(fileNames: Iterable<string>, loader = require): void {
+    #load(fileNames: Iterable<string>, loader = require): void {
         const loaded = new Set<TModule>();
         if (typeof fileNames === 'string')
             fileNames = [fileNames];
@@ -101,12 +101,12 @@ export abstract class BaseModuleLoader<TModule> extends EventEmitter<ModuleLoade
     public reload(fileNames?: Iterable<string> | boolean): void | Promise<void> {
         switch (fileNames) {
             case true:
-                return toArray(this.findFiles()).then(files => this.load(files));
+                return toArray(this.#findFiles()).then(files => this.#load(files));
             case undefined:
             case false:
-                return this.load(this.sources());
+                return this.#load(this.sources());
             default:
-                return this.load(fileNames, reload);
+                return this.#load(fileNames, reload);
         }
     }
 
@@ -146,7 +146,7 @@ export abstract class BaseModuleLoader<TModule> extends EventEmitter<ModuleLoade
 
     protected abstract tryActivate(rawModule: unknown, fileName: string): ModuleResult<TModule> | undefined;
 
-    private async * findFiles(): AsyncGenerator<string> {
+    async * #findFiles(): AsyncGenerator<string> {
         const directories = [this.#root];
         let dir;
         while ((dir = directories.shift()) !== undefined) {

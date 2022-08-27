@@ -9,7 +9,7 @@ export class ModLogManager {
     }
 
     public async logTimeout(guild: Guild, user: User, duration: Duration, moderator?: User, reason?: string): Promise<void> {
-        await this.logAction({
+        await this.#logAction({
             type: 'Timeout',
             guildId: guild.id,
             user,
@@ -29,7 +29,7 @@ export class ModLogManager {
     }
 
     public async logTimeoutClear(guild: Guild, user: User, moderator?: User, reason?: string): Promise<void> {
-        await this.logAction({
+        await this.#logAction({
             type: 'Timeout Clear',
             guildId: guild.id,
             user,
@@ -45,7 +45,7 @@ export class ModLogManager {
     }
 
     public async logSoftban(guild: Guild, user: User, duration: Duration, moderator?: User, reason?: string): Promise<void> {
-        await this.logAction({
+        await this.#logAction({
             type: 'Soft Ban',
             guildId: guild.id,
             user: user,
@@ -74,7 +74,7 @@ export class ModLogManager {
             }
         }
 
-        await this.logAction({
+        await this.#logAction({
             type: 'Ban',
             guildId: guild.id,
             user: user,
@@ -93,7 +93,7 @@ export class ModLogManager {
         switch (users.length) {
             case 0: return;
             case 1: return await this.logBan(guild, users[0], moderator, reason);
-            default: return await this.logAction({
+            default: return await this.#logAction({
                 type: 'Mass Ban',
                 guildId: guild.id,
                 user: users,
@@ -106,7 +106,7 @@ export class ModLogManager {
     }
 
     public async logUnban(guild: Guild, user: User, moderator?: User, reason?: string): Promise<void> {
-        await this.logAction({
+        await this.#logAction({
             type: 'Unban',
             guildId: guild.id,
             user: user,
@@ -117,7 +117,7 @@ export class ModLogManager {
     }
 
     public async logKick(guild: Guild, user: User, moderator?: User, reason?: string): Promise<void> {
-        await this.logAction({
+        await this.#logAction({
             type: 'Kick',
             guildId: guild.id,
             user: user,
@@ -128,7 +128,7 @@ export class ModLogManager {
     }
 
     public async logUnmute(guild: Guild, user: User, moderator?: User, reason?: string): Promise<void> {
-        await this.logAction({
+        await this.#logAction({
             type: 'Unmute',
             guildId: guild.id,
             user: user,
@@ -139,7 +139,7 @@ export class ModLogManager {
     }
 
     public async logMute(guild: Guild, user: User, moderator?: User, reason?: string): Promise<void> {
-        await this.logAction({
+        await this.#logAction({
             type: 'Mute',
             guildId: guild.id,
             user: user,
@@ -150,7 +150,7 @@ export class ModLogManager {
     }
 
     public async logTempMute(guild: Guild, user: User, duration: Duration, moderator?: User, reason?: string): Promise<void> {
-        await this.logAction({
+        await this.#logAction({
             type: 'Temporary Mute',
             guildId: guild.id,
             user,
@@ -168,7 +168,7 @@ export class ModLogManager {
     }
 
     public async logWarn(guild: Guild, user: User, count: number, newTotal: number, moderator?: User, reason?: string): Promise<void> {
-        await this.logAction({
+        await this.#logAction({
             type: 'Warning',
             guildId: guild.id,
             user: user,
@@ -184,7 +184,7 @@ export class ModLogManager {
     }
 
     public async logPardon(guild: Guild, user: User, count: number, newTotal: number, moderator?: User, reason?: string): Promise<void> {
-        await this.logAction({
+        await this.#logAction({
             type: 'Pardon',
             guildId: guild.id,
             user: user,
@@ -200,7 +200,7 @@ export class ModLogManager {
     }
 
     public async logCustom(guild: Guild, action: string, user: User, moderator?: User, reason?: string, color?: number): Promise<void> {
-        await this.logAction({
+        await this.#logAction({
             type: action,
             guildId: guild.id,
             user: user,
@@ -245,7 +245,7 @@ export class ModLogManager {
         return 'SUCCESS';
     }
 
-    private async logAction({ guildId, user, reason, fields = [], color = 0x17c484, type = 'Generic', moderator }: ModerationLogOptions): Promise<void> {
+    async #logAction({ guildId, user, reason, fields = [], color = 0x17c484, type = 'Generic', moderator }: ModerationLogOptions): Promise<void> {
         // TODO modlog setting can be channel id or tag
         const modlogChannelId = await this.cluster.database.guilds.getSetting(guildId, 'modlog');
         if (!guard.hasValue(modlogChannelId)) // TODO Should this still create the modlog entry in the db?

@@ -8,32 +8,32 @@ import { ApiResponse } from '../../types';
 type CensorRuleType = 'timeout' | 'kick' | 'ban' | 'delete';
 
 export class CensorsRoute extends BaseRoute {
-    public constructor(private readonly api: Api) {
+    public constructor() {
         super('/guilds');
 
-        this.middleware.push(async (req, _, next) => await this.checkAccess(req.params.guildId, this.getUserId(req, true)) ?? await next());
+        this.middleware.push(async (ctx, next) => await this.#checkAccess(ctx.api, ctx.request.params.guildId, this.getUserId(ctx.request, true)) ?? await next());
 
         this.addRoute('/:guildId/censors', {
-            get: ({ request }) => this.listCensors(request.params.guildId)
+            get: ({ request, api }) => this.listCensors(api, request.params.guildId)
         });
 
         for (const type of ['delete', 'ban', 'kick'] as const) {
             this.addRoute(`/:guildId/censors/${type}Message`, {
-                get: ({ request }) => this.getCensorDefaultMessage(request.params.guildId, type),
-                put: ({ request }) => this.setCensorDefaultMessage(request.params.guildId, type, request.body, this.getUserId(request)),
-                delete: ({ request }) => this.deleteCensorDefaultMessage(request.params.guildId, type)
+                get: ({ request, api }) => this.getCensorDefaultMessage(api, request.params.guildId, type),
+                put: ({ request, api }) => this.setCensorDefaultMessage(api, request.params.guildId, type, request.body, this.getUserId(request)),
+                delete: ({ request, api }) => this.deleteCensorDefaultMessage(api, request.params.guildId, type)
             });
 
             this.addRoute(`/:guildId/censors/:id/${type}Message`, {
-                get: ({ request }) => this.getCensorMessage(request.params.guildId, request.params.id, type),
-                put: ({ request }) => this.setCensorMessage(request.params.guildId, request.params.id, type, request.body, this.getUserId(request)),
-                delete: ({ request }) => this.deleteCensorMessage(request.params.guildId, request.params.id, type)
+                get: ({ request, api }) => this.getCensorMessage(api, request.params.guildId, request.params.id, type),
+                put: ({ request, api }) => this.setCensorMessage(api, request.params.guildId, request.params.id, type, request.body, this.getUserId(request)),
+                delete: ({ request, api }) => this.deleteCensorMessage(api, request.params.guildId, request.params.id, type)
             });
         }
     }
 
-    public async getCensorDefaultMessage(guildId: string, type: CensorRuleType): Promise<ApiResponse> {
-        const censors = await this.api.database.guilds.getCensors(guildId);
+    public async getCensorDefaultMessage(api: Api, guildId: string, type: CensorRuleType): Promise<ApiResponse> {
+        const censors = await api.database.guilds.getCensors(guildId);
         const result = censors?.rule?.[`${type}Message`];
         if (result === undefined)
             return this.notFound();
@@ -41,30 +41,30 @@ export class CensorsRoute extends BaseRoute {
         return this.ok(result);
     }
 
-    public async setCensorDefaultMessage(guildId: string, type: CensorRuleType, body: unknown, userId: string): Promise<ApiResponse> {
+    public async setCensorDefaultMessage(api: Api, guildId: string, type: CensorRuleType, body: unknown, userId: string): Promise<ApiResponse> {
         const mapped = mapTag(body);
         if (!mapped.valid)
             return this.badRequest();
 
-        const current = await this.api.database.guilds.getCensorRule(guildId, undefined, type);
+        const current = await api.database.guilds.getCensorRule(guildId, undefined, type);
         const result = { ...current, ...mapped.value, author: userId };
-        if (!await this.api.database.guilds.setCensorRule(guildId, undefined, type, result))
+        if (!await api.database.guilds.setCensorRule(guildId, undefined, type, result))
             return this.internalServerError('Failed to update record');
 
         return this.ok(result);
     }
 
-    public async deleteCensorDefaultMessage(guildId: string, type: CensorRuleType): Promise<ApiResponse> {
-        await this.api.database.guilds.setCensorRule(guildId, undefined, type, undefined);
+    public async deleteCensorDefaultMessage(api: Api, guildId: string, type: CensorRuleType): Promise<ApiResponse> {
+        await api.database.guilds.setCensorRule(guildId, undefined, type, undefined);
         return this.noContent();
     }
 
-    public async getCensorMessage(guildId: string, idStr: string, type: CensorRuleType): Promise<ApiResponse> {
+    public async getCensorMessage(api: Api, guildId: string, idStr: string, type: CensorRuleType): Promise<ApiResponse> {
         const id = parse.int(idStr, { strict: true });
         if (id === undefined)
             return this.badRequest();
 
-        const censor = await this.api.database.guilds.getCensor(guildId, id);
+        const censor = await api.database.guilds.getCensor(guildId, id);
         const result = censor?.[`${type}Message`];
         if (result === undefined)
             return this.notFound();
@@ -72,7 +72,7 @@ export class CensorsRoute extends BaseRoute {
         return this.ok(result);
     }
 
-    public async setCensorMessage(guildId: string, idStr: string, type: CensorRuleType, body: unknown, userId: string): Promise<ApiResponse> {
+    public async setCensorMessage(api: Api, guildId: string, idStr: string, type: CensorRuleType, body: unknown, userId: string): Promise<ApiResponse> {
         const id = parse.int(idStr, { strict: true });
         if (id === undefined)
             return this.badRequest();
@@ -81,42 +81,42 @@ export class CensorsRoute extends BaseRoute {
         if (!mapped.valid)
             return this.badRequest();
 
-        const current = await this.api.database.guilds.getCensor(guildId, id);
+        const current = await api.database.guilds.getCensor(guildId, id);
         if (current === undefined)
             return this.notFound();
 
         const result = { ...current[`${type}Message`], ...mapped.value, author: userId };
-        if (!await this.api.database.guilds.setCensorRule(guildId, id, type, result))
+        if (!await api.database.guilds.setCensorRule(guildId, id, type, result))
             return this.internalServerError('Failed to update record');
 
         return this.ok(result);
     }
 
-    public async deleteCensorMessage(guildId: string, idStr: string, type: CensorRuleType): Promise<ApiResponse> {
+    public async deleteCensorMessage(api: Api, guildId: string, idStr: string, type: CensorRuleType): Promise<ApiResponse> {
         const id = parse.int(idStr, { strict: true });
         if (id === undefined)
             return this.badRequest();
 
-        if (await this.api.database.guilds.getCensor(guildId, id) === undefined)
+        if (await api.database.guilds.getCensor(guildId, id) === undefined)
             return this.notFound();
 
-        await this.api.database.guilds.setCensorRule(guildId, id, type, undefined);
+        await api.database.guilds.setCensorRule(guildId, id, type, undefined);
         return this.noContent();
     }
 
-    public async listCensors(guildId: string): Promise<ApiResponse> {
-        const censors = await this.api.database.guilds.getCensors(guildId);
+    public async listCensors(api: Api, guildId: string): Promise<ApiResponse> {
+        const censors = await api.database.guilds.getCensors(guildId);
         if (censors === undefined)
             return this.notFound();
 
         return this.ok(censors);
     }
 
-    private async checkAccess(guildId: string, userId: string | undefined): Promise<ApiResponse | undefined> {
+    async #checkAccess(api: Api, guildId: string, userId: string | undefined): Promise<ApiResponse | undefined> {
         if (userId === undefined)
             return this.unauthorized();
 
-        const perms = await this.api.worker.request('getGuildPermission', { userId, guildId });
+        const perms = await api.worker.request('getGuildPermission', { userId, guildId });
         if (perms === undefined)
             return this.notFound();
 

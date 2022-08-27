@@ -19,7 +19,7 @@ export class SpellCommand extends GlobalCommand {
     }
 
     public async getSpell(context: CommandContext, name: string | undefined): Promise<EmbedOptions | string> {
-        const spell = name === undefined ? randChoose(Object.values(spells)) : await this.findSpell(context, name);
+        const spell = name === undefined ? randChoose(Object.values(spells)) : await this.#findSpell(context, name);
         if (spell === undefined)
             return this.error('I couldnt find that spell!');
 
@@ -43,7 +43,7 @@ export class SpellCommand extends GlobalCommand {
         };
     }
 
-    private async findSpell(context: CommandContext, name: string): Promise<typeof spellsJson[number] | undefined> {
+    async #findSpell(context: CommandContext, name: string): Promise<typeof spellsJson[number] | undefined> {
         const exact = spells[name.toLowerCase()];
         if (exact !== undefined)
             return exact;

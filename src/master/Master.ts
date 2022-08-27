@@ -58,13 +58,13 @@ export class Master extends BaseClient {
 
         await Promise.all([
             super.start(),
-            this.hello()
+            this.#hello()
         ]);
 
         await this.services.init();
     }
 
-    private async hello(): Promise<void> {
+    async #hello(): Promise<void> {
         try {
             await fetch(`https://discord.com/api/channels/${this.config.discord.channels.botlog}/messages`, {
                 method: 'POST',

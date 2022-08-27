@@ -192,7 +192,7 @@ export class CustomCommandCommand extends GuildCommand {
         input: string | undefined,
         debug: boolean
     ): Promise<string | SendContent | undefined> {
-        const match = await this.requestReadableCommand(context, commandName, false);
+        const match = await this.#requestReadableCommand(context, commandName, false);
         if (typeof match !== 'object')
             return match;
 
@@ -222,26 +222,26 @@ export class CustomCommandCommand extends GuildCommand {
     }
 
     public async createCommand(context: GuildCommandContext, commandName: string | undefined, content: string | undefined): Promise<string | undefined> {
-        const match = await this.requestCreatableCommand(context, commandName);
+        const match = await this.#requestCreatableCommand(context, commandName);
         if (typeof match !== 'object')
             return match;
 
-        return await this.saveCommand(context, 'created', match.name, content);
+        return await this.#saveCommand(context, 'created', match.name, content);
     }
 
     public async editCommand(context: GuildCommandContext, commandName: string | undefined, content: string | undefined): Promise<string | undefined> {
-        const match = await this.requestEditableCommand(context, commandName);
+        const match = await this.#requestEditableCommand(context, commandName);
         if (typeof match !== 'object')
             return match;
 
         if (guard.isGuildImportedCommandTag(match))
             return this.error(`The \`${match.name}\` custom command is an alias to the tag \`${match.alias}\``);
 
-        return await this.saveCommand(context, 'edited', match.name, content, match);
+        return await this.#saveCommand(context, 'edited', match.name, content, match);
     }
 
     public async deleteCommand(context: GuildCommandContext, commandName: string | undefined): Promise<string | undefined> {
-        const match = await this.requestEditableCommand(context, commandName);
+        const match = await this.#requestEditableCommand(context, commandName);
         if (typeof match !== 'object')
             return match;
 
@@ -250,22 +250,22 @@ export class CustomCommandCommand extends GuildCommand {
     }
 
     public async setCommand(context: GuildCommandContext, commandName: string | undefined, content: string | undefined): Promise<string | undefined> {
-        const match = await this.requestSettableCommand(context, commandName);
+        const match = await this.#requestSettableCommand(context, commandName);
         if (typeof match !== 'object')
             return match;
 
         if (guard.isGuildImportedCommandTag(match.command))
             return this.error(`The \`${match.name}\` custom command is an alias to the tag \`${match.command.alias}\``);
 
-        return await this.saveCommand(context, 'set', match.name, content, match.command);
+        return await this.#saveCommand(context, 'set', match.name, content, match.command);
     }
 
     public async renameCommand(context: GuildCommandContext, oldName: string | undefined, newName: string | undefined): Promise<string | undefined> {
-        const from = await this.requestEditableCommand(context, oldName);
+        const from = await this.#requestEditableCommand(context, oldName);
         if (typeof from !== 'object')
             return from;
 
-        const to = await this.requestCreatableCommand(context, newName);
+        const to = await this.#requestCreatableCommand(context, newName);
         if (typeof to !== 'object')
             return to;
 
@@ -275,7 +275,7 @@ export class CustomCommandCommand extends GuildCommand {
     }
 
     public async getRawCommand(context: GuildCommandContext, commandName: string | undefined): Promise<string | { content: string; files: FileContent[]; } | undefined> {
-        const match = await this.requestReadableCommand(context, commandName);
+        const match = await this.#requestReadableCommand(context, commandName);
         if (typeof match !== 'object')
             return match;
 
@@ -300,7 +300,7 @@ export class CustomCommandCommand extends GuildCommand {
         const grouped: Record<string, string[]> = {};
         for await (const command of context.cluster.commands.custom.list(context.channel.guild)) {
             if (command.state === 'ALLOWED') {
-                for await (const role of this.getRoles(context, command.detail.command)) {
+                for await (const role of this.#getRoles(context, command.detail.command)) {
                     (grouped[role] ??= []).push(command.detail.command.name);
                 }
             }
@@ -321,7 +321,7 @@ export class CustomCommandCommand extends GuildCommand {
         };
     }
 
-    private async * getRoles(context: GuildCommandContext, command: ICommand): AsyncGenerator<string> {
+    async * #getRoles(context: GuildCommandContext, command: ICommand): AsyncGenerator<string> {
         if (command.roles.length === 0)
             yield 'All Roles';
 
@@ -340,7 +340,7 @@ export class CustomCommandCommand extends GuildCommand {
         if (cooldown !== undefined && cooldown.asMilliseconds() < 0)
             return this.error('The cooldown must be greater than 0ms');
 
-        const match = await this.requestEditableCommand(context, commandName);
+        const match = await this.#requestEditableCommand(context, commandName);
         if (typeof match !== 'object')
             return match;
 
@@ -350,7 +350,7 @@ export class CustomCommandCommand extends GuildCommand {
     }
 
     public async getCommandAuthor(context: GuildCommandContext, commandName: string | undefined): Promise<string | undefined> {
-        const match = await this.requestReadableCommand(context, commandName);
+        const match = await this.#requestReadableCommand(context, commandName);
         if (typeof match !== 'object')
             return match;
 
@@ -366,7 +366,7 @@ export class CustomCommandCommand extends GuildCommand {
     }
 
     public async getCommandFlags(context: GuildCommandContext, commandName: string): Promise<string | undefined> {
-        const match = await this.requestReadableCommand(context, commandName);
+        const match = await this.#requestReadableCommand(context, commandName);
         if (typeof match !== 'object')
             return match;
 
@@ -382,7 +382,7 @@ export class CustomCommandCommand extends GuildCommand {
     }
 
     public async addCommandFlags(context: GuildCommandContext, commandName: string, flagsRaw: string): Promise<string | undefined> {
-        const match = await this.requestEditableCommand(context, commandName);
+        const match = await this.#requestEditableCommand(context, commandName);
         if (typeof match !== 'object')
             return match;
 
@@ -411,7 +411,7 @@ export class CustomCommandCommand extends GuildCommand {
     }
 
     public async removeCommandFlags(context: GuildCommandContext, commandName: string, flagsRaw: string): Promise<string | undefined> {
-        const match = await this.requestEditableCommand(context, commandName);
+        const match = await this.#requestEditableCommand(context, commandName);
         if (typeof match !== 'object')
             return match;
 
@@ -427,7 +427,7 @@ export class CustomCommandCommand extends GuildCommand {
     }
 
     public async setCommandHelp(context: GuildCommandContext, commandName: string, helpText: string | undefined): Promise<string | undefined> {
-        const match = await this.requestEditableCommand(context, commandName);
+        const match = await this.#requestEditableCommand(context, commandName);
         if (typeof match !== 'object')
             return match;
 
@@ -436,7 +436,7 @@ export class CustomCommandCommand extends GuildCommand {
     }
 
     public async toggleCommandHidden(context: GuildCommandContext, commandName: string): Promise<string | undefined> {
-        const match = await this.requestEditableCommand(context, commandName);
+        const match = await this.#requestEditableCommand(context, commandName);
         if (typeof match !== 'object')
             return match;
 
@@ -446,7 +446,7 @@ export class CustomCommandCommand extends GuildCommand {
     }
 
     public async setCommandRoles(context: GuildCommandContext, commandName: string, roles: readonly Role[]): Promise<string | undefined> {
-        const match = await this.requestEditableCommand(context, commandName);
+        const match = await this.#requestEditableCommand(context, commandName);
         if (typeof match !== 'object')
             return match;
 
@@ -455,7 +455,7 @@ export class CustomCommandCommand extends GuildCommand {
     }
 
     public async importCommand(context: GuildCommandContext, tagName: string, commandName: string | undefined): Promise<string | undefined> {
-        commandName = await this.requestCommandName(context, commandName ?? tagName);
+        commandName = await this.#requestCommandName(context, commandName ?? tagName);
         if (commandName === undefined)
             return undefined;
 
@@ -606,14 +606,14 @@ export class CustomCommandCommand extends GuildCommand {
         return this.success('No problem, my job here is done.');
     }
 
-    private async saveCommand(
+    async #saveCommand(
         context: GuildCommandContext,
         operation: string,
         commandName: string,
         content: string | undefined,
         currentCommand?: NamedGuildSourceCommandTag
     ): Promise<string | undefined> {
-        content = await this.requestCommandContent(context, content);
+        content = await this.#requestCommandContent(context, content);
         if (content === undefined)
             return;
 
@@ -636,7 +636,8 @@ export class CustomCommandCommand extends GuildCommand {
 
         return this.success(`Custom command \`${commandName}\` ${operation}.\n${bbtag.stringifyAnalysis(analysis)}`);
     }
-    private async requestCommandName(
+
+    async #requestCommandName(
         context: GuildCommandContext,
         name: string | undefined,
         query = 'Enter the name of the custom command:'
@@ -667,7 +668,7 @@ export class CustomCommandCommand extends GuildCommand {
         return name.length > 0 ? name : undefined;
     }
 
-    private async requestCommandContent(
+    async #requestCommandContent(
         context: GuildCommandContext,
         content: string | undefined
     ): Promise<string | undefined> {
@@ -681,24 +682,24 @@ export class CustomCommandCommand extends GuildCommand {
         return contentResult.value;
     }
 
-    private async requestSettableCommand(
+    async #requestSettableCommand(
         context: GuildCommandContext,
         commandName: string | undefined,
         allowQuery = true
     ): Promise<{ name: string; command?: NamedGuildCommandTag; } | string | undefined> {
-        const match = await this.requestCommand(context, commandName, allowQuery);
+        const match = await this.#requestCommand(context, commandName, allowQuery);
         if (typeof match !== 'object')
             return match;
 
         return { name: match.name, command: match.command };
     }
 
-    private async requestEditableCommand(
+    async #requestEditableCommand(
         context: GuildCommandContext,
         commandName: string | undefined,
         { hidden = true, allowQuery = true } = {}
     ): Promise<NamedGuildCommandTag | string | undefined> {
-        const match = await this.requestSettableCommand(context, commandName, allowQuery);
+        const match = await this.#requestSettableCommand(context, commandName, allowQuery);
         if (typeof match !== 'object')
             return match;
 
@@ -711,12 +712,12 @@ export class CustomCommandCommand extends GuildCommand {
         return match.command;
     }
 
-    private async requestReadableCommand(
+    async #requestReadableCommand(
         context: GuildCommandContext,
         commandName: string | undefined,
         allowQuery = true
     ): Promise<NamedGuildCommandTag | string | undefined> {
-        const match = await this.requestCommand(context, commandName, allowQuery);
+        const match = await this.#requestCommand(context, commandName, allowQuery);
         if (typeof match !== 'object')
             return match;
 
@@ -726,12 +727,12 @@ export class CustomCommandCommand extends GuildCommand {
         return match.command;
     }
 
-    private async requestCreatableCommand(
+    async #requestCreatableCommand(
         context: GuildCommandContext,
         commandName: string | undefined,
         allowQuery = true
     ): Promise<{ name: string; } | string | undefined> {
-        const match = await this.requestCommand(context, commandName, allowQuery);
+        const match = await this.#requestCommand(context, commandName, allowQuery);
         if (typeof match !== 'object')
             return match;
 
@@ -741,12 +742,12 @@ export class CustomCommandCommand extends GuildCommand {
         return { name: match.name };
     }
 
-    private async requestCommand(
+    async #requestCommand(
         context: GuildCommandContext,
         commandName: string | undefined,
         allowQuery: boolean
     ): Promise<{ name: string; command?: NamedGuildCommandTag; } | string | undefined> {
-        commandName = await this.requestCommandName(context, commandName, allowQuery ? undefined : '');
+        commandName = await this.#requestCommandName(context, commandName, allowQuery ? undefined : '');
         if (commandName === undefined)
             return undefined;
 

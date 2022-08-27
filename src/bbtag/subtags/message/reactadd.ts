@@ -18,7 +18,7 @@ export class ReactAddSubtag extends CompiledSubtag {
                 {
                     parameters: ['arguments+'],
                     returns: 'nothing',
-                    execute: (ctx, args) => this.addReactions(ctx, ...this.bindArguments(ctx, args.map(a => a.value)))
+                    execute: (ctx, args) => this.addReactions(ctx, ...this.#bindArguments(ctx, args.map(a => a.value)))
                 },
                 {
                     parameters: ['reactions+'],
@@ -75,7 +75,7 @@ export class ReactAddSubtag extends CompiledSubtag {
         }
     }
 
-    private bindArguments(context: BBTagContext, args: string[]): [channel: string, message: string | undefined, reactions: Emote[]] {
+    #bindArguments(context: BBTagContext, args: string[]): [channel: string, message: string | undefined, reactions: Emote[]] {
         let channel = context.channel.id;
         let message = context.data.outputMessage;
 

@@ -3,7 +3,7 @@ import { CommandType } from '@blargbot/cluster/utils';
 import Brainfuck from 'brainfuck-node';
 
 export class BrainfuckCommand extends GlobalCommand {
-    private readonly client: Brainfuck;
+    readonly #client: Brainfuck;
 
     public constructor() {
         super({
@@ -24,7 +24,7 @@ export class BrainfuckCommand extends GlobalCommand {
             ]
         });
 
-        this.client = new Brainfuck();
+        this.#client = new Brainfuck();
     }
 
     public async eval(context: CommandContext, code: string, showPointers: boolean): Promise<string> {
@@ -38,7 +38,7 @@ export class BrainfuckCommand extends GlobalCommand {
         }
 
         try {
-            const result = this.client.execute(code, input);
+            const result = this.#client.execute(code, input);
             const pointers = showPointers ? `\n\n[${result.memory.list.join(',')}]\nPointer: ${result.memory.pointer}` : '';
             return result.output.trim().length === 0
                 ? this.info(`No output...${pointers}`)

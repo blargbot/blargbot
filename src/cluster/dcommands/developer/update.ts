@@ -20,20 +20,20 @@ export class UpdateCommand extends GlobalCommand {
     public async update(context: CommandContext, type: string): Promise<string> {
         const oldCommit = await execCommandline('git rev-parse HEAD');
 
-        if ((await this.showCommand(context, 'git pull')).includes('Already up to date'))
+        if ((await this.#showCommand(context, 'git pull')).includes('Already up to date'))
             return this.success('No update required!');
 
         try {
-            await this.showCommand(context, 'yarn install');
+            await this.#showCommand(context, 'yarn install');
         } catch (err: unknown) {
             context.logger.error(err);
-            await this.showCommand(context, `git reset --hard ${oldCommit}`);
+            await this.#showCommand(context, `git reset --hard ${oldCommit}`);
             // Dont need to do yarn install on the old commit as yarn doesnt modify node_modules if it fails
             return this.error('Failed to update due to a package issue');
         }
 
         try {
-            await this.showCommand(context, 'yarn run rebuild');
+            await this.#showCommand(context, 'yarn run rebuild');
 
             await context.cluster.version.updateVersion(type);
 
@@ -46,9 +46,9 @@ export class UpdateCommand extends GlobalCommand {
 
         // Rollback as something went wrong above
         try {
-            await this.showCommand(context, `git reset --hard ${oldCommit}`);
-            await this.showCommand(context, 'yarn install');
-            await this.showCommand(context, 'yarn run rebuild');
+            await this.#showCommand(context, `git reset --hard ${oldCommit}`);
+            await this.#showCommand(context, 'yarn install');
+            await this.#showCommand(context, 'yarn run rebuild');
             return this.error(`Failed to update due to a build issue, but successfully rolled back to commit \`${oldCommit}\``);
         } catch (err: unknown) {
             context.logger.error(err);
@@ -56,7 +56,7 @@ export class UpdateCommand extends GlobalCommand {
         }
     }
 
-    private async showCommand(context: CommandContext, command: string): Promise<string> {
+    async #showCommand(context: CommandContext, command: string): Promise<string> {
         const message = await context.reply(this.info(`Command: \`${command}\`\nRunning...`));
         try {
             await context.channel.sendTyping();

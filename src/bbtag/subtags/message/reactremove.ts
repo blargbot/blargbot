@@ -17,7 +17,7 @@ export class ReactRemoveSubtag extends CompiledSubtag {
                 {
                     parameters: ['arguments+'],
                     returns: 'nothing',
-                    execute: async (ctx, args) => await this.removeReactions(ctx, ...await this.bindArguments(ctx, args))
+                    execute: async (ctx, args) => await this.removeReactions(ctx, ...await this.#bindArguments(ctx, args))
                 },
                 {
                     parameters: ['channel?', 'messageId'],
@@ -90,7 +90,7 @@ export class ReactRemoveSubtag extends CompiledSubtag {
             throw new BBTagRuntimeError('Unknown Emoji: ' + errored.join(', '));
     }
 
-    private async bindArguments(context: BBTagContext, rawArgs: SubtagArgumentArray): Promise<[channel: string, message: string, user: string, reactions: Emote[] | undefined]> {
+    async #bindArguments(context: BBTagContext, rawArgs: SubtagArgumentArray): Promise<[channel: string, message: string, user: string, reactions: Emote[] | undefined]> {
         const args = [...rawArgs];
         if (args.length === 1)
             return [context.channel.id, args[0].value, context.user.id, undefined];

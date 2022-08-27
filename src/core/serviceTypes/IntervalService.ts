@@ -9,7 +9,7 @@ export abstract class IntervalService extends BaseService {
 
     public readonly period: Duration;
     public readonly logger: Logger;
-    private readonly immediate: boolean;
+    readonly #immediate: boolean;
 
     protected constructor(period: DurationInputArg1, logger: Logger);
     protected constructor(period: DurationInputArg1, logger: Logger, immediate: boolean);
@@ -25,7 +25,7 @@ export abstract class IntervalService extends BaseService {
         const [period, unit, logger, immediate] = mapArgs(args);
         this.period = duration(period, unit);
         this.logger = logger;
-        this.immediate = immediate ?? false;
+        this.#immediate = immediate ?? false;
         this.#execute = this.makeSafeCaller(this.execute.bind(this), this.logger, 'Interval');
     }
 
@@ -36,7 +36,7 @@ export abstract class IntervalService extends BaseService {
             throw new Error(`Interval ${this.name} is already running`);
 
         this.#interval = setInterval(this.#execute, this.period.asMilliseconds());
-        if (this.immediate)
+        if (this.#immediate)
             this.#execute();
     }
 

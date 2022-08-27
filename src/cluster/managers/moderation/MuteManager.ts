@@ -14,7 +14,7 @@ export class MuteManager extends ModerationManagerBase {
     }
 
     public async mute(member: Member, moderator: User, reason?: string, duration?: Duration): Promise<MuteResult> {
-        const role = await this.getMuteRole(member.guild);
+        const role = await this.#getMuteRole(member.guild);
         if (role === undefined)
             return 'roleMissing';
 
@@ -45,7 +45,7 @@ export class MuteManager extends ModerationManagerBase {
     }
 
     public async unmute(member: Member, moderator: User, reason?: string): Promise<UnmuteResult> {
-        const role = await this.getMuteRole(member.guild);
+        const role = await this.#getMuteRole(member.guild);
         if (role === undefined || !member.roles.includes(role.id))
             return 'notMuted';
 
@@ -63,7 +63,7 @@ export class MuteManager extends ModerationManagerBase {
     }
 
     public async ensureMutedRole(guild: Guild): Promise<EnsureMutedRoleResult> {
-        const currentRole = await this.getMuteRole(guild);
+        const currentRole = await this.#getMuteRole(guild);
         if (currentRole !== undefined)
             return 'success';
 
@@ -84,12 +84,12 @@ export class MuteManager extends ModerationManagerBase {
 
         for (const channel of guild.channels.values()) {
             if (!guard.isThreadChannel(channel))
-                await this.configureChannel(channel, newRole);
+                await this.#configureChannel(channel, newRole);
         }
         return 'success';
     }
 
-    private async configureChannel(channel: KnownGuildChannel, mutedRole: Role): Promise<void> {
+    async #configureChannel(channel: KnownGuildChannel, mutedRole: Role): Promise<void> {
         try {
             let deny = 0n;
             if (guard.isTextableChannel(channel))
@@ -105,7 +105,7 @@ export class MuteManager extends ModerationManagerBase {
         }
     }
 
-    private async getMuteRole(guild: Guild): Promise<Role | undefined> {
+    async #getMuteRole(guild: Guild): Promise<Role | undefined> {
         // TODO mutedrole setting can be role id or tag
         const role = await this.cluster.database.guilds.getSetting(guild.id, 'mutedrole');
         if (role === undefined)

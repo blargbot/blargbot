@@ -44,7 +44,7 @@ export class BaseRoute {
     }
 
     #bindRoute<Route extends `/${string}`>(api: Api, router: IRoute<Route>, method: RequestMethods, middleware: Array<AsyncRequestMiddleware<this, Route>>, handler: AsyncRequestHandler<this, Route>): void {
-        const getResult = createMiddlewareCaller<this, Route>(this, () => [...this.middleware, ...middleware], handler);
+        const getResult = createMiddlewareCaller<this, Route>(this, () => [...this.middleware, ...middleware] as Array<AsyncRequestMiddleware<this, Route>>, handler);
         router[method](async (request, response) => {
             try {
                 const result = await getResult({ request, response, api });
@@ -146,13 +146,13 @@ class UnauthenticatedError extends Error {
 
 function createMiddlewareCaller<This, Route extends string>(
     thisArg: This,
-    getMiddleware: () => ReadonlyArray<AsyncRequestMiddleware<This, string> | AsyncRequestMiddleware<This, Route>>,
+    getMiddleware: () => ReadonlyArray<AsyncRequestMiddleware<This, Route>>,
     handler: AsyncRequestHandler<This, Route>
 ): (context: AsyncRequestContext<Route>) => Awaitable<ApiResponse> {
-    const callMiddleware = (context: AsyncRequestContext<Route>, index: number, middleware: ReadonlyArray<AsyncRequestMiddleware<This, string> | AsyncRequestMiddleware<This, Route>>): Awaitable<ApiResponse> => {
+    const callMiddleware = (context: AsyncRequestContext<Route>, index: number, middleware: ReadonlyArray<AsyncRequestMiddleware<This, Route>>): Awaitable<ApiResponse> => {
         if (index >= middleware.length)
             return handler.call(thisArg, context);
-        return middleware[index].call(thisArg, context.request, context.response, () => callMiddleware(context, index + 1, middleware));
+        return middleware[index].call(thisArg, context, () => callMiddleware(context, index + 1, middleware));
     };
     return (context) => callMiddleware(context, 0, getMiddleware());
 }

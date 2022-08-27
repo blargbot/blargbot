@@ -13,33 +13,35 @@ interface RollingRatelimitMiddlewareOptions {
 }
 
 export class RollingRatelimitMiddleware implements IMiddleware<CommandContext, CommandResult> {
-    private readonly timeouts: Record<string, Moment | undefined>;
-    private readonly timestamps: Record<string, Moment[] | undefined>;
+    readonly #timeouts: Record<string, Moment | undefined>;
+    readonly #timestamps: Record<string, Moment[] | undefined>;
+    readonly #options: RollingRatelimitMiddlewareOptions;
 
-    public constructor(private readonly options: RollingRatelimitMiddlewareOptions) {
-        this.timeouts = {};
-        this.timestamps = {};
+    public constructor(options: RollingRatelimitMiddlewareOptions) {
+        this.#timeouts = {};
+        this.#timestamps = {};
+        this.#options = options;
     }
 
     public async execute(context: CommandContext, next: NextMiddleware<CommandResult>): Promise<CommandResult> {
-        const key = this.options.key(context);
+        const key = this.#options.key(context);
 
-        let timeout = this.timeouts[key];
+        let timeout = this.#timeouts[key];
         if (timeout !== undefined) {
             if (timeout.isAfter(moment())) {
-                timeout.add(this.options.penalty);
+                timeout.add(this.#options.penalty);
                 return;
             }
-            delete this.timeouts[key];
+            delete this.#timeouts[key];
         }
 
-        const cutoff = moment().add(-this.options.period);
-        const messages = this.timestamps[key] = this.timestamps[key]?.filter(t => cutoff.isBefore(t)) ?? [];
-        if (messages.push(moment()) < this.options.maxCommands)
+        const cutoff = moment().add(-this.#options.period);
+        const messages = this.#timestamps[key] = this.#timestamps[key]?.filter(t => cutoff.isBefore(t)) ?? [];
+        if (messages.push(moment()) < this.#options.maxCommands)
             return await next();
 
-        timeout = this.timeouts[key] = moment().add(this.options.cooldown);
-        return `❌ Sorry, you've been running too many commands. To prevent abuse, I'm going to have to time you out for \`${this.options.cooldown.asSeconds()}s\`.\n\n` +
-            `Continuing to spam commands will lengthen your timeout by \`${this.options.penalty.asSeconds()}s\`!`;
+        timeout = this.#timeouts[key] = moment().add(this.#options.cooldown);
+        return `❌ Sorry, you've been running too many commands. To prevent abuse, I'm going to have to time you out for \`${this.#options.cooldown.asSeconds()}s\`.\n\n` +
+            `Continuing to spam commands will lengthen your timeout by \`${this.#options.penalty.asSeconds()}s\`!`;
     }
 }

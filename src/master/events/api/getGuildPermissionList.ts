@@ -4,14 +4,17 @@ import { WorkerPoolEventService } from '@blargbot/core/serviceTypes';
 import { Master } from '@blargbot/master';
 
 export class ApiGetGuildPermissionListHandler extends WorkerPoolEventService<ApiConnection, 'getGuildPermissionList'> {
-    public constructor(private readonly master: Master) {
+    readonly #master: Master;
+
+    public constructor(master: Master) {
         super(master.api, 'getGuildPermissionList', async ({ data, reply }) => reply(await this.getGuildPermissionList(data.userId)));
+        this.#master = master;
     }
 
     protected async getGuildPermissionList(userId: string): Promise<GuildPermissionDetails[]> {
         const results = new Map<string, GuildPermissionDetails>();
 
-        await this.master.clusters.forEach(async (_, cluster) => {
+        await this.#master.clusters.forEach(async (_, cluster) => {
             const response = await cluster?.request('getGuildPermissionList', { userId });
             if (response === undefined)
                 return;

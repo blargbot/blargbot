@@ -4,7 +4,10 @@ import { IMiddleware, NextMiddleware } from '@blargbot/core/types';
 import { KnownMessage } from 'eris';
 
 export class TableflipMiddleware implements IMiddleware<KnownMessage, boolean> {
-    public constructor(private readonly util: ClusterUtilities) {
+    readonly #util: ClusterUtilities;
+
+    public constructor(util: ClusterUtilities) {
+        this.#util = util;
     }
 
     public async execute(context: KnownMessage, next: NextMiddleware<boolean>): Promise<boolean> {
@@ -16,11 +19,11 @@ export class TableflipMiddleware implements IMiddleware<KnownMessage, boolean> {
         if (flipDir === undefined)
             return await result;
 
-        if (guard.isGuildMessage(context) && await this.util.database.guilds.getSetting(context.channel.guild.id, 'tableflip') === false)
+        if (guard.isGuildMessage(context) && await this.#util.database.guilds.getSetting(context.channel.guild.id, 'tableflip') === false)
             return await result;
 
         const seed = randInt(0, 3);
-        await this.util.send(context, TableflipMiddleware.tables[flipDir].prod[seed]);
+        await this.#util.send(context, TableflipMiddleware.tables[flipDir].prod[seed]);
         return await result;
     }
 

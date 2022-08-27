@@ -44,7 +44,7 @@ export class EvalCommand extends GlobalCommand {
     public async mastereval(context: CommandContext, userId: string, code: string): Promise<string> {
         [, code] = /^```(?:\w*?\s*\n|)(.*)\n```$/s.exec(code) ?? [undefined, code];
 
-        const response = await this.requestEval(context, { type: 'master', userId, code });
+        const response = await this.#requestEval(context, { type: 'master', userId, code });
         return response.success
             ? this.success(`Master eval input:${codeBlock(code, 'js')}Output:${codeBlock(response.result)}`)
             : this.error(`An error occured!${codeBlock(response.error)}`);
@@ -53,7 +53,7 @@ export class EvalCommand extends GlobalCommand {
     public async globaleval(context: CommandContext, userId: string, code: string): Promise<string> {
         [, code] = /^```(?:\w*?\s*\n|)(.*)\n```$/s.exec(code) ?? [undefined, code];
 
-        const response = await this.requestEval(context, { type: 'global', userId, code });
+        const response = await this.#requestEval(context, { type: 'global', userId, code });
         if (response.success === false)
             return `An error occured!${codeBlock(response.error)}`;
 
@@ -69,15 +69,15 @@ export class EvalCommand extends GlobalCommand {
     public async clustereval(context: CommandContext, clusterId: number, userId: string, code: string): Promise<string> {
         [, code] = /^```(?:\w*?\s*\n|)(.*)\n```$/s.exec(code) ?? [undefined, code];
 
-        const response = await this.requestEval(context, { type: `cluster${clusterId}`, userId, code });
+        const response = await this.#requestEval(context, { type: `cluster${clusterId}`, userId, code });
         return response.success
             ? this.success(`Cluster ${clusterId} eval input:${codeBlock(code, 'js')}Output:${codeBlock(response.result)}`)
             : this.error(`An error occured!${codeBlock(response.error)}`);
     }
 
-    private async requestEval(context: CommandContext, data: MasterEvalRequest & { type: `cluster${number}` | 'master'; }): Promise<EvalResult>
-    private async requestEval(context: CommandContext, data: MasterEvalRequest & { type: 'global'; }): Promise<GlobalEvalResult | Extract<EvalResult, { success: false; }>>
-    private async requestEval(context: CommandContext, data: MasterEvalRequest): Promise<GlobalEvalResult | EvalResult> {
+    async #requestEval(context: CommandContext, data: MasterEvalRequest & { type: `cluster${number}` | 'master'; }): Promise<EvalResult>
+    async #requestEval(context: CommandContext, data: MasterEvalRequest & { type: 'global'; }): Promise<GlobalEvalResult | Extract<EvalResult, { success: false; }>>
+    async #requestEval(context: CommandContext, data: MasterEvalRequest): Promise<GlobalEvalResult | EvalResult> {
         return await context.cluster.worker.request('meval', data);
     }
 }

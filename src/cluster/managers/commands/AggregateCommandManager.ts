@@ -10,14 +10,16 @@ export class AggregateCommandManager implements ICommandManager, CommandManagers
     public readonly messages: MessageIdQueue;
     public readonly custom: ICommandManager<NamedGuildCommandTag>;
     public readonly default: ICommandManager<Command>;
-    private readonly managersArr: Array<CommandManagers[keyof CommandManagers]>;
+    readonly #managersArr: Array<CommandManagers[keyof CommandManagers]>;
+    readonly #cluster: Cluster;
 
-    public get size(): number { return this.managersArr.reduce((p, c) => p + c.size, 0); }
+    public get size(): number { return this.#managersArr.reduce((p, c) => p + c.size, 0); }
 
     public constructor(
-        private readonly cluster: Cluster,
+        cluster: Cluster,
         managers: CommandManagers
     ) {
+        this.#cluster = cluster;
         cluster.discord.deleteMessage = (...args) => {
             this.messages.remove(args[0], args[1]);
             return Discord.prototype.deleteMessage.call(cluster.discord, ...args);
@@ -29,19 +31,19 @@ export class AggregateCommandManager implements ICommandManager, CommandManagers
         };
 
         this.messages = new MessageIdQueue(100);
-        this.managersArr = [
+        this.#managersArr = [
             this.custom = managers.custom,
             this.default = managers.default
         ];
     }
 
     public async load(commands?: Iterable<string> | boolean): Promise<void> {
-        await Promise.all(this.managersArr.map(m => m.load(commands)));
+        await Promise.all(this.#managersArr.map(m => m.load(commands)));
     }
 
     public async get(name: string, location?: Guild | KnownTextableChannel, user?: User): Promise<CommandGetResult> {
         let result: CommandGetResult;
-        for (const manager of this.managersArr) {
+        for (const manager of this.#managersArr) {
             result = await manager.get(name, location, user);
             if (result.state !== 'NOT_FOUND')
                 return result;
@@ -52,7 +54,7 @@ export class AggregateCommandManager implements ICommandManager, CommandManagers
     public async *list(location?: Guild | KnownTextableChannel, user?: User): AsyncGenerator<CommandGetResult> {
         const results = new Map<string, CommandGetResult[]>();
 
-        for (const manager of this.managersArr) {
+        for (const manager of this.#managersArr) {
             for await (const command of manager.list(location, user)) {
                 switch (command.state) {
                     case 'DISABLED':
@@ -86,7 +88,7 @@ export class AggregateCommandManager implements ICommandManager, CommandManagers
     public async configure(user: User, names: readonly string[], guild: Guild, permissions: Partial<CommandPermissions>): Promise<readonly string[]> {
         let remaining = [...names];
         const result = [];
-        for (const manager of this.managersArr) {
+        for (const manager of this.#managersArr) {
             const success = new Set(await manager.configure(user, remaining, guild, permissions));
             remaining = remaining.filter(n => !success.has(n));
             result.push(...success);
@@ -98,7 +100,7 @@ export class AggregateCommandManager implements ICommandManager, CommandManagers
         if (!guard.isGuildMessage(message))
             return;
         if (!this.messages.has(message.channel.guild.id, message.id)
-            || await this.cluster.database.guilds.getSetting(message.channel.guild.id, 'deletenotif') !== true) {
+            || await this.#cluster.database.guilds.getSetting(message.channel.guild.id, 'deletenotif') !== true) {
             return;
         }
 
@@ -106,13 +108,13 @@ export class AggregateCommandManager implements ICommandManager, CommandManagers
         if ('author' in message)
             author = humanize.fullName(message.author);
         else {
-            const chatlog = await this.cluster.database.chatlogs.getByMessageId(message.id);
+            const chatlog = await this.#cluster.database.chatlogs.getByMessageId(message.id);
             if (chatlog !== undefined) {
-                author = (await this.cluster.util.getUser(chatlog.userid))?.username;
+                author = (await this.#cluster.util.getUser(chatlog.userid))?.username;
             }
         }
 
         if (author !== undefined)
-            await this.cluster.util.send(message.channel.id, `**${author}** deleted their command message.`);
+            await this.#cluster.util.send(message.channel.id, `**${author}** deleted their command message.`);
     }
 }

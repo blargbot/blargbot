@@ -58,7 +58,7 @@ export class ChannelSetPermsSubtag extends CompiledSubtag {
         if (!context.hasPermission(channel, allow | deny))
             throw new BBTagRuntimeError('Author missing requested permissions');
 
-        const type = this.getOverwriteType(typeStr);
+        const type = this.#getOverwriteType(typeStr);
         try {
             if (allow !== 0n || deny !== 0n)
                 await channel.editPermission(entityId, allow, deny, type, context.auditReason());
@@ -74,7 +74,7 @@ export class ChannelSetPermsSubtag extends CompiledSubtag {
         }
     }
 
-    private getOverwriteType(typeStr: string): Constants['PermissionOverwriteTypes'][keyof Constants['PermissionOverwriteTypes']] {
+    #getOverwriteType(typeStr: string): Constants['PermissionOverwriteTypes'][keyof Constants['PermissionOverwriteTypes']] {
 
         switch (typeStr) {
             case 'member': return Constants.PermissionOverwriteTypes.USER;

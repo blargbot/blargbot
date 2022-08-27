@@ -48,27 +48,27 @@ export class FeedbackCommand extends GlobalCommand {
             const words = description.toLowerCase().split(' ');
             if (words.length >= 3) {
                 switch (words[0]) {
-                    case 'blacklist': return await this.blacklist(context, true, words[1], words[2]);
-                    case 'unblacklist': return await this.blacklist(context, false, words[1], words[2]);
+                    case 'blacklist': return await this.#blacklist(context, true, words[1], words[2]);
+                    case 'unblacklist': return await this.#blacklist(context, false, words[1], words[2]);
                 }
             }
         }
 
-        return await this.submit(context, 'Feedback', description, context.config.discord.channels.feedback, flags, false, 0xaaaf0c);
+        return await this.#submit(context, 'Feedback', description, context.config.discord.channels.feedback, flags, false, 0xaaaf0c);
     }
 
     public async submitBugReport(context: CommandContext, description: string, flags: FlagResult): Promise<string> {
-        return await this.submit(context, 'Bug Report', description, context.config.discord.channels.bugreports, flags, true, 0xaf0c0c);
+        return await this.#submit(context, 'Bug Report', description, context.config.discord.channels.bugreports, flags, true, 0xaf0c0c);
     }
 
     public async submitSuggestion(context: CommandContext, description: string, flags: FlagResult): Promise<string> {
-        return await this.submit(context, 'Suggestion', description, context.config.discord.channels.suggestions, flags, false, 0x1faf0c);
+        return await this.#submit(context, 'Suggestion', description, context.config.discord.channels.suggestions, flags, false, 0x1faf0c);
     }
 
     public async editFeedback(context: CommandContext, caseNumber: number, description: string, flags: FlagResult): Promise<string> {
-        switch (await this.checkBlacklist(context)) {
-            case 'GUILD': return this.blacklistedError(context, 'GUILD');
-            case 'USER': return this.blacklistedError(context, 'USER');
+        switch (await this.#checkBlacklist(context)) {
+            case 'GUILD': return this.#blacklistedError(context, 'GUILD');
+            case 'USER': return this.#blacklistedError(context, 'USER');
         }
 
         const suggestion = await context.database.suggestions.get(caseNumber);
@@ -80,7 +80,7 @@ export class FeedbackCommand extends GlobalCommand {
         if (suggestor === undefined || !suggestion.Author.includes(suggestor))
             return this.error('You cant edit someone elses suggestion.');
 
-        const res = await this.getSuggestionDetails(context, description, flags);
+        const res = await this.#getSuggestionDetails(context, description, flags);
         if (typeof res === 'string')
             return res;
 
@@ -102,7 +102,7 @@ export class FeedbackCommand extends GlobalCommand {
         return this.success('Your case has been updated.');
     }
 
-    private async getSuggestionDetails(
+    async #getSuggestionDetails(
         context: CommandContext,
         description: string,
         flags: FlagResult
@@ -114,14 +114,14 @@ export class FeedbackCommand extends GlobalCommand {
         if (title.length > 64)
             return this.error('The first line of your suggestion cannot be more than 64 characters!');
 
-        const subTypes = await this.getSubtypes(context, flags);
+        const subTypes = await this.#getSubtypes(context, flags);
         if (subTypes.length === 0)
             return this.error('You need to provide at least 1 feedback type.');
 
         return { description, title, subTypes };
     }
 
-    private async submit(
+    async #submit(
         context: CommandContext,
         type: string,
         description: string,
@@ -130,14 +130,14 @@ export class FeedbackCommand extends GlobalCommand {
         isBug: boolean,
         color: number
     ): Promise<string> {
-        switch (await this.checkBlacklist(context)) {
-            case 'GUILD': return this.blacklistedError(context, 'GUILD');
-            case 'USER': return this.blacklistedError(context, 'USER');
+        switch (await this.#checkBlacklist(context)) {
+            case 'GUILD': return this.#blacklistedError(context, 'GUILD');
+            case 'USER': return this.#blacklistedError(context, 'USER');
         }
 
         await context.channel.sendTyping();
 
-        const res = await this.getSuggestionDetails(context, description, flags);
+        const res = await this.#getSuggestionDetails(context, description, flags);
         if (typeof res === 'string')
             return res;
 
@@ -188,7 +188,7 @@ export class FeedbackCommand extends GlobalCommand {
         return this.success(`${type} has been sent with the ID ${record}! 👌\n\nYou can view your ${type.toLowerCase()} here: <${websiteLink}>`);
     }
 
-    private async getSubtypes(context: CommandContext, flags: FlagResult): Promise<string[]> {
+    async #getSubtypes(context: CommandContext, flags: FlagResult): Promise<string[]> {
         const result = [];
 
         if (flags.c !== undefined) result.push('Command');
@@ -216,7 +216,7 @@ export class FeedbackCommand extends GlobalCommand {
         return picked.state === 'SUCCESS' ? picked.value : [];
     }
 
-    private async blacklist(context: CommandContext, add: boolean, type: string, id: string): Promise<string> {
+    async #blacklist(context: CommandContext, add: boolean, type: string, id: string): Promise<string> {
         const blacklist = await context.database.vars.get('blacklist') ?? { guilds: [], users: [] };
         let ids: string[];
         let guilds: string[];
@@ -250,12 +250,12 @@ export class FeedbackCommand extends GlobalCommand {
         return this.success(`The ${type} ${id} has been ${add ? 'blacklisted' : 'removed from the blacklist'}`);
     }
 
-    private blacklistedError(context: CommandContext, type: 'GUILD' | 'USER'): string {
+    #blacklistedError(context: CommandContext, type: 'GUILD' | 'USER'): string {
         const who = type === 'GUILD' ? 'your guild has' : 'you have';
         return this.error(`Sorry, ${who} been blacklisted from the use of the \`${context.prefix}feedback\` command. If you wish to appeal this, please join my support guild. You can find a link by doing \`${context.prefix}invite\`.`);
     }
 
-    private async checkBlacklist(context: CommandContext): Promise<false | 'GUILD' | 'USER'> {
+    async #checkBlacklist(context: CommandContext): Promise<false | 'GUILD' | 'USER'> {
         if (context.util.isBotOwner(context.author.id))
             return false;
 

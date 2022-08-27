@@ -2,19 +2,23 @@ import { BinderResult, Binding, BindingResultAsyncIterator, BindingResultIterato
 
 export class Binder<TState> {
     public static readonly binder = Symbol('binder');
+    readonly #bindings: ReadonlyArray<Binding<TState>>;
+    readonly #selector: (current: TState, next: TState) => TState;
 
     public constructor(
-        private readonly bindings: ReadonlyArray<Binding<TState>>,
-        private readonly selector: (current: TState, next: TState) => TState
+        bindings: ReadonlyArray<Binding<TState>>,
+        selector: (current: TState, next: TState) => TState
     ) {
+        this.#bindings = bindings;
+        this.#selector = selector;
     }
 
     public debugView(): string {
-        return this.bindings.flatMap(b => [...b.debugView()]).join('\n');
+        return this.#bindings.flatMap(b => [...b.debugView()]).join('\n');
     }
 
     public async bind(state: TState): Promise<BinderResult<TState>> {
-        return await bind(state, this.bindings, this.selector);
+        return await bind(state, this.#bindings, this.#selector);
     }
 }
 

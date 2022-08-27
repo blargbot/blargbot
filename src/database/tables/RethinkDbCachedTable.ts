@@ -8,19 +8,21 @@ import { RethinkDbTable } from './RethinkDbTable';
 
 export class RethinkDbCachedTable<Table extends { [P in KeyName]: string }, KeyName extends string> extends RethinkDbTable<Table> {
     public readonly cache: Cache<string, Table>;
+    #keyName: KeyName;
 
     public constructor(
         table: string,
-        private readonly keyName: KeyName,
+        keyName: KeyName,
         rethinkDb: RethinkDb,
         logger: Logger
     ) {
         super(table, rethinkDb, logger);
         this.cache = new Cache(5, 'minutes');
+        this.#keyName = keyName;
     }
 
     public getKey(value: Table): string {
-        return value[this.keyName];
+        return value[this.#keyName];
     }
 
     public async get(
@@ -107,10 +109,10 @@ export class RethinkDbCachedTable<Table extends { [P in KeyName]: string }, KeyN
     }
 
     public watchChanges(shouldCache: (id: string) => boolean = () => true): void {
-        void this.watchChangesCore(shouldCache);
+        void this.#watchChangesCore(shouldCache);
     }
 
-    private async watchChangesCore(shouldCache: (id: string) => boolean = () => true): Promise<never> {
+    async #watchChangesCore(shouldCache: (id: string) => boolean = () => true): Promise<never> {
         this.logger.info(`Registering a ${this.table} changefeed!`);
         // eslint-disable-next-line no-constant-condition
         while (true) {

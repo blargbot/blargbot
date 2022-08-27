@@ -46,7 +46,7 @@ export class EmbedBuildSubtag extends CompiledSubtag {
             const key = entry.substring(0, splitAt);
             const value = entry.substring(splitAt + 1);
 
-            this.setField(embed, key.trim(), value);
+            this.#setField(embed, key.trim(), value);
         }
 
         if (embed.fields !== undefined) {
@@ -63,7 +63,7 @@ export class EmbedBuildSubtag extends CompiledSubtag {
         return embed as JObject;
     }
 
-    private setField(embed: EmbedBuildOptions, key: string, value: string): void {
+    #setField(embed: EmbedBuildOptions, key: string, value: string): void {
         const id = key.toLowerCase();
         if (!guard.hasProperty(fields, id))
             throw new InvalidEmbedError(`Unknown key '${key}'`);

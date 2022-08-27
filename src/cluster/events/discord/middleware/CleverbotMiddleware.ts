@@ -7,7 +7,10 @@ import fetch from 'node-fetch';
 import { URLSearchParams } from 'url';
 
 export class CleverbotMiddleware implements IMiddleware<KnownMessage, boolean> {
-    public constructor(private readonly util: ClusterUtilities) {
+    readonly #util: ClusterUtilities;
+
+    public constructor(util: ClusterUtilities) {
+        this.#util = util;
     }
 
     public async execute(context: KnownMessage, next: NextMiddleware<boolean>): Promise<boolean> {
@@ -17,33 +20,33 @@ export class CleverbotMiddleware implements IMiddleware<KnownMessage, boolean> {
         if (!guard.isGuildMessage(context))
             return false;
 
-        if (!new RegExp(`^<@!?${this.util.discord.user.id}>`).test(context.content))
+        if (!new RegExp(`^<@!?${this.#util.discord.user.id}>`).test(context.content))
             return false;
 
-        if (await this.util.database.guilds.getSetting(context.channel.guild.id, 'nocleverbot') === true)
+        if (await this.#util.database.guilds.getSetting(context.channel.guild.id, 'nocleverbot') === true)
             return false;
 
-        await this.reply(context);
+        await this.#reply(context);
         return true;
     }
 
-    private async reply(context: KnownMessage): Promise<void> {
+    async #reply(context: KnownMessage): Promise<void> {
         metrics.cleverbotStats.inc();
         await context.channel.sendTyping();
-        const query = await this.util.resolveTags(context, context.content);
+        const query = await this.#util.resolveTags(context, context.content);
         try {
-            await this.util.send(context, await this.queryCleverbot(query));
+            await this.#util.send(context, await this.#queryCleverbot(query));
         } catch (err: unknown) {
-            this.util.logger.error(err);
-            await this.util.send(context, '❌ It seems that my clever brain isnt working right now, try again later');
+            this.#util.logger.error(err);
+            await this.#util.send(context, '❌ It seems that my clever brain isnt working right now, try again later');
         }
     }
 
-    private async queryCleverbot(message: string): Promise<string> {
+    async #queryCleverbot(message: string): Promise<string> {
         const form = new URLSearchParams();
         form.append('input', message);
 
-        const result = await fetch(this.util.config.general.cleverbotApi, {
+        const result = await fetch(this.#util.config.general.cleverbotApi, {
             method: 'POST',
             body: form
         });

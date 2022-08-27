@@ -9,13 +9,13 @@ import moment from 'moment-timezone';
 import { AutoresponseMiddleware, CensorMiddleware, ChannelBlacklistMiddleware, ChatLogMiddleware, CleverbotMiddleware, CommandMiddleware, IgnoreBotsMiddleware, IgnoreSelfMiddleware, MessageAwaiterMiddleware, RolemesMiddleware, TableflipMiddleware, UpsertUserMiddleware } from './middleware';
 
 export class DiscordMessageCreateHandler extends DiscordEventService<'messageCreate'> {
-    private readonly middleware: Array<IMiddleware<KnownMessage, boolean>>;
+    readonly #middleware: Array<IMiddleware<KnownMessage, boolean>>;
 
     public constructor(
         public readonly cluster: Cluster
     ) {
         super(cluster.discord, 'messageCreate', cluster.logger, (msg) => this.execute(msg));
-        this.middleware = [
+        this.#middleware = [
             new ChatLogMiddleware(cluster.moderation.chatLog),
             new IgnoreSelfMiddleware(cluster.logger, cluster.discord),
             new UpsertUserMiddleware(cluster.database.users),
@@ -54,7 +54,7 @@ export class DiscordMessageCreateHandler extends DiscordEventService<'messageCre
             logger: this.logger,
             start: performance.now()
         });
-        const handled = await runMiddleware(this.middleware, message, options, () => false);
+        const handled = await runMiddleware(this.#middleware, message, options, () => false);
         this.cluster.logger.debug('Message by', humanize.fullName(message.author), handled ? 'handled' : 'ignored', 'in', performance.now() - options.start, 'ms');
     }
 }

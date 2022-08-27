@@ -21,13 +21,13 @@ export class XKCDCommand extends GlobalCommand {
 
     public async getComic(context: CommandContext, comicNumber: number | undefined): Promise<string | EmbedOptions> {
         if (comicNumber === undefined) {
-            const comic = await this.requestComic(undefined);
+            const comic = await this.#requestComic(undefined);
             if (comic === undefined)
                 return this.error('Seems like xkcd is down 😟');
             comicNumber = randInt(0, comic.num);
         }
 
-        const comic = await this.requestComic(comicNumber);
+        const comic = await this.#requestComic(comicNumber);
         if (comic === undefined)
             return this.error('Seems like xkcd is down 😟');
 
@@ -40,7 +40,7 @@ export class XKCDCommand extends GlobalCommand {
         };
     }
 
-    private async requestComic(comicNumber: number | undefined): Promise<ComicInfo | undefined> {
+    async #requestComic(comicNumber: number | undefined): Promise<ComicInfo | undefined> {
         const response = await fetch(`http://xkcd.com/${comicNumber === undefined ? '' : `${comicNumber}/`}info.0.json`);
         try {
             const info = comicInfoMapping(await response.json());

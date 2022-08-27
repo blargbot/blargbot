@@ -5,7 +5,7 @@ import { BBTagRuntimeError } from '../../errors';
 import { SubtagType } from '../../utils';
 
 export class BrainfuckSubtag extends CompiledSubtag {
-    private readonly bfClient: Brainfuck;
+    readonly #bfClient: Brainfuck;
     public constructor() {
         super({
             name: 'brainfuck',
@@ -21,12 +21,12 @@ export class BrainfuckSubtag extends CompiledSubtag {
                 }
             ]
         });
-        this.bfClient = new Brainfuck();
+        this.#bfClient = new Brainfuck();
     }
 
     public runBrainfuck(code: string, input: string): string {
         try {
-            return this.bfClient.execute(code, input).output;
+            return this.#bfClient.execute(code, input).output;
         } catch (e: unknown) {
             if (e instanceof Error)
                 throw new BBTagRuntimeError(e.message);

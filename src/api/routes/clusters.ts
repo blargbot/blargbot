@@ -8,15 +8,15 @@ export class ClustersRoute extends BaseRoute {
     #clusterStats: Record<number, ClusterStats | undefined>;
     readonly #sockets: Set<WebSocket>;
 
-    public constructor(private readonly api: Api) {
+    public constructor(api: Api) { // TODO Constructor DI is unsafe here, we should use api from the request handlers
         super('/clusters');
 
         this.#clusterStats = {};
         this.#sockets = new Set();
 
-        this.api.worker.on('clusterStats', ({ data }) => {
+        api.worker.on('clusterStats', ({ data }) => {
             this.#clusterStats = data;
-            this.api.logger.verbose('Sending cluster stats to', this.#sockets.size, 'connected clients');
+            api.logger.verbose('Sending cluster stats to', this.#sockets.size, 'connected clients');
             for (const socket of this.#sockets)
                 socket.send(JSON.stringify(data));
         });

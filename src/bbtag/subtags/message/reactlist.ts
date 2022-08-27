@@ -27,7 +27,7 @@ export class ReactListSubtag extends CompiledSubtag {
                 {
                     parameters: ['arguments+2'],
                     returns: 'string[]',
-                    execute: (ctx, args) => this.getReactionsOrReactors(ctx, ...this.bindArguments(ctx, args.map(arg => arg.value)))
+                    execute: (ctx, args) => this.getReactionsOrReactors(ctx, ...this.#bindArguments(ctx, args.map(arg => arg.value)))
                 },
                 {
                     parameters: ['channel?', 'messageId'],
@@ -84,7 +84,7 @@ export class ReactListSubtag extends CompiledSubtag {
         return [...new Set(users)];
     }
 
-    private bindArguments(context: BBTagContext, args: string[]): [channel: string, message: string, reactions: Emote[] | undefined] {
+    #bindArguments(context: BBTagContext, args: string[]): [channel: string, message: string, reactions: Emote[] | undefined] {
         let channel = context.channel.id;
         let message = '';
 

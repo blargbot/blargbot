@@ -16,9 +16,9 @@ export abstract class BaseRuntimeLimit implements RuntimeLimit {
         this.#name = name;
     }
 
-    private getKeys(key: string, useDefault?: true): [rootKey: string, subKey: string]
-    private getKeys(key: string, useDefault: false): [rootKey: string, subKey?: string]
-    private getKeys(key: string, useDefault = true): [rootKey: string, subKey?: string] {
+    #getKeys(key: string, useDefault?: true): [rootKey: string, subKey: string]
+    #getKeys(key: string, useDefault: false): [rootKey: string, subKey?: string]
+    #getKeys(key: string, useDefault = true): [rootKey: string, subKey?: string] {
         const keySplit = key.split(':', 2);
         return [keySplit[0], keySplit[1] ?? (useDefault ? 'default' : undefined)];
     }
@@ -26,7 +26,7 @@ export abstract class BaseRuntimeLimit implements RuntimeLimit {
     public addRules(rulekey: string | string[], ...rules: RuntimeLimitRule[]): this {
         rulekey = Array.isArray(rulekey) ? rulekey : [rulekey];
         for (const name of new Set(rulekey)) {
-            const [rootKey, subKey] = this.getKeys(name);
+            const [rootKey, subKey] = this.#getKeys(name);
             const set = this.#rules[rootKey] ??= {};
             const collection = set[subKey] ??= [];
             collection.push(...rules);
@@ -35,7 +35,7 @@ export abstract class BaseRuntimeLimit implements RuntimeLimit {
     }
 
     public async check(context: BBTagContext, rulekey: string): Promise<void> {
-        const [rootKey, subKey] = this.getKeys(rulekey);
+        const [rootKey, subKey] = this.#getKeys(rulekey);
         const set = this.#rules[rootKey] ?? {};
         const collection = set[subKey];
         if (collection === undefined)
@@ -46,7 +46,7 @@ export abstract class BaseRuntimeLimit implements RuntimeLimit {
     }
 
     public rulesFor(rulekey: string): string[] {
-        const [rootKey, subKey] = this.getKeys(rulekey, false);
+        const [rootKey, subKey] = this.#getKeys(rulekey, false);
         const set = this.#rules[rootKey] ?? {};
         const rules = subKey !== undefined
             ? set[subKey] ?? []
@@ -76,7 +76,7 @@ export abstract class BaseRuntimeLimit implements RuntimeLimit {
 
     public load(state: SerializedRuntimeLimit): void {
         for (const [ruleKey, states] of Object.entries(state.rules)) {
-            const [rootKey, subKey] = this.getKeys(ruleKey);
+            const [rootKey, subKey] = this.#getKeys(ruleKey);
             const set = this.#rules[rootKey];
             if (set === undefined)
                 continue;
