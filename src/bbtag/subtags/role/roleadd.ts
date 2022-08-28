@@ -64,7 +64,9 @@ export class RoleAddSubtag extends CompiledSubtag {
             return false;
 
         try {
-            await member.edit({ roles: member.roles.concat(...roles.map(r => r.id)) }, context.auditReason());
+            const newRoleList = [...new Set([...member.roles, ...roles.map(r => r.id)])];
+            await member.edit({ roles: newRoleList }, context.auditReason());
+            member.roles = newRoleList;
             return true;
         } catch (err: unknown) {
             context.logger.error(err);

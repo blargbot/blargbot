@@ -79,6 +79,7 @@ export class UserSetRolesSubtag extends CompiledSubtag {
 
         try {
             await member.edit({ roles: parsedRoles }, context.auditReason());
+            member.roles = parsedRoles;
             return true;
         } catch (err: unknown) {
             context.logger.error(err);
