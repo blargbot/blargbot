@@ -65,7 +65,7 @@ export class LogsCommand extends GuildCommand {
 
         const users = [];
         for (const userStr of options.users) {
-            const user = await context.queryMember({ filter: userStr });
+            const user = await context.queryUser({ filter: userStr });
             if (user.state !== 'SUCCESS')
                 return this.error(`I couldnt find the user \`${userStr}\``);
             users.push(user.value.id);

@@ -332,11 +332,11 @@ export class TagCommand extends GuildCommand {
         ];
 
         if (author !== undefined) {
-            const result = await context.queryMember({ filter: author });
+            const result = await context.queryUser({ filter: author });
             if (result.state !== 'SUCCESS')
                 return undefined;
 
-            args[2] += ` made by **${humanize.fullName(result.value.user)}**`;
+            args[2] += ` made by **${humanize.fullName(result.value)}**`;
             args[3] = async (skip, take) => await context.database.tags.byAuthor(result.value.id, skip, take);
             args[4] = async () => await context.database.tags.byAuthorCount(result.value.id);
         }
