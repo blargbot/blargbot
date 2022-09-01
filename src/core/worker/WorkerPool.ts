@@ -154,5 +154,5 @@ export abstract class WorkerPool<Worker extends WorkerConnection<IPCContracts>> 
 }
 
 function isPromiseLike<T>(value: T | PromiseLike<T>): value is PromiseLike<T> {
-    return typeof value === 'object' && 'then' in value && typeof value.then === 'function';
+    return typeof value === 'object' && value !== null && 'then' in value && typeof value.then === 'function';
 }
