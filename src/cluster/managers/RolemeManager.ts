@@ -29,7 +29,9 @@ export class RolemeManager {
             roleme.remove.forEach(r => roleList.delete(r));
 
             try {
-                await message.member.edit({ roles: [...roleList] });
+                const newRoleList = [...roleList];
+                await message.member.edit({ roles: newRoleList });
+                message.member.roles = newRoleList;
                 await this.invokeMessage(message, roleme);
 
             } catch (err: unknown) {

@@ -64,8 +64,10 @@ export class RoleRemoveSubtag extends CompiledSubtag {
             return false;
 
         try {
-            const roleIds = new Set(roles.map(r => r.id));
-            await member.edit({ roles: member.roles.filter(roleID => !roleIds.has(roleID)) }, context.auditReason());
+            const removeRoles = new Set(roles.map(r => r.id));
+            const newRoleList = [...new Set(member.roles.filter(r => !removeRoles.has(r)))];
+            await member.edit({ roles: newRoleList }, context.auditReason());
+            member.roles = newRoleList;
             return true;
         } catch (err: unknown) {
             context.logger.error(err);

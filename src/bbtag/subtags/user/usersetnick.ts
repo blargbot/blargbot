@@ -30,6 +30,7 @@ export class UserSetNickSubtag extends CompiledSubtag {
 
         try {
             await member.edit({ nick }, context.auditReason());
+            member.nick = nick;
         } catch (err: unknown) {
             context.logger.error(err);
             if (err instanceof Error)
