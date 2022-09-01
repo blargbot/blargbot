@@ -18,9 +18,9 @@ export class GreetingCommand extends GuildCommand {
                     execute: (ctx, [bbtag]) => this.setGreeting(ctx, bbtag.asString)
                 },
                 {
-                    parameters: 'raw',
+                    parameters: 'raw {fileExtension:literal(bbtag|txt)=bbtag}',
                     description: 'Gets the current message that will be sent when someone joins the server',
-                    execute: (ctx) => this.getGreeting(ctx)
+                    execute: (ctx, [fileExtension]) => this.getGreeting(ctx, fileExtension.asLiteral)
                 },
                 {
                     parameters: 'setauthorizer',
@@ -71,7 +71,7 @@ export class GreetingCommand extends GuildCommand {
         return this.success('The greeting message has been set');
     }
 
-    public async getGreeting(context: GuildCommandContext): Promise<string | SendContent> {
+    public async getGreeting(context: GuildCommandContext, fileExtension: string): Promise<string | SendContent> {
         const greeting = await context.database.guilds.getGreeting(context.channel.guild.id);
         if (greeting === undefined)
             return this.error('No greeting message has been set yet!');
@@ -89,7 +89,7 @@ export class GreetingCommand extends GuildCommand {
                 content: this.info(`${message} attached`),
                 files: [
                     {
-                        name: 'greeting.bbtag',
+                        name: `greeting.${fileExtension}`,
                         file: greeting.content
                     }
                 ]

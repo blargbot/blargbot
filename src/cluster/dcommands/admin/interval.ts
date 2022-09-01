@@ -17,9 +17,9 @@ export class IntervalCommand extends GuildCommand {
                     execute: (ctx, [bbtag]) => this.setInterval(ctx, bbtag.asString)
                 },
                 {
-                    parameters: 'raw',
+                    parameters: 'raw {fileExtension:literal(bbtag|txt)=bbtag}',
                     description: 'Gets the current code that the interval is running',
-                    execute: (ctx) => this.getRaw(ctx)
+                    execute: (ctx, [fileExtension]) => this.getRaw(ctx, fileExtension.asLiteral)
                 },
                 {
                     parameters: 'delete',
@@ -69,7 +69,7 @@ export class IntervalCommand extends GuildCommand {
         return this.success('The interval has been deleted');
     }
 
-    public async getRaw(context: GuildCommandContext): Promise<string | SendContent> {
+    public async getRaw(context: GuildCommandContext, fileExtension: string): Promise<string | SendContent> {
         const interval = await context.database.guilds.getInterval(context.channel.guild.id);
         if (interval === undefined)
             return this.error('There is no interval currently set up!');
@@ -81,7 +81,7 @@ export class IntervalCommand extends GuildCommand {
                 content: this.info('The raw code for the interval is attached'),
                 files: [
                     {
-                        name: 'interval.bbtag',
+                        name: `interval.${fileExtension}`,
                         file: interval.content
                     }
                 ]

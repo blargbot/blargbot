@@ -43,9 +43,9 @@ export class RolemeCommand extends GuildCommand {
                     execute: (ctx, [id, bbtag]) => this.setMessage(ctx, id.asInteger, bbtag.asOptionalString)
                 },
                 {
-                    parameters: 'rawmessage {rolemeId:integer}',
+                    parameters: 'rawmessage {rolemeId:integer} {fileExtension:literal(bbtag|txt)=bbtag}',
                     description: 'Gets the current message that will be sent when the roleme is triggered',
-                    execute: (ctx, [id]) => this.getRawMessage(ctx, id.asInteger)
+                    execute: (ctx, [id, fileExtension]) => this.getRawMessage(ctx, id.asInteger, fileExtension.asLiteral)
                 },
                 {
                     parameters: 'debugmessage {rolemeId:integer}',
@@ -253,7 +253,7 @@ export class RolemeCommand extends GuildCommand {
         return this.success(`Roleme ${id} has now had its message set`);
     }
 
-    public async getRawMessage(context: GuildCommandContext, id: number): Promise<string | SendContent> {
+    public async getRawMessage(context: GuildCommandContext, id: number, fileExtension: string): Promise<string | SendContent> {
         const roleme = await context.database.guilds.getRoleme(context.channel.guild.id, id);
         if (roleme === undefined)
             return this.error(`Roleme ${id} doesnt exist`);
@@ -268,7 +268,7 @@ export class RolemeCommand extends GuildCommand {
                 content: this.info('The raw code for the interval is attached'),
                 files: [
                     {
-                        name: 'interval.bbtag',
+                        name: `interval.${fileExtension}`,
                         file: roleme.output.content
                     }
                 ]
