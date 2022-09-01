@@ -22,6 +22,13 @@ runSubtagTests({
             }
         },
         {
+            code: '{args}',
+            expected: '{json;{\n "key": "value"\n}}',
+            setup(ctx) {
+                ctx.options.inputRaw = '{json;{\n  "key": "value"\n}}';
+            }
+        },
+        {
             code: '{args;0}',
             expected: 'arg1'
         },
