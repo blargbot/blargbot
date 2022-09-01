@@ -307,7 +307,7 @@ export class TagCommand extends GuildCommand {
             return match;
 
         const response = this.info(`The raw code for \`${match.name}\` is:\n\`\`\`${match.lang ?? ''}\n${match.content}\n\`\`\``);
-        return guard.checkMessageSize(response)
+        return !match.content.includes('`') && guard.checkMessageSize(response)
             ? response
             : {
                 content: this.info(`The raw code for \`${match.name}\` is attached`),

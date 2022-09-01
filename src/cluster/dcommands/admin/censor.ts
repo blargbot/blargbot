@@ -251,7 +251,7 @@ export class CensorCommand extends GuildCommand {
 
         const response = this.info(`${message}:\n${codeBlock(rule.content)}`);
 
-        return guard.checkMessageSize(response)
+        return !rule.content.includes('`') && guard.checkMessageSize(response)
             ? response
             : {
                 content: this.info(`${message} attached`),

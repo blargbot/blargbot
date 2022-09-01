@@ -262,7 +262,7 @@ export class RolemeCommand extends GuildCommand {
             return this.error(`Roleme ${id} doesnt have a custom message`);
 
         const response = this.info(`The raw code for the interval is:\n${codeBlock(roleme.output.content)}`);
-        return guard.checkMessageSize(response)
+        return !roleme.output.content.includes('`') && guard.checkMessageSize(response)
             ? response
             : {
                 content: this.info('The raw code for the interval is attached'),

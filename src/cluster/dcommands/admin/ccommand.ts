@@ -283,7 +283,7 @@ export class CustomCommandCommand extends GuildCommand {
             return this.error(`The command \`${match.name}\` is an alias to the tag \`${match.alias}\``);
 
         const response = this.info(`The raw code for \`${match.name}\` is:\n${codeBlock(match.content)}`);
-        return guard.checkMessageSize(response)
+        return !match.content.includes('`') && guard.checkMessageSize(response)
             ? response
             : {
                 content: this.info(`The raw code for \`${match.name}\` is attached`),

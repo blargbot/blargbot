@@ -83,7 +83,7 @@ export class GreetingCommand extends GuildCommand {
             : `The raw code for the greeting message (sent in ${channel.mention}) is`;
         const response = this.info(`${message}:\n${codeBlock(greeting.content)}`);
 
-        return guard.checkMessageSize(response)
+        return !greeting.content.includes('`') && guard.checkMessageSize(response)
             ? response
             : {
                 content: this.info(`${message} attached`),
