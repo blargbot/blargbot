@@ -509,7 +509,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["discord-api-types", "npm:0.30.0"],\
             ["eris", "npm:0.17.0"],\
             ["html-entities", "npm:2.3.3"],\
-            ["moment-timezone", "npm:0.5.34"],\
+            ["moment-timezone", "npm:0.5.37"],\
             ["node-fetch", "virtual:644263357c3808bc44f433a693fe388a0c8cd7253a76268de48af4ee58a719d112af996231f3c01e175a9d4db65884c068df3876ec1060da68b36b8d0a9b8225#npm:2.6.7"],\
             ["rwlock", "npm:5.0.0"]\
           ],\
@@ -538,7 +538,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["discord-api-types", "npm:0.30.0"],\
             ["eris", "npm:0.17.0"],\
             ["mocha", "npm:9.2.2"],\
-            ["moment-timezone", "npm:0.5.34"],\
+            ["moment-timezone", "npm:0.5.37"],\
             ["ts-mockito", "npm:2.6.1"]\
           ],\
           "linkType": "SOFT"\
@@ -572,7 +572,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["discord-api-types", "npm:0.30.0"],\
             ["eris", "npm:0.17.0"],\
             ["eventemitter3", "npm:4.0.7"],\
-            ["moment-timezone", "npm:0.5.34"],\
+            ["moment-timezone", "npm:0.5.37"],\
             ["node-fetch", "virtual:644263357c3808bc44f433a693fe388a0c8cd7253a76268de48af4ee58a719d112af996231f3c01e175a9d4db65884c068df3876ec1060da68b36b8d0a9b8225#npm:2.6.7"],\
             ["prom-client", "npm:14.0.1"],\
             ["require-reload", "npm:0.2.2"],\
@@ -621,7 +621,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["eventemitter3", "npm:4.0.7"],\
             ["limax", "npm:3.0.0"],\
             ["long", "npm:2.4.0"],\
-            ["moment-timezone", "npm:0.5.34"],\
+            ["moment-timezone", "npm:0.5.37"],\
             ["prom-client", "npm:14.0.1"],\
             ["require-reload", "npm:0.2.2"],\
             ["safe-regex", "npm:2.1.1"],\
@@ -665,7 +665,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["cassandra-driver", "npm:4.6.3"],\
             ["catflake", "npm:1.0.0"],\
             ["long", "npm:2.4.0"],\
-            ["moment-timezone", "npm:0.5.34"],\
+            ["moment-timezone", "npm:0.5.37"],\
             ["pg", "virtual:856d594ef58e3ff5ddd3d480c84f517a2b37719cc82ea2e4c1df0be5f76a9b525389c170d2c5e2be74c4b863231c45eb9094936473db96bd4b8e5e940ae574b6#npm:8.7.3"],\
             ["pg-hstore", "npm:2.3.4"],\
             ["rethinkdb", "npm:2.4.2"],\
@@ -679,7 +679,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./src/domain/",\
           "packageDependencies": [\
             ["@blargbot/domain", "workspace:src/domain"],\
-            ["moment-timezone", "npm:0.5.34"]\
+            ["moment-timezone", "npm:0.5.37"]\
           ],\
           "linkType": "SOFT"\
         }]\
@@ -728,7 +728,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./src/mapping/",\
           "packageDependencies": [\
             ["@blargbot/mapping", "workspace:src/mapping"],\
-            ["moment-timezone", "npm:0.5.34"]\
+            ["moment-timezone", "npm:0.5.37"]\
           ],\
           "linkType": "SOFT"\
         }]\
@@ -748,7 +748,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/eris", "workspace:definitions/eris"],\
             ["@types/node-fetch", "npm:2.6.2"],\
             ["eris", "npm:0.17.0"],\
-            ["moment-timezone", "npm:0.5.34"],\
+            ["moment-timezone", "npm:0.5.37"],\
             ["node-fetch", "virtual:644263357c3808bc44f433a693fe388a0c8cd7253a76268de48af4ee58a719d112af996231f3c01e175a9d4db65884c068df3876ec1060da68b36b8d0a9b8225#npm:2.6.7"],\
             ["prom-client", "npm:14.0.1"],\
             ["strip-ansi", "npm:6.0.1"]\
@@ -7598,6 +7598,14 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/moment-timezone-npm-0.5.34-e4fe2d01f6-12a1d3d52e.zip/node_modules/moment-timezone/",\
           "packageDependencies": [\
             ["moment-timezone", "npm:0.5.34"],\
+            ["moment", "npm:2.29.1"]\
+          ],\
+          "linkType": "HARD"\
+        }],\
+        ["npm:0.5.37", {\
+          "packageLocation": "./.yarn/cache/moment-timezone-npm-0.5.37-cb6e7487a6-b3fc24848a.zip/node_modules/moment-timezone/",\
+          "packageDependencies": [\
+            ["moment-timezone", "npm:0.5.37"],\
             ["moment", "npm:2.29.1"]\
           ],\
           "linkType": "HARD"\

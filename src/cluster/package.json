@@ -17,7 +17,7 @@
         "crypto": "^1.0.1",
         "eris": "^0.17.0",
         "eventemitter3": "^4.0.7",
-        "moment-timezone": "^0.5.34",
+        "moment-timezone": "^0.5.35",
         "node-fetch": "^2.6.7",
         "prom-client": "^14.0.1",
         "require-reload": "^0.2.2",
