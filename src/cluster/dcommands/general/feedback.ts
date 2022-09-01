@@ -44,7 +44,7 @@ export class FeedbackCommand extends GlobalCommand {
     }
 
     public async submitFeedback(context: CommandContext, description: string, flags: FlagResult): Promise<string> {
-        if (context.util.isBotOwner(context.author.id)) {
+        if (context.util.isBotStaff(context.author.id)) {
             const words = description.toLowerCase().split(' ');
             if (words.length >= 3) {
                 switch (words[0]) {
@@ -256,7 +256,7 @@ export class FeedbackCommand extends GlobalCommand {
     }
 
     private async checkBlacklist(context: CommandContext): Promise<false | 'GUILD' | 'USER'> {
-        if (context.util.isBotOwner(context.author.id))
+        if (context.util.isBotStaff(context.author.id))
             return false;
 
         const blacklist = await context.database.vars.get('blacklist');

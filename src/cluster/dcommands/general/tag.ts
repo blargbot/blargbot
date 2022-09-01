@@ -95,6 +95,7 @@ export class TagCommand extends GuildCommand {
                 },
                 {
                     parameters: 'permdelete {tagName} {reason+}',
+                    hidden: true,
                     execute: (ctx, [tagName, reason]) => this.disableTag(ctx, tagName.asString, reason.asString),
                     description: 'Marks the tag name as deleted forever, so no one can ever use it'
                 },
@@ -377,6 +378,9 @@ export class TagCommand extends GuildCommand {
     }
 
     public async disableTag(context: GuildCommandContext, tagName: string, reason: string): Promise<string | undefined> {
+        if (!context.util.isBotStaff(context.author.id))
+            return this.error('You cannot disable tags');
+
         tagName = normalizeName(tagName);
         if (!await context.database.tags.disable(tagName, context.author.id, reason))
             return this.error(`The \`${tagName}\` tag doesn't exist!`);
@@ -659,7 +663,7 @@ export class TagCommand extends GuildCommand {
             return match;
 
         if (match.tag !== undefined
-            && !context.util.isBotOwner(context.author.id)
+            && !context.util.isBotStaff(context.author.id)
             && match.tag.author !== context.author.id) {
             return this.error(`You don't own the \`${match.name}\` tag!`);
         }
