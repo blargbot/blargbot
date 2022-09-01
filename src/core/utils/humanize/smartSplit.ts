@@ -125,7 +125,7 @@ function* smartSplitIter(source: string): Generator<SmartSplitItem> {
             const ranges = this.ranges.splice(0, this.ranges.length);
             yield {
                 start: Math.min(...ranges.map(t => t.start)),
-                end: Math.min(...ranges.map(t => t.end)),
+                end: Math.max(...ranges.map(t => t.end)),
                 ranges: ranges,
                 content: ranges.map(r => r.content).join('')
             };
