@@ -1,6 +1,6 @@
 import { GuildCommand } from '@blargbot/cluster/command';
 import { GuildCommandContext } from '@blargbot/cluster/types';
-import { CommandType } from '@blargbot/cluster/utils';
+import { CommandType, ModerationType } from '@blargbot/cluster/utils';
 import { SendContent } from '@blargbot/core/types';
 import { codeBlock, guard } from '@blargbot/core/utils';
 import { GuildCensor, GuildTriggerTag } from '@blargbot/domain/models';
@@ -352,4 +352,4 @@ function stringifyCensorEvent(event: GuildTriggerTag | undefined): string {
     return `Author: <@${event.author ?? 0}>\nAuthorizer: <@${event.authorizer ?? event.author ?? '????'}>`;
 }
 
-const allowedTypes = new Set(['timeout', 'kick', 'ban', 'delete'] as const);
+const allowedTypes = new Set<ModerationType>([ModerationType.BAN, ModerationType.KICK, ModerationType.TIMEOUT, ModerationType.WARN] as const);

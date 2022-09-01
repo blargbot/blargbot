@@ -1,6 +1,6 @@
 import { bbtag } from '@blargbot/bbtag';
 import { guard, ModerationType } from '@blargbot/cluster/utils';
-import { GuildCensor, GuildCensorExceptions, GuildTriggerTag } from '@blargbot/domain/models';
+import { GuildCensor, GuildCensorExceptions } from '@blargbot/domain/models';
 import { KnownGuildTextableChannel, Message } from 'eris';
 import moment from 'moment-timezone';
 
@@ -15,19 +15,23 @@ export class CensorManager extends ModerationManagerBase {
         this.#debugOutput = {};
     }
 
+    public setDebug(guildId: string, id: number, userId: string, channelId: string, messageId: string, type: ModerationType): void {
+        this.#debugOutput[this.#getDebugKey(guildId, id, userId, type)] = { channelId, messageId };
+    }
+
     public async censor(message: Message<KnownGuildTextableChannel>): Promise<boolean> {
-        if (await this.censorMentions(message))
+        if (await this.#censorMentions(message))
             return true;
 
         const censors = await this.cluster.database.guilds.getCensors(message.channel.guild.id);
-        if (censors === undefined || this.isCensorExempt(message, censors.exception))
+        if (censors === undefined || this.#isCensorExempt(message, censors.exception))
             return false;
 
-        const [id, censor] = Object.entries(censors.list ?? {})
+        const matches = Object.entries(censors.list ?? {})
             .filter((e): e is [string, GuildCensor] => e[1] !== undefined)
-            .find(c => guard.matchMessageFilter(c[1], message) !== undefined) ?? [];
+            .filter(c => guard.matchMessageFilter(c[1], message) !== undefined);
 
-        if (censor === undefined || id === undefined)
+        if (matches.length === 0)
             return false;
 
         try {
@@ -39,29 +43,19 @@ export class CensorManager extends ModerationManagerBase {
         if (!guard.hasValue(message.member))
             return true;
 
-        const result = await this.manager.warns.warn(message.member, this.cluster.discord.user, this.cluster.discord.user, censor.weight, censor.reason ?? 'Said a blacklisted phrase.');
-        let tag: GuildTriggerTag | undefined;
-        let type: 'ban' | 'delete' | 'kick' | 'timeout';
-        switch (result.type) {
-            case ModerationType.BAN:
-                tag = censor.banMessage ?? censors.rule?.banMessage;
-                type = 'ban';
-                break;
-            case ModerationType.KICK:
-                tag = censor.kickMessage ?? censors.rule?.kickMessage;
-                type = 'kick';
-                break;
-            case ModerationType.TIMEOUT:
-                tag = censor.timeoutMessage ?? censors.rule?.timeoutMessage;
-                type = 'timeout';
-                break;
-            case ModerationType.WARN:
-                tag = censor.deleteMessage ?? censors.rule?.deleteMessage;
-                type = 'delete';
-                break;
+        const tags = [];
+        for (const [id, censor] of matches) {
+            const result = await this.manager.warns.warn(message.member, this.cluster.discord.user, this.cluster.discord.user, censor.weight, censor.reason ?? 'Said a blacklisted phrase.');
+            const tag = censor[`${result.type}Message`] ?? censors.rule?.[`${result.type}Message`];
+            if (tag !== undefined)
+                tags.push({ id: parseInt(id), tag, action: result.type });
         }
 
-        if (tag !== undefined) {
+        await Promise.all(tags.map(async ({ id, tag, action }) => {
+            const key = this.#getDebugKey(message.channel.guild.id, id, message.author.id, action);
+            const debugCtx = this.#debugOutput[key];
+            delete this.#debugOutput[key];
+
             const result = await this.cluster.bbtag.execute(tag.content, {
                 message: message,
                 rootTagName: 'censor',
@@ -72,18 +66,14 @@ export class CensorManager extends ModerationManagerBase {
                 authorizerId: tag.authorizer ?? undefined
             });
 
-            const key = this.getDebugKey(message.channel.guild.id, parseInt(id), message.author.id, type);
-            const debugCtx = this.#debugOutput[key];
-            if (debugCtx !== undefined) {
-                delete this.#debugOutput[key];
+            if (debugCtx?.channelId === message.channel.id)
                 await this.cluster.util.sendDM(message.author, bbtag.createDebugOutput(result));
-            }
-        }
+        }));
 
         return true;
     }
 
-    private async censorMentions(message: Message<KnownGuildTextableChannel>): Promise<boolean> {
+    async #censorMentions(message: Message<KnownGuildTextableChannel>): Promise<boolean> {
         const antimention = await this.cluster.database.guilds.getSetting(message.channel.guild.id, 'antimention');
         if (antimention === undefined)
             return false;
@@ -105,7 +95,7 @@ export class CensorManager extends ModerationManagerBase {
         }
     }
 
-    private isCensorExempt(message: Message<KnownGuildTextableChannel>, exemptions?: GuildCensorExceptions): boolean {
+    #isCensorExempt(message: Message<KnownGuildTextableChannel>, exemptions?: GuildCensorExceptions): boolean {
         if (exemptions === undefined)
             return false;
 
@@ -119,11 +109,7 @@ export class CensorManager extends ModerationManagerBase {
             || roles.some(r => userRoles.includes(r));
     }
 
-    public setDebug(guildId: string, id: number, userId: string, channelId: string, messageId: string, type: 'ban' | 'delete' | 'kick' | 'timeout'): void {
-        this.#debugOutput[this.getDebugKey(guildId, id, userId, type)] = { channelId, messageId };
-    }
-
-    private getDebugKey(guildId: string, id: number, userId: string, type: 'ban' | 'delete' | 'kick' | 'timeout'): string {
+    #getDebugKey(guildId: string, id: number, userId: string, type: ModerationType): string {
         return `${guildId}|${id}|${userId}|${type}`;
     }
 }
