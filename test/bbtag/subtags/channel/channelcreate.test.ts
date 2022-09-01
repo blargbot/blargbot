@@ -135,6 +135,61 @@ runSubtagTests({
                         userLimit: 32042430
                     }), undefined)).thenResolve(channel.instance);
                 }
+            },
+            {
+                code: `{channelcreate;My new channel;${type};{escapebbtag;${JSON.stringify({
+                    bitrate: '1234',
+                    nsfw: 'true',
+                    parentID: '23987233279389273',
+                    permissionOverwrites: [
+                        {
+                            id: '329478923748223',
+                            allow: '3827468274',
+                            deny: '42937843478',
+                            type: 'role'
+                        },
+                        {
+                            id: '9054786496875634',
+                            allow: '23432424',
+                            deny: '432434234',
+                            type: 'member'
+                        }
+                    ],
+                    rateLimitPerUser: '231432',
+                    topic: 'xyz123',
+                    reason: 'abcdef',
+                    userLimit: '32042430'
+                })}}}`,
+                expected: '28376128632132',
+                subtags: [new EscapeBbtagSubtag()],
+                setup(ctx: SubtagTestContext) {
+                    const channel = ctx.createMock<Channel>(instance);
+                    channel.setup(m => m.id).thenReturn('28376128632132');
+
+                    ctx.discord.setup(m => m.createChannel(ctx.guild.id, 'My new channel', code, argument.isDeepEqual({
+                        bitrate: 1234,
+                        nsfw: true,
+                        parentID: '23987233279389273',
+                        permissionOverwrites: [
+                            {
+                                id: '329478923748223',
+                                allow: 3827468274n,
+                                deny: 42937843478n,
+                                type: OverwriteType.Role
+                            },
+                            {
+                                id: '9054786496875634',
+                                allow: 23432424n,
+                                deny: 432434234n,
+                                type: OverwriteType.Member
+                            }
+                        ],
+                        rateLimitPerUser: 231432,
+                        topic: 'xyz123',
+                        reason: 'abcdef',
+                        userLimit: 32042430
+                    }), undefined)).thenResolve(channel.instance);
+                }
             }
         ]),
         {

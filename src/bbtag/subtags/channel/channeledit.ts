@@ -66,6 +66,8 @@ export class ChannelEditSubtag extends CompiledSubtag {
     }
 }
 
+const defaultAutoArchiveDurationMapping = mapping.in(...[60, 1440, 4320, 10080, undefined] as const);
+
 const mapChannelOptions = mapping.json(
     mapping.object<EditChannelOptions>({
         bitrate: mapping.number.optional,
@@ -75,7 +77,7 @@ const mapChannelOptions = mapping.json(
         rateLimitPerUser: mapping.number.optional,
         topic: mapping.string.optional,
         userLimit: mapping.number.optional,
-        defaultAutoArchiveDuration: mapping.in(60, 1440, 4320, 10080, undefined),
+        defaultAutoArchiveDuration: mapping.number.chain(defaultAutoArchiveDurationMapping).optional,
         locked: mapping.boolean.optional,
         rtcRegion: [undefined],
         archived: [undefined],
@@ -91,7 +93,7 @@ const mapChannelOptions = mapping.json(
 const mapThreadOptions = mapping.json(
     mapping.object<EditChannelOptions>({
         archived: mapping.boolean.optional,
-        autoArchiveDuration: mapping.in(60, 1440, 4320, 10080, undefined),
+        autoArchiveDuration: mapping.number.chain(defaultAutoArchiveDurationMapping).optional,
         locked: mapping.boolean.optional,
         name: mapping.string.optional,
         rateLimitPerUser: mapping.number.optional,
