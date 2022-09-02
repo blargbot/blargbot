@@ -103,9 +103,20 @@ export class CommandContext<TChannel extends KnownTextableChannel = KnownTextabl
 
         throw new Error('Cannot queryMember without a guild!');
     }
+    public async queryUser(options: SlimEntityFindQueryOptions): Promise<ChoiceQueryResult<User>>;
+    public async queryUser(this: GuildCommandContext, options: Omit<SlimEntityFindQueryOptions, 'guild'>): Promise<ChoiceQueryResult<User>>;
+    public async queryUser(options: SlimEntityPickQueryOptions<User>): Promise<ChoiceQueryResult<User>>;
+    public async queryUser(options: SlimEntityQueryOptions<User> | Omit<SlimEntityFindQueryOptions, 'guild'>): Promise<ChoiceQueryResult<User>> {
+        if ('choices' in options)
+            return await this.util.queryUser({ ...options, context: this.message, actors: this.author });
 
-    public async queryUser(options: SlimEntityPickQueryOptions<User>): Promise<ChoiceQueryResult<User>> {
-        return await this.util.queryUser({ ...options, context: this.message, actors: this.author });
+        if ('guild' in options)
+            return await this.util.queryUser({ ...options, context: this.message, actors: this.author });
+
+        if (guard.isGuildChannel(this.channel))
+            return await this.util.queryUser({ ...options, context: this.message, actors: this.author, guild: this.channel.guild });
+
+        throw new Error('Cannot queryUser without a guild!');
     }
 
     public async querySender(options: SlimEntityPickQueryOptions<User | Webhook>): Promise<ChoiceQueryResult<User | Webhook>> {

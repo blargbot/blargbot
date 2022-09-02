@@ -36,6 +36,7 @@ export class DecancerCommand extends GlobalCommand {
         const decancered = humanize.decancer(member.nick ?? member.username);
         try {
             await member.edit({ nick: decancered });
+            member.nick = decancered;
             return this.success(`Successfully decancered **${member.mention}**'s name to: \`${decancered}\``);
         } catch {
             return this.decancerText(member.nick ?? member.username, decancered);

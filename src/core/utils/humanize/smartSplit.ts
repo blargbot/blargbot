@@ -24,7 +24,7 @@ export function* smartSplitRanges(source: string): Generator<{ start: number; en
 }
 
 interface SmartSplitItem {
-    readonly ranges: CharRange[];
+    readonly ranges: readonly CharRange[];
     readonly content: string;
     readonly start: number;
     readonly end: number;
@@ -34,6 +34,28 @@ interface CharRange {
     readonly start: number;
     readonly end: number;
     readonly content: string;
+}
+
+interface SmartSplitTokenContext {
+    readonly source: string;
+    readonly ranges: CharRange[];
+    index: number;
+    readonly tokenCount: number;
+    getToken(offset?: number): SmartSplitToken;
+    digestRanges(): Generator<SmartSplitItem>;
+}
+
+const enum SmartSplitTokenType {
+    LITERAL,
+    QUOTE,
+    BREAK,
+    ESCAPE
+}
+
+interface SmartSplitToken {
+    readonly type: SmartSplitTokenType;
+    readonly start: number;
+    readonly end: number;
 }
 
 function* smartSplitIterLimit(source: string, limit: number): Generator<string> {
@@ -47,70 +69,123 @@ function* smartSplitIterLimit(source: string, limit: number): Generator<string> 
     }
 }
 
-const quoteBounds = new Set([' ', undefined]);
-function* smartSplitIter(source: string): Generator<SmartSplitItem> {
-    let inQuote = false;
-    let builder: number[] = [];
-    let start: number | undefined;
+function* tokenize(source: string): Generator<SmartSplitToken> {
+    let literalStart: number | undefined;
+    let i = 0;
 
-    for (let i = 0; i < source.length; i++) {
-        switch (source[i]) {
-            case '\\': {
-                start ??= i;
-                if (++i < source.length)
-                    builder.push(i);
-                break;
-            }
-            case '"': {
-                start ??= i;
-                // check before open quote or after close quote is a space or out of bounds
-                if (quoteBounds.has(source[i + (inQuote ? 1 : -1)]))
-                    inQuote = !inQuote;
-                else
-                    builder.push(i);
-                break;
-            }
-            case ' ': {
-                if (inQuote)
-                    builder.push(i);
-                else if (start !== undefined) {
-                    yield createSplitItem(source, builder, start, i);
-                    start = undefined;
-                    builder = [];
-                }
-                break;
-            }
-            default: {
-                start ??= i;
-                builder.push(i);
-                break;
-            }
+    function* yieldBlock(): Generator<SmartSplitToken> {
+        if (literalStart !== undefined) {
+            yield { type: SmartSplitTokenType.LITERAL, start: literalStart, end: i };
+            literalStart = undefined;
         }
     }
-    if (start !== undefined)
-        yield createSplitItem(source, builder, start, source.length);
-}
 
-function createSplitItem(source: string, charIndexes: number[], start: number, end: number): SmartSplitItem {
-    const ranges = charIndexes.reduce<Array<[number, number]>>((ranges, index) => {
-        const prevRange = ranges[ranges.length - 1] ?? [index, index];
-        if (prevRange[1] === index - 1) {
-            prevRange[1] = index;
-        } else {
-            ranges.push([index, index]);
+    for (; i < source.length; i++) {
+        switch (source[i]) {
+            case ' ':
+                yield* yieldBlock();
+                yield { type: SmartSplitTokenType.BREAK, start: i, end: i + 1 };
+                break;
+            case '"':
+                yield* yieldBlock();
+                yield { type: SmartSplitTokenType.QUOTE, start: i, end: i + 1 };
+                break;
+            case '\\':
+                yield* yieldBlock();
+                yield { type: SmartSplitTokenType.ESCAPE, start: i, end: i + 1 };
+                break;
+            default:
+                literalStart ??= i;
+                break;
         }
-        return ranges;
-    }, [])
-        .map(([start, end]) => ({
-            start,
-            end,
-            content: source.slice(start, end + 1)
-        }));
-
-    return {
-        ranges: ranges,
-        content: ranges.map(r => r.content).join(''),
-        end,
-        start
-    };
+    }
+    yield* yieldBlock();
 }
+
+function* smartSplitIter(source: string): Generator<SmartSplitItem> {
+    const tokens = [...tokenize(source)];
+    if (tokens.length === 0)
+        return;
+
+    const ctx: SmartSplitTokenContext = {
+        ranges: [],
+        index: 0,
+        source,
+        tokenCount: tokens.length,
+        getToken(offset = 0) {
+            const index = this.index + offset;
+            if (index < 0 || index >= tokens.length)
+                return { type: SmartSplitTokenType.BREAK, start: index, end: index };
+            return tokens[index];
+        },
+        * digestRanges() {
+            if (this.ranges.length === 0)
+                return;
+
+            const ranges = this.ranges.splice(0, this.ranges.length);
+            yield {
+                start: Math.min(...ranges.map(t => t.start)),
+                end: Math.max(...ranges.map(t => t.end)),
+                ranges: ranges,
+                content: ranges.map(r => r.content).join('')
+            };
+        }
+    };
+
+    for (; ctx.index < ctx.tokenCount; ctx.index++)
+        yield* tokenHandlers[tokens[ctx.index].type](ctx);
+
+    yield* ctx.digestRanges();
+}
+
+const noTokens = (function* () { /* NO-OP */ })();
+const tokenHandlers: Record<SmartSplitTokenType, (context: SmartSplitTokenContext) => Generator<SmartSplitItem>> = {
+    [SmartSplitTokenType.BREAK](ctx) {
+        return ctx.digestRanges();
+    },
+    [SmartSplitTokenType.QUOTE](ctx) {
+        if (ctx.getToken(-1).type !== SmartSplitTokenType.BREAK)
+            return this[SmartSplitTokenType.LITERAL](ctx);
+
+        const maxOffset = ctx.tokenCount - ctx.index;
+        let offset = 1;
+        for (; offset < maxOffset; offset++)
+            if (ctx.getToken(offset).type === SmartSplitTokenType.QUOTE && ctx.getToken(offset + 1).type === SmartSplitTokenType.BREAK)
+                break;
+
+        if (offset === maxOffset)
+            return this[SmartSplitTokenType.LITERAL](ctx);
+
+        const startToken = ctx.getToken();
+        const endToken = ctx.getToken(offset);
+        ctx.index += offset;
+        ctx.ranges.push({
+            start: startToken.start,
+            end: endToken.end,
+            content: ctx.source.slice(startToken.end, endToken.start)
+        });
+        return noTokens;
+    },
+    // eslint-disable-next-line require-yield
+    [SmartSplitTokenType.ESCAPE](ctx) {
+        const escapeToken = ctx.getToken();
+        ctx.index++;
+        const valueToken = ctx.getToken();
+        ctx.ranges.push({
+            start: escapeToken.start,
+            end: valueToken.end,
+            content: ctx.source.slice(valueToken.start, valueToken.end)
+        });
+        return noTokens;
+    },
+    // eslint-disable-next-line require-yield
+    [SmartSplitTokenType.LITERAL](ctx) {
+        const token = ctx.getToken();
+        ctx.ranges.push({
+            start: token.start,
+            end: token.end,
+            content: ctx.source.slice(token.start, token.end)
+        });
+        return noTokens;
+    }
+};

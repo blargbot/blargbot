@@ -21,7 +21,7 @@ export class NatoCommand extends GlobalCommand {
         let other = '';
         for (const char of text) {
             const lower = char.toLowerCase();
-            if (chars.includes(lower)) {
+            if (chars.includes<string>(lower)) {
                 if (other !== '') {
                     result.push(other);
                     other = '';

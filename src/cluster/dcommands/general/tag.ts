@@ -79,9 +79,9 @@ export class TagCommand extends GuildCommand {
                     description: 'Renames the tag'
                 },
                 {
-                    parameters: 'raw {tagName?}',
-                    execute: (ctx, [tagName]) => this.getRawTag(ctx, tagName.asOptionalString),
-                    description: 'Uses the BBTag engine to execute the content as it was a tag'
+                    parameters: 'raw {tagName?} {fileExtension:literal(bbtag|txt)=bbtag}',
+                    execute: (ctx, [tagName, fileExtension]) => this.getRawTag(ctx, tagName.asOptionalString, fileExtension.asLiteral),
+                    description: 'Gets the raw contents of the tag'
                 },
                 {
                     parameters: 'list {author+?}',
@@ -95,6 +95,7 @@ export class TagCommand extends GuildCommand {
                 },
                 {
                     parameters: 'permdelete {tagName} {reason+}',
+                    hidden: true,
                     execute: (ctx, [tagName, reason]) => this.disableTag(ctx, tagName.asString, reason.asString),
                     description: 'Marks the tag name as deleted forever, so no one can ever use it'
                 },
@@ -301,19 +302,19 @@ export class TagCommand extends GuildCommand {
         return this.success(`The \`${from.name}\` tag has been renamed to \`${to.name}\`.`);
     }
 
-    public async getRawTag(context: GuildCommandContext, tagName: string | undefined): Promise<string | { content: string; files: FileContent[]; } | undefined> {
+    public async getRawTag(context: GuildCommandContext, tagName: string | undefined, fileExtension: string): Promise<string | { content: string; files: FileContent[]; } | undefined> {
         const match = await this.#requestReadableTag(context, tagName);
         if (typeof match !== 'object')
             return match;
 
         const response = this.info(`The raw code for \`${match.name}\` is:\n\`\`\`${match.lang ?? ''}\n${match.content}\n\`\`\``);
-        return guard.checkMessageSize(response)
+        return !match.content.includes('`') && guard.checkMessageSize(response)
             ? response
             : {
                 content: this.info(`The raw code for \`${match.name}\` is attached`),
                 files: [
                     {
-                        name: match.name + '.bbtag',
+                        name: `${match.name}.${fileExtension}`,
                         file: match.content
                     }
                 ]
@@ -332,11 +333,11 @@ export class TagCommand extends GuildCommand {
         ];
 
         if (author !== undefined) {
-            const result = await context.queryMember({ filter: author });
+            const result = await context.queryUser({ filter: author });
             if (result.state !== 'SUCCESS')
                 return undefined;
 
-            args[2] += ` made by **${humanize.fullName(result.value.user)}**`;
+            args[2] += ` made by **${humanize.fullName(result.value)}**`;
             args[3] = async (skip, take) => await context.database.tags.byAuthor(result.value.id, skip, take);
             args[4] = async () => await context.database.tags.byAuthorCount(result.value.id);
         }
@@ -377,6 +378,9 @@ export class TagCommand extends GuildCommand {
     }
 
     public async disableTag(context: GuildCommandContext, tagName: string, reason: string): Promise<string | undefined> {
+        if (!context.util.isBotStaff(context.author.id))
+            return this.error('You cannot disable tags');
+
         tagName = normalizeName(tagName);
         if (!await context.database.tags.disable(tagName, context.author.id, reason))
             return this.error(`The \`${tagName}\` tag doesn't exist!`);
@@ -659,7 +663,7 @@ export class TagCommand extends GuildCommand {
             return match;
 
         if (match.tag !== undefined
-            && !context.util.isBotOwner(context.author.id)
+            && !context.util.isBotStaff(context.author.id)
             && match.tag.author !== context.author.id) {
             return this.error(`You don't own the \`${match.name}\` tag!`);
         }

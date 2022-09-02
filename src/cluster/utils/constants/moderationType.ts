@@ -1,6 +1,6 @@
 export enum ModerationType {
-    WARN = 0,
-    BAN = 1,
-    KICK = 2,
-    TIMEOUT = 3
+    WARN = 'delete',
+    BAN = 'ban',
+    KICK = 'kick',
+    TIMEOUT = 'timeout'
 }

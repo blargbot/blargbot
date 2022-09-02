@@ -60,9 +60,9 @@ export class AutoResponseCommand extends GuildCommand {
                     execute: (ctx, [id, bbtag]) => this.setBBTag(ctx, id.asString, bbtag.asString)
                 },
                 {
-                    parameters: 'raw {id}',
+                    parameters: 'raw {id} {fileExtension:literal(bbtag|txt)=bbtag}',
                     description: 'Gets the bbtag that is executed when the autoresponse is triggered',
-                    execute: (ctx, [id]) => this.getRaw(ctx, id.asString)
+                    execute: (ctx, [id, fileExtension]) => this.getRaw(ctx, id.asString, fileExtension.asLiteral)
                 },
                 {
                     parameters: 'setauthorizer {id}',
@@ -113,7 +113,7 @@ export class AutoResponseCommand extends GuildCommand {
         return this.success(`Updated the code for ${id === 'everything' ? 'the everything autoresponse' : `autoresponse ${id}`}`);
     }
 
-    public async getRaw(context: GuildCommandContext, id: string): Promise<string | SendContent> {
+    public async getRaw(context: GuildCommandContext, id: string, fileExtension: string): Promise<string | SendContent> {
         const accessError = this.#checkArAccess(context);
         if (accessError !== undefined)
             return accessError;
@@ -125,13 +125,13 @@ export class AutoResponseCommand extends GuildCommand {
         const responseBase = `The raw code for ${match.id === 'everything' ? 'the everything autoresponse' : `autoresponse ${match.id}`} is`;
 
         const response = this.success(`${responseBase}:\n${codeBlock(match.ar.content)}`);
-        return guard.checkMessageSize(response)
+        return !match.ar.content.includes('`') && guard.checkMessageSize(response)
             ? response
             : {
                 content: this.success(`${responseBase} attached`),
                 files: [
                     {
-                        name: `autoresponse_${match.id}.bbtag`,
+                        name: `autoresponse_${match.id}.${fileExtension}`,
                         file: match.ar.content
                     }
                 ]

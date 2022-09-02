@@ -120,7 +120,7 @@ export class TagsRoute extends BaseRoute {
         if (tag === undefined)
             return this.notFound();
 
-        if (tag.author !== author)
+        if (tag.author !== author && !await this.#api.util.isBotStaff(author))
             return this.forbidden('You are not the author of this tag');
 
         if (!await this.#api.database.tags.delete(name))

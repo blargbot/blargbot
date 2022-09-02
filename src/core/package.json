@@ -18,7 +18,7 @@
         "eventemitter3": "^4.0.7",
         "limax": "^3.0.0",
         "long": "^2.4.0",
-        "moment-timezone": "^0.5.34",
+        "moment-timezone": "^0.5.35",
         "prom-client": "^14.0.1",
         "require-reload": "^0.2.2",
         "safe-regex": "^2.1.1",

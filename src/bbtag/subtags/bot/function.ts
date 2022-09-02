@@ -31,7 +31,7 @@ export class FunctionSubtag extends CompiledSubtag {
         funcName: string,
         code: Statement
     ): void {
-        let name = funcName.toLowerCase();
+        let name: string = funcName.toLowerCase();
         if (name.startsWith('func.'))
             name = name.slice(5);
 

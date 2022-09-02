@@ -21,7 +21,7 @@ export class PostgresDb {
         );
     }
 
-    public defineModel<T>(name: string, attributes: ModelAttributes<Model<T>>): ModelStatic<Model<T>> {
+    public defineModel<T extends object>(name: string, attributes: ModelAttributes<Model<T>>): ModelStatic<Model<T>> {
         return this.#sequelize.define<Model<T>>(name, attributes);
     }
 

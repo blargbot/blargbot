@@ -170,7 +170,7 @@ function getAbsolutePath(...segments: string[]): string {
 }
 
 function isPromiseLike<T>(value: T | PromiseLike<T>): value is PromiseLike<T> {
-    return typeof value === 'object' && 'then' in value && typeof value.then === 'function';
+    return typeof value === 'object' && value !== null && 'then' in value && typeof value.then === 'function';
 }
 
 async function toArray<T>(source: AsyncIterable<T>): Promise<T[]> {

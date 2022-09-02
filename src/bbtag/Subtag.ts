@@ -1,13 +1,11 @@
 import { metrics } from '@blargbot/core/Metrics';
 import { Timer } from '@blargbot/core/Timer';
-import { abstract } from '@blargbot/core/utils';
 
 import { BBTagContext } from './BBTagContext';
 import { SubtagCall } from './language';
 import { SubtagOptions, SubtagSignature } from './types';
 import { SubtagType } from './utils';
 
-@abstract
 export abstract class Subtag implements SubtagOptions {
     public readonly name: string;
     public readonly aliases: readonly string[];
@@ -29,7 +27,6 @@ export abstract class Subtag implements SubtagOptions {
         this.signatures = options.signatures;
     }
 
-    @abstract.sealed
     public async * execute(context: BBTagContext, subtagName: string, subtag: SubtagCall): AsyncIterable<string | undefined> {
         const timer = new Timer().start();
         try {

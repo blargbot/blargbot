@@ -27,12 +27,12 @@ export class SpellCommand extends GlobalCommand {
         const components = spell.components
             .split(/,\s*/g)
             .map(c => ({ component: c, norm: c.toLowerCase() }))
-            .map(c => componentKeys.has(c.norm) ? componentMap[c.norm] : c.component)
+            .map(c => componentKeys.has<string>(c.norm) ? componentMap[c.norm] : c.component)
             .join(', ');
 
         return {
             title: spell.name,
-            color: schoolKeys.has(normSchool) ? schools[normSchool] : undefined,
+            color: schoolKeys.has<string>(normSchool) ? schools[normSchool] : undefined,
             description: `*Level ${spell.level} ${spell.school}*\n\n${spell.desc}`,
             fields: [
                 { name: 'Duration', value: spell.duration, inline: true },

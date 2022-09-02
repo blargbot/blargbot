@@ -346,15 +346,18 @@ export class ClusterUtilities extends BaseUtilities {
             return actorFilter(message.author) && await filter(message);
         }, timeout ?? 60000);
     }
+    public async queryUser(options: EntityFindQueryOptions): Promise<ChoiceResult<User>>
+    public async queryUser(options: EntityPickQueryOptions<User>): Promise<ChoiceResult<User>>
+    public async queryUser(options: EntityQueryOptions<User>): Promise<ChoiceResult<User>> {
+        const matches = 'guild' in options ? await this.findUsers(options.guild, options.filter) : [...options.choices];
 
-    public async queryUser(options: EntityPickQueryOptions<User>): Promise<ChoiceResult<User>> {
         return await this.queryChoice({
             ...options,
             prompt: options.prompt ?? (options.filter === undefined
                 ? 'ℹ️ Please select a user from the drop down'
                 : `ℹ️ Multiple users matching \`${options.filter}\` found! Please select one from the drop down.`),
             placeholder: options.placeholder ?? 'Select a user',
-            choices: [...options.choices].map(u => ({
+            choices: matches.map(u => ({
                 label: humanize.fullName(u),
                 emoji: { name: u.bot ? '🤖' : '👤' },
                 value: u,

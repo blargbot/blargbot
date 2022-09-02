@@ -73,7 +73,7 @@ ${codeBlock(code, 'js')}`
 
         if (isChange) {
             await this.#cluster.util.send(channelId, whitelisted
-                ? '✅ Congratz, your guild has been whitelisted for autoresponses! 🎉'
+                ? '✅ Congratz, your guild has been whitelisted for autoresponses! 🎉\n*It may take up to 15 minutes for them to become available*'
                 : '❌ Sorry, your guild has been rejected for autoresponses. 😿'
             );
         }
