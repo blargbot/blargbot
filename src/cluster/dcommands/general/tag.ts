@@ -79,8 +79,8 @@ export class TagCommand extends GuildCommand {
                     description: 'Renames the tag'
                 },
                 {
-                    parameters: 'raw {tagName?}',
-                    execute: (ctx, [tagName]) => this.getRawTag(ctx, tagName.asOptionalString),
+                    parameters: 'raw {tagName?} {fileExtension:literal(bbtag|txt)=bbtag}',
+                    execute: (ctx, [tagName, fileExtension]) => this.getRawTag(ctx, tagName.asOptionalString, fileExtension.asLiteral),
                     description: 'Uses the BBTag engine to execute the content as it was a tag'
                 },
                 {
@@ -302,19 +302,19 @@ export class TagCommand extends GuildCommand {
         return this.success(`The \`${from.name}\` tag has been renamed to \`${to.name}\`.`);
     }
 
-    public async getRawTag(context: GuildCommandContext, tagName: string | undefined): Promise<string | { content: string; files: FileContent[]; } | undefined> {
+    public async getRawTag(context: GuildCommandContext, tagName: string | undefined, fileExtension: string): Promise<string | { content: string; files: FileContent[]; } | undefined> {
         const match = await this.requestReadableTag(context, tagName);
         if (typeof match !== 'object')
             return match;
 
         const response = this.info(`The raw code for \`${match.name}\` is:\n\`\`\`${match.lang ?? ''}\n${match.content}\n\`\`\``);
-        return guard.checkMessageSize(response)
+        return !match.content.includes('`') && guard.checkMessageSize(response)
             ? response
             : {
                 content: this.info(`The raw code for \`${match.name}\` is attached`),
                 files: [
                     {
-                        name: match.name + '.bbtag',
+                        name: `${match.name}.${fileExtension}`,
                         file: match.content
                     }
                 ]

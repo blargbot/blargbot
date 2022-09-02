@@ -17,9 +17,9 @@ export class FarewellCommand extends GuildCommand {
                     execute: (ctx, [bbtag]) => this.setFarewell(ctx, bbtag.asString)
                 },
                 {
-                    parameters: 'raw',
+                    parameters: 'raw {fileExtension:literal(bbtag|txt)=bbtag}',
                     description: 'Gets the current message that will be sent when someone leaves the server',
-                    execute: (ctx) => this.getFarewell(ctx)
+                    execute: (ctx, [fileExtension]) => this.getFarewell(ctx, fileExtension.asLiteral)
                 },
                 {
                     parameters: 'setauthorizer',
@@ -70,7 +70,7 @@ export class FarewellCommand extends GuildCommand {
         return this.success('The farewell message has been set');
     }
 
-    public async getFarewell(context: GuildCommandContext): Promise<string | SendContent> {
+    public async getFarewell(context: GuildCommandContext, fileExtension: string): Promise<string | SendContent> {
         const farewell = await context.database.guilds.getFarewell(context.channel.guild.id);
         if (farewell === undefined)
             return this.error('No farewell message has been set yet!');
@@ -82,13 +82,13 @@ export class FarewellCommand extends GuildCommand {
             : `The raw code for the farewell message (sent in ${channel.mention}) is`;
         const response = this.info(`${message}:\n${codeBlock(farewell.content)}`);
 
-        return guard.checkMessageSize(response)
+        return !farewell.content.includes('`') && guard.checkMessageSize(response)
             ? response
             : {
                 content: this.info(`${message} attached`),
                 files: [
                     {
-                        name: 'farewell.bbtag',
+                        name: `farewell.${fileExtension}`,
                         file: farewell.content
                     }
                 ]

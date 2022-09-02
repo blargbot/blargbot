@@ -82,8 +82,8 @@ export class CustomCommandCommand extends GuildCommand {
                     description: 'Renames the custom command'
                 },
                 {
-                    parameters: 'raw {commandName?}',
-                    execute: (ctx, [commandName]) => this.getRawCommand(ctx, commandName.asOptionalString),
+                    parameters: 'raw {commandName?} {fileExtension:literal(bbtag|txt)=bbtag}',
+                    execute: (ctx, [commandName, fileExtension]) => this.getRawCommand(ctx, commandName.asOptionalString, fileExtension.asLiteral),
                     description: 'Gets the raw content of the custom command'
                 },
                 {
@@ -274,7 +274,7 @@ export class CustomCommandCommand extends GuildCommand {
         return this.success(`The \`${from.name}\` custom command has been renamed to \`${to.name}\`.`);
     }
 
-    public async getRawCommand(context: GuildCommandContext, commandName: string | undefined): Promise<string | { content: string; files: FileContent[]; } | undefined> {
+    public async getRawCommand(context: GuildCommandContext, commandName: string | undefined, fileExtension: string): Promise<string | { content: string; files: FileContent[]; } | undefined> {
         const match = await this.requestReadableCommand(context, commandName);
         if (typeof match !== 'object')
             return match;
@@ -283,13 +283,13 @@ export class CustomCommandCommand extends GuildCommand {
             return this.error(`The command \`${match.name}\` is an alias to the tag \`${match.alias}\``);
 
         const response = this.info(`The raw code for \`${match.name}\` is:\n${codeBlock(match.content)}`);
-        return guard.checkMessageSize(response)
+        return !match.content.includes('`') && guard.checkMessageSize(response)
             ? response
             : {
                 content: this.info(`The raw code for \`${match.name}\` is attached`),
                 files: [
                     {
-                        name: match.name + '.bbtag',
+                        name: `${match.name}.${fileExtension}`,
                         file: match.content
                     }
                 ]

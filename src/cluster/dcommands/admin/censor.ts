@@ -69,9 +69,9 @@ export class CensorCommand extends GuildCommand {
                     execute: (ctx, [id, type]) => this.setAuthorizer(ctx, id.asOptionalInteger, type.asLiteral)
                 },
                 {
-                    parameters: 'rawmessage {id:integer?} {type:literal(delete|timeout|kick|ban)}',
+                    parameters: 'rawmessage {id:integer?} {type:literal(delete|timeout|kick|ban)} {fileExtension:literal(bbtag|txt)=bbtag}',
                     description: 'Gets the raw code for the given censor',
-                    execute: (ctx, [id, type]) => this.getRawMessage(ctx, id.asOptionalInteger, type.asLiteral)
+                    execute: (ctx, [id, type, fileExtension]) => this.getRawMessage(ctx, id.asOptionalInteger, type.asLiteral, fileExtension.asLiteral)
                 },
                 {
                     parameters: 'debug {id:integer} {type:literal(delete|timeout|kick|ban)}',
@@ -233,7 +233,7 @@ export class CensorCommand extends GuildCommand {
         );
     }
 
-    public async getRawMessage(context: GuildCommandContext, id: number | undefined, type: string): Promise<string | SendContent> {
+    public async getRawMessage(context: GuildCommandContext, id: number | undefined, type: string, fileExtension: string): Promise<string | SendContent> {
         if (!allowedTypes.has(type))
             return this.error(`\`${type}\` is not a valid type`);
 
@@ -251,13 +251,13 @@ export class CensorCommand extends GuildCommand {
 
         const response = this.info(`${message}:\n${codeBlock(rule.content)}`);
 
-        return guard.checkMessageSize(response)
+        return !rule.content.includes('`') && guard.checkMessageSize(response)
             ? response
             : {
                 content: this.info(`${message} attached`),
                 files: [
                     {
-                        name: `censor-${type}-${id ?? 'default'}.bbtag`,
+                        name: `censor-${type}-${id ?? 'default'}.${fileExtension}`,
                         file: rule.content
                     }
                 ]
