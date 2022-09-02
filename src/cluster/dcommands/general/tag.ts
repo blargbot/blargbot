@@ -81,7 +81,7 @@ export class TagCommand extends GuildCommand {
                 {
                     parameters: 'raw {tagName?} {fileExtension:literal(bbtag|txt)=bbtag}',
                     execute: (ctx, [tagName, fileExtension]) => this.getRawTag(ctx, tagName.asOptionalString, fileExtension.asLiteral),
-                    description: 'Uses the BBTag engine to execute the content as it was a tag'
+                    description: 'Gets the raw contents of the tag'
                 },
                 {
                     parameters: 'list {author+?}',
