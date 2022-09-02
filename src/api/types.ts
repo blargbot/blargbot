@@ -42,7 +42,7 @@ export interface AsyncWebsocketContext {
 type ExplicitlyExtends<T, U, True, False> = [T] extends [U] ? [unknown] extends [T] ? False : True : False;
 
 export type RequestMethods = keyof { [P in keyof IRoute as ExplicitlyExtends<IRoute[P], IRouterHandler<unknown>, P, never>]: 0 }
-export type AsyncRequestMiddleware<This, Route extends string> = (this: This, ctx: AsyncRequestContext<Route>, next: () => Awaitable<ApiResponse>) => Awaitable<ApiResponse>;
+export type AsyncRequestMiddleware<This, Route extends string> = (this: This, req: Request<RouteParameters<Route>>, res: Response, next: () => Awaitable<ApiResponse>) => Awaitable<ApiResponse>;
 export type AsyncRequestHandler<This, Route extends string> = (this: This, ctx: AsyncRequestContext<Route>) => Awaitable<ApiResponse>;
 export type AsyncWebsocketHandler<This> = (this: This, context: AsyncWebsocketContext) => Awaitable<void>
 export type RequestHandlers<This, Route extends string> =

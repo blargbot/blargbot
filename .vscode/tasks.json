@@ -2,20 +2,20 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
-			"label": "Run build server on project open",
-			"type": "shell",
-			"command": "yarn run watch",
-			"presentation": {
-				"echo": false,
-				"reveal": "always",
-				"focus": false,
-				"panel": "new",
-				"showReuseMessage": false,
-				"clear": false
+			"type": "npm",
+			"script": "watch",
+			"isBackground": true,
+			"group": {
+				"kind": "build",
+				"isDefault": true
 			},
-			"runOptions": {
-				"runOn": "folderOpen"
-			}
+			"presentation": {
+				"panel": "dedicated",
+				"reveal": "never"
+			},
+			"problemMatcher": [
+				"$tsc-watch"
+			]
 		}
 	]
 }

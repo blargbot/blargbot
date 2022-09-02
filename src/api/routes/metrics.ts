@@ -5,16 +5,20 @@ import { BaseRoute } from '../BaseRoute';
 import { ApiResponse } from '../types';
 
 export class MetricsRoute extends BaseRoute {
-    public constructor() {
+    readonly #api: Api;
+
+    public constructor(api: Api) {
         super('/metrics');
 
+        this.#api = api;
+
         this.addRoute('/', {
-            get: ({ api }) => this.getMetrics(api)
+            get: () => this.getMetrics()
         });
     }
 
-    public async getMetrics(api: Api): Promise<ApiResponse> {
-        const retrievedMetrics = await api.worker.request('getMetrics', undefined);
+    public async getMetrics(): Promise<ApiResponse> {
+        const retrievedMetrics = await this.#api.worker.request('getMetrics', undefined);
         metrics.registryCache = Object.values(retrievedMetrics);
         const register = await metrics.getAggregated();
 

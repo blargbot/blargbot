@@ -6,21 +6,25 @@ import { ChatLog, ChatLogChannel, ChatLogIndex, ChatLogRole, ChatLogUser } from 
 import { APIEmbed } from 'discord-api-types/v9';
 
 export class ChatLogsRoute extends BaseRoute {
-    public constructor() {
+    readonly #api: Api;
+
+    public constructor(api: Api) {
         super('/chatlogs');
 
+        this.#api = api;
+
         this.addRoute('/:id', {
-            get: ({ request, api }) => this.getLogs(api, request.params.id)
+            get: ({ request }) => this.getLogs(request.params.id)
         });
     }
 
-    public async getLogs(api: Api, id: string): Promise<ApiResponse> {
-        const logIndex = await api.database.chatlogIndex.get(id);
+    public async getLogs(id: string): Promise<ApiResponse> {
+        const logIndex = await this.#api.database.chatlogIndex.get(id);
         if (logIndex === undefined) {
             return this.notFound();
         }
 
-        const messages = await api.database.chatlogs.getAll(logIndex.channel, logIndex.ids);
+        const messages = await this.#api.database.chatlogs.getAll(logIndex.channel, logIndex.ids);
         const result: ExpandedChatLogIndex = {
             ...logIndex,
             messages,
@@ -30,45 +34,45 @@ export class ChatLogsRoute extends BaseRoute {
         };
 
         for (const message of result.messages)
-            await this.#parseTags(api, message, result);
+            await this.#parseTags(message, result);
 
         return this.ok(result);
     }
 
-    async #parseTagsInString(api: Api, content: string, guildId: string, index: ExpandedChatLogIndex): Promise<void> {
+    async #parseTagsInString(content: string, guildId: string, index: ExpandedChatLogIndex): Promise<void> {
         const tagRegex = /<[^<>\s]+>/g;
         let match;
         while ((match = tagRegex.exec(content)) !== null) {
             let id: string | undefined;
             if ((id = parse.entityId(match[0], '@&')) !== undefined)
-                index.parsedRoles[id] ??= await this.#getChatLogRole(api, guildId, id);
+                index.parsedRoles[id] ??= await this.#getChatLogRole(guildId, id);
             else if ((id = parse.entityId(match[0], '@!')) !== undefined)
-                index.parsedUsers[id] ??= await this.#getChatLogUser(api, id);
+                index.parsedUsers[id] ??= await this.#getChatLogUser(id);
             else if ((id = parse.entityId(match[0], '@')) !== undefined)
-                index.parsedUsers[id] ??= await this.#getChatLogUser(api, id);
+                index.parsedUsers[id] ??= await this.#getChatLogUser(id);
             else if ((id = parse.entityId(match[0], '#')) !== undefined)
-                index.parsedChannels[id] ??= await this.#getChatLogChannel(api, id);
+                index.parsedChannels[id] ??= await this.#getChatLogChannel(id);
         }
     }
 
-    async #parseTags(api: Api, message: ChatLog, index: ExpandedChatLogIndex): Promise<void> {
-        index.parsedUsers[message.userid] ??= await this.#getChatLogUser(api, message.userid);
-        index.parsedChannels[message.channelid] ??= await this.#getChatLogChannel(api, message.channelid);
-        await this.#parseTagsInString(api, message.content, message.guildid, index);
+    async #parseTags(message: ChatLog, index: ExpandedChatLogIndex): Promise<void> {
+        index.parsedUsers[message.userid] ??= await this.#getChatLogUser(message.userid);
+        index.parsedChannels[message.channelid] ??= await this.#getChatLogChannel(message.channelid);
+        await this.#parseTagsInString(message.content, message.guildid, index);
         for (const embed of message.embeds as APIEmbed[]) {
             if (embed.title !== undefined)
-                await this.#parseTagsInString(api, embed.title, message.guildid, index);
+                await this.#parseTagsInString(embed.title, message.guildid, index);
             if (embed.description !== undefined)
-                await this.#parseTagsInString(api, embed.description, message.guildid, index);
+                await this.#parseTagsInString(embed.description, message.guildid, index);
             for (const field of embed.fields ?? []) {
-                await this.#parseTagsInString(api, field.name, message.guildid, index);
-                await this.#parseTagsInString(api, field.value, message.guildid, index);
+                await this.#parseTagsInString(field.name, message.guildid, index);
+                await this.#parseTagsInString(field.value, message.guildid, index);
             }
         }
     }
 
-    async #getChatLogRole(api: Api, guildId: string, id: string): Promise<ChatLogRole> {
-        const role = await api.util.getRole(guildId, id);
+    async #getChatLogRole(guildId: string, id: string): Promise<ChatLogRole> {
+        const role = await this.#api.util.getRole(guildId, id);
         return {
             id: id,
             color: role?.color,
@@ -76,8 +80,8 @@ export class ChatLogsRoute extends BaseRoute {
         };
     }
 
-    async #getChatLogChannel(api: Api, id: string): Promise<ChatLogChannel> {
-        const channel = await api.util.getChannel(id);
+    async #getChatLogChannel(id: string): Promise<ChatLogChannel> {
+        const channel = await this.#api.util.getChannel(id);
         return {
             id,
             name: channel === undefined ? undefined : 'name' in channel ? channel.name : undefined,
@@ -85,8 +89,8 @@ export class ChatLogsRoute extends BaseRoute {
         };
     }
 
-    async #getChatLogUser(api: Api, userId: string): Promise<ChatLogUser> {
-        const dbUser = await api.database.users.get(userId);
+    async #getChatLogUser(userId: string): Promise<ChatLogUser> {
+        const dbUser = await this.#api.database.users.get(userId);
         if (dbUser !== undefined) {
             return {
                 id: userId,
@@ -96,7 +100,7 @@ export class ChatLogsRoute extends BaseRoute {
             };
         }
 
-        const apiUser = await api.util.getUser(userId);
+        const apiUser = await this.#api.util.getUser(userId);
         return {
             id: userId,
             avatarURL: apiUser?.avatarURL,

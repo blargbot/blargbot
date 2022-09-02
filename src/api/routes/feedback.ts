@@ -3,15 +3,19 @@ import { BaseRoute } from '../BaseRoute';
 import { ApiResponse } from '../types';
 
 export class FeedbackRoute extends BaseRoute {
-    public constructor() {
+    readonly #api: Api;
+
+    public constructor(api: Api) {
         super('/feedback');
 
+        this.#api = api;
+
         this.addRoute('/:id/url', {
-            get: ({ request, api }) => this.getFeedbackUrl(api, request.params.id)
+            get: ({ request }) => this.getFeedbackUrl(request.params.id)
         });
     }
 
-    public getFeedbackUrl(api: Api, id: string): ApiResponse {
-        return this.ok(`https://airtable.com/${api.config.airtable.public}/${api.config.airtable.suggestions}/${id}`);
+    public getFeedbackUrl(id: string): ApiResponse {
+        return this.ok(`https://airtable.com/${this.#api.config.airtable.public}/${this.#api.config.airtable.suggestions}/${id}`);
     }
 }

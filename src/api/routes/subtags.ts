@@ -4,25 +4,29 @@ import { ApiResponse } from '@blargbot/api/types';
 import { tagTypeDetails } from '@blargbot/bbtag/utils';
 
 export class SubtagsRoute extends BaseRoute {
-    public constructor() {
+    readonly #api: Api;
+
+    public constructor(api: Api) {
         super('/subtags');
 
+        this.#api = api;
+
         this.addRoute('/', {
-            get: ({ api }) => this.listSubtags(api)
+            get: () => this.listSubtags()
         }).addRoute('/:subtagName', {
-            get: ({ request, api }) => this.getSubtag(api, request.params.subtagName)
+            get: ({ request }) => this.getSubtag(request.params.subtagName)
         }).addRoute('/meta/categories', {
             get: () => this.getCategories()
         });
     }
 
-    public async listSubtags(api: Api): Promise<ApiResponse> {
-        const subtags = await api.worker.request('getSubtagList', undefined);
+    public async listSubtags(): Promise<ApiResponse> {
+        const subtags = await this.#api.worker.request('getSubtagList', undefined);
         return this.ok(subtags);
     }
 
-    public async getSubtag(api: Api, name: string): Promise<ApiResponse> {
-        const subtag = await api.worker.request('getSubtag', name);
+    public async getSubtag(name: string): Promise<ApiResponse> {
+        const subtag = await this.#api.worker.request('getSubtag', name);
         if (subtag === undefined)
             return this.notFound();
         return this.ok(subtag);

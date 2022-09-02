@@ -6,63 +6,67 @@ import { GuildTriggerTag } from '@blargbot/domain/models';
 import { mapping } from '@blargbot/mapping';
 
 export class AutoresponsesRoute extends BaseRoute {
-    public constructor() {
+    readonly #api: Api;
+
+    public constructor(api: Api) {
         super('/guilds');
 
-        this.middleware.push(async (ctx, next) => await this.#checkAccess(ctx.api, ctx.request.params.guildId, this.getUserId(ctx.request, true)) ?? await next());
+        this.#api = api;
+
+        this.middleware.push(async (req, _, next) => await this.#checkAccess(req.params.guildId, this.getUserId(req, true)) ?? await next());
 
         this.addRoute('/:guildId/autoresponses', {
-            get: ({ request, api }) => this.listAutoresponses(api, request.params.guildId)
+            get: ({ request }) => this.listAutoresponses(request.params.guildId)
         });
 
         this.addRoute('/:guildId/autoresponses/:id', {
-            get: ({ request, api }) => this.getAutoresponse(api, request.params.guildId, request.params.id),
-            patch: ({ request, api }) => this.editAutoresponse(api, request.params.guildId, request.params.id, request.body, this.getUserId(request))
+            get: ({ request }) => this.getAutoresponse(request.params.guildId, request.params.id),
+            patch: ({ request }) => this.editAutoresponse(request.params.guildId, request.params.id, request.body, this.getUserId(request))
         });
     }
 
-    public async listAutoresponses(api: Api, guildId: string): Promise<ApiResponse> {
-        const autoresponses = await api.database.guilds.getAutoresponses(guildId);
+    public async listAutoresponses(guildId: string): Promise<ApiResponse> {
+        const autoresponses = await this.#api.database.guilds.getAutoresponses(guildId);
         if (autoresponses === undefined)
             return this.notFound();
 
         return this.ok(autoresponses);
     }
 
-    public async getAutoresponse(api: Api, guildId: string, id: string): Promise<ApiResponse> {
+    public async getAutoresponse(guildId: string, id: string): Promise<ApiResponse> {
         const key = id === 'everything' ? id : parse.int(id, { strict: true });
         if (key === undefined)
             return this.badRequest();
 
-        const autoresponse = await api.database.guilds.getAutoresponse(guildId, key);
+        const autoresponse = await this.#api.database.guilds.getAutoresponse(guildId, key);
         if (autoresponse === undefined)
             return this.notFound();
 
         return this.ok<GuildTriggerTag>(autoresponse);
     }
 
-    public async editAutoresponse(api: Api, guildId: string, id: string, body: unknown, userId: string): Promise<ApiResponse> {
+    public async editAutoresponse(guildId: string, id: string, body: unknown, userId: string): Promise<ApiResponse> {
         const mapped = mapUpdate(body);
         const key = id === 'everything' ? id : parse.int(id, { strict: true });
         if (key === undefined || !mapped.valid)
             return this.badRequest();
 
-        const autoresponse = await api.database.guilds.getAutoresponse(guildId, key);
+        const autoresponse = await this.#api.database.guilds.getAutoresponse(guildId, key);
         if (autoresponse === undefined)
             return this.notFound();
 
         const result = { ...autoresponse, content: mapped.value.content, author: userId };
-        if (!await api.database.guilds.setAutoresponse(guildId, key, result))
+        if (!await this.#api.database.guilds.setAutoresponse(guildId, key, result))
             return this.internalServerError('Failed to update autoresponse');
 
         return this.ok(result);
     }
 
-    async #checkAccess(api: Api, guildId: string, userId: string | undefined): Promise<ApiResponse | undefined> {
+    async #checkAccess(guildId: string, userId: string | undefined): Promise<ApiResponse | undefined> {
         if (userId === undefined)
             return this.unauthorized();
 
-        const perms = await api.worker.request('getGuildPermission', { userId, guildId });
+        const perms = await this.#api.worker.request('getGuildPermission', { userId, guildId });
         if (perms === undefined)
             return this.notFound();
 
