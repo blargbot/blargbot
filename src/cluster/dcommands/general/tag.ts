@@ -663,8 +663,15 @@ export class TagCommand extends GuildCommand {
             return match;
 
         if (match.tag !== undefined
-            && !context.util.isBotStaff(context.author.id)
-            && match.tag.author !== context.author.id) {
+            && match.tag.author !== context.author.id
+            && !(context.util.isBotStaff(context.author.id) && await context.util.queryConfirm({
+                actors: [context.author],
+                context: context.channel,
+                prompt: { content: `You are not the owner of the \`${match.name}\`, are you sure you want to modify it?` },
+                confirm: 'Yes',
+                cancel: 'No',
+                fallback: false
+            }))) {
             return this.error(`You don't own the \`${match.name}\` tag!`);
         }
 
