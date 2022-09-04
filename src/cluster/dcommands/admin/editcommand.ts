@@ -56,7 +56,7 @@ export class EditCommandCommand extends GuildCommand {
         const commandNames = new Set<string>();
         const defaultPerms = new Map<unknown, string>();
         const commands: ICommand[] = [];
-        for await (const result of context.cluster.commands.list()) {
+        for await (const result of context.cluster.commands.list(context.channel.guild)) {
             if (result.state === 'ALLOWED') {
                 defaultPerms.set(result.detail.command.implementation, result.detail.command.permission);
                 commands.push(result.detail.command);
