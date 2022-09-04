@@ -36,8 +36,9 @@ export class DefaultCommandManager extends CommandManager<Command> {
         if (!await command.isVisible(this.cluster.util, location, user))
             return { state: 'DISABLED', detail: { command: new NormalizedCommand(command, { disabled: true }), reason: undefined } };
 
+        const defaultPermission = commandTypeDetails[command.category].defaultPerms.toString();
         if (location === undefined)
-            return { state: 'FOUND', detail: new NormalizedCommand(command, {}) };
+            return { state: 'FOUND', detail: new NormalizedCommand(command, { permission: defaultPermission }) };
 
         const guild = location instanceof Guild ? location
             : guard.isGuildChannel(location) ? location.guild
@@ -46,6 +47,8 @@ export class DefaultCommandManager extends CommandManager<Command> {
         const permissions = guild === undefined ? {} : { ...await this.cluster.database.guilds.getCommandPerms(guild.id, command.name) };
         if (command.cannotDisable)
             permissions.disabled = false;
+        if (permissions.permission === undefined && (permissions.roles?.length ?? 0) === 0)
+            permissions.permission = defaultPermission;
 
         return { state: 'FOUND', detail: new NormalizedCommand(command, permissions) };
     }
@@ -97,7 +100,7 @@ class NormalizedCommand implements ICommand<Command> {
         this.description = implementation.description ?? undefined;
         this.signatures = implementation.signatures;
         this.disabled = permissions.disabled === true;
-        this.permission = permissions.permission ?? commandTypeDetails[implementation.category].defaultPerms.toString();
+        this.permission = permissions.permission ?? '0';
         this.roles = permissions.roles ?? [];
         this.hidden = permissions.hidden ?? false;
         this.category = commandTypeDetails[implementation.category].name;
