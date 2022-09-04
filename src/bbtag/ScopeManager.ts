@@ -1,20 +1,20 @@
 import { BBTagRuntimeScope } from './types';
 
 export class ScopeManager {
-    private readonly scopes: BBTagRuntimeScope[];
-    private readonly tags: number[];
+    readonly #scopes: BBTagRuntimeScope[];
+    readonly #tags: number[];
 
-    public get local(): BBTagRuntimeScope { return this.scopes[this.scopes.length - 1]; }
-    public get tag(): BBTagRuntimeScope { return this.scopes[this.tags[this.tags.length - 1]]; }
+    public get local(): BBTagRuntimeScope { return this.#scopes[this.#scopes.length - 1]; }
+    public get tag(): BBTagRuntimeScope { return this.#scopes[this.#tags[this.#tags.length - 1]]; }
     public readonly root: BBTagRuntimeScope;
 
     public constructor() {
-        this.scopes = [this.root = {
+        this.#scopes = [this.root = {
             functions: {},
             inLock: false,
             isTag: false
         }];
-        this.tags = [0];
+        this.#tags = [0];
     }
 
     public withScope<T>(action: (scope: BBTagRuntimeScope) => T, isTag = false): T {
@@ -29,18 +29,18 @@ export class ScopeManager {
 
     #pushScope(isTag = false): BBTagRuntimeScope {
         if (isTag)
-            this.tags.push(this.scopes.length);
-        this.scopes.push({ ...this.local, isTag });
+            this.#tags.push(this.#scopes.length);
+        this.#scopes.push({ ...this.local, isTag });
         return this.local;
     }
 
     #popScope(): BBTagRuntimeScope {
-        if (this.scopes.length === 1)
+        if (this.#scopes.length === 1)
             throw new Error('Cannot pop the root scope');
         const popped = this.local;
-        this.scopes.pop();
+        this.#scopes.pop();
         if (popped.isTag)
-            this.tags.pop();
+            this.#tags.pop();
         return popped;
     }
 }

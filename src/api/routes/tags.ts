@@ -5,8 +5,12 @@ import { StoredTag } from '@blargbot/domain/models';
 import { mapping } from '@blargbot/mapping';
 
 export class TagsRoute extends BaseRoute {
-    public constructor(private readonly api: Api) {
+    readonly #api: Api;
+
+    public constructor(api: Api) {
         super('/tags');
+
+        this.#api = api;
 
         this.addRoute('/', {
             post: ({ request }) => this.createTag(request.body, this.getUserId(request))
@@ -21,7 +25,7 @@ export class TagsRoute extends BaseRoute {
     }
 
     public async getTag(tagName: string): Promise<ApiResponse> {
-        const tag = await this.api.database.tags.get(tagName);
+        const tag = await this.#api.database.tags.get(tagName);
         if (tag === undefined)
             return this.notFound();
 
@@ -37,7 +41,7 @@ export class TagsRoute extends BaseRoute {
         if (!mapped.valid)
             return this.badRequest();
 
-        const current = await this.api.database.tags.get(tagName);
+        const current = await this.#api.database.tags.get(tagName);
         if (current === undefined)
             return await this.#createTag(tagName, mapped.value.content ?? '', author);
         return await this.#editTag(tagName, mapped.value, author, current);
@@ -50,7 +54,7 @@ export class TagsRoute extends BaseRoute {
 
         const { name: tagName, content } = mapped.value;
 
-        const exists = await this.api.database.tags.get(tagName);
+        const exists = await this.#api.database.tags.get(tagName);
         if (exists !== undefined)
             return this.forbidden(`A tag with the name ${tagName} already exists`);
 
@@ -65,7 +69,7 @@ export class TagsRoute extends BaseRoute {
             name: tagName,
             uses: 0
         };
-        const success = await this.api.database.tags.set(tag);
+        const success = await this.#api.database.tags.set(tag);
 
         if (!success)
             return this.internalServerError('Failed to save tag');
@@ -78,7 +82,7 @@ export class TagsRoute extends BaseRoute {
         if (!mapped.valid)
             return this.badRequest();
 
-        const current = await this.api.database.tags.get(tagName);
+        const current = await this.#api.database.tags.get(tagName);
         if (current === undefined)
             return this.notFound();
 
@@ -90,21 +94,21 @@ export class TagsRoute extends BaseRoute {
             return this.forbidden(`You are not the author of the tag ${tagName}`);
 
         const tag: Partial<StoredTag> = { ...update, author: author };
-        if (tag.name !== undefined && tag.name !== tagName && await this.api.database.tags.get(tag.name) !== undefined)
+        if (tag.name !== undefined && tag.name !== tagName && await this.#api.database.tags.get(tag.name) !== undefined)
             return this.badRequest(`The tag ${tag.name} already exists`);
 
         let success = false;
         if (update.name !== undefined && update.name !== tagName) {
-            await this.api.database.tags.delete(tagName);
+            await this.#api.database.tags.delete(tagName);
             tagName = update.name;
-            await this.api.database.tags.add({ ...current, name: tagName });
+            await this.#api.database.tags.add({ ...current, name: tagName });
             success = true;
         }
 
-        if (!await this.api.database.tags.update(tagName, tag) || success)
+        if (!await this.#api.database.tags.update(tagName, tag) || success)
             return this.internalServerError('Failed to update');
 
-        const newTag = await this.api.database.tags.get(tag.name ?? tagName);
+        const newTag = await this.#api.database.tags.get(tag.name ?? tagName);
         if (newTag === undefined)
             return this.notFound();
 
@@ -112,14 +116,14 @@ export class TagsRoute extends BaseRoute {
     }
 
     public async deleteTag(name: string, author: string): Promise<ApiResponse> {
-        const tag = await this.api.database.tags.get(name);
+        const tag = await this.#api.database.tags.get(name);
         if (tag === undefined)
             return this.notFound();
 
-        if (tag.author !== author && !await this.api.util.isBotStaff(author))
+        if (tag.author !== author && !await this.#api.util.isBotStaff(author))
             return this.forbidden('You are not the author of this tag');
 
-        if (!await this.api.database.tags.delete(name))
+        if (!await this.#api.database.tags.delete(name))
             return this.internalServerError('Failed to delete');
 
         return this.noContent();

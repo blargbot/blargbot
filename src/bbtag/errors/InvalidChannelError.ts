@@ -4,10 +4,10 @@ import { BBTagRuntimeError } from './BBTagRuntimeError';
 
 export class InvalidChannelError extends BBTagRuntimeError {
     public constructor(public readonly channelType: ChannelType, channelId: string) {
-        super(InvalidChannelError.getMessage(channelType), `The channel ${channelId} is not a valid type`);
+        super(InvalidChannelError.#getMessage(channelType), `The channel ${channelId} is not a valid type`);
     }
 
-    private static getMessage(channelType: ChannelType): string {
+    static #getMessage(channelType: ChannelType): string {
         switch (channelType) {
             case ChannelType.GuildVoice:
                 return 'Channel cannot be a voice channel';

@@ -5,10 +5,14 @@ import { parse } from '@blargbot/core/utils';
 import { mapping } from '@blargbot/mapping';
 
 export class RolemesRoute extends BaseRoute {
-    public constructor(private readonly api: Api) {
+    readonly #api: Api;
+
+    public constructor(api: Api) {
         super('/guilds');
 
-        this.middleware.push(async (req, _, next) => await this.checkAccess(req.params.guildId, this.getUserId(req, true)) ?? await next());
+        this.#api = api;
+
+        this.middleware.push(async (req, _, next) => await this.#checkAccess(req.params.guildId, this.getUserId(req, true)) ?? await next());
 
         this.addRoute('/:guildId/rolemes', {
             get: ({ request }) => this.listRolemes(request.params.guildId)
@@ -26,7 +30,7 @@ export class RolemesRoute extends BaseRoute {
         if (id === undefined)
             return this.badRequest();
 
-        const roleme = await this.api.database.guilds.getRoleme(guildId, id);
+        const roleme = await this.#api.database.guilds.getRoleme(guildId, id);
         if (roleme?.output === undefined)
             return this.notFound();
 
@@ -42,12 +46,12 @@ export class RolemesRoute extends BaseRoute {
         if (!mapped.valid)
             return this.badRequest();
 
-        const current = await this.api.database.guilds.getRoleme(guildId, id);
+        const current = await this.#api.database.guilds.getRoleme(guildId, id);
         if (current === undefined)
             return this.notFound();
 
         const result = { ...current, output: { ...current.output, ...mapped.value, author: userId } };
-        if (!await this.api.database.guilds.setRoleme(guildId, id, result))
+        if (!await this.#api.database.guilds.setRoleme(guildId, id, result))
             return this.internalServerError('Failed to save changes');
 
         return this.ok(result.output);
@@ -58,28 +62,28 @@ export class RolemesRoute extends BaseRoute {
         if (id === undefined)
             return this.badRequest();
 
-        const current = await this.api.database.guilds.getRoleme(guildId, id);
+        const current = await this.#api.database.guilds.getRoleme(guildId, id);
         if (current === undefined)
             return this.notFound();
 
         const result = { ...current, output: undefined };
-        await this.api.database.guilds.setRoleme(guildId, id, result);
+        await this.#api.database.guilds.setRoleme(guildId, id, result);
         return this.noContent();
     }
 
     public async listRolemes(guildId: string): Promise<ApiResponse> {
-        const rolemes = await this.api.database.guilds.getRolemes(guildId);
+        const rolemes = await this.#api.database.guilds.getRolemes(guildId);
         if (rolemes === undefined)
             return this.notFound();
 
         return this.ok(rolemes);
     }
 
-    private async checkAccess(guildId: string, userId: string | undefined): Promise<ApiResponse | undefined> {
+    async #checkAccess(guildId: string, userId: string | undefined): Promise<ApiResponse | undefined> {
         if (userId === undefined)
             return this.unauthorized();
 
-        const perms = await this.api.worker.request('getGuildPermission', { userId, guildId });
+        const perms = await this.#api.worker.request('getGuildPermission', { userId, guildId });
         if (perms === undefined)
             return this.notFound();
 

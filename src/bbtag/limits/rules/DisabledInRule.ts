@@ -6,13 +6,13 @@ import { SubtagCall } from '../../language';
 import { RuntimeLimitRule } from '../RuntimeLimitRule';
 
 export class DisabledInRule implements RuntimeLimitRule {
-    private readonly subtags: readonly string[];
+    readonly #subtags: readonly string[];
     public constructor(...subtagNames: readonly string[]) {
-        this.subtags = subtagNames;
+        this.#subtags = subtagNames;
     }
 
     public check(context: BBTagContext, subtagName: string): void {
-        const problem = this.subtags.map(s => ({ s, i: context.callStack.lastIndexOf(s) }))
+        const problem = this.#subtags.map(s => ({ s, i: context.callStack.lastIndexOf(s) }))
             .reduce((p, c) => p.i < c.i ? c : p, { s: '', i: -1 });
         if (problem.s.length > 0) {
             const { subtag } = context.callStack.get(problem.i) ?? { subtag: unknownSubtag };
@@ -23,7 +23,7 @@ export class DisabledInRule implements RuntimeLimitRule {
     }
 
     public displayText(): string {
-        return `Cannot be used in the arguments to ${humanize.smartJoin(this.subtags.map(s => `{${s}}`), ', ', ' or ')}`;
+        return `Cannot be used in the arguments to ${humanize.smartJoin(this.#subtags.map(s => `{${s}}`), ', ', ' or ')}`;
     }
 
     public state(): JToken {

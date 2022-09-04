@@ -109,7 +109,7 @@ export class EditCommandCommand extends GuildCommand {
         if (roles?.length === 0)
             roles = undefined;
 
-        const updatedCommands = await this.editCommands(context, commands, { roles: roles?.map(r => r.id) });
+        const updatedCommands = await this.#editCommands(context, commands, { roles: roles?.map(r => r.id) });
 
         if (roles === undefined)
             return this.success(`Removed the role requirement for the following commands:\n${codeBlock(updatedCommands, 'fix')}`);
@@ -117,7 +117,7 @@ export class EditCommandCommand extends GuildCommand {
     }
 
     public async setPermissions(context: GuildCommandContext, commands: readonly string[], permissions: bigint | undefined): Promise<string> {
-        const updatedCommands = await this.editCommands(context, commands, { permission: permissions?.toString() });
+        const updatedCommands = await this.#editCommands(context, commands, { permission: permissions?.toString() });
 
         if (permissions === undefined)
             return this.success(`Removed the permissions for the following commands:\n${codeBlock(updatedCommands, 'fix')}`);
@@ -125,7 +125,7 @@ export class EditCommandCommand extends GuildCommand {
     }
 
     public async setDisabled(context: GuildCommandContext, commands: readonly string[], disabled: boolean): Promise<string> {
-        const updatedCommands = await this.editCommands(context, commands, { disabled: disabled ? true : undefined });
+        const updatedCommands = await this.#editCommands(context, commands, { disabled: disabled ? true : undefined });
 
         if (!disabled)
             return this.success(`Enabled the following commands:\n${codeBlock(updatedCommands, 'fix')}`);
@@ -133,14 +133,14 @@ export class EditCommandCommand extends GuildCommand {
     }
 
     public async setHidden(context: GuildCommandContext, commands: readonly string[], hidden: boolean): Promise<string> {
-        const updatedCommands = await this.editCommands(context, commands, { hidden: hidden ? true : undefined });
+        const updatedCommands = await this.#editCommands(context, commands, { hidden: hidden ? true : undefined });
 
         if (!hidden)
             return this.success(`The following commands are no longer hidden:\n${codeBlock(updatedCommands, 'fix')}`);
         return this.success(`The following commands are now hidden:\n${codeBlock(updatedCommands, 'fix')}`);
     }
 
-    private async editCommands(context: GuildCommandContext, commands: readonly string[], update: Partial<CommandPermissions>): Promise<string> {
+    async #editCommands(context: GuildCommandContext, commands: readonly string[], update: Partial<CommandPermissions>): Promise<string> {
         const changed = await context.cluster.commands.configure(context.author, commands, context.channel.guild, update);
         return changed.join(', ');
     }

@@ -345,18 +345,18 @@ export class RethinkDbGuildStore implements GuildStore {
     }
 
     public async censorIgnoreUser(guildId: string, userId: string, ignored: boolean): Promise<boolean> {
-        return await this.censorIgnoreCore(guildId, 'user', userId, ignored);
+        return await this.#censorIgnoreCore(guildId, 'user', userId, ignored);
     }
 
     public async censorIgnoreChannel(guildId: string, channelId: string, ignored: boolean): Promise<boolean> {
-        return await this.censorIgnoreCore(guildId, 'channel', channelId, ignored);
+        return await this.#censorIgnoreCore(guildId, 'channel', channelId, ignored);
     }
 
     public async censorIgnoreRole(guildId: string, roleId: string, ignored: boolean): Promise<boolean> {
-        return await this.censorIgnoreCore(guildId, 'role', roleId, ignored);
+        return await this.#censorIgnoreCore(guildId, 'role', roleId, ignored);
     }
 
-    private async censorIgnoreCore(guildId: string, type: keyof GuildCensorExceptions, id: string, ignored: boolean): Promise<boolean> {
+    async #censorIgnoreCore(guildId: string, type: keyof GuildCensorExceptions, id: string, ignored: boolean): Promise<boolean> {
         const guild = await this.#table.get(guildId);
         if (guild === undefined)
             return false;

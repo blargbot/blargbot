@@ -7,16 +7,16 @@ import { ScopedCommand } from '../ScopedCommand';
 
 export class InvokeCommandHandlerMiddleware<TContext extends CommandContext> implements IMiddleware<TContext, CommandResult> {
     public readonly name: string;
-    private readonly handler: CommandHandler<TContext>;
+    readonly #handler: CommandHandler<TContext>;
 
-    public get debugView(): string { return this.handler.debugView; }
+    public get debugView(): string { return this.#handler.debugView; }
 
     public constructor(signatures: ReadonlyArray<CommandSignatureHandler<TContext>>, command: ScopedCommand<TContext>) {
-        this.handler = compileHandler(signatures, command);
+        this.#handler = compileHandler(signatures, command);
         this.name = command.name;
     }
 
     public async execute(context: TContext): Promise<CommandResult> {
-        return await this.handler.execute(context);
+        return await this.#handler.execute(context);
     }
 }

@@ -3,7 +3,9 @@ import { WorkerPoolEventService } from '@blargbot/core/serviceTypes';
 import { Master } from '@blargbot/master';
 
 export class RespawnApiHandler extends WorkerPoolEventService<ClusterConnection, 'respawnApi'> {
-    public constructor(private readonly master: Master) {
+    readonly #master: Master;
+
+    public constructor(master: Master) {
         super(
             master.clusters,
             'respawnApi',
@@ -12,10 +14,11 @@ export class RespawnApiHandler extends WorkerPoolEventService<ClusterConnection,
                 reply(true);
             }
         );
+        this.#master = master;
     }
 
     public async respawnApi(): Promise<void> {
-        await this.master.api.killAll();
-        await this.master.api.spawnAll();
+        await this.#master.api.killAll();
+        await this.#master.api.spawnAll();
     }
 }

@@ -32,10 +32,10 @@ export class PostgresDb {
     public async connect(): Promise<void> {
         await this.#sequelize.authenticate();
         this.logger.init('Connected to postgres. Loading models...');
-        await this.loadModels();
+        await this.#loadModels();
     }
 
-    private async loadModels(): Promise<void> {
+    async #loadModels(): Promise<void> {
         for (const model of Object.values(this.#sequelize.models))
             await model.sync();
         this.logger.init('Database models loaded.');

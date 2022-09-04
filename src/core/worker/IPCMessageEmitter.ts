@@ -15,17 +15,17 @@ export class IPCMessageEmitter {
             throw new Error('Already attached to a process!');
         if (value === undefined)
             return;
-        this.attach(value);
+        this.#attach(value);
     }
 
     public constructor(process?: NodeJS.Process | ChildProcess) {
         this.#events = new EventEmitter();
 
         if (process !== undefined)
-            this.attach(process);
+            this.#attach(process);
     }
 
-    private attach(process: NodeJS.Process | ChildProcess): void {
+    #attach(process: NodeJS.Process | ChildProcess): void {
         this.#process = process;
 
         process.on('message', ({ type, data, id }: ProcessMessage) =>

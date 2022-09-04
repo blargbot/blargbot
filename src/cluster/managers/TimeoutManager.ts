@@ -58,7 +58,7 @@ export class TimeoutManager {
         }
     }
 
-    private shouldHandle(event: StoredEventOptions): boolean {
+    #shouldHandle(event: StoredEventOptions): boolean {
         const source = parse.bigInt(event.source) ?? 0n;
         const shardId = Number(source >> 22n) % this.cluster.config.discord.shards.max;
         return this.cluster.discord.shards.has(shardId);
@@ -84,6 +84,6 @@ export class TimeoutManager {
     public async obtain(duration: Duration): Promise<void> {
         this.#lastDuration = duration;
         const events = await this.cluster.database.events.between(0, moment().add(duration));
-        this.#events = new Map(events.filter(e => this.shouldHandle(e)).map(e => [e.id, e]));
+        this.#events = new Map(events.filter(e => this.#shouldHandle(e)).map(e => [e.id, e]));
     }
 }

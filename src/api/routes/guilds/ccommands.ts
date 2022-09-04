@@ -5,10 +5,14 @@ import { GuildCommandTag, NamedGuildSourceCommandTag } from '@blargbot/domain/mo
 import { mapping } from '@blargbot/mapping';
 
 export class CCommandsRoute extends BaseRoute {
-    public constructor(private readonly api: Api) {
+    readonly #api: Api;
+
+    public constructor(api: Api) {
         super('/guilds');
 
-        this.middleware.push(async (req, _, next) => await this.checkAccess(req.params.guildId, this.getUserId(req, true)) ?? await next());
+        this.#api = api;
+
+        this.middleware.push(async (req, _, next) => await this.#checkAccess(req.params.guildId, this.getUserId(req, true)) ?? await next());
 
         this.addRoute('/:guildId/ccommands', {
             get: ({ request }) => this.listCCommands(request.params.guildId),
@@ -24,12 +28,12 @@ export class CCommandsRoute extends BaseRoute {
     }
 
     public async listCCommands(guildId: string): Promise<ApiResponse> {
-        const ccommands = await this.api.database.guilds.getCustomCommandNames(guildId);
+        const ccommands = await this.#api.database.guilds.getCustomCommandNames(guildId);
         return this.ok(ccommands);
     }
 
     public async getCommand(guildId: string, commandName: string): Promise<ApiResponse> {
-        const command = await this.api.database.guilds.getCommand(guildId, commandName);
+        const command = await this.#api.database.guilds.getCommand(guildId, commandName);
         if (command === undefined)
             return this.notFound();
 
@@ -41,7 +45,7 @@ export class CCommandsRoute extends BaseRoute {
         if (!mapped.valid)
             return this.badRequest();
 
-        const current = await this.api.database.guilds.getCommand(guildId, commandName);
+        const current = await this.#api.database.guilds.getCommand(guildId, commandName);
         if (current === undefined)
             return await this.#createCommand(guildId, commandName, mapped.value.content ?? '', author);
         return await this.#editCommand(guildId, commandName, mapped.value, author, current);
@@ -54,7 +58,7 @@ export class CCommandsRoute extends BaseRoute {
 
         const { name: commandName, content } = mapped.value;
 
-        const current = await this.api.database.guilds.getCommand(guildId, commandName);
+        const current = await this.#api.database.guilds.getCommand(guildId, commandName);
         if (current !== undefined)
             return this.forbidden(`A custom command with the name ${commandName} already exists`);
 
@@ -62,7 +66,7 @@ export class CCommandsRoute extends BaseRoute {
     }
 
     async #createCommand(guildId: string, commandName: string, content: string, author: string): Promise<ApiResponse> {
-        const success = await this.api.database.guilds.setCommand(guildId, commandName, { content, author });
+        const success = await this.#api.database.guilds.setCommand(guildId, commandName, { content, author });
         if (!success)
             return this.internalServerError('Failed to create custom command');
 
@@ -74,7 +78,7 @@ export class CCommandsRoute extends BaseRoute {
         if (!mapped.valid)
             return this.badRequest();
 
-        const current = await this.api.database.guilds.getCommand(guildId, commandName);
+        const current = await this.#api.database.guilds.getCommand(guildId, commandName);
         if (current === undefined)
             return this.forbidden(`There is no custom command with the name ${commandName}`);
 
@@ -88,7 +92,7 @@ export class CCommandsRoute extends BaseRoute {
         let success = false;
         const command = { ...update, author };
         if (command.name !== undefined && command.name !== commandName) {
-            if (!await this.api.database.guilds.renameCommand(guildId, commandName, command.name))
+            if (!await this.#api.database.guilds.renameCommand(guildId, commandName, command.name))
                 return this.badRequest(`A custom command with the name ${command.name} already exists`);
             commandName = command.name;
             success = true;
@@ -96,11 +100,11 @@ export class CCommandsRoute extends BaseRoute {
 
         delete command.name;
 
-        success = await this.api.database.guilds.updateCommand(guildId, commandName, command) || success;
+        success = await this.#api.database.guilds.updateCommand(guildId, commandName, command) || success;
         if (!success)
             return this.internalServerError('Failed to update custom command');
 
-        const newCommand = await this.api.database.guilds.getCommand(guildId, commandName);
+        const newCommand = await this.#api.database.guilds.getCommand(guildId, commandName);
         if (newCommand === undefined)
             return this.notFound();
 
@@ -108,18 +112,18 @@ export class CCommandsRoute extends BaseRoute {
     }
 
     public async deleteCommand(guildId: string, commandName: string): Promise<ApiResponse> {
-        const success = await this.api.database.guilds.setCommand(guildId, commandName, undefined);
+        const success = await this.#api.database.guilds.setCommand(guildId, commandName, undefined);
         if (!success)
             return this.notFound();
 
         return this.noContent();
     }
 
-    private async checkAccess(guildId: string, userId: string | undefined): Promise<ApiResponse | undefined> {
+    async #checkAccess(guildId: string, userId: string | undefined): Promise<ApiResponse | undefined> {
         if (userId === undefined)
             return this.unauthorized();
 
-        const perms = await this.api.worker.request('getGuildPermission', { userId, guildId });
+        const perms = await this.#api.worker.request('getGuildPermission', { userId, guildId });
         if (perms === undefined)
             return this.notFound();
 

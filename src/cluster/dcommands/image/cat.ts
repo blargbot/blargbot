@@ -5,7 +5,7 @@ import { EmbedOptions } from 'eris';
 import { Handler as Wolken } from 'wolken';
 
 export class CatCommand extends GlobalCommand {
-    private readonly client: Wolken;
+    readonly #client: Wolken;
 
     public constructor(cluster: Cluster) {
         super({
@@ -20,11 +20,11 @@ export class CatCommand extends GlobalCommand {
             ]
         });
 
-        this.client = new Wolken(cluster.config.general.wolke, 'Wolke', 'blargbot/6.0.0');
+        this.#client = new Wolken(cluster.config.general.wolke, 'Wolke', 'blargbot/6.0.0');
     }
 
     public async render(): Promise<EmbedOptions> {
-        const res = await this.client.getRandom({ type: 'animal_cat', allowNSFW: false });
+        const res = await this.#client.getRandom({ type: 'animal_cat', allowNSFW: false });
         return {
             image: { url: res.url },
             footer: { text: 'Powered by weeb.sh' },

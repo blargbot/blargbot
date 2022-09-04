@@ -5,17 +5,19 @@ import { GuildRolemeEntry } from '@blargbot/domain/models';
 import { KnownGuildTextableChannel, KnownMessage, Message } from 'eris';
 
 export class RolemeManager {
-    public constructor(
-        private readonly cluster: Cluster
-    ) {
+    readonly #cluster: Cluster;
 
+    public constructor(
+        cluster: Cluster
+    ) {
+        this.#cluster = cluster;
     }
 
     public async execute(message: KnownMessage): Promise<void> {
         if (!guard.isGuildMessage(message) || !guard.hasValue(message.member))
             return;
 
-        const rolemes = await this.cluster.database.guilds.getRolemes(message.channel.guild.id);
+        const rolemes = await this.#cluster.database.guilds.getRolemes(message.channel.guild.id);
         for (const roleme of Object.values(rolemes ?? {})) {
             if (roleme === undefined)
                 continue;
@@ -35,7 +37,7 @@ export class RolemeManager {
                 await this.invokeMessage(message, roleme);
 
             } catch (err: unknown) {
-                await this.cluster.util.send(message, 'A roleme was triggered, but I don\'t have the permissions required to give you your role!');
+                await this.#cluster.util.send(message, 'A roleme was triggered, but I don\'t have the permissions required to give you your role!');
             }
         }
     }
@@ -46,7 +48,7 @@ export class RolemeManager {
             author: ''
         };
 
-        return await this.cluster.bbtag.execute(tag.content, {
+        return await this.#cluster.bbtag.execute(tag.content, {
             message: trigger,
             rootTagName: 'roleme',
             limit: 'customCommandLimit',

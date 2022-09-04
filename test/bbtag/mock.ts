@@ -151,8 +151,9 @@ type TypeofMap = {
 }
 
 class StrictMocker extends Mocker {
+    readonly #strict: boolean;
     // eslint-disable-next-line @typescript-eslint/ban-types
-    public constructor(clazz?: (new (...args: never[]) => unknown) | (Function & { prototype: unknown; }), private readonly strict = false) {
+    public constructor(clazz?: (new (...args: never[]) => unknown) | (Function & { prototype: unknown; }), strict = false) {
         const ctx = {} as Record<PropertyKey, unknown>;
 
         if (typeof clazz === 'function' && typeof clazz.prototype === 'object')
@@ -163,10 +164,11 @@ class StrictMocker extends Mocker {
                 ctx[symbol] = undefined;
 
         super(clazz, ctx);
+        this.#strict = strict;
     }
 
     protected getEmptyMethodStub(key: string, args: unknown[]): MethodStub {
-        return this.strict
+        return this.#strict
             ? new MethodNotConfiguredStub(key)
             : super.getEmptyMethodStub(key, args);
     }
@@ -218,13 +220,16 @@ class MethodNotConfiguredError extends Error {
 }
 
 class SatisfiesMatcher<T> extends Matcher {
-    public constructor(private readonly test: (value: unknown) => value is T) {
+    readonly #test: (value: unknown) => value is T;
+
+    public constructor(test: (value: unknown) => value is T) {
         super();
+        this.#test = test;
     }
 
     public match(value: unknown): value is T {
         try {
-            return this.test(value);
+            return this.#test(value);
         } catch (err: unknown) {
             if (err instanceof MethodNotConfiguredError)
                 return false;
@@ -233,20 +238,26 @@ class SatisfiesMatcher<T> extends Matcher {
     }
 
     public toString(): string {
-        return `satisfies(${this.test.toString()})`;
+        return `satisfies(${this.#test.toString()})`;
     }
 }
 
 class DeepEqualMatcher<T> extends Matcher {
-    public constructor(private readonly expected: T, private readonly strict = false) {
+    readonly #expected: T;
+    readonly #strict: boolean;
+
+    public constructor(expected: T, strict = false) {
         super();
+
+        this.#expected = expected;
+        this.#strict = strict;
     }
 
     public match(value: unknown): value is T {
-        return this.deepEqual(value, this.expected);
+        return this.#deepEqual(value, this.#expected);
     }
 
-    private deepEqual(left: unknown, right: unknown): boolean {
+    #deepEqual(left: unknown, right: unknown): boolean {
         if (left === right)
             return true;
 
@@ -275,21 +286,21 @@ class DeepEqualMatcher<T> extends Matcher {
                 return false;
             if (left.length !== right.length)
                 return false;
-            return left.every((v, i) => this.deepEqual(v, right[i]));
+            return left.every((v, i) => this.#deepEqual(v, right[i]));
         }
         if (Array.isArray(right))
             return false;
 
         const leftLookup = new Map(Object.entries(left as Record<string, unknown>));
         for (const [key, rightVal] of Object.entries(right as Record<string, unknown>)) {
-            if (this.strict && !leftLookup.has(key))
+            if (this.#strict && !leftLookup.has(key))
                 return false;
             const leftVal = leftLookup.get(key);
             leftLookup.delete(key);
-            if (!this.deepEqual(leftVal, rightVal))
+            if (!this.#deepEqual(leftVal, rightVal))
                 return false;
         }
-        if (this.strict && leftLookup.size > 0)
+        if (this.#strict && leftLookup.size > 0)
             return false;
         for (const [, value] of leftLookup)
             if (value !== undefined)
@@ -298,12 +309,12 @@ class DeepEqualMatcher<T> extends Matcher {
     }
 
     public toString(): string {
-        if (this.expected instanceof Array) {
-            return `deepEqual([${this.expected.toString()}])`;
+        if (this.#expected instanceof Array) {
+            return `deepEqual([${this.#expected.toString()}])`;
         }
 
         // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-        return `deepEqual(${this.expected})`;
+        return `deepEqual(${this.#expected})`;
 
     }
 }

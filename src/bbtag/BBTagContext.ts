@@ -279,7 +279,7 @@ export class BBTagContext implements BBTagContextOptions {
     public async queryMember(query: string | undefined, options: FindEntityOptions = {}): Promise<Member | undefined> {
         if (query === '' || query === undefined || query === this.member?.id)
             return this.member;
-        return await this.queryEntity(
+        return await this.#queryEntity(
             query, 'user', 'User',
             async (id) => await this.util.getMember(this.guild, id),
             async (query) => await this.util.findMembers(this.guild, query),
@@ -289,7 +289,7 @@ export class BBTagContext implements BBTagContextOptions {
     }
 
     public async queryRole(query: string, options: FindEntityOptions = {}): Promise<Role | undefined> {
-        return await this.queryEntity(
+        return await this.#queryEntity(
             query, 'role', 'Role',
             async (id) => await this.util.getRole(this.guild, id),
             async (query) => await this.util.findRoles(this.guild, query),
@@ -301,7 +301,7 @@ export class BBTagContext implements BBTagContextOptions {
     public async queryChannel(query: string | undefined, options: FindEntityOptions = {}): Promise<KnownGuildChannel | undefined> {
         if (query === '' || query === undefined || query === this.channel.id)
             return this.channel;
-        return await this.queryEntity(
+        return await this.#queryEntity(
             query, 'channel', 'Channel',
             async (id) => {
                 const channel = await this.util.getChannel(this.guild, id);
@@ -316,7 +316,7 @@ export class BBTagContext implements BBTagContextOptions {
     public async queryThread(query: string | undefined, options: FindEntityOptions = {}): Promise<KnownThreadChannel | undefined> {
         if (guard.isThreadChannel(this.channel) && (query === '' || query === undefined || query === this.channel.id))
             return this.channel;
-        return await this.queryEntity(
+        return await this.#queryEntity(
             query ?? '', 'channel', 'Thread',
             async (id) => threadsOnly(await this.util.getChannel(this.guild, id)),
             async (query) => threadsOnly(await this.util.findChannels(this.guild, query)),
@@ -334,7 +334,7 @@ export class BBTagContext implements BBTagContextOptions {
         return await this.util.getMessage(channel, messageId, force);
     }
 
-    private async queryEntity<T extends { id: string; }>(
+    async #queryEntity<T extends { id: string; }>(
         queryString: string,
         cacheKey: FilteredKeys<BBTagContextState['query'], Record<string, string | undefined>>,
         type: string,

@@ -6,14 +6,17 @@ import { CommandContext } from '../../CommandContext';
 import { CommandBindingBase } from './CommandBindingBase';
 
 export class CommandHandlerBinding<TContext extends CommandContext> extends CommandBindingBase<TContext> {
+    readonly #signature: CommandSignatureHandler<TContext>;
+
     public constructor(
-        private readonly signature: CommandSignatureHandler<TContext>
+        signature: CommandSignatureHandler<TContext>
     ) {
         super();
+        this.#signature = signature;
     }
 
     public * debugView(): Generator<string> {
-        yield `Execute ${this.signature.execute.toString()}`;
+        yield `Execute ${this.#signature.execute.toString()}`;
     }
 
     public [Binder.binder](state: CommandBinderState<TContext>): BindingResultValue<CommandBinderState<TContext>> {
@@ -23,7 +26,7 @@ export class CommandHandlerBinding<TContext extends CommandContext> extends Comm
 
         return this.bindingSuccess({
             ...state,
-            handler: this.signature
+            handler: this.#signature
         }, [], 0);
     }
 }

@@ -6,10 +6,12 @@ import { WorkerPool } from '@blargbot/core/worker';
 export class ClusterStatsManager {
     readonly #statsMap: WeakMap<ClusterConnection, ClusterStats>;
     readonly #activeClusters: Map<number, ClusterConnection>;
+    readonly #apis: WorkerPool<ApiConnection>;
 
-    public constructor(private readonly apis: WorkerPool<ApiConnection>) {
+    public constructor(apis: WorkerPool<ApiConnection>) {
         this.#statsMap = new Map();
         this.#activeClusters = new Map();
+        this.#apis = apis;
     }
 
     public set(cluster: ClusterConnection, stats: ClusterStats | undefined): void {
@@ -23,7 +25,7 @@ export class ClusterStatsManager {
             return;
 
         this.#activeClusters.set(cluster.id, cluster);
-        this.apis.forEach((_, api) => api?.send('clusterStats', this.getAll()));
+        this.#apis.forEach((_, api) => api?.send('clusterStats', this.getAll()));
     }
 
     public get(cluster: ClusterConnection): ClusterStats | undefined {

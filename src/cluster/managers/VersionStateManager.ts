@@ -8,15 +8,19 @@ const mapUpdateType = mapping.choice(
 );
 
 export class VersionStateManager {
-    public constructor(private readonly db: BotVariableStore) { }
+    readonly #db: BotVariableStore;
+
+    public constructor(db: BotVariableStore) {
+        this.#db = db;
+    }
 
     public async getVersion(): Promise<string> {
-        const version = await this.getFromStorage();
+        const version = await this.#getFromStorage();
         return version.toString();
     }
 
     public async updateVersion(type: string): Promise<void> {
-        const version = await this.getFromStorage();
+        const version = await this.#getFromStorage();
 
         const mapped = mapUpdateType(type);
         if (!mapped.valid) {
@@ -25,15 +29,15 @@ export class VersionStateManager {
 
         version.update(mapped.value);
 
-        await this.db.set('version', version);
+        await this.#db.set('version', version);
     }
 
-    private async getFromStorage(): Promise<Version> {
+    async #getFromStorage(): Promise<Version> {
         const {
             major = 1,
             minor = 0,
             patch = 0
-        } = await this.db.get('version') ?? {};
+        } = await this.#db.get('version') ?? {};
         return new Version(major, minor, patch);
     }
 }

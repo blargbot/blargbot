@@ -3,14 +3,14 @@ import moment, { Duration } from 'moment-timezone';
 export class Cache<TKey, TValue> {
     readonly #entries: Map<TKey, { data: TValue; timeout: NodeJS.Timeout; }>;
     readonly #defaultTTL: number;
-    readonly #timout: (key: TKey) => void;
+    readonly #timeout: (key: TKey) => void;
 
     public constructor(defaultTimeToLive?: number | Duration);
     public constructor(...args: Parameters<typeof moment.duration>)
     public constructor(...args: [number | Duration] | Parameters<typeof moment.duration>) {
         this.#defaultTTL = toMS(moment.duration(...args));
         this.#entries = new Map();
-        this.#timout = key => this.#entries.delete(key);
+        this.#timeout = key => this.#entries.delete(key);
     }
 
     public has(key: TKey): boolean {
@@ -25,7 +25,7 @@ export class Cache<TKey, TValue> {
         if (resetTimeToLive !== false) {
             clearTimeout(entry.timeout);
             const ttl = toMS(resetTimeToLive === true ? this.#defaultTTL : resetTimeToLive);
-            entry.timeout = setTimeout(this.#timout, ttl, key);
+            entry.timeout = setTimeout(this.#timeout, ttl, key);
         }
         return entry.data;
     }
@@ -48,7 +48,7 @@ export class Cache<TKey, TValue> {
         const ttl = toMS(timeToLive ?? this.#defaultTTL);
         this.#entries.set(key, {
             data: value,
-            timeout: setTimeout(this.#timout, ttl, key)
+            timeout: setTimeout(this.#timeout, ttl, key)
         });
         return this;
     }

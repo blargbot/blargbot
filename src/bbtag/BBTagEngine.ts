@@ -15,7 +15,7 @@ import { AnalysisResults, BBTagContextOptions, BBTagRuntimeState, ExecutionResul
 import { bbtag as bbtagUtil } from './utils';
 
 export class BBTagEngine {
-    private readonly cooldowns: TagCooldownManager;
+    readonly #cooldowns: TagCooldownManager;
     public get discord(): Discord { return this.dependencies.discord; }
     public get logger(): Logger { return this.dependencies.logger; }
     public get database(): Database { return this.dependencies.database; }
@@ -25,7 +25,7 @@ export class BBTagEngine {
     public constructor(
         public readonly dependencies: InjectionContext
     ) {
-        this.cooldowns = new TagCooldownManager();
+        this.#cooldowns = new TagCooldownManager();
         const subtags = new Map<string, Subtag>();
         this.subtags = subtags;
         for (const subtag of dependencies.subtags) {
@@ -51,7 +51,7 @@ export class BBTagEngine {
         const timer = new Timer().start();
         const bbtag = bbtagUtil.parse(source, options instanceof BBTagContext);
         this.logger.bbtag(`Parsed bbtag in ${timer.poll(true)}ms`);
-        const context = options instanceof BBTagContext ? options : new BBTagContext(this, { cooldowns: this.cooldowns, ...options });
+        const context = options instanceof BBTagContext ? options : new BBTagContext(this, { cooldowns: this.#cooldowns, ...options });
         this.logger.bbtag(`Created context in ${timer.poll(true)}ms`);
         let content: string;
         if (context.cooldownEnd.isAfter(moment())) {
@@ -66,7 +66,7 @@ export class BBTagEngine {
             context.cooldowns.set(context);
             context.execTimer.start();
             content = await context.withStack(async () => {
-                const result = await joinResults(this.evalStatement(bbtag, context));
+                const result = await joinResults(this.#evalStatement(bbtag, context));
                 if (context.data.replace !== undefined)
                     return result.replace(context.data.replace.regex, context.data.replace.with);
                 return result;
@@ -106,8 +106,8 @@ export class BBTagEngine {
         };
     }
 
-    private async * evalSubtag(bbtag: SubtagCall, context: BBTagContext): AsyncIterable<string> {
-        const name = (await context.withScope(() => joinResults(this.evalStatement(bbtag.name, context)))).toLowerCase();
+    async * #evalSubtag(bbtag: SubtagCall, context: BBTagContext): AsyncIterable<string> {
+        const name = (await context.withScope(() => joinResults(this.#evalStatement(bbtag.name, context)))).toLowerCase();
 
         try {
             const subtag = context.getSubtag(name);
@@ -127,7 +127,7 @@ export class BBTagEngine {
             } catch (err: unknown) {
                 yield err instanceof BBTagRuntimeError
                     ? context.addError(err, bbtag)
-                    : this.logError(context, err, bbtag);
+                    : this.#logError(context, err, bbtag);
             } finally {
                 context.callStack.pop();
             }
@@ -140,12 +140,12 @@ export class BBTagEngine {
 
     }
 
-    private async * evalStatement(bbtag: Statement, context: BBTagContext): AsyncIterable<string> {
+    async * #evalStatement(bbtag: Statement, context: BBTagContext): AsyncIterable<string> {
         for (const elem of bbtag.values) {
             if (typeof elem === 'string')
                 yield elem;
             else {
-                yield* this.evalSubtag(elem, context);
+                yield* this.#evalSubtag(elem, context);
                 if (context.data.state !== BBTagRuntimeState.RUNNING)
                     break;
             }
@@ -160,13 +160,13 @@ export class BBTagEngine {
             return '';
 
         const results = 'values' in bbtag
-            ? context.withScope(() => this.evalStatement(bbtag, context))
-            : this.evalSubtag(bbtag, context);
+            ? context.withScope(() => this.#evalStatement(bbtag, context))
+            : this.#evalSubtag(bbtag, context);
 
         return joinResults(results);
     }
 
-    private logError(context: BBTagContext, error: unknown, bbtag: SubtagCall): string {
+    #logError(context: BBTagContext, error: unknown, bbtag: SubtagCall): string {
         if (error instanceof RangeError)
             throw error;
 

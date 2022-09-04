@@ -10,10 +10,10 @@ import { compileSignatures } from './compilation';
 import { InvokeCommandHandlerMiddleware } from './middleware';
 
 export abstract class ScopedCommand<TContext extends CommandContext> extends Command {
-    private readonly handler: InvokeCommandHandlerMiddleware<TContext>;
+    readonly #handler: InvokeCommandHandlerMiddleware<TContext>;
     protected readonly middleware: Array<IMiddleware<TContext, CommandResult>>;
 
-    public get debugView(): string { return this.handler.debugView; }
+    public get debugView(): string { return this.#handler.debugView; }
 
     public constructor(options: CommandOptions<TContext>, noHelp = false) {
         const definitions: ReadonlyArray<CommandDefinition<TContext>> = noHelp ? options.definitions : [
@@ -31,7 +31,7 @@ export abstract class ScopedCommand<TContext extends CommandContext> extends Com
         super({ ...options, signatures });
 
         this.middleware = [];
-        this.handler = new InvokeCommandHandlerMiddleware(signatures, this);
+        this.#handler = new InvokeCommandHandlerMiddleware(signatures, this);
     }
 
     public async isVisible(util: ClusterUtilities, location?: Guild | KnownTextableChannel, user?: User): Promise<boolean> {
@@ -45,6 +45,6 @@ export abstract class ScopedCommand<TContext extends CommandContext> extends Com
         if (!this.guardContext(context))
             return await this.handleInvalidContext(context);
 
-        return await runMiddleware([...this.middleware, this.handler], context, next);
+        return await runMiddleware([...this.middleware, this.#handler], context, next);
     }
 }

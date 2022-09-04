@@ -8,10 +8,14 @@ import { ApiResponse } from '../../types';
 type CensorRuleType = 'timeout' | 'kick' | 'ban' | 'delete';
 
 export class CensorsRoute extends BaseRoute {
-    public constructor(private readonly api: Api) {
+    readonly #api: Api;
+
+    public constructor(api: Api) {
         super('/guilds');
 
-        this.middleware.push(async (req, _, next) => await this.checkAccess(req.params.guildId, this.getUserId(req, true)) ?? await next());
+        this.#api = api;
+
+        this.middleware.push(async (req, _, next) => await this.#checkAccess(req.params.guildId, this.getUserId(req, true)) ?? await next());
 
         this.addRoute('/:guildId/censors', {
             get: ({ request }) => this.listCensors(request.params.guildId)
@@ -33,7 +37,7 @@ export class CensorsRoute extends BaseRoute {
     }
 
     public async getCensorDefaultMessage(guildId: string, type: CensorRuleType): Promise<ApiResponse> {
-        const censors = await this.api.database.guilds.getCensors(guildId);
+        const censors = await this.#api.database.guilds.getCensors(guildId);
         const result = censors?.rule?.[`${type}Message`];
         if (result === undefined)
             return this.notFound();
@@ -46,16 +50,16 @@ export class CensorsRoute extends BaseRoute {
         if (!mapped.valid)
             return this.badRequest();
 
-        const current = await this.api.database.guilds.getCensorRule(guildId, undefined, type);
+        const current = await this.#api.database.guilds.getCensorRule(guildId, undefined, type);
         const result = { ...current, ...mapped.value, author: userId };
-        if (!await this.api.database.guilds.setCensorRule(guildId, undefined, type, result))
+        if (!await this.#api.database.guilds.setCensorRule(guildId, undefined, type, result))
             return this.internalServerError('Failed to update record');
 
         return this.ok(result);
     }
 
     public async deleteCensorDefaultMessage(guildId: string, type: CensorRuleType): Promise<ApiResponse> {
-        await this.api.database.guilds.setCensorRule(guildId, undefined, type, undefined);
+        await this.#api.database.guilds.setCensorRule(guildId, undefined, type, undefined);
         return this.noContent();
     }
 
@@ -64,7 +68,7 @@ export class CensorsRoute extends BaseRoute {
         if (id === undefined)
             return this.badRequest();
 
-        const censor = await this.api.database.guilds.getCensor(guildId, id);
+        const censor = await this.#api.database.guilds.getCensor(guildId, id);
         const result = censor?.[`${type}Message`];
         if (result === undefined)
             return this.notFound();
@@ -81,12 +85,12 @@ export class CensorsRoute extends BaseRoute {
         if (!mapped.valid)
             return this.badRequest();
 
-        const current = await this.api.database.guilds.getCensor(guildId, id);
+        const current = await this.#api.database.guilds.getCensor(guildId, id);
         if (current === undefined)
             return this.notFound();
 
         const result = { ...current[`${type}Message`], ...mapped.value, author: userId };
-        if (!await this.api.database.guilds.setCensorRule(guildId, id, type, result))
+        if (!await this.#api.database.guilds.setCensorRule(guildId, id, type, result))
             return this.internalServerError('Failed to update record');
 
         return this.ok(result);
@@ -97,26 +101,26 @@ export class CensorsRoute extends BaseRoute {
         if (id === undefined)
             return this.badRequest();
 
-        if (await this.api.database.guilds.getCensor(guildId, id) === undefined)
+        if (await this.#api.database.guilds.getCensor(guildId, id) === undefined)
             return this.notFound();
 
-        await this.api.database.guilds.setCensorRule(guildId, id, type, undefined);
+        await this.#api.database.guilds.setCensorRule(guildId, id, type, undefined);
         return this.noContent();
     }
 
     public async listCensors(guildId: string): Promise<ApiResponse> {
-        const censors = await this.api.database.guilds.getCensors(guildId);
+        const censors = await this.#api.database.guilds.getCensors(guildId);
         if (censors === undefined)
             return this.notFound();
 
         return this.ok(censors);
     }
 
-    private async checkAccess(guildId: string, userId: string | undefined): Promise<ApiResponse | undefined> {
+    async #checkAccess(guildId: string, userId: string | undefined): Promise<ApiResponse | undefined> {
         if (userId === undefined)
             return this.unauthorized();
 
-        const perms = await this.api.worker.request('getGuildPermission', { userId, guildId });
+        const perms = await this.#api.worker.request('getGuildPermission', { userId, guildId });
         if (perms === undefined)
             return this.notFound();
 

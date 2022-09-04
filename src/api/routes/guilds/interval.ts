@@ -4,10 +4,14 @@ import { ApiResponse } from '@blargbot/api/types';
 import { mapping } from '@blargbot/mapping';
 
 export class IntervalRoute extends BaseRoute {
-    public constructor(private readonly api: Api) {
+    readonly #api: Api;
+
+    public constructor(api: Api) {
         super('/guilds');
 
-        this.middleware.push(async (req, _, next) => await this.checkAccess(req.params.guildId, this.getUserId(req, true)) ?? await next());
+        this.#api = api;
+
+        this.middleware.push(async (req, _, next) => await this.#checkAccess(req.params.guildId, this.getUserId(req, true)) ?? await next());
 
         this.addRoute('/:guildId/interval', {
             get: ({ request }) => this.getInterval(request.params.guildId),
@@ -17,7 +21,7 @@ export class IntervalRoute extends BaseRoute {
     }
 
     public async getInterval(guildId: string): Promise<ApiResponse> {
-        const interval = await this.api.database.guilds.getInterval(guildId);
+        const interval = await this.#api.database.guilds.getInterval(guildId);
         if (interval === undefined)
             return this.notFound();
         return this.ok(interval);
@@ -28,23 +32,23 @@ export class IntervalRoute extends BaseRoute {
         if (!mapped.valid)
             return this.badRequest();
 
-        const current = await this.api.database.guilds.getInterval(guildId);
+        const current = await this.#api.database.guilds.getInterval(guildId);
         const result = { ...current, ...mapped.value, author: userId };
-        if (!await this.api.database.guilds.setInterval(guildId, result))
+        if (!await this.#api.database.guilds.setInterval(guildId, result))
             return this.internalServerError('Failed to set interval');
         return this.ok(result);
     }
 
     public async deleteInterval(guildId: string): Promise<ApiResponse> {
-        await this.api.database.guilds.setInterval(guildId, undefined);
+        await this.#api.database.guilds.setInterval(guildId, undefined);
         return this.noContent();
     }
 
-    private async checkAccess(guildId: string, userId: string | undefined): Promise<ApiResponse | undefined> {
+    async #checkAccess(guildId: string, userId: string | undefined): Promise<ApiResponse | undefined> {
         if (userId === undefined)
             return this.unauthorized();
 
-        const perms = await this.api.worker.request('getGuildPermission', { userId, guildId });
+        const perms = await this.#api.worker.request('getGuildPermission', { userId, guildId });
         if (perms === undefined)
             return this.notFound();
 

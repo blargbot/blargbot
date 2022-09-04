@@ -20,7 +20,7 @@ export class ChannelPosSubtag extends CompiledSubtag {
                     exampleCode: 'This channel is in position {channelpos}',
                     exampleOut: 'This channel is in position 1',
                     returns: 'number',
-                    execute: (ctx) => this.getChanelPositionCore(ctx.channel)
+                    execute: (ctx) => this.#getChanelPosition(ctx.channel)
                 },
                 {
                     parameters: ['channel', 'quiet?'],
@@ -46,10 +46,10 @@ export class ChannelPosSubtag extends CompiledSubtag {
                 .withDisplay(quiet ? '' : undefined);
         }
 
-        return this.getChanelPositionCore(channel);
+        return this.#getChanelPosition(channel);
     }
 
-    private getChanelPositionCore(channel: GuildChannel): number {
+    #getChanelPosition(channel: GuildChannel): number {
         if (guard.isThreadChannel(channel))
             throw new BBTagRuntimeError('Threads dont have a position', `${channel.mention} is a thread and doesnt have a position`);
 

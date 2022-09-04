@@ -32,22 +32,22 @@ export class Emote {
             emotes.push(new Emote(name, id, animated !== ''));
             return '';
         }).replaceAll(guildApiEmoteRegex, (_, name: string, id: Snowflake) => {
-            emotes.push(new Emote(name, id, false));
+            emotes.push(new Emote(name, id));
             return '';
         }).replaceAll(discordEmoteRegex, emote => {
-            emotes.push(new Emote(emote, undefined, false));
+            emotes.push(new Emote(emote));
             return '';
         }).replaceAll(keycapEmote, emote => {
-            emotes.push(new Emote(emote, undefined, false));
+            emotes.push(new Emote(emote));
             return '';
         }).replaceAll(otherEmotes, emote => {
-            emotes.push(new Emote(emote, undefined, false));
+            emotes.push(new Emote(emote));
             return '';
         });
         twemoji.parse(text, {
             callback(codepoint) {
                 const emote = twemoji.convert.fromCodePoint(codepoint);
-                emotes.push(new Emote(emote, undefined, false));
+                emotes.push(new Emote(emote));
                 return text = text.replace(emote, '');
             }
         });
@@ -60,18 +60,14 @@ export class Emote {
         return [result, text.length === 0];
     }
 
-    public readonly id: Snowflake | undefined;
-    public readonly animated: boolean;
-
-    private constructor(
+    public constructor(name: string);
+    public constructor(name: string, id: Snowflake, animated?: boolean);
+    public constructor(
         public readonly name: string,
-        id?: string | Snowflake | undefined | null,
-        animated?: boolean | undefined | null
-    ) {
-        if (id !== undefined && id !== null && !snowflake.test(id))
-            throw new Error(`${id} is not a valid emote id`);
-        this.id = id ?? undefined;
-        this.animated = animated ?? false;
+        public readonly id?: Snowflake,
+        public readonly animated = false) {
+        if (id !== undefined && !snowflake.test(id))
+            throw new Error(`${id as string} is not a valid emote id`);
     }
 
     public toApi(): `${string}:${Snowflake}` | string {

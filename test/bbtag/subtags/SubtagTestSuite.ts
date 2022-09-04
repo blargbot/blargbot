@@ -543,17 +543,21 @@ export class EvalSubtag extends Subtag {
 }
 
 export class AssertSubtag extends Subtag {
-    public constructor(private readonly assertion: (...args: Parameters<Subtag['executeCore']>) => Awaitable<string>) {
+    readonly #assertion: (context: BBTagContext, subtagName: string, subtag: SubtagCall) => Awaitable<string>;
+
+    public constructor(assertion: (...args: Parameters<Subtag['executeCore']>) => Awaitable<string>) {
         super({
             name: 'assert',
             category: SubtagType.SIMPLE,
             hidden: true,
             signatures: []
         });
+
+        this.#assertion = assertion;
     }
 
     protected async * executeCore(context: BBTagContext, subtagName: string, subtag: SubtagCall): AsyncIterable<string> {
-        yield await this.assertion(context, subtagName, subtag);
+        yield await this.#assertion(context, subtagName, subtag);
     }
 }
 

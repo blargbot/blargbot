@@ -4,11 +4,14 @@ import { WorkerPoolEventService } from '@blargbot/core/serviceTypes';
 import { Master } from '@blargbot/master';
 
 export class ClusterGetClusterStatsHandler extends WorkerPoolEventService<ClusterConnection, 'getClusterStats'> {
-    public constructor(private readonly master: Master) {
+    readonly #master: Master;
+
+    public constructor(master: Master) {
         super(master.clusters, 'getClusterStats', ({ reply }) => reply(this.getStats()));
+        this.#master = master;
     }
 
     protected getStats(): Record<number, ClusterStats | undefined> {
-        return this.master.clusterStats.getAll();
+        return this.#master.clusterStats.getAll();
     }
 }

@@ -19,6 +19,10 @@
             "program": "${workspaceFolder}/src/master/start.ts",
             "env": {
                 "NODE_OPTIONS": "--require ${workspaceFolder}/.pnp.cjs"
+            },
+            "preLaunchTask": {
+                "type": "npm",
+                "script": "watch"
             }
         },
         {
@@ -43,6 +47,10 @@
                 "SHARDS_MAX": "1",
                 "SHARDS_FIRST": "0",
                 "SHARDS_LAST": "0"
+            },
+            "preLaunchTask": {
+                "type": "npm",
+                "script": "watch"
             }
         },
         {
@@ -60,6 +68,10 @@
             "program": "${workspaceFolder}/src/api/start.ts",
             "env": {
                 "NODE_OPTIONS": "--require ${workspaceFolder}/.pnp.cjs"
+            },
+            "preLaunchTask": {
+                "type": "npm",
+                "script": "watch"
             }
         },
         {
@@ -78,6 +90,10 @@
             "env": {
                 "NODE_OPTIONS": "--require ${workspaceFolder}/.pnp.cjs"
             },
+            "preLaunchTask": {
+                "type": "npm",
+                "script": "watch"
+            }
         },
         {
             "type": "node",
@@ -100,6 +116,10 @@
             "autoAttachChildProcesses": true,
             "env": {
                 "NODE_OPTIONS": "--require ${workspaceFolder}/.pnp.cjs"
+            },
+            "preLaunchTask": {
+                "type": "npm",
+                "script": "watch"
             }
         },
         {
@@ -124,7 +144,11 @@
                 "NODE_OPTIONS": "--require ${workspaceFolder}/.pnp.cjs",
                 "TS_NODE_FILES": "true"
             },
-            "autoAttachChildProcesses": true
+            "autoAttachChildProcesses": true,
+            "preLaunchTask": {
+                "type": "npm",
+                "script": "watch"
+            }
         }
     ]
 }

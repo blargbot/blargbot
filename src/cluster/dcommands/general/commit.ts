@@ -20,14 +20,14 @@ export class CommitCommand extends GlobalCommand {
     }
 
     public async getCommit(commitNumber: number | undefined): Promise<EmbedOptions | string> {
-        const commitCount = await this.fetchCommitCount();
+        const commitCount = await this.#fetchCommitCount();
         if (commitCount === 0)
             return this.error('I cant find any commits at the moment, please try again later!');
 
         commitNumber ??= randInt(1, commitCount);
         commitNumber = Math.min(commitCount, Math.max(commitNumber, 1));
 
-        const commit = await this.fetchCommit(commitCount - commitNumber);
+        const commit = await this.#fetchCommit(commitCount - commitNumber);
         if (commit === undefined)
             return this.error('I couldnt find the commit!');
 
@@ -43,8 +43,8 @@ export class CommitCommand extends GlobalCommand {
         };
     }
 
-    private async fetchCommitCount(): Promise<number> {
-        const response = await this.fetchCommitRaw(0);
+    async #fetchCommitCount(): Promise<number> {
+        const response = await this.#fetchCommitRaw(0);
         const link = response.headers.get('Link');
         if (link === null)
             return 0;
@@ -56,9 +56,9 @@ export class CommitCommand extends GlobalCommand {
         return parseInt(match[1]) + 1;
     }
 
-    private async fetchCommit(commitNumber: number): Promise<CommitData | undefined> {
+    async #fetchCommit(commitNumber: number): Promise<CommitData | undefined> {
         try {
-            const response = await this.fetchCommitRaw(commitNumber);
+            const response = await this.#fetchCommitRaw(commitNumber);
             const mapped = commitMapping(await response.json());
             return mapped.valid ? mapped.value[0] : undefined;
         } catch {
@@ -66,7 +66,7 @@ export class CommitCommand extends GlobalCommand {
         }
     }
 
-    private async fetchCommitRaw(commitNumber: number): Promise<Response> {
+    async #fetchCommitRaw(commitNumber: number): Promise<Response> {
         return await fetch(`https://api.github.com/repos/blargbot/blargbot/commits?per_page=1&page=${commitNumber}`);
     }
 }

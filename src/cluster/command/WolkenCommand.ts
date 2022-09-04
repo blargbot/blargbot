@@ -14,7 +14,7 @@ export interface WolkeOptions {
 }
 
 export abstract class WolkenCommand extends GlobalCommand {
-    private readonly client: Wolken;
+    readonly #client: Wolken;
 
     public constructor(
         name: string,
@@ -36,11 +36,11 @@ export abstract class WolkenCommand extends GlobalCommand {
             ]
         });
 
-        this.client = new Wolken(options.wolkeKey, 'Wolke', 'blargbot/6.0.0');
+        this.#client = new Wolken(options.wolkeKey, 'Wolke', 'blargbot/6.0.0');
     }
 
     public async render(context: CommandContext, type: string, action: string | undefined, target: User | undefined): Promise<EmbedOptions> {
-        const image = await this.client.getRandom({ type, allowNSFW: false, filetype: 'gif' });
+        const image = await this.#client.getRandom({ type, allowNSFW: false, filetype: 'gif' });
         const message = action !== undefined ? target === undefined
             ? `**<@${context.author.id}>** ${action}!`
             : `**<@${context.author.id}>** ${action} **${target.id === context.author.id ? 'themself' : target.mention}**!`

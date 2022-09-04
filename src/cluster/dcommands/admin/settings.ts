@@ -13,24 +13,24 @@ export class SettingsCommand extends GuildCommand {
             definitions: [
                 {
                     parameters: '',
-                    execute: ctx => this.list(ctx),
+                    execute: ctx => this.#list(ctx),
                     description: 'Gets the current settings for this guild'
                 },
                 {
                     parameters: 'keys',
                     description: 'Lists all the setting keys and their types',
-                    execute: () => this.keys()
+                    execute: () => this.#keys()
                 },
                 {
                     parameters: 'set {key} {~value+?}',
                     description: 'Sets the given setting key to have a certian value. If `value` is omitted, the setting is reverted to its default value',
-                    execute: (ctx, [setting, value]) => this.set(ctx, setting.asString, value.asOptionalString)
+                    execute: (ctx, [setting, value]) => this.#set(ctx, setting.asString, value.asOptionalString)
                 }
             ]
         });
     }
 
-    private async list(context: GuildCommandContext): Promise<string | { embeds: [EmbedOptions]; }> {
+    async #list(context: GuildCommandContext): Promise<string | { embeds: [EmbedOptions]; }> {
         const storedGuild = await context.database.guilds.get(context.channel.guild.id);
         if (storedGuild === undefined)
             return this.error('Your guild is not correctly configured yet! Please try again later');
@@ -100,7 +100,7 @@ export class SettingsCommand extends GuildCommand {
         };
     }
 
-    private async set(context: GuildCommandContext, setting: string, value: string | undefined): Promise<string> {
+    async #set(context: GuildCommandContext, setting: string, value: string | undefined): Promise<string> {
         const key = setting.toLowerCase();
         if (!guard.hasProperty(guildSettings, key))
             return this.error('Invalid key!');
@@ -115,7 +115,7 @@ export class SettingsCommand extends GuildCommand {
         return this.success(`${guildSettings[key].name} is set to ${parsed.display ?? 'nothing'}`);
     }
 
-    private keys(): string {
+    #keys(): string {
         const message = [];
         for (const key in guildSettings) {
             if (guard.hasProperty(guildSettings, key)) {

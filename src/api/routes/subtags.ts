@@ -5,8 +5,12 @@ import { tagTypeDetails } from '@blargbot/bbtag/utils';
 import { SubtagListResult } from '@blargbot/cluster/types';
 
 export class SubtagsRoute extends BaseRoute {
-    public constructor(private readonly api: Api) {
+    readonly #api: Api;
+
+    public constructor(api: Api) {
         super('/subtags');
+
+        this.#api = api;
 
         this.addRoute('/', {
             get: () => this.listSubtags()
@@ -18,12 +22,12 @@ export class SubtagsRoute extends BaseRoute {
     }
 
     public async listSubtags(): Promise<ApiResponse> {
-        const subtags: SubtagListResult = await this.api.worker.request('getSubtagList', undefined);
+        const subtags: SubtagListResult = await this.#api.worker.request('getSubtagList', undefined);
         return this.ok(subtags);
     }
 
     public async getSubtag(name: string): Promise<ApiResponse> {
-        const subtag = await this.api.worker.request('getSubtag', name);
+        const subtag = await this.#api.worker.request('getSubtag', name);
         if (subtag === undefined)
             return this.notFound();
         return this.ok(subtag);

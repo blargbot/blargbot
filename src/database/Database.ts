@@ -82,9 +82,9 @@ export class Database {
         this.connect = () => Promise.resolve();
 
         await Promise.all([
-            this.retryConnect('rethinkDb', () => this.#rethink.connect(), 5000, 10),
-            this.retryConnect('cassandra', () => this.#cassandra.connect(), 5000, 10),
-            this.retryConnect('postgresdb', () => this.#postgres.connect(), 5000, 10)
+            this.#retryConnect('rethinkDb', () => this.#rethink.connect(), 5000, 10),
+            this.#retryConnect('cassandra', () => this.#cassandra.connect(), 5000, 10),
+            this.#retryConnect('postgresdb', () => this.#postgres.connect(), 5000, 10)
         ]);
 
         await Promise.all([
@@ -94,7 +94,7 @@ export class Database {
         ]);
     }
 
-    private async retryConnect(dbName: string, connect: () => Promise<unknown>, intervalMs: number, maxAttempts = Infinity): Promise<void> {
+    async #retryConnect(dbName: string, connect: () => Promise<unknown>, intervalMs: number, maxAttempts = Infinity): Promise<void> {
         let attempt = 0;
         while (attempt++ < maxAttempts) {
             try {
