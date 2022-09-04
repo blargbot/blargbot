@@ -37,7 +37,6 @@ interface CharRange {
 }
 
 interface SmartSplitTokenContext {
-    readonly source: string;
     readonly ranges: CharRange[];
     index: number;
     readonly tokenCount: number;
@@ -48,14 +47,14 @@ interface SmartSplitTokenContext {
 const enum SmartSplitTokenType {
     LITERAL,
     QUOTE,
-    BREAK,
-    ESCAPE
+    BREAK
 }
 
 interface SmartSplitToken {
     readonly type: SmartSplitTokenType;
     readonly start: number;
     readonly end: number;
+    get content(): string;
 }
 
 function* smartSplitIterLimit(source: string, limit: number): Generator<string> {
@@ -75,7 +74,14 @@ function* tokenize(source: string): Generator<SmartSplitToken> {
 
     function* yieldBlock(): Generator<SmartSplitToken> {
         if (literalStart !== undefined) {
-            yield { type: SmartSplitTokenType.LITERAL, start: literalStart, end: i };
+            yield {
+                type: SmartSplitTokenType.LITERAL,
+                start: literalStart,
+                end: i,
+                get content() {
+                    return source.slice(this.start, this.end);
+                }
+            };
             literalStart = undefined;
         }
     }
@@ -84,15 +90,22 @@ function* tokenize(source: string): Generator<SmartSplitToken> {
         switch (source[i]) {
             case ' ':
                 yield* yieldBlock();
-                yield { type: SmartSplitTokenType.BREAK, start: i, end: i + 1 };
+                yield { type: SmartSplitTokenType.BREAK, start: i, end: i + 1, content: ' ' };
                 break;
             case '"':
                 yield* yieldBlock();
-                yield { type: SmartSplitTokenType.QUOTE, start: i, end: i + 1 };
+                yield { type: SmartSplitTokenType.QUOTE, start: i, end: i + 1, content: '"' };
                 break;
             case '\\':
                 yield* yieldBlock();
-                yield { type: SmartSplitTokenType.ESCAPE, start: i, end: i + 1 };
+                yield {
+                    type: SmartSplitTokenType.LITERAL,
+                    start: i,
+                    end: ++i + 1,
+                    get content() {
+                        return source.slice(this.start + 1, this.end);
+                    }
+                };
                 break;
             default:
                 literalStart ??= i;
@@ -110,12 +123,11 @@ function* smartSplitIter(source: string): Generator<SmartSplitItem> {
     const ctx: SmartSplitTokenContext = {
         ranges: [],
         index: 0,
-        source,
         tokenCount: tokens.length,
         getToken(offset = 0) {
             const index = this.index + offset;
             if (index < 0 || index >= tokens.length)
-                return { type: SmartSplitTokenType.BREAK, start: index, end: index };
+                return { type: SmartSplitTokenType.BREAK, start: index, end: index, content: '' };
             return tokens[index];
         },
         * digestRanges() {
@@ -148,10 +160,14 @@ const tokenHandlers: Record<SmartSplitTokenType, (context: SmartSplitTokenContex
             return this[SmartSplitTokenType.LITERAL](ctx);
 
         const maxOffset = ctx.tokenCount - ctx.index;
+        const tokens = [];
         let offset = 1;
-        for (; offset < maxOffset; offset++)
-            if (ctx.getToken(offset).type === SmartSplitTokenType.QUOTE && ctx.getToken(offset + 1).type === SmartSplitTokenType.BREAK)
+        for (; offset < maxOffset; offset++) {
+            const token = ctx.getToken(offset);
+            if (token.type === SmartSplitTokenType.QUOTE && ctx.getToken(offset + 1).type === SmartSplitTokenType.BREAK)
                 break;
+            tokens.push(token);
+        }
 
         if (offset === maxOffset)
             return this[SmartSplitTokenType.LITERAL](ctx);
@@ -162,29 +178,16 @@ const tokenHandlers: Record<SmartSplitTokenType, (context: SmartSplitTokenContex
         ctx.ranges.push({
             start: startToken.start,
             end: endToken.end,
-            content: ctx.source.slice(startToken.end, endToken.start)
+            content: tokens.map(t => t.content).join('')
         });
         return noTokens;
     },
-    // eslint-disable-next-line require-yield
-    [SmartSplitTokenType.ESCAPE](ctx) {
-        const escapeToken = ctx.getToken();
-        ctx.index++;
-        const valueToken = ctx.getToken();
-        ctx.ranges.push({
-            start: escapeToken.start,
-            end: valueToken.end,
-            content: ctx.source.slice(valueToken.start, valueToken.end)
-        });
-        return noTokens;
-    },
-    // eslint-disable-next-line require-yield
     [SmartSplitTokenType.LITERAL](ctx) {
         const token = ctx.getToken();
         ctx.ranges.push({
             start: token.start,
             end: token.end,
-            content: ctx.source.slice(token.start, token.end)
+            content: token.content
         });
         return noTokens;
     }

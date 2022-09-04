@@ -1,5 +1,6 @@
 import { BBTagRuntimeError, SubtagStackOverflowError } from '@blargbot/bbtag/errors';
 import { ExecccSubtag } from '@blargbot/bbtag/subtags/bot/execcc';
+import { JsonSubtag } from '@blargbot/bbtag/subtags/json';
 import { BBTagRuntimeState } from '@blargbot/bbtag/types';
 import { expect } from 'chai';
 
@@ -107,6 +108,47 @@ runSubtagTests({
                 expect(ctx.scopes.tag).to.not.equal(ctx.scopes.root);
                 return 'Success!';
             })],
+            errors: [
+                { start: 8, end: 14, error: new MarkerError('eval', 8) }
+            ],
+            setup(ctx) {
+                ctx.options.cooldown = 4;
+                ctx.options.tagName = 'test tag';
+                ctx.options.rootTagName = 'test tag';
+                ctx.options.inputRaw = 'This is some input text';
+                ctx.options.data = { stackSize: 100 };
+                ctx.ccommands['othersubtag'] = {
+                    author: '212097368371683623',
+                    content: '{assert}{eval}',
+                    cooldown: 7
+                };
+            },
+            assert(ctx) {
+                expect(ctx.parent).to.be.undefined;
+                expect(ctx.tagName).to.equal('test tag');
+                expect(ctx.rootTagName).to.equal('test tag');
+                expect(ctx.cooldown).to.equal(4);
+                expect(ctx.inputRaw).to.equal('This is some input text');
+                expect(ctx.data.stackSize).to.equal(100);
+                expect(ctx.scopes.local).to.equal(ctx.scopes.root);
+                expect(ctx.scopes.tag).to.equal(ctx.scopes.root);
+            }
+        },
+        {
+            code: '{execcc;otherSubtag;abc;{j;{"def":123}}}',
+            expected: 'Success!',
+            subtags: [new AssertSubtag((ctx) => {
+                expect(ctx.parent).to.not.be.undefined;
+                expect(ctx.tagName).to.equal('othersubtag');
+                expect(ctx.rootTagName).to.equal('test tag');
+                expect(ctx.cooldown).to.equal(7);
+                expect(ctx.inputRaw).to.equal('abc {\\"def\\":123}');
+                expect(ctx.input).to.deep.equal(['abc', '{"def":123}']);
+                expect(ctx.scopes.local).to.not.equal(ctx.scopes.root);
+                expect(ctx.scopes.tag).to.not.equal(ctx.scopes.root);
+                expect(ctx.data.stackSize).to.equal(101);
+                return 'Success!';
+            }), new JsonSubtag()],
             errors: [
                 { start: 8, end: 14, error: new MarkerError('eval', 8) }
             ],
