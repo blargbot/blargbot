@@ -93,21 +93,20 @@ export abstract class BaseImageGenerator<T extends keyof ImageGeneratorMap> {
     }
 
     protected async trim(data: Buffer, color: sharp.Color = 'transparent'): Promise<Buffer> {
-        const { width = 0, height = 0, channels = 4 } = await sharp(data).metadata();
-        return await sharp(
-            await sharp(data)
-                .resize(width + 1, height + 1)
-                .composite([
-                    {
-                        input: { create: { width: 1, height: 1, channels, background: color } },
-                        tile: true,
-                        blend: 'source'
-                    },
-                    { input: data, left: 1, top: 1 }
-                ])
-                .toBuffer())
-            .trim(1)
-            .toBuffer();
+        const source = sharp(data);
+        const { width = 0, height = 0, channels = 4 } = await source.metadata();
+        const padded = source.resize(width + 1, height + 1).composite([
+            {
+                // Set all pixels to the background color
+                input: { create: { width: 1, height: 1, channels, background: color } },
+                tile: true,
+                blend: 'source'
+            },
+            // Write image back, leaving the top left pixel unchanged
+            { input: data, left: 1, top: 1 }
+        ]);
+
+        return await sharp(await padded.toBuffer()).trim(1).toBuffer();
     }
 
     protected async toGif(frames: Buffer[], options: GIFEncoder.GIFOptions & { width: number; height: number; }): Promise<Buffer> {
