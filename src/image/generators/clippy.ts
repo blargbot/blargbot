@@ -1,7 +1,7 @@
 import { BaseImageGenerator } from '@blargbot/image/BaseImageGenerator';
 import { ImageWorker } from '@blargbot/image/ImageWorker';
 import { ClippyOptions, ImageResult } from '@blargbot/image/types';
-import Jimp from 'jimp';
+import sharp from 'sharp';
 
 export class ClippyGenerator extends BaseImageGenerator<'clippy'> {
     public constructor(worker: ImageWorker) {
@@ -9,15 +9,19 @@ export class ClippyGenerator extends BaseImageGenerator<'clippy'> {
     }
 
     public async execute({ text }: ClippyOptions): Promise<ImageResult> {
-        const caption = await this.renderJimpText(text, {
-            font: 'arial.ttf',
-            size: '290x130',
-            gravity: 'North'
-        });
-        const img = await this.getLocalJimp('clippy.png');
-        img.composite(caption, 28, 36);
+        const result = sharp(this.getLocalResourcePath('clippy.png'))
+            .composite([{
+                input: await this.renderText(text, {
+                    font: 'arial.ttf',
+                    size: '290x130',
+                    gravity: 'North'
+                }),
+                left: 28,
+                top: 36
+            }]);
+
         return {
-            data: await img.getBufferAsync(Jimp.MIME_PNG),
+            data: await result.png().toBuffer(),
             fileName: 'clippy.png'
         };
     }

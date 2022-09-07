@@ -1,7 +1,10 @@
+import fs from 'fs/promises';
+import GIFEncoder from 'gifencoder';
 import gm from 'gm';
-import Jimp from 'jimp';
 import fetch from 'node-fetch';
 import path from 'path';
+import sharp from 'sharp';
+import { Readable } from 'stream';
 import { inspect } from 'util';
 
 import { ImageWorker } from './ImageWorker';
@@ -37,15 +40,8 @@ export abstract class BaseImageGenerator<T extends keyof ImageGeneratorMap> {
         return path.join(imgDir, ...segments);
     }
 
-    protected getLocalJimp(...segments: string[]): Promise<Jimp> {
-        return Jimp.read(this.getLocalResourcePath(...segments));
-    }
-
-    protected toImageData(source: Jimp): ImageData {
-        return new ImageData(
-            new Uint8ClampedArray(source.bitmap.data),
-            source.bitmap.width,
-            source.bitmap.height);
+    protected async getLocal(...segments: string[]): Promise<Buffer> {
+        return await fs.readFile(this.getLocalResourcePath(...segments));
     }
 
     protected async toBuffer(source: gm.State, format?: string): Promise<Buffer> {
@@ -60,10 +56,6 @@ export abstract class BaseImageGenerator<T extends keyof ImageGeneratorMap> {
         });
     }
 
-    protected async getRemoteJimp(url: string): Promise<Jimp> {
-        return await Jimp.read(await this.getRemote(url));
-    }
-
     protected async getRemote(url: string): Promise<Buffer> {
         url = url.trim();
         if (url.startsWith('<') && url.endsWith('>')) {
@@ -75,11 +67,6 @@ export abstract class BaseImageGenerator<T extends keyof ImageGeneratorMap> {
 
         switch (response.headers.get('content-type')) {
             case 'image/gif':
-                return await this.toBuffer(
-                    gm(response.body, 'temp.gif')
-                        .selectFrame(1)
-                        .setFormat('png')
-                );
             case 'image/png':
             case 'image/jpeg':
             case 'image/bmp':
@@ -94,8 +81,6 @@ export abstract class BaseImageGenerator<T extends keyof ImageGeneratorMap> {
             source = im(source);
         else if (Array.isArray(source))
             source = im(...source);
-        else if (isJimp(source))
-            source = im(await source.getBufferAsync(Jimp.MIME_PNG));
         else if (source instanceof Buffer)
             source = im(source);
         else if (!isGm(source))
@@ -107,19 +92,49 @@ export abstract class BaseImageGenerator<T extends keyof ImageGeneratorMap> {
         return await this.toBuffer(source, format);
     }
 
-    protected async generateJimp(source: MagickSource, configure: (image: gm.State) => (Promise<void> | void)): Promise<Jimp> {
-        return await Jimp.read(await this.generate(source, configure));
+    protected async trim(data: Buffer, color: sharp.Color = 'transparent'): Promise<Buffer> {
+        const { width = 0, height = 0, channels = 4 } = await sharp(data).metadata();
+        return await sharp(
+            await sharp(data)
+                .resize(width + 1, height + 1)
+                .composite([
+                    {
+                        input: { create: { width: 1, height: 1, channels, background: color } },
+                        tile: true,
+                        blend: 'source'
+                    },
+                    { input: data, left: 1, top: 1 }
+                ])
+                .toBuffer())
+            .trim(1)
+            .toBuffer();
     }
 
-    protected renderJimpText(text: string, options: TextOptions): Promise<Jimp> {
-        options.fill ??= 'black';
-        options.gravity ??= 'Center';
+    protected async toGif(frames: Buffer[], options: GIFEncoder.GIFOptions & { width: number; height: number; }): Promise<Buffer> {
+        return await new Promise<Buffer>((resolve, reject) => {
+            const encoder = new GIFEncoder(options.width, options.height);
+            const frameStream = Readable.from(frames);
+            const buffers: Uint8Array[] = [];
+            const sr = frameStream.pipe(encoder.createWriteStream(options));
+            sr.on('data', (data: Uint8Array) => buffers.push(data));
+            sr.on('error', err => reject(err));
+            sr.on('end', () => {
+                const buffer = new Uint8Array(buffers.reduce((c, b) => c + b.length, 0));
+                buffers.reduce((offset, bytes) => {
+                    buffer.set(bytes, offset);
+                    return offset + bytes.length;
+                }, 0);
+                resolve(Buffer.from(buffer));
+            });
+        });
+    }
 
+    protected async renderText(text: string, options: TextOptions): Promise<Buffer> {
         this.worker.logger.debug(`Generating caption for text '${text}'`);
 
-        const { fill, gravity, font, fontsize, size, stroke, strokewidth } = options;
+        const { fill = 'black', gravity = 'center', font, fontsize, size, stroke, strokewidth } = options;
 
-        return this.generateJimp(Buffer.from(''), image => {
+        return await this.generate(Buffer.from(''), image => {
             if (font !== undefined)
                 image.font(this.getLocalResourcePath('fonts', font), fontsize);
 
@@ -146,10 +161,6 @@ export abstract class BaseImageGenerator<T extends keyof ImageGeneratorMap> {
             image.setFormat('png');
         });
     }
-}
-
-function isJimp(source: MagickSource): source is Jimp {
-    return source instanceof Jimp;
 }
 
 function isGm(source: MagickSource): source is gm.State {

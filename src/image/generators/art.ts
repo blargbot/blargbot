@@ -1,7 +1,7 @@
 import { BaseImageGenerator } from '@blargbot/image/BaseImageGenerator';
 import { ImageWorker } from '@blargbot/image/ImageWorker';
 import { ArtOptions, ImageResult } from '@blargbot/image/types';
-import Jimp from 'jimp';
+import sharp from 'sharp';
 
 export class ArtGenerator extends BaseImageGenerator<'art'> {
     public constructor(worker: ImageWorker) {
@@ -9,15 +9,18 @@ export class ArtGenerator extends BaseImageGenerator<'art'> {
     }
 
     public async execute({ avatar }: ArtOptions): Promise<ImageResult> {
-        const avatarImg = await this.getRemoteJimp(avatar);
-        avatarImg.resize(370, 370);
-        const foreground = await this.getLocalJimp('art.png');
-        const img = new Jimp(1364, 1534);
-        img.composite(avatarImg, 903, 92);
-        img.composite(avatarImg, 903, 860);
-        img.composite(foreground, 0, 0);
+        const avatarImg = await sharp(await this.getRemote(avatar))
+            .resize(370, 370)
+            .toBuffer();
+
+        const img = sharp({ create: { width: 1364, height: 1534, channels: 4, background: 'transparent' } })
+            .composite([
+                { input: avatarImg, left: 903, top: 92 },
+                { input: avatarImg, left: 903, top: 860 },
+                { input: this.getLocalResourcePath('art.png') }
+            ]);
         return {
-            data: await img.getBufferAsync(Jimp.MIME_PNG),
+            data: await img.png().toBuffer(),
             fileName: 'sobeautifulstan.png'
         };
     }

@@ -1,7 +1,7 @@
 import { BaseImageGenerator } from '@blargbot/image/BaseImageGenerator';
 import { ImageWorker } from '@blargbot/image/ImageWorker';
 import { ClydeOptions, ImageResult } from '@blargbot/image/types';
-import Jimp from 'jimp';
+import sharp from 'sharp';
 
 export class ClydeGenerator extends BaseImageGenerator<'clyde'> {
     public constructor(worker: ImageWorker) {
@@ -9,25 +9,23 @@ export class ClydeGenerator extends BaseImageGenerator<'clyde'> {
     }
 
     public async execute({ text }: ClydeOptions): Promise<ImageResult> {
-        const originalText = await this.renderJimpText(text, {
+        const textImg = await this.trim(await this.renderText(text, {
             font: 'whitney.ttf',
             fontsize: 20,
-            fill: '#ffffff',
-            gravity: 'west',
+            fill: '#ffffffB0',
             size: '714x1000'
-        });
-        const body = new Jimp(originalText.bitmap.width + 10, originalText.bitmap.height + 10);
-        body.composite(originalText, 5, 5).autocrop().opacity(0.7);
-        const height = 165 + body.bitmap.height;
-        const canvas = new Jimp(864, height, 0x33363bff);
-        const top = await this.getLocalJimp('clydeTop.png');
-        const bottom = await this.getLocalJimp('clydeBottom.png');
-        canvas.composite(top, 0, 0);
-        canvas.composite(body, 118, 83);
-        canvas.composite(bottom, 0, height - bottom.bitmap.height);
+        }));
+
+        const { height = 0 } = await sharp(textImg).metadata();
+        const result = sharp({ create: { width: 864, height: height + 165, channels: 4, background: '#33363bff' } })
+            .composite([
+                { input: this.getLocalResourcePath('clydeTop.png'), gravity: sharp.gravity.northwest },
+                { input: textImg, left: 118, top: 83 },
+                { input: this.getLocalResourcePath('clydeBottom.png'), gravity: sharp.gravity.southwest }
+            ]);
 
         return {
-            data: await canvas.getBufferAsync(Jimp.MIME_PNG),
+            data: await result.png().toBuffer(),
             fileName: 'clyde.png'
         };
     }

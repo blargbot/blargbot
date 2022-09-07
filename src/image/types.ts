@@ -1,17 +1,16 @@
 import { CommandMap } from 'blargbot-image-api';
 import gm from 'gm';
-import Jimp from 'jimp';
 
 export type ImageIPCContract = {
     [P in keyof ImageGeneratorMap]: { masterGets: ImageResult<string> | null; workerGets: ImageGeneratorMap[P]; };
 }
 
-export type MagickSource = string | Jimp | Buffer | gm.State | [width: number, height: number, color?: string];
+export type MagickSource = string | Buffer | gm.State | [width: number, height: number, color?: string];
 
 export interface TextOptions {
     font?: string;
     fontsize?: number;
-    size: string;
+    size: `${number | ''}x${number | ''}`;
     fill?: string;
     gravity?: string;
     stroke?: string;
@@ -27,14 +26,6 @@ export interface PhantomOptions {
 export interface PhantomTransformOptions<T> extends PhantomOptions {
     transform: (arg: T) => void;
     transformArg: T;
-}
-
-export interface JimpGifEncoderOptions {
-    width: number;
-    height: number;
-    repeat?: number;
-    quality?: number;
-    delay?: number;
 }
 
 export interface ImageRequest<T extends keyof ImageGeneratorMap, R = ImageGeneratorMap[T]> {

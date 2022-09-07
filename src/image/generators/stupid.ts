@@ -1,7 +1,7 @@
 import { BaseImageGenerator } from '@blargbot/image/BaseImageGenerator';
 import { ImageWorker } from '@blargbot/image/ImageWorker';
 import { ImageResult, StupidOptions } from '@blargbot/image/types';
-import Jimp from 'jimp';
+import sharp from 'sharp';
 
 export class StupidGenerator extends BaseImageGenerator<'stupid'> {
     public constructor(worker: ImageWorker) {
@@ -9,28 +9,35 @@ export class StupidGenerator extends BaseImageGenerator<'stupid'> {
     }
 
     public async execute({ text, avatar }: StupidOptions): Promise<ImageResult> {
-        const caption = await this.renderJimpText(text, {
-            font: 'ARCENA.ttf',
-            fill: 'black',
-            stroke: 'white',
-            strokewidth: '5',
-            size: '272x60'
-        });
-
-        const img = await this.getLocalJimp('stupid.png');
+        const overlays = [];
         if (avatar !== undefined) {
-            const avatarImg = await this.getRemoteJimp(avatar);
-            const smallAvatar = avatarImg.clone();
-            smallAvatar.resize(74, 74);
-            img.composite(smallAvatar, 166, 131);
-            avatarImg.resize(171, 171);
-            avatarImg.rotate(-18);
-            img.composite(avatarImg, 277, 32);
+            const avatarImg = sharp(await this.getRemote(avatar)).ensureAlpha();
+            const smallAvatar = avatarImg.clone().resize(74, 74);
+            const bigAvatar = avatarImg.clone().resize(171, 171).rotate(18, { background: 'transparent' });
+            overlays.push(
+                { input: await smallAvatar.toBuffer(), left: 166, top: 131 },
+                { input: await bigAvatar.toBuffer(), left: 277, top: 32 }
+            );
         }
-        img.composite(caption, 268, 0);
+
+        const result = sharp(this.getLocalResourcePath('stupid.png'))
+            .composite([
+                ...overlays,
+                {
+                    input: await this.renderText(text, {
+                        font: 'ARCENA.ttf',
+                        fill: 'black',
+                        stroke: 'white',
+                        strokewidth: '5',
+                        size: '272x60'
+                    }),
+                    left: 268,
+                    top: 0
+                }
+            ]);
 
         return {
-            data: await img.getBufferAsync(Jimp.MIME_PNG),
+            data: await result.png().toBuffer(),
             fileName: 'stupid.png'
         };
     }

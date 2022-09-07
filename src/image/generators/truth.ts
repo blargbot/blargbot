@@ -1,7 +1,7 @@
 import { BaseImageGenerator } from '@blargbot/image/BaseImageGenerator';
 import { ImageWorker } from '@blargbot/image/ImageWorker';
 import { ImageResult, TruthOptions } from '@blargbot/image/types';
-import Jimp from 'jimp';
+import sharp from 'sharp';
 
 export class TruthGenerator extends BaseImageGenerator<'truth'> {
     public constructor(worker: ImageWorker) {
@@ -9,16 +9,19 @@ export class TruthGenerator extends BaseImageGenerator<'truth'> {
     }
 
     public async execute({ text }: TruthOptions): Promise<ImageResult> {
-        const caption = await this.renderJimpText(text, {
-            font: 'AnnieUseYourTelescope.ttf',
-            size: '96x114',
-            gravity: 'North'
-        });
-        const img = await this.getLocalJimp('truth.png');
-        img.composite(caption, 95, 289);
+        const result = sharp(this.getLocalResourcePath('truth.png'))
+            .composite([{
+                input: await this.renderText(text, {
+                    font: 'AnnieUseYourTelescope.ttf',
+                    size: '96x114',
+                    gravity: 'North'
+                }),
+                left: 95,
+                top: 289
+            }]);
 
         return {
-            data: await img.getBufferAsync(Jimp.MIME_PNG),
+            data: await result.png().toBuffer(),
             fileName: 'truth.png'
         };
     }

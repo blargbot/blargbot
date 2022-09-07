@@ -1,4 +1,5 @@
 import moment, { Duration } from 'moment-timezone';
+import { performance } from 'perf_hooks';
 
 export class Timer {
     #elapsed: number;

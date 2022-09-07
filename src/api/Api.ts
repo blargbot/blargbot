@@ -4,6 +4,7 @@ import { ModuleLoader } from '@blargbot/core/modules';
 import { Logger } from '@blargbot/logger';
 import express, { Express } from 'express';
 import { createServer, Server } from 'http';
+import { performance } from 'perf_hooks';
 
 import { ApiWorker } from './ApiWorker';
 import { BaseRoute } from './BaseRoute';

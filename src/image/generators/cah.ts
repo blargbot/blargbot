@@ -1,7 +1,7 @@
 import { BaseImageGenerator } from '@blargbot/image/BaseImageGenerator';
 import { ImageWorker } from '@blargbot/image/ImageWorker';
 import { CahOptions, ImageResult } from '@blargbot/image/types';
-import Jimp from 'jimp';
+import sharp, { OverlayOptions } from 'sharp';
 
 export class CahGenerator extends BaseImageGenerator<'cah'> {
     public constructor(worker: ImageWorker) {
@@ -9,36 +9,33 @@ export class CahGenerator extends BaseImageGenerator<'cah'> {
     }
 
     public async execute({ white, black }: CahOptions): Promise<ImageResult> {
-        const blackCard = await this.getLocalJimp('blackcard.png');
-        const whiteCard = await this.getLocalJimp('whitecard.png');
+        const blackCard = await this.getLocal('blackcard.png');
+        const whiteCard = await this.getLocal('whitecard.png');
 
-        const finalImg = new Jimp(183 * (white.length + 1), 254);
-        const blackCaption = await this.renderJimpText(black, {
-            font: 'arial.ttf',
-            fill: '#ffffff',
-            size: '144x190',
-            gravity: 'northwest'
-        });
-        finalImg.composite(blackCard, 0, 0);
-        finalImg.composite(blackCaption, 19, 19);
+        const cards = [
+            { img: blackCard, text: black, fill: 'white' },
+            ...white.map(text => ({ img: whiteCard, text, fill: 'black' }))
+        ].map((c, i) => ({ ...c, left: i * 183, top: 0 }));
 
-        for (let i = 0; i < white.length; i++) {
-            const w = white[i];
-            if (typeof w !== 'string')
-                continue;
+        const overlays = await Promise.all(cards.map<Promise<OverlayOptions[]>>(async c => [
+            { input: c.img, left: c.left, top: c.top },
+            {
+                input: await this.renderText(c.text, {
+                    font: 'arial.ttf',
+                    fill: c.fill,
+                    size: '144x190',
+                    gravity: 'northwest'
+                }),
+                left: c.left + 19,
+                top: c.top + 19
+            }
+        ]));
 
-            const whiteCaption = await this.renderJimpText(w, {
-                font: 'arial.ttf',
-                fill: 'black',
-                size: '144x190',
-                gravity: 'northwest'
-            });
-            finalImg.composite(whiteCard, 183 * (i + 1), 0);
-            finalImg.composite(whiteCaption, 183 * (i + 1) + 19, 19);
-        }
+        const result = sharp({ create: { width: 183 * cards.length, height: 254, channels: 4, background: 'transparent' } })
+            .composite(overlays.flat());
 
         return {
-            data: await finalImg.getBufferAsync(Jimp.MIME_PNG),
+            data: await result.png().toBuffer(),
             fileName: 'cah.png'
         };
     }

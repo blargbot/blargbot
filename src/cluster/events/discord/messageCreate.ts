@@ -5,6 +5,7 @@ import { DiscordEventService } from '@blargbot/core/serviceTypes';
 import { IMiddleware } from '@blargbot/core/types';
 import { KnownMessage, Message, PossiblyUncachedTextableChannel } from 'eris';
 import moment from 'moment-timezone';
+import { performance } from 'perf_hooks';
 
 import { AutoresponseMiddleware, CensorMiddleware, ChannelBlacklistMiddleware, ChatLogMiddleware, CleverbotMiddleware, CommandMiddleware, IgnoreBotsMiddleware, IgnoreSelfMiddleware, MessageAwaiterMiddleware, RolemesMiddleware, TableflipMiddleware, UpsertUserMiddleware } from './middleware';
 
