@@ -1,5 +1,4 @@
-import { FindOptions, Model, ModelAttributes, ModelStatic } from 'sequelize/types';
-import { MakeNullishOptional } from 'sequelize/types/utils';
+import { CreationAttributes, FindOptions, Model, ModelAttributes, ModelStatic } from 'sequelize';
 
 import { PostgresDb } from '../clients';
 
@@ -19,7 +18,7 @@ export class PostgresDbTable<T extends object> {
         await this.#model.destroy(filter);
     }
 
-    public async upsert(value: MakeNullishOptional<T>): Promise<void> {
+    public async upsert(value: CreationAttributes<Model<T, T>>): Promise<void> {
         await this.#model.upsert(value);
     }
 }
