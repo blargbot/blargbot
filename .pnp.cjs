@@ -457,7 +457,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/jsonwebtoken", "npm:8.5.9"],\
             ["@types/node-fetch", "npm:2.6.2"],\
             ["@types/ws", "npm:8.5.3"],\
-            ["discord-api-types", "npm:0.30.0"],\
+            ["discord-api-types", "npm:0.37.7"],\
             ["express", "npm:4.18.1"],\
             ["express-promise-router", "virtual:095fcb10883c40f470ac6e6afe01baaad608ecd7018d2aa01600e1b94a63e74e03d9c60d9c4b5eae313115c2ddfa875282bf27ef0d1c898d09652020afc63115#npm:4.1.1"],\
             ["jsonwebtoken", "npm:8.5.1"],\
@@ -486,7 +486,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/rwlock", "npm:5.0.3"],\
             ["brainfuck-node", "npm:1.0.2"],\
             ["color", "npm:4.2.3"],\
-            ["discord-api-types", "npm:0.30.0"],\
+            ["discord-api-types", "npm:0.37.7"],\
             ["eris", "npm:0.17.1"],\
             ["html-entities", "npm:2.3.3"],\
             ["moment-timezone", "npm:0.5.37"],\
@@ -515,7 +515,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["chai-bytes", "virtual:94580678571635b8fa683d1ccf0d1493f27441684157cd3c71327884aaa620119eb99f1b6fb9168cfe69174ff44ca73b71d597b5e675b7d6ecf9ae214b4d650b#npm:0.1.2"],\
             ["chai-datetime", "npm:1.8.0"],\
             ["chai-exclude", "virtual:94580678571635b8fa683d1ccf0d1493f27441684157cd3c71327884aaa620119eb99f1b6fb9168cfe69174ff44ca73b71d597b5e675b7d6ecf9ae214b4d650b#npm:2.1.0"],\
-            ["discord-api-types", "npm:0.30.0"],\
+            ["discord-api-types", "npm:0.37.7"],\
             ["eris", "npm:0.17.1"],\
             ["mocha", "npm:10.0.0"],\
             ["moment-timezone", "npm:0.5.37"],\
@@ -549,7 +549,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/xml2js", "npm:0.4.11"],\
             ["brainfuck-node", "npm:1.0.2"],\
             ["crypto", "npm:1.0.1"],\
-            ["discord-api-types", "npm:0.30.0"],\
+            ["discord-api-types", "npm:0.37.7"],\
             ["eris", "npm:0.17.1"],\
             ["eventemitter3", "npm:4.0.7"],\
             ["moment-timezone", "npm:0.5.37"],\
@@ -3691,10 +3691,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["discord-api-types", [\
-        ["npm:0.30.0", {\
-          "packageLocation": "./.yarn/cache/discord-api-types-npm-0.30.0-b1e106c4a4-c4b0afbc45.zip/node_modules/discord-api-types/",\
+        ["npm:0.37.7", {\
+          "packageLocation": "./.yarn/cache/discord-api-types-npm-0.37.7-0cb81f7489-0d20679416.zip/node_modules/discord-api-types/",\
           "packageDependencies": [\
-            ["discord-api-types", "npm:0.30.0"]\
+            ["discord-api-types", "npm:0.37.7"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -6296,7 +6296,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ]],\
       ["mocha", [\
         ["npm:10.0.0", {\
-          "packageLocation": "./.yarn/cache/mocha-npm-10.0.0-d8858c6bb3-ba49ddcf80.zip/node_modules/mocha/",\
+          "packageLocation": "./.yarn/unplugged/mocha-npm-10.0.0-d8858c6bb3/node_modules/mocha/",\
           "packageDependencies": [\
             ["mocha", "npm:10.0.0"],\
             ["@ungap/promise-all-settled", "npm:1.1.2"],\

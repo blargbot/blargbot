@@ -16,16 +16,14 @@ runSubtagTests({
             code: '{channelcategories}',
             expected: '["29346782894762","2938476297493274"]',
             setup(ctx) {
-                ctx.guild.channels.push(
-                    SubtagTestContext.createApiChannel({
-                        id: '29346782894762',
-                        type: ChannelType.GuildCategory
-                    }),
-                    SubtagTestContext.createApiChannel({
-                        id: '2938476297493274',
-                        type: ChannelType.GuildCategory
-                    })
-                );
+                ctx.channels.abc = SubtagTestContext.createApiChannel({
+                    id: '29346782894762',
+                    type: ChannelType.GuildCategory
+                });
+                ctx.channels.def = SubtagTestContext.createApiChannel({
+                    id: '2938476297493274',
+                    type: ChannelType.GuildCategory
+                });
             }
         }
     ]

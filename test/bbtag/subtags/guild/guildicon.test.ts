@@ -14,7 +14,7 @@ runSubtagTests({
                 ctx.discordOptions.defaultImageSize = 512;
                 ctx.guild.id = '2387612328973643892746';
                 ctx.roles.everyone.id = ctx.guild.id;
-                ctx.message.guild_id = ctx.guild.id;
+                ctx.channels.command.guild_id = ctx.guild.id;
                 ctx.guild.icon = 'myCoolIcon';
             }
         },

@@ -35,6 +35,6 @@
         "@types/sharp": "^0.30.5",
         "@types/wolken": "workspace:^",
         "@types/xml2js": "^0.4.11",
-        "discord-api-types": "^0.30.0"
+        "discord-api-types": "^0.37.7"
     }
 }

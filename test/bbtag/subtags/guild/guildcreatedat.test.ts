@@ -8,7 +8,7 @@ runSubtagTests({
     setup(ctx) {
         ctx.guild.id = '417411399422312468';
         ctx.roles.everyone.id = ctx.guild.id;
-        ctx.message.guild_id = ctx.guild.id;
+        ctx.channels.command.guild_id = ctx.guild.id;
     },
     cases: [
         { code: '{guildcreatedat}', expected: '2018-02-25T20:03:52Z' },

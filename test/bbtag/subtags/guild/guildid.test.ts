@@ -12,7 +12,7 @@ runSubtagTests({
             setup(ctx) {
                 ctx.guild.id = '239874239478293234';
                 ctx.roles.everyone.id = ctx.guild.id;
-                ctx.message.guild_id = ctx.guild.id;
+                ctx.channels.command.guild_id = ctx.guild.id;
             }
         }
     ]

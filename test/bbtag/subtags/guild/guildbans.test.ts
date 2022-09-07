@@ -18,7 +18,7 @@ runSubtagTests({
                 user1.setup(m => m.id).thenReturn('23946327849364832');
                 user2.setup(m => m.id).thenReturn('32967423897649864');
 
-                ctx.discord.setup(m => m.getGuildBans(ctx.guild.id))
+                ctx.discord.setup(m => m.getGuildBans(ctx.guild.id, undefined))
                     .thenResolve([
                         { user: user1.instance },
                         { user: user2.instance }

@@ -20,18 +20,16 @@ runSubtagTests({
                     setup(channel, ctx) {
                         channel.type = ChannelType.GuildCategory;
 
-                        ctx.guild.channels.push(
-                            SubtagTestContext.createApiChannel({
-                                id: '2398462398472',
-                                type: ChannelType.GuildText,
-                                parent_id: channel.id
-                            }),
-                            SubtagTestContext.createApiChannel({
-                                id: '23098475928447',
-                                type: ChannelType.GuildText,
-                                parent_id: channel.id
-                            })
-                        );
+                        ctx.channels.abc = SubtagTestContext.createApiChannel({
+                            id: '2398462398472',
+                            type: ChannelType.GuildText,
+                            parent_id: channel.id
+                        });
+                        ctx.channels.def = SubtagTestContext.createApiChannel({
+                            id: '23098475928447',
+                            type: ChannelType.GuildText,
+                            parent_id: channel.id
+                        });
                     }
                 }
             ]
