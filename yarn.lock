@@ -402,7 +402,6 @@ __metadata:
     "@types/color": ^3.0.3
     "@types/cron": ^2.0.0
     "@types/eris": "workspace:^"
-    "@types/long": "workspace:^"
     "@types/require-reload": "workspace:^"
     "@types/safe-regex": ^1.1.3
     "@types/unorm": ^1.3.28
@@ -413,7 +412,6 @@ __metadata:
     eris: ^0.17.1
     eventemitter3: ^4.0.7
     limax: ^3.0.0
-    long: ^2.4.0
     moment-timezone: ^0.5.37
     prom-client: ^14.1.0
     require-reload: ^0.2.2
@@ -433,7 +431,6 @@ __metadata:
     "@blargbot/logger": "workspace:^"
     "@blargbot/mapping": "workspace:^"
     "@types/catflake": "workspace:^"
-    "@types/long": "workspace:^"
     "@types/pg": ^8.6.5
     "@types/rethinkdb": "workspace:^"
     "@types/sequelize": ^4.28.14
@@ -1239,12 +1236,6 @@ __metadata:
   checksum: ff9653c33f5000d0f131fd98a950a0343e2e33107dd067a97ac4a3b9678e1a2e39ea44772ad920f54ef6e8f107f76bc92c2584ba905a0dc4253282a4101166d0
   languageName: node
   linkType: hard
-
-"@types/long@workspace:^, @types/long@workspace:definitions/long":
-  version: 0.0.0-use.local
-  resolution: "@types/long@workspace:definitions/long"
-  languageName: unknown
-  linkType: soft
 
 "@types/luxon@npm:*":
   version: 3.0.1
@@ -4928,7 +4919,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"long@npm:^2.2.0, long@npm:^2.4.0":
+"long@npm:^2.2.0":
   version: 2.4.0
   resolution: "long@npm:2.4.0"
   checksum: e24fd5e14be90ba6ec3faa43b3b0f1c4ac88bfdc52471d90f63e173572f6db27c45873e847f8af58283ca3140eb42d7ba11708102f3cc0956793b03305c737e0

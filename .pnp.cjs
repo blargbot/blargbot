@@ -37,10 +37,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:definitions/eris"\
       },\
       {\
-        "name": "@types/long",\
-        "reference": "workspace:definitions/long"\
-      },\
-      {\
         "name": "@types/require-reload",\
         "reference": "workspace:definitions/require-reload"\
       },\
@@ -130,7 +126,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@types/brainfuck-node", ["workspace:definitions/brainfuck-node"]],\
       ["@types/catflake", ["workspace:definitions/catflake"]],\
       ["@types/eris", ["workspace:definitions/eris"]],\
-      ["@types/long", ["workspace:definitions/long"]],\
       ["@types/require-reload", ["workspace:definitions/require-reload"]],\
       ["@types/rethinkdb", ["workspace:definitions/rethinkdb"]],\
       ["@types/wolken", ["workspace:definitions/wolken"]],\
@@ -594,7 +589,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/color", "npm:3.0.3"],\
             ["@types/cron", "npm:2.0.0"],\
             ["@types/eris", "workspace:definitions/eris"],\
-            ["@types/long", "workspace:definitions/long"],\
             ["@types/require-reload", "workspace:definitions/require-reload"],\
             ["@types/safe-regex", "npm:1.1.3"],\
             ["@types/unorm", "npm:1.3.28"],\
@@ -605,7 +599,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["eris", "npm:0.17.1"],\
             ["eventemitter3", "npm:4.0.7"],\
             ["limax", "npm:3.0.0"],\
-            ["long", "npm:2.4.0"],\
             ["moment-timezone", "npm:0.5.37"],\
             ["prom-client", "npm:14.1.0"],\
             ["require-reload", "npm:0.2.2"],\
@@ -642,7 +635,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/logger", "workspace:src/logger"],\
             ["@blargbot/mapping", "workspace:src/mapping"],\
             ["@types/catflake", "workspace:definitions/catflake"],\
-            ["@types/long", "workspace:definitions/long"],\
             ["@types/pg", "npm:8.6.5"],\
             ["@types/rethinkdb", "workspace:definitions/rethinkdb"],\
             ["@types/sequelize", "npm:4.28.14"],\
@@ -1553,13 +1545,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/long", "npm:4.0.1"]\
           ],\
           "linkType": "HARD"\
-        }],\
-        ["workspace:definitions/long", {\
-          "packageLocation": "./definitions/long/",\
-          "packageDependencies": [\
-            ["@types/long", "workspace:definitions/long"]\
-          ],\
-          "linkType": "SOFT"\
         }]\
       ]],\
       ["@types/luxon", [\
