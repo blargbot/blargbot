@@ -10,9 +10,9 @@
         "@blargbot/mapping": "workspace:^",
         "brainfuck-node": "^1.0.2",
         "color": "^4.2.3",
-        "eris": "^0.17.0",
+        "eris": "^0.17.1",
         "html-entities": "^2.3.3",
-        "moment-timezone": "^0.5.35",
+        "moment-timezone": "^0.5.37",
         "node-fetch": "^2.6.7",
         "rwlock": "^5.0.0"
     },
@@ -22,6 +22,6 @@
         "@types/eris": "workspace:^",
         "@types/node-fetch": "^2.6.2",
         "@types/rwlock": "^5.0.3",
-        "discord-api-types": "^0.30.0"
+        "discord-api-types": "^0.37.7"
     }
 }

@@ -21,7 +21,8 @@ export class GuildSizeSubtag extends CompiledSubtag {
         });
     }
 
-    public getMemberCount(context: BBTagContext): number {
-        return context.guild.memberCount;
+    public async getMemberCount(context: BBTagContext): Promise<number> {
+        await context.util.ensureMemberCache(context.guild);
+        return context.guild.members.size;
     }
 }

@@ -1,7 +1,7 @@
 import { BaseImageGenerator } from '@blargbot/image/BaseImageGenerator';
 import { ImageWorker } from '@blargbot/image/ImageWorker';
 import { ImageResult, PixelateOptions } from '@blargbot/image/types';
-import Jimp from 'jimp';
+import sharp from 'sharp';
 
 export class PixelateGenerator extends BaseImageGenerator<'pixelate'> {
     public constructor(worker: ImageWorker) {
@@ -9,17 +9,15 @@ export class PixelateGenerator extends BaseImageGenerator<'pixelate'> {
     }
 
     public async execute({ url, scale }: PixelateOptions): Promise<ImageResult> {
-        const image = await this.getRemoteJimp(url);
-        if (image.bitmap.width >= image.bitmap.height) {
-            image.resize(scale, Jimp.AUTO);
-            image.resize(256, Jimp.AUTO, Jimp.RESIZE_NEAREST_NEIGHBOR);
-        } else {
-            image.resize(Jimp.AUTO, scale);
-            image.resize(Jimp.AUTO, 256, Jimp.RESIZE_NEAREST_NEIGHBOR);
-        }
+        const pixelated = await sharp(await this.getRemote(url))
+            .resize(scale, scale, { fit: 'inside' })
+            .toBuffer();
+
+        const result = sharp(pixelated)
+            .resize(256, 256, { fit: 'outside', kernel: 'nearest' });
 
         return {
-            data: await image.getBufferAsync(Jimp.MIME_PNG),
+            data: await result.png().toBuffer(),
             fileName: 'pixelate.png'
         };
     }

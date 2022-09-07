@@ -13,11 +13,6 @@ const messageTypes: { [P in string & keyof typeof MessageType]: typeof MessageTy
     ['ChannelNameChange']: MessageType.ChannelNameChange,
     ['ChannelIconChange']: MessageType.ChannelIconChange,
     ['ChannelPinnedMessage']: MessageType.ChannelPinnedMessage,
-    ['GuildMemberJoin']: MessageType.GuildMemberJoin,
-    ['UserPremiumGuildSubscription']: MessageType.UserPremiumGuildSubscription,
-    ['UserPremiumGuildSubscriptionTier1']: MessageType.UserPremiumGuildSubscriptionTier1,
-    ['UserPremiumGuildSubscriptionTier2']: MessageType.UserPremiumGuildSubscriptionTier2,
-    ['UserPremiumGuildSubscriptionTier3']: MessageType.UserPremiumGuildSubscriptionTier3,
     ['ChannelFollowAdd']: MessageType.ChannelFollowAdd,
     ['GuildDiscoveryDisqualified']: MessageType.GuildDiscoveryDisqualified,
     ['GuildDiscoveryRequalified']: MessageType.GuildDiscoveryRequalified,
@@ -28,7 +23,12 @@ const messageTypes: { [P in string & keyof typeof MessageType]: typeof MessageTy
     ['ChatInputCommand']: MessageType.ChatInputCommand,
     ['ThreadStarterMessage']: MessageType.ThreadStarterMessage,
     ['GuildInviteReminder']: MessageType.GuildInviteReminder,
-    ['ContextMenuCommand']: MessageType.ContextMenuCommand
+    ['ContextMenuCommand']: MessageType.ContextMenuCommand,
+    ['UserJoin']: MessageType.UserJoin,
+    ['GuildBoost']: MessageType.GuildBoost,
+    ['GuildBoostTier1']: MessageType.GuildBoostTier1,
+    ['GuildBoostTier2']: MessageType.GuildBoostTier2,
+    ['GuildBoostTier3']: MessageType.GuildBoostTier3
 };
 
 runSubtagTests({

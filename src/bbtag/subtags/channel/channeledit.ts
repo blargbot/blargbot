@@ -86,7 +86,8 @@ const mapChannelOptions = mapping.json(
         invitable: [undefined],
         ownerID: [undefined],
         videoQualityMode: [undefined],
-        position: [undefined]
+        position: [undefined],
+        permissionOverwrites: [undefined]
     })
 );
 
@@ -108,6 +109,7 @@ const mapThreadOptions = mapping.json(
         topic: [undefined],
         userLimit: [undefined],
         videoQualityMode: [undefined],
-        position: [undefined]
+        position: [undefined],
+        permissionOverwrites: [undefined]
     })
 );

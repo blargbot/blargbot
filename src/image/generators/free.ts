@@ -1,9 +1,8 @@
 import { randInt } from '@blargbot/core/utils';
 import { BaseImageGenerator } from '@blargbot/image/BaseImageGenerator';
 import { ImageWorker } from '@blargbot/image/ImageWorker';
-import { JimpGifEncoder } from '@blargbot/image/JimpGifEncoder';
 import { FreeOptions, ImageResult } from '@blargbot/image/types';
-import Jimp from 'jimp';
+import sharp from 'sharp';
 
 export class FreeGenerator extends BaseImageGenerator<'free'> {
     public constructor(worker: ImageWorker) {
@@ -11,7 +10,7 @@ export class FreeGenerator extends BaseImageGenerator<'free'> {
     }
 
     public async execute({ top, bottom }: FreeOptions): Promise<ImageResult> {
-        const topCaption = await this.renderJimpText(top, {
+        const topCaption = await this.renderText(top, {
             font: 'impact.ttf',
             fill: 'white',
             stroke: 'black',
@@ -20,28 +19,28 @@ export class FreeGenerator extends BaseImageGenerator<'free'> {
             size: '380x100'
         });
         const bottomText = bottom ?? 'CLICK HERE TO\nFIND OUT HOW';
-        const bottomCaption = await this.renderJimpText(bottomText, {
+        const bottomCaption = await this.renderText(bottomText, {
             font: 'arial.ttf',
             fill: 'white',
             gravity: 'center',
             size: '380x70'
         });
 
-        const back1 = await this.getLocalJimp('freefreefree0.png');
-        const back2 = await this.getLocalJimp('freefreefree1.png');
+        const back1 = this.getLocalResourcePath('freefreefree0.png');
+        const back2 = this.getLocalResourcePath('freefreefree1.png');
 
-        const frameCount = 6;
-        const base = new Jimp(400, 300);
-        const gif = new JimpGifEncoder({ width: 400, height: 300, delay: 50 });
-        for (let i = 0; i < frameCount; i++) {
-            const frame = base.clone();
-            frame.composite(i < frameCount / 2 ? back1 : back2, 0, 0);
-            frame.composite(topCaption, i === 0 ? 10 : randInt(-25, 25), i === 0 ? 15 : randInt(0, 20));
-            frame.composite(bottomCaption, 10, 228);
-            gif.addFrame(frame);
+        const frame = sharp({ create: { width: 400, height: 300, channels: 4, background: 'black' } });
+        const frames: Array<Promise<Buffer>> = [];
+        for (let i = 0; i < 6; i++) {
+            frames.push(frame.clone().composite([
+                { input: i < 3 ? back1 : back2 },
+                { input: topCaption, left: i === 0 ? 10 : randInt(-25, 25), top: i === 0 ? 15 : randInt(0, 20) },
+                { input: bottomCaption, left: 10, top: 228 }
+            ]).toBuffer());
         }
+
         return {
-            data: await gif.render(),
+            data: await this.toGif(await Promise.all(frames), { width: 400, height: 300, repeat: 0, delay: 50, quality: 10 }),
             fileName: 'free.gif'
         };
     }

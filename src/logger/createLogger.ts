@@ -34,10 +34,10 @@ export function createLogger(config: Configuration, workerId: string): Logger {
     return _logger;
 }
 
-const logLevels: Record<LogLevel, { color: typeof CatLoggr['_chalk']; isError?: boolean; isTrace?: boolean; sentryLevel?: Sentry.Severity; }> = {
-    fatal: { color: CatLoggr._chalk.red.bgBlack, isError: true, sentryLevel: Sentry.Severity.Fatal },
-    error: { color: CatLoggr._chalk.black.bgRed, isError: true, sentryLevel: Sentry.Severity.Error },
-    warn: { color: CatLoggr._chalk.black.bgYellow, isError: true, sentryLevel: Sentry.Severity.Warning },
+const logLevels: Record<LogLevel, { color: typeof CatLoggr['_chalk']; isError?: boolean; isTrace?: boolean; sentryLevel?: Sentry.SeverityLevel; }> = {
+    fatal: { color: CatLoggr._chalk.red.bgBlack, isError: true, sentryLevel: 'fatal' },
+    error: { color: CatLoggr._chalk.black.bgRed, isError: true, sentryLevel: 'error' },
+    warn: { color: CatLoggr._chalk.black.bgYellow, isError: true, sentryLevel: 'warning' },
     website: { color: CatLoggr._chalk.black.bgCyan },
     ws: { color: CatLoggr._chalk.yellow.bgBlack },
     cluster: { color: CatLoggr._chalk.black.bgMagenta },
@@ -96,7 +96,7 @@ function sentryPreHook(...[{ args, level, context, shard }]: Parameters<PreHookC
     return null;
 }
 
-function sendToSentry(scope: Sentry.Scope, level: Sentry.Severity, error: Error, context: object): void {
+function sendToSentry(scope: Sentry.Scope, level: Sentry.SeverityLevel, error: Error, context: object): void {
     scope.setLevel(level);
     Sentry.captureException(error, context);
 }

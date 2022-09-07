@@ -10,10 +10,10 @@
         "@blargbot/domain": "workspace:^",
         "@blargbot/logger": "workspace:^",
         "@blargbot/res": "workspace:^",
-        "eris": "^0.17.0",
-        "moment-timezone": "^0.5.35",
+        "eris": "^0.17.1",
+        "moment-timezone": "^0.5.37",
         "node-fetch": "^2.6.7",
-        "prom-client": "^14.0.1",
+        "prom-client": "^14.1.0",
         "strip-ansi": "^6.0.1"
     },
     "devDependencies": {

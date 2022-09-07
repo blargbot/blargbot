@@ -14,7 +14,7 @@ import * as chai from 'chai';
 import chaiBytes from 'chai-bytes';
 import chaiDateTime from 'chai-datetime';
 import chaiExclude from 'chai-exclude';
-import { APIChannel, APIGuild, APIGuildMember, APIMessage, APIRole, APITextChannel, APIThreadChannel, APIUser, ChannelType, GuildDefaultMessageNotifications, GuildExplicitContentFilter, GuildMFALevel, GuildNSFWLevel, GuildPremiumTier, GuildVerificationLevel } from 'discord-api-types/v9';
+import { APIChannel, APIGuild, APIGuildMember, APIMessage, APIRole, APITextChannel, APIThreadChannel, APIUser, ChannelType, GuildDefaultMessageNotifications, GuildExplicitContentFilter, GuildMFALevel, GuildNSFWLevel, GuildPremiumTier, GuildVerificationLevel, Snowflake } from 'discord-api-types/v9';
 import { BaseData, Channel, Client as Discord, ClientOptions as DiscordOptions, Collection, Constants, DiscordHTTPError, DiscordRESTError, ExtendedUser, Guild, KnownChannel, KnownChannelMap, KnownGuildTextableChannel, KnownTextableChannel, Member, Message, Role, Shard, ShardManager, User } from 'eris';
 import * as fs from 'fs';
 import { ClientRequest, IncomingMessage } from 'http';
@@ -143,6 +143,10 @@ export class SubtagTestContext {
     public readonly channels = {
         command: SubtagTestContext.createApiChannel({ id: snowflake.create().toString(), name: 'commands' }) as APITextChannel | APIThreadChannel,
         general: SubtagTestContext.createApiChannel({ id: snowflake.create().toString(), name: 'general' }) as APITextChannel | APIThreadChannel
+    } as {
+        command: Extract<APIChannel, { guild_id?: Snowflake; }>;
+        general: Extract<APIChannel, { guild_id?: Snowflake; }>;
+        [name: string]: Extract<APIChannel, { guild_id?: Snowflake; }>;
     };
 
     public readonly guild = SubtagTestContext.createApiGuild(
@@ -150,16 +154,13 @@ export class SubtagTestContext {
             id: this.roles.everyone.id,
             owner_id: this.users.owner.id,
             roles: Object.values(this.roles)
-        },
-        Object.values(this.channels),
-        Object.values(this.members)
+        }
     );
 
     public readonly message: APIMessage = SubtagTestContext.createApiMessage({
         id: snowflake.create().toString(),
-        member: this.members.command,
-        channel_id: this.channels.command.id,
-        guild_id: this.guild.id
+        author: this.users.command,
+        channel_id: this.channels.command.id
     }, this.users.command);
 
     public constructor(public readonly testCase: SubtagTestCase, subtags: Iterable<Subtag>) {
@@ -250,7 +251,7 @@ export class SubtagTestContext {
         const bot = new ExtendedUser(<BaseData><unknown>this.users.bot, this.discord.instance);
         this.discord.setup(m => m.user, false).thenReturn(bot);
 
-        const guild = this.createGuild(this.guild);
+        const guild = this.createGuild(this.guild, Object.values(this.channels), Object.values(this.members));
         this.discord.instance.guilds.add(guild);
 
         const authorizerId = this.options.authorizerId ?? this.options.authorId ?? this.users.authorizer.id;
@@ -259,7 +260,7 @@ export class SubtagTestContext {
         for (const channel of guild.channels.values())
             this.discord.setup(m => m.getChannel(channel.id), false).thenReturn(channel);
 
-        const textableChannelTypes = new Set([ChannelType.GuildText, ChannelType.DM, ChannelType.GroupDM, ChannelType.GuildNews, ChannelType.GuildNewsThread, ChannelType.GuildPrivateThread, ChannelType.GuildPublicThread]);
+        const textableChannelTypes = new Set([ChannelType.GuildText, ChannelType.DM, ChannelType.GroupDM, ChannelType.GuildAnnouncement, ChannelType.AnnouncementThread, ChannelType.PrivateThread, ChannelType.PublicThread]);
         const channel = guild.channels.find(c => textableChannelTypes.has(c.type));
         if (channel === undefined)
             throw new Error('No text channels were added');
@@ -379,14 +380,13 @@ export class SubtagTestContext {
         };
     }
 
-    public createGuild(settings: APIGuild): Guild
-    public createGuild(settings: RequireIds<APIGuild>, channels: APIChannel[], members: APIGuildMember[]): Guild
-    public createGuild(...args: [APIGuild] | [RequireIds<APIGuild>, APIChannel[], APIGuildMember[]]): Guild {
-        const data = args.length === 1 ? args[0] : SubtagTestContext.createApiGuild(...args);
-        return new Guild(<BaseData><unknown>data, this.discord.instance);
+    public createGuild(settings: APIGuild | RequireIds<APIGuild>, channels: APIChannel[], members: APIGuildMember[]): Guild {
+        const data = 'hub_type' in settings ? settings : SubtagTestContext.createApiGuild(settings);
+        const guild = new Guild(<BaseData><unknown>{ ...data, members: members, channels: channels }, this.discord.instance);
+        return guild;
     }
 
-    public static createApiGuild(settings: RequireIds<APIGuild>, channels: APIChannel[], members: APIGuildMember[]): RequiredProps<APIGuild, 'members' | 'roles' | 'channels'> {
+    public static createApiGuild(settings: RequireIds<APIGuild>): RequiredProps<APIGuild, 'roles'> {
         return {
             afk_channel_id: null,
             afk_timeout: 0,
@@ -417,13 +417,12 @@ export class SubtagTestContext {
             vanity_url_code: null,
             verification_level: GuildVerificationLevel.None,
             region: '',
-            channels: channels,
-            members: members,
+            hub_type: null,
             ...settings
         };
     }
 
-    public createChannel<T extends ChannelType>(settings: RequireIds<APIChannel> & { type: T; }): KnownChannelMap[T]
+    public createChannel<T extends keyof KnownChannelMap>(settings: RequireIds<APIChannel> & { type: T; }): KnownChannelMap[T]
     public createChannel(settings: RequireIds<APITextChannel>): APITextChannel
     public createChannel(settings: RequireIds<APIChannel>): KnownChannel
     public createChannel(settings: RequireIds<APIChannel>): KnownChannel {
@@ -433,8 +432,8 @@ export class SubtagTestContext {
 
     public static createApiChannel<T extends ChannelType>(settings: RequireIds<Extract<APIChannel, { type: T; }>> & { type: T; }): Extract<APIChannel, { type: T; }>;
     public static createApiChannel(settings: RequireIds<APITextChannel>): APITextChannel;
-    public static createApiChannel(settings: RequireIds<APIChannel>): APIChannel;
-    public static createApiChannel(settings: RequireIds<APIChannel>): APIChannel {
+    public static createApiChannel<T extends APIChannel>(settings: RequireIds<T>): T;
+    public static createApiChannel<T extends APIChannel>(settings: RequireIds<T>): T {
         return {
             name: 'Test Channel',
             type: ChannelType.GuildText,
@@ -443,7 +442,7 @@ export class SubtagTestContext {
             nsfw: false,
             topic: 'Test channel!',
             ...settings
-        };
+        } as unknown as T;
     }
 }
 /* eslint-enable @typescript-eslint/naming-convention */

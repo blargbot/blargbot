@@ -1,4 +1,5 @@
 import { IMiddleware, MiddlewareOptions, NextMiddleware } from '@blargbot/core/types';
+import { performance } from 'perf_hooks';
 
 const mw: unique symbol = Symbol();
 

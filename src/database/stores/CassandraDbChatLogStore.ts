@@ -4,8 +4,7 @@ import { ChatLog, ChatLogMessage, ChatLogSearchOptions, ChatLogType } from '@bla
 import { ChatLogStore } from '@blargbot/domain/stores';
 import { Logger } from '@blargbot/logger';
 import { mapping } from '@blargbot/mapping';
-import { Client as Cassandra } from 'cassandra-driver';
-import Long from 'long';
+import { Client as Cassandra, types } from 'cassandra-driver';
 import { Duration } from 'moment-timezone';
 
 export class CassandraDbChatLogStore implements ChatLogStore {
@@ -145,7 +144,7 @@ export class CassandraDbChatLogStore implements ChatLogStore {
     }
 }
 
-const mapLongToString = mapping.instanceof(Long).map(v => v.toString());
+const mapLongToString = mapping.instanceof(types.Long).map(v => v.toString());
 
 const mapChatLog = mapping.object<ChatLog>({
     attachments: ['attachment', mapping.choice(

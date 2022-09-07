@@ -100,7 +100,7 @@
             "request": "launch",
             "name": "mocha: all",
             "console": "integratedTerminal",
-            "program": "${workspaceFolder}/.yarn/unplugged/mocha-npm-9.2.2-f7735febb8/node_modules/mocha/bin/_mocha",
+            "program": "${workspaceFolder}/.yarn/unplugged/mocha-npm-10.0.0-d8858c6bb3/node_modules/mocha/bin/_mocha",
             "args": [
                 "--no-timeouts",
                 "--config",
@@ -127,7 +127,7 @@
             "request": "launch",
             "name": "mocha: current",
             "console": "integratedTerminal",
-            "program": "${workspaceFolder}/.yarn/unplugged/mocha-npm-9.2.2-f7735febb8/node_modules/mocha/bin/_mocha",
+            "program": "${workspaceFolder}/.yarn/unplugged/mocha-npm-10.0.0-d8858c6bb3/node_modules/mocha/bin/_mocha",
             "args": [
                 "--no-timeouts",
                 "--config",

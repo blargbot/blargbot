@@ -4,8 +4,8 @@
     "private": true,
     "dependencies": {
         "@blargbot/config": "workspace:^",
-        "@sentry/node": "^6.19.7",
-        "@sentry/tracing": "^6.19.7",
+        "@sentry/node": "^7.12.1",
+        "@sentry/tracing": "^7.12.1",
         "cat-loggr": "^1.2.2"
     }
 }

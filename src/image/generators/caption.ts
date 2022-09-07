@@ -1,7 +1,7 @@
 import { BaseImageGenerator } from '@blargbot/image/BaseImageGenerator';
 import { ImageWorker } from '@blargbot/image/ImageWorker';
 import { CaptionOptions, ImageResult } from '@blargbot/image/types';
-import Jimp from 'jimp';
+import sharp, { OverlayOptions } from 'sharp';
 
 export class CaptionGenerator extends BaseImageGenerator<'caption'> {
     public constructor(worker: ImageWorker) {
@@ -9,37 +9,45 @@ export class CaptionGenerator extends BaseImageGenerator<'caption'> {
     }
 
     public async execute({ url, input, font }: CaptionOptions): Promise<ImageResult> {
-        const img = await this.getRemoteJimp(url);
-        img.scaleToFit(800, 800);
+        const imgData = await sharp(await this.getRemote(url))
+            .resize(800, 800, { fit: 'outside' })
+            .toBuffer({ resolveWithObject: true });
 
-        const height = img.bitmap.height;
-        const width = img.bitmap.width;
+        const width = imgData.info.width;
+        const height = imgData.info.height / 6;
+        const overlays: OverlayOptions[] = [];
         if (input.top !== undefined) {
-            const topcap = await this.renderJimpText(input.top, {
-                font,
-                size: `${width}x${height / 6}`,
-                gravity: 'north',
-                fill: 'white',
-                stroke: 'black',
-                strokewidth: '16'
+            overlays.push({
+                input: await this.renderText(input.top, {
+                    font,
+                    size: `${width}x${height}`,
+                    gravity: 'north',
+                    fill: 'white',
+                    stroke: 'black',
+                    strokewidth: '16'
+                }),
+                left: 0,
+                top: 0
             });
-            img.composite(topcap, 0, 0);
         }
         if (input.bottom !== undefined) {
-            const botcap = await this.renderJimpText(input.bottom, {
-                font,
-                size: `${width}x${height / 6}`,
-                gravity: 'south',
-                fill: 'white',
-                stroke: 'black',
-                strokewidth: '16'
+            overlays.push({
+                input: await this.renderText(input.bottom, {
+                    font,
+                    size: `${width}x${height}`,
+                    gravity: 'south',
+                    fill: 'white',
+                    stroke: 'black',
+                    strokewidth: '16'
+                }),
+                left: 0,
+                top: Math.round(height * 5)
             });
-            img.composite(botcap, 0, height / 6 * 5);
         }
 
         return {
-            data: await img.getBufferAsync(Jimp.MIME_JPEG),
-            fileName: 'caption.jpeg'
+            data: await sharp(imgData.data).composite(overlays).png().toBuffer(),
+            fileName: 'caption.png'
         };
     }
 }

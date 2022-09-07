@@ -2,7 +2,7 @@ import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
 import { ChannelCreateSubtag } from '@blargbot/bbtag/subtags/channel/channelcreate';
 import { EscapeBbtagSubtag } from '@blargbot/bbtag/subtags/misc/escapebbtag';
 import { ChannelType, OverwriteType } from 'discord-api-types/v9';
-import { ApiError, CategoryChannel, Channel, Constants, NewsChannel, StoreChannel, TextChannel, VoiceChannel } from 'eris';
+import { ApiError, CategoryChannel, Channel, Constants, NewsChannel, TextChannel, VoiceChannel } from 'eris';
 
 import { argument } from '../../mock';
 import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite';
@@ -37,8 +37,7 @@ runSubtagTests({
             { type: 'text', instance: TextChannel, code: ChannelType.GuildText },
             { type: 'voice', instance: VoiceChannel, code: ChannelType.GuildVoice },
             { type: 'category', instance: CategoryChannel, code: ChannelType.GuildCategory },
-            { type: 'news', instance: NewsChannel, code: ChannelType.GuildNews },
-            { type: 'store', instance: StoreChannel, code: ChannelType.GuildStore },
+            { type: 'news', instance: NewsChannel, code: ChannelType.GuildAnnouncement },
             { type: 'this is some garbage', instance: TextChannel, code: ChannelType.GuildText },
             { type: '', instance: TextChannel, code: ChannelType.GuildText }
         ].flatMap(({ type, instance, code }) => [
