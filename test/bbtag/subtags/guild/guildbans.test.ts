@@ -33,7 +33,7 @@ runSubtagTests({
             ],
             setup(ctx) {
                 const error = ctx.createRESTError(ApiError.MISSING_PERMISSIONS);
-                ctx.discord.setup(m => m.getGuildBans(ctx.guild.id))
+                ctx.discord.setup(m => m.getGuildBans(ctx.guild.id, undefined))
                     .thenReject(error);
             }
         }
