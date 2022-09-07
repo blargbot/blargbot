@@ -649,7 +649,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["airtable", "npm:0.11.4"],\
             ["cassandra-driver", "npm:4.6.4"],\
             ["catflake", "npm:1.0.0"],\
-            ["long", "npm:2.4.0"],\
             ["moment-timezone", "npm:0.5.37"],\
             ["pg", "virtual:856d594ef58e3ff5ddd3d480c84f517a2b37719cc82ea2e4c1df0be5f76a9b525389c170d2c5e2be74c4b863231c45eb9094936473db96bd4b8e5e940ae574b6#npm:8.8.0"],\
             ["pg-hstore", "npm:2.3.4"],\
