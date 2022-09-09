@@ -1,7 +1,7 @@
 import { Configuration } from '@blargbot/config/Configuration';
 import { DMContext, SendContent, SendContext, SendPayload } from '@blargbot/core/types';
 import { Database } from '@blargbot/database';
-import { StoredUser } from '@blargbot/domain/models';
+import { DiscordChannelTag, DiscordRoleTag, DiscordTagSet, DiscordUserTag, StoredUser } from '@blargbot/domain/models';
 import { Logger } from '@blargbot/logger';
 import { Snowflake } from 'catflake';
 import { AnyGuildChannel, ApiError, ChannelInteraction, Client as Discord, Collection, DiscordRESTError, EmbedAuthor, EmbedOptions, ExtendedUser, Guild, GuildChannel, KnownChannel, KnownGuildChannel, KnownMessage, KnownTextableChannel, Member, Message, RequestHandler, Role, User, UserChannelInteraction, Webhook } from 'eris';
@@ -271,6 +271,58 @@ export class BaseUtilities {
         return message.replace(regex, match => replacements[match]);
     }
 
+    public async loadDiscordTagData(content: string, guildId: string, cache: DiscordTagSet): Promise<void> {
+        for (const match of content.matchAll(/<[^<>\s]+>/g)) {
+            let id: string | undefined;
+            if ((id = parse.entityId(match[0], '@&')) !== undefined)
+                cache.parsedRoles[id] ??= await this.#getDiscordRoleTag(guildId, id);
+            else if ((id = parse.entityId(match[0], '@!')) !== undefined)
+                cache.parsedUsers[id] ??= await this.#getDiscordUserTag(id);
+            else if ((id = parse.entityId(match[0], '@')) !== undefined)
+                cache.parsedUsers[id] ??= await this.#getDiscordUserTag(id);
+            else if ((id = parse.entityId(match[0], '#')) !== undefined)
+                cache.parsedChannels[id] ??= await this.#getDiscordChannelTag(id);
+        }
+    }
+
+    async #getDiscordRoleTag(guildId: string, id: string): Promise<DiscordRoleTag> {
+        const role = await this.getRole(guildId, id);
+        return {
+            id: id,
+            color: role?.color,
+            name: role?.name
+        };
+    }
+
+    async #getDiscordChannelTag(id: string): Promise<DiscordChannelTag> {
+        const channel = await this.getChannel(id);
+        return {
+            id,
+            name: channel === undefined ? undefined : 'name' in channel ? channel.name : undefined,
+            type: channel?.type
+        };
+    }
+
+    async #getDiscordUserTag(userId: string): Promise<DiscordUserTag> {
+        const dbUser = await this.database.users.get(userId);
+        if (dbUser !== undefined) {
+            return {
+                id: userId,
+                avatarURL: dbUser.avatarURL,
+                discriminator: dbUser.discriminator,
+                username: dbUser.username
+            };
+        }
+
+        const apiUser = await this.getUser(userId);
+        return {
+            id: userId,
+            avatarURL: apiUser?.avatarURL,
+            discriminator: apiUser?.discriminator,
+            username: apiUser?.username
+        };
+    }
+
     public async resolveTag(context: KnownChannel, tag: string): Promise<string> {
         let id: string | undefined;
         if ((id = parse.entityId(tag, '@&')) !== undefined) { // ROLE
@@ -316,7 +368,7 @@ export class BaseUtilities {
         return tag;
     }
 
-    public async generateDumpPage(payload: SendContent | string, channel?: KnownTextableChannel): Promise<Snowflake> {
+    public async generateDumpPage(payload: SendContent | string, channel: KnownTextableChannel): Promise<Snowflake> {
         if (typeof payload === 'string')
             payload = { content: payload };
 
@@ -325,7 +377,7 @@ export class BaseUtilities {
             id: id,
             content: payload.content ?? undefined,
             embeds: payload.embeds,
-            channelid: snowflake.parse(channel?.id),
+            channelid: snowflake.parse(channel.id),
             expiry: 604800
         });
         return id;
