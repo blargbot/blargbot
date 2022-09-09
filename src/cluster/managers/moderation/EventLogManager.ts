@@ -95,7 +95,7 @@ export class EventLogManager {
             description: 'Bulk Message Delete',
             fields: [
                 { name: 'Count', value: `${messages.length}`, inline: true },
-                { name: 'Channel', value: messages.map(m => `<#${m.channel.id}>`).join('\n'), inline: true }
+                { name: 'Channel', value: [...new Set(messages.map(m => `<#${m.channel.id}>`))].join('\n'), inline: true }
             ]
         }));
     }
