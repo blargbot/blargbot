@@ -30,7 +30,7 @@ export class CassandraDbChatLogStore implements ChatLogStore {
         const userLookup = new Set(options.users);
         const excludeLookup = new Set(options.exclude);
         const result = [];
-        for (const row of chatlogs.rows) {
+        for await (const row of chatlogs) {
             const chatlog = mapChatLog(row);
             if (!chatlog.valid) continue;
             if (typeLookup.size > 0 && !typeLookup.has(chatlog.value.type)) continue;
@@ -44,25 +44,29 @@ export class CassandraDbChatLogStore implements ChatLogStore {
     }
 
     public async getAll(channelId: string, ids: string[]): Promise<ChatLog[]> {
-        const batches = ids.reduce<string[][]>((b, c, i) => {
+        const idBatches = ids.reduce<string[][]>((b, c, i) => {
             if (i % 100 === 0)
                 b.push([]);
             b[b.length - 1].push(c);
             return b;
         }, []);
 
-        const chatlogs = await Promise.all(batches.map(ids => this.#db.execute(
-            'SELECT * FROM chatlogs ' +
-            'WHERE channelid = :channelid ' +
-            'AND id IN :ids',
-            { channelid: channelId, ids: ids },
-            { prepare: true, readTimeout: 200000 })
-        ));
+        return await idBatches.reduce(async (resultPromise, idBatch) => {
+            const resultSet = await this.#db.execute(
+                'SELECT * FROM chatlogs ' +
+                'WHERE channelid = :channelid ' +
+                'AND id IN :ids',
+                { channelid: channelId, ids: idBatch },
+                { prepare: true, readTimeout: 200000 });
 
-        return chatlogs.flatMap(c => c.rows)
-            .map(mapChatLog)
-            .filter((c): c is Extract<typeof c, { valid: true; }> => c.valid)
-            .map(c => c.value);
+            const results = await resultPromise;
+            for await (const row of resultSet) {
+                const mappedRow = mapChatLog(row);
+                if (mappedRow.valid)
+                    results.push(mappedRow.value);
+            }
+            return results;
+        }, Promise.resolve<ChatLog[]>([]));
     }
 
     public async getByMessageId(messageId: string): Promise<ChatLog | undefined> {
