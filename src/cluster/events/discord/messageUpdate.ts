@@ -1,15 +1,31 @@
 import { Cluster } from '@blargbot/cluster';
 import { DiscordEventService } from '@blargbot/core/serviceTypes';
+import { MessageFlags, MessageType } from 'discord-api-types/v9';
+import { Message, OldMessage, PossiblyUncachedTextableChannel } from 'eris';
+
+const reemitMessageTypes = new Set([
+    MessageType.ChatInputCommand,
+    MessageType.ContextMenuCommand
+]);
 
 export class DiscordMessageUpdateHandler extends DiscordEventService<'messageUpdate'> {
     public constructor(
         protected readonly cluster: Cluster
     ) {
-        super(cluster.discord, 'messageUpdate', cluster.logger, async (message, oldMessage) => {
+        super(cluster.discord, 'messageUpdate', cluster.logger, (m, o) => this.execute(m, o));
+    }
+
+    public async execute(message: Message<PossiblyUncachedTextableChannel>, oldMessage: OldMessage | null): Promise<void> {
+        if (message.editedTimestamp !== undefined) {
             await Promise.all([
                 this.cluster.moderation.eventLog.messageUpdated(message, oldMessage),
                 this.cluster.moderation.chatLog.messageUpdated(message)
             ]);
-        });
+        } else if (oldMessage !== null && message.embeds.length > oldMessage.embeds.length) {
+            // This was just links getting embedded, no need to do anything here.
+        } else if (reemitMessageTypes.has(message.type) && (message.flags & MessageFlags.Loading) === 0) {
+            // The response was a deferred response, we should process this as a brand new message
+            this.cluster.discord.emit('messageCreate', message);
+        }
     }
 }
