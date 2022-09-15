@@ -67,7 +67,7 @@ export class CCommandsRoute extends BaseRoute {
 
     async #createCommand(guildId: string, commandName: string, content: string, author: string): Promise<ApiResponse> {
         if (commandName.length > 80)
-            return this.badRequest('name cannot be longer than 80 characters');
+            return this.badRequest('name cannot be longer than 70 characters');
 
         const success = await this.#api.database.guilds.setCommand(guildId, commandName, { content, author });
         if (!success)
