@@ -19,19 +19,19 @@ export class ClusterMonitor extends IntervalService {
 
     #getClusterIssues(cluster: ClusterConnection): string[] {
         const stats = this.master.clusterStats.get(cluster);
-        const now = moment();
+        const now = (now => () => now.clone())(moment());
 
         function secondsSince(time: number | moment.Moment): number {
-            return moment.duration(now.diff(time)).asSeconds();
+            return moment.duration(now().diff(time)).asSeconds();
         }
 
         if (stats === undefined) {
-            if (cluster.created.isBefore(now.add(-2, 'minute')))
+            if (cluster.created.isBefore(now().add(-2, 'minute')))
                 return [`⏰ Cluster ${cluster.id} was created ${secondsSince(cluster.created)} seconds ago but hasn't posted stats yet`];
             return [];
         }
 
-        const shardCutoff = now.add(-1, 'minute');
+        const shardCutoff = now().add(-1, 'minute');
         if (shardCutoff.isAfter(stats.time))
             return [`⏰ Cluster ${cluster.id} hasn't posted stats for ${secondsSince(stats.time)} seconds`];
 
@@ -49,7 +49,13 @@ export class ClusterMonitor extends IntervalService {
         await Promise.all([
             this.master.util.send(
                 this.master.config.discord.channels.shardlog,
-                `Respawning unresponsive cluster ${cluster.id}...\n${issues.join('\n')}`),
+                {
+                    content: `Respawning unresponsive cluster ${cluster.id}...\n${issues.join('\n')}`,
+                    files: [{
+                        file: cluster.logs.join('\n'),
+                        name: `cluster ${cluster.id}.log`
+                    }]
+                }),
             this.master.clusters.spawn(cluster.id)
         ]);
     }

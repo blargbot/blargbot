@@ -15,16 +15,12 @@ export class ClusterExitHandler extends WorkerPoolEventService<ClusterConnection
         if (worker.state !== WorkerState.EXITED)
             return;
 
-        const logs = this.master.logHistory.clear(worker.id);
-        const logString = logs.slice(Math.max(logs.length - 5, 0))
-            .map(m => `[${m.timestamp}][${m.level}] ${m.text}`)
-            .join('\n');
         void this.master.util.send(
             this.master.config.discord.channels.shardlog,
             {
-                content: `Cluster ${worker.id} has died.\n\nLast 5 console outputs:`,
+                content: `Cluster ${worker.id} has died.`,
                 files: [{
-                    file: logString,
+                    file: worker.logs.join('\n'),
                     name: `cluster ${worker.id}.log`
                 }]
             }
