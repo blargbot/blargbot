@@ -755,8 +755,8 @@ export class CustomCommandCommand extends GuildCommand {
         if (command !== undefined)
             return { name: command.name, command };
 
-        if (commandName.length > 80)
-            return this.error('Command names cannot be longer than 70 characters');
+        if (commandName.length > 100)
+            return this.error('Command names cannot be longer than 100 characters');
 
         return { name: commandName };
     }
