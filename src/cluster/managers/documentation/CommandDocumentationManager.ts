@@ -1,4 +1,4 @@
-import { codeBlock, guard } from '@blargbot/core/utils';
+import { codeBlock, discord, guard, pluralise } from '@blargbot/core/utils';
 import { AdvancedMessageContent, EmbedField, KnownChannel, KnownTextableChannel, User } from 'eris';
 
 import { Cluster } from '../../Cluster';
@@ -57,7 +57,7 @@ export class CommandDocumentationManager extends DocumentationTreeManager {
                     fields: [
                         {
                             name: `${g.name} commands`,
-                            value: codeBlock(g.items.filter(i => i.hidden !== true).map(i => i.name).join(', '))
+                            value: this.#listCommandNames(g.items.filter(i => i.hidden !== true).map(i => i.name))
                         }
                     ]
                 }
@@ -74,7 +74,7 @@ export class CommandDocumentationManager extends DocumentationTreeManager {
                 fields: [
                     ...sortedCategories.filter(g => g.hidden !== true).map(g => ({
                         name: `${g.name} commands`,
-                        value: codeBlock(g.items.filter(i => i.hidden !== true).map(i => i.name).join(', '))
+                        value: this.#listCommandNames(g.items.filter(i => i.hidden !== true).map(i => i.name))
                     })),
                     {
                         name: '\u200B',
@@ -86,6 +86,31 @@ export class CommandDocumentationManager extends DocumentationTreeManager {
             selectText: 'Pick a command category',
             items: sortedCategories
         };
+    }
+
+    #listCommandNames(names: readonly string[]): string {
+        const charLimit = discord.getLimit('embed.field.value') - 6;
+        if (names.reduce((p, c) => p + c.length + 2, 0) - 2 <= charLimit)
+            return `\`\`\`${names.join(', ')}\`\`\``;
+
+        const remaining = [...names];
+        let missing = 0;
+        const postfix1 = '+ ';
+        const postfix2 = ' more';
+        function contentLength(): number {
+            return remaining.reduce((p, c) => p + c.length + 2, 0) - 2
+                + postfix1.length
+                + postfix2.length
+                + missing.toString().length;
+        }
+        while (contentLength() > charLimit) {
+            remaining.pop();
+            missing++;
+        }
+        if (remaining.length === 0)
+            return `${missing} ${pluralise(missing, 'command')}`;
+
+        return `\`\`\`${remaining.join(', ')}\`\`\`${postfix1}${missing}${postfix2}`;
     }
 
     protected noMatches(): Awaitable<Omit<AdvancedMessageContent, 'components'>> {

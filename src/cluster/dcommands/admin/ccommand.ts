@@ -752,10 +752,13 @@ export class CustomCommandCommand extends GuildCommand {
             return undefined;
 
         const command = await context.database.guilds.getCommand(context.channel.guild.id, commandName);
-        if (command === undefined)
-            return { name: commandName };
+        if (command !== undefined)
+            return { name: command.name, command };
 
-        return { name: command.name, command };
+        if (commandName.length > 80)
+            return this.error('Command names cannot be longer than 80 characters');
+
+        return { name: commandName };
     }
 }
 
