@@ -10,7 +10,7 @@ export class PrefixSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: [],
-                    description: 'Gets the current guild\'s prefix.',
+                    description: 'Gets the command prefix used to call this bbtag.',
                     exampleCode: 'Your prefix is {prefix}',
                     exampleOut: 'Your prefix is b!',
                     returns: 'string',
@@ -21,6 +21,9 @@ export class PrefixSubtag extends CompiledSubtag {
     }
 
     public async getPrefix(context: BBTagContext): Promise<string> {
+        if (context.prefix !== undefined)
+            return context.prefix;
+
         const prefix = await context.database.guilds.getSetting(context.guild.id, 'prefix');
         switch (typeof prefix) {
             case 'string': return prefix;

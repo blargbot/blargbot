@@ -62,6 +62,7 @@ export class BBTagContext implements BBTagContextOptions {
     public readonly data: BBTagContextState;
     public readonly callStack: SubtagCallStack;
     public readonly permission: Permission;
+    public readonly prefix?: string;
 
     public get parent(): BBTagContext | undefined { return this.#parent; }
     public get totalDuration(): Duration { return this.execTimer.duration.add(this.dbTimer.duration); }
@@ -94,6 +95,7 @@ export class BBTagContext implements BBTagContextOptions {
         options: BBTagContextOptions
     ) {
         this.message = options.message;
+        this.prefix = options.prefix;
         this.inputRaw = options.inputRaw;
         this.input = humanize.smartSplit(options.inputRaw);
         this.flags = options.flags ?? [];
@@ -453,7 +455,8 @@ export class BBTagContext implements BBTagContextOptions {
             authorId: obj.author,
             authorizerId: obj.authorizer,
             limit: limit,
-            tagVars: obj.tagVars
+            tagVars: obj.tagVars,
+            prefix: obj.prefix
         });
         Object.assign(result.scopes.local, obj.scope);
 
@@ -486,6 +489,7 @@ export class BBTagContext implements BBTagContextOptions {
                 query: this.data.query,
                 stackSize: this.data.stackSize
             },
+            prefix: this.prefix,
             flags: this.flags,
             rootTagName: this.rootTagName,
             tagName: this.tagName,

@@ -31,6 +31,13 @@ runSubtagTests({
             setup(ctx) {
                 ctx.guildTable.setup(m => m.getSetting(ctx.guild.id, 'prefix')).thenResolve(['def', 'ghi']);
             }
+        },
+        {
+            code: '{prefix}',
+            expected: 'ghi',
+            setup(ctx) {
+                ctx.options.prefix = 'ghi';
+            }
         }
     ]
 });

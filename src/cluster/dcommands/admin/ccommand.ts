@@ -172,7 +172,8 @@ export class CustomCommandCommand extends GuildCommand {
             isCC: true,
             limit: 'customCommandLimit',
             rootTagName: 'test',
-            authorId: context.author.id
+            authorId: context.author.id,
+            prefix: context.prefix
         });
 
         if (!debug)
@@ -211,7 +212,8 @@ export class CustomCommandCommand extends GuildCommand {
             authorId: match.author ?? undefined,
             authorizerId: match.authorizer ?? undefined,
             flags: match.flags,
-            cooldown: match.cooldown
+            cooldown: match.cooldown,
+            prefix: context.prefix
         });
 
         if (!debug)
