@@ -52,6 +52,7 @@ export interface ICommand<T = unknown> extends ICommandDetails, IMiddleware<Comm
     readonly id: string;
     readonly name: string;
     readonly implementation: T;
+    readonly isOnWebsite: boolean;
 }
 
 export type Result<State, Detail = undefined, Optional extends boolean = Detail extends undefined ? true : false> = Optional extends false

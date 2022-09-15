@@ -308,7 +308,7 @@ export module 'rethinkdb' {
         [K in string & keyof T]?: T[K] | FilterMap<T[K]>;
     }
 
-    export interface Expression<T> extends Writeable<T>, Operation<T>, HasFields<T, Expression<T>> {
+    export interface Expression<T> extends Writeable<T>, Operation<T>, HasFields<T, Expression<boolean>> {
         <K extends string & keyof T>(prop: K): Expression<T[K]>;
         <R extends readonly unknown[], K extends string & keyof R[number]>(this: Expression<R>, prop: K): Expression<Array<R[number][K]>>;
         merge<R>(query: R | Expression<R>): Expression<T & R>;

@@ -1,4 +1,4 @@
-import { guard } from '@blargbot/core/utils';
+import { guard, snowflake } from '@blargbot/core/utils';
 import { ChannelSettings, CommandPermissions, GuildAnnounceOptions, GuildAutoresponses, GuildCensor, GuildCensorExceptions, GuildCensors, GuildCommandTag, GuildDetails, GuildFilteredAutoresponse, GuildModlogEntry, GuildRolemeEntry, GuildTriggerTag, GuildVoteban, GuildVotebans, NamedGuildCommandTag, StoredGuild, StoredGuildEventLogConfig, StoredGuildEventLogType, StoredGuildSettings } from '@blargbot/domain/models';
 import { GuildStore } from '@blargbot/domain/stores';
 import { Logger } from '@blargbot/logger';
@@ -6,9 +6,11 @@ import { UpdateData } from 'rethinkdb';
 
 import { RethinkDb } from '../clients';
 import { RethinkDbCachedTable } from '../tables/RethinkDbCachedTable';
+import { RethinkDbTable } from '../tables/RethinkDbTable';
 
 export class RethinkDbGuildStore implements GuildStore {
     readonly #table: RethinkDbCachedTable<StoredGuild, 'guildid'>;
+    readonly #logger: Logger;
 
     public constructor(
         rethinkDb: RethinkDb,
@@ -17,6 +19,7 @@ export class RethinkDbGuildStore implements GuildStore {
     ) {
         this.#table = new RethinkDbCachedTable('guild', 'guildid', rethinkDb, logger);
         this.#table.watchChanges(shouldCache);
+        this.#logger = logger;
     }
 
     public async reset(guild: GuildDetails): Promise<void> {
@@ -788,12 +791,58 @@ export class RethinkDbGuildStore implements GuildStore {
     }
 
     public async migrate(): Promise<void> {
-        const indexes = await this.#table.query(t => t.indexList());
-        if (!indexes.includes('interval')) {
-            await this.#table.query(t => t.indexCreate('interval', r => r('ccommands').hasFields('_interval')));
+        const versionObj = await this.#table.get('migration', true);
+        if (versionObj === undefined) {
+            await this.#table.insert({
+                active: false,
+                ccommands: {},
+                channels: {},
+                guildid: 'migration',
+                name: '0',
+                settings: {}
+            });
+        }
+        let currentVersion = parseInt(versionObj?.name ?? '0');
+        for (const migration of migrations.filter(v => v.id > currentVersion).sort((a, b) => a.id - b.id)) {
+            this.#logger.database('Migrating GuildStore from', currentVersion, 'to', migration.id);
+            await migration.migrate(this.#table);
+            await this.#table.update('migration', { name: migration.id.toString() });
+            this.#logger.database('Migrated GuildStore from', currentVersion, 'to', migration.id);
+            currentVersion = migration.id;
         }
     }
 }
+
+interface GuildStoreMigration {
+    readonly id: number;
+    migrate(table: RethinkDbTable<StoredGuild>): Promise<void>;
+}
+
+const migrations: GuildStoreMigration[] = [
+    {
+        id: 1,
+        async migrate(table) {
+            const indexes = await table.query(t => t.indexList());
+            if (!indexes.includes('interval')) {
+                await table.query(t => t.indexCreate('interval', r => r('ccommands').hasFields('_interval')));
+            }
+        }
+    },
+    {
+        id: 2,
+        async migrate(table) {
+            for await (const guild of table.stream(r => r.filter(g => g('ccommands').values().map(cmd => cmd.hasFields('id')).contains(false)))) {
+                const ccommands: Record<string, { id: string; }> = {};
+                for (const [name, ccommand] of Object.entries(guild.ccommands)) {
+                    if (ccommand?.id === undefined) {
+                        ccommands[name] = { id: snowflake.create().toString() };
+                    }
+                }
+                await table.update(guild.guildid, { ccommands });
+            }
+        }
+    }
+];
 
 function setProp<Target, Key extends keyof Target>(target: Target, key: Key, value: Target[Key]): Target[Key] {
     if (value as unknown === undefined)

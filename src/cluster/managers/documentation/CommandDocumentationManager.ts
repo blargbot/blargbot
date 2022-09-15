@@ -176,7 +176,7 @@ export class CommandDocumentationManager extends DocumentationTreeManager {
             hidden: result.state !== 'ALLOWED',
             tags: [command.name, ...command.aliases],
             embed: {
-                url: `/commands#${command.name}`,
+                url: command.isOnWebsite ? `/commands#${command.name}` : undefined,
                 description: description.join('\n'),
                 color: this.#getColor(command.category)
             },
