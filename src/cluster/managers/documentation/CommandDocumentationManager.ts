@@ -89,28 +89,27 @@ export class CommandDocumentationManager extends DocumentationTreeManager {
     }
 
     #listCommandNames(names: readonly string[]): string {
-        const charLimit = discord.getLimit('embed.field.value') - 6;
-        if (names.reduce((p, c) => p + c.length + 2, 0) - 2 <= charLimit)
-            return `\`\`\`${names.join(', ')}\`\`\``;
+        if (names.length === 0)
+            return 'No commands';
 
-        const remaining = [...names];
-        let missing = 0;
-        const postfix1 = '+ ';
-        const postfix2 = ' more';
-        function contentLength(): number {
-            return remaining.reduce((p, c) => p + c.length + 2, 0) - 2
-                + postfix1.length
-                + postfix2.length
-                + missing.toString().length;
+        function* getPotentialResults(): Generator<string> {
+            let removed = 0;
+            const items = [...names];
+            const padding = '```';
+            yield `${padding}${items.join(', ')}${padding}`;
+            while (items.length > 0) {
+                items.pop();
+                removed++;
+                yield `${padding}${items.join(', ')}${padding}+ ${removed} more`;
+            }
         }
-        while (contentLength() > charLimit) {
-            remaining.pop();
-            missing++;
-        }
-        if (remaining.length === 0)
-            return `${missing} ${pluralise(missing, 'command')}`;
 
-        return `\`\`\`${remaining.join(', ')}\`\`\`${postfix1}${missing}${postfix2}`;
+        const charLimit = discord.getLimit('embed.field.value');
+        for (const result of getPotentialResults())
+            if (result.length <= charLimit)
+                return result;
+
+        return `${names.length} ${pluralise(names.length, 'command')}`;
     }
 
     protected noMatches(): Awaitable<Omit<AdvancedMessageContent, 'components'>> {
