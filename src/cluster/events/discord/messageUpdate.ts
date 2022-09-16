@@ -7,6 +7,7 @@ export class DiscordMessageUpdateHandler extends DiscordEventService<'messageUpd
     ) {
         super(cluster.discord, 'messageUpdate', cluster.logger, async (message, oldMessage) => {
             await Promise.all([
+                this.cluster.moderation.censors.censor(message),
                 this.cluster.moderation.eventLog.messageUpdated(message, oldMessage),
                 this.cluster.moderation.chatLog.messageUpdated(message)
             ]);
