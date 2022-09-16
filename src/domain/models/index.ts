@@ -1,5 +1,5 @@
 export * from './chatLogs';
-export * from './discordTags/index';
+export * from './discordTags';
 export * from './events';
 export * from './flags';
 export * from './guilds';
