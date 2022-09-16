@@ -273,14 +273,18 @@ export class BaseUtilities {
 
     public async loadDiscordTagData(content: string, guildId: string, cache: DiscordTagSet): Promise<void> {
         for (const match of content.matchAll(/<[^<>\s]+>/g)) {
-            let id: string | undefined;
-            if ((id = parse.entityId(match[0], '@&')) !== undefined)
+            let id = parse.entityId(match[0], '@&');
+            if (id !== undefined) {
                 cache.parsedRoles[id] ??= await this.#getDiscordRoleTag(guildId, id);
-            else if ((id = parse.entityId(match[0], '@!')) !== undefined)
+                continue;
+            }
+            id = parse.entityId(match[0], '@!') ?? parse.entityId(match[0], '@');
+            if (id !== undefined) {
                 cache.parsedUsers[id] ??= await this.#getDiscordUserTag(id);
-            else if ((id = parse.entityId(match[0], '@')) !== undefined)
-                cache.parsedUsers[id] ??= await this.#getDiscordUserTag(id);
-            else if ((id = parse.entityId(match[0], '#')) !== undefined)
+                continue;
+            }
+            id = parse.entityId(match[0], '#');
+            if (id !== undefined)
                 cache.parsedChannels[id] ??= await this.#getDiscordChannelTag(id);
         }
     }
@@ -324,15 +328,16 @@ export class BaseUtilities {
     }
 
     public async resolveTag(context: KnownChannel, tag: string): Promise<string> {
-        let id: string | undefined;
-        if ((id = parse.entityId(tag, '@&')) !== undefined) { // ROLE
+        let id = parse.entityId(tag, '@&');
+        if (id !== undefined) { // ROLE
             const role = guard.isGuildChannel(context)
                 ? await this.getRole(context.guild, id)
                 : undefined;
 
             return `@${role?.name ?? 'UNKNOWN ROLE'}`;
         }
-        if ((id = parse.entityId(tag, '@!')) !== undefined) { // USER (NICKNAME)
+        id = parse.entityId(tag, '@!');
+        if (id !== undefined) { // USER (NICKNAME)
             if (guard.isGuildChannel(context)) {
                 const member = await this.getMember(context.guild, tag.substring(2));
                 if (member !== undefined)
@@ -341,11 +346,13 @@ export class BaseUtilities {
             const user = await this.getUser(id);
             return user === undefined ? 'UNKNOWN USER' : `${user.username}#${user.discriminator}`;
         }
-        if ((id = parse.entityId(tag, '@')) !== undefined) { // USER
+        id = parse.entityId(tag, '@');
+        if (id !== undefined) { // USER
             const user = await this.getUser(id);
             return user === undefined ? 'UNKNOWN USER' : `${user.username}#${user.discriminator}`;
         }
-        if ((id = parse.entityId(tag, '#')) !== undefined) { // CHANNEL
+        id = parse.entityId(tag, '#');
+        if (id !== undefined) { // CHANNEL
             const channel = await this.getChannel(id);
             return channel !== undefined && guard.isGuildChannel(channel) ? `#${channel.name}` : '';
         }
