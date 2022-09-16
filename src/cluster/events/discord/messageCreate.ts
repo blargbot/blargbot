@@ -3,6 +3,7 @@ import { CommandLoggerMiddleware, ErrorMiddleware, RollingRatelimitMiddleware } 
 import { guard, humanize, runMiddleware, snowflake } from '@blargbot/cluster/utils';
 import { DiscordEventService } from '@blargbot/core/serviceTypes';
 import { IMiddleware } from '@blargbot/core/types';
+import { MessageFlags } from 'discord-api-types/v9';
 import { KnownMessage, Message, PossiblyUncachedTextableChannel } from 'eris';
 import moment from 'moment-timezone';
 import { performance } from 'perf_hooks';
@@ -43,6 +44,11 @@ export class DiscordMessageCreateHandler extends DiscordEventService<'messageCre
     }
 
     public async execute(message: Message<PossiblyUncachedTextableChannel>): Promise<void> {
+        if ((message.flags & MessageFlags.Loading) !== 0) {
+            // Message is a loading message. Ignore this event, it will be re-raised by the update handler later once the message is no longer loading
+            return;
+        }
+
         if (guard.isUncached(message.channel)) {
             this.cluster.logger.debug('Got a message in an uncached channel, probably a DM. Resolving it now');
             message.channel = await this.cluster.util.getChannel(message.channel.id) ?? message.channel;
