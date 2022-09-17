@@ -3,15 +3,15 @@ import GIFEncoder from 'gifencoder';
 import gm from 'gm';
 import fetch from 'node-fetch';
 import path from 'path';
-import sharp from 'sharp';
 import { Readable } from 'stream';
-import { inspect } from 'util';
+import { promisify } from 'util';
 
 import { ImageWorker } from './ImageWorker';
-import { ImageGeneratorMap, ImageResult, MagickSource, TextOptions } from './types';
+import { ImageGeneratorMap, ImageResult, TextOptions } from './types';
 
 const im = gm.subClass({ imageMagick: true });
 const imgDir = path.join(path.dirname(require.resolve('@blargbot/res/package')), 'img');
+const emptyBuffer = Buffer.from([]);
 
 export abstract class BaseImageGenerator<T extends keyof ImageGeneratorMap> {
     public constructor(
@@ -36,24 +36,12 @@ export abstract class BaseImageGenerator<T extends keyof ImageGeneratorMap> {
 
     public abstract execute(message: ImageGeneratorMap[T]): Promise<ImageResult | undefined>;
 
-    protected getLocalResourcePath(...segments: string[]): string {
+    protected getLocalPath(...segments: string[]): string {
         return path.join(imgDir, ...segments);
     }
 
     protected async getLocal(...segments: string[]): Promise<Buffer> {
-        return await fs.readFile(this.getLocalResourcePath(...segments));
-    }
-
-    protected async toBuffer(source: gm.State, format?: string): Promise<Buffer> {
-        return await new Promise<Buffer>((resolve, reject) => {
-            source.setFormat(format ?? 'png').toBuffer((err, buffer) => {
-                if (err !== null) {
-                    reject(err);
-                    return;
-                }
-                resolve(buffer);
-            });
-        });
+        return await fs.readFile(this.getLocalPath(...segments));
     }
 
     protected async getRemote(url: string): Promise<Buffer> {
@@ -76,92 +64,39 @@ export abstract class BaseImageGenerator<T extends keyof ImageGeneratorMap> {
         }
     }
 
-    protected async generate(source: MagickSource, configure: (image: gm.State) => (Promise<void> | void), format?: string): Promise<Buffer> {
-        if (typeof source === 'string')
-            source = im(source);
-        else if (Array.isArray(source))
-            source = im(...source);
-        else if (source instanceof Buffer)
-            source = im(source);
-        else if (!isGm(source))
-            throw new Error(`Unable to read ${inspect(source)} into imagemagick`);
-
-        source.command('convert');
-        await configure(source);
-
-        return await this.toBuffer(source, format);
-    }
-
-    protected async trim(data: Buffer, color: sharp.Color = 'transparent'): Promise<Buffer> {
-        const source = sharp(data);
-        const { width = 0, height = 0, channels = 4 } = await source.metadata();
-        const padded = source.resize(width + 1, height + 1).composite([
-            {
-                // Set all pixels to the background color
-                input: { create: { width: 1, height: 1, channels, background: color } },
-                tile: true,
-                blend: 'source'
-            },
-            // Write image back, leaving the top left pixel unchanged
-            { input: data, left: 1, top: 1 }
-        ]);
-
-        return await sharp(await padded.toBuffer()).trim(1).toBuffer();
+    protected async gmConvert(source: Buffer, transform: (image: gm.State) => gm.State, format?: string): Promise<Buffer> {
+        const pipeline = im(source).command('convert');
+        const result = transform(pipeline).setFormat(format ?? 'png');
+        return await promisify<Buffer>(cb => result.toBuffer(cb))();
     }
 
     protected async toGif(frames: Buffer[], options: GIFEncoder.GIFOptions & { width: number; height: number; }): Promise<Buffer> {
-        return await new Promise<Buffer>((resolve, reject) => {
-            const encoder = new GIFEncoder(options.width, options.height);
-            const frameStream = Readable.from(frames);
-            const buffers: Uint8Array[] = [];
-            const sr = frameStream.pipe(encoder.createWriteStream(options));
-            sr.on('data', (data: Uint8Array) => buffers.push(data));
-            sr.on('error', err => reject(err));
-            sr.on('end', () => {
-                const buffer = new Uint8Array(buffers.reduce((c, b) => c + b.length, 0));
-                buffers.reduce((offset, bytes) => {
-                    buffer.set(bytes, offset);
-                    return offset + bytes.length;
-                }, 0);
-                resolve(Buffer.from(buffer));
-            });
-        });
+        const encoder = new GIFEncoder(options.width, options.height);
+        const frameStream = Readable.from(frames);
+        const sr = frameStream.pipe(encoder.createWriteStream(options));
+        const chunks = [];
+        for await (const chunk of sr)
+            chunks.push(chunk);
+        return Buffer.concat(chunks);
     }
 
     protected async renderText(text: string, options: TextOptions): Promise<Buffer> {
-        this.worker.logger.debug(`Generating caption for text '${text}'`);
-
-        const { fill = 'black', gravity = 'center', font, fontsize, size, stroke, strokewidth } = options;
-
-        return await this.generate(Buffer.from(''), image => {
-            if (font !== undefined)
-                image.font(this.getLocalResourcePath('fonts', font), fontsize);
-
-            image.out('-size').out(size);
-            image.out('-background').out('transparent');
-            image.out('-fill').out(fill);
-            image.out('-gravity').out(gravity);
-            if (stroke !== undefined) {
-                image.out('-stroke').out(stroke);
-                if (strokewidth !== undefined)
-                    image.out('-strokewidth').out(strokewidth);
-            }
-            image.out(`caption:${text}`);
-            if (stroke !== undefined) {
-                image.out('-compose').out('Over');
-                image.out('-size').out(size);
-                image.out('-background').out('transparent');
-                image.out('-fill').out(fill);
-                image.out('-gravity').out(gravity);
-                image.out('-stroke').out('none');
-                image.out(`caption:${text}`);
-                image.out('-composite');
-            }
-            image.setFormat('png');
-        });
+        const caption = `caption:${text.replaceAll(/[\\%@]/g, m => `\\${m}`)}`;
+        return await this.gmConvert(emptyBuffer, x => x
+            .out('-size', `${options.width}x${options.height ?? ''}`)
+            .font(this.getLocalPath('fonts', options.font), options.fontsize)
+            .background('transparent')
+            .fill('black')
+            .gravity(options.gravity ?? 'Center')
+            .stroke(options.outline?.[0] ?? 'none')
+            .strokeWidth((options.outline?.[1] ?? 1) * 2)
+            .out(caption) // write text with stroke
+            .compose('xor')
+            .stroke('none')
+            .out(caption, '-composite') // remove text and half of the stroke
+            .compose('over')
+            .fill(options.fill ?? 'black')
+            .out(caption, '-composite') // write text again, filling in removed region
+        );
     }
-}
-
-function isGm(source: MagickSource): source is gm.State {
-    return source instanceof gm;
 }

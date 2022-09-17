@@ -1,6 +1,6 @@
 import { BaseImageGenerator } from '@blargbot/image/BaseImageGenerator';
 import { ImageWorker } from '@blargbot/image/ImageWorker';
-import { CaptionOptions, ImageResult } from '@blargbot/image/types';
+import { CaptionOptions, ImageResult, TextOptions } from '@blargbot/image/types';
 import sharp, { OverlayOptions } from 'sharp';
 
 export class CaptionGenerator extends BaseImageGenerator<'caption'> {
@@ -16,32 +16,24 @@ export class CaptionGenerator extends BaseImageGenerator<'caption'> {
         const width = imgData.info.width;
         const height = imgData.info.height / 6;
         const overlays: OverlayOptions[] = [];
+        const textOptions: TextOptions = {
+            font,
+            width,
+            height,
+            fill: 'white',
+            outline: ['black', 8]
+        };
+
         if (input.top !== undefined) {
             overlays.push({
-                input: await this.renderText(input.top, {
-                    font,
-                    size: `${width}x${height}`,
-                    gravity: 'north',
-                    fill: 'white',
-                    stroke: 'black',
-                    strokewidth: '16'
-                }),
-                left: 0,
-                top: 0
+                input: await this.renderText(input.top, { ...textOptions, gravity: 'North' }),
+                gravity: sharp.gravity.north
             });
         }
         if (input.bottom !== undefined) {
             overlays.push({
-                input: await this.renderText(input.bottom, {
-                    font,
-                    size: `${width}x${height}`,
-                    gravity: 'south',
-                    fill: 'white',
-                    stroke: 'black',
-                    strokewidth: '16'
-                }),
-                left: 0,
-                top: Math.round(height * 5)
+                input: await this.renderText(input.bottom, { ...textOptions, gravity: 'South' }),
+                gravity: sharp.gravity.south
             });
         }
 

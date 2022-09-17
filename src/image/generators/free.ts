@@ -13,21 +13,22 @@ export class FreeGenerator extends BaseImageGenerator<'free'> {
         const topCaption = await this.renderText(top, {
             font: 'impact.ttf',
             fill: 'white',
-            stroke: 'black',
-            strokewidth: '5',
-            gravity: 'north',
-            size: '380x100'
+            outline: ['black', 2.5],
+            gravity: 'North',
+            width: 380,
+            height: 100
         });
         const bottomText = bottom ?? 'CLICK HERE TO\nFIND OUT HOW';
         const bottomCaption = await this.renderText(bottomText, {
             font: 'arial.ttf',
             fill: 'white',
-            gravity: 'center',
-            size: '380x70'
+            gravity: 'Center',
+            width: 380,
+            height: 70
         });
 
-        const back1 = this.getLocalResourcePath('freefreefree0.png');
-        const back2 = this.getLocalResourcePath('freefreefree1.png');
+        const back1 = this.getLocalPath('freefreefree0.png');
+        const back2 = this.getLocalPath('freefreefree1.png');
 
         const frame = sharp({ create: { width: 400, height: 300, channels: 4, background: 'black' } });
         const frames: Array<Promise<Buffer>> = [];

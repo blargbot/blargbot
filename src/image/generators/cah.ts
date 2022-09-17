@@ -23,8 +23,9 @@ export class CahGenerator extends BaseImageGenerator<'cah'> {
                 input: await this.renderText(c.text, {
                     font: 'arial.ttf',
                     fill: c.fill,
-                    size: '144x190',
-                    gravity: 'northwest'
+                    width: 144,
+                    height: 190,
+                    gravity: 'NorthWest'
                 }),
                 left: c.left + 19,
                 top: c.top + 19

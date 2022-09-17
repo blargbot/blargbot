@@ -20,16 +20,16 @@ export class StupidGenerator extends BaseImageGenerator<'stupid'> {
             );
         }
 
-        const result = sharp(this.getLocalResourcePath('stupid.png'))
+        const result = sharp(this.getLocalPath('stupid.png'))
             .composite([
                 ...overlays,
                 {
                     input: await this.renderText(text, {
                         font: 'ARCENA.ttf',
                         fill: 'black',
-                        stroke: 'white',
-                        strokewidth: '5',
-                        size: '272x60'
+                        outline: ['white', 2.5],
+                        width: 272,
+                        height: 60
                     }),
                     left: 268,
                     top: 0

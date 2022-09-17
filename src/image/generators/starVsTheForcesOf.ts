@@ -10,20 +10,29 @@ export class StarVsTheForcesOfGenerator extends BaseImageGenerator<'starVsTheFor
 
     public async execute({ avatar }: StarVsTheForcesOfOptions): Promise<ImageResult> {
         const avatarImg = sharp(await this.getRemote(avatar)).resize(700, 700);
-        const bgImg = sharp(await this.generate(await avatarImg.toBuffer(), x => {
-            x.out('-matte').out('-virtual-pixel').out('transparent');
-            x.out('-extent').out('1468x1656');
-            x.out('-distort').out('Perspective').out('0,0,0,208  700,0,1468,0  0,700,0,1326  700,700,1468,1656');
-        })).resize(734, 828)
-            .extract({ left: 0, top: 104, width: 600, height: 540 });
 
-        const foreground = sharp(this.getLocalResourcePath('starvstheforcesof.png'))
+        const bgImg = await this.gmConvert(await avatarImg.toBuffer(), x => x
+            .matte()
+            .virtualPixel('transparent')
+            .extent(1468, 1656)
+            .out('-distort', 'Perspective', '0,0,0,208  700,0,1468,0  0,700,0,1326  700,700,1468,1656')
+            .resize(734, 828)
+            .crop(600, 540, 0, 104)
+        );
+
+        const stats = await avatarImg.stats();
+        const channels = stats.channels.slice(0, 3).map(c => c.mean);
+        const min = Math.min(...channels);
+        const max = Math.max(...channels);
+        const scale = channels.map(() => 1);
+        const shift = channels.map(c => (c - min) * 32 / (max - min)); // bring all channels into range 0 - 32
+        const foreground = sharp(this.getLocalPath('starvstheforcesof.png'))
             .resize(960, 540)
-            .linear(1, 0); // TODO: need latest version of sharp
+            .linear(scale.map(Math.round), shift.map(Math.round));
 
         const result = sharp({ create: { width: 960, height: 540, channels: 4, background: 'transparent' } })
             .composite([
-                { input: await bgImg.toBuffer(), left: 430, top: 0 },
+                { input: bgImg, left: 430, top: 0 },
                 { input: await foreground.toBuffer(), left: 0, top: 0 }
             ]);
 
@@ -33,33 +42,3 @@ export class StarVsTheForcesOfGenerator extends BaseImageGenerator<'starVsTheFor
         };
     }
 }
-
-// const blends: Record<sharp.Blend, 0> = {
-//     add: 0,
-//     clear: 0,
-//     source: 0,
-//     over: 0,
-//     in: 0,
-//     out: 0,
-//     atop: 0,
-//     dest: 0,
-//     'dest-over': 0,
-//     'dest-in': 0,
-//     'dest-out': 0,
-//     'dest-atop': 0,
-//     xor: 0,
-//     saturate: 0,
-//     multiply: 0,
-//     screen: 0,
-//     overlay: 0,
-//     darken: 0,
-//     lighten: 0,
-//     'color-dodge': 0,
-//     'colour-dodge': 0,
-//     'color-burn': 0,
-//     'colour-burn': 0,
-//     'hard-light': 0,
-//     'soft-light': 0,
-//     difference: 0,
-//     exclusion: 0
-// };
