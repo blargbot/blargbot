@@ -1,7 +1,7 @@
 import { bbtag } from '@blargbot/bbtag';
 import { guard, ModerationType } from '@blargbot/cluster/utils';
 import { GuildCensor, GuildCensorExceptions } from '@blargbot/domain/models';
-import { KnownGuildTextableChannel, Message } from 'eris';
+import { KnownGuildTextableChannel, Message, PossiblyUncachedTextableChannel } from 'eris';
 import moment from 'moment-timezone';
 
 import { ModerationManager } from '../ModerationManager';
@@ -19,7 +19,10 @@ export class CensorManager extends ModerationManagerBase {
         this.#debugOutput[this.#getDebugKey(guildId, id, userId, type)] = { channelId, messageId };
     }
 
-    public async censor(message: Message<KnownGuildTextableChannel>): Promise<boolean> {
+    public async censor(message: Message<PossiblyUncachedTextableChannel>): Promise<boolean> {
+        if (!guard.isGuildMessage(message) || !guard.isWellKnownMessage(message))
+            return false;
+
         if (await this.#censorMentions(message))
             return true;
 

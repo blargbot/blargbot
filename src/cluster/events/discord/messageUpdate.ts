@@ -18,6 +18,7 @@ export class DiscordMessageUpdateHandler extends DiscordEventService<'messageUpd
     public async execute(message: Message<PossiblyUncachedTextableChannel>, oldMessage: OldMessage | null): Promise<void> {
         if (message.editedTimestamp !== undefined) {
             await Promise.all([
+                this.cluster.moderation.censors.censor(message),
                 this.cluster.moderation.eventLog.messageUpdated(message, oldMessage),
                 this.cluster.moderation.chatLog.messageUpdated(message)
             ]);
