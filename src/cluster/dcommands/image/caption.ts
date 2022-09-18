@@ -99,5 +99,5 @@ interface FontNames {
     ['Roboto-Regular.ttf']: 'roboto';
     ['Ubuntu-Regular.ttf']: 'ubuntu';
     ['comicsans.ttf']: 'comicsans';
-    ['whitney.ttf']: 'whitney'
+    ['whitney.ttf']: 'whitney';
 }
