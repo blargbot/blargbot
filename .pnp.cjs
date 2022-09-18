@@ -675,7 +675,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["gifencoder", "npm:2.0.1"],\
             ["gm", "npm:1.23.1"],\
             ["node-fetch", "virtual:644263357c3808bc44f433a693fe388a0c8cd7253a76268de48af4ee58a719d112af996231f3c01e175a9d4db65884c068df3876ec1060da68b36b8d0a9b8225#npm:2.6.7"],\
-            ["sharp", "npm:0.31.0"]\
+            ["sharp", "npm:0.31.0"],\
+            ["twemoji", "npm:14.0.2"]\
           ],\
           "linkType": "SOFT"\
         }]\
