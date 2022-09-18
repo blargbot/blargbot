@@ -8,24 +8,13 @@ export type ImageIPCContract = {
 export type MagickSource = string | Buffer | gm.State | [width: number, height: number, color?: string];
 
 export interface TextOptions {
-    font?: string;
-    fontsize?: number;
-    size: `${number | ''}x${number | ''}`;
-    fill?: string;
-    gravity?: string;
-    stroke?: string;
-    strokewidth?: string;
-}
-
-export interface PhantomOptions {
-    replacements?: { [elementId: string]: string; };
-    scale?: number;
-    format?: string;
-}
-
-export interface PhantomTransformOptions<T> extends PhantomOptions {
-    transform: (arg: T) => void;
-    transformArg: T;
+    readonly font: ValidFont;
+    readonly fontsize?: number;
+    readonly width: number;
+    readonly height?: number;
+    readonly fill?: string;
+    readonly gravity?: gm.GravityDirection;
+    readonly outline?: [color: string, width: number];
 }
 
 export interface ImageRequest<T extends keyof ImageGeneratorMap, R = ImageGeneratorMap[T]> {
@@ -117,4 +106,5 @@ export type ValidFont =
     | 'IndieFlower.ttf'
     | 'Roboto-Regular.ttf'
     | 'Ubuntu-Regular.ttf'
-    | 'comicsans.ttf';
+    | 'comicsans.ttf'
+    | 'whitney.ttf';

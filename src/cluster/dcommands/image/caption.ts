@@ -83,7 +83,8 @@ const fontLookup: { [P in ValidFont as FontNames[P]]: P } = {
     indieflower: 'IndieFlower.ttf',
     roboto: 'Roboto-Regular.ttf',
     sftoontime: 'SFToontime.ttf',
-    ubuntu: 'Ubuntu-Regular.ttf'
+    ubuntu: 'Ubuntu-Regular.ttf',
+    whitney: 'whitney.ttf'
 };
 interface FontNames {
     ['ARCENA.ttf']: 'arcena';
@@ -98,4 +99,5 @@ interface FontNames {
     ['Roboto-Regular.ttf']: 'roboto';
     ['Ubuntu-Regular.ttf']: 'ubuntu';
     ['comicsans.ttf']: 'comicsans';
+    ['whitney.ttf']: 'whitney';
 }
