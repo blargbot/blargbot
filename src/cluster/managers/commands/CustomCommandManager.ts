@@ -127,7 +127,8 @@ class NormalizedCommandTag implements ICommand<NamedGuildCommandTag> {
             message: context.message,
             inputRaw: context.argsString,
             isCC: true,
-            limit: 'customCommandLimit'
+            limit: 'customCommandLimit',
+            prefix: context.prefix
         });
         return undefined;
     }

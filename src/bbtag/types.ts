@@ -65,6 +65,7 @@ export interface SerializedBBTagContext {
     rootTagName: string;
     author: string | undefined;
     authorizer: string | undefined;
+    prefix: string | undefined;
     tagVars: boolean;
     tempVars: JObject;
     limit: SerializedRuntimeLimit;
@@ -152,6 +153,7 @@ export interface BBTagContextOptions {
     readonly scopes?: ScopeManager;
     readonly variables?: VariableCache;
     readonly callStack?: SubtagCallStack;
+    readonly prefix?: string;
 }
 
 export interface ExecutionResult {

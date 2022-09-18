@@ -197,7 +197,8 @@ export class TagCommand extends GuildCommand {
             authorId: match.author,
             authorizerId: match.authorizer,
             flags: match.flags,
-            cooldown: match.cooldown
+            cooldown: match.cooldown,
+            prefix: context.prefix
         });
 
         if (!debug)
@@ -219,7 +220,8 @@ export class TagCommand extends GuildCommand {
             isCC: false,
             limit: 'tagLimit',
             rootTagName: 'test',
-            authorId: context.author.id
+            authorId: context.author.id,
+            prefix: context.prefix
         });
 
         if (!debug)
