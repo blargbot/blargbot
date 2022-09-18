@@ -54,7 +54,6 @@ export type WorkerIPCContractNames<Worker extends WorkerConnection<IPCContracts>
 export type BaseIPCContract = {
     'stop': { masterGets: undefined; workerGets: undefined; };
     'ready': { masterGets: string; workerGets: never; };
-    'log': { masterGets: LogEntry; workerGets: never; };
     'alive': { masterGets: Date; workerGets: never; };
     'exit': { masterGets: { code: number | null; signal: NodeJS.Signals | null; }; workerGets: never; };
     'close': { masterGets: { code: number | null; signal: NodeJS.Signals | null; }; workerGets: never; };

@@ -12,7 +12,7 @@ import fetch from 'node-fetch';
 import { metric } from 'prom-client';
 import { inspect } from 'util';
 
-import { ClusterLogManager, ClusterStatsManager } from './managers';
+import { ClusterStatsManager } from './managers';
 import { MasterWorker } from './MasterWorker';
 
 export class Master extends BaseClient {
@@ -20,7 +20,6 @@ export class Master extends BaseClient {
     public readonly eventHandlers: ModuleLoader<BaseService>;
     public readonly services: ModuleLoader<BaseService>;
     public readonly worker: MasterWorker;
-    public readonly logHistory: ClusterLogManager;
     public readonly clusterStats: ClusterStatsManager;
     public readonly api: ApiPool;
 
@@ -40,7 +39,6 @@ export class Master extends BaseClient {
 
         this.worker = options.worker;
         this.api = new ApiPool(this.logger);
-        this.logHistory = new ClusterLogManager(30);
         this.clusterStats = new ClusterStatsManager(this.api);
         this.metrics = {};
         this.clusters = new ClusterPool(this.config.discord.shards, this.logger);

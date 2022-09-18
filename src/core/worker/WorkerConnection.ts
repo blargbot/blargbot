@@ -3,6 +3,8 @@ import { GetMasterProcessMessageHandler, IPCContractMasterGets, IPCContractNames
 import { Logger } from '@blargbot/logger';
 import child_process from 'child_process';
 import moment, { Moment } from 'moment-timezone';
+import { createInterface } from 'readline';
+import streams from 'stream';
 
 import { IPCMessageEmitter } from './IPCMessageEmitter';
 
@@ -15,7 +17,11 @@ export const enum WorkerState {
 
 export abstract class WorkerConnection<Contracts extends IPCContracts> {
     #killed: boolean;
+    #logs: string[] = [];
     readonly #ipc: IPCMessageEmitter;
+    readonly #stdout = new streams.PassThrough();
+    readonly #stderr = new streams.PassThrough();
+    readonly #stdin = new streams.PassThrough();
 
     public get state(): WorkerState {
         if (this.#ipc.process === undefined)
@@ -30,6 +36,10 @@ export abstract class WorkerConnection<Contracts extends IPCContracts> {
     public readonly args: string[];
     public readonly env: NodeJS.ProcessEnv;
     public readonly created: Moment;
+    public get logs(): readonly string[] { return [...this.#logs].reverse(); }
+    public get stdout(): streams.Readable { return this.#stdout; }
+    public get stderr(): streams.Readable { return this.#stderr; }
+    public get stdin(): streams.Writable { return this.#stdin; }
 
     protected constructor(
         public readonly id: number,
@@ -48,6 +58,18 @@ export abstract class WorkerConnection<Contracts extends IPCContracts> {
 
         this.on('alive', () => this.logger.worker(this.worker, 'worker ( ID:', this.id, ') is alive'));
         this.on('error', err => this.logger.error(this.worker, 'worker ( ID:', this.id, ') error:', err));
+
+        this.#stderr.pipe(process.stderr);
+        this.#stdout.pipe(process.stdout);
+
+        const logStream = new streams.PassThrough();
+        this.#stdout.pipe(logStream);
+        this.#stderr.pipe(logStream);
+        createInterface({
+            input: logStream,
+            terminal: true,
+            historySize: 100
+        }).on('history', lines => this.#logs = lines);
     }
 
     public async connect(timeoutMs: number): Promise<unknown> {
@@ -63,11 +85,17 @@ export abstract class WorkerConnection<Contracts extends IPCContracts> {
 
         const process = this.#ipc.process = child_process.fork(this.entrypoint, {
             env: this.env,
-            execArgv: this.args
+            execArgv: this.args,
+            stdio: 'pipe'
         });
 
         if (process.pid === undefined)
             throw new Error(`Failed to start ${this.worker} worker (ID: ${this.id})`);
+
+        process.stderr?.pipe(this.#stderr);
+        process.stdout?.pipe(this.#stdout);
+        if (process.stdin !== null)
+            this.#stdin.pipe(process.stdin);
 
         for (const code of ['exit', 'close', 'disconnect', 'kill', 'error'] as const)
             process.on(code, data => this.logger.worker(this.worker, 'worker ( ID:', this.id, 'PID:', process.pid ?? '???', ') sent', code, data));
