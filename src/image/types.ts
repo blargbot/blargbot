@@ -18,13 +18,13 @@ export interface TextOptions {
 }
 
 export interface ImageRequest<T extends keyof ImageGeneratorMap, R = ImageGeneratorMap[T]> {
-    command: T;
-    data: R;
+    readonly command: T;
+    readonly data: R;
 }
 
 export interface ImageResult<T = Buffer> {
-    data: T;
-    fileName: string;
+    readonly data: T;
+    readonly fileName: string;
 }
 
 export interface ImageGeneratorMap extends CommandMap {
@@ -39,59 +39,64 @@ export interface ImageGeneratorMap extends CommandMap {
     'caption': CaptionOptions;
     'cah': CahOptions;
     'art': ArtOptions;
+    'emoji': EmojiOptions;
+}
+
+export interface EmojiOptions {
+    readonly name: string;
+    readonly size: number;
+    readonly svg: boolean;
 }
 
 export interface TruthOptions {
-    text: string;
+    readonly text: string;
 }
 
 export interface StarVsTheForcesOfOptions {
-    avatar: string;
+    readonly avatar: string;
 }
 
 export interface StupidOptions {
-    text: string;
-    avatar?: string;
+    readonly text: string;
+    readonly avatar?: string;
 }
 
 export interface PixelateOptions {
-    url: string;
-    scale: number;
+    readonly url: string;
+    readonly scale: number;
 }
 
 export interface FreeOptions {
-    top: string;
-    bottom?: string;
+    readonly top: string;
+    readonly bottom?: string;
 }
 
 export interface DistortOptions {
-    avatar: string;
+    readonly avatar: string;
 }
 
 export interface ClydeOptions {
-    text: string;
+    readonly text: string;
 }
 
 export interface ClippyOptions {
-    text: string;
+    readonly text: string;
 }
 
 export interface CaptionOptions {
-    url: string;
-    input: {
-        top?: string;
-        bottom?: string;
-    };
-    font: ValidFont;
+    readonly url: string;
+    readonly top?: string;
+    readonly bottom?: string;
+    readonly font: ValidFont;
 }
 
 export interface CahOptions {
-    white: string[];
-    black: string;
+    readonly white: string[];
+    readonly black: string;
 }
 
 export interface ArtOptions {
-    avatar: string;
+    readonly avatar: string;
 }
 
 export type ValidFont =
