@@ -1,6 +1,7 @@
 import { Api } from '@blargbot/api/Api';
 import { BaseRoute } from '@blargbot/api/BaseRoute';
 import { ApiResponse } from '@blargbot/api/types';
+import { snowflake } from '@blargbot/core/utils/snowflake';
 import { GuildCommandTag, NamedGuildSourceCommandTag } from '@blargbot/domain/models';
 import { mapping } from '@blargbot/mapping';
 
@@ -66,7 +67,15 @@ export class CCommandsRoute extends BaseRoute {
     }
 
     async #createCommand(guildId: string, commandName: string, content: string, author: string): Promise<ApiResponse> {
-        const success = await this.#api.database.guilds.setCommand(guildId, commandName, { content, author });
+        if (commandName.length > 100)
+            return this.badRequest('name cannot be longer than 100 characters');
+
+        const success = await this.#api.database.guilds.setCommand(guildId, commandName, {
+            id: snowflake.create().toString(),
+            content,
+            author
+        });
+
         if (!success)
             return this.internalServerError('Failed to create custom command');
 

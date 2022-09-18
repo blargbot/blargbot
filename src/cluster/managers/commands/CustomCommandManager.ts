@@ -86,12 +86,13 @@ class NormalizedCommandTag implements ICommand<NamedGuildCommandTag> {
     public readonly permission: string;
     public readonly roles: readonly string[];
     public readonly hidden: boolean;
+    public readonly isOnWebsite: false;
 
     public constructor(
         public readonly implementation: NamedGuildCommandTag,
         public readonly tag: StoredTag | undefined
     ) {
-        this.id = implementation.name;
+        this.id = implementation.id;
         this.name = implementation.name;
         this.aliases = [];
         this.category = 'Custom';
@@ -102,6 +103,7 @@ class NormalizedCommandTag implements ICommand<NamedGuildCommandTag> {
         this.permission = this.implementation.permission ?? '0';
         this.roles = this.implementation.roles ?? [];
         this.hidden = this.implementation.hidden ?? false;
+        this.isOnWebsite = false;
     }
 
     public async execute(context: CommandContext): Promise<undefined> {

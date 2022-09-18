@@ -1,4 +1,4 @@
-import { codeBlock, guard } from '@blargbot/core/utils';
+import { codeBlock, discord, guard, pluralise } from '@blargbot/core/utils';
 import { AdvancedMessageContent, EmbedField, KnownChannel, KnownTextableChannel, User } from 'eris';
 
 import { Cluster } from '../../Cluster';
@@ -57,7 +57,7 @@ export class CommandDocumentationManager extends DocumentationTreeManager {
                     fields: [
                         {
                             name: `${g.name} commands`,
-                            value: codeBlock(g.items.filter(i => i.hidden !== true).map(i => i.name).join(', '))
+                            value: this.#listCommandNames(g.items.filter(i => i.hidden !== true).map(i => i.name))
                         }
                     ]
                 }
@@ -74,7 +74,7 @@ export class CommandDocumentationManager extends DocumentationTreeManager {
                 fields: [
                     ...sortedCategories.filter(g => g.hidden !== true).map(g => ({
                         name: `${g.name} commands`,
-                        value: codeBlock(g.items.filter(i => i.hidden !== true).map(i => i.name).join(', '))
+                        value: this.#listCommandNames(g.items.filter(i => i.hidden !== true).map(i => i.name))
                     })),
                     {
                         name: '\u200B',
@@ -86,6 +86,30 @@ export class CommandDocumentationManager extends DocumentationTreeManager {
             selectText: 'Pick a command category',
             items: sortedCategories
         };
+    }
+
+    #listCommandNames(names: readonly string[]): string {
+        if (names.length === 0)
+            return 'No commands';
+
+        function* getPotentialResults(): Generator<string> {
+            let removed = 0;
+            const items = [...names];
+            const padding = '```';
+            yield `${padding}${items.join(', ')}${padding}`;
+            while (items.length > 0) {
+                items.pop();
+                removed++;
+                yield `${padding}${items.join(', ')}${padding}+ ${removed} more`;
+            }
+        }
+
+        const charLimit = discord.getLimit('embed.field.value');
+        for (const result of getPotentialResults())
+            if (result.length <= charLimit)
+                return result;
+
+        return `${names.length} ${pluralise(names.length, 'command')}`;
     }
 
     protected noMatches(): Awaitable<Omit<AdvancedMessageContent, 'components'>> {
@@ -151,7 +175,7 @@ export class CommandDocumentationManager extends DocumentationTreeManager {
             hidden: result.state !== 'ALLOWED',
             tags: [command.name, ...command.aliases],
             embed: {
-                url: `/commands#${command.name}`,
+                url: command.isOnWebsite ? `/commands#${command.name}` : undefined,
                 description: description.join('\n'),
                 color: this.#getColor(command.category)
             },

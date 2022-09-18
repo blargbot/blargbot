@@ -2,7 +2,7 @@ import { bbtag } from '@blargbot/bbtag';
 import { Cluster } from '@blargbot/cluster';
 import { GuildCommand } from '@blargbot/cluster/command';
 import { CommandResult, CustomCommandShrinkwrap, GuildCommandContext, GuildShrinkwrap, ICommand, SignedGuildShrinkwrap } from '@blargbot/cluster/types';
-import { codeBlock, CommandType, guard, humanize, parse } from '@blargbot/cluster/utils';
+import { codeBlock, CommandType, guard, humanize, parse, snowflake } from '@blargbot/cluster/utils';
 import { Configuration } from '@blargbot/config';
 import { SendContent, SendPayload } from '@blargbot/core/types';
 import { FlagDefinition, NamedGuildCommandTag, NamedGuildSourceCommandTag } from '@blargbot/domain/models';
@@ -226,7 +226,7 @@ export class CustomCommandCommand extends GuildCommand {
         if (typeof match !== 'object')
             return match;
 
-        return await this.#saveCommand(context, 'created', match.name, content);
+        return await this.#saveCommand(context, 'created', undefined, match.name, content);
     }
 
     public async editCommand(context: GuildCommandContext, commandName: string | undefined, content: string | undefined): Promise<string | undefined> {
@@ -237,7 +237,7 @@ export class CustomCommandCommand extends GuildCommand {
         if (guard.isGuildImportedCommandTag(match))
             return this.error(`The \`${match.name}\` custom command is an alias to the tag \`${match.alias}\``);
 
-        return await this.#saveCommand(context, 'edited', match.name, content, match);
+        return await this.#saveCommand(context, 'edited', match.id, match.name, content, match);
     }
 
     public async deleteCommand(context: GuildCommandContext, commandName: string | undefined): Promise<string | undefined> {
@@ -257,7 +257,7 @@ export class CustomCommandCommand extends GuildCommand {
         if (guard.isGuildImportedCommandTag(match.command))
             return this.error(`The \`${match.name}\` custom command is an alias to the tag \`${match.command.alias}\``);
 
-        return await this.#saveCommand(context, 'set', match.name, content, match.command);
+        return await this.#saveCommand(context, 'set', match.command?.id, match.name, content, match.command);
     }
 
     public async renameCommand(context: GuildCommandContext, oldName: string | undefined, newName: string | undefined): Promise<string | undefined> {
@@ -468,6 +468,7 @@ export class CustomCommandCommand extends GuildCommand {
 
         const author = await context.database.users.get(tag.author);
         await context.database.guilds.setCommand(context.channel.guild.id, commandName, {
+            id: snowflake.create().toString(),
             author: tag.author,
             alias: tagName,
             authorizer: context.author.id
@@ -577,6 +578,7 @@ export class CustomCommandCommand extends GuildCommand {
             confirm.push(this.success(`Import the command \`${commandName}\``));
             importSteps.push(async () => {
                 await context.cluster.database.guilds.setCommand(guildId, commandName, {
+                    id: snowflake.create().toString(),
                     ...command,
                     author: context.author.id
                 });
@@ -609,6 +611,7 @@ export class CustomCommandCommand extends GuildCommand {
     async #saveCommand(
         context: GuildCommandContext,
         operation: string,
+        id: string | undefined,
         commandName: string,
         content: string | undefined,
         currentCommand?: NamedGuildSourceCommandTag
@@ -622,6 +625,7 @@ export class CustomCommandCommand extends GuildCommand {
             return this.error(`There were errors with the bbtag you provided!\n${bbtag.stringifyAnalysis(analysis)}`);
 
         const command = {
+            id: id ?? snowflake.create().toString(),
             content: content,
             author: context.author.id,
             authorizer: context.author.id,
@@ -752,10 +756,13 @@ export class CustomCommandCommand extends GuildCommand {
             return undefined;
 
         const command = await context.database.guilds.getCommand(context.channel.guild.id, commandName);
-        if (command === undefined)
-            return { name: commandName };
+        if (command !== undefined)
+            return { name: command.name, command };
 
-        return { name: command.name, command };
+        if (commandName.length > 100)
+            return this.error('Command names cannot be longer than 100 characters');
+
+        return { name: commandName };
     }
 }
 

@@ -89,6 +89,7 @@ class NormalizedCommand implements ICommand<Command> {
     public readonly hidden: boolean;
     public readonly category: string;
     public readonly flags: readonly FlagDefinition[];
+    public readonly isOnWebsite: boolean;
 
     public constructor(
         public readonly implementation: Command,
@@ -105,6 +106,7 @@ class NormalizedCommand implements ICommand<Command> {
         this.hidden = permissions.hidden ?? false;
         this.category = commandTypeDetails[implementation.category].name;
         this.flags = implementation.flags;
+        this.isOnWebsite = !this.hidden;
     }
 
     public async execute(context: CommandContext, next: NextMiddleware<CommandResult>): Promise<CommandResult> {

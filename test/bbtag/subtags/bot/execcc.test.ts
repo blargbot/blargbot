@@ -36,6 +36,7 @@ runSubtagTests({
                 ctx.options.inputRaw = 'This is some input text';
                 ctx.options.data = { stackSize: 100 };
                 ctx.ccommands['othersubtag'] = {
+                    id: '0',
                     author: '212097368371683623',
                     content: '{assert}{eval}',
                     cooldown: 7
@@ -78,6 +79,7 @@ runSubtagTests({
                 ctx.options.inputRaw = 'This is some input text';
                 ctx.options.data = { stackSize: 100 };
                 ctx.ccommands['othersubtag'] = {
+                    id: '0',
                     author: '212097368371683623',
                     content: '{assert}{eval}'
                 };
@@ -118,6 +120,7 @@ runSubtagTests({
                 ctx.options.inputRaw = 'This is some input text';
                 ctx.options.data = { stackSize: 100 };
                 ctx.ccommands['othersubtag'] = {
+                    id: '0',
                     author: '212097368371683623',
                     content: '{assert}{eval}',
                     cooldown: 7
@@ -159,6 +162,7 @@ runSubtagTests({
                 ctx.options.inputRaw = 'This is some input text';
                 ctx.options.data = { stackSize: 100 };
                 ctx.ccommands['othersubtag'] = {
+                    id: '0',
                     author: '212097368371683623',
                     content: '{assert}{eval}',
                     cooldown: 7
@@ -190,6 +194,7 @@ runSubtagTests({
             ],
             setup(ctx) {
                 ctx.ccommands['othersubtag'] = {
+                    id: '0',
                     author: '212097368371683623',
                     content: '{assert}{eval}',
                     alias: 'otherSubtag',
@@ -206,6 +211,7 @@ runSubtagTests({
             setup(ctx) {
                 ctx.options.data = { stackSize: 200 };
                 ctx.ccommands['othersubtag'] = {
+                    id: '0',
                     author: '212097368371683623',
                     content: '{fail}',
                     cooldown: 7
@@ -243,6 +249,7 @@ runSubtagTests({
                 ctx.options.inputRaw = 'This is some input text';
                 ctx.options.data = { stackSize: 100 };
                 ctx.ccommands['othersubtag'] = {
+                    id: '0',
                     author: '212097368371683623',
                     content: '{assert}{eval}',
                     cooldown: 7
@@ -288,6 +295,7 @@ runSubtagTests({
                 ctx.options.inputRaw = 'This is some input text';
                 ctx.options.data = { stackSize: 100 };
                 ctx.ccommands['othersubtag'] = {
+                    id: '0',
                     author: '212097368371683623',
                     content: '{assert}{eval}',
                     cooldown: 7
@@ -333,6 +341,7 @@ runSubtagTests({
                 ctx.options.inputRaw = 'This is some input text';
                 ctx.options.data = { stackSize: 100 };
                 ctx.ccommands['othersubtag'] = {
+                    id: '0',
                     author: '212097368371683623',
                     content: '{assert}{eval}',
                     cooldown: 7
