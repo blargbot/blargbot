@@ -66,7 +66,8 @@ export class CaptionCommand extends GlobalImageCommand {
         return await this.renderImage(context, 'caption', {
             url,
             font: fontLookup[fontName],
-            input: { top: top, bottom: bottom }
+            top: top,
+            bottom: bottom
         });
     }
 }

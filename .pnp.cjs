@@ -544,7 +544,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/md5", "npm:2.3.2"],\
             ["@types/node-fetch", "npm:2.6.2"],\
             ["@types/require-reload", "workspace:definitions/require-reload"],\
-            ["@types/sharp", "npm:0.31.0"],\
             ["@types/wolken", "workspace:definitions/wolken"],\
             ["@types/xml2js", "npm:0.4.11"],\
             ["brainfuck-node", "npm:1.0.2"],\
@@ -556,8 +555,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["node-fetch", "virtual:644263357c3808bc44f433a693fe388a0c8cd7253a76268de48af4ee58a719d112af996231f3c01e175a9d4db65884c068df3876ec1060da68b36b8d0a9b8225#npm:2.6.7"],\
             ["prom-client", "npm:14.1.0"],\
             ["require-reload", "npm:0.2.2"],\
-            ["sharp", "npm:0.31.0"],\
-            ["twemoji", "npm:14.0.2"],\
             ["wolken", "npm:0.2.1"],\
             ["xml2js", "npm:0.4.23"]\
           ],\
@@ -678,7 +675,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["gifencoder", "npm:2.0.1"],\
             ["gm", "npm:1.23.1"],\
             ["node-fetch", "virtual:644263357c3808bc44f433a693fe388a0c8cd7253a76268de48af4ee58a719d112af996231f3c01e175a9d4db65884c068df3876ec1060da68b36b8d0a9b8225#npm:2.6.7"],\
-            ["sharp", "npm:0.31.0"]\
+            ["sharp", "npm:0.31.0"],\
+            ["twemoji", "npm:14.0.2"]\
           ],\
           "linkType": "SOFT"\
         }]\

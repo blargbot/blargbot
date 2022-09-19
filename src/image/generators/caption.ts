@@ -8,7 +8,7 @@ export class CaptionGenerator extends BaseImageGenerator<'caption'> {
         super('caption', worker);
     }
 
-    public async execute({ url, input, font }: CaptionOptions): Promise<ImageResult> {
+    public async execute({ url, top, bottom, font }: CaptionOptions): Promise<ImageResult> {
         const imgData = await sharp(await this.getRemote(url))
             .resize(800, 800, { fit: 'outside' })
             .toBuffer({ resolveWithObject: true });
@@ -24,15 +24,15 @@ export class CaptionGenerator extends BaseImageGenerator<'caption'> {
             outline: ['black', 8]
         };
 
-        if (input.top !== undefined) {
+        if (top !== undefined) {
             overlays.push({
-                input: await this.renderText(input.top, { ...textOptions, gravity: 'North' }),
+                input: await this.renderText(top, { ...textOptions, gravity: 'North' }),
                 gravity: sharp.gravity.north
             });
         }
-        if (input.bottom !== undefined) {
+        if (bottom !== undefined) {
             overlays.push({
-                input: await this.renderText(input.bottom, { ...textOptions, gravity: 'South' }),
+                input: await this.renderText(bottom, { ...textOptions, gravity: 'South' }),
                 gravity: sharp.gravity.south
             });
         }
