@@ -5,7 +5,7 @@
 *.js.map
 *.cjs.map
 *.mjs.map
-/test.ts
+**/_test.ts
 /config.json
 /src/res/avatars.json
 /test.bbtag

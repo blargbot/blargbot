@@ -73,6 +73,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:src/database"\
       },\
       {\
+        "name": "@blargbot/discord",\
+        "reference": "workspace:src/discord"\
+      },\
+      {\
         "name": "@blargbot/domain",\
         "reference": "workspace:src/domain"\
       },\
@@ -116,6 +120,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@blargbot/core", ["workspace:src/core"]],\
       ["@blargbot/core-tests", ["workspace:test/core"]],\
       ["@blargbot/database", ["workspace:src/database"]],\
+      ["@blargbot/discord", ["workspace:src/discord"]],\
       ["@blargbot/domain", ["workspace:src/domain"]],\
       ["@blargbot/image", ["workspace:src/image"]],\
       ["@blargbot/logger", ["workspace:src/logger"]],\
@@ -642,6 +647,18 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["pg-hstore", "npm:2.3.4"],\
             ["rethinkdb", "npm:2.4.2"],\
             ["sequelize", "virtual:856d594ef58e3ff5ddd3d480c84f517a2b37719cc82ea2e4c1df0be5f76a9b525389c170d2c5e2be74c4b863231c45eb9094936473db96bd4b8e5e940ae574b6#npm:6.23.0"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
+      ["@blargbot/discord", [\
+        ["workspace:src/discord", {\
+          "packageLocation": "./src/discord/",\
+          "packageDependencies": [\
+            ["@blargbot/discord", "workspace:src/discord"],\
+            ["@types/node-fetch", "npm:2.6.2"],\
+            ["discord-api-types", "npm:0.37.10"],\
+            ["node-fetch", "virtual:644263357c3808bc44f433a693fe388a0c8cd7253a76268de48af4ee58a719d112af996231f3c01e175a9d4db65884c068df3876ec1060da68b36b8d0a9b8225#npm:2.6.7"]\
           ],\
           "linkType": "SOFT"\
         }]\

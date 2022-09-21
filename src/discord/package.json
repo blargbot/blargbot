@@ -1,0 +1,12 @@
+{
+    "name": "@blargbot/discord",
+    "version": "1.0.0",
+    "private": true,
+    "dependencies": {
+        "discord-api-types": "^0.37.10",
+        "node-fetch": "^2.6.7"
+    },
+    "devDependencies": {
+        "@types/node-fetch": "^2.6.2"
+    }
+}

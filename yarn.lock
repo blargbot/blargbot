@@ -439,6 +439,16 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@blargbot/discord@workspace:src/discord":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/discord@workspace:src/discord"
+  dependencies:
+    "@types/node-fetch": ^2.6.2
+    discord-api-types: ^0.37.10
+    node-fetch: ^2.6.7
+  languageName: unknown
+  linkType: soft
+
 "@blargbot/domain@workspace:^, @blargbot/domain@workspace:src/domain":
   version: 0.0.0-use.local
   resolution: "@blargbot/domain@workspace:src/domain"
