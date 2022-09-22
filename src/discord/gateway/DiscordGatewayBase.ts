@@ -1,6 +1,6 @@
+import { TypedEventEmitter } from '../TypedEventEmitter';
 import { promiseRaceAbortable } from '../util';
 import { DiscordGatewayDisconnectError } from './DiscordGatewayDisconnectError';
-import { TypedEventEmitter } from './TypedEventEmitter';
 
 export interface DiscordGatewayEventsBase {
     disconnected: [error: DiscordGatewayDisconnectError];

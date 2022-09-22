@@ -1,4 +1,4 @@
-import { EventEmitter } from 'stream';
+import { EventEmitter } from 'events';
 
 export class TypedEventEmitter<TContract extends Record<keyof TContract, readonly unknown[]>> extends EventEmitter {
     readonly #relayTargets = new Set<EventEmitter>();
@@ -20,6 +20,14 @@ export class TypedEventEmitter<TContract extends Record<keyof TContract, readonl
     public override emit(event: PropertyKey, ...args: never): boolean {
         if (typeof event === 'number')
             event = event.toString();
+
+        try {
+            return super.emit(event, ...args as unknown[]);
+        } catch (err: unknown) {
+            if (event === 'error')
+                throw err;
+            this.emit('error', err);
+        }
 
         for (const target of this.#relayTargets)
             target.emit(event, ...args as unknown[]);

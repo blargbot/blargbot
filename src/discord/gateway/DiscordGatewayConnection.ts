@@ -9,8 +9,8 @@ import { DiscordGatewayBase, DiscordGatewayEventsBase } from './DiscordGatewayBa
 import { DiscordGatewayDisconnectError } from './DiscordGatewayDisconnectError';
 
 type DiscordGatewayEventsHelper =
-    & { [P in discord.GatewayReceivePayload['op']]: [packet: Extract<discord.GatewayReceivePayload, { op: P; }>] }
-    & { [P in discord.GatewayDispatchPayload['t']]: [event: Extract<discord.GatewayDispatchPayload, { t: P; }>] }
+    & { [P in discord.GatewayReceivePayload as P['op']]: [packet: P] }
+    & { [P in discord.GatewayDispatchPayload as P['t']]: [event: P] }
 
 export interface DiscordGatewayEvents extends DiscordGatewayEventsHelper, DiscordGatewayEventsBase {
     'error': [error: unknown];
