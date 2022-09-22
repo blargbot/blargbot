@@ -657,8 +657,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["@blargbot/discord", "workspace:src/discord"],\
             ["@types/node-fetch", "npm:2.6.2"],\
+            ["@types/ws", "npm:8.5.3"],\
             ["discord-api-types", "npm:0.37.10"],\
-            ["node-fetch", "virtual:644263357c3808bc44f433a693fe388a0c8cd7253a76268de48af4ee58a719d112af996231f3c01e175a9d4db65884c068df3876ec1060da68b36b8d0a9b8225#npm:2.6.7"]\
+            ["node-fetch", "virtual:644263357c3808bc44f433a693fe388a0c8cd7253a76268de48af4ee58a719d112af996231f3c01e175a9d4db65884c068df3876ec1060da68b36b8d0a9b8225#npm:2.6.7"],\
+            ["ws", "virtual:58a0f6abb50fb3d9b19664904b0752127f8fa1179f758d64257d25d1cdda702c7fb60381a71d7c9ab58c654ac14e88cb5faa901e986d9806ff9aa011b1f6eee9#npm:8.8.1"]\
           ],\
           "linkType": "SOFT"\
         }]\

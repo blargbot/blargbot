@@ -17,7 +17,7 @@ export class DefaultRequestTimeoutMiddleware implements RequestMiddleware {
     async #invokeCore(request: RequestOptions, next: () => Promise<ResponseMessage>): Promise<ResponseMessage> {
         const abort = new AbortController();
         request.abort = abort.signal;
-        const timeout = setTimeout(() => abort.abort(), this.#timeout);
+        const timeout = setTimeout(() => abort.abort(new Error('Operation timed out')), this.#timeout);
         try {
             return await next();
         } finally {

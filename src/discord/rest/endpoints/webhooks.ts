@@ -1,4 +1,4 @@
-import discord from 'discord-api-types/v10';
+import type discord from 'discord-api-types/v10';
 
 import { Body, EndpointBuilder } from '../requests';
 import { jsonBody } from '../requests/jsonBody';

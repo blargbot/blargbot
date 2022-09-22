@@ -1,12 +1,14 @@
+import http from 'http';
+
+import { RatelimitManager } from '../../ratelimit';
 import { RequestOptions, ResponseMessage } from '../handler';
-import { RatelimitBucketManager } from '../ratelimit';
 import { RequestMiddleware } from './RequestMiddleware';
 
 export class RatelimitRequestMiddleware implements RequestMiddleware {
-    readonly #buckets: RatelimitBucketManager;
+    readonly #buckets: RatelimitManager;
 
-    public constructor(buckets?: RatelimitBucketManager) {
-        this.#buckets = buckets ?? new RatelimitBucketManager();
+    public constructor(buckets?: RatelimitManager) {
+        this.#buckets = buckets ?? new RatelimitManager();
     }
 
     public async invoke(request: RequestOptions, next: () => Promise<ResponseMessage>): Promise<ResponseMessage> {
@@ -21,8 +23,13 @@ export class RatelimitRequestMiddleware implements RequestMiddleware {
                 throw err;
             }
 
-            bucket = this.#buckets.readHeaders(request.id, response.headers);
-            bucket.release();
+            const newId = this.#getHeader(response.headers, 'x-ratelimit-bucket');
+            const limit = this.#getHeader(response.headers, 'x-ratelimit-limit', parseFloat);
+            const remaining = this.#getHeader(response.headers, 'x-ratelimit-remaining', parseFloat);
+            const disableFor = this.#getHeader(response.headers, 'x-ratelimit-global') === 'true' ? this.#getHeader(response.headers, 'retry-after', v => parseFloat(v) * 1000) : undefined;
+            const resetAfter = this.#getHeader(response.headers, 'x-ratelimit-reset-after', v => parseFloat(v) * 1000);
+
+            bucket = this.#buckets.update(request.id, newId, disableFor, limit, remaining, resetAfter);
 
             if (response.statusCode !== 429)
                 return response;
@@ -34,5 +41,16 @@ export class RatelimitRequestMiddleware implements RequestMiddleware {
             }
             // eslint-disable-next-line no-constant-condition
         } while (true);
+    }
+
+    #getHeader(headers: http.IncomingHttpHeaders, header: string): string | undefined;
+    #getHeader<T>(headers: http.IncomingHttpHeaders, header: string, transform: (value: string) => T): T | undefined;
+    #getHeader(headers: http.IncomingHttpHeaders, header: string, transform: (value: string) => unknown = s => s): unknown {
+        const value = headers[header];
+        switch (typeof value) {
+            case 'string': return transform(value);
+            case 'object': return transform(value[0]);
+            case 'undefined': return undefined;
+        }
     }
 }

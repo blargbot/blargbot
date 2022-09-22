@@ -1,4 +1,4 @@
-import discord from 'discord-api-types/v10';
+import type discord from 'discord-api-types/v10';
 
 import { RequestOptions, ResponseMessage } from '../handler';
 import { RequestMiddleware } from './RequestMiddleware';

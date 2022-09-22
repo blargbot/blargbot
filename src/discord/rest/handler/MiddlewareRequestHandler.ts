@@ -11,18 +11,17 @@ import { ResponseMessage } from './ResponseMessage';
 export class MiddlewareRequestHandler implements RequestHandler {
     readonly #middleware: RequestMiddleware[];
     readonly #baseUrl: URL;
-    readonly #send: (request: RequestOptions) => Promise<ResponseMessage>;
 
     public constructor(baseUrl: string, middleware: Iterable<RequestMiddleware>) {
         this.#middleware = [...middleware].reverse();
         this.#baseUrl = new URL(baseUrl);
-        this.#send = this.#middleware.reduce(
-            (p, c) => req => c.invoke(req, () => p(req)),
-            this.#sendCore.bind(this));
     }
 
     public async send(request: RequestOptions): Promise<ResponseMessage> {
-        return await this.#send(request);
+        return await this.#middleware.reduce(
+            (p, c) => c.invoke.bind(c, request, p),
+            this.#sendCore.bind(this, request)
+        )();
     }
 
     async #sendCore(options: RequestOptions): Promise<ResponseMessage> {
