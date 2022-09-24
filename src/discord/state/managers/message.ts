@@ -33,7 +33,7 @@ export class MessageStateManager extends StateManagerBase<MessageStateManager, M
     public constructor(root: DiscordStateManager) {
         super({
             'channel': init => root.channels.get(init.channel_id),
-            'author': init => root.users.get(init.author.id),
+            'author': init => root.users.upsert(init.author),
             'membership': init => init.member === undefined || init.guild_id === undefined ? undefined : root.guildMemberships.upsert({
                 ...init.member,
                 guild_id: init.guild_id,
