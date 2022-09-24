@@ -656,6 +656,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./src/discord/",\
           "packageDependencies": [\
             ["@blargbot/discord", "workspace:src/discord"],\
+            ["@types/node", "npm:16.11.59"],\
             ["@types/node-fetch", "npm:2.6.2"],\
             ["@types/ws", "npm:8.5.3"],\
             ["discord-api-types", "npm:0.37.10"],\

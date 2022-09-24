@@ -172,6 +172,7 @@ export class DiscordGatewayConnection extends DiscordGatewayBase<DiscordGatewayE
     }
 
     async #sendIdentify(): Promise<void> {
+        // TODO this needs to be limited to globally 5 concurrent calls max, regardless of the ratelimit
         await this.#send({
             op: GatewayOpcodes.Identify,
             d: {

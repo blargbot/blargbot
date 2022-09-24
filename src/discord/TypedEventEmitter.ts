@@ -22,16 +22,15 @@ export class TypedEventEmitter<TContract extends Record<keyof TContract, readonl
             event = event.toString();
 
         try {
+            for (const target of this.#relayTargets)
+                target.emit(event, ...args as unknown[]);
             return super.emit(event, ...args as unknown[]);
         } catch (err: unknown) {
             if (event === 'error')
                 throw err;
             this.emit('error', err);
+            return true;
         }
-
-        for (const target of this.#relayTargets)
-            target.emit(event, ...args as unknown[]);
-        return super.emit(event, ...args as unknown[]);
     }
 
     public override on<T extends keyof TContract>(event: T, handler: (...args: TContract[T]) => void | Promise<void>): this;
