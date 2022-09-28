@@ -75,7 +75,7 @@ export class IntervalCommand extends GuildCommand {
             return this.error('There is no interval currently set up!');
 
         const response = this.info(`The raw code for the interval is:\n${codeBlock(interval.content)}`);
-        return !interval.content.includes('`') && guard.checkMessageSize(response)
+        return !interval.content.includes('```') && guard.checkMessageSize(response)
             ? response
             : {
                 content: this.info('The raw code for the interval is attached'),

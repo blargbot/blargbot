@@ -82,7 +82,7 @@ export class FarewellCommand extends GuildCommand {
             : `The raw code for the farewell message (sent in ${channel.mention}) is`;
         const response = this.info(`${message}:\n${codeBlock(farewell.content)}`);
 
-        return !farewell.content.includes('`') && guard.checkMessageSize(response)
+        return !farewell.content.includes('```') && guard.checkMessageSize(response)
             ? response
             : {
                 content: this.info(`${message} attached`),

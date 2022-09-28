@@ -125,7 +125,7 @@ export class AutoResponseCommand extends GuildCommand {
         const responseBase = `The raw code for ${match.id === 'everything' ? 'the everything autoresponse' : `autoresponse ${match.id}`} is`;
 
         const response = this.success(`${responseBase}:\n${codeBlock(match.ar.content)}`);
-        return !match.ar.content.includes('`') && guard.checkMessageSize(response)
+        return !match.ar.content.includes('```') && guard.checkMessageSize(response)
             ? response
             : {
                 content: this.success(`${responseBase} attached`),
