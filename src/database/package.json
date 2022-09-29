@@ -7,14 +7,14 @@
         "@blargbot/domain": "workspace:^",
         "@blargbot/logger": "workspace:^",
         "@blargbot/mapping": "workspace:^",
-        "airtable": "^0.11.4",
+        "airtable": "^0.11.5",
         "cassandra-driver": "^4.6.4",
         "catflake": "^1.0.0",
         "moment-timezone": "^0.5.37",
         "pg": "^8.8.0",
         "pg-hstore": "^2.3.4",
         "rethinkdb": "^2.4.2",
-        "sequelize": "^6.23.0"
+        "sequelize": "^6.23.2"
     },
     "devDependencies": {
         "@types/catflake": "workspace:^",
