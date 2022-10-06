@@ -11,24 +11,24 @@ import { metric } from 'prom-client';
 import { ClusterUtilities } from './ClusterUtilities';
 
 export type ClusterIPCContract = {
-    'shardReady': { masterGets: number; workerGets: never; };
-    'meval': { masterGets: MasterEvalRequest; workerGets: GlobalEvalResult | EvalResult; };
-    'killshard': { masterGets: never; workerGets: number; };
-    'ceval': { masterGets: EvalResult; workerGets: EvalRequest; };
-    'getSubtagList': { masterGets: SubtagListResult; workerGets: undefined; };
-    'getSubtag': { masterGets: SubtagDetails | undefined; workerGets: string; };
-    'getGuildPermissionList': { masterGets: GuildPermissionDetails[]; workerGets: { userId: string; }; };
-    'getGuildPermission': { masterGets: GuildPermissionDetails | undefined; workerGets: { userId: string; guildId: string; }; };
-    'respawn': { masterGets: { id?: number; channel: string; }; workerGets: boolean; };
-    'respawnApi': { masterGets: undefined; workerGets: boolean; };
-    'respawnAll': { masterGets: { channelId: string; }; workerGets: boolean; };
-    'killAll': { masterGets: undefined; workerGets: undefined; };
-    'clusterStats': { masterGets: ClusterStats; workerGets: never; };
-    'getClusterStats': { masterGets: undefined; workerGets: Record<number, ClusterStats | undefined>; };
-    'getCommandList': { masterGets: CommandListResult; workerGets: undefined; };
-    'getGuildSettings': { masterGets: GuildSettingDocs; workerGets: undefined; };
-    'getCommand': { masterGets: ICommandDetails | undefined; workerGets: string; };
-    'metrics': { masterGets: metric[]; workerGets: undefined; };
+    shardReady: { masterGets: number; workerGets: never; };
+    meval: { masterGets: MasterEvalRequest; workerGets: GlobalEvalResult | EvalResult; };
+    killshard: { masterGets: never; workerGets: number; };
+    ceval: { masterGets: EvalResult; workerGets: EvalRequest; };
+    getSubtagList: { masterGets: SubtagListResult; workerGets: undefined; };
+    getSubtag: { masterGets: SubtagDetails | undefined; workerGets: string; };
+    getGuildPermissionList: { masterGets: GuildPermissionDetails[]; workerGets: { userId: string; }; };
+    getGuildPermission: { masterGets: GuildPermissionDetails | undefined; workerGets: { userId: string; guildId: string; }; };
+    respawn: { masterGets: { id?: number; channel: string; }; workerGets: boolean; };
+    respawnApi: { masterGets: undefined; workerGets: boolean; };
+    respawnAll: { masterGets: { channelId: string; }; workerGets: boolean; };
+    killAll: { masterGets: undefined; workerGets: undefined; };
+    clusterStats: { masterGets: ClusterStats; workerGets: never; };
+    getClusterStats: { masterGets: undefined; workerGets: Record<number, ClusterStats | undefined>; };
+    getCommandList: { masterGets: CommandListResult; workerGets: undefined; };
+    getGuildSettings: { masterGets: GuildSettingDocs; workerGets: undefined; };
+    getCommand: { masterGets: ICommandDetails | undefined; workerGets: string; };
+    metrics: { masterGets: metric[]; workerGets: undefined; };
 }
 
 export interface ICommandManager<T = unknown> {
@@ -60,24 +60,24 @@ export type Result<State, Detail = undefined, Optional extends boolean = Detail 
     : { readonly state: State; readonly detail?: Detail; };
 
 export type PermissionCheckResult =
-    | Result<'ALLOWED'>
-    | Result<'BLACKLISTED', string>
-    | Result<'DISABLED'>
-    | Result<'NOT_IN_GUILD'>
-    | Result<'MISSING_ROLE', readonly string[]>
-    | Result<'MISSING_PERMISSIONS', bigint>;
+    | Result<`ALLOWED`>
+    | Result<`BLACKLISTED`, string>
+    | Result<`DISABLED`>
+    | Result<`NOT_IN_GUILD`>
+    | Result<`MISSING_ROLE`, readonly string[]>
+    | Result<`MISSING_PERMISSIONS`, bigint>;
 
 export type CommandGetResult<T = unknown> =
-    | Result<'NOT_FOUND'>
+    | Result<`NOT_FOUND`>
     | {
-        [P in PermissionCheckResult['state']]: Extract<PermissionCheckResult, { state: P; }> extends Result<infer State, infer Detail>
+        [P in PermissionCheckResult[`state`]]: Extract<PermissionCheckResult, { state: P; }> extends Result<infer State, infer Detail>
         ? Result<State, { readonly command: ICommand<T>; readonly reason: Detail; }>
         : never
-    }[PermissionCheckResult['state']]
+    }[PermissionCheckResult[`state`]]
 
 export type CommandGetCoreResult<T = unknown> =
     | CommandGetResult<T>
-    | Result<'FOUND', ICommand<T>>;
+    | Result<`FOUND`, ICommand<T>>;
 
 export type CommandManagerTypeMap = {
     custom: NamedGuildCommandTag;
@@ -148,18 +148,18 @@ export interface SubcommandDefinitionHolder<TContext extends CommandContext> {
 }
 
 export type CommandVariableTypeMap = {
-    'literal': string;
-    'bigint': bigint;
-    'integer': number;
-    'number': number;
-    'role': Role;
-    'channel': KnownChannel;
-    'user': User;
-    'sender': User | Webhook;
-    'member': Member;
-    'duration': Duration;
-    'boolean': boolean;
-    'string': string;
+    literal: string;
+    bigint: bigint;
+    integer: number;
+    number: number;
+    role: Role;
+    channel: KnownChannel;
+    user: User;
+    sender: User | Webhook;
+    member: Member;
+    duration: Duration;
+    boolean: boolean;
+    string: string;
 }
 
 export type CommandVariableTypeName = keyof CommandVariableTypeMap;
@@ -174,11 +174,11 @@ export interface CommandVariableTypeBase<Name extends CommandVariableTypeName> {
     parse: CommandVariableParser;
 }
 
-export interface LiteralCommandVariableType<T extends string> extends CommandVariableTypeBase<'literal'> {
+export interface LiteralCommandVariableType<T extends string> extends CommandVariableTypeBase<`literal`> {
     readonly choices: readonly T[];
 }
 
-export type UnmappedCommandVariableTypes = Exclude<CommandVariableTypeName, MappedCommandVariableTypes['name']>;
+export type UnmappedCommandVariableTypes = Exclude<CommandVariableTypeName, MappedCommandVariableTypes[`name`]>;
 export type MappedCommandVariableTypes =
     | LiteralCommandVariableType<string>;
 
@@ -189,7 +189,7 @@ export type CommandVariableTypes =
 export type CommandVariableType<TName extends CommandVariableTypeName> = Extract<CommandVariableTypes, CommandVariableTypeBase<TName>>
 
 export interface CommandSingleParameter<T extends CommandVariableTypeName, Concat extends boolean> {
-    readonly kind: Concat extends false ? 'singleVar' : 'concatVar';
+    readonly kind: Concat extends false ? `singleVar` : `concatVar`;
     readonly name: string;
     readonly raw: boolean;
     readonly type: CommandVariableType<T>;
@@ -198,7 +198,7 @@ export interface CommandSingleParameter<T extends CommandVariableTypeName, Conca
 }
 
 export interface CommandGreedyParameter<T extends CommandVariableTypeName> {
-    readonly kind: 'greedyVar';
+    readonly kind: `greedyVar`;
     readonly name: string;
     readonly raw: boolean;
     readonly type: CommandVariableType<T>;
@@ -206,7 +206,7 @@ export interface CommandGreedyParameter<T extends CommandVariableTypeName> {
 }
 
 export interface CommandLiteralParameter {
-    readonly kind: 'literal';
+    readonly kind: `literal`;
     readonly name: string;
     readonly alias: string[];
 }
@@ -227,7 +227,7 @@ export interface CommandSignatureHandler<TContext extends CommandContext> extend
 }
 
 export type CustomCommandShrinkwrap = {
-    readonly [P in Exclude<keyof GuildSourceCommandTag, 'author' | 'authorizer' | 'id'>]: GuildSourceCommandTag[P]
+    readonly [P in Exclude<keyof GuildSourceCommandTag, `author` | `authorizer` | `id`>]: GuildSourceCommandTag[P]
 }
 
 export interface GuildShrinkwrap {
@@ -258,7 +258,7 @@ export interface SubtagListResult {
     [tagName: string]: SubtagDetails | undefined;
 }
 
-export type SubtagDetails = Omit<Subtag, 'execute' | 'hidden'>;
+export type SubtagDetails = Omit<Subtag, `execute` | `hidden`>;
 
 export interface GuildDetails {
     readonly id: string;
@@ -298,7 +298,7 @@ export interface ClusterStats {
 
 export interface ShardStats {
     readonly id: number;
-    readonly status: Shard['status'];
+    readonly status: Shard[`status`];
     readonly latency: number;
     readonly guilds: number;
     readonly cluster: number;
@@ -345,31 +345,31 @@ export interface SubtagVariableProperties {
     table: string;
 }
 
-export type WhitelistResponse = 'approved' | 'rejected' | 'requested' | 'alreadyApproved' | 'alreadyRejected';
+export type WhitelistResponse = `approved` | `rejected` | `requested` | `alreadyApproved` | `alreadyRejected`;
 
-export type PollResponse = BasePollResponse<'OPTIONS_EMPTY' | 'TOO_SHORT' | 'FAILED_SEND' | 'NO_ANNOUNCE_PERMS' | 'ANNOUNCE_INVALID'> | PollSuccess | PollInvalidOption;
+export type PollResponse = BasePollResponse<`OPTIONS_EMPTY` | `TOO_SHORT` | `FAILED_SEND` | `NO_ANNOUNCE_PERMS` | `ANNOUNCE_INVALID`> | PollSuccess | PollInvalidOption;
 
 export interface BasePollResponse<T extends string> {
     readonly state: T;
 }
 
-export interface PollInvalidOption<T extends string = 'OPTIONS_INVALID'> extends BasePollResponse<T> {
+export interface PollInvalidOption<T extends string = `OPTIONS_INVALID`> extends BasePollResponse<T> {
     readonly failedReactions: string[];
 }
 
-export interface PollSuccess extends PollInvalidOption<'SUCCESS'> {
+export interface PollSuccess extends PollInvalidOption<`SUCCESS`> {
     readonly message: KnownMessage;
 }
 
-export type EnsureMutedRoleResult = 'success' | 'unconfigured' | 'noPerms';
-export type MuteResult = 'success' | 'alreadyMuted' | 'noPerms' | 'roleMissing' | 'roleTooHigh' | 'moderatorNoPerms' | 'moderatorTooLow';
-export type UnmuteResult = 'success' | 'notMuted' | 'noPerms' | 'roleTooHigh' | 'moderatorNoPerms' | 'moderatorTooLow';
-export type BanResult = 'success' | 'alreadyBanned' | 'noPerms' | 'memberTooHigh' | 'moderatorNoPerms' | 'moderatorTooLow';
-export type MassBanResult = User[] | Exclude<BanResult, 'success'> | 'noUsers';
-export type KickResult = 'success' | 'noPerms' | 'memberTooHigh' | 'moderatorNoPerms' | 'moderatorTooLow';
-export type UnbanResult = 'success' | 'notBanned' | 'noPerms' | 'moderatorNoPerms';
-export type TimeoutResult = 'success' | 'alreadyTimedOut' | 'noPerms' | 'moderatorNoPerms' | 'memberTooHigh' | 'moderatorTooLow';
-export type TimeoutClearResult = 'success' | 'notTimedOut' | 'noPerms' | 'moderatorNoPerms';
+export type EnsureMutedRoleResult = `success` | `unconfigured` | `noPerms`;
+export type MuteResult = `success` | `alreadyMuted` | `noPerms` | `roleMissing` | `roleTooHigh` | `moderatorNoPerms` | `moderatorTooLow`;
+export type UnmuteResult = `success` | `notMuted` | `noPerms` | `roleTooHigh` | `moderatorNoPerms` | `moderatorTooLow`;
+export type BanResult = `success` | `alreadyBanned` | `noPerms` | `memberTooHigh` | `moderatorNoPerms` | `moderatorTooLow`;
+export type MassBanResult = User[] | Exclude<BanResult, `success`> | `noUsers`;
+export type KickResult = `success` | `noPerms` | `memberTooHigh` | `moderatorNoPerms` | `moderatorTooLow`;
+export type UnbanResult = `success` | `notBanned` | `noPerms` | `moderatorNoPerms`;
+export type TimeoutResult = `success` | `alreadyTimedOut` | `noPerms` | `moderatorNoPerms` | `memberTooHigh` | `moderatorTooLow`;
+export type TimeoutClearResult = `success` | `notTimedOut` | `noPerms` | `moderatorNoPerms`;
 
 export interface WarnDetails {
     readonly count: number;
@@ -388,11 +388,11 @@ export type WarnResult =
     | WarnResultBase<ModerationType.BAN, BanResult>
     | WarnResultBase<ModerationType.KICK, KickResult>
     | WarnResultBase<ModerationType.TIMEOUT, TimeoutResult>
-    | WarnResultBase<ModerationType.WARN, 'success' | 'countNaN' | 'countNegative' | 'countZero'>;
+    | WarnResultBase<ModerationType.WARN, `success` | `countNaN` | `countNegative` | `countZero`>;
 
 export interface PardonResult {
     readonly warnings: number;
-    readonly state: 'success' | 'countNaN' | 'countNegative' | 'countZero';
+    readonly state: `success` | `countNaN` | `countNegative` | `countZero`;
 
 }
 
@@ -415,7 +415,7 @@ export interface CommandBinderFailure {
 }
 
 export interface CommandBinderDeferred {
-    success: 'deferred';
+    success: `deferred`;
     getValue(): CommandBinderValue | Promise<CommandBinderValue>;
 }
 

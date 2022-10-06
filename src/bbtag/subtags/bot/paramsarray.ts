@@ -6,15 +6,15 @@ import { SubtagType } from '../../utils';
 export class ParamsArraySubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: 'paramsarray',
+            name: `paramsarray`,
             category: SubtagType.BOT,
             definition: [
                 {
                     parameters: [],
-                    description: 'Gets the parameters passed to the current function as an array',
-                    exampleCode: '{func.test;{paramsarray}}\n{func.test;a;b;c;d}',
-                    exampleOut: '["a","b","c","d"]',
-                    returns: 'json[]',
+                    description: `Gets the parameters passed to the current function as an array`,
+                    exampleCode: `{func.test;{paramsarray}}\n{func.test;a;b;c;d}`,
+                    exampleOut: `["a","b","c","d"]`,
+                    returns: `json[]`,
                     execute: (ctx) => this.getParamsArray(ctx)
                 }
             ]
@@ -24,7 +24,7 @@ export class ParamsArraySubtag extends CompiledSubtag {
     public getParamsArray(context: BBTagContext): readonly string[] {
         const params = context.scopes.local.paramsarray;
         if (params === undefined)
-            throw new BBTagRuntimeError('{paramsarray} can only be used inside {function}');
+            throw new BBTagRuntimeError(`{paramsarray} can only be used inside {function}`);
         return params;
     }
 }

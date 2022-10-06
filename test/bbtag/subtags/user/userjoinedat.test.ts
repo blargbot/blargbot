@@ -8,48 +8,48 @@ runSubtagTests({
     argCountBounds: { min: 0, max: 3 },
     cases: [
         {
-            code: '{userjoinedat}',
-            expected: '2021-01-01T00:00:00+00:00',
+            code: `{userjoinedat}`,
+            expected: `2021-01-01T00:00:00+00:00`,
             setup(ctx) {
-                ctx.members.command.joined_at = '2021-01-01T00:00:00+0000';
+                ctx.members.command.joined_at = `2021-01-01T00:00:00+0000`;
             }
         },
         ...createGetUserPropTestCases({
-            quiet: '',
+            quiet: ``,
             generateCode(...args) {
-                return `{${['userjoinedat', '', ...args].join(';')}}`;
+                return `{${[`userjoinedat`, ``, ...args].join(`;`)}}`;
             },
             cases: [
                 {
-                    expected: '2021-01-01T00:00:00+00:00',
+                    expected: `2021-01-01T00:00:00+00:00`,
                     setup(user) {
-                        user.joined_at = '2021-01-01T00:00:00+0000';
+                        user.joined_at = `2021-01-01T00:00:00+0000`;
                     }
                 },
                 {
-                    expected: '2021-12-20T15:12:37+00:00',
+                    expected: `2021-12-20T15:12:37+00:00`,
                     setup(user) {
-                        user.joined_at = '2021-12-20T15:12:37+00:00';
+                        user.joined_at = `2021-12-20T15:12:37+00:00`;
                     }
                 }
             ]
         }),
         ...createGetUserPropTestCases({
-            quiet: '',
+            quiet: ``,
             generateCode(...args) {
-                return `{${['userjoinedat', 'DD/MM/YYYY', ...args].join(';')}}`;
+                return `{${[`userjoinedat`, `DD/MM/YYYY`, ...args].join(`;`)}}`;
             },
             cases: [
                 {
-                    expected: '01/01/2021',
+                    expected: `01/01/2021`,
                     setup(user) {
-                        user.joined_at = '2021-01-01T00:00:00+0000';
+                        user.joined_at = `2021-01-01T00:00:00+0000`;
                     }
                 },
                 {
-                    expected: '20/12/2021',
+                    expected: `20/12/2021`,
                     setup(user) {
-                        user.joined_at = '2021-12-20T15:12:37+00:00';
+                        user.joined_at = `2021-12-20T15:12:37+00:00`;
                     }
                 }
             ]

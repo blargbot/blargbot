@@ -3,11 +3,11 @@ import { TimeoutEventService } from '@blargbot/cluster/serviceTypes';
 import { StoredEvent } from '@blargbot/domain/models';
 import moment from 'moment-timezone';
 
-export class TimeoutRemindEventService extends TimeoutEventService<'remind'> {
+export class TimeoutRemindEventService extends TimeoutEventService<`remind`> {
     public constructor(protected readonly cluster: Cluster) {
-        super(cluster.timeouts, 'remind', cluster.logger);
+        super(cluster.timeouts, `remind`, cluster.logger);
     }
-    public async execute(event: StoredEvent<'remind'>): Promise<void> {
+    public async execute(event: StoredEvent<`remind`>): Promise<void> {
         const startTime = moment(event.starttime);
         await this.cluster.util.send(event.channel, {
             content: `⏰ Hi, <@${event.user}>! You asked me to remind you about this <t:${startTime.unix()}:R>:\n${event.content}`,

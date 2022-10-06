@@ -5,15 +5,15 @@ import { SubtagType } from '../../utils';
 export class UriDecodeSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: 'uridecode',
+            name: `uridecode`,
             category: SubtagType.MISC,
             definition: [
                 {
-                    parameters: ['text'],
-                    description: 'Decodes `text` from URI format.',
-                    exampleCode: '{uridecode;Hello%20world}',
-                    exampleOut: 'Hello world!',
-                    returns: 'string',
+                    parameters: [`text`],
+                    description: `Decodes \`text\` from URI format.`,
+                    exampleCode: `{uridecode;Hello%20world}`,
+                    exampleOut: `Hello world!`,
+                    returns: `string`,
                     execute: (_, [text]) => this.decodeUri(text.value)
                 }
             ]

@@ -7,7 +7,7 @@ export class ImageConnection extends WorkerConnection<ImageIPCContract> {
         id: number,
         logger: Logger
     ) {
-        super(id, '@blargbot/image', require.resolve('@blargbot/image/start'), logger);
+        super(id, `@blargbot/image`, require.resolve(`@blargbot/image/start`), logger);
         this.env.IMAGE_ID = id.toString();
     }
 
@@ -18,7 +18,7 @@ export class ImageConnection extends WorkerConnection<ImageIPCContract> {
                 return undefined;
 
             return {
-                data: Buffer.from(result.data, 'base64'),
+                data: Buffer.from(result.data, `base64`),
                 fileName: result.fileName
             };
         } catch (err: unknown) {

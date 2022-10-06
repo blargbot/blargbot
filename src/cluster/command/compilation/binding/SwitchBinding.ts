@@ -34,7 +34,7 @@ export class SwitchBinding<TContext extends CommandContext> extends CommandBindi
     }
 
     public * debugView(): Generator<string> {
-        yield 'Switch value';
+        yield `Switch value`;
         for (const option of Object.keys(this.lookup)) {
             yield `    case '${option}'`;
             for (const binding of this.lookup[option] ?? []) {
@@ -54,7 +54,7 @@ export class SwitchBinding<TContext extends CommandContext> extends CommandBindi
         if (nextRequired !== undefined && nextRequired.length > 0)
             return this.bindingSuccess(state, nextRequired, 1, undefined, false);
 
-        const nextOptional = this.lookup[''];
+        const nextOptional = this.lookup[``];
         if (nextOptional !== undefined)
             return this.bindingSuccess(state, nextOptional, 0, undefined);
 

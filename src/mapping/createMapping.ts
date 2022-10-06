@@ -42,7 +42,7 @@ const props: { [P in keyof TypeMapping<unknown>]: PropertyDescriptor } = {
     nullable: {
         configurable: true,
         get: function <T, TArgs extends unknown[]>(this: TypeMapping<T, TArgs>) {
-            return Object.defineProperty(this, 'nullable', {
+            return Object.defineProperty(this, `nullable`, {
                 configurable: false,
                 writable: false,
                 value: createNormalizedMapping(this, () => result.failed, () => result.null)
@@ -52,7 +52,7 @@ const props: { [P in keyof TypeMapping<unknown>]: PropertyDescriptor } = {
     nullish: {
         configurable: true,
         get: function <T, TArgs extends unknown[]>(this: TypeMapping<T, TArgs>) {
-            return Object.defineProperty(this, 'nullish', {
+            return Object.defineProperty(this, `nullish`, {
                 configurable: false,
                 writable: false,
                 value: createNormalizedMapping(this, () => result.undefined, () => result.null)
@@ -62,7 +62,7 @@ const props: { [P in keyof TypeMapping<unknown>]: PropertyDescriptor } = {
     optional: {
         configurable: true,
         get: function <T, TArgs extends unknown[]>(this: TypeMapping<T, TArgs>) {
-            return Object.defineProperty(this, 'optional', {
+            return Object.defineProperty(this, `optional`, {
                 configurable: false,
                 writable: false,
                 value: createNormalizedMapping(this, () => result.undefined, () => result.failed)
@@ -72,7 +72,7 @@ const props: { [P in keyof TypeMapping<unknown>]: PropertyDescriptor } = {
     required: {
         configurable: true,
         get: function <T, TArgs extends unknown[]>(this: TypeMapping<T, TArgs>) {
-            return Object.defineProperty(this, 'required', {
+            return Object.defineProperty(this, `required`, {
                 configurable: false,
                 writable: false,
                 value: createNormalizedMapping(this, () => result.failed, () => result.failed)

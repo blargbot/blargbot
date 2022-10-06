@@ -4,12 +4,12 @@ import { CommandType } from '@blargbot/cluster/utils';
 export class UptimeCommand extends GlobalCommand {
     public constructor() {
         super({
-            name: 'uptime',
+            name: `uptime`,
             category: CommandType.GENERAL,
             definitions: [
                 {
-                    parameters: '',
-                    description: 'Gets how long ive been online for',
+                    parameters: ``,
+                    description: `Gets how long ive been online for`,
                     execute: (ctx) => this.getUptime(ctx)
                 }
             ]

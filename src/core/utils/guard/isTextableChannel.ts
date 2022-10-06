@@ -1,6 +1,6 @@
 import { Constants, KnownChannel, KnownGuildTextableChannel } from 'eris';
 
-type ChannelType = typeof Constants['ChannelTypes'];
+type ChannelType = typeof Constants[`ChannelTypes`];
 const isTextableMap: Record<ChannelType[keyof ChannelType], boolean> = {
     [Constants.ChannelTypes.DM]: true,
     [Constants.ChannelTypes.GROUP_DM]: true,
@@ -16,5 +16,5 @@ const isTextableMap: Record<ChannelType[keyof ChannelType], boolean> = {
 };
 
 export function isTextableChannel<T extends KnownChannel>(channel: T): channel is T & KnownGuildTextableChannel {
-    return isTextableMap[channel.type] && 'messages' in channel;
+    return isTextableMap[channel.type] && `messages` in channel;
 }

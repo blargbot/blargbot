@@ -41,7 +41,6 @@ export class RollingRatelimitMiddleware implements IMiddleware<CommandContext, C
             return await next();
 
         timeout = this.#timeouts[key] = moment().add(this.#options.cooldown);
-        return `❌ Sorry, you've been running too many commands. To prevent abuse, I'm going to have to time you out for \`${this.#options.cooldown.asSeconds()}s\`.\n\n` +
-            `Continuing to spam commands will lengthen your timeout by \`${this.#options.penalty.asSeconds()}s\`!`;
+        return `❌ Sorry, you've been running too many commands. To prevent abuse, I'm going to have to time you out for \`${this.#options.cooldown.asSeconds()}s\`.\n\nContinuing to spam commands will lengthen your timeout by \`${this.#options.penalty.asSeconds()}s\`!`;
     }
 }

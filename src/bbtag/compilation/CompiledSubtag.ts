@@ -11,7 +11,7 @@ import { compileSignatures } from './compileSignatures';
 import { CompositeSubtagHandler } from './CompositeSubtagHandler';
 import { parseDefinitions } from './parseDefinitions';
 
-export interface DefinedSubtagOptions extends Omit<SubtagOptions, 'signatures'> {
+export interface DefinedSubtagOptions extends Omit<SubtagOptions, `signatures`> {
     readonly definition: readonly AnySubtagSignatureOptions[];
 }
 
@@ -30,7 +30,7 @@ export abstract class CompiledSubtag extends Subtag {
     }
 
     public async bulkLookup<T>(source: string, lookup: (value: string) => Awaitable<T | undefined>, error: new (term: string) => BBTagRuntimeError): Promise<T[] | undefined> {
-        if (source === '')
+        if (source === ``)
             return undefined;
 
         const flatSource = bbtag.tagArray.flattenArray([source]).map(i => parse.string(i));

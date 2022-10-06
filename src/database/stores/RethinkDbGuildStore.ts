@@ -9,7 +9,7 @@ import { RethinkDbCachedTable } from '../tables/RethinkDbCachedTable';
 import { RethinkDbTable } from '../tables/RethinkDbTable';
 
 export class RethinkDbGuildStore implements GuildStore {
-    readonly #table: RethinkDbCachedTable<StoredGuild, 'guildid'>;
+    readonly #table: RethinkDbCachedTable<StoredGuild, `guildid`>;
     readonly #logger: Logger;
 
     public constructor(
@@ -17,7 +17,7 @@ export class RethinkDbGuildStore implements GuildStore {
         logger: Logger,
         shouldCache: (id: string) => boolean
     ) {
-        this.#table = new RethinkDbCachedTable('guild', 'guildid', rethinkDb, logger);
+        this.#table = new RethinkDbCachedTable(`guild`, `guildid`, rethinkDb, logger);
         this.#table.watchChanges(shouldCache);
         this.#logger = logger;
     }
@@ -58,35 +58,35 @@ export class RethinkDbGuildStore implements GuildStore {
     }
 
     public getInterval(guildId: string, skipCache?: boolean): Promise<GuildTriggerTag | undefined> {
-        return this.#getRootProp('interval', guildId, skipCache);
+        return this.#getRootProp(`interval`, guildId, skipCache);
     }
 
     public setInterval(guildId: string, interval: GuildTriggerTag | undefined): Promise<boolean> {
-        return this.#setRootProp('interval', guildId, interval);
+        return this.#setRootProp(`interval`, guildId, interval);
     }
 
     public getFarewell(guildId: string, skipCache?: boolean): Promise<GuildTriggerTag | undefined> {
-        return this.#getRootProp('farewell', guildId, skipCache);
+        return this.#getRootProp(`farewell`, guildId, skipCache);
     }
 
     public setFarewell(guildId: string, farewell: GuildTriggerTag | undefined): Promise<boolean> {
-        return this.#setRootProp('farewell', guildId, farewell);
+        return this.#setRootProp(`farewell`, guildId, farewell);
     }
 
     public getGreeting(guildId: string, skipCache?: boolean): Promise<GuildTriggerTag | undefined> {
-        return this.#getRootProp('greeting', guildId, skipCache);
+        return this.#getRootProp(`greeting`, guildId, skipCache);
     }
 
     public setGreeting(guildId: string, greeting: GuildTriggerTag | undefined): Promise<boolean> {
-        return this.#setRootProp('greeting', guildId, greeting);
+        return this.#setRootProp(`greeting`, guildId, greeting);
     }
 
     public getAnnouncements(guildId: string, skipCache?: boolean): Promise<GuildAnnounceOptions | undefined> {
-        return this.#getRootProp('announce', guildId, skipCache);
+        return this.#getRootProp(`announce`, guildId, skipCache);
     }
 
     public setAnnouncements(guildId: string, options: GuildAnnounceOptions | undefined): Promise<boolean> {
-        return this.#setRootProp('announce', guildId, options);
+        return this.#setRootProp(`announce`, guildId, options);
     }
 
     public async clearVoteBans(guildId: string, userId?: string): Promise<void> {
@@ -105,7 +105,7 @@ export class RethinkDbGuildStore implements GuildStore {
             return;
 
         if (userId === undefined)
-            setProp(guild, 'votebans', undefined);
+            setProp(guild, `votebans`, undefined);
         else
             setProp(guild.votebans, userId, undefined);
     }
@@ -125,7 +125,7 @@ export class RethinkDbGuildStore implements GuildStore {
                 [guildId, target, skipCache] = args;
                 break;
             case 2:
-                if (typeof args[1] === 'string')
+                if (typeof args[1] === `string`)
                     [guildId, target, skipCache] = args;
                 else
                     [guildId, skipCache] = args;
@@ -157,8 +157,8 @@ export class RethinkDbGuildStore implements GuildStore {
 
         const updated = await this.#table.update(guildId, g => ({
             votebans: {
-                [target]: this.#table.branchExpr(g('votebans').default({})(target).default([]),
-                    x => x.getField('id').contains(signee).not(),
+                [target]: this.#table.branchExpr(g(`votebans`).default({})(target).default([]),
+                    x => x.getField(`id`).contains(signee).not(),
                     x => x.append(this.#table.addExpr({ id: signee, reason }))
                 )
             }
@@ -167,7 +167,7 @@ export class RethinkDbGuildStore implements GuildStore {
         if (!updated)
             return false;
 
-        const vb = setIfUndefined(guild, 'votebans', {});
+        const vb = setIfUndefined(guild, `votebans`, {});
         const votes = setIfUndefined(vb, target, []);
         if (!votes.some(vb => vb.id === signee))
             push(votes, { id: signee, reason });
@@ -189,7 +189,7 @@ export class RethinkDbGuildStore implements GuildStore {
         if (!updated)
             return false;
 
-        const vb = setIfUndefined(guild, 'votebans', {});
+        const vb = setIfUndefined(guild, `votebans`, {});
         const votes = setProp(vb, target, vb[target]?.filter(s => s.id !== signee));
         return votes?.length ?? 0;
 
@@ -212,7 +212,7 @@ export class RethinkDbGuildStore implements GuildStore {
         for (const [key, value] of Object.entries(guild?.log ?? {})) {
             if (value === undefined)
                 continue;
-            if (key.startsWith('role:'))
+            if (key.startsWith(`role:`))
                 setProp(result.roles, key.slice(5), value);
             else
                 setProp(result.events, key, value);
@@ -229,46 +229,46 @@ export class RethinkDbGuildStore implements GuildStore {
     }
 
     public async getAutoresponse(guildId: string, id: number, skipCache?: boolean): Promise<GuildFilteredAutoresponse | undefined>
-    public async getAutoresponse(guildId: string, id: 'everything', skipCache?: boolean): Promise<GuildTriggerTag | undefined>
-    public async getAutoresponse(guildId: string, id: number | 'everything', skipCache?: boolean): Promise<GuildTriggerTag | GuildFilteredAutoresponse | undefined>
-    public async getAutoresponse(guildId: string, id: number | 'everything', skipCache?: boolean): Promise<GuildTriggerTag | GuildFilteredAutoresponse | undefined> {
+    public async getAutoresponse(guildId: string, id: `everything`, skipCache?: boolean): Promise<GuildTriggerTag | undefined>
+    public async getAutoresponse(guildId: string, id: number | `everything`, skipCache?: boolean): Promise<GuildTriggerTag | GuildFilteredAutoresponse | undefined>
+    public async getAutoresponse(guildId: string, id: number | `everything`, skipCache?: boolean): Promise<GuildTriggerTag | GuildFilteredAutoresponse | undefined> {
         const guild = await this.#table.get(guildId, skipCache);
         if (guild?.autoresponse === undefined)
             return undefined;
 
-        if (id === 'everything')
+        if (id === `everything`)
             return guild.autoresponse.everything ?? undefined;
 
         return guild.autoresponse.filtered?.[id] ?? undefined;
     }
 
     public async setAutoresponse(guildId: string, id: number, autoresponse: GuildFilteredAutoresponse | undefined): Promise<boolean>
-    public async setAutoresponse(guildId: string, id: 'everything', autoresponse: GuildTriggerTag | undefined): Promise<boolean>
-    public async setAutoresponse(guildId: string, id: number | 'everything', autoresponse: undefined): Promise<boolean>
+    public async setAutoresponse(guildId: string, id: `everything`, autoresponse: GuildTriggerTag | undefined): Promise<boolean>
+    public async setAutoresponse(guildId: string, id: number | `everything`, autoresponse: undefined): Promise<boolean>
     public async setAutoresponse(...args:
         | readonly [guildId: string, index: number, autoresponse: GuildFilteredAutoresponse | undefined]
-        | readonly [guildId: string, index: 'everything', autoresponse: GuildTriggerTag | undefined]
-        | readonly [guildId: string, index: number | 'everything', autoresponse: undefined]
+        | readonly [guildId: string, index: `everything`, autoresponse: GuildTriggerTag | undefined]
+        | readonly [guildId: string, index: number | `everything`, autoresponse: undefined]
     ): Promise<boolean> {
         const [guildId, index, autoresponse] = args;
         const guild = await this.#table.get(guildId);
         if (guild === undefined)
             return false;
 
-        const ar = setIfUndefined(guild, 'autoresponse', {});
+        const ar = setIfUndefined(guild, `autoresponse`, {});
         switch (index) {
-            case 'everything': {
+            case `everything`: {
                 if (!await this.#table.update(guildId, { autoresponse: { everything: this.#table.setExpr(autoresponse) } }))
                     return false;
 
-                setProp(ar, 'everything', autoresponse);
+                setProp(ar, `everything`, autoresponse);
                 return true;
             }
             default: {
                 if (!await this.#table.update(guildId, { autoresponse: { filtered: { [index]: this.#table.setExpr(autoresponse) } } }))
                     return false;
 
-                const filtered = setIfUndefined(ar, 'filtered', {});
+                const filtered = setIfUndefined(ar, `filtered`, {});
                 setProp(filtered, index, autoresponse);
                 return true;
             }
@@ -288,7 +288,7 @@ export class RethinkDbGuildStore implements GuildStore {
         if (!await this.#table.update(guildId, { channels: { [channelId]: { [key]: this.#table.setExpr(value) } } }))
             return false;
 
-        const channels = setIfUndefined(guild, 'channels', {});
+        const channels = setIfUndefined(guild, `channels`, {});
         const channel = setIfUndefined(channels, channelId, {});
         setProp(channel, key, value);
         return true;
@@ -315,7 +315,7 @@ export class RethinkDbGuildStore implements GuildStore {
         if (!await this.#table.update(guildId, { roleme: { [id.toString()]: this.#table.setExpr(roleme) } }))
             return false;
 
-        const gr = setIfUndefined(guild, 'roleme', {});
+        const gr = setIfUndefined(guild, `roleme`, {});
         setProp(gr, id, roleme);
         return true;
     }
@@ -341,22 +341,22 @@ export class RethinkDbGuildStore implements GuildStore {
         if (!await this.#table.update(guildId, { censor: { list: { [id]: this.#table.setExpr(censor) } } }))
             return false;
 
-        const censors = setIfUndefined(guild, 'censor', {});
-        const list = setIfUndefined(censors, 'list', {});
+        const censors = setIfUndefined(guild, `censor`, {});
+        const list = setIfUndefined(censors, `list`, {});
         setProp(list, id, censor);
         return true;
     }
 
     public async censorIgnoreUser(guildId: string, userId: string, ignored: boolean): Promise<boolean> {
-        return await this.#censorIgnoreCore(guildId, 'user', userId, ignored);
+        return await this.#censorIgnoreCore(guildId, `user`, userId, ignored);
     }
 
     public async censorIgnoreChannel(guildId: string, channelId: string, ignored: boolean): Promise<boolean> {
-        return await this.#censorIgnoreCore(guildId, 'channel', channelId, ignored);
+        return await this.#censorIgnoreCore(guildId, `channel`, channelId, ignored);
     }
 
     public async censorIgnoreRole(guildId: string, roleId: string, ignored: boolean): Promise<boolean> {
-        return await this.#censorIgnoreCore(guildId, 'role', roleId, ignored);
+        return await this.#censorIgnoreCore(guildId, `role`, roleId, ignored);
     }
 
     async #censorIgnoreCore(guildId: string, type: keyof GuildCensorExceptions, id: string, ignored: boolean): Promise<boolean> {
@@ -365,8 +365,8 @@ export class RethinkDbGuildStore implements GuildStore {
             return false;
 
         const success = await this.#table.update(guildId, g => {
-            const exceptions = g.getField('censor').default({ list: {} })
-                .getField('exception').default({ user: [], role: [], channel: [] })
+            const exceptions = g.getField(`censor`).default({ list: {} })
+                .getField(`exception`).default({ user: [], role: [], channel: [] })
                 .getField(type).default([]);
             return {
                 censor: {
@@ -380,8 +380,8 @@ export class RethinkDbGuildStore implements GuildStore {
         if (!success)
             return false;
 
-        const censors = setIfUndefined(guild, 'censor', {});
-        const exceptions = setIfUndefined(censors, 'exception', {});
+        const censors = setIfUndefined(guild, `censor`, {});
+        const exceptions = setIfUndefined(censors, `exception`, {});
         const excluded = new Set(exceptions[type]);
 
         if (ignored)
@@ -393,7 +393,7 @@ export class RethinkDbGuildStore implements GuildStore {
         return true;
     }
 
-    public async setCensorRule(guildId: string, id: number | undefined, ruleType: 'timeout' | 'delete' | 'kick' | 'ban', code: GuildTriggerTag | undefined): Promise<boolean> {
+    public async setCensorRule(guildId: string, id: number | undefined, ruleType: `timeout` | `delete` | `kick` | `ban`, code: GuildTriggerTag | undefined): Promise<boolean> {
         const guild = await this.#table.get(guildId);
         if (guild === undefined)
             return false;
@@ -427,7 +427,7 @@ export class RethinkDbGuildStore implements GuildStore {
         return true;
     }
 
-    public async getCensorRule(guildId: string, id: number | undefined, ruleType: 'timeout' | 'delete' | 'kick' | 'ban', skipCache?: boolean): Promise<GuildTriggerTag | undefined> {
+    public async getCensorRule(guildId: string, id: number | undefined, ruleType: `timeout` | `delete` | `kick` | `ban`, skipCache?: boolean): Promise<GuildTriggerTag | undefined> {
         const guild = await this.#table.get(guildId, skipCache);
         const ruleMessage = `${ruleType}Message` as const;
         if (id === undefined)
@@ -443,7 +443,7 @@ export class RethinkDbGuildStore implements GuildStore {
         const [guildId, commandName, skipCache] = args.length === 1
             ? [args[0], undefined, undefined]
             : args.length === 3 ? args
-                : typeof args[1] === 'boolean'
+                : typeof args[1] === `boolean`
                     ? [args[0], undefined, args[1]]
                     : [args[0], args[1], undefined];
 
@@ -466,7 +466,7 @@ export class RethinkDbGuildStore implements GuildStore {
         if (commands.length === 0 || !await this.#table.update(guildId, { commandperms: payload }))
             return [];
 
-        const perms = setIfUndefined(guild, 'commandperms', {});
+        const perms = setIfUndefined(guild, `commandperms`, {});
         for (const command of commands) {
             const commandPerms = setIfUndefined(perms, command, {});
             Object.assign(commandPerms, permissions);
@@ -496,11 +496,11 @@ export class RethinkDbGuildStore implements GuildStore {
         return await this.#table.get(guildId, skipCache);
     }
 
-    public async upsert(guild: GuildDetails): Promise<'inserted' | 'updated' | false> {
+    public async upsert(guild: GuildDetails): Promise<`inserted` | `updated` | false> {
         const current = await this.#table.get(guild.id, true);
         if (current === undefined) {
             if (await this.#table.insert(this.#initialState(guild))) {
-                return 'inserted';
+                return `inserted`;
             }
         } else {
             const update: Mutable<Partial<StoredGuild>> = {};
@@ -510,7 +510,7 @@ export class RethinkDbGuildStore implements GuildStore {
                 update.name = guild.name;
 
             if (Object.values(update).some(guard.hasValue) && await this.#table.update(guild.id, update))
-                return 'updated';
+                return `updated`;
         }
 
         return false;
@@ -530,7 +530,7 @@ export class RethinkDbGuildStore implements GuildStore {
     }
 
     public async getIds(): Promise<string[]> {
-        return await this.#table.queryAll(t => t.getField('guildid'));
+        return await this.#table.queryAll(t => t.getField(`guildid`));
     }
 
     public async getSetting<K extends keyof StoredGuildSettings>(guildId: string, key: K, skipCache = false): Promise<StoredGuildSettings[K] | undefined> {
@@ -558,7 +558,7 @@ export class RethinkDbGuildStore implements GuildStore {
     }
 
     public async getIntervals(): Promise<ReadonlyArray<{ readonly guildId: string; readonly interval: GuildTriggerTag; }>> {
-        const guilds = await this.#table.queryAll(t => t.getAll(true, { index: 'interval' }).filter(g => g('active').eq(true)).pluck('guildid', 'interval'));
+        const guilds = await this.#table.queryAll(t => t.getAll(true, { index: `interval` }).filter(g => g(`active`).eq(true)).pluck(`guildid`, `interval`));
         return guilds.map(g => g.interval === undefined ? undefined : { guildId: g.guildid, interval: g.interval })
             .filter(guard.hasValue);
     }
@@ -639,7 +639,7 @@ export class RethinkDbGuildStore implements GuildStore {
         newName = newName.toLowerCase();
         if (guild.ccommands[oldName] === undefined
             || guild.ccommands[newName] !== undefined
-            || !await this.#table.update(guildId, r => ({ ccommands: { [newName]: r('ccommands')(oldName), [oldName]: this.#table.setExpr(undefined) } })))
+            || !await this.#table.update(guildId, r => ({ ccommands: { [newName]: r(`ccommands`)(oldName), [oldName]: this.#table.setExpr(undefined) } })))
             return false;
 
         setProp(guild.ccommands, newName, guild.ccommands[oldName]);
@@ -653,8 +653,8 @@ export class RethinkDbGuildStore implements GuildStore {
             return undefined;
 
         const newGuild = await this.#table.update(guildId, g => ({
-            nextModlogId: g('nextModlogId').default(
-                g('modlog').default([]).max('caseid')('caseid').default(0)
+            nextModlogId: g(`nextModlogId`).default(
+                g(`modlog`).default([]).max(`caseid`)(`caseid`).default(0)
             ).add(1)
         }), true);
 
@@ -671,14 +671,14 @@ export class RethinkDbGuildStore implements GuildStore {
         return guild.modlog?.find(m => m.caseid === caseId);
     }
 
-    public async updateModlogCase(guildId: string, caseid: number, modlog: Partial<Omit<GuildModlogEntry, 'caseid'>>): Promise<boolean> {
+    public async updateModlogCase(guildId: string, caseid: number, modlog: Partial<Omit<GuildModlogEntry, `caseid`>>): Promise<boolean> {
         const guild = await this.#table.get(guildId);
         if (guild === undefined)
             return false;
 
         const updated = await this.#table.update(guildId, g => ({
-            modlog: g('modlog').default([]).map(m => this.#table.branchExpr(m,
-                c => c('caseid').eq(caseid),
+            modlog: g(`modlog`).default([]).map(m => this.#table.branchExpr(m,
+                c => c(`caseid`).eq(caseid),
                 c => c.merge(modlog)
             ))
         }));
@@ -705,13 +705,13 @@ export class RethinkDbGuildStore implements GuildStore {
         const removed = ids === undefined
             ? await this.#table.update(guildId, { modlog: this.#table.setExpr(undefined) })
             : await this.#table.update(guildId, g => ({
-                modlog: g('modlog').default([]).filter(c => this.#table.expr(ids).contains(c('caseid')))
+                modlog: g(`modlog`).default([]).filter(c => this.#table.expr(ids).contains(c(`caseid`)))
             }));
 
         if (!removed)
             return undefined;
 
-        setProp(guild, 'modlog', guild.modlog?.filter(m => ids?.includes(m.caseid) ?? false));
+        setProp(guild, `modlog`, guild.modlog?.filter(m => ids?.includes(m.caseid) ?? false));
         return result;
     }
 
@@ -720,10 +720,10 @@ export class RethinkDbGuildStore implements GuildStore {
         if (guild === undefined)
             return false;
 
-        if (!await this.#table.update(guildId, r => ({ modlog: r('modlog').default([]).append(this.#table.addExpr(modlog)) })))
+        if (!await this.#table.update(guildId, r => ({ modlog: r(`modlog`).default([]).append(this.#table.addExpr(modlog)) })))
             return false;
 
-        const modlogs = setIfUndefined(guild, 'modlog', []);
+        const modlogs = setIfUndefined(guild, `modlog`, []);
         push(modlogs, modlog);
         return true;
     }
@@ -738,16 +738,16 @@ export class RethinkDbGuildStore implements GuildStore {
         // `setUnion` and `setDifference` prevent duplicates as they treat the array as a `Set`, which is distinct
         // https://rethinkdb.com/api/javascript/set_difference/
         // https://rethinkdb.com/api/javascript/set_union
-        const method = ignore ? 'setUnion' : 'setDifference';
-        if (!await this.#table.update(guildId, r => ({ logIgnore: r('logIgnore').default([])[method](userIds) })))
+        const method = ignore ? `setUnion` : `setDifference`;
+        if (!await this.#table.update(guildId, r => ({ logIgnore: r(`logIgnore`).default([])[method](userIds) })))
             return false;
 
-        setProp(guild, 'logIgnore', [...new Set([...guild.logIgnore ?? [], ...userIds])]);
+        setProp(guild, `logIgnore`, [...new Set([...guild.logIgnore ?? [], ...userIds])]);
         return true;
     }
 
     public async setLogChannel(guildId: string, events: StoredGuildEventLogType | StoredGuildEventLogType[], channel: string | undefined): Promise<boolean> {
-        if (typeof events === 'string')
+        if (typeof events === `string`)
             events = [events];
 
         const guild = await this.#table.get(guildId);
@@ -762,7 +762,7 @@ export class RethinkDbGuildStore implements GuildStore {
         if (!await this.#table.update(guildId, { log: this.#table.updateExpr(logUpdate) }))
             return false;
 
-        const log = setIfUndefined(guild, 'log', {});
+        const log = setIfUndefined(guild, `log`, {});
         for (const event of events)
             setProp(log, event, channel);
         return true;
@@ -784,30 +784,30 @@ export class RethinkDbGuildStore implements GuildStore {
         if (!await this.#table.update(guildId, { warnings: { users: { [userId]: this.#table.setExpr(count) } } }))
             return false;
 
-        const warnings = setIfUndefined(guild, 'warnings', {});
-        const users = setIfUndefined(warnings, 'users', {});
+        const warnings = setIfUndefined(guild, `warnings`, {});
+        const users = setIfUndefined(warnings, `users`, {});
         setProp(users, userId, count);
         return true;
     }
 
     public async migrate(): Promise<void> {
-        const versionObj = await this.#table.get('migration', true);
+        const versionObj = await this.#table.get(`migration`, true);
         if (versionObj === undefined) {
             await this.#table.insert({
                 active: false,
                 ccommands: {},
                 channels: {},
-                guildid: 'migration',
-                name: '0',
+                guildid: `migration`,
+                name: `0`,
                 settings: {}
             });
         }
-        let currentVersion = parseInt(versionObj?.name ?? '0');
+        let currentVersion = parseInt(versionObj?.name ?? `0`);
         for (const migration of migrations.filter(v => v.id > currentVersion).sort((a, b) => a.id - b.id)) {
-            this.#logger.database('Migrating GuildStore from', currentVersion, 'to', migration.id);
+            this.#logger.database(`Migrating GuildStore from`, currentVersion, `to`, migration.id);
             await migration.migrate(this.#table);
-            await this.#table.update('migration', { name: migration.id.toString() });
-            this.#logger.database('Migrated GuildStore from', currentVersion, 'to', migration.id);
+            await this.#table.update(`migration`, { name: migration.id.toString() });
+            this.#logger.database(`Migrated GuildStore from`, currentVersion, `to`, migration.id);
             currentVersion = migration.id;
         }
     }
@@ -823,15 +823,15 @@ const migrations: GuildStoreMigration[] = [
         id: 1,
         async migrate(table) {
             const indexes = await table.query(t => t.indexList());
-            if (!indexes.includes('interval')) {
-                await table.query(t => t.indexCreate('interval', r => r('ccommands').hasFields('_interval')));
+            if (!indexes.includes(`interval`)) {
+                await table.query(t => t.indexCreate(`interval`, r => r(`ccommands`).hasFields(`_interval`)));
             }
         }
     },
     {
         id: 2,
         async migrate(table) {
-            for await (const guild of table.stream(r => r.filter(g => g('ccommands').values().map(cmd => cmd.hasFields('id')).contains(false)))) {
+            for await (const guild of table.stream(r => r.filter(g => g(`ccommands`).values().map(cmd => cmd.hasFields(`id`)).contains(false)))) {
                 const ccommands: Record<string, { id: string; }> = {};
                 for (const [name, ccommand] of Object.entries(guild.ccommands)) {
                     if (ccommand?.id === undefined) {

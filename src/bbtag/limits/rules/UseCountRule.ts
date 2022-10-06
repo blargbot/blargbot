@@ -10,11 +10,11 @@ export class UseCountRule implements RuntimeLimitRule {
     #initial: number;
     #remaining: number;
 
-    public constructor(count: number, type = 'uses', error: string | ((subtagName: string) => BBTagRuntimeError) = 'Usage') {
+    public constructor(count: number, type = `uses`, error: string | ((subtagName: string) => BBTagRuntimeError) = `Usage`) {
         this.#initial = count;
         this.#remaining = count;
         this.#type = type;
-        this.#makeError = typeof error === 'string'
+        this.#makeError = typeof error === `string`
             ? (subtagName) => new BBTagRuntimeError(`${error} limit reached for ${subtagName}`)
             : error;
     }

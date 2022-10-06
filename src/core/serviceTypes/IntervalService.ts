@@ -26,7 +26,7 @@ export abstract class IntervalService extends BaseService {
         this.period = duration(period, unit);
         this.logger = logger;
         this.#immediate = immediate ?? false;
-        this.#execute = this.makeSafeCaller(this.execute.bind(this), this.logger, 'Interval');
+        this.#execute = this.makeSafeCaller(this.execute.bind(this), this.logger, `Interval`);
     }
 
     public abstract execute(): Promise<void> | void;
@@ -72,5 +72,5 @@ function check3Args(args:
     | [period: DurationInputArg1, logger: Logger, immediate: boolean]
     | [period: DurationInputArg1, unit: DurationInputArg2, logger: Logger]
 ): args is [duration: DurationInputArg1, logger: Logger, immediate: boolean] {
-    return typeof args[2] === 'boolean';
+    return typeof args[2] === `boolean`;
 }

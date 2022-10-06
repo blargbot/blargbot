@@ -7,16 +7,16 @@ import { User } from 'eris';
 export class ArtCommand extends GlobalImageCommand {
     public constructor() {
         super({
-            name: 'art',
+            name: `art`,
             definitions: [
                 {
-                    parameters: '{user:user+}',
-                    description: 'Shows everyone a work of art.',
+                    parameters: `{user:user+}`,
+                    description: `Shows everyone a work of art.`,
                     execute: (ctx, [user]) => this.renderUser(ctx, user.asUser)
                 },
                 {
-                    parameters: '',
-                    description: 'Shows everyone a work of art.',
+                    parameters: ``,
+                    description: `Shows everyone a work of art.`,
                     execute: (ctx, _, flags) => this.render(
                         ctx,
                         ctx.message.attachments.length > 0
@@ -27,7 +27,7 @@ export class ArtCommand extends GlobalImageCommand {
                 }
             ],
             flags: [
-                { flag: 'i', word: 'image', description: 'A custom image.' }
+                { flag: `i`, word: `image`, description: `A custom image.` }
             ]
         });
     }
@@ -41,6 +41,6 @@ export class ArtCommand extends GlobalImageCommand {
         if (!guard.isUrl(url))
             return this.error(`${url} is not a valid url!`);
 
-        return await this.renderImage(context, 'art', { avatar: url });
+        return await this.renderImage(context, `art`, { avatar: url });
     }
 }

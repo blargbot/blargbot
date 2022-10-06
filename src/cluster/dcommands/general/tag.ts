@@ -16,161 +16,157 @@ export class TagCommand extends GuildCommand {
 
     public constructor(cluster: Cluster) {
         super({
-            name: 'tag',
-            aliases: ['t'],
+            name: `tag`,
+            aliases: [`t`],
             category: CommandType.GENERAL,
-            description: 'Tags are a system of public commands that anyone can create or run, using the BBTag language.\n\n'
-                + `For more information about BBTag, visit <${cluster.util.websiteLink('/bbtag')}>.\n`
-                + `By creating a tag, you acknowledge that you agree to the Terms of Service (<${cluster.util.websiteLink('/bbtag/tos')}>)`,
+            description: `Tags are a system of public commands that anyone can create or run, using the BBTag language.\n\nFor more information about BBTag, visit <${cluster.util.websiteLink(`/bbtag`)}>.\nBy creating a tag, you acknowledge that you agree to the Terms of Service (<${cluster.util.websiteLink(`/bbtag/tos`)}>)`,
             definitions: [
                 {
-                    parameters: '{tagName} {~args+?}',
+                    parameters: `{tagName} {~args+?}`,
                     execute: (ctx, [tagName, args]) => this.runTag(ctx, tagName.asString, args.asOptionalString, false),
-                    description: 'Runs a user created tag with some arguments'
+                    description: `Runs a user created tag with some arguments`
                 },
                 {
-                    parameters: 'test|eval|exec|vtest',
+                    parameters: `test|eval|exec|vtest`,
                     subcommands: [
                         {
-                            parameters: '{~code+}',
-                            execute: (ctx, [code]) => this.runRaw(ctx, code.asString, '', false),
-                            description: 'Uses the BBTag engine to execute the content as if it was a tag'
+                            parameters: `{~code+}`,
+                            execute: (ctx, [code]) => this.runRaw(ctx, code.asString, ``, false),
+                            description: `Uses the BBTag engine to execute the content as if it was a tag`
                         },
                         {
-                            parameters: 'debug {~code+}',
-                            execute: (ctx, [code]) => this.runRaw(ctx, code.asString, '', true),
-                            description: 'Uses the BBTag engine to execute the content as if it was a tag and will return the debug output'
+                            parameters: `debug {~code+}`,
+                            execute: (ctx, [code]) => this.runRaw(ctx, code.asString, ``, true),
+                            description: `Uses the BBTag engine to execute the content as if it was a tag and will return the debug output`
                         }
                     ]
                 },
                 {
-                    parameters: 'docs {topic+?}',
+                    parameters: `docs {topic+?}`,
                     execute: (ctx, [topic]) => this.#showDocs(ctx, topic.asOptionalString),
-                    description: 'Returns helpful information about the specified topic.'
+                    description: `Returns helpful information about the specified topic.`
                 },
                 {
-                    parameters: 'debug {tagName} {~args+?}',
+                    parameters: `debug {tagName} {~args+?}`,
                     execute: (ctx, [tagName, args]) => this.runTag(ctx, tagName.asString, args.asOptionalString, true),
-                    description: 'Runs a user created tag with some arguments. A debug file will be sent in a DM after the tag has finished.'
+                    description: `Runs a user created tag with some arguments. A debug file will be sent in a DM after the tag has finished.`
                 },
                 {
-                    parameters: 'create|add {tagName?} {~content+?}',
+                    parameters: `create|add {tagName?} {~content+?}`,
                     execute: (ctx, [tagName, content]) => this.createTag(ctx, tagName.asOptionalString, content.asOptionalString),
-                    description: 'Creates a new tag with the content you give'
+                    description: `Creates a new tag with the content you give`
                 },
                 {
-                    parameters: 'edit {tagName?} {~content+?}',
+                    parameters: `edit {tagName?} {~content+?}`,
                     execute: (ctx, [tagName, content]) => this.editTag(ctx, tagName.asOptionalString, content.asOptionalString),
-                    description: 'Edits an existing tag to have the content you specify'
+                    description: `Edits an existing tag to have the content you specify`
                 },
                 {
-                    parameters: 'set {tagName?} {~content+?}',
+                    parameters: `set {tagName?} {~content+?}`,
                     execute: (ctx, [tagName, content]) => this.setTag(ctx, tagName.asOptionalString, content.asOptionalString),
-                    description: 'Sets the tag to have the content you specify. If the tag doesnt exist it will be created.'
+                    description: `Sets the tag to have the content you specify. If the tag doesnt exist it will be created.`
                 },
                 {
-                    parameters: 'delete|remove {tagName?}',
+                    parameters: `delete|remove {tagName?}`,
                     execute: (ctx, [tagName]) => this.deleteTag(ctx, tagName.asOptionalString),
-                    description: 'Deletes an existing tag'
+                    description: `Deletes an existing tag`
                 },
                 {
-                    parameters: 'rename {oldName?} {newName?}',
+                    parameters: `rename {oldName?} {newName?}`,
                     execute: (ctx, [oldName, newName]) => this.renameTag(ctx, oldName.asOptionalString, newName.asOptionalString),
-                    description: 'Renames the tag'
+                    description: `Renames the tag`
                 },
                 {
-                    parameters: 'raw {tagName?} {fileExtension:literal(bbtag|txt)=bbtag}',
+                    parameters: `raw {tagName?} {fileExtension:literal(bbtag|txt)=bbtag}`,
                     execute: (ctx, [tagName, fileExtension]) => this.getRawTag(ctx, tagName.asOptionalString, fileExtension.asLiteral),
-                    description: 'Gets the raw contents of the tag'
+                    description: `Gets the raw contents of the tag`
                 },
                 {
-                    parameters: 'list {author+?}',
+                    parameters: `list {author+?}`,
                     execute: (ctx, [author]) => this.listTags(ctx, author.asOptionalString),
-                    description: 'Lists all tags, or tags made by a specific author'
+                    description: `Lists all tags, or tags made by a specific author`
                 },
                 {
-                    parameters: 'search {tagName?}',
+                    parameters: `search {tagName?}`,
                     execute: (ctx, [tagName]) => this.searchTags(ctx, tagName.asOptionalString),
-                    description: 'Searches for a tag based on the provided name'
+                    description: `Searches for a tag based on the provided name`
                 },
                 {
-                    parameters: 'permdelete {tagName} {reason+}',
+                    parameters: `permdelete {tagName} {reason+}`,
                     hidden: true,
                     execute: (ctx, [tagName, reason]) => this.disableTag(ctx, tagName.asString, reason.asString),
-                    description: 'Marks the tag name as deleted forever, so no one can ever use it'
+                    description: `Marks the tag name as deleted forever, so no one can ever use it`
                 },
                 {
-                    parameters: 'cooldown {tagName} {duration:duration+=0ms}',
+                    parameters: `cooldown {tagName} {duration:duration+=0ms}`,
                     execute: (ctx, [tagName, duration]) => this.setTagCooldown(ctx, tagName.asString, duration.asDuration),
-                    description: 'Sets the cooldown of a tag, in milliseconds'
+                    description: `Sets the cooldown of a tag, in milliseconds`
                 },
                 {
-                    parameters: 'author {tagName?}',
+                    parameters: `author {tagName?}`,
                     execute: (ctx, [tagName]) => this.getTagAuthor(ctx, tagName.asOptionalString),
-                    description: 'Displays the name of the tag\'s author'
+                    description: `Displays the name of the tag's author`
                 },
                 {
-                    parameters: 'info {tagName?}',
+                    parameters: `info {tagName?}`,
                     execute: (ctx, [tagName]) => this.getTagInfo(ctx, tagName.asOptionalString),
-                    description: 'Displays information about a tag'
+                    description: `Displays information about a tag`
                 },
                 {
-                    parameters: 'top ',
+                    parameters: `top `,
                     execute: (ctx) => this.getTopTags(ctx),
-                    description: 'Displays the top 5 tags'
+                    description: `Displays the top 5 tags`
                 },
                 {
-                    parameters: 'report {tagName} {reason+?}',
+                    parameters: `report {tagName} {reason+?}`,
                     execute: (ctx, [tagName, reason]) => this.reportTag(ctx, tagName.asString, reason.asOptionalString),
-                    description: 'Reports a tag as violating the ToS'
+                    description: `Reports a tag as violating the ToS`
                 },
                 {
-                    parameters: 'setlang {tagName} {language}',
+                    parameters: `setlang {tagName} {language}`,
                     execute: (ctx, [tagName, language]) => this.setTagLanguage(ctx, tagName.asString, language.asString),
-                    description: 'Sets the language to use when returning the raw text of your tag'
+                    description: `Sets the language to use when returning the raw text of your tag`
                 },
                 {
-                    parameters: 'favourite|favorite|favourites|favorites',
+                    parameters: `favourite|favorite|favourites|favorites`,
                     subcommands: [
                         {
-                            parameters: '',
+                            parameters: ``,
                             execute: (ctx) => this.listFavouriteTags(ctx),
-                            description: 'Displays a list of the tags you have favourited'
+                            description: `Displays a list of the tags you have favourited`
                         },
                         {
-                            parameters: '{tagName}',
+                            parameters: `{tagName}`,
                             execute: (ctx, [tagName]) => this.toggleFavouriteTag(ctx, tagName.asString),
-                            description: 'Adds or removes a tag from your list of favourites'
+                            description: `Adds or removes a tag from your list of favourites`
                         }
                     ]
                 },
                 {
-                    parameters: 'flag|flags',
+                    parameters: `flag|flags`,
                     subcommands: [
                         {
-                            parameters: '{tagName}',
+                            parameters: `{tagName}`,
                             execute: (ctx, [tagName]) => this.getTagFlags(ctx, tagName.asString),
-                            description: 'Lists the flags the tag accepts'
+                            description: `Lists the flags the tag accepts`
                         },
                         {
-                            parameters: 'create|add {tagName} {~flags+}',
+                            parameters: `create|add {tagName} {~flags+}`,
                             execute: (ctx, [tagName, flags]) => this.addTagFlags(ctx, tagName.asString, flags.asString),
-                            description: 'Adds multiple flags to your tag. Flags should be of the form `-<f> <flag> [flag description]`\n' +
-                                'e.g. `b!t flags add mytag -c category The category you want to use -n name Your name`'
+                            description: `Adds multiple flags to your tag. Flags should be of the form \`-<f> <flag> [flag description]\`\ne.g. \`b!t flags add mytag -c category The category you want to use -n name Your name\``
                         },
                         {
-                            parameters: 'delete|remove {tagName} {~flags+}',
+                            parameters: `delete|remove {tagName} {~flags+}`,
                             execute: (ctx, [tagName, flags]) => this.removeTagFlags(ctx, tagName.asString, flags.asString),
-                            description: 'Removes multiple flags from your tag. Flags should be of the form `-<f>`\n' +
-                                'e.g. `b!t flags remove mytag -c -n`'
+                            description: `Removes multiple flags from your tag. Flags should be of the form \`-<f>\`\ne.g. \`b!t flags remove mytag -c -n\``
                         }
                     ]
                 }
             ]
         });
 
-        this.#docs = new BBTagDocumentationManager(cluster, 'tag');
-        cluster.discord.on('interactionCreate', i => this.#docs.handleInteraction(i));
+        this.#docs = new BBTagDocumentationManager(cluster, `tag`);
+        cluster.discord.on(`interactionCreate`, i => this.#docs.handleInteraction(i));
     }
 
     public async runTag(
@@ -180,19 +176,19 @@ export class TagCommand extends GuildCommand {
         debug: boolean
     ): Promise<string | SendContent | undefined> {
         const match = await this.#requestReadableTag(context, tagName, false);
-        if (typeof match !== 'object')
+        if (typeof match !== `object`)
             return match;
 
         if (debug && match.author !== context.author.id)
-            return this.error('You cannot debug someone elses tag.');
+            return this.error(`You cannot debug someone elses tag.`);
 
         await context.database.tags.incrementUses(match.name, 1);
 
         const result = await context.bbtag.execute(match.content, {
             message: context.message,
-            inputRaw: input ?? '',
+            inputRaw: input ?? ``,
             isCC: false,
-            limit: 'tagLimit',
+            limit: `tagLimit`,
             rootTagName: match.name,
             authorId: match.author,
             authorizerId: match.authorizer,
@@ -205,7 +201,7 @@ export class TagCommand extends GuildCommand {
             return undefined;
 
         await context.sendDM(bbtag.createDebugOutput(result));
-        return this.info('Ive sent the debug output in a DM');
+        return this.info(`Ive sent the debug output in a DM`);
     }
 
     public async runRaw(
@@ -218,8 +214,8 @@ export class TagCommand extends GuildCommand {
             message: context.message,
             inputRaw: input,
             isCC: false,
-            limit: 'tagLimit',
-            rootTagName: 'test',
+            limit: `tagLimit`,
+            rootTagName: `test`,
             authorId: context.author.id,
             prefix: context.prefix
         });
@@ -228,40 +224,40 @@ export class TagCommand extends GuildCommand {
             return undefined;
 
         await context.sendDM(bbtag.createDebugOutput(result));
-        return this.info('Ive sent the debug output in a DM');
+        return this.info(`Ive sent the debug output in a DM`);
     }
 
     public async createTag(context: GuildCommandContext, tagName: string | undefined, content: string | undefined): Promise<string | undefined> {
         const match = await this.#requestCreatableTag(context, tagName);
-        if (typeof match !== 'object')
+        if (typeof match !== `object`)
             return match;
 
-        return await this.#saveTag(context, 'created', match.name, content, undefined);
+        return await this.#saveTag(context, `created`, match.name, content, undefined);
     }
 
     public async editTag(context: GuildCommandContext, tagName: string | undefined, content: string | undefined): Promise<string | undefined> {
         const match = await this.#requestEditableTag(context, tagName);
-        if (typeof match !== 'object')
+        if (typeof match !== `object`)
             return match;
         if (content === undefined) {
             if (context.message.attachments.length > 0) {
                 const firstAttachment = context.message.attachments[0];
-                if (firstAttachment.filename.endsWith('.bbtag') || firstAttachment.filename.endsWith('.txt'))
+                if (firstAttachment.filename.endsWith(`.bbtag`) || firstAttachment.filename.endsWith(`.txt`))
                     content = await (await fetch(firstAttachment.url)).text();
             }
         }
 
-        return await this.#saveTag(context, 'edited', match.name, content, match);
+        return await this.#saveTag(context, `edited`, match.name, content, match);
     }
 
     public async deleteTag(context: GuildCommandContext, tagName: string | undefined): Promise<string | undefined> {
         const match = await this.#requestEditableTag(context, tagName);
-        if (typeof match !== 'object')
+        if (typeof match !== `object`)
             return match;
 
         await context.database.tags.delete(match.name);
         void this.#logChange(context, TagChangeAction.DELETE, context.author, context.id, {
-            author: `${(await context.database.users.get(match.author))?.username ?? 'undefined'} (${match.author})`,
+            author: `${(await context.database.users.get(match.author))?.username ?? `undefined`} (${match.author})`,
             tag: match.name,
             content: match.content
         });
@@ -270,25 +266,25 @@ export class TagCommand extends GuildCommand {
 
     public async setTag(context: GuildCommandContext, tagName: string | undefined, content: string | undefined): Promise<string | undefined> {
         const match = await this.#requestSettableTag(context, tagName);
-        if (typeof match !== 'object')
+        if (typeof match !== `object`)
             return match;
         if (content === undefined) {
             if (context.message.attachments.length > 0) {
                 const firstAttachment = context.message.attachments[0];
-                if (firstAttachment.filename.endsWith('.bbtag') || firstAttachment.filename.endsWith('.txt'))
+                if (firstAttachment.filename.endsWith(`.bbtag`) || firstAttachment.filename.endsWith(`.txt`))
                     content = await (await fetch(firstAttachment.url)).text();
             }
         }
-        return await this.#saveTag(context, 'set', match.name, content, match.tag);
+        return await this.#saveTag(context, `set`, match.name, content, match.tag);
     }
 
     public async renameTag(context: GuildCommandContext, oldName: string | undefined, newName: string | undefined): Promise<string | undefined> {
         const from = await this.#requestEditableTag(context, oldName);
-        if (typeof from !== 'object')
+        if (typeof from !== `object`)
             return from;
 
         const to = await this.#requestCreatableTag(context, newName);
-        if (typeof to !== 'object')
+        if (typeof to !== `object`)
             return to;
 
         await context.database.tags.delete(from.name);
@@ -306,11 +302,11 @@ export class TagCommand extends GuildCommand {
 
     public async getRawTag(context: GuildCommandContext, tagName: string | undefined, fileExtension: string): Promise<string | { content: string; files: FileContent[]; } | undefined> {
         const match = await this.#requestReadableTag(context, tagName);
-        if (typeof match !== 'object')
+        if (typeof match !== `object`)
             return match;
 
-        const response = this.info(`The raw code for \`${match.name}\` is:\n\`\`\`${match.lang ?? ''}\n${match.content}\n\`\`\``);
-        return !match.content.includes('```') && guard.checkMessageSize(response)
+        const response = this.info(`The raw code for \`${match.name}\` is:\n\`\`\`${match.lang ?? ``}\n${match.content}\n\`\`\``);
+        return !match.content.includes(`\`\`\``) && guard.checkMessageSize(response)
             ? response
             : {
                 content: this.info(`The raw code for \`${match.name}\` is attached`),
@@ -324,19 +320,19 @@ export class TagCommand extends GuildCommand {
     }
 
     public async listTags(context: GuildCommandContext, author?: string): Promise<string | undefined> {
-        const args: Parameters<ClusterUtilities['displayPaged']> = [
+        const args: Parameters<ClusterUtilities[`displayPaged`]> = [
             context.channel,
             context.author,
-            ' tags',
+            ` tags`,
             async (skip, take) => await context.database.tags.list(skip, take),
             async () => await context.database.tags.count(),
             100,
-            ', '
+            `, `
         ];
 
         if (author !== undefined) {
             const result = await context.queryUser({ filter: author });
-            if (result.state !== 'SUCCESS')
+            if (result.state !== `SUCCESS`)
                 return undefined;
 
             args[2] += ` made by **${humanize.fullName(result.value)}**`;
@@ -345,16 +341,16 @@ export class TagCommand extends GuildCommand {
         }
 
         switch (await context.util.displayPaged(...args)) {
-            case false: return this.error('No results found!');
-            case true: return this.success('I hope you found what you were looking for!');
+            case false: return this.error(`No results found!`);
+            case true: return this.success(`I hope you found what you were looking for!`);
             case undefined: return undefined;
         }
     }
 
     public async searchTags(context: GuildCommandContext, query?: string): Promise<string | undefined> {
         if (query === undefined || query.length === 0) {
-            const queryResult = await context.queryText({ prompt: 'What would you like to search for?' });
-            if (queryResult.state !== 'SUCCESS')
+            const queryResult = await context.queryText({ prompt: `What would you like to search for?` });
+            if (queryResult.state !== `SUCCESS`)
                 return undefined;
 
             query = queryResult.value;
@@ -370,18 +366,18 @@ export class TagCommand extends GuildCommand {
             (skip, take) => context.database.tags.search(_query, skip, take),
             () => context.database.tags.searchCount(_query),
             100,
-            ', ');
+            `, `);
 
         switch (result) {
-            case false: return this.error('No results found!');
-            case true: return this.success('I hope you found what you were looking for!');
+            case false: return this.error(`No results found!`);
+            case true: return this.success(`I hope you found what you were looking for!`);
             case undefined: return undefined;
         }
     }
 
     public async disableTag(context: GuildCommandContext, tagName: string, reason: string): Promise<string | undefined> {
         if (!context.util.isBotStaff(context.author.id))
-            return this.error('You cannot disable tags');
+            return this.error(`You cannot disable tags`);
 
         tagName = normalizeName(tagName);
         if (!await context.database.tags.disable(tagName, context.author.id, reason))
@@ -391,20 +387,20 @@ export class TagCommand extends GuildCommand {
 
     public async setTagCooldown(context: GuildCommandContext, tagName: string, cooldown?: Duration): Promise<string | undefined> {
         if (cooldown !== undefined && cooldown.asMilliseconds() < 0)
-            return this.error('The cooldown must be greater than 0ms');
+            return this.error(`The cooldown must be greater than 0ms`);
 
         const match = await this.#requestEditableTag(context, tagName);
-        if (typeof match !== 'object')
+        if (typeof match !== `object`)
             return match;
 
-        await context.database.tags.setProp(match.name, 'cooldown', cooldown?.asMilliseconds());
+        await context.database.tags.setProp(match.name, `cooldown`, cooldown?.asMilliseconds());
         cooldown ??= moment.duration();
         return this.success(`The tag \`${match.name}\` now has a cooldown of \`${humanize.duration(cooldown)}\`.`);
     }
 
     public async getTagAuthor(context: GuildCommandContext, tagName: string | undefined): Promise<string | undefined> {
         const match = await this.#requestReadableTag(context, tagName);
-        if (typeof match !== 'object')
+        if (typeof match !== `object`)
             return match;
 
         const response = [];
@@ -415,12 +411,12 @@ export class TagCommand extends GuildCommand {
             response.push(`and is authorized by **${humanize.fullName(authorizer)}**`);
         }
 
-        return response.join(' ');
+        return response.join(` `);
     }
 
     public async getTagInfo(context: GuildCommandContext, tagName: string | undefined): Promise<string | SendPayload | undefined> {
         const match = await this.#requestReadableTag(context, tagName);
-        if (typeof match !== 'object')
+        if (typeof match !== `object`)
             return match;
 
         const fields: EmbedField[] = [];
@@ -441,7 +437,7 @@ export class TagCommand extends GuildCommand {
             embed.author = context.util.embedifyAuthor(author);
 
         fields.push({
-            name: 'Author',
+            name: `Author`,
             value: `${humanize.fullName(author)} (${author?.userid ?? match.author})`,
             inline: true
         });
@@ -449,69 +445,68 @@ export class TagCommand extends GuildCommand {
         if (match.authorizer !== undefined && match.authorizer !== match.author) {
             const authorizer = await context.database.users.get(match.authorizer);
             fields.push({
-                name: 'Authorizer',
+                name: `Authorizer`,
                 value: `${humanize.fullName(authorizer)} (${authorizer?.userid ?? match.authorizer})`,
                 inline: true
             });
         }
 
         if (match.cooldown !== undefined)
-            fields.push({ name: 'Cooldown', value: humanize.duration(moment.duration(match.cooldown)), inline: true });
+            fields.push({ name: `Cooldown`, value: humanize.duration(moment.duration(match.cooldown)), inline: true });
 
-        fields.push({ name: 'Last modified', value: moment(match.lastmodified.valueOf()).format('LLLL'), inline: true });
-        fields.push({ name: 'Used', value: `${match.uses} ${p(match.uses, 'time')}`, inline: true });
-        fields.push({ name: 'Favourited', value: `${favouriteCount} ${p(favouriteCount, 'time')}`, inline: true });
+        fields.push({ name: `Last modified`, value: moment(match.lastmodified.valueOf()).format(`LLLL`), inline: true });
+        fields.push({ name: `Used`, value: `${match.uses} ${p(match.uses, `time`)}`, inline: true });
+        fields.push({ name: `Favourited`, value: `${favouriteCount} ${p(favouriteCount, `time`)}`, inline: true });
 
         if (match.reports !== undefined && match.reports > 0)
-            fields.push({ name: this.warning('Reported'), value: `${match.reports} ${p(match.reports, 'time')}`, inline: true });
+            fields.push({ name: this.warning(`Reported`), value: `${match.reports} ${p(match.reports, `time`)}`, inline: true });
 
         const flags = humanize.flags(match.flags ?? []);
         if (flags.length > 0)
-            fields.push({ name: 'Flags', value: flags.join('\n') });
+            fields.push({ name: `Flags`, value: flags.join(`\n`) });
 
         return { embeds: [embed] };
     }
 
     public async getTopTags(context: GuildCommandContext): Promise<string> {
         const tags = await context.database.tags.top(10);
-        const result = ['__Here are the top 10 tags:__'];
+        const result = [`__Here are the top 10 tags:__`];
         let i = 1;
         for (const tag of tags) {
             const author = await context.database.users.get(tag.author);
-            result.push(`**${i++}.** **${tag.name}** (**${humanize.fullName(author)}**) - used **${tag.uses} ${p(tag.uses, 'time')}**`);
+            result.push(`**${i++}.** **${tag.name}** (**${humanize.fullName(author)}**) - used **${tag.uses} ${p(tag.uses, `time`)}**`);
         }
-        return result.join('\n');
+        return result.join(`\n`);
     }
 
     public async toggleFavouriteTag(context: GuildCommandContext, tagName: string): Promise<string | undefined> {
         const match = await this.#requestReadableTag(context, tagName);
-        if (typeof match !== 'object')
+        if (typeof match !== `object`)
             return match;
 
         const isFavourited = match.favourites?.[context.author.id] === true;
         await context.database.tags.setFavourite(match.name, context.author.id, isFavourited);
         return isFavourited
-            ? this.success(`The \`${match.name}\` tag is now on your favourites list!\n\n`) +
-            'Note: there is no way for a tag to tell if you\'ve favourited it, and thus it\'s impossible to give rewards for favouriting.\n' +
-            'Any tag that claims otherwise is lying, and should be reported.'
+            ? `${this.success(`The \`${match.name}\` tag is now on your favourites list!\n\n`)
+            }Note: there is no way for a tag to tell if you've favourited it, and thus it's impossible to give rewards for favouriting.\nAny tag that claims otherwise is lying, and should be reported.`
             : this.success(`The \`${match.name}\` tag is no longer on your favourites list!`);
     }
 
     public async listFavouriteTags(context: GuildCommandContext): Promise<string> {
         const tags = await context.database.tags.getFavourites(context.author.id);
         if (tags.length === 0)
-            return 'You have no favourite tags!';
-        return `You have ${tags.length} favourite ${p(tags.length, 'tag')}. ${codeBlock(tags.join(', '), 'fix')}`;
+            return `You have no favourite tags!`;
+        return `You have ${tags.length} favourite ${p(tags.length, `tag`)}. ${codeBlock(tags.join(`, `), `fix`)}`;
     }
 
     public async reportTag(context: GuildCommandContext, tagName: string, reason: string | undefined): Promise<string | undefined> {
         const match = await this.#requestReadableTag(context, tagName);
-        if (typeof match !== 'object')
+        if (typeof match !== `object`)
             return match;
 
         const user = await context.database.users.get(context.author.id);
         if (user === undefined)
-            return this.error('Sorry, you cannot report tags at this time. Please try again later!');
+            return this.error(`Sorry, you cannot report tags at this time. Please try again later!`);
 
         if (user.reportblock !== undefined)
             return user.reportblock;
@@ -523,8 +518,8 @@ export class TagCommand extends GuildCommand {
                 await context.database.users.setTagReport(context.author.id, match.name, undefined);
                 return this.success(`The \`${match.name}\` tag is no longer being reported by you.`);
             }
-            const reasonResult = await context.queryText({ prompt: 'Please provide a reason for your report:' });
-            if (reasonResult.state !== 'SUCCESS')
+            const reasonResult = await context.queryText({ prompt: `Please provide a reason for your report:` });
+            if (reasonResult.state !== `SUCCESS`)
                 return;
 
             reason = reasonResult.value;
@@ -540,19 +535,19 @@ export class TagCommand extends GuildCommand {
 
     public async getTagFlags(context: GuildCommandContext, tagName: string): Promise<string | undefined> {
         const match = await this.#requestReadableTag(context, tagName);
-        if (typeof match !== 'object')
+        if (typeof match !== `object`)
             return match;
 
         const flags = humanize.flags(match.flags ?? []);
         if (flags.length === 0)
             return `The \`${match.name}\` tag has no flags.`;
 
-        return `The \`${match.name}\` tag has the following flags:\n\n${flags.join('\n')}`;
+        return `The \`${match.name}\` tag has the following flags:\n\n${flags.join(`\n`)}`;
     }
 
     public async addTagFlags(context: GuildCommandContext, tagName: string, flagsRaw: string): Promise<string | undefined> {
         const match = await this.#requestEditableTag(context, tagName);
-        if (typeof match !== 'object')
+        if (typeof match !== `object`)
             return match;
 
         const { _, ...addFlags } = parse.flags([], flagsRaw);
@@ -564,37 +559,37 @@ export class TagCommand extends GuildCommand {
             if (flags.some(f => f.flag === flag))
                 return this.error(`The flag \`${flag}\` already exists!`);
 
-            const word = args.get(0)?.value.replace(/[^a-z]/gi, '').toLowerCase() ?? '';
+            const word = args.get(0)?.value.replace(/[^a-z]/gi, ``).toLowerCase() ?? ``;
             if (flags.some(f => f.word === word))
                 return this.error(`A flag with the word \`${word}\` already exists!`);
 
-            const description = args.slice(1).merge().value.replace(/\n/g, ' ');
+            const description = args.slice(1).merge().value.replace(/\n/g, ` `);
             flags.push({ flag, word, description });
         }
 
-        await context.database.tags.setProp(match.name, 'flags', flags);
+        await context.database.tags.setProp(match.name, `flags`, flags);
         return this.success(`The flags for \`${match.name}\` have been updated.`);
     }
 
     public async removeTagFlags(context: GuildCommandContext, tagName: string, flagsRaw: string): Promise<string | undefined> {
         const match = await this.#requestEditableTag(context, tagName);
-        if (typeof match !== 'object')
+        if (typeof match !== `object`)
             return match;
 
         const { _, ...removeFlags } = parse.flags([], flagsRaw);
         const flags = [...match.flags ?? []]
             .filter(f => removeFlags[f.flag] === undefined);
 
-        await context.database.tags.setProp(match.name, 'flags', flags);
+        await context.database.tags.setProp(match.name, `flags`, flags);
         return this.success(`The flags for \`${match.name}\` have been updated.`);
     }
 
     public async setTagLanguage(context: GuildCommandContext, tagName: string, language: string): Promise<string | undefined> {
         const match = await this.#requestEditableTag(context, tagName);
-        if (typeof match !== 'object')
+        if (typeof match !== `object`)
             return match;
 
-        await context.database.tags.setProp(match.name, 'lang', language);
+        await context.database.tags.setProp(match.name, `lang`, language);
         return this.success(`Lang for tag \`${match.name}\` set.`);
     }
 
@@ -615,7 +610,7 @@ export class TagCommand extends GuildCommand {
             lastmodified: new Date(),
             uses: oldTag?.uses ?? 0,
             flags: [...oldTag?.flags ?? []],
-            lang: oldTag?.lang ?? ''
+            lang: oldTag?.lang ?? ``
         });
 
         void this.#logChange(context, oldTag !== undefined ? TagChangeAction.EDIT : TagChangeAction.CREATE, context.author, context.id, {
@@ -626,7 +621,7 @@ export class TagCommand extends GuildCommand {
         return this.success(`Tag \`${tagName}\` ${operation}.\n${bbtag.stringifyAnalysis(analysis)}`);
     }
 
-    async #requestTagName(context: GuildCommandContext, name: string | undefined, query = 'Enter the name of the tag or type `c` to cancel:'): Promise<string | undefined> {
+    async #requestTagName(context: GuildCommandContext, name: string | undefined, query = `Enter the name of the tag or type \`c\` to cancel:`): Promise<string | undefined> {
         if (name !== undefined) {
             name = normalizeName(name);
             if (name.length > 0)
@@ -637,7 +632,7 @@ export class TagCommand extends GuildCommand {
             return undefined;
 
         const nameResult = await context.queryText({ prompt: query });
-        if (nameResult.state !== 'SUCCESS')
+        if (nameResult.state !== `SUCCESS`)
             return undefined;
 
         name = normalizeName(nameResult.value);
@@ -648,8 +643,8 @@ export class TagCommand extends GuildCommand {
         if (content !== undefined && content.length > 0)
             return content;
 
-        const contentResult = await context.queryText({ prompt: 'Enter the tag\'s contents:' });
-        if (contentResult.state !== 'SUCCESS')
+        const contentResult = await context.queryText({ prompt: `Enter the tag's contents:` });
+        if (contentResult.state !== `SUCCESS`)
             return undefined;
 
         return contentResult.value;
@@ -661,7 +656,7 @@ export class TagCommand extends GuildCommand {
         allowQuery = true
     ): Promise<{ name: string; tag?: StoredTag; } | string | undefined> {
         const match = await this.#requestTag(context, tagName, allowQuery);
-        if (typeof match !== 'object')
+        if (typeof match !== `object`)
             return match;
 
         if (match.tag !== undefined
@@ -670,8 +665,8 @@ export class TagCommand extends GuildCommand {
                 actors: [context.author],
                 context: context.channel,
                 prompt: { content: `You are not the owner of the \`${match.name}\`, are you sure you want to modify it?` },
-                confirm: 'Yes',
-                cancel: 'No',
+                confirm: `Yes`,
+                cancel: `No`,
                 fallback: false
             }))) {
             return this.error(`You don't own the \`${match.name}\` tag!`);
@@ -686,7 +681,7 @@ export class TagCommand extends GuildCommand {
         allowQuery = true
     ): Promise<StoredTag | string | undefined> {
         const match = await this.#requestSettableTag(context, tagName, allowQuery);
-        if (typeof match !== 'object')
+        if (typeof match !== `object`)
             return match;
 
         if (match.tag === undefined)
@@ -701,7 +696,7 @@ export class TagCommand extends GuildCommand {
         allowQuery = true
     ): Promise<StoredTag | string | undefined> {
         const match = await this.#requestTag(context, tagName, allowQuery);
-        if (typeof match !== 'object')
+        if (typeof match !== `object`)
             return match;
 
         if (match.tag === undefined)
@@ -716,7 +711,7 @@ export class TagCommand extends GuildCommand {
         allowQuery = true
     ): Promise<{ name: string; } | string | undefined> {
         const match = await this.#requestTag(context, tagName, allowQuery);
-        if (typeof match !== 'object')
+        if (typeof match !== `object`)
             return match;
 
         if (match.tag !== undefined)
@@ -730,7 +725,7 @@ export class TagCommand extends GuildCommand {
         tagName: string | undefined,
         allowQuery: boolean
     ): Promise<{ name: string; tag?: StoredTag; } | string | undefined> {
-        tagName = await this.#requestTagName(context, tagName, allowQuery ? undefined : '');
+        tagName = await this.#requestTagName(context, tagName, allowQuery ? undefined : ``);
         if (tagName === undefined)
             return;
 
@@ -753,7 +748,7 @@ export class TagCommand extends GuildCommand {
     }
 
     async #showDocs(ctx: GuildCommandContext, topic: string | undefined): Promise<SendPayload> {
-        return await this.#docs.createMessageContent(topic ?? '', ctx.author, ctx.channel);
+        return await this.#docs.createMessageContent(topic ?? ``, ctx.author, ctx.channel);
     }
 
     async #logChange(
@@ -764,13 +759,13 @@ export class TagCommand extends GuildCommand {
         details: Record<string, string>): Promise<void> {
         const files: FileContent[] = [];
         const fields: EmbedField[] = [];
-        if ('tag' in details && 'content' in details)
-            files.push({ name: details.tag + '.bbtag', file: details.content });
+        if (`tag` in details && `content` in details)
+            files.push({ name: `${details.tag}.bbtag`, file: details.content });
 
         for (const [key, detail] of Object.entries(details)) {
             fields.push({
                 name: key,
-                value: humanize.truncate(detail, 1000, '(too long)'),
+                value: humanize.truncate(detail, 1000, `(too long)`),
                 inline: true
             });
         }
@@ -798,14 +793,14 @@ export class TagCommand extends GuildCommand {
 }
 
 function normalizeName(title: string): string {
-    return title.replace(/[^\d\w .,/#!$%^&*;:{}[\]=\-_~()]/gi, '');
+    return title.replace(/[^\d\w .,/#!$%^&*;:{}[\]=\-_~()]/gi, ``);
 }
 
 const enum TagChangeAction {
-    CREATE = 'Create',
-    RENAME = 'Rename',
-    EDIT = 'Edit',
-    DELETE = 'Delete'
+    CREATE = `Create`,
+    RENAME = `Rename`,
+    EDIT = `Edit`,
+    DELETE = `Delete`
 }
 
 const tagChangeActionColour: { [P in TagChangeAction]: number } = {

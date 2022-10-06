@@ -37,7 +37,7 @@ export class VariableCache {
     }
 
     async #getEntry(variable: string): Promise<CacheEntry> {
-        const forced = variable.startsWith('!');
+        const forced = variable.startsWith(`!`);
         if (forced)
             variable = variable.slice(1);
 
@@ -47,7 +47,7 @@ export class VariableCache {
 
         const provider = this.scopeProviders.find(s => variable.startsWith(s.prefix));
         if (provider === undefined)
-            throw new Error('Missing default variable scope!');
+            throw new Error(`Missing default variable scope!`);
 
         const varName = variable.substring(provider.prefix.length);
         const scope = provider.getScope(this.context);
@@ -66,7 +66,7 @@ export class VariableCache {
     }
 
     public async set(variable: string, value: JToken | undefined): Promise<void> {
-        const forced = variable.startsWith('!');
+        const forced = variable.startsWith(`!`);
         if (forced)
             variable = variable.slice(1);
 
@@ -95,19 +95,19 @@ export class VariableCache {
             if (pool === undefined)
                 pools.set(entry.scope, pool = {});
 
-            pool[entry.key] = entry.value === '' ? undefined : entry.value;
+            pool[entry.key] = entry.value === `` ? undefined : entry.value;
             entry.persist();
         }
 
         for (const [provider, pool] of pools) {
             const timer = new Timer().start();
             const objectCount = Object.keys(pool).length;
-            this.context.logger.bbtag('Committing', objectCount, 'objects to the', provider.prefix, 'pool.');
+            this.context.logger.bbtag(`Committing`, objectCount, `objects to the`, provider.prefix, `pool.`);
             const scope = provider.getScope(this.context);
             if (scope !== undefined)
                 await this.context.database.tagVariables.upsert(pool, scope);
             timer.end();
-            this.context.logger[timer.elapsed > 3000 ? 'info' : 'bbtag']('Commited', objectCount, 'objects to the', provider.prefix, 'pool in', timer.elapsed, 'ms.');
+            this.context.logger[timer.elapsed > 3000 ? `info` : `bbtag`](`Commited`, objectCount, `objects to the`, provider.prefix, `pool in`, timer.elapsed, `ms.`);
             this.context.dbObjectsCommitted += objectCount;
         }
         this.context.dbTimer.end();
@@ -149,7 +149,7 @@ class CacheEntry {
     }
 
     static #captureValue(value: undefined | JToken): ValueSource {
-        if (typeof value !== 'object' || value === null) {
+        if (typeof value !== `object` || value === null) {
             return {
                 isEqual: current => current === value,
                 get: () => value
@@ -158,7 +158,7 @@ class CacheEntry {
 
         const jdata = JSON.stringify(value);
         return {
-            isEqual: current => typeof current === 'object' && JSON.stringify(current) === jdata,
+            isEqual: current => typeof current === `object` && JSON.stringify(current) === jdata,
             get: () => JSON.parse(jdata)
         };
     }

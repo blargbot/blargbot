@@ -7,16 +7,16 @@ import { User } from 'eris';
 export class LinusCommand extends GlobalImageCommand {
     public constructor() {
         super({
-            name: 'linus',
+            name: `linus`,
             definitions: [
                 {
-                    parameters: '{user:user+}',
-                    description: 'Shows a picture of Linus pointing at something on his monitor.',
+                    parameters: `{user:user+}`,
+                    description: `Shows a picture of Linus pointing at something on his monitor.`,
                     execute: (ctx, [user]) => this.renderUser(ctx, user.asUser)
                 },
                 {
-                    parameters: '',
-                    description: 'Shows a picture of Linus pointing at something on his monitor.',
+                    parameters: ``,
+                    description: `Shows a picture of Linus pointing at something on his monitor.`,
                     execute: (ctx, _, flags) => this.render(
                         ctx,
                         flags.i?.merge().value
@@ -27,7 +27,7 @@ export class LinusCommand extends GlobalImageCommand {
                 }
             ],
             flags: [
-                { flag: 'i', word: 'image', description: 'A custom image.' }
+                { flag: `i`, word: `image`, description: `A custom image.` }
             ]
         });
     }
@@ -41,6 +41,6 @@ export class LinusCommand extends GlobalImageCommand {
         if (!guard.isUrl(url))
             return this.error(`${url} is not a valid url!`);
 
-        return await this.renderImage(context, 'linus', { image: url });
+        return await this.renderImage(context, `linus`, { image: url });
     }
 }

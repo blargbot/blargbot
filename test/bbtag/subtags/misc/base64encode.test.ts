@@ -7,12 +7,12 @@ runSubtagTests({
     argCountBounds: { min: 1, max: 1 },
     cases: [
         {
-            code: '{base64encode;Success!}',
-            expected: 'U3VjY2VzcyE='
+            code: `{base64encode;Success!}`,
+            expected: `U3VjY2VzcyE=`
         },
         {
-            code: '{btoa;Success!}',
-            expected: 'U3VjY2VzcyE='
+            code: `{btoa;Success!}`,
+            expected: `U3VjY2VzcyE=`
         }
     ]
 });

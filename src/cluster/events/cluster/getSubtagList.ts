@@ -2,11 +2,11 @@ import { Cluster } from '@blargbot/cluster';
 import { ClusterEventService } from '@blargbot/cluster/serviceTypes';
 import { SubtagListResult } from '@blargbot/cluster/types';
 
-export class ClusterGetSubtagListHandler extends ClusterEventService<'getSubtagList'> {
+export class ClusterGetSubtagListHandler extends ClusterEventService<`getSubtagList`> {
     public constructor(
         cluster: Cluster
     ) {
-        super(cluster, 'getSubtagList', ({ reply }) => reply(this.getSubtagList()));
+        super(cluster, `getSubtagList`, ({ reply }) => reply(this.getSubtagList()));
     }
 
     public getSubtagList(): SubtagListResult {

@@ -59,14 +59,14 @@ export class Cluster extends BaseClient {
             },
             getAllUsers: false,
             disableEvents: {
-                ['TYPING_START']: true,
-                ['VOICE_STATE_UPDATE']: true
+                [`TYPING_START`]: true,
+                [`VOICE_STATE_UPDATE`]: true
             },
             maxShards: options.shardCount,
             firstShardID: options.firstShardId,
             lastShardID: options.lastShardId,
             restMode: true,
-            defaultImageFormat: 'png',
+            defaultImageFormat: `png`,
             defaultImageSize: 512,
             messageLimit: 5,
             intents: GatewayIntentBits.Guilds
@@ -110,18 +110,18 @@ export class Cluster extends BaseClient {
             subtags: Object.values(subtags.all)
                 .map(subtag => new subtag())
         });
-        this.intervals = new IntervalManager(this, duration(10, 's'));
+        this.intervals = new IntervalManager(this, duration(10, `s`));
         this.rolemes = new RolemeManager(this);
         this.help = new CommandDocumentationManager(this);
         this.awaiter = new AwaiterManager(this.logger);
         this.version = new VersionStateManager(this.database.vars);
         this.announcements = new AnnouncementManager(this.database.guilds, this.util, this.commands.default);
 
-        this.services.on('add', module => void module.start());
-        this.services.on('remove', module => void module.stop());
-        this.events.on('add', module => void module.start());
-        this.events.on('remove', module => void module.stop());
-        this.discord.on('interactionCreate', i => this.help.handleInteraction(i));
+        this.services.on(`add`, module => void module.start());
+        this.services.on(`remove`, module => void module.stop());
+        this.events.on(`add`, module => void module.start());
+        this.events.on(`remove`, module => void module.stop());
+        this.discord.on(`interactionCreate`, i => this.help.handleInteraction(i));
     }
 
     public async start(): Promise<void> {
@@ -141,7 +141,7 @@ export class Cluster extends BaseClient {
             throw new Error(`User ${author} does not have permission to run eval`);
 
         try {
-            const code = text.split('\n').length === 1
+            const code = text.split(`\n`).length === 1
                 ? `async () => (${text})`
                 : `async () => { ${text} }`;
             const func = eval(code) as () => Promise<unknown>;

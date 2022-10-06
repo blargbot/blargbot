@@ -8,15 +8,15 @@ import { SubtagType } from '../../utils';
 export class GuildBansSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: 'guildbans',
+            name: `guildbans`,
             category: SubtagType.GUILD,
             definition: [
                 {
                     parameters: [],
-                    description: 'Returns an array of banned users in the current guild.',
-                    exampleCode: 'This guild has {length;{guildbans}} banned users.',
-                    exampleOut: 'This guild has 123 banned users.',
-                    returns: 'id[]',
+                    description: `Returns an array of banned users in the current guild.`,
+                    exampleCode: `This guild has {length;{guildbans}} banned users.`,
+                    exampleOut: `This guild has 123 banned users.`,
+                    returns: `id[]`,
                     execute: (ctx) => this.getGuildBans(ctx)
                 }
             ]
@@ -30,7 +30,7 @@ export class GuildBansSubtag extends CompiledSubtag {
             if (!(err instanceof DiscordRESTError))
                 throw err;
 
-            throw new BBTagRuntimeError('Missing required permissions', err.message);
+            throw new BBTagRuntimeError(`Missing required permissions`, err.message);
         }
     }
 }

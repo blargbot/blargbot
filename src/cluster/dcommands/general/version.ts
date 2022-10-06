@@ -4,12 +4,12 @@ import { CommandType } from '@blargbot/cluster/utils';
 export class VersionCommand extends GlobalCommand {
     public constructor() {
         super({
-            name: 'version',
+            name: `version`,
             category: CommandType.GENERAL,
             definitions: [
                 {
-                    parameters: '',
-                    description: 'Tells you what version I am on',
+                    parameters: ``,
+                    description: `Tells you what version I am on`,
                     execute: (ctx) => this.getVersion(ctx)
                 }
             ]

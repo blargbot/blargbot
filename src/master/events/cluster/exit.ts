@@ -4,11 +4,11 @@ import { WorkerState } from '@blargbot/core/worker';
 import { Master } from '@blargbot/master';
 import moment from 'moment-timezone';
 
-export class ClusterExitHandler extends WorkerPoolEventService<ClusterConnection, 'exit'> {
+export class ClusterExitHandler extends WorkerPoolEventService<ClusterConnection, `exit`> {
     public constructor(
         public readonly master: Master
     ) {
-        super(master.clusters, 'exit', ({ worker }) => this.alertExit(worker));
+        super(master.clusters, `exit`, ({ worker }) => this.alertExit(worker));
     }
 
     public async alertExit(worker: ClusterConnection): Promise<void> {
@@ -20,7 +20,7 @@ export class ClusterExitHandler extends WorkerPoolEventService<ClusterConnection
             {
                 content: `Cluster ${worker.id} has died.`,
                 files: [{
-                    file: worker.logs.join('\n'),
+                    file: worker.logs.join(`\n`),
                     name: `cluster ${worker.id}.log`
                 }]
             }

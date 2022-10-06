@@ -2,11 +2,11 @@ import { Cluster } from '@blargbot/cluster';
 import { IntervalService } from '@blargbot/core/serviceTypes';
 
 export class BotStaffWhitelistInterval extends IntervalService {
-    public readonly type: string = 'bot';
+    public readonly type: string = `bot`;
     readonly #cluster: Cluster;
 
     public constructor(cluster: Cluster) {
-        super(1, 'day', cluster.logger, true);
+        super(1, `day`, cluster.logger, true);
         this.#cluster = cluster;
     }
 

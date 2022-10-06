@@ -8,25 +8,25 @@ runSubtagTests({
     argCountBounds: { min: 1, max: 2 },
     cases: [
         ...createGetRolePropTestCases({
-            quiet: '',
+            quiet: ``,
             generateCode(...args) {
-                return `{${['rolecolor', ...args].join(';')}}`;
+                return `{${[`rolecolor`, ...args].join(`;`)}}`;
             },
             cases: [
                 {
-                    expected: '4488cc',
+                    expected: `4488cc`,
                     setup(role) {
                         role.color = 0x4488cc;
                     }
                 },
                 {
-                    expected: '000000',
+                    expected: `000000`,
                     setup(role) {
                         role.color = 0;
                     }
                 },
                 {
-                    expected: 'ffffff',
+                    expected: `ffffff`,
                     setup(role) {
                         role.color = 0xffffff;
                     }

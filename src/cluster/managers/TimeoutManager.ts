@@ -15,7 +15,7 @@ export class TimeoutManager {
     ) {
         this.#events = new Map();
         this.#emitter = new EventEmitter();
-        this.#lastDuration = duration(5, 'minutes');
+        this.#lastDuration = duration(5, `minutes`);
     }
 
     public on<E extends EventType>(event: E, handler: (event: EventTypeMap[E]) => void): this {
@@ -52,7 +52,7 @@ export class TimeoutManager {
             try {
                 this.#emitter.emit(event.type, event);
             } catch (err: unknown) {
-                this.cluster.logger.error('Error while processing timeout', event.type, event.id, err);
+                this.cluster.logger.error(`Error while processing timeout`, event.type, event.id, err);
             }
             await this.delete(event.id);
         }

@@ -4,14 +4,14 @@ import { CommandType, randInt } from '@blargbot/cluster/utils';
 export class PingCommand extends GlobalCommand {
     public constructor() {
         super({
-            name: 'ping',
+            name: `ping`,
             category: CommandType.GENERAL,
-            description: 'Pong!\nFind the command latency.',
+            description: `Pong!\nFind the command latency.`,
             definitions: [
                 {
-                    parameters: '',
+                    parameters: ``,
                     execute: ctx => this.ping(ctx),
-                    description: 'Gets the current latency.'
+                    description: `Gets the current latency.`
                 }
             ]
         });
@@ -26,14 +26,14 @@ export class PingCommand extends GlobalCommand {
 }
 
 const messages = [
-    'Existance is a lie.',
-    'You\'re going to die some day, perhaps soon.',
-    'Nothing matters.',
-    'Where do you get off?',
-    'There is nothing out there.',
-    'You are all alone in an infinite void.',
-    'Truth is false.',
-    'Forsake everything.',
-    'Your existence is pitiful.',
-    'We are all already dead.'
+    `Existance is a lie.`,
+    `You're going to die some day, perhaps soon.`,
+    `Nothing matters.`,
+    `Where do you get off?`,
+    `There is nothing out there.`,
+    `You are all alone in an infinite void.`,
+    `Truth is false.`,
+    `Forsake everything.`,
+    `Your existence is pitiful.`,
+    `We are all already dead.`
 ];

@@ -47,7 +47,7 @@ export class BBTagEngine {
     public async execute(source: string, options: BBTagContextOptions): Promise<ExecutionResult>
     public async execute(source: string, options: BBTagContext, caller: SubtagCall): Promise<ExecutionResult>
     public async execute(source: string, options: BBTagContextOptions | BBTagContext, caller?: SubtagCall): Promise<ExecutionResult> {
-        this.logger.bbtag(`Start running ${options.isCC ? 'CC' : 'tag'} ${options.rootTagName ?? ''}`);
+        this.logger.bbtag(`Start running ${options.isCC ? `CC` : `tag`} ${options.rootTagName ?? ``}`);
         const timer = new Timer().start();
         const bbtag = bbtagUtil.parse(source, options instanceof BBTagContext);
         this.logger.bbtag(`Parsed bbtag in ${timer.poll(true)}ms`);
@@ -57,7 +57,7 @@ export class BBTagEngine {
         if (context.cooldownEnd.isAfter(moment())) {
             const remaining = moment.duration(context.cooldownEnd.diff(moment()));
             if (context.data.stackSize === 0)
-                await context.sendOutput(`This ${context.isCC ? 'custom command' : 'tag'} is currently under cooldown. Please try again <t:${moment().add(remaining).unix()}:R>.`);
+                await context.sendOutput(`This ${context.isCC ? `custom command` : `tag`} is currently under cooldown. Please try again <t:${moment().add(remaining).unix()}:R>.`);
             content = context.addError(new TagCooldownError(context.tagName, context.isCC, remaining), caller);
         } else if (context.data.stackSize > 200) {
             context.data.state = BBTagRuntimeState.ABORT;
@@ -142,7 +142,7 @@ export class BBTagEngine {
 
     async * #evalStatement(bbtag: Statement, context: BBTagContext): AsyncIterable<string> {
         for (const elem of bbtag.values) {
-            if (typeof elem === 'string')
+            if (typeof elem === `string`)
                 yield elem;
             else {
                 yield* this.#evalSubtag(elem, context);
@@ -154,12 +154,12 @@ export class BBTagEngine {
 
     public eval(bbtag: SubtagCall | Statement, context: BBTagContext): Awaitable<string> {
         if (context.engine !== this)
-            throw new Error('Cannot execute a context from another engine!');
+            throw new Error(`Cannot execute a context from another engine!`);
 
         if (context.data.state !== BBTagRuntimeState.RUNNING)
-            return '';
+            return ``;
 
-        const results = 'values' in bbtag
+        const results = `values` in bbtag
             ? context.withScope(() => this.#evalStatement(bbtag, context))
             : this.#evalSubtag(bbtag, context);
 
@@ -181,18 +181,18 @@ export class BBTagEngine {
 
         for (const call of getSubtagCalls(statement)) {
             if (call.name.values.length === 0)
-                result.warnings.push({ location: call.start, message: 'Unnamed subtag' });
-            else if (call.name.values.some(p => typeof p !== 'string'))
-                result.warnings.push({ location: call.start, message: 'Dynamic subtag' });
+                result.warnings.push({ location: call.start, message: `Unnamed subtag` });
+            else if (call.name.values.some(p => typeof p !== `string`))
+                result.warnings.push({ location: call.start, message: `Dynamic subtag` });
             else {
-                const subtag = this.subtags.get(call.name.values.join(''));
+                const subtag = this.subtags.get(call.name.values.join(``));
                 // TODO Detect unknown subtags
                 switch (typeof subtag?.deprecated) {
-                    case 'boolean':
+                    case `boolean`:
                         if (!subtag.deprecated)
                             break;
                     // fallthrough
-                    case 'string':
+                    case `string`:
                         result.warnings.push({ location: call.start, message: `{${subtag.name}} is deprecated. ${subtag.deprecated}` });
                 }
             }
@@ -204,7 +204,7 @@ export class BBTagEngine {
 
 function* getSubtagCalls(statement: Statement): IterableIterator<SubtagCall> {
     for (const part of statement.values) {
-        if (typeof part === 'string')
+        if (typeof part === `string`)
             continue;
 
         yield part;
@@ -218,5 +218,5 @@ async function joinResults(values: AsyncIterable<string>): Promise<string> {
     const results = [];
     for await (const value of values)
         results.push(value);
-    return results.join('');
+    return results.join(``);
 }

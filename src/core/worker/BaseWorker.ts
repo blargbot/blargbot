@@ -14,25 +14,25 @@ export abstract class BaseWorker<Contracts extends IPCContracts> {
     ) {
         this.ipc = new IPCMessageEmitter(process);
 
-        process.on('exit', () => logger.fatal('Process is exiting', new Error().stack?.slice(5)));
-        process.on('unhandledRejection', err => this.logger.error('Unhandled rejection', err));
-        process.on('disconnect', () => {
-            logger.fatal('The parent process has disconnected!');
+        process.on(`exit`, () => logger.fatal(`Process is exiting`, new Error().stack?.slice(5)));
+        process.on(`unhandledRejection`, err => this.logger.error(`Unhandled rejection`, err));
+        process.on(`disconnect`, () => {
+            logger.fatal(`The parent process has disconnected!`);
             process.exit();
         });
 
-        this.on('stop', async ({ reply }) => {
+        this.on(`stop`, async ({ reply }) => {
             logger.fatal(`Stop command received. PID ${this.id}`);
             await this.stop();
             reply(undefined);
             process.exit();
         });
 
-        this.send('alive', new Date());
+        this.send(`alive`, new Date());
     }
 
     public start(): void {
-        this.send('ready', `Hello from process ${this.id}!`);
+        this.send(`ready`, `Hello from process ${this.id}!`);
     }
 
     public stop(): Promise<void> | void {

@@ -8,25 +8,25 @@ runSubtagTests({
     argCountBounds: { min: 0, max: 2 },
     cases: [
         ...createGetUserPropTestCases({
-            quiet: '',
+            quiet: ``,
             generateCode(...args) {
-                return `{${['userisbot', ...args].join(';')}}`;
+                return `{${[`userisbot`, ...args].join(`;`)}}`;
             },
             cases: [
                 {
-                    expected: 'true',
+                    expected: `true`,
                     setup(member) {
                         member.user.bot = true;
                     }
                 },
                 {
-                    expected: 'false',
+                    expected: `false`,
                     setup(member) {
                         member.user.bot = false;
                     }
                 },
                 {
-                    expected: 'false',
+                    expected: `false`,
                     setup(member) {
                         member.user.bot = undefined;
                     }

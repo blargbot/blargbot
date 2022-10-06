@@ -8,17 +8,15 @@ import { bbtag, SubtagType } from '../../utils';
 export class SortSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: 'sort',
+            name: `sort`,
             category: SubtagType.ARRAY,
             definition: [
                 {
-                    parameters: ['array', 'descending?:false'],
-                    description: 'Sorts the `array` in ascending order. ' +
-                        'If `descending` is provided, sorts in descending order. ' +
-                        'If provided a variable, will modify the original `array`.',
-                    exampleCode: '{sort;[3, 2, 5, 1, 4]}',
-                    exampleOut: '[1,2,3,4,5]',
-                    returns: 'json[]|nothing',
+                    parameters: [`array`, `descending?:false`],
+                    description: `Sorts the \`array\` in ascending order. If \`descending\` is provided, sorts in descending order. If provided a variable, will modify the original \`array\`.`,
+                    exampleCode: `{sort;[3, 2, 5, 1, 4]}`,
+                    exampleOut: `[1,2,3,4,5]`,
+                    returns: `json[]|nothing`,
                     execute: (ctx, [array, descending]) => this.sort(ctx, array.value, descending.value)
                 }
             ]
@@ -30,7 +28,7 @@ export class SortSubtag extends CompiledSubtag {
         if (arr === undefined)
             throw new NotAnArrayError(arrayStr);
 
-        const direction = parse.boolean(descendingStr, descendingStr !== '') ? -1 : 1;
+        const direction = parse.boolean(descendingStr, descendingStr !== ``) ? -1 : 1;
         arr.v = arr.v.sort((a, b) => direction * compare(parse.string(a), parse.string(b)));
 
         if (arr.n === undefined)

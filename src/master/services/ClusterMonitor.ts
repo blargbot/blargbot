@@ -5,7 +5,7 @@ import { Master } from '@blargbot/master';
 import moment from 'moment-timezone';
 
 export class ClusterMonitor extends IntervalService {
-    public readonly type = 'cluster';
+    public readonly type = `cluster`;
 
     public constructor(
         public readonly master: Master
@@ -26,12 +26,12 @@ export class ClusterMonitor extends IntervalService {
         }
 
         if (stats === undefined) {
-            if (cluster.created.isBefore(now().add(-2, 'minute')))
+            if (cluster.created.isBefore(now().add(-2, `minute`)))
                 return [`⏰ Cluster ${cluster.id} was created ${secondsSince(cluster.created)} seconds ago but hasn't posted stats yet`];
             return [];
         }
 
-        const shardCutoff = now().add(-1, 'minute');
+        const shardCutoff = now().add(-1, `minute`);
         if (shardCutoff.isAfter(stats.time))
             return [`⏰ Cluster ${cluster.id} hasn't posted stats for ${secondsSince(stats.time)} seconds`];
 
@@ -50,9 +50,9 @@ export class ClusterMonitor extends IntervalService {
             this.master.util.send(
                 this.master.config.discord.channels.shardlog,
                 {
-                    content: `Respawning unresponsive cluster ${cluster.id}...\n${issues.join('\n')}`,
+                    content: `Respawning unresponsive cluster ${cluster.id}...\n${issues.join(`\n`)}`,
                     files: [{
-                        file: cluster.logs.join('\n'),
+                        file: cluster.logs.join(`\n`),
                         name: `cluster ${cluster.id}.log`
                     }]
                 }),

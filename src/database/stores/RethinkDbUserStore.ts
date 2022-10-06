@@ -7,14 +7,14 @@ import { RethinkDb } from '../clients';
 import { RethinkDbCachedTable } from '../tables/RethinkDbCachedTable';
 
 export class RethinkDbUserStore implements UserStore {
-    readonly #table: RethinkDbCachedTable<StoredUser, 'userid'>;
+    readonly #table: RethinkDbCachedTable<StoredUser, `userid`>;
 
     public constructor(
         rethinkDb: RethinkDb,
         logger: Logger,
         shouldCache: (id: string) => boolean
     ) {
-        this.#table = new RethinkDbCachedTable('user', 'userid', rethinkDb, logger);
+        this.#table = new RethinkDbCachedTable(`user`, `userid`, rethinkDb, logger);
         this.#table.watchChanges(shouldCache);
     }
 
@@ -39,23 +39,23 @@ export class RethinkDbUserStore implements UserStore {
         return await this.#table.get(userId, skipCache);
     }
 
-    public async removeUsernames(userId: string, usernames: readonly string[] | 'all'): Promise<boolean> {
+    public async removeUsernames(userId: string, usernames: readonly string[] | `all`): Promise<boolean> {
         const user = await this.#table.get(userId);
         if (user === undefined)
             return false;
 
         const success = await this.#table.update(userId, user => ({
-            usernames: usernames === 'all' ? [] : user('usernames').filter(username => this.#table.expr([...usernames]).contains<string[]>(username('name')).not())
+            usernames: usernames === `all` ? [] : user(`usernames`).filter(username => this.#table.expr([...usernames]).contains<string[]>(username(`name`)).not())
         }));
 
         if (!success)
             return false;
 
-        if (usernames === 'all')
-            setProp(user, 'usernames', []);
+        if (usernames === `all`)
+            setProp(user, `usernames`, []);
         else {
             const nameLookup = new Set(usernames);
-            setProp(user, 'usernames', user.usernames.filter(username => !nameLookup.has(username.name)));
+            setProp(user, `usernames`, user.usernames.filter(username => !nameLookup.has(username.name)));
         }
 
         return true;
@@ -69,8 +69,8 @@ export class RethinkDbUserStore implements UserStore {
         return user.usernames;
     }
 
-    public async upsert(user: UserDetails): Promise<'inserted' | 'updated' | false> {
-        if (user.discriminator === '0000')
+    public async upsert(user: UserDetails): Promise<`inserted` | `updated` | false> {
+        if (user.discriminator === `0000`)
             return false;
         const currentUser = await this.#table.get(user.id, true);
         if (currentUser === undefined) {
@@ -86,12 +86,12 @@ export class RethinkDbUserStore implements UserStore {
                 discriminator: user.discriminator,
                 todo: []
             })) {
-                return 'inserted';
+                return `inserted`;
             }
         } else {
             const update: Partial<Mutable<StoredUser>> = {};
             if (currentUser.username !== user.username) {
-                setProp(currentUser, 'username', update.username = user.username);
+                setProp(currentUser, `username`, update.username = user.username);
                 update.usernames = currentUser.usernames;
                 push(update.usernames, {
                     name: user.username,
@@ -99,13 +99,13 @@ export class RethinkDbUserStore implements UserStore {
                 });
             }
             if (currentUser.discriminator !== user.discriminator)
-                setProp(currentUser, 'discriminator', update.discriminator = user.discriminator);
+                setProp(currentUser, `discriminator`, update.discriminator = user.discriminator);
 
             if (currentUser.avatarURL !== user.avatarURL)
-                setProp(currentUser, 'avatarURL', update.avatarURL = user.avatarURL);
+                setProp(currentUser, `avatarURL`, update.avatarURL = user.avatarURL);
 
             if (Object.values(update).some(guard.hasValue) && await this.#table.update(user.id, update))
-                return 'updated';
+                return `updated`;
         }
 
         return false;
@@ -119,7 +119,7 @@ export class RethinkDbUserStore implements UserStore {
         if (!await this.#table.update(userId, { reports: { [tagName]: this.#table.setExpr(reason) } }))
             return false;
 
-        const reports = setIfUndefined(user, 'reports', {});
+        const reports = setIfUndefined(user, `reports`, {});
         setProp(reports, tagName, reason);
         return true;
     }
@@ -130,14 +130,14 @@ export class RethinkDbUserStore implements UserStore {
             return false;
 
         const success = await this.#table.update(userId, user => ({
-            prefixes: user('prefixes').default([]).setInsert(prefix)
+            prefixes: user(`prefixes`).default([]).setInsert(prefix)
         }));
 
         if (!success)
             return false;
 
         const oldLength = user.prefixes?.length ?? 0;
-        const prefixes = setProp(user, 'prefixes', [...new Set([...user.prefixes ?? [], prefix])]);
+        const prefixes = setProp(user, `prefixes`, [...new Set([...user.prefixes ?? [], prefix])]);
         return oldLength !== prefixes.length;
     }
 
@@ -147,14 +147,14 @@ export class RethinkDbUserStore implements UserStore {
             return false;
 
         const success = await this.#table.update(userId, user => ({
-            prefixes: user('prefixes').default([]).filter(p => p.ne(prefix))
+            prefixes: user(`prefixes`).default([]).filter(p => p.ne(prefix))
         }));
 
         if (!success)
             return false;
 
         const oldLength = user.prefixes?.length;
-        setProp(user, 'prefixes', user.prefixes?.filter(p => p !== prefix));
+        setProp(user, `prefixes`, user.prefixes?.filter(p => p !== prefix));
         return oldLength !== user.prefixes?.length;
     }
 
@@ -176,7 +176,7 @@ export class RethinkDbUserStore implements UserStore {
             content: item
         };
 
-        if (!await this.#table.update(userId, u => ({ todo: u('todo').append(todo) })))
+        if (!await this.#table.update(userId, u => ({ todo: u(`todo`).append(todo) })))
             return false;
 
         push(user.todo, todo);
@@ -188,7 +188,7 @@ export class RethinkDbUserStore implements UserStore {
         if (user === undefined)
             return false;
 
-        if (!await this.#table.update(userId, u => ({ todo: u('todo').deleteAt(index).filter(t => t('active').eq(1)) })))
+        if (!await this.#table.update(userId, u => ({ todo: u(`todo`).deleteAt(index).filter(t => t(`active`).eq(1)) })))
             return false;
 
         return removeAt(user.todo, index).length === 1;

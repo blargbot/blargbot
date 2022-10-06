@@ -4,12 +4,12 @@ import { CommandType } from '@blargbot/cluster/utils';
 export class DonateCommand extends GlobalCommand {
     public constructor() {
         super({
-            name: 'donate',
+            name: `donate`,
             category: CommandType.GENERAL,
             definitions: [
                 {
-                    parameters: '',
-                    description: 'Gets my donation information',
+                    parameters: ``,
+                    description: `Gets my donation information`,
                     execute: (ctx) => this.donateDetails(ctx)
                 }
             ]
@@ -29,12 +29,12 @@ I don't like to beg, but right now I'm a student. Tuition is expensive, and main
 
 Thank you for your time. I really appreciate all of my users! :3`,
                     fields: [
-                        { name: 'Paypal', value: 'https://paypal.me/stupidcat', inline: true },
-                        { name: 'Patreon', value: 'https://www.patreon.com/blargbot', inline: true }
+                        { name: `Paypal`, value: `https://paypal.me/stupidcat`, inline: true },
+                        { name: `Patreon`, value: `https://www.patreon.com/blargbot`, inline: true }
                     ]
                 }
             ]
         });
-        return this.success('Thanks for the interest! Ive sent you a DM with information about donations.');
+        return this.success(`Thanks for the interest! Ive sent you a DM with information about donations.`);
     }
 }

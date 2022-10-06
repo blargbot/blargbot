@@ -7,24 +7,24 @@ import { bbtag, SubtagType } from '../../utils';
 export class AbsSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: 'abs',
+            name: `abs`,
             category: SubtagType.MATH,
-            aliases: ['absolute'],
+            aliases: [`absolute`],
             definition: [
                 {
-                    parameters: ['number'],
-                    description: 'Gets the absolute value of `number`',
-                    exampleCode: '{abs;-535}',
-                    exampleOut: '535',
-                    returns: 'number|number[]',
+                    parameters: [`number`],
+                    description: `Gets the absolute value of \`number\``,
+                    exampleCode: `{abs;-535}`,
+                    exampleOut: `535`,
+                    returns: `number|number[]`,
                     execute: (_, [value]) => this.absSingle(value.value)
                 },
                 {
-                    parameters: ['numbers+2'],
-                    description: 'Gets the absolute value of each `numbers` and returns an array containing the results',
-                    exampleCode: '{abs;-535;123;-42}',
-                    exampleOut: '[535, 123, 42]',
-                    returns: 'number[]',
+                    parameters: [`numbers+2`],
+                    description: `Gets the absolute value of each \`numbers\` and returns an array containing the results`,
+                    exampleCode: `{abs;-535;123;-42}`,
+                    exampleOut: `[535, 123, 42]`,
+                    returns: `number[]`,
                     execute: (_, values) => this.absMultiple(values.map(arg => arg.value))
                 }
             ]
@@ -42,14 +42,14 @@ export class AbsSubtag extends CompiledSubtag {
         return bbtag.tagArray.flattenArray(values)
             .map(s => {
                 switch (typeof s) {
-                    case 'string': {
+                    case `string`: {
                         const result = parse.float(s);
                         if (result === undefined)
                             throw new NotANumberError(s);
                         return result;
                     }
-                    case 'number':
-                    case 'bigint':
+                    case `number`:
+                    case `bigint`:
                         return s;
                     default:
                         throw new NotANumberError(s);

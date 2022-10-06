@@ -52,12 +52,12 @@ export abstract class WorkerConnection<Contracts extends IPCContracts> {
         this.args = [...process.execArgv];
         // eslint-disable-next-line @typescript-eslint/naming-convention
         this.env = { ...process.env, WORKER_ID: id.toString() };
-        this.env.FORCE_COLOR = '1';
+        this.env.FORCE_COLOR = `1`;
 
         this.#killed = false;
 
-        this.on('alive', () => this.logger.worker(this.worker, 'worker ( ID:', this.id, ') is alive'));
-        this.on('error', err => this.logger.error(this.worker, 'worker ( ID:', this.id, ') error:', err));
+        this.on(`alive`, () => this.logger.worker(this.worker, `worker ( ID:`, this.id, `) is alive`));
+        this.on(`error`, err => this.logger.error(this.worker, `worker ( ID:`, this.id, `) error:`, err));
 
         this.#stderr.pipe(process.stderr);
         this.#stdout.pipe(process.stdout);
@@ -69,24 +69,24 @@ export abstract class WorkerConnection<Contracts extends IPCContracts> {
             input: logStream,
             terminal: true,
             historySize: 100
-        }).on('history', lines => this.#logs = lines);
+        }).on(`history`, lines => this.#logs = lines);
     }
 
     public async connect(timeoutMs: number): Promise<unknown> {
         if (this.#ipc.process !== undefined)
-            throw new Error('Cannot connect to a worker multiple times. Create a new instance for a new worker');
+            throw new Error(`Cannot connect to a worker multiple times. Create a new instance for a new worker`);
 
         Object.freeze(this.args);
         Object.freeze(this.env);
 
-        this.logger.worker('Spawning a new', this.worker, 'worker ( ID:', this.id, ')');
+        this.logger.worker(`Spawning a new`, this.worker, `worker ( ID:`, this.id, `)`);
         const timer = new Timer();
         timer.start();
 
         const process = this.#ipc.process = child_process.fork(this.entrypoint, {
             env: this.env,
             execArgv: this.args,
-            stdio: 'pipe'
+            stdio: `pipe`
         });
 
         if (process.pid === undefined)
@@ -97,31 +97,31 @@ export abstract class WorkerConnection<Contracts extends IPCContracts> {
         if (process.stdin !== null)
             this.#stdin.pipe(process.stdin);
 
-        for (const code of ['exit', 'close', 'disconnect', 'kill', 'error'] as const)
-            process.on(code, data => this.logger.worker(this.worker, 'worker ( ID:', this.id, 'PID:', process.pid ?? '???', ') sent', code, data));
+        for (const code of [`exit`, `close`, `disconnect`, `kill`, `error`] as const)
+            process.on(code, data => this.logger.worker(this.worker, `worker ( ID:`, this.id, `PID:`, process.pid ?? `???`, `) sent`, code, data));
 
         try {
             const result = await new Promise<unknown>((resolve, reject) => {
-                this.once('ready', ctx => resolve(ctx.data));
-                this.once('exit', ctx => reject(new Error(`Child process has exited with ${JSON.stringify(ctx.data)}`)));
-                setTimeout(() => reject(new Error('Child process failed to send ready in time')), timeoutMs);
+                this.once(`ready`, ctx => resolve(ctx.data));
+                this.once(`exit`, ctx => reject(new Error(`Child process has exited with ${JSON.stringify(ctx.data)}`)));
+                setTimeout(() => reject(new Error(`Child process failed to send ready in time`)), timeoutMs);
             });
             timer.end();
-            this.logger.worker(this.worker, 'worker ( ID:', this.id, 'PID:', process.pid, ') is ready after', timer.elapsed, 'ms and said:\n', result);
+            this.logger.worker(this.worker, `worker ( ID:`, this.id, `PID:`, process.pid, `) is ready after`, timer.elapsed, `ms and said:\n`, result);
             return result;
         } catch (err: unknown) {
             this.#ipc.process.kill();
-            this.logger.error(this.worker, 'worker ( ID:', this.id, 'PID:', process.pid, ') failed to start', err);
+            this.logger.error(this.worker, `worker ( ID:`, this.id, `PID:`, process.pid, `) failed to start`, err);
             throw err;
         }
     }
 
-    public async kill(code: NodeJS.Signals | number = 'SIGTERM'): Promise<void> {
+    public async kill(code: NodeJS.Signals | number = `SIGTERM`): Promise<void> {
         if (this.#ipc.process !== undefined) {
-            this.logger.worker('Killing', this.worker, 'worker ( ID:', this.id, 'PID:', this.#ipc.process.pid ?? 'NOT RUNNING');
+            this.logger.worker(`Killing`, this.worker, `worker ( ID:`, this.id, `PID:`, this.#ipc.process.pid ?? `NOT RUNNING`);
 
             try {
-                await this.#ipc.request('stop', undefined);
+                await this.#ipc.request(`stop`, undefined);
             } catch { /* NOOP */ }
 
             try {

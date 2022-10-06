@@ -7,13 +7,13 @@ export class IntervalRoute extends BaseRoute {
     readonly #api: Api;
 
     public constructor(api: Api) {
-        super('/guilds');
+        super(`/guilds`);
 
         this.#api = api;
 
         this.middleware.push(async (req, _, next) => await this.#checkAccess(req.params.guildId, this.getUserId(req, true)) ?? await next());
 
-        this.addRoute('/:guildId/interval', {
+        this.addRoute(`/:guildId/interval`, {
             get: ({ request }) => this.getInterval(request.params.guildId),
             put: ({ request }) => this.setInterval(request.params.guildId, request.body, this.getUserId(request)),
             delete: ({ request }) => this.deleteInterval(request.params.guildId)
@@ -35,7 +35,7 @@ export class IntervalRoute extends BaseRoute {
         const current = await this.#api.database.guilds.getInterval(guildId);
         const result = { ...current, ...mapped.value, author: userId };
         if (!await this.#api.database.guilds.setInterval(guildId, result))
-            return this.internalServerError('Failed to set interval');
+            return this.internalServerError(`Failed to set interval`);
         return this.ok(result);
     }
 
@@ -48,7 +48,7 @@ export class IntervalRoute extends BaseRoute {
         if (userId === undefined)
             return this.unauthorized();
 
-        const perms = await this.#api.worker.request('getGuildPermission', { userId, guildId });
+        const perms = await this.#api.worker.request(`getGuildPermission`, { userId, guildId });
         if (perms === undefined)
             return this.notFound();
 

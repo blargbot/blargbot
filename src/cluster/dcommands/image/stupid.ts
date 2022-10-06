@@ -5,11 +5,11 @@ import { ImageResult } from '@blargbot/image/types';
 export class StupidCommand extends GlobalImageCommand {
     public constructor() {
         super({
-            name: 'stupid',
+            name: `stupid`,
             definitions: [
                 {
-                    parameters: '{text+}',
-                    description: 'Tells everyone who is stupid.',
+                    parameters: `{text+}`,
+                    description: `Tells everyone who is stupid.`,
                     execute: (ctx, [text], flags) => flags.u !== undefined
                         ? this.renderUser(ctx, text.asString, flags.u.merge().value)
                         : this.render(
@@ -23,8 +23,8 @@ export class StupidCommand extends GlobalImageCommand {
                 }
             ],
             flags: [
-                { flag: 'u', word: 'user', description: 'The person who is stupid.' },
-                { flag: 'i', word: 'image', description: 'A custom image.' }
+                { flag: `u`, word: `user`, description: `The person who is stupid.` },
+                { flag: `i`, word: `image`, description: `A custom image.` }
             ]
         });
     }
@@ -34,13 +34,13 @@ export class StupidCommand extends GlobalImageCommand {
             return this.error(`I could not find the user \`${userStr}\``);
 
         const result = await context.queryMember({ filter: userStr });
-        if (result.state !== 'SUCCESS')
+        if (result.state !== `SUCCESS`)
             return this.error(`I could not find the user \`${userStr}\``);
         return await this.render(context, text, result.value.user.avatarURL);
     }
 
     public async render(context: CommandContext, text: string, url: string): Promise<ImageResult | string> {
         text = await context.util.resolveTags(context, text);
-        return await this.renderImage(context, 'stupid', { text, avatar: url });
+        return await this.renderImage(context, `stupid`, { text, avatar: url });
     }
 }

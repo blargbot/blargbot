@@ -2,9 +2,9 @@ import { Cluster } from '@blargbot/cluster';
 import { DiscordEventService } from '@blargbot/core/serviceTypes';
 import { Member } from 'eris';
 
-export class DiscordGuildMemeberRemoveHandler extends DiscordEventService<'guildMemberRemove'> {
+export class DiscordGuildMemeberRemoveHandler extends DiscordEventService<`guildMemberRemove`> {
     public constructor(protected readonly cluster: Cluster) {
-        super(cluster.discord, 'guildMemberRemove', cluster.logger, async (guild, _member) => {
+        super(cluster.discord, `guildMemberRemove`, cluster.logger, async (guild, _member) => {
             const member = _member instanceof Member ? _member : new Member({ ..._member }, guild, cluster.discord);
             await Promise.all([
                 this.cluster.moderation.bans.userLeft(member),

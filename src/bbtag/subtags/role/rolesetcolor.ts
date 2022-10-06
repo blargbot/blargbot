@@ -9,25 +9,24 @@ import { SubtagType } from '../../utils';
 export class RoleSetColorSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: 'rolesetcolor',
+            name: `rolesetcolor`,
             category: SubtagType.ROLE,
             definition: [
                 {
-                    parameters: ['role'],
-                    description: 'Sets the color of `role` to \'#000000\'. This is transparent.',
-                    exampleCode: 'The admin role is now colourless. {rolesetcolor;admin}',
-                    exampleOut: 'The admin role is now colourless.',
-                    returns: 'nothing', //TODO output like true/false
-                    execute: (ctx, [role]) => this.setRolecolor(ctx, role.value, '', false)
+                    parameters: [`role`],
+                    description: `Sets the color of \`role\` to '#000000'. This is transparent.`,
+                    exampleCode: `The admin role is now colourless. {rolesetcolor;admin}`,
+                    exampleOut: `The admin role is now colourless.`,
+                    returns: `nothing`, //TODO output like true/false
+                    execute: (ctx, [role]) => this.setRolecolor(ctx, role.value, ``, false)
                 },
                 {
-                    parameters: ['role', 'color', 'quiet?'],
-                    description: 'Sets the `color` of `role`.' +
-                        'If `quiet` is specified, if `role` can\'t be found it will simply return nothing',
-                    exampleCode: 'The admin role is now white. {rolesetcolor;admin;white}',
-                    exampleOut: 'The admin role is now white.',
-                    returns: 'nothing', //TODO output like true/false
-                    execute: (ctx, [role, color, quiet]) => this.setRolecolor(ctx, role.value, color.value, quiet.value !== '')
+                    parameters: [`role`, `color`, `quiet?`],
+                    description: `Sets the \`color\` of \`role\`.If \`quiet\` is specified, if \`role\` can't be found it will simply return nothing`,
+                    exampleCode: `The admin role is now white. {rolesetcolor;admin;white}`,
+                    exampleOut: `The admin role is now white.`,
+                    returns: `nothing`, //TODO output like true/false
+                    execute: (ctx, [role, color, quiet]) => this.setRolecolor(ctx, role.value, color.value, quiet.value !== ``)
                 }
             ]
         });
@@ -41,17 +40,17 @@ export class RoleSetColorSubtag extends CompiledSubtag {
     ): Promise<void> {
         const topRole = context.roleEditPosition();
         if (topRole <= 0)
-            throw new BBTagRuntimeError('Author cannot edit roles');
+            throw new BBTagRuntimeError(`Author cannot edit roles`);
 
         quiet ||= context.scopes.local.quiet ?? false;
         const role = await context.queryRole(roleStr, { noLookup: quiet });
-        const color = parse.color(colorStr !== '' ? colorStr : 0);
+        const color = parse.color(colorStr !== `` ? colorStr : 0);
 
         if (role === undefined)
-            throw new BBTagRuntimeError('Role not found'); //TODO RoleNotFoundError instead
+            throw new BBTagRuntimeError(`Role not found`); //TODO RoleNotFoundError instead
 
         if (role.position >= topRole)
-            throw new BBTagRuntimeError('Role above author');
+            throw new BBTagRuntimeError(`Role above author`);
 
         try {
             await role.edit({ color }, context.auditReason());
@@ -62,7 +61,7 @@ export class RoleSetColorSubtag extends CompiledSubtag {
             if (quiet)
                 return;
 
-            throw new BBTagRuntimeError('Failed to edit role: no perms', err.message);
+            throw new BBTagRuntimeError(`Failed to edit role: no perms`, err.message);
         }
     }
 }

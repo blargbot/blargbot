@@ -8,20 +8,20 @@ runSubtagTests({
     argCountBounds: { min: 0, max: 0 },
     cases: [
         {
-            code: '{channelcategories}',
-            expected: '[]'
+            code: `{channelcategories}`,
+            expected: `[]`
         },
 
         {
-            code: '{channelcategories}',
-            expected: '["29346782894762","2938476297493274"]',
+            code: `{channelcategories}`,
+            expected: `["29346782894762","2938476297493274"]`,
             setup(ctx) {
                 ctx.channels.abc = SubtagTestContext.createApiChannel({
-                    id: '29346782894762',
+                    id: `29346782894762`,
                     type: ChannelType.GuildCategory
                 });
                 ctx.channels.def = SubtagTestContext.createApiChannel({
-                    id: '2938476297493274',
+                    id: `2938476297493274`,
                     type: ChannelType.GuildCategory
                 });
             }

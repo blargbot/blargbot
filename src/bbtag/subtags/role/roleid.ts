@@ -6,16 +6,16 @@ import { SubtagType } from '../../utils';
 export class RoleIdSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: 'roleid',
+            name: `roleid`,
             category: SubtagType.ROLE,
             definition: [
                 {
-                    parameters: ['role', 'quiet?'],
-                    description: 'Returns `role`\'s ID. If `quiet` is specified, if `role` can\'t be found it will simply return nothing.',
-                    exampleCode: 'The admin role ID is: {roleid;admin}.',
-                    exampleOut: 'The admin role ID is: 123456789123456.',
-                    returns: 'id',
-                    execute: (ctx, [roleId, quiet]) => this.getRoleId(ctx, roleId.value, quiet.value !== '')
+                    parameters: [`role`, `quiet?`],
+                    description: `Returns \`role\`'s ID. If \`quiet\` is specified, if \`role\` can't be found it will simply return nothing.`,
+                    exampleCode: `The admin role ID is: {roleid;admin}.`,
+                    exampleOut: `The admin role ID is: 123456789123456.`,
+                    returns: `id`,
+                    execute: (ctx, [roleId, quiet]) => this.getRoleId(ctx, roleId.value, quiet.value !== ``)
                 }
             ]
         });
@@ -31,7 +31,7 @@ export class RoleIdSubtag extends CompiledSubtag {
 
         if (role === undefined) {
             throw new RoleNotFoundError(roleId)
-                .withDisplay(quiet ? '' : undefined);
+                .withDisplay(quiet ? `` : undefined);
         }
 
         return role.id;

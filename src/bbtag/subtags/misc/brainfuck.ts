@@ -8,15 +8,15 @@ export class BrainfuckSubtag extends CompiledSubtag {
     readonly #bfClient: Brainfuck;
     public constructor() {
         super({
-            name: 'brainfuck',
+            name: `brainfuck`,
             category: SubtagType.MISC,
             definition: [
                 {
-                    parameters: ['code', 'input?'],
-                    description: 'Interprets `code` as brainfuck, using `input` as the text for `,`.',
-                    exampleCode: '{brainfuck;-[------->+<]>-.-[->+++++<]>++.+++++++..+++.[--->+<]>-----.---[->+++<]>.-[--->+<]>---.+++.------.--------.-[--->+<]>.}',
-                    exampleOut: 'Hello World!',
-                    returns: 'string',
+                    parameters: [`code`, `input?`],
+                    description: `Interprets \`code\` as brainfuck, using \`input\` as the text for \`,\`.`,
+                    exampleCode: `{brainfuck;-[------->+<]>-.-[->+++++<]>++.+++++++..+++.[--->+<]>-----.---[->+++<]>.-[--->+<]>---.+++.------.--------.-[--->+<]>.}`,
+                    exampleOut: `Hello World!`,
+                    returns: `string`,
                     execute: (_, [code, input]) => this.runBrainfuck(code.value, input.value)
                 }
             ]
@@ -30,7 +30,7 @@ export class BrainfuckSubtag extends CompiledSubtag {
         } catch (e: unknown) {
             if (e instanceof Error)
                 throw new BBTagRuntimeError(e.message);
-            throw new BBTagRuntimeError('Unexpected error from brainfuck');
+            throw new BBTagRuntimeError(`Unexpected error from brainfuck`);
         }
     }
 }

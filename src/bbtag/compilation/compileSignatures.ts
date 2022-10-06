@@ -13,7 +13,7 @@ export function compileSignatures(signatures: readonly SubtagSignatureCallable[]
     let max = initialResolver;
 
     for (const signature of signatures) {
-        if (!('implementation' in signature))
+        if (!(`implementation` in signature))
             continue;
         for (const resolver of createArgumentResolvers(signature)) {
             if (resolver.minArgs < min.minArgs)
@@ -64,7 +64,7 @@ const initialResolver: ArgumentResolver = {
     maxArgs: -Infinity,
     isExactMatch() { return false; },
     resolve() {
-        throw new Error('Unable to determine how to resolve this call!');
+        throw new Error(`Unable to determine how to resolve this call!`);
     }
 };
 

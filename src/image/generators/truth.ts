@@ -3,19 +3,19 @@ import { ImageWorker } from '@blargbot/image/ImageWorker';
 import { ImageResult, TruthOptions } from '@blargbot/image/types';
 import sharp from 'sharp';
 
-export class TruthGenerator extends BaseImageGenerator<'truth'> {
+export class TruthGenerator extends BaseImageGenerator<`truth`> {
     public constructor(worker: ImageWorker) {
-        super('truth', worker);
+        super(`truth`, worker);
     }
 
     public async execute({ text }: TruthOptions): Promise<ImageResult> {
-        const result = sharp(this.getLocalPath('truth.png'))
+        const result = sharp(this.getLocalPath(`truth.png`))
             .composite([{
                 input: await this.renderText(text, {
-                    font: 'AnnieUseYourTelescope.ttf',
+                    font: `AnnieUseYourTelescope.ttf`,
                     width: 96,
                     height: 114,
-                    gravity: 'North'
+                    gravity: `North`
                 }),
                 left: 95,
                 top: 289
@@ -23,7 +23,7 @@ export class TruthGenerator extends BaseImageGenerator<'truth'> {
 
         return {
             data: await result.png().toBuffer(),
-            fileName: 'truth.png'
+            fileName: `truth.png`
         };
     }
 }

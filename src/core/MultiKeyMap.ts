@@ -1,10 +1,10 @@
 import { EventEmitter } from 'eventemitter3';
 
 interface MultiKeyMapEvents<TKey, TValue> {
-    'remove': [value: TValue];
-    'add': [value: TValue];
-    'unlink': [value: TValue, key: TKey];
-    'link': [value: TValue, key: TKey];
+    remove: [value: TValue];
+    add: [value: TValue];
+    unlink: [value: TValue, key: TKey];
+    link: [value: TValue, key: TKey];
 }
 
 export class MultiKeyMap<TKey, TValue> extends EventEmitter<MultiKeyMapEvents<TKey, TValue>> {
@@ -31,10 +31,10 @@ export class MultiKeyMap<TKey, TValue> extends EventEmitter<MultiKeyMapEvents<TK
         this.#vk.clear();
 
         for (const [key, value] of links)
-            this.emit('unlink', value, key);
+            this.emit(`unlink`, value, key);
 
         for (const value of values)
-            this.emit('remove', value);
+            this.emit(`remove`, value);
     }
 
     public get(key: TKey): TValue | undefined {
@@ -65,8 +65,8 @@ export class MultiKeyMap<TKey, TValue> extends EventEmitter<MultiKeyMapEvents<TK
         this.#kv.set(key, value);
 
         if (adding)
-            this.emit('add', value);
-        this.emit('link', value, key);
+            this.emit(`add`, value);
+        this.emit(`link`, value, key);
 
         keys.add(key);
     }
@@ -84,9 +84,9 @@ export class MultiKeyMap<TKey, TValue> extends EventEmitter<MultiKeyMapEvents<TK
         }
         this.#kv.delete(key);
 
-        this.emit('unlink', value, key);
+        this.emit(`unlink`, value, key);
         if (keys?.size === 0)
-            this.emit('remove', value);
+            this.emit(`remove`, value);
 
         return true;
     }

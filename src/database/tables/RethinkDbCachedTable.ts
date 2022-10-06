@@ -17,7 +17,7 @@ export class RethinkDbCachedTable<Table extends { [P in KeyName]: string }, KeyN
         logger: Logger
     ) {
         super(table, rethinkDb, logger);
-        this.cache = new Cache(5, 'minutes');
+        this.cache = new Cache(5, `minutes`);
         this.#keyName = keyName;
     }
 

@@ -36,9 +36,9 @@ export class AnnouncementManager {
     }
 
     public async loadConfig(guild: Guild, user: User, queryChannel: KnownTextableChannel, options?: Partial<AnnouncementConfigOptions>): Promise<AnnounceResult> {
-        const command = await this.#commands.get('announce', guild, user);
-        if (command.state !== 'ALLOWED')
-            return { state: 'NotAllowed' };
+        const command = await this.#commands.get(`announce`, guild, user);
+        if (command.state !== `ALLOWED`)
+            return { state: `NotAllowed` };
 
         let { channel, role } = options ?? await this.getCurrentConfig(guild);
         if (channel === undefined) {
@@ -46,45 +46,45 @@ export class AnnouncementManager {
                 actors: [user],
                 context: queryChannel,
                 choices: guild.channels.filter(guard.isTextableChannel).values(),
-                prompt: 'ℹ️ Please select the channel that announcements should be put in.'
+                prompt: `ℹ️ Please select the channel that announcements should be put in.`
             });
 
-            if (result.state === 'TIMED_OUT' || result.state === 'CANCELLED')
-                return { state: 'TimedOut' };
+            if (result.state === `TIMED_OUT` || result.state === `CANCELLED`)
+                return { state: `TimedOut` };
 
-            if (result.state === 'SUCCESS')
+            if (result.state === `SUCCESS`)
                 channel = result.value;
         }
 
         if (channel === undefined)
-            return { state: 'ChannelNotFound' };
+            return { state: `ChannelNotFound` };
         if (!guard.isGuildChannel(channel) || channel.guild !== guild)
-            return { state: 'ChannelNotInGuild' };
+            return { state: `ChannelNotInGuild` };
         if (!guard.isTextableChannel(channel))
-            return { state: 'ChannelInvalid' };
+            return { state: `ChannelInvalid` };
 
         if (role === undefined) {
             const result = await this.#util.queryRole({
                 actors: [user],
                 context: queryChannel,
-                prompt: 'ℹ️ Please select the role to mention when announcing.',
+                prompt: `ℹ️ Please select the role to mention when announcing.`,
                 guild: guild
             });
 
-            if (result.state === 'TIMED_OUT' || result.state === 'CANCELLED')
-                return { state: 'TimedOut' };
+            if (result.state === `TIMED_OUT` || result.state === `CANCELLED`)
+                return { state: `TimedOut` };
 
-            if (result.state === 'SUCCESS')
+            if (result.state === `SUCCESS`)
                 role = result.value;
         }
         if (role === undefined)
-            return { state: 'RoleNotFound' };
+            return { state: `RoleNotFound` };
 
         await this.#database.setAnnouncements(guild.id, {
             channel: channel.id,
             role: role.id
         });
-        return { state: 'Success', detail: { channel, role } };
+        return { state: `Success`, detail: { channel, role } };
     }
 }
 
@@ -99,10 +99,10 @@ interface AnnouncementConfigOptions {
 }
 
 type AnnounceResult =
-    | Result<'Success', AnnouncementConfig>
-    | Result<'NotAllowed'>
-    | Result<'ChannelNotFound'>
-    | Result<'ChannelNotInGuild'>
-    | Result<'ChannelInvalid'>
-    | Result<'RoleNotFound'>
-    | Result<'TimedOut'>
+    | Result<`Success`, AnnouncementConfig>
+    | Result<`NotAllowed`>
+    | Result<`ChannelNotFound`>
+    | Result<`ChannelNotInGuild`>
+    | Result<`ChannelInvalid`>
+    | Result<`RoleNotFound`>
+    | Result<`TimedOut`>

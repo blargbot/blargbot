@@ -2,13 +2,13 @@ import { ClusterConnection } from '@blargbot/cluster';
 import { WorkerPoolEventService } from '@blargbot/core/serviceTypes';
 import { Master } from '@blargbot/master';
 
-export class RespawnApiHandler extends WorkerPoolEventService<ClusterConnection, 'respawnApi'> {
+export class RespawnApiHandler extends WorkerPoolEventService<ClusterConnection, `respawnApi`> {
     readonly #master: Master;
 
     public constructor(master: Master) {
         super(
             master.clusters,
-            'respawnApi',
+            `respawnApi`,
             async ({ reply }) => {
                 await this.respawnApi();
                 reply(true);

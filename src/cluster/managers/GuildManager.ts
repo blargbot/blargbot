@@ -12,11 +12,11 @@ export class GuildManager {
         cluster: Cluster
     ) {
         this.#cluster = cluster;
-        setInterval(() => this.#blacklist = undefined, moment.duration(10, 'minutes').asMilliseconds());
+        setInterval(() => this.#blacklist = undefined, moment.duration(10, `minutes`).asMilliseconds());
     }
 
     async #getBlacklist(): Promise<Record<string, boolean | undefined>> {
-        return this.#blacklist ??= { ...(await this.#cluster.database.vars.get('guildBlacklist'))?.values };
+        return this.#blacklist ??= { ...(await this.#cluster.database.vars.get(`guildBlacklist`))?.values };
     }
 
     public async setBlacklisted(guildId: string, blacklisted: boolean): Promise<void> {
@@ -25,7 +25,7 @@ export class GuildManager {
             blacklist[guildId] = true;
         else
             delete blacklist[guildId];
-        await this.#cluster.database.vars.set('guildBlacklist', { values: { ...blacklist } });
+        await this.#cluster.database.vars.set(`guildBlacklist`, { values: { ...blacklist } });
         this.#blacklist = undefined;
 
         if (blacklisted) {
@@ -48,13 +48,12 @@ export class GuildManager {
             return;
         }
 
-        if (await this.#cluster.database.guilds.upsert(guild) === 'inserted') {
+        if (await this.#cluster.database.guilds.upsert(guild) === `inserted`) {
             await this.#cluster.util.ensureMemberCache(guild);
             const users = guild.members.filter(m => !m.user.bot).length;
             const bots = guild.members.size - users;
             const percent = Math.floor(bots / guild.members.size * 10000) / 100;
-            const message = `:ballot_box_with_check: Guild: \`${guild.name}\` (\`${guild.id}\`)! ${percent >= 80 ? '- ***BOT GUILD***' : ''}\n` +
-                `    Total: **${guild.members.size}** | Users: **${users}** | Bots: **${bots}** | Percent: **${percent}**`;
+            const message = `:ballot_box_with_check: Guild: \`${guild.name}\` (\`${guild.id}\`)! ${percent >= 80 ? `- ***BOT GUILD***` : ``}\n    Total: **${guild.members.size}** | Users: **${users}** | Bots: **${bots}** | Percent: **${percent}**`;
             await this.#cluster.util.send(this.#cluster.config.discord.channels.joinlog, message);
         }
     }

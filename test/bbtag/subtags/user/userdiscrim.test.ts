@@ -8,27 +8,27 @@ runSubtagTests({
     argCountBounds: { min: 0, max: 2 },
     cases: [
         ...createGetUserPropTestCases({
-            quiet: '',
+            quiet: ``,
             generateCode(...args) {
-                return `{${['userdiscrim', ...args].join(';')}}`;
+                return `{${[`userdiscrim`, ...args].join(`;`)}}`;
             },
             cases: [
                 {
-                    expected: '1234',
+                    expected: `1234`,
                     setup(member) {
-                        member.user.discriminator = '1234';
+                        member.user.discriminator = `1234`;
                     }
                 },
                 {
-                    expected: '5678',
+                    expected: `5678`,
                     setup(member) {
-                        member.user.discriminator = '5678';
+                        member.user.discriminator = `5678`;
                     }
                 },
                 {
-                    expected: '0000',
+                    expected: `0000`,
                     setup(member) {
-                        member.user.discriminator = '0000';
+                        member.user.discriminator = `0000`;
                     }
                 }
             ]

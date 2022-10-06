@@ -22,7 +22,7 @@ export class DefaultCommandManager extends CommandManager<Command> {
     }
 
     public async load(commands?: Iterable<string> | boolean): Promise<void> {
-        if (commands === undefined || typeof commands === 'boolean')
+        if (commands === undefined || typeof commands === `boolean`)
             await this.modules.reload(commands ?? true);
         else
             this.modules.reload(this.modules.source(commands));
@@ -31,14 +31,14 @@ export class DefaultCommandManager extends CommandManager<Command> {
     protected async getCore(name: string, location?: Guild | KnownTextableChannel, user?: User): Promise<CommandGetCoreResult<Command>> {
         const command = this.modules.get(name);
         if (command === undefined)
-            return { state: 'NOT_FOUND' };
+            return { state: `NOT_FOUND` };
 
         if (!await command.isVisible(this.cluster.util, location, user))
-            return { state: 'DISABLED', detail: { command: new NormalizedCommand(command, { disabled: true }), reason: undefined } };
+            return { state: `DISABLED`, detail: { command: new NormalizedCommand(command, { disabled: true }), reason: undefined } };
 
         const defaultPermission = commandTypeDetails[command.category].defaultPerms.toString();
         if (location === undefined)
-            return { state: 'FOUND', detail: new NormalizedCommand(command, { permission: defaultPermission }) };
+            return { state: `FOUND`, detail: new NormalizedCommand(command, { permission: defaultPermission }) };
 
         const guild = location instanceof Guild ? location
             : guard.isGuildChannel(location) ? location.guild
@@ -50,7 +50,7 @@ export class DefaultCommandManager extends CommandManager<Command> {
         if (permissions.permission === undefined && (permissions.roles?.length ?? 0) === 0)
             permissions.permission = defaultPermission;
 
-        return { state: 'FOUND', detail: new NormalizedCommand(command, permissions) };
+        return { state: `FOUND`, detail: new NormalizedCommand(command, permissions) };
     }
 
     protected *allCommandNames(): Generator<string> {
@@ -101,7 +101,7 @@ class NormalizedCommand implements ICommand<Command> {
         this.description = implementation.description ?? undefined;
         this.signatures = implementation.signatures;
         this.disabled = permissions.disabled === true;
-        this.permission = permissions.permission ?? '0';
+        this.permission = permissions.permission ?? `0`;
         this.roles = permissions.roles ?? [];
         this.hidden = permissions.hidden ?? false;
         this.category = commandTypeDetails[implementation.category].name;

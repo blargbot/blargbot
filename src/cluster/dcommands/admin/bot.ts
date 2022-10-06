@@ -8,12 +8,12 @@ import { CommandType } from '../../utils';
 export class ServerCommand extends GuildCommand {
     public constructor() {
         super({
-            name: 'bot',
+            name: `bot`,
             category: CommandType.ADMIN,
             definitions: [
                 {
-                    parameters: 'reset',
-                    description: 'Resets the bot to the state it is in when joining a guild for the first time.',
+                    parameters: `reset`,
+                    description: `Resets the bot to the state it is in when joining a guild for the first time.`,
                     execute: (ctx) => this.resetGuild(ctx)
                 }
             ]
@@ -29,10 +29,10 @@ This will:
 - Reset all settings back to their defaults
 - Delete all custom commands, autoresponses, rolemes, censors, etc
 - Delete all tag guild variables`),
-            cancel: { style: Constants.ButtonStyles.SECONDARY, label: 'No' },
-            confirm: { style: Constants.ButtonStyles.DANGER, label: 'Yes' }
+            cancel: { style: Constants.ButtonStyles.SECONDARY, label: `No` },
+            confirm: { style: Constants.ButtonStyles.DANGER, label: `Yes` }
         }) !== true) {
-            return this.error('Reset cancelled');
+            return this.error(`Reset cancelled`);
         }
 
         await context.database.guilds.reset(context.channel.guild);
@@ -40,6 +40,6 @@ This will:
         await context.database.tagVariables.clearScope({ type: TagVariableType.TAGGUILD, entityId: context.channel.guild.id });
         await context.database.tagVariables.clearScope({ type: TagVariableType.GUILDLOCAL, entityId: context.channel.guild.id });
 
-        return this.success('I have been reset back to my initial configuration');
+        return this.success(`I have been reset back to my initial configuration`);
     }
 }

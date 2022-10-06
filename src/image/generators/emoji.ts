@@ -7,11 +7,11 @@ import sharp from 'sharp';
 import twemoji from 'twemoji';
 
 // the .base property is undocumented in the types. Doing this allows us to use it, but detect if it is removed in the future.
-const twemojiBase = (twemoji as { base?: string; }).base ?? 'https://twemoji.maxcdn.com/v/14.0.2/';
+const twemojiBase = (twemoji as { base?: string; }).base ?? `https://twemoji.maxcdn.com/v/14.0.2/`;
 
-export class EmojiGenerator extends BaseImageGenerator<'emoji'> {
+export class EmojiGenerator extends BaseImageGenerator<`emoji`> {
     public constructor(worker: ImageWorker) {
-        super('emoji', worker);
+        super(`emoji`, worker);
     }
 
     public async execute({ name, svg, size }: EmojiOptions): Promise<ImageResult | undefined> {
@@ -19,20 +19,20 @@ export class EmojiGenerator extends BaseImageGenerator<'emoji'> {
 
         let file = await fetch(path.join(twemojiBase, `svg/${codePoint}.svg`));
         if (file.status === 404) {
-            if (codePoint.includes('-fe0f')) // remove variation selector-16 if present
-                file = await fetch(path.join(twemojiBase, `svg/${codePoint.replaceAll('-fe0f', '')}.svg`));
+            if (codePoint.includes(`-fe0f`)) // remove variation selector-16 if present
+                file = await fetch(path.join(twemojiBase, `svg/${codePoint.replaceAll(`-fe0f`, ``)}.svg`));
         }
-        if (!file.status.toString().startsWith('2'))
+        if (!file.status.toString().startsWith(`2`))
             return undefined;
 
         const body = await file.buffer();
         if (svg)
-            return { fileName: 'emoji.svg', data: body };
+            return { fileName: `emoji.svg`, data: body };
 
         const buffer = await sharp(body)
             .resize(size, size)
             .png()
             .toBuffer();
-        return { fileName: 'emoji.png', data: buffer };
+        return { fileName: `emoji.png`, data: buffer };
     }
 }

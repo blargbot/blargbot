@@ -1,6 +1,6 @@
 import { Channel, Constants, PrivateChannel } from 'eris';
 
-type ChannelType = typeof Constants['ChannelTypes'];
+type ChannelType = typeof Constants[`ChannelTypes`];
 const isPrivateMap: Record<ChannelType[keyof ChannelType], boolean> = {
     [Constants.ChannelTypes.DM]: true,
     [Constants.ChannelTypes.GROUP_DM]: true,

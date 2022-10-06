@@ -11,14 +11,14 @@ export function parseInt(s: string | number, options: ParseIntOptions = {}): num
 }
 
 function intCore(s: string | number, options: ParseIntOptions): number {
-    if (typeof s === 'number')
+    if (typeof s === `number`)
         return s;
-    if (typeof s !== 'string')
+    if (typeof s !== `string`)
         return NaN;
 
     let radix = options.radix;
     if (radix === undefined) {
-        if (s.toLowerCase().startsWith('0x')) {
+        if (s.toLowerCase().startsWith(`0x`)) {
             radix = 16;
             s = s.substring(2);
         } else {
@@ -26,14 +26,14 @@ function intCore(s: string | number, options: ParseIntOptions): number {
         }
     }
 
-    s = s.replace(/[,.](?=.*[,.])/g, '').replace(',', '.');
+    s = s.replace(/[,.](?=.*[,.])/g, ``).replace(`,`, `.`);
     if (options.strict === true && radixRegexes[radix]?.test(s) === false)
         return NaN;
 
     return global.parseInt(s, radix);
 }
 
-const charset = '0123456789abcdefghijklmnopqrstuvwxyz0';
+const charset = `0123456789abcdefghijklmnopqrstuvwxyz0`;
 const radixRegexes = charset
-    .split('')
-    .map((_, i) => new RegExp(`^[+-]?[${charset.slice(0, i)}]+$`, 'i'));
+    .split(``)
+    .map((_, i) => new RegExp(`^[+-]?[${charset.slice(0, i)}]+$`, `i`));

@@ -9,31 +9,31 @@ runSubtagTests({
     argCountBounds: { min: 0, max: 1 },
     cases: [
         {
-            code: '{fallback}{xyz}',
-            expected: '`Unknown subtag xyz`',
+            code: `{fallback}{xyz}`,
+            expected: `\`Unknown subtag xyz\``,
             errors: [
-                { start: 10, end: 15, error: new UnknownSubtagError('xyz') }
+                { start: 10, end: 15, error: new UnknownSubtagError(`xyz`) }
             ],
             assert(ctx) {
                 expect(ctx.scopes.local.fallback).to.be.undefined;
             }
         },
         {
-            code: '{fallback;abc}{xyz}',
-            expected: 'abc',
+            code: `{fallback;abc}{xyz}`,
+            expected: `abc`,
             errors: [
-                { start: 14, end: 19, error: new UnknownSubtagError('xyz') }
+                { start: 14, end: 19, error: new UnknownSubtagError(`xyz`) }
             ],
             assert(ctx) {
-                expect(ctx.scopes.local.fallback).to.equal('abc');
+                expect(ctx.scopes.local.fallback).to.equal(`abc`);
             }
         },
         {
-            code: '{fallback;This tag failed} {abc} {fallback} {xyz}',
-            expected: ' This tag failed  `Unknown subtag xyz`',
+            code: `{fallback;This tag failed} {abc} {fallback} {xyz}`,
+            expected: ` This tag failed  \`Unknown subtag xyz\``,
             errors: [
-                { start: 27, end: 32, error: new UnknownSubtagError('abc') },
-                { start: 44, end: 49, error: new UnknownSubtagError('xyz') }
+                { start: 27, end: 32, error: new UnknownSubtagError(`abc`) },
+                { start: 44, end: 49, error: new UnknownSubtagError(`xyz`) }
             ],
             assert(ctx) {
                 expect(ctx.scopes.local.fallback).to.be.undefined;

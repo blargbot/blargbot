@@ -2,11 +2,11 @@ import { compare as compareFn, guard, parse } from '@blargbot/core/utils';
 
 import { tagArray } from './tagArray';
 
-export type OrdinalOperator = '==' | '!=' | '>=' | '>' | '<=' | '<';
-export type StringOperator = 'startswith' | 'endswith' | 'includes' | 'contains';
+export type OrdinalOperator = `==` | `!=` | `>=` | `>` | `<=` | `<`;
+export type StringOperator = `startswith` | `endswith` | `includes` | `contains`;
 export type ComparisonOperator = OrdinalOperator | StringOperator;
-export type NumericOperator = '+' | '-' | '*' | '/' | '%' | '^';
-export type LogicOperator = '||' | '&&' | '!' | 'xor';
+export type NumericOperator = `+` | `-` | `*` | `/` | `%` | `^`;
+export type LogicOperator = `||` | `&&` | `!` | `xor`;
 
 export function isOrdinalOperator(operator: string): operator is OrdinalOperator {
     return guard.hasProperty(ordinalOperators, operator);

@@ -7,6 +7,6 @@ export abstract class GlobalCommand extends ScopedCommand<CommandContext> {
     }
 
     protected handleInvalidContext(): never {
-        throw new Error('Unsuported context');
+        throw new Error(`Unsuported context`);
     }
 }

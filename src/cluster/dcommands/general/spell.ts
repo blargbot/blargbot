@@ -6,12 +6,12 @@ import { EmbedOptions } from 'eris';
 export class SpellCommand extends GlobalCommand {
     public constructor() {
         super({
-            name: 'spell',
+            name: `spell`,
             category: CommandType.GENERAL,
             definitions: [
                 {
-                    parameters: '{name?}',
-                    description: 'Gives you a description for a D&D 5e spell.',
+                    parameters: `{name?}`,
+                    description: `Gives you a description for a D&D 5e spell.`,
                     execute: (ctx, [name]) => this.getSpell(ctx, name.asOptionalString)
                 }
             ]
@@ -21,24 +21,24 @@ export class SpellCommand extends GlobalCommand {
     public async getSpell(context: CommandContext, name: string | undefined): Promise<EmbedOptions | string> {
         const spell = name === undefined ? randChoose(Object.values(spells)) : await this.#findSpell(context, name);
         if (spell === undefined)
-            return this.error('I couldnt find that spell!');
+            return this.error(`I couldnt find that spell!`);
 
         const normSchool = spell.school.toLowerCase();
         const components = spell.components
             .split(/,\s*/g)
             .map(c => ({ component: c, norm: c.toLowerCase() }))
             .map(c => componentKeys.has<string>(c.norm) ? componentMap[c.norm] : c.component)
-            .join(', ');
+            .join(`, `);
 
         return {
             title: spell.name,
             color: schoolKeys.has<string>(normSchool) ? schools[normSchool] : undefined,
             description: `*Level ${spell.level} ${spell.school}*\n\n${spell.desc}`,
             fields: [
-                { name: 'Duration', value: spell.duration, inline: true },
-                { name: 'Range', value: spell.range, inline: true },
-                { name: 'Casting Time', value: spell.casting_time, inline: true },
-                { name: 'Components', value: components, inline: true }
+                { name: `Duration`, value: spell.duration, inline: true },
+                { name: `Range`, value: spell.range, inline: true },
+                { name: `Casting Time`, value: spell.casting_time, inline: true },
+                { name: `Components`, value: components, inline: true }
             ]
         };
     }
@@ -51,15 +51,15 @@ export class SpellCommand extends GlobalCommand {
         const result = await context.util.queryChoice({
             context: context.message,
             actors: context.author,
-            prompt: '🪄 Multiple spells found! Please pick the right one',
-            placeholder: 'Pick a spell',
+            prompt: `🪄 Multiple spells found! Please pick the right one`,
+            placeholder: `Pick a spell`,
             choices: Object.values(spells)
                 .filter(guard.hasValue)
                 .filter(s => s.name.toLowerCase().includes(name.toLowerCase()))
                 .map(s => ({ label: s.name, description: `Level ${s.level} ${s.school}`, value: s }))
         });
 
-        return result.state === 'SUCCESS' ? result.value : undefined;
+        return result.state === `SUCCESS` ? result.value : undefined;
     }
 }
 
@@ -68,21 +68,21 @@ for (const spell of spellsJson) {
     spells[spell.name.toLowerCase()] = {
         ...spell,
         desc: spell.desc
-            .replace(/<\/?p>/gi, '\n')
-            .replace(/<\/?br>/gi, '\n\n')
-            .replace(/\n{3,}/, '\n\n')
-            .replace(/<\/?b>/gi, '**')
+            .replace(/<\/?p>/gi, `\n`)
+            .replace(/<\/?br>/gi, `\n\n`)
+            .replace(/\n{3,}/, `\n\n`)
+            .replace(/<\/?b>/gi, `**`)
             .trim()
     };
 }
 
 const componentMap = {
-    v: 'Verbal',
-    s: 'Somantic',
-    m: 'Material',
-    f: 'Focus',
-    df: 'Divine Focus',
-    xp: 'XP Cost'
+    v: `Verbal`,
+    s: `Somantic`,
+    m: `Material`,
+    f: `Focus`,
+    df: `Divine Focus`,
+    xp: `XP Cost`
 } as const;
 const componentKeys = new Set(Object.keys(componentMap));
 

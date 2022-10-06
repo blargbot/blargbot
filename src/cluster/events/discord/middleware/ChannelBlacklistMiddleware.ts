@@ -14,7 +14,7 @@ export class ChannelBlacklistMiddleware implements IMiddleware<KnownMessage, boo
         if (!guard.isGuildMessage(context))
             return await next();
 
-        if (await this.#util.database.guilds.getChannelSetting(context.channel.guild.id, context.channel.id, 'blacklisted') !== true)
+        if (await this.#util.database.guilds.getChannelSetting(context.channel.guild.id, context.channel.id, `blacklisted`) !== true)
             return await next();
 
         if (guard.hasValue(context.member) && await this.#util.isUserStaff(context.member))

@@ -4,12 +4,12 @@ import { CommandType, randInt } from '@blargbot/cluster/utils';
 export class TokenifyCommand extends GlobalCommand {
     public constructor() {
         super({
-            name: 'tokenify',
+            name: `tokenify`,
             category: CommandType.GENERAL,
             definitions: [
                 {
-                    parameters: '{input+}',
-                    description: 'Converts the given input into a token.',
+                    parameters: `{input+}`,
+                    description: `Converts the given input into a token.`,
                     execute: (_, [input]) => this.tokenify(input.asString)
                 }
             ]
@@ -17,7 +17,7 @@ export class TokenifyCommand extends GlobalCommand {
     }
 
     public tokenify(input: string): string {
-        const pasta = input.replace(/[^0-9a-z]/gi, '').toLowerCase();
+        const pasta = input.replace(/[^0-9a-z]/gi, ``).toLowerCase();
         const newPasta = [];
 
         for (let i = 0; i < pasta.length; i++) {
@@ -28,13 +28,13 @@ export class TokenifyCommand extends GlobalCommand {
             if (i === pasta.length - 1)
                 newPasta.length; // NOOP
             else if (randInt(1, 20) === 1)
-                newPasta.push('.');
+                newPasta.push(`.`);
             else if (randInt(1, 30) === 1)
-                newPasta.push('-');
+                newPasta.push(`-`);
             else if (randInt(1, 30) === 30)
-                newPasta.push('\\_');
+                newPasta.push(`\\_`);
         }
 
-        return newPasta.join('');
+        return newPasta.join(``);
     }
 }

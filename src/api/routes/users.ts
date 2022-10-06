@@ -6,11 +6,11 @@ export class UsersRoute extends BaseRoute {
     readonly #api: Api;
 
     public constructor(api: Api) {
-        super('/users');
+        super(`/users`);
 
         this.#api = api;
 
-        this.addRoute('/@me', {
+        this.addRoute(`/@me`, {
             get: ({ request }) => this.getUser(this.getUserId(request))
         });
     }

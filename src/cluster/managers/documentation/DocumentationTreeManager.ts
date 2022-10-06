@@ -8,7 +8,7 @@ export abstract class DocumentationTreeManager extends DocumentationManager {
     async * #getFlatTree(user: User, channel: KnownTextableChannel): AsyncGenerator<Documentation> {
         const tree = await this.getTree(user, channel);
         yield* expandAsync([tree], d => {
-            if (d.type !== 'group')
+            if (d.type !== `group`)
                 return [];
 
             return d.items.map(i => ({
@@ -64,7 +64,7 @@ export abstract class DocumentationTreeManager extends DocumentationManager {
 
     protected async getParent(documentationId: string, user: User, channel: KnownTextableChannel): Promise<Documentation | undefined> {
         for await (const item of this.#getFlatTree(user, channel))
-            if (item.type === 'group' && item.items.some(i => i.id === documentationId))
+            if (item.type === `group` && item.items.some(i => i.id === documentationId))
                 return item;
         return undefined;
     }

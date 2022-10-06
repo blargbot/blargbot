@@ -8,16 +8,15 @@ import { SubtagType } from '../../utils';
 export class TimerSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: 'timer',
+            name: `timer`,
             category: SubtagType.BOT,
             definition: [
                 {
-                    parameters: ['~code', 'duration'],
-                    description: 'Executes `code` after `duration`. ' +
-                        'Three timers are allowed per custom command, with no recursive timers.',
-                    exampleCode: '{timer;Hello!;20s}',
-                    exampleOut: '(after 20 seconds:) Hello!',
-                    returns: 'nothing',
+                    parameters: [`~code`, `duration`],
+                    description: `Executes \`code\` after \`duration\`. Three timers are allowed per custom command, with no recursive timers.`,
+                    exampleCode: `{timer;Hello!;20s}`,
+                    exampleOut: `(after 20 seconds:) Hello!`,
+                    returns: `nothing`,
                     execute: (ctx, [code, duration]) => this.queueTimer(ctx, code.raw, duration.value)
                 }
             ]
@@ -28,7 +27,7 @@ export class TimerSubtag extends CompiledSubtag {
         const duration = parse.duration(durationStr);
 
         if (duration === undefined || duration.asMilliseconds() <= 0)
-            throw new BBTagRuntimeError('Invalid duration');
+            throw new BBTagRuntimeError(`Invalid duration`);
         await context.util.setTimeout(context, code, duration);
     }
 }

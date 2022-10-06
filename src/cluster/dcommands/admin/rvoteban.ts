@@ -6,18 +6,18 @@ import { User } from 'eris';
 export class RemoveVotebanCommand extends GuildCommand {
     public constructor() {
         super({
-            name: 'removevoteban',
-            aliases: ['rvoteban', 'rvb'],
+            name: `removevoteban`,
+            aliases: [`rvoteban`, `rvb`],
             category: CommandType.ADMIN,
             definitions: [
                 {
-                    parameters: '{user:user+}',
-                    description: 'Deletes all the vote bans against the given user',
+                    parameters: `{user:user+}`,
+                    description: `Deletes all the vote bans against the given user`,
                     execute: (ctx, [user]) => this.clearUser(ctx, user.asUser)
                 },
                 {
-                    parameters: '',
-                    description: 'Deletes all vote bans against all users',
+                    parameters: ``,
+                    description: `Deletes all vote bans against all users`,
                     execute: (ctx) => this.clearAll(ctx)
                 }
             ]
@@ -31,6 +31,6 @@ export class RemoveVotebanCommand extends GuildCommand {
 
     public async clearAll(context: GuildCommandContext): Promise<string> {
         await context.database.guilds.clearVoteBans(context.channel.guild.id);
-        return this.success('Votebans for all users have been cleared');
+        return this.success(`Votebans for all users have been cleared`);
     }
 }

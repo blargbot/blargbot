@@ -6,15 +6,15 @@ import { bbtag, SubtagType } from '../../utils';
 export class JoinSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: 'join',
+            name: `join`,
             category: SubtagType.ARRAY,
             definition: [
                 {
-                    parameters: ['array', 'text'],
-                    description: 'Joins the elements of `array` together with `text` as the separator.',
-                    exampleCode: '{join;["this", "is", "an", "array"];!}',
-                    exampleOut: 'this!is!an!array',
-                    returns: 'string',
+                    parameters: [`array`, `text`],
+                    description: `Joins the elements of \`array\` together with \`text\` as the separator.`,
+                    exampleCode: `{join;["this", "is", "an", "array"];!}`,
+                    exampleOut: `this!is!an!array`,
+                    returns: `string`,
                     execute: (context, [array, join]) => this.join(context, array.value, join.value)
                 }
             ]

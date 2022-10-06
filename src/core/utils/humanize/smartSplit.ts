@@ -6,14 +6,14 @@ export const smartSplit = Object.assign(function smartSplit(source: string, limi
         for (const item of source) {
             const escaped = item.replace(/["\\]/g, m => `\\${m}`);
             if (escaped.length === 0)
-                results.push('""');
-            else if (escaped.includes(' '))
+                results.push(`""`);
+            else if (escaped.includes(` `))
                 results.push(`"${escaped}"`);
             else
                 results.push(escaped);
 
         }
-        return results.join(' ');
+        return results.join(` `);
     }
 });
 
@@ -88,15 +88,15 @@ function* tokenize(source: string): Generator<SmartSplitToken> {
 
     for (; i < source.length; i++) {
         switch (source[i]) {
-            case ' ':
+            case ` `:
                 yield* yieldBlock();
-                yield { type: SmartSplitTokenType.BREAK, start: i, end: i + 1, content: ' ' };
+                yield { type: SmartSplitTokenType.BREAK, start: i, end: i + 1, content: ` ` };
                 break;
-            case '"':
+            case `"`:
                 yield* yieldBlock();
-                yield { type: SmartSplitTokenType.QUOTE, start: i, end: i + 1, content: '"' };
+                yield { type: SmartSplitTokenType.QUOTE, start: i, end: i + 1, content: `"` };
                 break;
-            case '\\':
+            case `\\`:
                 yield* yieldBlock();
                 yield {
                     type: SmartSplitTokenType.LITERAL,
@@ -127,7 +127,7 @@ function* smartSplitIter(source: string): Generator<SmartSplitItem> {
         getToken(offset = 0) {
             const index = this.index + offset;
             if (index < 0 || index >= tokens.length)
-                return { type: SmartSplitTokenType.BREAK, start: index, end: index, content: '' };
+                return { type: SmartSplitTokenType.BREAK, start: index, end: index, content: `` };
             return tokens[index];
         },
         * digestRanges() {
@@ -139,7 +139,7 @@ function* smartSplitIter(source: string): Generator<SmartSplitItem> {
                 start: Math.min(...ranges.map(t => t.start)),
                 end: Math.max(...ranges.map(t => t.end)),
                 ranges: ranges,
-                content: ranges.map(r => r.content).join('')
+                content: ranges.map(r => r.content).join(``)
             };
         }
     };
@@ -178,7 +178,7 @@ const tokenHandlers: Record<SmartSplitTokenType, (context: SmartSplitTokenContex
         ctx.ranges.push({
             start: startToken.start,
             end: endToken.end,
-            content: tokens.map(t => t.content).join('')
+            content: tokens.map(t => t.content).join(``)
         });
         return noTokens;
     },

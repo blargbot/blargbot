@@ -4,11 +4,11 @@ import { WorkerState } from '@blargbot/core/worker';
 import { Master } from '@blargbot/master';
 import moment from 'moment-timezone';
 
-export class ApiExitHandler extends WorkerPoolEventService<ApiConnection, 'exit'> {
+export class ApiExitHandler extends WorkerPoolEventService<ApiConnection, `exit`> {
     public constructor(
         public readonly master: Master
     ) {
-        super(master.api, 'exit', ({ worker }) => this.alertExit(worker));
+        super(master.api, `exit`, ({ worker }) => this.alertExit(worker));
     }
 
     public async alertExit(worker: ApiConnection): Promise<void> {

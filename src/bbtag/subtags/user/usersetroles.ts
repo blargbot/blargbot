@@ -8,26 +8,26 @@ import { bbtag, SubtagType } from '../../utils';
 export class UserSetRolesSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: 'usersetroles',
-            aliases: ['setroles'],
+            name: `usersetroles`,
+            aliases: [`setroles`],
             category: SubtagType.USER,
-            description: '`roleArray` must be an array formatted like `["role1", "role2"]`',
+            description: `\`roleArray\` must be an array formatted like \`["role1", "role2"]\``,
             definition: [
                 {
-                    parameters: ['roleArray?'],
-                    description: 'Sets the roles of the current user to `roleArray`.',
-                    exampleCode: '{usersetroles;["1111111111111"]}',
-                    exampleOut: 'true',
-                    returns: 'boolean',
+                    parameters: [`roleArray?`],
+                    description: `Sets the roles of the current user to \`roleArray\`.`,
+                    exampleCode: `{usersetroles;["1111111111111"]}`,
+                    exampleOut: `true`,
+                    returns: `boolean`,
                     execute: (ctx, [roles]) => this.userSetRole(ctx, roles.value, ctx.user.id, false)
                 },
                 {
-                    parameters: ['roleArray', 'user', 'quiet?'],
-                    description: 'Sets the roles of `user` to `roleArray`. If quiet is provided, all errors will return `false`.',
-                    exampleCode: '{usersetroles;["1111111111111"];stupid cat}',
-                    exampleOut: 'true',
-                    returns: 'boolean',
-                    execute: (ctx, [roles, user, quiet]) => this.userSetRole(ctx, roles.value, user.value, quiet.value !== '')
+                    parameters: [`roleArray`, `user`, `quiet?`],
+                    description: `Sets the roles of \`user\` to \`roleArray\`. If quiet is provided, all errors will return \`false\`.`,
+                    exampleCode: `{usersetroles;["1111111111111"];stupid cat}`,
+                    exampleOut: `true`,
+                    returns: `boolean`,
+                    execute: (ctx, [roles, user, quiet]) => this.userSetRole(ctx, roles.value, user.value, quiet.value !== ``)
                 }
             ]
         });
@@ -41,7 +41,7 @@ export class UserSetRolesSubtag extends CompiledSubtag {
     ): Promise<boolean> {
         const topRole = context.roleEditPosition();
         if (topRole <= 0)
-            throw new BBTagRuntimeError('Author cannot remove roles');
+            throw new BBTagRuntimeError(`Author cannot remove roles`);
 
         /*
          * Quiet suppresses all errors here instead of just the user errors
@@ -54,13 +54,13 @@ export class UserSetRolesSubtag extends CompiledSubtag {
         });
         if (member === undefined) {
             throw new UserNotFoundError(userStr)
-                .withDisplay(quiet ? 'false' : undefined);
+                .withDisplay(quiet ? `false` : undefined);
         }
 
-        const roleArr = await bbtag.tagArray.deserializeOrGetArray(context, rolesStr !== '' ? rolesStr : '[]');
+        const roleArr = await bbtag.tagArray.deserializeOrGetArray(context, rolesStr !== `` ? rolesStr : `[]`);
         if (roleArr === undefined) {
             throw new NotAnArrayError(rolesStr)
-                .withDisplay(quiet ? 'false' : undefined);
+                .withDisplay(quiet ? `false` : undefined);
         }
 
         const parsedRoles: string[] = [];
@@ -72,7 +72,7 @@ export class UserSetRolesSubtag extends CompiledSubtag {
             });
             if (role === undefined) {
                 throw new RoleNotFoundError(roleStr)
-                    .withDisplay(quiet ? 'false' : undefined);
+                    .withDisplay(quiet ? `false` : undefined);
             }
             parsedRoles.push(role.id);
         }

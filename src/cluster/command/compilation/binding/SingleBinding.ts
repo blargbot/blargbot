@@ -19,7 +19,7 @@ export class SingleBinding<TContext extends CommandContext, Name extends Command
     }
 
     public * debugView(): Generator<string> {
-        yield `Single ${this.parameter.required ? 'required' : 'optional'} ${this.parameter.raw ? 'raw ' : ''}value into variable '${this.name}'${this.parameter.fallback === undefined ? '' : ` with fallback of '${this.parameter.fallback}'`}`;
+        yield `Single ${this.parameter.required ? `required` : `optional`} ${this.parameter.raw ? `raw ` : ``}value into variable '${this.name}'${this.parameter.fallback === undefined ? `` : ` with fallback of '${this.parameter.fallback}'`}`;
         for (const binding of this.next)
             for (const line of binding.debugView())
                 yield `    ${line}`;

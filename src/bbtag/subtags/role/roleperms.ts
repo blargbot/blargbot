@@ -6,17 +6,17 @@ import { SubtagType } from '../../utils';
 export class RolePermsSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: 'roleperms',
+            name: `roleperms`,
             category: SubtagType.ROLE,
-            aliases: ['rolepermissions'],
+            aliases: [`rolepermissions`],
             definition: [
                 {
-                    parameters: ['role', 'quiet?'],
-                    description: 'Returns `role`\'s permission number. If `quiet` is specified, if `role` can\'t be found it will simply return nothing.',
-                    exampleCode: 'The admin role\'s permissions are: {roleperms;admin}.',
-                    exampleOut: 'The admin role\'s permissions are: 8.',
-                    returns: 'number',
-                    execute: (ctx, [userId, quiet]) => this.getRolePerms(ctx, userId.value, quiet.value !== '')
+                    parameters: [`role`, `quiet?`],
+                    description: `Returns \`role\`'s permission number. If \`quiet\` is specified, if \`role\` can't be found it will simply return nothing.`,
+                    exampleCode: `The admin role's permissions are: {roleperms;admin}.`,
+                    exampleOut: `The admin role's permissions are: 8.`,
+                    returns: `number`,
+                    execute: (ctx, [userId, quiet]) => this.getRolePerms(ctx, userId.value, quiet.value !== ``)
                 }
             ]
         });
@@ -32,7 +32,7 @@ export class RolePermsSubtag extends CompiledSubtag {
 
         if (role === undefined) {
             throw new RoleNotFoundError(roleId)
-                .withDisplay(quiet ? '' : undefined);
+                .withDisplay(quiet ? `` : undefined);
         }
 
         return role.permissions.allow;

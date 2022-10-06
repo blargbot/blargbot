@@ -3,11 +3,11 @@ import { WolkenCommand } from '@blargbot/cluster/command';
 
 export class SlapCommand extends WolkenCommand {
     public constructor(cluster: Cluster) {
-        super('slap', {
-            search: 'slap',
-            action: 'slaps',
+        super(`slap`, {
+            search: `slap`,
+            action: `slaps`,
             user: true,
-            description: 'Slaps someone.',
+            description: `Slaps someone.`,
             wolkeKey: cluster.config.general.wolke
         });
     }

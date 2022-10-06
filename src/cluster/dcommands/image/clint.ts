@@ -7,16 +7,16 @@ import { User } from 'eris';
 export class ClintCommand extends GlobalImageCommand {
     public constructor() {
         super({
-            name: 'clint',
+            name: `clint`,
             definitions: [
                 {
-                    parameters: '{user:user+}',
-                    description: 'I don\'t even know, to be honest.',
+                    parameters: `{user:user+}`,
+                    description: `I don't even know, to be honest.`,
                     execute: (ctx, [user]) => this.renderUser(ctx, user.asUser)
                 },
                 {
-                    parameters: '',
-                    description: 'I don\'t even know, to be honest.',
+                    parameters: ``,
+                    description: `I don't even know, to be honest.`,
                     execute: (ctx, _, flags) => this.render(
                         ctx,
                         flags.i?.merge().value
@@ -27,7 +27,7 @@ export class ClintCommand extends GlobalImageCommand {
                 }
             ],
             flags: [
-                { flag: 'i', word: 'image', description: 'A custom image.' }
+                { flag: `i`, word: `image`, description: `A custom image.` }
             ]
         });
     }
@@ -41,6 +41,6 @@ export class ClintCommand extends GlobalImageCommand {
         if (!guard.isUrl(url))
             return this.error(`${url} is not a valid url!`);
 
-        return await this.renderImage(context, 'clint', { image: url });
+        return await this.renderImage(context, `clint`, { image: url });
     }
 }

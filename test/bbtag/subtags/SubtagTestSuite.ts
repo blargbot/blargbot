@@ -32,7 +32,7 @@ chai.use(chaiBytes);
 chai.use(chaiDateTime);
 
 type SourceMarkerResolvable = SourceMarker | number | `${number}:${number}:${number}` | `${number}:${number}` | `${number}`;
-type IdPropertiesOf<T> = { [P in keyof T]-?: [P, T[P]] extends [`${string}_id` | 'id', string] ? P : never }[keyof T];
+type IdPropertiesOf<T> = { [P in keyof T]-?: [P, T[P]] extends [`${string}_id` | `id`, string] ? P : never }[keyof T];
 type RequireIds<T, OtherProps extends keyof T = never> = RequiredProps<Partial<T>, IdPropertiesOf<T> | OtherProps>;
 
 type RuntimeSubtagTestCase<T> = Readonly<T> & {
@@ -70,11 +70,11 @@ interface TestSuiteConfig<T extends SubtagTestCase> {
 export class MarkerError extends BBTagRuntimeError {
     public constructor(type: string, index: number) {
         super(`{${type}} called at ${index}`);
-        this.display = '';
+        this.display = ``;
     }
 }
 
-export interface SubtagTestSuiteData<T extends Subtag = Subtag, TestCase extends SubtagTestCase = SubtagTestCase> extends Pick<TestCase, 'setup' | 'postSetup' | 'assert' | 'teardown'> {
+export interface SubtagTestSuiteData<T extends Subtag = Subtag, TestCase extends SubtagTestCase = SubtagTestCase> extends Pick<TestCase, `setup` | `postSetup` | `assert` | `teardown`> {
     readonly cases: TestCase[];
     readonly subtag: T;
     readonly runOtherTests?: (subtag: T) => void;
@@ -113,22 +113,22 @@ export class SubtagTestContext {
 
     public readonly roles = {
         everyone: SubtagTestContext.createApiRole({ id: snowflake.create().toString() }),
-        top: SubtagTestContext.createApiRole({ id: snowflake.create().toString(), position: 5, name: 'Top Role' }),
-        command: SubtagTestContext.createApiRole({ id: snowflake.create().toString(), position: 3, name: 'Command User' }),
-        authorizer: SubtagTestContext.createApiRole({ id: snowflake.create().toString(), position: 4, name: 'Command Authorizer' }),
-        other: SubtagTestContext.createApiRole({ id: snowflake.create().toString(), position: 2, name: 'Other User' }),
-        bot: SubtagTestContext.createApiRole({ id: snowflake.create().toString(), position: 1, name: 'Bot' })
+        top: SubtagTestContext.createApiRole({ id: snowflake.create().toString(), position: 5, name: `Top Role` }),
+        command: SubtagTestContext.createApiRole({ id: snowflake.create().toString(), position: 3, name: `Command User` }),
+        authorizer: SubtagTestContext.createApiRole({ id: snowflake.create().toString(), position: 4, name: `Command Authorizer` }),
+        other: SubtagTestContext.createApiRole({ id: snowflake.create().toString(), position: 2, name: `Other User` }),
+        bot: SubtagTestContext.createApiRole({ id: snowflake.create().toString(), position: 1, name: `Bot` })
     };
 
     public readonly users = {
-        owner: SubtagTestContext.createApiUser({ id: snowflake.create().toString(), username: 'Guild owner' }),
-        command: SubtagTestContext.createApiUser({ id: snowflake.create().toString(), username: 'Command User' }),
-        authorizer: SubtagTestContext.createApiUser({ id: snowflake.create().toString(), username: 'Command Authorizer' }),
-        other: SubtagTestContext.createApiUser({ id: snowflake.create().toString(), username: 'Other user' }),
+        owner: SubtagTestContext.createApiUser({ id: snowflake.create().toString(), username: `Guild owner` }),
+        command: SubtagTestContext.createApiUser({ id: snowflake.create().toString(), username: `Command User` }),
+        authorizer: SubtagTestContext.createApiUser({ id: snowflake.create().toString(), username: `Command Authorizer` }),
+        other: SubtagTestContext.createApiUser({ id: snowflake.create().toString(), username: `Other user` }),
         bot: SubtagTestContext.createApiUser({
-            id: '134133271750639616',
-            username: 'blargbot',
-            discriminator: '0128'
+            id: `134133271750639616`,
+            username: `blargbot`,
+            discriminator: `0128`
         })
     };
 
@@ -141,8 +141,8 @@ export class SubtagTestContext {
     };
 
     public readonly channels = {
-        command: SubtagTestContext.createApiChannel({ id: snowflake.create().toString(), name: 'commands' }) as APITextChannel | APIThreadChannel,
-        general: SubtagTestContext.createApiChannel({ id: snowflake.create().toString(), name: 'general' }) as APITextChannel | APIThreadChannel
+        command: SubtagTestContext.createApiChannel({ id: snowflake.create().toString(), name: `commands` }) as APITextChannel | APIThreadChannel,
+        general: SubtagTestContext.createApiChannel({ id: snowflake.create().toString(), name: `general` }) as APITextChannel | APIThreadChannel
     } as {
         command: Extract<APIChannel, { guild_id?: Snowflake; }>;
         general: Extract<APIChannel, { guild_id?: Snowflake; }>;
@@ -173,7 +173,7 @@ export class SubtagTestContext {
         const args = new Array(100).fill(argument.any().value) as unknown[];
         for (let i = 0; i < args.length; i++) {
             this.logger.setup(m => m.error(...args.slice(0, i)), false).thenCall((...args: unknown[]) => {
-                throw args.find(x => x instanceof Error) ?? new Error('Unexpected logger error: ' + inspect(args));
+                throw args.find(x => x instanceof Error) ?? new Error(`Unexpected logger error: ${  inspect(args)}`);
             });
         }
 
@@ -187,20 +187,20 @@ export class SubtagTestContext {
         this.database.setup(m => m.users, false).thenReturn(this.userTable.instance);
         this.database.setup(m => m.tags, false).thenReturn(this.tagsTable.instance);
 
-        this.tagVariablesTable.setup(m => m.get(argument.isTypeof('string').value, anything() as never), false)
-            .thenCall((...args: Parameters<TagVariableStore['get']>) => this.tagVariables[`${args[1].type}.${[args[1].entityId, args[1].name].filter(guard.hasValue).join('_')}.${args[0]}`]);
+        this.tagVariablesTable.setup(m => m.get(argument.isTypeof(`string`).value, anything() as never), false)
+            .thenCall((...args: Parameters<TagVariableStore[`get`]>) => this.tagVariables[`${args[1].type}.${[args[1].entityId, args[1].name].filter(guard.hasValue).join(`_`)}.${args[0]}`]);
         if (this.testCase.setupSaveVariables !== false) {
             this.tagVariablesTable.setup(m => m.upsert(anything() as never, anything() as never), false)
-                .thenCall((...args: Parameters<TagVariableStore['upsert']>) => {
+                .thenCall((...args: Parameters<TagVariableStore[`upsert`]>) => {
                     for (const [name, value] of Object.entries(args[0]))
-                        this.tagVariables[`${args[1].type}.${[args[1].entityId, args[1].name].filter(guard.hasValue).join('_')}.${name}`] = value;
+                        this.tagVariables[`${args[1].type}.${[args[1].entityId, args[1].name].filter(guard.hasValue).join(`_`)}.${name}`] = value;
                 });
         }
 
-        this.tagsTable.setup(m => m.get(argument.isTypeof('string').value), false)
-            .thenCall((...args: Parameters<TagStore['get']>) => this.tags[args[0]]);
-        this.guildTable.setup(m => m.getCommand(this.guild.id, argument.isTypeof('string').value), false)
-            .thenCall((...args: Parameters<GuildStore['getCommand']>) => this.ccommands[args[1]]);
+        this.tagsTable.setup(m => m.get(argument.isTypeof(`string`).value), false)
+            .thenCall((...args: Parameters<TagStore[`get`]>) => this.tags[args[0]]);
+        this.guildTable.setup(m => m.getCommand(this.guild.id, argument.isTypeof(`string`).value), false)
+            .thenCall((...args: Parameters<GuildStore[`getCommand`]>) => this.ccommands[args[1]]);
 
         this.discord.setup(m => m.shards, false).thenReturn(this.shards.instance);
         this.discord.setup(m => m.guildShardMap, false).thenReturn({});
@@ -237,13 +237,13 @@ export class SubtagTestContext {
         switch (errors.length) {
             case 0: break;
             case 1: throw errors[0];
-            default: throw new AggregateError(errors, errors.join('\n'));
+            default: throw new AggregateError(errors, errors.join(`\n`));
         }
     }
 
     public createContext(): BBTagContext {
         if (this.#isCreated)
-            throw new Error('Cannot create multiple contexts from 1 mock');
+            throw new Error(`Cannot create multiple contexts from 1 mock`);
         this.#isCreated = true;
 
         const engine = new BBTagEngine(this.dependencies.instance);
@@ -263,7 +263,7 @@ export class SubtagTestContext {
         const textableChannelTypes = new Set([ChannelType.GuildText, ChannelType.DM, ChannelType.GroupDM, ChannelType.GuildAnnouncement, ChannelType.AnnouncementThread, ChannelType.PrivateThread, ChannelType.PublicThread]);
         const channel = guild.channels.find(c => textableChannelTypes.has(c.type));
         if (channel === undefined)
-            throw new Error('No text channels were added');
+            throw new Error(`No text channels were added`);
 
         const message = this.createMessage<KnownGuildTextableChannel>(this.message);
         this.util.setup(m => m.getMessage(channel, message.id), false).thenResolve(message);
@@ -271,7 +271,7 @@ export class SubtagTestContext {
         const context = new BBTagContext(engine, {
             authorId: message.author.id,
             authorizerId: authorizerId,
-            inputRaw: '',
+            inputRaw: ``,
             isCC: false,
             limit: this.limit.instance,
             message: message,
@@ -284,11 +284,11 @@ export class SubtagTestContext {
         return context;
     }
 
-    public createRESTError(code: number, message = 'Test REST error'): DiscordRESTError {
+    public createRESTError(code: number, message = `Test REST error`): DiscordRESTError {
         const request = this.createMock(ClientRequest);
         const apiMessage = this.createMock(IncomingMessage);
 
-        const x = { stack: '' };
+        const x = { stack: `` };
         Error.captureStackTrace(x);
         return new DiscordRESTError(request.instance, apiMessage.instance, { code, message }, x.stack);
     }
@@ -302,7 +302,7 @@ export class SubtagTestContext {
         request.setup(m => m.method).thenReturn(method);
         request.setup(m => m.path).thenReturn(path);
 
-        const x = { stack: '' };
+        const x = { stack: `` };
         Error.captureStackTrace(x);
         return new DiscordHTTPError(request.instance, apiMessage.instance, { code, message }, x.stack);
     }
@@ -318,14 +318,14 @@ export class SubtagTestContext {
         return {
             author: author,
             attachments: [],
-            content: '',
-            edited_timestamp: '1970-01-01T00:00:00Z',
+            content: ``,
+            edited_timestamp: `1970-01-01T00:00:00Z`,
             embeds: [],
             mention_everyone: false,
             mention_roles: [],
             mentions: [],
             pinned: false,
-            timestamp: '1970-01-01T00:00:00Z',
+            timestamp: `1970-01-01T00:00:00Z`,
             tts: false,
             type: Constants.MessageTypes.DEFAULT,
             ...settings
@@ -340,8 +340,8 @@ export class SubtagTestContext {
     public static createApiUser(settings: RequireIds<APIUser>): APIUser {
         return {
             avatar: null,
-            discriminator: '0000',
-            username: 'Test User',
+            discriminator: `0000`,
+            username: `Test User`,
             ...settings
         };
     }
@@ -351,12 +351,12 @@ export class SubtagTestContext {
         return new Member(<BaseData><unknown>data, guild, this.discord.instance);
     }
 
-    public static createApiGuildMember(settings: RequireIds<APIGuildMember>, user: APIUser): RequiredProps<APIGuildMember, 'user'> {
+    public static createApiGuildMember(settings: RequireIds<APIGuildMember>, user: APIUser): RequiredProps<APIGuildMember, `user`> {
         return {
             deaf: false,
-            joined_at: '1970-01-01T00:00:00Z',
+            joined_at: `1970-01-01T00:00:00Z`,
             mute: false,
-            roles: ['0'],
+            roles: [`0`],
             user: user,
             ...settings
         };
@@ -373,20 +373,20 @@ export class SubtagTestContext {
             hoist: false,
             managed: false,
             mentionable: false,
-            name: '@everyone',
-            permissions: '0',
+            name: `@everyone`,
+            permissions: `0`,
             position: 0,
             ...settings
         };
     }
 
     public createGuild(settings: APIGuild | RequireIds<APIGuild>, channels: APIChannel[], members: APIGuildMember[]): Guild {
-        const data = 'hub_type' in settings ? settings : SubtagTestContext.createApiGuild(settings);
+        const data = `hub_type` in settings ? settings : SubtagTestContext.createApiGuild(settings);
         const guild = new Guild(<BaseData><unknown>{ ...data, members: members, channels: channels }, this.discord.instance);
         return guild;
     }
 
-    public static createApiGuild(settings: RequireIds<APIGuild>): RequiredProps<APIGuild, 'roles'> {
+    public static createApiGuild(settings: RequireIds<APIGuild>): RequiredProps<APIGuild, `roles`> {
         return {
             afk_channel_id: null,
             afk_timeout: 0,
@@ -400,9 +400,9 @@ export class SubtagTestContext {
             features: [],
             icon: null,
             mfa_level: GuildMFALevel.None,
-            name: 'Test Guild',
+            name: `Test Guild`,
             nsfw_level: GuildNSFWLevel.Default,
-            preferred_locale: 'en-US',
+            preferred_locale: `en-US`,
             premium_progress_bar_enabled: false,
             premium_tier: GuildPremiumTier.None,
             roles: [
@@ -416,7 +416,7 @@ export class SubtagTestContext {
             system_channel_id: null,
             vanity_url_code: null,
             verification_level: GuildVerificationLevel.None,
-            region: '',
+            region: ``,
             hub_type: null,
             ...settings
         };
@@ -435,12 +435,12 @@ export class SubtagTestContext {
     public static createApiChannel<T extends APIChannel>(settings: RequireIds<T>): T;
     public static createApiChannel<T extends APIChannel>(settings: RequireIds<T>): T {
         return {
-            name: 'Test Channel',
+            name: `Test Channel`,
             type: ChannelType.GuildText,
             position: 0,
             permission_overwrites: [],
             nsfw: false,
-            topic: 'Test channel!',
+            topic: `Test channel!`,
             ...settings
         } as unknown as T;
     }
@@ -460,8 +460,8 @@ export function runSubtagTests<T extends Subtag, TestCase extends SubtagTestCase
     if (data.teardown !== undefined)
         suite.teardown(data.teardown);
 
-    const min = typeof data.argCountBounds.min === 'number' ? { count: data.argCountBounds.min, noEval: [] } : data.argCountBounds.min;
-    const max = typeof data.argCountBounds.max === 'number' ? { count: data.argCountBounds.max, noEval: [] } : data.argCountBounds.max;
+    const min = typeof data.argCountBounds.min === `number` ? { count: data.argCountBounds.min, noEval: [] } : data.argCountBounds.min;
+    const max = typeof data.argCountBounds.max === `number` ? { count: data.argCountBounds.max, noEval: [] } : data.argCountBounds.max;
 
     suite.addTestCases(notEnoughArgumentsTestCases(data.subtag.name, min.count, min.noEval));
     suite.addTestCases(data.cases);
@@ -475,31 +475,31 @@ export function runSubtagTests<T extends Subtag, TestCase extends SubtagTestCase
         const blargTestSuite = `Errors:{clean;${data.cases.map(c => ({
             code: c.code,
             expected: getExpectation(c)
-        })).map(c => `{if;==;|${c.code}|;|${c.expected?.toString() ?? ''}|;;
+        })).map(c => `{if;==;|${c.code}|;|${c.expected?.toString() ?? ``}|;;
 > {escapebbtag;${c.code}} failed -
 Expected:
-|${c.expected?.toString() ?? ''}|
+|${c.expected?.toString() ?? ``}|
 Actual:
-|${c.code}|}`).join('\n')}}
+|${c.code}|}`).join(`\n`)}}
 ---------------
 Finished!`;
-        fs.writeFileSync(path.join(__dirname, '../../../test.bbtag'), blargTestSuite);
+        fs.writeFileSync(path.join(__dirname, `../../../test.bbtag`), blargTestSuite);
     }
 }
 
 export function sourceMarker(location: SourceMarkerResolvable): SourceMarker
 export function sourceMarker(location: SourceMarkerResolvable | undefined): SourceMarker | undefined
 export function sourceMarker(location: SourceMarkerResolvable | undefined): SourceMarker | undefined {
-    if (typeof location === 'number')
+    if (typeof location === `number`)
         return { index: location, line: 0, column: location };
-    if (typeof location === 'object')
+    if (typeof location === `object`)
         return location;
-    if (typeof location === 'undefined')
+    if (typeof location === `undefined`)
         return undefined;
 
-    const segments = location.split(':');
+    const segments = location.split(`:`);
     const index = segments[0];
-    const line = segments[1] ?? '0';
+    const line = segments[1] ?? `0`;
     const column = segments[2] ?? index;
 
     return { index: parseInt(index), line: parseInt(line), column: parseInt(column) };
@@ -507,7 +507,7 @@ export function sourceMarker(location: SourceMarkerResolvable | undefined): Sour
 export class TestDataSubtag extends Subtag {
     public constructor(public readonly values: Record<string, string | undefined>) {
         super({
-            name: 'testdata',
+            name: `testdata`,
             category: SubtagType.SIMPLE,
             signatures: []
         });
@@ -529,7 +529,7 @@ export class TestDataSubtag extends Subtag {
 export class EvalSubtag extends Subtag {
     public constructor() {
         super({
-            name: 'eval',
+            name: `eval`,
             category: SubtagType.SIMPLE,
             hidden: true,
             signatures: []
@@ -537,16 +537,16 @@ export class EvalSubtag extends Subtag {
     }
 
     protected executeCore(_context: BBTagContext, _subtagName: string, subtag: SubtagCall): never {
-        throw new MarkerError('eval', subtag.start.index);
+        throw new MarkerError(`eval`, subtag.start.index);
     }
 }
 
 export class AssertSubtag extends Subtag {
     readonly #assertion: (context: BBTagContext, subtagName: string, subtag: SubtagCall) => Awaitable<string>;
 
-    public constructor(assertion: (...args: Parameters<Subtag['executeCore']>) => Awaitable<string>) {
+    public constructor(assertion: (...args: Parameters<Subtag[`executeCore`]>) => Awaitable<string>) {
         super({
-            name: 'assert',
+            name: `assert`,
             category: SubtagType.SIMPLE,
             hidden: true,
             signatures: []
@@ -563,7 +563,7 @@ export class AssertSubtag extends Subtag {
 export class FailTestSubtag extends Subtag {
     public constructor() {
         super({
-            name: 'fail',
+            name: `fail`,
             category: SubtagType.SIMPLE,
             signatures: [],
             hidden: true
@@ -581,7 +581,7 @@ export class LimitedTestSubtag extends Subtag {
 
     public constructor(limit = 1) {
         super({
-            name: 'limit',
+            name: `limit`,
             category: SubtagType.SIMPLE,
             hidden: true,
             signatures: []
@@ -595,14 +595,14 @@ export class LimitedTestSubtag extends Subtag {
 
         if (count >= this.#limit)
             throw new Error(`Subtag {limit} cannot be called more than ${this.#limit} time(s)`);
-        throw new MarkerError('limit', count + 1);
+        throw new MarkerError(`limit`, count + 1);
     }
 }
 
 export class EchoArgsSubtag extends Subtag {
     public constructor() {
         super({
-            name: 'echoargs',
+            name: `echoargs`,
             category: SubtagType.SIMPLE,
             hidden: true,
             signatures: []
@@ -611,13 +611,13 @@ export class EchoArgsSubtag extends Subtag {
 
     protected async * executeCore(_: BBTagContext, __: string, subtag: SubtagCall): AsyncIterable<string> {
         await Promise.resolve();
-        yield '[';
+        yield `[`;
         yield JSON.stringify(subtag.name.source);
         for (const arg of subtag.args) {
-            yield ',';
+            yield `,`;
             yield JSON.stringify(arg.source);
         }
-        yield ']';
+        yield `]`;
     }
 }
 
@@ -630,23 +630,23 @@ export class SubtagTestSuite<TestCase extends SubtagTestCase> {
         this.#subtag = subtag;
     }
 
-    public setup(setup: TestSuiteConfig<TestCase>['setup'][number]): this {
+    public setup(setup: TestSuiteConfig<TestCase>[`setup`][number]): this {
         this.#config.setup.push(setup);
         return this;
     }
 
-    public postSetup(setup: TestSuiteConfig<TestCase>['postSetup'][number]): this {
+    public postSetup(setup: TestSuiteConfig<TestCase>[`postSetup`][number]): this {
         this.#config.postSetup.push(setup);
         return this;
     }
 
-    public assert(assert: TestSuiteConfig<TestCase>['assert'][number]): this {
+    public assert(assert: TestSuiteConfig<TestCase>[`assert`][number]): this {
         this.#config.assert.push(assert);
         return this;
 
     }
 
-    public teardown(teardown: TestSuiteConfig<TestCase>['teardown'][number]): this {
+    public teardown(teardown: TestSuiteConfig<TestCase>[`teardown`][number]): this {
         this.#config.teardown.push(teardown);
         return this;
     }
@@ -684,21 +684,21 @@ function getTestName(testCase: SubtagTestCase): string {
     let result = `should handle ${JSON.stringify(testCase.code)}`;
     const expected = getExpectation(testCase);
     switch (typeof expected) {
-        case 'undefined': break;
-        case 'string':
+        case `undefined`: break;
+        case `string`:
             result += ` and return ${JSON.stringify(expected)}`;
             break;
-        case 'object':
+        case `object`:
             result += ` and return something matching ${expected.toString()}`;
             break;
     }
 
-    if (typeof testCase.errors === 'object') {
+    if (typeof testCase.errors === `object`) {
         const [errorCount, markerCount] = testCase.errors.reduce((p, c) => c.error instanceof MarkerError ? [p[0], p[1] + 1] : [p[0] + 1, p[1]], [0, 0]);
         if (errorCount > 0 || markerCount > 0) {
-            const errorStr = errorCount === 0 ? undefined : `${errorCount} ${p(errorCount, 'error')}`;
-            const markerStr = markerCount === 0 ? undefined : `${markerCount} ${p(markerCount, 'marker')}`;
-            result += ` with ${[markerStr, errorStr].filter(x => x !== undefined).join(' and ')}`;
+            const errorStr = errorCount === 0 ? undefined : `${errorCount} ${p(errorCount, `error`)}`;
+            const markerStr = markerCount === 0 ? undefined : `${markerCount} ${p(markerCount, `marker`)}`;
+            result += ` with ${[markerStr, errorStr].filter(x => x !== undefined).join(` and `)}`;
         }
     }
 
@@ -709,7 +709,7 @@ function getTestName(testCase: SubtagTestCase): string {
 }
 
 async function runTestCase<TestCase extends SubtagTestCase>(context: Context, subtag: Subtag, testCase: TestCase, config: TestSuiteConfig<TestCase>): Promise<void> {
-    if (typeof testCase.skip === 'boolean' ? testCase.skip : await testCase.skip?.() ?? false)
+    if (typeof testCase.skip === `boolean` ? testCase.skip : await testCase.skip?.() ?? false)
         context.skip();
 
     const subtags = [subtag, new EvalSubtag(), new FailTestSubtag(), ...testCase.subtags ?? []];
@@ -741,7 +741,7 @@ async function runTestCase<TestCase extends SubtagTestCase>(context: Context, su
             await actualTestCase.expectError.handle(result.error);
             return;
         } else if (actualTestCase.expectError?.required === true) {
-            throw new Error('Expected an error to be thrown!');
+            throw new Error(`Expected an error to be thrown!`);
         }
 
         if (actualTestCase.setupSaveVariables !== false)
@@ -749,10 +749,10 @@ async function runTestCase<TestCase extends SubtagTestCase>(context: Context, su
 
         // assert
         switch (typeof expected) {
-            case 'string':
+            case `string`:
                 expect(result.value).to.equal(expected);
                 break;
-            case 'object':
+            case `object`:
                 expect(result.value).to.match(expected);
                 break;
         }
@@ -761,13 +761,13 @@ async function runTestCase<TestCase extends SubtagTestCase>(context: Context, su
         for (const assert of config.assert)
             await assert.call(actualTestCase, context, result.value, test);
 
-        if (typeof testCase.errors === 'function') {
+        if (typeof testCase.errors === `function`) {
             testCase.errors(context.errors);
         } else {
             expect(context.errors.map(err => ({ error: err.error, start: err.subtag?.start, end: err.subtag?.end })))
-                .excludingEvery('stack')
+                .excludingEvery(`stack`)
                 .to.deep.equal(testCase.errors?.map(err => ({ error: err.error, start: sourceMarker(err.start), end: sourceMarker(err.end) })) ?? [],
-                    'Error details didnt match the expectation');
+                    `Error details didnt match the expectation`);
         }
         test.verifyAll();
     } finally {
@@ -785,8 +785,8 @@ async function runSafe<T>(action: () => Awaitable<T>): Promise<{ success: true; 
 }
 
 // eslint-disable-next-line @typescript-eslint/ban-types
-function getExpectation(testCase: SubtagTestCase): Exclude<SubtagTestCase['expected'], Function> {
-    if (typeof testCase.expected === 'function')
+function getExpectation(testCase: SubtagTestCase): Exclude<SubtagTestCase[`expected`], Function> {
+    if (typeof testCase.expected === `function`)
         return testCase.expected();
     return testCase.expected;
 }
@@ -796,11 +796,11 @@ export function* notEnoughArgumentsTestCases(subtagName: string, minArgCount: nu
     for (let i = 0; i < minArgCount; i++) {
         const codeParts = repeat(i, j => {
             const start = 2 + subtagName.length + 7 * j;
-            return [noEvalLookup.has(j), { start, end: start + 6, error: new MarkerError('eval', start) }] as const;
+            return [noEvalLookup.has(j), { start, end: start + 6, error: new MarkerError(`eval`, start) }] as const;
         });
         yield {
-            code: `{${[subtagName, ...codeParts.map(p => p[0] ? '{fail}' : '{eval}')].join(';')}}`,
-            expected: '`Not enough arguments`',
+            code: `{${[subtagName, ...codeParts.map(p => p[0] ? `{fail}` : `{eval}`)].join(`;`)}}`,
+            expected: `\`Not enough arguments\``,
             errors: [
                 ...codeParts.filter(p => !p[0]).map(p => p[1]),
                 { start: 0, end: 2 + subtagName.length + 7 * i, error: new NotEnoughArgumentsError(minArgCount, i) }
@@ -809,11 +809,11 @@ export function* notEnoughArgumentsTestCases(subtagName: string, minArgCount: nu
     }
     const codeParts = repeat(minArgCount, j => {
         const start = 2 + subtagName.length + 7 * j;
-        return [noEvalLookup.has(j), { start, end: start + 6, error: new MarkerError('eval', start) }] as const;
+        return [noEvalLookup.has(j), { start, end: start + 6, error: new MarkerError(`eval`, start) }] as const;
     });
     yield {
-        title: 'Min arg count',
-        code: `{${[subtagName, ...codeParts.map(p => p[0] ? '{fail}' : '{eval}')].join(';')}}`,
+        title: `Min arg count`,
+        code: `{${[subtagName, ...codeParts.map(p => p[0] ? `{fail}` : `{eval}`)].join(`;`)}}`,
         expected: /^(?!`Not enough arguments`|`Too many arguments`).*$/gis,
         errors(err) {
             expect(err.map(x => x.error.constructor)).to.not.have.members([NotEnoughArgumentsError, TooManyArgumentsError]);
@@ -828,11 +828,11 @@ export function* tooManyArgumentsTestCases(subtagName: string, maxArgCount: numb
     const noEvalLookup = new Set(noEval);
     const codeParts = repeat(maxArgCount + 1, j => {
         const start = 2 + subtagName.length + 7 * j;
-        return [noEvalLookup.has(j), { start, end: start + 6, error: new MarkerError('eval', start) }] as const;
+        return [noEvalLookup.has(j), { start, end: start + 6, error: new MarkerError(`eval`, start) }] as const;
     });
     yield {
-        title: 'Max arg count',
-        code: `{${[subtagName, ...codeParts.slice(0, maxArgCount).map(p => p[0] ? '{fail}' : '{eval}')].join(';')}}`,
+        title: `Max arg count`,
+        code: `{${[subtagName, ...codeParts.slice(0, maxArgCount).map(p => p[0] ? `{fail}` : `{eval}`)].join(`;`)}}`,
         expected: /^(?!`Not enough arguments`|`Too many arguments`).*$/gis,
         errors(err) {
             expect(err.map(x => x.error.constructor)).to.not.have.members([NotEnoughArgumentsError, TooManyArgumentsError]);
@@ -842,8 +842,8 @@ export function* tooManyArgumentsTestCases(subtagName: string, maxArgCount: numb
         }
     };
     yield {
-        code: `{${[subtagName, ...codeParts.map(p => p[0] ? '{fail}' : '{eval}')].join(';')}}`,
-        expected: '`Too many arguments`',
+        code: `{${[subtagName, ...codeParts.map(p => p[0] ? `{fail}` : `{eval}`)].join(`;`)}}`,
+        expected: `\`Too many arguments\``,
         errors: [
             ...codeParts.filter(p => !p[0]).map(p => p[1]),
             { start: 0, end: 9 + subtagName.length + 7 * maxArgCount, error: new TooManyArgumentsError(maxArgCount, maxArgCount + 1) }

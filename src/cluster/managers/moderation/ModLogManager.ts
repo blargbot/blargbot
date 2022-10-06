@@ -10,18 +10,18 @@ export class ModLogManager {
 
     public async logTimeout(guild: Guild, user: User, duration: Duration, moderator?: User, reason?: string): Promise<void> {
         await this.#logAction({
-            type: 'Timeout',
+            type: `Timeout`,
             guildId: guild.id,
             user,
             color: ModlogColour.TIMEOUT,
             moderator,
             reason,
             fields: [{
-                name: 'User',
+                name: `User`,
                 value: `${humanize.fullName(user)} (${user.id})`,
                 inline: true
             }, {
-                name: 'Duration',
+                name: `Duration`,
                 value: humanize.duration(duration),
                 inline: true
             }]
@@ -30,14 +30,14 @@ export class ModLogManager {
 
     public async logTimeoutClear(guild: Guild, user: User, moderator?: User, reason?: string): Promise<void> {
         await this.#logAction({
-            type: 'Timeout Clear',
+            type: `Timeout Clear`,
             guildId: guild.id,
             user,
             color: ModlogColour.TIMEOUTCLEAR,
             moderator,
             reason,
             fields: [{
-                name: 'User',
+                name: `User`,
                 value: `${humanize.fullName(user)} (${user.id})`,
                 inline: true
             }]
@@ -46,18 +46,18 @@ export class ModLogManager {
 
     public async logSoftban(guild: Guild, user: User, duration: Duration, moderator?: User, reason?: string): Promise<void> {
         await this.#logAction({
-            type: 'Soft Ban',
+            type: `Soft Ban`,
             guildId: guild.id,
             user: user,
             color: ModlogColour.SOFTBAN,
             moderator: moderator,
             reason: reason,
             fields: [{
-                name: 'User',
+                name: `User`,
                 value: `${humanize.fullName(user)} (${user.id})`,
                 inline: true
             }, {
-                name: 'Duration',
+                name: `Duration`,
                 value: humanize.duration(duration),
                 inline: true
             }]
@@ -75,14 +75,14 @@ export class ModLogManager {
         }
 
         await this.#logAction({
-            type: 'Ban',
+            type: `Ban`,
             guildId: guild.id,
             user: user,
             color: ModlogColour.BAN,
             moderator: moderator,
             reason: reason,
             fields: [{
-                name: 'User',
+                name: `User`,
                 value: `${humanize.fullName(user)} (${user.id})`,
                 inline: true
             }]
@@ -94,7 +94,7 @@ export class ModLogManager {
             case 0: return;
             case 1: return await this.logBan(guild, users[0], moderator, reason);
             default: return await this.#logAction({
-                type: 'Mass Ban',
+                type: `Mass Ban`,
                 guildId: guild.id,
                 user: users,
                 color: ModlogColour.BAN,
@@ -107,7 +107,7 @@ export class ModLogManager {
 
     public async logUnban(guild: Guild, user: User, moderator?: User, reason?: string): Promise<void> {
         await this.#logAction({
-            type: 'Unban',
+            type: `Unban`,
             guildId: guild.id,
             user: user,
             color: ModlogColour.BAN,
@@ -118,7 +118,7 @@ export class ModLogManager {
 
     public async logKick(guild: Guild, user: User, moderator?: User, reason?: string): Promise<void> {
         await this.#logAction({
-            type: 'Kick',
+            type: `Kick`,
             guildId: guild.id,
             user: user,
             color: ModlogColour.KICK,
@@ -129,7 +129,7 @@ export class ModLogManager {
 
     public async logUnmute(guild: Guild, user: User, moderator?: User, reason?: string): Promise<void> {
         await this.#logAction({
-            type: 'Unmute',
+            type: `Unmute`,
             guildId: guild.id,
             user: user,
             moderator: moderator,
@@ -140,7 +140,7 @@ export class ModLogManager {
 
     public async logMute(guild: Guild, user: User, moderator?: User, reason?: string): Promise<void> {
         await this.#logAction({
-            type: 'Mute',
+            type: `Mute`,
             guildId: guild.id,
             user: user,
             moderator: moderator,
@@ -151,7 +151,7 @@ export class ModLogManager {
 
     public async logTempMute(guild: Guild, user: User, duration: Duration, moderator?: User, reason?: string): Promise<void> {
         await this.#logAction({
-            type: 'Temporary Mute',
+            type: `Temporary Mute`,
             guildId: guild.id,
             user,
             moderator,
@@ -159,7 +159,7 @@ export class ModLogManager {
             color: ModlogColour.MUTE,
             fields: [
                 {
-                    name: 'Duration',
+                    name: `Duration`,
                     value: humanize.duration(duration),
                     inline: true
                 }
@@ -169,14 +169,14 @@ export class ModLogManager {
 
     public async logWarn(guild: Guild, user: User, count: number, newTotal: number, moderator?: User, reason?: string): Promise<void> {
         await this.#logAction({
-            type: 'Warning',
+            type: `Warning`,
             guildId: guild.id,
             user: user,
             moderator: moderator,
             color: ModlogColour.WARN,
             reason: reason,
             fields: [{
-                name: 'Warnings',
+                name: `Warnings`,
                 value: `Assigned: ${count}\nNew Total: ${newTotal}`,
                 inline: true
             }]
@@ -185,14 +185,14 @@ export class ModLogManager {
 
     public async logPardon(guild: Guild, user: User, count: number, newTotal: number, moderator?: User, reason?: string): Promise<void> {
         await this.#logAction({
-            type: 'Pardon',
+            type: `Pardon`,
             guildId: guild.id,
             user: user,
             color: ModlogColour.PARDON,
             moderator: moderator,
             reason: reason,
             fields: [{
-                name: 'Pardons',
+                name: `Pardons`,
                 value: `Assigned: ${count}\nNew Total: ${newTotal}`,
                 inline: true
             }]
@@ -210,28 +210,28 @@ export class ModLogManager {
         });
     }
 
-    public async updateReason(guild: Guild, caseId: number | undefined, moderator: User, reason: string): Promise<'SUCCESS' | 'MISSING_CASE' | 'SUCCESS_NO_MESSAGE'> {
+    public async updateReason(guild: Guild, caseId: number | undefined, moderator: User, reason: string): Promise<`SUCCESS` | `MISSING_CASE` | `SUCCESS_NO_MESSAGE`> {
         const modlog = await this.cluster.database.guilds.getModlogCase(guild.id, caseId);
         if (modlog === undefined)
-            return 'MISSING_CASE';
+            return `MISSING_CASE`;
 
         await this.cluster.database.guilds.updateModlogCase(guild.id, modlog.caseid, { reason, modid: moderator.id });
 
         if (modlog.msgid === undefined)
-            return 'SUCCESS_NO_MESSAGE';
+            return `SUCCESS_NO_MESSAGE`;
 
-        const channelId = modlog.channelid ?? await this.cluster.database.guilds.getSetting(guild.id, 'modlog');
+        const channelId = modlog.channelid ?? await this.cluster.database.guilds.getSetting(guild.id, `modlog`);
         if (channelId === undefined)
-            return 'SUCCESS_NO_MESSAGE';
+            return `SUCCESS_NO_MESSAGE`;
 
         const message = await this.cluster.util.getMessage(channelId, modlog.msgid);
         if (message === undefined || message.author.id !== this.cluster.discord.user.id)
-            return 'SUCCESS_NO_MESSAGE';
+            return `SUCCESS_NO_MESSAGE`;
 
         await message.edit({
             embeds: message.embeds.map(e => {
                 const fields = [...e.fields ?? []];
-                fields.splice(fields.findIndex(f => f.name === 'Reason'), 1, { name: 'Reason', value: reason, inline: true });
+                fields.splice(fields.findIndex(f => f.name === `Reason`), 1, { name: `Reason`, value: reason, inline: true });
                 return {
                     ...e,
                     fields,
@@ -242,12 +242,12 @@ export class ModLogManager {
                 };
             })
         });
-        return 'SUCCESS';
+        return `SUCCESS`;
     }
 
-    async #logAction({ guildId, user, reason, fields = [], color = 0x17c484, type = 'Generic', moderator }: ModerationLogOptions): Promise<void> {
+    async #logAction({ guildId, user, reason, fields = [], color = 0x17c484, type = `Generic`, moderator }: ModerationLogOptions): Promise<void> {
         // TODO modlog setting can be channel id or tag
-        const modlogChannelId = await this.cluster.database.guilds.getSetting(guildId, 'modlog');
+        const modlogChannelId = await this.cluster.database.guilds.getSetting(guildId, `modlog`);
         if (!guard.hasValue(modlogChannelId)) // TODO Should this still create the modlog entry in the db?
             return;
 
@@ -262,15 +262,15 @@ export class ModLogManager {
             color: color,
             timestamp: new Date(),
             fields: [
-                { name: 'Type', value: type, inline: true },
-                { name: 'Reason', value: reason, inline: true },
+                { name: `Type`, value: type, inline: true },
+                { name: `Reason`, value: reason, inline: true },
                 ...fields
             ]
         };
         if (Array.isArray(user)) {
             if (moderator !== undefined && user.includes(moderator))
                 moderator = this.cluster.discord.user;
-            embed.description = user.map(u => `${u.username}#${u.discriminator} (${u.id})`).join('\n');
+            embed.description = user.map(u => `${u.username}#${u.discriminator} (${u.id})`).join(`\n`);
         } else {
             if (moderator === user)
                 moderator = this.cluster.discord.user;
@@ -288,8 +288,8 @@ export class ModLogManager {
         try {
             modlogMessage = await this.cluster.util.send(modlogChannelId, { embeds: [embed] });
         } catch (err: unknown) {
-            if (err instanceof Error && err.message === 'Channel not found')
-                await this.cluster.database.guilds.setSetting(guildId, 'modlog', undefined);
+            if (err instanceof Error && err.message === `Channel not found`)
+                await this.cluster.database.guilds.setSetting(guildId, `modlog`, undefined);
             else
                 throw err;
         }
@@ -301,7 +301,7 @@ export class ModLogManager {
             channelid: modlogMessage?.channel.id,
             reason: reason,
             type: type,
-            userid: Array.isArray(user) ? user.map(u => u.id).join(',') : user.id
+            userid: Array.isArray(user) ? user.map(u => u.id).join(`,`) : user.id
         });
     }
 }

@@ -20,7 +20,7 @@ export class SubtagCallStack {
     public pop(): void {
         const subtagName = this.#nameStack.pop();
         if (subtagName === undefined)
-            throw new Error('Callstack is empty');
+            throw new Error(`Callstack is empty`);
         this.#callStack.pop();
         (<number>this.#callCounts[subtagName])--;
     }

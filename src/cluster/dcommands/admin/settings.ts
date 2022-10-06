@@ -7,23 +7,23 @@ import { EmbedOptions, Guild } from 'eris';
 export class SettingsCommand extends GuildCommand {
     public constructor(cluster: Cluster) {
         super({
-            name: 'settings',
+            name: `settings`,
             category: CommandType.ADMIN,
-            description: `Gets or sets the settings for the current guild. Visit ${cluster.util.websiteLink('/guilds/settings')} for key documentation.`,
+            description: `Gets or sets the settings for the current guild. Visit ${cluster.util.websiteLink(`/guilds/settings`)} for key documentation.`,
             definitions: [
                 {
-                    parameters: '',
+                    parameters: ``,
                     execute: ctx => this.#list(ctx),
-                    description: 'Gets the current settings for this guild'
+                    description: `Gets the current settings for this guild`
                 },
                 {
-                    parameters: 'keys',
-                    description: 'Lists all the setting keys and their types',
+                    parameters: `keys`,
+                    description: `Lists all the setting keys and their types`,
                     execute: () => this.#keys()
                 },
                 {
-                    parameters: 'set {key} {~value+?}',
-                    description: 'Sets the given setting key to have a certian value. If `value` is omitted, the setting is reverted to its default value',
+                    parameters: `set {key} {~value+?}`,
+                    description: `Sets the given setting key to have a certian value. If \`value\` is omitted, the setting is reverted to its default value`,
                     execute: (ctx, [setting, value]) => this.#set(ctx, setting.asString, value.asOptionalString)
                 }
             ]
@@ -33,7 +33,7 @@ export class SettingsCommand extends GuildCommand {
     async #list(context: GuildCommandContext): Promise<string | { embeds: [EmbedOptions]; }> {
         const storedGuild = await context.database.guilds.get(context.channel.guild.id);
         if (storedGuild === undefined)
-            return this.error('Your guild is not correctly configured yet! Please try again later');
+            return this.error(`Your guild is not correctly configured yet! Please try again later`);
 
         const settings = storedGuild.settings;
         const guild = context.channel.guild;
@@ -43,55 +43,55 @@ export class SettingsCommand extends GuildCommand {
                 {
                     fields: [
                         {
-                            name: 'General',
+                            name: `General`,
                             value: settingGroup([
-                                ['dmhelp', parse.boolean(settings.dmhelp, false, true)],
-                                ['disablenoperms', settings.disablenoperms ?? false],
-                                ['social', settings.social ?? false]
+                                [`dmhelp`, parse.boolean(settings.dmhelp, false, true)],
+                                [`disablenoperms`, settings.disablenoperms ?? false],
+                                [`social`, settings.social ?? false]
                             ])
                         },
                         {
-                            name: 'Messages',
+                            name: `Messages`,
                             value: settingGroup([
-                                ['tableflip', parse.boolean(settings.tableflip, false, true)],
-                                ['nocleverbot', settings.nocleverbot ?? false],
-                                ['disableeveryone', settings.disableeveryone ?? false]
+                                [`tableflip`, parse.boolean(settings.tableflip, false, true)],
+                                [`nocleverbot`, settings.nocleverbot ?? false],
+                                [`disableeveryone`, settings.disableeveryone ?? false]
                             ])
                         },
                         {
-                            name: 'Channels',
+                            name: `Channels`,
                             value: settingGroup([
-                                ['farewellchan', resolveChannel(guild, settings.farewellchan) ?? 'Default Channel'],
-                                ['greetchan', resolveChannel(guild, settings.greetchan) ?? 'Default Channel'],
-                                ['modlog', resolveChannel(guild, settings.modlog)]
+                                [`farewellchan`, resolveChannel(guild, settings.farewellchan) ?? `Default Channel`],
+                                [`greetchan`, resolveChannel(guild, settings.greetchan) ?? `Default Channel`],
+                                [`modlog`, resolveChannel(guild, settings.modlog)]
                             ])
                         },
                         {
-                            name: 'Permission',
+                            name: `Permission`,
                             value: settingGroup([
-                                ['staffperms', settings.staffperms ?? defaultStaff.toString()],
-                                ['timeoutoverride', settings.timeoutoverride],
-                                ['kickoverride', settings.kickoverride],
-                                ['banoverride', settings.banoverride]
+                                [`staffperms`, settings.staffperms ?? defaultStaff.toString()],
+                                [`timeoutoverride`, settings.timeoutoverride],
+                                [`kickoverride`, settings.kickoverride],
+                                [`banoverride`, settings.banoverride]
                             ])
                         },
                         {
-                            name: 'Warnings',
+                            name: `Warnings`,
                             value: settingGroup([
-                                ['timeoutat', settings.timeoutat],
-                                ['kickat', settings.kickat],
-                                ['banat', settings.banat],
-                                ['actonlimitsonly', settings.actonlimitsonly]
+                                [`timeoutat`, settings.timeoutat],
+                                [`kickat`, settings.kickat],
+                                [`banat`, settings.banat],
+                                [`actonlimitsonly`, settings.actonlimitsonly]
                             ])
                         },
                         {
-                            name: 'Moderation',
+                            name: `Moderation`,
                             value: settingGroup([
-                                ['makelogs', parse.boolean(settings.makelogs, false, true)],
-                                ['antimention', settings.antimention],
-                                ['mutedrole', resolveRole(guild, settings.mutedrole)],
-                                ['deletenotif', parse.boolean(settings.deletenotif, false, true)],
-                                ['adminrole', resolveRole(guild, settings.adminrole)]
+                                [`makelogs`, parse.boolean(settings.makelogs, false, true)],
+                                [`antimention`, settings.antimention],
+                                [`mutedrole`, resolveRole(guild, settings.mutedrole)],
+                                [`deletenotif`, parse.boolean(settings.deletenotif, false, true)],
+                                [`adminrole`, resolveRole(guild, settings.adminrole)]
                             ])
                         }
                     ]
@@ -103,16 +103,16 @@ export class SettingsCommand extends GuildCommand {
     async #set(context: GuildCommandContext, setting: string, value: string | undefined): Promise<string> {
         const key = setting.toLowerCase();
         if (!guard.hasProperty(guildSettings, key))
-            return this.error('Invalid key!');
+            return this.error(`Invalid key!`);
 
         const parsed = await parse.guildSetting(context, context.util, key, value);
         if (!parsed.success)
-            return this.error(`'${value ?? '\u200b'}' is not a ${guildSettings[key].type}`);
+            return this.error(`'${value ?? `\u200b`}' is not a ${guildSettings[key].type}`);
 
         if (!await context.database.guilds.setSetting(context.channel.guild.id, key, parsed.value))
-            return this.error(`${value ?? '\u200b'} is already set for ${key}`);
+            return this.error(`${value ?? `\u200b`} is already set for ${key}`);
 
-        return this.success(`${guildSettings[key].name} is set to ${parsed.display ?? 'nothing'}`);
+        return this.success(`${guildSettings[key].name} is set to ${parsed.display ?? `nothing`}`);
     }
 
     #keys(): string {
@@ -123,8 +123,8 @@ export class SettingsCommand extends GuildCommand {
                 message.push(` - **${setting.name}:** \`${setting.key.toUpperCase()}\` (${setting.type})`);
             }
         }
-        return 'You can use `settings set <key> [value]` to set the following settings. All settings are case insensitive.\n'
-            + message.sort().join('\n');
+        return `You can use \`settings set <key> [value]\` to set the following settings. All settings are case insensitive.\n${
+            message.sort().join(`\n`)}`;
     }
 }
 
@@ -155,11 +155,11 @@ function settingGroup(values: Array<[key: string & keyof typeof guildSettings, v
         const setting = guildSettings[key];
         return [
             setting.name,
-            `${value ?? 'Not set'}`.substring(0, 100)
+            `${value ?? `Not set`}`.substring(0, 100)
         ] as const;
     });
     const keyLength = Math.max(...mapped.map(([key]) => key.length));
-    const content = mapped.map(v => `${v[0].padStart(keyLength, ' ')} : ${v[1]}`)
-        .join('\n');
+    const content = mapped.map(v => `${v[0].padStart(keyLength, ` `)} : ${v[1]}`)
+        .join(`\n`);
     return codeBlock(content);
 }

@@ -27,9 +27,9 @@ function parse(value: string | undefined): Snowflake | undefined {
 
 function test(value: unknown): value is Snowflake {
     switch (typeof value) {
-        case 'bigint':
-            return value > bounds['10^17'] && value < bounds['10^24'];
-        case 'string':
+        case `bigint`:
+            return value > bounds[`10^17`] && value < bounds[`10^24`];
+        case `string`:
             return /^\d{17,23}$/.test(value);
         default:
             return false;

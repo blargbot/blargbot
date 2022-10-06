@@ -11,16 +11,15 @@ import { SubtagType } from '../../utils';
 export class GuildSetIconSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: 'guildseticon',
+            name: `guildseticon`,
             category: SubtagType.GUILD,
             definition: [
                 {
-                    parameters: ['image'],
-                    description: 'Updates the current guild\'s icon with the provided image. ' +
-                        '`image` is either a link to an image, or a base64 encoded data url (`data:<content-type>;base64,<base64-data>`). You may need to use {semi} for the latter.',
-                    exampleCode: '{guildseticon;https://some.cool/image.png}',
-                    exampleOut: '', //TODO meaningful output
-                    returns: 'nothing',
+                    parameters: [`image`],
+                    description: `Updates the current guild's icon with the provided image. \`image\` is either a link to an image, or a base64 encoded data url (\`data:<content-type>;base64,<base64-data>\`). You may need to use {semi} for the latter.`,
+                    exampleCode: `{guildseticon;https://some.cool/image.png}`,
+                    exampleOut: ``, //TODO meaningful output
+                    returns: `nothing`,
                     execute: (ctx, [image]) => this.setGuildIcon(ctx, image.value)
 
                 }
@@ -29,16 +28,16 @@ export class GuildSetIconSubtag extends CompiledSubtag {
     }
 
     public async setGuildIcon(context: BBTagContext, image: string): Promise<void> {
-        if (!context.hasPermission('manageGuild'))
-            throw new BBTagRuntimeError('Author cannot modify the guild');
+        if (!context.hasPermission(`manageGuild`))
+            throw new BBTagRuntimeError(`Author cannot modify the guild`);
 
         image = parse.url(image);
         if (guard.isUrl(image)) {
             const res = await fetch(image);
-            const contentType = res.headers.get('content-type');
-            image = `data:${contentType !== null ? contentType : ''};base64,${(await res.buffer()).toString('base64')}`;
-        } else if (!image.startsWith('data:')) {
-            throw new BBTagRuntimeError('Image was not a buffer or a URL');
+            const contentType = res.headers.get(`content-type`);
+            image = `data:${contentType !== null ? contentType : ``};base64,${(await res.buffer()).toString(`base64`)}`;
+        } else if (!image.startsWith(`data:`)) {
+            throw new BBTagRuntimeError(`Image was not a buffer or a URL`);
         }
 
         try {
@@ -47,7 +46,7 @@ export class GuildSetIconSubtag extends CompiledSubtag {
             if (!(err instanceof DiscordRESTError))
                 throw err;
 
-            const parts = err.message.split('\n').map(m => m.trim());
+            const parts = err.message.split(`\n`).map(m => m.trim());
             throw new BBTagRuntimeError(`Failed to set icon: ${parts[1] ?? parts[0]}`);
         }
     }

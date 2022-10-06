@@ -3,14 +3,14 @@ import { SubtagDetails } from '@blargbot/cluster/types';
 import { WorkerPoolEventService } from '@blargbot/core/serviceTypes';
 import { Master } from '@blargbot/master';
 
-export class ApiGetSubtagHandler extends WorkerPoolEventService<ApiConnection, 'getSubtag'> {
+export class ApiGetSubtagHandler extends WorkerPoolEventService<ApiConnection, `getSubtag`> {
     #nextCluster: number;
     readonly #master: Master;
 
     public constructor(master: Master) {
         super(
             master.api,
-            'getSubtag',
+            `getSubtag`,
             async ({ data, reply }) => reply(await this.getSubtag(data)));
         this.#nextCluster = 0;
         this.#master = master;
@@ -20,12 +20,12 @@ export class ApiGetSubtagHandler extends WorkerPoolEventService<ApiConnection, '
         const cluster = this.#master.clusters.tryGet(this.#nextCluster);
         if (cluster === undefined) {
             if (this.#nextCluster === 0)
-                throw new Error('No clusters are available');
+                throw new Error(`No clusters are available`);
             this.#nextCluster = 0;
             return await this.getSubtag(name);
         }
         this.#nextCluster++;
 
-        return await cluster.request('getSubtag', name);
+        return await cluster.request(`getSubtag`, name);
     }
 }

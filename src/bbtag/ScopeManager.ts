@@ -36,7 +36,7 @@ export class ScopeManager {
 
     #popScope(): BBTagRuntimeScope {
         if (this.#scopes.length === 1)
-            throw new Error('Cannot pop the root scope');
+            throw new Error(`Cannot pop the root scope`);
         const popped = this.local;
         this.#scopes.pop();
         if (popped.isTag)

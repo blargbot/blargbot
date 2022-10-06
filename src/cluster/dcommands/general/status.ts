@@ -6,12 +6,12 @@ import fetch from 'node-fetch';
 export class StatusCommand extends GlobalCommand {
     public constructor() {
         super({
-            name: 'status',
+            name: `status`,
             category: CommandType.GENERAL,
             definitions: [
                 {
-                    parameters: '{status:integer} {animal?}',
-                    description: 'Gets you an image of an HTTP status code.',
+                    parameters: `{status:integer} {animal?}`,
+                    description: `Gets you an image of an HTTP status code.`,
                     execute: (_, [status, animal]) => this.getStatus(status.asInteger, animal.asOptionalString)
                 }
             ]
@@ -23,13 +23,13 @@ export class StatusCommand extends GlobalCommand {
         const service = statusKeys.has(animal) ? statusSites[animal] : randChoose(Object.values(statusSites));
         const response = await fetch(`${service}${status}.jpg`);
         let content;
-        if (response.ok && response.headers.get('content-type') === 'image/jpeg') {
+        if (response.ok && response.headers.get(`content-type`) === `image/jpeg`) {
             content = await response.buffer();
         } else {
             status = 404;
             const response = await fetch(`${service}404.jpg`);
-            if (!response.ok || response.headers.get('content-type') !== 'image/jpeg')
-                return this.error('Something terrible has happened! 404 is not found!');
+            if (!response.ok || response.headers.get(`content-type`) !== `image/jpeg`)
+                return this.error(`Something terrible has happened! 404 is not found!`);
             content = await response.buffer();
         }
 
@@ -41,7 +41,7 @@ export class StatusCommand extends GlobalCommand {
 }
 
 const statusSites = {
-    cat: 'https://http.cat/',
-    dog: 'https://httpstatusdogs.com/img/'
+    cat: `https://http.cat/`,
+    dog: `https://httpstatusdogs.com/img/`
 } as const;
 const statusKeys = new Set(Object.keys(statusSites));

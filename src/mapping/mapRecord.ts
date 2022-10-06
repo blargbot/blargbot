@@ -4,7 +4,7 @@ import { TypeMapping, TypeMappingImpl } from './types';
 
 export function mapRecord<T>(mapping: TypeMappingImpl<T, [key: string]>, initial?: () => Record<string, T>): TypeMapping<Record<string, T>> {
     return createMapping(value => {
-        if (value === undefined || typeof value !== 'object' || value === null)
+        if (value === undefined || typeof value !== `object` || value === null)
             return result.failed;
 
         const mapped: Record<string, T> = initial?.() ?? {};

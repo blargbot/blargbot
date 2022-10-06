@@ -10,25 +10,15 @@ import { SubtagType } from '../../utils';
 export class ChannelEditSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: 'channeledit',
+            name: `channeledit`,
             category: SubtagType.CHANNEL,
             definition: [
                 {
-                    parameters: ['channel', 'options?:{}'],
-                    description: 'Edits a channel with the given information.\n' +
-                        '`options` is a JSON object, containing any or all of the following properties:\n' +
-                        '- `name`\n' +
-                        '- `topic`\n' +
-                        '- `nsfw`\n' +
-                        '- `parentID`\n' +
-                        '- `reason` (displayed in audit log)\n' +
-                        '- `rateLimitPerUser`\n' +
-                        '- `bitrate` (voice)\n' +
-                        '- `userLimit` (voice)\n' +
-                        'Returns the channel\'s ID.',
-                    exampleCode: '{channeledit;11111111111111111;{j;{"name": "super-cool-channel"}}}',
-                    exampleOut: '11111111111111111',
-                    returns: 'id',
+                    parameters: [`channel`, `options?:{}`],
+                    description: `Edits a channel with the given information.\n\`options\` is a JSON object, containing any or all of the following properties:\n- \`name\`\n- \`topic\`\n- \`nsfw\`\n- \`parentID\`\n- \`reason\` (displayed in audit log)\n- \`rateLimitPerUser\`\n- \`bitrate\` (voice)\n- \`userLimit\` (voice)\nReturns the channel's ID.`,
+                    exampleCode: `{channeledit;11111111111111111;{j;{"name": "super-cool-channel"}}}`,
+                    exampleOut: `11111111111111111`,
+                    returns: `id`,
                     execute: (ctx, [channel, options]) => this.channelEdit(ctx, channel.value, options.value)
                 }
             ]
@@ -43,15 +33,15 @@ export class ChannelEditSubtag extends CompiledSubtag {
         const channel = await context.queryChannel(channelStr);
 
         if (channel === undefined)
-            throw new BBTagRuntimeError('Channel does not exist');//TODO no channel found error
+            throw new BBTagRuntimeError(`Channel does not exist`);//TODO no channel found error
 
-        if (!context.hasPermission(channel, 'manageChannels'))
-            throw new BBTagRuntimeError('Author cannot edit this channel');
+        if (!context.hasPermission(channel, `manageChannels`))
+            throw new BBTagRuntimeError(`Author cannot edit this channel`);
 
         const mapping = guard.isThreadChannel(channel) ? mapThreadOptions : mapChannelOptions;
         const mapped = mapping(editJson);
         if (!mapped.valid)
-            throw new BBTagRuntimeError('Invalid JSON');
+            throw new BBTagRuntimeError(`Invalid JSON`);
 
         const options = mapped.value;
         try {
@@ -61,7 +51,7 @@ export class ChannelEditSubtag extends CompiledSubtag {
             if (!(err instanceof DiscordRESTError))
                 throw err;
 
-            throw new BBTagRuntimeError('Failed to edit channel: no perms', err.message);
+            throw new BBTagRuntimeError(`Failed to edit channel: no perms`, err.message);
         }
     }
 }

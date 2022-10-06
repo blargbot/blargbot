@@ -19,7 +19,7 @@ export class ModuleLoader<TModule> extends BaseModuleLoader<TModule> {
             ? (_, fileName) => [fileName]
             : module => {
                 let names = getNames(module);
-                if (typeof names === 'string')
+                if (typeof names === `string`)
                     names = [names];
                 return names;
             };

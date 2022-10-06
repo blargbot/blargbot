@@ -61,7 +61,7 @@ export abstract class CommandBindingBase<TContext extends CommandContext> implem
             case false:
                 return this.bindingError(state, result.error, argCount);
             case true:
-            case 'deferred':
+            case `deferred`:
                 return this.bindingSuccess(state, next, argCount, result);
             default: {
                 const x: never = result;

@@ -7,5 +7,5 @@ export function stringifyAnalysis(analysis: AnalysisResults): string {
         lines.push(`❌ [${stringifyLocation(error.location)}]: ${error.message}`);
     for (const warning of analysis.warnings)
         lines.push(`⚠️ [${stringifyLocation(warning.location)}]: ${warning.message}`);
-    return lines.join('\n');
+    return lines.join(`\n`);
 }

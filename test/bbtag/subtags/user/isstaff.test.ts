@@ -9,25 +9,25 @@ runSubtagTests({
     argCountBounds: { min: 0, max: 2 },
     cases: [
         {
-            code: '{isstaff}',
-            expected: 'true',
+            code: `{isstaff}`,
+            expected: `true`,
             setup(ctx) {
                 ctx.isStaff = true;
             }
         },
         {
-            code: '{isstaff}',
-            expected: 'false',
+            code: `{isstaff}`,
+            expected: `false`,
             setup(ctx) {
                 ctx.isStaff = false;
             }
         },
         {
-            code: '{isstaff;other user}',
-            expected: 'true',
+            code: `{isstaff;other user}`,
+            expected: `true`,
             postSetup(bbctx, ctx) {
                 const member = ctx.createMock(Member);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
+                ctx.util.setup(m => m.findMembers(bbctx.guild, `other user`))
                     .verifiable(1)
                     .thenResolve([member.instance]);
                 ctx.util.setup(m => m.isUserStaff(member.instance))
@@ -36,11 +36,11 @@ runSubtagTests({
             }
         },
         {
-            code: '{isstaff;other user}',
-            expected: 'false',
+            code: `{isstaff;other user}`,
+            expected: `false`,
             postSetup(bbctx, ctx) {
                 const member = ctx.createMock(Member);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
+                ctx.util.setup(m => m.findMembers(bbctx.guild, `other user`))
                     .verifiable(1)
                     .thenResolve([member.instance]);
                 ctx.util.setup(m => m.isUserStaff(member.instance))
@@ -49,39 +49,39 @@ runSubtagTests({
             }
         },
         {
-            code: '{isstaff;other user}',
-            expected: '`No user found`',
+            code: `{isstaff;other user}`,
+            expected: `\`No user found\``,
             errors: [
-                { start: 0, end: 20, error: new UserNotFoundError('other user') }
+                { start: 0, end: 20, error: new UserNotFoundError(`other user`) }
 
             ],
             postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
+                ctx.util.setup(m => m.findMembers(bbctx.guild, `other user`))
                     .verifiable(1)
                     .thenResolve([]);
             }
         },
         {
-            code: '{isstaff;other user;}',
-            expected: '`No user found`',
+            code: `{isstaff;other user;}`,
+            expected: `\`No user found\``,
             errors: [
-                { start: 0, end: 21, error: new UserNotFoundError('other user') }
+                { start: 0, end: 21, error: new UserNotFoundError(`other user`) }
 
             ],
             postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
+                ctx.util.setup(m => m.findMembers(bbctx.guild, `other user`))
                     .verifiable(1)
                     .thenResolve([]);
             }
         },
         {
-            code: '{isstaff;other user;q}',
-            expected: '',
+            code: `{isstaff;other user;q}`,
+            expected: ``,
             errors: [
-                { start: 0, end: 22, error: new UserNotFoundError('other user').withDisplay('') }
+                { start: 0, end: 22, error: new UserNotFoundError(`other user`).withDisplay(``) }
             ],
             postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
+                ctx.util.setup(m => m.findMembers(bbctx.guild, `other user`))
                     .verifiable(1)
                     .thenResolve([]);
             }

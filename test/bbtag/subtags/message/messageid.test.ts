@@ -7,10 +7,10 @@ runSubtagTests({
     argCountBounds: { min: 0, max: 0 },
     cases: [
         {
-            code: '{messageid}',
-            expected: '098765432212345678',
+            code: `{messageid}`,
+            expected: `098765432212345678`,
             setup(ctx) {
-                ctx.message.id = '098765432212345678';
+                ctx.message.id = `098765432212345678`;
             }
         }
     ]

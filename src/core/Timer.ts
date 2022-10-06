@@ -18,7 +18,7 @@ export class Timer {
     }
 
     public get duration(): Duration {
-        return moment.duration(this.elapsed, 'milliseconds');
+        return moment.duration(this.elapsed, `milliseconds`);
     }
 
     public format(): string {
@@ -28,7 +28,7 @@ export class Timer {
 
     public start(reset = true): this {
         if (this.#start !== undefined)
-            throw new Error('Cannot start an already started timer');
+            throw new Error(`Cannot start an already started timer`);
         if (reset)
             this.#elapsed = 0;
         this.#start = performance.now();

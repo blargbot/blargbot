@@ -17,24 +17,24 @@ export class CustomCommandManager extends CommandManager<NamedGuildCommandTag> {
 
     protected async getCore(name: string, location?: Guild | KnownTextableChannel): Promise<CommandGetCoreResult<NamedGuildCommandTag>> {
         if (location === undefined)
-            return { state: 'NOT_FOUND' };
+            return { state: `NOT_FOUND` };
 
         const guild = location instanceof Guild ? location
             : guard.isGuildChannel(location) ? location.guild
                 : undefined;
 
         if (guild === undefined)
-            return { state: 'NOT_FOUND' };
+            return { state: `NOT_FOUND` };
 
         const command = await this.cluster.database.guilds.getCommand(guild.id, name);
         if (command === undefined)
-            return { state: 'NOT_FOUND' };
+            return { state: `NOT_FOUND` };
 
         const impl = guard.isGuildImportedCommandTag(command)
             ? await this.cluster.database.tags.get(command.alias)
             : undefined;
 
-        return { state: 'FOUND', detail: new NormalizedCommandTag(command, impl) };
+        return { state: `FOUND`, detail: new NormalizedCommandTag(command, impl) };
     }
 
     public load(): Promise<void> {
@@ -95,12 +95,12 @@ class NormalizedCommandTag implements ICommand<NamedGuildCommandTag> {
         this.id = implementation.id;
         this.name = implementation.name;
         this.aliases = [];
-        this.category = 'Custom';
-        this.description = implementation.help ?? '_No help set_';
-        this.flags = tag?.flags ?? ('flags' in implementation ? implementation.flags : []) ?? [];
+        this.category = `Custom`;
+        this.description = implementation.help ?? `_No help set_`;
+        this.flags = tag?.flags ?? (`flags` in implementation ? implementation.flags : []) ?? [];
         this.signatures = [];
         this.disabled = this.implementation.disabled ?? false;
-        this.permission = this.implementation.permission ?? '0';
+        this.permission = this.implementation.permission ?? `0`;
         this.roles = this.implementation.roles ?? [];
         this.hidden = this.implementation.hidden ?? false;
         this.isOnWebsite = false;
@@ -111,14 +111,14 @@ class NormalizedCommandTag implements ICommand<NamedGuildCommandTag> {
             return;
 
         const details = await this.#getDetails(context);
-        if (typeof details === 'string') {
+        if (typeof details === `string`) {
             await context.reply(details);
             return;
         }
 
         const { content, ...options } = details;
 
-        metrics.commandCounter.labels('custom', 'custom').inc();
+        metrics.commandCounter.labels(`custom`, `custom`).inc();
         await context.cluster.bbtag.execute(content, {
             ...options,
             authorId: options.author,
@@ -127,7 +127,7 @@ class NormalizedCommandTag implements ICommand<NamedGuildCommandTag> {
             message: context.message,
             inputRaw: context.argsString,
             isCC: true,
-            limit: 'customCommandLimit',
+            limit: `customCommandLimit`,
             prefix: context.prefix
         });
         return undefined;
@@ -146,10 +146,8 @@ class NormalizedCommandTag implements ICommand<NamedGuildCommandTag> {
         }
 
         if (this.tag === undefined) {
-            const oldAuthor = await context.util.getUser(this.implementation.author ?? '');
-            return `❌ When the command \`${context.commandName}\` was imported, the tag \`${this.implementation.alias}\` ` +
-                `was owned by **${humanize.fullName(oldAuthor)}** (${this.implementation.author ?? '????'}) but it no longer exists. ` +
-                'To continue using this command, please re-create the tag and re-import it.';
+            const oldAuthor = await context.util.getUser(this.implementation.author ?? ``);
+            return `❌ When the command \`${context.commandName}\` was imported, the tag \`${this.implementation.alias}\` was owned by **${humanize.fullName(oldAuthor)}** (${this.implementation.author ?? `????`}) but it no longer exists. To continue using this command, please re-create the tag and re-import it.`;
         }
 
         if (this.implementation.author === this.tag.author || !guard.hasValue(this.implementation.author)) {
@@ -167,9 +165,6 @@ class NormalizedCommandTag implements ICommand<NamedGuildCommandTag> {
 
         const newAuthor = await context.util.getUser(this.tag.author);
         const oldAuthor = await context.util.getUser(this.implementation.author);
-        return `❌ When the command \`${context.commandName}\` was imported, the tag \`${this.implementation.alias}\` ` +
-            `was owned by **${humanize.fullName(oldAuthor)}** (${this.implementation.author}) but it is ` +
-            `now owned by **${humanize.fullName(newAuthor)}** (${this.tag.author}). ` +
-            'If this is acceptable, please re-import the tag to continue using this command.';
+        return `❌ When the command \`${context.commandName}\` was imported, the tag \`${this.implementation.alias}\` was owned by **${humanize.fullName(oldAuthor)}** (${this.implementation.author}) but it is now owned by **${humanize.fullName(newAuthor)}** (${this.tag.author}). If this is acceptable, please re-import the tag to continue using this command.`;
     }
 }

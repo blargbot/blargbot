@@ -11,15 +11,15 @@ export class CommandDocumentationManager extends DocumentationTreeManager {
     readonly #cluster: Cluster;
 
     public constructor(cluster: Cluster) {
-        super(cluster, 'cmd', 'help');
+        super(cluster, `cmd`, `help`);
         this.#cluster = cluster;
     }
 
     protected async getTree(user: User, channel: KnownTextableChannel): Promise<Documentation> {
         const guild = guard.isGuildChannel(channel) ? channel.guild : undefined;
-        const categories = new Map<string, DocumentationGroup & { items: Mutable<DocumentationGroup['items']>; }>();
+        const categories = new Map<string, DocumentationGroup & { items: Mutable<DocumentationGroup[`items`]>; }>();
         for await (const item of this.#cluster.commands.list(guild, user)) {
-            if (item.state === 'NOT_FOUND')
+            if (item.state === `NOT_FOUND`)
                 continue;
 
             const command = item.detail.command;
@@ -31,12 +31,12 @@ export class CommandDocumentationManager extends DocumentationTreeManager {
                     categories.set(categoryDesc.id, category = {
                         id: categoryDesc.id,
                         name: categoryDesc.name,
-                        type: 'group',
+                        type: `group`,
                         items: [],
                         embed: {
                             color: commandDocumentation.embed.color
                         },
-                        selectText: 'Pick a command'
+                        selectText: `Pick a command`
                     });
                 }
 
@@ -65,10 +65,10 @@ export class CommandDocumentationManager extends DocumentationTreeManager {
             .sort((a, b) => a.name < b.name ? -1 : 1);
 
         return {
-            id: 'index',
-            name: 'Help',
-            tags: [''],
-            type: 'group',
+            id: `index`,
+            name: `Help`,
+            tags: [``],
+            type: `group`,
             embed: {
                 color: 0x7289da,
                 fields: [
@@ -77,58 +77,57 @@ export class CommandDocumentationManager extends DocumentationTreeManager {
                         value: this.#listCommandNames(g.items.filter(i => i.hidden !== true).map(i => i.name))
                     })),
                     {
-                        name: '\u200B',
-                        value: `For more information about commands, do \`b!help <commandname>\` or visit <${this.#cluster.util.websiteLink('/commands')}>.\n` +
-                            `Want to support the bot? Donation links are available at <${this.#cluster.util.websiteLink('/donate')}> - all donations go directly towards recouping hosting costs.`
+                        name: `\u200B`,
+                        value: `For more information about commands, do \`b!help <commandname>\` or visit <${this.#cluster.util.websiteLink(`/commands`)}>.\nWant to support the bot? Donation links are available at <${this.#cluster.util.websiteLink(`/donate`)}> - all donations go directly towards recouping hosting costs.`
                     }
                 ]
             },
-            selectText: 'Pick a command category',
+            selectText: `Pick a command category`,
             items: sortedCategories
         };
     }
 
     #listCommandNames(names: readonly string[]): string {
         if (names.length === 0)
-            return 'No commands';
+            return `No commands`;
 
         function* getPotentialResults(): Generator<string> {
             let removed = 0;
             const items = [...names];
-            const padding = '```';
-            yield `${padding}${items.join(', ')}${padding}`;
+            const padding = `\`\`\``;
+            yield `${padding}${items.join(`, `)}${padding}`;
             while (items.length > 0) {
                 items.pop();
                 removed++;
-                yield `${padding}${items.join(', ')}${padding}+ ${removed} more`;
+                yield `${padding}${items.join(`, `)}${padding}+ ${removed} more`;
             }
         }
 
-        const charLimit = discord.getLimit('embed.field.value');
+        const charLimit = discord.getLimit(`embed.field.value`);
         for (const result of getPotentialResults())
             if (result.length <= charLimit)
                 return result;
 
-        return `${names.length} ${pluralise(names.length, 'command')}`;
+        return `${names.length} ${pluralise(names.length, `command`)}`;
     }
 
-    protected noMatches(): Awaitable<Omit<AdvancedMessageContent, 'components'>> {
+    protected noMatches(): Awaitable<Omit<AdvancedMessageContent, `components`>> {
         return {
-            content: '❌ Oops, I couldnt find that command! Try using `b!help` for a list of all commands',
+            content: `❌ Oops, I couldnt find that command! Try using \`b!help\` for a list of all commands`,
             embeds: []
         };
     }
 
-    #getCommandDocs(result: Exclude<CommandGetResult, { state: 'NOT_FOUND'; }>): Documentation {
+    #getCommandDocs(result: Exclude<CommandGetResult, { state: `NOT_FOUND`; }>): Documentation {
         const description = [];
         switch (result.state) {
-            case 'ALLOWED':
+            case `ALLOWED`:
                 break;
-            case 'BLACKLISTED':
-            case 'DISABLED':
-            case 'NOT_IN_GUILD':
-            case 'MISSING_PERMISSIONS':
-            case 'MISSING_ROLE':
+            case `BLACKLISTED`:
+            case `DISABLED`:
+            case `NOT_IN_GUILD`:
+            case `MISSING_PERMISSIONS`:
+            case `MISSING_ROLE`:
                 description.push(codeBlock(`❌ You cannot use b!${result.detail.command.name}`));
                 break;
         }
@@ -138,10 +137,10 @@ export class CommandDocumentationManager extends DocumentationTreeManager {
             description.push(command.description);
 
         if (command.aliases.length > 0)
-            fields.push({ name: '**Aliases**', value: command.aliases.join(', ') });
+            fields.push({ name: `**Aliases**`, value: command.aliases.join(`, `) });
 
         if (command.flags.length > 0)
-            fields.push({ name: '**Flags**', value: humanize.flags(command.flags).join('\n') });
+            fields.push({ name: `**Flags**`, value: humanize.flags(command.flags).join(`\n`) });
 
         const signatures = command.signatures
             .filter(c => !c.hidden)
@@ -153,7 +152,7 @@ export class CommandDocumentationManager extends DocumentationTreeManager {
 
         const pages: DocumentationPage[] = [];
         for (const signature of signatures) {
-            const usage = `b!${command.name}${signature.usage !== '' ? ` ${signature.usage}` : ''}`;
+            const usage = `b!${command.name}${signature.usage !== `` ? ` ${signature.usage}` : ``}`;
             pages.push({
                 name: usage,
                 embed: {
@@ -161,7 +160,7 @@ export class CommandDocumentationManager extends DocumentationTreeManager {
                         ...fields,
                         {
                             name: `ℹ️  ${usage}`,
-                            value: `${signature.notes.map(n => `> ${n}`).join('\n')}\n\n${signature.description}`.trim()
+                            value: `${signature.notes.map(n => `> ${n}`).join(`\n`)}\n\n${signature.description}`.trim()
                         }
                     ]
                 }
@@ -171,60 +170,60 @@ export class CommandDocumentationManager extends DocumentationTreeManager {
         return {
             id: command.id,
             name: command.name,
-            type: 'paged',
-            hidden: result.state !== 'ALLOWED',
+            type: `paged`,
+            hidden: result.state !== `ALLOWED`,
             tags: [command.name, ...command.aliases],
             embed: {
                 url: command.isOnWebsite ? `/commands#${command.name}` : undefined,
-                description: description.join('\n'),
+                description: description.join(`\n`),
                 color: this.#getColor(command.category)
             },
-            selectText: 'Pick a command signature',
+            selectText: `Pick a command signature`,
             pages: pages.sort((a, b) => a.name < b.name ? -1 : 1)
         };
     }
 
     #getColor(type: string): number {
         switch (type.toLowerCase()) {
-            case 'custom': return 0x7289da;
-            case 'general': return 0xefff00;
-            case 'nsfw': return 0x010101;
-            case 'image': return 0xefff00;
-            case 'admin': return 0xff0000;
-            case 'social': return 0xefff00;
-            case 'owner': return 0xff0000;
-            case 'developer': return 0xff0000;
-            case 'staff': return 0xff0000;
-            case 'support': return 0xff0000;
+            case `custom`: return 0x7289da;
+            case `general`: return 0xefff00;
+            case `nsfw`: return 0x010101;
+            case `image`: return 0xefff00;
+            case `admin`: return 0xff0000;
+            case `social`: return 0xefff00;
+            case `owner`: return 0xff0000;
+            case `developer`: return 0xff0000;
+            case `staff`: return 0xff0000;
+            case `support`: return 0xff0000;
             default: return 0;
         }
     }
 
     *#getParameterNotes(parameter: CommandParameter): Generator<string> {
         switch (parameter.kind) {
-            case 'literal':
+            case `literal`:
                 if (parameter.alias.length > 0)
-                    yield `\`${parameter.name}\` can be replaced with ${humanize.smartJoin(parameter.alias.map(a => `\`${a}\``), ', ', ' or ')}`;
+                    yield `\`${parameter.name}\` can be replaced with ${humanize.smartJoin(parameter.alias.map(a => `\`${a}\``), `, `, ` or `)}`;
                 break;
-            case 'concatVar':
-            case 'singleVar': {
+            case `concatVar`:
+            case `singleVar`: {
                 const result = [];
                 if (parameter.type.descriptionSingular !== undefined)
                     result.push(` should be ${parameter.type.descriptionSingular}`);
                 if (parameter.fallback !== undefined && parameter.fallback.length > 0)
                     result.push(`defaults to \`${parameter.fallback}\``);
                 if (result.length > 0)
-                    yield `\`${parameter.name}\` ${result.join(' and ')}`;
+                    yield `\`${parameter.name}\` ${result.join(` and `)}`;
                 break;
             }
-            case 'greedyVar': {
+            case `greedyVar`: {
                 const result = [];
                 if (parameter.minLength > 1)
                     result.push(`${parameter.minLength} or more`);
                 if (parameter.type.descriptionPlural !== undefined)
                     result.push(parameter.type.descriptionPlural);
                 if (result.length > 0)
-                    yield `\`${parameter.name}\` are ${result.join(' ')}`;
+                    yield `\`${parameter.name}\` are ${result.join(` `)}`;
                 break;
 
             }

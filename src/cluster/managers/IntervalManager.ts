@@ -16,7 +16,7 @@ export class IntervalManager {
     }
 
     public async invokeAll(): Promise<void> {
-        const nonce = Math.floor(Math.random() * 0xffffffff).toString(16).padStart(8, '0').toUpperCase();
+        const nonce = Math.floor(Math.random() * 0xffffffff).toString(16).padStart(8, `0`).toUpperCase();
 
         const intervals = (await this.#cluster.database.guilds.getIntervals())
             .map(i => ({ guild: this.#cluster.discord.guilds.get(i.guildId), interval: i.interval }))
@@ -27,20 +27,20 @@ export class IntervalManager {
         const resolutions = await Promise.all(intervals.map(async ({ interval, guild }) => {
             this.#cluster.logger.debug(`[${nonce}] Performing interval on ${guild.id}`);
             const result = await this.#cluster.intervals.invoke(guild, interval);
-            return { result: typeof result === 'string' ? result : 'SUCCESS' as const, guild: guild.id };
+            return { result: typeof result === `string` ? result : `SUCCESS` as const, guild: guild.id };
         }));
 
         this.#cluster.logger.log(resolutions);
 
         const { success, failed, tooLong } = resolutions.reduce((p, c) => {
             switch (c.result) {
-                case 'TOO_LONG':
+                case `TOO_LONG`:
                     p.tooLong.push(c.guild);
                     break;
-                case 'FAILED':
+                case `FAILED`:
                     p.failed.push(c.guild);
                     break;
-                case 'SUCCESS':
+                case `SUCCESS`:
                     p.success.push(c.guild);
                     break;
             }
@@ -49,32 +49,32 @@ export class IntervalManager {
 
         this.#cluster.logger.info(`[${nonce}] Intervals complete. ${success.length} success | ${failed.length} fail | ${tooLong.length} unresolved`);
         if (tooLong.length > 0) {
-            this.#cluster.logger.info(`[${nonce}] Unresolved in:\n${tooLong.join('\n')}`);
+            this.#cluster.logger.info(`[${nonce}] Unresolved in:\n${tooLong.join(`\n`)}`);
         }
     }
 
-    public async invoke(guild: Guild): Promise<ExecutionResult | 'NO_INTERVAL' | 'TOO_LONG' | 'FAILED' | 'MISSING_AUTHORIZER' | 'MISSING_CHANNEL'>
-    public async invoke(guild: Guild, interval: GuildTriggerTag): Promise<ExecutionResult | 'TOO_LONG' | 'FAILED' | 'MISSING_AUTHORIZER' | 'MISSING_CHANNEL'>
-    public async invoke(guild: Guild, interval?: GuildTriggerTag): Promise<ExecutionResult | 'NO_INTERVAL' | 'TOO_LONG' | 'FAILED' | 'MISSING_AUTHORIZER' | 'MISSING_CHANNEL'> {
+    public async invoke(guild: Guild): Promise<ExecutionResult | `NO_INTERVAL` | `TOO_LONG` | `FAILED` | `MISSING_AUTHORIZER` | `MISSING_CHANNEL`>
+    public async invoke(guild: Guild, interval: GuildTriggerTag): Promise<ExecutionResult | `TOO_LONG` | `FAILED` | `MISSING_AUTHORIZER` | `MISSING_CHANNEL`>
+    public async invoke(guild: Guild, interval?: GuildTriggerTag): Promise<ExecutionResult | `NO_INTERVAL` | `TOO_LONG` | `FAILED` | `MISSING_AUTHORIZER` | `MISSING_CHANNEL`> {
         interval ??= await this.#cluster.database.guilds.getInterval(guild.id);
         if (interval === undefined)
-            return 'NO_INTERVAL';
+            return `NO_INTERVAL`;
 
         const id = interval.authorizer ?? interval.author;
-        const member = await this.#cluster.util.getMember(guild, id ?? '');
+        const member = await this.#cluster.util.getMember(guild, id ?? ``);
         if (member === undefined)
-            return 'MISSING_AUTHORIZER';
+            return `MISSING_AUTHORIZER`;
         const channel = guild.channels.find(guard.isTextableChannel);
         if (channel === undefined)
-            return 'MISSING_CHANNEL';
+            return `MISSING_CHANNEL`;
 
         return await Promise.race([
             this.#invoke(member, channel, interval),
-            sleep(this.timeLimit.asMilliseconds()).then(() => 'TOO_LONG' as const)
+            sleep(this.timeLimit.asMilliseconds()).then(() => `TOO_LONG` as const)
         ]);
     }
 
-    async #invoke(member: Member, channel: KnownGuildTextableChannel, interval: GuildTriggerTag): Promise<ExecutionResult | 'FAILED'> {
+    async #invoke(member: Member, channel: KnownGuildTextableChannel, interval: GuildTriggerTag): Promise<ExecutionResult | `FAILED`> {
         try {
             const result = await this.#cluster.bbtag.execute(interval.content, {
                 message: {
@@ -84,22 +84,22 @@ export class IntervalManager {
                     createdAt: moment.now(),
                     attachments: [],
                     embeds: [],
-                    content: '',
+                    content: ``,
                     id: snowflake.create().toString()
                 },
-                limit: 'customCommandLimit',
-                inputRaw: '',
+                limit: `customCommandLimit`,
+                inputRaw: ``,
                 isCC: true,
-                rootTagName: '_interval',
+                rootTagName: `_interval`,
                 authorId: interval.author ?? undefined,
                 authorizerId: interval.authorizer ?? undefined,
                 silent: true
             });
-            this.#cluster.logger.log('Interval on guild', member.guild.id, 'executed in', result.duration.total);
+            this.#cluster.logger.log(`Interval on guild`, member.guild.id, `executed in`, result.duration.total);
             return result;
         } catch (err: unknown) {
-            this.#cluster.logger.error('Issue with interval:', member.guild, err);
-            return 'FAILED';
+            this.#cluster.logger.error(`Issue with interval:`, member.guild, err);
+            return `FAILED`;
         }
     }
 }

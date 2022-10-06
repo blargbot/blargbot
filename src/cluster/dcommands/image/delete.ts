@@ -4,11 +4,11 @@ import { ImageResult } from '@blargbot/image/types';
 export class DeleteCommand extends GlobalImageCommand {
     public constructor() {
         super({
-            name: 'delete',
+            name: `delete`,
             definitions: [
                 {
-                    parameters: '{text+}',
-                    description: 'Shows that you\'re about to delete something.',
+                    parameters: `{text+}`,
+                    description: `Shows that you're about to delete something.`,
                     execute: (ctx, [text]) => this.render(ctx, text.asString)
                 }
             ]
@@ -17,6 +17,6 @@ export class DeleteCommand extends GlobalImageCommand {
 
     public async render(context: CommandContext, text: string): Promise<ImageResult | string> {
         text = await context.util.resolveTags(context, text);
-        return await this.renderImage(context, 'delete', { text });
+        return await this.renderImage(context, `delete`, { text });
     }
 }

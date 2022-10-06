@@ -37,18 +37,18 @@ export class BaseClient {
         const shards = getRange(this.discord.options.firstShardID ?? 0, this.discord.options.lastShardID ?? 0);
         const remainingShards = new Set(shards);
         await Promise.all([
-            new Promise(resolve => this.discord.once('ready', resolve)).then(() => this.logger.init('discord connected')),
+            new Promise(resolve => this.discord.once(`ready`, resolve)).then(() => this.logger.init(`discord connected`)),
             createShardReadyWaiter(this.discord, remainingShards, this.logger),
             this.discord.connect()
         ]);
     }
 
     public async start(): Promise<void> {
-        await this.database.connect().then(() => this.logger.init('database connected'));
+        await this.database.connect().then(() => this.logger.init(`database connected`));
         const application = await this.discord.getOAuthApplication();
         this.#owners = application.team?.members.filter(m => m.membership_state === OAuthTeamMemberState.ACCEPTED).map(m => m.user.id)
             ?? [application.owner.id];
-        this.logger.init('Loaded', this.#owners, 'user(s) as owners');
+        this.logger.init(`Loaded`, this.#owners, `user(s) as owners`);
     }
 }
 
@@ -59,13 +59,13 @@ function createShardReadyWaiter(discord: Discord, shards: Set<number>, logger: L
                 return;
 
             if (shards.size > 0)
-                return logger.info('Shard', shardId, 'is ready. Remaining shards: [', ...[...shards].flatMap(s => [s, ',']).slice(0, -1), ']');
+                return logger.info(`Shard`, shardId, `is ready. Remaining shards: [`, ...[...shards].flatMap(s => [s, `,`]).slice(0, -1), `]`);
 
-            discord.off('shardReady', shardReady);
-            logger.info('Shard', shardId, 'is ready. All shards ready');
+            discord.off(`shardReady`, shardReady);
+            logger.info(`Shard`, shardId, `is ready. All shards ready`);
             res();
         }
 
-        discord.on('shardReady', shardReady);
+        discord.on(`shardReady`, shardReady);
     });
 }

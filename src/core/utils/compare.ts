@@ -27,16 +27,16 @@ export function compare(a: string, b: string): number {
 type BlockTypePairs = `${keyof BlockTypes}|${keyof BlockTypes}`;
 type BlockType = BlockTypes[keyof BlockTypes];
 type BlockTypes = {
-    'string': string;
-    'number': number;
-    'undefined': undefined;
+    string: string;
+    number: number;
+    undefined: undefined;
 }
 
 type ExtractBlockTypeCalls<T extends string> = T extends `${infer A}|${infer B}` ? A extends keyof BlockTypes ? B extends keyof BlockTypes ?
     { name: T; args: [left: BlockTypes[A], right: BlockTypes[B]]; }
     : never : never : never;
 
-type TypedSorter = { [P in ExtractBlockTypeCalls<BlockTypePairs> as P['name']]: (...args: P['args']) => number };
+type TypedSorter = { [P in ExtractBlockTypeCalls<BlockTypePairs> as P[`name`]]: (...args: P[`args`]) => number };
 type GenericSorter = { [P in BlockTypePairs]: (left: BlockType, right: BlockType) => number }
 
 const sorter = <GenericSorter><TypedSorter>{

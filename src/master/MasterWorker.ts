@@ -11,7 +11,7 @@ export class MasterWorker extends BaseWorker<MasterIPCContract> {
     public constructor(
         logger: Logger,
         config: Configuration,
-        options: Omit<MasterOptions, 'worker'>
+        options: Omit<MasterOptions, `worker`>
     ) {
         super(logger);
 

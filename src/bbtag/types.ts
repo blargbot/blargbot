@@ -60,7 +60,7 @@ export interface SerializedBBTagContext {
     scope: BBTagRuntimeScope;
     inputRaw: string;
     flags: readonly FlagDefinition[];
-    data: Pick<BBTagContextState, 'query' | 'ownedMsgs' | 'stackSize' | 'allowedMentions'>;
+    data: Pick<BBTagContextState, `query` | `ownedMsgs` | `stackSize` | `allowedMentions`>;
     tagName: string;
     rootTagName: string;
     author: string | undefined;
@@ -72,14 +72,14 @@ export interface SerializedBBTagContext {
 }
 
 export type BBTagContextMessage = Pick<Message<KnownGuildTextableChannel>,
-    | 'id'
-    | 'createdAt'
-    | 'content'
-    | 'channel'
-    | 'member'
-    | 'author'
-    | 'attachments'
-    | 'embeds'
+    | `id`
+    | `createdAt`
+    | `content`
+    | `channel`
+    | `member`
+    | `author`
+    | `attachments`
+    | `embeds`
 >
 export interface BBTagContextState {
     query: {
@@ -217,14 +217,14 @@ export interface SubtagSignature {
 type AwaitableIterable<T> = (Iterable<T> | AsyncIterable<T>); // To exclude string
 
 type SubtagReturnTypeValueMap = {
-    'hex': number;
-    'number': number | bigint;
-    'boolean': boolean;
-    'string': string;
-    'id': string;
-    'json': JToken;
-    'embed': Embed;
-    'nothing': undefined;
+    hex: number;
+    number: number | bigint;
+    boolean: boolean;
+    string: string;
+    id: string;
+    json: JToken;
+    embed: Embed;
+    nothing: undefined;
 }
 
 type SubtagReturnTypeAtomicMap = SubtagReturnTypeValueMap & {
@@ -232,21 +232,21 @@ type SubtagReturnTypeAtomicMap = SubtagReturnTypeValueMap & {
 }
 
 type SubtagReturnTypeUnion<T extends Array<keyof SubtagReturnTypeAtomicMap>, Other = never> = {
-    [P in ArrayJoin<T, '|'>]: SubtagReturnTypeAtomicMap[T[number]] | Other;
+    [P in ArrayJoin<T, `|`>]: SubtagReturnTypeAtomicMap[T[number]] | Other;
 }
 
-type SubtagReturnTypeMapHelper = Omit<SubtagReturnTypeAtomicMap, 'nothing'>
-    & SubtagReturnTypeUnion<['number', 'number[]']>
-    & SubtagReturnTypeUnion<['boolean', 'number']>
-    & SubtagReturnTypeUnion<['string', 'nothing']>
+type SubtagReturnTypeMapHelper = Omit<SubtagReturnTypeAtomicMap, `nothing`>
+    & SubtagReturnTypeUnion<[`number`, `number[]`]>
+    & SubtagReturnTypeUnion<[`boolean`, `number`]>
+    & SubtagReturnTypeUnion<[`string`, `nothing`]>
     // & SubtagReturnTypeUnion<['json', 'nothing']>
-    & SubtagReturnTypeUnion<['json[]', 'nothing']>
-    & SubtagReturnTypeUnion<['json', 'nothing']>
+    & SubtagReturnTypeUnion<[`json[]`, `nothing`]>
+    & SubtagReturnTypeUnion<[`json`, `nothing`]>
     & {
-        'unknown': AsyncIterable<string | undefined>;
-        'nothing': void;
-        'error': never;
-        'loop': AwaitableIterable<string>;
+        unknown: AsyncIterable<string | undefined>;
+        nothing: void;
+        error: never;
+        loop: AwaitableIterable<string>;
     }
 
 export type SubtagReturnTypeMap = {

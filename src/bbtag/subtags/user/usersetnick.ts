@@ -6,16 +6,16 @@ import { SubtagType } from '../../utils';
 export class UserSetNickSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: 'usersetnick',
+            name: `usersetnick`,
             category: SubtagType.USER,
-            aliases: ['setnick'],
+            aliases: [`setnick`],
             definition: [
                 {
-                    parameters: ['nick', 'user?'],
-                    description: 'Sets `user`\'s nickname to `nick`. Leave `nick` blank to reset their nickname.',
-                    exampleCode: '{usersetnick;super cool nickname}\n{//;Reset the the nickname}\n{usersetnick;}',
-                    exampleOut: '', //TODO meaningful output
-                    returns: 'nothing',
+                    parameters: [`nick`, `user?`],
+                    description: `Sets \`user\`'s nickname to \`nick\`. Leave \`nick\` blank to reset their nickname.`,
+                    exampleCode: `{usersetnick;super cool nickname}\n{//;Reset the the nickname}\n{usersetnick;}`,
+                    exampleOut: ``, //TODO meaningful output
+                    returns: `nothing`,
                     execute: (ctx, [nick, user]) => this.setUserNick(ctx, nick.value, user.value)
                 }
             ]
@@ -34,7 +34,7 @@ export class UserSetNickSubtag extends CompiledSubtag {
         } catch (err: unknown) {
             context.logger.error(err);
             if (err instanceof Error)
-                throw new BBTagRuntimeError('Could not change nickname');
+                throw new BBTagRuntimeError(`Could not change nickname`);
             throw err;
         }
     }

@@ -11,29 +11,29 @@ export function createGetRolePropTestCases(options: GetRolePropTestData): Subtag
 }
 
 function* createGetRolePropTestCasesIter(options: GetRolePropTestData): Generator<SubtagTestCase, void, undefined> {
-    yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'command', ['command']));
+    yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, `command`, [`command`]));
 
     if (options.quiet !== false) {
-        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'command', ['command', '']));
-        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'command', ['command', 'q']));
+        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, `command`, [`command`, ``]));
+        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, `command`, [`command`, `q`]));
     }
 
-    yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'other', [c.queryString ?? 'other role']));
+    yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, `other`, [c.queryString ?? `other role`]));
     if (options.quiet !== false) {
-        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'other', [c.queryString ?? 'other role', '']));
-        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'other', [c.queryString ?? 'other role', 'q']));
+        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, `other`, [c.queryString ?? `other role`, ``]));
+        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, `other`, [c.queryString ?? `other role`, `q`]));
     }
 
     const notFound = options.notFound ?? (r => new RoleNotFoundError(r));
 
     yield {
-        code: options.generateCode('unknown role'),
-        expected: `\`${notFound('unknown role').message}\``,
+        code: options.generateCode(`unknown role`),
+        expected: `\`${notFound(`unknown role`).message}\``,
         errors: [
-            { start: 0, end: options.generateCode('unknown role').length, error: notFound('unknown role') }
+            { start: 0, end: options.generateCode(`unknown role`).length, error: notFound(`unknown role`) }
         ],
         setup(ctx) {
-            ctx.util.setup(m => m.findRoles(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id).value, 'unknown role'))
+            ctx.util.setup(m => m.findRoles(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id).value, `unknown role`))
                 .verifiable(1)
                 .thenResolve([]);
         }
@@ -41,25 +41,25 @@ function* createGetRolePropTestCasesIter(options: GetRolePropTestData): Generato
 
     if (options.quiet !== false) {
         yield {
-            code: options.generateCode('unknown role', ''),
-            expected: `\`${notFound('unknown role').message}\``,
+            code: options.generateCode(`unknown role`, ``),
+            expected: `\`${notFound(`unknown role`).message}\``,
             errors: [
-                { start: 0, end: options.generateCode('unknown role', '').length, error: notFound('unknown role') }
+                { start: 0, end: options.generateCode(`unknown role`, ``).length, error: notFound(`unknown role`) }
             ],
             setup(ctx) {
-                ctx.util.setup(m => m.findRoles(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id).value, 'unknown role'))
+                ctx.util.setup(m => m.findRoles(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id).value, `unknown role`))
                     .verifiable(1)
                     .thenResolve([]);
             }
         };
         yield {
-            code: options.generateCode('unknown role', 'q'),
-            expected: options.quiet ?? `\`${notFound('unknown role').message}\``,
+            code: options.generateCode(`unknown role`, `q`),
+            expected: options.quiet ?? `\`${notFound(`unknown role`).message}\``,
             errors: [
-                { start: 0, end: options.generateCode('unknown role', 'q').length, error: notFound('unknown role').withDisplay(options.quiet) }
+                { start: 0, end: options.generateCode(`unknown role`, `q`).length, error: notFound(`unknown role`).withDisplay(options.quiet) }
             ],
             setup(ctx) {
-                ctx.util.setup(m => m.findRoles(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id).value, 'unknown role'))
+                ctx.util.setup(m => m.findRoles(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id).value, `unknown role`))
                     .verifiable(1)
                     .thenResolve([]);
             }
@@ -85,7 +85,7 @@ interface GetRolePropTestCase {
     assert?: (result: string, role: Role, context: BBTagContext, test: SubtagTestContext) => void;
 }
 
-function createTestCase(data: GetRolePropTestData, testCase: GetRolePropTestCase, roleKey: keyof SubtagTestContext['roles'], args: Parameters<GetRolePropTestData['generateCode']>): SubtagTestCase {
+function createTestCase(data: GetRolePropTestData, testCase: GetRolePropTestCase, roleKey: keyof SubtagTestContext[`roles`], args: Parameters<GetRolePropTestData[`generateCode`]>): SubtagTestCase {
     const code = testCase.generateCode?.(...args) ?? data.generateCode(...args);
     return {
         code,
@@ -98,8 +98,8 @@ function createTestCase(data: GetRolePropTestData, testCase: GetRolePropTestCase
         postSetup(bbctx, ctx) {
             const role = bbctx.guild.roles.get(ctx.roles[roleKey].id);
             if (role === undefined)
-                throw new Error('Cannot find the role under test');
-            if (args[0] !== undefined && args[0] !== '') {
+                throw new Error(`Cannot find the role under test`);
+            if (args[0] !== undefined && args[0] !== ``) {
                 ctx.util.setup(m => m.findRoles(role.guild, args[0]))
                     .thenResolve([role]);
             }
@@ -111,7 +111,7 @@ function createTestCase(data: GetRolePropTestData, testCase: GetRolePropTestCase
                 return;
             const role = bbctx.guild.roles.get(ctx.roles[roleKey].id);
             if (role === undefined)
-                throw new Error('Cannot find the role under test');
+                throw new Error(`Cannot find the role under test`);
             testCase.assert(result, role, bbctx, ctx);
         }
     };

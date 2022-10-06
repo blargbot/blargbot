@@ -7,29 +7,29 @@ import { EmbedOptions, Member } from 'eris';
 export class VoteBanCommand extends GuildCommand {
     public constructor() {
         super({
-            name: 'voteban',
-            aliases: ['pollban', 'vb', 'pb'],
+            name: `voteban`,
+            aliases: [`pollban`, `vb`, `pb`],
             category: CommandType.GENERAL,
-            description: 'Its a meme, dont worry',
+            description: `Its a meme, dont worry`,
             definitions: [
                 {
-                    parameters: '',
-                    description: 'Gets the people with the most votes to be banned.',
+                    parameters: ``,
+                    description: `Gets the people with the most votes to be banned.`,
                     execute: (ctx) => this.getTop(ctx)
                 },
                 {
-                    parameters: 'info {user:member+}',
-                    description: 'Checks the status of the petition to ban someone.',
+                    parameters: `info {user:member+}`,
+                    description: `Checks the status of the petition to ban someone.`,
                     execute: (ctx, [user]) => this.getVotes(ctx, user.asMember)
                 },
                 {
-                    parameters: '{user:member} {reason+?}',
-                    description: 'Signs a petition to ban a someone',
+                    parameters: `{user:member} {reason+?}`,
+                    description: `Signs a petition to ban a someone`,
                     execute: (ctx, [user, reason]) => this.sign(ctx, user.asMember, reason.asOptionalString)
                 },
                 {
-                    parameters: 'forgive {user:member+}',
-                    description: 'Removes your signature to ban someone',
+                    parameters: `forgive {user:member+}`,
+                    description: `Removes your signature to ban someone`,
                     execute: (ctx, [user]) => this.unsign(ctx, user.asMember)
                 }
             ]
@@ -44,12 +44,12 @@ export class VoteBanCommand extends GuildCommand {
             .filter(e => e[1] > 0)
             .sort((a, b) => b[1] - a[1])
             .slice(0, 10)
-            .map((e, i) => `**${i + 1}.** <@${e[0]}> - ${e[1]} ${p(e[1], 'signature')}`);
+            .map((e, i) => `**${i + 1}.** <@${e[0]}> - ${e[1]} ${p(e[1], `signature`)}`);
 
         return {
             author: context.util.embedifyAuthor(context.channel.guild),
-            title: this.info('Top 10 Vote bans'),
-            description: entries.length === 0 ? 'No petitions have been signed yet!' : entries.join('\n')
+            title: this.info(`Top 10 Vote bans`),
+            description: entries.length === 0 ? `No petitions have been signed yet!` : entries.join(`\n`)
         };
     }
 
@@ -60,10 +60,10 @@ export class VoteBanCommand extends GuildCommand {
         return {
             author: context.util.embedifyAuthor(user),
             color: discord.getMemberColor(user),
-            title: this.info('Vote ban signatures'),
+            title: this.info(`Vote ban signatures`),
             description: voteLines.length === 0 ? `No one has voted to ban ${user.mention} yet.`
-                : voteLines.length > 20 ? `${voteLines.slice(0, 15).join('\n')}\n... and ${votes.length - 15} more`
-                    : voteLines.join('\n')
+                : voteLines.length > 20 ? `${voteLines.slice(0, 15).join(`\n`)}\n... and ${votes.length - 15} more`
+                    : voteLines.join(`\n`)
         };
     }
 
@@ -73,11 +73,9 @@ export class VoteBanCommand extends GuildCommand {
 
         const newTotal = await context.database.guilds.addVoteBan(context.channel.guild.id, user.id, context.author.id, reason);
         if (newTotal === false)
-            return this.error('Seems the petitions office didnt like that one! Please try again');
+            return this.error(`Seems the petitions office didnt like that one! Please try again`);
 
-        return this.success(`${context.author.mention} has signed to ban ${user.mention}! ` +
-            `A total of **${newTotal} ${p(newTotal, 'person** has', 'people** have')} signed the petition now.` +
-            (reason !== undefined ? `\n**Reason**: ${reason}` : ''));
+        return this.success(`${context.author.mention} has signed to ban ${user.mention}! A total of **${newTotal} ${p(newTotal, `person** has`, `people** have`)} signed the petition now.${reason !== undefined ? `\n**Reason**: ${reason}` : ``}`);
     }
 
     public async unsign(context: GuildCommandContext, user: Member): Promise<string> {
@@ -86,9 +84,8 @@ export class VoteBanCommand extends GuildCommand {
 
         const newTotal = await context.database.guilds.removeVoteBan(context.channel.guild.id, user.id, context.author.id);
         if (newTotal === false)
-            return this.error('Seems the petitions office didnt like that one! Please try again');
+            return this.error(`Seems the petitions office didnt like that one! Please try again`);
 
-        return this.success(`${context.author.mention} reconsidered and forgiven ${user.mention}! ` +
-            `A total of **${newTotal} ${p(newTotal, 'person** has', 'people** have')} signed the petition now.`);
+        return this.success(`${context.author.mention} reconsidered and forgiven ${user.mention}! A total of **${newTotal} ${p(newTotal, `person** has`, `people** have`)} signed the petition now.`);
     }
 }

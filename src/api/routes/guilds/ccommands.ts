@@ -9,18 +9,18 @@ export class CCommandsRoute extends BaseRoute {
     readonly #api: Api;
 
     public constructor(api: Api) {
-        super('/guilds');
+        super(`/guilds`);
 
         this.#api = api;
 
         this.middleware.push(async (req, _, next) => await this.#checkAccess(req.params.guildId, this.getUserId(req, true)) ?? await next());
 
-        this.addRoute('/:guildId/ccommands', {
+        this.addRoute(`/:guildId/ccommands`, {
             get: ({ request }) => this.listCCommands(request.params.guildId),
             post: ({ request }) => this.createCommand(request.params.guildId, request.body, this.getUserId(request))
         });
 
-        this.addRoute('/:guildId/ccommands/:commandName', {
+        this.addRoute(`/:guildId/ccommands/:commandName`, {
             get: ({ request }) => this.getCommand(request.params.guildId, request.params.commandName),
             delete: ({ request }) => this.deleteCommand(request.params.guildId, request.params.commandName),
             put: ({ request }) => this.setCommand(request.params.guildId, request.params.commandName, request.body, this.getUserId(request)),
@@ -48,7 +48,7 @@ export class CCommandsRoute extends BaseRoute {
 
         const current = await this.#api.database.guilds.getCommand(guildId, commandName);
         if (current === undefined)
-            return await this.#createCommand(guildId, commandName, mapped.value.content ?? '', author);
+            return await this.#createCommand(guildId, commandName, mapped.value.content ?? ``, author);
         return await this.#editCommand(guildId, commandName, mapped.value, author, current);
     }
 
@@ -68,7 +68,7 @@ export class CCommandsRoute extends BaseRoute {
 
     async #createCommand(guildId: string, commandName: string, content: string, author: string): Promise<ApiResponse> {
         if (commandName.length > 100)
-            return this.badRequest('name cannot be longer than 100 characters');
+            return this.badRequest(`name cannot be longer than 100 characters`);
 
         const success = await this.#api.database.guilds.setCommand(guildId, commandName, {
             id: snowflake.create().toString(),
@@ -77,7 +77,7 @@ export class CCommandsRoute extends BaseRoute {
         });
 
         if (!success)
-            return this.internalServerError('Failed to create custom command');
+            return this.internalServerError(`Failed to create custom command`);
 
         return this.created({ name: commandName, content, author });
     }
@@ -95,7 +95,7 @@ export class CCommandsRoute extends BaseRoute {
     }
 
     async #editCommand(guildId: string, commandName: string, update: Partial<NamedGuildSourceCommandTag>, author: string, current: GuildCommandTag): Promise<ApiResponse> {
-        if ('alias' in current)
+        if (`alias` in current)
             return this.forbidden(`Custom command ${commandName} is an imported tag and cannot be edited`);
 
         let success = false;
@@ -111,7 +111,7 @@ export class CCommandsRoute extends BaseRoute {
 
         success = await this.#api.database.guilds.updateCommand(guildId, commandName, command) || success;
         if (!success)
-            return this.internalServerError('Failed to update custom command');
+            return this.internalServerError(`Failed to update custom command`);
 
         const newCommand = await this.#api.database.guilds.getCommand(guildId, commandName);
         if (newCommand === undefined)
@@ -132,7 +132,7 @@ export class CCommandsRoute extends BaseRoute {
         if (userId === undefined)
             return this.unauthorized();
 
-        const perms = await this.#api.worker.request('getGuildPermission', { userId, guildId });
+        const perms = await this.#api.worker.request(`getGuildPermission`, { userId, guildId });
         if (perms === undefined)
             return this.notFound();
 

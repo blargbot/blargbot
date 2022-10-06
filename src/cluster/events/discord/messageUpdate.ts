@@ -8,11 +8,11 @@ const reemitMessageTypes = new Set([
     MessageType.ContextMenuCommand
 ]);
 
-export class DiscordMessageUpdateHandler extends DiscordEventService<'messageUpdate'> {
+export class DiscordMessageUpdateHandler extends DiscordEventService<`messageUpdate`> {
     public constructor(
         protected readonly cluster: Cluster
     ) {
-        super(cluster.discord, 'messageUpdate', cluster.logger, (m, o) => this.execute(m, o));
+        super(cluster.discord, `messageUpdate`, cluster.logger, (m, o) => this.execute(m, o));
     }
 
     public async execute(message: Message<PossiblyUncachedTextableChannel>, oldMessage: OldMessage | null): Promise<void> {
@@ -22,11 +22,11 @@ export class DiscordMessageUpdateHandler extends DiscordEventService<'messageUpd
                 this.cluster.moderation.eventLog.messageUpdated(message, oldMessage),
                 this.cluster.moderation.chatLog.messageUpdated(message)
             ]);
-        } else if (oldMessage !== null && message.embeds.filter(e => e.type !== 'rich').length > oldMessage.embeds.filter(e => e.type !== 'rich').length) {
+        } else if (oldMessage !== null && message.embeds.filter(e => e.type !== `rich`).length > oldMessage.embeds.filter(e => e.type !== `rich`).length) {
             // This was just links getting embedded, no need to do anything here.
         } else if (reemitMessageTypes.has(message.type) && (message.flags & MessageFlags.Loading) === 0) {
             // The response was a deferred response, we should process this as a brand new message
-            this.cluster.discord.emit('messageCreate', message);
+            this.cluster.discord.emit(`messageCreate`, message);
         }
     }
 }

@@ -21,14 +21,11 @@ export function createDebugOutput(result: ExecutionResult): { content: string; f
 
     return {
         content: codeBlock(
-            `         Execution Time: ${humanize.duration(moment.duration(result.duration.active, 'ms'))}\n` +
-            `    Variables Committed: ${result.database.committed}\n` +
-            `Database Execution Time: ${humanize.duration(moment.duration(result.duration.database, 'ms'))}\n` +
-            `   Total Execution Time: ${humanize.duration(moment.duration(result.duration.total, 'ms'))}`,
-            'js'),
+            `         Execution Time: ${humanize.duration(moment.duration(result.duration.active, `ms`))}\n    Variables Committed: ${result.database.committed}\nDatabase Execution Time: ${humanize.duration(moment.duration(result.duration.database, `ms`))}\n   Total Execution Time: ${humanize.duration(moment.duration(result.duration.total, `ms`))}`,
+            `js`),
         files: [
             {
-                name: 'bbtag.debug.json',
+                name: `bbtag.debug.json`,
                 file: JSON.stringify({
                     tagName: result.tagName,
                     userInput: result.input,

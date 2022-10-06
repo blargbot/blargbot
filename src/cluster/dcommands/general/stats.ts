@@ -6,12 +6,12 @@ import moment from 'moment-timezone';
 export class StatsCommand extends GlobalCommand {
     public constructor() {
         super({
-            name: 'stats',
+            name: `stats`,
             category: CommandType.GENERAL,
             definitions: [
                 {
-                    parameters: '',
-                    description: 'Gives you some information about me',
+                    parameters: ``,
+                    description: `Gives you some information about me`,
                     execute: (ctx) => this.getStats(ctx)
                 }
             ]
@@ -19,7 +19,7 @@ export class StatsCommand extends GlobalCommand {
     }
 
     public async getStats(context: CommandContext): Promise<EmbedOptions> {
-        const clusterStats = Object.values(await context.cluster.worker.request('getClusterStats', undefined));
+        const clusterStats = Object.values(await context.cluster.worker.request(`getClusterStats`, undefined));
         const mappedStats = { guilds: 0, users: 0, channels: 0, rss: 0 };
         clusterStats.forEach(c => {
             mappedStats.guilds += c?.guilds ?? 0;
@@ -31,58 +31,58 @@ export class StatsCommand extends GlobalCommand {
         return {
             color: randChoose(avatarColours),
             timestamp: moment().toDate(),
-            title: 'Bot Statistics',
+            title: `Bot Statistics`,
             footer: {
-                text: 'blargbot',
+                text: `blargbot`,
                 icon_url: context.discord.user.avatarURL
             },
             fields: [{
-                name: 'Guilds',
+                name: `Guilds`,
                 value: mappedStats.guilds.toString(),
                 inline: true
             },
             {
-                name: 'Users',
+                name: `Users`,
                 value: mappedStats.users.toString(),
                 inline: true
             },
             {
-                name: 'Channels',
+                name: `Channels`,
                 value: mappedStats.channels.toString(),
                 inline: true
             },
             {
-                name: 'Shards',
+                name: `Shards`,
                 value: context.config.discord.shards.max.toString(),
                 inline: true
             },
             {
-                name: 'Clusters',
+                name: `Clusters`,
                 value: Math.ceil(context.config.discord.shards.max / context.config.discord.shards.perCluster).toString(),
                 inline: true
             },
             {
-                name: 'RAM',
+                name: `RAM`,
                 value: humanize.ram(mappedStats.rss),
                 inline: true
             },
             {
-                name: 'Version',
+                name: `Version`,
                 value: version,
                 inline: true
             },
             {
-                name: 'Uptime',
+                name: `Uptime`,
                 value: `<t:${context.cluster.createdAt.unix()}:R>`,
                 inline: true
             },
             {
-                name: 'Eris',
+                name: `Eris`,
                 value: eris.VERSION,
                 inline: true
             },
             {
-                name: 'Node.js',
+                name: `Node.js`,
                 value: process.version,
                 inline: true
             }

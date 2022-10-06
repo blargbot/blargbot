@@ -10,10 +10,10 @@ import reloadFactory from 'require-reload';
 const reload = reloadFactory(require);
 
 interface ModuleLoaderEvents<TModule> {
-    'add': [module: TModule];
-    'remove': [module: TModule];
-    'unlink': [module: TModule, key: string];
-    'link': [module: TModule, key: string];
+    add: [module: TModule];
+    remove: [module: TModule];
+    unlink: [module: TModule, key: string];
+    link: [module: TModule, key: string];
 }
 
 export abstract class BaseModuleLoader<TModule> extends EventEmitter<ModuleLoaderEvents<TModule>> {
@@ -30,10 +30,10 @@ export abstract class BaseModuleLoader<TModule> extends EventEmitter<ModuleLoade
         this.#root = getAbsolutePath(root);
         this.#modules = new MultiKeyMap<string, { module: TModule; location: string; }>();
 
-        this.#modules.on('add', ({ module }) => this.emit('add', module));
-        this.#modules.on('remove', ({ module }) => this.emit('remove', module));
-        this.#modules.on('link', ({ module }, key) => this.emit('link', module, key));
-        this.#modules.on('unlink', ({ module }, key) => this.emit('unlink', module, key));
+        this.#modules.on(`add`, ({ module }) => this.emit(`add`, module));
+        this.#modules.on(`remove`, ({ module }) => this.emit(`remove`, module));
+        this.#modules.on(`link`, ({ module }, key) => this.emit(`link`, module, key));
+        this.#modules.on(`unlink`, ({ module }, key) => this.emit(`unlink`, module, key));
     }
 
     public list(): Generator<TModule>;
@@ -57,7 +57,7 @@ export abstract class BaseModuleLoader<TModule> extends EventEmitter<ModuleLoade
 
     #load(fileNames: Iterable<string>, loader = require): void {
         const loaded = new Set<TModule>();
-        if (typeof fileNames === 'string')
+        if (typeof fileNames === `string`)
             fileNames = [fileNames];
 
         for (const fileName of fileNames) {
@@ -74,11 +74,11 @@ export abstract class BaseModuleLoader<TModule> extends EventEmitter<ModuleLoade
             } catch (err: unknown) {
                 if (err instanceof Error)
                     this.logger.error(err.stack);
-                this.logger.module(this.root, 'Error while loading module', fileName);
+                this.logger.module(this.root, `Error while loading module`, fileName);
             }
         }
 
-        this.logger.init(`Loaded ${loaded.size} ${p(loaded.size, 'module')} from ${this.#root}`);
+        this.logger.init(`Loaded ${loaded.size} ${p(loaded.size, `module`)} from ${this.#root}`);
     }
 
     public foreach(action: (module: TModule) => void): void;
@@ -113,7 +113,7 @@ export abstract class BaseModuleLoader<TModule> extends EventEmitter<ModuleLoade
     public source(module: string): string | undefined;
     public source(modules: Iterable<string>): Iterable<string>;
     public source(modules: string | Iterable<string>): string | Iterable<string> | undefined {
-        if (typeof modules === 'string')
+        if (typeof modules === `string`)
             return this.#modules.get(modules)?.location;
 
         return mapIter(modules, m => this.#modules.get(m)?.location, guard.hasValue);
@@ -126,8 +126,8 @@ export abstract class BaseModuleLoader<TModule> extends EventEmitter<ModuleLoade
 
     protected activate(fileName: string, rawModule: unknown): Array<ModuleResult<TModule>> {
         switch (typeof rawModule) {
-            case 'function':
-            case 'object': {
+            case `function`:
+            case `object`: {
                 if (!guard.hasValue(rawModule))
                     break;
                 const result = this.tryActivate(rawModule, fileName);
@@ -155,8 +155,8 @@ export abstract class BaseModuleLoader<TModule> extends EventEmitter<ModuleLoade
                 const location = path.join(dir, item);
                 if ((await fs.stat(location)).isDirectory())
                     directories.push(location);
-                else if (item.endsWith('.js'))
-                    yield location.replace(this.#root, '');
+                else if (item.endsWith(`.js`))
+                    yield location.replace(this.#root, ``);
             }
         }
     }
@@ -166,11 +166,11 @@ function getAbsolutePath(...segments: string[]): string {
     const result = path.join(...segments);
     if (path.isAbsolute(result))
         return result;
-    return path.join(__dirname, '..', result);
+    return path.join(__dirname, `..`, result);
 }
 
 function isPromiseLike<T>(value: T | PromiseLike<T>): value is PromiseLike<T> {
-    return typeof value === 'object' && value !== null && 'then' in value && typeof value.then === 'function';
+    return typeof value === `object` && value !== null && `then` in value && typeof value.then === `function`;
 }
 
 async function toArray<T>(source: AsyncIterable<T>): Promise<T[]> {

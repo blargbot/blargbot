@@ -56,7 +56,7 @@ export class Database {
         this.#rethink = new RethinkDb(options.rethink);
         this.#postgres = new PostgresDb(options.logger, options.postgres);
         this.#cassandra = new Cassandra({
-            localDataCenter: 'datacenter1',
+            localDataCenter: `datacenter1`,
             contactPoints: [...options.cassandra.contactPoints],
             keyspace: options.cassandra.keyspace,
             authProvider: new CassandraAuth.PlainTextAuthProvider(
@@ -82,9 +82,9 @@ export class Database {
         this.connect = () => Promise.resolve();
 
         await Promise.all([
-            this.#retryConnect('rethinkDb', () => this.#rethink.connect(), 5000, 10),
-            this.#retryConnect('cassandra', () => this.#cassandra.connect(), 5000, 10),
-            this.#retryConnect('postgresdb', () => this.#postgres.connect(), 5000, 10)
+            this.#retryConnect(`rethinkDb`, () => this.#rethink.connect(), 5000, 10),
+            this.#retryConnect(`cassandra`, () => this.#cassandra.connect(), 5000, 10),
+            this.#retryConnect(`postgresdb`, () => this.#postgres.connect(), 5000, 10)
         ]);
 
         await Promise.all([
@@ -99,10 +99,10 @@ export class Database {
         while (attempt++ < maxAttempts) {
             try {
                 await connect();
-                this.#logger.init(dbName, 'connected on attempt', attempt);
+                this.#logger.init(dbName, `connected on attempt`, attempt);
                 break;
             } catch (err: unknown) {
-                this.#logger.error('Failed to connect to', dbName, 'on attempt', attempt, '. Retrying in', intervalMs, 'ms', err);
+                this.#logger.error(`Failed to connect to`, dbName, `on attempt`, attempt, `. Retrying in`, intervalMs, `ms`, err);
                 await sleep(intervalMs);
             }
         }

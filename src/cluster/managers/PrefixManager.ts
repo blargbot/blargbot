@@ -21,7 +21,7 @@ export class PrefixManager {
     }
 
     public async getGuildPrefixes(guildId: string): Promise<readonly string[]> {
-        return await this.#guilds.getSetting(guildId, 'prefix') ?? [];
+        return await this.#guilds.getSetting(guildId, `prefix`) ?? [];
     }
 
     public async addGuildPrefix(guildId: string, prefix: string): Promise<boolean> {
@@ -29,7 +29,7 @@ export class PrefixManager {
         if (prefixes.size === prefixes.add(prefix.toLowerCase()).size)
             return false;
 
-        return await this.#guilds.setSetting(guildId, 'prefix', [...prefixes]);
+        return await this.#guilds.setSetting(guildId, `prefix`, [...prefixes]);
     }
 
     public async removeGuildPrefix(guildId: string, prefix: string): Promise<boolean> {
@@ -37,11 +37,11 @@ export class PrefixManager {
         if (!prefixes.delete(prefix.toLowerCase()))
             return false;
 
-        return await this.#guilds.setSetting(guildId, 'prefix', [...prefixes]);
+        return await this.#guilds.setSetting(guildId, `prefix`, [...prefixes]);
     }
 
     public async getUserPrefixes(userId: string): Promise<readonly string[]> {
-        return await this.#users.getSetting(userId, 'prefixes') ?? [];
+        return await this.#users.getSetting(userId, `prefixes`) ?? [];
     }
 
     public async addUserPrefix(userId: string, prefix: string): Promise<boolean> {
@@ -49,7 +49,7 @@ export class PrefixManager {
         if (prefixes.size === prefixes.add(prefix.toLowerCase()).size)
             return false;
 
-        return await this.#users.setSetting(userId, 'prefixes', [...prefixes]);
+        return await this.#users.setSetting(userId, `prefixes`, [...prefixes]);
     }
 
     public async removeUserPrefix(userId: string, prefix: string): Promise<boolean> {
@@ -57,7 +57,7 @@ export class PrefixManager {
         if (prefixes.delete(prefix.toLowerCase()))
             return false;
 
-        return await this.#users.setSetting(userId, 'prefixes', [...prefixes]);
+        return await this.#users.setSetting(userId, `prefixes`, [...prefixes]);
     }
 
     public async findPrefix(message: KnownMessage): Promise<string | undefined> {
@@ -70,7 +70,7 @@ export class PrefixManager {
         if (guard.isGuildMessage(message))
             prefixes.push(...await this.getGuildPrefixes(message.channel.guild.id));
         else
-            prefixes.push('');
+            prefixes.push(``);
 
         const content = message.content.toLowerCase();
         return prefixes

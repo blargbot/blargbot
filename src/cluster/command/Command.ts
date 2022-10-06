@@ -42,7 +42,7 @@ export abstract class Command implements CommandBaseOptions, IMiddleware<Command
     public warning<T extends string>(message: T): `⚠️ ${T}`
     public warning<T extends string>(message: T, ...reasons: string[]): `⚠️ ${T}${string}`
     public warning(message: string, ...reasons: string[]): string {
-        return `⚠️ ${message}${reasons.map(r => `\n⛔ ${r}`).join('')}`;
+        return `⚠️ ${message}${reasons.map(r => `\n⛔ ${r}`).join(``)}`;
     }
 
     public success<T extends string>(message: T): `✅ ${T}` {

@@ -3,13 +3,13 @@ import { result } from './result';
 
 export const mapBoolean = createMapping<boolean>(value => {
     switch (typeof value) {
-        case 'boolean':
+        case `boolean`:
             return result.success(value);
-        case 'string':
+        case `string`:
             switch (value.toLowerCase()) {
-                case 'true':
+                case `true`:
                     return result.success(true);
-                case 'false':
+                case `false`:
                     return result.success(false);
             }
             break;

@@ -2,17 +2,17 @@ import { Cluster } from '@blargbot/cluster';
 import { ClusterEventService } from '@blargbot/cluster/serviceTypes';
 import { CommandListResult } from '@blargbot/cluster/types';
 
-export class ClusterGetCommandListHandler extends ClusterEventService<'getCommandList'> {
+export class ClusterGetCommandListHandler extends ClusterEventService<`getCommandList`> {
     public constructor(
         cluster: Cluster
     ) {
-        super(cluster, 'getCommandList', async ({ reply }) => reply(await this.getCommandList()));
+        super(cluster, `getCommandList`, async ({ reply }) => reply(await this.getCommandList()));
     }
 
     public async getCommandList(): Promise<CommandListResult> {
         const commands: CommandListResult = {};
         for await (const result of this.cluster.commands.default.list()) {
-            if (result.state !== 'ALLOWED')
+            if (result.state !== `ALLOWED`)
                 continue;
 
             const c = result.detail.command;

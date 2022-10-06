@@ -9,17 +9,15 @@ import { bbtag, SubtagType } from '../../utils';
 export class ApplySubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: 'apply',
+            name: `apply`,
             category: SubtagType.ARRAY,
             definition: [
                 {
-                    parameters: ['subtag', 'args*'],
-                    description:
-                        'Executes `subtag`, using the `args` as parameters. ' +
-                        'If `args` is an array, it will get deconstructed to it\'s individual elements.',
-                    exampleCode: '{apply;randint;[1,4]}',
-                    exampleOut: '3',
-                    returns: 'string',
+                    parameters: [`subtag`, `args*`],
+                    description: `Executes \`subtag\`, using the \`args\` as parameters. If \`args\` is an array, it will get deconstructed to it's individual elements.`,
+                    exampleCode: `{apply;randint;[1,4]}`,
+                    exampleOut: `3`,
+                    returns: `string`,
                     execute: (ctx, [subtagName, ...args], subtag) => this.defaultApply(ctx, subtagName.value, args.map(a => a.value), subtag)
                 }
             ]
@@ -36,7 +34,7 @@ export class ApplySubtag extends CompiledSubtag {
             context.getSubtag(subtagName.toLowerCase());
         } catch (error: unknown) {
             if (error instanceof UnknownSubtagError)
-                throw new BBTagRuntimeError('No subtag found');
+                throw new BBTagRuntimeError(`No subtag found`);
             throw error;
         }
 
@@ -44,7 +42,7 @@ export class ApplySubtag extends CompiledSubtag {
             .flatMap(arg => bbtag.tagArray.deserialize(arg)?.v ?? [arg])
             .map(v => parse.string(v));
 
-        const source = `{${[subtagName, ...flatArgs].join(';')}}`;
+        const source = `{${[subtagName, ...flatArgs].join(`;`)}}`;
 
         return await context.eval({
             values: [{

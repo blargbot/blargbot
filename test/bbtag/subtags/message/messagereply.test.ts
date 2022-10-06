@@ -8,16 +8,16 @@ runSubtagTests({
     argCountBounds: { min: 0, max: 3 },
     cases: [
         ...createGetMessagePropTestCases({
-            quiet: '',
+            quiet: ``,
             includeNoArgs: true,
             generateCode(...args) {
-                return `{${['messagereply', ...args].filter(a => a !== undefined).join(';')}}`;
+                return `{${[`messagereply`, ...args].filter(a => a !== undefined).join(`;`)}}`;
             },
             cases: [{
-                expected: '954074684058660934',
+                expected: `954074684058660934`,
                 setup(channel, message) {
                     message.message_reference = {
-                        message_id: '954074684058660934',
+                        message_id: `954074684058660934`,
                         channel_id: channel.id
                     };
                 }

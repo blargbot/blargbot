@@ -5,16 +5,16 @@ import { bbtag, SubtagType } from '../../utils';
 export class JsonCleanSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: 'jsonclean',
+            name: `jsonclean`,
             category: SubtagType.JSON,
-            aliases: ['jclean'],
+            aliases: [`jclean`],
             definition: [
                 {
-                    parameters: ['input:{}'],
-                    description: 'Using the `input` as a base, cleans up the JSON file structure, parsing stringified nested objects/arrays. Will not mutate the original object.',
-                    exampleCode: '{jsonclean;{j;{"test":"[]"}}}',
-                    exampleOut: '{"test":[]}',
-                    returns: 'json',
+                    parameters: [`input:{}`],
+                    description: `Using the \`input\` as a base, cleans up the JSON file structure, parsing stringified nested objects/arrays. Will not mutate the original object.`,
+                    exampleCode: `{jsonclean;{j;{"test":"[]"}}}`,
+                    exampleOut: `{"test":[]}`,
+                    returns: `json`,
                     execute: (ctx, [input]) => this.cleanJson(ctx, input.value)
                 }
             ]

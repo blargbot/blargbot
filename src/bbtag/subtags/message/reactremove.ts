@@ -10,26 +10,26 @@ import { SubtagType } from '../../utils';
 export class ReactRemoveSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: 'reactremove',
+            name: `reactremove`,
             category: SubtagType.MESSAGE,
-            aliases: ['removereact'],
+            aliases: [`removereact`],
             definition: [
                 {
-                    parameters: ['arguments+'],
-                    returns: 'nothing',
+                    parameters: [`arguments+`],
+                    returns: `nothing`,
                     execute: async (ctx, args) => await this.removeReactions(ctx, ...await this.#bindArguments(ctx, args))
                 },
                 {
-                    parameters: ['channel?', 'messageId'],
-                    description: 'Removes all reactions of the executing user from `messageID` in `channel`.',
-                    exampleCode: '{reactremove;12345678901234}',
-                    exampleOut: '(removed all reactions on 12345678901234)'
+                    parameters: [`channel?`, `messageId`],
+                    description: `Removes all reactions of the executing user from \`messageID\` in \`channel\`.`,
+                    exampleCode: `{reactremove;12345678901234}`,
+                    exampleOut: `(removed all reactions on 12345678901234)`
                 },
                 {
-                    parameters: ['channel?', 'messageId', 'reactions+'],
-                    description: 'Removes `reactions` `user` reacted on `messageID` in `channel`.',
-                    exampleCode: '{reactremove;12345678901234;111111111111111111;🤔}',
-                    exampleOut: '(removed the 🤔 reaction on 12345678901234 from user 111111111111111111)'
+                    parameters: [`channel?`, `messageId`, `reactions+`],
+                    description: `Removes \`reactions\` \`user\` reacted on \`messageID\` in \`channel\`.`,
+                    exampleCode: `{reactremove;12345678901234;111111111111111111;🤔}`,
+                    exampleOut: `(removed the 🤔 reaction on 12345678901234 from user 111111111111111111)`
                 }
             ]
         });
@@ -47,28 +47,28 @@ export class ReactRemoveSubtag extends CompiledSubtag {
             throw new ChannelNotFoundError(channelStr);
 
         const permissions = channel.permissionsOf(context.discord.user.id);
-        if (!permissions.has('manageMessages'))
-            throw new BBTagRuntimeError('I need to be able to Manage Messages to remove reactions');
+        if (!permissions.has(`manageMessages`))
+            throw new BBTagRuntimeError(`I need to be able to Manage Messages to remove reactions`);
 
         const message = await context.getMessage(channel, messageId, true);
         if (message === undefined)
             throw new MessageNotFoundError(channel.id, messageId);
 
         if (!context.ownsMessage(message.id) && !await context.isStaff)
-            throw new BBTagRuntimeError('Author must be staff to modify unrelated messages');
+            throw new BBTagRuntimeError(`Author must be staff to modify unrelated messages`);
 
         const user = await context.queryUser(userStr, { noErrors: true, noLookup: true });
         if (user === undefined)
             throw new UserNotFoundError(userStr);
 
         if (reactions?.length === 0)
-            throw new BBTagRuntimeError('Invalid Emojis');
+            throw new BBTagRuntimeError(`Invalid Emojis`);
         reactions ??= Object.keys(message.reactions).map(Emote.parse);
 
         const errored = [];
         for (const reaction of reactions) {
             try {
-                await context.limit.check(context, 'reactremove:requests');
+                await context.limit.check(context, `reactremove:requests`);
                 await message.removeReaction(reaction.toApi(), user.id);
             } catch (err: unknown) {
                 if (!(err instanceof DiscordRESTError))
@@ -79,7 +79,7 @@ export class ReactRemoveSubtag extends CompiledSubtag {
                         errored.push(reaction);
                         break;
                     case ApiError.MISSING_PERMISSIONS:
-                        throw new BBTagRuntimeError('I need to be able to Manage Messages to remove reactions');
+                        throw new BBTagRuntimeError(`I need to be able to Manage Messages to remove reactions`);
                     default:
                         throw err;
                 }
@@ -87,7 +87,7 @@ export class ReactRemoveSubtag extends CompiledSubtag {
         }
 
         if (errored.length > 0)
-            throw new BBTagRuntimeError('Unknown Emoji: ' + errored.join(', '));
+            throw new BBTagRuntimeError(`Unknown Emoji: ${  errored.join(`, `)}`);
     }
 
     async #bindArguments(context: BBTagContext, rawArgs: SubtagArgumentArray): Promise<[channel: string, message: string, user: string, reactions: Emote[] | undefined]> {

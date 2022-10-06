@@ -9,15 +9,15 @@ runSubtagTests({
     argCountBounds: { min: 0, max: 0 },
     cases: [
         {
-            code: '{guildfeatures}',
+            code: `{guildfeatures}`,
             expected: JSON.stringify(Constants.GuildFeatures),
             setup(ctx) {
                 ctx.guild.features = Constants.GuildFeatures as GuildFeature[];
             }
         },
         {
-            code: '{guildfeatures}',
-            expected: '[]',
+            code: `{guildfeatures}`,
+            expected: `[]`,
             setup(ctx) {
                 ctx.guild.features = [];
             }

@@ -6,12 +6,12 @@ import moment from 'moment-timezone';
 export class UserCommand extends GlobalCommand {
     public constructor() {
         super({
-            name: 'user',
+            name: `user`,
             category: CommandType.GENERAL,
             definitions: [
                 {
-                    parameters: '{user:user+?}',
-                    description: 'Gets information about a user',
+                    parameters: `{user:user+?}`,
+                    description: `Gets information about a user`,
                     execute: (ctx, [user]) => this.getUser(ctx, user.asOptionalUser ?? ctx.author)
                 }
             ]
@@ -35,13 +35,13 @@ export class UserCommand extends GlobalCommand {
 **Permission**: [${member.permissions.allow}](https://discordapi.com/permissions.html#${member.permissions.allow})`;
                 result.fields = [
                     {
-                        name: 'Roles',
-                        value: member.roles
+                        name: `Roles`,
+                        value: `${member.roles
                             .map(r => ({ id: r, pos: member.guild.roles.get(r)?.position ?? -Infinity }))
                             .filter(r => r.pos !== 0) // @everyone
                             .sort((a, b) => b.pos - a.pos) // descending
                             .map(r => `<@&${r.id}>`)
-                            .join(' ') + '\u200b'
+                            .join(` `)  }\u200b`
                     }
                 ];
                 if (member.nick !== null)
@@ -64,7 +64,7 @@ export class UserCommand extends GlobalCommand {
 
 function timestamp(value: number | null): string {
     if (value === null)
-        return '-';
+        return `-`;
 
     const unix = moment(value).unix();
     return `<t:${unix}>`;
@@ -72,26 +72,26 @@ function timestamp(value: number | null): string {
 
 function getStatusEmoteId(context: CommandContext, member: Member): string {
     const emote = getStatusEmote(context, member);
-    return parse.entityId(emote) ?? '';
+    return parse.entityId(emote) ?? ``;
 }
 
 function getStatusEmote(context: CommandContext, member: Member): string {
     switch (member.status) {
-        case 'dnd': return context.config.discord.emotes.busy;
-        case 'idle': return context.config.discord.emotes.away;
-        case 'online': return context.config.discord.emotes.online;
+        case `dnd`: return context.config.discord.emotes.busy;
+        case `idle`: return context.config.discord.emotes.away;
+        case `online`: return context.config.discord.emotes.online;
         case undefined: return context.config.discord.emotes.offline;
     }
 }
 
 function getActivityString(activity: Activity | undefined): string {
     switch (activity?.type) {
-        case undefined: return 'Not doing anything';
+        case undefined: return `Not doing anything`;
         case Constants.ActivityTypes.COMPETING: return `Competing in ${activity.name}`;
         case Constants.ActivityTypes.CUSTOM: return activity.name;
         case Constants.ActivityTypes.LISTENING: return `Listening to ${activity.name}`;
         case Constants.ActivityTypes.GAME: return `Playing ${activity.name}`;
-        case Constants.ActivityTypes.STREAMING: return `Streaming ${activity.details ?? ''}`.trim();
+        case Constants.ActivityTypes.STREAMING: return `Streaming ${activity.details ?? ``}`.trim();
         case Constants.ActivityTypes.WATCHING: return `Watching ${activity.name}`;
     }
 }

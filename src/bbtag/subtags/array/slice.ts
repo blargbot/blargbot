@@ -9,15 +9,15 @@ import { bbtag, SubtagType } from '../../utils';
 export class SliceSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: 'slice',
+            name: `slice`,
             category: SubtagType.ARRAY,
             definition: [
                 {
-                    parameters: ['array', 'start', 'end?:999999999999'],
-                    description: 'Grabs elements between the zero-indexed `start` and `end` points (inclusive) from `array`.',
-                    exampleCode: '{slice;["this", "is", "an", "array"];1}',
-                    exampleOut: '["is","an","array"]',
-                    returns: 'json[]',
+                    parameters: [`array`, `start`, `end?:999999999999`],
+                    description: `Grabs elements between the zero-indexed \`start\` and \`end\` points (inclusive) from \`array\`.`,
+                    exampleCode: `{slice;["this", "is", "an", "array"];1}`,
+                    exampleOut: `["is","an","array"]`,
+                    returns: `json[]`,
                     execute: (ctx, [array, start, end]) => this.slice(ctx, array.value, start.value, end.value)
                 }
             ]
@@ -26,7 +26,7 @@ export class SliceSubtag extends CompiledSubtag {
 
     public async slice(context: BBTagContext, array: string, startStr: string, endStr: string): Promise<JArray> {
         const arr = await bbtag.tagArray.deserializeOrGetArray(context, array);
-        const fallback = new Lazy(() => parse.int(context.scopes.local.fallback ?? ''));
+        const fallback = new Lazy(() => parse.int(context.scopes.local.fallback ?? ``));
 
         if (arr === undefined)
             throw new NotAnArrayError(array);

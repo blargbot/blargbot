@@ -80,7 +80,7 @@ export class BBTagContext implements BBTagContextOptions {
     public get bot(): Member {
         const member = this.guild.members.get(this.discord.user.id);
         if (member === undefined)
-            throw new Error('Bot is not a member of the current guild');
+            throw new Error(`Bot is not a member of the current guild`);
         return member;
     }
 
@@ -103,17 +103,17 @@ export class BBTagContext implements BBTagContextOptions {
         this.tagVars = options.tagVars ?? !this.isCC;
         this.authorId = options.authorId;
         this.authorizerId = options.authorizerId ?? this.authorId;
-        this.authorizer = this.guild.members.get(this.authorizerId ?? '');
+        this.authorizer = this.guild.members.get(this.authorizerId ?? ``);
         this.permission = this.authorizer === undefined
             ? this.authorizerId === undefined ? new Permission(8n) : new Permission(0n)
-            : this.authorizer.permissions.has('administrator') ? new Permission(Constants.Permissions.all)
+            : this.authorizer.permissions.has(`administrator`) ? new Permission(Constants.Permissions.all)
                 : this.authorizer.permissions;
-        this.rootTagName = options.rootTagName ?? options.tagName ?? 'unknown';
+        this.rootTagName = options.rootTagName ?? options.tagName ?? `unknown`;
         this.tagName = options.tagName ?? this.rootTagName;
         this.cooldown = options.cooldown ?? 0;
         this.cooldowns = options.cooldowns ?? new TagCooldownManager();
         this.locks = options.locks ?? {};
-        this.limit = typeof options.limit === 'string' ? new limits[options.limit](this.guild) : options.limit;
+        this.limit = typeof options.limit === `string` ? new limits[options.limit](this.guild) : options.limit;
         this.silent = options.silent ?? false;
         this.flaggedInput = parse.flags(this.flags, this.inputRaw);
         this.errors = [];
@@ -158,7 +158,7 @@ export class BBTagContext implements BBTagContextOptions {
         if (this.authorizer === undefined)
             return new Permission(0n);
         const permissions = channel.permissionsOf(this.authorizer);
-        if (permissions.has('administrator'))
+        if (permissions.has(`administrator`))
             return new Permission(Constants.Permissions.all);
         return permissions;
     }
@@ -214,14 +214,14 @@ export class BBTagContext implements BBTagContextOptions {
         return result;
     }
 
-    public hasPermission(permission: bigint | keyof Constants['Permissions']): boolean;
-    public hasPermission(channel: KnownGuildChannel, permission: bigint | keyof Constants['Permissions']): boolean;
-    public hasPermission(...args: [permission: bigint | keyof Constants['Permissions']] | [channel: KnownGuildChannel, permission: bigint | keyof Constants['Permissions']]): boolean {
+    public hasPermission(permission: bigint | keyof Constants[`Permissions`]): boolean;
+    public hasPermission(channel: KnownGuildChannel, permission: bigint | keyof Constants[`Permissions`]): boolean;
+    public hasPermission(...args: [permission: bigint | keyof Constants[`Permissions`]] | [channel: KnownGuildChannel, permission: bigint | keyof Constants[`Permissions`]]): boolean {
         const [permissions, permission] = args.length === 1
             ? [this.permission, args[0]]
             : [this.permissionIn(args[0]), args[1]];
 
-        const flags = typeof permission === 'bigint' ? permission : Constants.Permissions[permission];
+        const flags = typeof permission === `bigint` ? permission : Constants.Permissions[permission];
         return hasFlag(permissions.allow, flags);
     }
 
@@ -230,14 +230,14 @@ export class BBTagContext implements BBTagContextOptions {
             return Infinity;
 
         const permission = channel === undefined ? this.permission : this.permissionIn(channel);
-        if (!permission.has('manageRoles'))
+        if (!permission.has(`manageRoles`))
             return -Infinity;
 
         return discord.getMemberPosition(this.authorizer);
     }
 
     public auditReason(user: User = this.user): string {
-        const reason = this.scopes.local.reason ?? '';
+        const reason = this.scopes.local.reason ?? ``;
         return reason.length > 0
             ? `${humanize.fullName(user)}: ${reason}`
             : humanize.fullName(user);
@@ -256,7 +256,7 @@ export class BBTagContext implements BBTagContextOptions {
         if (result !== undefined)
             return result;
 
-        result = this.subtags.get(`${name.split('.', 1)[0]}.`);
+        result = this.subtags.get(`${name.split(`.`, 1)[0]}.`);
         if (result !== undefined)
             return result;
 
@@ -269,7 +269,7 @@ export class BBTagContext implements BBTagContextOptions {
     }
 
     public async queryUser(query: string | undefined, options: FindEntityOptions = {}): Promise<User | undefined> {
-        if (query === '' || query === undefined || query === this.user.id)
+        if (query === `` || query === undefined || query === this.user.id)
             return this.user;
         const user = await this.util.getUser(query);
         if (user !== undefined)
@@ -279,10 +279,10 @@ export class BBTagContext implements BBTagContextOptions {
     }
 
     public async queryMember(query: string | undefined, options: FindEntityOptions = {}): Promise<Member | undefined> {
-        if (query === '' || query === undefined || query === this.member?.id)
+        if (query === `` || query === undefined || query === this.member?.id)
             return this.member;
         return await this.#queryEntity(
-            query, 'user', 'User',
+            query, `user`, `User`,
             async (id) => await this.util.getMember(this.guild, id),
             async (query) => await this.util.findMembers(this.guild, query),
             async (options) => await this.util.queryMember(options),
@@ -292,7 +292,7 @@ export class BBTagContext implements BBTagContextOptions {
 
     public async queryRole(query: string, options: FindEntityOptions = {}): Promise<Role | undefined> {
         return await this.#queryEntity(
-            query, 'role', 'Role',
+            query, `role`, `Role`,
             async (id) => await this.util.getRole(this.guild, id),
             async (query) => await this.util.findRoles(this.guild, query),
             async (options) => await this.util.queryRole(options),
@@ -301,10 +301,10 @@ export class BBTagContext implements BBTagContextOptions {
     }
 
     public async queryChannel(query: string | undefined, options: FindEntityOptions = {}): Promise<KnownGuildChannel | undefined> {
-        if (query === '' || query === undefined || query === this.channel.id)
+        if (query === `` || query === undefined || query === this.channel.id)
             return this.channel;
         return await this.#queryEntity(
-            query, 'channel', 'Channel',
+            query, `channel`, `Channel`,
             async (id) => {
                 const channel = await this.util.getChannel(this.guild, id);
                 return channel !== undefined && guard.isGuildChannel(channel) && channel.guild.id === this.guild.id ? channel : undefined;
@@ -316,10 +316,10 @@ export class BBTagContext implements BBTagContextOptions {
     }
 
     public async queryThread(query: string | undefined, options: FindEntityOptions = {}): Promise<KnownThreadChannel | undefined> {
-        if (guard.isThreadChannel(this.channel) && (query === '' || query === undefined || query === this.channel.id))
+        if (guard.isThreadChannel(this.channel) && (query === `` || query === undefined || query === this.channel.id))
             return this.channel;
         return await this.#queryEntity(
-            query ?? '', 'channel', 'Thread',
+            query ?? ``, `channel`, `Thread`,
             async (id) => threadsOnly(await this.util.getChannel(this.guild, id)),
             async (query) => threadsOnly(await this.util.findChannels(this.guild, query)),
             async (options) => await this.util.queryChannel(options),
@@ -330,7 +330,7 @@ export class BBTagContext implements BBTagContextOptions {
     public async getMessage(channel: KnownChannel, messageId: string, force?: boolean): Promise<KnownMessage | undefined>
     public async getMessage<T extends KnownTextableChannel>(channel: T, messageId: string, force?: boolean): Promise<Message<T> | undefined>
     public async getMessage(channel: KnownChannel, messageId: string, force = false): Promise<KnownMessage | undefined> {
-        if (!force && channel.id === this.channel.id && (messageId === this.message.id || messageId === '') && this.message instanceof Message)
+        if (!force && channel.id === this.channel.id && (messageId === this.message.id || messageId === ``) && this.message instanceof Message)
             return this.message;
 
         return await this.util.getMessage(channel, messageId, force);
@@ -338,7 +338,7 @@ export class BBTagContext implements BBTagContextOptions {
 
     async #queryEntity<T extends { id: string; }>(
         queryString: string,
-        cacheKey: FilteredKeys<BBTagContextState['query'], Record<string, string | undefined>>,
+        cacheKey: FilteredKeys<BBTagContextState[`query`], Record<string, string | undefined>>,
         type: string,
         fetch: (id: string) => Promise<T | undefined>,
         find: (query: string) => Promise<T[]>,
@@ -357,20 +357,20 @@ export class BBTagContext implements BBTagContextOptions {
         const result = await query({ context: this.channel, actors: this.user.id, choices: entities, filter: queryString });
         const noErrors = options.noErrors === true || this.scopes.local.noLookupErrors === true;
         switch (result.state) {
-            case 'FAILED':
-            case 'NO_OPTIONS':
+            case `FAILED`:
+            case `NO_OPTIONS`:
                 if (!noErrors) {
-                    await this.util.send(this.channel, `No ${type.toLowerCase()} matching \`${queryString}\` found in ${this.isCC ? 'custom command' : 'tag'} \`${this.rootTagName}\`.`);
+                    await this.util.send(this.channel, `No ${type.toLowerCase()} matching \`${queryString}\` found in ${this.isCC ? `custom command` : `tag`} \`${this.rootTagName}\`.`);
                     this.data.query.count++;
                 }
                 return undefined;
-            case 'TIMED_OUT':
-            case 'CANCELLED':
+            case `TIMED_OUT`:
+            case `CANCELLED`:
                 this.data.query.count = Infinity;
                 if (!noErrors)
-                    await this.util.send(this.channel, `${type} query canceled in ${this.isCC ? 'custom command' : 'tag'} \`${this.rootTagName}\`.`);
+                    await this.util.send(this.channel, `${type} query canceled in ${this.isCC ? `custom command` : `tag`} \`${this.rootTagName}\`.`);
                 return undefined;
-            case 'SUCCESS':
+            case `SUCCESS`:
                 this.data.query[cacheKey][queryString] = result.value.id;
                 return result.value;
             default:
@@ -385,10 +385,10 @@ export class BBTagContext implements BBTagContextOptions {
     async #sendOutput(text: string): Promise<string | undefined> {
         let disableEveryone = true;
         if (this.isCC) {
-            disableEveryone = await this.engine.database.guilds.getSetting(this.guild.id, 'disableeveryone') ?? false;
+            disableEveryone = await this.engine.database.guilds.getSetting(this.guild.id, `disableeveryone`) ?? false;
             disableEveryone ||= !this.data.allowedMentions.everybody;
 
-            this.engine.logger.log('Allowed mentions:', this.data.allowedMentions, disableEveryone);
+            this.engine.logger.log(`Allowed mentions:`, this.data.allowedMentions, disableEveryone);
         }
         try {
             const response = await this.engine.util.send(this.message,
@@ -410,15 +410,15 @@ export class BBTagContext implements BBTagContextOptions {
                 this.data.ownedMsgs.push(response.id);
                 return response.id;
             }
-            throw new Error('Failed to send message');
+            throw new Error(`Failed to send message`);
         } catch (err: unknown) {
             if (err instanceof Error) {
-                if (err.message === 'No content')
+                if (err.message === `No content`)
                     return undefined;
                 throw err;
             }
-            this.logger.error('Failed to send message', err);
-            throw new Error('Failed to send message');
+            this.logger.error(`Failed to send message`, err);
+            throw new Error(`Failed to send message`);
         }
     }
 
@@ -428,8 +428,8 @@ export class BBTagContext implements BBTagContextOptions {
         return this.data.outputMessage ??= await this.#sendOutput(text);
     }
 
-    public async getTag(type: 'tag', key: string, resolver: (key: string) => Promise<StoredTag | undefined>): Promise<StoredTag | null>;
-    public async getTag(type: 'cc', key: string, resolver: (key: string) => Promise<NamedGuildCommandTag | undefined>): Promise<NamedGuildCommandTag | null>;
+    public async getTag(type: `tag`, key: string, resolver: (key: string) => Promise<StoredTag | undefined>): Promise<StoredTag | null>;
+    public async getTag(type: `cc`, key: string, resolver: (key: string) => Promise<NamedGuildCommandTag | undefined>): Promise<NamedGuildCommandTag | null>;
     public async getTag(type: string, key: string, resolver: (key: string) => Promise<NamedGuildCommandTag | StoredTag | undefined>): Promise<NamedGuildCommandTag | StoredTag | null> {
         const cacheKey = `${type}_${key}`;
         if (cacheKey in this.data.cache)
@@ -498,7 +498,7 @@ export class BBTagContext implements BBTagContextOptions {
             authorizer: this.authorizerId,
             limit: this.limit.serialize(),
             tempVars: this.variables.list
-                .filter(v => v.key.startsWith('~'))
+                .filter(v => v.key.startsWith(`~`))
                 .reduce<JObject>((p, v) => {
                     if (v.value !== undefined)
                         p[v.key] = v.value;
@@ -512,15 +512,15 @@ export class BBTagContext implements BBTagContextOptions {
         if (msg !== undefined) {
             if (guard.isGuildMessage(msg))
                 return msg;
-            throw new Error('Channel must be a guild channel to work with BBTag');
+            throw new Error(`Channel must be a guild channel to work with BBTag`);
         }
 
         const channel = await engine.util.getChannel(obj.msg.channel.id);
         if (channel === undefined || !guard.isGuildChannel(channel))
-            throw new Error('Channel must be a guild channel to work with BBTag');
+            throw new Error(`Channel must be a guild channel to work with BBTag`);
 
         if (!guard.isTextableChannel(channel))
-            throw new Error('Channel must be able to send and receive messages to work with BBTag');
+            throw new Error(`Channel must be able to send and receive messages to work with BBTag`);
 
         const member = await this.#getOrFabricateMember(engine, channel.guild, obj);
         return {
@@ -537,7 +537,7 @@ export class BBTagContext implements BBTagContextOptions {
 
     static async #getOrFabricateMember(engine: BBTagEngine, guild: Guild, obj: SerializedBBTagContext): Promise<Member> {
         if (obj.msg.member === undefined)
-            throw new Error('No user id given');
+            throw new Error(`No user id given`);
 
         const member = await engine.util.getMember(guild, obj.msg.member.id);
         if (member !== undefined)
@@ -545,7 +545,7 @@ export class BBTagContext implements BBTagContextOptions {
 
         const user = await engine.util.getUser(obj.msg.member.id);
         if (user === undefined)
-            throw new Error('No user found');
+            throw new Error(`No user found`);
 
         return new Member({
             id: user.id,

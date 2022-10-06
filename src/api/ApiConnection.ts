@@ -5,6 +5,6 @@ import { ApiIPCContracts } from './types';
 
 export class ApiConnection extends WorkerConnection<ApiIPCContracts> {
     public constructor(id: number, logger: Logger) {
-        super(id, '@blargbot/api', require.resolve('@blargbot/api/start'), logger);
+        super(id, `@blargbot/api`, require.resolve(`@blargbot/api/start`), logger);
     }
 }

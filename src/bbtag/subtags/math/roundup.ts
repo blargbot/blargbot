@@ -7,16 +7,16 @@ import { SubtagType } from '../../utils';
 export class RoundUpSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: 'roundup',
+            name: `roundup`,
             category: SubtagType.MATH,
-            aliases: ['ceil'],
+            aliases: [`ceil`],
             definition: [
                 {
-                    parameters: ['number'],
-                    description: 'Rounds `number` up.',
-                    exampleCode: '{roundup;1.23}',
-                    exampleOut: '2',
-                    returns: 'number',
+                    parameters: [`number`],
+                    description: `Rounds \`number\` up.`,
+                    exampleCode: `{roundup;1.23}`,
+                    exampleOut: `2`,
+                    returns: `number`,
                     execute: (_, [number]) => this.roundup(number.value)
                 }
             ]

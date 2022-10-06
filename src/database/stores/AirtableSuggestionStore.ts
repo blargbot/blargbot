@@ -9,11 +9,11 @@ export class AirtableSuggestionStore implements SuggestionStore {
     readonly #table: AirtableDbTable<Suggestion>;
 
     public constructor(client: AirtableBase, logger: Logger) {
-        this.#table = new AirtableDbTable<Suggestion>(client, 'Suggestions', logger);
+        this.#table = new AirtableDbTable<Suggestion>(client, `Suggestions`, logger);
     }
 
     public async get(id: number): Promise<Suggestion | undefined> {
-        const record = await this.#table.find('ID', id);
+        const record = await this.#table.find(`ID`, id);
         return record?.fields;
     }
 
@@ -23,7 +23,7 @@ export class AirtableSuggestionStore implements SuggestionStore {
     }
 
     public async update(id: number, suggestion: Partial<Suggestion>): Promise<boolean> {
-        const record = await this.#table.find('ID', id);
+        const record = await this.#table.find(`ID`, id);
         if (record === undefined)
             return false;
 

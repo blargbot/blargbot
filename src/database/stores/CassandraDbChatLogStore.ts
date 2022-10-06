@@ -21,8 +21,7 @@ export class CassandraDbChatLogStore implements ChatLogStore {
 
     public async findAll(options: ChatLogSearchOptions): Promise<ChatLog[]> {
         const chatlogs = await this.#db.execute(
-            'SELECT * FROM chatlogs ' +
-            'WHERE channelid = :channelid',
+            `SELECT * FROM chatlogs WHERE channelid = :channelid`,
             { channelid: options.channelId },
             { prepare: true, readTimeout: 200000 });
 
@@ -53,9 +52,7 @@ export class CassandraDbChatLogStore implements ChatLogStore {
 
         return await idBatches.reduce(async (resultPromise, idBatch) => {
             const resultSet = await this.#db.execute(
-                'SELECT * FROM chatlogs ' +
-                'WHERE channelid = :channelid ' +
-                'AND id IN :ids',
+                `SELECT * FROM chatlogs WHERE channelid = :channelid AND id IN :ids`,
                 { channelid: channelId, ids: idBatch },
                 { prepare: true, readTimeout: 200000 });
 
@@ -71,18 +68,13 @@ export class CassandraDbChatLogStore implements ChatLogStore {
 
     public async getByMessageId(messageId: string): Promise<ChatLog | undefined> {
         const map = await this.#db.execute(
-            'SELECT channelid, id ' +
-            'FROM chatlogs_map ' +
-            'WHERE msgid = :id ' +
-            'LIMIT 1',
+            `SELECT channelid, id FROM chatlogs_map WHERE msgid = :id LIMIT 1`,
             { id: messageId },
             { prepare: true });
         if (map.rows.length === 0)
             return undefined;
         const messages = await this.#db.execute(
-            'SELECT * FROM chatlogs ' +
-            'WHERE channelid = :channelid and id = :id ' +
-            'LIMIT 1',
+            `SELECT * FROM chatlogs WHERE channelid = :channelid and id = :id LIMIT 1`,
             map.rows[0],
             { prepare: true });
         if (messages.rows.length === 0)
@@ -93,7 +85,7 @@ export class CassandraDbChatLogStore implements ChatLogStore {
 
     public async add(message: ChatLogMessage, type: ChatLogType, lifespanS: number | Duration = 604800): Promise<void> {
         metrics.chatlogCounter.labels(stringifyType(type)).inc();
-        const lifespan = typeof lifespanS === 'number' ? lifespanS : lifespanS.asSeconds();
+        const lifespan = typeof lifespanS === `number` ? lifespanS : lifespanS.asSeconds();
         const chatlog = {
             ...message,
             id: snowflake.create().toString(),
@@ -103,15 +95,11 @@ export class CassandraDbChatLogStore implements ChatLogStore {
             attachment: JSON.stringify(message.attachments)
         };
         await this.#db.execute(
-            'INSERT INTO chatlogs (id, content, attachment, userid, msgid, channelid, guildid, msgtime, type, embeds)\n' +
-            'VALUES (:id, :content, :attachment, :userid, :msgid, :channelid, :guildid, :msgtime, :type, :embeds)\n' +
-            `USING TTL ${lifespan}`,
+            `INSERT INTO chatlogs (id, content, attachment, userid, msgid, channelid, guildid, msgtime, type, embeds)\nVALUES (:id, :content, :attachment, :userid, :msgid, :channelid, :guildid, :msgtime, :type, :embeds)\nUSING TTL ${lifespan}`,
             chatlog,
             { prepare: true });
         await this.#db.execute(
-            'INSERT INTO chatlogs_map (id, msgid, channelid)\n' +
-            'VALUES (:id, :msgid, :channelid)\n' +
-            `USING TTL ${lifespan}`,
+            `INSERT INTO chatlogs_map (id, msgid, channelid)\nVALUES (:id, :msgid, :channelid)\nUSING TTL ${lifespan}`,
             { id: chatlog.id, msgid: chatlog.msgid, channelid: chatlog.channelid },
             { prepare: true });
     }
@@ -119,29 +107,10 @@ export class CassandraDbChatLogStore implements ChatLogStore {
     public async migrate(): Promise<void> {
         try {
             await this.#db.execute(
-                'CREATE TABLE IF NOT EXISTS chatlogs (\n' +
-                '    id BIGINT,\n' +
-                '    channelid BIGINT,\n' +
-                '    guildid BIGINT,\n' +
-                '    msgid BIGINT,\n' +
-                '    userid BIGINT,\n' +
-                '    content TEXT,\n' +
-                '    msgtime TIMESTAMP,\n' +
-                '    embeds TEXT,\n' +
-                '    type INT,\n' +
-                '    attachment TEXT,\n' +
-                '    PRIMARY KEY ((channelid), id)\n' +
-                ')\n' +
-                'WITH CLUSTERING ORDER BY(id DESC);');
+                `CREATE TABLE IF NOT EXISTS chatlogs (\n    id BIGINT,\n    channelid BIGINT,\n    guildid BIGINT,\n    msgid BIGINT,\n    userid BIGINT,\n    content TEXT,\n    msgtime TIMESTAMP,\n    embeds TEXT,\n    type INT,\n    attachment TEXT,\n    PRIMARY KEY ((channelid), id)\n)\nWITH CLUSTERING ORDER BY(id DESC);`);
 
             await this.#db.execute(
-                'CREATE TABLE IF NOT EXISTS chatlogs_map (\n' +
-                '    id BIGINT,\n' +
-                '    msgid BIGINT,\n' +
-                '    channelid BIGINT,\n' +
-                '    PRIMARY KEY((msgid), id)\n' +
-                ')\n' +
-                'WITH CLUSTERING ORDER BY(id DESC);');
+                `CREATE TABLE IF NOT EXISTS chatlogs_map (\n    id BIGINT,\n    msgid BIGINT,\n    channelid BIGINT,\n    PRIMARY KEY((msgid), id)\n)\nWITH CLUSTERING ORDER BY(id DESC);`);
         } catch (err: unknown) {
             this.#logger.error(err);
         }
@@ -151,13 +120,13 @@ export class CassandraDbChatLogStore implements ChatLogStore {
 const mapLongToString = mapping.instanceof(types.Long).map(v => v.toString());
 
 const mapChatLog = mapping.object<ChatLog>({
-    attachments: ['attachment', mapping.choice(
+    attachments: [`attachment`, mapping.choice(
         mapping.json(mapping.array(mapping.string)),
-        mapping.string.nullish.map(s => typeof s === 'string' ? [s] : [])
+        mapping.string.nullish.map(s => typeof s === `string` ? [s] : [])
     )],
     channelid: mapLongToString,
     content: mapping.string,
-    embeds: mapping.json(mapping.array(mapping.typeof('object'))),
+    embeds: mapping.json(mapping.array(mapping.typeof(`object`))),
     guildid: mapLongToString,
     id: mapLongToString,
     msgid: mapLongToString,
@@ -168,8 +137,8 @@ const mapChatLog = mapping.object<ChatLog>({
 
 function stringifyType(type: ChatLogType): string {
     switch (type) {
-        case ChatLogType.CREATE: return 'create';
-        case ChatLogType.UPDATE: return 'update';
-        case ChatLogType.DELETE: return 'delete';
+        case ChatLogType.CREATE: return `create`;
+        case ChatLogType.UPDATE: return `update`;
+        case ChatLogType.DELETE: return `delete`;
     }
 }

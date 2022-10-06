@@ -6,7 +6,7 @@ import { ApiConnection } from './ApiConnection';
 export class ApiPool extends WorkerPool<ApiConnection> {
     public constructor(logger: Logger) {
         super({
-            type: 'Api',
+            type: `Api`,
             workerCount: 1,
             defaultTimeout: 60000,
             logger,

@@ -22,5 +22,5 @@ export class MessageAwaiterFactory extends AwaiterFactoryBase<KnownMessage> {
 
 function* getIds(pools: Iterable<string | KnownTextableChannel>): Iterable<string> {
     for (const pool of pools)
-        yield typeof pool === 'string' ? pool : pool.id;
+        yield typeof pool === `string` ? pool : pool.id;
 }

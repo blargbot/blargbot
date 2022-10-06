@@ -8,34 +8,34 @@ import { SubtagType } from '../../utils';
 export class ArgsSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: 'args',
+            name: `args`,
             category: SubtagType.BOT,
             definition: [
                 {
                     parameters: [],
-                    description: 'Gets the whole user input',
-                    exampleCode: 'You said {args}',
-                    exampleIn: 'Hello world! BBtag is so cool',
-                    exampleOut: 'You said Hello world! BBtag is so cool',
-                    returns: 'string',
+                    description: `Gets the whole user input`,
+                    exampleCode: `You said {args}`,
+                    exampleIn: `Hello world! BBtag is so cool`,
+                    exampleOut: `You said Hello world! BBtag is so cool`,
+                    returns: `string`,
                     execute: (ctx) => this.getAllArgs(ctx)
                 },
                 {
-                    parameters: ['index'],
-                    description: 'Gets a word from the user input at the `index` position',
-                    exampleCode: '{args;1}',
-                    exampleIn: 'Hello world! BBtag is so cool',
-                    exampleOut: 'world!',
-                    returns: 'string',
+                    parameters: [`index`],
+                    description: `Gets a word from the user input at the \`index\` position`,
+                    exampleCode: `{args;1}`,
+                    exampleIn: `Hello world! BBtag is so cool`,
+                    exampleOut: `world!`,
+                    returns: `string`,
                     execute: (ctx, [index]) => this.getArg(ctx, index.value)
                 },
                 {
-                    parameters: ['start', 'end'],
-                    description: 'Gets all the words in the user input from `start` up to `end`. If `end` is `n` then all words after `start` will be returned',
-                    exampleCode: '{args;2;4}',
-                    exampleIn: 'Hello world! BBtag is so cool',
-                    exampleOut: 'BBtag is',
-                    returns: 'string',
+                    parameters: [`start`, `end`],
+                    description: `Gets all the words in the user input from \`start\` up to \`end\`. If \`end\` is \`n\` then all words after \`start\` will be returned`,
+                    exampleCode: `{args;2;4}`,
+                    exampleIn: `Hello world! BBtag is so cool`,
+                    exampleOut: `BBtag is`,
+                    returns: `string`,
                     execute: (ctx, [start, end]) => this.getArgs(ctx, start.value, end.value)
                 }
             ]
@@ -43,7 +43,7 @@ export class ArgsSubtag extends CompiledSubtag {
     }
 
     public getAllArgs(context: BBTagContext): string {
-        return context.input.join(' ');
+        return context.input.join(` `);
     }
 
     public getArg(context: BBTagContext, index: string): string {
@@ -66,7 +66,7 @@ export class ArgsSubtag extends CompiledSubtag {
         if (from === undefined)
             throw new NotANumberError(start);
 
-        let to = end.toLowerCase() === 'n'
+        let to = end.toLowerCase() === `n`
             ? context.input.length
             : parse.int(end);
 
@@ -80,6 +80,6 @@ export class ArgsSubtag extends CompiledSubtag {
         if (context.input.length <= from || from < 0)
             throw new NotEnoughArgumentsError(from + 1, context.input.length);
 
-        return context.input.slice(from, to).join(' ');
+        return context.input.slice(from, to).join(` `);
     }
 }

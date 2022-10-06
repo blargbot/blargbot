@@ -11,11 +11,11 @@ export class ClusterBBTagUtilities extends BaseUtilities implements BBTagUtiliti
         super(cluster);
     }
 
-    public timeout(member: Member, moderator: User, authorizer: User, duration: Duration, reason?: string | undefined): Promise<'noPerms' | 'success' | 'alreadyTimedOut' | 'memberTooHigh' | 'moderatorNoPerms' | 'moderatorTooLow'> {
+    public timeout(member: Member, moderator: User, authorizer: User, duration: Duration, reason?: string | undefined): Promise<`noPerms` | `success` | `alreadyTimedOut` | `memberTooHigh` | `moderatorNoPerms` | `moderatorTooLow`> {
         return this.cluster.moderation.timeouts.timeout(member, moderator, authorizer, duration, reason);
     }
 
-    public clearTimeout(member: Member, moderator: User, authorizer: User, reason?: string | undefined): Promise<'noPerms' | 'success' | 'moderatorNoPerms' | 'notTimedOut'> {
+    public clearTimeout(member: Member, moderator: User, authorizer: User, reason?: string | undefined): Promise<`noPerms` | `success` | `moderatorNoPerms` | `notTimedOut`> {
         return this.cluster.moderation.timeouts.clearTimeout(member, moderator, authorizer, reason);
     }
 
@@ -53,15 +53,15 @@ export class ClusterBBTagUtilities extends BaseUtilities implements BBTagUtiliti
         return result.warnings;
     }
 
-    public ban(guild: Guild, user: User, moderator: User, authorizer: User, deleteDays: number, reason: string, duration: moment.Duration): Promise<'success' | 'alreadyBanned' | 'noPerms' | 'memberTooHigh' | 'moderatorNoPerms' | 'moderatorTooLow'> {
+    public ban(guild: Guild, user: User, moderator: User, authorizer: User, deleteDays: number, reason: string, duration: moment.Duration): Promise<`success` | `alreadyBanned` | `noPerms` | `memberTooHigh` | `moderatorNoPerms` | `moderatorTooLow`> {
         return this.cluster.moderation.bans.ban(guild, user, moderator, authorizer, deleteDays, reason, duration);
     }
 
-    public unban(guild: Guild, user: User, moderator: User, authorizer: User, reason?: string): Promise<'success' | 'noPerms' | 'moderatorNoPerms' | 'notBanned'> {
+    public unban(guild: Guild, user: User, moderator: User, authorizer: User, reason?: string): Promise<`success` | `noPerms` | `moderatorNoPerms` | `notBanned`> {
         return this.cluster.moderation.bans.unban(guild, user, moderator, authorizer, reason);
     }
 
-    public kick(member: Member, moderator: User, authorizer: User, reason?: string): Promise<'success' | 'noPerms' | 'memberTooHigh' | 'moderatorNoPerms' | 'moderatorTooLow'> {
+    public kick(member: Member, moderator: User, authorizer: User, reason?: string): Promise<`success` | `noPerms` | `memberTooHigh` | `moderatorNoPerms` | `moderatorTooLow`> {
         return this.cluster.moderation.bans.kick(member, moderator, authorizer, reason);
     }
 
@@ -74,7 +74,7 @@ export class ClusterBBTagUtilities extends BaseUtilities implements BBTagUtiliti
     }
 
     public async setTimeout(context: BBTagContext, content: string, timeout: Duration): Promise<void> {
-        await this.cluster.timeouts.insert('tag', {
+        await this.cluster.timeouts.insert(`tag`, {
             version: 4,
             source: context.guild.id,
             channel: context.channel.id,

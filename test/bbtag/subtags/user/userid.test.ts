@@ -8,27 +8,27 @@ runSubtagTests({
     argCountBounds: { min: 0, max: 2 },
     cases: [
         ...createGetUserPropTestCases({
-            quiet: '',
+            quiet: ``,
             generateCode(...args) {
-                return `{${['userid', ...args].join(';')}}`;
+                return `{${[`userid`, ...args].join(`;`)}}`;
             },
             cases: [
                 {
-                    expected: '12345678900987236',
+                    expected: `12345678900987236`,
                     setup(member) {
-                        member.user.id = '12345678900987236';
+                        member.user.id = `12345678900987236`;
                     }
                 },
                 {
-                    expected: '098765434512212678',
+                    expected: `098765434512212678`,
                     setup(member) {
-                        member.user.id = '098765434512212678';
+                        member.user.id = `098765434512212678`;
                     }
                 },
                 {
-                    expected: '876543456782978367654',
+                    expected: `876543456782978367654`,
                     setup(member) {
-                        member.user.id = '876543456782978367654';
+                        member.user.id = `876543456782978367654`;
                     }
                 }
             ]

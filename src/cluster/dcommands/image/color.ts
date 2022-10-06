@@ -4,11 +4,11 @@ import { ImageResult } from '@blargbot/image/types';
 export class ColorCommand extends GlobalImageCommand {
     public constructor() {
         super({
-            name: 'color',
+            name: `color`,
             definitions: [
                 {
-                    parameters: '{colors[]}',
-                    description: 'Returns the provided colors.',
+                    parameters: `{colors[]}`,
+                    description: `Returns the provided colors.`,
                     execute: (ctx, [text]) => this.render(ctx, text.asStrings)
                 }
             ]
@@ -16,6 +16,6 @@ export class ColorCommand extends GlobalImageCommand {
     }
 
     public async render(context: CommandContext, colors: readonly string[]): Promise<string | ImageResult> {
-        return await this.renderImage(context, 'color', { color: colors });
+        return await this.renderImage(context, `color`, { color: colors });
     }
 }

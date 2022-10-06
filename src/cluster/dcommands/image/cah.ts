@@ -9,21 +9,21 @@ import { Guild, KnownTextableChannel, User } from 'eris';
 export class CAHCommand extends GlobalImageCommand {
     public constructor() {
         super({
-            name: 'cah',
+            name: `cah`,
             definitions: [
                 {
-                    parameters: '',
-                    description: 'Generates a set of Cards Against Humanity cards.',
+                    parameters: ``,
+                    description: `Generates a set of Cards Against Humanity cards.`,
                     execute: (ctx, _, flags) => this.render(ctx, flags.u !== undefined)
                 },
                 {
-                    parameters: 'packs',
-                    description: 'Lists all the Cards against packs I know about',
+                    parameters: `packs`,
+                    description: `Lists all the Cards against packs I know about`,
                     execute: (_, __, flags) => this.listPacks(flags.u !== undefined)
                 }
             ],
             flags: [
-                { flag: 'u', word: 'unofficial', description: 'Also show unofficial cards.' }
+                { flag: `u`, word: `unofficial`, description: `Also show unofficial cards.` }
             ]
         });
     }
@@ -36,7 +36,7 @@ export class CAHCommand extends GlobalImageCommand {
             return true;
 
         const guild = location instanceof Guild ? location : guard.isGuildChannel(location) ? location.guild : undefined;
-        if (guild === undefined || await util.database.guilds.getSetting(guild.id, 'cahnsfw') !== true)
+        if (guild === undefined || await util.database.guilds.getSetting(guild.id, `cahnsfw`) !== true)
             return true;
 
         return await commandTypeDetails[CommandType.NSFW].isVisible(util, location, user);
@@ -52,17 +52,17 @@ export class CAHCommand extends GlobalImageCommand {
 
         const white = [...whiteIds].map(id => cahData.white[id]);
 
-        return await this.renderImage(context, 'cah', { black: black.text.replaceAll('_', '______'), white: white });
+        return await this.renderImage(context, `cah`, { black: black.text.replaceAll(`_`, `______`), white: white });
     }
 
     public listPacks(unofficial: boolean): SendContent {
         const packNames = unofficial ? packs.all : packs.official;
         return {
-            content: this.info('These are the packs I know about:'),
+            content: this.info(`These are the packs I know about:`),
             files: [
                 {
-                    file: packNames.join('\n'),
-                    name: 'cah-packs.txt'
+                    file: packNames.join(`\n`),
+                    name: `cah-packs.txt`
                 }
             ]
         };

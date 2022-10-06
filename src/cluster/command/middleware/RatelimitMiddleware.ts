@@ -25,7 +25,7 @@ export class RatelimitMiddleware<TContext extends CommandContext> implements IMi
             return `❌ Sorry, you ran this command too recently! Please try again in ${Math.ceil(duration.asSeconds())} seconds.`;
         }
 
-        lastUsage.timestamp = moment().add(99, 'years');
+        lastUsage.timestamp = moment().add(99, `years`);
         try {
             return await next();
         } finally {

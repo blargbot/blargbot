@@ -19,7 +19,7 @@ export class GreedyBinding<TContext extends CommandContext, Name extends Command
     }
 
     public * debugView(): Generator<string> {
-        yield `Greedy ${this.parameter.raw ? 'raw ' : ''}values into array variable '${this.name}'`;
+        yield `Greedy ${this.parameter.raw ? `raw ` : ``}values into array variable '${this.name}'`;
         for (const [key, next] of Object.entries(this.next)) {
             yield `    When ${<string>key} or more values:`;
             if (next !== undefined) {
@@ -78,27 +78,27 @@ function memoize(
         case true:
         case false:
             return result;
-        case 'deferred': {
+        case `deferred`: {
             let resolved: CommandBinderValue | undefined;
             return {
                 get success() {
-                    return resolved?.success ?? 'deferred';
+                    return resolved?.success ?? `deferred`;
                 },
                 async getValue() {
                     return resolved = await result.getValue();
                 },
                 get value() {
                     if (resolved === undefined)
-                        throw new Error('Value hasnt been resolved yet');
+                        throw new Error(`Value hasnt been resolved yet`);
                     if (resolved.success)
                         return resolved.value;
-                    throw new Error('Value was not resolved successfully');
+                    throw new Error(`Value was not resolved successfully`);
                 },
                 get error() {
                     if (resolved === undefined)
-                        throw new Error('Value hasnt been resolved yet');
+                        throw new Error(`Value hasnt been resolved yet`);
                     if (resolved.success)
-                        throw new Error('Value was resolved successfully');
+                        throw new Error(`Value was resolved successfully`);
                     return resolved.error;
                 }
             };
@@ -119,7 +119,7 @@ function aggregateResults(
             case false: return result;
             case true: successful.push({ i, result: result.value });
             // fallthrough
-            case 'deferred': deferred.push({ i, result });
+            case `deferred`: deferred.push({ i, result });
         }
     }
 
@@ -127,7 +127,7 @@ function aggregateResults(
         return { success: true, value: populateMissingArgumentAccessors(createAggregated(successful.sort((a, b) => a.i - b.i).map(x => x.result))) };
 
     return {
-        success: 'deferred',
+        success: `deferred`,
         async getValue() {
             const results: Array<{ i: number; result: CommandArgument; }> = [];
             for (const { result, i } of deferred) {
@@ -135,7 +135,7 @@ function aggregateResults(
                     case true:
                         results.push({ i, result: result.value });
                         break;
-                    case 'deferred': {
+                    case `deferred`: {
                         const value = await result.getValue();
                         switch (value.success) {
                             case false: return { success: false, error: value.error };

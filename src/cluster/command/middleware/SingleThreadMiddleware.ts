@@ -18,7 +18,7 @@ export class SingleThreadMiddleware<TContext extends CommandContext> implements 
         if (lock !== undefined) {
             if (!lock.warned) {
                 lock.warned = true;
-                return '❌ Sorry, this command is already running! Please wait and try again.';
+                return `❌ Sorry, this command is already running! Please wait and try again.`;
             }
             return;
         }

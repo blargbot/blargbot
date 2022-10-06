@@ -40,7 +40,7 @@ export class RethinkDbTable<Table> {
         try {
             throwIfErrored(result);
         } catch (err: unknown) {
-            if (err instanceof Error && err.message.startsWith('Duplicate primary key'))
+            if (err instanceof Error && err.message.startsWith(`Duplicate primary key`))
                 return returnValue ? undefined : false;
             throw err;
         }
@@ -66,7 +66,7 @@ export class RethinkDbTable<Table> {
     public async update(key: string, value: UpdateRequest<Table>, returnValue?: false): Promise<boolean>
     public async update(key: string, value: UpdateRequest<Table>, returnValue: true): Promise<Table | undefined>
     public async update(key: string, value: UpdateRequest<Table>, returnValue = false): Promise<boolean | Table | undefined> {
-        const updater = 'eq' in value || typeof value === 'object' ? () => value : value;
+        const updater = `eq` in value || typeof value === `object` ? () => value : value;
         const result = await this.query(t => t.get(key).update(r => updater(r), { returnChanges: returnValue }));
         throwIfErrored(result);
 
@@ -79,7 +79,7 @@ export class RethinkDbTable<Table> {
     public async delete(key: string | Partial<Table>, returnChanges?: false): Promise<boolean>
     public async delete(key: string | Partial<Table>, returnChanges: true): Promise<Table[]>
     public async delete(key: string | Partial<Table>, returnChanges = false): Promise<boolean | Table[]> {
-        const result = typeof key === 'string'
+        const result = typeof key === `string`
             ? await this.query(t => t.get(key).delete({ returnChanges }))
             : await this.query(t => t.filter(key).delete({ returnChanges }));
         throwIfErrored(result);
@@ -134,7 +134,7 @@ function throwIfErrored<T>(result: WriteResult<T>): void | never {
     if (result.errors === 0)
         return;
 
-    const error = typeof result.first_error === 'string'
+    const error = typeof result.first_error === `string`
         ? new Error(result.first_error)
         : result.first_error;
 

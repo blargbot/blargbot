@@ -37,22 +37,22 @@ export class RolemeManager {
                 await this.invokeMessage(message, roleme);
 
             } catch (err: unknown) {
-                await this.#cluster.util.send(message, 'A roleme was triggered, but I don\'t have the permissions required to give you your role!');
+                await this.#cluster.util.send(message, `A roleme was triggered, but I don't have the permissions required to give you your role!`);
             }
         }
     }
 
     public async invokeMessage(trigger: Message<KnownGuildTextableChannel>, roleme: GuildRolemeEntry): Promise<ExecutionResult> {
         const tag = roleme.output ?? {
-            content: 'Your roles have been edited!',
-            author: ''
+            content: `Your roles have been edited!`,
+            author: ``
         };
 
         return await this.#cluster.bbtag.execute(tag.content, {
             message: trigger,
-            rootTagName: 'roleme',
-            limit: 'customCommandLimit',
-            inputRaw: '',
+            rootTagName: `roleme`,
+            limit: `customCommandLimit`,
+            inputRaw: ``,
             isCC: true,
             authorId: tag.author ?? undefined,
             authorizerId: tag.authorizer ?? undefined

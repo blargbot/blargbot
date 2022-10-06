@@ -9,29 +9,29 @@ runSubtagTests({
     argCountBounds: { min: 0, max: 1 },
     cases: [
         {
-            code: 'abc{return}def',
-            expected: 'abc',
+            code: `abc{return}def`,
+            expected: `abc`,
             assert(ctx) {
                 expect(ctx.data.state).to.equal(BBTagRuntimeState.ABORT);
             }
         },
         {
-            code: '{return;true}',
-            expected: '',
+            code: `{return;true}`,
+            expected: ``,
             assert(ctx) {
                 expect(ctx.data.state).to.equal(BBTagRuntimeState.ABORT);
             }
         },
         {
-            code: 'abc{return;false}def',
-            expected: 'abc',
+            code: `abc{return;false}def`,
+            expected: `abc`,
             assert(ctx) {
                 expect(ctx.data.state).to.equal(BBTagRuntimeState.RETURN);
             }
         },
         {
-            code: '{return;abc}',
-            expected: '',
+            code: `{return;abc}`,
+            expected: ``,
             assert(ctx) {
                 expect(ctx.data.state).to.equal(BBTagRuntimeState.ABORT);
             }

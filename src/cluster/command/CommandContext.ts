@@ -57,66 +57,66 @@ export class CommandContext<TChannel extends KnownTextableChannel = KnownTextabl
     }
 
     public async queryChannel(options: SlimEntityFindQueryOptions): Promise<ChoiceQueryResult<KnownGuildChannel>>;
-    public async queryChannel(this: GuildCommandContext, options: Omit<SlimEntityFindQueryOptions, 'guild'>): Promise<ChoiceQueryResult<KnownGuildChannel>>;
+    public async queryChannel(this: GuildCommandContext, options: Omit<SlimEntityFindQueryOptions, `guild`>): Promise<ChoiceQueryResult<KnownGuildChannel>>;
     public async queryChannel<T extends KnownChannel>(options: SlimEntityPickQueryOptions<T>): Promise<ChoiceQueryResult<T>>;
-    public async queryChannel(options: SlimEntityQueryOptions<KnownChannel> | Omit<SlimEntityFindQueryOptions, 'guild'>): Promise<ChoiceQueryResult<KnownChannel>> {
-        if ('choices' in options)
+    public async queryChannel(options: SlimEntityQueryOptions<KnownChannel> | Omit<SlimEntityFindQueryOptions, `guild`>): Promise<ChoiceQueryResult<KnownChannel>> {
+        if (`choices` in options)
             return await this.util.queryChannel({ ...options, context: this.message, actors: this.author });
 
-        if ('guild' in options)
+        if (`guild` in options)
             return await this.util.queryChannel({ ...options, context: this.message, actors: this.author });
 
         if (guard.isGuildChannel(this.channel))
             return await this.util.queryChannel({ ...options, context: this.message, actors: this.author, guild: this.channel.guild });
 
-        throw new Error('Cannot queryChannel without a guild!');
+        throw new Error(`Cannot queryChannel without a guild!`);
     }
 
     public async queryRole(options: SlimEntityFindQueryOptions): Promise<ChoiceQueryResult<Role>>;
-    public async queryRole(this: GuildCommandContext, options: Omit<SlimEntityFindQueryOptions, 'guild'>): Promise<ChoiceQueryResult<Role>>;
+    public async queryRole(this: GuildCommandContext, options: Omit<SlimEntityFindQueryOptions, `guild`>): Promise<ChoiceQueryResult<Role>>;
     public async queryRole(options: SlimEntityPickQueryOptions<Role>): Promise<ChoiceQueryResult<Role>>;
-    public async queryRole(options: SlimEntityQueryOptions<Role> | Omit<SlimEntityFindQueryOptions, 'guild'>): Promise<ChoiceQueryResult<Role>> {
-        if ('choices' in options)
+    public async queryRole(options: SlimEntityQueryOptions<Role> | Omit<SlimEntityFindQueryOptions, `guild`>): Promise<ChoiceQueryResult<Role>> {
+        if (`choices` in options)
             return await this.util.queryRole({ ...options, context: this.message, actors: this.author });
 
-        if ('guild' in options)
+        if (`guild` in options)
             return await this.util.queryRole({ ...options, context: this.message, actors: this.author });
 
         if (guard.isGuildChannel(this.channel))
             return await this.util.queryRole({ ...options, context: this.message, actors: this.author, guild: this.channel.guild });
 
-        throw new Error('Cannot queryRole without a guild!');
+        throw new Error(`Cannot queryRole without a guild!`);
     }
 
     public async queryMember(options: SlimEntityFindQueryOptions): Promise<ChoiceQueryResult<Member>>;
-    public async queryMember(this: GuildCommandContext, options: Omit<SlimEntityFindQueryOptions, 'guild'>): Promise<ChoiceQueryResult<Member>>;
+    public async queryMember(this: GuildCommandContext, options: Omit<SlimEntityFindQueryOptions, `guild`>): Promise<ChoiceQueryResult<Member>>;
     public async queryMember(options: SlimEntityPickQueryOptions<Member>): Promise<ChoiceQueryResult<Member>>;
-    public async queryMember(options: SlimEntityQueryOptions<Member> | Omit<SlimEntityFindQueryOptions, 'guild'>): Promise<ChoiceQueryResult<Member>> {
-        if ('choices' in options)
+    public async queryMember(options: SlimEntityQueryOptions<Member> | Omit<SlimEntityFindQueryOptions, `guild`>): Promise<ChoiceQueryResult<Member>> {
+        if (`choices` in options)
             return await this.util.queryMember({ ...options, context: this.message, actors: this.author });
 
-        if ('guild' in options)
+        if (`guild` in options)
             return await this.util.queryMember({ ...options, context: this.message, actors: this.author });
 
         if (guard.isGuildChannel(this.channel))
             return await this.util.queryMember({ ...options, context: this.message, actors: this.author, guild: this.channel.guild });
 
-        throw new Error('Cannot queryMember without a guild!');
+        throw new Error(`Cannot queryMember without a guild!`);
     }
     public async queryUser(options: SlimEntityFindQueryOptions): Promise<ChoiceQueryResult<User>>;
-    public async queryUser(this: GuildCommandContext, options: Omit<SlimEntityFindQueryOptions, 'guild'>): Promise<ChoiceQueryResult<User>>;
+    public async queryUser(this: GuildCommandContext, options: Omit<SlimEntityFindQueryOptions, `guild`>): Promise<ChoiceQueryResult<User>>;
     public async queryUser(options: SlimEntityPickQueryOptions<User>): Promise<ChoiceQueryResult<User>>;
-    public async queryUser(options: SlimEntityQueryOptions<User> | Omit<SlimEntityFindQueryOptions, 'guild'>): Promise<ChoiceQueryResult<User>> {
-        if ('choices' in options)
+    public async queryUser(options: SlimEntityQueryOptions<User> | Omit<SlimEntityFindQueryOptions, `guild`>): Promise<ChoiceQueryResult<User>> {
+        if (`choices` in options)
             return await this.util.queryUser({ ...options, context: this.message, actors: this.author });
 
-        if ('guild' in options)
+        if (`guild` in options)
             return await this.util.queryUser({ ...options, context: this.message, actors: this.author });
 
         if (guard.isGuildChannel(this.channel))
             return await this.util.queryUser({ ...options, context: this.message, actors: this.author, guild: this.channel.guild });
 
-        throw new Error('Cannot queryUser without a guild!');
+        throw new Error(`Cannot queryUser without a guild!`);
     }
 
     public async querySender(options: SlimEntityPickQueryOptions<User | Webhook>): Promise<ChoiceQueryResult<User | Webhook>> {
@@ -133,10 +133,10 @@ export class CommandContext<TChannel extends KnownTextableChannel = KnownTextabl
 
 function toSendContent(content: CommandResult): SendPayload | undefined {
     switch (typeof content) {
-        case 'undefined':
+        case `undefined`:
             return undefined;
-        case 'object':
-            if ('data' in content)
+        case `object`:
+            if (`data` in content)
                 return { name: content.fileName, file: content.data };
         // fallthrough
         default:

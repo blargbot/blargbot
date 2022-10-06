@@ -15,18 +15,18 @@ runSubtagTests({
     },
     cases: [
         {
-            title: 'Channel is not a thread',
-            code: '{channeledit;1293671282973698}',
-            expected: '1293671282973698',
+            title: `Channel is not a thread`,
+            code: `{channeledit;1293671282973698}`,
+            expected: `1293671282973698`,
             setup(ctx) {
-                ctx.channels.general.id = '1293671282973698';
+                ctx.channels.general.id = `1293671282973698`;
             },
             postSetup(bbctx, ctx) {
                 const channel = bbctx.guild.channels.get(ctx.channels.general.id);
                 if (channel === undefined)
-                    throw new Error('Unable to get channel under test');
+                    throw new Error(`Unable to get channel under test`);
 
-                ctx.util.setup(m => m.findChannels(bbctx.guild, '1293671282973698')).thenResolve([channel]);
+                ctx.util.setup(m => m.findChannels(bbctx.guild, `1293671282973698`)).thenResolve([channel]);
                 ctx.discord.setup(m => m.editChannel(channel.id, argument.isDeepEqual({
                     bitrate: undefined,
                     name: undefined,
@@ -44,23 +44,23 @@ runSubtagTests({
                     invitable: undefined,
                     ownerID: undefined,
                     videoQualityMode: undefined
-                }), 'Command User#0000')).thenResolve(channel);
+                }), `Command User#0000`)).thenResolve(channel);
             }
         },
         {
-            title: 'Channel is a thread',
-            code: '{channeledit;1293671282973698}',
-            expected: '1293671282973698',
+            title: `Channel is a thread`,
+            code: `{channeledit;1293671282973698}`,
+            expected: `1293671282973698`,
             setup(ctx) {
-                ctx.channels.general.id = '1293671282973698';
+                ctx.channels.general.id = `1293671282973698`;
                 ctx.channels.general.type = ChannelType.GuildPublicThread;
             },
             postSetup(bbctx, ctx) {
                 const channel = bbctx.guild.channels.get(ctx.channels.general.id);
                 if (channel === undefined)
-                    throw new Error('Unable to get channel under test');
+                    throw new Error(`Unable to get channel under test`);
 
-                ctx.util.setup(m => m.findChannels(bbctx.guild, '1293671282973698')).thenResolve([channel]);
+                ctx.util.setup(m => m.findChannels(bbctx.guild, `1293671282973698`)).thenResolve([channel]);
                 ctx.discord.setup(m => m.editChannel(channel.id, argument.isDeepEqual({
                     bitrate: undefined,
                     name: undefined,
@@ -78,40 +78,40 @@ runSubtagTests({
                     invitable: undefined,
                     ownerID: undefined,
                     videoQualityMode: undefined
-                }), 'Command User#0000')).thenResolve(channel);
+                }), `Command User#0000`)).thenResolve(channel);
             }
         },
         {
-            title: 'Channel is not a thread',
+            title: `Channel is not a thread`,
             code: `{channeledit;1293671282973698;{escapebbtag;${JSON.stringify({
                 bitrate: 123,
-                name: 'new channel name',
+                name: `new channel name`,
                 nsfw: true,
-                parentID: '2836742834628346',
+                parentID: `2836742834628346`,
                 rateLimitPerUser: 456,
-                topic: 'New channel topic',
+                topic: `New channel topic`,
                 userLimit: 789,
                 defaultAutoArchiveDuration: 1440,
                 locked: true
             })}}}`,
-            expected: '1293671282973698',
+            expected: `1293671282973698`,
             subtags: [new EscapeBbtagSubtag()],
             setup(ctx) {
-                ctx.channels.general.id = '1293671282973698';
+                ctx.channels.general.id = `1293671282973698`;
             },
             postSetup(bbctx, ctx) {
                 const channel = bbctx.guild.channels.get(ctx.channels.general.id);
                 if (channel === undefined)
-                    throw new Error('Unable to get channel under test');
+                    throw new Error(`Unable to get channel under test`);
 
-                ctx.util.setup(m => m.findChannels(bbctx.guild, '1293671282973698')).thenResolve([channel]);
+                ctx.util.setup(m => m.findChannels(bbctx.guild, `1293671282973698`)).thenResolve([channel]);
                 ctx.discord.setup(m => m.editChannel(channel.id, argument.isDeepEqual({
                     bitrate: 123,
-                    name: 'new channel name',
+                    name: `new channel name`,
                     nsfw: true,
-                    parentID: '2836742834628346',
+                    parentID: `2836742834628346`,
                     rateLimitPerUser: 456,
-                    topic: 'New channel topic',
+                    topic: `New channel topic`,
                     userLimit: 789,
                     defaultAutoArchiveDuration: 1440,
                     locked: true,
@@ -122,36 +122,36 @@ runSubtagTests({
                     invitable: undefined,
                     ownerID: undefined,
                     videoQualityMode: undefined
-                }), 'Command User#0000')).thenResolve(channel);
+                }), `Command User#0000`)).thenResolve(channel);
             }
         },
         {
-            title: 'Channel is a thread',
+            title: `Channel is a thread`,
             code: `{channeledit;1293671282973698;{escapebbtag;${JSON.stringify({
                 archived: true,
                 autoArchiveDuration: 4320,
                 locked: true,
-                name: 'New thread name',
+                name: `New thread name`,
                 rateLimitPerUser: 123,
                 invitable: true
             })}}}`,
-            expected: '1293671282973698',
+            expected: `1293671282973698`,
             subtags: [new EscapeBbtagSubtag()],
             setup(ctx) {
-                ctx.channels.general.id = '1293671282973698';
+                ctx.channels.general.id = `1293671282973698`;
                 ctx.channels.general.type = ChannelType.GuildPublicThread;
             },
             postSetup(bbctx, ctx) {
                 const channel = bbctx.guild.channels.get(ctx.channels.general.id);
                 if (channel === undefined)
-                    throw new Error('Unable to get channel under test');
+                    throw new Error(`Unable to get channel under test`);
 
-                ctx.util.setup(m => m.findChannels(bbctx.guild, '1293671282973698')).thenResolve([channel]);
+                ctx.util.setup(m => m.findChannels(bbctx.guild, `1293671282973698`)).thenResolve([channel]);
                 ctx.discord.setup(m => m.editChannel(channel.id, argument.isDeepEqual({
                     archived: true,
                     autoArchiveDuration: 4320,
                     locked: true,
-                    name: 'New thread name',
+                    name: `New thread name`,
                     rateLimitPerUser: 123,
                     invitable: true,
                     bitrate: undefined,
@@ -164,40 +164,40 @@ runSubtagTests({
                     topic: undefined,
                     userLimit: undefined,
                     videoQualityMode: undefined
-                }), 'Command User#0000')).thenResolve(channel);
+                }), `Command User#0000`)).thenResolve(channel);
             }
         },
         {
-            title: 'Channel is not a thread',
+            title: `Channel is not a thread`,
             code: `{channeledit;1293671282973698;{escapebbtag;${JSON.stringify({
-                bitrate: '123',
-                name: 'new channel name',
-                nsfw: 'true',
-                parentID: '2836742834628346',
-                rateLimitPerUser: '456',
-                topic: 'New channel topic',
-                userLimit: '789',
-                defaultAutoArchiveDuration: '1440',
-                locked: 'true'
+                bitrate: `123`,
+                name: `new channel name`,
+                nsfw: `true`,
+                parentID: `2836742834628346`,
+                rateLimitPerUser: `456`,
+                topic: `New channel topic`,
+                userLimit: `789`,
+                defaultAutoArchiveDuration: `1440`,
+                locked: `true`
             })}}}`,
-            expected: '1293671282973698',
+            expected: `1293671282973698`,
             subtags: [new EscapeBbtagSubtag()],
             setup(ctx) {
-                ctx.channels.general.id = '1293671282973698';
+                ctx.channels.general.id = `1293671282973698`;
             },
             postSetup(bbctx, ctx) {
                 const channel = bbctx.guild.channels.get(ctx.channels.general.id);
                 if (channel === undefined)
-                    throw new Error('Unable to get channel under test');
+                    throw new Error(`Unable to get channel under test`);
 
-                ctx.util.setup(m => m.findChannels(bbctx.guild, '1293671282973698')).thenResolve([channel]);
+                ctx.util.setup(m => m.findChannels(bbctx.guild, `1293671282973698`)).thenResolve([channel]);
                 ctx.discord.setup(m => m.editChannel(channel.id, argument.isDeepEqual({
                     bitrate: 123,
-                    name: 'new channel name',
+                    name: `new channel name`,
                     nsfw: true,
-                    parentID: '2836742834628346',
+                    parentID: `2836742834628346`,
                     rateLimitPerUser: 456,
-                    topic: 'New channel topic',
+                    topic: `New channel topic`,
                     userLimit: 789,
                     defaultAutoArchiveDuration: 1440,
                     locked: true,
@@ -208,36 +208,36 @@ runSubtagTests({
                     invitable: undefined,
                     ownerID: undefined,
                     videoQualityMode: undefined
-                }), 'Command User#0000')).thenResolve(channel);
+                }), `Command User#0000`)).thenResolve(channel);
             }
         },
         {
-            title: 'Channel is a thread',
+            title: `Channel is a thread`,
             code: `{channeledit;1293671282973698;{escapebbtag;${JSON.stringify({
-                archived: 'true',
-                autoArchiveDuration: '4320',
-                locked: 'true',
-                name: 'New thread name',
-                rateLimitPerUser: '123',
-                invitable: 'true'
+                archived: `true`,
+                autoArchiveDuration: `4320`,
+                locked: `true`,
+                name: `New thread name`,
+                rateLimitPerUser: `123`,
+                invitable: `true`
             })}}}`,
-            expected: '1293671282973698',
+            expected: `1293671282973698`,
             subtags: [new EscapeBbtagSubtag()],
             setup(ctx) {
-                ctx.channels.general.id = '1293671282973698';
+                ctx.channels.general.id = `1293671282973698`;
                 ctx.channels.general.type = ChannelType.GuildPublicThread;
             },
             postSetup(bbctx, ctx) {
                 const channel = bbctx.guild.channels.get(ctx.channels.general.id);
                 if (channel === undefined)
-                    throw new Error('Unable to get channel under test');
+                    throw new Error(`Unable to get channel under test`);
 
-                ctx.util.setup(m => m.findChannels(bbctx.guild, '1293671282973698')).thenResolve([channel]);
+                ctx.util.setup(m => m.findChannels(bbctx.guild, `1293671282973698`)).thenResolve([channel]);
                 ctx.discord.setup(m => m.editChannel(channel.id, argument.isDeepEqual({
                     archived: true,
                     autoArchiveDuration: 4320,
                     locked: true,
-                    name: 'New thread name',
+                    name: `New thread name`,
                     rateLimitPerUser: 123,
                     invitable: true,
                     bitrate: undefined,
@@ -250,77 +250,77 @@ runSubtagTests({
                     topic: undefined,
                     userLimit: undefined,
                     videoQualityMode: undefined
-                }), 'Command User#0000')).thenResolve(channel);
+                }), `Command User#0000`)).thenResolve(channel);
             }
         },
         {
-            code: '{channeledit;1293671282973698}',
-            expected: '`Channel does not exist`',
+            code: `{channeledit;1293671282973698}`,
+            expected: `\`Channel does not exist\``,
             errors: [
-                { start: 0, end: 30, error: new BBTagRuntimeError('Channel does not exist') }
+                { start: 0, end: 30, error: new BBTagRuntimeError(`Channel does not exist`) }
             ],
             postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.findChannels(bbctx.guild, '1293671282973698')).thenResolve([]);
+                ctx.util.setup(m => m.findChannels(bbctx.guild, `1293671282973698`)).thenResolve([]);
             }
         },
         {
-            code: '{channeledit;1293671282973698}',
-            expected: '`Author cannot edit this channel`',
+            code: `{channeledit;1293671282973698}`,
+            expected: `\`Author cannot edit this channel\``,
             subtags: [new EscapeBbtagSubtag()],
             errors: [
-                { start: 0, end: 30, error: new BBTagRuntimeError('Author cannot edit this channel') }
+                { start: 0, end: 30, error: new BBTagRuntimeError(`Author cannot edit this channel`) }
             ],
             setup(ctx) {
-                ctx.roles.authorizer.permissions = '0';
+                ctx.roles.authorizer.permissions = `0`;
             },
             postSetup(bbctx, ctx) {
                 const channel = bbctx.guild.channels.get(ctx.channels.general.id);
                 if (channel === undefined)
-                    throw new Error('Unable to get channel under test');
+                    throw new Error(`Unable to get channel under test`);
 
-                ctx.util.setup(m => m.findChannels(bbctx.guild, '1293671282973698')).thenResolve([channel]);
+                ctx.util.setup(m => m.findChannels(bbctx.guild, `1293671282973698`)).thenResolve([channel]);
             }
         },
         {
-            title: 'Channel is not a thread',
+            title: `Channel is not a thread`,
             code: `{channeledit;1293671282973698;{escapebbtag;${JSON.stringify({
                 archived: true,
                 autoArchiveDuration: 4320,
                 locked: true,
-                name: 'New thread name',
+                name: `New thread name`,
                 rateLimitPerUser: 123,
                 invitable: true
             })}}}`,
-            expected: '`Invalid JSON`',
+            expected: `\`Invalid JSON\``,
             subtags: [new EscapeBbtagSubtag()],
             errors: [
-                { start: 0, end: 168, error: new BBTagRuntimeError('Invalid JSON') }
+                { start: 0, end: 168, error: new BBTagRuntimeError(`Invalid JSON`) }
             ],
             postSetup(bbctx, ctx) {
                 const channel = bbctx.guild.channels.get(ctx.channels.general.id);
                 if (channel === undefined)
-                    throw new Error('Unable to get channel under test');
+                    throw new Error(`Unable to get channel under test`);
 
-                ctx.util.setup(m => m.findChannels(bbctx.guild, '1293671282973698')).thenResolve([channel]);
+                ctx.util.setup(m => m.findChannels(bbctx.guild, `1293671282973698`)).thenResolve([channel]);
             }
         },
         {
-            title: 'Channel is a thread',
+            title: `Channel is a thread`,
             code: `{channeledit;1293671282973698;{escapebbtag;${JSON.stringify({
                 bitrate: 123,
-                name: 'new channel name',
+                name: `new channel name`,
                 nsfw: true,
-                parentID: '2836742834628346',
+                parentID: `2836742834628346`,
                 rateLimitPerUser: 456,
-                topic: 'New channel topic',
+                topic: `New channel topic`,
                 userLimit: 789,
                 defaultAutoArchiveDuration: 1440,
                 locked: true
             })}}}`,
-            expected: '`Invalid JSON`',
+            expected: `\`Invalid JSON\``,
             subtags: [new EscapeBbtagSubtag()],
             errors: [
-                { start: 0, end: 243, error: new BBTagRuntimeError('Invalid JSON') }
+                { start: 0, end: 243, error: new BBTagRuntimeError(`Invalid JSON`) }
             ],
             setup(ctx) {
                 ctx.channels.general.type = ChannelType.GuildPublicThread;
@@ -328,22 +328,22 @@ runSubtagTests({
             postSetup(bbctx, ctx) {
                 const channel = bbctx.guild.channels.get(ctx.channels.general.id);
                 if (channel === undefined)
-                    throw new Error('Unable to get channel under test');
+                    throw new Error(`Unable to get channel under test`);
 
-                ctx.util.setup(m => m.findChannels(bbctx.guild, '1293671282973698')).thenResolve([channel]);
+                ctx.util.setup(m => m.findChannels(bbctx.guild, `1293671282973698`)).thenResolve([channel]);
             }
         },
         {
-            code: '{channeledit;2384762844234324}',
-            expected: '`Failed to edit channel: no perms`',
+            code: `{channeledit;2384762844234324}`,
+            expected: `\`Failed to edit channel: no perms\``,
             errors: [
-                { start: 0, end: 30, error: new BBTagRuntimeError('Failed to edit channel: no perms', 'Test REST error') }
+                { start: 0, end: 30, error: new BBTagRuntimeError(`Failed to edit channel: no perms`, `Test REST error`) }
             ],
             setup(ctx) {
                 const err = ctx.createRESTError(ApiError.MISSING_PERMISSIONS);
-                ctx.channels.command.id = '2384762844234324';
+                ctx.channels.command.id = `2384762844234324`;
                 ctx.message.channel_id = ctx.channels.command.id;
-                ctx.discord.setup(m => m.editChannel('2384762844234324', argument.isDeepEqual({
+                ctx.discord.setup(m => m.editChannel(`2384762844234324`, argument.isDeepEqual({
                     bitrate: undefined,
                     name: undefined,
                     nsfw: undefined,
@@ -360,20 +360,20 @@ runSubtagTests({
                     invitable: undefined,
                     ownerID: undefined,
                     videoQualityMode: undefined
-                }), 'Command User#0000')).thenReject(err);
+                }), `Command User#0000`)).thenReject(err);
             }
         },
         {
-            code: '{channeledit;2384762844234324}',
-            expected: '`Failed to edit channel: no perms`',
+            code: `{channeledit;2384762844234324}`,
+            expected: `\`Failed to edit channel: no perms\``,
             errors: [
-                { start: 0, end: 30, error: new BBTagRuntimeError('Failed to edit channel: no perms', 'Some other error message') }
+                { start: 0, end: 30, error: new BBTagRuntimeError(`Failed to edit channel: no perms`, `Some other error message`) }
             ],
             setup(ctx) {
-                const err = ctx.createRESTError(ApiError.NOT_AUTHORIZED, 'Some other error message');
-                ctx.channels.command.id = '2384762844234324';
+                const err = ctx.createRESTError(ApiError.NOT_AUTHORIZED, `Some other error message`);
+                ctx.channels.command.id = `2384762844234324`;
                 ctx.message.channel_id = ctx.channels.command.id;
-                ctx.discord.setup(m => m.editChannel('2384762844234324', argument.isDeepEqual({
+                ctx.discord.setup(m => m.editChannel(`2384762844234324`, argument.isDeepEqual({
                     bitrate: undefined,
                     name: undefined,
                     nsfw: undefined,
@@ -390,7 +390,7 @@ runSubtagTests({
                     invitable: undefined,
                     ownerID: undefined,
                     videoQualityMode: undefined
-                }), 'Command User#0000')).thenReject(err);
+                }), `Command User#0000`)).thenReject(err);
             }
         }
     ]

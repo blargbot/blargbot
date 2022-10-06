@@ -12,87 +12,87 @@ runSubtagTests({
     },
     cases: [
         {
-            code: '{channelsetpos;239874692346327846;123}',
-            expected: '',
+            code: `{channelsetpos;239874692346327846;123}`,
+            expected: ``,
             postSetup(bbctx, ctx) {
                 const channel = bbctx.guild.channels.random();
                 if (channel === undefined)
-                    throw new Error('Could not find channel under test');
+                    throw new Error(`Could not find channel under test`);
 
                 ctx.discord.setup(m => m.editChannelPosition(channel.id, 123, undefined)).thenResolve(undefined);
-                ctx.util.setup(m => m.findChannels(bbctx.guild, '239874692346327846')).thenResolve([channel]);
+                ctx.util.setup(m => m.findChannels(bbctx.guild, `239874692346327846`)).thenResolve([channel]);
             }
         },
         {
-            code: '{channelsetpos;239874692346327846;abc}',
-            expected: '`Not a number`',
+            code: `{channelsetpos;239874692346327846;abc}`,
+            expected: `\`Not a number\``,
             errors: [
-                { start: 0, end: 38, error: new NotANumberError('abc') }
+                { start: 0, end: 38, error: new NotANumberError(`abc`) }
             ],
             postSetup(bbctx, ctx) {
                 const channel = bbctx.guild.channels.random();
                 if (channel === undefined)
-                    throw new Error('Could not find channel under test');
+                    throw new Error(`Could not find channel under test`);
 
-                ctx.util.setup(m => m.findChannels(bbctx.guild, '239874692346327846')).thenResolve([channel]);
+                ctx.util.setup(m => m.findChannels(bbctx.guild, `239874692346327846`)).thenResolve([channel]);
             }
         },
         {
-            code: '{channelsetpos;239874692346327846;123}',
-            expected: '`Channel does not exist`',
+            code: `{channelsetpos;239874692346327846;123}`,
+            expected: `\`Channel does not exist\``,
             errors: [
-                { start: 0, end: 38, error: new BBTagRuntimeError('Channel does not exist') }
+                { start: 0, end: 38, error: new BBTagRuntimeError(`Channel does not exist`) }
             ],
             postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.findChannels(bbctx.guild, '239874692346327846')).thenResolve([]);
+                ctx.util.setup(m => m.findChannels(bbctx.guild, `239874692346327846`)).thenResolve([]);
             }
         },
         {
-            code: '{channelsetpos;239874692346327846;123}',
-            expected: '`Author cannot move this channel`',
+            code: `{channelsetpos;239874692346327846;123}`,
+            expected: `\`Author cannot move this channel\``,
             errors: [
-                { start: 0, end: 38, error: new BBTagRuntimeError('Author cannot move this channel') }
+                { start: 0, end: 38, error: new BBTagRuntimeError(`Author cannot move this channel`) }
             ],
             setup(ctx) {
-                ctx.roles.authorizer.permissions = '0';
+                ctx.roles.authorizer.permissions = `0`;
             },
             postSetup(bbctx, ctx) {
                 const channel = bbctx.guild.channels.random();
                 if (channel === undefined)
-                    throw new Error('Could not find channel under test');
+                    throw new Error(`Could not find channel under test`);
 
-                ctx.util.setup(m => m.findChannels(bbctx.guild, '239874692346327846')).thenResolve([channel]);
+                ctx.util.setup(m => m.findChannels(bbctx.guild, `239874692346327846`)).thenResolve([channel]);
             }
         },
         {
-            code: '{channelsetpos;239874692346327846;123}',
-            expected: '`Failed to move channel: no perms`',
+            code: `{channelsetpos;239874692346327846;123}`,
+            expected: `\`Failed to move channel: no perms\``,
             errors: [
-                { start: 0, end: 38, error: new BBTagRuntimeError('Failed to move channel: no perms', 'Test REST error') }
+                { start: 0, end: 38, error: new BBTagRuntimeError(`Failed to move channel: no perms`, `Test REST error`) }
             ],
             postSetup(bbctx, ctx) {
                 const err = ctx.createRESTError(ApiError.MISSING_PERMISSIONS);
                 const channel = bbctx.guild.channels.random();
                 if (channel === undefined)
-                    throw new Error('Could not find channel under test');
+                    throw new Error(`Could not find channel under test`);
 
-                ctx.util.setup(m => m.findChannels(bbctx.guild, '239874692346327846')).thenResolve([channel]);
+                ctx.util.setup(m => m.findChannels(bbctx.guild, `239874692346327846`)).thenResolve([channel]);
                 ctx.discord.setup(m => m.editChannelPosition(channel.id, 123, undefined)).thenReject(err);
             }
         },
         {
-            code: '{channelsetpos;239874692346327846;123}',
-            expected: '`Failed to move channel: no perms`',
+            code: `{channelsetpos;239874692346327846;123}`,
+            expected: `\`Failed to move channel: no perms\``,
             errors: [
-                { start: 0, end: 38, error: new BBTagRuntimeError('Failed to move channel: no perms', 'Some other error message') }
+                { start: 0, end: 38, error: new BBTagRuntimeError(`Failed to move channel: no perms`, `Some other error message`) }
             ],
             postSetup(bbctx, ctx) {
-                const err = ctx.createRESTError(ApiError.NOT_AUTHORIZED, 'Some other error message');
+                const err = ctx.createRESTError(ApiError.NOT_AUTHORIZED, `Some other error message`);
                 const channel = bbctx.guild.channels.random();
                 if (channel === undefined)
-                    throw new Error('Could not find channel under test');
+                    throw new Error(`Could not find channel under test`);
 
-                ctx.util.setup(m => m.findChannels(bbctx.guild, '239874692346327846')).thenResolve([channel]);
+                ctx.util.setup(m => m.findChannels(bbctx.guild, `239874692346327846`)).thenResolve([channel]);
                 ctx.discord.setup(m => m.editChannelPosition(channel.id, 123, undefined)).thenReject(err);
             }
         }

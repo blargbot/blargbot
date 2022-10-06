@@ -6,16 +6,16 @@ import { SubtagType } from '../../utils';
 export class ReactRemoveAllSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: 'reactremoveall',
+            name: `reactremoveall`,
             category: SubtagType.MESSAGE,
-            aliases: ['removereactall'],
+            aliases: [`removereactall`],
             definition: [
                 {
-                    parameters: ['channel?', 'messageId'],
-                    description: 'Removes all reactions from `messageId`.\n`channelId` defaults to the current channel.',
-                    exampleCode: '{reactremoveall;12345678901234;:thinking:}',
-                    exampleOut: '(removed all the reactions)',
-                    returns: 'nothing',
+                    parameters: [`channel?`, `messageId`],
+                    description: `Removes all reactions from \`messageId\`.\n\`channelId\` defaults to the current channel.`,
+                    exampleCode: `{reactremoveall;12345678901234;:thinking:}`,
+                    exampleOut: `(removed all the reactions)`,
+                    returns: `nothing`,
                     execute: (ctx, [channel, message]) => this.removeAllReactions(ctx, channel.value, message.value)
                 }
             ]
@@ -32,11 +32,11 @@ export class ReactRemoveAllSubtag extends CompiledSubtag {
             throw new MessageNotFoundError(channel.id, messageId);
 
         const permissions = channel.permissionsOf(context.discord.user.id);
-        if (!permissions.has('manageMessages'))
-            throw new BBTagRuntimeError('I need to be able to Manage Messages to remove reactions');
+        if (!permissions.has(`manageMessages`))
+            throw new BBTagRuntimeError(`I need to be able to Manage Messages to remove reactions`);
 
         if (!(await context.isStaff || context.ownsMessage(message.id)))
-            throw new BBTagRuntimeError('Author must be staff to modify unrelated messages');
+            throw new BBTagRuntimeError(`Author must be staff to modify unrelated messages`);
 
         await message.removeReactions();
         //TODO meaningful output please

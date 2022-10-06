@@ -26,10 +26,10 @@ export class PollManager {
         announce: boolean
     ): Promise<PollResponse> {
         if (duration.asMilliseconds() === 0)
-            return { state: 'TOO_SHORT' };
+            return { state: `TOO_SHORT` };
 
         if (emojis.length === 0)
-            return { state: 'OPTIONS_EMPTY' };
+            return { state: `OPTIONS_EMPTY` };
 
         const endTime = moment().add(duration);
         let content: string | undefined = undefined;
@@ -38,12 +38,12 @@ export class PollManager {
         if (announce) {
             const result = await this.#cluster.announcements.loadConfig(channel.guild, author, channel);
             switch (result.state) {
-                case 'ChannelInvalid': return { state: 'ANNOUNCE_INVALID' };
-                case 'ChannelNotFound': return { state: 'ANNOUNCE_INVALID' };
-                case 'ChannelNotInGuild': return { state: 'ANNOUNCE_INVALID' };
-                case 'NotAllowed': return { state: 'NO_ANNOUNCE_PERMS' };
-                case 'RoleNotFound': return { state: 'ANNOUNCE_INVALID' };
-                case 'TimedOut': return { state: 'FAILED_SEND' };
+                case `ChannelInvalid`: return { state: `ANNOUNCE_INVALID` };
+                case `ChannelNotFound`: return { state: `ANNOUNCE_INVALID` };
+                case `ChannelNotInGuild`: return { state: `ANNOUNCE_INVALID` };
+                case `NotAllowed`: return { state: `NO_ANNOUNCE_PERMS` };
+                case `RoleNotFound`: return { state: `ANNOUNCE_INVALID` };
+                case `TimedOut`: return { state: `FAILED_SEND` };
             }
             channel = result.detail.channel;
             content = result.detail.role.mention;
@@ -63,7 +63,7 @@ export class PollManager {
                         name: title
                     },
                     description: description,
-                    footer: { text: 'The poll will end' },
+                    footer: { text: `The poll will end` },
                     timestamp: endTime.toDate(),
                     color: colour
                 }
@@ -71,11 +71,11 @@ export class PollManager {
         });
 
         if (poll === undefined)
-            return { state: 'FAILED_SEND' };
+            return { state: `FAILED_SEND` };
 
         const reactions = await this.#cluster.util.addReactions(poll, emojis);
 
-        await this.#cluster.timeouts.insert('poll', {
+        await this.#cluster.timeouts.insert(`poll`, {
             endtime: endTime.valueOf(),
             source: channel.guild.id,
             channel: channel.id,
@@ -87,7 +87,7 @@ export class PollManager {
             strict: emojis.map(m => m.toString())
         });
 
-        return { state: 'SUCCESS', message: poll, failedReactions: reactions.failed.map(m => m.toString()) };
+        return { state: `SUCCESS`, message: poll, failedReactions: reactions.failed.map(m => m.toString()) };
     }
 
     public async pollExpired(options: PollEventOptions): Promise<void> {
@@ -121,16 +121,16 @@ export class PollManager {
         const winners = Object.entries(results).filter(e => e[1] === bestCount).map(e => e[0]);
 
         const resultStr = bestCount === 0
-            ? 'No one voted, how sad 😦'
+            ? `No one voted, how sad 😦`
             : winners.length > 1
-                ? `It was a tie between these choices at **${bestCount}** ${p(bestCount, 'vote')} each:\n\n${winners.join('')}`
-                : `At **${bestCount}** ${p(bestCount, 'vote')}, the winner is:\n\n${winners.join('')}`;
+                ? `It was a tie between these choices at **${bestCount}** ${p(bestCount, `vote`)} each:\n\n${winners.join(``)}`
+                : `At **${bestCount}** ${p(bestCount, `vote`)}, the winner is:\n\n${winners.join(``)}`;
 
         await this.#cluster.util.send(message, {
             embeds: [
                 {
                     author: author,
-                    description: `The results are in! A total of **${voteCount}** ${p(voteCount, 'vote was', 'votes were')} collected!\n\n${resultStr}`,
+                    description: `The results are in! A total of **${voteCount}** ${p(voteCount, `vote was`, `votes were`)} collected!\n\n${resultStr}`,
                     color: options.color
                 }
             ]

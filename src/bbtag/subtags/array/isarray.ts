@@ -4,15 +4,15 @@ import { bbtag, SubtagType } from '../../utils';
 export class IsArraySubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: 'isarray',
+            name: `isarray`,
             category: SubtagType.ARRAY,
             definition: [
                 {
-                    parameters: ['text'],
-                    description: 'Determines whether `text` is a valid array.',
-                    exampleCode: '{isarray;["array?"]} {isarray;array?}',
-                    exampleOut: 'true false',
-                    returns: 'boolean',
+                    parameters: [`text`],
+                    description: `Determines whether \`text\` is a valid array.`,
+                    exampleCode: `{isarray;["array?"]} {isarray;array?}`,
+                    exampleOut: `true false`,
+                    returns: `boolean`,
                     execute: (_, [array]) => this.isArray(array.value)
                 }
             ]

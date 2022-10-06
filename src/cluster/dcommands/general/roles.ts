@@ -6,12 +6,12 @@ import { EmbedOptions } from 'eris';
 export class RolesCommand extends GuildCommand {
     public constructor() {
         super({
-            name: 'roles',
+            name: `roles`,
             category: CommandType.GENERAL,
             definitions: [
                 {
-                    parameters: '',
-                    description: 'Displays a list of roles and their IDs.',
+                    parameters: ``,
+                    description: `Displays a list of roles and their IDs.`,
                     execute: ctx => this.showRoles(ctx)
                 }
             ]
@@ -21,11 +21,11 @@ export class RolesCommand extends GuildCommand {
     public showRoles(context: GuildCommandContext): EmbedOptions {
         return {
             author: context.util.embedifyAuthor(context.channel.guild),
-            title: 'Roles',
+            title: `Roles`,
             description: [...context.channel.guild.roles.values()]
                 .sort((a, b) => b.position - a.position)
                 .map(r => `${r.mention} (${r.id})`)
-                .join('\n')
+                .join(`\n`)
         };
     }
 }

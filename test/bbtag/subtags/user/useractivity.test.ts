@@ -10,72 +10,72 @@ runSubtagTests({
     argCountBounds: { min: 0, max: 2 },
     cases: [
         ...createGetUserPropTestCases({
-            quiet: '',
+            quiet: ``,
             generateCode(...args) {
-                return `{${['usergame', ...args].join(';')}}`;
+                return `{${[`usergame`, ...args].join(`;`)}}`;
             },
             cases: [
                 {
-                    expected: 'My test game',
+                    expected: `My test game`,
                     postSetup(member) {
                         member.update({
                             activities: [{
                                 created_at: moment().unix(),
-                                name: 'My test game',
+                                name: `My test game`,
                                 type: ActivityType.Playing
                             }]
                         });
                     }
                 },
                 {
-                    expected: 'Some cool music',
+                    expected: `Some cool music`,
                     postSetup(member) {
                         member.update({
                             activities: [{
                                 created_at: moment().unix(),
-                                name: 'Some cool music',
+                                name: `Some cool music`,
                                 type: ActivityType.Listening
                             }]
                         });
                     }
                 },
                 {
-                    expected: 'nothing'
+                    expected: `nothing`
                 }
             ]
         }),
         ...createGetUserPropTestCases({
-            quiet: '',
+            quiet: ``,
             generateCode(...args) {
-                return `{${['useractivity', ...args].join(';')}}`;
+                return `{${[`useractivity`, ...args].join(`;`)}}`;
             },
             cases: [
                 {
-                    expected: 'My test game',
+                    expected: `My test game`,
                     postSetup(member) {
                         member.update({
                             activities: [{
                                 created_at: moment().unix(),
-                                name: 'My test game',
+                                name: `My test game`,
                                 type: ActivityType.Playing
                             }]
                         });
                     }
                 },
                 {
-                    expected: 'Some cool music',
+                    expected: `Some cool music`,
                     postSetup(member) {
                         member.update({
                             activities: [{
                                 created_at: moment().unix(),
-                                name: 'Some cool music',
+                                name: `Some cool music`,
                                 type: ActivityType.Listening
                             }]
                         });
                     }
                 },
                 {
-                    expected: 'nothing'
+                    expected: `nothing`
                 }
             ]
         })

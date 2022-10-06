@@ -7,18 +7,15 @@ import { bbtag, SubtagType } from '../../utils';
 export class BoolSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: 'bool',
+            name: `bool`,
             category: SubtagType.MISC,
             definition: [
                 {
-                    parameters: ['arg1', 'evaluator', 'arg2'],
-                    description:
-                        'Evaluates `arg1` and `arg2` using the `evaluator` and returns `true` or `false`. ' +
-                        'Valid evaluators are `' + Object.keys(bbtag.comparisonOperators).join('`, `') + '`\n' +
-                        'The positions of `evaluator` and `arg1` can be swapped.',
-                    exampleCode: '{bool;5;<=;10}',
-                    exampleOut: 'true',
-                    returns: 'boolean',
+                    parameters: [`arg1`, `evaluator`, `arg2`],
+                    description: `Evaluates \`arg1\` and \`arg2\` using the \`evaluator\` and returns \`true\` or \`false\`. Valid evaluators are \`${Object.keys(bbtag.comparisonOperators).join(`\`, \``)}\`\nThe positions of \`evaluator\` and \`arg1\` can be swapped.`,
+                    exampleCode: `{bool;5;<=;10}`,
+                    exampleOut: `true`,
+                    returns: `boolean`,
                     execute: (_, [arg1, evaluator, arg2]) => this.runCondition(arg1.value, evaluator.value, arg2.value)
                 }
             ]

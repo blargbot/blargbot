@@ -8,24 +8,24 @@ import { SubtagType } from '../../utils';
 export class RolesSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: 'roles',
+            name: `roles`,
             category: SubtagType.ROLE,
             definition: [
                 {
                     parameters: [],
-                    description: 'Returns an array of roles on the current guild.',
-                    exampleCode: 'The roles on this guild are: {roles}.',
-                    exampleOut: 'The roles on this guild are: ["11111111111111111","22222222222222222"].',
-                    returns: 'id[]',
+                    description: `Returns an array of roles on the current guild.`,
+                    exampleCode: `The roles on this guild are: {roles}.`,
+                    exampleOut: `The roles on this guild are: ["11111111111111111","22222222222222222"].`,
+                    returns: `id[]`,
                     execute: (ctx) => this.getGuildRoles(ctx)
                 },
                 {
-                    parameters: ['user', 'quiet?'],
-                    description: 'Returns `user`\'s roles in the current guild. If `quiet` is specified, if `user` can\'t be found it will simply return nothing.',
-                    exampleCode: 'Stupid cat has the roles: {roles;Stupid cat}',
-                    exampleOut: 'Stupid cat has the roles: ["11111111111111111","22222222222222222"]',
-                    returns: 'id[]',
-                    execute: (ctx, [userId, quiet]) => this.getUserRoles(ctx, userId.value, quiet.value !== '')
+                    parameters: [`user`, `quiet?`],
+                    description: `Returns \`user\`'s roles in the current guild. If \`quiet\` is specified, if \`user\` can't be found it will simply return nothing.`,
+                    exampleCode: `Stupid cat has the roles: {roles;Stupid cat}`,
+                    exampleOut: `Stupid cat has the roles: ["11111111111111111","22222222222222222"]`,
+                    returns: `id[]`,
+                    execute: (ctx, [userId, quiet]) => this.getUserRoles(ctx, userId.value, quiet.value !== ``)
                 }
             ]
         });
@@ -47,7 +47,7 @@ export class RolesSubtag extends CompiledSubtag {
 
         if (member === undefined) {
             throw new UserNotFoundError(userId)
-                .withDisplay(quiet ? '' : undefined);
+                .withDisplay(quiet ? `` : undefined);
         }
 
         if (!guard.hasValue(member.guild) || !guard.hasValue(member.roles))

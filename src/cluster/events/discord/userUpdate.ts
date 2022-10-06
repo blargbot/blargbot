@@ -4,9 +4,9 @@ import { Lazy } from '@blargbot/core/Lazy';
 import { DiscordEventService } from '@blargbot/core/serviceTypes';
 import { PartialUser, User } from 'eris';
 
-export class DiscordUserUpdateHandler extends DiscordEventService<'userUpdate'> {
+export class DiscordUserUpdateHandler extends DiscordEventService<`userUpdate`> {
     public constructor(protected readonly cluster: Cluster) {
-        super(cluster.discord, 'userUpdate', cluster.logger, (user, oldUser) => this.execute(user, oldUser));
+        super(cluster.discord, `userUpdate`, cluster.logger, (user, oldUser) => this.execute(user, oldUser));
     }
 
     public async execute(user: User | undefined | null, oldUser: PartialUser | null | undefined): Promise<void> {
@@ -33,7 +33,7 @@ export class DiscordUserUpdateHandler extends DiscordEventService<'userUpdate'> 
         try {
             await this.cluster.database.users.upsert(user);
         } catch (ex: unknown) {
-            this.cluster.logger.error('Error while updating the db for a user', ex);
+            this.cluster.logger.error(`Error while updating the db for a user`, ex);
         }
     }
 
@@ -41,7 +41,7 @@ export class DiscordUserUpdateHandler extends DiscordEventService<'userUpdate'> 
         try {
             await this.cluster.moderation.eventLog.userTagUpdated(user, oldUser);
         } catch (ex: unknown) {
-            this.cluster.logger.error('Error while evaluating modlog for a user tag update', ex);
+            this.cluster.logger.error(`Error while evaluating modlog for a user tag update`, ex);
         }
     }
 
@@ -49,7 +49,7 @@ export class DiscordUserUpdateHandler extends DiscordEventService<'userUpdate'> 
         try {
             await this.cluster.moderation.eventLog.userAvatarUpdated(user, oldUser);
         } catch (ex: unknown) {
-            this.cluster.logger.error('Error while evaluating modlog for a user avatar update', ex);
+            this.cluster.logger.error(`Error while evaluating modlog for a user avatar update`, ex);
         }
     }
 }

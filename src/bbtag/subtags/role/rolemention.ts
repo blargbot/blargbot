@@ -8,16 +8,16 @@ import { SubtagType } from '../../utils';
 export class RoleMentionSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: 'rolemention',
+            name: `rolemention`,
             category: SubtagType.ROLE,
             definition: [
                 {
-                    parameters: ['role', 'quiet?', 'noPing?:false'],
-                    description: 'Returns a mention of `role`. If `quiet` is specified, if `role` can\'t be found it will simply return nothing.',
-                    exampleCode: 'The admin role will be mentioned: {rolemention;Admin}',
-                    exampleOut: 'The admin role will be mentioned: @\u200BAdminstrator',
-                    returns: 'string',
-                    execute: (ctx, [roleId, quiet, noPing]) => this.roleMention(ctx, roleId.value, quiet.value !== '', noPing.value)
+                    parameters: [`role`, `quiet?`, `noPing?:false`],
+                    description: `Returns a mention of \`role\`. If \`quiet\` is specified, if \`role\` can't be found it will simply return nothing.`,
+                    exampleCode: `The admin role will be mentioned: {rolemention;Admin}`,
+                    exampleOut: `The admin role will be mentioned: @\u200BAdminstrator`,
+                    returns: `string`,
+                    execute: (ctx, [roleId, quiet, noPing]) => this.roleMention(ctx, roleId.value, quiet.value !== ``, noPing.value)
                 }
             ]
         });
@@ -38,7 +38,7 @@ export class RoleMentionSubtag extends CompiledSubtag {
 
         if (role === undefined) {
             throw new RoleNotFoundError(roleId)
-                .withDisplay(quiet ? '' : undefined);
+                .withDisplay(quiet ? `` : undefined);
         }
 
         if (!noPing && !context.data.allowedMentions.roles.includes(role.id))

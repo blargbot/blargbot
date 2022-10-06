@@ -8,22 +8,22 @@ runSubtagTests({
     argCountBounds: { min: 0, max: 1 },
     cases: [
         {
-            code: '{heremention}',
-            expected: '@here',
+            code: `{heremention}`,
+            expected: `@here`,
             assert(ctx) {
                 expect(ctx.data.allowedMentions.everybody).to.be.true;
             }
         },
         {
-            code: '{heremention;true}',
-            expected: '@here',
+            code: `{heremention;true}`,
+            expected: `@here`,
             assert(ctx) {
                 expect(ctx.data.allowedMentions.everybody).to.be.true;
             }
         },
         {
-            code: '{heremention;false}',
-            expected: '@here',
+            code: `{heremention;false}`,
+            expected: `@here`,
             assert(ctx) {
                 expect(ctx.data.allowedMentions.everybody).to.be.false;
             }

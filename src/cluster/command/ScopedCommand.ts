@@ -18,9 +18,9 @@ export abstract class ScopedCommand<TContext extends CommandContext> extends Com
     public constructor(options: CommandOptions<TContext>, noHelp = false) {
         const definitions: ReadonlyArray<CommandDefinition<TContext>> = noHelp ? options.definitions : [
             {
-                parameters: 'help',
+                parameters: `help`,
                 execute: (context) => context.cluster.help.createMessageContent(this.name, context.author, context.channel),
-                description: 'Gets the help message for this command',
+                description: `Gets the help message for this command`,
                 hidden: true
             },
             ...options.definitions

@@ -5,12 +5,12 @@ import { User } from 'eris';
 export class ShipCommand extends GlobalCommand {
     public constructor() {
         super({
-            name: 'ship',
+            name: `ship`,
             category: CommandType.GENERAL,
             definitions: [
                 {
-                    parameters: '{user1:user} {user2:user}',
-                    description: 'Gives you the ship name for two users.',
+                    parameters: `{user1:user} {user2:user}`,
+                    description: `Gives you the ship name for two users.`,
                     execute: (_, [user1, user2]) => this.getShipName(user1.asUser, user2.asUser)
                 }
             ]

@@ -4,12 +4,12 @@ import { CommandType } from '@blargbot/cluster/utils';
 export class LoglevelCommand extends GlobalCommand {
     public constructor() {
         super({
-            name: 'loglevel',
+            name: `loglevel`,
             category: CommandType.OWNER,
             definitions: [
                 {
-                    parameters: '{loglevel}',
-                    description: 'Sets the current log level',
+                    parameters: `{loglevel}`,
+                    description: `Sets the current log level`,
                     execute: (ctx, [logLevel]) => this.setLogLevel(ctx, logLevel.asString)
                 }
             ]

@@ -15,15 +15,10 @@ export class ErrorMiddleware<TContext extends CommandContext> implements IMiddle
 
             if (err instanceof DiscordRESTError
                 && err.code === ApiError.MISSING_ACCESS
-                && await context.database.users.getSetting(context.author.id, 'dontdmerrors') !== true) {
+                && await context.database.users.getSetting(context.author.id, `dontdmerrors`) !== true) {
                 const message = !guard.isGuildChannel(context.channel)
-                    ? '❌ Oops, I dont seem to have permission to do that!'
-                    : '❌ Hi! You asked me to do something, but I didn\'t have permission to do it! Please make sure I have permissions to do what you asked.\n' +
-                    `Guild: ${context.channel.guild.name}\n` +
-                    `Channel: ${context.channel.mention}\n` +
-                    `Command: ${context.commandText}\n` +
-                    '\n' +
-                    `If you wish to stop seeing these messages, do the command \`${context.prefix}dmerrors\`.`;
+                    ? `❌ Oops, I dont seem to have permission to do that!`
+                    : `❌ Hi! You asked me to do something, but I didn't have permission to do it! Please make sure I have permissions to do what you asked.\nGuild: ${context.channel.guild.name}\nChannel: ${context.channel.mention}\nCommand: ${context.commandText}\n\nIf you wish to stop seeing these messages, do the command \`${context.prefix}dmerrors\`.`;
                 await context.util.sendDM(context.author, message);
             }
 

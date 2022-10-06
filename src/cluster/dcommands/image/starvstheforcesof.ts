@@ -7,16 +7,16 @@ import { User } from 'eris';
 export class StarVsTheForcesOfCommand extends GlobalImageCommand {
     public constructor() {
         super({
-            name: 'starvstheforcesof',
+            name: `starvstheforcesof`,
             definitions: [
                 {
-                    parameters: '{user:user+}',
-                    description: 'WHO IS STAR BATTLING THIS EPISODE?',
+                    parameters: `{user:user+}`,
+                    description: `WHO IS STAR BATTLING THIS EPISODE?`,
                     execute: (ctx, [user]) => this.renderUser(ctx, user.asUser)
                 },
                 {
-                    parameters: '',
-                    description: 'WHO IS STAR BATTLING THIS EPISODE?',
+                    parameters: ``,
+                    description: `WHO IS STAR BATTLING THIS EPISODE?`,
                     execute: (ctx, _, flags) => this.render(
                         ctx,
                         flags.i?.merge().value
@@ -27,7 +27,7 @@ export class StarVsTheForcesOfCommand extends GlobalImageCommand {
                 }
             ],
             flags: [
-                { flag: 'i', word: 'image', description: 'A custom image.' }
+                { flag: `i`, word: `image`, description: `A custom image.` }
             ]
         });
     }
@@ -41,6 +41,6 @@ export class StarVsTheForcesOfCommand extends GlobalImageCommand {
         if (!guard.isUrl(url))
             return this.error(`${url} is not a valid url!`);
 
-        return await this.renderImage(context, 'starVsTheForcesOf', { avatar: url });
+        return await this.renderImage(context, `starVsTheForcesOf`, { avatar: url });
     }
 }

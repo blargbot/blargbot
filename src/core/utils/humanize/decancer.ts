@@ -7,7 +7,7 @@ const limaxOpt = {
     separateNumbers: false,
     separateApostrophes: false,
     maintainCase: true,
-    custom: Array.from('., !\'"?0123456789')
+    custom: Array.from(`., !'"?0123456789`)
 } as const;
 
 export function decancer(text: string): string {
@@ -17,5 +17,5 @@ export function decancer(text: string): string {
     };
     return nfkd(text)
         .replace(/[^ ]+/g, text => limax(text, opt))
-        .replaceAll(opt.replacement, '');
+        .replaceAll(opt.replacement, ``);
 }

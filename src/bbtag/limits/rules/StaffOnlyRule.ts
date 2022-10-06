@@ -8,7 +8,7 @@ export const staffOnlyRule: RuntimeLimitRule = Object.seal({
             throw new StaffOnlyError(context.authorizerId ?? context.guild.id);
     },
     displayText() {
-        return 'Authorizer must be staff';
+        return `Authorizer must be staff`;
     },
     state() {
         return null;

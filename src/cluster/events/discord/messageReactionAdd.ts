@@ -3,9 +3,9 @@ import { Emote } from '@blargbot/core/Emote';
 import { DiscordEventService } from '@blargbot/core/serviceTypes';
 import { KnownMessage, Member, PossiblyUncachedMessage, Uncached, User } from 'eris';
 
-export class DiscordMessageReactionAddHandler extends DiscordEventService<'messageReactionAdd'> {
+export class DiscordMessageReactionAddHandler extends DiscordEventService<`messageReactionAdd`> {
     public constructor(public readonly cluster: Cluster) {
-        super(cluster.discord, 'messageReactionAdd', cluster.logger, async (message, emoji, user) => {
+        super(cluster.discord, `messageReactionAdd`, cluster.logger, async (message, emoji, user) => {
             const _message = await this.resolveMessage(message);
             if (_message === undefined)
                 return;

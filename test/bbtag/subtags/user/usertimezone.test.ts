@@ -8,27 +8,27 @@ runSubtagTests({
     argCountBounds: { min: 0, max: 2 },
     cases: [
         ...createGetUserPropTestCases({
-            quiet: '',
+            quiet: ``,
             generateCode(...args) {
-                return `{${['usertimezone', ...args].join(';')}}`;
+                return `{${[`usertimezone`, ...args].join(`;`)}}`;
             },
             cases: [
                 {
-                    expected: 'UTC',
+                    expected: `UTC`,
                     setup(member, ctx) {
-                        ctx.userTable.setup(m => m.getSetting(member.user.id, 'timezone')).thenResolve(undefined);
+                        ctx.userTable.setup(m => m.getSetting(member.user.id, `timezone`)).thenResolve(undefined);
                     }
                 },
                 {
-                    expected: 'abc',
+                    expected: `abc`,
                     setup(member, ctx) {
-                        ctx.userTable.setup(m => m.getSetting(member.user.id, 'timezone')).thenResolve('abc');
+                        ctx.userTable.setup(m => m.getSetting(member.user.id, `timezone`)).thenResolve(`abc`);
                     }
                 },
                 {
-                    expected: 'Etc/UTC',
+                    expected: `Etc/UTC`,
                     setup(member, ctx) {
-                        ctx.userTable.setup(m => m.getSetting(member.user.id, 'timezone')).thenResolve('Etc/UTC');
+                        ctx.userTable.setup(m => m.getSetting(member.user.id, `timezone`)).thenResolve(`Etc/UTC`);
                     }
                 }
             ]

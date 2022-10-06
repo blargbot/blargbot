@@ -8,15 +8,15 @@ runSubtagTests({
     argCountBounds: { min: 1, max: 2 },
     cases: [
         ...createGetRolePropTestCases({
-            quiet: '',
+            quiet: ``,
             generateCode(...args) {
-                return `{${['roleperms', ...args].join(';')}}`;
+                return `{${[`roleperms`, ...args].join(`;`)}}`;
             },
             cases: [
                 {
-                    expected: '23178324',
+                    expected: `23178324`,
                     setup(role) {
-                        role.permissions = '23178324';
+                        role.permissions = `23178324`;
                     }
                 }
             ]

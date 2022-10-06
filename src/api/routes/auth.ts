@@ -7,9 +7,9 @@ import fetch from 'node-fetch';
 
 import Security from '../Security';
 
-const baseEndpoint = 'https://discordapp.com/api/v9/';
-const tokenEndpoint = 'https://discordapp.com/api/oauth2/token';
-const userEndpoint = baseEndpoint + 'users/@me';
+const baseEndpoint = `https://discordapp.com/api/v9/`;
+const tokenEndpoint = `https://discordapp.com/api/oauth2/token`;
+const userEndpoint = `${baseEndpoint  }users/@me`;
 
 /* eslint-disable @typescript-eslint/naming-convention */
 type AccessTokenResponse = {
@@ -23,9 +23,9 @@ type AccessTokenResponse = {
 
 export class AuthRoute extends BaseRoute {
     public constructor() {
-        super('/auth');
+        super(`/auth`);
 
-        this.addRoute('/validate', {
+        this.addRoute(`/validate`, {
             post: ({ request }) => this.validate(request)
         });
     }
@@ -36,17 +36,17 @@ export class AuthRoute extends BaseRoute {
             return this.badRequest();
 
         const params = new URLSearchParams();
-        params.append('client_id', config.website.clientId);
-        params.append('client_secret', config.website.secret);
-        params.append('grant_type', 'authorization_code');
-        params.append('code', mappedBody.value.code);
-        params.append('redirect_uri', config.website.callback);
-        params.append('scope', 'identify');
+        params.append(`client_id`, config.website.clientId);
+        params.append(`client_secret`, config.website.secret);
+        params.append(`grant_type`, `authorization_code`);
+        params.append(`code`, mappedBody.value.code);
+        params.append(`redirect_uri`, config.website.callback);
+        params.append(`scope`, `identify`);
 
         const tokenRes = await fetch(tokenEndpoint, {
-            method: 'POST',
+            method: `POST`,
             headers: {
-                'content-type': 'application/x-www-form-urlencoded'
+                'content-type': `application/x-www-form-urlencoded`
             },
             body: params.toString()
         });
@@ -54,7 +54,7 @@ export class AuthRoute extends BaseRoute {
         const token = await tokenRes.json() as AccessTokenResponse;
         const userRes = await fetch(userEndpoint, {
             headers: {
-                authorization: 'Bearer ' + token.access_token
+                authorization: `Bearer ${  token.access_token}`
             }
         });
         const user = await userRes.json() as { id: string; };

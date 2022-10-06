@@ -6,32 +6,32 @@ import { SubtagType } from '../../utils';
 export class MessageReplySubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: 'messagereply',
+            name: `messagereply`,
             category: SubtagType.MESSAGE,
             definition: [
                 {
                     parameters: [],
-                    description: 'Returns the ID of the invoking message\'s parent message.',
-                    exampleCode: 'You replied to the message {messagereply}',
-                    exampleOut: 'You replied to the message 1111111111111',
-                    returns: 'id',
+                    description: `Returns the ID of the invoking message's parent message.`,
+                    exampleCode: `You replied to the message {messagereply}`,
+                    exampleOut: `You replied to the message 1111111111111`,
+                    returns: `id`,
                     execute: (ctx) => this.getMessageReplyId(ctx, ctx.channel.id, ctx.message.id, false)
                 },
                 {
-                    parameters: ['messageid'],
-                    description: '',
-                    exampleCode: '',
-                    exampleOut: '',
-                    returns: 'id',
+                    parameters: [`messageid`],
+                    description: ``,
+                    exampleCode: ``,
+                    exampleOut: ``,
+                    returns: `id`,
                     execute: (ctx, [message]) => this.getMessageReplyId(ctx, ctx.channel.id, message.value, false)
                 },
                 {
-                    parameters: ['channel', 'messageid', 'quiet?'],
-                    description: 'Returns the ID of the parent message of the provided `message`.',
-                    exampleCode: 'Someone replied to the message {messagereply;general;2222222222222}',
-                    exampleOut: 'Someone replied to the message 1111111111111',
-                    returns: 'id',
-                    execute: (ctx, [channel, message, quiet]) => this.getMessageReplyId(ctx, channel.value, message.value, quiet.value !== '')
+                    parameters: [`channel`, `messageid`, `quiet?`],
+                    description: `Returns the ID of the parent message of the provided \`message\`.`,
+                    exampleCode: `Someone replied to the message {messagereply;general;2222222222222}`,
+                    exampleOut: `Someone replied to the message 1111111111111`,
+                    returns: `id`,
+                    execute: (ctx, [channel, message, quiet]) => this.getMessageReplyId(ctx, channel.value, message.value, quiet.value !== ``)
                 }
             ]
         });
@@ -42,15 +42,15 @@ export class MessageReplySubtag extends CompiledSubtag {
         const channel = await context.queryChannel(channelStr, { noLookup: quiet });
         if (channel === undefined) {
             throw new ChannelNotFoundError(channelStr)
-                .withDisplay(quiet ? '' : undefined);
+                .withDisplay(quiet ? `` : undefined);
         }
 
         const message = await context.getMessage(channel, messageStr);
         if (message === undefined) {
             throw new MessageNotFoundError(channel.id, messageStr)
-                .withDisplay(quiet ? '' : undefined);
+                .withDisplay(quiet ? `` : undefined);
         }
 
-        return message.messageReference?.messageID ?? '';
+        return message.messageReference?.messageID ?? ``;
     }
 }

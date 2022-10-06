@@ -8,12 +8,12 @@ import fetch, { RequestInit } from 'node-fetch';
 export class DefineCommand extends GlobalCommand {
     public constructor() {
         super({
-            name: 'define',
+            name: `define`,
             category: CommandType.GENERAL,
             definitions: [
                 {
-                    parameters: '{word}',
-                    description: 'Gets the definition for the specified word. The word must be in english.',
+                    parameters: `{word}`,
+                    description: `Gets the definition for the specified word. The word must be in english.`,
                     execute: (ctx, [word]) => this.define(ctx, word.asString)
                 }
             ]
@@ -24,19 +24,19 @@ export class DefineCommand extends GlobalCommand {
         const response = await fetchSafe(`https://wordsapiv1.p.rapidapi.com/words/${word}`, {
             headers: {
                 'x-rapidapi-key': context.config.general.mashape,
-                'x-rapidapi-host': 'wordsapiv1.p.rapidapi.com'
+                'x-rapidapi-host': `wordsapiv1.p.rapidapi.com`
             }
         });
         const details = wordApiMapping(response);
         if (!details.valid)
-            return this.error('It seems I cant find the definition for that word at the moment!');
+            return this.error(`It seems I cant find the definition for that word at the moment!`);
 
-        const defaultIPA = details.value.pronunciation.all ?? '';
+        const defaultIPA = details.value.pronunciation.all ?? ``;
 
         return {
             author: context.util.embedifyAuthor(context.author),
             title: `Definition for ${word}`,
-            description: defaultIPA !== '' ? `**Pronunciation** ${linkPronunciation(defaultIPA)}` : undefined,
+            description: defaultIPA !== `` ? `**Pronunciation** ${linkPronunciation(defaultIPA)}` : undefined,
             fields: details.value.results
                 .slice(0, 15)
                 .map((r, i) => {
@@ -45,9 +45,9 @@ export class DefineCommand extends GlobalCommand {
                         name: `${i + 1}. ${r.partOfSpeech}`,
                         value: [
                             specificIPA !== defaultIPA ? `**Pronunciation**: ${linkPronunciation(specificIPA)}` : undefined,
-                            r.synonyms !== undefined ? `**Synonyms:** ${humanize.smartJoin(r.synonyms.map(s => `\`${s}\``), ', ', ' and ')}` : undefined,
+                            r.synonyms !== undefined ? `**Synonyms:** ${humanize.smartJoin(r.synonyms.map(s => `\`${s}\``), `, `, ` and `)}` : undefined,
                             r.definition
-                        ].filter(guard.hasValue).join('\n'),
+                        ].filter(guard.hasValue).join(`\n`),
                         inline: true
                     };
                 })
@@ -56,7 +56,7 @@ export class DefineCommand extends GlobalCommand {
 }
 
 function linkPronunciation(phonetic: string): string {
-    return `[🔈 ${phonetic}](http://ipa-reader.xyz/?text=${encodeURIComponent(phonetic.replace(/'/g, '&apos;'))})`;
+    return `[🔈 ${phonetic}](http://ipa-reader.xyz/?text=${encodeURIComponent(phonetic.replace(/'/g, `&apos;`))})`;
 }
 
 async function fetchSafe(url: string, init?: RequestInit): Promise<unknown> {

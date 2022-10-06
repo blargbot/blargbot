@@ -22,7 +22,7 @@ export class Semaphore {
 
     public release(): number {
         if (this.#heldLocks === 0)
-            throw new Error('No locks are currently being held');
+            throw new Error(`No locks are currently being held`);
         const waiter = this.#waiters.shift();
         waiter?.resolve();
         return --this.#heldLocks;

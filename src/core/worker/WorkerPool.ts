@@ -20,7 +20,7 @@ export interface WorkerPoolOptions {
     readonly maxConcurrentSpawning?: number;
 }
 
-type WorkerPoolEvents = 'killingWorker' | 'killedWorker' | 'spawningWorker' | 'spawnedWorker'
+type WorkerPoolEvents = `killingWorker` | `killedWorker` | `spawningWorker` | `spawnedWorker`
 
 export abstract class WorkerPool<Worker extends WorkerConnection<IPCContracts>> {
     public readonly workerCount: number;
@@ -78,9 +78,9 @@ export abstract class WorkerPool<Worker extends WorkerConnection<IPCContracts>> 
     }
 
     async #killWorker(worker: Worker): Promise<void> {
-        this.#events.emit('killingWorker', worker);
+        this.#events.emit(`killingWorker`, worker);
         await worker.kill(undefined);
-        this.#events.emit('killedWorker', worker);
+        this.#events.emit(`killedWorker`, worker);
     }
 
     public async spawn(id: number, timeoutMs = this.defaultTimeout): Promise<Worker> {
@@ -99,10 +99,10 @@ export abstract class WorkerPool<Worker extends WorkerConnection<IPCContracts>> 
                 if (oldWorker !== undefined && this.#respawnStrategy === RespawnStrategy.KILL_THEN_SPAWN)
                     await this.#killWorker(oldWorker);
 
-                this.#events.emit('spawningWorker', worker);
+                this.#events.emit(`spawningWorker`, worker);
                 await worker.connect(timeoutMs);
                 this.#workers.set(id, worker);
-                this.#events.emit('spawnedWorker', worker);
+                this.#events.emit(`spawnedWorker`, worker);
 
                 if (oldWorker !== undefined && this.#respawnStrategy === RespawnStrategy.SPAWN_THEN_KILL)
                     await this.#killWorker(oldWorker);
@@ -154,5 +154,5 @@ export abstract class WorkerPool<Worker extends WorkerConnection<IPCContracts>> 
 }
 
 function isPromiseLike<T>(value: T | PromiseLike<T>): value is PromiseLike<T> {
-    return typeof value === 'object' && value !== null && 'then' in value && typeof value.then === 'function';
+    return typeof value === `object` && value !== null && `then` in value && typeof value.then === `function`;
 }

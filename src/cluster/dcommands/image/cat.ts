@@ -9,25 +9,25 @@ export class CatCommand extends GlobalCommand {
 
     public constructor(cluster: Cluster) {
         super({
-            name: 'cat',
+            name: `cat`,
             category: CommandType.IMAGE,
             definitions: [
                 {
-                    parameters: '',
-                    description: 'Gets a picture of a cat.',
+                    parameters: ``,
+                    description: `Gets a picture of a cat.`,
                     execute: () => this.render()
                 }
             ]
         });
 
-        this.#client = new Wolken(cluster.config.general.wolke, 'Wolke', 'blargbot/6.0.0');
+        this.#client = new Wolken(cluster.config.general.wolke, `Wolke`, `blargbot/6.0.0`);
     }
 
     public async render(): Promise<EmbedOptions> {
-        const res = await this.#client.getRandom({ type: 'animal_cat', allowNSFW: false });
+        const res = await this.#client.getRandom({ type: `animal_cat`, allowNSFW: false });
         return {
             image: { url: res.url },
-            footer: { text: 'Powered by weeb.sh' },
+            footer: { text: `Powered by weeb.sh` },
             color: randInt(0x1, 0xffffff)
         };
     }

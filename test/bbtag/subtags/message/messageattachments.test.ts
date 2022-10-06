@@ -8,47 +8,47 @@ runSubtagTests({
     argCountBounds: { min: 0, max: 3 },
     cases: [
         ...createGetMessagePropTestCases({
-            quiet: '[]',
+            quiet: `[]`,
             includeNoArgs: true,
             generateCode(...args) {
-                return `{${['messageattachments', ...args].filter(a => a !== undefined).join(';')}}`;
+                return `{${[`messageattachments`, ...args].filter(a => a !== undefined).join(`;`)}}`;
             },
             cases: [
                 {
-                    title: 'No attachments',
-                    expected: '[]'
+                    title: `No attachments`,
+                    expected: `[]`
                 },
                 {
-                    title: '1 attachment',
-                    expected: '["https://www.google.com/url"]',
+                    title: `1 attachment`,
+                    expected: `["https://www.google.com/url"]`,
                     setup(_, message) {
                         message.attachments.push({
-                            filename: 'abc.txt',
-                            id: '12345678900987654432',
-                            proxy_url: 'https://www.google.com/proxy',
+                            filename: `abc.txt`,
+                            id: `12345678900987654432`,
+                            proxy_url: `https://www.google.com/proxy`,
                             size: 12345,
-                            url: 'https://www.google.com/url'
+                            url: `https://www.google.com/url`
                         });
                     }
                 },
                 {
-                    title: '2 attachments',
-                    expected: '["https://www.google.com/url","https://www.google.com/url2"]',
+                    title: `2 attachments`,
+                    expected: `["https://www.google.com/url","https://www.google.com/url2"]`,
                     setup(_, message) {
                         message.attachments.push(
                             {
-                                filename: 'abc.txt',
-                                id: '12345678900987654432',
-                                proxy_url: 'https://www.google.com/proxy',
+                                filename: `abc.txt`,
+                                id: `12345678900987654432`,
+                                proxy_url: `https://www.google.com/proxy`,
                                 size: 12345,
-                                url: 'https://www.google.com/url'
+                                url: `https://www.google.com/url`
                             },
                             {
-                                filename: 'def.png',
-                                id: '9871376826132933',
-                                proxy_url: 'https://www.google.com/proxy2',
+                                filename: `def.png`,
+                                id: `9871376826132933`,
+                                proxy_url: `https://www.google.com/proxy2`,
                                 size: 65453,
-                                url: 'https://www.google.com/url2'
+                                url: `https://www.google.com/url2`
                             }
                         );
                     }

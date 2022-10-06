@@ -20,21 +20,21 @@ export abstract class CommandManager<T> implements ICommandManager<T> {
 
     public async get(name: string, location?: Guild | KnownGuildTextableChannel, user?: User): Promise<CommandGetResult<T>> {
         const findResult = await this.getCore(name.toLowerCase(), location, user);
-        if (findResult.state !== 'FOUND')
+        if (findResult.state !== `FOUND`)
             return findResult;
 
         const command = findResult.detail;
         if (user === undefined || location === undefined)
-            return { state: 'ALLOWED', detail: { command, reason: undefined } };
+            return { state: `ALLOWED`, detail: { command, reason: undefined } };
 
         const { state, detail: reason } = await this.checkPermissions(user, location, command);
         switch (state) {
-            case 'ALLOWED': return { state, detail: { command, reason } };
-            case 'BLACKLISTED': return { state, detail: { command, reason } };
-            case 'DISABLED': return { state, detail: { command, reason } };
-            case 'MISSING_PERMISSIONS': return { state, detail: { command, reason } };
-            case 'MISSING_ROLE': return { state, detail: { command, reason } };
-            case 'NOT_IN_GUILD': return { state, detail: { command, reason } };
+            case `ALLOWED`: return { state, detail: { command, reason } };
+            case `BLACKLISTED`: return { state, detail: { command, reason } };
+            case `DISABLED`: return { state, detail: { command, reason } };
+            case `MISSING_PERMISSIONS`: return { state, detail: { command, reason } };
+            case `MISSING_ROLE`: return { state, detail: { command, reason } };
+            case `NOT_IN_GUILD`: return { state, detail: { command, reason } };
         }
     }
 
@@ -50,15 +50,15 @@ export abstract class CommandManager<T> implements ICommandManager<T> {
         permissions: Required<CommandPermissions>
     ): Promise<PermissionCheckResult> {
         if (this.cluster.util.isBotOwner(user.id))
-            return { state: 'ALLOWED' };
+            return { state: `ALLOWED` };
 
-        const blacklistReason = await this.cluster.database.users.getSetting(user.id, 'blacklisted');
+        const blacklistReason = await this.cluster.database.users.getSetting(user.id, `blacklisted`);
         if (blacklistReason !== undefined)
-            return { state: 'BLACKLISTED', detail: blacklistReason };
+            return { state: `BLACKLISTED`, detail: blacklistReason };
 
         if (permissions.disabled || permissions.hidden)
             // Command is disabled
-            return { state: 'DISABLED' };
+            return { state: `DISABLED` };
 
         const guild = location instanceof Guild ? location
             : guard.isGuildChannel(location) ? location.guild
@@ -66,37 +66,37 @@ export abstract class CommandManager<T> implements ICommandManager<T> {
 
         if (guild === undefined)
             // Dms have no command restrictions
-            return { state: 'ALLOWED' };
+            return { state: `ALLOWED` };
 
         const member = await this.cluster.util.getMember(guild, user.id);
         if (member === undefined)
             // User isnt in the guild and so cannot use commands
-            return { state: 'NOT_IN_GUILD' };
+            return { state: `NOT_IN_GUILD` };
 
-        if (guild.ownerID === user.id || member.permissions.has('administrator'))
+        if (guild.ownerID === user.id || member.permissions.has(`administrator`))
             // Guild owners/admins can use all commands
-            return { state: 'ALLOWED' };
+            return { state: `ALLOWED` };
 
-        const adminrole = await this.cluster.util.database.guilds.getSetting(member.guild.id, 'adminrole');
+        const adminrole = await this.cluster.util.database.guilds.getSetting(member.guild.id, `adminrole`);
         const adminroleId = findRoleId(member.guild.roles, adminrole);
         if (adminroleId !== undefined && member.roles.includes(adminroleId)) {
             // Guild admins can use all commands
-            return { state: 'ALLOWED' };
+            return { state: `ALLOWED` };
         }
 
-        const staffPerms = parse.bigInt(await this.cluster.util.database.guilds.getSetting(guild.id, 'staffperms') ?? defaultStaff);
+        const staffPerms = parse.bigInt(await this.cluster.util.database.guilds.getSetting(guild.id, `staffperms`) ?? defaultStaff);
         if (staffPerms !== undefined && this.cluster.util.hasPerms(member, staffPerms))
             // User has any of the permissions that identify them as a staff member
-            return { state: 'ALLOWED' };
+            return { state: `ALLOWED` };
 
-        let result: PermissionCheckResult = { state: 'ALLOWED' };
-        if (permissions.permission !== '0') {
+        let result: PermissionCheckResult = { state: `ALLOWED` };
+        if (permissions.permission !== `0`) {
             // User has any of the permissions for this command
             const perm = parse.bigInt(permissions.permission);
             if (perm !== undefined && perm !== 0n) {
                 if (this.cluster.util.hasPerms(member, perm))
-                    return { state: 'ALLOWED' };
-                result = { state: 'MISSING_PERMISSIONS', detail: perm };
+                    return { state: `ALLOWED` };
+                result = { state: `MISSING_PERMISSIONS`, detail: perm };
             }
         }
 
@@ -107,8 +107,8 @@ export abstract class CommandManager<T> implements ICommandManager<T> {
         if (roleIds.length > 0) {
             // User has one of the roles this command is linked to or the admin role?
             if (member.roles.some(r => roleIds.includes(r)))
-                return { state: 'ALLOWED' };
-            result = { state: 'MISSING_ROLE', detail: roleIds };
+                return { state: `ALLOWED` };
+            result = { state: `MISSING_ROLE`, detail: roleIds };
         }
 
         return result;
@@ -119,7 +119,7 @@ function findRoleId(roles: Collection<Role>, roleSetting: string | undefined): s
     if (roleSetting === undefined)
         return undefined;
 
-    const id = parse.entityId(roleSetting, '@&', true);
+    const id = parse.entityId(roleSetting, `@&`, true);
     if (id !== undefined)
         return roles.get(id)?.id;
 

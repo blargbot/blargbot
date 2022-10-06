@@ -1,5 +1,5 @@
-export function parseEntityId(text: string, identifier = '', allowJustId = identifier.length === 0): string | undefined {
-    if (typeof text !== 'string')
+export function parseEntityId(text: string, identifier = ``, allowJustId = identifier.length === 0): string | undefined {
+    if (typeof text !== `string`)
         return undefined;
 
     let regex = new RegExp(`\\<${identifier}(\\d{17,23})\\>`);

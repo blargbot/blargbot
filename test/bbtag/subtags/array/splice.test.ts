@@ -11,10 +11,10 @@ runSubtagTests({
     argCountBounds: { min: 2, max: Infinity },
     cases: [
         {
-            code: '{splice;arr1;0}',
-            expected: '[]',
+            code: `{splice;arr1;0}`,
+            expected: `[]`,
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
+                ctx.options.tagName = `testTag`;
                 ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.arr1`] = [1, 2, 3, 4, 5, 6];
             },
             assert(_, __, ctx) {
@@ -22,10 +22,10 @@ runSubtagTests({
             }
         },
         {
-            code: '{splice;arr1;1}',
-            expected: '[]',
+            code: `{splice;arr1;1}`,
+            expected: `[]`,
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
+                ctx.options.tagName = `testTag`;
                 ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.arr1`] = [1, 2, 3, 4, 5, 6];
             },
             assert(_, __, ctx) {
@@ -33,10 +33,10 @@ runSubtagTests({
             }
         },
         {
-            code: '{splice;arr1;2;1}',
-            expected: '[3]',
+            code: `{splice;arr1;2;1}`,
+            expected: `[3]`,
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
+                ctx.options.tagName = `testTag`;
                 ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.arr1`] = [1, 2, 3, 4, 5, 6];
             },
             assert(_, __, ctx) {
@@ -44,10 +44,10 @@ runSubtagTests({
             }
         },
         {
-            code: '{splice;arr1;1;3}',
-            expected: '[2,3,4]',
+            code: `{splice;arr1;1;3}`,
+            expected: `[2,3,4]`,
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
+                ctx.options.tagName = `testTag`;
                 ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.arr1`] = [1, 2, 3, 4, 5, 6];
             },
             assert(_, __, ctx) {
@@ -55,10 +55,10 @@ runSubtagTests({
             }
         },
         {
-            code: '{splice;arr1;4;3}',
-            expected: '[5,6]',
+            code: `{splice;arr1;4;3}`,
+            expected: `[5,6]`,
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
+                ctx.options.tagName = `testTag`;
                 ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.arr1`] = [1, 2, 3, 4, 5, 6];
             },
             assert(_, __, ctx) {
@@ -66,110 +66,110 @@ runSubtagTests({
             }
         },
         {
-            code: '{splice;arr1;2;0;a}',
-            expected: '[]',
+            code: `{splice;arr1;2;0;a}`,
+            expected: `[]`,
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
+                ctx.options.tagName = `testTag`;
                 ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.arr1`] = [1, 2, 3, 4, 5, 6];
             },
             assert(_, __, ctx) {
-                expect(ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.arr1`]).to.deep.equal([1, 2, 'a', 3, 4, 5, 6]);
+                expect(ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.arr1`]).to.deep.equal([1, 2, `a`, 3, 4, 5, 6]);
             }
         },
         {
-            code: '{splice;arr1;2;1;a}',
-            expected: '[3]',
+            code: `{splice;arr1;2;1;a}`,
+            expected: `[3]`,
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
+                ctx.options.tagName = `testTag`;
                 ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.arr1`] = [1, 2, 3, 4, 5, 6];
             },
             assert(_, __, ctx) {
-                expect(ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.arr1`]).to.deep.equal([1, 2, 'a', 4, 5, 6]);
+                expect(ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.arr1`]).to.deep.equal([1, 2, `a`, 4, 5, 6]);
             }
         },
         {
-            code: '{splice;arr1;2;2;a;b;c;d;e;f}',
-            expected: '[3,4]',
+            code: `{splice;arr1;2;2;a;b;c;d;e;f}`,
+            expected: `[3,4]`,
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
+                ctx.options.tagName = `testTag`;
                 ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.arr1`] = [1, 2, 3, 4, 5, 6];
             },
             assert(_, __, ctx) {
-                expect(ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.arr1`]).to.deep.equal([1, 2, 'a', 'b', 'c', 'd', 'e', 'f', 5, 6]);
+                expect(ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.arr1`]).to.deep.equal([1, 2, `a`, `b`, `c`, `d`, `e`, `f`, 5, 6]);
             }
         },
         {
-            code: '{splice;arr1;2;2;a;1;2;d;e;f}',
-            expected: '[3,4]',
+            code: `{splice;arr1;2;2;a;1;2;d;e;f}`,
+            expected: `[3,4]`,
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
+                ctx.options.tagName = `testTag`;
                 ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.arr1`] = [1, 2, 3, 4, 5, 6];
             },
             assert(_, __, ctx) {
-                expect(ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.arr1`]).to.deep.equal([1, 2, 'a', '1', '2', 'd', 'e', 'f', 5, 6]);
+                expect(ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.arr1`]).to.deep.equal([1, 2, `a`, `1`, `2`, `d`, `e`, `f`, 5, 6]);
             }
         },
         {
-            code: '{splice;arr1;2;2;a;[1,2,"d"];e;f}',
-            expected: '[3,4]',
+            code: `{splice;arr1;2;2;a;[1,2,"d"];e;f}`,
+            expected: `[3,4]`,
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
+                ctx.options.tagName = `testTag`;
                 ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.arr1`] = [1, 2, 3, 4, 5, 6];
             },
             assert(_, __, ctx) {
-                expect(ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.arr1`]).to.deep.equal([1, 2, 'a', 1, 2, 'd', 'e', 'f', 5, 6]);
+                expect(ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.arr1`]).to.deep.equal([1, 2, `a`, 1, 2, `d`, `e`, `f`, 5, 6]);
             }
         },
         {
-            code: '{splice;arr1;2;2;a;[[1,2,"d"]];e;f}',
-            expected: '[3,4]',
+            code: `{splice;arr1;2;2;a;[[1,2,"d"]];e;f}`,
+            expected: `[3,4]`,
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
+                ctx.options.tagName = `testTag`;
                 ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.arr1`] = [1, 2, 3, 4, 5, 6];
             },
             assert(_, __, ctx) {
-                expect(ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.arr1`]).to.deep.equal([1, 2, 'a', [1, 2, 'd'], 'e', 'f', 5, 6]);
+                expect(ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.arr1`]).to.deep.equal([1, 2, `a`, [1, 2, `d`], `e`, `f`, 5, 6]);
             }
         },
         {
-            code: '{splice;{get;arr1};2;2;a;[[1,2,"d"]];e;f}',
-            expected: '[3,4]',
+            code: `{splice;{get;arr1};2;2;a;[[1,2,"d"]];e;f}`,
+            expected: `[3,4]`,
             subtags: [new GetSubtag()],
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
+                ctx.options.tagName = `testTag`;
                 ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.arr1`] = [1, 2, 3, 4, 5, 6];
             },
             assert(_, __, ctx) {
-                expect(ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.arr1`]).to.deep.equal([1, 2, 'a', [1, 2, 'd'], 'e', 'f', 5, 6]);
+                expect(ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.arr1`]).to.deep.equal([1, 2, `a`, [1, 2, `d`], `e`, `f`, 5, 6]);
             }
         },
         {
-            code: '{splice;[1,2,3,4,5,6];2;2;a;[[1,2,"d"]];e;f}',
-            expected: '[3,4]'
+            code: `{splice;[1,2,3,4,5,6];2;2;a;[[1,2,"d"]];e;f}`,
+            expected: `[3,4]`
         },
         {
-            code: '{splice;var1;2;2;a;[[1,2,"d"]];e;f}',
-            expected: '`Not an array`',
+            code: `{splice;var1;2;2;a;[[1,2,"d"]];e;f}`,
+            expected: `\`Not an array\``,
             errors: [
-                { start: 0, end: 35, error: new NotAnArrayError('var1') }
+                { start: 0, end: 35, error: new NotAnArrayError(`var1`) }
             ],
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
-                ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.arr1`] = 'abc';
+                ctx.options.tagName = `testTag`;
+                ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.arr1`] = `abc`;
             }
         },
         {
-            code: '{splice;[1,2,3,4,5,6];abc;2;a;[[1,2,"d"]];e;f}',
-            expected: '`Not a number`',
+            code: `{splice;[1,2,3,4,5,6];abc;2;a;[[1,2,"d"]];e;f}`,
+            expected: `\`Not a number\``,
             errors: [
-                { start: 0, end: 46, error: new NotANumberError('abc') }
+                { start: 0, end: 46, error: new NotANumberError(`abc`) }
             ]
         },
         {
-            code: '{splice;[1,2,3,4,5,6];2;def;a;[[1,2,"d"]];e;f}',
-            expected: '`Not a number`',
+            code: `{splice;[1,2,3,4,5,6];2;def;a;[[1,2,"d"]];e;f}`,
+            expected: `\`Not a number\``,
             errors: [
-                { start: 0, end: 46, error: new NotANumberError('def') }
+                { start: 0, end: 46, error: new NotANumberError(`def`) }
             ]
         }
     ]

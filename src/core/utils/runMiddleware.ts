@@ -16,7 +16,7 @@ type WithMiddleware<Target, Method extends keyof Target> =
     & { [P in Method]: MiddlewareFunc<Target, Method> };
 
 function isMethodMiddleware<Target, Method extends keyof Target>(target: Target, method: Method): target is WithMiddleware<Target, Method> {
-    return typeof target[method] === 'function' && mw in target[method];
+    return typeof target[method] === `function` && mw in target[method];
 }
 
 export function addMiddleware<Target, Method extends keyof Target>(
@@ -50,10 +50,10 @@ export function runMiddleware<Context, Result>(middleware: ReadonlyArray<IMiddle
     let options: NextMiddleware<Result>;
     if (terminate !== undefined)
         options = Object.assign(terminate, next);
-    else if (typeof next === 'function')
+    else if (typeof next === `function`)
         options = next;
     else
-        throw new Error('terminate must be given if options is not callable');
+        throw new Error(`terminate must be given if options is not callable`);
 
     const runMiddleware = (context: Context, index: number): Awaitable<Result> => {
         if (index >= middleware.length)
@@ -62,7 +62,7 @@ export function runMiddleware<Context, Result>(middleware: ReadonlyArray<IMiddle
         const current = middleware[index];
         const name = current.name === undefined ? current.constructor.name : `${current.constructor.name}(${current.name})`;
 
-        options.logger.middleware('[', options.id, ']', name, 'started after', performance.now() - options.start, 'ms');
+        options.logger.middleware(`[`, options.id, `]`, name, `started after`, performance.now() - options.start, `ms`);
         let result;
         try {
             result = current.execute(context, Object.assign(() => runMiddleware(context, index + 1), options));
@@ -80,5 +80,5 @@ export function runMiddleware<Context, Result>(middleware: ReadonlyArray<IMiddle
 }
 
 function logCompletion(name: string, options: MiddlewareOptions): void {
-    options.logger.middleware('[', options.id, ']', name, 'completed after', performance.now() - options.start, 'ms');
+    options.logger.middleware(`[`, options.id, `]`, name, `completed after`, performance.now() - options.start, `ms`);
 }

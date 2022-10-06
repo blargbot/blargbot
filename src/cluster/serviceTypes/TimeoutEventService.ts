@@ -15,7 +15,7 @@ export abstract class TimeoutEventService<TEvent extends keyof EventOptionsTypeM
     ) {
         super();
         this.type = `timeout:${this.event}`;
-        this.#execute = this.makeSafeCaller(this.execute.bind(this), this.logger, 'Timeout event handler');
+        this.#execute = this.makeSafeCaller(this.execute.bind(this), this.logger, `Timeout event handler`);
     }
 
     public abstract execute(event: StoredEvent<TEvent>): Promise<void> | void;
