@@ -31,22 +31,22 @@ export class ModlogCommand extends GuildCommand {
 
     public async setChannel(context: GuildCommandContext, channel: KnownChannel | undefined): Promise<string> {
         if (channel !== undefined && (!guard.isGuildChannel(channel) || channel.guild !== context.channel.guild))
-            return this.error(`The modlog channel must be on this server!`);
+            return `❌ The modlog channel must be on this server!`;
         if (channel !== undefined && !guard.isTextableChannel(channel))
-            return this.error(`The modlog channel must be a text channel!`);
+            return `❌ The modlog channel must be a text channel!`;
 
         await context.database.guilds.setSetting(context.channel.guild.id, `modlog`, channel?.id);
 
         if (channel === undefined)
-            return this.success(`The modlog is disabled`);
-        return this.success(`Modlog entries will now be sent in ${channel.mention}`);
+            return `✅ The modlog is disabled`;
+        return `✅ Modlog entries will now be sent in ${channel.mention}`;
     }
 
     public async clearModlog(context: GuildCommandContext, ids: readonly number[]): Promise<string> {
         const modlogs = await context.database.guilds.removeModlogCases(context.channel.guild.id, ids.length === 0 ? undefined : ids);
 
         if (modlogs === undefined || modlogs.length === 0)
-            return this.error(`No modlogs were found!`);
+            return `❌ No modlogs were found!`;
 
         const modlogChanel = await context.database.guilds.getSetting(context.channel.guild.id, `modlog`);
         const missingChannel: number[] = [];
@@ -92,8 +92,8 @@ export class ModlogCommand extends GuildCommand {
         ].filter(guard.hasValue);
 
         if (errors.length > 0)
-            return this.warning(`I successfully deleted ${modlogs.length} ${p(modlogs.length, `modlog`)} from my database.`, ...errors);
-        return this.success(`I successfully deleted ${modlogs.length} ${p(modlogs.length, `modlog`)} from my database.`);
+            return `⚠️ I successfully deleted ${modlogs.length} ${p(modlogs.length, `modlog`)} from my database.${errors.map(e => `\n⛔ ${e}`).join(``)}`;
+        return `✅ I successfully deleted ${modlogs.length} ${p(modlogs.length, `modlog`)} from my database.`;
     }
 }
 

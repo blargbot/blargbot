@@ -28,7 +28,7 @@ export abstract class GlobalImageCommand extends GlobalCommand {
     protected async renderImage<T extends keyof ImageGeneratorMap>(context: CommandContext, command: T, data: ImageGeneratorMap[T]): Promise<ImageResult | string> {
         const result = await context.cluster.images.render(command, data);
         if (result === undefined || result.data.length === 0)
-            return this.error(`Something went wrong while trying to render that!`);
+            return `❌ Something went wrong while trying to render that!`;
         return result;
     }
 }

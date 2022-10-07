@@ -1,13 +1,14 @@
 import { Cluster } from '@blargbot/cluster';
 import { WolkenCommand } from '@blargbot/cluster/command';
 
+import templates from '../../text';
+
 export class KissCommand extends WolkenCommand {
     public constructor(cluster: Cluster) {
         super(`kiss`, {
             search: `kiss`,
-            action: `kisses`,
             user: true,
-            description: `Give someone a kiss!`,
+            ...templates.commands.kiss,
             wolkeKey: cluster.config.general.wolke
         });
     }

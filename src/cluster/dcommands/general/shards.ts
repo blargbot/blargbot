@@ -46,7 +46,7 @@ export class ShardsCommand extends GlobalCommand {
                 return downedShards.length > 0;
             });
             if (clusters.length === 0)
-                return this.info(`No shards are currently down!`);
+                return `ℹ️ No shards are currently down!`;
             clusters = clusters.map(c => {
                 c.shards.filter(s => s.status !== `ready`);
                 return {
@@ -69,7 +69,7 @@ export class ShardsCommand extends GlobalCommand {
             };
         });
         if (clusters.length === 0)
-            return this.error(`No cluster stats yet!`);
+            return `❌ No cluster stats yet!`;
         return {
             title: `Shards`,
             url: context.util.websiteLink(`shards`),
@@ -80,7 +80,7 @@ export class ShardsCommand extends GlobalCommand {
 
     public async showGuildShards(context: CommandContext, guildIDStr: string): Promise<string | EmbedOptions> {
         if (!snowflake.test(guildIDStr))
-            return this.error(`\`${guildIDStr}\` is not a valid guildID`);
+            return `❌ \`${guildIDStr}\` is not a valid guildID`;
         const guildData = await discord.cluster.getGuildClusterStats(context.cluster, guildIDStr);
         const isSameGuild = guard.isGuildCommandContext(context) ? context.channel.guild.id === guildIDStr : false;
         const descPrefix = isSameGuild ? `This guild` : `Guild \`${guildIDStr}\``;
@@ -94,7 +94,7 @@ export class ShardsCommand extends GlobalCommand {
         const clusterStats = await discord.cluster.getClusterStats(context.cluster, clusterID);
         const isValidCluster = Math.ceil(context.config.discord.shards.max / context.config.discord.shards.perCluster) - 1 >= clusterID && clusterID >= 0;
         if (clusterStats === undefined)
-            return this.error(`Cluster ${clusterID} ${isValidCluster ? `is not online at the moment` : `does not exist`}`);
+            return `❌ Cluster ${clusterID} ${isValidCluster ? `is not online at the moment` : `does not exist`}`;
         return this.shardEmbed(context, clusterStats, ``);
     }
 

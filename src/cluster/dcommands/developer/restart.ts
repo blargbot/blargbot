@@ -30,7 +30,7 @@ export class RestartCommand extends GlobalCommand {
 
     async #restartWebsites(context: CommandContext): Promise<string> {
         await context.cluster.worker.request(`respawnApi`, undefined, 60000);
-        return this.success(`Api has been respawned.`);
+        return `✅ Api has been respawned.`;
     }
 
     async #restart(context: CommandContext): Promise<undefined> {

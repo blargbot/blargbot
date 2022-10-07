@@ -31,7 +31,7 @@ export class PersonalPrefixCommand extends GlobalCommand {
     public async listPrefixes(context: CommandContext): Promise<string | EmbedOptions> {
         const prefixes = await context.database.users.getSetting(context.author.id, `prefixes`);
         if (prefixes === undefined || prefixes.length === 0)
-            return this.info(`You dont have any personal command prefixes set!`);
+            return `ℹ️ You dont have any personal command prefixes set!`;
 
         return {
             author: context.util.embedifyAuthor(context.author),
@@ -42,13 +42,13 @@ export class PersonalPrefixCommand extends GlobalCommand {
 
     public async addPrefix(context: CommandContext, prefix: string): Promise<string> {
         if (!await context.database.users.addPrefix(context.author.id, prefix.toLowerCase()))
-            return this.error(`You already have that as a command prefix.`);
-        return this.success(`Your personal command prefix has been added.`);
+            return `❌ You already have that as a command prefix.`;
+        return `✅ Your personal command prefix has been added.`;
     }
 
     public async removePrefix(context: CommandContext, prefix: string): Promise<string> {
         if (!await context.database.users.removePrefix(context.author.id, prefix.toLowerCase()))
-            return this.error(`That isnt one of your prefixes.`);
-        return this.success(`Your personal command prefix has been removed.`);
+            return `❌ That isnt one of your prefixes.`;
+        return `✅ Your personal command prefix has been removed.`;
     }
 }

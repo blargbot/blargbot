@@ -39,7 +39,7 @@ export class DistortCommand extends GlobalImageCommand {
     public async render(context: CommandContext, url: string): Promise<ImageResult | string> {
         url = parse.url(url);
         if (!guard.isUrl(url))
-            return this.error(`${url} is not a valid url!`);
+            return `❌ ${url} is not a valid url!`;
 
         return await this.renderImage(context, `distort`, { avatar: url });
     }

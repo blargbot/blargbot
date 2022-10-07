@@ -49,7 +49,7 @@ export class PollCommand extends GuildCommand {
             : options.time ?? duration(1, `minute`);
 
         if (typeof time === `string`)
-            return this.error(`\`${time}\` is not a valid duration for a poll.`);
+            return `❌ \`${time}\` is not a valid duration for a poll.`;
 
         let color: number | undefined;
         switch (typeof options.color) {
@@ -62,21 +62,21 @@ export class PollCommand extends GuildCommand {
             case `string`:
                 color = parse.color(options.color);
                 if (color === undefined)
-                    return this.error(`\`${options.color}\` is not a valid color!`);
+                    return `❌ \`${options.color}\` is not a valid color!`;
                 break;
         }
 
         const result = await context.cluster.polls.createPoll(context.channel, context.author, emojis, options.title, options.description, color, time, options.announce ?? false);
         switch (result.state) {
-            case `FAILED_SEND`: return this.error(`I wasnt able to send the poll! Please make sure I have the right permissions and try again.`);
-            case `NO_ANNOUNCE_PERMS`: return this.error(`Sorry, you dont have permissions to send announcements!`);
-            case `ANNOUNCE_INVALID`: return this.error(`Announcements on this server arent set up correctly. Please fix them before trying again.`);
-            case `OPTIONS_EMPTY`: return this.error(`You must provide some emojis to use in the poll.`);
-            case `OPTIONS_INVALID`: return this.error(`I dont have access to some of the emojis you used! Please use different emojis or add me to the server that the emojis are from.`);
-            case `TOO_SHORT`: return this.error(`${time.humanize()} is too short for a poll! Use a longer time`);
+            case `FAILED_SEND`: return `❌ I wasnt able to send the poll! Please make sure I have the right permissions and try again.`;
+            case `NO_ANNOUNCE_PERMS`: return `❌ Sorry, you dont have permissions to send announcements!`;
+            case `ANNOUNCE_INVALID`: return `❌ Announcements on this server arent set up correctly. Please fix them before trying again.`;
+            case `OPTIONS_EMPTY`: return `❌ You must provide some emojis to use in the poll.`;
+            case `OPTIONS_INVALID`: return `❌ I dont have access to some of the emojis you used! Please use different emojis or add me to the server that the emojis are from.`;
+            case `TOO_SHORT`: return `❌ ${time.humanize()} is too short for a poll! Use a longer time`;
             case `SUCCESS`:
                 if (result.failedReactions.length > 0)
-                    return this.warning(`I managed to create the poll, but wasnt able to add some of the emojis to it. Please add them manually (they will still be counted in the results)`);
+                    return `⚠️ I managed to create the poll, but wasnt able to add some of the emojis to it. Please add them manually (they will still be counted in the results)`;
                 return undefined;
             default:
                 return result;

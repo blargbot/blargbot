@@ -19,11 +19,11 @@ export class RussianRouletteCommand extends GlobalCommand {
     public async play(context: CommandContext, bullets: number, emote: string | undefined): Promise<string | undefined> {
         emote ??= randChoose(mojiList);
         if (bullets <= 0)
-            return this.error(`Wimp! You need to load at least one bullet.`);
+            return `❌ Wimp! You need to load at least one bullet.`;
         if (bullets === 6)
-            return this.warning(`Do you have a deathwish or something? Your revolver can only hold 6 bullets, that's guaranteed death!`);
+            return `⚠️ Do you have a deathwish or something? Your revolver can only hold 6 bullets, that's guaranteed death!`;
         if (bullets > 6)
-            return this.warning(`That's gutsy, but your revolver can only hold 6 bullets!`);
+            return `⚠️ That's gutsy, but your revolver can only hold 6 bullets!`;
 
         const query = await context.util.createConfirmQuery({
             context: context.message,
@@ -36,7 +36,7 @@ export class RussianRouletteCommand extends GlobalCommand {
 
         if (query.prompt === undefined) {
             await query.cancel();
-            return this.error(`Your revolver jams when you try to close the barrel. Maybe you should try somewhere else...`);
+            return `❌ Your revolver jams when you try to close the barrel. Maybe you should try somewhere else...`;
         }
 
         const you = await context.send(context.channel, `${emote}🔫`);

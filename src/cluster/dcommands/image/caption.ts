@@ -33,7 +33,7 @@ export class CaptionCommand extends GlobalImageCommand {
     }
 
     public listFonts(): string {
-        return this.info(`The supported fonts are:${humanize.smartJoin(Object.keys(fontLookup), `, `, ` and `)}`);
+        return `ℹ️ The supported fonts are:${humanize.smartJoin(Object.keys(fontLookup), `, `, ` and `)}`;
     }
 
     public async render(
@@ -44,18 +44,18 @@ export class CaptionCommand extends GlobalImageCommand {
         fontName = `impact`
     ): Promise<string | ImageResult> {
         if (url === undefined)
-            return this.error(`You didnt tell me what image I should caption!`);
+            return `❌ You didnt tell me what image I should caption!`;
 
         if ((top === undefined || top.length === 0)
             && (bottom === undefined || bottom.length === 0))
-            return this.error(`You must give atleast 1 caption!`);
+            return `❌ You must give atleast 1 caption!`;
 
         if (!Object.keys(fontLookup).includes(fontName))
-            return this.error(`${fontName} is not a supported font! Use \`${context.prefix}caption list\` to see all available fonts`);
+            return `❌ ${fontName} is not a supported font! Use \`${context.prefix}caption list\` to see all available fonts`;
 
         url = parse.url(url);
         if (!guard.isUrl(url))
-            return this.error(`${url} is not a valid url!`);
+            return `❌ ${url} is not a valid url!`;
 
         if (top !== undefined)
             top = await context.util.resolveTags(context, top);

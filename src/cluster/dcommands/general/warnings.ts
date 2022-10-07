@@ -27,8 +27,8 @@ export class WarningsCommand extends GuildCommand {
         const { count, banAt, kickAt, timeoutAt } = await context.cluster.moderation.warns.details(member);
         const result: string[] = [
             count > 0
-                ? this.warning(`**${humanize.fullName(member.user)}** has accumulated ${count} ${p(count, `warning`)}.`)
-                : this.congrats(`**${humanize.fullName(member.user)}** doesn't have any warnings!`)
+                ? `⚠️ **${humanize.fullName(member.user)}** has accumulated ${count} ${p(count, `warning`)}.`
+                : `🎉 **${humanize.fullName(member.user)}** doesn't have any warnings!`
         ];
 
         if (timeoutAt !== undefined)

@@ -33,8 +33,8 @@ export class PrefixCommand extends GuildCommand {
             prefixes = [prefixes];
 
         if (prefixes === undefined || prefixes.length === 0)
-            return this.error(`${context.channel.guild.name} has no custom prefixes!`);
-        return this.info(`${context.channel.guild.name} has the following prefixes:\n${prefixes.map(p => ` - ${p}`).join(`\n`)}`);
+            return `❌ ${context.channel.guild.name} has no custom prefixes!`;
+        return `ℹ️ ${context.channel.guild.name} has the following prefixes:\n${prefixes.map(p => ` - ${p}`).join(`\n`)}`;
     }
 
     public async addPrefix(context: GuildCommandContext, prefix: string): Promise<string> {
@@ -52,7 +52,7 @@ export class PrefixCommand extends GuildCommand {
         }
         prefixes = [...new Set(prefixes)];
         await context.database.guilds.setSetting(context.channel.guild.id, `prefix`, prefixes);
-        return this.success(`The prefix has been added!`);
+        return `✅ The prefix has been added!`;
     }
 
     public async removePrefix(context: GuildCommandContext, prefix: string): Promise<string> {
@@ -69,6 +69,6 @@ export class PrefixCommand extends GuildCommand {
                 break;
         }
         await context.database.guilds.setSetting(context.channel.guild.id, `prefix`, prefixes);
-        return this.success(`The prefix has been removed!`);
+        return `✅ The prefix has been removed!`;
     }
 }

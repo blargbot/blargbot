@@ -1,6 +1,7 @@
 import { CommandResult } from '@blargbot/cluster/types';
 import { IMiddleware, NextMiddleware } from '@blargbot/core/types';
 
+import templates from '../../text';
 import { CommandContext } from '../CommandContext';
 
 export class SingleThreadMiddleware<TContext extends CommandContext> implements IMiddleware<TContext, CommandResult> {
@@ -18,7 +19,7 @@ export class SingleThreadMiddleware<TContext extends CommandContext> implements 
         if (lock !== undefined) {
             if (!lock.warned) {
                 lock.warned = true;
-                return `❌ Sorry, this command is already running! Please wait and try again.`;
+                return templates.commands.$errors.alreadyRunning;
             }
             return;
         }

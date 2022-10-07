@@ -21,7 +21,7 @@ export class DanbooruCommand extends GlobalCommand {
 
     public async getDanbooru(tags: readonly string[]): Promise<string | SendContent> {
         if (tags.length === 0)
-            return this.error(`You need to provide some tags`);
+            return `❌ You need to provide some tags`;
 
         const safeTags = tags
             .filter(t => !/[^a-zA-Z0-9_-]/.test(t))
@@ -29,19 +29,19 @@ export class DanbooruCommand extends GlobalCommand {
             .map(t => t.toLowerCase());
 
         if (safeTags.length === 0)
-            return this.error(`None of the tags you provided were safe!`);
+            return `❌ None of the tags you provided were safe!`;
 
         const response = await requestSafe(`https://danbooru.donmai.us/posts.json?limit=50&tags=${tags.join(`%20`)}`);
         const doc = danbooruMapping(response);
         if (!doc.valid)
-            return this.error(`No results were found!`);
+            return `❌ No results were found!`;
 
         const posts = doc.value
             .filter(p => p.has_children === false)
             .filter(p => p.file_url !== undefined && /\.(gif|jpg|png|jpeg)$/.test(p.file_url));
 
         if (posts.length === 0)
-            return this.error(`No results were found!`);
+            return `❌ No results were found!`;
 
         shuffle(posts);
 

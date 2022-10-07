@@ -1,12 +1,13 @@
 import { Cluster } from '@blargbot/cluster';
 import { WolkenCommand } from '@blargbot/cluster/command';
 
-export class ThumbsupCommand extends WolkenCommand {
+import templates from '../../text';
+
+export class ThumbsUpCommand extends WolkenCommand {
     public constructor(cluster: Cluster) {
         super(`thumbsup`, {
             search: `thumbsup`,
-            action: `gives a thumbs up`,
-            description: `Give a thumbs up!`,
+            ...templates.commands.thumbsUp,
             wolkeKey: cluster.config.general.wolke
         });
     }

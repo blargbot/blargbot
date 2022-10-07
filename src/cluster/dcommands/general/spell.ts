@@ -21,7 +21,7 @@ export class SpellCommand extends GlobalCommand {
     public async getSpell(context: CommandContext, name: string | undefined): Promise<EmbedOptions | string> {
         const spell = name === undefined ? randChoose(Object.values(spells)) : await this.#findSpell(context, name);
         if (spell === undefined)
-            return this.error(`I couldnt find that spell!`);
+            return `❌ I couldnt find that spell!`;
 
         const normSchool = spell.school.toLowerCase();
         const components = spell.components

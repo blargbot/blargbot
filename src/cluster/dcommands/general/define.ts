@@ -29,7 +29,7 @@ export class DefineCommand extends GlobalCommand {
         });
         const details = wordApiMapping(response);
         if (!details.valid)
-            return this.error(`It seems I cant find the definition for that word at the moment!`);
+            return `❌ It seems I cant find the definition for that word at the moment!`;
 
         const defaultIPA = details.value.pronunciation.all ?? ``;
 

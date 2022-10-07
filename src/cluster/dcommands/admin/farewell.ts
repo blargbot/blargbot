@@ -53,10 +53,10 @@ export class FarewellCommand extends GuildCommand {
     public async getInfo(context: GuildCommandContext): Promise<string> {
         const farewell = await context.database.guilds.getFarewell(context.channel.guild.id);
         if (farewell === undefined)
-            return this.error(`No farewell message has been set yet!`);
+            return `❌ No farewell message has been set yet!`;
 
         const authorizer = farewell.authorizer ?? farewell.author;
-        return this.info(`The current farewell was last edited by <@${farewell.author ?? 0}> (${farewell.author ?? `????`}) and is authorized by <@${authorizer ?? 0}> (${authorizer ?? `????`})`);
+        return `ℹ️ The current farewell was last edited by <@${farewell.author ?? 0}> (${farewell.author ?? `????`}) and is authorized by <@${authorizer ?? 0}> (${authorizer ?? `????`})`;
     }
 
     public async setFarewell(context: GuildCommandContext, message: string): Promise<string> {
@@ -67,25 +67,25 @@ export class FarewellCommand extends GuildCommand {
             author: context.author.id
         });
 
-        return this.success(`The farewell message has been set`);
+        return `✅ The farewell message has been set`;
     }
 
     public async getFarewell(context: GuildCommandContext, fileExtension: string): Promise<string | SendContent> {
         const farewell = await context.database.guilds.getFarewell(context.channel.guild.id);
         if (farewell === undefined)
-            return this.error(`No farewell message has been set yet!`);
+            return `❌ No farewell message has been set yet!`;
 
         const channel = await context.cluster.greetings.getFarewellChannel(context.channel.guild.id);
 
         const message = channel === undefined
             ? `The raw code for the farewell message is`
             : `The raw code for the farewell message (sent in ${channel.mention}) is`;
-        const response = this.info(`${message}:\n${codeBlock(farewell.content)}`);
+        const response = `ℹ️ ${message}:\n${codeBlock(farewell.content)}`;
 
         return !farewell.content.includes(`\`\`\``) && guard.checkMessageSize(response)
             ? response
             : {
-                content: this.info(`${message} attached`),
+                content: `ℹ️ ${message} attached`,
                 files: [
                     {
                         name: `farewell.${fileExtension}`,
@@ -97,39 +97,39 @@ export class FarewellCommand extends GuildCommand {
 
     public async deleteFarewell(context: GuildCommandContext): Promise<string> {
         await context.database.guilds.setFarewell(context.channel.guild.id, undefined);
-        return this.success(`Farewell messages will no longer be sent`);
+        return `✅ Farewell messages will no longer be sent`;
     }
 
     public async setAuthorizer(context: GuildCommandContext): Promise<string> {
         const farewell = await context.database.guilds.getFarewell(context.channel.guild.id);
         if (farewell === undefined)
-            return this.error(`There isnt a farewell message set!`);
+            return `❌ There isnt a farewell message set!`;
 
         await context.database.guilds.setFarewell(context.channel.guild.id, {
             ...farewell,
             authorizer: context.author.id
         });
-        return this.success(`The farewell message will now run using your permissions`);
+        return `✅ The farewell message will now run using your permissions`;
     }
 
     public async setChannel(context: GuildCommandContext, channel: KnownChannel): Promise<string> {
         if (!guard.isGuildChannel(channel) || channel.guild !== context.channel.guild)
-            return this.error(`The farewell channel must be on this server!`);
+            return `❌ The farewell channel must be on this server!`;
         if (!guard.isTextableChannel(channel))
-            return this.error(`The farewell channel must be a text channel!`);
+            return `❌ The farewell channel must be a text channel!`;
 
         await context.database.guilds.setSetting(context.channel.guild.id, `farewellchan`, channel.id);
-        return this.success(`Farewell messages will now be sent in ${channel.mention}`);
+        return `✅ Farewell messages will now be sent in ${channel.mention}`;
     }
 
     public async debug(context: GuildCommandContext): Promise<string | SendContent> {
         const result = await context.cluster.greetings.farewell(context.message.member);
         switch (result) {
-            case `CHANNEL_MISSING`: return this.error(`I wasnt able to locate a channel to sent the message in!`);
-            case `CODE_MISSING`: return this.error(`There isnt a farewell message set!`);
+            case `CHANNEL_MISSING`: return `❌ I wasnt able to locate a channel to sent the message in!`;
+            case `CODE_MISSING`: return `❌ There isnt a farewell message set!`;
             default:
                 await context.sendDM(bbtag.createDebugOutput(result));
-                return this.info(`Ive sent the debug output in a DM`);
+                return `ℹ️ Ive sent the debug output in a DM`;
         }
     }
 }

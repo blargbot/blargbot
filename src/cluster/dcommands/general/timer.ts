@@ -23,7 +23,7 @@ export class TimerCommand extends GlobalCommand {
 
     public async addTimer(context: CommandContext, duration: Duration, inChannel: boolean): Promise<string> {
         if (duration.asMilliseconds() <= 0)
-            return this.error(`I cant set a timer for 0 seconds!`);
+            return `❌ I cant set a timer for 0 seconds!`;
 
         const channel = inChannel && guard.isGuildCommandContext(context) ? context.channel : await context.author.getDMChannel();
         const source = inChannel && guard.isGuildCommandContext(context) ? context.channel.guild.id : context.author.id;
@@ -35,7 +35,7 @@ export class TimerCommand extends GlobalCommand {
             endtime: moment().add(duration).valueOf()
         });
 
-        return this.success(`Ok, ill ping you ${channel === context.channel ? `here` : `in a DM`} <t:${moment().add(duration).unix()}:R>`);
+        return `✅ Ok, ill ping you ${channel === context.channel ? `here` : `in a DM`} <t:${moment().add(duration).unix()}:R>`;
     }
 
 }

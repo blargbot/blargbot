@@ -19,29 +19,29 @@ export class ExecCommand extends GlobalCommand {
 
     public async commandLine(context: CommandContext, command: string): Promise<string | undefined> {
         if (/pm2 (restart|reload|start)/i.test(command))
-            return this.error(`No! That's dangerous! Do \`b!restart\` instead.\n\nIt's not that I don't trust you, it's just...\n\nI don't trust you.`);
+            return `❌ No! That's dangerous! Do \`b!restart\` instead.\n\nIt's not that I don't trust you, it's just...\n\nI don't trust you.`;
 
         if (!await context.util.queryConfirm({
             context: context.message,
             actors: context.author,
-            prompt: this.warning(`You are about to execute the following on the command line:${codeBlock(command, `bash`)}`),
+            prompt: `⚠️ You are about to execute the following on the command line:${codeBlock(command, `bash`)}`,
             confirm: `Continue`,
             cancel: `Cancel`,
             fallback: false
         }))
-            return this.success(`Execution cancelled`);
+            return `✅ Execution cancelled`;
 
         const message = await context.reply(`Command: \`${command}\`\nRunning....`);
         try {
             await context.channel.sendTyping();
-            const content = this.success(`Command: \`${command}\``);
+            const content = `✅ Command: \`${command}\``;
             const file = {
                 file: Buffer.from(cleanConsole(await execCommandline(command))),
                 name: `output.txt`
             };
             await (message?.channel.editMessage(message.id, { content, file }) ?? context.reply({ content, files: [file] }));
         } catch (err: unknown) {
-            const content = this.error(`Command: \`${command}\``);
+            const content = `❌ Command: \`${command}\``;
             const file = {
                 file: Buffer.from(cleanConsole(err instanceof Error ? err.toString() : Object.prototype.toString.call(err))),
                 name: `output.txt`

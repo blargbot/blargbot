@@ -90,7 +90,7 @@ const parameterTypes: ParameterTypeFactories = {
                 const match = lookup.get(value.toLowerCase());
                 return match !== undefined
                     ? { success: true, value: createCommandArgument(`literal`, value) }
-                    : { success: false, error: { parseFailed: { attemptedValue: value, types: choices } } };
+                    : { success: false, error: { parseFailed: { value: value, types: choices } } };
             }
         };
     },
@@ -98,31 +98,31 @@ const parameterTypes: ParameterTypeFactories = {
     bigint: buildParameter(`bigint`, (value) => {
         const result = parse.bigInt(value);
         if (result === undefined)
-            return { success: false, error: { parseFailed: { attemptedValue: value, types: [`an integer`] } } };
+            return { success: false, error: { parseFailed: { value: value, types: [`an integer`] } } };
         return { success: true, value: createCommandArgument(`bigint`, result) };
     }),
     integer: buildParameter(`integer`, (value) => {
         const result = parse.int(value, { strict: true });
         if (result === undefined)
-            return { success: false, error: { parseFailed: { attemptedValue: value, types: [`an integer`] } } };
+            return { success: false, error: { parseFailed: { value: value, types: [`an integer`] } } };
         return { success: true, value: createCommandArgument(`integer`, result) };
     }),
     number: buildParameter(`number`, (value) => {
         const result = parse.float(value);
         if (result === undefined)
-            return { success: false, error: { parseFailed: { attemptedValue: value, types: [`a number`] } } };
+            return { success: false, error: { parseFailed: { value: value, types: [`a number`] } } };
         return { success: true, value: createCommandArgument(`number`, result) };
     }),
     boolean: buildParameter(`boolean`, (value) => {
         const result = parse.boolean(value);
         if (result === undefined)
-            return { success: false, error: { parseFailed: { attemptedValue: value, types: [`a boolean`] } } };
+            return { success: false, error: { parseFailed: { value: value, types: [`a boolean`] } } };
         return { success: true, value: createCommandArgument(`boolean`, result) };
     }),
     duration: buildParameter(`duration`, (value) => {
         const result = parse.duration(value);
         if (result === undefined)
-            return { success: false, error: { parseFailed: { attemptedValue: value, types: [`a duration`] } } };
+            return { success: false, error: { parseFailed: { value: value, types: [`a duration`] } } };
         return { success: true, value: createCommandArgument(`duration`, result) };
     }),
     channel: buildParameter(`channel`, (value, state) => {

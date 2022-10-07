@@ -21,12 +21,12 @@ export class ReasonCommand extends GuildCommand {
         switch (await context.cluster.moderation.modLog.updateReason(context.channel.guild, caseId, context.author, reason)) {
             case `MISSING_CASE`:
                 if (caseId === undefined)
-                    return this.error(`There arent any modlog entries yet!`);
-                return this.error(`I couldnt find a modlog entry with a case if od ${caseId}`);
+                    return `❌ There arent any modlog entries yet!`;
+                return `❌ I couldnt find a modlog entry with a case if od ${caseId}`;
             case `SUCCESS_NO_MESSAGE`:
-                return this.warning(`The modlog has been updated! I couldnt find the message to update however.`);
+                return `⚠️ The modlog has been updated! I couldnt find the message to update however.`;
             case `SUCCESS`:
-                return this.success(`The modlog has been updated!`);
+                return `✅ The modlog has been updated!`;
         }
     }
 }

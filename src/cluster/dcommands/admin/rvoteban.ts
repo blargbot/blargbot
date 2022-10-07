@@ -26,11 +26,11 @@ export class RemoveVotebanCommand extends GuildCommand {
 
     public async clearUser(context: GuildCommandContext, user: User): Promise<string> {
         await context.database.guilds.clearVoteBans(context.channel.guild.id, user.id);
-        return this.success(`Votebans for ${user.mention} have been cleared`);
+        return `✅ Votebans for ${user.mention} have been cleared`;
     }
 
     public async clearAll(context: GuildCommandContext): Promise<string> {
         await context.database.guilds.clearVoteBans(context.channel.guild.id);
-        return this.success(`Votebans for all users have been cleared`);
+        return `✅ Votebans for all users have been cleared`;
     }
 }

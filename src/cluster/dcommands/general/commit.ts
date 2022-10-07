@@ -22,14 +22,14 @@ export class CommitCommand extends GlobalCommand {
     public async getCommit(commitNumber: number | undefined): Promise<EmbedOptions | string> {
         const commitCount = await this.#fetchCommitCount();
         if (commitCount === 0)
-            return this.error(`I cant find any commits at the moment, please try again later!`);
+            return `❌ I cant find any commits at the moment, please try again later!`;
 
         commitNumber ??= randInt(1, commitCount);
         commitNumber = Math.min(commitCount, Math.max(commitNumber, 1));
 
         const commit = await this.#fetchCommit(commitCount - commitNumber);
         if (commit === undefined)
-            return this.error(`I couldnt find the commit!`);
+            return `❌ I couldnt find the commit!`;
 
         return {
             author: {

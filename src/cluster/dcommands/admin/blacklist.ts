@@ -21,13 +21,13 @@ export class BlacklistCommandBase extends GuildCommand {
 
     public async blacklist(context: GuildCommandContext, channel: KnownChannel): Promise<string> {
         if (!guard.isGuildChannel(channel) || channel.guild !== context.channel.guild)
-            return this.error(`You cannot blacklist a channel outside of this server`);
+            return `❌ You cannot blacklist a channel outside of this server`;
 
         const wasBlacklisted = await context.cluster.database.guilds.getChannelSetting(context.channel.guild.id, channel.id, `blacklisted`);
         await context.cluster.database.guilds.setChannelSetting(context.channel.guild.id, channel.id, `blacklisted`, wasBlacklisted !== true);
 
         return wasBlacklisted === true
-            ? this.success(`${channel.mention} is no longer blacklisted.`)
-            : this.success(`${channel.mention} is now blacklisted`);
+            ? `✅ ${channel.mention} is no longer blacklisted.`
+            : `✅ ${channel.mention} is now blacklisted`;
     }
 }

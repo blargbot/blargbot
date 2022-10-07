@@ -1,6 +1,6 @@
 import { GlobalCommand, SendTypingMiddleware } from '@blargbot/cluster/command';
 import { CommandType } from '@blargbot/cluster/utils';
-import { SendPayload } from '@blargbot/core/types';
+import { SendContent } from '@blargbot/core/types';
 import { humanize, parse } from '@blargbot/core/utils';
 import { ImageFormat, User } from 'eris';
 import fetch from 'node-fetch';
@@ -31,21 +31,21 @@ export class AvatarCommand extends GlobalCommand {
         this.middleware.push(new SendTypingMiddleware());
     }
 
-    public async getAvatar(user: User, format: string | undefined, size: string | number | undefined): Promise<SendPayload> {
+    public async getAvatar(user: User, format: string | undefined, size: string | number | undefined): Promise<SendContent> {
         if (format !== undefined && !allowedFormats.includes(format))
-            return this.error(`${format} is not a valid format! Supported formats are ${humanize.smartJoin(allowedFormats, `, `, ` and `)}`);
+            return `❌ ${format} is not a valid format! Supported formats are ${humanize.smartJoin(allowedFormats, `, `, ` and `)}`;
 
         const parsedSize = typeof size === `string` ? size = parse.int(size, { strict: true }) : size;
 
         if (parsedSize !== undefined && !allowedImageSizes.includes(parsedSize))
-            return this.error(`${size ?? parsedSize} is not a valid image size! Supported sizes are ${humanize.smartJoin(allowedImageSizes, `, `, ` and `)}`);
+            return `❌ ${size ?? parsedSize} is not a valid image size! Supported sizes are ${humanize.smartJoin(allowedImageSizes, `, `, ` and `)}`;
 
         const avatarUrl = user.dynamicAvatarURL(format, parsedSize ?? 512);
 
         const avatar = await fetch(avatarUrl);
 
         return {
-            content: this.success(`<@${user.id}>'s avatar`),
+            content: `✅ <@${user.id}>'s avatar`,
             files: [{ file: await avatar.buffer(), name: new URL(avatarUrl).pathname.split(`/`).pop() ?? `${user.id}.${format ?? `png`}` }]
         };
     }

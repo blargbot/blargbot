@@ -111,7 +111,7 @@ export class CensorCommand extends GuildCommand {
         }
 
         if (isNaN(weight))
-            return this.error(`The censor weight must be a number but \`${options.weight ?? ``}\` is not`);
+            return `❌ The censor weight must be a number but \`${options.weight ?? ``}\` is not`;
 
         if (weight < 0)
             weight = 0;
@@ -124,13 +124,13 @@ export class CensorCommand extends GuildCommand {
             weight: weight,
             reason: options.reason
         });
-        return this.success(`Censor \`${id}\` has been created`);
+        return `✅ Censor \`${id}\` has been created`;
     }
 
     public async updateCensor(context: GuildCommandContext, id: number, phrase: string | undefined, options: CensorOptions): Promise<string> {
         const censor = await context.database.guilds.getCensor(context.channel.guild.id, id);
         if (censor === undefined)
-            return this.error(`Censor \`${id}\` doesnt exist`);
+            return `❌ Censor \`${id}\` doesnt exist`;
 
         let weight = 1;
         switch (typeof options.weight) {
@@ -143,7 +143,7 @@ export class CensorCommand extends GuildCommand {
         }
 
         if (isNaN(weight))
-            return this.error(`The censor weight must be a number but \`${options.weight ?? ``}\` is not`);
+            return `❌ The censor weight must be a number but \`${options.weight ?? ``}\` is not`;
 
         if (weight < 0)
             weight = 0;
@@ -156,45 +156,45 @@ export class CensorCommand extends GuildCommand {
             decancer: phrase !== undefined ? options.decancer : censor.decancer,
             term: phrase ?? censor.term
         });
-        return this.success(`Censor \`${id}\` has been updated`);
+        return `✅ Censor \`${id}\` has been updated`;
     }
 
     public async deleteCensor(context: GuildCommandContext, id: number): Promise<string> {
         const censor = await context.database.guilds.getCensor(context.channel.guild.id, id);
         if (censor === undefined)
-            return this.error(`Censor \`${id}\` doesnt exist`);
+            return `❌ Censor \`${id}\` doesnt exist`;
 
         await context.database.guilds.setCensor(context.channel.guild.id, id, undefined);
-        return this.success(`Censor \`${id}\` has been deleted`);
+        return `✅ Censor \`${id}\` has been deleted`;
     }
 
     public async ignoreUser(context: GuildCommandContext, user: User, ignored: boolean): Promise<string> {
         await context.database.guilds.censorIgnoreUser(context.channel.guild.id, user.id, ignored);
-        return this.success(`${user.mention} is now exempt from all censors`);
+        return `✅ ${user.mention} is now exempt from all censors`;
     }
 
     public async ignoreChannel(context: GuildCommandContext, channel: KnownChannel, ignored: boolean): Promise<string> {
         if (!guard.isGuildChannel(channel) || channel.guild !== context.channel.guild)
-            return this.error(`The channel must be on this server!`);
+            return `❌ The channel must be on this server!`;
 
         await context.database.guilds.censorIgnoreChannel(context.channel.guild.id, channel.id, ignored);
-        return this.success(`Messages sent in ${channel.mention} are now exempt from all censors`);
+        return `✅ Messages sent in ${channel.mention} are now exempt from all censors`;
     }
 
     public async ignoreRole(context: GuildCommandContext, role: Role, ignored: boolean): Promise<string> {
         await context.database.guilds.censorIgnoreRole(context.channel.guild.id, role.id, ignored);
-        return this.success(`Anyone with the role ${role.mention} is now exempt from all censors`);
+        return `✅ Anyone with the role ${role.mention} is now exempt from all censors`;
     }
 
     public async setMessage(context: GuildCommandContext, id: number | undefined, type: string, code: string | undefined): Promise<string> {
         if (!allowedTypes.has(type))
-            return this.error(`\`${type}\` is not a valid type`);
+            return `❌ \`${type}\` is not a valid type`;
 
         const rule = await context.database.guilds.getCensorRule(context.channel.guild.id, id, type);
         if (id !== undefined) {
             const censor = await context.database.guilds.getCensor(context.channel.guild.id, id);
             if (censor === undefined)
-                return this.error(`Censor \`${id}\` doesnt exist`);
+                return `❌ Censor \`${id}\` doesnt exist`;
         }
 
         await context.database.guilds.setCensorRule(context.channel.guild.id, id, type, code === undefined ? undefined : {
@@ -203,22 +203,20 @@ export class CensorCommand extends GuildCommand {
             author: context.author.id
         });
 
-        return this.success(id === undefined
-            ? `The default ${type} message has been set`
-            : `The ${type} message for censor ${id} has been set`
-        );
+        return id === undefined
+            ? `✅ The default ${type} message has been set`
+            : `✅ The ${type} message for censor ${id} has been set`;
     }
 
     public async setAuthorizer(context: GuildCommandContext, id: number | undefined, type: string): Promise<string> {
         if (!allowedTypes.has(type))
-            return this.error(`\`${type}\` is not a valid type`);
+            return `❌ \`${type}\` is not a valid type`;
 
         const rule = await context.database.guilds.getCensorRule(context.channel.guild.id, id, type);
         if (rule === undefined) {
-            return this.error(id === undefined
-                ? `A custom default ${type} message has not been set yet`
-                : `A custom ${type} message for censor ${id} has not been set yet`
-            );
+            return id === undefined
+                ? `❌ A custom default ${type} message has not been set yet`
+                : `❌ A custom ${type} message for censor ${id} has not been set yet`;
         }
 
         await context.database.guilds.setCensorRule(context.channel.guild.id, id, type, {
@@ -226,34 +224,32 @@ export class CensorCommand extends GuildCommand {
             authorizer: context.author.id
         });
 
-        return this.success(id === undefined
-            ? `The default ${type} message authorizer has been set`
-            : `The ${type} message authorizer for censor ${id} has been set`
-        );
+        return id === undefined
+            ? `✅ The default ${type} message authorizer has been set`
+            : `✅ The ${type} message authorizer for censor ${id} has been set`;
     }
 
     public async getRawMessage(context: GuildCommandContext, id: number | undefined, type: string, fileExtension: string): Promise<string | SendContent> {
         if (!allowedTypes.has(type))
-            return this.error(`\`${type}\` is not a valid type`);
+            return `❌ \`${type}\` is not a valid type`;
 
         const rule = await context.database.guilds.getCensorRule(context.channel.guild.id, id, type);
         if (rule === undefined) {
-            return this.error(id === undefined
-                ? `A custom default ${type} message has not been set yet`
-                : `A custom ${type} message for censor ${id} has not been set yet`
-            );
+            return id === undefined
+                ? `❌ A custom default ${type} message has not been set yet`
+                : `❌ A custom ${type} message for censor ${id} has not been set yet`;
         }
 
         const message = id === undefined
             ? `The raw code for the default ${type} message is`
             : `The raw code for the ${type} message for censor \`${id}\` is`;
 
-        const response = this.info(`${message}:\n${codeBlock(rule.content)}`);
+        const response = `ℹ️ ${message}:\n${codeBlock(rule.content)}`;
 
         return !rule.content.includes(`\`\`\``) && guard.checkMessageSize(response)
             ? response
             : {
-                content: this.info(`${message} attached`),
+                content: `ℹ️ ${message} attached`,
                 files: [
                     {
                         name: `censor-${type}-${id ?? `default`}.${fileExtension}`,
@@ -265,14 +261,14 @@ export class CensorCommand extends GuildCommand {
 
     public async setDebug(context: GuildCommandContext, id: number, type: string): Promise<string> {
         if (!allowedTypes.has(type))
-            return this.error(`\`${type}\` is not a valid type`);
+            return `❌ \`${type}\` is not a valid type`;
 
         const censor = await context.database.guilds.getCensor(context.channel.guild.id, id);
         if (censor === undefined)
-            return this.error(`Censor \`${id}\` doesnt exist`);
+            return `❌ Censor \`${id}\` doesnt exist`;
 
         context.cluster.moderation.censors.setDebug(context.channel.guild.id, id, context.author.id, context.channel.id, context.message.id, type);
-        return this.success(`The next message that you send that triggers censor \`${id}\` will send the debug output here`);
+        return `✅ The next message that you send that triggers censor \`${id}\` will send the debug output here`;
     }
 
     public async list(context: GuildCommandContext): Promise<EmbedOptions> {
@@ -294,7 +290,7 @@ export class CensorCommand extends GuildCommand {
 
         return {
             author: context.util.embedifyAuthor(context.channel.guild),
-            title: this.info(`Censors`),
+            title: `ℹ️ Censors`,
             description: description.length === 0 ? `No censors configured` : description,
             fields: [
                 {
@@ -319,11 +315,11 @@ export class CensorCommand extends GuildCommand {
     public async showInfo(context: GuildCommandContext, id: number): Promise<string | EmbedOptions> {
         const censor = await context.database.guilds.getCensor(context.channel.guild.id, id);
         if (censor === undefined)
-            return this.error(`Censor \`${id}\` doesnt exist`);
+            return `❌ Censor \`${id}\` doesnt exist`;
 
         return {
             author: context.util.embedifyAuthor(context.channel.guild),
-            title: this.info(`Censor \`${id}\``),
+            title: `ℹ️ Censor \`${id}\``,
             fields: [
                 { name: `Trigger${censor.regex ? ` (Regex)` : ``}`, value: censor.term, inline: false },
                 { name: `Weight`, value: censor.weight.toString(), inline: true },

@@ -26,7 +26,7 @@ export class EmojiCommand extends GlobalImageCommand {
     public async emoji(context: CommandContext, emoji: string, size: number, svg: boolean): Promise<string | ImageResult> {
         const parsedEmojis = Emote.findAll(emoji);
         if (parsedEmojis.length === 0)
-            return this.error(`No emoji found!`);
+            return `❌ No emoji found!`;
 
         const parsedEmoji = parsedEmojis[0];
         if (parsedEmoji.id !== undefined)

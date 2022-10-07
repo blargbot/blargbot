@@ -29,7 +29,7 @@ export class StatusCommand extends GlobalCommand {
             status = 404;
             const response = await fetch(`${service}404.jpg`);
             if (!response.ok || response.headers.get(`content-type`) !== `image/jpeg`)
-                return this.error(`Something terrible has happened! 404 is not found!`);
+                return `❌ Something terrible has happened! 404 is not found!`;
             content = await response.buffer();
         }
 

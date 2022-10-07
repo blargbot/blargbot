@@ -27,7 +27,7 @@ export class InfoCommand extends GlobalCommand {
     }
     public showInfo(context: CommandContext): EmbedOptions | string {
         if (context.cluster.contributors.patrons.length === 0)
-            return this.warning(`Im still waking up! Try again in a minute or two`);
+            return `⚠️ Im still waking up! Try again in a minute or two`;
 
         const age = moment.duration(moment().diff(1444708800000));
         const ageStr = humanize.smartJoin(

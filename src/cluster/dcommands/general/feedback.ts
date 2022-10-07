@@ -74,11 +74,11 @@ export class FeedbackCommand extends GlobalCommand {
         const suggestion = await context.database.suggestions.get(caseNumber);
 
         if (suggestion === undefined)
-            return this.error(`I couldnt find any feedback with the case number ${caseNumber}!`);
+            return `❌ I couldnt find any feedback with the case number ${caseNumber}!`;
 
         const suggestor = await context.database.suggestors.upsert(context.author.id, humanize.fullName(context.author));
         if (suggestor === undefined || !suggestion.Author.includes(suggestor))
-            return this.error(`You cant edit someone elses suggestion.`);
+            return `❌ You cant edit someone elses suggestion.`;
 
         const res = await this.#getSuggestionDetails(context, description, flags);
         if (typeof res === `string`)
@@ -99,7 +99,7 @@ export class FeedbackCommand extends GlobalCommand {
             /* eslint-enable @typescript-eslint/naming-convention */
         });
 
-        return this.success(`Your case has been updated.`);
+        return `✅ Your case has been updated.`;
     }
 
     async #getSuggestionDetails(
@@ -112,11 +112,11 @@ export class FeedbackCommand extends GlobalCommand {
         description = sections.slice(1).join(`\n`).trim();
 
         if (title.length > 64)
-            return this.error(`The first line of your suggestion cannot be more than 64 characters!`);
+            return `❌ The first line of your suggestion cannot be more than 64 characters!`;
 
         const subTypes = await this.#getSubtypes(context, flags);
         if (subTypes.length === 0)
-            return this.error(`You need to provide at least 1 feedback type.`);
+            return `❌ You need to provide at least 1 feedback type.`;
 
         return { description, title, subTypes };
     }
@@ -146,7 +146,7 @@ export class FeedbackCommand extends GlobalCommand {
 
         const suggestor = await context.database.suggestors.upsert(context.author.id, humanize.fullName(context.author));
         if (suggestor === undefined)
-            return this.error(`Something went wrong while trying to submit that! Please try again`);
+            return `❌ Something went wrong while trying to submit that! Please try again`;
 
         const record = await context.database.suggestions.create({
             /* eslint-disable @typescript-eslint/naming-convention */
@@ -161,7 +161,7 @@ export class FeedbackCommand extends GlobalCommand {
             /* eslint-enable @typescript-eslint/naming-convention */
         });
         if (record === undefined)
-            return this.error(`Something went wrong while trying to submit that! Please try again`);
+            return `❌ Something went wrong while trying to submit that! Please try again`;
 
         const websiteLink = context.util.websiteLink(`feedback/${record}`);
         await context.send(channelId, {
@@ -185,7 +185,7 @@ export class FeedbackCommand extends GlobalCommand {
             }
         });
 
-        return this.success(`${type} has been sent with the ID ${record}! 👌\n\nYou can view your ${type.toLowerCase()} here: <${websiteLink}>`);
+        return `✅ ${type} has been sent with the ID ${record}! 👌\n\nYou can view your ${type.toLowerCase()} here: <${websiteLink}>`;
     }
 
     async #getSubtypes(context: CommandContext, flags: FlagResult): Promise<string[]> {
@@ -202,7 +202,7 @@ export class FeedbackCommand extends GlobalCommand {
         const picked = await context.util.queryMultiple({
             context: context.channel,
             actors: context.author,
-            prompt: this.info(`Please select the types that apply to your suggestion`),
+            prompt: `ℹ️ Please select the types that apply to your suggestion`,
             placeholder: `Select your suggestion type`,
             minCount: 1,
             choices: [
@@ -231,28 +231,28 @@ export class FeedbackCommand extends GlobalCommand {
                 guilds = ids = [...blacklist.guilds];
                 break;
             default:
-                return this.error(`I dont know how to blacklist a ${type}! only \`guild\` and \`user\``);
+                return `❌ I dont know how to blacklist a ${type}! only \`guild\` and \`user\``;
         }
 
         if (add) {
             if (ids.includes(id))
-                return this.error(`That ${type} id is already blacklisted!`);
+                return `❌ That ${type} id is already blacklisted!`;
             ids.push(id);
         } else {
             const index = ids.indexOf(id);
             if (index === -1)
-                return this.error(`That ${type} id is not blacklisted!`);
+                return `❌ That ${type} id is not blacklisted!`;
             ids.splice(index, 1);
         }
 
         await context.database.vars.set(`blacklist`, { users, guilds });
 
-        return this.success(`The ${type} ${id} has been ${add ? `blacklisted` : `removed from the blacklist`}`);
+        return `✅ The ${type} ${id} has been ${add ? `blacklisted` : `removed from the blacklist`}`;
     }
 
     #blacklistedError(context: CommandContext, type: `GUILD` | `USER`): string {
         const who = type === `GUILD` ? `your guild has` : `you have`;
-        return this.error(`Sorry, ${who} been blacklisted from the use of the \`${context.prefix}feedback\` command. If you wish to appeal this, please join my support guild. You can find a link by doing \`${context.prefix}invite\`.`);
+        return `❌ Sorry, ${who} been blacklisted from the use of the \`${context.prefix}feedback\` command. If you wish to appeal this, please join my support guild. You can find a link by doing \`${context.prefix}invite\`.`;
     }
 
     async #checkBlacklist(context: CommandContext): Promise<false | `GUILD` | `USER`> {

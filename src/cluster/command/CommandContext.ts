@@ -2,7 +2,7 @@ import { BBTagEngine } from '@blargbot/bbtag';
 import { Cluster, ClusterUtilities } from '@blargbot/cluster';
 import { CommandResult, GuildCommandContext, ICommand } from '@blargbot/cluster/types';
 import { Configuration } from '@blargbot/config';
-import { ChoiceQueryResult, DMContext, SendContext, SendPayload, SlimEntityFindQueryOptions, SlimEntityPickQueryOptions, SlimEntityQueryOptions, SlimTextQueryOptions, SlimTextQueryOptionsParsed, TextQueryResult } from '@blargbot/core/types';
+import { ChoiceQueryResult, SendContent, SendContext, SlimEntityFindQueryOptions, SlimEntityPickQueryOptions, SlimEntityQueryOptions, SlimTextQueryOptions, SlimTextQueryOptionsParsed, TextQueryResult } from '@blargbot/core/types';
 import { guard } from '@blargbot/core/utils';
 import { Database } from '@blargbot/database';
 import { Logger } from '@blargbot/logger';
@@ -34,26 +34,20 @@ export class CommandContext<TChannel extends KnownTextableChannel = KnownTextabl
     public async send(content: CommandResult): Promise<KnownMessage | undefined>
     public async send(context: SendContext, content: CommandResult): Promise<KnownMessage | undefined>
     public async send(...args: [CommandResult] | [SendContext, CommandResult]): Promise<KnownMessage | undefined> {
-        const [context, content] = args.length === 1 ? [this.message, toSendContent(args[0])] : [args[0], toSendContent(args[1])];
+        const [context, content] = args.length === 1 ? [this.message.channel, toSendContent(args[0])] : [args[0], toSendContent(args[1])];
         if (content === undefined)
             return undefined;
         return await this.cluster.util.send(context, content);
     }
 
     public async reply(content: CommandResult): Promise<KnownMessage | undefined> {
-        content = toSendContent(content);
+        const payload = toSendContent(content);
         if (content === undefined)
             return undefined;
-        return await this.cluster.util.send(this.message, content);
-    }
-
-    public async sendDM(content: CommandResult): Promise<KnownMessage | undefined>
-    public async sendDM(context: DMContext, content: CommandResult): Promise<KnownMessage | undefined>
-    public async sendDM(...args: [CommandResult] | [DMContext, CommandResult]): Promise<KnownMessage | undefined> {
-        const [context, content] = args.length === 1 ? [this.author, toSendContent(args[0])] : [args[0], toSendContent(args[1])];
-        if (content === undefined)
-            return undefined;
-        return await this.cluster.util.sendDM(context, content);
+        return await this.cluster.util.send(this.message.channel, {
+            messageReference: { messageID: this.message.id, channelID: this.message.channel.id },
+            ...payload
+        });
     }
 
     public async queryChannel(options: SlimEntityFindQueryOptions): Promise<ChoiceQueryResult<KnownGuildChannel>>;
@@ -131,7 +125,7 @@ export class CommandContext<TChannel extends KnownTextableChannel = KnownTextabl
     }
 }
 
-function toSendContent(content: CommandResult): SendPayload | undefined {
+function toSendContent(content: CommandResult): SendContent | undefined {
     switch (typeof content) {
         case `undefined`:
             return undefined;

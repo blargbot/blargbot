@@ -45,14 +45,14 @@ export class TidyCommand extends GuildCommand {
 
     public async tidy(context: GuildCommandContext, count: number, options: TidyOptions): Promise<string | undefined> {
         if (count <= 0)
-            return this.error(`I cannot delete ${count} messages!`);
+            return `❌ I cannot delete ${count} messages!`;
 
         count = Math.min(count, 500);
 
         const filter = await buildFilter(context, options);
         switch (filter) {
-            case `INVALID_REGEX`: return this.error(`That regex is not safe!`);
-            case `INVALID_USER`: return this.error(`I couldnt find some of the users you gave!`);
+            case `INVALID_REGEX`: return `❌ That regex is not safe!`;
+            case `INVALID_USER`: return `❌ I couldnt find some of the users you gave!`;
         }
 
         const messages: KnownMessage[] = [];
@@ -76,14 +76,14 @@ export class TidyCommand extends GuildCommand {
         const confirmed = options.confirm || await context.util.queryConfirm({
             context: context.message,
             actors: context.author,
-            prompt: this.info(`I am about to attempt to delete ${queryText}. Are you sure you wish to continue?\n${buildSummary(messages)}`),
+            prompt: `ℹ️ I am about to attempt to delete ${queryText}. Are you sure you wish to continue?\n${buildSummary(messages)}`,
             cancel: `Cancel`,
             confirm: `Continue`,
             fallback: false
         });
 
         if (!confirmed)
-            return this.success(`Tidy cancelled, No messages will be deleted`);
+            return `✅ Tidy cancelled, No messages will be deleted`;
 
         messages.push(context.message);
 
@@ -93,11 +93,11 @@ export class TidyCommand extends GuildCommand {
         const commandDeleted = result.success.delete(context.message);
 
         if (result.success.size === 0)
-            return this.error(`I wasnt able to delete any of the messages! Please make sure I have permission to manage messages`);
+            return `❌ I wasnt able to delete any of the messages! Please make sure I have permission to manage messages`;
 
         const resultMessage = result.failed.size === 0
-            ? this.success(`Deleted ${result.success.size} ${p(result.success.size, `message`)}:\n${buildSummary(result.success)}`)
-            : this.warning(`I managed to delete ${result.success.size} of the messages I attempted to delete.\n${buildSummary(result.success)}\n\nFailed:\n${buildSummary(result.failed)}`);
+            ? `✅ Deleted ${result.success.size} ${p(result.success.size, `message`)}:\n${buildSummary(result.success)}`
+            : `⚠️ I managed to delete ${result.success.size} of the messages I attempted to delete.\n${buildSummary(result.success)}\n\nFailed:\n${buildSummary(result.failed)}`;
 
         if (!commandDeleted)
             return resultMessage;

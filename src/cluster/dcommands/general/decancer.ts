@@ -37,7 +37,7 @@ export class DecancerCommand extends GlobalCommand {
         try {
             await member.edit({ nick: decancered });
             member.nick = decancered;
-            return this.success(`Successfully decancered **${member.mention}**'s name to: \`${decancered}\``);
+            return `✅ Successfully decancered **${member.mention}**'s name to: \`${decancered}\``;
         } catch {
             return this.decancerText(member.nick ?? member.username, decancered);
         }
@@ -45,7 +45,7 @@ export class DecancerCommand extends GlobalCommand {
 
     public decancerText(text: string, decancered?: string): string {
         decancered ??= humanize.decancer(text);
-        return this.success(`The decancered version of **${text}** is: \`${decancered}\``);
+        return `✅ The decancered version of **${text}** is: \`${decancered}\``;
     }
 
 }

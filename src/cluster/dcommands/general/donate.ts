@@ -35,6 +35,6 @@ Thank you for your time. I really appreciate all of my users! :3`,
                 }
             ]
         });
-        return this.success(`Thanks for the interest! Ive sent you a DM with information about donations.`);
+        return `✅ Thanks for the interest! Ive sent you a DM with information about donations.`;
     }
 }

@@ -23,13 +23,13 @@ export class XKCDCommand extends GlobalCommand {
         if (comicNumber === undefined) {
             const comic = await this.#requestComic(undefined);
             if (comic === undefined)
-                return this.error(`Seems like xkcd is down 😟`);
+                return `❌ Seems like xkcd is down 😟`;
             comicNumber = randInt(0, comic.num);
         }
 
         const comic = await this.#requestComic(comicNumber);
         if (comic === undefined)
-            return this.error(`Seems like xkcd is down 😟`);
+            return `❌ Seems like xkcd is down 😟`;
 
         return {
             author: context.util.embedifyAuthor(context.author),

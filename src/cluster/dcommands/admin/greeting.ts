@@ -54,10 +54,10 @@ export class GreetingCommand extends GuildCommand {
     public async getInfo(context: GuildCommandContext): Promise<string> {
         const greeting = await context.database.guilds.getGreeting(context.channel.guild.id);
         if (greeting === undefined)
-            return this.error(`No greeting message has been set yet!`);
+            return `❌ No greeting message has been set yet!`;
 
         const authorizer = greeting.authorizer ?? greeting.author;
-        return this.info(`The current greeting was last edited by <@${greeting.author ?? 0}> (${greeting.author ?? `????`}) and is authorized by <@${authorizer ?? 0}> (${authorizer ?? `????`})`);
+        return `ℹ️ The current greeting was last edited by <@${greeting.author ?? 0}> (${greeting.author ?? `????`}) and is authorized by <@${authorizer ?? 0}> (${authorizer ?? `????`})`;
     }
 
     public async setGreeting(context: GuildCommandContext, message: string): Promise<string> {
@@ -68,25 +68,25 @@ export class GreetingCommand extends GuildCommand {
             author: context.author.id
         });
 
-        return this.success(`The greeting message has been set`);
+        return `✅ The greeting message has been set`;
     }
 
     public async getGreeting(context: GuildCommandContext, fileExtension: string): Promise<string | SendContent> {
         const greeting = await context.database.guilds.getGreeting(context.channel.guild.id);
         if (greeting === undefined)
-            return this.error(`No greeting message has been set yet!`);
+            return `❌ No greeting message has been set yet!`;
 
         const channel = await context.cluster.greetings.getGreetingChannel(context.channel.guild.id);
 
         const message = channel === undefined
             ? `The raw code for the greeting message is`
             : `The raw code for the greeting message (sent in ${channel.mention}) is`;
-        const response = this.info(`${message}:\n${codeBlock(greeting.content)}`);
+        const response = `ℹ️ ${message}:\n${codeBlock(greeting.content)}`;
 
         return !greeting.content.includes(`\`\`\``) && guard.checkMessageSize(response)
             ? response
             : {
-                content: this.info(`${message} attached`),
+                content: `ℹ️ ${message} attached`,
                 files: [
                     {
                         name: `greeting.${fileExtension}`,
@@ -98,39 +98,39 @@ export class GreetingCommand extends GuildCommand {
 
     public async deleteGreeting(context: GuildCommandContext): Promise<string> {
         await context.database.guilds.setGreeting(context.channel.guild.id, undefined);
-        return this.success(`Greeting messages will no longer be sent`);
+        return `✅ Greeting messages will no longer be sent`;
     }
 
     public async setAuthorizer(context: GuildCommandContext): Promise<string> {
         const greeting = await context.database.guilds.getGreeting(context.channel.guild.id);
         if (greeting === undefined)
-            return this.error(`There isnt a greeting message set!`);
+            return `❌ There isnt a greeting message set!`;
 
         await context.database.guilds.setGreeting(context.channel.guild.id, {
             ...greeting,
             authorizer: context.author.id
         });
-        return this.success(`The greeting message will now run using your permissions`);
+        return `✅ The greeting message will now run using your permissions`;
     }
 
     public async setChannel(context: GuildCommandContext, channel: KnownChannel): Promise<string> {
         if (!guard.isGuildChannel(channel) || channel.guild !== context.channel.guild)
-            return this.error(`The greeting channel must be on this server!`);
+            return `❌ The greeting channel must be on this server!`;
         if (!guard.isTextableChannel(channel))
-            return this.error(`The greeting channel must be a text channel!`);
+            return `❌ The greeting channel must be a text channel!`;
 
         await context.database.guilds.setSetting(context.channel.guild.id, `greetchan`, channel.id);
-        return this.success(`Greeting messages will now be sent in ${channel.mention}`);
+        return `✅ Greeting messages will now be sent in ${channel.mention}`;
     }
 
     public async debug(context: GuildCommandContext): Promise<string | SendContent> {
         const result = await context.cluster.greetings.greet(context.message.member);
         switch (result) {
-            case `CHANNEL_MISSING`: return this.error(`I wasnt able to locate a channel to sent the message in!`);
-            case `CODE_MISSING`: return this.error(`There isnt a greeting message set!`);
+            case `CHANNEL_MISSING`: return `❌ I wasnt able to locate a channel to sent the message in!`;
+            case `CODE_MISSING`: return `❌ There isnt a greeting message set!`;
             default:
                 await context.sendDM(bbtag.createDebugOutput(result));
-                return this.info(`Ive sent the debug output in a DM`);
+                return `ℹ️ Ive sent the debug output in a DM`;
         }
     }
 }

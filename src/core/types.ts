@@ -1,6 +1,7 @@
+import { IFormatString } from '@blargbot/domain/messages';
 import { Snowflake } from '@blargbot/domain/models';
 import { Logger } from '@blargbot/logger';
-import { AdvancedMessageContent, ChannelInteraction, EmbedField, EmbedOptions, FileContent, Guild, InteractionButton, KnownMessage, KnownTextableChannel, Member, SelectMenuOptions, User, UserChannelInteraction } from 'eris';
+import { ActionRow, AdvancedMessageContent, ChannelInteraction, EmbedAuthor, EmbedField, EmbedFooter, EmbedOptions, FileContent, Guild, InteractionButton, KnownMessage, KnownTextableChannel, Member, SelectMenu, SelectMenuOptions, TextableChannel, URLButton, User, UserChannelInteraction } from 'eris';
 
 import { Binder } from './Binder';
 import { WorkerConnection } from './worker';
@@ -8,16 +9,54 @@ import { WorkerConnection } from './worker';
 export type MalformedEmbed = { fields: [EmbedField]; malformed: true; };
 export type ModuleResult<TModule> = { names: Iterable<string>; module: TModule; };
 export type DMContext = string | KnownMessage | User | Member;
-export type SendContext = UserChannelInteraction | ChannelInteraction | KnownTextableChannel | string
+export type SendContext = TextableChannel | string | User;
 export type SendEmbed = EmbedOptions & { asString?: string; }
 export type SendFiles = FileContent | FileContent[]
 export interface SendContent extends AdvancedMessageContent {
-    nsfw?: string;
-    isHelp?: boolean;
-    replyToExecuting?: boolean;
     files?: FileContent[];
 }
-export type SendPayload = SendContent | EmbedOptions | string | FileContent;
+
+type ExtendProps<T, U extends { [P in keyof T]?: unknown }> = { [P in keyof T]: T[P] | (P extends keyof U ? U[P] : never) }
+export type FormatSendContent = ExtendProps<SendContent, {
+    components: FormatActionRow[];
+    content: IFormatString;
+    embeds: FormatEmbedOptions[];
+}>;
+
+export type FormatActionRow = ExtendProps<ActionRow, {
+    components: FormatActionRowComponents[];
+}>;
+
+export type FormatActionRowComponents = FormatButton | FormatSelectMenu;
+export type FormatButton = FormatInteractionButton | FormatURLButton;
+export type FormatInteractionButton = ExtendProps<InteractionButton, { label: IFormatString; }>;
+export type FormatURLButton = ExtendProps<URLButton, { label: IFormatString; }>;
+export type FormatSelectMenu = ExtendProps<SelectMenu, {
+    placeholder: IFormatString;
+    options: FormatSelectMenuOptions;
+}>;
+export type FormatSelectMenuOptions = ExtendProps<SelectMenuOptions, {
+    description: IFormatString;
+    label: IFormatString;
+}>;
+export type FormatEmbedOptions = ExtendProps<EmbedOptions, {
+    author: FormatEmbedAuthor;
+    description: IFormatString;
+    fields: FormatEmbedField[];
+    footer: FormatEmbedFooter;
+    title: IFormatString;
+}>;
+export type FormatEmbedAuthor = ExtendProps<EmbedAuthor, {
+    name: IFormatString;
+}>;
+export type FormatEmbedField = ExtendProps<EmbedField, {
+    name: IFormatString;
+    value: IFormatString;
+}>;
+export type FormatEmbedFooter = ExtendProps<EmbedFooter, {
+    text: IFormatString;
+}>;
+
 export type LogEntry = { text: string; level: string; timestamp: string; }
 export type ProcessMessage = { type: string; id: Snowflake; data: unknown; };
 export type ProcessMessageContext<TData, TReply> = { data: TData; id: Snowflake; reply: (data: TReply) => void; };
@@ -87,7 +126,7 @@ type ConfirmQueryOptionsFallback<T extends boolean | undefined> = T extends unde
 export interface QueryOptionsBase {
     context: KnownTextableChannel | KnownMessage;
     actors: Iterable<string | User> | string | User;
-    prompt?: string | Omit<SendContent, `components`>;
+    prompt?: IFormatString | Omit<FormatSendContent, `components`>;
     timeout?: number;
 }
 

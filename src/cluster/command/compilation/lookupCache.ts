@@ -125,7 +125,7 @@ function createLookup<K extends keyof CommandVariableTypeMap>(
         let result: CommandBinderParseResult;
         switch (matches.length) {
             case 0:
-                result = { success: false, error: { parseFailed: { attemptedValue: query, types: [type] } } };
+                result = { success: false, error: { parseFailed: { value: query, types: [type] } } };
                 break;
             case 1:
                 result = { success: true, value: createCommandArgument(key, matches[0]) };
@@ -140,7 +140,7 @@ function createLookup<K extends keyof CommandVariableTypeMap>(
 
                         const value = await select(matches, query);
                         const result: CommandBinderParseResult = value === undefined
-                            ? { success: false, error: { parseFailed: { attemptedValue: query, types: [type] } } }
+                            ? { success: false, error: { parseFailed: { value: query, types: [type] } } }
                             : { success: true, value: createCommandArgument(key, value) };
 
                         cache.set(normQuery, result);

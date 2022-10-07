@@ -48,7 +48,7 @@ export class VoteBanCommand extends GuildCommand {
 
         return {
             author: context.util.embedifyAuthor(context.channel.guild),
-            title: this.info(`Top 10 Vote bans`),
+            title: `ℹ️ Top 10 Vote bans`,
             description: entries.length === 0 ? `No petitions have been signed yet!` : entries.join(`\n`)
         };
     }
@@ -60,7 +60,7 @@ export class VoteBanCommand extends GuildCommand {
         return {
             author: context.util.embedifyAuthor(user),
             color: discord.getMemberColor(user),
-            title: this.info(`Vote ban signatures`),
+            title: `ℹ️ Vote ban signatures`,
             description: voteLines.length === 0 ? `No one has voted to ban ${user.mention} yet.`
                 : voteLines.length > 20 ? `${voteLines.slice(0, 15).join(`\n`)}\n... and ${votes.length - 15} more`
                     : voteLines.join(`\n`)
@@ -69,23 +69,23 @@ export class VoteBanCommand extends GuildCommand {
 
     public async sign(context: GuildCommandContext, user: Member, reason: string | undefined): Promise<string> {
         if (await context.database.guilds.hasVoteBanned(context.channel.guild.id, user.id, context.author.id))
-            return this.error(`I know youre eager, but you have already signed the petition to ban ${user.mention}!`);
+            return `❌ I know youre eager, but you have already signed the petition to ban ${user.mention}!`;
 
         const newTotal = await context.database.guilds.addVoteBan(context.channel.guild.id, user.id, context.author.id, reason);
         if (newTotal === false)
-            return this.error(`Seems the petitions office didnt like that one! Please try again`);
+            return `❌ Seems the petitions office didnt like that one! Please try again`;
 
-        return this.success(`${context.author.mention} has signed to ban ${user.mention}! A total of **${newTotal} ${p(newTotal, `person** has`, `people** have`)} signed the petition now.${reason !== undefined ? `\n**Reason**: ${reason}` : ``}`);
+        return `✅ ${context.author.mention} has signed to ban ${user.mention}! A total of **${newTotal} ${p(newTotal, `person** has`, `people** have`)} signed the petition now.${reason !== undefined ? `\n**Reason**: ${reason}` : ``}`;
     }
 
     public async unsign(context: GuildCommandContext, user: Member): Promise<string> {
         if (!await context.database.guilds.hasVoteBanned(context.channel.guild.id, user.id, context.author.id))
-            return this.error(`Thats very kind of you, but you havent even signed to ban ${user.mention} yet!`);
+            return `❌ Thats very kind of you, but you havent even signed to ban ${user.mention} yet!`;
 
         const newTotal = await context.database.guilds.removeVoteBan(context.channel.guild.id, user.id, context.author.id);
         if (newTotal === false)
-            return this.error(`Seems the petitions office didnt like that one! Please try again`);
+            return `❌ Seems the petitions office didnt like that one! Please try again`;
 
-        return this.success(`${context.author.mention} reconsidered and forgiven ${user.mention}! A total of **${newTotal} ${p(newTotal, `person** has`, `people** have`)} signed the petition now.`);
+        return `✅ ${context.author.mention} reconsidered and forgiven ${user.mention}! A total of **${newTotal} ${p(newTotal, `person** has`, `people** have`)} signed the petition now.`;
     }
 }

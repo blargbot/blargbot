@@ -21,7 +21,7 @@ export class DMErrorsCommand extends GlobalCommand {
         await context.database.users.setSetting(context.author.id, `dontdmerrors`, dmErrors !== true);
 
         if (dmErrors === true)
-            return this.success(`I will now DM you if I have an issue running a command.`);
-        return this.success(`I won't DM you if I have an issue running a command.`);
+            return `✅ I will now DM you if I have an issue running a command.`;
+        return `✅ I won't DM you if I have an issue running a command.`;
     }
 }

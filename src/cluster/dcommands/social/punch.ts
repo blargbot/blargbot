@@ -1,13 +1,14 @@
 import { Cluster } from '@blargbot/cluster';
 import { WolkenCommand } from '@blargbot/cluster/command';
 
+import templates from '../../text';
+
 export class PunchCommand extends WolkenCommand {
     public constructor(cluster: Cluster) {
         super(`punch`, {
             search: `punch`,
-            action: `punches`,
             user: true,
-            description: `Punch someone. They probably deserved it.`,
+            ...templates.commands.punch,
             wolkeKey: cluster.config.general.wolke
         });
     }

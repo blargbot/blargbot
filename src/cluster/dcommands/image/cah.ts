@@ -58,7 +58,7 @@ export class CAHCommand extends GlobalImageCommand {
     public listPacks(unofficial: boolean): SendContent {
         const packNames = unofficial ? packs.all : packs.official;
         return {
-            content: this.info(`These are the packs I know about:`),
+            content: `ℹ️ These are the packs I know about:`,
             files: [
                 {
                     file: packNames.join(`\n`),

@@ -31,11 +31,11 @@ export class StupidCommand extends GlobalImageCommand {
 
     public async renderUser(context: CommandContext, text: string, userStr: string): Promise<ImageResult | string> {
         if (!guard.isGuildCommandContext(context))
-            return this.error(`I could not find the user \`${userStr}\``);
+            return `❌ I could not find the user \`${userStr}\``;
 
         const result = await context.queryMember({ filter: userStr });
         if (result.state !== `SUCCESS`)
-            return this.error(`I could not find the user \`${userStr}\``);
+            return `❌ I could not find the user \`${userStr}\``;
         return await this.render(context, text, result.value.user.avatarURL);
     }
 

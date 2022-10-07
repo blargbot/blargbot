@@ -1,12 +1,13 @@
 import { Cluster } from '@blargbot/cluster';
 import { WolkenCommand } from '@blargbot/cluster/command';
 
+import templates from '../../text';
+
 export class DanceCommand extends WolkenCommand {
     public constructor(cluster: Cluster) {
         super(`dance`, {
             search: `dance`,
-            action: `dances`,
-            description: `Break out some sweet, sweet dance moves.`,
+            ...templates.commands.dance,
             wolkeKey: cluster.config.general.wolke
         });
     }

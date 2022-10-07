@@ -37,7 +37,7 @@ export class ReloadCommand extends GlobalCommand {
             await (loader instanceof ModuleLoader ? loader.reload(loader.source(members)) : loader.load(members));
         }
 
-        return this.success(`Successfully reloaded ${count} ${p(count, type)}`);
+        return `✅ Successfully reloaded ${count} ${p(count, type)}`;
     }
 
 }

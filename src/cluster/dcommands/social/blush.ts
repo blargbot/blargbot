@@ -1,12 +1,13 @@
 import { Cluster } from '@blargbot/cluster';
 import { WolkenCommand } from '@blargbot/cluster/command';
 
+import templates from '../../text';
+
 export class BlushCommand extends WolkenCommand {
     public constructor(cluster: Cluster) {
         super(`blush`, {
             search: `blush`,
-            action: `blushes`,
-            description: `Show everyone that you're blushing.`,
+            ...templates.commands.blush,
             wolkeKey: cluster.config.general.wolke
         });
     }

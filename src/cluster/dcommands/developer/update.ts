@@ -21,7 +21,7 @@ export class UpdateCommand extends GlobalCommand {
         const oldCommit = await execCommandline(`git rev-parse HEAD`);
 
         if ((await this.#showCommand(context, `git pull`)).includes(`Already up to date`))
-            return this.success(`No update required!`);
+            return `✅ No update required!`;
 
         try {
             await this.#showCommand(context, `yarn install`);
@@ -29,7 +29,7 @@ export class UpdateCommand extends GlobalCommand {
             context.logger.error(err);
             await this.#showCommand(context, `git reset --hard ${oldCommit}`);
             // Dont need to do yarn install on the old commit as yarn doesnt modify node_modules if it fails
-            return this.error(`Failed to update due to a package issue`);
+            return `❌ Failed to update due to a package issue`;
         }
 
         try {
@@ -39,7 +39,7 @@ export class UpdateCommand extends GlobalCommand {
 
             const version = await context.cluster.version.getVersion();
             const newCommit = await execCommandline(`git rev-parse HEAD`);
-            return this.success(`Updated to version ${version} commit \`${newCommit}\`!\nRun \`${context.prefix}restart\` to gracefully start all the clusters on this new version.`);
+            return `✅ Updated to version ${version} commit \`${newCommit}\`!\nRun \`${context.prefix}restart\` to gracefully start all the clusters on this new version.`;
         } catch (err: unknown) {
             context.logger.error(err);
         }
@@ -49,19 +49,19 @@ export class UpdateCommand extends GlobalCommand {
             await this.#showCommand(context, `git reset --hard ${oldCommit}`);
             await this.#showCommand(context, `yarn install`);
             await this.#showCommand(context, `yarn run rebuild`);
-            return this.error(`Failed to update due to a build issue, but successfully rolled back to commit \`${oldCommit}\``);
+            return `❌ Failed to update due to a build issue, but successfully rolled back to commit \`${oldCommit}\``;
         } catch (err: unknown) {
             context.logger.error(err);
-            return this.error(`A fatal error has occurred while rolling back the latest commit! Manual intervention is required ASAP.`);
+            return `❌ A fatal error has occurred while rolling back the latest commit! Manual intervention is required ASAP.`;
         }
     }
 
     async #showCommand(context: CommandContext, command: string): Promise<string> {
-        const message = await context.reply(this.info(`Command: \`${command}\`\nRunning...`));
+        const message = await context.reply(`ℹ️ Command: \`${command}\`\nRunning...`);
         try {
             await context.channel.sendTyping();
             const result = cleanConsole(await execCommandline(command));
-            const content = this.success(`Command: \`${command}\``);
+            const content = `✅ Command: \`${command}\``;
             const files = result.length === 0 ? [] : [{
                 file: Buffer.from(result),
                 name: `output.txt`
@@ -69,7 +69,7 @@ export class UpdateCommand extends GlobalCommand {
             await (message?.channel.editMessage(message.id, { content, file: files }) ?? context.reply({ content, files }));
             return result;
         } catch (err: unknown) {
-            const content = this.error(`Command: \`${command}\``);
+            const content = `❌ Command: \`${command}\``;
             const result = cleanConsole(err instanceof Error ? err.toString() : Object.prototype.toString.call(err));
             const files = result.length === 0 ? [] : [{
                 file: Buffer.from(result),

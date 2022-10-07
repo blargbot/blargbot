@@ -17,8 +17,7 @@ export class LogCommand extends GuildCommand {
                 },
                 {
                     parameters: `enable {channel:channel} {eventNames[]}`,
-                    description: `Sets the channel to log the given events to. Available events are:\n${
-                        Object.entries(eventDescriptions).map(([key, desc]) => `\`${key}\` - ${desc}`).join(`\n`)}`,
+                    description: `Sets the channel to log the given events to. Available events are:\n${Object.entries(eventDescriptions).map(([key, desc]) => `\`${key}\` - ${desc}`).join(`\n`)}`,
                     execute: (ctx, [channel, eventNames]) => this.setEventChannel(ctx, eventNames.asStrings, channel.asChannel)
                 },
                 {
@@ -33,8 +32,7 @@ export class LogCommand extends GuildCommand {
                 },
                 {
                     parameters: `disable {eventNames[]}`,
-                    description: `Disables logging of the given events. Available events are:\n${
-                        Object.entries(eventDescriptions).map(([key, desc]) => `\`${key}\` - ${desc}`).join(`\n`)}`,
+                    description: `Disables logging of the given events. Available events are:\n${Object.entries(eventDescriptions).map(([key, desc]) => `\`${key}\` - ${desc}`).join(`\n`)}`,
                     execute: (ctx, [eventNames]) => this.setEventChannel(ctx, eventNames.asStrings, undefined)
                 },
                 {
@@ -63,10 +61,10 @@ export class LogCommand extends GuildCommand {
 
     public async setEventChannel(context: GuildCommandContext, eventnames: readonly string[], channel: KnownChannel | undefined): Promise<string> {
         if (channel !== undefined && (!guard.isGuildChannel(channel) || channel.guild !== context.channel.guild))
-            return this.error(`The log channel must be on this server!`);
+            return `❌ The log channel must be on this server!`;
 
         if (channel !== undefined && !guard.isTextableChannel(channel))
-            return this.error(`The log channel must be a text channel!`);
+            return `❌ The log channel must be a text channel!`;
 
         const validEvents: StoredGuildEventLogType[] = [];
         const invalidEvents = [];
@@ -80,8 +78,8 @@ export class LogCommand extends GuildCommand {
 
         switch (invalidEvents.length) {
             case 0: break;
-            case 1: return this.error(`${invalidEvents[0]} is not a valid event`);
-            default: return this.error(`${humanize.smartJoin(invalidEvents, `, `, ` and `)} are not valid events`);
+            case 1: return `❌ ${invalidEvents[0]} is not a valid event`;
+            default: return `❌ ${humanize.smartJoin(invalidEvents, `, `, ` and `)} are not valid events`;
         }
 
         await context.database.guilds.setLogChannel(context.channel.guild.id, validEvents, channel?.id);
@@ -92,8 +90,8 @@ export class LogCommand extends GuildCommand {
         });
 
         if (channel !== undefined)
-            return this.success(`I will now log the following events in ${channel.mention}:\n${eventStrings.join(`\n`)}`);
-        return this.success(`I will no longer log the following events:\n${eventStrings.join(`\n`)}`);
+            return `✅ I will now log the following events in ${channel.mention}:\n${eventStrings.join(`\n`)}`;
+        return `✅ I will no longer log the following events:\n${eventStrings.join(`\n`)}`;
     }
 
     public async listEvents(context: GuildCommandContext): Promise<EmbedOptions> {
@@ -138,8 +136,8 @@ export class LogCommand extends GuildCommand {
 
         const mentions = senders.map(s => `<@${s.id}>`);
         if (ignore)
-            return this.success(`I will now ignore events from ${humanize.smartJoin(mentions, `, `, ` and `)}`);
-        return this.success(`I will no longer ignore events from ${humanize.smartJoin(mentions, `, `, ` and `)}`);
+            return `✅ I will now ignore events from ${humanize.smartJoin(mentions, `, `, ` and `)}`;
+        return `✅ I will no longer ignore events from ${humanize.smartJoin(mentions, `, `, ` and `)}`;
     }
 }
 

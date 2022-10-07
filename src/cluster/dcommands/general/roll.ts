@@ -40,15 +40,15 @@ export class RollCommand extends GlobalCommand {
 
         const match = /^(\d+) ?d ?(\d+)$/.exec(dice);
         if (match === null || match.length !== 3)
-            return this.error(`\`${dice}\` is not a valid dice!`);
+            return `❌ \`${dice}\` is not a valid dice!`;
         const rollCount = parse.int(match[1], { strict: true });
         const faceCount = parse.int(match[2], { strict: true });
 
         if (rollCount === undefined || rollCount < 1 || faceCount === undefined || faceCount < 2)
-            return this.error(`\`${dice}\` is not a valid dice!`);
+            return `❌ \`${dice}\` is not a valid dice!`;
 
         if (rollCount > maxRolls || faceCount > maxFaces)
-            return this.error(`Youre limited to ${maxRolls} of a d${maxFaces}`);
+            return `❌ Youre limited to ${maxRolls} of a d${maxFaces}`;
 
         const rolls = repeat(rollCount, () => randInt(1, faceCount));
         const total = rolls.reduce((p, c) => p + c, 0) + (modifier ?? 0);

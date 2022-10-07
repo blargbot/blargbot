@@ -1,9 +1,9 @@
-import { CommandBinderState, CommandBinderStateFailureReason, CommandGreedyParameter, CommandHandler, CommandLiteralParameter, CommandParameter, CommandSignatureHandler, CommandSingleParameter, CommandVariableTypeName } from '@blargbot/cluster/types';
-import { parse, pluralise as p } from '@blargbot/cluster/utils';
+import { CommandBinderState, CommandBinderStateFailureReason, CommandGreedyParameter, CommandHandler, CommandLiteralParameter, CommandParameter, CommandResult, CommandSignatureHandler, CommandSingleParameter, CommandVariableTypeName } from '@blargbot/cluster/types';
+import { parse } from '@blargbot/cluster/utils';
 import { Binder } from '@blargbot/core/Binder';
 import { Binding } from '@blargbot/core/types';
-import { humanize } from '@blargbot/core/utils';
 
+import templates from '../../text';
 import { CommandContext } from '../CommandContext';
 import { ScopedCommand } from '../ScopedCommand';
 import * as bindings from './binding';
@@ -49,12 +49,12 @@ export function compileHandler<TContext extends CommandContext>(
                     }
 
                     if (reason.parseFailed !== undefined) {
-                        if (failure.parseFailed === undefined || failure.parseFailed.attemptedValue.length < reason.parseFailed.attemptedValue.length) {
+                        if (failure.parseFailed === undefined || failure.parseFailed.value.length < reason.parseFailed.value.length) {
                             failure.parseFailed = {
-                                attemptedValue: reason.parseFailed.attemptedValue,
+                                value: reason.parseFailed.value,
                                 types: [...reason.parseFailed.types]
                             };
-                        } else if (failure.parseFailed.attemptedValue.length === reason.parseFailed.attemptedValue.length) {
+                        } else if (failure.parseFailed.value.length === reason.parseFailed.value.length) {
                             failure.parseFailed.types.push(...reason.parseFailed.types);
                         }
                     }
@@ -97,24 +97,16 @@ interface BindingBuilder<TContext extends CommandContext> {
     add(parameter: CommandParameter | undefined, signature: CommandSignatureHandler<TContext>): void;
 }
 
-function resolveFailure<TContext extends CommandContext>(state: CommandBinderState<TContext>, reason: CommandBinderStateFailureReason, depth: number): string {
-    if (reason.parseFailed !== undefined) {
-        const expectedTypes = humanize.smartJoin(reason.parseFailed.types.map(arg => `\`${arg}\``), `, `, ` or `);
-        return state.command.error(`Invalid arguments! \`${reason.parseFailed.attemptedValue}\` isnt ${expectedTypes}`);
-    }
-
-    if (reason.notEnoughArgs !== undefined && reason.notEnoughArgs.length > 0) {
-        const missingParameters = humanize.smartJoin(reason.notEnoughArgs.map(arg => `\`${arg}\``), `, `, ` or `);
-        return state.command.error(`Not enough arguments! You need to provide ${missingParameters}`);
-    }
-
+function resolveFailure<TContext extends CommandContext>(state: CommandBinderState<TContext>, reason: CommandBinderStateFailureReason, depth: number): CommandResult {
+    if (reason.parseFailed !== undefined)
+        return templates.commands.$errors.arguments.invalid(reason.parseFailed);
+    if (reason.notEnoughArgs !== undefined && reason.notEnoughArgs.length > 0)
+        return templates.commands.$errors.arguments.missing({ missing: reason.notEnoughArgs });
     if (reason.tooManyArgs !== true)
-        return state.command.error(`I couldnt understand those arguments!`);
-
+        return templates.commands.$errors.arguments.unknown;
     if (depth === 0)
-        return state.command.error(`Too many arguments! \`${state.command.name}\` doesnt need any arguments`);
-
-    return state.command.error(`Too many arguments! Expected at most ${depth} ${p(depth, `argument`)}, but you gave ${state.flags._.length}`);
+        return templates.commands.$errors.arguments.noneNeeded({ command: state.command });
+    return templates.commands.$errors.arguments.tooMany({ max: depth, given: state.flags._.length });
 
 }
 

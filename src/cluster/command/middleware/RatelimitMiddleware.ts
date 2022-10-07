@@ -2,6 +2,7 @@ import { CommandResult } from '@blargbot/cluster/types';
 import { IMiddleware, NextMiddleware } from '@blargbot/core/types';
 import moment, { Duration, Moment } from 'moment-timezone';
 
+import templates from '../../text';
 import { CommandContext } from '../CommandContext';
 
 export class RatelimitMiddleware<TContext extends CommandContext> implements IMiddleware<TContext, CommandResult> {
@@ -22,7 +23,7 @@ export class RatelimitMiddleware<TContext extends CommandContext> implements IMi
 
             const duration = moment.duration(lastUsage.timestamp.diff(moment()));
             lastUsage.warned = true;
-            return `❌ Sorry, you ran this command too recently! Please try again in ${Math.ceil(duration.asSeconds())} seconds.`;
+            return templates.commands.$errors.rateLimited.local({ duration });
         }
 
         lastUsage.timestamp = moment().add(99, `years`);

@@ -1,6 +1,7 @@
 import { Configuration } from '@blargbot/config/Configuration';
-import { DMContext, SendContent, SendContext, SendPayload } from '@blargbot/core/types';
+import { DMContext, FormatSendContent, SendContent, SendContext } from '@blargbot/core/types';
 import { Database } from '@blargbot/database';
+import { IFormatString } from '@blargbot/domain/messages/types';
 import { DiscordChannelTag, DiscordRoleTag, DiscordTagSet, DiscordUserTag, StoredUser } from '@blargbot/domain/models';
 import { Logger } from '@blargbot/logger';
 import { Snowflake } from 'catflake';
@@ -85,10 +86,9 @@ export class BaseUtilities {
         return target; // never
     }
 
-    public async send<T extends KnownTextableChannel>(context: T, payload: SendPayload): Promise<Message<T> | undefined>;
-    public async send<T extends KnownTextableChannel>(context: Message<T>, payload: SendPayload): Promise<Message<T> | undefined>;
-    public async send(context: SendContext, payload: SendPayload): Promise<KnownMessage | undefined>;
-    public async send(context: SendContext, payload: SendPayload): Promise<KnownMessage | undefined> {
+    public async send<T extends KnownTextableChannel>(context: T, payload: FormatSendContent | IFormatString): Promise<Message<T> | undefined>;
+    public async send(context: SendContext, payload: FormatSendContent | IFormatString): Promise<KnownMessage | undefined>;
+    public async send(context: SendContext, payload: FormatSendContent | IFormatString): Promise<KnownMessage | undefined> {
         metrics.sendCounter.inc();
 
         let channel = await this.#getSendChannel(context);
@@ -182,43 +182,13 @@ export class BaseUtilities {
                 result += `\nChannel: ${name} (${channel.id})`;
                 result += `\n\nIf you wish to stop seeing these messages, do the command \`dmerrors\`.`;
 
-                await this.sendDM(author.id, {
+                await this.send(author, {
                     content: result,
                     messageReference: payload.messageReference
                 });
             }
             return undefined;
         }
-    }
-
-    public async sendDM(context: DMContext, payload: SendPayload): Promise<KnownMessage | undefined> {
-        let user: User | undefined;
-        switch (typeof context) {
-            case `string`: {
-                user = await this.getUser(context);
-                break;
-            }
-            case `object`: {
-                if (`author` in context) {
-                    user = context.author;
-                    break;
-                }
-                if (`user` in context) {
-                    user = context.user;
-                    break;
-                }
-                if (`id` in context) {
-                    user = context;
-                    break;
-                }
-                break;
-            }
-        }
-
-        if (user === undefined)
-            throw new Error(`Not a user`);
-
-        return await this.send(await user.getDMChannel(), payload);
     }
 
     public async addReactions(context: KnownMessage, reactions: Iterable<Emote>): Promise<{ success: Emote[]; failed: Emote[]; }> {
@@ -814,7 +784,7 @@ export class BaseUtilities {
 
 const sendErrors = {
     [ApiError.UNKNOWN_CHANNEL]: () => { /* console.error('10003: Channel not found. ', channel); */ },
-    [ApiError.CANNOT_SEND_EMPTY_MESSAGE]: (util: BaseUtilities, _: unknown, payload: SendPayload) => { util.logger.error(`50006: Tried to send an empty message:`, payload); },
+    [ApiError.CANNOT_SEND_EMPTY_MESSAGE]: (util: BaseUtilities, _: unknown, payload: SendContent) => { util.logger.error(`50006: Tried to send an empty message:`, payload); },
     [ApiError.CANNOT_MESSAGE_USER]: () => { /* console.error('50007: Can\'t send a message to this user!'); */ },
     [ApiError.CANNOT_SEND_MESSAGES_IN_VOICE_CHANNEL]: () => { /* console.error('50008: Can\'t send messages in a voice channel!'); */ },
     [ApiError.MISSING_PERMISSIONS]: (util: BaseUtilities) => {
@@ -833,12 +803,12 @@ const sendErrors = {
 
     // try to catch the mystery of the autoresponse-object-in-field-value error
     // https://stop-it.get-some.help/9PtuDEm.png
-    [ApiError.INVALID_FORM_BODY]: (util: BaseUtilities, channel: KnownTextableChannel, payload: SendPayload, error: DiscordRESTError) => {
+    [ApiError.INVALID_FORM_BODY]: (util: BaseUtilities, channel: KnownTextableChannel, payload: SendContent, error: DiscordRESTError) => {
         util.logger.error(`${channel.id}|${guard.isGuildChannel(channel) ? channel.name : `PRIVATE CHANNEL`}|${JSON.stringify(payload)}`, error);
     }
 } as const;
 
-function isEmbed(payload: SendPayload): payload is EmbedOptions {
+function isEmbed(payload: SendContent): payload is EmbedOptions {
     return typeof payload !== `string` && embedKeys.some(k => k in payload);
 }
 

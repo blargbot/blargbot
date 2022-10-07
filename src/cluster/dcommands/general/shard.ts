@@ -34,7 +34,7 @@ export class ShardCommand extends GlobalCommand {
 
     public async showGuildShard(context: CommandContext, guildID: string): Promise<string | EmbedOptions> {
         if (!snowflake.test(guildID))
-            return this.error(`\`${guildID}\` is not a valid guildID`);
+            return `❌ \`${guildID}\` is not a valid guildID`;
         const clusterData = await discord.cluster.getGuildClusterStats(context.cluster, guildID);
 
         const isSameGuild = guard.isGuildCommandContext(context) ? context.channel.guild.id === guildID : false;

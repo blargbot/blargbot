@@ -1,9 +1,9 @@
 import { Subtag } from '@blargbot/bbtag';
 import { Command, CommandContext, ScopedCommand } from '@blargbot/cluster/command';
 import { CommandType, ModerationType } from '@blargbot/cluster/utils';
-import { EvalRequest, EvalResult, GlobalEvalResult, IMiddleware, MasterEvalRequest, SendPayload } from '@blargbot/core/types';
+import { EvalRequest, EvalResult, FormatSendContent, GlobalEvalResult, IMiddleware, MasterEvalRequest, SendContent } from '@blargbot/core/types';
+import { IFormatString, IFormatter } from '@blargbot/domain/messages/index';
 import { CommandPermissions, FlagDefinition, FlagResult, GuildSettingDocs, GuildSourceCommandTag, NamedGuildCommandTag } from '@blargbot/domain/models';
-import { ImageResult } from '@blargbot/image/types';
 import { Guild, KnownChannel, KnownGuildTextableChannel, KnownMessage, KnownPrivateChannel, KnownTextableChannel, Member, Role, Shard, User, Webhook } from 'eris';
 import { Duration } from 'moment-timezone';
 import { metric } from 'prom-client';
@@ -91,7 +91,7 @@ export interface CommandOptionsBase {
     readonly aliases?: readonly string[];
     readonly category: CommandType;
     readonly cannotDisable?: boolean;
-    readonly description?: string;
+    readonly description?: IFormatString;
     readonly flags?: readonly FlagDefinition[];
     readonly hidden?: boolean;
 }
@@ -105,8 +105,9 @@ export interface CommandOptions<TContext extends CommandContext> extends Command
 }
 
 export type CommandResult =
-    | ImageResult
-    | SendPayload
+    | IFormatString
+    | FormatSendContent
+    | ((formatter: IFormatter) => string | SendContent)
     | undefined;
 
 export type CommandDefinition<TContext extends CommandContext> =
@@ -120,7 +121,7 @@ export type CommandParameter =
     | CommandLiteralParameter;
 
 export interface CommandHandlerDefinition<TContext extends CommandContext> {
-    readonly description: string;
+    readonly description: IFormatString;
     readonly parameters: string;
     readonly hidden?: boolean;
     readonly execute: (context: TContext, args: readonly CommandArgument[], flags: FlagResult) => Promise<CommandResult> | CommandResult;
@@ -217,7 +218,7 @@ export interface CommandHandler<TContext extends CommandContext> {
 }
 
 export interface CommandSignature<TParameter = CommandParameter> {
-    readonly description: string;
+    readonly description: IFormatString;
     readonly parameters: readonly TParameter[];
     readonly hidden: boolean;
 }
@@ -443,7 +444,7 @@ export interface CommandBinderStateFailureReason {
     notEnoughArgs?: string[];
     tooManyArgs?: boolean;
     parseFailed?: {
-        attemptedValue: string;
+        value: string;
         types: string[];
     };
 }

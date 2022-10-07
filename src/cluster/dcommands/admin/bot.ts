@@ -24,15 +24,15 @@ export class ServerCommand extends GuildCommand {
         if (await context.util.queryConfirm({
             context: context.message,
             actors: context.author,
-            prompt: this.warning(`Are you sure you want to reset the bot to its initial state?
+            prompt: `⚠️ Are you sure you want to reset the bot to its initial state?
 This will:
 - Reset all settings back to their defaults
 - Delete all custom commands, autoresponses, rolemes, censors, etc
-- Delete all tag guild variables`),
+- Delete all tag guild variables`,
             cancel: { style: Constants.ButtonStyles.SECONDARY, label: `No` },
             confirm: { style: Constants.ButtonStyles.DANGER, label: `Yes` }
         }) !== true) {
-            return this.error(`Reset cancelled`);
+            return `❌ Reset cancelled`;
         }
 
         await context.database.guilds.reset(context.channel.guild);
@@ -40,6 +40,6 @@ This will:
         await context.database.tagVariables.clearScope({ type: TagVariableType.TAGGUILD, entityId: context.channel.guild.id });
         await context.database.tagVariables.clearScope({ type: TagVariableType.GUILDLOCAL, entityId: context.channel.guild.id });
 
-        return this.success(`I have been reset back to my initial configuration`);
+        return `✅ I have been reset back to my initial configuration`;
     }
 }

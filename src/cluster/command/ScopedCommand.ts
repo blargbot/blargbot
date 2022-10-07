@@ -4,6 +4,7 @@ import { commandTypeDetails, runMiddleware } from '@blargbot/cluster/utils';
 import { IMiddleware, NextMiddleware } from '@blargbot/core/types';
 import { Guild, KnownTextableChannel, User } from 'eris';
 
+import templates from '../text';
 import { Command } from './Command';
 import { CommandContext } from './CommandContext';
 import { compileSignatures } from './compilation';
@@ -20,7 +21,7 @@ export abstract class ScopedCommand<TContext extends CommandContext> extends Com
             {
                 parameters: `help`,
                 execute: (context) => context.cluster.help.createMessageContent(this.name, context.author, context.channel),
-                description: `Gets the help message for this command`,
+                description: templates.commands.help.forCommand.description,
                 hidden: true
             },
             ...options.definitions

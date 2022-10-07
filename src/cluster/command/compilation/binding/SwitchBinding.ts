@@ -59,7 +59,7 @@ export class SwitchBinding<TContext extends CommandContext> extends CommandBindi
             return this.bindingSuccess(state, nextOptional, 0, undefined);
 
         if (this.expected.length > 0)
-            return this.bindingError(state, { parseFailed: { attemptedValue: arg, types: [...this.expected] } });
+            return this.bindingError(state, { parseFailed: { value: arg, types: [...this.expected] } });
 
         return this.bindingError(state, { tooManyArgs: true });
     }

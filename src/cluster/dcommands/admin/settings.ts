@@ -33,7 +33,7 @@ export class SettingsCommand extends GuildCommand {
     async #list(context: GuildCommandContext): Promise<string | { embeds: [EmbedOptions]; }> {
         const storedGuild = await context.database.guilds.get(context.channel.guild.id);
         if (storedGuild === undefined)
-            return this.error(`Your guild is not correctly configured yet! Please try again later`);
+            return `❌ Your guild is not correctly configured yet! Please try again later`;
 
         const settings = storedGuild.settings;
         const guild = context.channel.guild;
@@ -103,16 +103,16 @@ export class SettingsCommand extends GuildCommand {
     async #set(context: GuildCommandContext, setting: string, value: string | undefined): Promise<string> {
         const key = setting.toLowerCase();
         if (!guard.hasProperty(guildSettings, key))
-            return this.error(`Invalid key!`);
+            return `❌ Invalid key!`;
 
         const parsed = await parse.guildSetting(context, context.util, key, value);
         if (!parsed.success)
-            return this.error(`'${value ?? `\u200b`}' is not a ${guildSettings[key].type}`);
+            return `❌ '${value ?? `\u200b`}' is not a ${guildSettings[key].type}`;
 
         if (!await context.database.guilds.setSetting(context.channel.guild.id, key, parsed.value))
-            return this.error(`${value ?? `\u200b`} is already set for ${key}`);
+            return `❌ ${value ?? `\u200b`} is already set for ${key}`;
 
-        return this.success(`${guildSettings[key].name} is set to ${parsed.display ?? `nothing`}`);
+        return `✅ ${guildSettings[key].name} is set to ${parsed.display ?? `nothing`}`;
     }
 
     #keys(): string {
@@ -123,8 +123,7 @@ export class SettingsCommand extends GuildCommand {
                 message.push(` - **${setting.name}:** \`${setting.key.toUpperCase()}\` (${setting.type})`);
             }
         }
-        return `You can use \`settings set <key> [value]\` to set the following settings. All settings are case insensitive.\n${
-            message.sort().join(`\n`)}`;
+        return `You can use \`settings set <key> [value]\` to set the following settings. All settings are case insensitive.\n${message.sort().join(`\n`)}`;
     }
 }
 

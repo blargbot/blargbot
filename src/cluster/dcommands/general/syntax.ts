@@ -19,7 +19,7 @@ export class SyntaxCommand extends GlobalCommand {
     public getSyntax(context: CommandContext, commandName: string): string {
         const cleanName = commandName.replace(/[\s\n]+/g, ` `);
         const correctTokens = repeat(randInt(1, 10), i => getToken(i));
-        return this.error(`Invalid usage!\nProper usage: \`${context.prefix}syntax ${cleanName} ${correctTokens.join(` `)}\``);
+        return `❌ Invalid usage!\nProper usage: \`${context.prefix}syntax ${cleanName} ${correctTokens.join(` `)}\``;
     }
 }
 

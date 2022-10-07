@@ -48,37 +48,37 @@ export class IntervalCommand extends GuildCommand {
     public async getInfo(context: GuildCommandContext): Promise<string> {
         const interval = await context.database.guilds.getInterval(context.channel.guild.id);
         if (interval === undefined)
-            return this.error(`No interval has been set yet!`);
+            return `❌ No interval has been set yet!`;
 
         const authorizer = interval.authorizer ?? interval.author;
-        return this.info(`The current interval was last edited by <@${interval.author ?? 0}> (${interval.author ?? `????`}) and is authorized by <@${authorizer ?? 0}> (${authorizer ?? `????`})`);
+        return `ℹ️ The current interval was last edited by <@${interval.author ?? 0}> (${interval.author ?? `????`}) and is authorized by <@${authorizer ?? 0}> (${authorizer ?? `????`})`;
     }
 
     public async setInterval(context: GuildCommandContext, code: string): Promise<string> {
         const interval = await context.database.guilds.getInterval(context.channel.guild.id) ?? {};
         await context.database.guilds.setInterval(context.channel.guild.id, { ...interval, content: code, author: context.author.id });
-        return this.success(`The interval has been set`);
+        return `✅ The interval has been set`;
     }
 
     public async deleteInterval(context: GuildCommandContext): Promise<string> {
         const interval = await context.database.guilds.getInterval(context.channel.guild.id);
         if (interval === undefined)
-            return this.error(`There is no interval currently set up!`);
+            return `❌ There is no interval currently set up!`;
 
         await context.database.guilds.setInterval(context.channel.guild.id, undefined);
-        return this.success(`The interval has been deleted`);
+        return `✅ The interval has been deleted`;
     }
 
     public async getRaw(context: GuildCommandContext, fileExtension: string): Promise<string | SendContent> {
         const interval = await context.database.guilds.getInterval(context.channel.guild.id);
         if (interval === undefined)
-            return this.error(`There is no interval currently set up!`);
+            return `❌ There is no interval currently set up!`;
 
-        const response = this.info(`The raw code for the interval is:\n${codeBlock(interval.content)}`);
+        const response = `ℹ️ The raw code for the interval is:\n${codeBlock(interval.content)}`;
         return !interval.content.includes(`\`\`\``) && guard.checkMessageSize(response)
             ? response
             : {
-                content: this.info(`The raw code for the interval is attached`),
+                content: `ℹ️ The raw code for the interval is attached`,
                 files: [
                     {
                         name: `interval.${fileExtension}`,
@@ -91,26 +91,26 @@ export class IntervalCommand extends GuildCommand {
     public async setAuthorizer(context: GuildCommandContext): Promise<string> {
         const interval = await context.database.guilds.getInterval(context.channel.guild.id);
         if (interval === undefined)
-            return this.error(`There is no interval currently set up!`);
+            return `❌ There is no interval currently set up!`;
 
         await context.database.guilds.setInterval(context.channel.guild.id, { ...interval, authorizer: context.author.id });
-        return this.success(`Your permissions will now be used when the interval runs`);
+        return `✅ Your permissions will now be used when the interval runs`;
     }
 
     public async debug(context: GuildCommandContext): Promise<string | SendContent> {
         const interval = await context.database.guilds.getInterval(context.channel.guild.id);
         if (interval === undefined)
-            return this.error(`There is no interval currently set up!`);
+            return `❌ There is no interval currently set up!`;
 
         const result = await context.cluster.intervals.invoke(context.channel.guild, interval);
         switch (result) {
-            case `FAILED`: return this.error(`There was an error while running the interval!`);
-            case `MISSING_AUTHORIZER`: return this.error(`I couldnt find the user who authorizes the interval!`);
-            case `MISSING_CHANNEL`: return this.error(`I wasnt able to figure out which channel to run the interval in!`);
-            case `TOO_LONG`: return this.error(`The interval took longer than the max allowed time (${humanize.duration(context.cluster.intervals.timeLimit)})`);
+            case `FAILED`: return `❌ There was an error while running the interval!`;
+            case `MISSING_AUTHORIZER`: return `❌ I couldnt find the user who authorizes the interval!`;
+            case `MISSING_CHANNEL`: return `❌ I wasnt able to figure out which channel to run the interval in!`;
+            case `TOO_LONG`: return `❌ The interval took longer than the max allowed time (${humanize.duration(context.cluster.intervals.timeLimit)})`;
             default:
                 await context.sendDM(bbtag.createDebugOutput(result));
-                return this.info(`Ive sent the debug output in a DM`);
+                return `ℹ️ Ive sent the debug output in a DM`;
         }
     }
 }

@@ -24,7 +24,7 @@ export class Rule34Command extends GlobalCommand {
 
     public async getRule34(tags: readonly string[]): Promise<string | SendContent> {
         if (tags.length === 0)
-            return this.error(`You need to provide some tags`);
+            return `❌ You need to provide some tags`;
 
         const safeTags = tags
             .filter(t => !/[^a-zA-Z0-9_-]/.test(t))
@@ -32,19 +32,19 @@ export class Rule34Command extends GlobalCommand {
             .map(t => t.toLowerCase());
 
         if (safeTags.length === 0)
-            return this.error(`None of the tags you provided were safe!`);
+            return `❌ None of the tags you provided were safe!`;
 
         const response = await requestXmlSafe(`http://rule34.paheal.net/api/danbooru/find_posts/index.xml?tags=${tags.join(`%20`)}&limit=50`);
         const doc = r34Mapping(response);
         if (!doc.valid)
-            return this.error(`No results were found!`);
+            return `❌ No results were found!`;
 
         const posts = doc.value.posts.tag
             .map(t => t.$)
             .filter(p => p.file_url !== undefined && /\.(gif|jpg|png|jpeg)$/.test(p.file_url));
 
         if (posts.length === 0)
-            return this.error(`No results were found`);
+            return `❌ No results were found`;
 
         shuffle(posts);
 

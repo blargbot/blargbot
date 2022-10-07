@@ -40,12 +40,12 @@ export class ToDoCommand extends GlobalCommand {
 
     public async addItem(context: CommandContext, item: string): Promise<string> {
         await context.database.users.addTodo(context.author.id, item);
-        return this.success(`Done!`);
+        return `✅ Done!`;
     }
 
     public async removeItem(context: CommandContext, index: number): Promise<string> {
         if (!await context.database.users.removeTodo(context.author.id, index - 1))
-            return this.error(`Your todo list doesnt have an item ${index}!`);
-        return this.success(`Done!`);
+            return `❌ Your todo list doesnt have an item ${index}!`;
+        return `✅ Done!`;
     }
 }

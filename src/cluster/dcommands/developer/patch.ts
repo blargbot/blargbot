@@ -24,10 +24,10 @@ export class PatchCommand extends GlobalCommand {
     public async patch(context: CommandContext, features: string | undefined, fixes: string | undefined, notes: string | undefined): Promise<string> {
         const channel = await context.util.getChannel(context.config.discord.channels.changelog);
         if (channel === undefined || !guard.isGuildChannel(channel) || !guard.isTextableChannel(channel))
-            return this.error(`I cant find the changelog channel!`);
+            return `❌ I cant find the changelog channel!`;
 
         if (features === undefined && fixes === undefined && notes === undefined)
-            return this.error(`I cant send out an empty patch note!`);
+            return `❌ I cant send out an empty patch note!`;
 
         const role = await context.util.getRole(channel.guild, context.config.discord.roles.updates);
         const version = await context.cluster.version.getVersion();
@@ -58,7 +58,7 @@ export class PatchCommand extends GlobalCommand {
         });
 
         if (confirmed !== true)
-            return this.info(`Patch cancelled`);
+            return `ℹ️ Patch cancelled`;
 
         const changelog = await context.send(channel, {
             content: role?.mention,
@@ -69,11 +69,11 @@ export class PatchCommand extends GlobalCommand {
         });
 
         if (changelog === undefined)
-            return this.error(`I wasnt able to send the patch notes!`);
+            return `❌ I wasnt able to send the patch notes!`;
 
         if (changelog.channel.type === Constants.ChannelTypes.GUILD_NEWS)
             await changelog.crosspost();
 
-        return this.success(`Done!`);
+        return `✅ Done!`;
     }
 }

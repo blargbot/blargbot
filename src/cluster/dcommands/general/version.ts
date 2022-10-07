@@ -19,6 +19,6 @@ export class VersionCommand extends GlobalCommand {
     public async getVersion(context: CommandContext): Promise<string> {
         const version = await context.cluster.version.getVersion();
 
-        return this.info(`I am running blargbot version ${version}`);
+        return `ℹ️ I am running blargbot version ${version}`;
     }
 }
