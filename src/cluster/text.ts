@@ -1,6 +1,6 @@
 import { IFormatString, IFormatStringDefinition, TranslatableString } from "@blargbot/domain/messages";
 import * as Eris from "eris";
-import { Duration } from "moment-timezone";
+import { Duration, Moment } from "moment-timezone";
 
 import { Command } from "./command/Command";
 import { CommandContext } from "./command/CommandContext";
@@ -170,6 +170,37 @@ export const templates = crunchTree(`cluster`, {
                 success: {
                     id: f(`✅ The next message that you send that triggers autoresponse {id} will send the debug output here`).withArgs<{ id: number; }>(),
                     everything: f(`✅ The next message that you send that triggers the everything autoresponse will send the debug output here`)
+                }
+            }
+        },
+        ban: {
+            flags: {
+                reason: f(`The reason for the (un)ban.`),
+                time: f(`If provided, the user will be unbanned after the period of time. (softban)`)
+            },
+            default: {
+                description: f(`Bans a user, where \`days\` is the number of days to delete messages for.\nIf mod-logging is enabled, the ban will be logged.`),
+                state: {
+                    alreadyBanned: f(`❌ **{user.username}#{user.discriminator}** is already banned!`).withArgs<{ user: Eris.User; }>(),
+                    memberTooHigh: f(`❌ I don't have permission to ban **{user.username}#{user.discriminator}**! Their highest role is above my highest role.`).withArgs<{ user: Eris.User; }>(),
+                    moderatorTooLow: f(`❌ You don't have permission to ban **{user.username}#{user.discriminator}**! Their highest role is above your highest role.`).withArgs<{ user: Eris.User; }>(),
+                    noPerms: f(`❌ I don't have permission to ban **{user.username}#{user.discriminator}**! Make sure I have the \`ban members\` permission and try again.`).withArgs<{ user: Eris.User; }>(),
+                    moderatorNoPerms: f(`❌ You don't have permission to ban **{user.username}#{user.discriminator}**! Make sure you have the \`ban members\` permission or one of the permissions specified in the \`ban override\` setting and try again.`).withArgs<{ user: Eris.User; }>(),
+                    success: f(`✅ **{user.username}#{user.discriminator}** has been banned.`).withArgs<{ user: Eris.User; }>()
+                },
+                unbanSchedule: {
+                    success: f(`✅ **{user.username}#{user.discriminator}** has been banned and will be unbanned in **<t:{unbanAt.unix}:R>**`).withArgs<{ user: Eris.User; unbanAt: Moment; }>(),
+                    invalid: f(`⚠️ **{user.username}#{user.discriminator}** has been banned, but the duration was either 0 seconds or improperly formatted so they won't automatically be unbanned.`).withArgs<{ user: Eris.User; }>()
+                }
+            },
+            clear: {
+                description: f(`Unbans a user.\nIf mod-logging is enabled, the ban will be logged.`),
+                userNotFound: f(`❌ I couldn't find that user!`),
+                state: {
+                    notBanned: f(`❌ **{user.username}#{user.discriminator}** is not currently banned!`).withArgs<{ user: Eris.User; }>(),
+                    noPerms: f(`❌ I don't have permission to unban **{user.username}#{user.discriminator}**! Make sure I have the \`ban members\` permission and try again.`).withArgs<{ user: Eris.User; }>(),
+                    moderatorNoPerms: f(`❌ You don't have permission to unban **{user.username}#{user.discriminator}**! Make sure you have the \`ban members\` permission or one of the permissions specified in the \`ban override\` setting and try again.`).withArgs<{ user: Eris.User; }>(),
+                    success: f(`✅ **{user.username}#{user.discriminator}** has been unbanned.`).withArgs<{ user: Eris.User; }>()
                 }
             }
         },
