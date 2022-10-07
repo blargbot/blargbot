@@ -9,9 +9,9 @@
         "@blargbot/res": "workspace:^",
         "canvas": "^2.10.1",
         "gifencoder": "^2.0.1",
-        "gm": "^1.23.1",
+        "gm": "^1.25.0",
         "node-fetch": "^2.6.7",
-        "sharp": "^0.31.0",
+        "sharp": "^0.31.1",
         "twemoji": "^14.0.2"
     },
     "devDependencies": {
