@@ -32,6 +32,6 @@
         "@types/require-reload": "workspace:^",
         "@types/wolken": "workspace:^",
         "@types/xml2js": "^0.4.11",
-        "discord-api-types": "^0.37.11"
+        "discord-api-types": "^0.37.12"
     }
 }

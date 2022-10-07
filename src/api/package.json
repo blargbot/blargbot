@@ -23,6 +23,6 @@
         "@types/jsonwebtoken": "^8.5.9",
         "@types/node-fetch": "^2.6.2",
         "@types/ws": "^8.5.3",
-        "discord-api-types": "^0.37.11"
+        "discord-api-types": "^0.37.12"
     }
 }
