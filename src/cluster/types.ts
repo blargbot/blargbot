@@ -1,7 +1,7 @@
 import { Subtag } from '@blargbot/bbtag';
 import { Command, CommandContext, ScopedCommand } from '@blargbot/cluster/command';
 import { CommandType, ModerationType } from '@blargbot/cluster/utils';
-import { EvalRequest, EvalResult, FormatAdvancedMessageContent, GlobalEvalResult, IMiddleware, MasterEvalRequest, SendContent } from '@blargbot/core/types';
+import { EvalRequest, EvalResult, GlobalEvalResult, IMiddleware, MasterEvalRequest, SendContent } from '@blargbot/core/types';
 import { IFormattable } from '@blargbot/domain/messages/index';
 import { CommandPermissions, FlagDefinition, FlagResult, GuildSettingDocs, GuildSourceCommandTag, NamedGuildCommandTag } from '@blargbot/domain/models';
 import { Guild, KnownChannel, KnownGuildTextableChannel, KnownMessage, KnownPrivateChannel, KnownTextableChannel, Member, Role, Shard, User, Webhook } from 'eris';
@@ -44,7 +44,7 @@ export interface ICommandDetails extends Required<CommandPermissions> {
     readonly aliases: readonly string[];
     readonly category: string;
     readonly description: string | undefined;
-    readonly flags: readonly FlagDefinition[];
+    readonly flags: ReadonlyArray<FlagDefinition<string | IFormattable<string>>>;
     readonly signatures: readonly CommandSignature[];
 }
 
@@ -92,7 +92,7 @@ export interface CommandOptionsBase {
     readonly category: CommandType;
     readonly cannotDisable?: boolean;
     readonly description?: IFormattable<string>;
-    readonly flags?: readonly FlagDefinition[];
+    readonly flags?: ReadonlyArray<FlagDefinition<IFormattable<string>>>;
     readonly hidden?: boolean;
 }
 

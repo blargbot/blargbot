@@ -1,10 +1,15 @@
 import { GuildCommand } from '@blargbot/cluster/command';
-import { GuildCommandContext } from '@blargbot/cluster/types';
+import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType, ModerationType } from '@blargbot/cluster/utils';
-import { SendContent } from '@blargbot/core/types';
-import { codeBlock, guard } from '@blargbot/core/utils';
+import { guard } from '@blargbot/core/utils';
+import { IFormattable } from '@blargbot/domain/messages/types';
 import { GuildCensor, GuildTriggerTag } from '@blargbot/domain/models';
-import { EmbedOptions, KnownChannel, Role, User } from 'eris';
+import { KnownChannel, Role, User } from 'eris';
+
+import { RawBBTagCommandResult } from '../../command/RawBBTagCommandResult';
+import templates, { t } from '../../text';
+
+const cmd = templates.commands.censor;
 
 export class CensorCommand extends GuildCommand {
     public constructor() {
@@ -14,7 +19,7 @@ export class CensorCommand extends GuildCommand {
             definitions: [
                 {
                     parameters: `add|create {~phrase+}`,
-                    description: `Creates a censor using the given phrase`,
+                    description: cmd.add.description,
                     execute: (ctx, [phrase], flags) => this.createCensor(ctx, phrase.asString, {
                         isRegex: flags.R !== undefined,
                         decancer: flags.D !== undefined,
@@ -24,7 +29,7 @@ export class CensorCommand extends GuildCommand {
                 },
                 {
                     parameters: `edit {id:integer} {~phrase+?}`,
-                    description: `Updates a censor`,
+                    description: cmd.edit.description,
                     execute: (ctx, [id, phrase], flags) => this.updateCensor(ctx, id.asInteger, phrase.asOptionalString, {
                         isRegex: flags.R !== undefined,
                         decancer: flags.D !== undefined,
@@ -34,7 +39,7 @@ export class CensorCommand extends GuildCommand {
                 },
                 {
                     parameters: `delete|remove {id:integer}`,
-                    description: `Deletes a censor`,
+                    description: cmd.delete.description,
                     execute: (ctx, [id]) => this.deleteCensor(ctx, id.asInteger)
                 },
                 {
@@ -42,76 +47,75 @@ export class CensorCommand extends GuildCommand {
                     subcommands: [
                         {
                             parameters: `user {user:user+}`,
-                            description: `Adds or removes a user from the list of users which all censors ignore`,
+                            description: cmd.exception.user.description,
                             execute: (ctx, [action, user]) => this.ignoreUser(ctx, user.asUser, action.asLiteral === `add`)
                         },
                         {
                             parameters: `role {role:role+}`,
-                            description: `Adds or removes a role from the list of roles which all censors ignore`,
+                            description: cmd.exception.role.description,
                             execute: (ctx, [action, role]) => this.ignoreRole(ctx, role.asRole, action.asLiteral === `add`)
                         },
                         {
                             parameters: `channel {channel:channel+}`,
-                            description: `Adds or removes a channel from the list of channels which all censors ignore`,
+                            description: cmd.exception.channel.description,
                             execute: (ctx, [action, channel]) => this.ignoreChannel(ctx, channel.asChannel, action.asLiteral === `add`)
                         }
                     ]
                 },
                 {
                     parameters: `setmessage {id:integer?} {type:literal(delete|timeout|kick|ban)} {~code+?}`,
-                    description: `Sets the message so show when the given censor causes a user to be granted a \`timeout\`, or to be \`kick\`ed or \`ban\`ned, or the message is \`delete\`d\nIf \`id\` is not provided, the message will be the default message that gets shown if one isnt set for the censor that is triggered`,
+                    description: cmd.setMessage.description,
                     execute: (ctx, [id, type, code]) => this.setMessage(ctx, id.asOptionalInteger, type.asLiteral, code.asOptionalString)
                 },
                 {
                     parameters: `setauthorizer {id:integer?} {type:literal(delete|timeout|kick|ban)}`,
-                    description: `Sets the custom censor message to use your permissions when executing.`,
+                    description: cmd.setAuthorizer.description,
                     execute: (ctx, [id, type]) => this.setAuthorizer(ctx, id.asOptionalInteger, type.asLiteral)
                 },
                 {
                     parameters: `rawmessage {id:integer?} {type:literal(delete|timeout|kick|ban)} {fileExtension:literal(bbtag|txt)=bbtag}`,
-                    description: `Gets the raw code for the given censor`,
+                    description: cmd.rawMessage.description,
                     execute: (ctx, [id, type, fileExtension]) => this.getRawMessage(ctx, id.asOptionalInteger, type.asLiteral, fileExtension.asLiteral)
                 },
                 {
                     parameters: `debug {id:integer} {type:literal(delete|timeout|kick|ban)}`,
-                    description: `Sets the censor to send you the debug output when it is next triggered by one of your messages. Make sure you arent exempt from censors!`,
+                    description: cmd.debug.description,
                     execute: (ctx, [id, type]) => this.setDebug(ctx, id.asInteger, type.asLiteral)
                 },
                 {
                     parameters: `list`,
-                    description: `Lists all the details about the censors that are currently set up on this server`,
+                    description: cmd.list.description,
                     execute: (ctx) => this.list(ctx)
                 },
                 {
                     parameters: `info {id:integer}`,
-                    description: `Gets detailed information about the given censor`,
+                    description: cmd.info.description,
                     execute: (ctx, [id]) => this.showInfo(ctx, id.asInteger)
                 }
             ],
             flags: [
-                { flag: `R`, word: `regex`, description: `If specified, parse as /regex/ rather than plaintext. Unsafe and very long (more than 2000 characters) regexes will not parse successfully.` },
-                { flag: `D`, word: `decancer`, description: `If specified, perform the censor check against the decancered version of the message.` },
-                { flag: `w`, word: `weight`, description: `How many incidents the censor is worth.` },
-                { flag: `r`, word: `reason`, description: `A custom modlog reason. NOT BBTag compatible.` }
+                { flag: `R`, word: `regex`, description: cmd.flags.regex },
+                { flag: `D`, word: `decancer`, description: cmd.flags.decancer },
+                { flag: `w`, word: `weight`, description: cmd.flags.weight },
+                { flag: `r`, word: `reason`, description: cmd.flags.reason }
             ]
         });
     }
 
-    public async createCensor(context: GuildCommandContext, phrase: string, options: CensorOptions): Promise<string> {
+    public async createCensor(context: GuildCommandContext, phrase: string, options: CensorOptions): Promise<CommandResult> {
         const censors = await context.database.guilds.getCensors(context.channel.guild.id);
 
         let weight = 1;
         switch (typeof options.weight) {
             case `string`:
                 weight = parseInt(options.weight);
+                if (isNaN(weight))
+                    return cmd.errors.weightNotNumber({ value: options.weight });
                 break;
             case `number`:
                 weight = options.weight;
                 break;
         }
-
-        if (isNaN(weight))
-            return `❌ The censor weight must be a number but \`${options.weight ?? ``}\` is not`;
 
         if (weight < 0)
             weight = 0;
@@ -124,26 +128,25 @@ export class CensorCommand extends GuildCommand {
             weight: weight,
             reason: options.reason
         });
-        return `✅ Censor \`${id}\` has been created`;
+        return cmd.add.success({ id });
     }
 
-    public async updateCensor(context: GuildCommandContext, id: number, phrase: string | undefined, options: CensorOptions): Promise<string> {
+    public async updateCensor(context: GuildCommandContext, id: number, phrase: string | undefined, options: CensorOptions): Promise<CommandResult> {
         const censor = await context.database.guilds.getCensor(context.channel.guild.id, id);
         if (censor === undefined)
-            return `❌ Censor \`${id}\` doesnt exist`;
+            return cmd.errors.doesntExist({ id });
 
         let weight = 1;
         switch (typeof options.weight) {
             case `string`:
                 weight = parseInt(options.weight);
+                if (isNaN(weight))
+                    return cmd.errors.weightNotNumber({ value: options.weight });
                 break;
             case `number`:
                 weight = options.weight;
                 break;
         }
-
-        if (isNaN(weight))
-            return `❌ The censor weight must be a number but \`${options.weight ?? ``}\` is not`;
 
         if (weight < 0)
             weight = 0;
@@ -156,45 +159,45 @@ export class CensorCommand extends GuildCommand {
             decancer: phrase !== undefined ? options.decancer : censor.decancer,
             term: phrase ?? censor.term
         });
-        return `✅ Censor \`${id}\` has been updated`;
+        return cmd.edit.success({ id });
     }
 
-    public async deleteCensor(context: GuildCommandContext, id: number): Promise<string> {
+    public async deleteCensor(context: GuildCommandContext, id: number): Promise<CommandResult> {
         const censor = await context.database.guilds.getCensor(context.channel.guild.id, id);
         if (censor === undefined)
-            return `❌ Censor \`${id}\` doesnt exist`;
+            return cmd.errors.doesntExist({ id });
 
         await context.database.guilds.setCensor(context.channel.guild.id, id, undefined);
-        return `✅ Censor \`${id}\` has been deleted`;
+        return cmd.delete.success({ id });
     }
 
-    public async ignoreUser(context: GuildCommandContext, user: User, ignored: boolean): Promise<string> {
+    public async ignoreUser(context: GuildCommandContext, user: User, ignored: boolean): Promise<CommandResult> {
         await context.database.guilds.censorIgnoreUser(context.channel.guild.id, user.id, ignored);
-        return `✅ ${user.mention} is now exempt from all censors`;
+        return cmd.exception.user.success({ user });
     }
 
-    public async ignoreChannel(context: GuildCommandContext, channel: KnownChannel, ignored: boolean): Promise<string> {
+    public async ignoreChannel(context: GuildCommandContext, channel: KnownChannel, ignored: boolean): Promise<CommandResult> {
         if (!guard.isGuildChannel(channel) || channel.guild !== context.channel.guild)
-            return `❌ The channel must be on this server!`;
+            return cmd.exception.channel.notOnServer;
 
         await context.database.guilds.censorIgnoreChannel(context.channel.guild.id, channel.id, ignored);
-        return `✅ Messages sent in ${channel.mention} are now exempt from all censors`;
+        return cmd.exception.channel.success({ channel });
     }
 
-    public async ignoreRole(context: GuildCommandContext, role: Role, ignored: boolean): Promise<string> {
+    public async ignoreRole(context: GuildCommandContext, role: Role, ignored: boolean): Promise<CommandResult> {
         await context.database.guilds.censorIgnoreRole(context.channel.guild.id, role.id, ignored);
-        return `✅ Anyone with the role ${role.mention} is now exempt from all censors`;
+        return cmd.exception.role.success({ role });
     }
 
-    public async setMessage(context: GuildCommandContext, id: number | undefined, type: string, code: string | undefined): Promise<string> {
+    public async setMessage(context: GuildCommandContext, id: number | undefined, type: string, code: string | undefined): Promise<CommandResult> {
         if (!allowedTypes.has(type))
-            return `❌ \`${type}\` is not a valid type`;
+            return cmd.errors.invalidType({ type });
 
         const rule = await context.database.guilds.getCensorRule(context.channel.guild.id, id, type);
         if (id !== undefined) {
             const censor = await context.database.guilds.getCensor(context.channel.guild.id, id);
             if (censor === undefined)
-                return `❌ Censor \`${id}\` doesnt exist`;
+                return cmd.errors.doesntExist({ id });
         }
 
         await context.database.guilds.setCensorRule(context.channel.guild.id, id, type, code === undefined ? undefined : {
@@ -203,75 +206,54 @@ export class CensorCommand extends GuildCommand {
             author: context.author.id
         });
 
-        return id === undefined
-            ? `✅ The default ${type} message has been set`
-            : `✅ The ${type} message for censor ${id} has been set`;
+        return cmd.setMessage.success[id === undefined ? `default` : `id`]({ type, id: id ?? 0 });
     }
 
-    public async setAuthorizer(context: GuildCommandContext, id: number | undefined, type: string): Promise<string> {
+    public async setAuthorizer(context: GuildCommandContext, id: number | undefined, type: string): Promise<CommandResult> {
         if (!allowedTypes.has(type))
-            return `❌ \`${type}\` is not a valid type`;
+            return cmd.errors.invalidType({ type });
 
         const rule = await context.database.guilds.getCensorRule(context.channel.guild.id, id, type);
-        if (rule === undefined) {
-            return id === undefined
-                ? `❌ A custom default ${type} message has not been set yet`
-                : `❌ A custom ${type} message for censor ${id} has not been set yet`;
-        }
+        if (rule === undefined)
+            return cmd.errors.messageNotSet[id === undefined ? `default` : `id`]({ type, id: id ?? 0 });
 
         await context.database.guilds.setCensorRule(context.channel.guild.id, id, type, {
             ...rule,
             authorizer: context.author.id
         });
 
-        return id === undefined
-            ? `✅ The default ${type} message authorizer has been set`
-            : `✅ The ${type} message authorizer for censor ${id} has been set`;
+        return cmd.setAuthorizer.success[id === undefined ? `default` : `id`]({ type, id: id ?? 0 });
     }
 
-    public async getRawMessage(context: GuildCommandContext, id: number | undefined, type: string, fileExtension: string): Promise<string | SendContent> {
+    public async getRawMessage(context: GuildCommandContext, id: number | undefined, type: string, fileExtension: string): Promise<CommandResult> {
         if (!allowedTypes.has(type))
-            return `❌ \`${type}\` is not a valid type`;
+            return cmd.errors.invalidType({ type });
 
         const rule = await context.database.guilds.getCensorRule(context.channel.guild.id, id, type);
-        if (rule === undefined) {
-            return id === undefined
-                ? `❌ A custom default ${type} message has not been set yet`
-                : `❌ A custom ${type} message for censor ${id} has not been set yet`;
-        }
+        if (rule === undefined)
+            return cmd.errors.messageNotSet[id === undefined ? `default` : `id`]({ type, id: id ?? 0 });
 
-        const message = id === undefined
-            ? `The raw code for the default ${type} message is`
-            : `The raw code for the ${type} message for censor \`${id}\` is`;
-
-        const response = `ℹ️ ${message}:\n${codeBlock(rule.content)}`;
-
-        return !rule.content.includes(`\`\`\``) && guard.checkMessageSize(response)
-            ? response
-            : {
-                content: `ℹ️ ${message} attached`,
-                files: [
-                    {
-                        name: `censor-${type}-${id ?? `default`}.${fileExtension}`,
-                        file: rule.content
-                    }
-                ]
-            };
+        return new RawBBTagCommandResult(
+            cmd.rawMessage.inline[id === undefined ? `default` : `id`]({ type, id: id ?? 0, content: rule.content }),
+            cmd.rawMessage.attached[id === undefined ? `default` : `id`]({ type, id: id ?? 0 }),
+            rule.content,
+            `censor-${type}-${id ?? `default`}.${fileExtension}`
+        );
     }
 
-    public async setDebug(context: GuildCommandContext, id: number, type: string): Promise<string> {
+    public async setDebug(context: GuildCommandContext, id: number, type: string): Promise<CommandResult> {
         if (!allowedTypes.has(type))
-            return `❌ \`${type}\` is not a valid type`;
+            return cmd.errors.invalidType({ type });
 
         const censor = await context.database.guilds.getCensor(context.channel.guild.id, id);
         if (censor === undefined)
-            return `❌ Censor \`${id}\` doesnt exist`;
+            return cmd.errors.doesntExist({ id });
 
         context.cluster.moderation.censors.setDebug(context.channel.guild.id, id, context.author.id, context.channel.id, context.message.id, type);
-        return `✅ The next message that you send that triggers censor \`${id}\` will send the debug output here`;
+        return cmd.debug.success({ id });
     }
 
-    public async list(context: GuildCommandContext): Promise<EmbedOptions> {
+    public async list(context: GuildCommandContext): Promise<CommandResult> {
         const censors = await context.database.guilds.getCensors(context.channel.guild.id) ?? {};
 
         if (censors.list?.[NaN] !== undefined) {
@@ -285,49 +267,90 @@ export class CensorCommand extends GuildCommand {
         const channels = censors.exception?.channel ?? [];
         const description = Object.entries(censors.list ?? {})
             .filter((e): e is [string, GuildCensor] => e[1] !== undefined)
-            .map(([id, censor]) => `**Censor** \`${id}\`${censor.regex ? ` (Regex)` : ``}: ${censor.term}`)
-            .join(`\n`);
+            .map(([id, censor]) => cmd.list.embed.description.censor[censor.regex ? `regex` : `text`]({ id: parseInt(id), term: censor.term }));
 
         return {
-            author: context.util.embedifyAuthor(context.channel.guild),
-            title: `ℹ️ Censors`,
-            description: description.length === 0 ? `No censors configured` : description,
-            fields: [
+            embeds: [
                 {
-                    name: `Excluded users`,
-                    value: users.length === 0 ? `None` : users.map(u => `<@${u}>`).join(` `),
-                    inline: true
-                },
-                {
-                    name: `Excluded roles`,
-                    value: roles.length === 0 ? `None` : roles.map(u => `<@&${u}>`).join(` `),
-                    inline: true
-                },
-                {
-                    name: `Excluded channels`,
-                    value: channels.length === 0 ? `None` : channels.map(u => `<#${u}>`).join(` `),
-                    inline: true
+                    author: context.util.embedifyAuthor(context.channel.guild),
+                    title: cmd.list.embed.title,
+                    description: description.length === 0 ? cmd.list.embed.description.none : cmd.list.embed.description.value({ censors: description }),
+                    fields: [
+                        {
+                            name: cmd.list.embed.field.users.name,
+                            value: users.length === 0
+                                ? cmd.list.embed.field.users.value.none
+                                : cmd.list.embed.field.users.value.some({ users }),
+                            inline: true
+                        },
+                        {
+                            name: cmd.list.embed.field.roles.name,
+                            value: roles.length === 0
+                                ? cmd.list.embed.field.roles.value.none
+                                : cmd.list.embed.field.roles.value.some({ roles }),
+                            inline: true
+                        },
+                        {
+                            name: cmd.list.embed.field.channels.name,
+                            value: channels.length === 0
+                                ? cmd.list.embed.field.channels.value.none
+                                : cmd.list.embed.field.channels.value.some({ channels }),
+                            inline: true
+                        }
+                    ]
                 }
             ]
         };
     }
 
-    public async showInfo(context: GuildCommandContext, id: number): Promise<string | EmbedOptions> {
+    public async showInfo(context: GuildCommandContext, id: number): Promise<CommandResult> {
         const censor = await context.database.guilds.getCensor(context.channel.guild.id, id);
         if (censor === undefined)
-            return `❌ Censor \`${id}\` doesnt exist`;
+            return cmd.errors.doesntExist({ id });
 
         return {
-            author: context.util.embedifyAuthor(context.channel.guild),
-            title: `ℹ️ Censor \`${id}\``,
-            fields: [
-                { name: `Trigger${censor.regex ? ` (Regex)` : ``}`, value: censor.term, inline: false },
-                { name: `Weight`, value: censor.weight.toString(), inline: true },
-                { name: `Reason`, value: censor.reason ?? `Not set`, inline: true },
-                { name: `Delete message`, value: stringifyCensorEvent(censor.deleteMessage), inline: true },
-                { name: `Timeout message`, value: stringifyCensorEvent(censor.timeoutMessage), inline: true },
-                { name: `Kick message`, value: stringifyCensorEvent(censor.kickMessage), inline: true },
-                { name: `Ban message`, value: stringifyCensorEvent(censor.banMessage), inline: true }
+            embeds: [
+                {
+                    author: context.util.embedifyAuthor(context.channel.guild),
+                    title: cmd.info.embed.title({ id }),
+                    fields: [
+                        {
+                            name: cmd.info.embed.field.trigger.name[censor.regex ? `regex` : `text`],
+                            value: t(censor.term),
+                            inline: false
+                        },
+                        {
+                            name: cmd.info.embed.field.weight.name,
+                            value: cmd.info.embed.field.weight.value({ weight: censor.weight }),
+                            inline: true
+                        },
+                        {
+                            name: cmd.info.embed.field.reason.name,
+                            value: cmd.info.embed.field.reason.value({ reason: censor.reason }),
+                            inline: true
+                        },
+                        {
+                            name: cmd.info.embed.field.deleteMessage.name,
+                            value: stringifyCensorEvent(censor.deleteMessage),
+                            inline: true
+                        },
+                        {
+                            name: cmd.info.embed.field.timeoutMessage.name,
+                            value: stringifyCensorEvent(censor.timeoutMessage),
+                            inline: true
+                        },
+                        {
+                            name: cmd.info.embed.field.kickMessage.name,
+                            value: stringifyCensorEvent(censor.kickMessage),
+                            inline: true
+                        },
+                        {
+                            name: cmd.info.embed.field.banMessage.name,
+                            value: stringifyCensorEvent(censor.banMessage),
+                            inline: true
+                        }
+                    ]
+                }
             ]
         };
     }
@@ -340,11 +363,14 @@ interface CensorOptions {
     reason?: string;
 }
 
-function stringifyCensorEvent(event: GuildTriggerTag | undefined): string {
+function stringifyCensorEvent(event: GuildTriggerTag | undefined): IFormattable<string> {
     if (event === undefined)
-        return `Not set`;
+        return cmd.info.messageFieldValue.notSet;
 
-    return `Author: <@${event.author ?? 0}>\nAuthorizer: <@${event.authorizer ?? event.author ?? `????`}>`;
+    return cmd.info.messageFieldValue.set({
+        authorId: event.author ?? `????`,
+        authorizerId: event.authorizer ?? event.author ?? `????`
+    });
 }
 
 const allowedTypes = new Set<ModerationType>([ModerationType.BAN, ModerationType.KICK, ModerationType.TIMEOUT, ModerationType.WARN] as const);

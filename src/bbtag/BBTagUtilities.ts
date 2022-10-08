@@ -22,9 +22,9 @@ export interface InjectionContext {
 export interface BBTagUtilities extends BaseUtilities {
     isUserStaff(member: Member): Promise<boolean>;
 
-    queryMember(options: EntityPickQueryOptions<Member>): Promise<ChoiceQueryResult<Member>>;
-    queryRole(options: EntityPickQueryOptions<Role>): Promise<ChoiceQueryResult<Role>>;
-    queryChannel<T extends KnownChannel>(options: EntityPickQueryOptions<T>): Promise<ChoiceQueryResult<T>>;
+    queryMember(options: EntityPickQueryOptions<string, Member>): Promise<ChoiceQueryResult<Member>>;
+    queryRole(options: EntityPickQueryOptions<string, Role>): Promise<ChoiceQueryResult<Role>>;
+    queryChannel<T extends KnownChannel>(options: EntityPickQueryOptions<string, T>): Promise<ChoiceQueryResult<T>>;
 
     warn(member: Member, moderator: User, count: number, reason?: string): Promise<number>;
     pardon(member: Member, moderator: User, count: number, reason?: string): Promise<number>;

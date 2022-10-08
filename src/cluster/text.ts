@@ -380,6 +380,154 @@ export const templates = crunchTree(`cluster`, {
                 success: f(`✅ The tag \`{tagName}\` by **{author#userTag}** has been imported as \`{commandName}\` and is authorized by **{authorizer#userTag}**`).withArgs<{ tagName: string; commandName: string; author?: UserTag; authorizer?: UserTag; }>()
             }
         },
+        censor: {
+            flags: {
+                regex: f(`If specified, parse as /regex/ rather than plaintext. Unsafe and very long (more than 2000 characters) regexes will not parse successfully.`),
+                decancer: f(`If specified, perform the censor check against the decancered version of the message.`),
+                weight: f(`How many incidents the censor is worth.`),
+                reason: f(`A custom modlog reason. NOT BBTag compatible.`)
+            },
+            errors: {
+                doesntExist: f(`❌ Censor \`{id}\` doesn't exist`).withArgs<{ id: number; }>(),
+                weightNotNumber: f(`❌ The censor weight must be a number but \`{value}\` is not`).withArgs<{ value: string; }>(),
+                invalidType: f(`❌ \`{type}\` is not a valid type`).withArgs<{ type: string; }>(),
+                messageNotSet: {
+                    default: f(`❌ A custom default {type} message has not been set yet`).withArgs<{ type: string; }>(),
+                    id: f(`❌ A custom {type} message for censor {id} has not been set yet`).withArgs<{ type: string; id: number; }>()
+                }
+            },
+            add: {
+                description: f(`Creates a censor using the given phrase`),
+                success: f(`✅ Censor \`{id}\` has been created`).withArgs<{ id: number; }>()
+            },
+            edit: {
+                description: f(`Updates a censor`),
+                success: f(`✅ Censor \`{id}\` has been updated`).withArgs<{ id: number; }>()
+            },
+            delete: {
+                description: f(`Deletes a censor`),
+                success: f(`✅ Censor \`{id}\` has been deleted`).withArgs<{ id: number; }>()
+            },
+            exception: {
+                user: {
+                    description: f(`Adds or removes a user from the list of users which all censors ignore`),
+                    success: f(`✅ {user.mention} is now exempt from all censors`).withArgs<{ user: Eris.User; }>()
+                },
+                role: {
+                    description: f(`Adds or removes a role from the list of roles which all censors ignore`),
+                    success: f(`✅ Anyone with the role {role.mention} is now exempt from all censors`).withArgs<{ role: Eris.Role; }>()
+                },
+                channel: {
+                    description: f(`Adds or removes a channel from the list of channels which all censors ignore`),
+                    notOnServer: f(`❌ The channel must be on this server!`),
+                    success: f(`✅ Messages sent in {channel.mention} are now exempt from all censors`).withArgs<{ channel: Eris.Channel; }>()
+                }
+            },
+            setMessage: {
+                description: f(`Sets the message so show when the given censor causes a user to be granted a \`timeout\`, or to be \`kick\`ed or \`ban\`ned, or the message is \`delete\`d\nIf \`id\` is not provided, the message will be the default message that gets shown if one isnt set for the censor that is triggered`),
+                success: {
+                    default: f(`✅ The default {type} message has been set`).withArgs<{ type: string; }>(),
+                    id: f(`✅ The {type} message for censor {id} has been set`).withArgs<{ type: string; id: number; }>()
+                }
+            },
+            setAuthorizer: {
+                description: f(`Sets the custom censor message to use your permissions when executing.`),
+                success: {
+                    default: f(`✅ The default {type} message authorizer has been set`).withArgs<{ type: string; }>(),
+                    id: f(`✅ The {type} message authorizer for censor {id} has been set`).withArgs<{ type: string; id: number; }>()
+                }
+            },
+            rawMessage: {
+                description: f(`Gets the raw code for the given censor`),
+                inline: {
+                    default: f(`ℹ️ The raw code for the default {type} message is: \`\`\`{content}\`\`\``).withArgs<{ type: string; content: string; }>(),
+                    id: f(`ℹ️ The raw code for the {type} message for censor \`{id}\` is: \`\`\`{content}\`\`\``).withArgs<{ type: string; id: number; content: string; }>()
+                },
+                attached: {
+                    default: f(`ℹ️ The raw code for the default {type} message is attached`).withArgs<{ type: string; }>(),
+                    id: f(`ℹ️ The raw code for the {type} message for censor \`{id}\` is attached`).withArgs<{ type: string; id: number; }>()
+                }
+            },
+            debug: {
+                description: f(`Sets the censor to send you the debug output when it is next triggered by one of your messages. Make sure you arent exempt from censors!`),
+                success: f(`✅ The next message that you send that triggers censor \`{id}\` will send the debug output here`).withArgs<{ id: number; }>()
+            },
+            list: {
+                description: f(`Lists all the details about the censors that are currently set up on this server`),
+                embed: {
+                    title: f(`ℹ️ Censors`),
+                    description: {
+                        value: f(`{censors#join(\n)}`).withArgs<{ censors: Iterable<IFormattable<string>>; }>(),
+                        censor: {
+                            regex: f(`**Censor** \`{id}\` (Regex): {term}`).withArgs<{ id: number; term: string; }>(),
+                            text: f(`**Censor** \`{id}\`: {term}`).withArgs<{ id: number; term: string; }>()
+                        },
+                        none: f(`No censors configured`)
+                    },
+                    field: {
+                        users: {
+                            name: f(`Excluded users`),
+                            value: {
+                                some: f(`{users#map(<@{}>)#join( )}`).withArgs<{ users: Iterable<string>; }>(),
+                                none: f(`None`)
+                            }
+                        },
+                        roles: {
+                            name: f(`Excluded roles`),
+                            value: {
+                                some: f(`{roles#map(<@&{}>)#join( )}`).withArgs<{ roles: Iterable<string>; }>(),
+                                none: f(`None`)
+                            }
+                        },
+                        channels: {
+                            name: f(`Excluded channels`),
+                            value: {
+                                some: f(`{channels#map(<#{}>)#join( )}`).withArgs<{ channels: Iterable<string>; }>(),
+                                none: f(`None`)
+                            }
+                        }
+                    }
+                }
+            },
+            info: {
+                description: f(`Gets detailed information about the given censor`),
+                messageFieldValue: {
+                    notSet: f(`Not set`),
+                    set: f(`Author: <@{authorId}>\nAuthorizer: <@{authorizerId}>`).withArgs<{ authorId: string; authorizerId: string; }>()
+                },
+                embed: {
+                    title: f(`ℹ️ Censor \`{id}\``).withArgs<{ id: number; }>(),
+                    field: {
+                        trigger: {
+                            name: {
+                                regex: f(`Trigger (Regex)`),
+                                text: f(`Trigger`)
+                            }
+                        },
+                        weight: {
+                            name: f(`Weight`),
+                            value: f(`{weight}`).withArgs<{ weight: number; }>()
+                        },
+                        reason: {
+                            name: f(`Reason`),
+                            value: f(`{reason=Not set}`).withArgs<{ reason?: string; }>()
+                        },
+                        deleteMessage: {
+                            name: f(`Delete message`)
+                        },
+                        timeoutMessage: {
+                            name: f(`Timeout message`)
+                        },
+                        kickMessage: {
+                            name: f(`Kick message`)
+                        },
+                        banMessage: {
+                            name: f(`Ban message`)
+                        }
+                    }
+                }
+            }
+        },
         help: {
             forCommand: {
                 description: f(`Gets the help message for this command`)

@@ -14,7 +14,7 @@ export abstract class Command implements CommandBaseOptions, IMiddleware<Command
     public readonly category: CommandType;
     public readonly cannotDisable: boolean;
     public readonly description: IFormattable<string> | undefined;
-    public readonly flags: readonly FlagDefinition[];
+    public readonly flags: ReadonlyArray<FlagDefinition<IFormattable<string>>>;
     public readonly signatures: readonly CommandSignature[];
     public readonly hidden: boolean;
 
