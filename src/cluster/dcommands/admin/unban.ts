@@ -1,5 +1,5 @@
 import { GuildCommand } from '@blargbot/cluster/command';
-import { GuildCommandContext } from '@blargbot/cluster/types';
+import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType, humanize } from '@blargbot/cluster/utils';
 import { FlagResult } from '@blargbot/domain/models';
 
@@ -21,7 +21,7 @@ export class UnbanCommand extends GuildCommand {
         });
     }
 
-    public async unban(context: GuildCommandContext, userId: string, flags: FlagResult): Promise<string> {
+    public async unban(context: GuildCommandContext, userId: string, flags: FlagResult): Promise<CommandResult> {
         const user = await context.util.getUser(userId);
         if (user === undefined)
             return `❌ I couldn't find that user!`;

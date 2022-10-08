@@ -2,6 +2,8 @@ import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType, guard } from '@blargbot/cluster/utils';
 import moment, { Duration } from 'moment-timezone';
 
+import { CommandResult } from '../../types';
+
 export class TimerCommand extends GlobalCommand {
     public constructor() {
         super({
@@ -21,7 +23,7 @@ export class TimerCommand extends GlobalCommand {
         });
     }
 
-    public async addTimer(context: CommandContext, duration: Duration, inChannel: boolean): Promise<string> {
+    public async addTimer(context: CommandContext, duration: Duration, inChannel: boolean): Promise<CommandResult> {
         if (duration.asMilliseconds() <= 0)
             return `❌ I cant set a timer for 0 seconds!`;
 

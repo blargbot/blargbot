@@ -1,5 +1,5 @@
 import { GuildCommand } from '@blargbot/cluster/command';
-import { GuildCommandContext } from '@blargbot/cluster/types';
+import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType } from '@blargbot/cluster/utils';
 
 export class PrefixCommand extends GuildCommand {
@@ -27,7 +27,7 @@ export class PrefixCommand extends GuildCommand {
         });
     }
 
-    public async listPrefixes(context: GuildCommandContext): Promise<string> {
+    public async listPrefixes(context: GuildCommandContext): Promise<CommandResult> {
         let prefixes = await context.database.guilds.getSetting(context.channel.guild.id, `prefix`);
         if (typeof prefixes === `string`)
             prefixes = [prefixes];
@@ -37,7 +37,7 @@ export class PrefixCommand extends GuildCommand {
         return `ℹ️ ${context.channel.guild.name} has the following prefixes:\n${prefixes.map(p => ` - ${p}`).join(`\n`)}`;
     }
 
-    public async addPrefix(context: GuildCommandContext, prefix: string): Promise<string> {
+    public async addPrefix(context: GuildCommandContext, prefix: string): Promise<CommandResult> {
         let prefixes = await context.database.guilds.getSetting(context.channel.guild.id, `prefix`);
         switch (typeof prefixes) {
             case `undefined`:
@@ -55,7 +55,7 @@ export class PrefixCommand extends GuildCommand {
         return `✅ The prefix has been added!`;
     }
 
-    public async removePrefix(context: GuildCommandContext, prefix: string): Promise<string> {
+    public async removePrefix(context: GuildCommandContext, prefix: string): Promise<CommandResult> {
         let prefixes = await context.database.guilds.getSetting(context.channel.guild.id, `prefix`);
         switch (typeof prefixes) {
             case `undefined`:

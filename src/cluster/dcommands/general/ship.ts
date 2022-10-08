@@ -2,6 +2,8 @@ import { GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType, randInt } from '@blargbot/cluster/utils';
 import { User } from 'eris';
 
+import { CommandResult } from '../../types';
+
 export class ShipCommand extends GlobalCommand {
     public constructor() {
         super({
@@ -17,7 +19,7 @@ export class ShipCommand extends GlobalCommand {
         });
     }
 
-    public getShipName(user1: User, user2: User): string {
+    public getShipName(user1: User, user2: User): CommandResult {
         const order = randInt(0, 1);
         const first = [user1, user2][order];
         const second = [user1, user2][1 - order];

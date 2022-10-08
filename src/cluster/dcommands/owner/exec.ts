@@ -2,6 +2,8 @@ import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { codeBlock, CommandType } from '@blargbot/cluster/utils';
 import { exec } from 'child_process';
 
+import { CommandResult } from '../../types';
+
 export class ExecCommand extends GlobalCommand {
     public constructor() {
         super({
@@ -17,7 +19,7 @@ export class ExecCommand extends GlobalCommand {
         });
     }
 
-    public async commandLine(context: CommandContext, command: string): Promise<string | undefined> {
+    public async commandLine(context: CommandContext, command: string): Promise<CommandResult> {
         if (/pm2 (restart|reload|start)/i.test(command))
             return `❌ No! That's dangerous! Do \`b!restart\` instead.\n\nIt's not that I don't trust you, it's just...\n\nI don't trust you.`;
 

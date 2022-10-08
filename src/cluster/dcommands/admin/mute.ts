@@ -1,5 +1,5 @@
 import { GuildCommand } from '@blargbot/cluster/command';
-import { GuildCommandContext } from '@blargbot/cluster/types';
+import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType, humanize, parse } from '@blargbot/cluster/utils';
 import { FlagResult } from '@blargbot/domain/models';
 import { Member } from 'eris';
@@ -34,7 +34,7 @@ export class MuteCommand extends GuildCommand {
         });
     }
 
-    public async unmute(context: GuildCommandContext, member: Member, flags: FlagResult): Promise<string> {
+    public async unmute(context: GuildCommandContext, member: Member, flags: FlagResult): Promise<CommandResult> {
         const reason = flags.r?.merge().value;
 
         switch (await context.cluster.moderation.mutes.unmute(member, context.author, reason)) {
@@ -47,7 +47,7 @@ export class MuteCommand extends GuildCommand {
         }
     }
 
-    public async mute(context: GuildCommandContext, member: Member, flags: FlagResult): Promise<string> {
+    public async mute(context: GuildCommandContext, member: Member, flags: FlagResult): Promise<CommandResult> {
         const muteAvailable = await this.#checkMuteAvailable(context);
         if (muteAvailable !== true)
             return muteAvailable;
@@ -72,7 +72,7 @@ export class MuteCommand extends GuildCommand {
         }
     }
 
-    async #checkMuteAvailable(context: GuildCommandContext): Promise<string | true> {
+    async #checkMuteAvailable(context: GuildCommandContext): Promise<CommandResult | true> {
         switch (await context.cluster.moderation.mutes.ensureMutedRole(context.channel.guild)) {
             case `noPerms`: return `❌ I don't have enough permissions to create a \`muted\` role! Make sure I have the \`manage roles\` permission and try again.`;
             case `unconfigured`: return `❌ I created a \`muted\` role, but don't have permissions to configure it! Either configure it yourself, or make sure I have the \`manage channel\` permission, delete the \`muted\` role, and try again.`;

@@ -1,7 +1,9 @@
 import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { avatarColours, CommandType, humanize, randChoose } from '@blargbot/cluster/utils';
-import eris, { EmbedOptions } from 'eris';
+import eris from 'eris';
 import moment from 'moment-timezone';
+
+import { CommandResult } from '../../types';
 
 export class StatsCommand extends GlobalCommand {
     public constructor() {
@@ -18,7 +20,7 @@ export class StatsCommand extends GlobalCommand {
         });
     }
 
-    public async getStats(context: CommandContext): Promise<EmbedOptions> {
+    public async getStats(context: CommandContext): Promise<CommandResult> {
         const clusterStats = Object.values(await context.cluster.worker.request(`getClusterStats`, undefined));
         const mappedStats = { guilds: 0, users: 0, channels: 0, rss: 0 };
         clusterStats.forEach(c => {

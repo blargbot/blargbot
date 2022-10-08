@@ -1,6 +1,8 @@
 import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType, randInt } from '@blargbot/cluster/utils';
 
+import { CommandResult } from '../../types';
+
 export class PingCommand extends GlobalCommand {
     public constructor() {
         super({
@@ -17,7 +19,7 @@ export class PingCommand extends GlobalCommand {
         });
     }
 
-    public async ping(context: CommandContext): Promise<undefined> {
+    public async ping(context: CommandContext): Promise<CommandResult> {
         const content = messages[randInt(0, messages.length - 1)];
         const message = await context.reply(`ℹ️ ${content}`);
         await message?.edit(`✅ Pong! (${message.createdAt - context.timestamp}ms)`);

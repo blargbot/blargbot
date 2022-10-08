@@ -1,5 +1,5 @@
 import { GuildCommand } from '@blargbot/cluster/command';
-import { GuildCommandContext } from '@blargbot/cluster/types';
+import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType, discord, pluralise as p } from '@blargbot/cluster/utils';
 import { guard } from '@blargbot/core/utils';
 import { EmbedOptions, Member } from 'eris';
@@ -36,7 +36,7 @@ export class VoteBanCommand extends GuildCommand {
         });
     }
 
-    public async getTop(context: GuildCommandContext): Promise<EmbedOptions> {
+    public async getTop(context: GuildCommandContext): Promise<CommandResult> {
         const votebans = await context.database.guilds.getVoteBans(context.channel.guild.id);
 
         const entries = votebans === undefined ? [] : Object.entries(votebans)
@@ -53,7 +53,7 @@ export class VoteBanCommand extends GuildCommand {
         };
     }
 
-    public async getVotes(context: GuildCommandContext, user: Member): Promise<EmbedOptions> {
+    public async getVotes(context: GuildCommandContext, user: Member): Promise<CommandResult> {
         const votes = await context.database.guilds.getVoteBans(context.channel.guild.id, user.id) ?? [];
         const voteLines = votes.map(v => guard.hasValue(v.reason) ? `<@${v.id}> - ${v.reason}` : `<@${v.id}>`);
 
@@ -67,7 +67,7 @@ export class VoteBanCommand extends GuildCommand {
         };
     }
 
-    public async sign(context: GuildCommandContext, user: Member, reason: string | undefined): Promise<string> {
+    public async sign(context: GuildCommandContext, user: Member, reason: string | undefined): Promise<CommandResult> {
         if (await context.database.guilds.hasVoteBanned(context.channel.guild.id, user.id, context.author.id))
             return `❌ I know youre eager, but you have already signed the petition to ban ${user.mention}!`;
 
@@ -78,7 +78,7 @@ export class VoteBanCommand extends GuildCommand {
         return `✅ ${context.author.mention} has signed to ban ${user.mention}! A total of **${newTotal} ${p(newTotal, `person** has`, `people** have`)} signed the petition now.${reason !== undefined ? `\n**Reason**: ${reason}` : ``}`;
     }
 
-    public async unsign(context: GuildCommandContext, user: Member): Promise<string> {
+    public async unsign(context: GuildCommandContext, user: Member): Promise<CommandResult> {
         if (!await context.database.guilds.hasVoteBanned(context.channel.guild.id, user.id, context.author.id))
             return `❌ Thats very kind of you, but you havent even signed to ban ${user.mention} yet!`;
 

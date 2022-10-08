@@ -4,6 +4,8 @@ import { humanize } from '@blargbot/core/utils';
 import { EmbedOptions } from 'eris';
 import moment from 'moment-timezone';
 
+import { CommandResult } from '../../types';
+
 const year = [undefined, `year`, `years`];
 const month = [undefined, `month`, `months`];
 const day = [undefined, `day`, `days`];
@@ -25,7 +27,7 @@ export class InfoCommand extends GlobalCommand {
             ]
         });
     }
-    public showInfo(context: CommandContext): EmbedOptions | string {
+    public showInfo(context: CommandContext): CommandResult {
         if (context.cluster.contributors.patrons.length === 0)
             return `⚠️ Im still waking up! Try again in a minute or two`;
 

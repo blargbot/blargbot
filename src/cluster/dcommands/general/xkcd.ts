@@ -4,6 +4,8 @@ import { mapping } from '@blargbot/mapping';
 import { EmbedOptions } from 'eris';
 import fetch from 'node-fetch';
 
+import { CommandResult } from '../../types';
+
 export class XKCDCommand extends GlobalCommand {
     public constructor() {
         super({
@@ -19,7 +21,7 @@ export class XKCDCommand extends GlobalCommand {
         });
     }
 
-    public async getComic(context: CommandContext, comicNumber: number | undefined): Promise<string | EmbedOptions> {
+    public async getComic(context: CommandContext, comicNumber: number | undefined): Promise<CommandResult> {
         if (comicNumber === undefined) {
             const comic = await this.#requestComic(undefined);
             if (comic === undefined)

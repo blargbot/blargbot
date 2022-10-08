@@ -1,6 +1,7 @@
 import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType } from '@blargbot/cluster/utils';
-import { EmbedOptions } from 'eris';
+
+import { CommandResult } from '../../types';
 
 export class ToDoCommand extends GlobalCommand {
     public constructor() {
@@ -27,7 +28,7 @@ export class ToDoCommand extends GlobalCommand {
         });
     }
 
-    public async viewTodo(context: CommandContext): Promise<EmbedOptions> {
+    public async viewTodo(context: CommandContext): Promise<CommandResult> {
         const todolist = await context.database.users.getTodo(context.author.id);
         return {
             author: context.util.embedifyAuthor(context.author),
@@ -38,12 +39,12 @@ export class ToDoCommand extends GlobalCommand {
         };
     }
 
-    public async addItem(context: CommandContext, item: string): Promise<string> {
+    public async addItem(context: CommandContext, item: string): Promise<CommandResult> {
         await context.database.users.addTodo(context.author.id, item);
         return `✅ Done!`;
     }
 
-    public async removeItem(context: CommandContext, index: number): Promise<string> {
+    public async removeItem(context: CommandContext, index: number): Promise<CommandResult> {
         if (!await context.database.users.removeTodo(context.author.id, index - 1))
             return `❌ Your todo list doesnt have an item ${index}!`;
         return `✅ Done!`;

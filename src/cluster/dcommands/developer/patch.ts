@@ -2,6 +2,8 @@ import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType, guard } from '@blargbot/cluster/utils';
 import { Constants, EmbedField, EmbedOptions } from 'eris';
 
+import { CommandResult } from '../../types';
+
 export class PatchCommand extends GlobalCommand {
     public constructor() {
         super({
@@ -21,7 +23,7 @@ export class PatchCommand extends GlobalCommand {
         });
     }
 
-    public async patch(context: CommandContext, features: string | undefined, fixes: string | undefined, notes: string | undefined): Promise<string> {
+    public async patch(context: CommandContext, features: string | undefined, fixes: string | undefined, notes: string | undefined): Promise<CommandResult> {
         const channel = await context.util.getChannel(context.config.discord.channels.changelog);
         if (channel === undefined || !guard.isGuildChannel(channel) || !guard.isTextableChannel(channel))
             return `❌ I cant find the changelog channel!`;

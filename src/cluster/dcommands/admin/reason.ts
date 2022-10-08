@@ -1,5 +1,5 @@
 import { GuildCommand } from '@blargbot/cluster/command';
-import { GuildCommandContext } from '@blargbot/cluster/types';
+import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType } from '@blargbot/cluster/utils';
 
 export class ReasonCommand extends GuildCommand {
@@ -17,7 +17,7 @@ export class ReasonCommand extends GuildCommand {
         });
     }
 
-    public async setReason(context: GuildCommandContext, caseId: number | undefined, reason: string): Promise<string> {
+    public async setReason(context: GuildCommandContext, caseId: number | undefined, reason: string): Promise<CommandResult> {
         switch (await context.cluster.moderation.modLog.updateReason(context.channel.guild, caseId, context.author, reason)) {
             case `MISSING_CASE`:
                 if (caseId === undefined)

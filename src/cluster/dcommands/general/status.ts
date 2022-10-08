@@ -1,7 +1,8 @@
 import { GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType, randChoose } from '@blargbot/cluster/utils';
-import { FileContent } from 'eris';
 import fetch from 'node-fetch';
+
+import { CommandResult } from '../../types';
 
 export class StatusCommand extends GlobalCommand {
     public constructor() {
@@ -18,7 +19,7 @@ export class StatusCommand extends GlobalCommand {
         });
     }
 
-    public async getStatus(status: number, animal: string | undefined): Promise<string | FileContent> {
+    public async getStatus(status: number, animal: string | undefined): Promise<CommandResult> {
         animal = animal?.toLowerCase();
         const service = statusKeys.has(animal) ? statusSites[animal] : randChoose(Object.values(statusSites));
         const response = await fetch(`${service}${status}.jpg`);

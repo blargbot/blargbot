@@ -5,6 +5,8 @@ import { humanize, parse } from '@blargbot/core/utils';
 import { ImageFormat, User } from 'eris';
 import fetch from 'node-fetch';
 
+import { CommandResult } from '../../types';
+
 export class AvatarCommand extends GlobalCommand {
     public constructor() {
         super({
@@ -31,7 +33,7 @@ export class AvatarCommand extends GlobalCommand {
         this.middleware.push(new SendTypingMiddleware());
     }
 
-    public async getAvatar(user: User, format: string | undefined, size: string | number | undefined): Promise<SendContent> {
+    public async getAvatar(user: User, format: string | undefined, size: string | number | undefined): Promise<CommandResult> {
         if (format !== undefined && !allowedFormats.includes(format))
             return `❌ ${format} is not a valid format! Supported formats are ${humanize.smartJoin(allowedFormats, `, `, ` and `)}`;
 

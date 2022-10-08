@@ -1,9 +1,9 @@
 import { GuildCommand } from '@blargbot/cluster/command';
-import { GuildCommandContext, ICommand } from '@blargbot/cluster/types';
+import { CommandResult, GuildCommandContext, ICommand } from '@blargbot/cluster/types';
 import { codeBlock, CommandType } from '@blargbot/cluster/utils';
 import { guard } from '@blargbot/core/utils';
 import { CommandPermissions } from '@blargbot/domain/models';
-import { EmbedOptions, Role } from 'eris';
+import { Role } from 'eris';
 
 export class EditCommandCommand extends GuildCommand {
     public constructor() {
@@ -51,7 +51,7 @@ export class EditCommandCommand extends GuildCommand {
         });
     }
 
-    public async list(context: GuildCommandContext): Promise<string | EmbedOptions> {
+    public async list(context: GuildCommandContext): Promise<CommandResult> {
         const lines = [];
         const commandNames = new Set<string>();
         const defaultPerms = new Map<unknown, string>();
@@ -105,7 +105,7 @@ export class EditCommandCommand extends GuildCommand {
         };
     }
 
-    public async setRole(context: GuildCommandContext, commands: readonly string[], roles: readonly Role[] | undefined): Promise<string> {
+    public async setRole(context: GuildCommandContext, commands: readonly string[], roles: readonly Role[] | undefined): Promise<CommandResult> {
         if (roles?.length === 0)
             roles = undefined;
 
@@ -116,7 +116,7 @@ export class EditCommandCommand extends GuildCommand {
         return `✅ Set the role requirement for the following commands:\n${codeBlock(updatedCommands, `fix`)}`;
     }
 
-    public async setPermissions(context: GuildCommandContext, commands: readonly string[], permissions: bigint | undefined): Promise<string> {
+    public async setPermissions(context: GuildCommandContext, commands: readonly string[], permissions: bigint | undefined): Promise<CommandResult> {
         const updatedCommands = await this.#editCommands(context, commands, { permission: permissions?.toString() });
 
         if (permissions === undefined)
@@ -124,7 +124,7 @@ export class EditCommandCommand extends GuildCommand {
         return `✅ Set the permissions for the following commands:\n${codeBlock(updatedCommands, `fix`)}`;
     }
 
-    public async setDisabled(context: GuildCommandContext, commands: readonly string[], disabled: boolean): Promise<string> {
+    public async setDisabled(context: GuildCommandContext, commands: readonly string[], disabled: boolean): Promise<CommandResult> {
         const updatedCommands = await this.#editCommands(context, commands, { disabled: disabled ? true : undefined });
 
         if (!disabled)
@@ -132,7 +132,7 @@ export class EditCommandCommand extends GuildCommand {
         return `✅ Disabled the following commands:\n${codeBlock(updatedCommands, `fix`)}`;
     }
 
-    public async setHidden(context: GuildCommandContext, commands: readonly string[], hidden: boolean): Promise<string> {
+    public async setHidden(context: GuildCommandContext, commands: readonly string[], hidden: boolean): Promise<CommandResult> {
         const updatedCommands = await this.#editCommands(context, commands, { hidden: hidden ? true : undefined });
 
         if (!hidden)
@@ -140,7 +140,7 @@ export class EditCommandCommand extends GuildCommand {
         return `✅ The following commands are now hidden:\n${codeBlock(updatedCommands, `fix`)}`;
     }
 
-    async #editCommands(context: GuildCommandContext, commands: readonly string[], update: Partial<CommandPermissions>): Promise<string> {
+    async #editCommands(context: GuildCommandContext, commands: readonly string[], update: Partial<CommandPermissions>): Promise<CommandResult> {
         const changed = await context.cluster.commands.configure(context.author, commands, context.channel.guild, update);
         return changed.join(`, `);
     }

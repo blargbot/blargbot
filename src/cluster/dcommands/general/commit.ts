@@ -4,6 +4,8 @@ import { mapping } from '@blargbot/mapping';
 import { EmbedOptions } from 'eris';
 import fetch, { Response } from 'node-fetch';
 
+import { CommandResult } from '../../types';
+
 export class CommitCommand extends GlobalCommand {
     public constructor() {
         super({
@@ -19,7 +21,7 @@ export class CommitCommand extends GlobalCommand {
         });
     }
 
-    public async getCommit(commitNumber: number | undefined): Promise<EmbedOptions | string> {
+    public async getCommit(commitNumber: number | undefined): Promise<CommandResult> {
         const commitCount = await this.#fetchCommitCount();
         if (commitCount === 0)
             return `❌ I cant find any commits at the moment, please try again later!`;

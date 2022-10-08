@@ -1,10 +1,11 @@
 import { GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType, shuffle } from '@blargbot/cluster/utils';
-import { SendContent } from '@blargbot/core/types';
 import { humanize } from '@blargbot/core/utils';
 import { mapping } from '@blargbot/mapping';
 import fetch from 'node-fetch';
 import xml2js from 'xml2js';
+
+import { CommandResult } from '../../types';
 
 export class Rule34Command extends GlobalCommand {
     public constructor() {
@@ -22,7 +23,7 @@ export class Rule34Command extends GlobalCommand {
         });
     }
 
-    public async getRule34(tags: readonly string[]): Promise<string | SendContent> {
+    public async getRule34(tags: readonly string[]): Promise<CommandResult> {
         if (tags.length === 0)
             return `❌ You need to provide some tags`;
 

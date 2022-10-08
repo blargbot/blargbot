@@ -1,6 +1,8 @@
 import { GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType, randInt } from '@blargbot/cluster/utils';
 
+import { CommandResult } from '../../types';
+
 export class TokenifyCommand extends GlobalCommand {
     public constructor() {
         super({
@@ -16,7 +18,7 @@ export class TokenifyCommand extends GlobalCommand {
         });
     }
 
-    public tokenify(input: string): string {
+    public tokenify(input: string): CommandResult {
         const pasta = input.replace(/[^0-9a-z]/gi, ``).toLowerCase();
         const newPasta = [];
 

@@ -1,10 +1,10 @@
 import { ClusterUtilities } from '@blargbot/cluster';
 import { CommandContext, GlobalImageCommand } from '@blargbot/cluster/command';
 import { CommandType, commandTypeDetails, guard, randChoose } from '@blargbot/cluster/utils';
-import { SendContent } from '@blargbot/core/types';
-import { ImageResult } from '@blargbot/image/types';
 import cahData from '@blargbot/res/cah.json';
 import { Guild, KnownTextableChannel, User } from 'eris';
+
+import { CommandResult } from '../../types';
 
 export class CAHCommand extends GlobalImageCommand {
     public constructor() {
@@ -42,7 +42,7 @@ export class CAHCommand extends GlobalImageCommand {
         return await commandTypeDetails[CommandType.NSFW].isVisible(util, location, user);
     }
 
-    public async render(context: CommandContext, unofficial: boolean): Promise<string | ImageResult> {
+    public async render(context: CommandContext, unofficial: boolean): Promise<CommandResult> {
         const cardIds = unofficial ? packLookup.all : packLookup.official;
         const black = cahData.black[randChoose(cardIds.black)];
 
@@ -55,7 +55,7 @@ export class CAHCommand extends GlobalImageCommand {
         return await this.renderImage(context, `cah`, { black: black.text.replaceAll(`_`, `______`), white: white });
     }
 
-    public listPacks(unofficial: boolean): SendContent {
+    public listPacks(unofficial: boolean): CommandResult {
         const packNames = unofficial ? packs.all : packs.official;
         return {
             content: `ℹ️ These are the packs I know about:`,

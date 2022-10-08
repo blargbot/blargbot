@@ -1,7 +1,6 @@
 import { GuildCommand } from '@blargbot/cluster/command';
-import { GuildCommandContext } from '@blargbot/cluster/types';
+import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType } from '@blargbot/cluster/utils';
-import { EmbedOptions } from 'eris';
 
 export class RolesCommand extends GuildCommand {
     public constructor() {
@@ -18,7 +17,7 @@ export class RolesCommand extends GuildCommand {
         });
     }
 
-    public showRoles(context: GuildCommandContext): EmbedOptions {
+    public showRoles(context: GuildCommandContext): CommandResult {
         return {
             author: context.util.embedifyAuthor(context.channel.guild),
             title: `Roles`,

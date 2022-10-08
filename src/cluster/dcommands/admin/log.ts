@@ -1,8 +1,8 @@
 import { GuildCommand } from '@blargbot/cluster/command';
-import { GuildCommandContext } from '@blargbot/cluster/types';
+import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType, guard, humanize } from '@blargbot/cluster/utils';
 import { StoredGuildEventLogType } from '@blargbot/domain/models';
-import { EmbedField, EmbedOptions, KnownChannel, Role, User, Webhook } from 'eris';
+import { EmbedField, KnownChannel, Role, User, Webhook } from 'eris';
 
 export class LogCommand extends GuildCommand {
     public constructor() {
@@ -59,7 +59,7 @@ export class LogCommand extends GuildCommand {
         });
     }
 
-    public async setEventChannel(context: GuildCommandContext, eventnames: readonly string[], channel: KnownChannel | undefined): Promise<string> {
+    public async setEventChannel(context: GuildCommandContext, eventnames: readonly string[], channel: KnownChannel | undefined): Promise<CommandResult> {
         if (channel !== undefined && (!guard.isGuildChannel(channel) || channel.guild !== context.channel.guild))
             return `❌ The log channel must be on this server!`;
 
@@ -94,7 +94,7 @@ export class LogCommand extends GuildCommand {
         return `✅ I will no longer log the following events:\n${eventStrings.join(`\n`)}`;
     }
 
-    public async listEvents(context: GuildCommandContext): Promise<EmbedOptions> {
+    public async listEvents(context: GuildCommandContext): Promise<CommandResult> {
         const channels = await context.database.guilds.getLogChannels(context.channel.guild.id);
         const ignoreUsers = await context.database.guilds.getLogIgnores(context.channel.guild.id);
         const ignoreUsersField: EmbedField = {
@@ -131,7 +131,7 @@ export class LogCommand extends GuildCommand {
         };
     }
 
-    public async ignoreUsers(context: GuildCommandContext, senders: ReadonlyArray<User | Webhook>, ignore: boolean): Promise<string> {
+    public async ignoreUsers(context: GuildCommandContext, senders: ReadonlyArray<User | Webhook>, ignore: boolean): Promise<CommandResult> {
         await context.database.guilds.setLogIgnores(context.channel.guild.id, senders.map(u => u.id), ignore);
 
         const mentions = senders.map(s => `<@${s.id}>`);
@@ -141,7 +141,7 @@ export class LogCommand extends GuildCommand {
     }
 }
 
-const eventDescriptions: { [key in Exclude<StoredGuildEventLogType, `role:${string}`>]: string } = {
+const eventDescriptions: { [key in Exclude<StoredGuildEventLogType, `role:${string}`>]: CommandResult } = {
     avatarupdate: `Triggered when someone changes their username`,
     kick: `Triggered when a member is kicked`,
     memberban: `Triggered when a member is banned`,

@@ -1,7 +1,7 @@
 import { bbtag } from '@blargbot/bbtag';
 import { Cluster, ClusterUtilities } from '@blargbot/cluster';
 import { CommandContext, GuildCommand } from '@blargbot/cluster/command';
-import { GuildCommandContext } from '@blargbot/cluster/types';
+import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { codeBlock, CommandType, guard, humanize, parse, pluralise as p } from '@blargbot/cluster/utils';
 import { SendContent } from '@blargbot/core/types';
 import { StoredTag } from '@blargbot/domain/models';
@@ -174,7 +174,7 @@ export class TagCommand extends GuildCommand {
         tagName: string,
         input: string | undefined,
         debug: boolean
-    ): Promise<string | SendContent | undefined> {
+    ): Promise<CommandResult> {
         const match = await this.#requestReadableTag(context, tagName, false);
         if (typeof match !== `object`)
             return match;
@@ -209,7 +209,7 @@ export class TagCommand extends GuildCommand {
         content: string,
         input: string,
         debug: boolean
-    ): Promise<string | SendContent | undefined> {
+    ): Promise<CommandResult> {
         const result = await context.bbtag.execute(content, {
             message: context.message,
             inputRaw: input,
@@ -227,7 +227,7 @@ export class TagCommand extends GuildCommand {
         return `ℹ️ Ive sent the debug output in a DM`;
     }
 
-    public async createTag(context: GuildCommandContext, tagName: string | undefined, content: string | undefined): Promise<string | undefined> {
+    public async createTag(context: GuildCommandContext, tagName: string | undefined, content: string | undefined): Promise<CommandResult> {
         const match = await this.#requestCreatableTag(context, tagName);
         if (typeof match !== `object`)
             return match;
@@ -235,7 +235,7 @@ export class TagCommand extends GuildCommand {
         return await this.#saveTag(context, `created`, match.name, content, undefined);
     }
 
-    public async editTag(context: GuildCommandContext, tagName: string | undefined, content: string | undefined): Promise<string | undefined> {
+    public async editTag(context: GuildCommandContext, tagName: string | undefined, content: string | undefined): Promise<CommandResult> {
         const match = await this.#requestEditableTag(context, tagName);
         if (typeof match !== `object`)
             return match;
@@ -250,7 +250,7 @@ export class TagCommand extends GuildCommand {
         return await this.#saveTag(context, `edited`, match.name, content, match);
     }
 
-    public async deleteTag(context: GuildCommandContext, tagName: string | undefined): Promise<string | undefined> {
+    public async deleteTag(context: GuildCommandContext, tagName: string | undefined): Promise<CommandResult> {
         const match = await this.#requestEditableTag(context, tagName);
         if (typeof match !== `object`)
             return match;
@@ -264,7 +264,7 @@ export class TagCommand extends GuildCommand {
         return `✅ The \`${match.name}\` tag is gone forever!`;
     }
 
-    public async setTag(context: GuildCommandContext, tagName: string | undefined, content: string | undefined): Promise<string | undefined> {
+    public async setTag(context: GuildCommandContext, tagName: string | undefined, content: string | undefined): Promise<CommandResult> {
         const match = await this.#requestSettableTag(context, tagName);
         if (typeof match !== `object`)
             return match;
@@ -278,7 +278,7 @@ export class TagCommand extends GuildCommand {
         return await this.#saveTag(context, `set`, match.name, content, match.tag);
     }
 
-    public async renameTag(context: GuildCommandContext, oldName: string | undefined, newName: string | undefined): Promise<string | undefined> {
+    public async renameTag(context: GuildCommandContext, oldName: string | undefined, newName: string | undefined): Promise<CommandResult> {
         const from = await this.#requestEditableTag(context, oldName);
         if (typeof from !== `object`)
             return from;
@@ -300,7 +300,7 @@ export class TagCommand extends GuildCommand {
         return `✅ The \`${from.name}\` tag has been renamed to \`${to.name}\`.`;
     }
 
-    public async getRawTag(context: GuildCommandContext, tagName: string | undefined, fileExtension: string): Promise<string | { content: string; files: FileContent[]; } | undefined> {
+    public async getRawTag(context: GuildCommandContext, tagName: string | undefined, fileExtension: string): Promise<CommandResult> {
         const match = await this.#requestReadableTag(context, tagName);
         if (typeof match !== `object`)
             return match;
@@ -319,7 +319,7 @@ export class TagCommand extends GuildCommand {
             };
     }
 
-    public async listTags(context: GuildCommandContext, author?: string): Promise<string | undefined> {
+    public async listTags(context: GuildCommandContext, author?: string): Promise<CommandResult> {
         const args: Parameters<ClusterUtilities[`displayPaged`]> = [
             context.channel,
             context.author,
@@ -347,7 +347,7 @@ export class TagCommand extends GuildCommand {
         }
     }
 
-    public async searchTags(context: GuildCommandContext, query?: string): Promise<string | undefined> {
+    public async searchTags(context: GuildCommandContext, query?: string): Promise<CommandResult> {
         if (query === undefined || query.length === 0) {
             const queryResult = await context.queryText({ prompt: `What would you like to search for?` });
             if (queryResult.state !== `SUCCESS`)
@@ -375,7 +375,7 @@ export class TagCommand extends GuildCommand {
         }
     }
 
-    public async disableTag(context: GuildCommandContext, tagName: string, reason: string): Promise<string | undefined> {
+    public async disableTag(context: GuildCommandContext, tagName: string, reason: string): Promise<CommandResult> {
         if (!context.util.isBotStaff(context.author.id))
             return `❌ You cannot disable tags`;
 
@@ -385,7 +385,7 @@ export class TagCommand extends GuildCommand {
         return `✅ The \`${tagName}\` tag has been deleted`;
     }
 
-    public async setTagCooldown(context: GuildCommandContext, tagName: string, cooldown?: Duration): Promise<string | undefined> {
+    public async setTagCooldown(context: GuildCommandContext, tagName: string, cooldown?: Duration): Promise<CommandResult> {
         if (cooldown !== undefined && cooldown.asMilliseconds() < 0)
             return `❌ The cooldown must be greater than 0ms`;
 
@@ -398,7 +398,7 @@ export class TagCommand extends GuildCommand {
         return `✅ The tag \`${match.name}\` now has a cooldown of \`${humanize.duration(cooldown)}\`.`;
     }
 
-    public async getTagAuthor(context: GuildCommandContext, tagName: string | undefined): Promise<string | undefined> {
+    public async getTagAuthor(context: GuildCommandContext, tagName: string | undefined): Promise<CommandResult> {
         const match = await this.#requestReadableTag(context, tagName);
         if (typeof match !== `object`)
             return match;
@@ -414,7 +414,7 @@ export class TagCommand extends GuildCommand {
         return response.join(` `);
     }
 
-    public async getTagInfo(context: GuildCommandContext, tagName: string | undefined): Promise<string | SendContent | undefined> {
+    public async getTagInfo(context: GuildCommandContext, tagName: string | undefined): Promise<CommandResult> {
         const match = await this.#requestReadableTag(context, tagName);
         if (typeof match !== `object`)
             return match;
@@ -468,7 +468,7 @@ export class TagCommand extends GuildCommand {
         return { embeds: [embed] };
     }
 
-    public async getTopTags(context: GuildCommandContext): Promise<string> {
+    public async getTopTags(context: GuildCommandContext): Promise<CommandResult> {
         const tags = await context.database.tags.top(10);
         const result = [`__Here are the top 10 tags:__`];
         let i = 1;
@@ -479,7 +479,7 @@ export class TagCommand extends GuildCommand {
         return result.join(`\n`);
     }
 
-    public async toggleFavouriteTag(context: GuildCommandContext, tagName: string): Promise<string | undefined> {
+    public async toggleFavouriteTag(context: GuildCommandContext, tagName: string): Promise<CommandResult> {
         const match = await this.#requestReadableTag(context, tagName);
         if (typeof match !== `object`)
             return match;
@@ -491,14 +491,14 @@ export class TagCommand extends GuildCommand {
             : `✅ The \`${match.name}\` tag is no longer on your favourites list!`;
     }
 
-    public async listFavouriteTags(context: GuildCommandContext): Promise<string> {
+    public async listFavouriteTags(context: GuildCommandContext): Promise<CommandResult> {
         const tags = await context.database.tags.getFavourites(context.author.id);
         if (tags.length === 0)
             return `You have no favourite tags!`;
         return `You have ${tags.length} favourite ${p(tags.length, `tag`)}. ${codeBlock(tags.join(`, `), `fix`)}`;
     }
 
-    public async reportTag(context: GuildCommandContext, tagName: string, reason: string | undefined): Promise<string | undefined> {
+    public async reportTag(context: GuildCommandContext, tagName: string, reason: string | undefined): Promise<CommandResult> {
         const match = await this.#requestReadableTag(context, tagName);
         if (typeof match !== `object`)
             return match;
@@ -532,7 +532,7 @@ export class TagCommand extends GuildCommand {
         return `✅ The \`${match.name}\` tag has been reported.`;
     }
 
-    public async getTagFlags(context: GuildCommandContext, tagName: string): Promise<string | undefined> {
+    public async getTagFlags(context: GuildCommandContext, tagName: string): Promise<CommandResult> {
         const match = await this.#requestReadableTag(context, tagName);
         if (typeof match !== `object`)
             return match;
@@ -544,7 +544,7 @@ export class TagCommand extends GuildCommand {
         return `The \`${match.name}\` tag has the following flags:\n\n${flags.join(`\n`)}`;
     }
 
-    public async addTagFlags(context: GuildCommandContext, tagName: string, flagsRaw: string): Promise<string | undefined> {
+    public async addTagFlags(context: GuildCommandContext, tagName: string, flagsRaw: string): Promise<CommandResult> {
         const match = await this.#requestEditableTag(context, tagName);
         if (typeof match !== `object`)
             return match;
@@ -570,7 +570,7 @@ export class TagCommand extends GuildCommand {
         return `✅ The flags for \`${match.name}\` have been updated.`;
     }
 
-    public async removeTagFlags(context: GuildCommandContext, tagName: string, flagsRaw: string): Promise<string | undefined> {
+    public async removeTagFlags(context: GuildCommandContext, tagName: string, flagsRaw: string): Promise<CommandResult> {
         const match = await this.#requestEditableTag(context, tagName);
         if (typeof match !== `object`)
             return match;
@@ -583,7 +583,7 @@ export class TagCommand extends GuildCommand {
         return `✅ The flags for \`${match.name}\` have been updated.`;
     }
 
-    public async setTagLanguage(context: GuildCommandContext, tagName: string, language: string): Promise<string | undefined> {
+    public async setTagLanguage(context: GuildCommandContext, tagName: string, language: string): Promise<CommandResult> {
         const match = await this.#requestEditableTag(context, tagName);
         if (typeof match !== `object`)
             return match;
@@ -592,7 +592,7 @@ export class TagCommand extends GuildCommand {
         return `✅ Lang for tag \`${match.name}\` set.`;
     }
 
-    async #saveTag(context: GuildCommandContext, operation: string, tagName: string, content: string | undefined, oldTag?: StoredTag): Promise<string | undefined> {
+    async #saveTag(context: GuildCommandContext, operation: string, tagName: string, content: string | undefined, oldTag?: StoredTag): Promise<CommandResult> {
         content = await this.#requestTagContent(context, content);
         if (content === undefined)
             return;

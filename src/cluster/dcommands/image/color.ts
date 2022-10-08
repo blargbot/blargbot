@@ -1,5 +1,6 @@
 import { CommandContext, GlobalImageCommand } from '@blargbot/cluster/command';
-import { ImageResult } from '@blargbot/image/types';
+
+import { CommandResult } from '../../types';
 
 export class ColorCommand extends GlobalImageCommand {
     public constructor() {
@@ -15,7 +16,7 @@ export class ColorCommand extends GlobalImageCommand {
         });
     }
 
-    public async render(context: CommandContext, colors: readonly string[]): Promise<string | ImageResult> {
+    public async render(context: CommandContext, colors: readonly string[]): Promise<CommandResult> {
         return await this.renderImage(context, `color`, { color: colors });
     }
 }

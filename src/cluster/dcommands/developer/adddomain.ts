@@ -1,6 +1,8 @@
 import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { codeBlock, CommandType } from '@blargbot/cluster/utils';
 
+import { CommandResult } from '../../types';
+
 export class AddDomainCommand extends GlobalCommand {
     public constructor() {
         super({
@@ -17,7 +19,7 @@ export class AddDomainCommand extends GlobalCommand {
         });
     }
 
-    public async toggleDomains(ctx: CommandContext, domains: readonly string[]): Promise<string> {
+    public async toggleDomains(ctx: CommandContext, domains: readonly string[]): Promise<CommandResult> {
         const result = await ctx.cluster.domains.toggle(...domains);
 
         const output = [`✅ Boy howdy, thanks for the domains!\n`];

@@ -1,5 +1,6 @@
 import { CommandContext, GlobalImageCommand } from '@blargbot/cluster/command';
-import { ImageResult } from '@blargbot/image/types';
+
+import { CommandResult } from '../../types';
 
 export class PCCheckCommand extends GlobalImageCommand {
     public constructor() {
@@ -15,7 +16,7 @@ export class PCCheckCommand extends GlobalImageCommand {
         });
     }
 
-    public async render(context: CommandContext, text: string): Promise<ImageResult | string> {
+    public async render(context: CommandContext, text: string): Promise<CommandResult> {
         text = await context.util.resolveTags(context, text);
         return await this.renderImage(context, `pccheck`, { text });
     }

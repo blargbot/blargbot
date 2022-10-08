@@ -1,6 +1,7 @@
 import { CommandContext, GlobalImageCommand } from '@blargbot/cluster/command';
 import { Emote } from '@blargbot/core/Emote';
-import { ImageResult } from '@blargbot/image/types';
+
+import { CommandResult } from '../../types';
 
 export class EmojiCommand extends GlobalImageCommand {
     public constructor() {
@@ -23,7 +24,7 @@ export class EmojiCommand extends GlobalImageCommand {
         });
     }
 
-    public async emoji(context: CommandContext, emoji: string, size: number, svg: boolean): Promise<string | ImageResult> {
+    public async emoji(context: CommandContext, emoji: string, size: number, svg: boolean): Promise<CommandResult> {
         const parsedEmojis = Emote.findAll(emoji);
         if (parsedEmojis.length === 0)
             return `❌ No emoji found!`;

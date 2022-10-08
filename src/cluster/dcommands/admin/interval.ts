@@ -1,8 +1,7 @@
 import { bbtag } from '@blargbot/bbtag';
 import { GuildCommand } from '@blargbot/cluster/command';
-import { GuildCommandContext } from '@blargbot/cluster/types';
+import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { codeBlock, CommandType, guard } from '@blargbot/cluster/utils';
-import { SendContent } from '@blargbot/core/types';
 import { humanize } from '@blargbot/core/utils';
 
 export class IntervalCommand extends GuildCommand {
@@ -45,7 +44,7 @@ export class IntervalCommand extends GuildCommand {
         });
     }
 
-    public async getInfo(context: GuildCommandContext): Promise<string> {
+    public async getInfo(context: GuildCommandContext): Promise<CommandResult> {
         const interval = await context.database.guilds.getInterval(context.channel.guild.id);
         if (interval === undefined)
             return `❌ No interval has been set yet!`;
@@ -54,13 +53,13 @@ export class IntervalCommand extends GuildCommand {
         return `ℹ️ The current interval was last edited by <@${interval.author ?? 0}> (${interval.author ?? `????`}) and is authorized by <@${authorizer ?? 0}> (${authorizer ?? `????`})`;
     }
 
-    public async setInterval(context: GuildCommandContext, code: string): Promise<string> {
+    public async setInterval(context: GuildCommandContext, code: string): Promise<CommandResult> {
         const interval = await context.database.guilds.getInterval(context.channel.guild.id) ?? {};
         await context.database.guilds.setInterval(context.channel.guild.id, { ...interval, content: code, author: context.author.id });
         return `✅ The interval has been set`;
     }
 
-    public async deleteInterval(context: GuildCommandContext): Promise<string> {
+    public async deleteInterval(context: GuildCommandContext): Promise<CommandResult> {
         const interval = await context.database.guilds.getInterval(context.channel.guild.id);
         if (interval === undefined)
             return `❌ There is no interval currently set up!`;
@@ -69,7 +68,7 @@ export class IntervalCommand extends GuildCommand {
         return `✅ The interval has been deleted`;
     }
 
-    public async getRaw(context: GuildCommandContext, fileExtension: string): Promise<string | SendContent> {
+    public async getRaw(context: GuildCommandContext, fileExtension: string): Promise<CommandResult> {
         const interval = await context.database.guilds.getInterval(context.channel.guild.id);
         if (interval === undefined)
             return `❌ There is no interval currently set up!`;
@@ -88,7 +87,7 @@ export class IntervalCommand extends GuildCommand {
             };
     }
 
-    public async setAuthorizer(context: GuildCommandContext): Promise<string> {
+    public async setAuthorizer(context: GuildCommandContext): Promise<CommandResult> {
         const interval = await context.database.guilds.getInterval(context.channel.guild.id);
         if (interval === undefined)
             return `❌ There is no interval currently set up!`;
@@ -97,7 +96,7 @@ export class IntervalCommand extends GuildCommand {
         return `✅ Your permissions will now be used when the interval runs`;
     }
 
-    public async debug(context: GuildCommandContext): Promise<string | SendContent> {
+    public async debug(context: GuildCommandContext): Promise<CommandResult> {
         const interval = await context.database.guilds.getInterval(context.channel.guild.id);
         if (interval === undefined)
             return `❌ There is no interval currently set up!`;

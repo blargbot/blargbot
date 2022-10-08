@@ -2,6 +2,8 @@ import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType } from '@blargbot/cluster/utils';
 import { exec } from 'child_process';
 
+import { CommandResult } from '../../types';
+
 export class UpdateCommand extends GlobalCommand {
     public constructor() {
         super({
@@ -17,7 +19,7 @@ export class UpdateCommand extends GlobalCommand {
         });
     }
 
-    public async update(context: CommandContext, type: string): Promise<string> {
+    public async update(context: CommandContext, type: string): Promise<CommandResult> {
         const oldCommit = await execCommandline(`git rev-parse HEAD`);
 
         if ((await this.#showCommand(context, `git pull`)).includes(`Already up to date`))
@@ -56,7 +58,7 @@ export class UpdateCommand extends GlobalCommand {
         }
     }
 
-    async #showCommand(context: CommandContext, command: string): Promise<string> {
+    async #showCommand(context: CommandContext, command: string): Promise<CommandResult> {
         const message = await context.reply(`ℹ️ Command: \`${command}\`\nRunning...`);
         try {
             await context.channel.sendTyping();

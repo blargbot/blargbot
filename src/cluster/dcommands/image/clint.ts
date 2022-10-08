@@ -1,8 +1,9 @@
 import { CommandContext, GlobalImageCommand } from '@blargbot/cluster/command';
 import { guard } from '@blargbot/cluster/utils';
 import { parse } from '@blargbot/core/utils/parse';
-import { ImageResult } from '@blargbot/image/types';
 import { User } from 'eris';
+
+import { CommandResult } from '../../types';
 
 export class ClintCommand extends GlobalImageCommand {
     public constructor() {
@@ -32,11 +33,11 @@ export class ClintCommand extends GlobalImageCommand {
         });
     }
 
-    public async renderUser(context: CommandContext, user: User): Promise<ImageResult | string> {
+    public async renderUser(context: CommandContext, user: User): Promise<CommandResult> {
         return await this.render(context, user.avatarURL);
     }
 
-    public async render(context: CommandContext, url: string): Promise<ImageResult | string> {
+    public async render(context: CommandContext, url: string): Promise<CommandResult> {
         url = parse.url(url);
         if (!guard.isUrl(url))
             return `❌ ${url} is not a valid url!`;

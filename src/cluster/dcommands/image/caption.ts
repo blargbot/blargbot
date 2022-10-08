@@ -1,7 +1,9 @@
 import { CommandContext, GlobalImageCommand } from '@blargbot/cluster/command';
 import { guard, humanize } from '@blargbot/core/utils';
 import { parse } from '@blargbot/core/utils/parse';
-import { ImageResult, ValidFont } from '@blargbot/image/types';
+import { ValidFont } from '@blargbot/image/types';
+
+import { CommandResult } from '../../types';
 
 export class CaptionCommand extends GlobalImageCommand {
     public constructor() {
@@ -42,7 +44,7 @@ export class CaptionCommand extends GlobalImageCommand {
         top: string | undefined,
         bottom: string | undefined,
         fontName = `impact`
-    ): Promise<string | ImageResult> {
+    ): Promise<CommandResult> {
         if (url === undefined)
             return `❌ You didnt tell me what image I should caption!`;
 

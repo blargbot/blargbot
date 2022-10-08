@@ -1,5 +1,5 @@
 import { GuildCommand } from '@blargbot/cluster/command';
-import { GuildCommandContext } from '@blargbot/cluster/types';
+import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType, guard, humanize, parse } from '@blargbot/cluster/utils';
 import { FlagResult } from '@blargbot/domain/models';
 
@@ -22,7 +22,7 @@ export class MassBanCommand extends GuildCommand {
         });
     }
 
-    public async massBan(context: GuildCommandContext, userIds: readonly string[], deleteDays: number, flags: FlagResult): Promise<string> {
+    public async massBan(context: GuildCommandContext, userIds: readonly string[], deleteDays: number, flags: FlagResult): Promise<CommandResult> {
         userIds = userIds.flatMap(u => parse.entityId(u)).filter(guard.hasValue);
 
         const reason = flags.r?.merge().value ?? ``;

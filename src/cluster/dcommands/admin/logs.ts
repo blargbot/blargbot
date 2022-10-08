@@ -1,5 +1,5 @@
 import { GuildCommand } from '@blargbot/cluster/command';
-import { GuildCommandContext } from '@blargbot/cluster/types';
+import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType } from '@blargbot/cluster/utils';
 import { SendContent } from '@blargbot/core/types';
 import { guard, sleep } from '@blargbot/core/utils';
@@ -38,7 +38,7 @@ export class LogsCommand extends GuildCommand {
             ]
         });
     }
-    public async generateLogs(context: GuildCommandContext, options: LogsGenerateOptions): Promise<string | SendContent> {
+    public async generateLogs(context: GuildCommandContext, options: LogsGenerateOptions): Promise<CommandResult> {
         if (await context.database.guilds.getSetting(context.channel.guild.id, `makelogs`) !== true)
             return `❌ This guild has not opted into chatlogs. Please do \`${context.prefix}settings set makelogs true\` to allow me to start creating chatlogs.`;
 

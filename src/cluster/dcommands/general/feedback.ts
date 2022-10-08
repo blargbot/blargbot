@@ -4,6 +4,8 @@ import { humanize } from '@blargbot/core/utils';
 import { FlagResult } from '@blargbot/domain/models';
 import moment from 'moment-timezone';
 
+import { CommandResult } from '../../types';
+
 export class FeedbackCommand extends GlobalCommand {
 
     public constructor() {
@@ -43,7 +45,7 @@ export class FeedbackCommand extends GlobalCommand {
         this.middleware.push(new SendTypingMiddleware());
     }
 
-    public async submitFeedback(context: CommandContext, description: string, flags: FlagResult): Promise<string> {
+    public async submitFeedback(context: CommandContext, description: string, flags: FlagResult): Promise<CommandResult> {
         if (context.util.isBotStaff(context.author.id)) {
             const words = description.toLowerCase().split(` `);
             if (words.length >= 3) {
@@ -57,15 +59,15 @@ export class FeedbackCommand extends GlobalCommand {
         return await this.#submit(context, `Feedback`, description, context.config.discord.channels.feedback, flags, false, 0xaaaf0c);
     }
 
-    public async submitBugReport(context: CommandContext, description: string, flags: FlagResult): Promise<string> {
+    public async submitBugReport(context: CommandContext, description: string, flags: FlagResult): Promise<CommandResult> {
         return await this.#submit(context, `Bug Report`, description, context.config.discord.channels.bugreports, flags, true, 0xaf0c0c);
     }
 
-    public async submitSuggestion(context: CommandContext, description: string, flags: FlagResult): Promise<string> {
+    public async submitSuggestion(context: CommandContext, description: string, flags: FlagResult): Promise<CommandResult> {
         return await this.#submit(context, `Suggestion`, description, context.config.discord.channels.suggestions, flags, false, 0x1faf0c);
     }
 
-    public async editFeedback(context: CommandContext, caseNumber: number, description: string, flags: FlagResult): Promise<string> {
+    public async editFeedback(context: CommandContext, caseNumber: number, description: string, flags: FlagResult): Promise<CommandResult> {
         switch (await this.#checkBlacklist(context)) {
             case `GUILD`: return this.#blacklistedError(context, `GUILD`);
             case `USER`: return this.#blacklistedError(context, `USER`);

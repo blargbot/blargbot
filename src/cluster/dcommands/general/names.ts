@@ -3,6 +3,8 @@ import { CommandType, pluralise as p } from '@blargbot/cluster/utils';
 import { EmbedOptions, User } from 'eris';
 import moment from 'moment-timezone';
 
+import { CommandResult } from '../../types';
+
 export class NamesCommand extends GlobalCommand {
     public constructor() {
         super({
@@ -27,7 +29,7 @@ export class NamesCommand extends GlobalCommand {
         });
     }
 
-    public async listNames(context: CommandContext, user: User, all: boolean, detailed: boolean): Promise<EmbedOptions | string> {
+    public async listNames(context: CommandContext, user: User, all: boolean, detailed: boolean): Promise<CommandResult> {
         let usernames = await context.database.users.getUsernames(user.id);
         if (usernames === undefined || usernames.length === 0)
             return `ℹ️ I havent seen any usernames for ${user.mention} yet!`;
@@ -53,7 +55,7 @@ export class NamesCommand extends GlobalCommand {
         return embed;
     }
 
-    public async removeNames(context: CommandContext, names: string | undefined): Promise<string> {
+    public async removeNames(context: CommandContext, names: string | undefined): Promise<CommandResult> {
         let usernames = await context.database.users.getUsernames(context.author.id);
         if (usernames === undefined || usernames.length === 0)
             return `ℹ️ You dont have any usernames to remove!`;

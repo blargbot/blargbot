@@ -1,6 +1,8 @@
 import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType } from '@blargbot/cluster/utils';
 
+import { CommandResult } from '../../types';
+
 export class DMErrorsCommand extends GlobalCommand {
     public constructor() {
         super({
@@ -16,7 +18,7 @@ export class DMErrorsCommand extends GlobalCommand {
         });
     }
 
-    public async toggleDMErrors(context: CommandContext): Promise<string> {
+    public async toggleDMErrors(context: CommandContext): Promise<CommandResult> {
         const dmErrors = await context.database.users.getSetting(context.author.id, `dontdmerrors`);
         await context.database.users.setSetting(context.author.id, `dontdmerrors`, dmErrors !== true);
 

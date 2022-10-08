@@ -1,5 +1,5 @@
 import { GuildCommand } from '@blargbot/cluster/command';
-import { GuildCommandContext } from '@blargbot/cluster/types';
+import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType } from '@blargbot/cluster/utils';
 import { humanize } from '@blargbot/core/utils';
 import { Webhook } from 'eris';
@@ -24,7 +24,7 @@ export class ChangelogCommand extends GuildCommand {
         });
     }
 
-    public async addFollower(context: GuildCommandContext): Promise<string> {
+    public async addFollower(context: GuildCommandContext): Promise<CommandResult> {
         const current = await this.#getCurrentSubscription(context);
         if (typeof current !== `undefined`)
             return `ℹ️ This channel is already subscribed to my changelog updates!`;
@@ -33,7 +33,7 @@ export class ChangelogCommand extends GuildCommand {
         return `✅ This channel will now get my changelog updates!`;
     }
 
-    public async removeFollower(context: GuildCommandContext): Promise<string> {
+    public async removeFollower(context: GuildCommandContext): Promise<CommandResult> {
         const current = await this.#getCurrentSubscription(context);
         if (typeof current !== `object`)
             return current ?? `ℹ️ This channel is not subscribed to my changelog updates!`;
@@ -42,7 +42,7 @@ export class ChangelogCommand extends GuildCommand {
         return `✅ This channel will no longer get my changelog updates!`;
     }
 
-    async #getCurrentSubscription(context: GuildCommandContext): Promise<Webhook | string | undefined> {
+    async #getCurrentSubscription(context: GuildCommandContext): Promise<Webhook | CommandResult> {
         const self = context.channel.guild.members.get(context.discord.user.id);
         if (self?.permissions.has(`manageWebhooks`) !== true)
             return `❌ I need the manage webhooks permission to subscribe this channel to changelogs!`;

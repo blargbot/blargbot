@@ -1,6 +1,8 @@
 import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType } from '@blargbot/cluster/utils';
 
+import { CommandResult } from '../../types';
+
 export class VersionCommand extends GlobalCommand {
     public constructor() {
         super({
@@ -16,7 +18,7 @@ export class VersionCommand extends GlobalCommand {
         });
     }
 
-    public async getVersion(context: CommandContext): Promise<string> {
+    public async getVersion(context: CommandContext): Promise<CommandResult> {
         const version = await context.cluster.version.getVersion();
 
         return `ℹ️ I am running blargbot version ${version}`;

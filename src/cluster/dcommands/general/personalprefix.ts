@@ -2,6 +2,8 @@ import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType } from '@blargbot/cluster/utils';
 import { EmbedOptions } from 'eris';
 
+import { CommandResult } from '../../types';
+
 export class PersonalPrefixCommand extends GlobalCommand {
     public constructor() {
         super({
@@ -28,7 +30,7 @@ export class PersonalPrefixCommand extends GlobalCommand {
         });
     }
 
-    public async listPrefixes(context: CommandContext): Promise<string | EmbedOptions> {
+    public async listPrefixes(context: CommandContext): Promise<CommandResult> {
         const prefixes = await context.database.users.getSetting(context.author.id, `prefixes`);
         if (prefixes === undefined || prefixes.length === 0)
             return `ℹ️ You dont have any personal command prefixes set!`;
@@ -40,13 +42,13 @@ export class PersonalPrefixCommand extends GlobalCommand {
         };
     }
 
-    public async addPrefix(context: CommandContext, prefix: string): Promise<string> {
+    public async addPrefix(context: CommandContext, prefix: string): Promise<CommandResult> {
         if (!await context.database.users.addPrefix(context.author.id, prefix.toLowerCase()))
             return `❌ You already have that as a command prefix.`;
         return `✅ Your personal command prefix has been added.`;
     }
 
-    public async removePrefix(context: CommandContext, prefix: string): Promise<string> {
+    public async removePrefix(context: CommandContext, prefix: string): Promise<CommandResult> {
         if (!await context.database.users.removePrefix(context.author.id, prefix.toLowerCase()))
             return `❌ That isnt one of your prefixes.`;
         return `✅ Your personal command prefix has been removed.`;

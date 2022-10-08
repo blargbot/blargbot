@@ -1,6 +1,8 @@
 import { GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType } from '@blargbot/cluster/utils';
 
+import { CommandResult } from '../../types';
+
 export class NatoCommand extends GlobalCommand {
     public constructor() {
         super({
@@ -16,7 +18,7 @@ export class NatoCommand extends GlobalCommand {
         });
     }
 
-    public natoify(text: string): string {
+    public natoify(text: string): CommandResult {
         const result = [];
         let other = ``;
         for (const char of text) {

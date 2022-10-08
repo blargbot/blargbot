@@ -1,6 +1,8 @@
 import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType } from '@blargbot/cluster/utils';
 
+import { CommandResult } from '../../types';
+
 export class LoglevelCommand extends GlobalCommand {
     public constructor() {
         super({
@@ -16,7 +18,7 @@ export class LoglevelCommand extends GlobalCommand {
         });
     }
 
-    public setLogLevel(context: CommandContext, logLevel: string): string {
+    public setLogLevel(context: CommandContext, logLevel: string): CommandResult {
         context.logger.setLevel(logLevel);
         return `✅ Log level set to \`${logLevel}\``;
     }

@@ -1,5 +1,5 @@
 import { GuildCommand } from '@blargbot/cluster/command';
-import { GuildCommandContext } from '@blargbot/cluster/types';
+import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType, humanize, parse } from '@blargbot/cluster/utils';
 import { FlagResult } from '@blargbot/domain/models';
 import { Member } from 'eris';
@@ -33,7 +33,7 @@ export class TimeoutCommand extends GuildCommand {
         });
     }
 
-    public async clearTimeout(context: GuildCommandContext, member: Member, reason: string): Promise<string> {
+    public async clearTimeout(context: GuildCommandContext, member: Member, reason: string): Promise<CommandResult> {
         switch (await context.cluster.moderation.timeouts.clearTimeout(member, context.author, context.author, reason)) {
             case `notTimedOut`: return `❌ **${humanize.fullName(member.user)}** is not currently timed out.`;
             case `noPerms`: return `❌ I don't have permission to timeout **${humanize.fullName(member.user)}**! Make sure I have the \`moderate members\` permission and try again.`;
@@ -42,7 +42,7 @@ export class TimeoutCommand extends GuildCommand {
         }
     }
 
-    public async timeout(context: GuildCommandContext, member: Member, flags: FlagResult): Promise<string> {
+    public async timeout(context: GuildCommandContext, member: Member, flags: FlagResult): Promise<CommandResult> {
         const reason = flags.r?.merge().value ?? ``;
         const duration = (flags.t !== undefined ? parse.duration(flags.t.merge().value) : undefined) ?? moment.duration(1, `d`);
 

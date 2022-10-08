@@ -2,6 +2,8 @@ import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType } from '@blargbot/cluster/utils';
 import Brainfuck from 'brainfuck-node';
 
+import { CommandResult } from '../../types';
+
 export class BrainfuckCommand extends GlobalCommand {
     readonly #client: Brainfuck;
 
@@ -27,7 +29,7 @@ export class BrainfuckCommand extends GlobalCommand {
         this.#client = new Brainfuck();
     }
 
-    public async eval(context: CommandContext, code: string, showPointers: boolean): Promise<string> {
+    public async eval(context: CommandContext, code: string, showPointers: boolean): Promise<CommandResult> {
         let input = ``;
         if (code.includes(`,`)) {
             const reply = await context.queryText({ prompt: `This brainfuck code requires user input. Please say what you want to use:` });

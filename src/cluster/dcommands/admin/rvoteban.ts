@@ -1,5 +1,5 @@
 import { GuildCommand } from '@blargbot/cluster/command';
-import { GuildCommandContext } from '@blargbot/cluster/types';
+import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType } from '@blargbot/cluster/utils';
 import { User } from 'eris';
 
@@ -24,12 +24,12 @@ export class RemoveVotebanCommand extends GuildCommand {
         });
     }
 
-    public async clearUser(context: GuildCommandContext, user: User): Promise<string> {
+    public async clearUser(context: GuildCommandContext, user: User): Promise<CommandResult> {
         await context.database.guilds.clearVoteBans(context.channel.guild.id, user.id);
         return `✅ Votebans for ${user.mention} have been cleared`;
     }
 
-    public async clearAll(context: GuildCommandContext): Promise<string> {
+    public async clearAll(context: GuildCommandContext): Promise<CommandResult> {
         await context.database.guilds.clearVoteBans(context.channel.guild.id);
         return `✅ Votebans for all users have been cleared`;
     }

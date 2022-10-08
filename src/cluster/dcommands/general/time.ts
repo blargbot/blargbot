@@ -3,6 +3,8 @@ import { CommandType } from '@blargbot/cluster/utils';
 import { User } from 'eris';
 import moment from 'moment-timezone';
 
+import { CommandResult } from '../../types';
+
 export class TimeCommand extends GlobalCommand {
     public constructor() {
         super({
@@ -33,7 +35,7 @@ export class TimeCommand extends GlobalCommand {
         });
     }
 
-    public async getUserTime(context: CommandContext, user: User): Promise<string> {
+    public async getUserTime(context: CommandContext, user: User): Promise<CommandResult> {
         const timezone = await context.database.users.getSetting(user.id, `timezone`);
         if (timezone === undefined)
             return `❌ ${user.mention} has not set their timezone with the \`${context.prefix}timezone\` command yet.`;
@@ -45,7 +47,7 @@ export class TimeCommand extends GlobalCommand {
         return `ℹ️ It is currently **${now.format(`LT`)}** for **${user.mention}**.`;
     }
 
-    public getTime(timezone: string): string {
+    public getTime(timezone: string): CommandResult {
         const now = moment().tz(timezone);
         if (now.zoneAbbr() === ``)
             return `❌ \`${timezone}\` is not a valid timezone! See <https://en.wikipedia.org/wiki/List_of_tz_database_time_zones> for timezone codes that I understand.`;
@@ -53,7 +55,7 @@ export class TimeCommand extends GlobalCommand {
         return `ℹ️ In **${now.zoneAbbr()}**, it is currently **${now.format(`LT`)}**`;
     }
 
-    public changeTimezone(time: string, from: string, to: string): string {
+    public changeTimezone(time: string, from: string, to: string): CommandResult {
         const source = moment.tz(time, [`hh:mma`, `HH:mm`], true, from);
         const dest = source.clone().tz(to);
 

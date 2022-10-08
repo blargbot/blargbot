@@ -2,6 +2,8 @@ import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType } from '@blargbot/cluster/utils';
 import { humanize } from '@blargbot/core/utils';
 
+import { CommandResult } from '../../types';
+
 export class RespondCommand extends GlobalCommand {
 
     public constructor() {
@@ -18,7 +20,7 @@ export class RespondCommand extends GlobalCommand {
         });
     }
 
-    public async respond(context: CommandContext, id: number, response: string): Promise<string> {
+    public async respond(context: CommandContext, id: number, response: string): Promise<CommandResult> {
         const feedback = await context.database.suggestions.get(id);
 
         if (feedback === undefined)

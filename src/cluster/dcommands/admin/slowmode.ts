@@ -3,6 +3,8 @@ import { CommandType } from '@blargbot/cluster/utils';
 import { guard } from '@blargbot/core/utils';
 import { ApiError, DiscordRESTError, KnownChannel } from 'eris';
 
+import { CommandResult } from '../../types';
+
 export class SlowmodeCommand extends GuildCommand {
     public constructor() {
         super({
@@ -23,7 +25,7 @@ export class SlowmodeCommand extends GuildCommand {
         });
     }
 
-    public async setSlowmode(time: number, channel: KnownChannel): Promise<string> {
+    public async setSlowmode(time: number, channel: KnownChannel): Promise<CommandResult> {
         if (!guard.isTextableChannel(channel))
             return `❌ You can only set slowmode on text channels!`;
         if (!guard.isGuildChannel(channel))
@@ -49,7 +51,7 @@ export class SlowmodeCommand extends GuildCommand {
         }
     }
 
-    public async disableSlowmode(channel: KnownChannel): Promise<string> {
+    public async disableSlowmode(channel: KnownChannel): Promise<CommandResult> {
         if (!guard.isTextableChannel(channel))
             return `❌ You can only set slowmode on text channels!`;
         if (!guard.isGuildChannel(channel))

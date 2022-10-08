@@ -2,8 +2,9 @@ import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType } from '@blargbot/cluster/utils';
 import { guard, humanize } from '@blargbot/core/utils';
 import { mapping } from '@blargbot/mapping';
-import { EmbedOptions } from 'eris';
 import fetch, { RequestInit } from 'node-fetch';
+
+import { CommandResult } from '../../types';
 
 export class DefineCommand extends GlobalCommand {
     public constructor() {
@@ -20,7 +21,7 @@ export class DefineCommand extends GlobalCommand {
         }, true);
     }
 
-    public async define(context: CommandContext, word: string): Promise<string | EmbedOptions> {
+    public async define(context: CommandContext, word: string): Promise<CommandResult> {
         const response = await fetchSafe(`https://wordsapiv1.p.rapidapi.com/words/${word}`, {
             headers: {
                 'x-rapidapi-key': context.config.general.mashape,

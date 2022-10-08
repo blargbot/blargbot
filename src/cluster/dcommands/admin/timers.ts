@@ -1,8 +1,9 @@
 import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { codeBlock, CommandType, guard, humanize, pluralise as p } from '@blargbot/cluster/utils';
-import { SendContent } from '@blargbot/core/types';
 import { EmbedField, EmbedOptions } from 'eris';
 import moment from 'moment-timezone';
+
+import { CommandResult } from '../../types';
 
 export class TimersCommand extends GlobalCommand {
     public constructor() {
@@ -35,7 +36,7 @@ export class TimersCommand extends GlobalCommand {
         });
     }
 
-    public async listTimers(context: CommandContext, page: number): Promise<string> {
+    public async listTimers(context: CommandContext, page: number): Promise<CommandResult> {
         const pageSize = 15;
         const source = guard.isGuildCommandContext(context) ? context.channel.guild.id : context.author.id;
         const eventsPage = await context.database.events.list(source, page - 1, pageSize);
@@ -80,7 +81,7 @@ export class TimersCommand extends GlobalCommand {
         return `ℹ️ Here are the currently active timers:${codeBlock(gridLines.join(`\n`), `prolog`)}${paging}`;
     }
 
-    public async getTimer(context: CommandContext, timerId: string): Promise<SendContent> {
+    public async getTimer(context: CommandContext, timerId: string): Promise<CommandResult> {
         const source = guard.isGuildCommandContext(context) ? context.channel.guild.id : context.author.id;
         const allTimerIds = await context.database.events.getIds(source);
         const idMatch = allTimerIds.find(t => t.startsWith(timerId));
@@ -117,7 +118,7 @@ export class TimersCommand extends GlobalCommand {
         return { embeds: [embed] };
     }
 
-    public async cancelTimers(context: CommandContext, timerIds: readonly string[]): Promise<string> {
+    public async cancelTimers(context: CommandContext, timerIds: readonly string[]): Promise<CommandResult> {
         const source = guard.isGuildCommandContext(context) ? context.channel.guild.id : context.author.id;
         const allTimerIds = await context.database.events.getIds(source);
         const matchIds = allTimerIds.filter(i => timerIds.some(j => i.startsWith(j)));
@@ -145,7 +146,7 @@ export class TimersCommand extends GlobalCommand {
         return lines.join(`\n`);
     }
 
-    public async clearAllTimers(context: CommandContext): Promise<string> {
+    public async clearAllTimers(context: CommandContext): Promise<CommandResult> {
         const source = guard.isGuildCommandContext(context) ? context.channel.guild.id : context.author.id;
         const shouldClear = await context.util.queryConfirm({
             context: context.channel,

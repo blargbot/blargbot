@@ -41,13 +41,13 @@ export const templates = crunchTree(`cluster`, {
                 global: f(`❌ Sorry, you've been running too many commands. To prevent abuse, I'm going to have to time you out for \`{duration#duration(S)}s\`.\n\nContinuing to spam commands will lengthen your timeout by \`{penalty#duration(S)}s\`!`).withArgs<{ duration: Duration; penalty: Duration; }>()
             },
             missingPermission: {
-                generic: f(`❌ Oops, I dont seem to have permission to do that!`),
+                generic: f(`❌ Oops, I don't seem to have permission to do that!`),
                 guild: f(`❌ Hi! You asked me to do something, but I didn't have permission to do it! Please make sure I have permissions to do what you asked.\nGuild: {channel.guild.name}\nChannel: {channel.mention}\nCommand: {commandText}\n\nIf you wish to stop seeing these messages, do the command \`{prefix}dmerrors\`.`).withArgs<GuildCommandContext>()
             },
             arguments: {
                 invalid: f(`❌ Invalid arguments! \`{value}\` isnt {types#map(\`{}\`)#join(, | or )}`).withArgs<{ value: string; types: string[]; }>(),
                 missing: f(`❌ Not enough arguments! You need to provide {missing#map(\`{}\`)#join(, | or )}`).withArgs<{ missing: string[]; }>(),
-                unknown: f(`❌ I couldnt understand those arguments!`),
+                unknown: f(`❌ I couldn't understand those arguments!`),
                 noneNeeded: f(`❌ Too many arguments! \`{command.name}\` doesn't need any arguments`).withArgs<{ command: Command; }>(),
                 tooMany: f(`❌ Too many arguments! Expected at most {max} {max#plural(one:argument|other:arguments)}, but you gave {given}`).withArgs<{ max: number; given: number; }>()
             }
@@ -60,7 +60,7 @@ export const templates = crunchTree(`cluster`, {
                         name: f(`Announcement`)
                     }
                 },
-                failed: f(`❌ I wasnt able to send that message for some reason!`),
+                failed: f(`❌ I wasn't able to send that message for some reason!`),
                 success: f(`✅ I've sent the announcement!`)
             },
             reset: {
@@ -88,7 +88,7 @@ export const templates = crunchTree(`cluster`, {
         autoresponse: {
             notWhitelisted: f(`❌ Sorry, autoresponses are currently whitelisted. To request access, do \`b!ar whitelist [reason]\``),
             notFoundId: f(`❌ There isnt an autoresponse with id \`{id}\` here!`).withArgs<{ id: string; }>(),
-            notFoundEverything: f(`❌ There isnt an everything autoresponse here!`),
+            notFoundEverything: f(`❌ There isn't an everything autoresponse here!`),
             flags: {
                 regex: f(`If specified, parse as /regex/ rather than plaintext. Unsafe and very long (more than 2000 characters) regexes will not parse successfully.`),
                 everything: f(`Makes the added autoresponse respond to everything. Only one is allowed.`)
@@ -279,7 +279,7 @@ export const templates = crunchTree(`cluster`, {
                 success: f(`✅ Custom command \`{name}\` edited.\n{errors#join(\n)}`).withArgs<{ name: string; errors: Iterable<IFormattable<string>>; }>()
             },
             set: {
-                description: f(`Sets the custom command to have the content you specify. If the custom command doesnt exist it will be created.`),
+                description: f(`Sets the custom command to have the content you specify. If the custom command doesn't exist it will be created.`),
                 success: f(`✅ Custom command \`{name}\` set.\n{errors#join(\n)}`).withArgs<{ name: string; errors: Iterable<IFormattable<string>>; }>()
             },
             delete: {
@@ -376,7 +376,7 @@ export const templates = crunchTree(`cluster`, {
             },
             import: {
                 description: f(`Imports a tag as a ccommand, retaining all data such as author variables`),
-                tagMissing: f(`❌ The \`{name}\` tag doesnt exist!`).withArgs<{ name: string; }>(),
+                tagMissing: f(`❌ The \`{name}\` tag doesn't exist!`).withArgs<{ name: string; }>(),
                 success: f(`✅ The tag \`{tagName}\` by **{author#userTag}** has been imported as \`{commandName}\` and is authorized by **{authorizer#userTag}**`).withArgs<{ tagName: string; commandName: string; author?: UserTag; authorizer?: UserTag; }>()
             }
         },

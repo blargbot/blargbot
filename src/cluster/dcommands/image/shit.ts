@@ -1,5 +1,6 @@
 import { CommandContext, GlobalImageCommand } from '@blargbot/cluster/command';
-import { ImageResult } from '@blargbot/image/types';
+
+import { CommandResult } from '../../types';
 
 export class ShitCommand extends GlobalImageCommand {
     public constructor() {
@@ -19,7 +20,7 @@ export class ShitCommand extends GlobalImageCommand {
         });
     }
 
-    public async render(context: CommandContext, text: string, plural: boolean): Promise<ImageResult | string> {
+    public async render(context: CommandContext, text: string, plural: boolean): Promise<CommandResult> {
         text = await context.util.resolveTags(context, text);
         return await this.renderImage(context, `shit`, { text, plural });
     }

@@ -3,6 +3,8 @@ import { CommandType, guard } from '@blargbot/cluster/utils';
 import { parse } from '@blargbot/core/utils';
 import moment from 'moment-timezone';
 
+import { CommandResult } from '../../types';
+
 export class TimerCommand extends GlobalCommand {
     public constructor() {
         super({
@@ -23,7 +25,7 @@ export class TimerCommand extends GlobalCommand {
         });
     }
 
-    public async addTimer(context: CommandContext, durationStr: string | undefined, message: string, inChannel: boolean): Promise<string> {
+    public async addTimer(context: CommandContext, durationStr: string | undefined, message: string, inChannel: boolean): Promise<CommandResult> {
         if (durationStr === undefined)
             return `❌ The \`-t\` flag is required to set the duration of the reminder!`;
 

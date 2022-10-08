@@ -1,6 +1,7 @@
 import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { codeBlock, CommandType, parse, pluralise as p, randChoose, randInt, repeat } from '@blargbot/cluster/utils';
-import { EmbedOptions } from 'eris';
+
+import { CommandResult } from '../../types';
 
 export class RollCommand extends GlobalCommand {
     public constructor() {
@@ -17,7 +18,7 @@ export class RollCommand extends GlobalCommand {
         });
     }
 
-    public rollDice(context: CommandContext, dice: string, modifier?: number, details?: string): EmbedOptions | string {
+    public rollDice(context: CommandContext, dice: string, modifier?: number, details?: string): CommandResult {
         switch (dice.toLowerCase()) {
             case `cat`: return {
                 author: context.util.embedifyAuthor(context.author),

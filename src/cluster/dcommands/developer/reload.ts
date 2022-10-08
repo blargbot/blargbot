@@ -1,5 +1,5 @@
 import { GlobalCommand } from '@blargbot/cluster/command';
-import { ICommandManager } from '@blargbot/cluster/types';
+import { CommandResult, ICommandManager } from '@blargbot/cluster/types';
 import { CommandType, pluralise as p } from '@blargbot/cluster/utils';
 import { ModuleLoader } from '@blargbot/core/modules';
 
@@ -28,7 +28,7 @@ export class ReloadCommand extends GlobalCommand {
         });
     }
 
-    public async reloadModules<T>(loader: ModuleLoader<T> | ICommandManager, members: readonly string[], type: string): Promise<string> {
+    public async reloadModules<T>(loader: ModuleLoader<T> | ICommandManager, members: readonly string[], type: string): Promise<CommandResult> {
         let count = members.length;
         if (members.length === 0) {
             await (loader instanceof ModuleLoader ? loader.reload(true) : loader.load());

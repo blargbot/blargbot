@@ -2,6 +2,8 @@ import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { codeBlock, CommandType } from '@blargbot/cluster/utils';
 import { EvalResult, GlobalEvalResult, MasterEvalRequest } from '@blargbot/core/types';
 
+import { CommandResult } from '../../types';
+
 export class EvalCommand extends GlobalCommand {
     public constructor() {
         super({
@@ -32,7 +34,7 @@ export class EvalCommand extends GlobalCommand {
         });
     }
 
-    public async eval(context: CommandContext, userId: string, code: string): Promise<string> {
+    public async eval(context: CommandContext, userId: string, code: string): Promise<CommandResult> {
         [, code] = /^```(?:\w*?\s*\n|)(.*)\n```$/s.exec(code) ?? [undefined, code];
 
         const result = await context.cluster.eval(userId, code);
@@ -41,7 +43,7 @@ export class EvalCommand extends GlobalCommand {
             : `❌ An error occured!${codeBlock(result.error)}`;
     }
 
-    public async mastereval(context: CommandContext, userId: string, code: string): Promise<string> {
+    public async mastereval(context: CommandContext, userId: string, code: string): Promise<CommandResult> {
         [, code] = /^```(?:\w*?\s*\n|)(.*)\n```$/s.exec(code) ?? [undefined, code];
 
         const response = await this.#requestEval(context, { type: `master`, userId, code });
@@ -50,7 +52,7 @@ export class EvalCommand extends GlobalCommand {
             : `❌ An error occured!${codeBlock(response.error)}`;
     }
 
-    public async globaleval(context: CommandContext, userId: string, code: string): Promise<string> {
+    public async globaleval(context: CommandContext, userId: string, code: string): Promise<CommandResult> {
         [, code] = /^```(?:\w*?\s*\n|)(.*)\n```$/s.exec(code) ?? [undefined, code];
 
         const response = await this.#requestEval(context, { type: `global`, userId, code });
@@ -66,7 +68,7 @@ export class EvalCommand extends GlobalCommand {
         }).join(``)}`;
     }
 
-    public async clustereval(context: CommandContext, clusterId: number, userId: string, code: string): Promise<string> {
+    public async clustereval(context: CommandContext, clusterId: number, userId: string, code: string): Promise<CommandResult> {
         [, code] = /^```(?:\w*?\s*\n|)(.*)\n```$/s.exec(code) ?? [undefined, code];
 
         const response = await this.#requestEval(context, { type: `cluster${clusterId}`, userId, code });

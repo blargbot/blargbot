@@ -1,7 +1,8 @@
 import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType, guard, randChoose } from '@blargbot/cluster/utils';
 import spellsJson from '@blargbot/res/spells.json';
-import { EmbedOptions } from 'eris';
+
+import { CommandResult } from '../../types';
 
 export class SpellCommand extends GlobalCommand {
     public constructor() {
@@ -18,7 +19,7 @@ export class SpellCommand extends GlobalCommand {
         });
     }
 
-    public async getSpell(context: CommandContext, name: string | undefined): Promise<EmbedOptions | string> {
+    public async getSpell(context: CommandContext, name: string | undefined): Promise<CommandResult> {
         const spell = name === undefined ? randChoose(Object.values(spells)) : await this.#findSpell(context, name);
         if (spell === undefined)
             return `❌ I couldnt find that spell!`;

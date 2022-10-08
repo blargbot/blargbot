@@ -1,6 +1,8 @@
 import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType, randChoose, randInt, repeat } from '@blargbot/cluster/utils';
 
+import { CommandResult } from '../../types';
+
 export class SyntaxCommand extends GlobalCommand {
     public constructor() {
         super({
@@ -16,7 +18,7 @@ export class SyntaxCommand extends GlobalCommand {
         });
     }
 
-    public getSyntax(context: CommandContext, commandName: string): string {
+    public getSyntax(context: CommandContext, commandName: string): CommandResult {
         const cleanName = commandName.replace(/[\s\n]+/g, ` `);
         const correctTokens = repeat(randInt(1, 10), i => getToken(i));
         return `❌ Invalid usage!\nProper usage: \`${context.prefix}syntax ${cleanName} ${correctTokens.join(` `)}\``;

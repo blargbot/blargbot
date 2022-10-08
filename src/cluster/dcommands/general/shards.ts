@@ -1,7 +1,8 @@
 import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
-import { ClusterStats, ShardStats } from '@blargbot/cluster/types';
+import { ClusterStats, CommandResult, ShardStats } from '@blargbot/cluster/types';
 import { CommandType, discord, guard, humanize, snowflake } from '@blargbot/cluster/utils';
-import { EmbedOptions } from 'eris';
+import { FormatEmbedOptions } from '@blargbot/core/types';
+import { IFormattable } from '@blargbot/domain/messages/types';
 import moment from 'moment-timezone';
 
 export class ShardsCommand extends GlobalCommand {
@@ -35,7 +36,7 @@ export class ShardsCommand extends GlobalCommand {
             ]
         });
     }
-    public async showAllShards(context: CommandContext, downOnly: boolean): Promise<string | EmbedOptions> {
+    public async showAllShards(context: CommandContext, downOnly: boolean): Promise<CommandResult> {
         const shardConfig = context.config.discord.shards;
         const clusterCount = Math.ceil(shardConfig.max / shardConfig.perCluster);
         const clusterData = await context.cluster.worker.request(`getClusterStats`, undefined);
@@ -78,7 +79,7 @@ export class ShardsCommand extends GlobalCommand {
         };
     }
 
-    public async showGuildShards(context: CommandContext, guildIDStr: string): Promise<string | EmbedOptions> {
+    public async showGuildShards(context: CommandContext, guildIDStr: string): Promise<CommandResult> {
         if (!snowflake.test(guildIDStr))
             return `❌ \`${guildIDStr}\` is not a valid guildID`;
         const guildData = await discord.cluster.getGuildClusterStats(context.cluster, guildIDStr);
@@ -90,7 +91,7 @@ export class ShardsCommand extends GlobalCommand {
     public async showClusterShards(
         context: CommandContext,
         clusterID: number
-    ): Promise<string | EmbedOptions> {
+    ): Promise<CommandResult> {
         const clusterStats = await discord.cluster.getClusterStats(context.cluster, clusterID);
         const isValidCluster = Math.ceil(context.config.discord.shards.max / context.config.discord.shards.perCluster) - 1 >= clusterID && clusterID >= 0;
         if (clusterStats === undefined)
@@ -98,8 +99,8 @@ export class ShardsCommand extends GlobalCommand {
         return this.shardEmbed(context, clusterStats, ``);
     }
 
-    public shardEmbed(context: CommandContext, clusterData: ClusterStats, embedDesc: string, shard?: ShardStats): EmbedOptions {
-        const embed: EmbedOptions = {};
+    public shardEmbed(context: CommandContext, clusterData: ClusterStats, embedDesc: string, shard?: ShardStats): CommandResult {
+        const embed: FormatEmbedOptions<IFormattable<string>> = {};
         embed.title = shard !== undefined ? `Shard ${shard.id}` : `Cluster ${clusterData.id}`;
         embed.url = context.util.websiteLink(`shards`);
         embed.description = embedDesc;

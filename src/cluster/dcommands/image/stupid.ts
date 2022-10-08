@@ -1,6 +1,7 @@
 import { CommandContext, GlobalImageCommand } from '@blargbot/cluster/command';
 import { guard } from '@blargbot/cluster/utils';
-import { ImageResult } from '@blargbot/image/types';
+
+import { CommandResult } from '../../types';
 
 export class StupidCommand extends GlobalImageCommand {
     public constructor() {
@@ -29,7 +30,7 @@ export class StupidCommand extends GlobalImageCommand {
         });
     }
 
-    public async renderUser(context: CommandContext, text: string, userStr: string): Promise<ImageResult | string> {
+    public async renderUser(context: CommandContext, text: string, userStr: string): Promise<CommandResult> {
         if (!guard.isGuildCommandContext(context))
             return `❌ I could not find the user \`${userStr}\``;
 
@@ -39,7 +40,7 @@ export class StupidCommand extends GlobalImageCommand {
         return await this.render(context, text, result.value.user.avatarURL);
     }
 
-    public async render(context: CommandContext, text: string, url: string): Promise<ImageResult | string> {
+    public async render(context: CommandContext, text: string, url: string): Promise<CommandResult> {
         text = await context.util.resolveTags(context, text);
         return await this.renderImage(context, `stupid`, { text, avatar: url });
     }

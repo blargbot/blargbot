@@ -1,6 +1,8 @@
 import { GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType, randChoose } from '@blargbot/cluster/utils';
 
+import { CommandResult } from '../../types';
+
 export class InsultCommand extends GlobalCommand {
     public constructor() {
         super({
@@ -21,7 +23,7 @@ export class InsultCommand extends GlobalCommand {
         });
     }
 
-    public insult(who: string): string {
+    public insult(who: string): CommandResult {
         return `${who} ${randChoose(nouns)} ${randChoose(verbs)} ${randChoose(adjectives)}`;
     }
 }

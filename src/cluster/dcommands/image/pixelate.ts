@@ -1,8 +1,9 @@
 import { CommandContext, GlobalImageCommand } from '@blargbot/cluster/command';
 import { guard } from '@blargbot/core/utils';
 import { parse } from '@blargbot/core/utils/parse';
-import { ImageResult } from '@blargbot/image/types';
 import { User } from 'eris';
+
+import { CommandResult } from '../../types';
 
 export class PixelateCommand extends GlobalImageCommand {
     public constructor() {
@@ -34,11 +35,11 @@ export class PixelateCommand extends GlobalImageCommand {
         });
     }
 
-    public async renderUser(context: CommandContext, user: User, scale: number): Promise<ImageResult | string> {
+    public async renderUser(context: CommandContext, user: User, scale: number): Promise<CommandResult> {
         return await this.render(context, user.avatarURL, scale);
     }
 
-    public async render(context: CommandContext, url: string, scale: number): Promise<ImageResult | string> {
+    public async render(context: CommandContext, url: string, scale: number): Promise<CommandResult> {
         url = parse.url(url);
         if (!guard.isUrl(url))
             return `❌ \`${url}\` is not a valid url!`;

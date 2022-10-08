@@ -1,6 +1,8 @@
 import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType, pluralise as p, randChoose, randInt } from '@blargbot/cluster/utils';
 
+import { CommandResult } from '../../types';
+
 export class RussianRouletteCommand extends GlobalCommand {
     public constructor() {
         super({
@@ -16,7 +18,7 @@ export class RussianRouletteCommand extends GlobalCommand {
         });
     }
 
-    public async play(context: CommandContext, bullets: number, emote: string | undefined): Promise<string | undefined> {
+    public async play(context: CommandContext, bullets: number, emote: string | undefined): Promise<CommandResult> {
         emote ??= randChoose(mojiList);
         if (bullets <= 0)
             return `❌ Wimp! You need to load at least one bullet.`;

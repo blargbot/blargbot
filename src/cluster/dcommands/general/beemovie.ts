@@ -2,6 +2,8 @@ import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType, randChoose } from '@blargbot/cluster/utils';
 import script from '@blargbot/res/beemovie.json';
 
+import { CommandResult } from '../../types';
+
 const scriptMap = script.reduce<{ characterLines: typeof script; allLines: typeof script; }>((a, l) => {
     if (l.type !== 2)
         a.allLines.push(l);
@@ -29,7 +31,7 @@ export class BeemovieCommand extends GlobalCommand {
         });
     }
 
-    public getQuote(context: CommandContext, showName: boolean, charactersOnly: boolean): string {
+    public getQuote(context: CommandContext, showName: boolean, charactersOnly: boolean): CommandResult {
         const lines = scriptMap[charactersOnly ? `characterLines` : `allLines`];
         const line = randChoose(lines);
 

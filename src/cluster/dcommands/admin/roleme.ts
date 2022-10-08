@@ -1,6 +1,6 @@
 import { bbtag } from '@blargbot/bbtag';
 import { GuildCommand } from '@blargbot/cluster/command';
-import { GuildCommandContext } from '@blargbot/cluster/types';
+import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { codeBlock, CommandType, guard } from '@blargbot/cluster/utils';
 import { SendContent } from '@blargbot/core/types';
 import { GuildRolemeEntry } from '@blargbot/domain/models';
@@ -77,7 +77,7 @@ export class RolemeCommand extends GuildCommand {
         });
     }
 
-    public async addRoleme(context: GuildCommandContext, phrase: string, options: RolemeOptions): Promise<string | undefined> {
+    public async addRoleme(context: GuildCommandContext, phrase: string, options: RolemeOptions): Promise<CommandResult> {
         const roleme = await this.#buildRoleme(context, {
             message: phrase,
             add: options.addRoles ?? [],
@@ -102,7 +102,7 @@ export class RolemeCommand extends GuildCommand {
         return `✅ Roleme \`${nextId}\` has been created!`;
     }
 
-    public async editRoleme(context: GuildCommandContext, id: number, phrase: string | undefined, options: RolemeOptions): Promise<string | undefined> {
+    public async editRoleme(context: GuildCommandContext, id: number, phrase: string | undefined, options: RolemeOptions): Promise<CommandResult> {
         const current = await context.database.guilds.getRoleme(context.channel.guild.id, id);
         if (current === undefined)
             return `❌ Roleme ${id} doesnt exist`;
@@ -227,7 +227,7 @@ export class RolemeCommand extends GuildCommand {
         return result;
     }
 
-    public async deleteRoleme(context: GuildCommandContext, id: number): Promise<string> {
+    public async deleteRoleme(context: GuildCommandContext, id: number): Promise<CommandResult> {
         const roleme = await context.database.guilds.getRoleme(context.channel.guild.id, id);
         if (roleme === undefined)
             return `❌ Roleme ${id} doesnt exist`;
@@ -236,7 +236,7 @@ export class RolemeCommand extends GuildCommand {
         return `✅ Roleme ${id} has been deleted`;
     }
 
-    public async setMessage(context: GuildCommandContext, id: number, message: string | undefined): Promise<string> {
+    public async setMessage(context: GuildCommandContext, id: number, message: string | undefined): Promise<CommandResult> {
         const roleme = await context.database.guilds.getRoleme(context.channel.guild.id, id);
         if (roleme === undefined)
             return `❌ Roleme ${id} doesnt exist`;
@@ -253,7 +253,7 @@ export class RolemeCommand extends GuildCommand {
         return `✅ Roleme ${id} has now had its message set`;
     }
 
-    public async getRawMessage(context: GuildCommandContext, id: number, fileExtension: string): Promise<string | SendContent> {
+    public async getRawMessage(context: GuildCommandContext, id: number, fileExtension: string): Promise<CommandResult> {
         const roleme = await context.database.guilds.getRoleme(context.channel.guild.id, id);
         if (roleme === undefined)
             return `❌ Roleme ${id} doesnt exist`;
@@ -275,7 +275,7 @@ export class RolemeCommand extends GuildCommand {
             };
     }
 
-    public async debugMessage(context: GuildCommandContext, id: number): Promise<string | SendContent> {
+    public async debugMessage(context: GuildCommandContext, id: number): Promise<CommandResult> {
         const roleme = await context.database.guilds.getRoleme(context.channel.guild.id, id);
         if (roleme === undefined)
             return `❌ Roleme ${id} doesnt exist`;
@@ -288,7 +288,7 @@ export class RolemeCommand extends GuildCommand {
         return `ℹ️ Ive sent the debug output in a DM`;
     }
 
-    public async setAuthorizer(context: GuildCommandContext, id: number): Promise<string> {
+    public async setAuthorizer(context: GuildCommandContext, id: number): Promise<CommandResult> {
         const roleme = await context.database.guilds.getRoleme(context.channel.guild.id, id);
         if (roleme === undefined)
             return `❌ Roleme ${id} doesnt exist`;
@@ -307,7 +307,7 @@ export class RolemeCommand extends GuildCommand {
         return `✅ Your permissions will now be used for roleme ${id}`;
     }
 
-    public async showInfo(context: GuildCommandContext, id: number): Promise<string | EmbedOptions> {
+    public async showInfo(context: GuildCommandContext, id: number): Promise<CommandResult> {
         const roleme = await context.database.guilds.getRoleme(context.channel.guild.id, id);
         if (roleme === undefined)
             return `❌ Roleme ${id} doesnt exist`;
@@ -330,7 +330,7 @@ export class RolemeCommand extends GuildCommand {
         };
     }
 
-    public async listRolemes(context: GuildCommandContext): Promise<string | EmbedOptions> {
+    public async listRolemes(context: GuildCommandContext): Promise<CommandResult> {
         const rolemes = Object.entries(await context.database.guilds.getRolemes(context.channel.guild.id) ?? {})
             .filter((e): e is [string, GuildRolemeEntry] => e[1] !== undefined);
 

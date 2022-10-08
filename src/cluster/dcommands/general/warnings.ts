@@ -1,5 +1,5 @@
 import { GuildCommand } from '@blargbot/cluster/command';
-import { GuildCommandContext } from '@blargbot/cluster/types';
+import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType, humanize, pluralise as p } from '@blargbot/cluster/utils';
 import { Member } from 'eris';
 
@@ -23,7 +23,7 @@ export class WarningsCommand extends GuildCommand {
         });
     }
 
-    public async warnings(context: GuildCommandContext, member: Member): Promise<string> {
+    public async warnings(context: GuildCommandContext, member: Member): Promise<CommandResult> {
         const { count, banAt, kickAt, timeoutAt } = await context.cluster.moderation.warns.details(member);
         const result: string[] = [
             count > 0

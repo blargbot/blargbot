@@ -1,5 +1,5 @@
 import { GuildCommand } from '@blargbot/cluster/command';
-import { GuildCommandContext } from '@blargbot/cluster/types';
+import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType, parse, randInt } from '@blargbot/cluster/utils';
 import { Emote } from '@blargbot/core/Emote';
 import { Duration, duration } from 'moment-timezone';
@@ -42,7 +42,7 @@ export class PollCommand extends GuildCommand {
         });
     }
 
-    public async createPoll(context: GuildCommandContext, options: PollOptions): Promise<string | undefined> {
+    public async createPoll(context: GuildCommandContext, options: PollOptions): Promise<CommandResult> {
         const emojis = options.emojis === undefined ? defaultEmotes : Emote.findAll(options.emojis);
         const time = typeof options.time === `string`
             ? parse.duration(options.time) ?? options.time

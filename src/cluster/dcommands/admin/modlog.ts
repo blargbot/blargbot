@@ -1,5 +1,5 @@
 import { GuildCommand } from '@blargbot/cluster/command';
-import { GuildCommandContext } from '@blargbot/cluster/types';
+import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType, humanize } from '@blargbot/cluster/utils';
 import { guard, pluralise as p } from '@blargbot/core/utils';
 import { ApiError, DiscordRESTError, KnownChannel } from 'eris';
@@ -29,7 +29,7 @@ export class ModlogCommand extends GuildCommand {
         });
     }
 
-    public async setChannel(context: GuildCommandContext, channel: KnownChannel | undefined): Promise<string> {
+    public async setChannel(context: GuildCommandContext, channel: KnownChannel | undefined): Promise<CommandResult> {
         if (channel !== undefined && (!guard.isGuildChannel(channel) || channel.guild !== context.channel.guild))
             return `❌ The modlog channel must be on this server!`;
         if (channel !== undefined && !guard.isTextableChannel(channel))
@@ -42,7 +42,7 @@ export class ModlogCommand extends GuildCommand {
         return `✅ Modlog entries will now be sent in ${channel.mention}`;
     }
 
-    public async clearModlog(context: GuildCommandContext, ids: readonly number[]): Promise<string> {
+    public async clearModlog(context: GuildCommandContext, ids: readonly number[]): Promise<CommandResult> {
         const modlogs = await context.database.guilds.removeModlogCases(context.channel.guild.id, ids.length === 0 ? undefined : ids);
 
         if (modlogs === undefined || modlogs.length === 0)

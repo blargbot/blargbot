@@ -1,8 +1,8 @@
 import { Cluster } from '@blargbot/cluster';
 import { GuildCommand } from '@blargbot/cluster/command';
-import { GuildCommandContext } from '@blargbot/cluster/types';
+import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { codeBlock, CommandType, defaultStaff, guard, guildSettings, parse } from '@blargbot/cluster/utils';
-import { EmbedOptions, Guild } from 'eris';
+import { Guild } from 'eris';
 
 export class SettingsCommand extends GuildCommand {
     public constructor(cluster: Cluster) {
@@ -13,24 +13,24 @@ export class SettingsCommand extends GuildCommand {
             definitions: [
                 {
                     parameters: ``,
-                    execute: ctx => this.#list(ctx),
+                    execute: ctx => this.list(ctx),
                     description: `Gets the current settings for this guild`
                 },
                 {
                     parameters: `keys`,
                     description: `Lists all the setting keys and their types`,
-                    execute: () => this.#keys()
+                    execute: () => this.keys()
                 },
                 {
                     parameters: `set {key} {~value+?}`,
                     description: `Sets the given setting key to have a certian value. If \`value\` is omitted, the setting is reverted to its default value`,
-                    execute: (ctx, [setting, value]) => this.#set(ctx, setting.asString, value.asOptionalString)
+                    execute: (ctx, [setting, value]) => this.set(ctx, setting.asString, value.asOptionalString)
                 }
             ]
         });
     }
 
-    async #list(context: GuildCommandContext): Promise<string | { embeds: [EmbedOptions]; }> {
+    public async list(context: GuildCommandContext): Promise<CommandResult> {
         const storedGuild = await context.database.guilds.get(context.channel.guild.id);
         if (storedGuild === undefined)
             return `❌ Your guild is not correctly configured yet! Please try again later`;
@@ -100,7 +100,7 @@ export class SettingsCommand extends GuildCommand {
         };
     }
 
-    async #set(context: GuildCommandContext, setting: string, value: string | undefined): Promise<string> {
+    public async set(context: GuildCommandContext, setting: string, value: string | undefined): Promise<CommandResult> {
         const key = setting.toLowerCase();
         if (!guard.hasProperty(guildSettings, key))
             return `❌ Invalid key!`;
@@ -115,7 +115,7 @@ export class SettingsCommand extends GuildCommand {
         return `✅ ${guildSettings[key].name} is set to ${parsed.display ?? `nothing`}`;
     }
 
-    #keys(): string {
+    public keys(): CommandResult {
         const message = [];
         for (const key in guildSettings) {
             if (guard.hasProperty(guildSettings, key)) {

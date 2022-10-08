@@ -1,6 +1,8 @@
 import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType } from '@blargbot/cluster/utils';
 
+import { CommandResult } from '../../types';
+
 export class InviteCommand extends GlobalCommand {
     public constructor() {
         super({
@@ -17,7 +19,7 @@ export class InviteCommand extends GlobalCommand {
         });
     }
 
-    public invite(context: CommandContext): string {
+    public invite(context: CommandContext): CommandResult {
         return [
             `Invite me to your guild!`,
             `<${context.util.websiteLink(`invite`)}>`,

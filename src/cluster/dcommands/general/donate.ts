@@ -1,6 +1,8 @@
 import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType } from '@blargbot/cluster/utils';
 
+import { CommandResult } from '../../types';
+
 export class DonateCommand extends GlobalCommand {
     public constructor() {
         super({
@@ -16,7 +18,7 @@ export class DonateCommand extends GlobalCommand {
         });
     }
 
-    public async donateDetails(context: CommandContext): Promise<string> {
+    public async donateDetails(context: CommandContext): Promise<CommandResult> {
         const ownerId = context.cluster.ownerIds.reduce((p, c) => p < c ? p : c);
         const owner = await context.util.getUser(ownerId);
         await context.sendDM({

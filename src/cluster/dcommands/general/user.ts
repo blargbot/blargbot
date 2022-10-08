@@ -1,7 +1,9 @@
 import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType, discord, guard, parse } from '@blargbot/cluster/utils';
-import { Activity, Constants, EmbedOptions, Member, User } from 'eris';
+import { Activity, Constants, Member, User } from 'eris';
 import moment from 'moment-timezone';
+
+import { CommandResult } from '../../types';
 
 export class UserCommand extends GlobalCommand {
     public constructor() {
@@ -18,9 +20,8 @@ export class UserCommand extends GlobalCommand {
         });
     }
 
-    public async getUser(context: CommandContext, user: User): Promise<EmbedOptions> {
+    public async getUser(context: CommandContext, user: User): Promise<CommandResult> {
         const result = {
-            ...<EmbedOptions>{},
             author: context.util.embedifyAuthor(user),
             thumbnail: {
                 url: user.avatarURL
@@ -41,7 +42,7 @@ export class UserCommand extends GlobalCommand {
                             .filter(r => r.pos !== 0) // @everyone
                             .sort((a, b) => b.pos - a.pos) // descending
                             .map(r => `<@&${r.id}>`)
-                            .join(` `)  }\u200b`
+                            .join(` `)}\u200b`
                     }
                 ];
                 if (member.nick !== null)

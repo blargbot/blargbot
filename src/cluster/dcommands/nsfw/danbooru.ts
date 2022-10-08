@@ -1,8 +1,9 @@
 import { GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType, humanize, shuffle } from '@blargbot/cluster/utils';
-import { SendContent } from '@blargbot/core/types';
 import { mapping } from '@blargbot/mapping';
 import fetch from 'node-fetch';
+
+import { CommandResult } from '../../types';
 
 export class DanbooruCommand extends GlobalCommand {
     public constructor() {
@@ -19,7 +20,7 @@ export class DanbooruCommand extends GlobalCommand {
         });
     }
 
-    public async getDanbooru(tags: readonly string[]): Promise<string | SendContent> {
+    public async getDanbooru(tags: readonly string[]): Promise<CommandResult> {
         if (tags.length === 0)
             return `❌ You need to provide some tags`;
 

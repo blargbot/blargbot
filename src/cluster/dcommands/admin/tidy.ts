@@ -1,5 +1,5 @@
 import { GuildCommand, SingleThreadMiddleware } from '@blargbot/cluster/command';
-import { GuildCommandContext } from '@blargbot/cluster/types';
+import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType } from '@blargbot/cluster/utils';
 import { createSafeRegExp, guard, pluralise as p } from '@blargbot/core/utils';
 import { ApiError, DiscordRESTError, KnownMessage, KnownTextableChannel, User } from 'eris';
@@ -43,7 +43,7 @@ export class TidyCommand extends GuildCommand {
         this.middleware.push(new SingleThreadMiddleware(ctx => ctx.channel.id));
     }
 
-    public async tidy(context: GuildCommandContext, count: number, options: TidyOptions): Promise<string | undefined> {
+    public async tidy(context: GuildCommandContext, count: number, options: TidyOptions): Promise<CommandResult> {
         if (count <= 0)
             return `❌ I cannot delete ${count} messages!`;
 

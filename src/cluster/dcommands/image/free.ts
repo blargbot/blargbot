@@ -1,5 +1,6 @@
 import { CommandContext, GlobalImageCommand } from '@blargbot/cluster/command';
-import { ImageResult } from '@blargbot/image/types';
+
+import { CommandResult } from '../../types';
 
 export class FreeCommand extends GlobalImageCommand {
     public constructor() {
@@ -18,7 +19,7 @@ export class FreeCommand extends GlobalImageCommand {
         });
     }
 
-    public async render(context: CommandContext, caption: string, bottomText: string | undefined): Promise<string | ImageResult> {
+    public async render(context: CommandContext, caption: string, bottomText: string | undefined): Promise<CommandResult> {
         return await this.renderImage(context, `free`, { top: caption, bottom: bottomText });
     }
 }
