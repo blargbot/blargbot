@@ -2,7 +2,7 @@ import { ClusterUtilities } from '@blargbot/cluster/ClusterUtilities';
 import { CommandBaseOptions, CommandResult, CommandSignature } from '@blargbot/cluster/types';
 import { CommandType } from '@blargbot/cluster/utils';
 import { IMiddleware, NextMiddleware } from '@blargbot/core/types';
-import { IFormatString } from '@blargbot/domain/messages/types';
+import { IFormattable } from '@blargbot/domain/messages/types';
 import { FlagDefinition } from '@blargbot/domain/models';
 import { Guild, KnownTextableChannel, User } from 'eris';
 
@@ -13,7 +13,7 @@ export abstract class Command implements CommandBaseOptions, IMiddleware<Command
     public readonly aliases: readonly string[];
     public readonly category: CommandType;
     public readonly cannotDisable: boolean;
-    public readonly description: IFormatString | undefined;
+    public readonly description: IFormattable<string> | undefined;
     public readonly flags: readonly FlagDefinition[];
     public readonly signatures: readonly CommandSignature[];
     public readonly hidden: boolean;

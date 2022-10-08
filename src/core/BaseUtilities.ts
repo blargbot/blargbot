@@ -1,7 +1,7 @@
 import { Configuration } from '@blargbot/config/Configuration';
-import { DMContext, FormatSendContent, SendContent, SendContext } from '@blargbot/core/types';
+import { FormatSendContent, SendContent, SendContext } from '@blargbot/core/types';
 import { Database } from '@blargbot/database';
-import { IFormatString } from '@blargbot/domain/messages/types';
+import { IFormattable } from '@blargbot/domain/messages/types';
 import { DiscordChannelTag, DiscordRoleTag, DiscordTagSet, DiscordUserTag, StoredUser } from '@blargbot/domain/models';
 import { Logger } from '@blargbot/logger';
 import { Snowflake } from 'catflake';
@@ -86,9 +86,9 @@ export class BaseUtilities {
         return target; // never
     }
 
-    public async send<T extends KnownTextableChannel>(context: T, payload: FormatSendContent | IFormatString): Promise<Message<T> | undefined>;
-    public async send(context: SendContext, payload: FormatSendContent | IFormatString): Promise<KnownMessage | undefined>;
-    public async send(context: SendContext, payload: FormatSendContent | IFormatString): Promise<KnownMessage | undefined> {
+    public async send<T extends KnownTextableChannel>(context: T, payload: SendContent): Promise<Message<T> | undefined>;
+    public async send(context: SendContext, payload: SendContent): Promise<KnownMessage | undefined>;
+    public async send(context: SendContext, payload: SendContent): Promise<KnownMessage | undefined> {
         metrics.sendCounter.inc();
 
         let channel = await this.#getSendChannel(context);

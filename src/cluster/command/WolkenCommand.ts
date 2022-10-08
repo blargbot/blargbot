@@ -1,5 +1,5 @@
 import { CommandType } from '@blargbot/cluster/utils';
-import { IFormatString, IFormatStringDefinition } from '@blargbot/domain/messages/types';
+import { IFormatStringDefinition, IFormattable } from '@blargbot/domain/messages/types';
 import { User } from 'eris';
 import Wolken from 'wolken';
 
@@ -11,7 +11,7 @@ export type WolkeOptions = WolkeSelfOptions | WolkeUserOptions;
 
 export interface WolkeOptionsBase {
     search: string;
-    description: IFormatString;
+    description: IFormattable<string>;
     wolkeKey: string;
 }
 

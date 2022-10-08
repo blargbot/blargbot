@@ -1,7 +1,7 @@
-import { IFormatString } from '@blargbot/domain/messages';
+import { IFormattable } from '@blargbot/domain/messages';
 import { Snowflake } from '@blargbot/domain/models';
 import { Logger } from '@blargbot/logger';
-import { ActionRow, AdvancedMessageContent, ChannelInteraction, EmbedAuthor, EmbedField, EmbedFooter, EmbedOptions, FileContent, Guild, InteractionButton, KnownMessage, KnownTextableChannel, Member, SelectMenu, SelectMenuOptions, TextableChannel, URLButton, User, UserChannelInteraction } from 'eris';
+import { ActionRow, AdvancedMessageContent, EmbedAuthor, EmbedField, EmbedFooter, EmbedOptions, FileContent, Guild, InteractionButton, KnownMessage, KnownTextableChannel, Member, SelectMenu, SelectMenuOptions, TextableChannel, URLButton, User } from 'eris';
 
 import { Binder } from './Binder';
 import { WorkerConnection } from './worker';
@@ -10,51 +10,49 @@ export type MalformedEmbed = { fields: [EmbedField]; malformed: true; };
 export type ModuleResult<TModule> = { names: Iterable<string>; module: TModule; };
 export type DMContext = string | KnownMessage | User | Member;
 export type SendContext = TextableChannel | string | User;
-export type SendEmbed = EmbedOptions & { asString?: string; }
-export type SendFiles = FileContent | FileContent[]
 export interface SendContent extends AdvancedMessageContent {
     files?: FileContent[];
 }
 
-type ExtendProps<T, U extends { [P in keyof T]?: unknown }> = { [P in keyof T]: T[P] | (P extends keyof U ? U[P] : never) }
-export type FormatSendContent = ExtendProps<SendContent, {
-    components: FormatActionRow[];
-    content: IFormatString;
-    embeds: FormatEmbedOptions[];
+type ReplaceProps<T, U extends { [P in keyof T]?: unknown }> = { [P in keyof T]: P extends keyof U ? U[P] : T[P] }
+export type FormatSendContent<TString> = ReplaceProps<SendContent, {
+    components: Array<FormatActionRow<TString>>;
+    content: TString;
+    embeds: Array<FormatEmbedOptions<TString>>;
 }>;
 
-export type FormatActionRow = ExtendProps<ActionRow, {
-    components: FormatActionRowComponents[];
+export type FormatActionRow<TString> = ReplaceProps<ActionRow, {
+    components: Array<FormatActionRowComponents<TString>>;
 }>;
 
-export type FormatActionRowComponents = FormatButton | FormatSelectMenu;
-export type FormatButton = FormatInteractionButton | FormatURLButton;
-export type FormatInteractionButton = ExtendProps<InteractionButton, { label: IFormatString; }>;
-export type FormatURLButton = ExtendProps<URLButton, { label: IFormatString; }>;
-export type FormatSelectMenu = ExtendProps<SelectMenu, {
-    placeholder: IFormatString;
-    options: FormatSelectMenuOptions;
+export type FormatActionRowComponents<TString> = FormatButton<TString> | FormatSelectMenu<TString>;
+export type FormatButton<TString> = FormatInteractionButton<TString> | FormatURLButton<TString>;
+export type FormatInteractionButton<TString> = ReplaceProps<InteractionButton, { label: TString; }>;
+export type FormatURLButton<TString> = ReplaceProps<URLButton, { label: TString; }>;
+export type FormatSelectMenu<TString> = ReplaceProps<SelectMenu, {
+    placeholder: TString;
+    options: Array<FormatSelectMenuOptions<TString>>;
 }>;
-export type FormatSelectMenuOptions = ExtendProps<SelectMenuOptions, {
-    description: IFormatString;
-    label: IFormatString;
+export type FormatSelectMenuOptions<TString> = ReplaceProps<SelectMenuOptions, {
+    description: TString;
+    label: TString;
 }>;
-export type FormatEmbedOptions = ExtendProps<EmbedOptions, {
-    author: FormatEmbedAuthor;
-    description: IFormatString;
-    fields: FormatEmbedField[];
-    footer: FormatEmbedFooter;
-    title: IFormatString;
+export type FormatEmbedOptions<TString> = ReplaceProps<EmbedOptions, {
+    author: FormatEmbedAuthor<TString>;
+    description: TString;
+    fields: Array<FormatEmbedField<TString>>;
+    footer: FormatEmbedFooter<TString>;
+    title: TString;
 }>;
-export type FormatEmbedAuthor = ExtendProps<EmbedAuthor, {
-    name: IFormatString;
+export type FormatEmbedAuthor<TString> = ReplaceProps<EmbedAuthor, {
+    name: TString;
 }>;
-export type FormatEmbedField = ExtendProps<EmbedField, {
-    name: IFormatString;
-    value: IFormatString;
+export type FormatEmbedField<TString> = ReplaceProps<EmbedField, {
+    name: TString;
+    value: TString;
 }>;
-export type FormatEmbedFooter = ExtendProps<EmbedFooter, {
-    text: IFormatString;
+export type FormatEmbedFooter<TString> = ReplaceProps<EmbedFooter, {
+    text: TString;
 }>;
 
 export type LogEntry = { text: string; level: string; timestamp: string; }
@@ -126,7 +124,7 @@ type ConfirmQueryOptionsFallback<T extends boolean | undefined> = T extends unde
 export interface QueryOptionsBase {
     context: KnownTextableChannel | KnownMessage;
     actors: Iterable<string | User> | string | User;
-    prompt?: IFormatString | Omit<FormatSendContent, `components`>;
+    prompt?: IFormattable<string | Omit<SendContent, `components`>>;
     timeout?: number;
 }
 

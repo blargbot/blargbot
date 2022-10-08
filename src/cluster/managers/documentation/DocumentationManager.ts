@@ -90,7 +90,7 @@ export abstract class DocumentationManager {
     #compress(value: bigint): string {
         let hex = value.toString(16);
         if (hex.length % 2 === 1) // Buffer.from(str, 'hex') needs str to be even in length
-            hex = `0${  hex}`;
+            hex = `0${hex}`;
         const buf = Buffer.from(hex, `hex`);
         return buf.toString(`base64url`); // Might use another base, maybe base128 for even denser values
     }
@@ -98,7 +98,7 @@ export abstract class DocumentationManager {
     #decompress(value: string): bigint {
         const buf = Buffer.from(value, `base64url`);
         const hex = buf.toString(`hex`);
-        return BigInt(`0x${  hex}`);
+        return BigInt(`0x${hex}`);
     }
 
     protected abstract findDocumentation(term: string, user: User, channel: KnownTextableChannel): Awaitable<readonly Documentation[]>;

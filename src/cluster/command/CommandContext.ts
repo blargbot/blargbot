@@ -2,11 +2,14 @@ import { BBTagEngine } from '@blargbot/bbtag';
 import { Cluster, ClusterUtilities } from '@blargbot/cluster';
 import { CommandResult, GuildCommandContext, ICommand } from '@blargbot/cluster/types';
 import { Configuration } from '@blargbot/config';
-import { ChoiceQueryResult, SendContent, SendContext, SlimEntityFindQueryOptions, SlimEntityPickQueryOptions, SlimEntityQueryOptions, SlimTextQueryOptions, SlimTextQueryOptionsParsed, TextQueryResult } from '@blargbot/core/types';
+import { ChoiceQueryResult, FormatSendContent, SendContent, SendContext, SlimEntityFindQueryOptions, SlimEntityPickQueryOptions, SlimEntityQueryOptions, SlimTextQueryOptions, SlimTextQueryOptionsParsed, TextQueryResult } from '@blargbot/core/types';
 import { guard } from '@blargbot/core/utils';
 import { Database } from '@blargbot/database';
+import { IFormatter } from '@blargbot/domain/messages/types';
 import { Logger } from '@blargbot/logger';
 import { Client as Discord, KnownChannel, KnownGuildChannel, KnownMessage, KnownTextableChannel, Member, Message, Role, User, Webhook } from 'eris';
+
+import { FormattableMessageContent } from './FormattableMessageContent';
 
 export class CommandContext<TChannel extends KnownTextableChannel = KnownTextableChannel> {
     public get logger(): Logger { return this.cluster.logger; }
@@ -125,15 +128,17 @@ export class CommandContext<TChannel extends KnownTextableChannel = KnownTextabl
     }
 }
 
-function toSendContent(content: CommandResult): SendContent | undefined {
+function toSendContent(content: CommandResult, formatter: IFormatter): SendContent | undefined {
     switch (typeof content) {
         case `undefined`:
             return undefined;
-        case `object`:
-            if (`data` in content)
-                return { name: content.fileName, file: content.data };
-        // fallthrough
-        default:
-            return content;
+        case `object`: {
+            if (!(`format` in content))
+                return new FormattableMessageContent(content).format(formatter);
+            const formatted = content.format(formatter);
+            if (typeof formatted === `string`)
+                return { content: formatted };
+            return formatted;
+        }
     }
 }

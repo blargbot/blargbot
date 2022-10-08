@@ -20,7 +20,7 @@ export class ErrorMiddleware<TContext extends CommandContext> implements IMiddle
                 const message = !guard.isGuildCommandContext(context)
                     ? templates.commands.$errors.missingPermission.generic
                     : templates.commands.$errors.missingPermission.guild(context);
-                await context.util.send(context.author, message);
+                await context.send(context.author, message);
             }
 
             return templates.commands.$errors.generic({ token });

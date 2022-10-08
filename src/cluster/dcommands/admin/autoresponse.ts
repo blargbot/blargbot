@@ -3,8 +3,8 @@ import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType, createSafeRegExp, getRange, parse, randChoose, randInt } from '@blargbot/cluster/utils';
 import { guard } from '@blargbot/core/utils';
 import { GuildFilteredAutoresponse, GuildTriggerTag } from '@blargbot/domain/models';
-import { EmbedOptions } from 'eris';
 
+import { RawBBTagCommandResult } from '../../command/RawBBTagCommandResult';
 import templates from '../../text';
 
 const cmd = templates.commands.autoresponse;
@@ -126,31 +126,16 @@ export class AutoResponseCommand extends GuildCommand {
         if (match === undefined)
             return this.#arNotFound(id);
 
-        const attached = {
-            content: match.id === `everything`
+        return new RawBBTagCommandResult(
+            match.id === `everything`
+                ? cmd.raw.inline.everything({ content: match.ar.content })
+                : cmd.raw.inline.id({ id: match.id, content: match.ar.content }),
+            match.id === `everything`
                 ? cmd.raw.attached.everything
                 : cmd.raw.attached.id({ id: match.id }),
-            files: [
-                {
-                    name: `autoresponse_${match.id}.${fileExtension}`,
-                    file: match.ar.content
-                }
-            ]
-        };
-
-        if (match.ar.content.includes(`\`\`\``))
-            return attached;
-
-        return formatter => {
-            const content = formatter.format(match.id === `everything`
-                ? cmd.raw.inline.everything({ content: match.ar.content })
-                : cmd.raw.inline.id({ id: match.id, content: match.ar.content }));
-
-            if (!guard.checkMessageSize(content))
-                return { content: formatter.format(attached.content), files: attached.files };
-
-            return content;
-        };
+            match.ar.content,
+            `autoresponse_${match.id}.${fileExtension}`
+        );
     }
 
     public async setAuthorizer(context: GuildCommandContext, id: string): Promise<CommandResult> {
@@ -190,11 +175,6 @@ export class AutoResponseCommand extends GuildCommand {
         const ars = await context.database.guilds.getAutoresponses(context.channel.guild.id) ?? {};
 
         const fields = [];
-        const embed: EmbedOptions & Required<Pick<EmbedOptions, `fields`>> = {
-            fields: [],
-            title: `Autoresponses`
-        };
-
         if (ars.everything !== undefined && ars.everything !== null) {
             fields.push({
                 name: cmd.list.embed.field.name({ id: `everything` }),
@@ -215,7 +195,7 @@ export class AutoResponseCommand extends GuildCommand {
             }
         }
 
-        if (embed.fields.length === 0)
+        if (fields.length === 0)
             return cmd.list.noAutoresponses;
 
         return {

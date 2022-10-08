@@ -1,4 +1,4 @@
-import { IFormatString, IFormatStringDefinition } from "./index";
+import { IFormatString, IFormatStringDefinition, IFormatter } from "./index";
 
 export interface ITranslatableStringDefinition<T extends string, V> extends IFormatStringDefinition<T, V> {
     readonly id: string;
@@ -19,6 +19,10 @@ export class TranslatableString<T extends string, V> implements IFormatString<T>
         this.template = definition.template;
         this.value = value;
         Object.freeze(this);
+    }
+
+    public format(formatter: IFormatter): string {
+        return formatter.format(this);
     }
 
     static #verify(definition: ITranslatableStringDefinition<string, never>): void {

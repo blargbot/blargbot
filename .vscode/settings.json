@@ -35,7 +35,9 @@
   "typescript.enablePromptUseWorkspaceTsdk": true,
   "cSpell.words": [
     "Blargbot",
+    "formattable",
     "subtag",
-    "subtags"
+    "subtags",
+    "textable"
   ]
 }

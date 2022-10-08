@@ -2,7 +2,7 @@ import { Subtag } from '@blargbot/bbtag';
 import { Command, CommandContext, ScopedCommand } from '@blargbot/cluster/command';
 import { CommandType, ModerationType } from '@blargbot/cluster/utils';
 import { EvalRequest, EvalResult, FormatSendContent, GlobalEvalResult, IMiddleware, MasterEvalRequest, SendContent } from '@blargbot/core/types';
-import { IFormatString, IFormatter } from '@blargbot/domain/messages/index';
+import { IFormattable } from '@blargbot/domain/messages/index';
 import { CommandPermissions, FlagDefinition, FlagResult, GuildSettingDocs, GuildSourceCommandTag, NamedGuildCommandTag } from '@blargbot/domain/models';
 import { Guild, KnownChannel, KnownGuildTextableChannel, KnownMessage, KnownPrivateChannel, KnownTextableChannel, Member, Role, Shard, User, Webhook } from 'eris';
 import { Duration } from 'moment-timezone';
@@ -91,7 +91,7 @@ export interface CommandOptionsBase {
     readonly aliases?: readonly string[];
     readonly category: CommandType;
     readonly cannotDisable?: boolean;
-    readonly description?: IFormatString;
+    readonly description?: IFormattable<string>;
     readonly flags?: readonly FlagDefinition[];
     readonly hidden?: boolean;
 }
@@ -105,9 +105,8 @@ export interface CommandOptions<TContext extends CommandContext> extends Command
 }
 
 export type CommandResult =
-    | IFormatString
-    | FormatSendContent
-    | ((formatter: IFormatter) => string | SendContent)
+    | IFormattable<string | SendContent>
+    | FormatSendContent<string | IFormattable<string>>
     | undefined;
 
 export type CommandDefinition<TContext extends CommandContext> =
@@ -121,7 +120,7 @@ export type CommandParameter =
     | CommandLiteralParameter;
 
 export interface CommandHandlerDefinition<TContext extends CommandContext> {
-    readonly description: IFormatString;
+    readonly description: IFormattable<string>;
     readonly parameters: string;
     readonly hidden?: boolean;
     readonly execute: (context: TContext, args: readonly CommandArgument[], flags: FlagResult) => Promise<CommandResult> | CommandResult;
@@ -218,7 +217,7 @@ export interface CommandHandler<TContext extends CommandContext> {
 }
 
 export interface CommandSignature<TParameter = CommandParameter> {
-    readonly description: IFormatString;
+    readonly description: IFormattable<string>;
     readonly parameters: readonly TParameter[];
     readonly hidden: boolean;
 }
