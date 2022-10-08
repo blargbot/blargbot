@@ -36,7 +36,7 @@ export class DumpsRoute extends BaseRoute {
         if (channel !== undefined && guard.isGuildChannel(channel)) {
             if (dump.content !== undefined)
                 await this.#api.util.loadDiscordTagData(dump.content, channel.guild.id, result);
-            for (const embed of dump.embeds as APIEmbed[]) {
+            for (const embed of (dump.embeds ?? []) as APIEmbed[]) {
                 if (embed.title !== undefined)
                     await this.#api.util.loadDiscordTagData(embed.title, channel.guild.id, result);
                 if (embed.description !== undefined)
