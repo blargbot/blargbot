@@ -1,4 +1,6 @@
-import { ActionRow, AdvancedMessageContent, Button, ComponentInteraction, Constants, EmbedOptions, KnownInteraction, KnownTextableChannel, SelectMenu, User } from 'eris';
+import { FormatActionRow, FormatEmbedOptions, FormatSelectMenu, SendContent } from '@blargbot/core/types';
+import { IFormattable } from '@blargbot/domain/messages/types';
+import { Button, ComponentInteraction, Constants, KnownInteraction, KnownTextableChannel, User } from 'eris';
 import moment from 'moment-timezone';
 
 import { Cluster } from '../../Cluster';
@@ -7,33 +9,33 @@ export type Documentation = DocumentationGroup | DocumentationLeaf | Documentati
 
 export interface DocumentationBase {
     readonly id: string;
-    readonly name: string;
-    readonly tags?: readonly string[];
+    readonly name: IFormattable<string>;
+    readonly tags?: ReadonlyArray<string | IFormattable<string>>;
     readonly hidden?: boolean;
 }
 
 export interface DocumentationGroup extends DocumentationBase {
     readonly type: `group`;
     readonly items: readonly Documentation[];
-    readonly selectText: string;
-    readonly embed: Pick<EmbedOptions, `color` | `description` | `url` | `image` | `thumbnail` | `fields`>;
+    readonly selectText: IFormattable<string>;
+    readonly embed: Pick<FormatEmbedOptions<IFormattable<string>>, `color` | `description` | `url` | `image` | `thumbnail` | `fields`>;
 }
 
 export interface DocumentationLeaf extends DocumentationBase {
     readonly type: `single`;
-    readonly embed: Pick<EmbedOptions, `color` | `description` | `url` | `image` | `thumbnail` | `fields`>;
+    readonly embed: Pick<FormatEmbedOptions<IFormattable<string>>, `color` | `description` | `url` | `image` | `thumbnail` | `fields`>;
 }
 
 export interface DocumentationPaged extends DocumentationBase {
     readonly type: `paged`;
     readonly pages: readonly DocumentationPage[];
-    readonly selectText: string;
-    readonly embed: Pick<EmbedOptions, `color` | `description` | `url` | `image` | `thumbnail`>;
+    readonly selectText: IFormattable<string>;
+    readonly embed: Pick<FormatEmbedOptions<IFormattable<string>>, `color` | `description` | `url` | `image` | `thumbnail`>;
 }
 
 export interface DocumentationPage {
-    readonly name: string;
-    readonly embed: Pick<EmbedOptions, `fields`>;
+    readonly name: IFormattable<string>;
+    readonly embed: Pick<FormatEmbedOptions<IFormattable<string>>, `fields`>;
 }
 
 interface DocumentationPageIdData {
@@ -104,9 +106,9 @@ export abstract class DocumentationManager {
     protected abstract findDocumentation(term: string, user: User, channel: KnownTextableChannel): Awaitable<readonly Documentation[]>;
     protected abstract getDocumentation(documentationId: string, user: User, channel: KnownTextableChannel): Awaitable<Documentation | undefined>;
     protected abstract getParent(documentationId: string, user: User, channel: KnownTextableChannel): Awaitable<Documentation | undefined>;
-    protected abstract noMatches(term: string, user: User, channel: KnownTextableChannel): Awaitable<Omit<AdvancedMessageContent, `components`>>;
+    protected abstract noMatches(term: string, user: User, channel: KnownTextableChannel): Awaitable<SendContent<IFormattable<string>>>;
 
-    public async createMessageContent(term: string, user: User, channel: KnownTextableChannel): Promise<AdvancedMessageContent> {
+    public async createMessageContent(term: string, user: User, channel: KnownTextableChannel): Promise<SendContent<IFormattable<string>>> {
         const choices = await this.findDocumentation(term, user, channel);
         const documentation = choices.length > 1 ? await this.#pickDocumentation(choices, term, user, channel) : choices[0];
         if (documentation === undefined)
@@ -149,7 +151,7 @@ export abstract class DocumentationManager {
         await interaction.editParent(content);
     }
 
-    async #render(documentation: Documentation, idData: DocumentationPageIdData, user: User, channel: KnownTextableChannel, interaction: ComponentInteraction): Promise<AdvancedMessageContent> {
+    async #render(documentation: Documentation, idData: DocumentationPageIdData, user: User, channel: KnownTextableChannel, interaction: ComponentInteraction): Promise<SendContent<IFormattable<string>>> {
         switch (interaction.data.component_type) {
             case 2: //ComponentType.Button
                 return await this.#renderDocumentation(documentation, idData.pageGroup, idData.pageNumber, user, channel);
@@ -192,7 +194,7 @@ export abstract class DocumentationManager {
         }
     }
 
-    async #renderDocumentation(documentation: Documentation, pageGroup: number, pageNumber: number, user: User, channel: KnownTextableChannel): Promise<AdvancedMessageContent> {
+    async #renderDocumentation(documentation: Documentation, pageGroup: number, pageNumber: number, user: User, channel: KnownTextableChannel): Promise<SendContent<IFormattable<string>>> {
         const parent = await this.getParent(documentation.id, user, channel);
         const prevPageGroup: Button = {
             type: Constants.ComponentTypes.BUTTON,
@@ -224,7 +226,7 @@ export abstract class DocumentationManager {
             label: `Back to ${parent?.name ?? ``}`
         };
 
-        const pageSelect: SelectMenu = {
+        const pageSelect: FormatSelectMenu<IFormattable<string>> = {
             type: Constants.ComponentTypes.SELECT_MENU,
             custom_id: this.#createCustomId({ documentationId: documentation.id, pageGroup, pageNumber, userId: user.id }),
             placeholder: selectOptions.length > 25 ? `${selectText} - Page ${pageGroup + 1}/${lastPage + 1}` : selectText,
@@ -244,7 +246,7 @@ export abstract class DocumentationManager {
         if (gotoParent.disabled !== true)
             buttonRow.splice(1, 0, gotoParent); // between paging buttons
 
-        const components: ActionRow[] = [];
+        const components: Array<FormatActionRow<IFormattable<string>>> = [];
 
         if (pageSelect.options.some(opt => opt.default !== true))
             components.push({ type: Constants.ComponentTypes.ACTION_ROW, components: [pageSelect] });
@@ -256,17 +258,19 @@ export abstract class DocumentationManager {
             : documentation;
 
         return {
-            embed: {
-                title: documentation.name,
-                url: documentation.embed.url === undefined ? undefined : this.#cluster.util.websiteLink(documentation.embed.url),
-                description: documentation.embed.description,
-                color: documentation.embed.color,
-                image: documentation.embed.image,
-                thumbnail: documentation.embed.thumbnail,
-                fields: page.embed.fields,
-                author: this.#cluster.util.embedifyAuthor(user),
-                timestamp: moment().toDate()
-            },
+            embeds: [
+                {
+                    title: documentation.name,
+                    url: documentation.embed.url === undefined ? undefined : this.#cluster.util.websiteLink(documentation.embed.url),
+                    description: documentation.embed.description,
+                    color: documentation.embed.color,
+                    image: documentation.embed.image,
+                    thumbnail: documentation.embed.thumbnail,
+                    fields: page.embed.fields,
+                    author: this.#cluster.util.embedifyAuthor(user),
+                    timestamp: moment().toDate()
+                }
+            ],
             components
         };
     }

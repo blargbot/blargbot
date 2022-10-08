@@ -1,13 +1,5 @@
-import { IFormatString } from '../../messages/types';
-
-export interface FlagDefinition {
+export interface FlagDefinition<TString> {
     readonly flag: Alphanumeric;
     readonly word: string;
-    readonly description: IFormatString;
-}
-
-export interface InvariantFlagDefinition {
-    readonly flag: Alphanumeric;
-    readonly word: string;
-    readonly description: string;
+    readonly description: TString;
 }

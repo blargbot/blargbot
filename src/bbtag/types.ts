@@ -1,4 +1,5 @@
 import { Emote } from '@blargbot/core/Emote';
+import { IFormattable } from '@blargbot/domain/messages/types';
 import { FlagDefinition, NamedGuildCommandTag, StoredTag } from '@blargbot/domain/models';
 import { Attachment, Embed, EmbedOptions, FileContent, KnownGuildTextableChannel, KnownMessage, Message, User } from 'eris';
 import ReadWriteLock from 'rwlock';
@@ -19,7 +20,7 @@ export interface AnalysisResults {
 
 export interface AnalysisResult {
     readonly location: SourceMarker;
-    readonly message: string;
+    readonly message: IFormattable<string>;
 }
 
 export type BBTagArray = { n?: string; v: JArray; };
@@ -59,7 +60,7 @@ export interface SerializedBBTagContext {
     isCC: boolean;
     scope: BBTagRuntimeScope;
     inputRaw: string;
-    flags: readonly FlagDefinition[];
+    flags: ReadonlyArray<FlagDefinition<string>>;
     data: Pick<BBTagContextState, `query` | `ownedMsgs` | `stackSize` | `allowedMentions`>;
     tagName: string;
     rootTagName: string;
@@ -137,7 +138,7 @@ export interface FindEntityOptions {
 export interface BBTagContextOptions {
     readonly message: BBTagContextMessage;
     readonly inputRaw: string;
-    readonly flags?: readonly FlagDefinition[];
+    readonly flags?: ReadonlyArray<FlagDefinition<string>>;
     readonly isCC: boolean;
     readonly tagVars?: boolean;
     readonly authorId?: string;

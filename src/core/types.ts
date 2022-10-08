@@ -125,7 +125,7 @@ type ConfirmQueryOptionsFallback<T extends boolean | undefined> = T extends unde
 export interface QueryOptionsBase<TString> {
     context: KnownTextableChannel | KnownMessage;
     actors: Iterable<string | User> | string | User;
-    prompt?: Omit<SendContent<TString>, `components`>;
+    prompt?: Omit<SendContent<TString>, `components`> | TString;
     timeout?: number;
 }
 
@@ -145,10 +145,11 @@ export interface QuerySuccess<T> extends QueryBaseResult<`SUCCESS`> {
 }
 
 export interface ConfirmQueryOptionsBase<TString> extends QueryOptionsBase<TString> {
-    confirm: QueryButton<TString>;
+    continue: QueryButton<TString>;
     cancel: QueryButton<TString>;
 }
 
+export type SlimConfirmQueryOptions<TString, T extends boolean | undefined = undefined> = Omit<ConfirmQueryOptions<TString, T>, `context` | `actors`>;
 export type ConfirmQueryOptions<TString, T extends boolean | undefined = undefined> = ConfirmQueryOptionsBase<TString> & ConfirmQueryOptionsFallback<T>;
 
 export interface ChoiceQueryOptions<TString, T> extends QueryOptionsBase<TString> {

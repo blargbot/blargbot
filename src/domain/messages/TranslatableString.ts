@@ -30,7 +30,7 @@ export class TranslatableString<T extends string, V> implements IFormatString<T>
             throw new Error(`Unknown translation`);
     }
 
-    public static define<T extends string, V>(id: string, template: T): IFormatStringDefinition<T, V> {
+    public static define<V, T extends string = string>(id: string, template: T): IFormatStringDefinition<T, V> {
         if (TranslatableString.#idMap.has(id))
             throw new Error(`Duplicate translation id`);
 

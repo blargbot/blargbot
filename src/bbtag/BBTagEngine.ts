@@ -1,6 +1,7 @@
 import { Timer } from '@blargbot/core/Timer';
 import { sleep } from '@blargbot/core/utils';
 import { Database } from '@blargbot/database';
+import { TranslatableString } from '@blargbot/domain/messages/index';
 import { Logger } from '@blargbot/logger';
 import { Client as Discord } from 'eris';
 import moment from 'moment-timezone';
@@ -13,6 +14,10 @@ import { Subtag } from './Subtag';
 import { TagCooldownManager } from './TagCooldownManager';
 import { AnalysisResults, BBTagContextOptions, BBTagRuntimeState, ExecutionResult } from './types';
 import { bbtag as bbtagUtil } from './utils';
+
+const unnamedSubtag = TranslatableString.create(`bbtag.analysis.unnamedSubtag`, `Unnamed subtag`);
+const dynamicSubtag = TranslatableString.create(`bbtag.analysis.dynamicSubtag`, `Dynamic subtag`);
+const subtagDeprecated = TranslatableString.define<Subtag>(`bbtag.analysis.subtagDeprecated`, `{{name}} is deprecated. Use \`\\{{deprecated}\\}\` instead`);
 
 export class BBTagEngine {
     readonly #cooldowns: TagCooldownManager;
@@ -181,9 +186,9 @@ export class BBTagEngine {
 
         for (const call of getSubtagCalls(statement)) {
             if (call.name.values.length === 0)
-                result.warnings.push({ location: call.start, message: `Unnamed subtag` });
+                result.warnings.push({ location: call.start, message: unnamedSubtag });
             else if (call.name.values.some(p => typeof p !== `string`))
-                result.warnings.push({ location: call.start, message: `Dynamic subtag` });
+                result.warnings.push({ location: call.start, message: dynamicSubtag });
             else {
                 const subtag = this.subtags.get(call.name.values.join(``));
                 // TODO Detect unknown subtags
@@ -193,7 +198,7 @@ export class BBTagEngine {
                             break;
                     // fallthrough
                     case `string`:
-                        result.warnings.push({ location: call.start, message: `{${subtag.name}} is deprecated. ${subtag.deprecated}` });
+                        result.warnings.push({ location: call.start, message: subtagDeprecated(subtag) });
                 }
             }
         }

@@ -210,7 +210,7 @@ export class ClusterUtilities extends BaseUtilities {
             cancelId: snowflake.create().toString(),
             confirmId: snowflake.create().toString(),
             cancelButton: options.cancel,
-            confirmButton: options.confirm
+            confirmButton: options.continue
         };
 
         const awaiter = this.createComponentAwaiter(options.actors, `❌ This isnt for you to use!`, options.timeout, {

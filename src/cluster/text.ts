@@ -1,4 +1,6 @@
+import { AnalysisResult } from "@blargbot/bbtag";
 import { IFormatString, IFormatStringDefinition, IFormattable, TranslatableString } from "@blargbot/domain/messages";
+import { FlagDefinition } from "@blargbot/domain/models/index";
 import * as Eris from "eris";
 import { Duration, Moment } from "moment-timezone";
 
@@ -12,6 +14,11 @@ export function t(value: string): IFormattable<string> {
             return value;
         }
     };
+}
+
+interface UserTag {
+    readonly username?: string;
+    readonly discriminator?: string;
 }
 
 export const templates = crunchTree(`cluster`, {
@@ -189,26 +196,26 @@ export const templates = crunchTree(`cluster`, {
             default: {
                 description: f(`Bans a user, where \`days\` is the number of days to delete messages for.\nIf mod-logging is enabled, the ban will be logged.`),
                 state: {
-                    alreadyBanned: f(`❌ **{user.username}#{user.discriminator}** is already banned!`).withArgs<{ user: Eris.User; }>(),
-                    memberTooHigh: f(`❌ I don't have permission to ban **{user.username}#{user.discriminator}**! Their highest role is above my highest role.`).withArgs<{ user: Eris.User; }>(),
-                    moderatorTooLow: f(`❌ You don't have permission to ban **{user.username}#{user.discriminator}**! Their highest role is above your highest role.`).withArgs<{ user: Eris.User; }>(),
-                    noPerms: f(`❌ I don't have permission to ban **{user.username}#{user.discriminator}**! Make sure I have the \`ban members\` permission and try again.`).withArgs<{ user: Eris.User; }>(),
-                    moderatorNoPerms: f(`❌ You don't have permission to ban **{user.username}#{user.discriminator}**! Make sure you have the \`ban members\` permission or one of the permissions specified in the \`ban override\` setting and try again.`).withArgs<{ user: Eris.User; }>(),
-                    success: f(`✅ **{user.username}#{user.discriminator}** has been banned.`).withArgs<{ user: Eris.User; }>()
+                    alreadyBanned: f(`❌ **{user#userTag}** is already banned!`).withArgs<{ user: Eris.User; }>(),
+                    memberTooHigh: f(`❌ I don't have permission to ban **{user#userTag}**! Their highest role is above my highest role.`).withArgs<{ user: Eris.User; }>(),
+                    moderatorTooLow: f(`❌ You don't have permission to ban **{user#userTag}**! Their highest role is above your highest role.`).withArgs<{ user: Eris.User; }>(),
+                    noPerms: f(`❌ I don't have permission to ban **{user#userTag}**! Make sure I have the \`ban members\` permission and try again.`).withArgs<{ user: Eris.User; }>(),
+                    moderatorNoPerms: f(`❌ You don't have permission to ban **{user#userTag}**! Make sure you have the \`ban members\` permission or one of the permissions specified in the \`ban override\` setting and try again.`).withArgs<{ user: Eris.User; }>(),
+                    success: f(`✅ **{user#userTag}** has been banned.`).withArgs<{ user: Eris.User; }>()
                 },
                 unbanSchedule: {
-                    success: f(`✅ **{user.username}#{user.discriminator}** has been banned and will be unbanned in **<t:{unbanAt.unix}:R>**`).withArgs<{ user: Eris.User; unbanAt: Moment; }>(),
-                    invalid: f(`⚠️ **{user.username}#{user.discriminator}** has been banned, but the duration was either 0 seconds or improperly formatted so they won't automatically be unbanned.`).withArgs<{ user: Eris.User; }>()
+                    success: f(`✅ **{user#userTag}** has been banned and will be unbanned in **<t:{unbanAt.unix}:R>**`).withArgs<{ user: Eris.User; unbanAt: Moment; }>(),
+                    invalid: f(`⚠️ **{user#userTag}** has been banned, but the duration was either 0 seconds or improperly formatted so they won't automatically be unbanned.`).withArgs<{ user: Eris.User; }>()
                 }
             },
             clear: {
                 description: f(`Unbans a user.\nIf mod-logging is enabled, the ban will be logged.`),
                 userNotFound: f(`❌ I couldn't find that user!`),
                 state: {
-                    notBanned: f(`❌ **{user.username}#{user.discriminator}** is not currently banned!`).withArgs<{ user: Eris.User; }>(),
-                    noPerms: f(`❌ I don't have permission to unban **{user.username}#{user.discriminator}**! Make sure I have the \`ban members\` permission and try again.`).withArgs<{ user: Eris.User; }>(),
-                    moderatorNoPerms: f(`❌ You don't have permission to unban **{user.username}#{user.discriminator}**! Make sure you have the \`ban members\` permission or one of the permissions specified in the \`ban override\` setting and try again.`).withArgs<{ user: Eris.User; }>(),
-                    success: f(`✅ **{user.username}#{user.discriminator}** has been unbanned.`).withArgs<{ user: Eris.User; }>()
+                    notBanned: f(`❌ **{user#userTag}** is not currently banned!`).withArgs<{ user: Eris.User; }>(),
+                    noPerms: f(`❌ I don't have permission to unban **{user#userTag}**! Make sure I have the \`ban members\` permission and try again.`).withArgs<{ user: Eris.User; }>(),
+                    moderatorNoPerms: f(`❌ You don't have permission to unban **{user#userTag}**! Make sure you have the \`ban members\` permission or one of the permissions specified in the \`ban override\` setting and try again.`).withArgs<{ user: Eris.User; }>(),
+                    success: f(`✅ **{user#userTag}** has been unbanned.`).withArgs<{ user: Eris.User; }>()
                 }
             }
         },
@@ -228,6 +235,149 @@ export const templates = crunchTree(`cluster`, {
                 prompt: f(`⚠️ Are you sure you want to reset the bot to its initial state?\nThis will:\n- Reset all settings back to their defaults\n- Delete all custom commands, autoresponses, rolemes, censors, etc\n- Delete all tag guild variables`),
                 cancelled: f(`❌ Reset cancelled`),
                 success: f(`✅ I have been reset back to my initial configuration`)
+            }
+        },
+        ccommand: {
+            description: f(`Creates a custom command, using the BBTag language.\n\nCustom commands take precedent over all other commands. As such, you can use it to overwrite commands, or disable them entirely. If the command content is "null" (without the quotations), blargbot will have no output whatsoever, allowing you to disable any built-in command you wish. You cannot overwrite the 'ccommand' command. For more in-depth command customization, see the \`editcommand\` command.\nFor more information about BBTag, visit <{subtags}>.\nBy creating a custom command, you acknowledge that you agree to the Terms of Service (<{tos}>)`).withArgs<{ subtags: string; tos: string; }>(),
+            request: {
+                name: f(`Enter the name of the custom command:`),
+                content: f(`Enter the custom command's contents:`)
+            },
+            errors: {
+                isAlias: f(`❌ The command \`{commandName}\` is an alias to the tag \`{tagName}\``).withArgs<{ commandName: string; tagName: string; }>(),
+                alreadyExists: f(`❌ The \`{name}\` custom command already exists!`).withArgs<{ name: string; }>(),
+                doesntExist: f(`❌ The \`{name}\` custom command doesn't exist!`).withArgs<{ name: string; }>(),
+                isHidden: f(`❌ The \`{name}\` custom command is a hidden command!`).withArgs<{ name: string; }>(),
+                invalidBBTag: f(`❌ There were errors with the bbtag you provided!\n{errors#join(\n)}`).withArgs<{ errors: Iterable<IFormattable<string>>; }>(),
+                bbtagError: f(`❌ [{location.line},{location.column}]: {message}`).withArgs<AnalysisResult>(),
+                bbtagWarning: f(`❌ [{location.line},{location.column}]: {message}`).withArgs<AnalysisResult>(),
+                nameReserved: f(`❌ The command name \`{name}\` is reserved and cannot be overwritten`).withArgs<{ name: string; }>(),
+                tooLong: f(`❌ Command names cannot be longer than {max} characters`).withArgs<{ max: number; }>()
+            },
+            test: {
+                default: {
+                    description: f(`Uses the BBTag engine to execute the content as if it was a custom command`)
+                },
+                debug: {
+                    description: f(`Uses the BBTag engine to execute the content as if it was a custom command and will return the debug output`)
+                }
+            },
+            docs: {
+                description: f(`Returns helpful information about the specified topic.`)
+            },
+            debug: {
+                description: f(`Runs a custom command with some arguments. A debug file will be sent in a DM after the command has finished.`),
+                notOwner: f(`❌ You cannot debug someone elses custom command.`),
+                success: f(`ℹ️ Ive sent the debug output in a DM`)
+            },
+            create: {
+                description: f(`Creates a new custom command with the content you give`),
+                success: f(`✅ Custom command \`{name}\` created.\n{errors#join(\n)}`).withArgs<{ name: string; errors: Iterable<IFormattable<string>>; }>()
+            },
+            edit: {
+                description: f(`Edits an existing custom command to have the content you specify`),
+                success: f(`✅ Custom command \`{name}\` edited.\n{errors#join(\n)}`).withArgs<{ name: string; errors: Iterable<IFormattable<string>>; }>()
+            },
+            set: {
+                description: f(`Sets the custom command to have the content you specify. If the custom command doesnt exist it will be created.`),
+                success: f(`✅ Custom command \`{name}\` set.\n{errors#join(\n)}`).withArgs<{ name: string; errors: Iterable<IFormattable<string>>; }>()
+            },
+            delete: {
+                description: f(`Deletes an existing custom command`),
+                success: f(`✅ The \`{name}\` custom command is gone forever!`).withArgs<{ name: string; }>()
+            },
+            rename: {
+                description: f(`Renames the custom command`),
+                enterOldName: f(`Enter the name of the custom command to rename:`),
+                enterNewName: f(`Enter the new name of the custom command:`),
+                success: f(`✅ The \`{oldName}\` custom command has been renamed to \`{newName}\`.`).withArgs<{ oldName: string; newName: string; }>()
+            },
+            raw: {
+                description: f(`Gets the raw content of the custom command`),
+                inline: f(`ℹ️ The raw code for {name} is: \`\`\`{content}\`\`\``).withArgs<{ name: string; content: string; }>(),
+                attached: f(`ℹ️ The raw code for {name} is attached`).withArgs<{ name: string; }>()
+            },
+            list: {
+                description: f(`Lists all custom commands on this server`),
+                embed: {
+                    title: f(`List of custom commands`),
+                    field: {
+                        anyRole: {
+                            name: f(`Any role`)
+                        }
+                    }
+                }
+            },
+            cooldown: {
+                description: f(`Sets the cooldown of a custom command, in milliseconds`),
+                mustBePositive: f(`❌ The cooldown must be greater than 0ms`),
+                success: f(`✅ The custom command \`{name}\` now has a cooldown of \`{cooldown#duration(MS)}ms\`.`).withArgs<{ name: string; cooldown: Duration; }>()
+            },
+            author: {
+                description: f(`Displays the name of the custom command's author`),
+                noAuthorizer: f(`✅ The custom command \`{name}\` was made by **{author#userTag}**`).withArgs<{ name: string; author?: UserTag; }>(),
+                withAuthorizer: f(`✅ The custom command \`{name}\` was made by **{author#userTag}** and is authorized by **{authorizer#userTag}**`).withArgs<{ name: string; author?: UserTag; authorizer?: UserTag; }>()
+            },
+            flag: {
+                updated: f(`✅ The flags for \`{name}\` have been updated.`).withArgs<{ name: string; }>(),
+                get: {
+                    description: f(`Lists the flags the custom command accepts`),
+                    none: f(`❌ The \`{name}\` custom command has no flags.`).withArgs<{ name: string; }>(),
+                    success: f(`✅ The \`{name}\` custom command has the following flags:\n\n{flags#map(\`-{flag}\`/\`--{word}\`: {description})#join(\n)}`).withArgs<{ name: string; flags: Iterable<FlagDefinition<string>>; }>()
+                },
+                create: {
+                    description: f(`Adds multiple flags to your custom command. Flags should be of the form \`-<f> <flag> [flag description]\`\ne.g. \`b!cc flags add myCommand -c category The category you want to use -n name Your name\``),
+                    wordMissing: f(`❌ No word was specified for the \`{flag}\` flag`).withArgs<{ flag: string; }>(),
+                    flagExists: f(`❌ The flag \`{flag}\` already exists!`).withArgs<{ flag: string; }>(),
+                    wordExists: f(`❌ A flag with the word \`{word}\` already exists!`).withArgs<{ word: string; }>()
+                },
+                delete: {
+                    description: f(`Removes multiple flags from your custom command. Flags should be of the form \`-<f>\`\ne.g. \`b!cc flags remove myCommand -c -n\``)
+                }
+            },
+            setHelp: {
+                description: f(`Sets the help text to show for the command`),
+                success: f(`✅ Help text for custom command \`{name}\` set.`).withArgs<{ name: string; }>()
+            },
+            hide: {
+                description: f(`Toggles whether the command is hidden from the command list or not`),
+                success: f(`✅ Custom command \`{name}\` is now {hidden#bool(hidden|visible)}.`).withArgs<{ name: string; hidden: boolean; }>()
+            },
+            setRole: {
+                description: f(`Sets the roles that are allowed to use the command`),
+                success: f(`✅ Roles for custom command \`{name}\` set to {roles#map({mention})#join(, | and )}.`).withArgs<{ name: string; roles: Iterable<Eris.Role>; }>()
+            },
+            shrinkwrap: {
+                description: f(`Bundles up the given commands into a single file that you can download and install into another server`),
+                confirm: {
+                    prompt: f(`Salutations! You have discovered the super handy ShrinkWrapper9000!\n\nIf you decide to proceed, this will:\n{steps#join(\n)}\nThis will not:\n - Export variables\n - Export authors or authorizers\n - Export dependencies`).withArgs<{ steps: Iterable<IFormattable<string>>; }>(),
+                    export: f(` - Export the custom command \`{name}\``).withArgs<{ name: string; }>(),
+                    continue: f(`Confirm`),
+                    cancel: f(`Cancel`)
+                },
+                cancelled: f(`✅ Maybe next time then.`),
+                success: f(`✅ No problem, my job here is done.`)
+            },
+            install: {
+                description: f(`Bundles up the given commands into a single file that you can download and install into another server`),
+                fileMissing: f(`❌ You have to upload the installation file, or give me a URL to one.`),
+                malformed: f(`❌ Your installation file was malformed.`),
+                confirm: {
+                    unsigned: f(`⚠️ **Warning**: This installation file is **unsigned**. It did not come from me. Please double check to make sure you want to go through with this.\n\n`),
+                    tampered: f(`⚠️ **Warning**: This installation file's signature is **incorrect**. There is a 100% chance that it has been tampered with. Please double check to make sure you want to go through with this.\n\n`),
+                    prompt: f(`{warning}Salutations! You have discovered the super handy CommandInstaller9000!\n\nIf you decide to proceed, this will:\n{steps#join(\n)}\nThis will also:\n - Set you as the author for all imported commands`).withArgs<{ warning?: IFormattable<string>; steps: Iterable<IFormattable<string>>; }>(),
+                    import: f(`✅ Import the command \`{name}\``).withArgs<{ name: string; }>(),
+                    skip: f(`❌ Ignore the command \`{name}\` as a command with that name already exists`).withArgs<{ name: string; }>(),
+                    continue: f(`Confirm`),
+                    cancel: f(`Cancel`)
+                },
+                cancelled: f(`✅ Maybe next time then.`),
+                success: f(`✅ No problem, my job here is done.`)
+            },
+            import: {
+                description: f(`Imports a tag as a ccommand, retaining all data such as author variables`),
+                tagMissing: f(`❌ The \`{name}\` tag doesnt exist!`).withArgs<{ name: string; }>(),
+                success: f(`✅ The tag \`{tagName}\` by **{author#userTag}** has been imported as \`{commandName}\` and is authorized by **{authorizer#userTag}**`).withArgs<{ tagName: string; commandName: string; author?: UserTag; authorizer?: UserTag; }>()
             }
         },
         help: {
@@ -354,7 +504,7 @@ function f<T extends string>(template: T, value?: unknown): { (id: string): IFor
         (id: string): IFormatString<T> => TranslatableString.create(id, template, value),
         {
             withArgs<V>(): (id: string) => IFormatStringDefinition<T, V> {
-                return id => TranslatableString.define<T, V>(id, template);
+                return id => TranslatableString.define<V, T>(id, template);
             }
         }
     );

@@ -1,4 +1,3 @@
-import { bot } from '@blargbot/bbtag/subtags/index';
 import { TagVariableType } from '@blargbot/domain/models';
 import { Constants } from 'eris';
 
