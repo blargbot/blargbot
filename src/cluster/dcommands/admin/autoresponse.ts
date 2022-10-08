@@ -5,7 +5,7 @@ import { guard } from '@blargbot/core/utils';
 import { GuildFilteredAutoresponse, GuildTriggerTag } from '@blargbot/domain/models';
 
 import { RawBBTagCommandResult } from '../../command/RawBBTagCommandResult';
-import templates from '../../text';
+import templates, { t } from '../../text';
 
 const cmd = templates.commands.autoresponse;
 export class AutoResponseCommand extends GuildCommand {
@@ -229,10 +229,10 @@ export class AutoResponseCommand extends GuildCommand {
                     fields: [
                         ...`term` in match.ar ? [{
                             name: cmd.info.embed.field.trigger[match.ar.regex ? `regex` : `text`],
-                            value: match.ar.term
+                            value: t(match.ar.term)
                         }] : [],
-                        { name: cmd.info.embed.field.author, value: `<@${match.ar.author ?? 0}> (${match.ar.author ?? `????`})`, inline: true },
-                        { name: cmd.info.embed.field.authorizer, value: `<@${authorizer ?? 0}> (${authorizer ?? `????`})`, inline: true }
+                        { name: cmd.info.embed.field.author, value: t(`<@${match.ar.author ?? 0}> (${match.ar.author ?? `????`})`), inline: true },
+                        { name: cmd.info.embed.field.authorizer, value: t(`<@${authorizer ?? 0}> (${authorizer ?? `????`})`), inline: true }
                     ]
                 }
             ]

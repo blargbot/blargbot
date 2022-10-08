@@ -3,7 +3,7 @@ import { IFormattable, IFormatter } from "@blargbot/domain/messages/types";
 
 import { discord } from "../utils/index";
 
-export class RawBBTagCommandResult implements IFormattable<string | SendContent> {
+export class RawBBTagCommandResult implements IFormattable<string | SendContent<string>> {
     readonly #inline: IFormattable<string>;
     readonly #attached: IFormattable<string>;
     readonly #content: string;
@@ -16,7 +16,7 @@ export class RawBBTagCommandResult implements IFormattable<string | SendContent>
         this.#fileName = fileName;
     }
 
-    public format(formatter: IFormatter): string | SendContent {
+    public format(formatter: IFormatter): string | SendContent<string> {
         if (this.#content.includes(`\`\`\``))
             return this.#attach(formatter);
 
@@ -27,7 +27,7 @@ export class RawBBTagCommandResult implements IFormattable<string | SendContent>
         return inlineRaw;
     }
 
-    #attach(formatter: IFormatter): SendContent {
+    #attach(formatter: IFormatter): SendContent<string> {
         return {
             content: this.#attached.format(formatter),
             files: [

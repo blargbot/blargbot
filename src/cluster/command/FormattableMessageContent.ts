@@ -1,19 +1,18 @@
-import { FormatActionRowComponents, FormatButton, FormatEmbedAuthor, FormatEmbedFooter, FormatEmbedOptions, FormatSelectMenu, FormatSendContent, SendContent } from "@blargbot/core/types";
+import { FormatActionRowComponents, FormatButton, FormatEmbedAuthor, FormatEmbedFooter, FormatEmbedOptions, FormatSelectMenu, SendContent } from "@blargbot/core/types";
 import { IFormattable, IFormatter } from "@blargbot/domain/messages/types";
 import { ActionRowComponents, Button, EmbedAuthor, EmbedFooter, EmbedOptions, SelectMenu } from "eris";
 
-export class FormattableMessageContent implements IFormattable<string | SendContent> {
-    readonly #content: FormatSendContent<string | IFormattable<string>>;
+export class FormattableMessageContent implements IFormattable<SendContent<string>> {
+    readonly #content: SendContent<string | IFormattable<string>>;
 
-    public constructor(content: FormatSendContent<string | IFormattable<string>>) {
+    public constructor(content: SendContent<string | IFormattable<string>>) {
         this.#content = content;
     }
 
-    public format(formatter: IFormatter): SendContent {
+    public format(formatter: IFormatter): SendContent<string> {
         return {
             ...this.#content,
             content: this.#getString(this.#content.content, formatter),
-            embed: this.#getEmbed(this.#content.embed, formatter),
             embeds: this.#content.embeds?.map(e => this.#getEmbed(e, formatter)),
             components: this.#content.components?.map(x => ({
                 ...x,

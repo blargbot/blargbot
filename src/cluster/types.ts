@@ -1,7 +1,7 @@
 import { Subtag } from '@blargbot/bbtag';
 import { Command, CommandContext, ScopedCommand } from '@blargbot/cluster/command';
 import { CommandType, ModerationType } from '@blargbot/cluster/utils';
-import { EvalRequest, EvalResult, FormatSendContent, GlobalEvalResult, IMiddleware, MasterEvalRequest, SendContent } from '@blargbot/core/types';
+import { EvalRequest, EvalResult, FormatAdvancedMessageContent, GlobalEvalResult, IMiddleware, MasterEvalRequest, SendContent } from '@blargbot/core/types';
 import { IFormattable } from '@blargbot/domain/messages/index';
 import { CommandPermissions, FlagDefinition, FlagResult, GuildSettingDocs, GuildSourceCommandTag, NamedGuildCommandTag } from '@blargbot/domain/models';
 import { Guild, KnownChannel, KnownGuildTextableChannel, KnownMessage, KnownPrivateChannel, KnownTextableChannel, Member, Role, Shard, User, Webhook } from 'eris';
@@ -105,8 +105,8 @@ export interface CommandOptions<TContext extends CommandContext> extends Command
 }
 
 export type CommandResult =
-    | IFormattable<string | SendContent>
-    | FormatSendContent<string | IFormattable<string>>
+    | SendContent<IFormattable<string>>
+    | IFormattable<string | SendContent<string>>
     | undefined;
 
 export type CommandDefinition<TContext extends CommandContext> =

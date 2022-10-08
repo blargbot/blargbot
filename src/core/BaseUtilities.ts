@@ -1,11 +1,11 @@
 import { Configuration } from '@blargbot/config/Configuration';
-import { FormatSendContent, SendContent, SendContext } from '@blargbot/core/types';
+import { FormatEmbedAuthor, SendContent, SendContext } from '@blargbot/core/types';
 import { Database } from '@blargbot/database';
 import { IFormattable } from '@blargbot/domain/messages/types';
 import { DiscordChannelTag, DiscordRoleTag, DiscordTagSet, DiscordUserTag, StoredUser } from '@blargbot/domain/models';
 import { Logger } from '@blargbot/logger';
 import { Snowflake } from 'catflake';
-import { AnyGuildChannel, ApiError, ChannelInteraction, Client as Discord, Collection, DiscordRESTError, EmbedAuthor, EmbedOptions, ExtendedUser, Guild, GuildChannel, KnownChannel, KnownGuildChannel, KnownMessage, KnownTextableChannel, Member, Message, RequestHandler, Role, User, UserChannelInteraction, Webhook } from 'eris';
+import { AnyGuildChannel, ApiError, ChannelInteraction, Client as Discord, Collection, DiscordRESTError, EmbedAuthor, ExtendedUser, Guild, GuildChannel, KnownChannel, KnownGuildChannel, KnownMessage, KnownTextableChannel, Member, Message, RequestHandler, Role, User, UserChannelInteraction, Webhook } from 'eris';
 import moment from 'moment-timezone';
 
 import { BaseClient } from './BaseClient';
@@ -57,7 +57,7 @@ export class BaseUtilities {
         return `${scheme}://${host}${port}/${path ?? ``}`;
     }
 
-    public embedifyAuthor(target: Member | User | Guild | StoredUser, includeId = false): EmbedAuthor {
+    public embedifyAuthor(target: Member | User | Guild | StoredUser, includeId = false): FormatEmbedAuthor<IFormattable<string>> {
         if (target instanceof User) {
             return {
                 icon_url: target.avatarURL,
@@ -86,9 +86,9 @@ export class BaseUtilities {
         return target; // never
     }
 
-    public async send<T extends KnownTextableChannel>(context: T, payload: SendContent): Promise<Message<T> | undefined>;
-    public async send(context: SendContext, payload: SendContent): Promise<KnownMessage | undefined>;
-    public async send(context: SendContext, payload: SendContent): Promise<KnownMessage | undefined> {
+    public async send<T extends KnownTextableChannel>(context: T, payload: SendContent<string>): Promise<Message<T> | undefined>;
+    public async send(context: SendContext, payload: SendContent<string>): Promise<KnownMessage | undefined>;
+    public async send(context: SendContext, payload: SendContent<string>): Promise<KnownMessage | undefined> {
         metrics.sendCounter.inc();
 
         let channel = await this.#getSendChannel(context);
@@ -343,10 +343,7 @@ export class BaseUtilities {
         return tag;
     }
 
-    public async generateDumpPage(payload: SendContent | string, channel: KnownTextableChannel): Promise<Snowflake> {
-        if (typeof payload === `string`)
-            payload = { content: payload };
-
+    public async generateDumpPage(payload: SendContent<string>, channel: KnownTextableChannel): Promise<Snowflake> {
         const id = snowflake.create();
         await this.database.dumps.add({
             id: id,
@@ -784,7 +781,7 @@ export class BaseUtilities {
 
 const sendErrors = {
     [ApiError.UNKNOWN_CHANNEL]: () => { /* console.error('10003: Channel not found. ', channel); */ },
-    [ApiError.CANNOT_SEND_EMPTY_MESSAGE]: (util: BaseUtilities, _: unknown, payload: SendContent) => { util.logger.error(`50006: Tried to send an empty message:`, payload); },
+    [ApiError.CANNOT_SEND_EMPTY_MESSAGE]: (util: BaseUtilities, _: unknown, payload: SendContent<string>) => { util.logger.error(`50006: Tried to send an empty message:`, payload); },
     [ApiError.CANNOT_MESSAGE_USER]: () => { /* console.error('50007: Can\'t send a message to this user!'); */ },
     [ApiError.CANNOT_SEND_MESSAGES_IN_VOICE_CHANNEL]: () => { /* console.error('50008: Can\'t send messages in a voice channel!'); */ },
     [ApiError.MISSING_PERMISSIONS]: (util: BaseUtilities) => {
@@ -797,33 +794,16 @@ const sendErrors = {
     },
     [ApiError.EMBED_DISABLED]: async (util: BaseUtilities, channel: KnownTextableChannel) => {
         util.logger.warn(`50004: Tried embeding a link, but had no permissions!`);
-        await util.send(channel, `I don't have permission to embed links! This will break several of my commands. Please give me the \`Embed Links\` permission. Thanks!`);
+        await util.send(channel, { content: `I don't have permission to embed links! This will break several of my commands. Please give me the \`Embed Links\` permission. Thanks!` });
         return `I tried to send a message in response to your command, but didn't have permission to create embeds. If you think this is an error, please contact the staff on your guild to give me the \`Embed Links\` permission.`;
     },
 
     // try to catch the mystery of the autoresponse-object-in-field-value error
     // https://stop-it.get-some.help/9PtuDEm.png
-    [ApiError.INVALID_FORM_BODY]: (util: BaseUtilities, channel: KnownTextableChannel, payload: SendContent, error: DiscordRESTError) => {
+    [ApiError.INVALID_FORM_BODY]: (util: BaseUtilities, channel: KnownTextableChannel, payload: SendContent<string>, error: DiscordRESTError) => {
         util.logger.error(`${channel.id}|${guard.isGuildChannel(channel) ? channel.name : `PRIVATE CHANNEL`}|${JSON.stringify(payload)}`, error);
     }
 } as const;
-
-function isEmbed(payload: SendContent): payload is EmbedOptions {
-    return typeof payload !== `string` && embedKeys.some(k => k in payload);
-}
-
-const embedKeys = Object.keys<keyof EmbedOptions>({
-    author: 0,
-    color: 0,
-    description: 0,
-    fields: 0,
-    footer: 0,
-    image: 0,
-    thumbnail: 0,
-    timestamp: 0,
-    title: 0,
-    url: 0
-});
 
 function findBest<T>(options: Iterable<T>, evaluator: (value: T) => number): T[] {
     const result = [];

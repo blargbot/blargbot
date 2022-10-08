@@ -1,10 +1,18 @@
-import { IFormatString, IFormatStringDefinition, TranslatableString } from "@blargbot/domain/messages";
+import { IFormatString, IFormatStringDefinition, IFormattable, TranslatableString } from "@blargbot/domain/messages";
 import * as Eris from "eris";
 import { Duration, Moment } from "moment-timezone";
 
 import { Command } from "./command/Command";
 import { CommandContext } from "./command/CommandContext";
 import { GuildCommandContext } from "./types";
+
+export function t(value: string): IFormattable<string> {
+    return {
+        format() {
+            return value;
+        }
+    };
+}
 
 export const templates = crunchTree(`cluster`, {
     common: {
@@ -202,6 +210,24 @@ export const templates = crunchTree(`cluster`, {
                     moderatorNoPerms: f(`❌ You don't have permission to unban **{user.username}#{user.discriminator}**! Make sure you have the \`ban members\` permission or one of the permissions specified in the \`ban override\` setting and try again.`).withArgs<{ user: Eris.User; }>(),
                     success: f(`✅ **{user.username}#{user.discriminator}** has been unbanned.`).withArgs<{ user: Eris.User; }>()
                 }
+            }
+        },
+        blacklist: {
+            default: {
+                description: f(`Blacklists the current channel, or the channel that you mention. The bot will not respond until you do \`blacklist\` again.`),
+                notInServer: f(`❌ You cannot blacklist a channel outside of this server`),
+                success: {
+                    added: f(`✅ {channel.mention} is no longer blacklisted.`).withArgs<{ channel: Eris.Channel; }>(),
+                    removed: f(`✅ {channel.mention} is now blacklisted`).withArgs<{ channel: Eris.Channel; }>()
+                }
+            }
+        },
+        bot: {
+            reset: {
+                description: f(`Resets the bot to the state it is in when joining a guild for the first time.`),
+                prompt: f(`⚠️ Are you sure you want to reset the bot to its initial state?\nThis will:\n- Reset all settings back to their defaults\n- Delete all custom commands, autoresponses, rolemes, censors, etc\n- Delete all tag guild variables`),
+                cancelled: f(`❌ Reset cancelled`),
+                success: f(`✅ I have been reset back to my initial configuration`)
             }
         },
         help: {
