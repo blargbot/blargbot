@@ -4,6 +4,10 @@ import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { codeBlock, CommandType, guard } from '@blargbot/cluster/utils';
 import { humanize } from '@blargbot/core/utils';
 
+import templates from '../../text';
+
+const cmd = templates.commands.interval;
+
 export class IntervalCommand extends GuildCommand {
     public constructor() {
         super({
@@ -12,32 +16,32 @@ export class IntervalCommand extends GuildCommand {
             definitions: [
                 {
                     parameters: `set {~bbtag+}`,
-                    description: `Sets the bbtag to run every 15 minutes`,
+                    description: cmd.set.description,
                     execute: (ctx, [bbtag]) => this.setInterval(ctx, bbtag.asString)
                 },
                 {
                     parameters: `raw {fileExtension:literal(bbtag|txt)=bbtag}`,
-                    description: `Gets the current code that the interval is running`,
+                    description: cmd.raw.description,
                     execute: (ctx, [fileExtension]) => this.getRaw(ctx, fileExtension.asLiteral)
                 },
                 {
                     parameters: `delete`,
-                    description: `Deletes the current interval`,
+                    description: cmd.delete.description,
                     execute: (ctx) => this.deleteInterval(ctx)
                 },
                 {
                     parameters: `setauthorizer`,
-                    description: `Sets the interval to run using your permissions`,
+                    description: cmd.setauthorizer.description,
                     execute: (ctx) => this.setAuthorizer(ctx)
                 },
                 {
                     parameters: `debug`,
-                    description: `Runs the interval now and sends the debug output`,
+                    description: cmd.debug.description,
                     execute: (ctx) => this.debug(ctx)
                 },
                 {
                     parameters: `info`,
-                    description: `Shows information about the current interval`,
+                    description: cmd.info.description,
                     execute: (ctx) => this.getInfo(ctx)
                 }
             ]

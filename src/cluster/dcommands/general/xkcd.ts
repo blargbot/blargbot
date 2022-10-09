@@ -1,10 +1,12 @@
 import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType, randInt } from '@blargbot/cluster/utils';
 import { mapping } from '@blargbot/mapping';
-import { EmbedOptions } from 'eris';
 import fetch from 'node-fetch';
 
+import templates from '../../text';
 import { CommandResult } from '../../types';
+
+const cmd = templates.commands.xkcd;
 
 export class XKCDCommand extends GlobalCommand {
     public constructor() {
@@ -14,7 +16,7 @@ export class XKCDCommand extends GlobalCommand {
             definitions: [
                 {
                     parameters: `{comicNumber:integer?}`,
-                    description: `Gets an xkcd comic. If a number is not specified, gets a random one.`,
+                    description: cmd.default.description,
                     execute: (ctx, [comicNumber]) => this.getComic(ctx, comicNumber.asOptionalInteger)
                 }
             ]

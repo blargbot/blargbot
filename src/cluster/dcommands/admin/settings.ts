@@ -4,26 +4,30 @@ import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { codeBlock, CommandType, defaultStaff, guard, guildSettings, parse } from '@blargbot/cluster/utils';
 import { Guild } from 'eris';
 
+import templates from '../../text';
+
+const cmd = templates.commands.settings;
+
 export class SettingsCommand extends GuildCommand {
     public constructor(cluster: Cluster) {
         super({
             name: `settings`,
             category: CommandType.ADMIN,
-            description: `Gets or sets the settings for the current guild. Visit ${cluster.util.websiteLink(`/guilds/settings`)} for key documentation.`,
+            description: cmd.description({ website: cluster.util.websiteLink(`/guilds/settings`) }),
             definitions: [
                 {
                     parameters: ``,
                     execute: ctx => this.list(ctx),
-                    description: `Gets the current settings for this guild`
+                    description: cmd.view.description
                 },
                 {
                     parameters: `keys`,
-                    description: `Lists all the setting keys and their types`,
+                    description: cmd.keys.description,
                     execute: () => this.keys()
                 },
                 {
                     parameters: `set {key} {~value+?}`,
-                    description: `Sets the given setting key to have a certian value. If \`value\` is omitted, the setting is reverted to its default value`,
+                    description: cmd.set.description,
                     execute: (ctx, [setting, value]) => this.set(ctx, setting.asString, value.asOptionalString)
                 }
             ]

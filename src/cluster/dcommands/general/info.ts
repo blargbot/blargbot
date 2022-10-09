@@ -1,10 +1,12 @@
 import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType } from '@blargbot/cluster/utils';
 import { humanize } from '@blargbot/core/utils';
-import { EmbedOptions } from 'eris';
 import moment from 'moment-timezone';
 
+import templates from '../../text';
 import { CommandResult } from '../../types';
+
+const cmd = templates.commands.info;
 
 const year = [undefined, `year`, `years`];
 const month = [undefined, `month`, `months`];
@@ -21,7 +23,7 @@ export class InfoCommand extends GlobalCommand {
             definitions: [
                 {
                     parameters: ``,
-                    description: `Returns some info about me.`,
+                    description: cmd.default.description,
                     execute: (ctx) => this.showInfo(ctx)
                 }
             ]

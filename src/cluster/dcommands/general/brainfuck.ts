@@ -2,7 +2,10 @@ import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType } from '@blargbot/cluster/utils';
 import Brainfuck from 'brainfuck-node';
 
+import templates from '../../text';
 import { CommandResult } from '../../types';
+
+const cmd = templates.commands.brainfuck;
 
 export class BrainfuckCommand extends GlobalCommand {
     readonly #client: Brainfuck;
@@ -15,12 +18,12 @@ export class BrainfuckCommand extends GlobalCommand {
             definitions: [
                 {
                     parameters: `{code+}`,
-                    description: `Executes brainfuck code.`,
+                    description: cmd.default.description,
                     execute: (ctx, [code]) => this.eval(ctx, code.asString, false)
                 },
                 {
                     parameters: `debug {code+}`,
-                    description: `Executes brainfuck code and returns the pointers.`,
+                    description: cmd.debug.description,
                     execute: (ctx, [code]) => this.eval(ctx, code.asString, true)
                 }
             ]

@@ -2,7 +2,10 @@ import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { codeBlock, CommandType } from '@blargbot/cluster/utils';
 import { exec } from 'child_process';
 
+import templates from '../../text';
 import { CommandResult } from '../../types';
+
+const cmd = templates.commands.exec;
 
 export class ExecCommand extends GlobalCommand {
     public constructor() {
@@ -12,7 +15,7 @@ export class ExecCommand extends GlobalCommand {
             definitions: [
                 {
                     parameters: `{~command+}`,
-                    description: `Executes a command on the current shell`,
+                    description: cmd.default.description,
                     execute: (ctx, [command]) => this.commandLine(ctx, command.asString)
                 }
             ]

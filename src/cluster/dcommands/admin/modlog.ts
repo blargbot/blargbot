@@ -4,6 +4,10 @@ import { CommandType, humanize } from '@blargbot/cluster/utils';
 import { guard, pluralise as p } from '@blargbot/core/utils';
 import { ApiError, DiscordRESTError, KnownChannel } from 'eris';
 
+import templates from '../../text';
+
+const cmd = templates.commands.modLog;
+
 export class ModlogCommand extends GuildCommand {
     public constructor() {
         super({
@@ -12,17 +16,17 @@ export class ModlogCommand extends GuildCommand {
             definitions: [
                 {
                     parameters: `{channel:channel+?}`,
-                    description: `Sets the channel to use as the modlog channel`,
+                    description: cmd.setChannel.description,
                     execute: (ctx, [channel]) => this.setChannel(ctx, channel.asOptionalChannel ?? ctx.channel)
                 },
                 {
                     parameters: `disable`,
-                    description: `Disables the modlog`,
+                    description: cmd.disable.description,
                     execute: ctx => this.setChannel(ctx, undefined)
                 },
                 {
                     parameters: `clear|delete {ids:integer[0]}`,
-                    description: `Deletes specific modlog entries. If you dont provide any, all the entries will be removed`,
+                    description: cmd.clear.description,
                     execute: (ctx, [ids]) => this.clearModlog(ctx, ids.asIntegers)
                 }
             ]

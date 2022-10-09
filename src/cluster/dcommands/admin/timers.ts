@@ -3,7 +3,10 @@ import { codeBlock, CommandType, guard, humanize, pluralise as p } from '@blargb
 import { EmbedField, EmbedOptions } from 'eris';
 import moment from 'moment-timezone';
 
+import templates from '../../text';
 import { CommandResult } from '../../types';
+
+const cmd = templates.commands.timers;
 
 export class TimersCommand extends GlobalCommand {
     public constructor() {
@@ -14,22 +17,22 @@ export class TimersCommand extends GlobalCommand {
             definitions: [
                 {
                     parameters: `{page:integer=1}`,
-                    description: `Lists all the currently active timers here`,
+                    description: cmd.list.description,
                     execute: (ctx, [page]) => this.listTimers(ctx, page.asInteger)
                 },
                 {
                     parameters: `info {timerId}`,
-                    description: `Shows detailed information about a given timer`,
+                    description: cmd.info.description,
                     execute: (ctx, [timerId]) => this.getTimer(ctx, timerId.asString)
                 },
                 {
                     parameters: `cancel|delete {timerIds[]}`,
-                    description: `Cancels currently active timers`,
+                    description: cmd.cancel.description,
                     execute: (ctx, [timerIds]) => this.cancelTimers(ctx, timerIds.asStrings)
                 },
                 {
                     parameters: `clear`,
-                    description: `Clears all currently active timers`,
+                    description: cmd.clear.description,
                     execute: (ctx) => this.clearAllTimers(ctx)
                 }
             ]

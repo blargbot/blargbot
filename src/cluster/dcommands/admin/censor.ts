@@ -16,6 +16,12 @@ export class CensorCommand extends GuildCommand {
         super({
             name: `censor`,
             category: CommandType.ADMIN,
+            flags: [
+                { flag: `R`, word: `regex`, description: cmd.flags.regex },
+                { flag: `D`, word: `decancer`, description: cmd.flags.decancer },
+                { flag: `w`, word: `weight`, description: cmd.flags.weight },
+                { flag: `r`, word: `reason`, description: cmd.flags.reason }
+            ],
             definitions: [
                 {
                     parameters: `add|create {~phrase+}`,
@@ -92,12 +98,6 @@ export class CensorCommand extends GuildCommand {
                     description: cmd.info.description,
                     execute: (ctx, [id]) => this.showInfo(ctx, id.asInteger)
                 }
-            ],
-            flags: [
-                { flag: `R`, word: `regex`, description: cmd.flags.regex },
-                { flag: `D`, word: `decancer`, description: cmd.flags.decancer },
-                { flag: `w`, word: `weight`, description: cmd.flags.weight },
-                { flag: `r`, word: `reason`, description: cmd.flags.reason }
             ]
         });
     }

@@ -2,7 +2,10 @@ import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType, guard, humanize } from '@blargbot/cluster/utils';
 import { User } from 'eris';
 
+import templates from '../../text';
 import { CommandResult } from '../../types';
+
+const cmd = templates.commands.decancer;
 
 export class DecancerCommand extends GlobalCommand {
     public constructor() {
@@ -12,12 +15,12 @@ export class DecancerCommand extends GlobalCommand {
             definitions: [
                 {
                     parameters: `user {user:user+}`,
-                    description: `Decancers a users display name. If you have permissions, this will also change their nickname`,
+                    description: cmd.user.description,
                     execute: (ctx, [user]) => this.decancerUser(ctx, user.asUser)
                 },
                 {
                     parameters: `{text+}`,
-                    description: `Decancers some text to plain ASCII`,
+                    description: cmd.text.description,
                     execute: (_, [text]) => this.decancerText(text.asString)
                 }
             ]

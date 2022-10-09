@@ -2,25 +2,29 @@ import { GuildCommand } from '@blargbot/cluster/command';
 import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType } from '@blargbot/cluster/utils';
 
+import templates from '../../text';
+
+const cmd = templates.commands.prefix;
+
 export class PrefixCommand extends GuildCommand {
     public constructor() {
         super({
-            name: `prefix`,
+            name: ``,
             category: CommandType.ADMIN,
             definitions: [
                 {
                     parameters: ``,
-                    description: `Lists all the current prefixes on this server`,
+                    description: cmd.list.description,
                     execute: ctx => this.listPrefixes(ctx)
                 },
                 {
                     parameters: `add|set|create {prefix}`,
-                    description: `Adds a command prefix to this server`,
+                    description: cmd.add.description,
                     execute: (ctx, [prefix]) => this.addPrefix(ctx, prefix.asString)
                 },
                 {
                     parameters: `remove|delete {prefix}`,
-                    description: `Removes a command prefix from this server`,
+                    description: cmd.remove.description,
                     execute: (ctx, [prefix]) => this.removePrefix(ctx, prefix.asString)
                 }
             ]

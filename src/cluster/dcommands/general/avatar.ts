@@ -1,32 +1,34 @@
 import { GlobalCommand, SendTypingMiddleware } from '@blargbot/cluster/command';
 import { CommandType } from '@blargbot/cluster/utils';
-import { SendContent } from '@blargbot/core/types';
 import { humanize, parse } from '@blargbot/core/utils';
 import { ImageFormat, User } from 'eris';
 import fetch from 'node-fetch';
 
+import templates from '../../text';
 import { CommandResult } from '../../types';
+
+const cmd = templates.commands.avatar;
 
 export class AvatarCommand extends GlobalCommand {
     public constructor() {
         super({
             name: `avatar`,
             category: CommandType.GENERAL,
+            flags: [
+                { flag: `f`, word: `format`, description: cmd.flags.format },
+                { flag: `s`, word: `size`, description: cmd.flags.size }
+            ],
             definitions: [
                 {
                     parameters: ``,
-                    description: `Gets your avatar`,
+                    description: cmd.self.description,
                     execute: (ctx, _, flags) => this.getAvatar(ctx.author, flags.f?.merge().value, flags.s?.merge().value)
                 },
                 {
                     parameters: `{user:user+}`,
-                    description: `Gets the avatar of the user you chose`,
+                    description: cmd.user.description,
                     execute: (_, [user], flags) => this.getAvatar(user.asUser, flags.f?.merge().value, flags.s?.merge().value)
                 }
-            ],
-            flags: [
-                { flag: `f`, word: `format`, description: `The file format. Can be ${humanize.smartJoin(allowedFormats, `, `, ` or `)}.` },
-                { flag: `s`, word: `size`, description: `The file size. Can be ${humanize.smartJoin(allowedImageSizes, `, `, ` or `)}.` }
             ]
         });
 

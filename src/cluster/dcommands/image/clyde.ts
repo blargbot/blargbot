@@ -1,6 +1,9 @@
 import { CommandContext, GlobalImageCommand } from '@blargbot/cluster/command';
 
+import templates from '../../text';
 import { CommandResult } from '../../types';
+
+const cmd = templates.commands.clyde;
 
 export class ClydeCommand extends GlobalImageCommand {
     public constructor() {
@@ -9,7 +12,7 @@ export class ClydeCommand extends GlobalImageCommand {
             definitions: [
                 {
                     parameters: `{text+}`,
-                    description: `Give everyone a message from Clyde.`,
+                    description: cmd.default.description,
                     execute: (ctx, [text]) => this.render(ctx, text.asString)
                 }
             ]

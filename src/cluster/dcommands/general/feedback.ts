@@ -4,7 +4,10 @@ import { humanize } from '@blargbot/core/utils';
 import { FlagResult } from '@blargbot/domain/models';
 import moment from 'moment-timezone';
 
+import templates from '../../text';
 import { CommandResult } from '../../types';
+
+const cmd = templates.commands.feedback;
 
 export class FeedbackCommand extends GlobalCommand {
 
@@ -12,33 +15,33 @@ export class FeedbackCommand extends GlobalCommand {
         super({
             name: `feedback`,
             category: CommandType.GENERAL,
+            flags: [
+                { flag: `c`, word: `command`, description: cmd.flags.command },
+                { flag: `b`, word: `bbtag`, description: cmd.flags.bbtag },
+                { flag: `a`, word: `docs`, description: cmd.flags.docs },
+                { flag: `o`, word: `other`, description: cmd.flags.other }
+            ],
             definitions: [
                 {
                     parameters: `{description+}`,
-                    description: `Give me general feedback about the bot`,
+                    description: cmd.general.description,
                     execute: (ctx, [description], flags) => this.submitFeedback(ctx, description.asString, flags)
                 },
                 {
                     parameters: `suggest|suggestion {description+}`,
-                    description: `Tell me something you want to be added or changed`,
+                    description: cmd.suggest.description,
                     execute: (ctx, [description], flags) => this.submitSuggestion(ctx, description.asString, flags)
                 },
                 {
                     parameters: `report|bug {description+}`,
-                    description: `Let me know about a bug you found`,
+                    description: cmd.report.description,
                     execute: (ctx, [description], flags) => this.submitBugReport(ctx, description.asString, flags)
                 },
                 {
                     parameters: `edit {caseNumber:integer} {description+}`,
-                    description: `Edit some feedback you have previously sent`,
+                    description: cmd.edit.description,
                     execute: (ctx, [caseNumber, description], flags) => this.editFeedback(ctx, caseNumber.asInteger, description.asString, flags)
                 }
-            ],
-            flags: [
-                { flag: `c`, word: `command`, description: `Signify your feedack is for a command` },
-                { flag: `b`, word: `bbtag`, description: `Signify your feedack is for BBTag` },
-                { flag: `a`, word: `docs`, description: `Signify your feedack is for documentation` },
-                { flag: `o`, word: `other`, description: `Signify your feedack is for other functionality` }
             ]
         });
 

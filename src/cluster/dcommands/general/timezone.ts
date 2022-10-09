@@ -3,7 +3,10 @@ import { CommandType } from '@blargbot/cluster/utils';
 import { User } from 'eris';
 import moment from 'moment-timezone';
 
+import templates from '../../text';
 import { CommandResult } from '../../types';
+
+const cmd = templates.commands.timeZone;
 
 export class TimezoneCommand extends GlobalCommand {
     public constructor() {
@@ -13,12 +16,12 @@ export class TimezoneCommand extends GlobalCommand {
             definitions: [
                 {
                     parameters: ``,
-                    description: `Gets your current timezone`,
+                    description: cmd.get.description,
                     execute: (ctx) => this.getTimezone(ctx, ctx.author)
                 },
                 {
                     parameters: `{timezone}`,
-                    description: `Sets your current timezone. A list of [allowed timezones can be found on wikipedia](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones#List) under the \`TZ database name\` column`,
+                    description: cmd.set.description,
                     execute: (ctx, [timezone]) => this.setTimezone(ctx, ctx.author, timezone.asString)
                 }
             ]

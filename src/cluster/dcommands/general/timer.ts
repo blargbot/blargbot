@@ -2,7 +2,10 @@ import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType, guard } from '@blargbot/cluster/utils';
 import moment, { Duration } from 'moment-timezone';
 
+import templates from '../../text';
 import { CommandResult } from '../../types';
+
+const cmd = templates.commands.timer;
 
 export class TimerCommand extends GlobalCommand {
     public constructor() {
@@ -11,12 +14,12 @@ export class TimerCommand extends GlobalCommand {
             aliases: [`stopwatch`],
             category: CommandType.GENERAL,
             flags: [
-                { flag: `c`, word: `channel`, description: `Sets the reminder to appear in the current channel rather than a DM` }
+                { flag: `c`, word: `channel`, description: cmd.flags.channel }
             ],
             definitions: [
                 {
                     parameters: `{duration:duration+}`,
-                    description: `Sets a timer for the provided duration, formatted as '1 day 2 hours 3 minutes and 4 seconds', '1d2h3m4s', or some other combination.`,
+                    description: cmd.default.description,
                     execute: (ctx, [duration], { c: channel }) => this.addTimer(ctx, duration.asDuration, channel !== undefined)
                 }
             ]

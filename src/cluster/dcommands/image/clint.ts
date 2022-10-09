@@ -3,21 +3,27 @@ import { guard } from '@blargbot/cluster/utils';
 import { parse } from '@blargbot/core/utils/parse';
 import { User } from 'eris';
 
+import templates from '../../text';
 import { CommandResult } from '../../types';
+
+const cmd = templates.commands.clint;
 
 export class ClintCommand extends GlobalImageCommand {
     public constructor() {
         super({
             name: `clint`,
+            flags: [
+                { flag: `i`, word: `image`, description: cmd.flags.image }
+            ],
             definitions: [
                 {
                     parameters: `{user:user+}`,
-                    description: `I don't even know, to be honest.`,
+                    description: cmd.user.description,
                     execute: (ctx, [user]) => this.renderUser(ctx, user.asUser)
                 },
                 {
                     parameters: ``,
-                    description: `I don't even know, to be honest.`,
+                    description: cmd.default.description,
                     execute: (ctx, _, flags) => this.render(
                         ctx,
                         flags.i?.merge().value
@@ -26,9 +32,6 @@ export class ClintCommand extends GlobalImageCommand {
                             : ctx.author.avatarURL)
                     )
                 }
-            ],
-            flags: [
-                { flag: `i`, word: `image`, description: `A custom image.` }
             ]
         });
     }

@@ -2,7 +2,10 @@ import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType, guard, randChoose } from '@blargbot/cluster/utils';
 import spellsJson from '@blargbot/res/spells.json';
 
+import templates from '../../text';
 import { CommandResult } from '../../types';
+
+const cmd = templates.commands.spell;
 
 export class SpellCommand extends GlobalCommand {
     public constructor() {
@@ -12,7 +15,7 @@ export class SpellCommand extends GlobalCommand {
             definitions: [
                 {
                     parameters: `{name?}`,
-                    description: `Gives you a description for a D&D 5e spell.`,
+                    description: cmd.default.description,
                     execute: (ctx, [name]) => this.getSpell(ctx, name.asOptionalString)
                 }
             ]

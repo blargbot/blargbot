@@ -2,7 +2,10 @@ import { GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType, randChoose } from '@blargbot/cluster/utils';
 import fetch from 'node-fetch';
 
+import templates from '../../text';
 import { CommandResult } from '../../types';
+
+const cmd = templates.commands.status;
 
 export class StatusCommand extends GlobalCommand {
     public constructor() {
@@ -12,7 +15,7 @@ export class StatusCommand extends GlobalCommand {
             definitions: [
                 {
                     parameters: `{status:integer} {animal?}`,
-                    description: `Gets you an image of an HTTP status code.`,
+                    description: cmd.default.description,
                     execute: (_, [status, animal]) => this.getStatus(status.asInteger, animal.asOptionalString)
                 }
             ]

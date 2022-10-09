@@ -4,23 +4,23 @@ import { CommandType, humanize, ModerationType, parse, pluralise as p } from '@b
 import { FlagResult } from '@blargbot/domain/models';
 import { Member } from 'eris';
 
+import templates from '../../text';
+
+const cmd = templates.commands.warn;
+
 export class WarnCommand extends GuildCommand {
     public constructor() {
         super({
             name: `warn`,
             category: CommandType.ADMIN,
             flags: [
-                { flag: `r`, word: `reason`, description: `The reason for the warning.` },
-                {
-                    flag: `c`,
-                    word: `count`,
-                    description: `The number of warnings that will be issued.`
-                }
+                { flag: `r`, word: `reason`, description: cmd.flags.reason },
+                { flag: `c`, word: `count`, description: cmd.flags.count }
             ],
             definitions: [
                 {
                     parameters: `{user:member+}`,
-                    description: `Issues a warning.\nIf mod-logging is enabled, the warning will be logged.\nIf \`kickat\` and \`banat\` have been set using the \`settings\` command, the target could potentially get banned or kicked.`,
+                    description: cmd.default.description,
                     execute: (ctx, [user], flags) => this.warn(ctx, user.asMember, flags)
                 }
             ]

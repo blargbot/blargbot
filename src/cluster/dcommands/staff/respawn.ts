@@ -2,17 +2,21 @@ import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { ClusterRespawnRequest, CommandResult } from '@blargbot/cluster/types';
 import { CommandType, humanize } from '@blargbot/cluster/utils';
 
+import templates from '../../text';
+
+const cmd = templates.commands.respawn;
+
 export class RespawnCommand extends GlobalCommand {
     public constructor() {
         super({
             name: `respawn`,
             category: CommandType.STAFF,
-            description: `Cluster respawning only for staff.`,
+            description: cmd.description,
             definitions: [
                 {
                     parameters: `{clusterId:integer}`,
                     execute: (ctx, [clusterId]) => this.respawn(ctx, clusterId.asInteger),
-                    description: `Respawns the cluster specified`
+                    description: cmd.default.description
                 }
             ]
         });

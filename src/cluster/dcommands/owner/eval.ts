@@ -2,7 +2,10 @@ import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { codeBlock, CommandType } from '@blargbot/cluster/utils';
 import { EvalResult, GlobalEvalResult, MasterEvalRequest } from '@blargbot/core/types';
 
+import templates from '../../text';
 import { CommandResult } from '../../types';
+
+const cmd = templates.commands.eval;
 
 export class EvalCommand extends GlobalCommand {
     public constructor() {
@@ -12,23 +15,23 @@ export class EvalCommand extends GlobalCommand {
             definitions: [
                 {
                     parameters: `{~code+}`,
-                    execute: (ctx, [code]) => this.eval(ctx, ctx.author.id, code.asString),
-                    description: `Runs the code you enter on the current cluster`
+                    description: cmd.here.description,
+                    execute: (ctx, [code]) => this.eval(ctx, ctx.author.id, code.asString)
                 },
                 {
                     parameters: `master {~code+}`,
-                    execute: (ctx, [code]) => this.mastereval(ctx, ctx.author.id, code.asString),
-                    description: `Runs the code you enter on the master process`
+                    description: cmd.master.description,
+                    execute: (ctx, [code]) => this.mastereval(ctx, ctx.author.id, code.asString)
                 },
                 {
                     parameters: `global {~code+}`,
-                    execute: (ctx, [code]) => this.globaleval(ctx, ctx.author.id, code.asString),
-                    description: `Runs the code you enter on all the clusters and aggregates the result`
+                    description: cmd.global.description,
+                    execute: (ctx, [code]) => this.globaleval(ctx, ctx.author.id, code.asString)
                 },
                 {
                     parameters: `cluster {clusterId:number} {~code+}`,
-                    execute: (ctx, [clusterId, code]) => this.clustereval(ctx, clusterId.asNumber, ctx.author.id, code.asString),
-                    description: `Runs the code you enter on all the clusters and aggregates the result`
+                    description: cmd.cluster.description,
+                    execute: (ctx, [clusterId, code]) => this.clustereval(ctx, clusterId.asNumber, ctx.author.id, code.asString)
                 }
             ]
         });

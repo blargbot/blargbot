@@ -5,6 +5,10 @@ import { guard } from '@blargbot/core/utils';
 import { CommandPermissions } from '@blargbot/domain/models';
 import { Role } from 'eris';
 
+import templates from '../../text';
+
+const cmd = templates.commands.editCommand;
+
 export class EditCommandCommand extends GuildCommand {
     public constructor() {
         super({
@@ -14,37 +18,37 @@ export class EditCommandCommand extends GuildCommand {
             definitions: [
                 {
                     parameters: `list`,
-                    description: `Shows a list of modified commands`,
+                    description: cmd.list.description,
                     execute: (ctx) => this.list(ctx)
                 },
                 {
                     parameters: `{commands[]} setrole {roles:role[0]}`,
-                    description: `Sets the role required to run the listed commands`,
+                    description: cmd.setrole.description,
                     execute: (ctx, [commands, roles]) => this.setRole(ctx, commands.asStrings, roles.asRoles)
                 },
                 {
                     parameters: `{commands[]} setperm|setperms {permission:bigint?}`,
-                    description: `Sets the permssions required to run the listed commands. If a user has any of the permissions, they will be able to use the command.`,
+                    description: cmd.setperm.description,
                     execute: (ctx, [commands, permissions]) => this.setPermissions(ctx, commands.asStrings, permissions.asOptionalBigint)
                 },
                 {
                     parameters: `{commands[]} disable`,
-                    description: `Disables the listed commands, so no one but the owner can use them`,
+                    description: cmd.disable.description,
                     execute: (ctx, [commands]) => this.setDisabled(ctx, commands.asStrings, true)
                 },
                 {
                     parameters: `{commands[]} enable`,
-                    description: `Enables the listed commands, allowing anyone with the correct permissions or roles to use them`,
+                    description: cmd.enable.description,
                     execute: (ctx, [commands]) => this.setDisabled(ctx, commands.asStrings, false)
                 },
                 {
                     parameters: `{commands[]} hide`,
-                    description: `Hides the listed commands. They can still be executed, but wont show up in help`,
+                    description: cmd.hide.description,
                     execute: (ctx, [commands]) => this.setHidden(ctx, commands.asStrings, true)
                 },
                 {
                     parameters: `{commands[]} show`,
-                    description: `Reveals the listed commands in help`,
+                    description: cmd.show.description,
                     execute: (ctx, [commands]) => this.setHidden(ctx, commands.asStrings, false)
                 }
             ]

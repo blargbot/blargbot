@@ -1,6 +1,9 @@
 import { CommandContext, GlobalImageCommand } from '@blargbot/cluster/command';
 
+import templates from '../../text';
 import { CommandResult } from '../../types';
+
+const cmd = templates.commands.truth;
 
 export class TruthCommand extends GlobalImageCommand {
     public constructor() {
@@ -9,7 +12,7 @@ export class TruthCommand extends GlobalImageCommand {
             definitions: [
                 {
                     parameters: `{text+}`,
-                    description: `Shows everyone what is written in the Scroll of Truth.`,
+                    description: cmd.default.description,
                     execute: (ctx, [text]) => this.render(ctx, text.asString)
                 }
             ]

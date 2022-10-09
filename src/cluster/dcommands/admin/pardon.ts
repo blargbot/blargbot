@@ -4,23 +4,23 @@ import { CommandType, humanize, parse, pluralise as p } from '@blargbot/cluster/
 import { FlagResult } from '@blargbot/domain/models';
 import { Member } from 'eris';
 
+import templates from '../../text';
+
+const cmd = templates.commands.pardon;
+
 export class PardonCommand extends GuildCommand {
     public constructor() {
         super({
             name: `pardon`,
             category: CommandType.ADMIN,
             flags: [
-                { flag: `r`, word: `reason`, description: `The reason for the pardon.` },
-                {
-                    flag: `c`,
-                    word: `count`,
-                    description: `The number of warnings that will be removed.`
-                }
+                { flag: `r`, word: `reason`, description: cmd.flags.reason },
+                { flag: `c`, word: `count`, description: cmd.flags.count }
             ],
             definitions: [
                 {
                     parameters: `{user:member+}`,
-                    description: `Pardons a user.\nIf mod-logging is enabled, the pardon will be logged.\nThis will not unban users.`,
+                    description: cmd.default.description,
                     execute: (ctx, [user], flags) => this.pardon(ctx, user.asMember, flags)
                 }
             ]

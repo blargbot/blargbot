@@ -3,21 +3,27 @@ import { guard } from '@blargbot/cluster/utils';
 import { parse } from '@blargbot/core/utils/parse';
 import { User } from 'eris';
 
+import templates from '../../text';
 import { CommandResult } from '../../types';
+
+const cmd = templates.commands.distort;
 
 export class DistortCommand extends GlobalImageCommand {
     public constructor() {
         super({
             name: `distort`,
+            flags: [
+                { flag: `i`, word: `image`, description: cmd.flags.image }
+            ],
             definitions: [
                 {
                     parameters: `{user:user+}`,
-                    description: `Turns an avatar into modern art.`,
+                    description: cmd.user.description,
                     execute: (ctx, [user]) => this.renderUser(ctx, user.asUser)
                 },
                 {
                     parameters: ``,
-                    description: `Turns an image into modern art.`,
+                    description: cmd.default.description,
                     execute: (ctx, _, flags) => this.render(
                         ctx,
                         ctx.message.attachments.length > 0
@@ -26,9 +32,6 @@ export class DistortCommand extends GlobalImageCommand {
                             ?? ctx.author.avatarURL
                     )
                 }
-            ],
-            flags: [
-                { flag: `i`, word: `image`, description: `A custom image.` }
             ]
         });
     }

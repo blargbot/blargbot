@@ -1,19 +1,22 @@
 import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType, randInt } from '@blargbot/cluster/utils';
 
+import templates from '../../text';
 import { CommandResult } from '../../types';
+
+const cmd = templates.commands.ping;
 
 export class PingCommand extends GlobalCommand {
     public constructor() {
         super({
             name: `ping`,
             category: CommandType.GENERAL,
-            description: `Pong!\nFind the command latency.`,
+            description: cmd.description,
             definitions: [
                 {
                     parameters: ``,
                     execute: ctx => this.ping(ctx),
-                    description: `Gets the current latency.`
+                    description: cmd.default.description
                 }
             ]
         });

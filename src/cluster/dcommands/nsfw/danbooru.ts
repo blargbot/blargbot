@@ -3,7 +3,10 @@ import { CommandType, humanize, shuffle } from '@blargbot/cluster/utils';
 import { mapping } from '@blargbot/mapping';
 import fetch from 'node-fetch';
 
+import templates from '../../text';
 import { CommandResult } from '../../types';
+
+const cmd = templates.commands.danbooru;
 
 export class DanbooruCommand extends GlobalCommand {
     public constructor() {
@@ -13,7 +16,7 @@ export class DanbooruCommand extends GlobalCommand {
             definitions: [
                 {
                     parameters: `{tags[]}`,
-                    description: `Gets three pictures from '<https://danbooru.donmai.us/>' using given tags.`,
+                    description: cmd.default.description,
                     execute: (_, [tags]) => this.getDanbooru(tags.asStrings)
                 }
             ]

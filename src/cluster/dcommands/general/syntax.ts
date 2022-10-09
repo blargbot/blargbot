@@ -1,7 +1,10 @@
 import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType, randChoose, randInt, repeat } from '@blargbot/cluster/utils';
 
+import templates from '../../text';
 import { CommandResult } from '../../types';
+
+const cmd = templates.commands.syntax;
 
 export class SyntaxCommand extends GlobalCommand {
     public constructor() {
@@ -11,7 +14,7 @@ export class SyntaxCommand extends GlobalCommand {
             definitions: [
                 {
                     parameters: `{commandName+=}`,
-                    description: `Gives you the 'syntax' for a command 😉`,
+                    description: cmd.default.description,
                     execute: (ctx, [commandName]) => this.getSyntax(ctx, commandName.asString)
                 }
             ]

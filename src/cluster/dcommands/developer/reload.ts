@@ -3,6 +3,10 @@ import { CommandResult, ICommandManager } from '@blargbot/cluster/types';
 import { CommandType, pluralise as p } from '@blargbot/cluster/utils';
 import { ModuleLoader } from '@blargbot/core/modules';
 
+import templates from '../../text';
+
+const cmd = templates.commands.reload;
+
 export class ReloadCommand extends GlobalCommand {
     public constructor() {
         super({
@@ -11,17 +15,17 @@ export class ReloadCommand extends GlobalCommand {
             definitions: [
                 {
                     parameters: `commands {commands[0]}`,
-                    description: `Reloads the given commands, or all commands if none were given`,
+                    description: cmd.commands.description,
                     execute: (ctx, [commands]) => this.reloadModules(ctx.cluster.commands, commands.asStrings, `command`)
                 },
                 {
                     parameters: `events {events[0]}`,
-                    description: `Reloads the given events, or all events if none were given`,
+                    description: cmd.events.description,
                     execute: (ctx, [events]) => this.reloadModules(ctx.cluster.events, events.asStrings, `event`)
                 },
                 {
                     parameters: `services {services[0]}`,
-                    description: `Reloads the given services, or all services if none were given`,
+                    description: cmd.services.description,
                     execute: (ctx, [services]) => this.reloadModules(ctx.cluster.services, services.asStrings, `service`)
                 }
             ]

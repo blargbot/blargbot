@@ -1,6 +1,9 @@
 import { CommandContext, GlobalImageCommand } from '@blargbot/cluster/command';
 
+import templates from '../../text';
 import { CommandResult } from '../../types';
+
+const cmd = templates.commands.pcCheck;
 
 export class PCCheckCommand extends GlobalImageCommand {
     public constructor() {
@@ -9,7 +12,7 @@ export class PCCheckCommand extends GlobalImageCommand {
             definitions: [
                 {
                     parameters: `{text+}`,
-                    description: `Tells everyone a reason why they should get their PC checked. Template credits go to Ghosty#8204.`,
+                    description: cmd.default.description,
                     execute: (ctx, [text]) => this.render(ctx, text.asString)
                 }
             ]

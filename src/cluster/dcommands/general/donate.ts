@@ -1,7 +1,10 @@
 import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType } from '@blargbot/cluster/utils';
 
+import templates from '../../text';
 import { CommandResult } from '../../types';
+
+const cmd = templates.commands.donate;
 
 export class DonateCommand extends GlobalCommand {
     public constructor() {
@@ -11,7 +14,7 @@ export class DonateCommand extends GlobalCommand {
             definitions: [
                 {
                     parameters: ``,
-                    description: `Gets my donation information`,
+                    description: cmd.default.description,
                     execute: (ctx) => this.donateDetails(ctx)
                 }
             ]

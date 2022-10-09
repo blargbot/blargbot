@@ -1,7 +1,10 @@
 import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType } from '@blargbot/cluster/utils';
 
+import templates from '../../text';
 import { CommandResult } from '../../types';
+
+const cmd = templates.commands.dmErrors;
 
 export class DMErrorsCommand extends GlobalCommand {
     public constructor() {
@@ -11,7 +14,7 @@ export class DMErrorsCommand extends GlobalCommand {
             definitions: [
                 {
                     parameters: ``,
-                    description: `Toggles whether to DM you errors.`,
+                    description: cmd.default.description,
                     execute: ctx => this.toggleDMErrors(ctx)
                 }
             ]

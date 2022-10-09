@@ -1,8 +1,10 @@
 import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { codeBlock, CommandType, parse, pluralise as p, randChoose, randInt, repeat } from '@blargbot/cluster/utils';
 
+import templates from '../../text';
 import { CommandResult } from '../../types';
 
+const cmd = templates.commands.roll;
 export class RollCommand extends GlobalCommand {
     public constructor() {
         super({
@@ -11,7 +13,7 @@ export class RollCommand extends GlobalCommand {
             definitions: [
                 {
                     parameters: `{dice=1d20} {modifier:integer?} {details+?}`,
-                    description: `Rolls the dice you tell it to, and adds the modifier`,
+                    description: cmd.default.description,
                     execute: (ctx, [dice, modifier, details]) => this.rollDice(ctx, dice.asString, modifier.asOptionalInteger, details.asOptionalString)
                 }
             ]

@@ -3,28 +3,31 @@ import { CommandType, pluralise as p } from '@blargbot/cluster/utils';
 import { EmbedOptions, User } from 'eris';
 import moment from 'moment-timezone';
 
+import templates from '../../text';
 import { CommandResult } from '../../types';
+
+const cmd = templates.commands.names;
 
 export class NamesCommand extends GlobalCommand {
     public constructor() {
         super({
             name: `names`,
             category: CommandType.GENERAL,
+            flags: [
+                { flag: `a`, word: `all`, description: cmd.flags.all },
+                { flag: `v`, word: `verbose`, description: cmd.flags.verbose }
+            ],
             definitions: [
                 {
                     parameters: `{user:user+?}`,
-                    description: `Returns the names that I've seen the specified user have in the past 30 days.`,
+                    description: cmd.list.description,
                     execute: (ctx, [user], flags) => this.listNames(ctx, user.asOptionalUser ?? ctx.author, flags.a !== undefined, flags.v !== undefined)
                 },
                 {
                     parameters: `remove {names+?}`,
-                    description: `Removes the names ive seen you use in the past 30 days`,
+                    description: cmd.remove.description,
                     execute: (ctx, [names]) => this.removeNames(ctx, names.asOptionalString)
                 }
-            ],
-            flags: [
-                { flag: `a`, word: `all`, description: `Gets all the names.` },
-                { flag: `v`, word: `verbose`, description: `Gets more information about the retrieved names.` }
             ]
         });
     }

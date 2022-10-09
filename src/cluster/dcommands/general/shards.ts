@@ -5,32 +5,32 @@ import { FormatEmbedOptions } from '@blargbot/core/types';
 import { IFormattable } from '@blargbot/domain/messages/types';
 import moment from 'moment-timezone';
 
+import templates from '../../text';
+
+const cmd = templates.commands.shards;
+
 export class ShardsCommand extends GlobalCommand {
     public constructor() {
         super({
             name: `shards`,
             category: CommandType.GENERAL,
             flags: [
-                {
-                    flag: `d`,
-                    word: `down`,
-                    description: `If provided, only shows downed shards for \`b!shards\``
-                }
+                { flag: `d`, word: `down`, description: cmd.flags.down }
             ],
             definitions: [
                 {
                     parameters: ``,
-                    description: `Shows a list of all shards.`,
+                    description: cmd.all.description,
                     execute: (ctx, _, { d: down }) => this.showAllShards(ctx, down !== undefined)
                 },
                 {
                     parameters: `{guildID}`,
-                    description: `Shows information about the shard and cluster \`guildID\` is in `,
+                    description: cmd.guild.description,
                     execute: (ctx, [guildID]) => this.showGuildShards(ctx, guildID.asString)
                 },
                 {
                     parameters: `{clusterID:integer}`,
-                    description: `Show information about \`cluster\``,
+                    description: cmd.cluster.description,
                     execute: (ctx, [clusterID]) => this.showClusterShards(ctx, clusterID.asInteger)
                 }
             ]

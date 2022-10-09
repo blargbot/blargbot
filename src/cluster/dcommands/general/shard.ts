@@ -3,6 +3,10 @@ import { ClusterStats, CommandResult, ShardStats } from '@blargbot/cluster/types
 import { CommandType, discord, guard, humanize, snowflake } from '@blargbot/cluster/utils';
 import moment from 'moment-timezone';
 
+import templates from '../../text';
+
+const cmd = templates.commands.shard;
+
 export class ShardCommand extends GlobalCommand {
     public constructor() {
         super({
@@ -11,12 +15,12 @@ export class ShardCommand extends GlobalCommand {
             definitions: [
                 {
                     parameters: ``,
-                    description: `Returns information about the shard the current guild is in, along with cluster stats.`,
+                    description: cmd.current.description,
                     execute: (ctx) => this.showCurrentShard(ctx)
                 },
                 {
                     parameters: `{guildID}`,
-                    description: `Returns information about the shard \`guildID\` is in, along with cluster stats.`,
+                    description: cmd.guild.description,
                     execute: (ctx, [guildID]) => this.showGuildShard(ctx, guildID.asString)
                 }
             ]

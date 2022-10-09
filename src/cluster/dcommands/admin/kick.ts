@@ -3,18 +3,22 @@ import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType, humanize } from '@blargbot/cluster/utils';
 import { Member } from 'eris';
 
+import templates from '../../text';
+
+const cmd = templates.commands.kick;
+
 export class KickCommand extends GuildCommand {
     public constructor() {
         super({
             name: `kick`,
             category: CommandType.ADMIN,
             flags: [
-                { flag: `r`, word: `reason`, description: `The reason for the kick.` }
+                { flag: `r`, word: `reason`, description: cmd.flags.reason }
             ],
             definitions: [
                 {
                     parameters: `{user:member+}`,
-                    description: `Kicks a user.\nIf mod-logging is enabled, the kick will be logged.`,
+                    description: cmd.default.description,
                     execute: (ctx, [user], flags) => this.kick(ctx, user.asMember, flags.r?.merge().value)
                 }
             ]

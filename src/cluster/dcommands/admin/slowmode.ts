@@ -3,7 +3,10 @@ import { CommandType } from '@blargbot/cluster/utils';
 import { guard } from '@blargbot/core/utils';
 import { ApiError, DiscordRESTError, KnownChannel } from 'eris';
 
+import templates from '../../text';
 import { CommandResult } from '../../types';
+
+const cmd = templates.commands.slowMode;
 
 export class SlowmodeCommand extends GuildCommand {
     public constructor() {
@@ -13,12 +16,12 @@ export class SlowmodeCommand extends GuildCommand {
             definitions: [
                 {
                     parameters: `{time:integer} {channel:channel+?}`,
-                    description: `Sets the channel's slowmode to 1 message every \`time\` seconds, with a max of 6 hours`,
+                    description: cmd.on.description,
                     execute: (ctx, [time, channel]) => this.setSlowmode(time.asInteger, channel.asOptionalChannel ?? ctx.channel)
                 },
                 {
                     parameters: `off {channel:channel+?}`,
-                    description: `Turns off the channel's slowmode`,
+                    description: cmd.off.description,
                     execute: (ctx, [channel]) => this.disableSlowmode(channel.asOptionalChannel ?? ctx.channel)
                 }
             ]

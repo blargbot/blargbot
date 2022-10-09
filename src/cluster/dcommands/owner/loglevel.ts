@@ -1,7 +1,10 @@
 import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType } from '@blargbot/cluster/utils';
 
+import templates from '../../text';
 import { CommandResult } from '../../types';
+
+const cmd = templates.commands.logLevel;
 
 export class LoglevelCommand extends GlobalCommand {
     public constructor() {
@@ -11,7 +14,7 @@ export class LoglevelCommand extends GlobalCommand {
             definitions: [
                 {
                     parameters: `{loglevel}`,
-                    description: `Sets the current log level`,
+                    description: cmd.default.description,
                     execute: (ctx, [logLevel]) => this.setLogLevel(ctx, logLevel.asString)
                 }
             ]

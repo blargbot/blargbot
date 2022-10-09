@@ -3,18 +3,22 @@ import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType, humanize } from '@blargbot/cluster/utils';
 import { FlagResult } from '@blargbot/domain/models';
 
+import templates from '../../text';
+
+const cmd = templates.commands.unban;
+
 export class UnbanCommand extends GuildCommand {
     public constructor() {
         super({
             name: `unban`,
             category: CommandType.ADMIN,
             flags: [
-                { flag: `r`, word: `reason`, description: `The reason for the ban.` }
+                { flag: `r`, word: `reason`, description: cmd.flags.reason }
             ],
             definitions: [
                 {
                     parameters: `{userId}`,
-                    description: `Unbans a user.\nIf mod-logging is enabled, the ban will be logged.`,
+                    description: cmd.default.description,
                     execute: (ctx, [user], flags) => this.unban(ctx, user.asString, flags)
                 }
             ]

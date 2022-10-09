@@ -4,18 +4,22 @@ import { CommandType, humanize } from '@blargbot/cluster/utils';
 import { FlagResult } from '@blargbot/domain/models';
 import { Member } from 'eris';
 
+import templates from '../../text';
+
+const cmd = templates.commands.unmute;
+
 export class UnmuteCommand extends GuildCommand {
     public constructor() {
         super({
             name: `unmute`,
             category: CommandType.ADMIN,
             flags: [
-                { flag: `r`, word: `reason`, description: `The reason for the unmute.` }
+                { flag: `r`, word: `reason`, description: cmd.flags.reason }
             ],
             definitions: [
                 {
                     parameters: `{user:member+}`,
-                    description: `Removes the special muted role from the user. \nIf mod-logging is enabled, the mute will be logged.`,
+                    description: cmd.default.description,
                     execute: (ctx, [user], flags) => this.unmute(ctx, user.asMember, flags)
                 }
             ]

@@ -3,7 +3,10 @@ import { CommandType, guard } from '@blargbot/cluster/utils';
 import { parse } from '@blargbot/core/utils';
 import moment from 'moment-timezone';
 
+import templates from '../../text';
 import { CommandResult } from '../../types';
+
+const cmd = templates.commands.remind;
 
 export class TimerCommand extends GlobalCommand {
     public constructor() {
@@ -12,13 +15,13 @@ export class TimerCommand extends GlobalCommand {
             aliases: [`remindme`],
             category: CommandType.GENERAL,
             flags: [
-                { flag: `c`, word: `channel`, description: `Sets the reminder to appear in the current channel rather than a DM` },
-                { flag: `t`, word: `time`, description: `The time before the user is to be reminded, formatted as '1 day 2 hours 3 minutes and 4 seconds', '1d 2h 3m 4s', or some other combination` }
+                { flag: `c`, word: `channel`, description: cmd.flags.channel },
+                { flag: `t`, word: `time`, description: cmd.flags.time }
             ],
             definitions: [
                 {
                     parameters: `{~message+}`,
-                    description: `Reminds you about something after a period of time in a DM.`,
+                    description: cmd.default.description,
                     execute: (ctx, [message], { c: channel, t: time }) => this.addTimer(ctx, time?.merge().value, message.asString, channel !== undefined)
                 }
             ]

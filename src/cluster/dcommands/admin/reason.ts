@@ -2,6 +2,10 @@ import { GuildCommand } from '@blargbot/cluster/command';
 import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType } from '@blargbot/cluster/utils';
 
+import templates from '../../text';
+
+const cmd = templates.commands.reason;
+
 export class ReasonCommand extends GuildCommand {
     public constructor() {
         super({
@@ -10,7 +14,7 @@ export class ReasonCommand extends GuildCommand {
             definitions: [
                 {
                     parameters: `{caseId:integer?} {reason+}`,
-                    description: `Sets the reason for an action on the modlog.`,
+                    description: cmd.default.description,
                     execute: (ctx, [caseId, reason]) => this.setReason(ctx, caseId.asOptionalInteger, reason.asString)
                 }
             ]

@@ -2,7 +2,10 @@ import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType } from '@blargbot/cluster/utils';
 import { EmbedOptions } from 'eris';
 
+import templates from '../../text';
 import { CommandResult } from '../../types';
+
+const cmd = templates.commands.personalPrefix;
 
 export class PersonalPrefixCommand extends GlobalCommand {
     public constructor() {
@@ -13,17 +16,17 @@ export class PersonalPrefixCommand extends GlobalCommand {
             definitions: [
                 {
                     parameters: `add {prefix}`,
-                    description: `Adds a command prefix just for you!`,
+                    description: cmd.add.description,
                     execute: (ctx, [prefix]) => this.addPrefix(ctx, prefix.asString)
                 },
                 {
                     parameters: `remove {prefix}`,
-                    description: `Removes one of your personal command prefixes`,
+                    description: cmd.remove.description,
                     execute: (ctx, [prefix]) => this.removePrefix(ctx, prefix.asString)
                 },
                 {
                     parameters: ``,
-                    description: `Lists the your personal command prefixes`,
+                    description: cmd.list.description,
                     execute: (ctx) => this.listPrefixes(ctx)
                 }
             ]

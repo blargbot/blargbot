@@ -4,6 +4,10 @@ import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { codeBlock, CommandType, guard } from '@blargbot/cluster/utils';
 import { KnownChannel } from 'eris';
 
+import templates from '../../text';
+
+const cmd = templates.commands.greeting;
+
 export class GreetingCommand extends GuildCommand {
     public constructor() {
         super({
@@ -13,37 +17,37 @@ export class GreetingCommand extends GuildCommand {
             definitions: [
                 {
                     parameters: `set {~bbtag+}`,
-                    description: `Sets the message to send when someone joins the server`,
+                    description: cmd.set.description,
                     execute: (ctx, [bbtag]) => this.setGreeting(ctx, bbtag.asString)
                 },
                 {
                     parameters: `raw {fileExtension:literal(bbtag|txt)=bbtag}`,
-                    description: `Gets the current message that will be sent when someone joins the server`,
+                    description: cmd.raw.description,
                     execute: (ctx, [fileExtension]) => this.getGreeting(ctx, fileExtension.asLiteral)
                 },
                 {
                     parameters: `setauthorizer`,
-                    description: `Sets the greeting message to use your permissions when running`,
+                    description: cmd.setauthorizer.description,
                     execute: (ctx) => this.setAuthorizer(ctx)
                 },
                 {
                     parameters: `setchannel {channel:channel+}`,
-                    description: `Sets the channel the greeting message will be sent in.`,
+                    description: cmd.setchannel.description,
                     execute: (ctx, [channel]) => this.setChannel(ctx, channel.asChannel)
                 },
                 {
                     parameters: `debug`,
-                    description: `Executes the greeting message as if you left the server and provides the debug output.`,
+                    description: cmd.debug.description,
                     execute: (ctx) => this.debug(ctx)
                 },
                 {
                     parameters: `delete|clear`,
-                    description: `Deletes the current greeting message.`,
+                    description: cmd.delete.description,
                     execute: (ctx) => this.deleteGreeting(ctx)
                 },
                 {
                     parameters: `info`,
-                    description: `Shows information about the current greeting message`,
+                    description: cmd.info.description,
                     execute: (ctx) => this.getInfo(ctx)
                 }
             ]
@@ -122,7 +126,7 @@ export class GreetingCommand extends GuildCommand {
         return `✅ Greeting messages will now be sent in ${channel.mention}`;
     }
 
-    public async debug(context: GuildCommandContext): NewType {
+    public async debug(context: GuildCommandContext): CommandResult {
         const result = await context.cluster.greetings.greet(context.message.member);
         switch (result) {
             case `CHANNEL_MISSING`: return `❌ I wasnt able to locate a channel to sent the message in!`;

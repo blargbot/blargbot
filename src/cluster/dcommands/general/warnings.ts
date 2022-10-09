@@ -3,6 +3,10 @@ import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType, humanize, pluralise as p } from '@blargbot/cluster/utils';
 import { Member } from 'eris';
 
+import templates from '../../text';
+
+const cmd = templates.commands.warnings;
+
 export class WarningsCommand extends GuildCommand {
     public constructor() {
         super({
@@ -11,12 +15,12 @@ export class WarningsCommand extends GuildCommand {
             definitions: [
                 {
                     parameters: ``,
-                    description: `Gets how many warnings you have`,
+                    description: cmd.self.description,
                     execute: (ctx) => this.warnings(ctx, ctx.message.member)
                 },
                 {
                     parameters: `{user:member+}`,
-                    description: `Gets how many warnings the user has`,
+                    description: cmd.user.description,
                     execute: (ctx, [user]) => this.warnings(ctx, user.asMember)
                 }
             ]

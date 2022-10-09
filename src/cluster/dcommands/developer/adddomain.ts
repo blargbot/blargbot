@@ -1,7 +1,10 @@
 import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { codeBlock, CommandType } from '@blargbot/cluster/utils';
 
+import templates from '../../text';
 import { CommandResult } from '../../types';
+
+const cmd = templates.commands.addDomain;
 
 export class AddDomainCommand extends GlobalCommand {
     public constructor() {
@@ -12,7 +15,7 @@ export class AddDomainCommand extends GlobalCommand {
             definitions: [
                 {
                     parameters: `{domains[]}`,
-                    description: `Toggles multiple domains to the domain whitelist for use with the {request} subtag`,
+                    description: cmd.default.description,
                     execute: (ctx, [domains]) => this.toggleDomains(ctx, domains.asStrings)
                 }
             ]

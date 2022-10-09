@@ -85,7 +85,7 @@ export const templates = crunchTree(`cluster`, {
                 details: f(`ℹ️ Announcements will be sent in {channel.mention=\`<unconfigured>\`} and will mention {role.mention=\`<unconfigured>\`}`).withArgs<{ channel?: Eris.Channel; role?: Eris.Role; }>()
             }
         },
-        autoresponse: {
+        autoResponse: {
             notWhitelisted: f(`❌ Sorry, autoresponses are currently whitelisted. To request access, do \`b!ar whitelist [reason]\``),
             notFoundId: f(`❌ There isnt an autoresponse with id \`{id}\` here!`).withArgs<{ id: string; }>(),
             notFoundEverything: f(`❌ There isn't an everything autoresponse here!`),
@@ -528,9 +528,1013 @@ export const templates = crunchTree(`cluster`, {
                 }
             }
         },
+        changeLog: {
+            subscribe: {
+                description: f(`Subscribes this channel to my changelog updates. I require the \`manage webhooks\` permission for this.`)
+            },
+            unsubscribe: {
+                description: f(`Unsubscribes this channel from my changelog updates. I require the \`manage webhooks\` permission for this.`)
+            }
+        },
+        editCommand: {
+            list: {
+                description: f(`Shows a list of modified commands`)
+            },
+            setrole: {
+                description: f(`Sets the role required to run the listed commands`)
+            },
+            setperm: {
+                description: f(`Sets the permssions required to run the listed commands. If a user has any of the permissions, they will be able to use the command.`)
+            },
+            disable: {
+                description: f(`Disables the listed commands, so no one but the owner can use them`)
+            },
+            enable: {
+                description: f(`Enables the listed commands, allowing anyone with the correct permissions or roles to use them`)
+            },
+            hide: {
+                description: f(`Hides the listed commands. They can still be executed, but wont show up in help`)
+            },
+            show: {
+                description: f(`Reveals the listed commands in help`)
+            }
+        },
+        farewell: {
+            set: {
+                description: f(`Sets the bbtag to send when someone leaves the server`)
+            },
+            raw: {
+                description: f(`Gets the current message that will be sent when someone leaves the server`)
+            },
+            setauthorizer: {
+                description: f(`Sets the farewell message to use your permissions when running`)
+            },
+            setchannel: {
+                description: f(`Sets the channel the farewell message will be sent in.`)
+            },
+            debug: {
+                description: f(`Executes the farewell message as if you left the server and provides the debug output.`)
+            },
+            delete: {
+                description: f(`Deletes the current farewell message.`)
+            },
+            info: {
+                description: f(`Shows information about the current farewell message`)
+            }
+        },
+        greeting: {
+            set: {
+                description: f(`Sets the message to send when someone joins the server`)
+            },
+            raw: {
+                description: f(`Gets the current message that will be sent when someone joins the server`)
+            },
+            setauthorizer: {
+                description: f(`Sets the greeting message to use your permissions when running`)
+            },
+            setchannel: {
+                description: f(`Sets the channel the greeting message will be sent in.`)
+            },
+            debug: {
+                description: f(`Executes the greeting message as if you left the server and provides the debug output.`)
+            },
+            delete: {
+                description: f(`Deletes the current greeting message.`)
+            },
+            info: {
+                description: f(`Shows information about the current greeting message`)
+            }
+        },
+        interval: {
+            set: {
+                description: f(`Sets the bbtag to run every 15 minutes`)
+            },
+            raw: {
+                description: f(`Gets the current code that the interval is running`)
+            },
+            delete: {
+                description: f(`Deletes the current interval`)
+            },
+            setauthorizer: {
+                description: f(`Sets the interval to run using your permissions`)
+            },
+            debug: {
+                description: f(`Runs the interval now and sends the debug output`)
+            },
+            info: {
+                description: f(`Shows information about the current interval`)
+            }
+        },
+        kick: {
+            flags: {
+                reason: f(`The reason for the kick.`)
+            },
+            default: {
+                description: f(`Kicks a user.\nIf mod-logging is enabled, the kick will be logged.`)
+            }
+        },
+        log: {
+            common: {
+                events: {
+                    avatarupdate: f(`Triggered when someone changes their username`),
+                    kick: f(`Triggered when a member is kicked`),
+                    memberban: f(`Triggered when a member is banned`),
+                    memberjoin: f(`Triggered when someone joins`),
+                    memberleave: f(`Triggered when someone leaves`),
+                    membertimeout: f(`Triggered when someone is timed out`),
+                    membertimeoutclear: f(`Triggered when someone's timeout is removed`),
+                    memberunban: f(`Triggered when someone is unbanned`),
+                    messagedelete: f(`Triggered when someone deletes a message they sent`),
+                    messageupdate: f(`Triggered when someone updates a message they sent`),
+                    nameupdate: f(`Triggered when someone changes their username or discriminator`),
+                    nickupdate: f(`Triggered when someone changes their nickname`)
+                }
+            },
+            list: {
+                description: f(`Lists all the events currently being logged`)
+            },
+            enable: {
+                description: {
+                    default: f(`Sets the channel to log the given events to. Available events are:\n{events#map(\`{key}\` - {desc})#join(\n)}`).withArgs<{ events: Iterable<{ key: string; desc: IFormattable<string>; }>; }>(),
+                    all: f(`Sets the channel to log all events to, except role related events.`),
+                    role: f(`Sets the channel to log when someone gets or loses a role.`)
+                }
+            },
+            disable: {
+                description: {
+                    default: f(`Disables logging of the given events. Available events are:\n{events#map(\`{key}\` - {desc})#join(\n)}`).withArgs<{ events: Iterable<{ key: string; desc: IFormattable<string>; }>; }>(),
+                    all: f(`Disables logging of all events except role related events.`),
+                    role: f(`Stops logging when someone gets or loses a role.`)
+                }
+            },
+            ignore: {
+                description: f(`Ignores any tracked events concerning the users`)
+            },
+            track: {
+                description: f(`Removes the users from the list of ignored users and begins tracking events from them again`)
+            }
+        },
+        logs: {
+            flags: {
+                type: f(`The type(s) of message. Value can be CREATE, UPDATE, and/or DELETE, separated by commas.`),
+                channel: f(`The channel to retrieve logs from. Value can be a channel ID or a channel mention.`),
+                user: f(`The user(s) to retrieve logs from. Value can be a username, nickname, mention, or ID. This uses the user lookup system.`),
+                create: f(`Get message creates.`),
+                update: f(`Get message updates.`),
+                delete: f(`Get message deletes.`),
+                json: f(`Returns the logs in a json file rather than on a webpage.`)
+            },
+            default: {
+                description: f(`Creates a chatlog page for a specified channel, where \`number\` is the amount of lines to get. You can retrieve a maximum of 1000 logs. For more specific logs, you can specify flags.\nFor example, if you wanted to get 100 messages \`stupid cat\` deleted, you would do this:\n\`logs 100 --type delete --user stupid cat\`\nIf you want to use multiple of the same type, separate parameters with commas or chain them together. For example:\n\`logs 100 -CU -u stupid cat, dumb cat\``)
+            }
+        },
+        massBan: {
+            flags: {
+                reason: f(`The reason for the ban.`)
+            },
+            default: {
+                description: f(`Bans a user who isn't currently on your guild, where \`<userIds...>\` is a list of user IDs or mentions (separated by spaces) and \`days\` is the number of days to delete messages for.\nIf mod-logging is enabled, the ban will be logged.`)
+            }
+        },
+        modLog: {
+            setChannel: {
+                description: f(`Sets the channel to use as the modlog channel`)
+            },
+            disable: {
+                description: f(`Disables the modlog`)
+            },
+            clear: {
+                description: f(`Deletes specific modlog entries. If you dont provide any, all the entries will be removed`)
+            }
+        },
+        mute: {
+            flags: {
+                reason: f(`The reason for the (un)mute.`),
+                time: f(`The amount of time to mute for, formatted as '1 day 2 hours 3 minutes and 4 seconds', '1d2h3m4s', or some other combination.`)
+            },
+            default: {
+                description: f(`Gives the user a special muted role. On first run, this role will be created. The bot needs to be able to \`manage roles\` to create and assign the role, and \`manage channels\` to configure the role. You are able to manually configure the role without the bot, but the bot has to make it. Deleting the muted role causes it to be regenerated.\nIf the bot has permissions for it, this command will also voice-mute the user.\nIf mod-logging is enabled, the mute will be logged.\nYou can also specify a length of time the user should be muted for, using formats such as \`1 hour 2 minutes\` or \`1h2m\`.`)
+            },
+
+            clear: {
+                description: f(`Removes the special muted role from the user. \nIf mod-logging is enabled, the mute will be logged.`)
+            }
+        },
+        pardon: {
+            flags: {
+                reason: f(`The reason for the pardon.`),
+                count: f(`The number of warnings that will be removed.`)
+            },
+            default: {
+                description: f(`Pardons a user.\nIf mod-logging is enabled, the pardon will be logged.\nThis will not unban users.`)
+            }
+        },
+        prefix: {
+            list: {
+                description: f(`Lists all the current prefixes on this server`)
+            },
+            add: {
+                description: f(`Adds a command prefix to this server`)
+            },
+            remove: {
+                description: f(`Removes a command prefix from this server`)
+            }
+        },
+        reason: {
+            default: {
+                description: f(`Sets the reason for an action on the modlog.`)
+            }
+        },
+        roleMe: {
+            flags: {
+                add: f(`A list of roles to add in the roleme`),
+                remove: f(`A list of roles to remove in the roleme`),
+                case: f(`Whether the phrase is case sensitive`),
+                channels: f(`The channels the roleme should be in`)
+            },
+            add: {
+                description: f(`Adds a new roleme with the given phrase`)
+            },
+            remove: {
+                description: f(`Deletes the given roleme`)
+            },
+            edit: {
+                description: f(`Edits the given roleme`)
+            },
+            setmessage: {
+                description: f(`Sets the bbtag compatible message to show when the roleme is triggered`)
+            },
+            rawmessage: {
+                description: f(`Gets the current message that will be sent when the roleme is triggered`)
+            },
+            debugmessage: {
+                description: f(`Executes the roleme message as if you triggered the roleme`)
+            },
+            setauthorizer: {
+                description: f(`Sets the roleme message to run using your permissions`)
+            },
+            info: {
+                description: f(`Shows information about a roleme`)
+            },
+            list: {
+                description: f(`Lists the rolemes currently active on this server`)
+            }
+        },
+        removeVoteBan: {
+            user: {
+                description: f(`Deletes all the vote bans against the given user`)
+            },
+            all: {
+                description: f(`Deletes all vote bans against all users`)
+            }
+        },
+        settings: {
+            description: f(`Gets or sets the settings for the current guild. Visit {website} for key documentation.`).withArgs<{ website: string; }>(),
+            view: {
+                description: f(`Gets the current settings for this guild`)
+            },
+            keys: {
+                description: f(`Lists all the setting keys and their types`)
+            },
+            set: {
+                description: f(`Sets the given setting key to have a certian value. If \`value\` is omitted, the setting is reverted to its default value`)
+            }
+        },
+        slowMode: {
+            on: {
+                description: f(`Sets the channel's slowmode to 1 message every \`time\` seconds, with a max of 6 hours`)
+            },
+            off: {
+                description: f(`Turns off the channel's slowmode`)
+            }
+        },
+        tidy: {
+            flags: {
+                bots: f(`Remove messages from bots.`),
+                invites: f(`Remove messages containing invites.`),
+                links: f(`Remove messages containing links.`),
+                embeds: f(`Remove messages containing embeds.`),
+                attachments: f(`Remove messages containing attachments.`),
+                user: f(`Removes messages from the users specified. Separate users by commas`),
+                query: f(`Removes messages that match the provided query as a regex.`),
+                invert: f(`Reverses the effects of all the flag filters.`),
+                yes: f(`Bypasses the confirmation`)
+            },
+            default: {
+                description: f(`Clears messages from chat`)
+            }
+        },
+        timeout: {
+            flags: {
+                reason: f(`The reason for the timeout (removal).`),
+                time: f(`The amount of time to mute for, formatted as '1 day 2 hours 3 minutes and 4 seconds', '1d2h3m4s', or some other combination.\nMaximum allowed time is 28 days. Default is 1 day.`)
+            },
+            user: {
+                description: f(`Timeouts a user.\nIf mod-logging is enabled, the timeout will be logged.`)
+            },
+            clear: {
+                description: f(`Removes the timeout of a user.\nIf mod-logging is enabled, the timeout removal will be logged.`)
+            }
+        },
+        timers: {
+            list: {
+                description: f(`Lists all the currently active timers here`)
+            },
+            info: {
+                description: f(`Shows detailed information about a given timer`)
+            },
+            cancel: {
+                description: f(`Cancels currently active timers`)
+            },
+            clear: {
+                description: f(`Clears all currently active timers`)
+            }
+        },
+        unban: {
+            flags: {
+                reason: f(`The reason for the ban.`)
+            },
+            default: {
+                description: f(`Unbans a user.\nIf mod-logging is enabled, the ban will be logged.`)
+            }
+        },
+        unmute: {
+            flags: {
+                reason: f(`The reason for the unmute.`)
+            },
+            default: {
+                description: f(`Removes the special muted role from the user. \nIf mod-logging is enabled, the mute will be logged.`)
+            }
+        },
+        warn: {
+            flags: {
+                reason: f(`The reason for the warning.`),
+                count: f(`The number of warnings that will be issued.`)
+            },
+            default: {
+                description: f(`Issues a warning.\nIf mod-logging is enabled, the warning will be logged.\nIf \`kickat\` and \`banat\` have been set using the \`settings\` command, the target could potentially get banned or kicked.`)
+            }
+        },
+        addDomain: {
+            default: {
+                description: f(`Toggles multiple domains to the domain whitelist for use with the {request} subtag`)
+            }
+        },
+        patch: {
+            flags: {
+                fixes: f(`The bug fixes of the patch.`),
+                notes: f(`Other notes.`)
+            },
+            default: {
+                description: f(`Makes a patch note`)
+            }
+        },
+        reload: {
+            commands: {
+                description: f(`Reloads the given commands, or all commands if none were given`)
+            },
+            events: {
+                description: f(`Reloads the given events, or all events if none were given`)
+            },
+            services: {
+                description: f(`Reloads the given services, or all services if none were given`)
+            }
+        },
+        restart: {
+            description: f(`Restarts blargbot, or one of its components`),
+            default: {
+                description: f(`Restarts all the clusters`)
+            },
+            kill: {
+                description: f(`Kills the master process, ready for pm2 to restart it`)
+            },
+            api: {
+                description: f(`Restarts the api process`)
+            }
+        },
+        update: {
+            default: {
+                description: f(`Updates the codebase to the latest commit.`)
+            }
+        },
+        avatar: {
+            flags: {
+                format: f(`The file format. Can be {formats#join(, | or )}.`).withArgs<{ formats: Iterable<string>; }>(),
+                size: f(`The file size. Can be {sizes#join(, | or )}.`).withArgs<{ sizes: Iterable<number>; }>()
+            },
+            self: {
+                description: f(`Gets your avatar`)
+            },
+            user: {
+                description: f(`Gets the avatar of the user you chose`)
+            }
+        },
+        beeMovie: {
+            flags: {
+                name: f(`Shows the name of the character the quote is from, if applicable.`),
+                characters: f(`Only give quotes from actual characters (no stage directions).`)
+            },
+            default: {
+                description: f(`Gives a quote from the Bee Movie.`)
+            }
+        },
+        brainfuck: {
+            default: {
+                description: f(`Executes brainfuck code.`)
+            },
+            debug: {
+                description: f(`Executes brainfuck code and returns the pointers.`)
+            }
+        },
+        commit: {
+            default: {
+                description: f(`Gets a random or specified blargbot commit.`)
+            }
+        },
+        decancer: {
+            user: {
+                description: f(`Decancers a users display name. If you have permissions, this will also change their nickname`)
+            },
+            text: {
+                description: f(`Decancers some text to plain ASCII`)
+            }
+        },
+        define: {
+            default: {
+                description: f(`Gets the definition for the specified word. The word must be in english.`)
+            }
+        },
+        dmErrors: {
+            default: {
+                description: f(`Toggles whether to DM you errors.`)
+            }
+        },
+        donate: {
+            default: {
+                description: f(`Gets my donation information`)
+            }
+        },
+        feedback: {
+            flags: {
+                command: f(`Signify your feedack is for a command`),
+                bbtag: f(`Signify your feedack is for BBTag`),
+                docs: f(`Signify your feedack is for documentation`),
+                other: f(`Signify your feedack is for other functionality`)
+            },
+            general: {
+                description: f(`Give me general feedback about the bot`)
+            },
+            suggest: {
+                description: f(`Tell me something you want to be added or changed`)
+            },
+            report: {
+                description: f(`Let me know about a bug you found`)
+            },
+            edit: {
+                description: f(`Edit some feedback you have previously sent`)
+            }
+        },
         help: {
-            forCommand: {
+            self: {
                 description: f(`Gets the help message for this command`)
+            },
+            list: {
+                description: f(`Shows a list of all the available commands`)
+            },
+            command: {
+                description: f(`Shows the help text for the given command`)
+            }
+        },
+        info: {
+            default: {
+                description: f(`Returns some info about me.`)
+            }
+        },
+        insult: {
+            someone: {
+                description: f(`Generates a random insult directed at the name supplied.`)
+            },
+            default: {
+                description: f(`Generates a random insult.`)
+            }
+        },
+        invite: {
+            default: {
+                description: f(`Gets you invite information.`)
+            }
+        },
+        mods: {
+            all: {
+                description: f(`Gets a list of all mods.`)
+            },
+            online: {
+                description: f(`Gets a list of all currently online mods.`)
+            },
+            away: {
+                description: f(`Gets a list of all currently away mods.`)
+            },
+            dnd: {
+                description: f(`Gets a list of all mods currently set to do not disturb.`)
+            },
+            offline: {
+                description: f(`Gets a list of all currently offline mods.`)
+            }
+        },
+        names: {
+            flags: {
+                all: f(`Gets all the names.`),
+                verbose: f(`Gets more information about the retrieved names.`)
+            },
+            list: {
+                description: f(`Returns the names that I've seen the specified user have in the past 30 days.`)
+            },
+            remove: {
+                description: f(`Removes the names ive seen you use in the past 30 days`)
+            }
+        },
+        nato: {
+            default: {
+                description: f(`Translates the given text into the NATO phonetic alphabet.`)
+            }
+        },
+        personalPrefix: {
+            add: {
+                description: f(`Adds a command prefix just for you!`)
+            },
+            remove: {
+                description: f(`Removes one of your personal command prefixes`)
+            },
+            list: {
+                description: f(`Lists the your personal command prefixes`)
+            }
+        },
+        ping: {
+            description: f(`Pong!\nFind the command latency.`),
+            default: {
+                description: f(`Gets the current latency.`)
+            }
+        },
+        poll: {
+            flags: {
+                time: f(`How long before the poll expires, formatted as '1 day 2 hours 3 minutes and 4 seconds', '1d2h3m4s', or some other combination.`),
+                emojis: f(`The emojis to apply to the poll.`),
+                description: f(`The description of the poll.`),
+                colour: f(`The colour of the poll (in HEX).`),
+                announce: f(`If specified, it will make an announcement. Requires the proper permissions.`)
+            },
+            default: {
+                description: f(`Creates a poll for the given question and duration. If no duration is given, defaults to 60 seconds. If emojis are given, they will be used as options for the poll.`)
+            }
+        },
+        remind: {
+            flags: {
+                channel: f(`Sets the reminder to appear in the current channel rather than a DM`),
+                time: f(`The time before the user is to be reminded, formatted as '1 day 2 hours 3 minutes and 4 seconds', '1d 2h 3m 4s', or some other combination`)
+            },
+            default: {
+                description: f(`Reminds you about something after a period of time in a DM.`)
+            }
+        },
+        roles: {
+            default: {
+                description: f(`Displays a list of roles and their IDs.`)
+            }
+        },
+        roll: {
+            default: {
+                description: f(`Rolls the dice you tell it to, and adds the modifier`)
+            }
+        },
+        rr: {
+            default: {
+                description: f(`Plays russian roulette with a specified number of bullets. If \`emote\` is specified, uses that specific emote.`)
+            }
+        },
+        shard: {
+            current: {
+                description: f(`Returns information about the shard the current guild is in, along with cluster stats.`)
+            },
+            guild: {
+                description: f(`Returns information about the shard \`guildID\` is in, along with cluster stats.`)
+            }
+        },
+        shards: {
+            flags: {
+                down: f(`If provided, only shows downed shards for \`b!shards\``)
+            },
+            all: {
+                description: f(`Shows a list of all shards.`)
+            },
+            guild: {
+                description: f(`Shows information about the shard and cluster \`guildID\` is in `)
+            },
+            cluster: {
+                description: f(`Show information about \`cluster\``)
+            }
+        },
+        ship: {
+            default: {
+                description: f(`Gives you the ship name for two users.`)
+            }
+        },
+        spell: {
+            default: {
+                description: f(`Gives you a description for a D&D 5e spell.`)
+            }
+        },
+        stats: {
+            default: {
+                description: f(`Gives you some information about me`)
+            }
+        },
+        status: {
+            default: {
+                description: f(`Gets you an image of an HTTP status code.`)
+            }
+        },
+        syntax: {
+            default: {
+                description: f(`Gives you the 'syntax' for a command 😉`)
+            }
+        },
+        tag: {
+            description: f(`Tags are a system of public commands that anyone can create or run, using the BBTag language.\n\nFor more information about BBTag, visit <{subtags}>.\nBy creating a tag, you acknowledge that you agree to the Terms of Service (<{tos}>)`).withArgs<{ subtags: string; tos: string; }>(),
+            run: {
+                description: f(`Runs a user created tag with some arguments`)
+            },
+            test: {
+                default: {
+                    description: f(`Uses the BBTag engine to execute the content as if it was a tag`)
+                },
+                debug: {
+                    description: f(`Uses the BBTag engine to execute the content as if it was a tag and will return the debug output`)
+                }
+            },
+            docs: {
+                description: f(`Returns helpful information about the specified topic.`)
+            },
+            debug: {
+                description: f(`Runs a user created tag with some arguments. A debug file will be sent in a DM after the tag has finished.`)
+            },
+            create: {
+                description: f(`Creates a new tag with the content you give`)
+            },
+            edit: {
+                description: f(`Edits an existing tag to have the content you specify`)
+            },
+            set: {
+                description: f(`Sets the tag to have the content you specify. If the tag doesnt exist it will be created.`)
+            },
+            delete: {
+                description: f(`Deletes an existing tag`)
+            },
+            rename: {
+                description: f(`Renames the tag`)
+            },
+            raw: {
+                description: f(`Gets the raw contents of the tag`)
+            },
+            list: {
+                description: f(`Lists all tags, or tags made by a specific author`)
+            },
+            search: {
+                description: f(`Searches for a tag based on the provided name`)
+            },
+            permdelete: {
+                description: f(`Marks the tag name as deleted forever, so no one can ever use it`)
+            },
+            cooldown: {
+                description: f(`Sets the cooldown of a tag, in milliseconds`)
+            },
+            author: {
+                description: f(`Displays the name of the tag's author`)
+            },
+            info: {
+                description: f(`Displays information about a tag`)
+            },
+            top: {
+                description: f(`Displays the top 5 tags`)
+            },
+            report: {
+                description: f(`Reports a tag as violating the ToS`)
+            },
+            setlang: {
+                description: f(`Sets the language to use when returning the raw text of your tag`)
+            },
+            favourite: {
+                list: {
+                    description: f(`Displays a list of the tags you have favourited`)
+                },
+                toggle: {
+                    description: f(`Adds or removes a tag from your list of favourites`)
+                }
+            },
+            flag: {
+                list: {
+                    description: f(`Lists the flags the tag accepts`)
+                },
+                create: {
+                    description: f(`Adds multiple flags to your tag. Flags should be of the form \`-<f> <flag> [flag description]\`\ne.g. \`b!t flags add mytag -c category The category you want to use -n name Your name\``)
+                },
+                delete: {
+                    description: f(`Removes multiple flags from your tag. Flags should be of the form \`-<f>\`\ne.g. \`b!t flags remove mytag -c -n\``)
+                }
+            }
+        },
+        time: {
+            self: {
+                description: f(`Gets the time in your timezone`)
+            },
+            user: {
+                description: f(`Gets the current time for the user`)
+            },
+            timezone: {
+                description: f(`Gets the current time in the timezone`)
+            },
+            convert: {
+                description: f(`Converts a \`time\` from \`timezone1\` to \`timezone2\``)
+            }
+        },
+        timer: {
+            flags: {
+                channel: f(`Sets the reminder to appear in the current channel rather than a DM`)
+            },
+            default: {
+                description: f(`Sets a timer for the provided duration, formatted as '1 day 2 hours 3 minutes and 4 seconds', '1d2h3m4s', or some other combination.`)
+            }
+        },
+        timeZone: {
+            get: {
+                description: f(`Gets your current timezone`)
+            },
+            set: {
+                description: f(`Sets your current timezone. A list of [allowed timezones can be found on wikipedia](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones#List) under the \`TZ database name\` column`)
+            }
+        },
+        todo: {
+            list: {
+                description: f(`Shows you your todo list`)
+            },
+            remove: {
+                description: f(`Removes an item from your todo list by id`)
+            },
+            add: {
+                description: f(`Adds an item to your todo list`)
+            }
+        },
+        tokenify: {
+            default: {
+                description: f(`Converts the given input into a token.`)
+            }
+        },
+        uptime: {
+            default: {
+                description: f(`Gets how long ive been online for`)
+            }
+        },
+        user: {
+            default: {
+                description: f(`Gets information about a user`)
+            }
+        },
+        version: {
+            default: {
+                description: f(`Tells you what version I am on`)
+            }
+        },
+        voteBan: {
+            description: f(`Its a meme, dont worry`),
+            list: {
+                description: f(`Gets the people with the most votes to be banned.`)
+            },
+            info: {
+                description: f(`Checks the status of the petition to ban someone.`)
+            },
+            sign: {
+                description: f(`Signs a petition to ban a someone`)
+            },
+            forgive: {
+                description: f(`Removes your signature to ban someone`)
+            }
+        },
+        warnings: {
+            self: {
+                description: f(`Gets how many warnings you have`)
+            },
+            user: {
+                description: f(`Gets how many warnings the user has`)
+            }
+        },
+        xkcd: {
+            default: {
+                description: f(`Gets an xkcd comic. If a number is not specified, gets a random one.`)
+            }
+        },
+        art: {
+            flags: {
+                image: f(`A custom image.`)
+            },
+            user: {
+                description: f(`Shows everyone a work of art.`)
+            },
+            default: {
+                description: f(`Shows everyone a work of art.`)
+            }
+        },
+        cah: {
+            flags: {
+                unofficial: f(`Also show unofficial cards.`)
+            },
+            default: {
+                description: f(`Generates a set of Cards Against Humanity cards.`)
+            },
+            packs: {
+                description: f(`Lists all the Cards against packs I know about`)
+            }
+        },
+        caption: {
+            flags: {
+                top: f(`The top caption.`),
+                bottom: f(`The bottom caption.`),
+                font: f(`The font to use (case insensitive). Use the command with the -l flag to view the available fonts. Defaults to impact.`)
+            },
+            fonts: {
+                description: f(`Lists the fonts that are supported`)
+            },
+            attached: {
+                description: f(`Puts captions on an attached image.`)
+            },
+            linked: {
+                description: f(`Puts captions on the image in the URL.`)
+            }
+        },
+        cat: {
+            default: {
+                description: f(`Gets a picture of a cat.`)
+            }
+        },
+        clint: {
+            flags: {
+                image: f(`A custom image.`)
+            },
+            user: {
+                description: f(`I don't even know, to be honest.`)
+            },
+            default: {
+                description: f(`I don't even know, to be honest.`)
+            }
+        },
+        clippy: {
+            default: {
+                description: f(`Clippy the paperclip is here to save the day!`)
+            }
+        },
+        clyde: {
+            default: {
+                description: f(`Give everyone a message from Clyde.`)
+            }
+        },
+        color: {
+            default: {
+                description: f(`Returns the provided colors.`)
+            }
+        },
+        delete: {
+            default: {
+                description: f(`Shows that you're about to delete something.`)
+            }
+        },
+        distort: {
+            flags: {
+                image: f(`A custom image.`)
+            },
+            user: {
+                description: f(`Turns an avatar into modern art.`)
+            },
+            default: {
+                description: f(`Turns an image into modern art.`)
+            }
+        },
+        emoji: {
+            description: f(`Gives you a large version of an emoji. If size is specified and the emoji is not a custom emoji, the image will be that size.`),
+            flags: {
+                svg: f(`Get the emote as an svg instead of a png.`)
+            },
+            default: {
+                description: f(`Gives you a large version of an emoji. If size is specified and the emoji is not a custom emoji, the image will be that size.`)
+            }
+        },
+        free: {
+            flags: {
+                bottom: f(`The bottom caption.`)
+            },
+            default: {
+                description: f(`Tells everyone what you got for free`)
+            }
+        },
+        linus: {
+            flags: {
+                image: f(`A custom image.`)
+            },
+            user: {
+                description: f(`Shows a picture of Linus pointing at something on his monitor.`)
+            },
+            default: {
+                description: f(`Shows a picture of Linus pointing at something on his monitor.`)
+            }
+        },
+        pcCheck: {
+            default: {
+                description: f(`Tells everyone a reason why they should get their PC checked. Template credits go to Ghosty#8204.`)
+            }
+        },
+        pixelate: {
+            flags: {
+                image: f(`A custom image.`),
+                scale: f(`The amount to pixelate by (defaults to 64)`)
+            },
+            user: {
+                description: f(`Pixelates an image.`)
+            },
+            default: {
+                description: f(`Pixelates an image.`)
+            }
+        },
+        shit: {
+            flags: {
+                plural: f(`Whether or not the text is plural (use ARE instead of IS).`)
+            },
+            default: {
+                description: f(`Tells everyone what's shit.`)
+            }
+        },
+        sonicSays: {
+            default: {
+                description: f(`Sonic wants to share some words of wisdom.`)
+            }
+        },
+        starVsTheForcesOf: {
+            flags: {
+                image: f(`A custom image.`)
+            },
+            user: {
+                description: f(`WHO IS STAR BATTLING THIS EPISODE?`)
+            },
+            default: {
+                description: f(`WHO IS STAR BATTLING THIS EPISODE?`)
+            }
+        },
+        stupid: {
+            flags: {
+                user: f(`The person who is stupid.`),
+                image: f(`A custom image.`)
+            },
+            default: {
+                description: f(`Tells everyone who is stupid.`)
+            }
+        },
+        theSearch: {
+            default: {
+                description: f(`Tells everyone about the progress of the search for intelligent life.`)
+            }
+        },
+        truth: {
+            default: {
+                description: f(`Shows everyone what is written in the Scroll of Truth.`)
+            }
+        },
+        danbooru: {
+            default: {
+                description: f(`Gets three pictures from '<https://danbooru.donmai.us/>' using given tags.`)
+            }
+        },
+        rule34: {
+            default: {
+                description: f(`Gets three pictures from '<https://rule34.xxx/>' using given tags.`)
+            }
+        },
+        eval: {
+            here: {
+                description: f(`Runs the code you enter on the current cluster`)
+            },
+            master: {
+                description: f(`Runs the code you enter on the master process`)
+            },
+            global: {
+                description: f(`Runs the code you enter on all the clusters and aggregates the result`)
+            },
+            cluster: {
+                description: f(`Runs the code you enter on all the clusters and aggregates the result`)
+            }
+        },
+        exec: {
+            default: {
+                description: f(`Executes a command on the current shell`)
+            }
+        },
+        logLevel: {
+            default: {
+                description: f(`Sets the current log level`)
             }
         },
         awoo: {
@@ -641,6 +1645,17 @@ export const templates = crunchTree(`cluster`, {
         wag: {
             description: f(`Wagwagwagwag`),
             action: f(`**{self.mention}** wags!`).withArgs<{ self: Eris.User; }>()
+        },
+        respawn: {
+            description: f(`Cluster respawning only for staff.`),
+            default: {
+                description: f(`Respawns the cluster specified`)
+            }
+        },
+        respond: {
+            default: {
+                description: f(`Responds to a suggestion, bug report or feature request`)
+            }
         }
     }
 });

@@ -1,20 +1,23 @@
 import { CommandContext, GlobalImageCommand } from '@blargbot/cluster/command';
 
+import templates from '../../text';
 import { CommandResult } from '../../types';
+
+const cmd = templates.commands.free;
 
 export class FreeCommand extends GlobalImageCommand {
     public constructor() {
         super({
             name: `free`,
+            flags: [
+                { flag: `b`, word: `bottom`, description: cmd.flags.bottom }
+            ],
             definitions: [
                 {
                     parameters: `{caption+}`,
-                    description: `Tells everyone what you got for free`,
+                    description: cmd.default.description,
                     execute: (ctx, [caption], flags) => this.render(ctx, caption.asString, flags.b?.merge().value)
                 }
-            ],
-            flags: [
-                { flag: `b`, word: `bottom`, description: `The bottom caption.` }
             ]
         });
     }

@@ -3,7 +3,10 @@ import { avatarColours, CommandType, humanize, randChoose } from '@blargbot/clus
 import eris from 'eris';
 import moment from 'moment-timezone';
 
+import templates from '../../text';
 import { CommandResult } from '../../types';
+
+const cmd = templates.commands.stats;
 
 export class StatsCommand extends GlobalCommand {
     public constructor() {
@@ -13,7 +16,7 @@ export class StatsCommand extends GlobalCommand {
             definitions: [
                 {
                     parameters: ``,
-                    description: `Gives you some information about me`,
+                    description: cmd.default.description,
                     execute: (ctx) => this.getStats(ctx)
                 }
             ]

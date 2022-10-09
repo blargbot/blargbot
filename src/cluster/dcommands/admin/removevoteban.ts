@@ -3,6 +3,10 @@ import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType } from '@blargbot/cluster/utils';
 import { User } from 'eris';
 
+import templates from '../../text';
+
+const cmd = templates.commands.removeVoteBan;
+
 export class RemoveVotebanCommand extends GuildCommand {
     public constructor() {
         super({
@@ -12,12 +16,12 @@ export class RemoveVotebanCommand extends GuildCommand {
             definitions: [
                 {
                     parameters: `{user:user+}`,
-                    description: `Deletes all the vote bans against the given user`,
+                    description: cmd.user.description,
                     execute: (ctx, [user]) => this.clearUser(ctx, user.asUser)
                 },
                 {
                     parameters: ``,
-                    description: `Deletes all vote bans against all users`,
+                    description: cmd.all.description,
                     execute: (ctx) => this.clearAll(ctx)
                 }
             ]

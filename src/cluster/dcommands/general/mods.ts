@@ -1,7 +1,11 @@
 import { GuildCommand } from '@blargbot/cluster/command';
 import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType } from '@blargbot/cluster/utils';
-import { EmbedField, EmbedOptions, Member, UserStatus } from 'eris';
+import { EmbedField, Member, UserStatus } from 'eris';
+
+import templates from '../../text';
+
+const cmd = templates.commands.mods;
 
 export class ModsCommand extends GuildCommand {
     public constructor() {
@@ -11,27 +15,27 @@ export class ModsCommand extends GuildCommand {
             definitions: [
                 {
                     parameters: ``,
-                    description: `Gets a list of all mods.`,
+                    description: cmd.all.description,
                     execute: (ctx) => this.listMods(ctx, () => true)
                 },
                 {
                     parameters: `online|o`,
-                    description: `Gets a list of all currently online mods.`,
+                    description: cmd.online.description,
                     execute: (ctx) => this.listMods(ctx, p => p === `online`)
                 },
                 {
                     parameters: `away|a`,
-                    description: `Gets a list of all currently away mods.`,
+                    description: cmd.away.description,
                     execute: (ctx) => this.listMods(ctx, p => p === `idle`)
                 },
                 {
                     parameters: `dnd|d`,
-                    description: `Gets a list of all mods currently set to do not disturb.`,
+                    description: cmd.dnd.description,
                     execute: (ctx) => this.listMods(ctx, p => p === `dnd`)
                 },
                 {
                     parameters: `offline`,
-                    description: `Gets a list of all currently offline mods.`,
+                    description: cmd.offline.description,
                     execute: (ctx) => this.listMods(ctx, p => p === `offline`)
                 }
             ]

@@ -21,7 +21,7 @@ export abstract class ScopedCommand<TContext extends CommandContext> extends Com
             {
                 parameters: `help`,
                 execute: (context) => context.cluster.help.createMessageContent(this.name, context.author, context.channel),
-                description: templates.commands.help.forCommand.description,
+                description: templates.commands.help.command.description,
                 hidden: true
             },
             ...options.definitions

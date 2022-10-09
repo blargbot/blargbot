@@ -3,6 +3,10 @@ import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType, guard, humanize, parse } from '@blargbot/cluster/utils';
 import { FlagResult } from '@blargbot/domain/models';
 
+import templates from '../../text';
+
+const cmd = templates.commands.massBan;
+
 export class MassBanCommand extends GuildCommand {
     public constructor() {
         super({
@@ -10,12 +14,12 @@ export class MassBanCommand extends GuildCommand {
             aliases: [`hackban`],
             category: CommandType.ADMIN,
             flags: [
-                { flag: `r`, word: `reason`, description: `The reason for the ban.` }
+                { flag: `r`, word: `reason`, description: cmd.flags.reason }
             ],
             definitions: [
                 {
                     parameters: `{userIds[]} {deleteDays:integer=1}`,
-                    description: `Bans a user who isn't currently on your guild, where \`<userIds...>\` is a list of user IDs or mentions (separated by spaces) and \`days\` is the number of days to delete messages for.\nIf mod-logging is enabled, the ban will be logged.`,
+                    description: cmd.default.description,
                     execute: (ctx, [users, deleteDays], flags) => this.massBan(ctx, users.asStrings, deleteDays.asInteger, flags)
                 }
             ]

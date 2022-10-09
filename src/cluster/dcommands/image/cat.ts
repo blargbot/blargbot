@@ -3,7 +3,10 @@ import { GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType, randInt } from '@blargbot/cluster/utils';
 import { Handler as Wolken } from 'wolken';
 
+import templates from '../../text';
 import { CommandResult } from '../../types';
+
+const cmd = templates.commands.cat;
 
 export class CatCommand extends GlobalCommand {
     readonly #client: Wolken;
@@ -15,7 +18,7 @@ export class CatCommand extends GlobalCommand {
             definitions: [
                 {
                     parameters: ``,
-                    description: `Gets a picture of a cat.`,
+                    description: cmd.default.description,
                     execute: () => this.render()
                 }
             ]

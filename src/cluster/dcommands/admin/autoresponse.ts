@@ -7,7 +7,8 @@ import { GuildFilteredAutoresponse, GuildTriggerTag } from '@blargbot/domain/mod
 import { RawBBTagCommandResult } from '../../command/RawBBTagCommandResult';
 import templates, { t } from '../../text';
 
-const cmd = templates.commands.autoresponse;
+const cmd = templates.commands.autoResponse;
+
 export class AutoResponseCommand extends GuildCommand {
     public constructor() {
         super({
@@ -15,15 +16,8 @@ export class AutoResponseCommand extends GuildCommand {
             aliases: [`ar`],
             category: CommandType.ADMIN,
             flags: [
-                {
-                    flag: `R`,
-                    word: `regex`,
-                    description: cmd.flags.regex
-                }, {
-                    flag: `e`,
-                    word: `everything`,
-                    description: cmd.flags.everything
-                }
+                { flag: `R`, word: `regex`, description: cmd.flags.regex },
+                { flag: `e`, word: `everything`, description: cmd.flags.everything }
             ],
             definitions: [
                 {

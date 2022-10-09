@@ -5,15 +5,30 @@ import { createSafeRegExp, guard, pluralise as p } from '@blargbot/core/utils';
 import { ApiError, DiscordRESTError, KnownMessage, KnownTextableChannel, User } from 'eris';
 import moment, { Moment } from 'moment-timezone';
 
+import templates from '../../text';
+
+const cmd = templates.commands.tidy;
+
 export class TidyCommand extends GuildCommand {
     public constructor() {
         super({
             name: `tidy`,
             category: CommandType.ADMIN,
+            flags: [
+                { flag: `b`, word: `bots`, description: cmd.flags.bots },
+                { flag: `i`, word: `invites`, description: cmd.flags.invites },
+                { flag: `l`, word: `links`, description: cmd.flags.links },
+                { flag: `e`, word: `embeds`, description: cmd.flags.embeds },
+                { flag: `a`, word: `attachments`, description: cmd.flags.attachments },
+                { flag: `u`, word: `user`, description: cmd.flags.user },
+                { flag: `q`, word: `query`, description: cmd.flags.query },
+                { flag: `I`, word: `invert`, description: cmd.flags.invert },
+                { flag: `y`, word: `yes`, description: cmd.flags.yes }
+            ],
             definitions: [
                 {
                     parameters: `{count:integer=100}`,
-                    description: `Clears messages from chat`,
+                    description: cmd.default.description,
                     execute: (ctx, [count], flags) => this.tidy(ctx, count.asInteger, {
                         botsOnly: flags.b !== undefined,
                         invites: flags.i !== undefined,
@@ -26,17 +41,6 @@ export class TidyCommand extends GuildCommand {
                         confirm: flags.y !== undefined
                     })
                 }
-            ],
-            flags: [
-                { flag: `b`, word: `bots`, description: `Remove messages from bots.` },
-                { flag: `i`, word: `invites`, description: `Remove messages containing invites.` },
-                { flag: `l`, word: `links`, description: `Remove messages containing links.` },
-                { flag: `e`, word: `embeds`, description: `Remove messages containing embeds.` },
-                { flag: `a`, word: `attachments`, description: `Remove messages containing attachments.` },
-                { flag: `u`, word: `user`, description: `Removes messages from the users specified. Separate users by commas` },
-                { flag: `q`, word: `query`, description: `Removes messages that match the provided query as a regex.` },
-                { flag: `I`, word: `invert`, description: `Reverses the effects of all the flag filters.` },
-                { flag: `y`, word: `yes`, description: `Bypasses the confirmation` }
             ]
         });
 

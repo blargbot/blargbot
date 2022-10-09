@@ -5,7 +5,10 @@ import { mapping } from '@blargbot/mapping';
 import fetch from 'node-fetch';
 import xml2js from 'xml2js';
 
+import templates from '../../text';
 import { CommandResult } from '../../types';
+
+const cmd = templates.commands.rule34;
 
 export class Rule34Command extends GlobalCommand {
     public constructor() {
@@ -16,7 +19,7 @@ export class Rule34Command extends GlobalCommand {
             definitions: [
                 {
                     parameters: `{tags[]}`,
-                    description: `Gets three pictures from '<https://rule34.xxx/>' using given tags.`,
+                    description: cmd.default.description,
                     execute: (_, [tags]) => this.getRule34(tags.asStrings)
                 }
             ]

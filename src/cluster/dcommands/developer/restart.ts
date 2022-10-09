@@ -2,29 +2,32 @@ import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType } from '@blargbot/cluster/utils';
 import moment from 'moment-timezone';
 
+import templates from '../../text';
 import { CommandResult } from '../../types';
+
+const cmd = templates.commands.restart;
 
 export class RestartCommand extends GlobalCommand {
     public constructor() {
         super({
             name: `restart`,
             category: CommandType.DEVELOPER,
-            description: `Restarts blargbot, or one of its components`,
+            description: cmd.description,
             definitions: [
                 {
                     parameters: ``,
                     execute: (ctx) => this.respawnClusters(ctx),
-                    description: `Restarts all the clusters`
+                    description: cmd.default.description
                 },
                 {
                     parameters: `kill`,
                     execute: (ctx) => this.restart(ctx),
-                    description: `Kills the master process, ready for pm2 to restart it`
+                    description: cmd.kill.description
                 },
                 {
                     parameters: `api`,
                     execute: (ctx) => this.restartWebsites(ctx),
-                    description: `Restarts the api process`
+                    description: cmd.api.description
                 }
             ]
         });

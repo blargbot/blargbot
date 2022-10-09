@@ -1,6 +1,9 @@
 import { CommandContext, GlobalImageCommand } from '@blargbot/cluster/command';
 
+import templates from '../../text';
 import { CommandResult } from '../../types';
+
+const cmd = templates.commands.theSearch;
 
 export class TheSearchCommand extends GlobalImageCommand {
     public constructor() {
@@ -9,7 +12,7 @@ export class TheSearchCommand extends GlobalImageCommand {
             definitions: [
                 {
                     parameters: `{text+}`,
-                    description: `Tells everyone about the progress of the search for intelligent life.`,
+                    description: cmd.default.description,
                     execute: (ctx, [text]) => this.render(ctx, text.asString)
                 }
             ]

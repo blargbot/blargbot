@@ -4,24 +4,26 @@ import { CommandType, parse, randInt } from '@blargbot/cluster/utils';
 import { Emote } from '@blargbot/core/Emote';
 import { Duration, duration } from 'moment-timezone';
 
-interface PollOptions {
-    time?: string | Duration;
-    emojis?: string;
-    title: string;
-    description?: string;
-    color?: number | string;
-    announce?: boolean;
-}
+import templates from '../../text';
+
+const cmd = templates.commands.poll;
 
 export class PollCommand extends GuildCommand {
     public constructor() {
         super({
             name: `poll`,
             category: CommandType.GENERAL,
+            flags: [
+                { flag: `t`, word: `time`, description: cmd.flags.time },
+                { flag: `e`, word: `emojis`, description: cmd.flags.emojis },
+                { flag: `d`, word: `description`, description: cmd.flags.description },
+                { flag: `c`, word: `colour`, description: cmd.flags.colour },
+                { flag: `a`, word: `announce`, description: cmd.flags.announce }
+            ],
             definitions: [
                 {
                     parameters: `{title+}`,
-                    description: `Creates a poll for the given question and duration. If no duration is given, defaults to 60 seconds. If emojis are given, they will be used as options for the poll.`,
+                    description: cmd.default.description,
                     execute: (ctx, [title], flags) => this.createPoll(ctx, {
                         time: flags.t?.merge().value,
                         emojis: flags.e?.merge().value,
@@ -31,13 +33,6 @@ export class PollCommand extends GuildCommand {
                         announce: flags.a !== undefined
                     })
                 }
-            ],
-            flags: [
-                { flag: `t`, word: `time`, description: `How long before the poll expires, formatted as '1 day 2 hours 3 minutes and 4 seconds', '1d2h3m4s', or some other combination.` },
-                { flag: `e`, word: `emojis`, description: `The emojis to apply to the poll.` },
-                { flag: `d`, word: `description`, description: `The description of the poll.` },
-                { flag: `c`, word: `colour`, description: `The colour of the poll (in HEX).` },
-                { flag: `a`, word: `announce`, description: `If specified, it will make an announcement. Requires the proper permissions.` }
             ]
         });
     }
@@ -82,6 +77,15 @@ export class PollCommand extends GuildCommand {
                 return result;
         }
     }
+}
+
+interface PollOptions {
+    time?: string | Duration;
+    emojis?: string;
+    title: string;
+    description?: string;
+    color?: number | string;
+    announce?: boolean;
 }
 
 const defaultEmotes = [

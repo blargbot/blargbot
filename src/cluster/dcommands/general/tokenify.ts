@@ -1,7 +1,10 @@
 import { GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType, randInt } from '@blargbot/cluster/utils';
 
+import templates from '../../text';
 import { CommandResult } from '../../types';
+
+const cmd = templates.commands.tokenify;
 
 export class TokenifyCommand extends GlobalCommand {
     public constructor() {
@@ -11,7 +14,7 @@ export class TokenifyCommand extends GlobalCommand {
             definitions: [
                 {
                     parameters: `{input+}`,
-                    description: `Converts the given input into a token.`,
+                    description: cmd.default.description,
                     execute: (_, [input]) => this.tokenify(input.asString)
                 }
             ]

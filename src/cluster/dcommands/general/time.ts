@@ -3,7 +3,10 @@ import { CommandType } from '@blargbot/cluster/utils';
 import { User } from 'eris';
 import moment from 'moment-timezone';
 
+import templates from '../../text';
 import { CommandResult } from '../../types';
+
+const cmd = templates.commands.time;
 
 export class TimeCommand extends GlobalCommand {
     public constructor() {
@@ -13,22 +16,22 @@ export class TimeCommand extends GlobalCommand {
             definitions: [
                 {
                     parameters: ``,
-                    description: `Gets the time in your timezone`,
+                    description: cmd.self.description,
                     execute: (ctx) => this.getUserTime(ctx, ctx.author)
                 },
                 {
                     parameters: `{user:user+}`,
-                    description: `Gets the current time for the user`,
+                    description: cmd.user.description,
                     execute: (ctx, [user]) => this.getUserTime(ctx, user.asUser)
                 },
                 {
                     parameters: `in {timezone}`,
-                    description: `Gets the current time in the timezone`,
+                    description: cmd.timezone.description,
                     execute: (_, [timezone]) => this.getTime(timezone.asString)
                 },
                 {
                     parameters: `{timezone1} {timezone2} {time+}`,
-                    description: `Converts a \`time\` from \`timezone1\` to \`timezone2\``,
+                    description: cmd.convert.description,
                     execute: (_, [from, to, time]) => this.changeTimezone(time.asString, from.asString, to.asString)
                 }
             ]

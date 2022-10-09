@@ -4,6 +4,10 @@ import { CommandType } from '@blargbot/cluster/utils';
 import { humanize } from '@blargbot/core/utils';
 import { Webhook } from 'eris';
 
+import templates from '../../text';
+
+const cmd = templates.commands.changeLog;
+
 export class ChangelogCommand extends GuildCommand {
     public constructor() {
         super({
@@ -12,12 +16,12 @@ export class ChangelogCommand extends GuildCommand {
             definitions: [
                 {
                     parameters: `subscribe|sub|track`,
-                    description: `Subscribes this channel to my changelog updates. I require the \`manage webhooks\` permission for this.`,
+                    description: cmd.subscribe.description,
                     execute: (ctx) => this.addFollower(ctx)
                 },
                 {
                     parameters: `unsubscribe|unsub|untrack`,
-                    description: `Unsubscribes this channel from my changelog updates. I require the \`manage webhooks\` permission for this.`,
+                    description: cmd.unsubscribe.description,
                     execute: (ctx) => this.removeFollower(ctx)
                 }
             ]

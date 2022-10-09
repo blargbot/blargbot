@@ -1,6 +1,9 @@
 import { CommandContext, GlobalImageCommand } from '@blargbot/cluster/command';
 
+import templates from '../../text';
 import { CommandResult } from '../../types';
+
+const cmd = templates.commands.delete;
 
 export class DeleteCommand extends GlobalImageCommand {
     public constructor() {
@@ -9,7 +12,7 @@ export class DeleteCommand extends GlobalImageCommand {
             definitions: [
                 {
                     parameters: `{text+}`,
-                    description: `Shows that you're about to delete something.`,
+                    description: cmd.default.description,
                     execute: (ctx, [text]) => this.render(ctx, text.asString)
                 }
             ]

@@ -2,7 +2,10 @@ import { GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType, randInt } from '@blargbot/cluster/utils';
 import { User } from 'eris';
 
+import templates from '../../text';
 import { CommandResult } from '../../types';
+
+const cmd = templates.commands.ship;
 
 export class ShipCommand extends GlobalCommand {
     public constructor() {
@@ -12,7 +15,7 @@ export class ShipCommand extends GlobalCommand {
             definitions: [
                 {
                     parameters: `{user1:user} {user2:user}`,
-                    description: `Gives you the ship name for two users.`,
+                    description: cmd.default.description,
                     execute: (_, [user1, user2]) => this.getShipName(user1.asUser, user2.asUser)
                 }
             ]

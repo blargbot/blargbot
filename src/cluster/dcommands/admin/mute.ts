@@ -5,29 +5,29 @@ import { FlagResult } from '@blargbot/domain/models';
 import { Member } from 'eris';
 import moment from 'moment-timezone';
 
+import templates from '../../text';
+
+const cmd = templates.commands.mute;
+
 export class MuteCommand extends GuildCommand {
     public constructor() {
         super({
             name: `mute`,
             category: CommandType.ADMIN,
             flags: [
-                { flag: `r`, word: `reason`, description: `The reason for the (un)mute.` },
-                {
-                    flag: `t`,
-                    word: `time`,
-                    description: `The amount of time to mute for, formatted as '1 day 2 hours 3 minutes and 4 seconds', '1d2h3m4s', or some other combination.`
-                }
+                { flag: `r`, word: `reason`, description: cmd.flags.reason },
+                { flag: `t`, word: `time`, description: cmd.flags.time }
             ],
             definitions: [
                 {
                     parameters: `{user:member+}`,
-                    description: `Gives the user a special muted role. On first run, this role will be created. The bot needs to be able to \`manage roles\` to create and assign the role, and \`manage channels\` to configure the role. You are able to manually configure the role without the bot, but the bot has to make it. Deleting the muted role causes it to be regenerated.\nIf the bot has permissions for it, this command will also voice-mute the user.\nIf mod-logging is enabled, the mute will be logged.\nYou can also specify a length of time the user should be muted for, using formats such as \`1 hour 2 minutes\` or \`1h2m\`.`,
+                    description: cmd.default.description,
                     execute: (ctx, [user], flags) => this.mute(ctx, user.asMember, flags)
                 },
 
                 {
                     parameters: `clear {user:member+}`,
-                    description: `Removes the special muted role from the user. \nIf mod-logging is enabled, the mute will be logged.`,
+                    description: cmd.clear.description,
                     execute: (ctx, [user], flags) => this.unmute(ctx, user.asMember, flags)
                 }
             ]

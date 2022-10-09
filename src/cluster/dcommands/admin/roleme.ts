@@ -2,19 +2,28 @@ import { bbtag } from '@blargbot/bbtag';
 import { GuildCommand } from '@blargbot/cluster/command';
 import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { codeBlock, CommandType, guard } from '@blargbot/cluster/utils';
-import { SendContent } from '@blargbot/core/types';
 import { GuildRolemeEntry } from '@blargbot/domain/models';
-import { Constants, EmbedOptions } from 'eris';
+import { Constants } from 'eris';
+
+import templates from '../../text';
+
+const cmd = templates.commands.roleMe;
 
 export class RolemeCommand extends GuildCommand {
     public constructor() {
         super({
             name: `roleme`,
             category: CommandType.ADMIN,
+            flags: [
+                { flag: `a`, word: `add`, description: cmd.flags.add },
+                { flag: `r`, word: `remove`, description: cmd.flags.remove },
+                { flag: `C`, word: `case`, description: cmd.flags.case },
+                { flag: `c`, word: `channels`, description: cmd.flags.channels }
+            ],
             definitions: [
                 {
                     parameters: `add|create {~phrase+}`,
-                    description: `Adds a new roleme with the given phrase`,
+                    description: cmd.add.description,
                     execute: (ctx, [phrase], flags) => this.addRoleme(ctx, phrase.asString, {
                         caseSensitive: flags.C !== undefined,
                         addRoles: flags.a?.map(v => v.value),
@@ -24,12 +33,12 @@ export class RolemeCommand extends GuildCommand {
                 },
                 {
                     parameters: `remove|delete {rolemeId:integer}`,
-                    description: `Deletes the given roleme`,
+                    description: cmd.remove.description,
                     execute: (ctx, [id]) => this.deleteRoleme(ctx, id.asInteger)
                 },
                 {
                     parameters: `edit {rolemeId:integer} {~newPhrase+?}`,
-                    description: `Edits the given roleme`,
+                    description: cmd.edit.description,
                     execute: (ctx, [id, phrase], flags) => this.editRoleme(ctx, id.asInteger, phrase.asOptionalString, {
                         caseSensitive: flags.C !== undefined,
                         addRoles: flags.a?.map(v => v.value),
@@ -39,40 +48,34 @@ export class RolemeCommand extends GuildCommand {
                 },
                 {
                     parameters: `setmessage {rolemeId:integer} {~bbtag+?}`,
-                    description: `Sets the bbtag compatible message to show when the roleme is triggered`,
+                    description: cmd.setmessage.description,
                     execute: (ctx, [id, bbtag]) => this.setMessage(ctx, id.asInteger, bbtag.asOptionalString)
                 },
                 {
                     parameters: `rawmessage {rolemeId:integer} {fileExtension:literal(bbtag|txt)=bbtag}`,
-                    description: `Gets the current message that will be sent when the roleme is triggered`,
+                    description: cmd.rawmessage.description,
                     execute: (ctx, [id, fileExtension]) => this.getRawMessage(ctx, id.asInteger, fileExtension.asLiteral)
                 },
                 {
                     parameters: `debugmessage {rolemeId:integer}`,
-                    description: `Executes the roleme message as if you triggered the roleme`,
+                    description: cmd.debugmessage.description,
                     execute: (ctx, [id]) => this.debugMessage(ctx, id.asInteger)
                 },
                 {
                     parameters: `setauthorizer {rolemeId:integer}`,
-                    description: `Sets the roleme message to run using your permissions`,
+                    description: cmd.setauthorizer.description,
                     execute: (ctx, [id]) => this.setAuthorizer(ctx, id.asInteger)
                 },
                 {
                     parameters: `info {rolemeId:integer}`,
-                    description: `Shows information about a roleme`,
+                    description: cmd.info.description,
                     execute: (ctx, [id]) => this.showInfo(ctx, id.asInteger)
                 },
                 {
                     parameters: `list`,
-                    description: `Lists the rolemes currently active on this server`,
+                    description: cmd.list.description,
                     execute: (ctx) => this.listRolemes(ctx)
                 }
-            ],
-            flags: [
-                { flag: `a`, word: `add`, description: `A list of roles to add in the roleme` },
-                { flag: `r`, word: `remove`, description: `A list of roles to remove in the roleme` },
-                { flag: `C`, word: `case`, description: `Whether the phrase is case sensitive` },
-                { flag: `c`, word: `channels`, description: `The channels the roleme should be in` }
             ]
         });
     }

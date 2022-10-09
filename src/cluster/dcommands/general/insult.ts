@@ -1,7 +1,10 @@
 import { GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType, randChoose } from '@blargbot/cluster/utils';
 
+import templates from '../../text';
 import { CommandResult } from '../../types';
+
+const cmd = templates.commands.insult;
 
 export class InsultCommand extends GlobalCommand {
     public constructor() {
@@ -11,12 +14,12 @@ export class InsultCommand extends GlobalCommand {
             definitions: [
                 {
                     parameters: `{name+}`,
-                    description: `Generates a random insult directed at the name supplied.`,
+                    description: cmd.someone.description,
                     execute: (_, [name]) => this.insult(`${name.asString}'s`)
                 },
                 {
                     parameters: ``,
-                    description: `Generates a random insult.`,
+                    description: cmd.default.description,
                     execute: () => this.insult(`Your`)
                 }
             ]

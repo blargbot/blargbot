@@ -2,7 +2,10 @@ import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType } from '@blargbot/cluster/utils';
 import { humanize } from '@blargbot/core/utils';
 
+import templates from '../../text';
 import { CommandResult } from '../../types';
+
+const cmd = templates.commands.respond;
 
 export class RespondCommand extends GlobalCommand {
 
@@ -13,7 +16,7 @@ export class RespondCommand extends GlobalCommand {
             definitions: [
                 {
                     parameters: `{id:number} {~response+}`,
-                    description: `Responds to a suggestion, bug report or feature request`,
+                    description: cmd.default.description,
                     execute: (ctx, [id, response]) => this.respond(ctx, id.asNumber, response.asString)
                 }
             ]

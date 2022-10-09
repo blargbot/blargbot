@@ -1,8 +1,13 @@
 import { GuildCommand } from '@blargbot/cluster/command';
 import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType, guard, humanize } from '@blargbot/cluster/utils';
+import { IFormattable } from '@blargbot/domain/messages/types';
 import { StoredGuildEventLogType } from '@blargbot/domain/models';
 import { EmbedField, KnownChannel, Role, User, Webhook } from 'eris';
+
+import templates from '../../text';
+
+const cmd = templates.commands.log;
 
 export class LogCommand extends GuildCommand {
     public constructor() {
@@ -12,47 +17,47 @@ export class LogCommand extends GuildCommand {
             definitions: [
                 {
                     parameters: `list`,
-                    description: `Lists all the events currently being logged`,
+                    description: cmd.list.description,
                     execute: ctx => this.listEvents(ctx)
                 },
                 {
                     parameters: `enable {channel:channel} {eventNames[]}`,
-                    description: `Sets the channel to log the given events to. Available events are:\n${Object.entries(eventDescriptions).map(([key, desc]) => `\`${key}\` - ${desc}`).join(`\n`)}`,
+                    description: cmd.enable.description.default({ events: Object.entries(eventDescriptions).map(e => ({ key: e[0], desc: e[1] })) }),
                     execute: (ctx, [channel, eventNames]) => this.setEventChannel(ctx, eventNames.asStrings, channel.asChannel)
                 },
                 {
                     parameters: `enable {channel:channel} all`,
-                    description: `Sets the channel to log all events to, except role related events.`,
+                    description: cmd.enable.description.all,
                     execute: (ctx, [channel]) => this.setEventChannel(ctx, Object.keys(eventDescriptions), channel.asChannel)
                 },
                 {
                     parameters: `enable {channel:channel} roles|role {roles:role[]}`,
-                    description: `Sets the channel to log when someone gets or loses a role.`,
+                    description: cmd.enable.description.role,
                     execute: (ctx, [channel, roles]) => this.setEventChannel(ctx, roles.asRoles.map((r: Role) => `role:${r.id}`), channel.asChannel)
                 },
                 {
                     parameters: `disable {eventNames[]}`,
-                    description: `Disables logging of the given events. Available events are:\n${Object.entries(eventDescriptions).map(([key, desc]) => `\`${key}\` - ${desc}`).join(`\n`)}`,
+                    description: cmd.disable.description.default({ events: Object.entries(eventDescriptions).map(e => ({ key: e[0], desc: e[1] })) }),
                     execute: (ctx, [eventNames]) => this.setEventChannel(ctx, eventNames.asStrings, undefined)
                 },
                 {
                     parameters: `disable all`,
-                    description: `Disables logging of all events except role related events.`,
+                    description: cmd.disable.description.all,
                     execute: (ctx) => this.setEventChannel(ctx, Object.keys(eventDescriptions), undefined)
                 },
                 {
                     parameters: `disable roles|role {roles:role[]}`,
-                    description: `Stops logging when someone gets or loses a role.`,
+                    description: cmd.disable.description.role,
                     execute: (ctx, [roles]) => this.setEventChannel(ctx, roles.asRoles.map((r: Role) => `role:${r.id}`), undefined)
                 },
                 {
                     parameters: `ignore {users:sender[]}`,
-                    description: `Ignores any tracked events concerning the users`,
+                    description: cmd.ignore.description,
                     execute: (ctx, [users]) => this.ignoreUsers(ctx, users.asSenders, true)
                 },
                 {
                     parameters: `track {users:sender[]}`,
-                    description: `Removes the users from the list of ignored users and begins tracking events from them again`,
+                    description: cmd.track.description,
                     execute: (ctx, [users]) => this.ignoreUsers(ctx, users.asSenders, false)
                 }
             ]
@@ -141,19 +146,19 @@ export class LogCommand extends GuildCommand {
     }
 }
 
-const eventDescriptions: { [key in Exclude<StoredGuildEventLogType, `role:${string}`>]: CommandResult } = {
-    avatarupdate: `Triggered when someone changes their username`,
-    kick: `Triggered when a member is kicked`,
-    memberban: `Triggered when a member is banned`,
-    memberjoin: `Triggered when someone joins`,
-    memberleave: `Triggered when someone leaves`,
-    membertimeout: `Triggered when someone is timed out`,
-    membertimeoutclear: `Triggered when someone's timeout is removed`,
-    memberunban: `Triggered when someone is unbanned`,
-    messagedelete: `Triggered when someone deletes a message they sent`,
-    messageupdate: `Triggered when someone updates a message they sent`,
-    nameupdate: `Triggered when someone changes their username or discriminator`,
-    nickupdate: `Triggered when someone changes their nickname`
+const eventDescriptions: { [key in Exclude<StoredGuildEventLogType, `role:${string}`>]: IFormattable<string> } = {
+    avatarupdate: cmd.common.events.avatarupdate,
+    kick: cmd.common.events.kick,
+    memberban: cmd.common.events.memberban,
+    memberjoin: cmd.common.events.memberjoin,
+    memberleave: cmd.common.events.memberleave,
+    membertimeout: cmd.common.events.membertimeout,
+    membertimeoutclear: cmd.common.events.membertimeoutclear,
+    memberunban: cmd.common.events.memberunban,
+    messagedelete: cmd.common.events.messagedelete,
+    messageupdate: cmd.common.events.messageupdate,
+    nameupdate: cmd.common.events.nameupdate,
+    nickupdate: cmd.common.events.nickupdate
 };
 
 function isLogEventType(eventName: string): eventName is StoredGuildEventLogType {

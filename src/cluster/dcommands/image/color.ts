@@ -1,6 +1,9 @@
 import { CommandContext, GlobalImageCommand } from '@blargbot/cluster/command';
 
+import templates from '../../text';
 import { CommandResult } from '../../types';
+
+const cmd = templates.commands.color;
 
 export class ColorCommand extends GlobalImageCommand {
     public constructor() {
@@ -9,7 +12,7 @@ export class ColorCommand extends GlobalImageCommand {
             definitions: [
                 {
                     parameters: `{colors[]}`,
-                    description: `Returns the provided colors.`,
+                    description: cmd.default.description,
                     execute: (ctx, [text]) => this.render(ctx, text.asStrings)
                 }
             ]

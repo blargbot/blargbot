@@ -1,10 +1,12 @@
 import { GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType, randInt } from '@blargbot/cluster/utils';
 import { mapping } from '@blargbot/mapping';
-import { EmbedOptions } from 'eris';
 import fetch, { Response } from 'node-fetch';
 
+import templates from '../../text';
 import { CommandResult } from '../../types';
+
+const cmd = templates.commands.commit;
 
 export class CommitCommand extends GlobalCommand {
     public constructor() {
@@ -14,7 +16,7 @@ export class CommitCommand extends GlobalCommand {
             definitions: [
                 {
                     parameters: `{commitNumber:integer?}`,
-                    description: `Gets a random or specified blargbot commit.`,
+                    description: cmd.default.description,
                     execute: (_, [commitNumber]) => this.getCommit(commitNumber.asOptionalInteger)
                 }
             ]

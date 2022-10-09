@@ -4,26 +4,29 @@ import { CommandType, commandTypeDetails, guard, randChoose } from '@blargbot/cl
 import cahData from '@blargbot/res/cah.json';
 import { Guild, KnownTextableChannel, User } from 'eris';
 
+import templates from '../../text';
 import { CommandResult } from '../../types';
+
+const cmd = templates.commands.cah;
 
 export class CAHCommand extends GlobalImageCommand {
     public constructor() {
         super({
             name: `cah`,
+            flags: [
+                { flag: `u`, word: `unofficial`, description: cmd.flags.unofficial }
+            ],
             definitions: [
                 {
                     parameters: ``,
-                    description: `Generates a set of Cards Against Humanity cards.`,
+                    description: cmd.default.description,
                     execute: (ctx, _, flags) => this.render(ctx, flags.u !== undefined)
                 },
                 {
                     parameters: `packs`,
-                    description: `Lists all the Cards against packs I know about`,
+                    description: cmd.packs.description,
                     execute: (_, __, flags) => this.listPacks(flags.u !== undefined)
                 }
-            ],
-            flags: [
-                { flag: `u`, word: `unofficial`, description: `Also show unofficial cards.` }
             ]
         });
     }

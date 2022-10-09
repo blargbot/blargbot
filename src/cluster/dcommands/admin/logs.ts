@@ -1,19 +1,31 @@
 import { GuildCommand } from '@blargbot/cluster/command';
 import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType } from '@blargbot/cluster/utils';
-import { SendContent } from '@blargbot/core/types';
 import { guard, sleep } from '@blargbot/core/utils';
 import { ChatLogSearchOptions, ChatLogType } from '@blargbot/domain/models';
+
+import templates from '../../text';
+
+const cmd = templates.commands.logs;
 
 export class LogsCommand extends GuildCommand {
     public constructor() {
         super({
             name: `logs`,
             category: CommandType.ADMIN,
+            flags: [
+                { flag: `t`, word: `type`, description: cmd.flags.type },
+                { flag: `c`, word: `channel`, description: cmd.flags.channel },
+                { flag: `u`, word: `user`, description: cmd.flags.user },
+                { flag: `C`, word: `create`, description: cmd.flags.create },
+                { flag: `U`, word: `update`, description: cmd.flags.update },
+                { flag: `D`, word: `delete`, description: cmd.flags.delete },
+                { flag: `j`, word: `json`, description: cmd.flags.json }
+            ],
             definitions: [
                 {
                     parameters: `{number:integer=100}`,
-                    description: `Creates a chatlog page for a specified channel, where \`number\` is the amount of lines to get. You can retrieve a maximum of 1000 logs. For more specific logs, you can specify flags.\nFor example, if you wanted to get 100 messages \`stupid cat\` deleted, you would do this:\n\`logs 100 --type delete --user stupid cat\`\nIf you want to use multiple of the same type, separate parameters with commas or chain them together. For example:\n\`logs 100 -CU -u stupid cat, dumb cat\``,
+                    description: cmd.default.description,
                     execute: (ctx, [number], flags) => this.generateLogs(ctx, {
                         count: number.asInteger,
                         users: flags.u?.map(f => f.value) ?? [],
@@ -26,15 +38,6 @@ export class LogsCommand extends GuildCommand {
                         json: flags.j !== undefined
                     })
                 }
-            ],
-            flags: [
-                { flag: `t`, word: `type`, description: `The type(s) of message. Value can be CREATE, UPDATE, and/or DELETE, separated by commas.` },
-                { flag: `c`, word: `channel`, description: `The channel to retrieve logs from. Value can be a channel ID or a channel mention.` },
-                { flag: `u`, word: `user`, description: `The user(s) to retrieve logs from. Value can be a username, nickname, mention, or ID. This uses the user lookup system.` },
-                { flag: `C`, word: `create`, description: `Get message creates.` },
-                { flag: `U`, word: `update`, description: `Get message updates.` },
-                { flag: `D`, word: `delete`, description: `Get message deletes.` },
-                { flag: `j`, word: `json`, description: `Returns the logs in a json file rather than on a webpage.` }
             ]
         });
     }

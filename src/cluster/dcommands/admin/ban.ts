@@ -15,16 +15,8 @@ export class BanCommand extends GuildCommand {
             name: `ban`,
             category: CommandType.ADMIN,
             flags: [
-                {
-                    flag: `r`,
-                    word: `reason`,
-                    description: cmd.flags.reason
-                },
-                {
-                    flag: `t`,
-                    word: `time`,
-                    description: cmd.flags.time
-                }
+                { flag: `r`, word: `reason`, description: cmd.flags.reason },
+                { flag: `t`, word: `time`, description: cmd.flags.time }
             ],
             definitions: [
                 {

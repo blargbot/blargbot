@@ -1,16 +1,23 @@
 import { CommandContext, GlobalImageCommand } from '@blargbot/cluster/command';
 import { guard } from '@blargbot/cluster/utils';
 
+import templates from '../../text';
 import { CommandResult } from '../../types';
+
+const cmd = templates.commands.stupid;
 
 export class StupidCommand extends GlobalImageCommand {
     public constructor() {
         super({
             name: `stupid`,
+            flags: [
+                { flag: `u`, word: `user`, description: cmd.flags.user },
+                { flag: `i`, word: `image`, description: cmd.flags.image }
+            ],
             definitions: [
                 {
                     parameters: `{text+}`,
-                    description: `Tells everyone who is stupid.`,
+                    description: cmd.default.description,
                     execute: (ctx, [text], flags) => flags.u !== undefined
                         ? this.renderUser(ctx, text.asString, flags.u.merge().value)
                         : this.render(
@@ -22,10 +29,6 @@ export class StupidCommand extends GlobalImageCommand {
                                 : ctx.author.avatarURL)
                         )
                 }
-            ],
-            flags: [
-                { flag: `u`, word: `user`, description: `The person who is stupid.` },
-                { flag: `i`, word: `image`, description: `A custom image.` }
             ]
         });
     }

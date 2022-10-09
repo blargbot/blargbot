@@ -3,7 +3,10 @@ import { CommandType, discord, guard, parse } from '@blargbot/cluster/utils';
 import { Activity, Constants, Member, User } from 'eris';
 import moment from 'moment-timezone';
 
+import templates from '../../text';
 import { CommandResult } from '../../types';
+
+const cmd = templates.commands.user;
 
 export class UserCommand extends GlobalCommand {
     public constructor() {
@@ -13,7 +16,7 @@ export class UserCommand extends GlobalCommand {
             definitions: [
                 {
                     parameters: `{user:user+?}`,
-                    description: `Gets information about a user`,
+                    description: cmd.default.description,
                     execute: (ctx, [user]) => this.getUser(ctx, user.asOptionalUser ?? ctx.author)
                 }
             ]

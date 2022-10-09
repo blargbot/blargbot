@@ -4,7 +4,10 @@ import { guard, humanize } from '@blargbot/core/utils';
 import { mapping } from '@blargbot/mapping';
 import fetch, { RequestInit } from 'node-fetch';
 
+import templates from '../../text';
 import { CommandResult } from '../../types';
+
+const cmd = templates.commands.define;
 
 export class DefineCommand extends GlobalCommand {
     public constructor() {
@@ -14,7 +17,7 @@ export class DefineCommand extends GlobalCommand {
             definitions: [
                 {
                     parameters: `{word}`,
-                    description: `Gets the definition for the specified word. The word must be in english.`,
+                    description: cmd.default.description,
                     execute: (ctx, [word]) => this.define(ctx, word.asString)
                 }
             ]

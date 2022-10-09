@@ -2,23 +2,26 @@ import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType, guard } from '@blargbot/cluster/utils';
 import { Constants, EmbedField, EmbedOptions } from 'eris';
 
+import templates from '../../text';
 import { CommandResult } from '../../types';
+
+const cmd = templates.commands.patch;
 
 export class PatchCommand extends GlobalCommand {
     public constructor() {
         super({
             name: `patch`,
             category: CommandType.DEVELOPER,
+            flags: [
+                { flag: `f`, word: `fixes`, description: cmd.flags.fixes },
+                { flag: `n`, word: `notes`, description: cmd.flags.notes }
+            ],
             definitions: [
                 {
                     parameters: `{features+?}`,
-                    description: `Makes a patch note`,
+                    description: cmd.default.description,
                     execute: (ctx, [features], flags) => this.patch(ctx, features.asOptionalString, flags.f?.merge().raw, flags.n?.merge().raw)
                 }
-            ],
-            flags: [
-                { flag: `f`, word: `fixes`, description: `The bug fixes of the patch.` },
-                { flag: `n`, word: `notes`, description: `Other notes.` }
             ]
         });
     }

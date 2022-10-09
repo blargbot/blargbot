@@ -4,6 +4,10 @@ import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { codeBlock, CommandType, guard } from '@blargbot/cluster/utils';
 import { KnownChannel } from 'eris';
 
+import templates from '../../text';
+
+const cmd = templates.commands.farewell;
+
 export class FarewellCommand extends GuildCommand {
     public constructor() {
         super({
@@ -12,37 +16,37 @@ export class FarewellCommand extends GuildCommand {
             definitions: [
                 {
                     parameters: `set {~bbtag+}`,
-                    description: `Sets the bbtag to send when someone leaves the server`,
+                    description: cmd.set.description,
                     execute: (ctx, [bbtag]) => this.setFarewell(ctx, bbtag.asString)
                 },
                 {
                     parameters: `raw {fileExtension:literal(bbtag|txt)=bbtag}`,
-                    description: `Gets the current message that will be sent when someone leaves the server`,
+                    description: cmd.raw.description,
                     execute: (ctx, [fileExtension]) => this.getFarewell(ctx, fileExtension.asLiteral)
                 },
                 {
                     parameters: `setauthorizer`,
-                    description: `Sets the farewell message to use your permissions when running`,
+                    description: cmd.setauthorizer.description,
                     execute: (ctx) => this.setAuthorizer(ctx)
                 },
                 {
                     parameters: `setchannel {channel:channel+}`,
-                    description: `Sets the channel the farewell message will be sent in.`,
+                    description: cmd.setchannel.description,
                     execute: (ctx, [channel]) => this.setChannel(ctx, channel.asChannel)
                 },
                 {
                     parameters: `debug`,
-                    description: `Executes the farewell message as if you left the server and provides the debug output.`,
+                    description: cmd.debug.description,
                     execute: (ctx) => this.debug(ctx)
                 },
                 {
                     parameters: `delete|clear`,
-                    description: `Deletes the current farewell message.`,
+                    description: cmd.delete.description,
                     execute: (ctx) => this.deleteFarewell(ctx)
                 },
                 {
                     parameters: `info`,
-                    description: `Shows information about the current farewell message`,
+                    description: cmd.info.description,
                     execute: (ctx) => this.getInfo(ctx)
                 }
             ]

@@ -1,7 +1,10 @@
 import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType, pluralise as p, randChoose, randInt } from '@blargbot/cluster/utils';
 
+import templates from '../../text';
 import { CommandResult } from '../../types';
+
+const cmd = templates.commands.rr;
 
 export class RussianRouletteCommand extends GlobalCommand {
     public constructor() {
@@ -11,7 +14,7 @@ export class RussianRouletteCommand extends GlobalCommand {
             definitions: [
                 {
                     parameters: `{bullets:integer=1} {emote?}`,
-                    description: `Plays russian roulette with a specified number of bullets. If \`emote\` is specified, uses that specific emote.`,
+                    description: cmd.default.description,
                     execute: (ctx, [bullets, emote]) => this.play(ctx, bullets.asInteger, emote.asOptionalString)
                 }
             ]

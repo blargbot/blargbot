@@ -2,7 +2,10 @@ import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType } from '@blargbot/cluster/utils';
 import { exec } from 'child_process';
 
+import templates from '../../text';
 import { CommandResult } from '../../types';
+
+const cmd = templates.commands.update;
 
 export class UpdateCommand extends GlobalCommand {
     public constructor() {
@@ -12,7 +15,7 @@ export class UpdateCommand extends GlobalCommand {
             definitions: [
                 {
                     parameters: `{semVer:literal(patch|minor|major)=patch}`,
-                    description: `Updates the codebase to the latest commit.`,
+                    description: cmd.default.description,
                     execute: (ctx, [type]) => this.update(ctx, type.asLiteral)
                 }
             ]

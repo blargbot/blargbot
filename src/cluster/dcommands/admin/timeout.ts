@@ -5,28 +5,28 @@ import { FlagResult } from '@blargbot/domain/models';
 import { Member } from 'eris';
 import moment from 'moment-timezone';
 
+import templates from '../../text';
+
+const cmd = templates.commands.timeout;
+
 export class TimeoutCommand extends GuildCommand {
     public constructor() {
         super({
             name: `timeout`,
             category: CommandType.ADMIN,
             flags: [
-                { flag: `r`, word: `reason`, description: `The reason for the timeout (removal).` },
-                {
-                    flag: `t`,
-                    word: `time`,
-                    description: `The amount of time to mute for, formatted as '1 day 2 hours 3 minutes and 4 seconds', '1d2h3m4s', or some other combination.\nMaximum allowed time is 28 days. Default is 1 day.`
-                }
+                { flag: `r`, word: `reason`, description: cmd.flags.reason },
+                { flag: `t`, word: `time`, description: cmd.flags.time }
             ],
             definitions: [
                 {
                     parameters: `{user:member+}`,
-                    description: `Timeouts a user.\nIf mod-logging is enabled, the timeout will be logged.`,
+                    description: cmd.user.description,
                     execute: (ctx, [user], flags) => this.timeout(ctx, user.asMember, flags)
                 },
                 {
                     parameters: `clear {user:member+}`,
-                    description: `Removes the timeout of a user.\nIf mod-logging is enabled, the timeout removal will be logged.`,
+                    description: cmd.clear.description,
                     execute: (ctx, [user], flags) => this.clearTimeout(ctx, user.asMember, flags.r?.merge().value ?? ``)
                 }
             ]
