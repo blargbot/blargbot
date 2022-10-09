@@ -1,7 +1,7 @@
 import { CommandContext, GlobalImageCommand } from '@blargbot/cluster/command';
 import { Emote } from '@blargbot/core/Emote';
 
-import templates from '../../text';
+import templates, { t } from '../../text';
 import { CommandResult } from '../../types';
 
 const cmd = templates.commands.emoji;
@@ -28,11 +28,11 @@ export class EmojiCommand extends GlobalImageCommand {
     public async emoji(context: CommandContext, emoji: string, size: number, svg: boolean): Promise<CommandResult> {
         const parsedEmojis = Emote.findAll(emoji);
         if (parsedEmojis.length === 0)
-            return `❌ No emoji found!`;
+            return cmd.default.invalidEmoji;
 
         const parsedEmoji = parsedEmojis[0];
         if (parsedEmoji.id !== undefined)
-            return `https://cdn.discordapp.com/emojis/${parsedEmoji.id}.${parsedEmoji.animated ? `gif` : `png`}`;
+            return t(`https://cdn.discordapp.com/emojis/${parsedEmoji.id}.${parsedEmoji.animated ? `gif` : `png`}`);
 
         return await this.renderImage(context, `emoji`, { name: parsedEmoji.name, size, svg });
     }

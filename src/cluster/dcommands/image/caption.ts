@@ -1,5 +1,5 @@
 import { CommandContext, GlobalImageCommand } from '@blargbot/cluster/command';
-import { guard, humanize } from '@blargbot/core/utils';
+import { guard } from '@blargbot/core/utils';
 import { parse } from '@blargbot/core/utils/parse';
 import { ValidFont } from '@blargbot/image/types';
 
@@ -37,8 +37,8 @@ export class CaptionCommand extends GlobalImageCommand {
         });
     }
 
-    public listFonts(): string {
-        return `ℹ️ The supported fonts are:${humanize.smartJoin(Object.keys(fontLookup), `, `, ` and `)}`;
+    public listFonts(): CommandResult {
+        return cmd.fonts.success({ fonts: Object.keys(fontLookup) });
     }
 
     public async render(
@@ -49,18 +49,18 @@ export class CaptionCommand extends GlobalImageCommand {
         fontName = `impact`
     ): Promise<CommandResult> {
         if (url === undefined)
-            return `❌ You didnt tell me what image I should caption!`;
+            return cmd.errors.imageMissing;
 
         if ((top === undefined || top.length === 0)
             && (bottom === undefined || bottom.length === 0))
-            return `❌ You must give atleast 1 caption!`;
+            return cmd.errors.captionMissing;
 
         if (!Object.keys(fontLookup).includes(fontName))
-            return `❌ ${fontName} is not a supported font! Use \`${context.prefix}caption list\` to see all available fonts`;
+            return cmd.errors.fontInvalid({ font: fontName, prefix: context.prefix });
 
         url = parse.url(url);
         if (!guard.isUrl(url))
-            return `❌ ${url} is not a valid url!`;
+            return cmd.linked.invalidUrl({ url });
 
         if (top !== undefined)
             top = await context.util.resolveTags(context, top);

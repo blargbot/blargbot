@@ -51,7 +51,8 @@ export const templates = crunchTree(`cluster`, {
                 unknown: f(`❌ I couldn't understand those arguments!`),
                 noneNeeded: f(`❌ Too many arguments! \`{command.name}\` doesn't need any arguments`).withArgs<{ command: Command; }>(),
                 tooMany: f(`❌ Too many arguments! Expected at most {max} {max#plural(1:argument|arguments)}, but you gave {given}`).withArgs<{ max: number; given: number; }>()
-            }
+            },
+            renderFailed: f(`❌ Something went wrong while trying to render that!`)
         },
         announce: {
             default: {
@@ -2259,7 +2260,7 @@ export const templates = crunchTree(`cluster`, {
             },
             default: {
                 description: f(`Shows everyone a work of art.`),
-                invalidUrl: f(`❌ ${url} is not a valid url!`)
+                invalidUrl: f(`❌ {url} is not a valid url!`).withArgs<{ url: string; }>()
             }
         },
         cah: {
@@ -2275,10 +2276,10 @@ export const templates = crunchTree(`cluster`, {
             }
         },
         caption: {
-            common: {
+            errors: {
                 imageMissing: f(`❌ You didnt tell me what image I should caption!`),
                 captionMissing: f(`❌ You must give atleast 1 caption!`),
-                fontInvalid: f(`❌ ${fontName} is not a supported font! Use \`${context.prefix}caption list\` to see all available fonts`)
+                fontInvalid: f(`❌ {font} is not a supported font! Use \`{prefix}caption list\` to see all available fonts`).withArgs<{ font: string; prefix: string; }>()
             },
             flags: {
                 top: f(`The top caption.`),
@@ -2287,14 +2288,14 @@ export const templates = crunchTree(`cluster`, {
             },
             fonts: {
                 description: f(`Lists the fonts that are supported`),
-                success: f(`ℹ️ The supported fonts are:${humanize.smartJoin(Object.keys(fontLookup), `, `, ` and `)}`)
+                success: f(`ℹ️ The supported fonts are: {fonts#join(, | and )}`).withArgs<{ fonts: Iterable<string>; }>()
             },
             attached: {
                 description: f(`Puts captions on an attached image.`)
             },
             linked: {
                 description: f(`Puts captions on the image in the URL.`),
-                urlInvalid: f(`❌ ${url} is not a valid url!`)
+                invalidUrl: f(`❌ {url} is not a valid url!`).withArgs<{ url: string; }>()
             }
         },
         cat: {
@@ -2311,7 +2312,7 @@ export const templates = crunchTree(`cluster`, {
             },
             default: {
                 description: f(`I don't even know, to be honest.`),
-                urlInvalid: f(`❌ ${url} is not a valid url!`)
+                invalidUrl: f(`❌ {url} is not a valid url!`).withArgs<{ url: string; }>()
             }
         },
         clippy: {
@@ -2343,7 +2344,7 @@ export const templates = crunchTree(`cluster`, {
             },
             default: {
                 description: f(`Turns an image into modern art.`),
-                urlInvalid: f(`❌ ${url} is not a valid url!`)
+                invalidUrl: f(`❌ {url} is not a valid url!`).withArgs<{ url: string; }>()
             }
         },
         emoji: {
@@ -2373,7 +2374,7 @@ export const templates = crunchTree(`cluster`, {
             },
             default: {
                 description: f(`Shows a picture of Linus pointing at something on his monitor.`),
-                urlInvalid: f(`❌ ${url} is not a valid url!`)
+                invalidUrl: f(`❌ {url} is not a valid url!`).withArgs<{ url: string; }>()
             }
         },
         pcCheck: {
@@ -2391,7 +2392,7 @@ export const templates = crunchTree(`cluster`, {
             },
             default: {
                 description: f(`Pixelates an image.`),
-                urlInvalid: f(`❌ ${url} is not a valid url!`)
+                invalidUrl: f(`❌ {url} is not a valid url!`).withArgs<{ url: string; }>()
             }
         },
         shit: {
@@ -2416,7 +2417,7 @@ export const templates = crunchTree(`cluster`, {
             },
             default: {
                 description: f(`WHO IS STAR BATTLING THIS EPISODE?`),
-                urlInvalid: f(`❌ ${url} is not a valid url!`)
+                invalidUrl: f(`❌ {url} is not a valid url!`).withArgs<{ url: string; }>()
             }
         },
         stupid: {
@@ -2426,7 +2427,7 @@ export const templates = crunchTree(`cluster`, {
             },
             default: {
                 description: f(`Tells everyone who is stupid.`),
-                invalidUser: f(`❌ I could not find the user \`${userStr}\``)
+                invalidUser: f(`❌ I could not find the user \`{user}\``).withArgs<{ user: string; }>()
             }
         },
         theSearch: {

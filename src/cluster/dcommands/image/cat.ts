@@ -3,7 +3,7 @@ import { GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType, randInt } from '@blargbot/cluster/utils';
 import { Handler as Wolken } from 'wolken';
 
-import templates from '../../text';
+import templates, { t } from '../../text';
 import { CommandResult } from '../../types';
 
 const cmd = templates.commands.cat;
@@ -30,9 +30,13 @@ export class CatCommand extends GlobalCommand {
     public async render(): Promise<CommandResult> {
         const res = await this.#client.getRandom({ type: `animal_cat`, allowNSFW: false });
         return {
-            image: { url: res.url },
-            footer: { text: `Powered by weeb.sh` },
-            color: randInt(0x1, 0xffffff)
+            embeds: [
+                {
+                    image: { url: res.url },
+                    footer: { text: t(`Powered by weeb.sh`) },
+                    color: randInt(0x1, 0xffffff)
+                }
+            ]
         };
     }
 }

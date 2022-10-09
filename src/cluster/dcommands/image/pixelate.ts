@@ -45,7 +45,7 @@ export class PixelateCommand extends GlobalImageCommand {
     public async render(context: CommandContext, url: string, scale: number): Promise<CommandResult> {
         url = parse.url(url);
         if (!guard.isUrl(url))
-            return `❌ \`${url}\` is not a valid url!`;
+            return cmd.default.invalidUrl({ url });
 
         return await this.renderImage(context, `pixelate`, { url: url, scale });
     }

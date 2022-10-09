@@ -43,7 +43,7 @@ export class ClintCommand extends GlobalImageCommand {
     public async render(context: CommandContext, url: string): Promise<CommandResult> {
         url = parse.url(url);
         if (!guard.isUrl(url))
-            return `❌ ${url} is not a valid url!`;
+            return cmd.default.invalidUrl({ url });
 
         return await this.renderImage(context, `clint`, { image: url });
     }
