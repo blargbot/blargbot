@@ -31,7 +31,7 @@ export class IntervalCommand extends GuildCommand {
                 },
                 {
                     parameters: `setauthorizer`,
-                    description: cmd.setauthorizer.description,
+                    description: cmd.setAuthorizer.description,
                     execute: (ctx) => this.setAuthorizer(ctx)
                 },
                 {
@@ -86,7 +86,7 @@ export class IntervalCommand extends GuildCommand {
             return cmd.errors.notSet;
 
         await context.database.guilds.setInterval(context.channel.guild.id, { ...interval, authorizer: context.author.id });
-        return cmd.setauthorizer.success;
+        return cmd.setAuthorizer.success;
     }
 
     public async debug(context: GuildCommandContext): Promise<CommandResult> {

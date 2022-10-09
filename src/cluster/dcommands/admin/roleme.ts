@@ -50,22 +50,22 @@ export class RolemeCommand extends GuildCommand {
                 },
                 {
                     parameters: `setmessage {rolemeId:integer} {~bbtag+?}`,
-                    description: cmd.setmessage.description,
+                    description: cmd.setMessage.description,
                     execute: (ctx, [id, bbtag]) => this.setMessage(ctx, id.asInteger, bbtag.asOptionalString)
                 },
                 {
                     parameters: `rawmessage {rolemeId:integer} {fileExtension:literal(bbtag|txt)=bbtag}`,
-                    description: cmd.rawmessage.description,
+                    description: cmd.rawMessage.description,
                     execute: (ctx, [id, fileExtension]) => this.getRawMessage(ctx, id.asInteger, fileExtension.asLiteral)
                 },
                 {
                     parameters: `debugmessage {rolemeId:integer}`,
-                    description: cmd.debugmessage.description,
+                    description: cmd.debugMessage.description,
                     execute: (ctx, [id]) => this.debugMessage(ctx, id.asInteger)
                 },
                 {
                     parameters: `setauthorizer {rolemeId:integer}`,
-                    description: cmd.setauthorizer.description,
+                    description: cmd.setAuthorizer.description,
                     execute: (ctx, [id]) => this.setAuthorizer(ctx, id.asInteger)
                 },
                 {
@@ -256,7 +256,7 @@ export class RolemeCommand extends GuildCommand {
             }
         });
 
-        return cmd.setmessage.success({ id });
+        return cmd.setMessage.success({ id });
     }
 
     public async getRawMessage(context: GuildCommandContext, id: number, fileExtension: string): Promise<CommandResult> {
@@ -268,8 +268,8 @@ export class RolemeCommand extends GuildCommand {
             return cmd.errors.noMessage({ id });
 
         return new RawBBTagCommandResult(
-            cmd.rawmessage.inline({ id, content: roleme.output.content }),
-            cmd.rawmessage.attached({ id }),
+            cmd.rawMessage.inline({ id, content: roleme.output.content }),
+            cmd.rawMessage.attached({ id }),
             roleme.output.content,
             `interval.${fileExtension}`
         );
@@ -285,7 +285,7 @@ export class RolemeCommand extends GuildCommand {
 
         const result = await context.cluster.rolemes.invokeMessage(context.message, roleme);
         await context.send(context.author, bbtag.createDebugOutput(result));
-        return cmd.debugmessage.success;
+        return cmd.debugMessage.success;
     }
 
     public async setAuthorizer(context: GuildCommandContext, id: number): Promise<CommandResult> {
@@ -304,7 +304,7 @@ export class RolemeCommand extends GuildCommand {
             }
         });
 
-        return cmd.setauthorizer.success({ id });
+        return cmd.setAuthorizer.success({ id });
     }
 
     public async showInfo(context: GuildCommandContext, id: number): Promise<CommandResult> {

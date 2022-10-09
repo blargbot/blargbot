@@ -688,7 +688,7 @@ export class CustomCommandCommand extends GuildCommand {
             return match;
 
         if (match.command === undefined)
-            return { response: cmd.errors.doesntExist({ name: match.name }) };
+            return { response: cmd.errors.doesNotExist({ name: match.name }) };
 
         if (!allowHidden && match.command.hidden === true)
             return { response: cmd.errors.isHidden({ name: match.name }) };
@@ -706,7 +706,7 @@ export class CustomCommandCommand extends GuildCommand {
             return match;
 
         if (match.command === undefined)
-            return { response: cmd.errors.doesntExist({ name: match.name }) };
+            return { response: cmd.errors.doesNotExist({ name: match.name }) };
 
         return match.command;
     }

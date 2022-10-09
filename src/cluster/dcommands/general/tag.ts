@@ -97,7 +97,7 @@ export class TagCommand extends GuildCommand {
                 {
                     hidden: true,
                     parameters: `permdelete {tagName} {reason+}`,
-                    description: cmd.permdelete.description,
+                    description: cmd.permDelete.description,
                     execute: (ctx, [tagName, reason]) => this.disableTag(ctx, tagName.asString, reason.asString)
                 },
                 {
@@ -127,7 +127,7 @@ export class TagCommand extends GuildCommand {
                 },
                 {
                     parameters: `setlang {tagName} {language}`,
-                    description: cmd.setlang.description,
+                    description: cmd.setLang.description,
                     execute: (ctx, [tagName, language]) => this.setTagLanguage(ctx, tagName.asString, language.asString)
                 },
                 {
@@ -135,12 +135,12 @@ export class TagCommand extends GuildCommand {
                     subcommands: [
                         {
                             parameters: ``,
-                            description: cmd.favourite.list.description,
+                            description: cmd.favorite.list.description,
                             execute: (ctx) => this.listFavouriteTags(ctx)
                         },
                         {
                             parameters: `{tagName}`,
-                            description: cmd.favourite.toggle.description,
+                            description: cmd.favorite.toggle.description,
                             execute: (ctx, [tagName]) => this.toggleFavouriteTag(ctx, tagName.asString)
                         }
                     ]

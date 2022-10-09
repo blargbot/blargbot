@@ -46,7 +46,7 @@ export const templates = crunchTree(`cluster`, {
                 guild: f(`❌ Hi! You asked me to do something, but I didn't have permission to do it! Please make sure I have permissions to do what you asked.\nGuild: {channel.guild.name}\nChannel: {channel#tag}\nCommand: {commandText}\n\nIf you wish to stop seeing these messages, do the command \`{prefix}dmerrors\`.`).withArgs<GuildCommandContext>()
             },
             arguments: {
-                invalid: f(`❌ Invalid arguments! \`{value}\` isnt {types#map(\`{}\`)#join(, | or )}`).withArgs<{ value: string; types: string[]; }>(),
+                invalid: f(`❌ Invalid arguments! \`{value}\` isn't {types#map(\`{}\`)#join(, | or )}`).withArgs<{ value: string; types: string[]; }>(),
                 missing: f(`❌ Not enough arguments! You need to provide {missing#map(\`{}\`)#join(, | or )}`).withArgs<{ missing: string[]; }>(),
                 unknown: f(`❌ I couldn't understand those arguments!`),
                 noneNeeded: f(`❌ Too many arguments! \`{command.name}\` doesn't need any arguments`).withArgs<{ command: Command; }>(),
@@ -89,7 +89,7 @@ export const templates = crunchTree(`cluster`, {
         },
         autoResponse: {
             notWhitelisted: f(`❌ Sorry, autoresponses are currently whitelisted. To request access, do \`b!ar whitelist [reason]\``),
-            notFoundId: f(`❌ There isnt an autoresponse with id \`{id}\` here!`).withArgs<{ id: string; }>(),
+            notFoundId: f(`❌ There isn't an autoresponse with id \`{id}\` here!`).withArgs<{ id: string; }>(),
             notFoundEverything: f(`❌ There isn't an everything autoresponse here!`),
             flags: {
                 regex: f(`If specified, parse as /regex/ rather than plaintext. Unsafe and very long (more than 2000 characters) regexes will not parse successfully.`),
@@ -248,7 +248,7 @@ export const templates = crunchTree(`cluster`, {
             errors: {
                 isAlias: f(`❌ The command \`{commandName}\` is an alias to the tag \`{tagName}\``).withArgs<{ commandName: string; tagName: string; }>(),
                 alreadyExists: f(`❌ The \`{name}\` custom command already exists!`).withArgs<{ name: string; }>(),
-                doesntExist: f(`❌ The \`{name}\` custom command doesn't exist!`).withArgs<{ name: string; }>(),
+                doesNotExist: f(`❌ The \`{name}\` custom command doesn't exist!`).withArgs<{ name: string; }>(),
                 isHidden: f(`❌ The \`{name}\` custom command is a hidden command!`).withArgs<{ name: string; }>(),
                 invalidBBTag: f(`❌ There were errors with the bbtag you provided!\n{errors#join(\n)}`).withArgs<{ errors: Iterable<IFormattable<string>>; }>(),
                 bbtagError: f(`❌ [{location.line},{location.column}]: {message}`).withArgs<AnalysisResult>(),
@@ -390,7 +390,7 @@ export const templates = crunchTree(`cluster`, {
                 reason: f(`A custom modlog reason. NOT BBTag compatible.`)
             },
             errors: {
-                doesntExist: f(`❌ Censor \`{id}\` doesn't exist`).withArgs<{ id: number; }>(),
+                doesNotExist: f(`❌ Censor \`{id}\` doesn't exist`).withArgs<{ id: number; }>(),
                 weightNotNumber: f(`❌ The censor weight must be a number but \`{value}\` is not`).withArgs<{ value: string; }>(),
                 invalidType: f(`❌ \`{type}\` is not a valid type`).withArgs<{ type: string; }>(),
                 messageNotSet: {
@@ -426,7 +426,7 @@ export const templates = crunchTree(`cluster`, {
                 }
             },
             setMessage: {
-                description: f(`Sets the message so show when the given censor causes a user to be granted a \`timeout\`, or to be \`kick\`ed or \`ban\`ned, or the message is \`delete\`d\nIf \`id\` is not provided, the message will be the default message that gets shown if one isnt set for the censor that is triggered`),
+                description: f(`Sets the message so show when the given censor causes a user to be granted a \`timeout\`, or to be \`kick\`ed or \`ban\`ned, or the message is \`delete\`d\nIf \`id\` is not provided, the message will be the default message that gets shown if one isn't set for the censor that is triggered`),
                 success: {
                     default: f(`✅ The default {type} message has been set`).withArgs<{ type: string; }>(),
                     id: f(`✅ The {type} message for censor {id} has been set`).withArgs<{ type: string; id: number; }>()
@@ -451,7 +451,7 @@ export const templates = crunchTree(`cluster`, {
                 }
             },
             debug: {
-                description: f(`Sets the censor to send you the debug output when it is next triggered by one of your messages. Make sure you arent exempt from censors!`),
+                description: f(`Sets the censor to send you the debug output when it is next triggered by one of your messages. Make sure you aren't exempt from censors!`),
                 success: f(`✅ The next message that you send that triggers censor \`{id}\` will send the debug output here`).withArgs<{ id: number; }>()
             },
             list: {
@@ -539,7 +539,7 @@ export const templates = crunchTree(`cluster`, {
         editCommand: {
             list: {
                 description: f(`Shows a list of modified commands`),
-                none: f(`ℹ️ You havent modified any commands`),
+                none: f(`ℹ️ You haven't modified any commands`),
                 embed: {
                     title: f(`ℹ️ Edited commands`),
                     description: {
@@ -558,7 +558,7 @@ export const templates = crunchTree(`cluster`, {
                 set: f(`✅ Set the role requirement for the following commands:\`\`\`fix\n{commands#join(, )}\`\`\``).withArgs<{ commands: Iterable<string>; }>()
             },
             setPermissions: {
-                description: f(`Sets the permssions required to run the listed commands. If a user has any of the permissions, they will be able to use the command.`),
+                description: f(`Sets the permissions required to run the listed commands. If a user has any of the permissions, they will be able to use the command.`),
                 removed: f(`✅ Removed the permissions for the following commands:\`\`\`fix\n{commands#join(, )}\`\`\``).withArgs<{ commands: Iterable<string>; }>(),
                 set: f(`✅ Set the permissions for the following commands:\`\`\`fix\n{commands#join(, )}\`\`\``).withArgs<{ commands: Iterable<string>; }>()
             },
@@ -604,7 +604,7 @@ export const templates = crunchTree(`cluster`, {
             },
             debug: {
                 description: f(`Executes the farewell message as if you left the server and provides the debug output.`),
-                channelMissing: f(`❌ I wasnt able to locate a channel to sent the message in!`),
+                channelMissing: f(`❌ I wasn't able to locate a channel to sent the message in!`),
                 success: f(`ℹ️ Ive sent the debug output in a DM`)
             },
             delete: {
@@ -641,7 +641,7 @@ export const templates = crunchTree(`cluster`, {
             },
             debug: {
                 description: f(`Executes the greeting message as if you left the server and provides the debug output.`),
-                channelMissing: f(`❌ I wasnt able to locate a channel to sent the message in!`),
+                channelMissing: f(`❌ I wasn't able to locate a channel to sent the message in!`),
                 success: f(`ℹ️ Ive sent the debug output in a DM`)
             },
             delete: {
@@ -670,7 +670,7 @@ export const templates = crunchTree(`cluster`, {
                 description: f(`Deletes the current interval`),
                 success: f(`✅ The interval has been deleted`)
             },
-            setauthorizer: {
+            setAuthorizer: {
                 description: f(`Sets the interval to run using your permissions`),
                 success: f(`✅ Your permissions will now be used when the interval runs`)
             },
@@ -881,7 +881,7 @@ export const templates = crunchTree(`cluster`, {
             default: {
                 description: f(`Pardons a user.\nIf mod-logging is enabled, the pardon will be logged.\nThis will not unban users.`),
                 state: {
-                    countNaN: f(`❌ {text} isnt a number!`).withArgs<{ text: string; }>(),
+                    countNaN: f(`❌ {text} isn't a number!`).withArgs<{ text: string; }>(),
                     countNegative: f(`❌ I cant give a negative amount of pardons!`),
                     countZero: f(`❌ I cant give zero pardons!`),
                     success: f(`✅ **{user#tag}** has been given {count#plural(1:a warning|{} warnings)}. They now have {warnings#plural(1:1 warning|{} warnings)}.`).withArgs<{ user: Eris.User; count: number; warnings: number; }>()
@@ -908,18 +908,18 @@ export const templates = crunchTree(`cluster`, {
                 none: f(`❌ There aren't any modlog entries yet!`),
                 unknownCase: f(`❌ I couldn't find a modlog entry with a case id of {caseId}`).withArgs<{ caseId: number; }>(),
                 success: {
-                    messageMissing: f(`⚠️ The modlog has been updated! I couldnt find the message to update however.`),
+                    messageMissing: f(`⚠️ The modlog has been updated! I couldn't find the message to update however.`),
                     default: f(`✅ The modlog has been updated!`)
                 }
             }
         },
         roleMe: {
             errors: {
-                missing: f(`❌ Roleme {id} doesnt exist`).withArgs<{ id: number; }>(),
-                noMessage: f(`❌ Roleme {id} doesnt have a custom message`).withArgs<{ id: number; }>(),
-                missingChannels: f(`❌ I couldnt locate any of the channels you provided`),
-                missingRoles: f(`❌ I couldnt locate any of the roles you provided`),
-                noRoles: f(`❌ You must provide atleast 1 role to add or remove`),
+                missing: f(`❌ Roleme {id} doesn't exist`).withArgs<{ id: number; }>(),
+                noMessage: f(`❌ Roleme {id} doesn't have a custom message`).withArgs<{ id: number; }>(),
+                missingChannels: f(`❌ I couldn't locate any of the channels you provided`),
+                missingRoles: f(`❌ I couldn't locate any of the roles you provided`),
+                noRoles: f(`❌ You must provide at least 1 role to add or remove`),
                 noTrigger: f(`❌ You must provide a trigger phrase for the roleme`)
             },
             common: {
@@ -962,20 +962,20 @@ export const templates = crunchTree(`cluster`, {
                 unexpectedError: f(`❌ Something went wrong while I was trying to edit that roleme`),
                 success: f(`✅ Roleme \`{id}\` has been updated!`).withArgs<{ id: number; }>()
             },
-            setmessage: {
+            setMessage: {
                 description: f(`Sets the bbtag compatible message to show when the roleme is triggered`),
                 success: f(`✅ Roleme \`{id}\` has now had its message set`).withArgs<{ id: number; }>()
             },
-            rawmessage: {
+            rawMessage: {
                 description: f(`Gets the current message that will be sent when the roleme is triggered`),
                 inline: f(`ℹ️ The raw code for roleme \`{id}\` is: \`\`\`{content}\`\`\``).withArgs<{ id: number; content: string; }>(),
                 attached: f(`ℹ️ The raw code for roleme \`{id}\` is attached`).withArgs<{ id: number; }>()
             },
-            debugmessage: {
+            debugMessage: {
                 description: f(`Executes the roleme message as if you triggered the roleme`),
                 success: f(`ℹ️ Ive sent the debug output in a DM`)
             },
-            setauthorizer: {
+            setAuthorizer: {
                 description: f(`Sets the roleme message to run using your permissions`),
                 success: f(`✅ Your permissions will now be used for roleme \`{id}\``).withArgs<{ id: number; }>()
             },
@@ -985,7 +985,7 @@ export const templates = crunchTree(`cluster`, {
                     title: f(`Roleme #{id}`).withArgs<{ id: number; }>(),
                     field: {
                         phrase: {
-                            name: f(`Phrase (case {caseSensitive#bool(sensistive|insensitive)})`).withArgs<{ caseSensitive: boolean; }>()
+                            name: f(`Phrase (case {caseSensitive#bool(sensitive|insensitive)})`).withArgs<{ caseSensitive: boolean; }>()
                         },
                         rolesAdded: {
                             name: f(`Roles added`),
@@ -1067,7 +1067,7 @@ export const templates = crunchTree(`cluster`, {
                 success: f(`ℹ️ You can use \`settings set <key> [value]\` to set the following settings. All settings are case insensitive.\n{settings#map( - **{name}:** \`{key#upper}\` ({type}))#join(\n)}`).withArgs<{ settings: Iterable<{ name: IFormattable<string>; key: string; type: IFormattable<string>; }>; }>()
             },
             set: {
-                description: f(`Sets the given setting key to have a certian value. If \`value\` is omitted, the setting is reverted to its default value`),
+                description: f(`Sets the given setting key to have a certain value. If \`value\` is omitted, the setting is reverted to its default value`),
                 keyInvalid: f(`❌ Invalid key!`),
                 valueInvalid: f(`❌ \`{value}\` is not a {type}`).withArgs<{ value: string; type: IFormattable<string>; }>(),
                 alreadySet: f(`❌ \`{value}\` is already set for {key}`).withArgs<{ value: string; key: string; }>(),
@@ -1078,7 +1078,7 @@ export const templates = crunchTree(`cluster`, {
             errors: {
                 notTextChannel: f(`❌ You can only set slowmode on text channels!`),
                 notInGuild: f(`❌ You cant set slowmode on channels outside of a server`),
-                botNoPerms: f(`❌ I dont have permission to set slowmode in {channel#tag}!`).withArgs<{ channel: Eris.Channel; }>()
+                botNoPerms: f(`❌ I don't have permission to set slowmode in {channel#tag}!`).withArgs<{ channel: Eris.Channel; }>()
             },
             on: {
                 description: f(`Sets the channel's slowmode to 1 message every \`time\` seconds, with a max of 6 hours`),
@@ -1106,8 +1106,8 @@ export const templates = crunchTree(`cluster`, {
                 description: f(`Clears messages from chat`),
                 notNegative: f(`❌ I cannot delete {count} messages!`).withArgs<{ count: number; }>(),
                 unsafeRegex: f(`❌ That regex is not safe!`),
-                invalidUsers: f(`❌ I couldnt find some of the users you gave!`),
-                noMessages: f(`❌ I couldnt find any matching messages!`),
+                invalidUsers: f(`❌ I couldn't find some of the users you gave!`),
+                noMessages: f(`❌ I couldn't find any matching messages!`),
                 confirmQuery: {
                     prompt: {
                         foundAll: f(`ℹ️ I am about to attempt to delete {total} {total#plural(1:message|messages)}. Are you sure you wish to continue?\n{breakdown#map({user#tag} - {count} {count#plural(1:message|messages)})}`).withArgs<{ total: number; breakdown: Iterable<{ user: Eris.User; count: number; }>; }>(),
@@ -1117,7 +1117,7 @@ export const templates = crunchTree(`cluster`, {
                     continue: f(`Continue`)
                 },
                 cancelled: f(`✅ Tidy cancelled, No messages will be deleted`),
-                deleteFailed: f(`❌ I wasnt able to delete any of the messages! Please make sure I have permission to manage messages`),
+                deleteFailed: f(`❌ I wasn't able to delete any of the messages! Please make sure I have permission to manage messages`),
                 success: {
                     default: f(`✅ Deleted {deleted} {success#plural(1:message|messages)}:\n{success#map({user#tag} - {count} {count#plural(1:message|messages)})}`).withArgs<{ deleted: number; success: Iterable<{ user: Eris.User; count: number; }>; }>(),
                     partial: f(`⚠️ I managed to delete {deleted} of the messages I attempted to delete.\n{success#map({user#tag} - {count} {count#plural(1:message|messages)})}\n\nFailed:\n{failed#map({user#tag} - {count} {count#plural(1:message|messages)})}`).withArgs<{ deleted: number; success: Iterable<{ user: Eris.User; count: number; }>; failed: Iterable<{ user: Eris.User; count: number; }>; }>()
@@ -1205,7 +1205,7 @@ export const templates = crunchTree(`cluster`, {
             },
             cancel: {
                 description: f(`Cancels currently active timers`),
-                timersMissing: f(`❌ I couldnt find {count#plural(1:the timer|any of the timers)} you specified!`).withArgs<{ count: number; }>(),
+                timersMissing: f(`❌ I couldn't find {count#plural(1:the timer|any of the timers)} you specified!`).withArgs<{ count: number; }>(),
                 success: {
                     default: f(`✅ Cancelled {success#count#plural(1:{} timer|{} timers)}:\n{timers#map(\`{}\`)#join(\n)}`).withArgs<{ success: Iterable<string>; }>(),
                     partial: f(`⚠️ Cancelled {success#count#plural(1:{} timer|{} timers)}:\n{success#map(\`{}\`)#join(\n)}\nCould not find {fail#count#plural(1:{} timer|{} timers)}:\n{fail#map(\`{}\`)#join(\n)}`).withArgs<{ success: Iterable<string>; fail: Iterable<string>; }>()
@@ -1267,13 +1267,13 @@ export const templates = crunchTree(`cluster`, {
             default: {
                 description: f(`Issues a warning.\nIf mod-logging is enabled, the warning will be logged.\nIf \`kickat\` and \`banat\` have been set using the \`settings\` command, the target could potentially get banned or kicked.`),
                 state: {
-                    countNaN: f(`❌ {value} isnt a number!`).withArgs<{ value: string; }>(),
+                    countNaN: f(`❌ {value} isn't a number!`).withArgs<{ value: string; }>(),
                     countNegative: f(`❌ I cant give a negative amount of warnings!`),
                     countZero: f(`❌ I cant give zero warnings!`),
-                    memberTooHigh: f(`⚠️ **{user#tag}** has been given {count} {count#plural(1:warning|warnings)}.\n⛔ They went over the limit for {action}s but they are above me so I couldnt {action} them.`).withArgs<{ user: Eris.User; count: number; }>(),
-                    moderatorTooLow: f(`⚠️ **{user#tag}** has been given {count} {count#plural(1:warning|warnings)}.\n⛔ They went over the limit for {action}s but they are above you so I didnt {action} them.`).withArgs<{ user: Eris.User; count: number; action: IFormattable<string>; }>(),
-                    noPerms: f(`⚠️ **{user#tag}** has been given {count} {count#plural(1:warning|warnings)}.\n⛔ They went over the limit for {action}s but I dont have permission to {action} them.`).withArgs<{ user: Eris.User; count: number; action: IFormattable<string>; }>(),
-                    moderatorNoPerms: f(`⚠️ **{user#tag}** has been given {count} {count#plural(1:warning|warnings)}.\n⛔ They went over the limit for {action}s but you dont have permission to {action} them.`).withArgs<{ user: Eris.User; count: number; action: IFormattable<string>; }>(),
+                    memberTooHigh: f(`⚠️ **{user#tag}** has been given {count} {count#plural(1:warning|warnings)}.\n⛔ They went over the limit for {action}s but they are above me so I couldn't {action} them.`).withArgs<{ user: Eris.User; count: number; }>(),
+                    moderatorTooLow: f(`⚠️ **{user#tag}** has been given {count} {count#plural(1:warning|warnings)}.\n⛔ They went over the limit for {action}s but they are above you so I didn't {action} them.`).withArgs<{ user: Eris.User; count: number; action: IFormattable<string>; }>(),
+                    noPerms: f(`⚠️ **{user#tag}** has been given {count} {count#plural(1:warning|warnings)}.\n⛔ They went over the limit for {action}s but I don't have permission to {action} them.`).withArgs<{ user: Eris.User; count: number; action: IFormattable<string>; }>(),
+                    moderatorNoPerms: f(`⚠️ **{user#tag}** has been given {count} {count#plural(1:warning|warnings)}.\n⛔ They went over the limit for {action}s but you don't have permission to {action} them.`).withArgs<{ user: Eris.User; count: number; action: IFormattable<string>; }>(),
                     alreadyBanned: f(`⚠️ **{user#tag}** has been given {count} {count#plural(1:warning|warnings)}.\n⛔ They went over the limit for bans, but they were already banned.`).withArgs<{ user: Eris.User; count: number; }>(),
                     alreadyTimedOut: f(`⚠️ **{user#tag}** has been given {count} {count#plural(1:warning|warnings)}.\n⛔ They went over the limit for timeouts, but they were already timed out.`).withArgs<{ user: Eris.User; count: number; }>(),
                     success: {
@@ -1315,7 +1315,7 @@ export const templates = crunchTree(`cluster`, {
                     cancel: f(`Nah let me change something`)
                 },
                 cancelled: f(`ℹ️ Patch cancelled`),
-                failed: f(`❌ I wasnt able to send the patch notes!`),
+                failed: f(`❌ I wasn't able to send the patch notes!`),
                 success: f(`✅ Done!`)
             }
         },
@@ -1412,7 +1412,7 @@ export const templates = crunchTree(`cluster`, {
             default: {
                 description: f(`Gets a random or specified blargbot commit.`),
                 noCommits: f(`❌ I cant find any commits at the moment, please try again later!`),
-                unknownCommit: f(`❌ I couldnt find the commit!`),
+                unknownCommit: f(`❌ I couldn't find the commit!`),
                 embed: {
                     title: f(`${commit.sha.substring(0, 7)} - commit #${commitNumber}`)
                 }
@@ -1460,7 +1460,7 @@ export const templates = crunchTree(`cluster`, {
                 embed: {
                     description: f(`Hi! This is stupid cat, creator of blargbot. I hope you're enjoying it!\n\nI don't like to beg, but right now I'm a student. Tuition is expensive, and maintaining this project isn't exactly free. I have to pay for services such as web servers and domains, not to mention invest time into developing code to make this bot as good as it can be. I don't expect to be paid for what I'm doing; the most important thing to me is that people enjoy what I make, that my product is making people happy. But still, money doesn't grow on trees. If you want to support me and what I'm doing, I have a patreon available for donations. Prefer something with less commitment? I also have a paypal available.\n\nThank you for your time. I really appreciate all of my users! :3`),
                     field: {
-                        paylap: {
+                        paypal: {
                             name: f(`Paypal`)
                         },
                         patreon: {
@@ -1477,16 +1477,16 @@ export const templates = crunchTree(`cluster`, {
                 blacklisted: f(`❌ Sorry, ${type === `GUILD` ? `your guild has` : `you have`} been blacklisted from the use of the \`${context.prefix}feedback\` command. If you wish to appeal this, please join my support guild. You can find a link by doing \`${context.prefix}invite\`.`)
             },
             blacklist: {
-                unknownType: f(`❌ I dont know how to blacklist a ${type}! only \`guild\` and \`user\``),
+                unknownType: f(`❌ I don't know how to blacklist a ${type}! only \`guild\` and \`user\``),
                 alreadyBlacklisted: f(`❌ That ${type} id is already blacklisted!`),
                 notBlacklisted: f(`❌ That ${type} id is not blacklisted!`),
                 success: f(`✅ The ${type} ${id} has been ${add ? `blacklisted` : `removed from the blacklist`}`)
             },
             flags: {
-                command: f(`Signify your feedack is for a command`),
-                bbtag: f(`Signify your feedack is for BBTag`),
-                docs: f(`Signify your feedack is for documentation`),
-                other: f(`Signify your feedack is for other functionality`)
+                command: f(`Signify your feedback is for a command`),
+                bbtag: f(`Signify your feedback is for BBTag`),
+                docs: f(`Signify your feedback is for documentation`),
+                other: f(`Signify your feedback is for other functionality`)
             },
             general: {
                 description: f(`Give me general feedback about the bot`),
@@ -1521,7 +1521,7 @@ export const templates = crunchTree(`cluster`, {
             },
             edit: {
                 description: f(`Edit some feedback you have previously sent`),
-                unknownCase: f(`❌ I couldnt find any feedback with the case number ${caseNumber}!`),
+                unknownCase: f(`❌ I couldn't find any feedback with the case number ${caseNumber}!`),
                 notOwner: f(`❌ You cant edit someone elses suggestion.`),
                 success: f(`✅ Your case has been updated.`)
             }
@@ -1623,8 +1623,8 @@ export const templates = crunchTree(`cluster`, {
             list: {
                 description: f(`Returns the names that I've seen the specified user have in the past 30 days.`),
                 none: {
-                    ever: f(`ℹ️ I havent seen any usernames for ${user.mention} yet!`),
-                    since: f(`ℹ️ I havent seen ${user.mention} change their username since <t:${cutoff.unix()}>!`)
+                    ever: f(`ℹ️ I haven't seen any usernames for ${user.mention} yet!`),
+                    since: f(`ℹ️ I haven't seen ${user.mention} change their username since <t:${cutoff.unix()}>!`)
                 },
                 embed: {
                     title: f(`Historical usernames`),
@@ -1636,8 +1636,8 @@ export const templates = crunchTree(`cluster`, {
             },
             remove: {
                 description: f(`Removes the names ive seen you use in the past 30 days`),
-                none: f(`ℹ️ You dont have any usernames to remove!`),
-                notFound: f(`❌ I couldnt find any of the usernames you gave!`),
+                none: f(`ℹ️ You don't have any usernames to remove!`),
+                notFound: f(`❌ I couldn't find any of the usernames you gave!`),
                 confirm: {
                     prompt: {
                         some: f(`⚠️ Are you sure you want to remove ${countStr} usernames`),
@@ -1663,12 +1663,12 @@ export const templates = crunchTree(`cluster`, {
             },
             remove: {
                 description: f(`Removes one of your personal command prefixes`),
-                notAdded: f(`❌ That isnt one of your prefixes.`),
+                notAdded: f(`❌ That isn't one of your prefixes.`),
                 success: f(`✅ Your personal command prefix has been removed.`)
             },
             list: {
                 description: f(`Lists the your personal command prefixes`),
-                none: f(`ℹ️ You dont have any personal command prefixes set!`),
+                none: f(`ℹ️ You don't have any personal command prefixes set!`),
                 embed: {
                     title: f(`Personal prefixes`),
                     description: f(`${prefixes.map(x => ` - ${x}`).join(`\n`)}`)
@@ -1688,20 +1688,20 @@ export const templates = crunchTree(`cluster`, {
                 time: f(`How long before the poll expires, formatted as '1 day 2 hours 3 minutes and 4 seconds', '1d2h3m4s', or some other combination.`),
                 emojis: f(`The emojis to apply to the poll.`),
                 description: f(`The description of the poll.`),
-                colour: f(`The colour of the poll (in HEX).`),
+                color: f(`The color of the poll (in HEX).`),
                 announce: f(`If specified, it will make an announcement. Requires the proper permissions.`)
             },
             default: {
                 description: f(`Creates a poll for the given question and duration. If no duration is given, defaults to 60 seconds. If emojis are given, they will be used as options for the poll.`),
                 invalidDuration: f(`❌ \`${time}\` is not a valid duration for a poll.`),
                 invalidColor: f(`❌ \`${options.color}\` is not a valid color!`),
-                sendFailed: f(`❌ I wasnt able to send the poll! Please make sure I have the right permissions and try again.`),
-                noAnnouncePerms: f(`❌ Sorry, you dont have permissions to send announcements!`),
-                announceNotSetUp: f(`❌ Announcements on this server arent set up correctly. Please fix them before trying again.`),
+                sendFailed: f(`❌ I wasn't able to send the poll! Please make sure I have the right permissions and try again.`),
+                noAnnouncePerms: f(`❌ Sorry, you don't have permissions to send announcements!`),
+                announceNotSetUp: f(`❌ Announcements on this server aren't set up correctly. Please fix them before trying again.`),
                 emojisMissing: f(`❌ You must provide some emojis to use in the poll.`),
-                emojisInaccessible: f(`❌ I dont have access to some of the emojis you used! Please use different emojis or add me to the server that the emojis are from.`),
+                emojisInaccessible: f(`❌ I don't have access to some of the emojis you used! Please use different emojis or add me to the server that the emojis are from.`),
                 tooShort: f(`❌ ${time.humanize()} is too short for a poll! Use a longer time`),
-                someEmojisMissing: f(`⚠️ I managed to create the poll, but wasnt able to add some of the emojis to it. Please add them manually (they will still be counted in the results)`)
+                someEmojisMissing: f(`⚠️ I managed to create the poll, but wasn't able to add some of the emojis to it. Please add them manually (they will still be counted in the results)`)
             }
         },
         remind: {
@@ -1729,7 +1729,7 @@ export const templates = crunchTree(`cluster`, {
             default: {
                 description: f(`Rolls the dice you tell it to, and adds the modifier`),
                 diceInvalid: f(`❌ \`${dice}\` is not a valid dice!`),
-                tooBig: f(`❌ Youre limited to ${maxRolls} of a d${maxFaces}`),
+                tooBig: f(`❌ You're limited to ${maxRolls} of a d${maxFaces}`),
                 character: {
                     embed: {
                         description: f(`Stat #${i} - [ ${rolls.join(`, `)} ] > ${total.toString().padStart(2, ` `)} - ${min} > ${(total - min).toString().padStart(2, ` `)}`)
@@ -1750,7 +1750,7 @@ export const templates = crunchTree(`cluster`, {
             default: {
                 description: f(`Plays russian roulette with a specified number of bullets. If \`emote\` is specified, uses that specific emote.`),
                 notEnoughBullets: f(`❌ Wimp! You need to load at least one bullet.`),
-                guaranteedDeath: f(`⚠️ Do you have a deathwish or something? Your revolver can only hold 6 bullets, that's guaranteed death!`),
+                guaranteedDeath: f(`⚠️ Do you have a death wish or something? Your revolver can only hold 6 bullets, that's guaranteed death!`),
                 tooManyBullets: f(`⚠️ That's gutsy, but your revolver can only hold 6 bullets!`),
                 jammed: f(`❌ Your revolver jams when you try to close the barrel. Maybe you should try somewhere else...`),
                 confirm: {
@@ -1863,10 +1863,10 @@ export const templates = crunchTree(`cluster`, {
         spell: {
             default: {
                 description: f(`Gives you a description for a D&D 5e spell.`),
-                notFound: f(`❌ I couldnt find that spell!`),
+                notFound: f(`❌ I couldn't find that spell!`),
                 components: {
                     v: f(`Verbal`),
-                    s: f(`Somantic`),
+                    s: f(`Somatic`),
                     m: f(`Material`),
                     f: f(`Focus`),
                     df: f(`Divine Focus`),
@@ -1999,7 +1999,7 @@ export const templates = crunchTree(`cluster`, {
                 success: f(`✅ Tag \`{name}\` edited.\n{errors#join(\n)}`).withArgs<{ name: string; errors: Iterable<IFormattable<string>>; }>()
             },
             set: {
-                description: f(`Sets the tag to have the content you specify. If the tag doesnt exist it will be created.`),
+                description: f(`Sets the tag to have the content you specify. If the tag doesn't exist it will be created.`),
                 success: f(`✅ Tag \`{name}\` set.\n{errors#join(\n)}`).withArgs<{ name: string; errors: Iterable<IFormattable<string>>; }>()
             },
             delete: {
@@ -2021,7 +2021,7 @@ export const templates = crunchTree(`cluster`, {
             search: {
                 description: f(`Searches for a tag based on the provided name`)
             },
-            permdelete: {
+            permDelete: {
                 description: f(`Marks the tag name as deleted forever, so no one can ever use it`),
                 notStaff: f(`❌ You cannot disable tags`),
                 success: f(`✅ The \`${tagName}\` tag has been deleted`)
@@ -2046,18 +2046,18 @@ export const templates = crunchTree(`cluster`, {
                 deleted: f(`✅ The \`${match.name}\` tag is no longer being reported by you.`),
                 added: f(`✅ The \`${match.name}\` tag has been reported.`)
             },
-            setlang: {
+            setLang: {
                 description: f(`Sets the language to use when returning the raw text of your tag`),
                 success: f(`✅ Lang for tag \`${match.name}\` set.`)
             },
-            favourite: {
+            favorite: {
                 list: {
-                    description: f(`Displays a list of the tags you have favourited`),
-                    none: f(`You have no favourite tags!`),
-                    success: f(`You have ${tags.length} favourite ${p(tags.length, `tag`)}. ${codeBlock(tags.join(`, `), `fix`)}`)
+                    description: f(`Displays a list of the tags you have favorited`),
+                    none: f(`You have no favorite tags!`),
+                    success: f(`You have ${tags.length} favorite ${p(tags.length, `tag`)}. ${codeBlock(tags.join(`, `), `fix`)}`)
                 },
                 toggle: {
-                    description: f(`Adds or removes a tag from your list of favourites`)
+                    description: f(`Adds or removes a tag from your list of favorites`)
                 }
             },
             flag: {
@@ -2089,7 +2089,7 @@ export const templates = crunchTree(`cluster`, {
             user: {
                 description: f(`Gets the current time for the user`),
                 timezoneNotSet: f(`❌ ${user.mention} has not set their timezone with the \`${context.prefix}timezone\` command yet.`),
-                timezoneInvalid: f(`❌ ${user.mention} doesnt have a valid timezone set. They need to update it with the \`${context.prefix}timezone\` command`),
+                timezoneInvalid: f(`❌ ${user.mention} doesn't have a valid timezone set. They need to update it with the \`${context.prefix}timezone\` command`),
                 success: f(`ℹ️ It is currently **${now.format(`LT`)}** for **${user.mention}**.`)
             },
             timezone: {
@@ -2116,7 +2116,7 @@ export const templates = crunchTree(`cluster`, {
             get: {
                 description: f(`Gets your current timezone`),
                 notSet: f(`ℹ️ You haven't set a timezone yet.`),
-                timezoneInvalid: f(`⚠️ Your stored timezone code is \`${timezone}\`, which isnt valid! Please update it when possible.`),
+                timezoneInvalid: f(`⚠️ Your stored timezone code is \`${timezone}\`, which isn't valid! Please update it when possible.`),
                 success: f(`ℹ️ Your stored timezone code is \`${timezone}\`, which is equivalent to ${zone.format(`z (Z)`)}.`)
             },
             set: {
@@ -2139,7 +2139,7 @@ export const templates = crunchTree(`cluster`, {
             },
             remove: {
                 description: f(`Removes an item from your todo list by id`),
-                unknownId: f(`❌ Your todo list doesnt have an item ${index}!`),
+                unknownId: f(`❌ Your todo list doesn't have an item ${index}!`),
                 success: f(`✅ Done!`)
             },
             add: {
@@ -2187,9 +2187,9 @@ export const templates = crunchTree(`cluster`, {
             }
         },
         voteBan: {
-            description: f(`Its a meme, dont worry`),
+            description: f(`Its a meme, don't worry`),
             errors: {
-                failed: f(`❌ Seems the petitions office didnt like that one! Please try again`)
+                failed: f(`❌ Seems the petitions office didn't like that one! Please try again`)
             },
             list: {
                 description: f(`Gets the people with the most votes to be banned.`),
@@ -2214,12 +2214,12 @@ export const templates = crunchTree(`cluster`, {
             },
             sign: {
                 description: f(`Signs a petition to ban a someone`),
-                alreadySigned: f(`❌ I know youre eager, but you have already signed the petition to ban ${user.mention}!`),
+                alreadySigned: f(`❌ I know you're eager, but you have already signed the petition to ban ${user.mention}!`),
                 success: f(`✅ ${context.author.mention} has signed to ban ${user.mention}! A total of **${newTotal} ${p(newTotal, `person** has`, `people** have`)} signed the petition now.${reason !== undefined ? `\n**Reason**: ${reason}` : ``}`)
             },
             forgive: {
                 description: f(`Removes your signature to ban someone`),
-                notSigned: f(`❌ Thats very kind of you, but you havent even signed to ban ${user.mention} yet!`),
+                notSigned: f(`❌ Thats very kind of you, but you haven't even signed to ban ${user.mention} yet!`),
                 success: f(`✅ ${context.author.mention} reconsidered and forgiven ${user.mention}! A total of **${newTotal} ${p(newTotal, `person** has`, `people** have`)} signed the petition now.`)
             }
         },
@@ -2277,8 +2277,8 @@ export const templates = crunchTree(`cluster`, {
         },
         caption: {
             errors: {
-                imageMissing: f(`❌ You didnt tell me what image I should caption!`),
-                captionMissing: f(`❌ You must give atleast 1 caption!`),
+                imageMissing: f(`❌ You didn't tell me what image I should caption!`),
+                captionMissing: f(`❌ You must give at least 1 caption!`),
                 fontInvalid: f(`❌ {font} is not a supported font! Use \`{prefix}caption list\` to see all available fonts`).withArgs<{ font: string; prefix: string; }>()
             },
             flags: {
@@ -2458,7 +2458,7 @@ export const templates = crunchTree(`cluster`, {
         },
         eval: {
             errors: {
-                error: f(`❌ An error occured!${codeBlock(response.error)}`)
+                error: f(`❌ An error occurred!${codeBlock(response.error)}`)
             },
             here: {
                 description: f(`Runs the code you enter on the current cluster`),
@@ -2473,7 +2473,7 @@ export const templates = crunchTree(`cluster`, {
                 results: {
                     template: f(`Global eval input:${codeBlock(code, `js`)}${clusterResults.join(`\n`)}`),
                     success: f(`✅ Cluster ${id} output:${codeBlock(response.result)}`),
-                    failed: f(`❌ Cluster ${id}: An error occured!${codeBlock(response.error)}`)
+                    failed: f(`❌ Cluster ${id}: An error occurred!${codeBlock(response.error)}`)
                 }
             },
             cluster: {
@@ -2624,9 +2624,9 @@ export const templates = crunchTree(`cluster`, {
         respond: {
             default: {
                 description: f(`Responds to a suggestion, bug report or feature request`),
-                notFound: f(`❌ I couldnt find that feeback!`),
-                userNotFound: f(`⚠️ Feedback successfully updated\n⛔ I couldnt find the user who submitted that feedback`),
-                alertFailed: f(`⚠️ Feedback successfully updated\n⛔ I wasnt able to send the response in the channel where the feedback was initially sent`),
+                notFound: f(`❌ I couldn't find that feedback!`),
+                userNotFound: f(`⚠️ Feedback successfully updated\n⛔ I couldn't find the user who submitted that feedback`),
+                alertFailed: f(`⚠️ Feedback successfully updated\n⛔ I wasn't able to send the response in the channel where the feedback was initially sent`),
                 success: f(`✅ Feedback successfully updated and response has been sent.`),
                 alert: f(`**Hi, <@${author.ID}>!**  You recently made this suggestion:\n\n**${feedback.Title}**${feedback.Description.length > 0 ? `\n\n${feedback.Description}` : ``}\n\n**${humanize.fullName(context.author)}** has responded to your feedback with this:\n\n${response}\n\nIf you have any further questions or concerns, please join my support guild so that they can talk to you directly. You can get a link by doing \`b!invite\`. Thanks for your time!\n\nYour card has been updated here: <${context.util.websiteLink(`feedback/${id}`)}>`)
             }
