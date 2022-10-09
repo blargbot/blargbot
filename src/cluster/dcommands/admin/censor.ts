@@ -134,7 +134,7 @@ export class CensorCommand extends GuildCommand {
     public async updateCensor(context: GuildCommandContext, id: number, phrase: string | undefined, options: CensorOptions): Promise<CommandResult> {
         const censor = await context.database.guilds.getCensor(context.channel.guild.id, id);
         if (censor === undefined)
-            return cmd.errors.doesntExist({ id });
+            return cmd.errors.doesNotExist({ id });
 
         let weight = 1;
         switch (typeof options.weight) {
@@ -165,7 +165,7 @@ export class CensorCommand extends GuildCommand {
     public async deleteCensor(context: GuildCommandContext, id: number): Promise<CommandResult> {
         const censor = await context.database.guilds.getCensor(context.channel.guild.id, id);
         if (censor === undefined)
-            return cmd.errors.doesntExist({ id });
+            return cmd.errors.doesNotExist({ id });
 
         await context.database.guilds.setCensor(context.channel.guild.id, id, undefined);
         return cmd.delete.success({ id });
@@ -197,7 +197,7 @@ export class CensorCommand extends GuildCommand {
         if (id !== undefined) {
             const censor = await context.database.guilds.getCensor(context.channel.guild.id, id);
             if (censor === undefined)
-                return cmd.errors.doesntExist({ id });
+                return cmd.errors.doesNotExist({ id });
         }
 
         await context.database.guilds.setCensorRule(context.channel.guild.id, id, type, code === undefined ? undefined : {
@@ -247,7 +247,7 @@ export class CensorCommand extends GuildCommand {
 
         const censor = await context.database.guilds.getCensor(context.channel.guild.id, id);
         if (censor === undefined)
-            return cmd.errors.doesntExist({ id });
+            return cmd.errors.doesNotExist({ id });
 
         context.cluster.moderation.censors.setDebug(context.channel.guild.id, id, context.author.id, context.channel.id, context.message.id, type);
         return cmd.debug.success({ id });
@@ -257,8 +257,8 @@ export class CensorCommand extends GuildCommand {
         const censors = await context.database.guilds.getCensors(context.channel.guild.id) ?? {};
 
         if (censors.list?.[NaN] !== undefined) {
-            const newid = Math.max(-1, ...Object.keys(censors.list).map(x => parseInt(x)).filter(x => !isNaN(x))) + 1;
-            await context.database.guilds.setCensor(context.channel.guild.id, newid, censors.list[NaN]);
+            const newId = Math.max(-1, ...Object.keys(censors.list).map(x => parseInt(x)).filter(x => !isNaN(x))) + 1;
+            await context.database.guilds.setCensor(context.channel.guild.id, newId, censors.list[NaN]);
             await context.database.guilds.setCensor(context.channel.guild.id, NaN, undefined);
         }
 
@@ -300,7 +300,7 @@ export class CensorCommand extends GuildCommand {
     public async showInfo(context: GuildCommandContext, id: number): Promise<CommandResult> {
         const censor = await context.database.guilds.getCensor(context.channel.guild.id, id);
         if (censor === undefined)
-            return cmd.errors.doesntExist({ id });
+            return cmd.errors.doesNotExist({ id });
 
         return {
             embeds: [
