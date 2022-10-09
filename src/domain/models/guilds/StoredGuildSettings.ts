@@ -1,3 +1,5 @@
+import { IFormattable } from "../../messages/types";
+
 export interface StoredGuildSettings {
     readonly actonlimitsonly?: boolean;
     readonly adminrole?: string; // role tag or role name
@@ -38,7 +40,7 @@ type GuildSettingTypeName<T> =
 
 type GuildSettingDescriptor<T extends keyof StoredGuildSettings = keyof StoredGuildSettings> = {
     readonly key: T;
-    readonly name: string;
-    readonly desc: string;
+    readonly name: IFormattable<string>;
+    readonly desc: IFormattable<string>;
     readonly type: GuildSettingTypeName<StoredGuildSettings[T]>;
 }

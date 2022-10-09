@@ -278,23 +278,17 @@ export class CensorCommand extends GuildCommand {
                     fields: [
                         {
                             name: cmd.list.embed.field.users.name,
-                            value: users.length === 0
-                                ? cmd.list.embed.field.users.value.none
-                                : cmd.list.embed.field.users.value.some({ users }),
+                            value: cmd.list.embed.field.users.value({ users }),
                             inline: true
                         },
                         {
                             name: cmd.list.embed.field.roles.name,
-                            value: roles.length === 0
-                                ? cmd.list.embed.field.roles.value.none
-                                : cmd.list.embed.field.roles.value.some({ roles }),
+                            value: cmd.list.embed.field.roles.value({ roles }),
                             inline: true
                         },
                         {
                             name: cmd.list.embed.field.channels.name,
-                            value: channels.length === 0
-                                ? cmd.list.embed.field.channels.value.none
-                                : cmd.list.embed.field.channels.value.some({ channels }),
+                            value: cmd.list.embed.field.channels.value({ channels }),
                             inline: true
                         }
                     ]

@@ -58,8 +58,7 @@ export class ShardCommand extends GlobalCommand {
             fields: [
                 {
                     name: `Shard ${shard.id.toString()}`,
-                    value: `\`\`\`\nStatus: ${discord.cluster.statusEmojiMap[shard.status]
-                        }\nLatency: ${shard.latency}ms\nGuilds: ${shard.guilds}\nCluster: ${shard.cluster}\nLast update: ${humanize.duration(moment(), moment(shard.time, `x`), 1)} ago\n\`\`\``
+                    value: `\`\`\`\nStatus: ${discord.cluster.statusEmojiMap[shard.status]}\nLatency: ${shard.latency}ms\nGuilds: ${shard.guilds}\nCluster: ${shard.cluster}\nLast update: ${humanize.duration(moment(), moment(shard.time, `x`), 1)} ago\n\`\`\``
                 },
                 {
                     name: `Cluster ${clusterData.id.toString()}`,

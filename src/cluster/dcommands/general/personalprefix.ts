@@ -1,6 +1,5 @@
 import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType } from '@blargbot/cluster/utils';
-import { EmbedOptions } from 'eris';
 
 import templates from '../../text';
 import { CommandResult } from '../../types';

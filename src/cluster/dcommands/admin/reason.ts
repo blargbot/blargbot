@@ -23,14 +23,11 @@ export class ReasonCommand extends GuildCommand {
 
     public async setReason(context: GuildCommandContext, caseId: number | undefined, reason: string): Promise<CommandResult> {
         switch (await context.cluster.moderation.modLog.updateReason(context.channel.guild, caseId, context.author, reason)) {
-            case `MISSING_CASE`:
-                if (caseId === undefined)
-                    return `❌ There arent any modlog entries yet!`;
-                return `❌ I couldnt find a modlog entry with a case if od ${caseId}`;
-            case `SUCCESS_NO_MESSAGE`:
-                return `⚠️ The modlog has been updated! I couldnt find the message to update however.`;
-            case `SUCCESS`:
-                return `✅ The modlog has been updated!`;
+            case `MISSING_CASE`: return caseId === undefined
+                ? cmd.default.none
+                : cmd.default.unknownCase({ caseId });
+            case `SUCCESS_NO_MESSAGE`: return cmd.default.success.messageMissing;
+            case `SUCCESS`: return cmd.default.success.default;
         }
     }
 }

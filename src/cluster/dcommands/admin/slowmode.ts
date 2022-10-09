@@ -2,6 +2,7 @@ import { GuildCommand } from '@blargbot/cluster/command';
 import { CommandType } from '@blargbot/cluster/utils';
 import { guard } from '@blargbot/core/utils';
 import { ApiError, DiscordRESTError, KnownChannel } from 'eris';
+import moment from 'moment-timezone';
 
 import templates from '../../text';
 import { CommandResult } from '../../types';
@@ -29,25 +30,25 @@ export class SlowmodeCommand extends GuildCommand {
     }
 
     public async setSlowmode(time: number, channel: KnownChannel): Promise<CommandResult> {
-        if (!guard.isTextableChannel(channel))
-            return `❌ You can only set slowmode on text channels!`;
         if (!guard.isGuildChannel(channel))
-            return `❌ You cant set slowmode on channels outside of a server`;
+            return cmd.errors.notInGuild;
+        if (!guard.isTextableChannel(channel))
+            return cmd.errors.notTextChannel;
 
         if (time > 120)
-            return `❌ \`time\` must be less than 6 hours`;
+            return cmd.on.timeTooLong({ duration: moment.duration(120, `s`) });
 
         if (time <= 0)
             return await this.disableSlowmode(channel);
 
         try {
             await channel.edit({ rateLimitPerUser: time });
-            return `✅ Slowmode has been set to 1 message every ${time} seconds in ${channel.mention}`;
+            return cmd.on.success({ duration: moment.duration(time, `s`), channel });
         } catch (err: unknown) {
             if (err instanceof DiscordRESTError) {
                 switch (err.code) {
                     case ApiError.MISSING_PERMISSIONS:
-                        return `❌ I dont have permission to set slowmode in ${channel.mention}!`;
+                        return cmd.errors.botNoPerms({ channel });
                 }
             }
             throw err;
@@ -55,19 +56,19 @@ export class SlowmodeCommand extends GuildCommand {
     }
 
     public async disableSlowmode(channel: KnownChannel): Promise<CommandResult> {
-        if (!guard.isTextableChannel(channel))
-            return `❌ You can only set slowmode on text channels!`;
         if (!guard.isGuildChannel(channel))
-            return `❌ You cant set slowmode on channels outside of a server`;
+            return cmd.errors.notInGuild;
+        if (!guard.isTextableChannel(channel))
+            return cmd.errors.notTextChannel;
 
         try {
             await channel.edit({ rateLimitPerUser: 0 });
-            return `✅ Slowmode has been disabled in ${channel.mention}`;
+            return cmd.off.success({ channel });
         } catch (err: unknown) {
             if (err instanceof DiscordRESTError) {
                 switch (err.code) {
                     case ApiError.MISSING_PERMISSIONS:
-                        return `❌ I dont have permission to set slowmode in ${channel.mention}!`;
+                        return cmd.errors.botNoPerms({ channel });
                 }
             }
             throw err;

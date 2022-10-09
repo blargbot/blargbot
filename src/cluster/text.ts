@@ -3,7 +3,7 @@ import { IFormatString, IFormatStringDefinition, IFormattable, TranslatableStrin
 import { FlagDefinition } from "@blargbot/domain/models/index";
 import { channel } from "diagnostics_channel";
 import * as Eris from "eris";
-import { Duration, Moment } from "moment-timezone";
+import moment, { Duration, Moment } from "moment-timezone";
 
 import { Command } from "./command/Command";
 import { CommandContext } from "./command/CommandContext";
@@ -43,14 +43,14 @@ export const templates = crunchTree(`cluster`, {
             },
             missingPermission: {
                 generic: f(`❌ Oops, I don't seem to have permission to do that!`),
-                guild: f(`❌ Hi! You asked me to do something, but I didn't have permission to do it! Please make sure I have permissions to do what you asked.\nGuild: {channel.guild.name}\nChannel: {channel.mention}\nCommand: {commandText}\n\nIf you wish to stop seeing these messages, do the command \`{prefix}dmerrors\`.`).withArgs<GuildCommandContext>()
+                guild: f(`❌ Hi! You asked me to do something, but I didn't have permission to do it! Please make sure I have permissions to do what you asked.\nGuild: {channel.guild.name}\nChannel: {channel#tag}\nCommand: {commandText}\n\nIf you wish to stop seeing these messages, do the command \`{prefix}dmerrors\`.`).withArgs<GuildCommandContext>()
             },
             arguments: {
                 invalid: f(`❌ Invalid arguments! \`{value}\` isnt {types#map(\`{}\`)#join(, | or )}`).withArgs<{ value: string; types: string[]; }>(),
                 missing: f(`❌ Not enough arguments! You need to provide {missing#map(\`{}\`)#join(, | or )}`).withArgs<{ missing: string[]; }>(),
                 unknown: f(`❌ I couldn't understand those arguments!`),
                 noneNeeded: f(`❌ Too many arguments! \`{command.name}\` doesn't need any arguments`).withArgs<{ command: Command; }>(),
-                tooMany: f(`❌ Too many arguments! Expected at most {max} {max#plural(one:argument|other:arguments)}, but you gave {given}`).withArgs<{ max: number; given: number; }>()
+                tooMany: f(`❌ Too many arguments! Expected at most {max} {max#plural(1:argument|arguments)}, but you gave {given}`).withArgs<{ max: number; given: number; }>()
             }
         },
         announce: {
@@ -83,7 +83,7 @@ export const templates = crunchTree(`cluster`, {
             info: {
                 description: f(`Displays the current configuration for announcements on this server`),
                 unconfigured: f(`ℹ️ Announcements are not yet configured for this server. Please use \`{prefix}announce configure\` to set them up`).withArgs<CommandContext>(),
-                details: f(`ℹ️ Announcements will be sent in {channel.mention=\`<unconfigured>\`} and will mention {role.mention=\`<unconfigured>\`}`).withArgs<{ channel?: Eris.Channel; role?: Eris.Role; }>()
+                details: f(`ℹ️ Announcements will be sent in {channel#tag=\`<unconfigured>\`} and will mention {role#tag=\`<unconfigured>\`}`).withArgs<{ channel?: Eris.Channel; role?: Eris.Role; }>()
             }
         },
         autoResponse: {
@@ -197,26 +197,26 @@ export const templates = crunchTree(`cluster`, {
             default: {
                 description: f(`Bans a user, where \`days\` is the number of days to delete messages for.\nIf mod-logging is enabled, the ban will be logged.`),
                 state: {
-                    alreadyBanned: f(`❌ **{user#userTag}** is already banned!`).withArgs<{ user: Eris.User; }>(),
-                    memberTooHigh: f(`❌ I don't have permission to ban **{user#userTag}**! Their highest role is above my highest role.`).withArgs<{ user: Eris.User; }>(),
-                    moderatorTooLow: f(`❌ You don't have permission to ban **{user#userTag}**! Their highest role is above your highest role.`).withArgs<{ user: Eris.User; }>(),
-                    noPerms: f(`❌ I don't have permission to ban **{user#userTag}**! Make sure I have the \`ban members\` permission and try again.`).withArgs<{ user: Eris.User; }>(),
-                    moderatorNoPerms: f(`❌ You don't have permission to ban **{user#userTag}**! Make sure you have the \`ban members\` permission or one of the permissions specified in the \`ban override\` setting and try again.`).withArgs<{ user: Eris.User; }>(),
-                    success: f(`✅ **{user#userTag}** has been banned.`).withArgs<{ user: Eris.User; }>()
+                    alreadyBanned: f(`❌ **{user#tag}** is already banned!`).withArgs<{ user: Eris.User; }>(),
+                    memberTooHigh: f(`❌ I don't have permission to ban **{user#tag}**! Their highest role is above my highest role.`).withArgs<{ user: Eris.User; }>(),
+                    moderatorTooLow: f(`❌ You don't have permission to ban **{user#tag}**! Their highest role is above your highest role.`).withArgs<{ user: Eris.User; }>(),
+                    noPerms: f(`❌ I don't have permission to ban **{user#tag}**! Make sure I have the \`ban members\` permission and try again.`).withArgs<{ user: Eris.User; }>(),
+                    moderatorNoPerms: f(`❌ You don't have permission to ban **{user#tag}**! Make sure you have the \`ban members\` permission or one of the permissions specified in the \`ban override\` setting and try again.`).withArgs<{ user: Eris.User; }>(),
+                    success: f(`✅ **{user#tag}** has been banned.`).withArgs<{ user: Eris.User; }>()
                 },
                 unbanSchedule: {
-                    success: f(`✅ **{user#userTag}** has been banned and will be unbanned in **<t:{unbanAt.unix}:R>**`).withArgs<{ user: Eris.User; unbanAt: Moment; }>(),
-                    invalid: f(`⚠️ **{user#userTag}** has been banned, but the duration was either 0 seconds or improperly formatted so they won't automatically be unbanned.`).withArgs<{ user: Eris.User; }>()
+                    success: f(`✅ **{user#tag}** has been banned and will be unbanned in **{unban#tag}**`).withArgs<{ user: Eris.User; unban: Duration; }>(),
+                    invalid: f(`⚠️ **{user#tag}** has been banned, but the duration was either 0 seconds or improperly formatted so they won't automatically be unbanned.`).withArgs<{ user: Eris.User; }>()
                 }
             },
             clear: {
                 description: f(`Unbans a user.\nIf mod-logging is enabled, the ban will be logged.`),
                 userNotFound: f(`❌ I couldn't find that user!`),
                 state: {
-                    notBanned: f(`❌ **{user#userTag}** is not currently banned!`).withArgs<{ user: Eris.User; }>(),
-                    noPerms: f(`❌ I don't have permission to unban **{user#userTag}**! Make sure I have the \`ban members\` permission and try again.`).withArgs<{ user: Eris.User; }>(),
-                    moderatorNoPerms: f(`❌ You don't have permission to unban **{user#userTag}**! Make sure you have the \`ban members\` permission or one of the permissions specified in the \`ban override\` setting and try again.`).withArgs<{ user: Eris.User; }>(),
-                    success: f(`✅ **{user#userTag}** has been unbanned.`).withArgs<{ user: Eris.User; }>()
+                    notBanned: f(`❌ **{user#tag}** is not currently banned!`).withArgs<{ user: Eris.User; }>(),
+                    noPerms: f(`❌ I don't have permission to unban **{user#tag}**! Make sure I have the \`ban members\` permission and try again.`).withArgs<{ user: Eris.User; }>(),
+                    moderatorNoPerms: f(`❌ You don't have permission to unban **{user#tag}**! Make sure you have the \`ban members\` permission or one of the permissions specified in the \`ban override\` setting and try again.`).withArgs<{ user: Eris.User; }>(),
+                    success: f(`✅ **{user#tag}** has been unbanned.`).withArgs<{ user: Eris.User; }>()
                 }
             }
         },
@@ -225,8 +225,8 @@ export const templates = crunchTree(`cluster`, {
                 description: f(`Blacklists the current channel, or the channel that you mention. The bot will not respond until you do \`blacklist\` again.`),
                 notInServer: f(`❌ You cannot blacklist a channel outside of this server`),
                 success: {
-                    added: f(`✅ {channel.mention} is no longer blacklisted.`).withArgs<{ channel: Eris.Channel; }>(),
-                    removed: f(`✅ {channel.mention} is now blacklisted`).withArgs<{ channel: Eris.Channel; }>()
+                    added: f(`✅ {channel#tag} is no longer blacklisted.`).withArgs<{ channel: Eris.Channel; }>(),
+                    removed: f(`✅ {channel#tag} is now blacklisted`).withArgs<{ channel: Eris.Channel; }>()
                 }
             }
         },
@@ -316,8 +316,8 @@ export const templates = crunchTree(`cluster`, {
             },
             author: {
                 description: f(`Displays the name of the custom command's author`),
-                noAuthorizer: f(`✅ The custom command \`{name}\` was made by **{author#userTag}**`).withArgs<{ name: string; author?: UserTag; }>(),
-                withAuthorizer: f(`✅ The custom command \`{name}\` was made by **{author#userTag}** and is authorized by **{authorizer#userTag}**`).withArgs<{ name: string; author?: UserTag; authorizer?: UserTag; }>()
+                noAuthorizer: f(`✅ The custom command \`{name}\` was made by **{author#tag}**`).withArgs<{ name: string; author?: UserTag; }>(),
+                withAuthorizer: f(`✅ The custom command \`{name}\` was made by **{author#tag}** and is authorized by **{authorizer#tag}**`).withArgs<{ name: string; author?: UserTag; authorizer?: UserTag; }>()
             },
             flag: {
                 updated: f(`✅ The flags for \`{name}\` have been updated.`).withArgs<{ name: string; }>(),
@@ -378,7 +378,7 @@ export const templates = crunchTree(`cluster`, {
             import: {
                 description: f(`Imports a tag as a ccommand, retaining all data such as author variables`),
                 tagMissing: f(`❌ The \`{name}\` tag doesn't exist!`).withArgs<{ name: string; }>(),
-                success: f(`✅ The tag \`{tagName}\` by **{author#userTag}** has been imported as \`{commandName}\` and is authorized by **{authorizer#userTag}**`).withArgs<{ tagName: string; commandName: string; author?: UserTag; authorizer?: UserTag; }>()
+                success: f(`✅ The tag \`{tagName}\` by **{author#tag}** has been imported as \`{commandName}\` and is authorized by **{authorizer#tag}**`).withArgs<{ tagName: string; commandName: string; author?: UserTag; authorizer?: UserTag; }>()
             }
         },
         censor: {
@@ -412,16 +412,16 @@ export const templates = crunchTree(`cluster`, {
             exception: {
                 user: {
                     description: f(`Adds or removes a user from the list of users which all censors ignore`),
-                    success: f(`✅ {user.mention} is now exempt from all censors`).withArgs<{ user: Eris.User; }>()
+                    success: f(`✅ {user#tag} is now exempt from all censors`).withArgs<{ user: Eris.User; }>()
                 },
                 role: {
                     description: f(`Adds or removes a role from the list of roles which all censors ignore`),
-                    success: f(`✅ Anyone with the role {role.mention} is now exempt from all censors`).withArgs<{ role: Eris.Role; }>()
+                    success: f(`✅ Anyone with the role {role#tag} is now exempt from all censors`).withArgs<{ role: Eris.Role; }>()
                 },
                 channel: {
                     description: f(`Adds or removes a channel from the list of channels which all censors ignore`),
                     notOnServer: f(`❌ The channel must be on this server!`),
-                    success: f(`✅ Messages sent in {channel.mention} are now exempt from all censors`).withArgs<{ channel: Eris.Channel; }>()
+                    success: f(`✅ Messages sent in {channel#tag} are now exempt from all censors`).withArgs<{ channel: Eris.Channel; }>()
                 }
             },
             setMessage: {
@@ -468,24 +468,15 @@ export const templates = crunchTree(`cluster`, {
                     field: {
                         users: {
                             name: f(`Excluded users`),
-                            value: {
-                                some: f(`{users#map(<@{}>)#join( )}`).withArgs<{ users: Iterable<string>; }>(),
-                                none: f(`None`)
-                            }
+                            value: f(`{users#plural(0:None|{#map(<@{}>)#join( )})}`).withArgs<{ users: Iterable<string>; }>()
                         },
                         roles: {
                             name: f(`Excluded roles`),
-                            value: {
-                                some: f(`{roles#map(<@&{}>)#join( )}`).withArgs<{ roles: Iterable<string>; }>(),
-                                none: f(`None`)
-                            }
+                            value: f(`{roles#plural(0:None|{#map(<@&{}>)#join( )})}`).withArgs<{ roles: Iterable<string>; }>()
                         },
                         channels: {
                             name: f(`Excluded channels`),
-                            value: {
-                                some: f(`{channels#map(<#{}>)#join( )}`).withArgs<{ channels: Iterable<string>; }>(),
-                                none: f(`None`)
-                            }
+                            value: f(`{channels#plural(0:None|{#map(<#{}>)#join( )})}`).withArgs<{ channels: Iterable<string>; }>()
                         }
                     }
                 }
@@ -702,11 +693,11 @@ export const templates = crunchTree(`cluster`, {
             default: {
                 description: f(`Kicks a user.\nIf mod-logging is enabled, the kick will be logged.`),
                 state: {
-                    memberTooHigh: f(`❌ I don't have permission to kick **{user#userTag}**! Their highest role is above my highest role.`).withArgs<{ user: Eris.User; }>(),
-                    moderatorTooLow: f(`❌ You don't have permission to kick **{user#userTag}**! Their highest role is above your highest role.`).withArgs<{ user: Eris.User; }>(),
-                    noPerms: f(`❌ I don't have permission to kick **{user#userTag}**! Make sure I have the \`kick members\` permission and try again.`).withArgs<{ user: Eris.User; }>(),
-                    moderatorNoPerms: f(`❌ You don't have permission to kick **{user#userTag}**! Make sure you have the \`kick members\` permission or one of the permissions specified in the \`kick override\` setting and try again.`).withArgs<{ user: Eris.User; }>(),
-                    success: f(`✅ **{user#userTag}** has been kicked.`).withArgs<{ user: Eris.User; }>()
+                    memberTooHigh: f(`❌ I don't have permission to kick **{user#tag}**! Their highest role is above my highest role.`).withArgs<{ user: Eris.User; }>(),
+                    moderatorTooLow: f(`❌ You don't have permission to kick **{user#tag}**! Their highest role is above your highest role.`).withArgs<{ user: Eris.User; }>(),
+                    noPerms: f(`❌ I don't have permission to kick **{user#tag}**! Make sure I have the \`kick members\` permission and try again.`).withArgs<{ user: Eris.User; }>(),
+                    moderatorNoPerms: f(`❌ You don't have permission to kick **{user#tag}**! Make sure you have the \`kick members\` permission or one of the permissions specified in the \`kick override\` setting and try again.`).withArgs<{ user: Eris.User; }>(),
+                    success: f(`✅ **{user#tag}** has been kicked.`).withArgs<{ user: Eris.User; }>()
                 }
             }
         },
@@ -733,20 +724,14 @@ export const templates = crunchTree(`cluster`, {
                     field: {
                         ignore: {
                             name: f(`Ignored users`),
-                            value: {
-                                none: f(`No ignored users`),
-                                some: f(`{userIds#map(<@{}> ({}))#join(\n)}`).withArgs<{ userIds: Iterable<string>; }>()
-                            }
+                            value: f(`{userIds#plural(0:No ignored users|{#map(<@{}> ({}))#join(\n)})}`).withArgs<{ userIds: Iterable<string>; }>()
                         },
                         current: {
                             name: f(`Currently logged events`),
                             value: {
-                                none: f(`No logged events`),
-                                some: {
-                                    event: f(`**{event}** - <#{channelId}>}`).withArgs<{ event: string; channelId: string; }>(),
-                                    role: f(`**{roleId}** - <#{channelId}>}`).withArgs<{ roleId: string; channelId: string; }>(),
-                                    template: f(`{entries#join(\n)}`).withArgs<{ entries: Iterable<IFormattable<string>>; }>()
-                                }
+                                event: f(`**{event}** - <#{channelId}>}`).withArgs<{ event: string; channelId: string; }>(),
+                                role: f(`**{roleId}** - <#{channelId}>}`).withArgs<{ roleId: string; channelId: string; }>(),
+                                template: f(`{entries#plural(0:No logged events|{#join(\n)})}`).withArgs<{ entries: Iterable<IFormattable<string>>; }>()
                             }
                         }
                     }
@@ -760,8 +745,8 @@ export const templates = crunchTree(`cluster`, {
                 },
                 notOnGuild: f(`❌ The log channel must be on this server!`),
                 notTextChannel: f(`❌ The log channel must be a text channel!`),
-                eventInvalid: f(`❌ {events#join(, | and )} {events#plural(is not a valid event|are not valid events)}`).withArgs<{ events: Iterable<string>; }>(),
-                success: f(`✅ I will now log the following events in {channel.mention}:\n{events#join(\n)}`).withArgs<{ channel: Eris.Channel; events: Iterable<string>; }>()
+                eventInvalid: f(`❌ {events#join(, | and )} {events#plural(1:is not a valid event|are not valid events)}`).withArgs<{ events: Iterable<string>; }>(),
+                success: f(`✅ I will now log the following events in {channel#tag}:\n{events#join(\n)}`).withArgs<{ channel: Eris.Channel; events: Iterable<string>; }>()
             },
             disable: {
                 description: {
@@ -805,11 +790,11 @@ export const templates = crunchTree(`cluster`, {
                 generated: {
                     link: {
                         quick: f(`✅ Your logs are available here: {link}`).withArgs<{ link: string; }>(),
-                        slow: f(`✅ Sorry that took so long, {user.mention}.\nYour logs are available here: {link}`).withArgs<{ user: Eris.User; link: string; }>()
+                        slow: f(`✅ Sorry that took so long, {user#tag}.\nYour logs are available here: {link}`).withArgs<{ user: Eris.User; link: string; }>()
                     },
                     json: {
                         quick: f(`✅ Here are your logs, in a JSON file!`),
-                        slow: f(`✅ Sorry that took so long, {user.mention}.\nHere are your logs, in a JSON file!`).withArgs<{ user: Eris.User; }>()
+                        slow: f(`✅ Sorry that took so long, {user#tag}.\nHere are your logs, in a JSON file!`).withArgs<{ user: Eris.User; }>()
                     }
                 }
             }
@@ -820,14 +805,15 @@ export const templates = crunchTree(`cluster`, {
             },
             default: {
                 description: f(`Bans a user who isn't currently on your guild, where \`<userIds...>\` is a list of user IDs or mentions (separated by spaces) and \`days\` is the number of days to delete messages for.\nIf mod-logging is enabled, the ban will be logged.`),
-
-                alreadyBanned: f(`❌ All those users are already banned!`),
-                targetAboveBot: f(`❌ I don't have permission to ban any of those users! Their highest roles are above my highest role.`),
-                targetAboveUser: f(`❌ You don't have permission to ban any of those users! Their highest roles are above your highest role.`),
-                botNoPerms: f(`❌ I don't have permission to ban anyone! Make sure I have the \`ban members\` permission and try again.`),
-                userNoPerms: f(`❌ You don't have permission to ban anyone! Make sure you have the \`ban members\` permission or one of the permissions specified in the \`ban override\` setting and try again.`),
-                invalidUsers: f(`❌ None of the user ids you gave were valid users!`),
-                success: f(`✅ The following user(s) have been banned:${result.map(humanize.fullName).map(u => `\n**${u}**`).join(``)}`)
+                state: {
+                    alreadyBanned: f(`❌ All those users are already banned!`),
+                    memberTooHigh: f(`❌ I don't have permission to ban any of those users! Their highest roles are above my highest role.`),
+                    moderatorTooLow: f(`❌ You don't have permission to ban any of those users! Their highest roles are above your highest role.`),
+                    noPerms: f(`❌ I don't have permission to ban anyone! Make sure I have the \`ban members\` permission and try again.`),
+                    moderatorNoPerms: f(`❌ You don't have permission to ban anyone! Make sure you have the \`ban members\` permission or one of the permissions specified in the \`ban override\` setting and try again.`),
+                    noUsers: f(`❌ None of the user ids you gave were valid users!`)
+                },
+                success: f(`✅ The following user(s) have been banned:\n{users#map(\`{#tag}\`)#join(\n)}`).withArgs<{ users: Iterable<Eris.User>; }>()
             }
         },
         modLog: {
@@ -835,7 +821,7 @@ export const templates = crunchTree(`cluster`, {
                 description: f(`Sets the channel to use as the modlog channel`),
                 notOnGuild: f(`❌ The modlog channel must be on this server!`),
                 notTextChannel: f(`❌ The modlog channel must be a text channel!`),
-                success: f(`✅ Modlog entries will now be sent in ${channel.mention}`)
+                success: f(`✅ Modlog entries will now be sent in {channel#tag}`).withArgs<{ channel: Eris.Channel; }>()
             },
             disable: {
                 description: f(`Disables the modlog`),
@@ -844,47 +830,46 @@ export const templates = crunchTree(`cluster`, {
             clear: {
                 description: f(`Deletes specific modlog entries. If you don't provide any, all the entries will be removed`),
                 notFound: f(`❌ No modlogs were found!`),
-                channelMissing: f(`⛔ I couldn't find the modlog channel for cases ${humanize.smartJoin(missingChannel.map(c => `\`${c}\``), `, `, ` and `)}`),
-                messageMissing: f(`⛔ I couldn't find the modlog message for cases ${humanize.smartJoin(missingMessage.map(c => `\`${c}\``), `, `, ` and `)}`),
-                permissionMissing: f(`⛔ I didn't have permission to delete the modlog for cases ${humanize.smartJoin(noperms.map(c => `\`${c}\``), `, `, ` and `)}`),
-                success: {
-                    withErrors: f(`⚠️ I successfully deleted ${modlogs.length} ${p(modlogs.length, `modlog`)} from my database.${errors.map(e => `\n⛔ ${e}`).join(``)}`),
-                    default: f(`✅ I successfully deleted ${modlogs.length} ${p(modlogs.length, `modlog`)} from my database.`)
-                }
+                channelMissing: f(`\n⛔ I couldn't find the modlog channel for cases {modlogs#map(\`{}\`)#join(, | and )}`).withArgs<{ modlogs: Iterable<number>; }>(),
+                messageMissing: f(`\n⛔ I couldn't find the modlog message for cases {modlogs#map(\`{}\`)#join(, | and )}`).withArgs<{ modlogs: Iterable<number>; }>(),
+                permissionMissing: f(`\n⛔ I didn't have permission to delete the modlog for cases {modlogs#map(\`{}\`)#join(, | and )}`).withArgs<{ modlogs: Iterable<number>; }>(),
+                success: f(`✅ I successfully deleted {count} {count#plural(1:modlog|modlogs)} from my database.{errors#join()}`).withArgs<{ count: number; errors: Iterable<IFormattable<string>>; }>()
             }
         },
         mute: {
-            errors: {
-                createPermsMissing: f(`❌ I don't have enough permissions to create a \`muted\` role! Make sure I have the \`manage roles\` permission and try again.`),
-                configurePermsMissing: f(`❌ I created a \`muted\` role, but don't have permissions to configure it! Either configure it yourself, or make sure I have the \`manage channel\` permission, delete the \`muted\` role, and try again.`)
-            },
             flags: {
                 reason: f(`The reason for the (un)mute.`),
                 time: f(`The amount of time to mute for, formatted as '1 day 2 hours 3 minutes and 4 seconds', '1d2h3m4s', or some other combination.`)
             },
             default: {
                 description: f(`Gives the user a special muted role. On first run, this role will be created. The bot needs to be able to \`manage roles\` to create and assign the role, and \`manage channels\` to configure the role. You are able to manually configure the role without the bot, but the bot has to make it. Deleting the muted role causes it to be regenerated.\nIf the bot has permissions for it, this command will also voice-mute the user.\nIf mod-logging is enabled, the mute will be logged.\nYou can also specify a length of time the user should be muted for, using formats such as \`1 hour 2 minutes\` or \`1h2m\`.`),
+                createPermsMissing: f(`❌ I don't have enough permissions to create a \`muted\` role! Make sure I have the \`manage roles\` permission and try again.`),
+                configurePermsMissing: f(`❌ I created a \`muted\` role, but don't have permissions to configure it! Either configure it yourself, or make sure I have the \`manage channel\` permission, delete the \`muted\` role, and try again.`),
+                state: {
+                    alreadyMuted: f(`❌ {user#tag} is already muted`).withArgs<{ user: Eris.User; }>(),
+                    noPerms: f(`❌ I don't have permission to mute users! Make sure I have the \`manage roles\` permission and try again.`),
+                    moderatorNoPerms: f(`❌ You don't have permission to mute users! Make sure you have the \`manage roles\` permission and try again.`),
+                    roleMissing: f(`❌ The muted role has been deleted! Please re-run this command to create a new one.`),
+                    roleTooHigh: f(`❌ I can't assign the muted role! (it's higher than or equal to my top role)`),
+                    moderatorTooLow: f(`❌ You can't assign the muted role! (it's higher than or equal to your top role)`)
 
-                alreadyMuted: f(`❌ ${humanize.fullName(member.user)} is already muted`),
-                botNoPerms: f(`❌ I don't have permission to mute users! Make sure I have the \`manage roles\` permission and try again.`),
-                userNoPerms: f(`❌ You don't have permission to mute users! Make sure you have the \`manage roles\` permission and try again.`),
-                roleMissing: f(`❌ The muted role has been deleted! Please re-run this command to create a new one.`),
-                roleAboveBot: f(`❌ I can't assign the muted role! (it's higher than or equal to my top role)`),
-                roleAboveUser: f(`❌ You can't assign the muted role! (it's higher than or equal to your top role)`),
+                },
                 success: {
-                    default: f(`✅ **${humanize.fullName(member.user)}** has been muted`),
-                    durationInvalid: f(`⚠️ **${humanize.fullName(member.user)}** has been muted, but the duration was either 0 seconds or improperly formatted so they won't automatically be unmuted.`),
-                    temporary: f(`✅ **${humanize.fullName(member.user)}** has been muted and will be unmuted **<t:${moment().add(duration).unix()}:R>**`)
+                    default: f(`✅ **{user#tag}** has been muted`).withArgs<{ user: Eris.User; }>(),
+                    durationInvalid: f(`⚠️ **{user#tag}** has been muted, but the duration was either 0 seconds or improperly formatted so they won't automatically be unmuted.`).withArgs<{ user: Eris.User; }>(),
+                    temporary: f(`✅ **{user#tag}** has been muted and will be unmuted **{unmute#tag}**`).withArgs<{ user: Eris.User; unmute: Duration; }>()
                 }
             },
             clear: {
                 description: f(`Removes the special muted role from the user. \nIf mod-logging is enabled, the mute will be logged.`),
-                notMuted: f(`❌ ${humanize.fullName(member.user)} is not currently muted`),
-                botNoPerms: f(`❌ I don't have permission to unmute users! Make sure I have the \`manage roles\` permission and try again.`),
-                userNoPerms: f(`❌ You don't have permission to unmute users! Make sure you have the \`manage roles\` permission and try again.`),
-                roleAboveBot: f(`❌ I can't revoke the muted role! (it's higher than or equal to my top role)`),
-                roleAboveUser: f(`❌ You can't revoke the muted role! (it's higher than or equal to your top role)`),
-                success: f(`✅ **${humanize.fullName(member.user)}** has been unmuted`)
+                state: {
+                    notMuted: f(`❌ {user#tag} is not currently muted`).withArgs<{ user: Eris.User; }>(),
+                    noPerms: f(`❌ I don't have permission to unmute users! Make sure I have the \`manage roles\` permission and try again.`),
+                    moderatorNoPerms: f(`❌ You don't have permission to unmute users! Make sure you have the \`manage roles\` permission and try again.`),
+                    roleTooHigh: f(`❌ I can't revoke the muted role! (it's higher than or equal to my top role)`),
+                    moderatorTooLow: f(`❌ You can't revoke the muted role! (it's higher than or equal to your top role)`),
+                    success: f(`✅ **{user#tag}** has been unmuted`).withArgs<{ user: Eris.User; }>()
+                }
             }
         },
         pardon: {
@@ -894,17 +879,18 @@ export const templates = crunchTree(`cluster`, {
             },
             default: {
                 description: f(`Pardons a user.\nIf mod-logging is enabled, the pardon will be logged.\nThis will not unban users.`),
-                countInvalid: f(`❌ ${flags.c?.merge().value ?? ``} isnt a number!`),
-                countNegative: f(`❌ I cant give a negative amount of pardons!`),
-                countZero: f(`❌ I cant give zero pardons!`),
-                success: f(`✅ **${humanize.fullName(member.user)}** has been given ${p(count, `a pardon`, `${count} pardons`)}. They now have ${result.warnings} warnings.`)
+                state: {
+                    countNaN: f(`❌ {text} isnt a number!`).withArgs<{ text: string; }>(),
+                    countNegative: f(`❌ I cant give a negative amount of pardons!`),
+                    countZero: f(`❌ I cant give zero pardons!`),
+                    success: f(`✅ **{user#tag}** has been given {count#plural(1:a warning|{} warnings)}. They now have {warnings#plural(1:1 warning|{} warnings)}.`).withArgs<{ user: Eris.User; count: number; warnings: number; }>()
+                }
             }
         },
         prefix: {
             list: {
                 description: f(`Lists all the current prefixes on this server`),
-                none: f(`❌ ${context.channel.guild.name} has no custom prefixes!`),
-                success: f(`ℹ️ ${context.channel.guild.name} has the following prefixes:\n${prefixes.map(p => ` - ${p}`).join(`\n`)}`)
+                success: f(`ℹ️ {guild#tag} has {prefixes#plural(0:no custom prefixes|the following prefixes:\n{#map( - {})#join(\n)})}`).withArgs<{ guild: Eris.Guild; prefixes: Iterable<string>; }>()
             },
             add: {
                 description: f(`Adds a command prefix to this server`),
@@ -918,8 +904,8 @@ export const templates = crunchTree(`cluster`, {
         reason: {
             default: {
                 description: f(`Sets the reason for an action on the modlog.`),
-                none: f(`❌ There arent any modlog entries yet!`),
-                unknownCase: f(`❌ I couldnt find a modlog entry with a case id of ${caseId}`),
+                none: f(`❌ There aren't any modlog entries yet!`),
+                unknownCase: f(`❌ I couldn't find a modlog entry with a case id of {caseId}`).withArgs<{ caseId: number; }>(),
                 success: {
                     messageMissing: f(`⚠️ The modlog has been updated! I couldnt find the message to update however.`),
                     default: f(`✅ The modlog has been updated!`)
@@ -928,21 +914,32 @@ export const templates = crunchTree(`cluster`, {
         },
         roleMe: {
             errors: {
-                missing: f(`❌ Roleme ${id} doesnt exist`),
-                noMessage: f(`❌ Roleme ${id} doesnt have a custom message`),
+                missing: f(`❌ Roleme {id} doesnt exist`).withArgs<{ id: number; }>(),
+                noMessage: f(`❌ Roleme {id} doesnt have a custom message`).withArgs<{ id: number; }>(),
                 missingChannels: f(`❌ I couldnt locate any of the channels you provided`),
                 missingRoles: f(`❌ I couldnt locate any of the roles you provided`),
                 noRoles: f(`❌ You must provide atleast 1 role to add or remove`),
-                noTrigger: f(`❌ You must provide a trigger phrase for the roleme`),
-                unknownRoles: f(`❌ I couldnt find any of the roles from your message, please try again.`)
+                noTrigger: f(`❌ You must provide a trigger phrase for the roleme`)
             },
             common: {
-                typeQuery: f(`❓ What should users type for this roleme to trigger?`),
-                caseSensitiveQuery: f(`❓ Is the trigger case sensitive?`),
-                channelsQuery: f(`❓ Please mention all the channels you want the roleme to be available in`),
-                rolesToAdd: f(`❓ Please type the roles you want the roleme to add, 1 per line. Mentions, ids or names can be used.`),
-                rolesToRemove: f(`❓ Please type the roles you want the roleme to remove, 1 per line. Mentions, ids or names can be used.`),
-                cancelRoles: f(`No roles`)
+                triggerQuery: f(`❓ What should users type for this roleme to trigger?`),
+                caseSensitiveQuery: {
+                    prompt: f(`❓ Is the trigger case sensitive?`),
+                    continue: f(`Yes`),
+                    cancel: f(`No`)
+                },
+                channelsQuery: {
+                    prompt: f(`❓ Please mention all the channels you want the roleme to be available in`),
+                    cancel: f(`All channels`)
+                },
+                rolesQuery: {
+                    prompt: {
+                        add: f(`❓ Please type the roles you want the roleme to add, 1 per line. Mentions, ids or names can be used.`),
+                        remove: f(`❓ Please type the roles you want the roleme to remove, 1 per line. Mentions, ids or names can be used.`)
+                    },
+                    fail: f(`❌ I couldn't find any of the roles from your message, please try again.`),
+                    cancel: f(`No roles`)
+                }
             },
             flags: {
                 add: f(`A list of roles to add in the roleme`),
@@ -953,26 +950,25 @@ export const templates = crunchTree(`cluster`, {
             add: {
                 description: f(`Adds a new roleme with the given phrase`),
                 unexpectedError: f(`❌ Something went wrong while I was trying to create that roleme`),
-                success: f(`✅ Roleme \`${nextId}\` has been created!`)
+                success: f(`✅ Roleme \`{id}\` has been created!`).withArgs<{ id: number; }>()
             },
             remove: {
                 description: f(`Deletes the given roleme`),
-                success: f(`✅ Roleme ${id} has been deleted`)
+                success: f(`✅ Roleme \`{id}\` has been deleted`).withArgs<{ id: number; }>()
             },
             edit: {
                 description: f(`Edits the given roleme`),
                 unexpectedError: f(`❌ Something went wrong while I was trying to edit that roleme`),
-                success: f(`✅ Roleme \`${id}\` has been updated!`)
+                success: f(`✅ Roleme \`{id}\` has been updated!`).withArgs<{ id: number; }>()
             },
             setmessage: {
                 description: f(`Sets the bbtag compatible message to show when the roleme is triggered`),
-                success: f(`✅ Roleme ${id} has now had its message set`)
+                success: f(`✅ Roleme \`{id}\` has now had its message set`).withArgs<{ id: number; }>()
             },
             rawmessage: {
                 description: f(`Gets the current message that will be sent when the roleme is triggered`),
-
-                inline: f(`ℹ️ The raw code for roleme {id} is: \`\`\`{content}\`\`\``).withArgs<{ id: number; content: string; }>(),
-                attached: f(`ℹ️ The raw code for roleme {id} is attached`).withArgs<{ id: number; }>()
+                inline: f(`ℹ️ The raw code for roleme \`{id}\` is: \`\`\`{content}\`\`\``).withArgs<{ id: number; content: string; }>(),
+                attached: f(`ℹ️ The raw code for roleme \`{id}\` is attached`).withArgs<{ id: number; }>()
             },
             debugmessage: {
                 description: f(`Executes the roleme message as if you triggered the roleme`),
@@ -980,32 +976,31 @@ export const templates = crunchTree(`cluster`, {
             },
             setauthorizer: {
                 description: f(`Sets the roleme message to run using your permissions`),
-                success: f(`✅ Your permissions will now be used for roleme ${id}`)
+                success: f(`✅ Your permissions will now be used for roleme \`{id}\``).withArgs<{ id: number; }>()
             },
             info: {
                 description: f(`Shows information about a roleme`),
                 embed: {
-                    title: f(`Roleme #${id}`),
+                    title: f(`Roleme #{id}`).withArgs<{ id: number; }>(),
                     field: {
                         phrase: {
-                            name: f(`Phrase (case ${roleme.casesensitive ? `sensistive` : `insensitive`})`)
+                            name: f(`Phrase (case {caseSensitive#bool(sensistive|insensitive)})`).withArgs<{ caseSensitive: boolean; }>()
                         },
                         rolesAdded: {
-                            name: f(`Roles added`)
+                            name: f(`Roles added`),
+                            value: f(`{roleIds#plural(0:None|{#map(<@&{}>)#join(\n)})}`).withArgs<{ roleIds: Iterable<string>; }>()
                         },
                         rolesRemoved: {
-                            name: f(`Roles removed`)
+                            name: f(`Roles removed`),
+                            value: f(`{roleIds#plural(0:None|{#map(<@&{}>)#join(\n)})}`).withArgs<{ roleIds: Iterable<string>; }>()
                         },
                         channels: {
                             name: f(`Channels`),
-                            value: {
-                                none: f(`Anywhere`),
-                                some: f(`${channels.map(c => `<#${c}>`).join(`\n`)}`)
-                            }
+                            value: f(`{roleIds#plural(0:Anywhere|{#map(<#{}>)#join(\n)})}`).withArgs<{ channelIds: Iterable<string>; }>()
                         },
                         message: {
                             name: f(`Message`),
-                            value: f(`**Author:** <@${roleme.output.author ?? 0}>\n**Authorizer:** <@${roleme.output.authorizer ?? roleme.output.author ?? `????`}>`)
+                            value: f(`**Author:** <@{authorId}>\n**Authorizer:** <@{authorizerId}>`).withArgs<{ authorId: string; authorizerId: string; }>()
                         }
                     }
                 }
@@ -1016,9 +1011,9 @@ export const templates = crunchTree(`cluster`, {
                 embed: {
                     title: f(`Rolemes`),
                     description: {
-                        anywhere: f(`All channels`),
-                        roleme: f(`**Roleme** \`${id}\`: ${message}`),
-                        layout: f(`${groups.map(g => `${g.name}\n${g.entries.join(`\n`)}`).join(`\n\n`)}`)
+                        channel: f(`{channelId#bool(<#{}>|All channels)}`).withArgs<{ channelId?: string; }>(),
+                        roleme: f(`**Roleme** \`{id}\`: {message}`).withArgs<{ id: number; message: string; }>(),
+                        layout: f(`{groups#map({name}\n{entries#join(\n)})#join(\n\n)`).withArgs<{ groups: Iterable<{ name: IFormattable<string>; entries: Iterable<IFormattable<string>>; }>; }>()
                     }
                 }
             }
@@ -1026,7 +1021,7 @@ export const templates = crunchTree(`cluster`, {
         removeVoteBan: {
             user: {
                 description: f(`Deletes all the vote bans against the given user`),
-                success: f(`✅ Votebans for ${user.mention} have been cleared`)
+                success: f(`✅ Votebans for {user#tag} have been cleared`).withArgs<{ user: Eris.User; }>()
             },
             all: {
                 description: f(`Deletes all vote bans against all users`),
@@ -1036,20 +1031,26 @@ export const templates = crunchTree(`cluster`, {
         settings: {
             description: f(`Gets or sets the settings for the current guild. Visit {website} for key documentation.`).withArgs<{ website: string; }>(),
             types: {
+                string: f(`string`),
                 channel: f(`channel`),
                 bool: f(`bool`),
                 role: f(`role`),
                 int: f(`int`),
+                float: f(`float`),
                 permission: f(`permission`)
             },
             list: {
                 description: f(`Gets the current settings for this guild`),
                 notConfigured: f(`❌ Your guild is not correctly configured yet! Please try again later`),
                 channelValue: {
-                    default: f(`${channel.name ?? `Unknown channel`} (${channel.id})`),
+                    default: f(`{channel.name} ({channel.id})`).withArgs<{ channel: Eris.Channel; }>(),
+                    unknown: f(`Unknown channel ({channelId})`).withArgs<{ channelId: string; }>(),
                     none: f(`Default Channel`)
                 },
-                roleValue: f(`${role.name ?? `Unknown role`} (${role.id})`),
+                roleValue: {
+                    default: f(`{role.name} ({role.id})`).withArgs<{ role: Eris.Role; }>(),
+                    unknown: f(`Unknown role ({roleId})`).withArgs<{ roleId: string; }>()
+                },
                 notSet: f(`Not set`),
                 groups: {
                     general: f(`General`),
@@ -1062,31 +1063,30 @@ export const templates = crunchTree(`cluster`, {
             },
             keys: {
                 description: f(`Lists all the setting keys and their types`),
-                key: f(` - **${setting.name}:** \`${setting.key.toUpperCase()}\``),
-                success: f(`ℹ️ You can use \`settings set <key> [value]\` to set the following settings. All settings are case insensitive.\n${message.sort().join(`\n`)}`)
+                success: f(`ℹ️ You can use \`settings set <key> [value]\` to set the following settings. All settings are case insensitive.\n{settings#map( - **{name}:** \`{key#upper}\` ({type}))#join(\n)}`).withArgs<{ settings: Iterable<{ name: IFormattable<string>; key: string; type: IFormattable<string>; }>; }>()
             },
             set: {
                 description: f(`Sets the given setting key to have a certian value. If \`value\` is omitted, the setting is reverted to its default value`),
                 keyInvalid: f(`❌ Invalid key!`),
-                valueInvalid: f(`❌ '${value ?? `\u200b`}' is not a ${guildSettings[key].type}`),
-                alreadySet: f(`❌ ${value ?? `\u200b`} is already set for ${key}`),
-                success: f(`✅ ${guildSettings[key].name} is set to ${parsed.display ?? `nothing`}`)
+                valueInvalid: f(`❌ \`{value}\` is not a {type}`).withArgs<{ value: string; type: IFormattable<string>; }>(),
+                alreadySet: f(`❌ \`{value}\` is already set for {key}`).withArgs<{ value: string; key: string; }>(),
+                success: f(`✅ {key} is set to {value=nothing}`).withArgs<{ key: string; value?: string; }>()
             }
         },
         slowMode: {
             errors: {
                 notTextChannel: f(`❌ You can only set slowmode on text channels!`),
                 notInGuild: f(`❌ You cant set slowmode on channels outside of a server`),
-                botNoPerms: f(`❌ I dont have permission to set slowmode in ${channel.mention}!`)
+                botNoPerms: f(`❌ I dont have permission to set slowmode in {channel#tag}!`).withArgs<{ channel: Eris.Channel; }>()
             },
             on: {
                 description: f(`Sets the channel's slowmode to 1 message every \`time\` seconds, with a max of 6 hours`),
-                timeTooLong: f(`❌ \`time\` must be less than ${duration}`),
-                success: f(`✅ Slowmode has been set to 1 message every ${duration} in ${channel.mention}`)
+                timeTooLong: f(`❌ \`time\` must be less than {duration#duration(S)}s`).withArgs<{ duration: Duration; }>(),
+                success: f(`✅ Slowmode has been set to 1 message every {duration#duration(S)}s in {channel#tag}`).withArgs<{ duration: Duration; channel: Eris.Channel; }>()
             },
             off: {
                 description: f(`Turns off the channel's slowmode`),
-                success: f(`✅ Slowmode has been disabled in ${channel.mention}`)
+                success: f(`✅ Slowmode has been disabled in {channel#tag}`).withArgs<{ channel: Eris.Channel; }>()
             }
         },
         tidy: {
@@ -1103,81 +1103,118 @@ export const templates = crunchTree(`cluster`, {
             },
             default: {
                 description: f(`Clears messages from chat`),
-                notNegative: f(`❌ I cannot delete ${count} messages!`),
+                notNegative: f(`❌ I cannot delete {count} messages!`).withArgs<{ count: number; }>(),
                 unsafeRegex: f(`❌ That regex is not safe!`),
                 invalidUsers: f(`❌ I couldnt find some of the users you gave!`),
                 noMessages: f(`❌ I couldnt find any matching messages!`),
-                confirm: {
+                confirmQuery: {
                     prompt: {
-                        foundAll: f(`ℹ️ I am about to attempt to delete ${`${messages.length} ${p(messages.length, `message`)}`}. Are you sure you wish to continue?\n${buildSummary(messages)}`),
-                        foundSome: f(`ℹ️ I am about to attempt to delete ${`${messages.length} ${p(messages.length, `message`)} after searching through ${searched} ${p(searched, `message`)}`}. Are you sure you wish to continue?\n${buildSummary(messages)}`)
-                    }
+                        foundAll: f(`ℹ️ I am about to attempt to delete {total} {total#plural(1:message|messages)}. Are you sure you wish to continue?\n{breakdown#map({user#tag} - {count} {count#plural(1:message|messages)})}`).withArgs<{ total: number; breakdown: Iterable<{ user: Eris.User; count: number; }>; }>(),
+                        foundSome: f(`ℹ️ I am about to attempt to delete {total} {total#plural(1:message|messages)} after searching through {searched} {searched#plural(1:message|messages)}. Are you sure you wish to continue?\n{breakdown#map({user#tag} - {count} {count#plural(1:message|messages)})}`).withArgs<{ total: number; searched: number; breakdown: Iterable<{ user: Eris.User; count: number; }>; }>()
+                    },
+                    cancel: f(`Cancel`),
+                    continue: f(`Continue`)
                 },
                 cancelled: f(`✅ Tidy cancelled, No messages will be deleted`),
                 deleteFailed: f(`❌ I wasnt able to delete any of the messages! Please make sure I have permission to manage messages`),
                 success: {
-                    default: f(`✅ Deleted ${result.success.size} ${p(result.success.size, `message`)}:\n${buildSummary(result.success)}`),
-                    partial: f(`⚠️ I managed to delete ${result.success.size} of the messages I attempted to delete.\n${buildSummary(result.success)}\n\nFailed:\n${buildSummary(result.failed)}`)
+                    default: f(`✅ Deleted {deleted} {success#plural(1:message|messages)}:\n{success#map({user#tag} - {count} {count#plural(1:message|messages)})}`).withArgs<{ deleted: number; success: Iterable<{ user: Eris.User; count: number; }>; }>(),
+                    partial: f(`⚠️ I managed to delete {deleted} of the messages I attempted to delete.\n{success#map({user#tag} - {count} {count#plural(1:message|messages)})}\n\nFailed:\n{failed#map({user#tag} - {count} {count#plural(1:message|messages)})}`).withArgs<{ deleted: number; success: Iterable<{ user: Eris.User; count: number; }>; failed: Iterable<{ user: Eris.User; count: number; }>; }>()
                 }
             }
         },
         timeout: {
-            errors: {
-                botNoPerms: f(`❌ I don't have permission to timeout **${humanize.fullName(member.user)}**! Make sure I have the \`moderate members\` permission and try again.`),
-                userNoPerms: f(`❌ You don't have permission to timeout **${humanize.fullName(member.user)}**! Make sure you have the \`moderate members\` permission or one of the permissions specified in the \`timeout override\` setting and try again.`)
-            },
             flags: {
                 reason: f(`The reason for the timeout (removal).`),
                 time: f(`The amount of time to mute for, formatted as '1 day 2 hours 3 minutes and 4 seconds', '1d2h3m4s', or some other combination.\nMaximum allowed time is 28 days. Default is 1 day.`)
             },
             user: {
                 description: f(`Timeouts a user.\nIf mod-logging is enabled, the timeout will be logged.`),
-                targetAboveBot: f(`❌ I don't have permission to timeout **${humanize.fullName(member.user)}**! Their highest role is above my highest role.`),
-                targetAboveUser: f(`❌ You don't have permission to timeout **${humanize.fullName(member.user)}**! Their highest role is above your highest role.`),
-                alreadyTimedOut: f(`❌ **${humanize.fullName(member.user)}** has already been timed out.`),
-                success: f(`✅ **${humanize.fullName(member.user)}** has been timed out.`)
+                state: {
+                    memberTooHigh: f(`❌ I don't have permission to timeout **{user#tag}**! Their highest role is above my highest role.`).withArgs<{ user: Eris.User; }>(),
+                    moderatorTooLow: f(`❌ You don't have permission to timeout **{user#tag}**! Their highest role is above your highest role.`).withArgs<{ user: Eris.User; }>(),
+                    noPerms: f(`❌ I don't have permission to timeout **{user#tag}**! Make sure I have the \`moderate members\` permission and try again.`).withArgs<{ user: Eris.User; }>(),
+                    moderatorNoPerms: f(`❌ You don't have permission to timeout **{user#tag}**! Make sure you have the \`moderate members\` permission or one of the permissions specified in the \`timeout override\` setting and try again.`).withArgs<{ user: Eris.User; }>(),
+                    alreadyTimedOut: f(`❌ **{user#tag}** has already been timed out.`).withArgs<{ user: Eris.User; }>(),
+                    success: f(`✅ **{user#tag}** has been timed out.`).withArgs<{ user: Eris.User; }>()
+                }
             },
             clear: {
                 description: f(`Removes the timeout of a user.\nIf mod-logging is enabled, the timeout removal will be logged.`),
-                notTimedOut: f(`❌ **${humanize.fullName(member.user)}** is not currently timed out.`),
-                success: f(`✅ **${humanize.fullName(member.user)}** timeout has been removed.`)
+                state: {
+                    notTimedOut: f(`❌ **{user#tag}** is not currently timed out.`).withArgs<{ user: Eris.User; }>(),
+                    noPerms: f(`❌ I don't have permission to timeout **{user#tag}**! Make sure I have the \`moderate members\` permission and try again.`).withArgs<{ user: Eris.User; }>(),
+                    moderatorNoPerms: f(`❌ You don't have permission to timeout **{user#tag}**! Make sure you have the \`moderate members\` permission or one of the permissions specified in the \`timeout override\` setting and try again.`).withArgs<{ user: Eris.User; }>(),
+                    success: f(`✅ **{user#tag}** timeout has been removed.`).withArgs<{ user: Eris.User; }>()
+                }
             }
         },
         timers: {
             list: {
                 description: f(`Lists all the currently active timers here`),
                 none: f(`✅ There are no active timers!`),
-                paged: f(`Showing timers ${(page - 1) * pageSize + 1} - ${page * pageSize + 1} of ${eventsPage.total}. Page ${page}/${Math.ceil(eventsPage.total / pageSize)}`),
-                success: f(`ℹ️ Here are the currently active timers:${codeBlock(gridLines.join(`\n`), `prolog`)}${paging}`)
+                paged: f(`Showing timers {start} - {end} of {total}. Page {page}/{pageCount}`).withArgs<{ start: number; end: number; total: number; page: number; pageCount: number; }>(),
+                success: f(`ℹ️ Here are the currently active timers:\`\`\`prolog\n{table}{paging}`).withArgs<{ table: IFormattable<string>; paging?: IFormattable<string>; }>(),
+                table: {
+                    id: {
+                        header: f(`Id`),
+                        cell: f(``).withArgs<{ id: string; }>()
+                    },
+                    elapsed: {
+                        header: f(`Elapsed`),
+                        cell: f(``).withArgs<{ startTime: Moment; }>()
+                    },
+                    remain: {
+                        header: f(`Remain`),
+                        cell: f(``).withArgs<{ endTime: Moment; }>()
+                    },
+                    user: {
+                        header: f(`User`),
+                        cell: f(``).withArgs<{ user?: Eris.User; }>()
+                    },
+                    type: {
+                        header: f(`Type`),
+                        cell: f(``).withArgs<{ type: string; }>()
+                    },
+                    content: {
+                        header: f(`Content`),
+                        cell: f(``).withArgs<{ content: string; }>()
+                    }
+                }
             },
             info: {
                 description: f(`Shows detailed information about a given timer`),
                 notFound: f(`❌ I couldn't find the timer you gave.`),
                 embed: {
-                    title: f(`Timer #${simpleId(timer.id)}`),
+                    title: f(`Timer #{id}`).withArgs<{ id: string; }>(),
                     field: {
                         type: {
                             name: f(`Type`)
                         },
                         user: {
-                            name: f(`Started by`)
+                            name: f(`Started by`),
+                            value: f(`<@{userId}>`).withArgs<{ userId: string; }>()
                         },
                         duration: {
                             name: f(`Duration`),
-                            value: f(`Started <t:${moment(timer.starttime).unix()}>\nEnds <t:${moment(timer.endtime).unix()}>`)
+                            value: f(`Started {start#tag}\nEnds {end#tag}`).withArgs<{ start: Moment; end: Moment; }>()
                         }
                     }
                 }
             },
             cancel: {
                 description: f(`Cancels currently active timers`),
-                timersMissing: f(`❌ I couldnt find ${p(timerIds.length, `the timer`, `any of the timers`)} you specified!`)
+                timersMissing: f(`❌ I couldnt find {count#plural(1:the timer|any of the timers)} you specified!`).withArgs<{ count: number; }>(),
+                success: {
+                    default: f(`✅ Cancelled {success#count#plural(1:{} timer|{} timers)}:\n{timers#map(\`{}\`)#join(\n)}`).withArgs<{ success: Iterable<string>; }>(),
+                    partial: f(`⚠️ Cancelled {success#count#plural(1:{} timer|{} timers)}:\n{success#map(\`{}\`)#join(\n)}\nCould not find {fail#count#plural(1:{} timer|{} timers)}:\n{fail#map(\`{}\`)#join(\n)}`).withArgs<{ success: Iterable<string>; fail: Iterable<string>; }>()
+                }
             },
             clear: {
                 description: f(`Clears all currently active timers`),
                 confirm: {
                     prompt: f(`⚠️ Are you sure you want to clear all timers?`),
-                    confirm: f(`Yes`),
+                    continue: f(`Yes`),
                     cancel: f(`No`)
                 },
                 cancelled: f(`ℹ️ Cancelled clearing of timers`),
@@ -1191,10 +1228,12 @@ export const templates = crunchTree(`cluster`, {
             default: {
                 description: f(`Unbans a user.\nIf mod-logging is enabled, the ban will be logged.`),
                 userNotFound: f(`❌ I couldn't find that user!`),
-                notBanned: f(`❌ **${humanize.fullName(user)}** is not currently banned!`),
-                botNoPerms: f(`❌ I don't have permission to unban **${humanize.fullName(user)}**! Make sure I have the \`ban members\` permission and try again.`),
-                userNoPerms: f(`❌ You don't have permission to unban **${humanize.fullName(user)}**! Make sure you have the \`ban members\` permission or one of the permissions specified in the \`ban override\` setting and try again.`),
-                success: f(`✅ **${humanize.fullName(user)}** has been unbanned.`)
+                state: {
+                    notBanned: f(`❌ **{user#tag}** is not currently banned!`).withArgs<{ user: Eris.User; }>(),
+                    noPerms: f(`❌ I don't have permission to unban **{user#tag}**! Make sure I have the \`ban members\` permission and try again.`).withArgs<{ user: Eris.User; }>(),
+                    moderatorNoPerms: f(`❌ You don't have permission to unban **{user#tag}**! Make sure you have the \`ban members\` permission or one of the permissions specified in the \`ban override\` setting and try again.`).withArgs<{ user: Eris.User; }>(),
+                    success: f(`✅ **{user#tag}** has been unbanned.`).withArgs<{ user: Eris.User; }>()
+                }
             }
         },
         unmute: {
@@ -1203,12 +1242,14 @@ export const templates = crunchTree(`cluster`, {
             },
             default: {
                 description: f(`Removes the special muted role from the user. \nIf mod-logging is enabled, the mute will be logged.`),
-                notMuted: f(`❌ ${humanize.fullName(member.user)} is not currently muted`),
-                botNoPerms: f(`❌ I don't have permission to unmute users! Make sure I have the \`manage roles\` permission and try again.`),
-                userNoPerms: f(`❌ You don't have permission to unmute users! Make sure you have the \`manage roles\` permission and try again.`),
-                targetAboveBot: f(`❌ I can't revoke the muted role! (it's higher than or equal to my top role)`),
-                targetAboveUser: f(`❌ You can't revoke the muted role! (it's higher than or equal to your top role)`),
-                success: f(`✅ **${humanize.fullName(member.user)}** has been unmuted`)
+                state: {
+                    notMuted: f(`❌ {user#tag} is not currently muted`).withArgs<{ user: Eris.User; }>(),
+                    noPerms: f(`❌ I don't have permission to unmute users! Make sure I have the \`manage roles\` permission and try again.`),
+                    moderatorNoPerms: f(`❌ You don't have permission to unmute users! Make sure you have the \`manage roles\` permission and try again.`),
+                    roleTooHigh: f(`❌ I can't revoke the muted role! (it's higher than or equal to my top role)`),
+                    moderatorTooLow: f(`❌ You can't revoke the muted role! (it's higher than or equal to your top role)`),
+                    success: f(`✅ **{user#tag}** has been unmuted`).withArgs<{ user: Eris.User; }>()
+                }
             }
         },
         warn: {
@@ -1216,7 +1257,7 @@ export const templates = crunchTree(`cluster`, {
                 ban: f(`ban`),
                 kick: f(`kick`),
                 timeout: f(`timeout`),
-                warn: f(`warn`)
+                delete: f(`warn`)
             },
             flags: {
                 reason: f(`The reason for the warning.`),
@@ -1224,20 +1265,22 @@ export const templates = crunchTree(`cluster`, {
             },
             default: {
                 description: f(`Issues a warning.\nIf mod-logging is enabled, the warning will be logged.\nIf \`kickat\` and \`banat\` have been set using the \`settings\` command, the target could potentially get banned or kicked.`),
-                countInvalid: f(`❌ ${flags.c?.merge().value ?? ``} isnt a number!`),
-                countNegative: f(`❌ I cant give a negative amount of warnings!`),
-                countZero: f(`❌ I cant give zero warnings!`),
-                success: {
-                    targetAboveBot: f(`⚠️ **${humanize.fullName(member.user)}** has been given ${count} ${p(count, `warning`)}.\n⛔ They went over the limit for ${actionStr}s but they are above me so I couldnt ${actionStr} them.`),
-                    targetAboveUser: f(`⚠️ **${humanize.fullName(member.user)}** has been given ${count} ${p(count, `warning`)}.\n⛔ They went over the limit for ${actionStr}s but they are above you so I didnt ${actionStr} them.`),
-                    botNoPerms: f(`⚠️ **${humanize.fullName(member.user)}** has been given ${count} ${p(count, `warning`)}.\n⛔ They went over the limit for ${actionStr}s but I dont have permission to ${actionStr} them.`),
-                    userNoPerms: f(`⚠️ **${humanize.fullName(member.user)}** has been given ${count} ${p(count, `warning`)}.\n⛔ They went over the limit for ${actionStr}s but you dont have permission to ${actionStr} them.`),
-                    alreadyBanned: f(`⚠️ **${humanize.fullName(member.user)}** has been given ${count} ${p(count, `warning`)}.\n⛔ They went over the limit for bans, but they were already banned.`),
-                    alreadyTimedOut: f(`⚠️ **${humanize.fullName(member.user)}** has been given ${count} ${p(count, `warning`)}.\n⛔ They went over the limit for timeouts, but they were already timed out.`),
-                    warned: f(`✅ **${humanize.fullName(member.user)}** has been given ${count} ${p(count, `warning`)}. They now have ${result.warnings} warnings.`),
-                    timedOut: f(`✅ **${humanize.fullName(member.user)}** has been given ${count} ${p(count, `warning`)}. They want over the limit for timeouts and so have been timed out.`),
-                    banned: f(`✅ **${humanize.fullName(member.user)}** has been given ${count} ${p(count, `warning`)}. They went over the limit for bans and so have been banned.`),
-                    kicked: f(`✅ **${humanize.fullName(member.user)}** has been given ${count} ${p(count, `warning`)}. They went over the limit for kicks and so have been kicked.`)
+                state: {
+                    countNaN: f(`❌ {value} isnt a number!`).withArgs<{ value: string; }>(),
+                    countNegative: f(`❌ I cant give a negative amount of warnings!`),
+                    countZero: f(`❌ I cant give zero warnings!`),
+                    memberTooHigh: f(`⚠️ **{user#tag}** has been given {count} {count#plural(1:warning|warnings)}.\n⛔ They went over the limit for {action}s but they are above me so I couldnt {action} them.`).withArgs<{ user: Eris.User; count: number; }>(),
+                    moderatorTooLow: f(`⚠️ **{user#tag}** has been given {count} {count#plural(1:warning|warnings)}.\n⛔ They went over the limit for {action}s but they are above you so I didnt {action} them.`).withArgs<{ user: Eris.User; count: number; action: IFormattable<string>; }>(),
+                    noPerms: f(`⚠️ **{user#tag}** has been given {count} {count#plural(1:warning|warnings)}.\n⛔ They went over the limit for {action}s but I dont have permission to {action} them.`).withArgs<{ user: Eris.User; count: number; action: IFormattable<string>; }>(),
+                    moderatorNoPerms: f(`⚠️ **{user#tag}** has been given {count} {count#plural(1:warning|warnings)}.\n⛔ They went over the limit for {action}s but you dont have permission to {action} them.`).withArgs<{ user: Eris.User; count: number; action: IFormattable<string>; }>(),
+                    alreadyBanned: f(`⚠️ **{user#tag}** has been given {count} {count#plural(1:warning|warnings)}.\n⛔ They went over the limit for bans, but they were already banned.`).withArgs<{ user: Eris.User; count: number; }>(),
+                    alreadyTimedOut: f(`⚠️ **{user#tag}** has been given {count} {count#plural(1:warning|warnings)}.\n⛔ They went over the limit for timeouts, but they were already timed out.`).withArgs<{ user: Eris.User; count: number; }>(),
+                    success: {
+                        delete: f(`✅ **{user#tag}** has been given {count} {count#plural(1:warning|warnings)}. They now have {warnings} {warnings#plural(1:warning|warnings)}.`).withArgs<{ user: Eris.User; count: number; warnings: number; }>(),
+                        timeout: f(`✅ **{user#tag}** has been given {count} {count#plural(1:warning|warnings)}. They want over the limit for timeouts and so have been timed out.`).withArgs<{ user: Eris.User; count: number; }>(),
+                        ban: f(`✅ **{user#tag}** has been given {count} {count#plural(1:warning|warnings)}. They went over the limit for bans and so have been banned.`).withArgs<{ user: Eris.User; count: number; }>(),
+                        kick: f(`✅ **{user#tag}** has been given {count} {count#plural(1:warning|warnings)}. They went over the limit for kicks and so have been kicked.`).withArgs<{ user: Eris.User; count: number; }>()
+                    }
                 }
             }
         },
@@ -2462,112 +2505,112 @@ export const templates = crunchTree(`cluster`, {
         },
         awoo: {
             description: f(`Awoooooooooo!`),
-            action: f(`**{self.mention}** awoos!`).withArgs<{ self: Eris.User; }>()
+            action: f(`**{self#tag}** awoos!`).withArgs<{ self: Eris.User; }>()
         },
         bang: {
             description: f(`Bang bang!`),
-            action: f(`**{self.mention}** bangs!`).withArgs<{ self: Eris.User; }>()
+            action: f(`**{self#tag}** bangs!`).withArgs<{ self: Eris.User; }>()
         },
         bite: {
             description: f(`Give someone a bite!`),
-            action: f(`**{self.mention}** bites **{target.mention=themselves}**`).withArgs<{ self: Eris.User; target?: Eris.User; }>()
+            action: f(`**{self#tag}** bites **{target#tag=themselves}**`).withArgs<{ self: Eris.User; target?: Eris.User; }>()
         },
         blush: {
             description: f(`Show everyone that you're blushing.`),
-            action: f(`**{self.mention}** blushes!`).withArgs<{ self: Eris.User; }>()
+            action: f(`**{self#tag}** blushes!`).withArgs<{ self: Eris.User; }>()
         },
         cry: {
             description: f(`Show everyone that you're crying.`),
-            action: f(`**{self.mention}** cries!`).withArgs<{ self: Eris.User; }>()
+            action: f(`**{self#tag}** cries!`).withArgs<{ self: Eris.User; }>()
         },
         cuddles: {
             description: f(`Cuddle with someone.`),
-            action: f(`**{self.mention}** cuddles with **{target.mention=themselves}**`).withArgs<{ self: Eris.User; target?: Eris.User; }>()
+            action: f(`**{self#tag}** cuddles with **{target#tag=themselves}**`).withArgs<{ self: Eris.User; target?: Eris.User; }>()
         },
         dance: {
             description: f(`Break out some sweet, sweet dance moves.`),
-            action: f(`**{self.mention}** dances!`).withArgs<{ self: Eris.User; }>()
+            action: f(`**{self#tag}** dances!`).withArgs<{ self: Eris.User; }>()
         },
         hug: {
             description: f(`Give somebody a hug.`),
-            action: f(`**{self.mention}** hugs **{target.mention=themselves}**`).withArgs<{ self: Eris.User; target?: Eris.User; }>()
+            action: f(`**{self#tag}** hugs **{target#tag=themselves}**`).withArgs<{ self: Eris.User; target?: Eris.User; }>()
         },
         jojo: {
             description: f(`This must be the work of an enemy stand!`)
         },
         kiss: {
             description: f(`Give somebody a kiss.`),
-            action: f(`**{self.mention}** kisses **{target.mention=themselves}**`).withArgs<{ self: Eris.User; target?: Eris.User; }>()
+            action: f(`**{self#tag}** kisses **{target#tag=themselves}**`).withArgs<{ self: Eris.User; target?: Eris.User; }>()
         },
         lewd: {
             description: f(`T-that's lewd...`),
-            action: f(`**{self.mention}** is lewd 😳!`).withArgs<{ self: Eris.User; }>()
+            action: f(`**{self#tag}** is lewd 😳!`).withArgs<{ self: Eris.User; }>()
         },
         lick: {
             description: f(`Give someone a lick. Sluurrpppp!`),
-            action: f(`**{self.mention}** licks **{target.mention=themselves}**`).withArgs<{ self: Eris.User; target?: Eris.User; }>()
+            action: f(`**{self#tag}** licks **{target#tag=themselves}**`).withArgs<{ self: Eris.User; target?: Eris.User; }>()
         },
         megumin: {
             description: f(`Darkness blacker than black and darker than dark, I beseech thee, combine with my deep crimson. The time of awakening cometh. Justice, fallen upon the infallible boundary, appear now as an intangible distortion! Dance, Dance, Dance! I desire for my torrent of power a destructive force: a destructive force without equal! Return all creation to cinders, and come from the abyss!`)
         },
         nom: {
             description: f(`Nom on somebody.`),
-            action: f(`**{self.mention}** noms on **{target.mention=themselves}**`).withArgs<{ self: Eris.User; target?: Eris.User; }>()
+            action: f(`**{self#tag}** noms on **{target#tag=themselves}**`).withArgs<{ self: Eris.User; target?: Eris.User; }>()
         },
         owo: {
             description: f(`owo whats this?`),
-            action: f(`**{self.mention}** owos!`).withArgs<{ self: Eris.User; }>()
+            action: f(`**{self#tag}** owos!`).withArgs<{ self: Eris.User; }>()
         },
         pat: {
             description: f(`Give somebody a lovely pat.`),
-            action: f(`**{self.mention}** pats **{target.mention=themselves}**`).withArgs<{ self: Eris.User; target?: Eris.User; }>()
+            action: f(`**{self#tag}** pats **{target#tag=themselves}**`).withArgs<{ self: Eris.User; target?: Eris.User; }>()
         },
         poke: {
             description: f(`Gives somebody a poke.`),
-            action: f(`**{self.mention}** pokes **{target.mention=themselves}**`).withArgs<{ self: Eris.User; target?: Eris.User; }>()
+            action: f(`**{self#tag}** pokes **{target#tag=themselves}**`).withArgs<{ self: Eris.User; target?: Eris.User; }>()
         },
         pout: {
             description: f(`Let everyone know that you're being pouty.`),
-            action: f(`**{self.mention}** pouts!`).withArgs<{ self: Eris.User; }>()
+            action: f(`**{self#tag}** pouts!`).withArgs<{ self: Eris.User; }>()
         },
         punch: {
             description: f(`Punch someone. They probably deserved it.`),
-            action: f(`**{self.mention}** punches **{target.mention=themselves}**`).withArgs<{ self: Eris.User; target?: Eris.User; }>()
+            action: f(`**{self#tag}** punches **{target#tag=themselves}**`).withArgs<{ self: Eris.User; target?: Eris.User; }>()
         },
         rem: {
             description: f(`Worst girl`)
         },
         shrug: {
             description: f(`Let everyone know that you're a bit indifferent.`),
-            action: f(`**{self.mention}** shrugs!`).withArgs<{ self: Eris.User; }>()
+            action: f(`**{self#tag}** shrugs!`).withArgs<{ self: Eris.User; }>()
         },
         slap: {
             description: f(`Slaps someone.`),
-            action: f(`**{self.mention}** slaps **{target.mention=themselves}**`).withArgs<{ self: Eris.User; target?: Eris.User; }>()
+            action: f(`**{self#tag}** slaps **{target#tag=themselves}**`).withArgs<{ self: Eris.User; target?: Eris.User; }>()
         },
         sleepy: {
             description: f(`Let everyone know that you're feeling tired.`),
-            action: f(`**{self.mention}** is sleepy!`).withArgs<{ self: Eris.User; }>()
+            action: f(`**{self#tag}** is sleepy!`).withArgs<{ self: Eris.User; }>()
         },
         smile: {
             description: f(`Smile!`),
-            action: f(`**{self.mention}** smiles!`).withArgs<{ self: Eris.User; }>()
+            action: f(`**{self#tag}** smiles!`).withArgs<{ self: Eris.User; }>()
         },
         smug: {
             description: f(`Let out your inner smugness.`),
-            action: f(`**{self.mention}** is smug!`).withArgs<{ self: Eris.User; }>()
+            action: f(`**{self#tag}** is smug!`).withArgs<{ self: Eris.User; }>()
         },
         stare: {
             description: f(`Staaaaaaaaare`),
-            action: f(`**{self.mention}** stares!`).withArgs<{ self: Eris.User; }>()
+            action: f(`**{self#tag}** stares!`).withArgs<{ self: Eris.User; }>()
         },
         thumbsUp: {
             description: f(`Give a thumbs up!`),
-            action: f(`**{self.mention}** gives a thumbs up!`).withArgs<{ self: Eris.User; }>()
+            action: f(`**{self#tag}** gives a thumbs up!`).withArgs<{ self: Eris.User; }>()
         },
         wag: {
             description: f(`Wagwagwagwag`),
-            action: f(`**{self.mention}** wags!`).withArgs<{ self: Eris.User; }>()
+            action: f(`**{self#tag}** wags!`).withArgs<{ self: Eris.User; }>()
         },
         respawn: {
             description: f(`Cluster respawning only for staff.`),

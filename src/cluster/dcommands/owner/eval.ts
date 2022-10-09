@@ -60,7 +60,7 @@ export class EvalCommand extends GlobalCommand {
 
         const response = await this.#requestEval(context, { type: `global`, userId, code });
         if (response.success === false)
-            return `An error occured!${codeBlock(response.error)}`;
+            return `❌ An error occured!${codeBlock(response.error)}`;
 
         const masterResponse = <GlobalEvalResult>response;
 

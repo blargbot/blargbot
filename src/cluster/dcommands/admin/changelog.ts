@@ -2,6 +2,7 @@ import { GuildCommand } from '@blargbot/cluster/command';
 import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType } from '@blargbot/cluster/utils';
 import { humanize } from '@blargbot/core/utils';
+import { IFormattable } from '@blargbot/domain/messages/types';
 import { Webhook } from 'eris';
 
 import templates from '../../text';
@@ -30,26 +31,30 @@ export class ChangelogCommand extends GuildCommand {
 
     public async addFollower(context: GuildCommandContext): Promise<CommandResult> {
         const current = await this.#getCurrentSubscription(context);
-        if (typeof current !== `undefined`)
-            return `ℹ️ This channel is already subscribed to my changelog updates!`;
+        if (current === undefined)
+            return cmd.subscribe.alreadySubscribed;
+        if (`format` in current)
+            return current;
 
         await context.discord.followChannel(context.config.discord.channels.changelog, context.channel.id);
-        return `✅ This channel will now get my changelog updates!`;
+        return cmd.subscribe.success;
     }
 
     public async removeFollower(context: GuildCommandContext): Promise<CommandResult> {
         const current = await this.#getCurrentSubscription(context);
-        if (typeof current !== `object`)
-            return current ?? `ℹ️ This channel is not subscribed to my changelog updates!`;
+        if (current === undefined)
+            return cmd.unsubscribe.notSubscribed;
+        if (`format` in current)
+            return current;
 
         await context.discord.deleteWebhook(current.id, undefined, `${humanize.fullName(context.author)} unsubscribed channel to changelog updates`);
-        return `✅ This channel will no longer get my changelog updates!`;
+        return cmd.unsubscribe.success;
     }
 
-    async #getCurrentSubscription(context: GuildCommandContext): Promise<Webhook | CommandResult> {
+    async #getCurrentSubscription(context: GuildCommandContext): Promise<Webhook | IFormattable<string> | undefined> {
         const self = context.channel.guild.members.get(context.discord.user.id);
         if (self?.permissions.has(`manageWebhooks`) !== true)
-            return `❌ I need the manage webhooks permission to subscribe this channel to changelogs!`;
+            return cmd.errors.missingPermissions;
 
         const webhooks = await context.channel.guild.getWebhooks();
         return webhooks.find(hook =>

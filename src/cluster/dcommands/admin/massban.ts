@@ -1,6 +1,6 @@
 import { GuildCommand } from '@blargbot/cluster/command';
 import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
-import { CommandType, guard, humanize, parse } from '@blargbot/cluster/utils';
+import { CommandType, guard, parse } from '@blargbot/cluster/utils';
 import { FlagResult } from '@blargbot/domain/models';
 
 import templates from '../../text';
@@ -33,15 +33,7 @@ export class MassBanCommand extends GuildCommand {
 
         const result = await context.cluster.moderation.bans.massBan(context.channel.guild, userIds, context.author, context.author, deleteDays, reason);
         if (Array.isArray(result))
-            return `❌ The following user(s) have been banned:${result.map(humanize.fullName).map(u => `\n**${u}**`).join(``)}`;
-
-        switch (result) {
-            case `alreadyBanned`: return `❌ All those users are already banned!`;
-            case `memberTooHigh`: return `❌ I don't have permission to ban any of those users! Their highest roles are above my highest role.`;
-            case `moderatorTooLow`: return `❌ You don't have permission to ban any of those users! Their highest roles are above your highest role.`;
-            case `noPerms`: return `❌ I don't have permission to ban anyone! Make sure I have the \`ban members\` permission and try again.`;
-            case `moderatorNoPerms`: return `❌ You don't have permission to ban anyone! Make sure you have the \`ban members\` permission or one of the permissions specified in the \`ban override\` setting and try again.`;
-            case `noUsers`: return `❌ None of the user ids you gave were valid users!`;
-        }
+            return cmd.default.success({ users: result });
+        return cmd.default.state[result];
     }
 }

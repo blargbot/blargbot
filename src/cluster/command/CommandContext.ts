@@ -53,6 +53,16 @@ export class CommandContext<TChannel extends KnownTextableChannel = KnownTextabl
         });
     }
 
+    public async edit(message: Message, content: CommandResult): Promise<KnownMessage | undefined> {
+        const payload = toSendContent(content);
+        if (content === undefined)
+            return undefined;
+        return await this.cluster.util.send(this.message.channel, {
+            messageReference: { messageID: this.message.id, channelID: this.message.channel.id },
+            ...payload
+        });
+    }
+
     public async queryConfirm(options: SlimConfirmQueryOptions<IFormattable<string>>): Promise<boolean | undefined>
     public async queryConfirm(options: SlimConfirmQueryOptions<IFormattable<string>, boolean>): Promise<boolean>
     public async queryConfirm(options: SlimConfirmQueryOptions<IFormattable<string>, boolean | undefined>): Promise<boolean | undefined>

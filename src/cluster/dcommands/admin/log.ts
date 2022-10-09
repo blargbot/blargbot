@@ -1,9 +1,9 @@
 import { GuildCommand } from '@blargbot/cluster/command';
 import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
-import { CommandType, guard, humanize } from '@blargbot/cluster/utils';
+import { CommandType, guard } from '@blargbot/cluster/utils';
 import { IFormattable } from '@blargbot/domain/messages/types';
 import { StoredGuildEventLogType } from '@blargbot/domain/models';
-import { EmbedField, KnownChannel, Role, User, Webhook } from 'eris';
+import { KnownChannel, Role, User, Webhook } from 'eris';
 
 import templates from '../../text';
 
@@ -66,10 +66,10 @@ export class LogCommand extends GuildCommand {
 
     public async setEventChannel(context: GuildCommandContext, eventnames: readonly string[], channel: KnownChannel | undefined): Promise<CommandResult> {
         if (channel !== undefined && (!guard.isGuildChannel(channel) || channel.guild !== context.channel.guild))
-            return `❌ The log channel must be on this server!`;
+            return cmd.enable.notOnGuild;
 
         if (channel !== undefined && !guard.isTextableChannel(channel))
-            return `❌ The log channel must be a text channel!`;
+            return cmd.enable.notTextChannel;
 
         const validEvents: StoredGuildEventLogType[] = [];
         const invalidEvents = [];
@@ -81,11 +81,8 @@ export class LogCommand extends GuildCommand {
                 invalidEvents.push(event);
         }
 
-        switch (invalidEvents.length) {
-            case 0: break;
-            case 1: return `❌ ${invalidEvents[0]} is not a valid event`;
-            default: return `❌ ${humanize.smartJoin(invalidEvents, `, `, ` and `)} are not valid events`;
-        }
+        if (invalidEvents.length > 0)
+            return cmd.enable.eventInvalid({ events: invalidEvents });
 
         await context.database.guilds.setLogChannel(context.channel.guild.id, validEvents, channel?.id);
         const eventStrings = validEvents.map(e => {
@@ -94,55 +91,49 @@ export class LogCommand extends GuildCommand {
             return `\`${e}\``;
         });
 
-        if (channel !== undefined)
-            return `✅ I will now log the following events in ${channel.mention}:\n${eventStrings.join(`\n`)}`;
-        return `✅ I will no longer log the following events:\n${eventStrings.join(`\n`)}`;
+        return channel === undefined
+            ? cmd.disable.success({ events: eventStrings })
+            : cmd.enable.success({ channel, events: eventStrings });
     }
 
     public async listEvents(context: GuildCommandContext): Promise<CommandResult> {
         const channels = await context.database.guilds.getLogChannels(context.channel.guild.id);
         const ignoreUsers = await context.database.guilds.getLogIgnores(context.channel.guild.id);
-        const ignoreUsersField: EmbedField = {
-            name: `Ignored users`,
-            value: ignoreUsers.size === 0 ? `No ignored users` : [...ignoreUsers].map(id => `<@${id}> (${id})`).join(`\n`),
-            inline: true
-        };
-
-        if (Object.values<string | undefined>(channels.events).every(e => e === undefined)) {
-            return {
-                fields: [
-                    { name: `Currently logged events`, value: `No logged events`, inline: true },
-                    ignoreUsersField
-                ]
-            };
-        }
 
         return {
-            fields: [
+            embeds: [
                 {
-                    name: `Currently logged events`,
-                    value: [
-                        ...Object.entries<string | undefined>(channels.events)
-                            .filter((e): e is [string, string] => e[1] !== undefined)
-                            .map(([eventName, channelId]) => `**${eventName}** - <#${channelId}>`),
-                        ...Object.entries<string | undefined>(channels.roles)
-                            .filter((e): e is [string, string] => e[1] !== undefined)
-                            .map(([roleId, channelId]) => `**<@&${roleId}>** - <#${channelId}>`)
-                    ].join(`\n`),
-                    inline: true
-                },
-                ignoreUsersField
+                    fields: [
+                        {
+                            name: cmd.list.embed.field.current.name,
+                            value: cmd.list.embed.field.current.value.template({
+                                entries: [
+                                    ...Object.entries<string | undefined>(channels.events)
+                                        .filter((e): e is [string, string] => e[1] !== undefined)
+                                        .map(([event, channelId]) => cmd.list.embed.field.current.value.event({ event, channelId })),
+                                    ...Object.entries<string | undefined>(channels.roles)
+                                        .filter((e): e is [string, string] => e[1] !== undefined)
+                                        .map(([roleId, channelId]) => cmd.list.embed.field.current.value.role({ roleId, channelId }))
+                                ]
+                            }),
+                            inline: true
+                        },
+                        {
+                            name: cmd.list.embed.field.ignore.name,
+                            value: cmd.list.embed.field.ignore.value({ userIds: ignoreUsers }),
+                            inline: true
+                        }
+                    ]
+                }
             ]
         };
     }
 
     public async ignoreUsers(context: GuildCommandContext, senders: ReadonlyArray<User | Webhook>, ignore: boolean): Promise<CommandResult> {
         await context.database.guilds.setLogIgnores(context.channel.guild.id, senders.map(u => u.id), ignore);
-
-        const mentions = senders.map(s => `<@${s.id}>`);
-        if (ignore)
-            return `✅ I will now ignore events from ${humanize.smartJoin(mentions, `, `, ` and `)}`;
-        return `✅ I will no longer ignore events from ${humanize.smartJoin(mentions, `, `, ` and `)}`;
+        return ignore
+            ? cmd.ignore.success({ senderIds: senders.map(s => s.id) })
+            : cmd.track.success({ senderIds: senders.map(s => s.id) });
     }
 }
 

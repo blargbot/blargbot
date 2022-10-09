@@ -2,6 +2,7 @@ import { Cluster } from '@blargbot/cluster';
 import { GuildCommand } from '@blargbot/cluster/command';
 import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { codeBlock, CommandType, defaultStaff, guard, guildSettings, parse } from '@blargbot/cluster/utils';
+import { IFormattable } from '@blargbot/domain/messages/types';
 import { Guild } from 'eris';
 
 import templates from '../../text';
@@ -18,7 +19,7 @@ export class SettingsCommand extends GuildCommand {
                 {
                     parameters: ``,
                     execute: ctx => this.list(ctx),
-                    description: cmd.view.description
+                    description: cmd.list.description
                 },
                 {
                     parameters: `keys`,
@@ -37,7 +38,7 @@ export class SettingsCommand extends GuildCommand {
     public async list(context: GuildCommandContext): Promise<CommandResult> {
         const storedGuild = await context.database.guilds.get(context.channel.guild.id);
         if (storedGuild === undefined)
-            return `❌ Your guild is not correctly configured yet! Please try again later`;
+            return cmd.list.notConfigured;
 
         const settings = storedGuild.settings;
         const guild = context.channel.guild;
@@ -47,7 +48,7 @@ export class SettingsCommand extends GuildCommand {
                 {
                     fields: [
                         {
-                            name: `General`,
+                            name: cmd.list.groups.general,
                             value: settingGroup([
                                 [`dmhelp`, parse.boolean(settings.dmhelp, false, true)],
                                 [`disablenoperms`, settings.disablenoperms ?? false],
@@ -55,7 +56,7 @@ export class SettingsCommand extends GuildCommand {
                             ])
                         },
                         {
-                            name: `Messages`,
+                            name: cmd.list.groups.messages,
                             value: settingGroup([
                                 [`tableflip`, parse.boolean(settings.tableflip, false, true)],
                                 [`nocleverbot`, settings.nocleverbot ?? false],
@@ -63,15 +64,15 @@ export class SettingsCommand extends GuildCommand {
                             ])
                         },
                         {
-                            name: `Channels`,
+                            name: cmd.list.groups.channels,
                             value: settingGroup([
-                                [`farewellchan`, resolveChannel(guild, settings.farewellchan) ?? `Default Channel`],
-                                [`greetchan`, resolveChannel(guild, settings.greetchan) ?? `Default Channel`],
+                                [`farewellchan`, resolveChannel(guild, settings.farewellchan) ?? cmd.list.channelValue.none],
+                                [`greetchan`, resolveChannel(guild, settings.greetchan) ?? cmd.list.channelValue.none],
                                 [`modlog`, resolveChannel(guild, settings.modlog)]
                             ])
                         },
                         {
-                            name: `Permission`,
+                            name: cmd.list.groups.permission,
                             value: settingGroup([
                                 [`staffperms`, settings.staffperms ?? defaultStaff.toString()],
                                 [`timeoutoverride`, settings.timeoutoverride],
@@ -80,7 +81,7 @@ export class SettingsCommand extends GuildCommand {
                             ])
                         },
                         {
-                            name: `Warnings`,
+                            name: cmd.list.groups.warnings,
                             value: settingGroup([
                                 [`timeoutat`, settings.timeoutat],
                                 [`kickat`, settings.kickat],
@@ -89,7 +90,7 @@ export class SettingsCommand extends GuildCommand {
                             ])
                         },
                         {
-                            name: `Moderation`,
+                            name: cmd.list.groups.moderation,
                             value: settingGroup([
                                 [`makelogs`, parse.boolean(settings.makelogs, false, true)],
                                 [`antimention`, settings.antimention],
@@ -107,62 +108,62 @@ export class SettingsCommand extends GuildCommand {
     public async set(context: GuildCommandContext, setting: string, value: string | undefined): Promise<CommandResult> {
         const key = setting.toLowerCase();
         if (!guard.hasProperty(guildSettings, key))
-            return `❌ Invalid key!`;
+            return cmd.set.keyInvalid;
 
         const parsed = await parse.guildSetting(context, context.util, key, value);
         if (!parsed.success)
-            return `❌ '${value ?? `\u200b`}' is not a ${guildSettings[key].type}`;
+            return cmd.set.valueInvalid({ value: value ?? ``, type: cmd.types[guildSettings[key].type] });
 
         if (!await context.database.guilds.setSetting(context.channel.guild.id, key, parsed.value))
-            return `❌ ${value ?? `\u200b`} is already set for ${key}`;
+            return cmd.set.alreadySet({ value: value ?? ``, key });
 
-        return `✅ ${guildSettings[key].name} is set to ${parsed.display ?? `nothing`}`;
+        return cmd.set.success({ key, value: parsed.display });
     }
 
     public keys(): CommandResult {
-        const message = [];
-        for (const key in guildSettings) {
-            if (guard.hasProperty(guildSettings, key)) {
-                const setting = guildSettings[key];
-                message.push(` - **${setting.name}:** \`${setting.key.toUpperCase()}\` (${setting.type})`);
-            }
-        }
-        return `You can use \`settings set <key> [value]\` to set the following settings. All settings are case insensitive.\n${message.sort().join(`\n`)}`;
+        const settings = Object.entries(guildSettings).map(([key, setting]) => ({
+            key,
+            name: setting.name,
+            type: cmd.types[setting.type]
+        }));
+        return cmd.keys.success({ settings });
     }
 }
 
-function resolveChannel(guild: Guild, channelId: string | undefined): string | undefined {
+function resolveChannel(guild: Guild, channelId: string | undefined): IFormattable<string> | undefined {
     // TODO channelId can be channel name, id or tag
     if (channelId === undefined)
         return undefined;
     const channel = guild.channels.get(channelId)
         ?? guild.channels.find(c => c.name.toLowerCase() === channelId.toLowerCase());
-    if (channel === undefined)
-        return `Unknown channel (${channelId})`;
-    return `${channel.name} (${channel.id})`;
+    return channel === undefined
+        ? cmd.list.channelValue.unknown({ channelId })
+        : cmd.list.channelValue.default({ channel });
 }
 
-function resolveRole(guild: Guild, roleId: string | undefined): string | undefined {
+function resolveRole(guild: Guild, roleId: string | undefined): IFormattable<string> | undefined {
     // TODO roleId can be role name, id or tag
     if (roleId === undefined)
         return undefined;
     const role = guild.roles.get(roleId)
         ?? guild.roles.find(r => r.name.toLowerCase() === roleId.toLowerCase());
-    if (role === undefined)
-        return `Unknown role (${roleId})`;
-    return `${role.name} (${role.id})`;
+    return role === undefined
+        ? cmd.list.roleValue.unknown({ roleId })
+        : cmd.list.roleValue.default({ role });
 }
 
-function settingGroup(values: Array<[key: string & keyof typeof guildSettings, value: string | undefined | boolean | number]>): string {
-    const mapped = values.map(([key, value]) => {
-        const setting = guildSettings[key];
-        return [
-            setting.name,
-            `${value ?? `Not set`}`.substring(0, 100)
-        ] as const;
-    });
-    const keyLength = Math.max(...mapped.map(([key]) => key.length));
-    const content = mapped.map(v => `${v[0].padStart(keyLength, ` `)} : ${v[1]}`)
-        .join(`\n`);
-    return codeBlock(content);
+function settingGroup(values: Array<[key: string & keyof typeof guildSettings, value: string | IFormattable<string> | undefined | boolean | number]>): IFormattable<string> {
+    return {
+        format(formatter) {
+            const mapped = values.map(([key, value = cmd.list.notSet]) => {
+                const setting = guildSettings[key];
+                const strValue = typeof value === `object` ? value.format(formatter) : `${value}`;
+                return [setting.name.format(formatter), strValue.slice(0, 100)] as const;
+            });
+            const keyLength = Math.max(...mapped.map(([key]) => key.length));
+            const content = mapped.map(v => `${v[0].padStart(keyLength, ` `)} : ${v[1]}`)
+                .join(`\n`);
+            return codeBlock(content);
+        }
+    };
 }

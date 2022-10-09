@@ -43,36 +43,36 @@ export class LogsCommand extends GuildCommand {
     }
     public async generateLogs(context: GuildCommandContext, options: LogsGenerateOptions): Promise<CommandResult> {
         if (await context.database.guilds.getSetting(context.channel.guild.id, `makelogs`) !== true)
-            return `❌ This guild has not opted into chatlogs. Please do \`${context.prefix}settings set makelogs true\` to allow me to start creating chatlogs.`;
+            return cmd.default.chatlogsDisabled({ prefix: context.prefix });
 
         if (options.count > 1000)
-            return `❌ You cant get more than 1000 logs at a time`;
+            return cmd.default.tooManyLogs;
 
         if (options.count <= 0)
-            return `❌ A minimum of 1 chatlog entry must be requested`;
+            return cmd.default.notEnoughLogs;
 
         const channel = await context.queryChannel({ filter: options.channel });
         if (channel.state !== `SUCCESS`)
-            return `❌ I couldnt find the channel \`${options.channel}\``;
+            return cmd.default.channelMissing({ channel: options.channel });
 
         if (!guard.isGuildChannel(channel.value) || channel.value.guild.id !== context.channel.guild.id)
-            return `❌ The channel must be on this guild!`;
+            return cmd.default.notOnGuild;
 
         const perms = channel.value.permissionsOf(context.message.member);
         if (!perms.has(`readMessageHistory`))
-            return `❌ You do not have permissions to look at that channels message history!`;
+            return cmd.default.noPermissions;
 
         const users = [];
         for (const userStr of options.users) {
             const user = await context.queryUser({ filter: userStr });
             if (user.state !== `SUCCESS`)
-                return `❌ I couldnt find the user \`${userStr}\``;
+                return cmd.default.userMissing({ user: userStr });
             users.push(user.value.id);
         }
 
-        const info = await context.reply(`Generating your logs...`);
+        const info = await context.reply(cmd.default.generating);
         if (info === undefined)
-            return `❌ I wasnt able to send the message containing the logs!`;
+            return cmd.default.sendFailed;
 
         const searchOptions: ChatLogSearchOptions = { channelId: channel.value.id, types: options.types, users, exclude: [info.id, context.id], count: options.count };
         const generatePromise = options.json
@@ -83,24 +83,28 @@ export class LogsCommand extends GuildCommand {
 
         let logs = await Promise.race([sleep(10000), generatePromise]);
 
-        let ping = ``;
+        let slow = false;
         if (logs === undefined) {
+            slow = true;
             try {
-                await info.edit(`Generating your logs...\nThis seems to be taking longer than usual. I'll ping you when I'm finished.`);
+                await context.edit(info, cmd.default.pleaseWait);
             } catch { /* NOOP */ }
             logs = await generatePromise;
-            ping = `Sorry that took so long, ${context.author.mention}.\n`;
         }
 
         if (!Array.isArray(logs)) {
             return {
-                content: `${ping}Your logs are available here: ${context.util.websiteLink(`logs/${logs.keycode}`)}`,
+                content: slow
+                    ? cmd.default.generated.link.slow({ link: context.util.websiteLink(`logs/${logs.keycode}`), user: context.author })
+                    : cmd.default.generated.link.quick({ link: context.util.websiteLink(`logs/${logs.keycode}`) }),
                 allowedMentions: { users: [context.author.id] }
             };
         }
 
         return {
-            content: `${ping}Here are your logs, in a JSON file!`,
+            content: slow
+                ? cmd.default.generated.json.slow({ user: context.author })
+                : cmd.default.generated.json.quick,
             allowedMentions: { users: [context.author.id] },
             files: [
                 {

@@ -47,13 +47,13 @@ export class BanCommand extends GuildCommand {
         const reason = flags.r?.merge().value ?? ``;
         const duration = (flags.t !== undefined ? parse.duration(flags.t.merge().value) : undefined) ?? moment.duration(Infinity);
 
-        const result = await context.cluster.moderation.bans.ban(context.channel.guild, user, context.author, context.author, days, reason, duration);
-        if (result === `success` && flags.t !== undefined) {
-            return duration.asMilliseconds() === Infinity
-                ? cmd.default.unbanSchedule.invalid({ user })
-                : cmd.default.unbanSchedule.success({ user, unbanAt: moment().add(duration) });
-        }
+        const state = await context.cluster.moderation.bans.ban(context.channel.guild, user, context.author, context.author, days, reason, duration);
+        if (state !== `success` || flags.t === undefined)
+            return cmd.default.state[state]({ user });
 
-        return cmd.default.state[result]({ user });
+        return duration.asMilliseconds() === Infinity
+            ? cmd.default.unbanSchedule.invalid({ user })
+            : cmd.default.unbanSchedule.success({ user, unban: duration });
+
     }
 }
