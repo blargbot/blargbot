@@ -7,7 +7,7 @@ import { GuildCensor, GuildTriggerTag } from '@blargbot/domain/models';
 import { KnownChannel, Role, User } from 'eris';
 
 import { RawBBTagCommandResult } from '../../command/RawBBTagCommandResult';
-import templates, { t } from '../../text';
+import templates, { literal } from '../../text';
 
 const cmd = templates.commands.censor;
 
@@ -310,7 +310,7 @@ export class CensorCommand extends GuildCommand {
                     fields: [
                         {
                             name: cmd.info.embed.field.trigger.name[censor.regex ? `regex` : `text`],
-                            value: t(censor.term),
+                            value: literal(censor.term),
                             inline: false
                         },
                         {

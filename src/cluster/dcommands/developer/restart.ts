@@ -35,11 +35,11 @@ export class RestartCommand extends GlobalCommand {
 
     public async restartWebsites(context: CommandContext): Promise<CommandResult> {
         await context.cluster.worker.request(`respawnApi`, undefined, 60000);
-        return `✅ Api has been respawned.`;
+        return cmd.api.success;
     }
 
     public async restart(context: CommandContext): Promise<CommandResult> {
-        await context.reply(`Ah! You've killed me! D:`);
+        await context.reply(cmd.default.success);
         await context.database.vars.set(`restart`, {
             varvalue: {
                 channel: context.channel.id,
@@ -52,6 +52,6 @@ export class RestartCommand extends GlobalCommand {
 
     public respawnClusters(context: CommandContext): CommandResult {
         context.cluster.worker.send(`respawnAll`, { channelId: context.channel.id });
-        return `Ah! You've killed me but in a way that minimizes downtime! D:`;
+        return cmd.kill.success;
     }
 }

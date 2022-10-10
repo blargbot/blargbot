@@ -1,5 +1,5 @@
 import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
-import { codeBlock, CommandType } from '@blargbot/cluster/utils';
+import { CommandType } from '@blargbot/cluster/utils';
 import { exec } from 'child_process';
 
 import templates from '../../text';
@@ -24,34 +24,36 @@ export class ExecCommand extends GlobalCommand {
 
     public async commandLine(context: CommandContext, command: string): Promise<CommandResult> {
         if (/pm2 (restart|reload|start)/i.test(command))
-            return `❌ No! That's dangerous! Do \`b!restart\` instead.\n\nIt's not that I don't trust you, it's just...\n\nI don't trust you.`;
+            return cmd.default.pm2Bad;
 
-        if (!await context.util.queryConfirm({
-            context: context.message,
-            actors: context.author,
-            prompt: `⚠️ You are about to execute the following on the command line:${codeBlock(command, `bash`)}`,
-            confirm: `Continue`,
-            cancel: `Cancel`,
+        if (!await context.queryConfirm({
+            prompt: cmd.default.confirm.prompt({ command }),
+            continue: cmd.default.confirm.continue,
+            cancel: cmd.default.confirm.cancel,
             fallback: false
         }))
-            return `✅ Execution cancelled`;
+            return cmd.default.cancelled;
 
-        const message = await context.reply(`Command: \`${command}\`\nRunning....`);
+        const message = await context.reply(cmd.default.command.pending({ command }));
         try {
             await context.channel.sendTyping();
-            const content = `✅ Command: \`${command}\``;
+            const content = cmd.default.command.success({ command });
             const file = {
                 file: Buffer.from(cleanConsole(await execCommandline(command))),
                 name: `output.txt`
             };
-            await (message?.channel.editMessage(message.id, { content, file }) ?? context.reply({ content, files: [file] }));
+            message === undefined
+                ? await context.reply({ content, files: [file] })
+                : await context.edit(message, { content, files: [file] });
         } catch (err: unknown) {
-            const content = `❌ Command: \`${command}\``;
+            const content = cmd.default.command.error({ command });
             const file = {
                 file: Buffer.from(cleanConsole(err instanceof Error ? err.toString() : Object.prototype.toString.call(err))),
                 name: `output.txt`
             };
-            await (message?.channel.editMessage(message.id, { content, file }) ?? context.reply({ content, files: [file] }));
+            message === undefined
+                ? await context.reply({ content, files: [file] })
+                : await context.edit(message, { content, files: [file] });
         }
         return undefined;
     }

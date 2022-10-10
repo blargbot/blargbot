@@ -7,7 +7,7 @@ import { GuildRolemeEntry } from '@blargbot/domain/models';
 import { Constants } from 'eris';
 
 import { RawBBTagCommandResult } from '../../command/RawBBTagCommandResult';
-import templates, { t } from '../../text';
+import templates, { literal } from '../../text';
 
 const cmd = templates.commands.roleMe;
 
@@ -320,7 +320,7 @@ export class RolemeCommand extends GuildCommand {
                     fields: [
                         {
                             name: cmd.info.embed.field.phrase.name({ caseSensitive: roleme.casesensitive }),
-                            value: t(roleme.message),
+                            value: literal(roleme.message),
                             inline: true
                         },
                         {

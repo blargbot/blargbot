@@ -1,6 +1,5 @@
 import { GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType, shuffle } from '@blargbot/cluster/utils';
-import { humanize } from '@blargbot/core/utils';
 import { mapping } from '@blargbot/mapping';
 import fetch from 'node-fetch';
 import xml2js from 'xml2js';
@@ -28,37 +27,36 @@ export class Rule34Command extends GlobalCommand {
 
     public async getRule34(tags: readonly string[]): Promise<CommandResult> {
         if (tags.length === 0)
-            return `❌ You need to provide some tags`;
+            return cmd.default.noTags;
 
-        const safeTags = tags
+        tags = tags
             .filter(t => !/[^a-zA-Z0-9_-]/.test(t))
             .filter(t => !/loli|shota|child|young/i.test(t))
             .map(t => t.toLowerCase());
 
-        if (safeTags.length === 0)
-            return `❌ None of the tags you provided were safe!`;
+        if (tags.length === 0)
+            return cmd.default.unsafeTags;
 
         const response = await requestXmlSafe(`http://rule34.paheal.net/api/danbooru/find_posts/index.xml?tags=${tags.join(`%20`)}&limit=50`);
         const doc = r34Mapping(response);
         if (!doc.valid)
-            return `❌ No results were found!`;
+            return cmd.default.noResults;
 
         const posts = doc.value.posts.tag
             .map(t => t.$)
             .filter(p => p.file_url !== undefined && /\.(gif|jpg|png|jpeg)$/.test(p.file_url));
 
         if (posts.length === 0)
-            return `❌ No results were found`;
+            return cmd.default.noResults;
 
         shuffle(posts);
-
         const selected = posts.slice(0, 3);
 
         return {
-            content: `Found **${posts.length}/50** posts for tags ${humanize.smartJoin(tags.map(t => `\`${t}\``), `, `, ` and `)}`,
+            content: cmd.default.success({ count: selected.length, total: posts.length, tags }),
             embeds: selected.map(post => ({
                 author: {
-                    name: `By ${post.author ?? `UNKNOWN`}`,
+                    name: cmd.default.embed.author.name({ author: post.author }),
                     url: post.source
                 },
                 image: { url: post.file_url },

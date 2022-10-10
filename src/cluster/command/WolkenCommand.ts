@@ -3,7 +3,7 @@ import { IFormatStringDefinition, IFormattable } from '@blargbot/domain/messages
 import { User } from 'eris';
 import Wolken from 'wolken';
 
-import { t } from '../text';
+import { literal } from '../text';
 import { CommandResult } from '../types';
 import { CommandContext } from './CommandContext';
 import { GlobalCommand } from './GlobalCommand';
@@ -59,7 +59,7 @@ export abstract class WolkenCommand extends GlobalCommand {
                 {
                     description: action?.({ self, target }),
                     image: { url: image.url },
-                    footer: { text: t(`Powered by weeb.sh`) }
+                    footer: { text: literal(`Powered by weeb.sh`) }
                 }
             ]
         };

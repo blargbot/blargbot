@@ -23,6 +23,6 @@ export class LoglevelCommand extends GlobalCommand {
 
     public setLogLevel(context: CommandContext, logLevel: string): CommandResult {
         context.logger.setLevel(logLevel);
-        return `✅ Log level set to \`${logLevel}\``;
+        return cmd.default.success({ logLevel });
     }
 }

@@ -14,7 +14,7 @@ import fetch from 'node-fetch';
 
 import { RawBBTagCommandResult } from '../../command/RawBBTagCommandResult';
 import { BBTagDocumentationManager } from '../../managers/documentation/BBTagDocumentationManager';
-import templates, { t } from '../../text';
+import templates, { literal } from '../../text';
 
 const cmd = templates.commands.ccommand;
 
@@ -315,11 +315,11 @@ export class CustomCommandCommand extends GuildCommand {
                             commands: any
                         },
                         ...Object.entries(grouped)
-                            .map(([role, commands]) => ({ name: t(role), commands }))
+                            .map(([role, commands]) => ({ name: literal(role), commands }))
                     ].filter(x => x.commands.length > 0)
                         .map(x => ({
                             name: x.name,
-                            value: t(codeBlock(x.commands.join(`, `), `ini`)),
+                            value: literal(codeBlock(x.commands.join(`, `), `ini`)),
                             inline: true
                         }))
                 }

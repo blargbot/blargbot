@@ -1,6 +1,6 @@
 import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { ClusterRespawnRequest, CommandResult } from '@blargbot/cluster/types';
-import { CommandType, humanize } from '@blargbot/cluster/utils';
+import { CommandType } from '@blargbot/cluster/utils';
 
 import templates from '../../text';
 
@@ -23,8 +23,8 @@ export class RespawnCommand extends GlobalCommand {
     }
 
     public async respawn(context: CommandContext, clusterId: number): Promise<CommandResult> {
-        await context.send(context.config.discord.channels.shardlog, `**${humanize.fullName(context.author)}** has called for a respawn of cluster ${clusterId}.`);
+        await context.send(context.config.discord.channels.shardlog, cmd.default.requested({ user: context.author, clusterId }));
         context.cluster.worker.send(`respawn`, <ClusterRespawnRequest>{ id: clusterId, channel: context.channel.id });
-        return `✅ Cluster ${clusterId} is being respawned and stuff now`;
+        return cmd.default.success({ clusterId });
     }
 }

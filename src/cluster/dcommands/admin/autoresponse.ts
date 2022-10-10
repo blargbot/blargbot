@@ -5,7 +5,7 @@ import { guard } from '@blargbot/core/utils';
 import { GuildFilteredAutoresponse, GuildTriggerTag } from '@blargbot/domain/models';
 
 import { RawBBTagCommandResult } from '../../command/RawBBTagCommandResult';
-import templates, { t } from '../../text';
+import templates, { literal } from '../../text';
 
 const cmd = templates.commands.autoResponse;
 
@@ -211,8 +211,6 @@ export class AutoResponseCommand extends GuildCommand {
         if (match === undefined)
             return this.#arNotFound(id);
 
-        const authorizer = match.ar.authorizer ?? match.ar.author;
-
         return {
             embeds: [
                 {
@@ -222,11 +220,19 @@ export class AutoResponseCommand extends GuildCommand {
                         : cmd.info.embed.title.id({ id }),
                     fields: [
                         ...`term` in match.ar ? [{
-                            name: cmd.info.embed.field.trigger[match.ar.regex ? `regex` : `text`],
-                            value: t(match.ar.term)
+                            name: cmd.info.embed.field.trigger.name[match.ar.regex ? `regex` : `text`],
+                            value: literal(match.ar.term)
                         }] : [],
-                        { name: cmd.info.embed.field.author, value: t(`<@${match.ar.author ?? 0}> (${match.ar.author ?? `????`})`), inline: true },
-                        { name: cmd.info.embed.field.authorizer, value: t(`<@${authorizer ?? 0}> (${authorizer ?? `????`})`), inline: true }
+                        {
+                            name: cmd.info.embed.field.author.name,
+                            value: cmd.info.embed.field.author.value({ authorId: match.ar.author ?? `????` }),
+                            inline: true
+                        },
+                        {
+                            name: cmd.info.embed.field.authorizer.name,
+                            value: cmd.info.embed.field.authorizer.value({ authorizerId: match.ar.authorizer ?? match.ar.author ?? `????` }),
+                            inline: true
+                        }
                     ]
                 }
             ]

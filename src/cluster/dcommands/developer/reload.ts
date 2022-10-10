@@ -1,6 +1,6 @@
 import { GlobalCommand } from '@blargbot/cluster/command';
 import { CommandResult, ICommandManager } from '@blargbot/cluster/types';
-import { CommandType, pluralise as p } from '@blargbot/cluster/utils';
+import { CommandType } from '@blargbot/cluster/utils';
 import { ModuleLoader } from '@blargbot/core/modules';
 
 import templates from '../../text';
@@ -16,23 +16,23 @@ export class ReloadCommand extends GlobalCommand {
                 {
                     parameters: `commands {commands[0]}`,
                     description: cmd.commands.description,
-                    execute: (ctx, [commands]) => this.reloadModules(ctx.cluster.commands, commands.asStrings, `command`)
+                    execute: (ctx, [commands]) => this.reloadModules(ctx.cluster.commands, commands.asStrings, `commands`)
                 },
                 {
                     parameters: `events {events[0]}`,
                     description: cmd.events.description,
-                    execute: (ctx, [events]) => this.reloadModules(ctx.cluster.events, events.asStrings, `event`)
+                    execute: (ctx, [events]) => this.reloadModules(ctx.cluster.events, events.asStrings, `events`)
                 },
                 {
                     parameters: `services {services[0]}`,
                     description: cmd.services.description,
-                    execute: (ctx, [services]) => this.reloadModules(ctx.cluster.services, services.asStrings, `service`)
+                    execute: (ctx, [services]) => this.reloadModules(ctx.cluster.services, services.asStrings, `services`)
                 }
             ]
         });
     }
 
-    public async reloadModules<T>(loader: ModuleLoader<T> | ICommandManager, members: readonly string[], type: string): Promise<CommandResult> {
+    public async reloadModules<T>(loader: ModuleLoader<T> | ICommandManager, members: readonly string[], type: keyof typeof cmd): Promise<CommandResult> {
         let count = members.length;
         if (members.length === 0) {
             await (loader instanceof ModuleLoader ? loader.reload(true) : loader.load());
@@ -41,7 +41,7 @@ export class ReloadCommand extends GlobalCommand {
             await (loader instanceof ModuleLoader ? loader.reload(loader.source(members)) : loader.load(members));
         }
 
-        return `✅ Successfully reloaded ${count} ${p(count, type)}`;
+        return cmd[type].success({ count });
     }
 
 }

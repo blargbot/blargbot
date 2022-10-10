@@ -9,7 +9,11 @@ import { Command } from "./command/Command";
 import { CommandContext } from "./command/CommandContext";
 import { GuildCommandContext } from "./types";
 
-export function t(value: string): IFormattable<string> {
+export function literal(value: string): IFormattable<string>;
+export function literal(value: string | undefined): IFormattable<string> | undefined;
+export function literal(value: string | undefined): IFormattable<string> | undefined {
+    if (value === undefined)
+        return undefined;
     return {
         format() {
             return value;
@@ -26,496 +30,504 @@ export const templates = crunchTree(`cluster`, {
     common: {
     },
     regex: {
-        tooLong: f(`❌ Regex is too long!`),
-        invalid: f(`❌ Regex is invalid!`),
-        unsafe: f(`❌ Regex is unsafe!\nIf you are 100% sure your regex is valid, it has likely been blocked due to how I detect catastrophic backtracking.\nYou can find more info about catastrophic backtracking here: <https://www.regular-expressions.info/catastrophic.html>`),
-        matchesEverything: f(`❌ Your regex cannot match everything!`)
+        tooLong: translatable(`❌ Regex is too long!`),
+        invalid: translatable(`❌ Regex is invalid!`),
+        unsafe: translatable(`❌ Regex is unsafe!\nIf you are 100% sure your regex is valid, it has likely been blocked due to how I detect catastrophic backtracking.\nYou can find more info about catastrophic backtracking here: <https://www.regular-expressions.info/catastrophic.html>`),
+        matchesEverything: translatable(`❌ Your regex cannot match everything!`)
     },
     commands: {
         $errors: {
-            generic: f(`❌ Something went wrong while handling your command!\nError id: \`{token}\``).withArgs<{ token: string; }>(),
-            alreadyRunning: f(`❌ Sorry, this command is already running! Please wait and try again.`),
-            guildOnly: f(`❌ \`{prefix}{commandName}\` can only be used on guilds.`).withArgs<CommandContext>(),
-            privateOnly: f(`❌ \`{prefix}{commandName}\` can only be used in private messages.`).withArgs<CommandContext>(),
+            generic: translatable(`❌ Something went wrong while handling your command!\nError id: \`{token}\``).withArgs<{ token: string; }>(),
+            alreadyRunning: translatable(`❌ Sorry, this command is already running! Please wait and try again.`),
+            guildOnly: translatable(`❌ \`{prefix}{commandName}\` can only be used on guilds.`).withArgs<CommandContext>(),
+            privateOnly: translatable(`❌ \`{prefix}{commandName}\` can only be used in private messages.`).withArgs<CommandContext>(),
             rateLimited: {
-                local: f(`❌ Sorry, you ran this command too recently! Please try again in {delay#duration(S)} seconds.`).withArgs<{ duration: Duration; }>(),
-                global: f(`❌ Sorry, you've been running too many commands. To prevent abuse, I'm going to have to time you out for \`{duration#duration(S)}s\`.\n\nContinuing to spam commands will lengthen your timeout by \`{penalty#duration(S)}s\`!`).withArgs<{ duration: Duration; penalty: Duration; }>()
+                local: translatable(`❌ Sorry, you ran this command too recently! Please try again in {delay#duration(S)} seconds.`).withArgs<{ duration: Duration; }>(),
+                global: translatable(`❌ Sorry, you've been running too many commands. To prevent abuse, I'm going to have to time you out for \`{duration#duration(S)}s\`.\n\nContinuing to spam commands will lengthen your timeout by \`{penalty#duration(S)}s\`!`).withArgs<{ duration: Duration; penalty: Duration; }>()
             },
             missingPermission: {
-                generic: f(`❌ Oops, I don't seem to have permission to do that!`),
-                guild: f(`❌ Hi! You asked me to do something, but I didn't have permission to do it! Please make sure I have permissions to do what you asked.\nGuild: {channel.guild.name}\nChannel: {channel#tag}\nCommand: {commandText}\n\nIf you wish to stop seeing these messages, do the command \`{prefix}dmerrors\`.`).withArgs<GuildCommandContext>()
+                generic: translatable(`❌ Oops, I don't seem to have permission to do that!`),
+                guild: translatable(`❌ Hi! You asked me to do something, but I didn't have permission to do it! Please make sure I have permissions to do what you asked.\nGuild: {channel.guild.name}\nChannel: {channel#tag}\nCommand: {commandText}\n\nIf you wish to stop seeing these messages, do the command \`{prefix}dmerrors\`.`).withArgs<GuildCommandContext>()
             },
             arguments: {
-                invalid: f(`❌ Invalid arguments! \`{value}\` isn't {types#map(\`{}\`)#join(, | or )}`).withArgs<{ value: string; types: string[]; }>(),
-                missing: f(`❌ Not enough arguments! You need to provide {missing#map(\`{}\`)#join(, | or )}`).withArgs<{ missing: string[]; }>(),
-                unknown: f(`❌ I couldn't understand those arguments!`),
-                noneNeeded: f(`❌ Too many arguments! \`{command.name}\` doesn't need any arguments`).withArgs<{ command: Command; }>(),
-                tooMany: f(`❌ Too many arguments! Expected at most {max} {max#plural(1:argument|arguments)}, but you gave {given}`).withArgs<{ max: number; given: number; }>()
+                invalid: translatable(`❌ Invalid arguments! \`{value}\` isn't {types#map(\`{}\`)#join(, | or )}`).withArgs<{ value: string; types: string[]; }>(),
+                missing: translatable(`❌ Not enough arguments! You need to provide {missing#map(\`{}\`)#join(, | or )}`).withArgs<{ missing: string[]; }>(),
+                unknown: translatable(`❌ I couldn't understand those arguments!`),
+                noneNeeded: translatable(`❌ Too many arguments! \`{command.name}\` doesn't need any arguments`).withArgs<{ command: Command; }>(),
+                tooMany: translatable(`❌ Too many arguments! Expected at most {max} {max#plural(1:argument|arguments)}, but you gave {given}`).withArgs<{ max: number; given: number; }>()
             },
-            renderFailed: f(`❌ Something went wrong while trying to render that!`)
+            renderFailed: translatable(`❌ Something went wrong while trying to render that!`)
         },
         announce: {
             default: {
-                description: f(`Resets the current configuration for announcements`),
+                description: translatable(`Resets the current configuration for announcements`),
                 embed: {
                     author: {
-                        name: f(`Announcement`)
+                        name: translatable(`Announcement`)
                     }
                 },
-                failed: f(`❌ I wasn't able to send that message for some reason!`),
-                success: f(`✅ I've sent the announcement!`)
+                failed: translatable(`❌ I wasn't able to send that message for some reason!`),
+                success: translatable(`✅ I've sent the announcement!`)
             },
             reset: {
-                description: f(`Resets the current configuration for announcements`),
-                success: f(`✅ Announcement configuration reset! Do \`{prefix}announce configure\` to reconfigure it.`).withArgs<CommandContext>()
+                description: translatable(`Resets the current configuration for announcements`),
+                success: translatable(`✅ Announcement configuration reset! Do \`{prefix}announce configure\` to reconfigure it.`).withArgs<CommandContext>()
             },
             configure: {
-                description: f(`Resets the current configuration for announcements`),
+                description: translatable(`Resets the current configuration for announcements`),
                 state: {
-                    ChannelInvalid: f(`❌ The announcement channel must be a text channel!`),
-                    ChannelNotFound: f(`❌ No channel is set up for announcements`),
-                    ChannelNotInGuild: f(`❌ The announcement channel must be on this server!`),
-                    NotAllowed: f(`❌ You cannot send announcements`),
-                    RoleNotFound: f(`❌ No role is set up for announcements`),
-                    TimedOut: f(`❌ You must configure a role and channel to use announcements!`),
-                    Success: f(`✅ Your announcements have been configured!`)
+                    ChannelInvalid: translatable(`❌ The announcement channel must be a text channel!`),
+                    ChannelNotFound: translatable(`❌ No channel is set up for announcements`),
+                    ChannelNotInGuild: translatable(`❌ The announcement channel must be on this server!`),
+                    NotAllowed: translatable(`❌ You cannot send announcements`),
+                    RoleNotFound: translatable(`❌ No role is set up for announcements`),
+                    TimedOut: translatable(`❌ You must configure a role and channel to use announcements!`),
+                    Success: translatable(`✅ Your announcements have been configured!`)
                 }
             },
             info: {
-                description: f(`Displays the current configuration for announcements on this server`),
-                unconfigured: f(`ℹ️ Announcements are not yet configured for this server. Please use \`{prefix}announce configure\` to set them up`).withArgs<CommandContext>(),
-                details: f(`ℹ️ Announcements will be sent in {channel#tag=\`<unconfigured>\`} and will mention {role#tag=\`<unconfigured>\`}`).withArgs<{ channel?: Eris.Channel; role?: Eris.Role; }>()
+                description: translatable(`Displays the current configuration for announcements on this server`),
+                unconfigured: translatable(`ℹ️ Announcements are not yet configured for this server. Please use \`{prefix}announce configure\` to set them up`).withArgs<CommandContext>(),
+                details: translatable(`ℹ️ Announcements will be sent in {channel#tag=\`<unconfigured>\`} and will mention {role#tag=\`<unconfigured>\`}`).withArgs<{ channel?: Eris.Channel; role?: Eris.Role; }>()
             }
         },
         autoResponse: {
-            notWhitelisted: f(`❌ Sorry, autoresponses are currently whitelisted. To request access, do \`b!ar whitelist [reason]\``),
-            notFoundId: f(`❌ There isn't an autoresponse with id \`{id}\` here!`).withArgs<{ id: string; }>(),
-            notFoundEverything: f(`❌ There isn't an everything autoresponse here!`),
+            notWhitelisted: translatable(`❌ Sorry, autoresponses are currently whitelisted. To request access, do \`b!ar whitelist [reason]\``),
+            notFoundId: translatable(`❌ There isn't an autoresponse with id \`{id}\` here!`).withArgs<{ id: string; }>(),
+            notFoundEverything: translatable(`❌ There isn't an everything autoresponse here!`),
             flags: {
-                regex: f(`If specified, parse as /regex/ rather than plaintext. Unsafe and very long (more than 2000 characters) regexes will not parse successfully.`),
-                everything: f(`Makes the added autoresponse respond to everything. Only one is allowed.`)
+                regex: translatable(`If specified, parse as /regex/ rather than plaintext. Unsafe and very long (more than 2000 characters) regexes will not parse successfully.`),
+                everything: translatable(`Makes the added autoresponse respond to everything. Only one is allowed.`)
             },
             whitelist: {
-                description: f(`Requests for the current server to have autoresponses whitelisted`),
-                alreadyApproved: f(`❌ This server is already whitelisted!`),
-                requested: f(`✅ Your request has been sent. Please don't spam this command.\n\nYou will hear back in this channel if you were accepted or rejected.`)
+                description: translatable(`Requests for the current server to have autoresponses whitelisted`),
+                alreadyApproved: translatable(`❌ This server is already whitelisted!`),
+                requested: translatable(`✅ Your request has been sent. Please don't spam this command.\n\nYou will hear back in this channel if you were accepted or rejected.`)
             },
             list: {
-                description: f(`Displays information about autoresponses`),
-                noAutoresponses: f(`❌ There are no autoresponses configured for this server!`),
+                description: translatable(`Displays information about autoresponses`),
+                noAutoresponses: translatable(`❌ There are no autoresponses configured for this server!`),
                 embed: {
-                    title: f(`Autoresponses`),
+                    title: translatable(`Autoresponses`),
                     field: {
-                        name: f(`Autoresponse \`{id}\``).withArgs<{ id: string; }>(),
+                        name: translatable(`Autoresponse \`{id}\``).withArgs<{ id: string; }>(),
                         value: {
-                            regex: f(`**Trigger regex:**\n\`{trigger}\``).withArgs<{ trigger: string; }>(),
-                            text: f(`**Trigger text:**\n\`{trigger}\``).withArgs<{ trigger: string; }>(),
-                            any: f(`**Trigger:**\neverything`)
+                            regex: translatable(`**Trigger regex:**\n\`{trigger}\``).withArgs<{ trigger: string; }>(),
+                            text: translatable(`**Trigger text:**\n\`{trigger}\``).withArgs<{ trigger: string; }>(),
+                            any: translatable(`**Trigger:**\neverything`)
                         }
                     }
                 }
             },
             info: {
-                description: f(`Displays information about an autoresponse`),
+                description: translatable(`Displays information about an autoresponse`),
                 embed: {
                     title: {
-                        id: f(`Autoresponse #{id}`).withArgs<{ id: string; }>(),
-                        everything: f(`Everything Autoresponse`)
+                        id: translatable(`Autoresponse #{id}`).withArgs<{ id: string; }>(),
+                        everything: translatable(`Everything Autoresponse`)
                     },
                     field: {
                         trigger: {
-                            regex: f(`Trigger regex`),
-                            text: f(`Trigger text`)
+                            name: {
+                                regex: translatable(`Trigger regex`),
+                                text: translatable(`Trigger text`)
+                            }
                         },
-                        author: f(`Author`),
-                        authorizer: f(`Authorizer`)
+                        author: {
+                            name: translatable(`Author`),
+                            value: translatable(`<@{authorId}> ({authorId})`).withArgs<{ authorId: string; }>()
+                        },
+                        authorizer: {
+                            name: translatable(`Authorizer`),
+                            value: translatable(`<@{authorizerId}> ({authorizerId})`).withArgs<{ authorizerId: string; }>()
+                        }
                     }
                 }
             },
             create: {
-                description: f(`Adds a autoresponse which matches the given pattern`),
-                everythingAlreadyExists: f(`❌ An autoresponse that responds to everything already exists!`),
-                everythingCannotHavePattern: f(`❌ Autoresponses that respond to everything cannot have a pattern`),
-                tooMany: f(`❌ You already have {max} autoresponses!`).withArgs<{ max: number; }>(),
-                missingEFlag: f(`❌ If you want to respond to everything, you need to use the \`-e\` flag.`),
-                success: f(`✅ Your autoresponse has been added! Use \`{prefix}autoresponse set {id} <bbtag>\` to change the code that it runs`).withArgs<{ context: CommandContext; id: `everything` | number; }>()
+                description: translatable(`Adds a autoresponse which matches the given pattern`),
+                everythingAlreadyExists: translatable(`❌ An autoresponse that responds to everything already exists!`),
+                everythingCannotHavePattern: translatable(`❌ Autoresponses that respond to everything cannot have a pattern`),
+                tooMany: translatable(`❌ You already have {max} autoresponses!`).withArgs<{ max: number; }>(),
+                missingEFlag: translatable(`❌ If you want to respond to everything, you need to use the \`-e\` flag.`),
+                success: translatable(`✅ Your autoresponse has been added! Use \`{prefix}autoresponse set {id} <bbtag>\` to change the code that it runs`).withArgs<{ context: CommandContext; id: `everything` | number; }>()
             },
             delete: {
-                description: f(`Deletes an autoresponse. Ids can be seen when using the \`list\` subcommand`),
+                description: translatable(`Deletes an autoresponse. Ids can be seen when using the \`list\` subcommand`),
                 success: {
-                    regex: f(`✅ Autoresponse {id} (Regex: \`{term}\`) has been deleted`).withArgs<{ id: number; term: string; }>(),
-                    text: f(`✅ Autoresponse {id} (Pattern: \`{term}\`) has been deleted`).withArgs<{ id: number; term: string; }>(),
-                    everything: f(`✅ The everything autoresponse has been deleted!`)
+                    regex: translatable(`✅ Autoresponse {id} (Regex: \`{term}\`) has been deleted`).withArgs<{ id: number; term: string; }>(),
+                    text: translatable(`✅ Autoresponse {id} (Pattern: \`{term}\`) has been deleted`).withArgs<{ id: number; term: string; }>(),
+                    everything: translatable(`✅ The everything autoresponse has been deleted!`)
                 }
             },
             setPattern: {
-                description: f(`Sets the pattern of an autoresponse`),
-                notEmpty: f(`❌ The pattern cannot be empty`),
-                notEverything: f(`❌ Cannot set the pattern for the everything autoresponse`),
+                description: translatable(`Sets the pattern of an autoresponse`),
+                notEmpty: translatable(`❌ The pattern cannot be empty`),
+                notEverything: translatable(`❌ Cannot set the pattern for the everything autoresponse`),
                 success: {
-                    regex: f(`✅ The pattern for autoresponse {id} has been set to (regex) \`{term}\`!`).withArgs<{ id: number; term: string; }>(),
-                    text: f(`✅ The pattern for autoresponse {id} has been set to \`{term}\`!`).withArgs<{ id: number; term: string; }>()
+                    regex: translatable(`✅ The pattern for autoresponse {id} has been set to (regex) \`{term}\`!`).withArgs<{ id: number; term: string; }>(),
+                    text: translatable(`✅ The pattern for autoresponse {id} has been set to \`{term}\`!`).withArgs<{ id: number; term: string; }>()
                 }
             },
             set: {
-                description: f(`Sets the bbtag code to run when the autoresponse is triggered`),
+                description: translatable(`Sets the bbtag code to run when the autoresponse is triggered`),
                 success: {
-                    id: f(`✅ Updated the code for autoresponse {id}`).withArgs<{ id: number; }>(),
-                    everything: f(`✅ Updated the code for the everything autoresponse`)
+                    id: translatable(`✅ Updated the code for autoresponse {id}`).withArgs<{ id: number; }>(),
+                    everything: translatable(`✅ Updated the code for the everything autoresponse`)
                 }
             },
             raw: {
-                description: f(`Gets the bbtag that is executed when the autoresponse is triggered`),
+                description: translatable(`Gets the bbtag that is executed when the autoresponse is triggered`),
                 inline: {
-                    id: f(`✅ The raw code for autoresponse {id} is: \`\`\`{content}\`\`\``).withArgs<{ id: number; content: string; }>(),
-                    everything: f(`✅ The raw code for the everything autoresponse is: \`\`\`{content}\`\`\``).withArgs<{ content: string; }>()
+                    id: translatable(`✅ The raw code for autoresponse {id} is: \`\`\`\n{content}\n\`\`\``).withArgs<{ id: number; content: string; }>(),
+                    everything: translatable(`✅ The raw code for the everything autoresponse is: \`\`\`\n{content}\n\`\`\``).withArgs<{ content: string; }>()
                 },
                 attached: {
-                    id: f(`✅ The raw code for autoresponse {id} is attached`).withArgs<{ id: number; }>(),
-                    everything: f(`✅ The raw code for the everything autoresponse is attached`)
+                    id: translatable(`✅ The raw code for autoresponse {id} is attached`).withArgs<{ id: number; }>(),
+                    everything: translatable(`✅ The raw code for the everything autoresponse is attached`)
                 }
             },
             setAuthorizer: {
-                description: f(`Sets the autoresponse to use your permissions for the bbtag when it is triggered`),
+                description: translatable(`Sets the autoresponse to use your permissions for the bbtag when it is triggered`),
                 success: {
-                    id: f(`✅ You are now the authorizer for autoresponse {id}`).withArgs<{ id: number; }>(),
-                    everything: f(`✅ You are now the authorizer for the everything autoresponse`)
+                    id: translatable(`✅ You are now the authorizer for autoresponse {id}`).withArgs<{ id: number; }>(),
+                    everything: translatable(`✅ You are now the authorizer for the everything autoresponse`)
                 }
             },
             debug: {
-                description: f(`Sets the autoresponse to send you the debug output when it is next triggered by one of your messages`),
+                description: translatable(`Sets the autoresponse to send you the debug output when it is next triggered by one of your messages`),
                 success: {
-                    id: f(`✅ The next message that you send that triggers autoresponse {id} will send the debug output here`).withArgs<{ id: number; }>(),
-                    everything: f(`✅ The next message that you send that triggers the everything autoresponse will send the debug output here`)
+                    id: translatable(`✅ The next message that you send that triggers autoresponse {id} will send the debug output here`).withArgs<{ id: number; }>(),
+                    everything: translatable(`✅ The next message that you send that triggers the everything autoresponse will send the debug output here`)
                 }
             }
         },
         ban: {
             flags: {
-                reason: f(`The reason for the (un)ban.`),
-                time: f(`If provided, the user will be unbanned after the period of time. (softban)`)
+                reason: translatable(`The reason for the (un)ban.`),
+                time: translatable(`If provided, the user will be unbanned after the period of time. (softban)`)
             },
             default: {
-                description: f(`Bans a user, where \`days\` is the number of days to delete messages for.\nIf mod-logging is enabled, the ban will be logged.`),
+                description: translatable(`Bans a user, where \`days\` is the number of days to delete messages for.\nIf mod-logging is enabled, the ban will be logged.`),
                 state: {
-                    alreadyBanned: f(`❌ **{user#tag}** is already banned!`).withArgs<{ user: Eris.User; }>(),
-                    memberTooHigh: f(`❌ I don't have permission to ban **{user#tag}**! Their highest role is above my highest role.`).withArgs<{ user: Eris.User; }>(),
-                    moderatorTooLow: f(`❌ You don't have permission to ban **{user#tag}**! Their highest role is above your highest role.`).withArgs<{ user: Eris.User; }>(),
-                    noPerms: f(`❌ I don't have permission to ban **{user#tag}**! Make sure I have the \`ban members\` permission and try again.`).withArgs<{ user: Eris.User; }>(),
-                    moderatorNoPerms: f(`❌ You don't have permission to ban **{user#tag}**! Make sure you have the \`ban members\` permission or one of the permissions specified in the \`ban override\` setting and try again.`).withArgs<{ user: Eris.User; }>(),
-                    success: f(`✅ **{user#tag}** has been banned.`).withArgs<{ user: Eris.User; }>()
+                    alreadyBanned: translatable(`❌ **{user#tag}** is already banned!`).withArgs<{ user: Eris.User; }>(),
+                    memberTooHigh: translatable(`❌ I don't have permission to ban **{user#tag}**! Their highest role is above my highest role.`).withArgs<{ user: Eris.User; }>(),
+                    moderatorTooLow: translatable(`❌ You don't have permission to ban **{user#tag}**! Their highest role is above your highest role.`).withArgs<{ user: Eris.User; }>(),
+                    noPerms: translatable(`❌ I don't have permission to ban **{user#tag}**! Make sure I have the \`ban members\` permission and try again.`).withArgs<{ user: Eris.User; }>(),
+                    moderatorNoPerms: translatable(`❌ You don't have permission to ban **{user#tag}**! Make sure you have the \`ban members\` permission or one of the permissions specified in the \`ban override\` setting and try again.`).withArgs<{ user: Eris.User; }>(),
+                    success: translatable(`✅ **{user#tag}** has been banned.`).withArgs<{ user: Eris.User; }>()
                 },
                 unbanSchedule: {
-                    success: f(`✅ **{user#tag}** has been banned and will be unbanned in **{unban#tag}**`).withArgs<{ user: Eris.User; unban: Duration; }>(),
-                    invalid: f(`⚠️ **{user#tag}** has been banned, but the duration was either 0 seconds or improperly formatted so they won't automatically be unbanned.`).withArgs<{ user: Eris.User; }>()
+                    success: translatable(`✅ **{user#tag}** has been banned and will be unbanned in **{unban#tag}**`).withArgs<{ user: Eris.User; unban: Duration; }>(),
+                    invalid: translatable(`⚠️ **{user#tag}** has been banned, but the duration was either 0 seconds or improperly formatted so they won't automatically be unbanned.`).withArgs<{ user: Eris.User; }>()
                 }
             },
             clear: {
-                description: f(`Unbans a user.\nIf mod-logging is enabled, the ban will be logged.`),
-                userNotFound: f(`❌ I couldn't find that user!`),
+                description: translatable(`Unbans a user.\nIf mod-logging is enabled, the ban will be logged.`),
+                userNotFound: translatable(`❌ I couldn't find that user!`),
                 state: {
-                    notBanned: f(`❌ **{user#tag}** is not currently banned!`).withArgs<{ user: Eris.User; }>(),
-                    noPerms: f(`❌ I don't have permission to unban **{user#tag}**! Make sure I have the \`ban members\` permission and try again.`).withArgs<{ user: Eris.User; }>(),
-                    moderatorNoPerms: f(`❌ You don't have permission to unban **{user#tag}**! Make sure you have the \`ban members\` permission or one of the permissions specified in the \`ban override\` setting and try again.`).withArgs<{ user: Eris.User; }>(),
-                    success: f(`✅ **{user#tag}** has been unbanned.`).withArgs<{ user: Eris.User; }>()
+                    notBanned: translatable(`❌ **{user#tag}** is not currently banned!`).withArgs<{ user: Eris.User; }>(),
+                    noPerms: translatable(`❌ I don't have permission to unban **{user#tag}**! Make sure I have the \`ban members\` permission and try again.`).withArgs<{ user: Eris.User; }>(),
+                    moderatorNoPerms: translatable(`❌ You don't have permission to unban **{user#tag}**! Make sure you have the \`ban members\` permission or one of the permissions specified in the \`ban override\` setting and try again.`).withArgs<{ user: Eris.User; }>(),
+                    success: translatable(`✅ **{user#tag}** has been unbanned.`).withArgs<{ user: Eris.User; }>()
                 }
             }
         },
         blacklist: {
             default: {
-                description: f(`Blacklists the current channel, or the channel that you mention. The bot will not respond until you do \`blacklist\` again.`),
-                notInServer: f(`❌ You cannot blacklist a channel outside of this server`),
+                description: translatable(`Blacklists the current channel, or the channel that you mention. The bot will not respond until you do \`blacklist\` again.`),
+                notInServer: translatable(`❌ You cannot blacklist a channel outside of this server`),
                 success: {
-                    added: f(`✅ {channel#tag} is no longer blacklisted.`).withArgs<{ channel: Eris.Channel; }>(),
-                    removed: f(`✅ {channel#tag} is now blacklisted`).withArgs<{ channel: Eris.Channel; }>()
+                    added: translatable(`✅ {channel#tag} is no longer blacklisted.`).withArgs<{ channel: Eris.Channel; }>(),
+                    removed: translatable(`✅ {channel#tag} is now blacklisted`).withArgs<{ channel: Eris.Channel; }>()
                 }
             }
         },
         bot: {
             reset: {
-                description: f(`Resets the bot to the state it is in when joining a guild for the first time.`),
-                prompt: f(`⚠️ Are you sure you want to reset the bot to its initial state?\nThis will:\n- Reset all settings back to their defaults\n- Delete all custom commands, autoresponses, rolemes, censors, etc\n- Delete all tag guild variables`),
-                cancelled: f(`❌ Reset cancelled`),
-                success: f(`✅ I have been reset back to my initial configuration`)
+                description: translatable(`Resets the bot to the state it is in when joining a guild for the first time.`),
+                prompt: translatable(`⚠️ Are you sure you want to reset the bot to its initial state?\nThis will:\n- Reset all settings back to their defaults\n- Delete all custom commands, autoresponses, rolemes, censors, etc\n- Delete all tag guild variables`),
+                cancelled: translatable(`❌ Reset cancelled`),
+                success: translatable(`✅ I have been reset back to my initial configuration`)
             }
         },
         ccommand: {
-            description: f(`Creates a custom command, using the BBTag language.\n\nCustom commands take precedent over all other commands. As such, you can use it to overwrite commands, or disable them entirely. If the command content is "null" (without the quotations), blargbot will have no output whatsoever, allowing you to disable any built-in command you wish. You cannot overwrite the 'ccommand' command. For more in-depth command customization, see the \`editcommand\` command.\nFor more information about BBTag, visit <{subtags}>.\nBy creating a custom command, you acknowledge that you agree to the Terms of Service (<{tos}>)`).withArgs<{ subtags: string; tos: string; }>(),
+            description: translatable(`Creates a custom command, using the BBTag language.\n\nCustom commands take precedent over all other commands. As such, you can use it to overwrite commands, or disable them entirely. If the command content is "null" (without the quotations), blargbot will have no output whatsoever, allowing you to disable any built-in command you wish. You cannot overwrite the 'ccommand' command. For more in-depth command customization, see the \`editcommand\` command.\nFor more information about BBTag, visit <{subtags}>.\nBy creating a custom command, you acknowledge that you agree to the Terms of Service (<{tos}>)`).withArgs<{ subtags: string; tos: string; }>(),
             request: {
-                name: f(`Enter the name of the custom command:`),
-                content: f(`Enter the custom command's contents:`)
+                name: translatable(`Enter the name of the custom command:`),
+                content: translatable(`Enter the custom command's contents:`)
             },
             errors: {
-                isAlias: f(`❌ The command \`{commandName}\` is an alias to the tag \`{tagName}\``).withArgs<{ commandName: string; tagName: string; }>(),
-                alreadyExists: f(`❌ The \`{name}\` custom command already exists!`).withArgs<{ name: string; }>(),
-                doesNotExist: f(`❌ The \`{name}\` custom command doesn't exist!`).withArgs<{ name: string; }>(),
-                isHidden: f(`❌ The \`{name}\` custom command is a hidden command!`).withArgs<{ name: string; }>(),
-                invalidBBTag: f(`❌ There were errors with the bbtag you provided!\n{errors#join(\n)}`).withArgs<{ errors: Iterable<IFormattable<string>>; }>(),
-                bbtagError: f(`❌ [{location.line},{location.column}]: {message}`).withArgs<AnalysisResult>(),
-                bbtagWarning: f(`❌ [{location.line},{location.column}]: {message}`).withArgs<AnalysisResult>(),
-                nameReserved: f(`❌ The command name \`{name}\` is reserved and cannot be overwritten`).withArgs<{ name: string; }>(),
-                tooLong: f(`❌ Command names cannot be longer than {max} characters`).withArgs<{ max: number; }>()
+                isAlias: translatable(`❌ The command \`{commandName}\` is an alias to the tag \`{tagName}\``).withArgs<{ commandName: string; tagName: string; }>(),
+                alreadyExists: translatable(`❌ The \`{name}\` custom command already exists!`).withArgs<{ name: string; }>(),
+                doesNotExist: translatable(`❌ The \`{name}\` custom command doesn't exist!`).withArgs<{ name: string; }>(),
+                isHidden: translatable(`❌ The \`{name}\` custom command is a hidden command!`).withArgs<{ name: string; }>(),
+                invalidBBTag: translatable(`❌ There were errors with the bbtag you provided!\n{errors#join(\n)}`).withArgs<{ errors: Iterable<IFormattable<string>>; }>(),
+                bbtagError: translatable(`❌ [{location.line},{location.column}]: {message}`).withArgs<AnalysisResult>(),
+                bbtagWarning: translatable(`❌ [{location.line},{location.column}]: {message}`).withArgs<AnalysisResult>(),
+                nameReserved: translatable(`❌ The command name \`{name}\` is reserved and cannot be overwritten`).withArgs<{ name: string; }>(),
+                tooLong: translatable(`❌ Command names cannot be longer than {max} characters`).withArgs<{ max: number; }>()
             },
             test: {
                 default: {
-                    description: f(`Uses the BBTag engine to execute the content as if it was a custom command`)
+                    description: translatable(`Uses the BBTag engine to execute the content as if it was a custom command`)
                 },
                 debug: {
-                    description: f(`Uses the BBTag engine to execute the content as if it was a custom command and will return the debug output`)
+                    description: translatable(`Uses the BBTag engine to execute the content as if it was a custom command and will return the debug output`)
                 }
             },
             docs: {
-                description: f(`Returns helpful information about the specified topic.`)
+                description: translatable(`Returns helpful information about the specified topic.`)
             },
             debug: {
-                description: f(`Runs a custom command with some arguments. A debug file will be sent in a DM after the command has finished.`),
-                notOwner: f(`❌ You cannot debug someone elses custom command.`),
-                success: f(`ℹ️ Ive sent the debug output in a DM`)
+                description: translatable(`Runs a custom command with some arguments. A debug file will be sent in a DM after the command has finished.`),
+                notOwner: translatable(`❌ You cannot debug someone elses custom command.`),
+                success: translatable(`ℹ️ Ive sent the debug output in a DM`)
             },
             create: {
-                description: f(`Creates a new custom command with the content you give`),
-                success: f(`✅ Custom command \`{name}\` created.\n{errors#join(\n)}`).withArgs<{ name: string; errors: Iterable<IFormattable<string>>; }>()
+                description: translatable(`Creates a new custom command with the content you give`),
+                success: translatable(`✅ Custom command \`{name}\` created.\n{errors#join(\n)}`).withArgs<{ name: string; errors: Iterable<IFormattable<string>>; }>()
             },
             edit: {
-                description: f(`Edits an existing custom command to have the content you specify`),
-                success: f(`✅ Custom command \`{name}\` edited.\n{errors#join(\n)}`).withArgs<{ name: string; errors: Iterable<IFormattable<string>>; }>()
+                description: translatable(`Edits an existing custom command to have the content you specify`),
+                success: translatable(`✅ Custom command \`{name}\` edited.\n{errors#join(\n)}`).withArgs<{ name: string; errors: Iterable<IFormattable<string>>; }>()
             },
             set: {
-                description: f(`Sets the custom command to have the content you specify. If the custom command doesn't exist it will be created.`),
-                success: f(`✅ Custom command \`{name}\` set.\n{errors#join(\n)}`).withArgs<{ name: string; errors: Iterable<IFormattable<string>>; }>()
+                description: translatable(`Sets the custom command to have the content you specify. If the custom command doesn't exist it will be created.`),
+                success: translatable(`✅ Custom command \`{name}\` set.\n{errors#join(\n)}`).withArgs<{ name: string; errors: Iterable<IFormattable<string>>; }>()
             },
             delete: {
-                description: f(`Deletes an existing custom command`),
-                success: f(`✅ The \`{name}\` custom command is gone forever!`).withArgs<{ name: string; }>()
+                description: translatable(`Deletes an existing custom command`),
+                success: translatable(`✅ The \`{name}\` custom command is gone forever!`).withArgs<{ name: string; }>()
             },
             rename: {
-                description: f(`Renames the custom command`),
-                enterOldName: f(`Enter the name of the custom command to rename:`),
-                enterNewName: f(`Enter the new name of the custom command:`),
-                success: f(`✅ The \`{oldName}\` custom command has been renamed to \`{newName}\`.`).withArgs<{ oldName: string; newName: string; }>()
+                description: translatable(`Renames the custom command`),
+                enterOldName: translatable(`Enter the name of the custom command to rename:`),
+                enterNewName: translatable(`Enter the new name of the custom command:`),
+                success: translatable(`✅ The \`{oldName}\` custom command has been renamed to \`{newName}\`.`).withArgs<{ oldName: string; newName: string; }>()
             },
             raw: {
-                description: f(`Gets the raw content of the custom command`),
-                inline: f(`ℹ️ The raw code for {name} is: \`\`\`{content}\`\`\``).withArgs<{ name: string; content: string; }>(),
-                attached: f(`ℹ️ The raw code for {name} is attached`).withArgs<{ name: string; }>()
+                description: translatable(`Gets the raw content of the custom command`),
+                inline: translatable(`ℹ️ The raw code for {name} is: \`\`\`\n{content}\n\`\`\``).withArgs<{ name: string; content: string; }>(),
+                attached: translatable(`ℹ️ The raw code for {name} is attached`).withArgs<{ name: string; }>()
             },
             list: {
-                description: f(`Lists all custom commands on this server`),
+                description: translatable(`Lists all custom commands on this server`),
                 embed: {
-                    title: f(`List of custom commands`),
+                    title: translatable(`List of custom commands`),
                     field: {
                         anyRole: {
-                            name: f(`Any role`)
+                            name: translatable(`Any role`)
                         }
                     }
                 }
             },
             cooldown: {
-                description: f(`Sets the cooldown of a custom command, in milliseconds`),
-                mustBePositive: f(`❌ The cooldown must be greater than 0ms`),
-                success: f(`✅ The custom command \`{name}\` now has a cooldown of \`{cooldown#duration(MS)}ms\`.`).withArgs<{ name: string; cooldown: Duration; }>()
+                description: translatable(`Sets the cooldown of a custom command, in milliseconds`),
+                mustBePositive: translatable(`❌ The cooldown must be greater than 0ms`),
+                success: translatable(`✅ The custom command \`{name}\` now has a cooldown of \`{cooldown#duration(MS)}ms\`.`).withArgs<{ name: string; cooldown: Duration; }>()
             },
             author: {
-                description: f(`Displays the name of the custom command's author`),
-                noAuthorizer: f(`✅ The custom command \`{name}\` was made by **{author#tag}**`).withArgs<{ name: string; author?: UserTag; }>(),
-                withAuthorizer: f(`✅ The custom command \`{name}\` was made by **{author#tag}** and is authorized by **{authorizer#tag}**`).withArgs<{ name: string; author?: UserTag; authorizer?: UserTag; }>()
+                description: translatable(`Displays the name of the custom command's author`),
+                noAuthorizer: translatable(`✅ The custom command \`{name}\` was made by **{author#tag}**`).withArgs<{ name: string; author?: UserTag; }>(),
+                withAuthorizer: translatable(`✅ The custom command \`{name}\` was made by **{author#tag}** and is authorized by **{authorizer#tag}**`).withArgs<{ name: string; author?: UserTag; authorizer?: UserTag; }>()
             },
             flag: {
-                updated: f(`✅ The flags for \`{name}\` have been updated.`).withArgs<{ name: string; }>(),
+                updated: translatable(`✅ The flags for \`{name}\` have been updated.`).withArgs<{ name: string; }>(),
                 get: {
-                    description: f(`Lists the flags the custom command accepts`),
-                    none: f(`❌ The \`{name}\` custom command has no flags.`).withArgs<{ name: string; }>(),
-                    success: f(`✅ The \`{name}\` custom command has the following flags:\n\n{flags#map(\`-{flag}\`/\`--{word}\`: {description})#join(\n)}`).withArgs<{ name: string; flags: Iterable<FlagDefinition<string>>; }>()
+                    description: translatable(`Lists the flags the custom command accepts`),
+                    none: translatable(`❌ The \`{name}\` custom command has no flags.`).withArgs<{ name: string; }>(),
+                    success: translatable(`✅ The \`{name}\` custom command has the following flags:\n\n{flags#map(\`-{flag}\`/\`--{word}\`: {description})#join(\n)}`).withArgs<{ name: string; flags: Iterable<FlagDefinition<string>>; }>()
                 },
                 create: {
-                    description: f(`Adds multiple flags to your custom command. Flags should be of the form \`-<f> <flag> [flag description]\`\ne.g. \`b!cc flags add myCommand -c category The category you want to use -n name Your name\``),
-                    wordMissing: f(`❌ No word was specified for the \`{flag}\` flag`).withArgs<{ flag: string; }>(),
-                    flagExists: f(`❌ The flag \`{flag}\` already exists!`).withArgs<{ flag: string; }>(),
-                    wordExists: f(`❌ A flag with the word \`{word}\` already exists!`).withArgs<{ word: string; }>()
+                    description: translatable(`Adds multiple flags to your custom command. Flags should be of the form \`-<f> <flag> [flag description]\`\ne.g. \`b!cc flags add myCommand -c category The category you want to use -n name Your name\``),
+                    wordMissing: translatable(`❌ No word was specified for the \`{flag}\` flag`).withArgs<{ flag: string; }>(),
+                    flagExists: translatable(`❌ The flag \`{flag}\` already exists!`).withArgs<{ flag: string; }>(),
+                    wordExists: translatable(`❌ A flag with the word \`{word}\` already exists!`).withArgs<{ word: string; }>()
                 },
                 delete: {
-                    description: f(`Removes multiple flags from your custom command. Flags should be of the form \`-<f>\`\ne.g. \`b!cc flags remove myCommand -c -n\``)
+                    description: translatable(`Removes multiple flags from your custom command. Flags should be of the form \`-<f>\`\ne.g. \`b!cc flags remove myCommand -c -n\``)
                 }
             },
             setHelp: {
-                description: f(`Sets the help text to show for the command`),
-                success: f(`✅ Help text for custom command \`{name}\` set.`).withArgs<{ name: string; }>()
+                description: translatable(`Sets the help text to show for the command`),
+                success: translatable(`✅ Help text for custom command \`{name}\` set.`).withArgs<{ name: string; }>()
             },
             hide: {
-                description: f(`Toggles whether the command is hidden from the command list or not`),
-                success: f(`✅ Custom command \`{name}\` is now {hidden#bool(hidden|visible)}.`).withArgs<{ name: string; hidden: boolean; }>()
+                description: translatable(`Toggles whether the command is hidden from the command list or not`),
+                success: translatable(`✅ Custom command \`{name}\` is now {hidden#bool(hidden|visible)}.`).withArgs<{ name: string; hidden: boolean; }>()
             },
             setRole: {
-                description: f(`Sets the roles that are allowed to use the command`),
-                success: f(`✅ Roles for custom command \`{name}\` set to {roles#map({mention})#join(, | and )}.`).withArgs<{ name: string; roles: Iterable<Eris.Role>; }>()
+                description: translatable(`Sets the roles that are allowed to use the command`),
+                success: translatable(`✅ Roles for custom command \`{name}\` set to {roles#map({mention})#join(, | and )}.`).withArgs<{ name: string; roles: Iterable<Eris.Role>; }>()
             },
             shrinkwrap: {
-                description: f(`Bundles up the given commands into a single file that you can download and install into another server`),
+                description: translatable(`Bundles up the given commands into a single file that you can download and install into another server`),
                 confirm: {
-                    prompt: f(`Salutations! You have discovered the super handy ShrinkWrapper9000!\n\nIf you decide to proceed, this will:\n{steps#join(\n)}\nThis will not:\n - Export variables\n - Export authors or authorizers\n - Export dependencies`).withArgs<{ steps: Iterable<IFormattable<string>>; }>(),
-                    export: f(` - Export the custom command \`{name}\``).withArgs<{ name: string; }>(),
-                    continue: f(`Confirm`),
-                    cancel: f(`Cancel`)
+                    prompt: translatable(`Salutations! You have discovered the super handy ShrinkWrapper9000!\n\nIf you decide to proceed, this will:\n{steps#join(\n)}\nThis will not:\n - Export variables\n - Export authors or authorizers\n - Export dependencies`).withArgs<{ steps: Iterable<IFormattable<string>>; }>(),
+                    export: translatable(` - Export the custom command \`{name}\``).withArgs<{ name: string; }>(),
+                    continue: translatable(`Confirm`),
+                    cancel: translatable(`Cancel`)
                 },
-                cancelled: f(`✅ Maybe next time then.`),
-                success: f(`✅ No problem, my job here is done.`)
+                cancelled: translatable(`✅ Maybe next time then.`),
+                success: translatable(`✅ No problem, my job here is done.`)
             },
             install: {
-                description: f(`Bundles up the given commands into a single file that you can download and install into another server`),
-                fileMissing: f(`❌ You have to upload the installation file, or give me a URL to one.`),
-                malformed: f(`❌ Your installation file was malformed.`),
+                description: translatable(`Bundles up the given commands into a single file that you can download and install into another server`),
+                fileMissing: translatable(`❌ You have to upload the installation file, or give me a URL to one.`),
+                malformed: translatable(`❌ Your installation file was malformed.`),
                 confirm: {
-                    unsigned: f(`⚠️ **Warning**: This installation file is **unsigned**. It did not come from me. Please double check to make sure you want to go through with this.\n\n`),
-                    tampered: f(`⚠️ **Warning**: This installation file's signature is **incorrect**. There is a 100% chance that it has been tampered with. Please double check to make sure you want to go through with this.\n\n`),
-                    prompt: f(`{warning}Salutations! You have discovered the super handy CommandInstaller9000!\n\nIf you decide to proceed, this will:\n{steps#join(\n)}\nThis will also:\n - Set you as the author for all imported commands`).withArgs<{ warning?: IFormattable<string>; steps: Iterable<IFormattable<string>>; }>(),
-                    import: f(`✅ Import the command \`{name}\``).withArgs<{ name: string; }>(),
-                    skip: f(`❌ Ignore the command \`{name}\` as a command with that name already exists`).withArgs<{ name: string; }>(),
-                    continue: f(`Confirm`),
-                    cancel: f(`Cancel`)
+                    unsigned: translatable(`⚠️ **Warning**: This installation file is **unsigned**. It did not come from me. Please double check to make sure you want to go through with this.\n\n`),
+                    tampered: translatable(`⚠️ **Warning**: This installation file's signature is **incorrect**. There is a 100% chance that it has been tampered with. Please double check to make sure you want to go through with this.\n\n`),
+                    prompt: translatable(`{warning}Salutations! You have discovered the super handy CommandInstaller9000!\n\nIf you decide to proceed, this will:\n{steps#join(\n)}\nThis will also:\n - Set you as the author for all imported commands`).withArgs<{ warning?: IFormattable<string>; steps: Iterable<IFormattable<string>>; }>(),
+                    import: translatable(`✅ Import the command \`{name}\``).withArgs<{ name: string; }>(),
+                    skip: translatable(`❌ Ignore the command \`{name}\` as a command with that name already exists`).withArgs<{ name: string; }>(),
+                    continue: translatable(`Confirm`),
+                    cancel: translatable(`Cancel`)
                 },
-                cancelled: f(`✅ Maybe next time then.`),
-                success: f(`✅ No problem, my job here is done.`)
+                cancelled: translatable(`✅ Maybe next time then.`),
+                success: translatable(`✅ No problem, my job here is done.`)
             },
             import: {
-                description: f(`Imports a tag as a ccommand, retaining all data such as author variables`),
-                tagMissing: f(`❌ The \`{name}\` tag doesn't exist!`).withArgs<{ name: string; }>(),
-                success: f(`✅ The tag \`{tagName}\` by **{author#tag}** has been imported as \`{commandName}\` and is authorized by **{authorizer#tag}**`).withArgs<{ tagName: string; commandName: string; author?: UserTag; authorizer?: UserTag; }>()
+                description: translatable(`Imports a tag as a ccommand, retaining all data such as author variables`),
+                tagMissing: translatable(`❌ The \`{name}\` tag doesn't exist!`).withArgs<{ name: string; }>(),
+                success: translatable(`✅ The tag \`{tagName}\` by **{author#tag}** has been imported as \`{commandName}\` and is authorized by **{authorizer#tag}**`).withArgs<{ tagName: string; commandName: string; author?: UserTag; authorizer?: UserTag; }>()
             }
         },
         censor: {
             flags: {
-                regex: f(`If specified, parse as /regex/ rather than plaintext. Unsafe and very long (more than 2000 characters) regexes will not parse successfully.`),
-                decancer: f(`If specified, perform the censor check against the decancered version of the message.`),
-                weight: f(`How many incidents the censor is worth.`),
-                reason: f(`A custom modlog reason. NOT BBTag compatible.`)
+                regex: translatable(`If specified, parse as /regex/ rather than plaintext. Unsafe and very long (more than 2000 characters) regexes will not parse successfully.`),
+                decancer: translatable(`If specified, perform the censor check against the decancered version of the message.`),
+                weight: translatable(`How many incidents the censor is worth.`),
+                reason: translatable(`A custom modlog reason. NOT BBTag compatible.`)
             },
             errors: {
-                doesNotExist: f(`❌ Censor \`{id}\` doesn't exist`).withArgs<{ id: number; }>(),
-                weightNotNumber: f(`❌ The censor weight must be a number but \`{value}\` is not`).withArgs<{ value: string; }>(),
-                invalidType: f(`❌ \`{type}\` is not a valid type`).withArgs<{ type: string; }>(),
+                doesNotExist: translatable(`❌ Censor \`{id}\` doesn't exist`).withArgs<{ id: number; }>(),
+                weightNotNumber: translatable(`❌ The censor weight must be a number but \`{value}\` is not`).withArgs<{ value: string; }>(),
+                invalidType: translatable(`❌ \`{type}\` is not a valid type`).withArgs<{ type: string; }>(),
                 messageNotSet: {
-                    default: f(`❌ A custom default {type} message has not been set yet`).withArgs<{ type: string; }>(),
-                    id: f(`❌ A custom {type} message for censor {id} has not been set yet`).withArgs<{ type: string; id: number; }>()
+                    default: translatable(`❌ A custom default {type} message has not been set yet`).withArgs<{ type: string; }>(),
+                    id: translatable(`❌ A custom {type} message for censor {id} has not been set yet`).withArgs<{ type: string; id: number; }>()
                 }
             },
             add: {
-                description: f(`Creates a censor using the given phrase`),
-                success: f(`✅ Censor \`{id}\` has been created`).withArgs<{ id: number; }>()
+                description: translatable(`Creates a censor using the given phrase`),
+                success: translatable(`✅ Censor \`{id}\` has been created`).withArgs<{ id: number; }>()
             },
             edit: {
-                description: f(`Updates a censor`),
-                success: f(`✅ Censor \`{id}\` has been updated`).withArgs<{ id: number; }>()
+                description: translatable(`Updates a censor`),
+                success: translatable(`✅ Censor \`{id}\` has been updated`).withArgs<{ id: number; }>()
             },
             delete: {
-                description: f(`Deletes a censor`),
-                success: f(`✅ Censor \`{id}\` has been deleted`).withArgs<{ id: number; }>()
+                description: translatable(`Deletes a censor`),
+                success: translatable(`✅ Censor \`{id}\` has been deleted`).withArgs<{ id: number; }>()
             },
             exception: {
                 user: {
-                    description: f(`Adds or removes a user from the list of users which all censors ignore`),
-                    success: f(`✅ {user#tag} is now exempt from all censors`).withArgs<{ user: Eris.User; }>()
+                    description: translatable(`Adds or removes a user from the list of users which all censors ignore`),
+                    success: translatable(`✅ {user#tag} is now exempt from all censors`).withArgs<{ user: Eris.User; }>()
                 },
                 role: {
-                    description: f(`Adds or removes a role from the list of roles which all censors ignore`),
-                    success: f(`✅ Anyone with the role {role#tag} is now exempt from all censors`).withArgs<{ role: Eris.Role; }>()
+                    description: translatable(`Adds or removes a role from the list of roles which all censors ignore`),
+                    success: translatable(`✅ Anyone with the role {role#tag} is now exempt from all censors`).withArgs<{ role: Eris.Role; }>()
                 },
                 channel: {
-                    description: f(`Adds or removes a channel from the list of channels which all censors ignore`),
-                    notOnServer: f(`❌ The channel must be on this server!`),
-                    success: f(`✅ Messages sent in {channel#tag} are now exempt from all censors`).withArgs<{ channel: Eris.Channel; }>()
+                    description: translatable(`Adds or removes a channel from the list of channels which all censors ignore`),
+                    notOnServer: translatable(`❌ The channel must be on this server!`),
+                    success: translatable(`✅ Messages sent in {channel#tag} are now exempt from all censors`).withArgs<{ channel: Eris.Channel; }>()
                 }
             },
             setMessage: {
-                description: f(`Sets the message so show when the given censor causes a user to be granted a \`timeout\`, or to be \`kick\`ed or \`ban\`ned, or the message is \`delete\`d\nIf \`id\` is not provided, the message will be the default message that gets shown if one isn't set for the censor that is triggered`),
+                description: translatable(`Sets the message so show when the given censor causes a user to be granted a \`timeout\`, or to be \`kick\`ed or \`ban\`ned, or the message is \`delete\`d\nIf \`id\` is not provided, the message will be the default message that gets shown if one isn't set for the censor that is triggered`),
                 success: {
-                    default: f(`✅ The default {type} message has been set`).withArgs<{ type: string; }>(),
-                    id: f(`✅ The {type} message for censor {id} has been set`).withArgs<{ type: string; id: number; }>()
+                    default: translatable(`✅ The default {type} message has been set`).withArgs<{ type: string; }>(),
+                    id: translatable(`✅ The {type} message for censor {id} has been set`).withArgs<{ type: string; id: number; }>()
                 }
             },
             setAuthorizer: {
-                description: f(`Sets the custom censor message to use your permissions when executing.`),
+                description: translatable(`Sets the custom censor message to use your permissions when executing.`),
                 success: {
-                    default: f(`✅ The default {type} message authorizer has been set`).withArgs<{ type: string; }>(),
-                    id: f(`✅ The {type} message authorizer for censor {id} has been set`).withArgs<{ type: string; id: number; }>()
+                    default: translatable(`✅ The default {type} message authorizer has been set`).withArgs<{ type: string; }>(),
+                    id: translatable(`✅ The {type} message authorizer for censor {id} has been set`).withArgs<{ type: string; id: number; }>()
                 }
             },
             rawMessage: {
-                description: f(`Gets the raw code for the given censor`),
+                description: translatable(`Gets the raw code for the given censor`),
                 inline: {
-                    default: f(`ℹ️ The raw code for the default {type} message is: \`\`\`{content}\`\`\``).withArgs<{ type: string; content: string; }>(),
-                    id: f(`ℹ️ The raw code for the {type} message for censor \`{id}\` is: \`\`\`{content}\`\`\``).withArgs<{ type: string; id: number; content: string; }>()
+                    default: translatable(`ℹ️ The raw code for the default {type} message is: \`\`\`\n{content}\n\`\`\``).withArgs<{ type: string; content: string; }>(),
+                    id: translatable(`ℹ️ The raw code for the {type} message for censor \`{id}\` is: \`\`\`\n{content}\n\`\`\``).withArgs<{ type: string; id: number; content: string; }>()
                 },
                 attached: {
-                    default: f(`ℹ️ The raw code for the default {type} message is attached`).withArgs<{ type: string; }>(),
-                    id: f(`ℹ️ The raw code for the {type} message for censor \`{id}\` is attached`).withArgs<{ type: string; id: number; }>()
+                    default: translatable(`ℹ️ The raw code for the default {type} message is attached`).withArgs<{ type: string; }>(),
+                    id: translatable(`ℹ️ The raw code for the {type} message for censor \`{id}\` is attached`).withArgs<{ type: string; id: number; }>()
                 }
             },
             debug: {
-                description: f(`Sets the censor to send you the debug output when it is next triggered by one of your messages. Make sure you aren't exempt from censors!`),
-                success: f(`✅ The next message that you send that triggers censor \`{id}\` will send the debug output here`).withArgs<{ id: number; }>()
+                description: translatable(`Sets the censor to send you the debug output when it is next triggered by one of your messages. Make sure you aren't exempt from censors!`),
+                success: translatable(`✅ The next message that you send that triggers censor \`{id}\` will send the debug output here`).withArgs<{ id: number; }>()
             },
             list: {
-                description: f(`Lists all the details about the censors that are currently set up on this server`),
+                description: translatable(`Lists all the details about the censors that are currently set up on this server`),
                 embed: {
-                    title: f(`ℹ️ Censors`),
+                    title: translatable(`ℹ️ Censors`),
                     description: {
-                        value: f(`{censors#join(\n)}`).withArgs<{ censors: Iterable<IFormattable<string>>; }>(),
+                        value: translatable(`{censors#join(\n)}`).withArgs<{ censors: Iterable<IFormattable<string>>; }>(),
                         censor: {
-                            regex: f(`**Censor** \`{id}\` (Regex): {term}`).withArgs<{ id: number; term: string; }>(),
-                            text: f(`**Censor** \`{id}\`: {term}`).withArgs<{ id: number; term: string; }>()
+                            regex: translatable(`**Censor** \`{id}\` (Regex): {term}`).withArgs<{ id: number; term: string; }>(),
+                            text: translatable(`**Censor** \`{id}\`: {term}`).withArgs<{ id: number; term: string; }>()
                         },
-                        none: f(`No censors configured`)
+                        none: translatable(`No censors configured`)
                     },
                     field: {
                         users: {
-                            name: f(`Excluded users`),
-                            value: f(`{users#plural(0:None|{#map(<@{}>)#join( )})}`).withArgs<{ users: Iterable<string>; }>()
+                            name: translatable(`Excluded users`),
+                            value: translatable(`{users#plural(0:None|{#map(<@{}>)#join( )})}`).withArgs<{ users: Iterable<string>; }>()
                         },
                         roles: {
-                            name: f(`Excluded roles`),
-                            value: f(`{roles#plural(0:None|{#map(<@&{}>)#join( )})}`).withArgs<{ roles: Iterable<string>; }>()
+                            name: translatable(`Excluded roles`),
+                            value: translatable(`{roles#plural(0:None|{#map(<@&{}>)#join( )})}`).withArgs<{ roles: Iterable<string>; }>()
                         },
                         channels: {
-                            name: f(`Excluded channels`),
-                            value: f(`{channels#plural(0:None|{#map(<#{}>)#join( )})}`).withArgs<{ channels: Iterable<string>; }>()
+                            name: translatable(`Excluded channels`),
+                            value: translatable(`{channels#plural(0:None|{#map(<#{}>)#join( )})}`).withArgs<{ channels: Iterable<string>; }>()
                         }
                     }
                 }
             },
             info: {
-                description: f(`Gets detailed information about the given censor`),
+                description: translatable(`Gets detailed information about the given censor`),
                 messageFieldValue: {
-                    notSet: f(`Not set`),
-                    set: f(`Author: <@{authorId}>\nAuthorizer: <@{authorizerId}>`).withArgs<{ authorId: string; authorizerId: string; }>()
+                    notSet: translatable(`Not set`),
+                    set: translatable(`Author: <@{authorId}>\nAuthorizer: <@{authorizerId}>`).withArgs<{ authorId: string; authorizerId: string; }>()
                 },
                 embed: {
-                    title: f(`ℹ️ Censor \`{id}\``).withArgs<{ id: number; }>(),
+                    title: translatable(`ℹ️ Censor \`{id}\``).withArgs<{ id: number; }>(),
                     field: {
                         trigger: {
                             name: {
-                                regex: f(`Trigger (Regex)`),
-                                text: f(`Trigger`)
+                                regex: translatable(`Trigger (Regex)`),
+                                text: translatable(`Trigger`)
                             }
                         },
                         weight: {
-                            name: f(`Weight`),
-                            value: f(`{weight}`).withArgs<{ weight: number; }>()
+                            name: translatable(`Weight`),
+                            value: translatable(`{weight}`).withArgs<{ weight: number; }>()
                         },
                         reason: {
-                            name: f(`Reason`),
-                            value: f(`{reason=Not set}`).withArgs<{ reason?: string; }>()
+                            name: translatable(`Reason`),
+                            value: translatable(`{reason=Not set}`).withArgs<{ reason?: string; }>()
                         },
                         deleteMessage: {
-                            name: f(`Delete message`)
+                            name: translatable(`Delete message`)
                         },
                         timeoutMessage: {
-                            name: f(`Timeout message`)
+                            name: translatable(`Timeout message`)
                         },
                         kickMessage: {
-                            name: f(`Kick message`)
+                            name: translatable(`Kick message`)
                         },
                         banMessage: {
-                            name: f(`Ban message`)
+                            name: translatable(`Ban message`)
                         }
                     }
                 }
@@ -523,216 +535,216 @@ export const templates = crunchTree(`cluster`, {
         },
         changeLog: {
             errors: {
-                missingPermissions: f(`❌ I need the manage webhooks permission to subscribe this channel to changelogs!`)
+                missingPermissions: translatable(`❌ I need the manage webhooks permission to subscribe this channel to changelogs!`)
             },
             subscribe: {
-                description: f(`Subscribes this channel to my changelog updates. I require the \`manage webhooks\` permission for this.`),
-                alreadySubscribed: f(`ℹ️ This channel is already subscribed to my changelog updates!`),
-                success: f(`✅ This channel will now get my changelog updates!`)
+                description: translatable(`Subscribes this channel to my changelog updates. I require the \`manage webhooks\` permission for this.`),
+                alreadySubscribed: translatable(`ℹ️ This channel is already subscribed to my changelog updates!`),
+                success: translatable(`✅ This channel will now get my changelog updates!`)
             },
             unsubscribe: {
-                description: f(`Unsubscribes this channel from my changelog updates. I require the \`manage webhooks\` permission for this.`),
-                notSubscribed: f(`ℹ️ This channel is not subscribed to my changelog updates!`),
-                success: f(`✅ This channel will no longer get my changelog updates!`)
+                description: translatable(`Unsubscribes this channel from my changelog updates. I require the \`manage webhooks\` permission for this.`),
+                notSubscribed: translatable(`ℹ️ This channel is not subscribed to my changelog updates!`),
+                success: translatable(`✅ This channel will no longer get my changelog updates!`)
             }
         },
         editCommand: {
             list: {
-                description: f(`Shows a list of modified commands`),
-                none: f(`ℹ️ You haven't modified any commands`),
+                description: translatable(`Shows a list of modified commands`),
+                none: translatable(`ℹ️ You haven't modified any commands`),
                 embed: {
-                    title: f(`ℹ️ Edited commands`),
+                    title: translatable(`ℹ️ Edited commands`),
                     description: {
-                        name: f(`**{name}**\n`).withArgs<{ name: string; }>(),
-                        roles: f(`- Roles: {roles#map({mention})#join(, )}\n`).withArgs<{ roles: Iterable<Eris.Role>; }>(),
-                        permissions: f(`- Permission: {permission}\n`).withArgs<{ permission: string; }>(),
-                        disabled: f(`- Disabled\n`),
-                        hidden: f(`- Hidden\n`),
-                        template: f(`{commands#map({name}{roles}{permissions}{disabled}{hidden})#join()}`).withArgs<{ commands: Iterable<{ name: IFormattable<string>; roles?: IFormattable<string>; permissions?: IFormattable<string>; disabled?: IFormattable<string>; hidden?: IFormattable<string>; }>; }>()
+                        name: translatable(`**{name}**\n`).withArgs<{ name: string; }>(),
+                        roles: translatable(`- Roles: {roles#map({mention})#join(, )}\n`).withArgs<{ roles: Iterable<Eris.Role>; }>(),
+                        permissions: translatable(`- Permission: {permission}\n`).withArgs<{ permission: string; }>(),
+                        disabled: translatable(`- Disabled\n`),
+                        hidden: translatable(`- Hidden\n`),
+                        template: translatable(`{commands#map({name}{roles}{permissions}{disabled}{hidden})#join()}`).withArgs<{ commands: Iterable<{ name: IFormattable<string>; roles?: IFormattable<string>; permissions?: IFormattable<string>; disabled?: IFormattable<string>; hidden?: IFormattable<string>; }>; }>()
                     }
                 }
             },
             setRole: {
-                description: f(`Sets the role required to run the listed commands`),
-                removed: f(`✅ Removed the role requirement for the following commands:\`\`\`fix\n{commands#join(, )}\`\`\``).withArgs<{ commands: Iterable<string>; }>(),
-                set: f(`✅ Set the role requirement for the following commands:\`\`\`fix\n{commands#join(, )}\`\`\``).withArgs<{ commands: Iterable<string>; }>()
+                description: translatable(`Sets the role required to run the listed commands`),
+                removed: translatable(`✅ Removed the role requirement for the following commands:\`\`\`fix\n{commands#join(, )}\n\`\`\``).withArgs<{ commands: Iterable<string>; }>(),
+                set: translatable(`✅ Set the role requirement for the following commands:\`\`\`fix\n{commands#join(, )}\n\`\`\``).withArgs<{ commands: Iterable<string>; }>()
             },
             setPermissions: {
-                description: f(`Sets the permissions required to run the listed commands. If a user has any of the permissions, they will be able to use the command.`),
-                removed: f(`✅ Removed the permissions for the following commands:\`\`\`fix\n{commands#join(, )}\`\`\``).withArgs<{ commands: Iterable<string>; }>(),
-                set: f(`✅ Set the permissions for the following commands:\`\`\`fix\n{commands#join(, )}\`\`\``).withArgs<{ commands: Iterable<string>; }>()
+                description: translatable(`Sets the permissions required to run the listed commands. If a user has any of the permissions, they will be able to use the command.`),
+                removed: translatable(`✅ Removed the permissions for the following commands:\`\`\`fix\n{commands#join(, )}\n\`\`\``).withArgs<{ commands: Iterable<string>; }>(),
+                set: translatable(`✅ Set the permissions for the following commands:\`\`\`fix\n{commands#join(, )}\n\`\`\``).withArgs<{ commands: Iterable<string>; }>()
             },
             disable: {
-                description: f(`Disables the listed commands, so no one but the owner can use them`),
-                success: f(`✅ Disabled the following commands:\`\`\`fix\n{commands#join(, )}\`\`\``).withArgs<{ commands: Iterable<string>; }>()
+                description: translatable(`Disables the listed commands, so no one but the owner can use them`),
+                success: translatable(`✅ Disabled the following commands:\`\`\`fix\n{commands#join(, )}\n\`\`\``).withArgs<{ commands: Iterable<string>; }>()
             },
             enable: {
-                description: f(`Enables the listed commands, allowing anyone with the correct permissions or roles to use them`),
-                success: f(`✅ Enabled the following commands:\`\`\`fix\n{commands#join(, )}\`\`\``).withArgs<{ commands: Iterable<string>; }>()
+                description: translatable(`Enables the listed commands, allowing anyone with the correct permissions or roles to use them`),
+                success: translatable(`✅ Enabled the following commands:\`\`\`fix\n{commands#join(, )}\n\`\`\``).withArgs<{ commands: Iterable<string>; }>()
             },
             hide: {
-                description: f(`Hides the listed commands. They can still be executed, but wont show up in help`),
-                success: f(`✅ The following commands are now hidden:\`\`\`fix\n{commands#join(, )}\`\`\``).withArgs<{ commands: Iterable<string>; }>()
+                description: translatable(`Hides the listed commands. They can still be executed, but wont show up in help`),
+                success: translatable(`✅ The following commands are now hidden:\`\`\`fix\n{commands#join(, )}\n\`\`\``).withArgs<{ commands: Iterable<string>; }>()
             },
             show: {
-                description: f(`Reveals the listed commands in help`),
-                success: f(`✅ The following commands are no longer hidden:\`\`\`fix\n{commands#join(, )}\`\`\``).withArgs<{ commands: Iterable<string>; }>()
+                description: translatable(`Reveals the listed commands in help`),
+                success: translatable(`✅ The following commands are no longer hidden:\`\`\`fix\n{commands#join(, )}\n\`\`\``).withArgs<{ commands: Iterable<string>; }>()
             }
         },
         farewell: {
             errors: {
-                notSet: f(`❌ No farewell message has been set yet!`)
+                notSet: translatable(`❌ No farewell message has been set yet!`)
             },
             set: {
-                description: f(`Sets the bbtag to send when someone leaves the server`),
-                success: f(`✅ The farewell message has been set`)
+                description: translatable(`Sets the bbtag to send when someone leaves the server`),
+                success: translatable(`✅ The farewell message has been set`)
             },
             raw: {
-                description: f(`Gets the current message that will be sent when someone leaves the server`),
-                inline: f(`ℹ️ The raw code for the farewell message is: \`\`\`{content}\`\`\``).withArgs<{ content: string; }>(),
-                attached: f(`ℹ️ The raw code for the farewell message is attached`)
+                description: translatable(`Gets the current message that will be sent when someone leaves the server`),
+                inline: translatable(`ℹ️ The raw code for the farewell message is: \`\`\`\n{content}\n\`\`\``).withArgs<{ content: string; }>(),
+                attached: translatable(`ℹ️ The raw code for the farewell message is attached`)
             },
             setAuthorizer: {
-                description: f(`Sets the farewell message to use your permissions when running`),
-                success: f(`✅ The farewell message will now run using your permissions`)
+                description: translatable(`Sets the farewell message to use your permissions when running`),
+                success: translatable(`✅ The farewell message will now run using your permissions`)
             },
             setChannel: {
-                description: f(`Sets the channel the farewell message will be sent in.`),
-                notOnGuild: f(`❌ The farewell channel must be on this server!`),
-                notTextChannel: f(`❌ The farewell channel must be a text channel!`),
-                success: f(`✅ Farewell messages will now be sent in {mention}`).withArgs<{ channel: Eris.Channel; }>()
+                description: translatable(`Sets the channel the farewell message will be sent in.`),
+                notOnGuild: translatable(`❌ The farewell channel must be on this server!`),
+                notTextChannel: translatable(`❌ The farewell channel must be a text channel!`),
+                success: translatable(`✅ Farewell messages will now be sent in {mention}`).withArgs<{ channel: Eris.Channel; }>()
             },
             debug: {
-                description: f(`Executes the farewell message as if you left the server and provides the debug output.`),
-                channelMissing: f(`❌ I wasn't able to locate a channel to sent the message in!`),
-                success: f(`ℹ️ Ive sent the debug output in a DM`)
+                description: translatable(`Executes the farewell message as if you left the server and provides the debug output.`),
+                channelMissing: translatable(`❌ I wasn't able to locate a channel to sent the message in!`),
+                success: translatable(`ℹ️ Ive sent the debug output in a DM`)
             },
             delete: {
-                description: f(`Deletes the current farewell message.`),
-                success: f(`✅ Farewell messages will no longer be sent`)
+                description: translatable(`Deletes the current farewell message.`),
+                success: translatable(`✅ Farewell messages will no longer be sent`)
             },
             info: {
-                description: f(`Shows information about the current farewell message`),
-                success: f(`ℹ️ The current farewell was last edited by <@{authorId}> ({authorId}) and is authorized by <@{authorizerId}> ({authorizerId})`).withArgs<{ authorId: string; authorizerId: string; }>()
+                description: translatable(`Shows information about the current farewell message`),
+                success: translatable(`ℹ️ The current farewell was last edited by <@{authorId}> ({authorId}) and is authorized by <@{authorizerId}> ({authorizerId})`).withArgs<{ authorId: string; authorizerId: string; }>()
             }
         },
         greeting: {
             errors: {
-                notSet: f(`❌ No greeting message has been set yet!`)
+                notSet: translatable(`❌ No greeting message has been set yet!`)
             },
             set: {
-                description: f(`Sets the message to send when someone joins the server`),
-                success: f(`✅ The greeting message has been set`)
+                description: translatable(`Sets the message to send when someone joins the server`),
+                success: translatable(`✅ The greeting message has been set`)
             },
             raw: {
-                description: f(`Gets the current message that will be sent when someone joins the server`),
-                inline: f(`ℹ️ The raw code for the greeting message is: \`\`\`{content}\`\`\``).withArgs<{ content: string; }>(),
-                attached: f(`ℹ️ The raw code for the greeting message is attached`)
+                description: translatable(`Gets the current message that will be sent when someone joins the server`),
+                inline: translatable(`ℹ️ The raw code for the greeting message is: \n{content}\n\`\`\``).withArgs<{ content: string; }>(),
+                attached: translatable(`ℹ️ The raw code for the greeting message is attached`)
             },
             setAuthorizer: {
-                description: f(`Sets the greeting message to use your permissions when running`),
-                success: f(`✅ The greeting message will now run using your permissions`)
+                description: translatable(`Sets the greeting message to use your permissions when running`),
+                success: translatable(`✅ The greeting message will now run using your permissions`)
             },
             setChannel: {
-                description: f(`Sets the channel the greeting message will be sent in.`),
-                notOnGuild: f(`❌ The greeting channel must be on this server!`),
-                notTextChannel: f(`❌ The greeting channel must be a text channel!`),
-                success: f(`✅ Greeting messages will now be sent in {mention}`).withArgs<{ channel: Eris.Channel; }>()
+                description: translatable(`Sets the channel the greeting message will be sent in.`),
+                notOnGuild: translatable(`❌ The greeting channel must be on this server!`),
+                notTextChannel: translatable(`❌ The greeting channel must be a text channel!`),
+                success: translatable(`✅ Greeting messages will now be sent in {mention}`).withArgs<{ channel: Eris.Channel; }>()
             },
             debug: {
-                description: f(`Executes the greeting message as if you left the server and provides the debug output.`),
-                channelMissing: f(`❌ I wasn't able to locate a channel to sent the message in!`),
-                success: f(`ℹ️ Ive sent the debug output in a DM`)
+                description: translatable(`Executes the greeting message as if you left the server and provides the debug output.`),
+                channelMissing: translatable(`❌ I wasn't able to locate a channel to sent the message in!`),
+                success: translatable(`ℹ️ Ive sent the debug output in a DM`)
             },
             delete: {
-                description: f(`Deletes the current greeting message.`),
-                success: f(`✅ Greeting messages will no longer be sent`)
+                description: translatable(`Deletes the current greeting message.`),
+                success: translatable(`✅ Greeting messages will no longer be sent`)
             },
             info: {
-                description: f(`Shows information about the current greeting message`),
-                success: f(`ℹ️ The current greeting was last edited by <@{authorId}> ({authorId}) and is authorized by <@{authorizerId}> ({authorizerId})`).withArgs<{ authorId: string; authorizerId: string; }>()
+                description: translatable(`Shows information about the current greeting message`),
+                success: translatable(`ℹ️ The current greeting was last edited by <@{authorId}> ({authorId}) and is authorized by <@{authorizerId}> ({authorizerId})`).withArgs<{ authorId: string; authorizerId: string; }>()
             }
         },
         interval: {
             errors: {
-                notSet: f(`❌ No interval has been set yet!`)
+                notSet: translatable(`❌ No interval has been set yet!`)
             },
             set: {
-                description: f(`Sets the bbtag to run every 15 minutes`),
-                success: f(`✅ The interval has been set`)
+                description: translatable(`Sets the bbtag to run every 15 minutes`),
+                success: translatable(`✅ The interval has been set`)
             },
             raw: {
-                description: f(`Gets the current code that the interval is running`),
-                inline: f(`ℹ️ The raw code for the interval is: \`\`\`{content}\`\`\``).withArgs<{ content: string; }>(),
-                attached: f(`ℹ️ The raw code for the interval is attached`)
+                description: translatable(`Gets the current code that the interval is running`),
+                inline: translatable(`ℹ️ The raw code for the interval is: \`\`\`\n{content}\n\`\`\``).withArgs<{ content: string; }>(),
+                attached: translatable(`ℹ️ The raw code for the interval is attached`)
             },
             delete: {
-                description: f(`Deletes the current interval`),
-                success: f(`✅ The interval has been deleted`)
+                description: translatable(`Deletes the current interval`),
+                success: translatable(`✅ The interval has been deleted`)
             },
             setAuthorizer: {
-                description: f(`Sets the interval to run using your permissions`),
-                success: f(`✅ Your permissions will now be used when the interval runs`)
+                description: translatable(`Sets the interval to run using your permissions`),
+                success: translatable(`✅ Your permissions will now be used when the interval runs`)
             },
             debug: {
-                description: f(`Runs the interval now and sends the debug output`),
-                failed: f(`❌ There was an error while running the interval!`),
-                authorizerMissing: f(`❌ I couldn't find the user who authorizes the interval!`),
-                channelMissing: f(`❌ I wasn't able to figure out which channel to run the interval in!`),
-                timedOut: f(`❌ The interval took longer than the max allowed time ({max#duration(S)}s)`).withArgs<{ max: Duration; }>(),
-                success: f(`ℹ️ Ive sent the debug output in a DM`)
+                description: translatable(`Runs the interval now and sends the debug output`),
+                failed: translatable(`❌ There was an error while running the interval!`),
+                authorizerMissing: translatable(`❌ I couldn't find the user who authorizes the interval!`),
+                channelMissing: translatable(`❌ I wasn't able to figure out which channel to run the interval in!`),
+                timedOut: translatable(`❌ The interval took longer than the max allowed time ({max#duration(S)}s)`).withArgs<{ max: Duration; }>(),
+                success: translatable(`ℹ️ Ive sent the debug output in a DM`)
             },
             info: {
-                description: f(`Shows information about the current interval`),
-                success: f(`ℹ️ The current interval was last edited by <@{authorId}> ({authorId}) and is authorized by <@{authorizerId}> ({authorizerId})`).withArgs<{ authorId: string; authorizerId: string; }>()
+                description: translatable(`Shows information about the current interval`),
+                success: translatable(`ℹ️ The current interval was last edited by <@{authorId}> ({authorId}) and is authorized by <@{authorizerId}> ({authorizerId})`).withArgs<{ authorId: string; authorizerId: string; }>()
             }
         },
         kick: {
             flags: {
-                reason: f(`The reason for the kick.`)
+                reason: translatable(`The reason for the kick.`)
             },
             default: {
-                description: f(`Kicks a user.\nIf mod-logging is enabled, the kick will be logged.`),
+                description: translatable(`Kicks a user.\nIf mod-logging is enabled, the kick will be logged.`),
                 state: {
-                    memberTooHigh: f(`❌ I don't have permission to kick **{user#tag}**! Their highest role is above my highest role.`).withArgs<{ user: Eris.User; }>(),
-                    moderatorTooLow: f(`❌ You don't have permission to kick **{user#tag}**! Their highest role is above your highest role.`).withArgs<{ user: Eris.User; }>(),
-                    noPerms: f(`❌ I don't have permission to kick **{user#tag}**! Make sure I have the \`kick members\` permission and try again.`).withArgs<{ user: Eris.User; }>(),
-                    moderatorNoPerms: f(`❌ You don't have permission to kick **{user#tag}**! Make sure you have the \`kick members\` permission or one of the permissions specified in the \`kick override\` setting and try again.`).withArgs<{ user: Eris.User; }>(),
-                    success: f(`✅ **{user#tag}** has been kicked.`).withArgs<{ user: Eris.User; }>()
+                    memberTooHigh: translatable(`❌ I don't have permission to kick **{user#tag}**! Their highest role is above my highest role.`).withArgs<{ user: Eris.User; }>(),
+                    moderatorTooLow: translatable(`❌ You don't have permission to kick **{user#tag}**! Their highest role is above your highest role.`).withArgs<{ user: Eris.User; }>(),
+                    noPerms: translatable(`❌ I don't have permission to kick **{user#tag}**! Make sure I have the \`kick members\` permission and try again.`).withArgs<{ user: Eris.User; }>(),
+                    moderatorNoPerms: translatable(`❌ You don't have permission to kick **{user#tag}**! Make sure you have the \`kick members\` permission or one of the permissions specified in the \`kick override\` setting and try again.`).withArgs<{ user: Eris.User; }>(),
+                    success: translatable(`✅ **{user#tag}** has been kicked.`).withArgs<{ user: Eris.User; }>()
                 }
             }
         },
         log: {
             common: {
                 events: {
-                    avatarupdate: f(`Triggered when someone changes their username`),
-                    kick: f(`Triggered when a member is kicked`),
-                    memberban: f(`Triggered when a member is banned`),
-                    memberjoin: f(`Triggered when someone joins`),
-                    memberleave: f(`Triggered when someone leaves`),
-                    membertimeout: f(`Triggered when someone is timed out`),
-                    membertimeoutclear: f(`Triggered when someone's timeout is removed`),
-                    memberunban: f(`Triggered when someone is unbanned`),
-                    messagedelete: f(`Triggered when someone deletes a message they sent`),
-                    messageupdate: f(`Triggered when someone updates a message they sent`),
-                    nameupdate: f(`Triggered when someone changes their username or discriminator`),
-                    nickupdate: f(`Triggered when someone changes their nickname`)
+                    avatarupdate: translatable(`Triggered when someone changes their username`),
+                    kick: translatable(`Triggered when a member is kicked`),
+                    memberban: translatable(`Triggered when a member is banned`),
+                    memberjoin: translatable(`Triggered when someone joins`),
+                    memberleave: translatable(`Triggered when someone leaves`),
+                    membertimeout: translatable(`Triggered when someone is timed out`),
+                    membertimeoutclear: translatable(`Triggered when someone's timeout is removed`),
+                    memberunban: translatable(`Triggered when someone is unbanned`),
+                    messagedelete: translatable(`Triggered when someone deletes a message they sent`),
+                    messageupdate: translatable(`Triggered when someone updates a message they sent`),
+                    nameupdate: translatable(`Triggered when someone changes their username or discriminator`),
+                    nickupdate: translatable(`Triggered when someone changes their nickname`)
                 }
             },
             list: {
-                description: f(`Lists all the events currently being logged`),
+                description: translatable(`Lists all the events currently being logged`),
                 embed: {
                     field: {
                         ignore: {
-                            name: f(`Ignored users`),
-                            value: f(`{userIds#plural(0:No ignored users|{#map(<@{}> ({}))#join(\n)})}`).withArgs<{ userIds: Iterable<string>; }>()
+                            name: translatable(`Ignored users`),
+                            value: translatable(`{userIds#plural(0:No ignored users|{#map(<@{}> ({}))#join(\n)})}`).withArgs<{ userIds: Iterable<string>; }>()
                         },
                         current: {
-                            name: f(`Currently logged events`),
+                            name: translatable(`Currently logged events`),
                             value: {
-                                event: f(`**{event}** - <#{channelId}>}`).withArgs<{ event: string; channelId: string; }>(),
-                                role: f(`**{roleId}** - <#{channelId}>}`).withArgs<{ roleId: string; channelId: string; }>(),
-                                template: f(`{entries#plural(0:No logged events|{#join(\n)})}`).withArgs<{ entries: Iterable<IFormattable<string>>; }>()
+                                event: translatable(`**{event}** - <#{channelId}>}`).withArgs<{ event: string; channelId: string; }>(),
+                                role: translatable(`**{roleId}** - <#{channelId}>}`).withArgs<{ roleId: string; channelId: string; }>(),
+                                template: translatable(`{entries#plural(0:No logged events|{#join(\n)})}`).withArgs<{ entries: Iterable<IFormattable<string>>; }>()
                             }
                         }
                     }
@@ -740,707 +752,712 @@ export const templates = crunchTree(`cluster`, {
             },
             enable: {
                 description: {
-                    default: f(`Sets the channel to log the given events to. Available events are:\n{events#map(\`{key}\` - {desc})#join(\n)}`).withArgs<{ events: Iterable<{ key: string; desc: IFormattable<string>; }>; }>(),
-                    all: f(`Sets the channel to log all events to, except role related events.`),
-                    role: f(`Sets the channel to log when someone gets or loses a role.`)
+                    default: translatable(`Sets the channel to log the given events to. Available events are:\n{events#map(\`{key}\` - {desc})#join(\n)}`).withArgs<{ events: Iterable<{ key: string; desc: IFormattable<string>; }>; }>(),
+                    all: translatable(`Sets the channel to log all events to, except role related events.`),
+                    role: translatable(`Sets the channel to log when someone gets or loses a role.`)
                 },
-                notOnGuild: f(`❌ The log channel must be on this server!`),
-                notTextChannel: f(`❌ The log channel must be a text channel!`),
-                eventInvalid: f(`❌ {events#join(, | and )} {events#plural(1:is not a valid event|are not valid events)}`).withArgs<{ events: Iterable<string>; }>(),
-                success: f(`✅ I will now log the following events in {channel#tag}:\n{events#join(\n)}`).withArgs<{ channel: Eris.Channel; events: Iterable<string>; }>()
+                notOnGuild: translatable(`❌ The log channel must be on this server!`),
+                notTextChannel: translatable(`❌ The log channel must be a text channel!`),
+                eventInvalid: translatable(`❌ {events#join(, | and )} {events#plural(1:is not a valid event|are not valid events)}`).withArgs<{ events: Iterable<string>; }>(),
+                success: translatable(`✅ I will now log the following events in {channel#tag}:\n{events#join(\n)}`).withArgs<{ channel: Eris.Channel; events: Iterable<string>; }>()
             },
             disable: {
                 description: {
-                    default: f(`Disables logging of the given events. Available events are:\n{events#map(\`{key}\` - {desc})#join(\n)}`).withArgs<{ events: Iterable<{ key: string; desc: IFormattable<string>; }>; }>(),
-                    all: f(`Disables logging of all events except role related events.`),
-                    role: f(`Stops logging when someone gets or loses a role.`)
+                    default: translatable(`Disables logging of the given events. Available events are:\n{events#map(\`{key}\` - {desc})#join(\n)}`).withArgs<{ events: Iterable<{ key: string; desc: IFormattable<string>; }>; }>(),
+                    all: translatable(`Disables logging of all events except role related events.`),
+                    role: translatable(`Stops logging when someone gets or loses a role.`)
                 },
-                success: f(`✅ I will no longer log the following events:\n{events#join(\n)}`).withArgs<{ events: Iterable<string>; }>()
+                success: translatable(`✅ I will no longer log the following events:\n{events#join(\n)}`).withArgs<{ events: Iterable<string>; }>()
             },
             ignore: {
-                description: f(`Ignores any tracked events concerning the users`),
-                success: f(`✅ I will now ignore events from {senderIds#map(<@{}>)#join(, | and )}`).withArgs<{ senderIds: Iterable<string>; }>()
+                description: translatable(`Ignores any tracked events concerning the users`),
+                success: translatable(`✅ I will now ignore events from {senderIds#map(<@{}>)#join(, | and )}`).withArgs<{ senderIds: Iterable<string>; }>()
             },
             track: {
-                description: f(`Removes the users from the list of ignored users and begins tracking events from them again`),
-                success: f(`✅ I will no longer ignore events from {senderIds#map(<@{}>)#join(, | and )}`).withArgs<{ senderIds: Iterable<string>; }>()
+                description: translatable(`Removes the users from the list of ignored users and begins tracking events from them again`),
+                success: translatable(`✅ I will no longer ignore events from {senderIds#map(<@{}>)#join(, | and )}`).withArgs<{ senderIds: Iterable<string>; }>()
             }
         },
         logs: {
             flags: {
-                type: f(`The type(s) of message. Value can be CREATE, UPDATE, and/or DELETE, separated by commas.`),
-                channel: f(`The channel to retrieve logs from. Value can be a channel ID or a channel mention.`),
-                user: f(`The user(s) to retrieve logs from. Value can be a username, nickname, mention, or ID. This uses the user lookup system.`),
-                create: f(`Get message creates.`),
-                update: f(`Get message updates.`),
-                delete: f(`Get message deletes.`),
-                json: f(`Returns the logs in a json file rather than on a webpage.`)
+                type: translatable(`The type(s) of message. Value can be CREATE, UPDATE, and/or DELETE, separated by commas.`),
+                channel: translatable(`The channel to retrieve logs from. Value can be a channel ID or a channel mention.`),
+                user: translatable(`The user(s) to retrieve logs from. Value can be a username, nickname, mention, or ID. This uses the user lookup system.`),
+                create: translatable(`Get message creates.`),
+                update: translatable(`Get message updates.`),
+                delete: translatable(`Get message deletes.`),
+                json: translatable(`Returns the logs in a json file rather than on a webpage.`)
             },
             default: {
-                description: f(`Creates a chatlog page for a specified channel, where \`number\` is the amount of lines to get. You can retrieve a maximum of 1000 logs. For more specific logs, you can specify flags.\nFor example, if you wanted to get 100 messages \`stupid cat\` deleted, you would do this:\n\`logs 100 --type delete --user stupid cat\`\nIf you want to use multiple of the same type, separate parameters with commas or chain them together. For example:\n\`logs 100 -CU -u stupid cat, dumb cat\``),
-                chatlogsDisabled: f(`❌ This guild has not opted into chatlogs. Please do \`{prefix}settings set makelogs true\` to allow me to start creating chatlogs.`).withArgs<{ prefix: string; }>(),
-                tooManyLogs: f(`❌ You cant get more than 1000 logs at a time`),
-                notEnoughLogs: f(`❌ A minimum of 1 chatlog entry must be requested`),
-                channelMissing: f(`❌ I couldn't find the channel \`{channel}\``).withArgs<{ channel: string; }>(),
-                notOnGuild: f(`❌ The channel must be on this guild!`),
-                noPermissions: f(`❌ You do not have permissions to look at that channels message history!`),
-                userMissing: f(`❌ I couldn't find the user \`{user}\``).withArgs<{ user: string; }>(),
-                generating: f(`ℹ️ Generating your logs...`),
-                sendFailed: f(`❌ I wasn't able to send the message containing the logs!`),
-                pleaseWait: f(`ℹ️ Generating your logs...\nThis seems to be taking longer than usual. I'll ping you when I'm finished.`),
+                description: translatable(`Creates a chatlog page for a specified channel, where \`number\` is the amount of lines to get. You can retrieve a maximum of 1000 logs. For more specific logs, you can specify flags.\nFor example, if you wanted to get 100 messages \`stupid cat\` deleted, you would do this:\n\`logs 100 --type delete --user stupid cat\`\nIf you want to use multiple of the same type, separate parameters with commas or chain them together. For example:\n\`logs 100 -CU -u stupid cat, dumb cat\``),
+                chatlogsDisabled: translatable(`❌ This guild has not opted into chatlogs. Please do \`{prefix}settings set makelogs true\` to allow me to start creating chatlogs.`).withArgs<{ prefix: string; }>(),
+                tooManyLogs: translatable(`❌ You cant get more than 1000 logs at a time`),
+                notEnoughLogs: translatable(`❌ A minimum of 1 chatlog entry must be requested`),
+                channelMissing: translatable(`❌ I couldn't find the channel \`{channel}\``).withArgs<{ channel: string; }>(),
+                notOnGuild: translatable(`❌ The channel must be on this guild!`),
+                noPermissions: translatable(`❌ You do not have permissions to look at that channels message history!`),
+                userMissing: translatable(`❌ I couldn't find the user \`{user}\``).withArgs<{ user: string; }>(),
+                generating: translatable(`ℹ️ Generating your logs...`),
+                sendFailed: translatable(`❌ I wasn't able to send the message containing the logs!`),
+                pleaseWait: translatable(`ℹ️ Generating your logs...\nThis seems to be taking longer than usual. I'll ping you when I'm finished.`),
                 generated: {
                     link: {
-                        quick: f(`✅ Your logs are available here: {link}`).withArgs<{ link: string; }>(),
-                        slow: f(`✅ Sorry that took so long, {user#tag}.\nYour logs are available here: {link}`).withArgs<{ user: Eris.User; link: string; }>()
+                        quick: translatable(`✅ Your logs are available here: {link}`).withArgs<{ link: string; }>(),
+                        slow: translatable(`✅ Sorry that took so long, {user#tag}.\nYour logs are available here: {link}`).withArgs<{ user: Eris.User; link: string; }>()
                     },
                     json: {
-                        quick: f(`✅ Here are your logs, in a JSON file!`),
-                        slow: f(`✅ Sorry that took so long, {user#tag}.\nHere are your logs, in a JSON file!`).withArgs<{ user: Eris.User; }>()
+                        quick: translatable(`✅ Here are your logs, in a JSON file!`),
+                        slow: translatable(`✅ Sorry that took so long, {user#tag}.\nHere are your logs, in a JSON file!`).withArgs<{ user: Eris.User; }>()
                     }
                 }
             }
         },
         massBan: {
             flags: {
-                reason: f(`The reason for the ban.`)
+                reason: translatable(`The reason for the ban.`)
             },
             default: {
-                description: f(`Bans a user who isn't currently on your guild, where \`<userIds...>\` is a list of user IDs or mentions (separated by spaces) and \`days\` is the number of days to delete messages for.\nIf mod-logging is enabled, the ban will be logged.`),
+                description: translatable(`Bans a user who isn't currently on your guild, where \`<userIds...>\` is a list of user IDs or mentions (separated by spaces) and \`days\` is the number of days to delete messages for.\nIf mod-logging is enabled, the ban will be logged.`),
                 state: {
-                    alreadyBanned: f(`❌ All those users are already banned!`),
-                    memberTooHigh: f(`❌ I don't have permission to ban any of those users! Their highest roles are above my highest role.`),
-                    moderatorTooLow: f(`❌ You don't have permission to ban any of those users! Their highest roles are above your highest role.`),
-                    noPerms: f(`❌ I don't have permission to ban anyone! Make sure I have the \`ban members\` permission and try again.`),
-                    moderatorNoPerms: f(`❌ You don't have permission to ban anyone! Make sure you have the \`ban members\` permission or one of the permissions specified in the \`ban override\` setting and try again.`),
-                    noUsers: f(`❌ None of the user ids you gave were valid users!`)
+                    alreadyBanned: translatable(`❌ All those users are already banned!`),
+                    memberTooHigh: translatable(`❌ I don't have permission to ban any of those users! Their highest roles are above my highest role.`),
+                    moderatorTooLow: translatable(`❌ You don't have permission to ban any of those users! Their highest roles are above your highest role.`),
+                    noPerms: translatable(`❌ I don't have permission to ban anyone! Make sure I have the \`ban members\` permission and try again.`),
+                    moderatorNoPerms: translatable(`❌ You don't have permission to ban anyone! Make sure you have the \`ban members\` permission or one of the permissions specified in the \`ban override\` setting and try again.`),
+                    noUsers: translatable(`❌ None of the user ids you gave were valid users!`)
                 },
-                success: f(`✅ The following user(s) have been banned:\n{users#map(\`{#tag}\`)#join(\n)}`).withArgs<{ users: Iterable<Eris.User>; }>()
+                success: translatable(`✅ The following user(s) have been banned:\n{users#map(\`{#tag}\`)#join(\n)}`).withArgs<{ users: Iterable<Eris.User>; }>()
             }
         },
         modLog: {
             setChannel: {
-                description: f(`Sets the channel to use as the modlog channel`),
-                notOnGuild: f(`❌ The modlog channel must be on this server!`),
-                notTextChannel: f(`❌ The modlog channel must be a text channel!`),
-                success: f(`✅ Modlog entries will now be sent in {channel#tag}`).withArgs<{ channel: Eris.Channel; }>()
+                description: translatable(`Sets the channel to use as the modlog channel`),
+                notOnGuild: translatable(`❌ The modlog channel must be on this server!`),
+                notTextChannel: translatable(`❌ The modlog channel must be a text channel!`),
+                success: translatable(`✅ Modlog entries will now be sent in {channel#tag}`).withArgs<{ channel: Eris.Channel; }>()
             },
             disable: {
-                description: f(`Disables the modlog`),
-                success: f(`✅ The modlog is disabled`)
+                description: translatable(`Disables the modlog`),
+                success: translatable(`✅ The modlog is disabled`)
             },
             clear: {
-                description: f(`Deletes specific modlog entries. If you don't provide any, all the entries will be removed`),
-                notFound: f(`❌ No modlogs were found!`),
-                channelMissing: f(`\n⛔ I couldn't find the modlog channel for cases {modlogs#map(\`{}\`)#join(, | and )}`).withArgs<{ modlogs: Iterable<number>; }>(),
-                messageMissing: f(`\n⛔ I couldn't find the modlog message for cases {modlogs#map(\`{}\`)#join(, | and )}`).withArgs<{ modlogs: Iterable<number>; }>(),
-                permissionMissing: f(`\n⛔ I didn't have permission to delete the modlog for cases {modlogs#map(\`{}\`)#join(, | and )}`).withArgs<{ modlogs: Iterable<number>; }>(),
-                success: f(`✅ I successfully deleted {count} {count#plural(1:modlog|modlogs)} from my database.{errors#join()}`).withArgs<{ count: number; errors: Iterable<IFormattable<string>>; }>()
+                description: translatable(`Deletes specific modlog entries. If you don't provide any, all the entries will be removed`),
+                notFound: translatable(`❌ No modlogs were found!`),
+                channelMissing: translatable(`\n⛔ I couldn't find the modlog channel for cases {modlogs#map(\`{}\`)#join(, | and )}`).withArgs<{ modlogs: Iterable<number>; }>(),
+                messageMissing: translatable(`\n⛔ I couldn't find the modlog message for cases {modlogs#map(\`{}\`)#join(, | and )}`).withArgs<{ modlogs: Iterable<number>; }>(),
+                permissionMissing: translatable(`\n⛔ I didn't have permission to delete the modlog for cases {modlogs#map(\`{}\`)#join(, | and )}`).withArgs<{ modlogs: Iterable<number>; }>(),
+                success: translatable(`✅ I successfully deleted {count} {count#plural(1:modlog|modlogs)} from my database.{errors#join()}`).withArgs<{ count: number; errors: Iterable<IFormattable<string>>; }>()
             }
         },
         mute: {
             flags: {
-                reason: f(`The reason for the (un)mute.`),
-                time: f(`The amount of time to mute for, formatted as '1 day 2 hours 3 minutes and 4 seconds', '1d2h3m4s', or some other combination.`)
+                reason: translatable(`The reason for the (un)mute.`),
+                time: translatable(`The amount of time to mute for, formatted as '1 day 2 hours 3 minutes and 4 seconds', '1d2h3m4s', or some other combination.`)
             },
             default: {
-                description: f(`Gives the user a special muted role. On first run, this role will be created. The bot needs to be able to \`manage roles\` to create and assign the role, and \`manage channels\` to configure the role. You are able to manually configure the role without the bot, but the bot has to make it. Deleting the muted role causes it to be regenerated.\nIf the bot has permissions for it, this command will also voice-mute the user.\nIf mod-logging is enabled, the mute will be logged.\nYou can also specify a length of time the user should be muted for, using formats such as \`1 hour 2 minutes\` or \`1h2m\`.`),
-                createPermsMissing: f(`❌ I don't have enough permissions to create a \`muted\` role! Make sure I have the \`manage roles\` permission and try again.`),
-                configurePermsMissing: f(`❌ I created a \`muted\` role, but don't have permissions to configure it! Either configure it yourself, or make sure I have the \`manage channel\` permission, delete the \`muted\` role, and try again.`),
+                description: translatable(`Gives the user a special muted role. On first run, this role will be created. The bot needs to be able to \`manage roles\` to create and assign the role, and \`manage channels\` to configure the role. You are able to manually configure the role without the bot, but the bot has to make it. Deleting the muted role causes it to be regenerated.\nIf the bot has permissions for it, this command will also voice-mute the user.\nIf mod-logging is enabled, the mute will be logged.\nYou can also specify a length of time the user should be muted for, using formats such as \`1 hour 2 minutes\` or \`1h2m\`.`),
+                createPermsMissing: translatable(`❌ I don't have enough permissions to create a \`muted\` role! Make sure I have the \`manage roles\` permission and try again.`),
+                configurePermsMissing: translatable(`❌ I created a \`muted\` role, but don't have permissions to configure it! Either configure it yourself, or make sure I have the \`manage channel\` permission, delete the \`muted\` role, and try again.`),
                 state: {
-                    alreadyMuted: f(`❌ {user#tag} is already muted`).withArgs<{ user: Eris.User; }>(),
-                    noPerms: f(`❌ I don't have permission to mute users! Make sure I have the \`manage roles\` permission and try again.`),
-                    moderatorNoPerms: f(`❌ You don't have permission to mute users! Make sure you have the \`manage roles\` permission and try again.`),
-                    roleMissing: f(`❌ The muted role has been deleted! Please re-run this command to create a new one.`),
-                    roleTooHigh: f(`❌ I can't assign the muted role! (it's higher than or equal to my top role)`),
-                    moderatorTooLow: f(`❌ You can't assign the muted role! (it's higher than or equal to your top role)`)
+                    alreadyMuted: translatable(`❌ {user#tag} is already muted`).withArgs<{ user: Eris.User; }>(),
+                    noPerms: translatable(`❌ I don't have permission to mute users! Make sure I have the \`manage roles\` permission and try again.`),
+                    moderatorNoPerms: translatable(`❌ You don't have permission to mute users! Make sure you have the \`manage roles\` permission and try again.`),
+                    roleMissing: translatable(`❌ The muted role has been deleted! Please re-run this command to create a new one.`),
+                    roleTooHigh: translatable(`❌ I can't assign the muted role! (it's higher than or equal to my top role)`),
+                    moderatorTooLow: translatable(`❌ You can't assign the muted role! (it's higher than or equal to your top role)`)
 
                 },
                 success: {
-                    default: f(`✅ **{user#tag}** has been muted`).withArgs<{ user: Eris.User; }>(),
-                    durationInvalid: f(`⚠️ **{user#tag}** has been muted, but the duration was either 0 seconds or improperly formatted so they won't automatically be unmuted.`).withArgs<{ user: Eris.User; }>(),
-                    temporary: f(`✅ **{user#tag}** has been muted and will be unmuted **{unmute#tag}**`).withArgs<{ user: Eris.User; unmute: Duration; }>()
+                    default: translatable(`✅ **{user#tag}** has been muted`).withArgs<{ user: Eris.User; }>(),
+                    durationInvalid: translatable(`⚠️ **{user#tag}** has been muted, but the duration was either 0 seconds or improperly formatted so they won't automatically be unmuted.`).withArgs<{ user: Eris.User; }>(),
+                    temporary: translatable(`✅ **{user#tag}** has been muted and will be unmuted **{unmute#tag}**`).withArgs<{ user: Eris.User; unmute: Duration; }>()
                 }
             },
             clear: {
-                description: f(`Removes the special muted role from the user. \nIf mod-logging is enabled, the mute will be logged.`),
+                description: translatable(`Removes the special muted role from the user. \nIf mod-logging is enabled, the mute will be logged.`),
                 state: {
-                    notMuted: f(`❌ {user#tag} is not currently muted`).withArgs<{ user: Eris.User; }>(),
-                    noPerms: f(`❌ I don't have permission to unmute users! Make sure I have the \`manage roles\` permission and try again.`),
-                    moderatorNoPerms: f(`❌ You don't have permission to unmute users! Make sure you have the \`manage roles\` permission and try again.`),
-                    roleTooHigh: f(`❌ I can't revoke the muted role! (it's higher than or equal to my top role)`),
-                    moderatorTooLow: f(`❌ You can't revoke the muted role! (it's higher than or equal to your top role)`),
-                    success: f(`✅ **{user#tag}** has been unmuted`).withArgs<{ user: Eris.User; }>()
+                    notMuted: translatable(`❌ {user#tag} is not currently muted`).withArgs<{ user: Eris.User; }>(),
+                    noPerms: translatable(`❌ I don't have permission to unmute users! Make sure I have the \`manage roles\` permission and try again.`),
+                    moderatorNoPerms: translatable(`❌ You don't have permission to unmute users! Make sure you have the \`manage roles\` permission and try again.`),
+                    roleTooHigh: translatable(`❌ I can't revoke the muted role! (it's higher than or equal to my top role)`),
+                    moderatorTooLow: translatable(`❌ You can't revoke the muted role! (it's higher than or equal to your top role)`),
+                    success: translatable(`✅ **{user#tag}** has been unmuted`).withArgs<{ user: Eris.User; }>()
                 }
             }
         },
         pardon: {
             flags: {
-                reason: f(`The reason for the pardon.`),
-                count: f(`The number of warnings that will be removed.`)
+                reason: translatable(`The reason for the pardon.`),
+                count: translatable(`The number of warnings that will be removed.`)
             },
             default: {
-                description: f(`Pardons a user.\nIf mod-logging is enabled, the pardon will be logged.\nThis will not unban users.`),
+                description: translatable(`Pardons a user.\nIf mod-logging is enabled, the pardon will be logged.\nThis will not unban users.`),
                 state: {
-                    countNaN: f(`❌ {text} isn't a number!`).withArgs<{ text: string; }>(),
-                    countNegative: f(`❌ I cant give a negative amount of pardons!`),
-                    countZero: f(`❌ I cant give zero pardons!`),
-                    success: f(`✅ **{user#tag}** has been given {count#plural(1:a warning|{} warnings)}. They now have {warnings#plural(1:1 warning|{} warnings)}.`).withArgs<{ user: Eris.User; count: number; warnings: number; }>()
+                    countNaN: translatable(`❌ {text} isn't a number!`).withArgs<{ text: string; }>(),
+                    countNegative: translatable(`❌ I cant give a negative amount of pardons!`),
+                    countZero: translatable(`❌ I cant give zero pardons!`),
+                    success: translatable(`✅ **{user#tag}** has been given {count#plural(1:a warning|{} warnings)}. They now have {warnings#plural(1:1 warning|{} warnings)}.`).withArgs<{ user: Eris.User; count: number; warnings: number; }>()
                 }
             }
         },
         prefix: {
             list: {
-                description: f(`Lists all the current prefixes on this server`),
-                success: f(`ℹ️ {guild#tag} has {prefixes#plural(0:no custom prefixes|the following prefixes:\n{#map( - {})#join(\n)})}`).withArgs<{ guild: Eris.Guild; prefixes: Iterable<string>; }>()
+                description: translatable(`Lists all the current prefixes on this server`),
+                success: translatable(`ℹ️ {guild#tag} has {prefixes#plural(0:no custom prefixes|the following prefixes:\n{#map( - {})#join(\n)})}`).withArgs<{ guild: Eris.Guild; prefixes: Iterable<string>; }>()
             },
             add: {
-                description: f(`Adds a command prefix to this server`),
-                success: f(`✅ The prefix has been added!`)
+                description: translatable(`Adds a command prefix to this server`),
+                success: translatable(`✅ The prefix has been added!`)
             },
             remove: {
-                description: f(`Removes a command prefix from this server`),
-                success: f(`✅ The prefix has been removed!`)
+                description: translatable(`Removes a command prefix from this server`),
+                success: translatable(`✅ The prefix has been removed!`)
             }
         },
         reason: {
             default: {
-                description: f(`Sets the reason for an action on the modlog.`),
-                none: f(`❌ There aren't any modlog entries yet!`),
-                unknownCase: f(`❌ I couldn't find a modlog entry with a case id of {caseId}`).withArgs<{ caseId: number; }>(),
+                description: translatable(`Sets the reason for an action on the modlog.`),
+                none: translatable(`❌ There aren't any modlog entries yet!`),
+                unknownCase: translatable(`❌ I couldn't find a modlog entry with a case id of {caseId}`).withArgs<{ caseId: number; }>(),
                 success: {
-                    messageMissing: f(`⚠️ The modlog has been updated! I couldn't find the message to update however.`),
-                    default: f(`✅ The modlog has been updated!`)
+                    messageMissing: translatable(`⚠️ The modlog has been updated! I couldn't find the message to update however.`),
+                    default: translatable(`✅ The modlog has been updated!`)
                 }
             }
         },
         roleMe: {
             errors: {
-                missing: f(`❌ Roleme {id} doesn't exist`).withArgs<{ id: number; }>(),
-                noMessage: f(`❌ Roleme {id} doesn't have a custom message`).withArgs<{ id: number; }>(),
-                missingChannels: f(`❌ I couldn't locate any of the channels you provided`),
-                missingRoles: f(`❌ I couldn't locate any of the roles you provided`),
-                noRoles: f(`❌ You must provide at least 1 role to add or remove`),
-                noTrigger: f(`❌ You must provide a trigger phrase for the roleme`)
+                missing: translatable(`❌ Roleme {id} doesn't exist`).withArgs<{ id: number; }>(),
+                noMessage: translatable(`❌ Roleme {id} doesn't have a custom message`).withArgs<{ id: number; }>(),
+                missingChannels: translatable(`❌ I couldn't locate any of the channels you provided`),
+                missingRoles: translatable(`❌ I couldn't locate any of the roles you provided`),
+                noRoles: translatable(`❌ You must provide at least 1 role to add or remove`),
+                noTrigger: translatable(`❌ You must provide a trigger phrase for the roleme`)
             },
             common: {
-                triggerQuery: f(`❓ What should users type for this roleme to trigger?`),
+                triggerQuery: translatable(`❓ What should users type for this roleme to trigger?`),
                 caseSensitiveQuery: {
-                    prompt: f(`❓ Is the trigger case sensitive?`),
-                    continue: f(`Yes`),
-                    cancel: f(`No`)
+                    prompt: translatable(`❓ Is the trigger case sensitive?`),
+                    continue: translatable(`Yes`),
+                    cancel: translatable(`No`)
                 },
                 channelsQuery: {
-                    prompt: f(`❓ Please mention all the channels you want the roleme to be available in`),
-                    cancel: f(`All channels`)
+                    prompt: translatable(`❓ Please mention all the channels you want the roleme to be available in`),
+                    cancel: translatable(`All channels`)
                 },
                 rolesQuery: {
                     prompt: {
-                        add: f(`❓ Please type the roles you want the roleme to add, 1 per line. Mentions, ids or names can be used.`),
-                        remove: f(`❓ Please type the roles you want the roleme to remove, 1 per line. Mentions, ids or names can be used.`)
+                        add: translatable(`❓ Please type the roles you want the roleme to add, 1 per line. Mentions, ids or names can be used.`),
+                        remove: translatable(`❓ Please type the roles you want the roleme to remove, 1 per line. Mentions, ids or names can be used.`)
                     },
-                    fail: f(`❌ I couldn't find any of the roles from your message, please try again.`),
-                    cancel: f(`No roles`)
+                    fail: translatable(`❌ I couldn't find any of the roles from your message, please try again.`),
+                    cancel: translatable(`No roles`)
                 }
             },
             flags: {
-                add: f(`A list of roles to add in the roleme`),
-                remove: f(`A list of roles to remove in the roleme`),
-                case: f(`Whether the phrase is case sensitive`),
-                channels: f(`The channels the roleme should be in`)
+                add: translatable(`A list of roles to add in the roleme`),
+                remove: translatable(`A list of roles to remove in the roleme`),
+                case: translatable(`Whether the phrase is case sensitive`),
+                channels: translatable(`The channels the roleme should be in`)
             },
             add: {
-                description: f(`Adds a new roleme with the given phrase`),
-                unexpectedError: f(`❌ Something went wrong while I was trying to create that roleme`),
-                success: f(`✅ Roleme \`{id}\` has been created!`).withArgs<{ id: number; }>()
+                description: translatable(`Adds a new roleme with the given phrase`),
+                unexpectedError: translatable(`❌ Something went wrong while I was trying to create that roleme`),
+                success: translatable(`✅ Roleme \`{id}\` has been created!`).withArgs<{ id: number; }>()
             },
             remove: {
-                description: f(`Deletes the given roleme`),
-                success: f(`✅ Roleme \`{id}\` has been deleted`).withArgs<{ id: number; }>()
+                description: translatable(`Deletes the given roleme`),
+                success: translatable(`✅ Roleme \`{id}\` has been deleted`).withArgs<{ id: number; }>()
             },
             edit: {
-                description: f(`Edits the given roleme`),
-                unexpectedError: f(`❌ Something went wrong while I was trying to edit that roleme`),
-                success: f(`✅ Roleme \`{id}\` has been updated!`).withArgs<{ id: number; }>()
+                description: translatable(`Edits the given roleme`),
+                unexpectedError: translatable(`❌ Something went wrong while I was trying to edit that roleme`),
+                success: translatable(`✅ Roleme \`{id}\` has been updated!`).withArgs<{ id: number; }>()
             },
             setMessage: {
-                description: f(`Sets the bbtag compatible message to show when the roleme is triggered`),
-                success: f(`✅ Roleme \`{id}\` has now had its message set`).withArgs<{ id: number; }>()
+                description: translatable(`Sets the bbtag compatible message to show when the roleme is triggered`),
+                success: translatable(`✅ Roleme \`{id}\` has now had its message set`).withArgs<{ id: number; }>()
             },
             rawMessage: {
-                description: f(`Gets the current message that will be sent when the roleme is triggered`),
-                inline: f(`ℹ️ The raw code for roleme \`{id}\` is: \`\`\`{content}\`\`\``).withArgs<{ id: number; content: string; }>(),
-                attached: f(`ℹ️ The raw code for roleme \`{id}\` is attached`).withArgs<{ id: number; }>()
+                description: translatable(`Gets the current message that will be sent when the roleme is triggered`),
+                inline: translatable(`ℹ️ The raw code for roleme \`{id}\` is: \`\`\`\n{content}\n\`\`\``).withArgs<{ id: number; content: string; }>(),
+                attached: translatable(`ℹ️ The raw code for roleme \`{id}\` is attached`).withArgs<{ id: number; }>()
             },
             debugMessage: {
-                description: f(`Executes the roleme message as if you triggered the roleme`),
-                success: f(`ℹ️ Ive sent the debug output in a DM`)
+                description: translatable(`Executes the roleme message as if you triggered the roleme`),
+                success: translatable(`ℹ️ Ive sent the debug output in a DM`)
             },
             setAuthorizer: {
-                description: f(`Sets the roleme message to run using your permissions`),
-                success: f(`✅ Your permissions will now be used for roleme \`{id}\``).withArgs<{ id: number; }>()
+                description: translatable(`Sets the roleme message to run using your permissions`),
+                success: translatable(`✅ Your permissions will now be used for roleme \`{id}\``).withArgs<{ id: number; }>()
             },
             info: {
-                description: f(`Shows information about a roleme`),
+                description: translatable(`Shows information about a roleme`),
                 embed: {
-                    title: f(`Roleme #{id}`).withArgs<{ id: number; }>(),
+                    title: translatable(`Roleme #{id}`).withArgs<{ id: number; }>(),
                     field: {
                         phrase: {
-                            name: f(`Phrase (case {caseSensitive#bool(sensitive|insensitive)})`).withArgs<{ caseSensitive: boolean; }>()
+                            name: translatable(`Phrase (case {caseSensitive#bool(sensitive|insensitive)})`).withArgs<{ caseSensitive: boolean; }>()
                         },
                         rolesAdded: {
-                            name: f(`Roles added`),
-                            value: f(`{roleIds#plural(0:None|{#map(<@&{}>)#join(\n)})}`).withArgs<{ roleIds: Iterable<string>; }>()
+                            name: translatable(`Roles added`),
+                            value: translatable(`{roleIds#plural(0:None|{#map(<@&{}>)#join(\n)})}`).withArgs<{ roleIds: Iterable<string>; }>()
                         },
                         rolesRemoved: {
-                            name: f(`Roles removed`),
-                            value: f(`{roleIds#plural(0:None|{#map(<@&{}>)#join(\n)})}`).withArgs<{ roleIds: Iterable<string>; }>()
+                            name: translatable(`Roles removed`),
+                            value: translatable(`{roleIds#plural(0:None|{#map(<@&{}>)#join(\n)})}`).withArgs<{ roleIds: Iterable<string>; }>()
                         },
                         channels: {
-                            name: f(`Channels`),
-                            value: f(`{roleIds#plural(0:Anywhere|{#map(<#{}>)#join(\n)})}`).withArgs<{ channelIds: Iterable<string>; }>()
+                            name: translatable(`Channels`),
+                            value: translatable(`{roleIds#plural(0:Anywhere|{#map(<#{}>)#join(\n)})}`).withArgs<{ channelIds: Iterable<string>; }>()
                         },
                         message: {
-                            name: f(`Message`),
-                            value: f(`**Author:** <@{authorId}>\n**Authorizer:** <@{authorizerId}>`).withArgs<{ authorId: string; authorizerId: string; }>()
+                            name: translatable(`Message`),
+                            value: translatable(`**Author:** <@{authorId}>\n**Authorizer:** <@{authorizerId}>`).withArgs<{ authorId: string; authorizerId: string; }>()
                         }
                     }
                 }
             },
             list: {
-                description: f(`Lists the rolemes currently active on this server`),
-                none: f(`❌ You have no rolemes created!`),
+                description: translatable(`Lists the rolemes currently active on this server`),
+                none: translatable(`❌ You have no rolemes created!`),
                 embed: {
-                    title: f(`Rolemes`),
+                    title: translatable(`Rolemes`),
                     description: {
-                        channel: f(`{channelId#bool(<#{}>|All channels)}`).withArgs<{ channelId?: string; }>(),
-                        roleme: f(`**Roleme** \`{id}\`: {message}`).withArgs<{ id: number; message: string; }>(),
-                        layout: f(`{groups#map({name}\n{entries#join(\n)})#join(\n\n)`).withArgs<{ groups: Iterable<{ name: IFormattable<string>; entries: Iterable<IFormattable<string>>; }>; }>()
+                        channel: translatable(`{channelId#bool(<#{}>|All channels)}`).withArgs<{ channelId?: string; }>(),
+                        roleme: translatable(`**Roleme** \`{id}\`: {message}`).withArgs<{ id: number; message: string; }>(),
+                        layout: translatable(`{groups#map({name}\n{entries#join(\n)})#join(\n\n)`).withArgs<{ groups: Iterable<{ name: IFormattable<string>; entries: Iterable<IFormattable<string>>; }>; }>()
                     }
                 }
             }
         },
         removeVoteBan: {
             user: {
-                description: f(`Deletes all the vote bans against the given user`),
-                success: f(`✅ Votebans for {user#tag} have been cleared`).withArgs<{ user: Eris.User; }>()
+                description: translatable(`Deletes all the vote bans against the given user`),
+                success: translatable(`✅ Votebans for {user#tag} have been cleared`).withArgs<{ user: Eris.User; }>()
             },
             all: {
-                description: f(`Deletes all vote bans against all users`),
-                success: f(`✅ Votebans for all users have been cleared`)
+                description: translatable(`Deletes all vote bans against all users`),
+                success: translatable(`✅ Votebans for all users have been cleared`)
             }
         },
         settings: {
-            description: f(`Gets or sets the settings for the current guild. Visit {website} for key documentation.`).withArgs<{ website: string; }>(),
+            description: translatable(`Gets or sets the settings for the current guild. Visit {website} for key documentation.`).withArgs<{ website: string; }>(),
             types: {
-                string: f(`string`),
-                channel: f(`channel`),
-                bool: f(`bool`),
-                role: f(`role`),
-                int: f(`int`),
-                float: f(`float`),
-                permission: f(`permission`)
+                string: translatable(`string`),
+                channel: translatable(`channel`),
+                bool: translatable(`bool`),
+                role: translatable(`role`),
+                int: translatable(`int`),
+                float: translatable(`float`),
+                permission: translatable(`permission`)
             },
             list: {
-                description: f(`Gets the current settings for this guild`),
-                notConfigured: f(`❌ Your guild is not correctly configured yet! Please try again later`),
+                description: translatable(`Gets the current settings for this guild`),
+                notConfigured: translatable(`❌ Your guild is not correctly configured yet! Please try again later`),
                 channelValue: {
-                    default: f(`{channel.name} ({channel.id})`).withArgs<{ channel: Eris.Channel; }>(),
-                    unknown: f(`Unknown channel ({channelId})`).withArgs<{ channelId: string; }>(),
-                    none: f(`Default Channel`)
+                    default: translatable(`{channel.name} ({channel.id})`).withArgs<{ channel: Eris.Channel; }>(),
+                    unknown: translatable(`Unknown channel ({channelId})`).withArgs<{ channelId: string; }>(),
+                    none: translatable(`Default Channel`)
                 },
                 roleValue: {
-                    default: f(`{role.name} ({role.id})`).withArgs<{ role: Eris.Role; }>(),
-                    unknown: f(`Unknown role ({roleId})`).withArgs<{ roleId: string; }>()
+                    default: translatable(`{role.name} ({role.id})`).withArgs<{ role: Eris.Role; }>(),
+                    unknown: translatable(`Unknown role ({roleId})`).withArgs<{ roleId: string; }>()
                 },
-                notSet: f(`Not set`),
+                notSet: translatable(`Not set`),
                 groups: {
-                    general: f(`General`),
-                    messages: f(`Messages`),
-                    channels: f(`Channels`),
-                    permission: f(`Permission`),
-                    warnings: f(`Warnings`),
-                    moderation: f(`Moderation`)
+                    general: translatable(`General`),
+                    messages: translatable(`Messages`),
+                    channels: translatable(`Channels`),
+                    permission: translatable(`Permission`),
+                    warnings: translatable(`Warnings`),
+                    moderation: translatable(`Moderation`)
                 }
             },
             keys: {
-                description: f(`Lists all the setting keys and their types`),
-                success: f(`ℹ️ You can use \`settings set <key> [value]\` to set the following settings. All settings are case insensitive.\n{settings#map( - **{name}:** \`{key#upper}\` ({type}))#join(\n)}`).withArgs<{ settings: Iterable<{ name: IFormattable<string>; key: string; type: IFormattable<string>; }>; }>()
+                description: translatable(`Lists all the setting keys and their types`),
+                success: translatable(`ℹ️ You can use \`settings set <key> [value]\` to set the following settings. All settings are case insensitive.\n{settings#map( - **{name}:** \`{key#upper}\` ({type}))#join(\n)}`).withArgs<{ settings: Iterable<{ name: IFormattable<string>; key: string; type: IFormattable<string>; }>; }>()
             },
             set: {
-                description: f(`Sets the given setting key to have a certain value. If \`value\` is omitted, the setting is reverted to its default value`),
-                keyInvalid: f(`❌ Invalid key!`),
-                valueInvalid: f(`❌ \`{value}\` is not a {type}`).withArgs<{ value: string; type: IFormattable<string>; }>(),
-                alreadySet: f(`❌ \`{value}\` is already set for {key}`).withArgs<{ value: string; key: string; }>(),
-                success: f(`✅ {key} is set to {value=nothing}`).withArgs<{ key: string; value?: string; }>()
+                description: translatable(`Sets the given setting key to have a certain value. If \`value\` is omitted, the setting is reverted to its default value`),
+                keyInvalid: translatable(`❌ Invalid key!`),
+                valueInvalid: translatable(`❌ \`{value}\` is not a {type}`).withArgs<{ value: string; type: IFormattable<string>; }>(),
+                alreadySet: translatable(`❌ \`{value}\` is already set for {key}`).withArgs<{ value: string; key: string; }>(),
+                success: translatable(`✅ {key} is set to {value=nothing}`).withArgs<{ key: string; value?: string; }>()
             }
         },
         slowMode: {
             errors: {
-                notTextChannel: f(`❌ You can only set slowmode on text channels!`),
-                notInGuild: f(`❌ You cant set slowmode on channels outside of a server`),
-                botNoPerms: f(`❌ I don't have permission to set slowmode in {channel#tag}!`).withArgs<{ channel: Eris.Channel; }>()
+                notTextChannel: translatable(`❌ You can only set slowmode on text channels!`),
+                notInGuild: translatable(`❌ You cant set slowmode on channels outside of a server`),
+                botNoPerms: translatable(`❌ I don't have permission to set slowmode in {channel#tag}!`).withArgs<{ channel: Eris.Channel; }>()
             },
             on: {
-                description: f(`Sets the channel's slowmode to 1 message every \`time\` seconds, with a max of 6 hours`),
-                timeTooLong: f(`❌ \`time\` must be less than {duration#duration(S)}s`).withArgs<{ duration: Duration; }>(),
-                success: f(`✅ Slowmode has been set to 1 message every {duration#duration(S)}s in {channel#tag}`).withArgs<{ duration: Duration; channel: Eris.Channel; }>()
+                description: translatable(`Sets the channel's slowmode to 1 message every \`time\` seconds, with a max of 6 hours`),
+                timeTooLong: translatable(`❌ \`time\` must be less than {duration#duration(S)}s`).withArgs<{ duration: Duration; }>(),
+                success: translatable(`✅ Slowmode has been set to 1 message every {duration#duration(S)}s in {channel#tag}`).withArgs<{ duration: Duration; channel: Eris.Channel; }>()
             },
             off: {
-                description: f(`Turns off the channel's slowmode`),
-                success: f(`✅ Slowmode has been disabled in {channel#tag}`).withArgs<{ channel: Eris.Channel; }>()
+                description: translatable(`Turns off the channel's slowmode`),
+                success: translatable(`✅ Slowmode has been disabled in {channel#tag}`).withArgs<{ channel: Eris.Channel; }>()
             }
         },
         tidy: {
             flags: {
-                bots: f(`Remove messages from bots.`),
-                invites: f(`Remove messages containing invites.`),
-                links: f(`Remove messages containing links.`),
-                embeds: f(`Remove messages containing embeds.`),
-                attachments: f(`Remove messages containing attachments.`),
-                user: f(`Removes messages from the users specified. Separate users by commas`),
-                query: f(`Removes messages that match the provided query as a regex.`),
-                invert: f(`Reverses the effects of all the flag filters.`),
-                yes: f(`Bypasses the confirmation`)
+                bots: translatable(`Remove messages from bots.`),
+                invites: translatable(`Remove messages containing invites.`),
+                links: translatable(`Remove messages containing links.`),
+                embeds: translatable(`Remove messages containing embeds.`),
+                attachments: translatable(`Remove messages containing attachments.`),
+                user: translatable(`Removes messages from the users specified. Separate users by commas`),
+                query: translatable(`Removes messages that match the provided query as a regex.`),
+                invert: translatable(`Reverses the effects of all the flag filters.`),
+                yes: translatable(`Bypasses the confirmation`)
             },
             default: {
-                description: f(`Clears messages from chat`),
-                notNegative: f(`❌ I cannot delete {count} messages!`).withArgs<{ count: number; }>(),
-                unsafeRegex: f(`❌ That regex is not safe!`),
-                invalidUsers: f(`❌ I couldn't find some of the users you gave!`),
-                noMessages: f(`❌ I couldn't find any matching messages!`),
+                description: translatable(`Clears messages from chat`),
+                notNegative: translatable(`❌ I cannot delete {count} messages!`).withArgs<{ count: number; }>(),
+                unsafeRegex: translatable(`❌ That regex is not safe!`),
+                invalidUsers: translatable(`❌ I couldn't find some of the users you gave!`),
+                noMessages: translatable(`❌ I couldn't find any matching messages!`),
                 confirmQuery: {
                     prompt: {
-                        foundAll: f(`ℹ️ I am about to attempt to delete {total} {total#plural(1:message|messages)}. Are you sure you wish to continue?\n{breakdown#map({user#tag} - {count} {count#plural(1:message|messages)})}`).withArgs<{ total: number; breakdown: Iterable<{ user: Eris.User; count: number; }>; }>(),
-                        foundSome: f(`ℹ️ I am about to attempt to delete {total} {total#plural(1:message|messages)} after searching through {searched} {searched#plural(1:message|messages)}. Are you sure you wish to continue?\n{breakdown#map({user#tag} - {count} {count#plural(1:message|messages)})}`).withArgs<{ total: number; searched: number; breakdown: Iterable<{ user: Eris.User; count: number; }>; }>()
+                        foundAll: translatable(`ℹ️ I am about to attempt to delete {total} {total#plural(1:message|messages)}. Are you sure you wish to continue?\n{breakdown#map({user#tag} - {count} {count#plural(1:message|messages)})}`).withArgs<{ total: number; breakdown: Iterable<{ user: Eris.User; count: number; }>; }>(),
+                        foundSome: translatable(`ℹ️ I am about to attempt to delete {total} {total#plural(1:message|messages)} after searching through {searched} {searched#plural(1:message|messages)}. Are you sure you wish to continue?\n{breakdown#map({user#tag} - {count} {count#plural(1:message|messages)})}`).withArgs<{ total: number; searched: number; breakdown: Iterable<{ user: Eris.User; count: number; }>; }>()
                     },
-                    cancel: f(`Cancel`),
-                    continue: f(`Continue`)
+                    cancel: translatable(`Cancel`),
+                    continue: translatable(`Continue`)
                 },
-                cancelled: f(`✅ Tidy cancelled, No messages will be deleted`),
-                deleteFailed: f(`❌ I wasn't able to delete any of the messages! Please make sure I have permission to manage messages`),
+                cancelled: translatable(`✅ Tidy cancelled, No messages will be deleted`),
+                deleteFailed: translatable(`❌ I wasn't able to delete any of the messages! Please make sure I have permission to manage messages`),
                 success: {
-                    default: f(`✅ Deleted {deleted} {success#plural(1:message|messages)}:\n{success#map({user#tag} - {count} {count#plural(1:message|messages)})}`).withArgs<{ deleted: number; success: Iterable<{ user: Eris.User; count: number; }>; }>(),
-                    partial: f(`⚠️ I managed to delete {deleted} of the messages I attempted to delete.\n{success#map({user#tag} - {count} {count#plural(1:message|messages)})}\n\nFailed:\n{failed#map({user#tag} - {count} {count#plural(1:message|messages)})}`).withArgs<{ deleted: number; success: Iterable<{ user: Eris.User; count: number; }>; failed: Iterable<{ user: Eris.User; count: number; }>; }>()
+                    default: translatable(`✅ Deleted {deleted} {success#plural(1:message|messages)}:\n{success#map({user#tag} - {count} {count#plural(1:message|messages)})}`).withArgs<{ deleted: number; success: Iterable<{ user: Eris.User; count: number; }>; }>(),
+                    partial: translatable(`⚠️ I managed to delete {deleted} of the messages I attempted to delete.\n{success#map({user#tag} - {count} {count#plural(1:message|messages)})}\n\nFailed:\n{failed#map({user#tag} - {count} {count#plural(1:message|messages)})}`).withArgs<{ deleted: number; success: Iterable<{ user: Eris.User; count: number; }>; failed: Iterable<{ user: Eris.User; count: number; }>; }>()
                 }
             }
         },
         timeout: {
             flags: {
-                reason: f(`The reason for the timeout (removal).`),
-                time: f(`The amount of time to mute for, formatted as '1 day 2 hours 3 minutes and 4 seconds', '1d2h3m4s', or some other combination.\nMaximum allowed time is 28 days. Default is 1 day.`)
+                reason: translatable(`The reason for the timeout (removal).`),
+                time: translatable(`The amount of time to mute for, formatted as '1 day 2 hours 3 minutes and 4 seconds', '1d2h3m4s', or some other combination.\nMaximum allowed time is 28 days. Default is 1 day.`)
             },
             user: {
-                description: f(`Timeouts a user.\nIf mod-logging is enabled, the timeout will be logged.`),
+                description: translatable(`Timeouts a user.\nIf mod-logging is enabled, the timeout will be logged.`),
                 state: {
-                    memberTooHigh: f(`❌ I don't have permission to timeout **{user#tag}**! Their highest role is above my highest role.`).withArgs<{ user: Eris.User; }>(),
-                    moderatorTooLow: f(`❌ You don't have permission to timeout **{user#tag}**! Their highest role is above your highest role.`).withArgs<{ user: Eris.User; }>(),
-                    noPerms: f(`❌ I don't have permission to timeout **{user#tag}**! Make sure I have the \`moderate members\` permission and try again.`).withArgs<{ user: Eris.User; }>(),
-                    moderatorNoPerms: f(`❌ You don't have permission to timeout **{user#tag}**! Make sure you have the \`moderate members\` permission or one of the permissions specified in the \`timeout override\` setting and try again.`).withArgs<{ user: Eris.User; }>(),
-                    alreadyTimedOut: f(`❌ **{user#tag}** has already been timed out.`).withArgs<{ user: Eris.User; }>(),
-                    success: f(`✅ **{user#tag}** has been timed out.`).withArgs<{ user: Eris.User; }>()
+                    memberTooHigh: translatable(`❌ I don't have permission to timeout **{user#tag}**! Their highest role is above my highest role.`).withArgs<{ user: Eris.User; }>(),
+                    moderatorTooLow: translatable(`❌ You don't have permission to timeout **{user#tag}**! Their highest role is above your highest role.`).withArgs<{ user: Eris.User; }>(),
+                    noPerms: translatable(`❌ I don't have permission to timeout **{user#tag}**! Make sure I have the \`moderate members\` permission and try again.`).withArgs<{ user: Eris.User; }>(),
+                    moderatorNoPerms: translatable(`❌ You don't have permission to timeout **{user#tag}**! Make sure you have the \`moderate members\` permission or one of the permissions specified in the \`timeout override\` setting and try again.`).withArgs<{ user: Eris.User; }>(),
+                    alreadyTimedOut: translatable(`❌ **{user#tag}** has already been timed out.`).withArgs<{ user: Eris.User; }>(),
+                    success: translatable(`✅ **{user#tag}** has been timed out.`).withArgs<{ user: Eris.User; }>()
                 }
             },
             clear: {
-                description: f(`Removes the timeout of a user.\nIf mod-logging is enabled, the timeout removal will be logged.`),
+                description: translatable(`Removes the timeout of a user.\nIf mod-logging is enabled, the timeout removal will be logged.`),
                 state: {
-                    notTimedOut: f(`❌ **{user#tag}** is not currently timed out.`).withArgs<{ user: Eris.User; }>(),
-                    noPerms: f(`❌ I don't have permission to timeout **{user#tag}**! Make sure I have the \`moderate members\` permission and try again.`).withArgs<{ user: Eris.User; }>(),
-                    moderatorNoPerms: f(`❌ You don't have permission to timeout **{user#tag}**! Make sure you have the \`moderate members\` permission or one of the permissions specified in the \`timeout override\` setting and try again.`).withArgs<{ user: Eris.User; }>(),
-                    success: f(`✅ **{user#tag}** timeout has been removed.`).withArgs<{ user: Eris.User; }>()
+                    notTimedOut: translatable(`❌ **{user#tag}** is not currently timed out.`).withArgs<{ user: Eris.User; }>(),
+                    noPerms: translatable(`❌ I don't have permission to timeout **{user#tag}**! Make sure I have the \`moderate members\` permission and try again.`).withArgs<{ user: Eris.User; }>(),
+                    moderatorNoPerms: translatable(`❌ You don't have permission to timeout **{user#tag}**! Make sure you have the \`moderate members\` permission or one of the permissions specified in the \`timeout override\` setting and try again.`).withArgs<{ user: Eris.User; }>(),
+                    success: translatable(`✅ **{user#tag}** timeout has been removed.`).withArgs<{ user: Eris.User; }>()
                 }
             }
         },
         timers: {
             list: {
-                description: f(`Lists all the currently active timers here`),
-                none: f(`✅ There are no active timers!`),
-                paged: f(`Showing timers {start} - {end} of {total}. Page {page}/{pageCount}`).withArgs<{ start: number; end: number; total: number; page: number; pageCount: number; }>(),
-                success: f(`ℹ️ Here are the currently active timers:\`\`\`prolog\n{table}{paging}`).withArgs<{ table: IFormattable<string>; paging?: IFormattable<string>; }>(),
+                description: translatable(`Lists all the currently active timers here`),
+                none: translatable(`✅ There are no active timers!`),
+                paged: translatable(`Showing timers {start} - {end} of {total}. Page {page}/{pageCount}`).withArgs<{ start: number; end: number; total: number; page: number; pageCount: number; }>(),
+                success: translatable(`ℹ️ Here are the currently active timers:\`\`\`prolog\n{table}\n\`\`\`{paging}`).withArgs<{ table: IFormattable<string>; paging?: IFormattable<string>; }>(),
                 table: {
                     id: {
-                        header: f(`Id`),
-                        cell: f(``).withArgs<{ id: string; }>()
+                        header: translatable(`Id`),
+                        cell: translatable(``).withArgs<{ id: string; }>()
                     },
                     elapsed: {
-                        header: f(`Elapsed`),
-                        cell: f(``).withArgs<{ startTime: Moment; }>()
+                        header: translatable(`Elapsed`),
+                        cell: translatable(``).withArgs<{ startTime: Moment; }>()
                     },
                     remain: {
-                        header: f(`Remain`),
-                        cell: f(``).withArgs<{ endTime: Moment; }>()
+                        header: translatable(`Remain`),
+                        cell: translatable(``).withArgs<{ endTime: Moment; }>()
                     },
                     user: {
-                        header: f(`User`),
-                        cell: f(``).withArgs<{ user?: Eris.User; }>()
+                        header: translatable(`User`),
+                        cell: translatable(``).withArgs<{ user?: Eris.User; }>()
                     },
                     type: {
-                        header: f(`Type`),
-                        cell: f(``).withArgs<{ type: string; }>()
+                        header: translatable(`Type`),
+                        cell: translatable(``).withArgs<{ type: string; }>()
                     },
                     content: {
-                        header: f(`Content`),
-                        cell: f(``).withArgs<{ content: string; }>()
+                        header: translatable(`Content`),
+                        cell: translatable(``).withArgs<{ content: string; }>()
                     }
                 }
             },
             info: {
-                description: f(`Shows detailed information about a given timer`),
-                notFound: f(`❌ I couldn't find the timer you gave.`),
+                description: translatable(`Shows detailed information about a given timer`),
+                notFound: translatable(`❌ I couldn't find the timer you gave.`),
                 embed: {
-                    title: f(`Timer #{id}`).withArgs<{ id: string; }>(),
+                    title: translatable(`Timer #{id}`).withArgs<{ id: string; }>(),
                     field: {
                         type: {
-                            name: f(`Type`)
+                            name: translatable(`Type`)
                         },
                         user: {
-                            name: f(`Started by`),
-                            value: f(`<@{userId}>`).withArgs<{ userId: string; }>()
+                            name: translatable(`Started by`),
+                            value: translatable(`<@{userId}>`).withArgs<{ userId: string; }>()
                         },
                         duration: {
-                            name: f(`Duration`),
-                            value: f(`Started {start#tag}\nEnds {end#tag}`).withArgs<{ start: Moment; end: Moment; }>()
+                            name: translatable(`Duration`),
+                            value: translatable(`Started {start#tag}\nEnds {end#tag}`).withArgs<{ start: Moment; end: Moment; }>()
                         }
                     }
                 }
             },
             cancel: {
-                description: f(`Cancels currently active timers`),
-                timersMissing: f(`❌ I couldn't find {count#plural(1:the timer|any of the timers)} you specified!`).withArgs<{ count: number; }>(),
+                description: translatable(`Cancels currently active timers`),
+                timersMissing: translatable(`❌ I couldn't find {count#plural(1:the timer|any of the timers)} you specified!`).withArgs<{ count: number; }>(),
                 success: {
-                    default: f(`✅ Cancelled {success#count#plural(1:{} timer|{} timers)}:\n{timers#map(\`{}\`)#join(\n)}`).withArgs<{ success: Iterable<string>; }>(),
-                    partial: f(`⚠️ Cancelled {success#count#plural(1:{} timer|{} timers)}:\n{success#map(\`{}\`)#join(\n)}\nCould not find {fail#count#plural(1:{} timer|{} timers)}:\n{fail#map(\`{}\`)#join(\n)}`).withArgs<{ success: Iterable<string>; fail: Iterable<string>; }>()
+                    default: translatable(`✅ Cancelled {success#count#plural(1:{} timer|{} timers)}:\n{timers#map(\`{}\`)#join(\n)}`).withArgs<{ success: Iterable<string>; }>(),
+                    partial: translatable(`⚠️ Cancelled {success#count#plural(1:{} timer|{} timers)}:\n{success#map(\`{}\`)#join(\n)}\nCould not find {fail#count#plural(1:{} timer|{} timers)}:\n{fail#map(\`{}\`)#join(\n)}`).withArgs<{ success: Iterable<string>; fail: Iterable<string>; }>()
                 }
             },
             clear: {
-                description: f(`Clears all currently active timers`),
+                description: translatable(`Clears all currently active timers`),
                 confirm: {
-                    prompt: f(`⚠️ Are you sure you want to clear all timers?`),
-                    continue: f(`Yes`),
-                    cancel: f(`No`)
+                    prompt: translatable(`⚠️ Are you sure you want to clear all timers?`),
+                    continue: translatable(`Yes`),
+                    cancel: translatable(`No`)
                 },
-                cancelled: f(`ℹ️ Cancelled clearing of timers`),
-                success: f(`✅ All timers cleared`)
+                cancelled: translatable(`ℹ️ Cancelled clearing of timers`),
+                success: translatable(`✅ All timers cleared`)
             }
         },
         unban: {
             flags: {
-                reason: f(`The reason for the ban.`)
+                reason: translatable(`The reason for the ban.`)
             },
             default: {
-                description: f(`Unbans a user.\nIf mod-logging is enabled, the ban will be logged.`),
-                userNotFound: f(`❌ I couldn't find that user!`),
+                description: translatable(`Unbans a user.\nIf mod-logging is enabled, the ban will be logged.`),
+                userNotFound: translatable(`❌ I couldn't find that user!`),
                 state: {
-                    notBanned: f(`❌ **{user#tag}** is not currently banned!`).withArgs<{ user: Eris.User; }>(),
-                    noPerms: f(`❌ I don't have permission to unban **{user#tag}**! Make sure I have the \`ban members\` permission and try again.`).withArgs<{ user: Eris.User; }>(),
-                    moderatorNoPerms: f(`❌ You don't have permission to unban **{user#tag}**! Make sure you have the \`ban members\` permission or one of the permissions specified in the \`ban override\` setting and try again.`).withArgs<{ user: Eris.User; }>(),
-                    success: f(`✅ **{user#tag}** has been unbanned.`).withArgs<{ user: Eris.User; }>()
+                    notBanned: translatable(`❌ **{user#tag}** is not currently banned!`).withArgs<{ user: Eris.User; }>(),
+                    noPerms: translatable(`❌ I don't have permission to unban **{user#tag}**! Make sure I have the \`ban members\` permission and try again.`).withArgs<{ user: Eris.User; }>(),
+                    moderatorNoPerms: translatable(`❌ You don't have permission to unban **{user#tag}**! Make sure you have the \`ban members\` permission or one of the permissions specified in the \`ban override\` setting and try again.`).withArgs<{ user: Eris.User; }>(),
+                    success: translatable(`✅ **{user#tag}** has been unbanned.`).withArgs<{ user: Eris.User; }>()
                 }
             }
         },
         unmute: {
             flags: {
-                reason: f(`The reason for the unmute.`)
+                reason: translatable(`The reason for the unmute.`)
             },
             default: {
-                description: f(`Removes the special muted role from the user. \nIf mod-logging is enabled, the mute will be logged.`),
+                description: translatable(`Removes the special muted role from the user. \nIf mod-logging is enabled, the mute will be logged.`),
                 state: {
-                    notMuted: f(`❌ {user#tag} is not currently muted`).withArgs<{ user: Eris.User; }>(),
-                    noPerms: f(`❌ I don't have permission to unmute users! Make sure I have the \`manage roles\` permission and try again.`),
-                    moderatorNoPerms: f(`❌ You don't have permission to unmute users! Make sure you have the \`manage roles\` permission and try again.`),
-                    roleTooHigh: f(`❌ I can't revoke the muted role! (it's higher than or equal to my top role)`),
-                    moderatorTooLow: f(`❌ You can't revoke the muted role! (it's higher than or equal to your top role)`),
-                    success: f(`✅ **{user#tag}** has been unmuted`).withArgs<{ user: Eris.User; }>()
+                    notMuted: translatable(`❌ {user#tag} is not currently muted`).withArgs<{ user: Eris.User; }>(),
+                    noPerms: translatable(`❌ I don't have permission to unmute users! Make sure I have the \`manage roles\` permission and try again.`),
+                    moderatorNoPerms: translatable(`❌ You don't have permission to unmute users! Make sure you have the \`manage roles\` permission and try again.`),
+                    roleTooHigh: translatable(`❌ I can't revoke the muted role! (it's higher than or equal to my top role)`),
+                    moderatorTooLow: translatable(`❌ You can't revoke the muted role! (it's higher than or equal to your top role)`),
+                    success: translatable(`✅ **{user#tag}** has been unmuted`).withArgs<{ user: Eris.User; }>()
                 }
             }
         },
         warn: {
             actions: {
-                ban: f(`ban`),
-                kick: f(`kick`),
-                timeout: f(`timeout`),
-                delete: f(`warn`)
+                ban: translatable(`ban`),
+                kick: translatable(`kick`),
+                timeout: translatable(`timeout`),
+                delete: translatable(`warn`)
             },
             flags: {
-                reason: f(`The reason for the warning.`),
-                count: f(`The number of warnings that will be issued.`)
+                reason: translatable(`The reason for the warning.`),
+                count: translatable(`The number of warnings that will be issued.`)
             },
             default: {
-                description: f(`Issues a warning.\nIf mod-logging is enabled, the warning will be logged.\nIf \`kickat\` and \`banat\` have been set using the \`settings\` command, the target could potentially get banned or kicked.`),
+                description: translatable(`Issues a warning.\nIf mod-logging is enabled, the warning will be logged.\nIf \`kickat\` and \`banat\` have been set using the \`settings\` command, the target could potentially get banned or kicked.`),
                 state: {
-                    countNaN: f(`❌ {value} isn't a number!`).withArgs<{ value: string; }>(),
-                    countNegative: f(`❌ I cant give a negative amount of warnings!`),
-                    countZero: f(`❌ I cant give zero warnings!`),
-                    memberTooHigh: f(`⚠️ **{user#tag}** has been given {count} {count#plural(1:warning|warnings)}.\n⛔ They went over the limit for {action}s but they are above me so I couldn't {action} them.`).withArgs<{ user: Eris.User; count: number; }>(),
-                    moderatorTooLow: f(`⚠️ **{user#tag}** has been given {count} {count#plural(1:warning|warnings)}.\n⛔ They went over the limit for {action}s but they are above you so I didn't {action} them.`).withArgs<{ user: Eris.User; count: number; action: IFormattable<string>; }>(),
-                    noPerms: f(`⚠️ **{user#tag}** has been given {count} {count#plural(1:warning|warnings)}.\n⛔ They went over the limit for {action}s but I don't have permission to {action} them.`).withArgs<{ user: Eris.User; count: number; action: IFormattable<string>; }>(),
-                    moderatorNoPerms: f(`⚠️ **{user#tag}** has been given {count} {count#plural(1:warning|warnings)}.\n⛔ They went over the limit for {action}s but you don't have permission to {action} them.`).withArgs<{ user: Eris.User; count: number; action: IFormattable<string>; }>(),
-                    alreadyBanned: f(`⚠️ **{user#tag}** has been given {count} {count#plural(1:warning|warnings)}.\n⛔ They went over the limit for bans, but they were already banned.`).withArgs<{ user: Eris.User; count: number; }>(),
-                    alreadyTimedOut: f(`⚠️ **{user#tag}** has been given {count} {count#plural(1:warning|warnings)}.\n⛔ They went over the limit for timeouts, but they were already timed out.`).withArgs<{ user: Eris.User; count: number; }>(),
+                    countNaN: translatable(`❌ {value} isn't a number!`).withArgs<{ value: string; }>(),
+                    countNegative: translatable(`❌ I cant give a negative amount of warnings!`),
+                    countZero: translatable(`❌ I cant give zero warnings!`),
+                    memberTooHigh: translatable(`⚠️ **{user#tag}** has been given {count} {count#plural(1:warning|warnings)}.\n⛔ They went over the limit for {action}s but they are above me so I couldn't {action} them.`).withArgs<{ user: Eris.User; count: number; }>(),
+                    moderatorTooLow: translatable(`⚠️ **{user#tag}** has been given {count} {count#plural(1:warning|warnings)}.\n⛔ They went over the limit for {action}s but they are above you so I didn't {action} them.`).withArgs<{ user: Eris.User; count: number; action: IFormattable<string>; }>(),
+                    noPerms: translatable(`⚠️ **{user#tag}** has been given {count} {count#plural(1:warning|warnings)}.\n⛔ They went over the limit for {action}s but I don't have permission to {action} them.`).withArgs<{ user: Eris.User; count: number; action: IFormattable<string>; }>(),
+                    moderatorNoPerms: translatable(`⚠️ **{user#tag}** has been given {count} {count#plural(1:warning|warnings)}.\n⛔ They went over the limit for {action}s but you don't have permission to {action} them.`).withArgs<{ user: Eris.User; count: number; action: IFormattable<string>; }>(),
+                    alreadyBanned: translatable(`⚠️ **{user#tag}** has been given {count} {count#plural(1:warning|warnings)}.\n⛔ They went over the limit for bans, but they were already banned.`).withArgs<{ user: Eris.User; count: number; }>(),
+                    alreadyTimedOut: translatable(`⚠️ **{user#tag}** has been given {count} {count#plural(1:warning|warnings)}.\n⛔ They went over the limit for timeouts, but they were already timed out.`).withArgs<{ user: Eris.User; count: number; }>(),
                     success: {
-                        delete: f(`✅ **{user#tag}** has been given {count} {count#plural(1:warning|warnings)}. They now have {warnings} {warnings#plural(1:warning|warnings)}.`).withArgs<{ user: Eris.User; count: number; warnings: number; }>(),
-                        timeout: f(`✅ **{user#tag}** has been given {count} {count#plural(1:warning|warnings)}. They want over the limit for timeouts and so have been timed out.`).withArgs<{ user: Eris.User; count: number; }>(),
-                        ban: f(`✅ **{user#tag}** has been given {count} {count#plural(1:warning|warnings)}. They went over the limit for bans and so have been banned.`).withArgs<{ user: Eris.User; count: number; }>(),
-                        kick: f(`✅ **{user#tag}** has been given {count} {count#plural(1:warning|warnings)}. They went over the limit for kicks and so have been kicked.`).withArgs<{ user: Eris.User; count: number; }>()
+                        delete: translatable(`✅ **{user#tag}** has been given {count} {count#plural(1:warning|warnings)}. They now have {warnings} {warnings#plural(1:warning|warnings)}.`).withArgs<{ user: Eris.User; count: number; warnings: number; }>(),
+                        timeout: translatable(`✅ **{user#tag}** has been given {count} {count#plural(1:warning|warnings)}. They want over the limit for timeouts and so have been timed out.`).withArgs<{ user: Eris.User; count: number; }>(),
+                        ban: translatable(`✅ **{user#tag}** has been given {count} {count#plural(1:warning|warnings)}. They went over the limit for bans and so have been banned.`).withArgs<{ user: Eris.User; count: number; }>(),
+                        kick: translatable(`✅ **{user#tag}** has been given {count} {count#plural(1:warning|warnings)}. They went over the limit for kicks and so have been kicked.`).withArgs<{ user: Eris.User; count: number; }>()
                     }
                 }
             }
         },
         addDomain: {
             default: {
-                description: f(`Toggles multiple domains to the domain whitelist for use with the {request} subtag`)
+                description: translatable(`Toggles multiple domains to the domain whitelist for use with the {request} subtag`),
+                success: translatable(`✅ Boy howdy, thanks for the domains!{added#plural(0:|\nThese ones are great!\`\`\`\n{#join(\n)}\n\`\`\`)}{removed#plural(0:|\nI always hated these ones anyway.\`\`\`\n{#join(\n)}\n\`\`\`)}\nJust remember: it might take up to 15 minutes for these to go live.`).withArgs<{ added: Iterable<string>; removed: Iterable<string>; }>()
             }
         },
         patch: {
             flags: {
-                fixes: f(`The bug fixes of the patch.`),
-                notes: f(`Other notes.`)
+                fixes: translatable(`The bug fixes of the patch.`),
+                notes: translatable(`Other notes.`)
             },
             default: {
-                description: f(`Makes a patch note`),
-                changelogMissing: f(`❌ I cant find the changelog channel!`),
-                messageEmpty: f(`❌ I cant send out an empty patch note!`),
+                description: translatable(`Makes a patch note`),
+                changelogMissing: translatable(`❌ I cant find the changelog channel!`),
+                messageEmpty: translatable(`❌ I cant send out an empty patch note!`),
                 embed: {
                     author: {
-                        name: f(`Version ${version}`)
+                        name: translatable(`Version {version}`).withArgs<{ version: string; }>()
                     },
-                    title: f(`New Features and Changes`),
+                    title: translatable(`New Features and Changes`),
                     field: {
-                        bugFixes: f(`Bug fixes`),
-                        otherNotes: f(`Other notes`)
+                        bugFixes: {
+                            name: translatable(`Bug fixes`)
+                        },
+                        otherNotes: {
+                            name: translatable(`Other notes`)
+                        }
                     }
                 },
                 confirm: {
-                    prompt: f(`This is a preview of what the patch will look like`),
-                    confirm: f(`Looks good, post it!`),
-                    cancel: f(`Nah let me change something`)
+                    prompt: translatable(`This is a preview of what the patch will look like`),
+                    continue: translatable(`Looks good, post it!`),
+                    cancel: translatable(`Nah let me change something`)
                 },
-                cancelled: f(`ℹ️ Patch cancelled`),
-                failed: f(`❌ I wasn't able to send the patch notes!`),
-                success: f(`✅ Done!`)
+                cancelled: translatable(`ℹ️ Patch cancelled`),
+                failed: translatable(`❌ I wasn't able to send the patch notes!`),
+                success: translatable(`✅ Done!`)
             }
         },
         reload: {
-            common: {
-                success: f(`✅ Successfully reloaded ${count} ${p(count, type)}`)
-            },
             commands: {
-                description: f(`Reloads the given commands, or all commands if none were given`)
+                description: translatable(`Reloads the given commands, or all commands if none were given`),
+                success: translatable(`✅ Successfully reloaded {count} {count#plural(1:command|commands)}`).withArgs<{ count: number; }>()
             },
             events: {
-                description: f(`Reloads the given events, or all events if none were given`)
+                description: translatable(`Reloads the given events, or all events if none were given`),
+                success: translatable(`✅ Successfully reloaded {count} {count#plural(1:event|events)}`).withArgs<{ count: number; }>()
             },
             services: {
-                description: f(`Reloads the given services, or all services if none were given`)
+                description: translatable(`Reloads the given services, or all services if none were given`),
+                success: translatable(`✅ Successfully reloaded {count} {count#plural(1:service|services)}`).withArgs<{ count: number; }>()
             }
         },
         restart: {
-            description: f(`Restarts blargbot, or one of its components`),
+            description: translatable(`Restarts blargbot, or one of its components`),
             default: {
-                description: f(`Restarts all the clusters`),
-                success: f(`Ah! You've killed me but in a way that minimizes downtime! D:`)
+                description: translatable(`Restarts all the clusters`),
+                success: translatable(`Ah! You've killed me but in a way that minimizes downtime! D:`)
             },
             kill: {
-                description: f(`Kills the master process, ready for pm2 to restart it`),
-                success: f(`Ah! You've killed me! D:`)
+                description: translatable(`Kills the master process, ready for pm2 to restart it`),
+                success: translatable(`Ah! You've killed me! D:`)
             },
             api: {
-                description: f(`Restarts the api process`),
-                success: f(`✅ Api has been respawned.`)
+                description: translatable(`Restarts the api process`),
+                success: translatable(`✅ Api has been respawned.`)
             }
         },
         update: {
             default: {
-                description: f(`Updates the codebase to the latest commit.`),
-                none: f(`✅ No update required!`),
+                description: translatable(`Updates the codebase to the latest commit.`),
+                noUpdate: translatable(`✅ No update required!`),
                 command: {
-                    pending: f(`ℹ️ Command: \`${command}\`\nRunning...`),
-                    success: f(`✅ Command: \`${command}\``),
-                    error: f(`❌ Command: \`${command}\``)
+                    pending: translatable(`ℹ️ Command: \`{command}\`\nRunning...`).withArgs<{ command: string; }>(),
+                    success: translatable(`✅ Command: \`{command}\``).withArgs<{ command: string; }>(),
+                    error: translatable(`❌ Command: \`{command}\``).withArgs<{ command: string; }>()
                 },
-                packageIssue: f(`❌ Failed to update due to a package issue`),
-                buildIssue: f(`❌ Failed to update due to a build issue, but successfully rolled back to commit \`${oldCommit}\``),
-                rollbackIssue: f(`❌ A fatal error has occurred while rolling back the latest commit! Manual intervention is required ASAP.`),
-                success: f(`✅ Updated to version ${version} commit \`${newCommit}\`!\nRun \`${context.prefix}restart\` to gracefully start all the clusters on this new version.`)
+                packageIssue: translatable(`❌ Failed to update due to a package issue`),
+                buildIssue: translatable(`❌ Failed to update due to a build issue, but successfully rolled back to commit \`{commit}\``).withArgs<{ commit: string; }>(),
+                rollbackIssue: translatable(`❌ A fatal error has occurred while rolling back the latest commit! Manual intervention is required ASAP.`),
+                success: translatable(`✅ Updated to version {version} commit \`{commit}\`!\nRun \`{prefix}restart\` to gracefully start all the clusters on this new version.`).withArgs<{ version: string; prefix: string; commit: string; }>()
             }
         },
         avatar: {
             common: {
-                formatInvalid: f(`❌ ${format} is not a valid format! Supported formats are ${humanize.smartJoin(allowedFormats, `, `, ` and `)}`),
-                sizeInvalid: f(`❌ ${size ?? parsedSize} is not a valid image size! Supported sizes are ${humanize.smartJoin(allowedImageSizes, `, `, ` and `)}`),
-                success: f(`✅ <@${user.id}>'s avatar`)
+                formatInvalid: translatable(`❌ ${format} is not a valid format! Supported formats are ${humanize.smartJoin(allowedFormats, `, `, ` and `)}`),
+                sizeInvalid: translatable(`❌ ${size ?? parsedSize} is not a valid image size! Supported sizes are ${humanize.smartJoin(allowedImageSizes, `, `, ` and `)}`),
+                success: translatable(`✅ <@${user.id}>'s avatar`)
             },
             flags: {
-                format: f(`The file format. Can be {formats#join(, | or )}.`).withArgs<{ formats: Iterable<string>; }>(),
-                size: f(`The file size. Can be {sizes#join(, | or )}.`).withArgs<{ sizes: Iterable<number>; }>()
+                format: translatable(`The file format. Can be {formats#join(, | or )}.`).withArgs<{ formats: Iterable<string>; }>(),
+                size: translatable(`The file size. Can be {sizes#join(, | or )}.`).withArgs<{ sizes: Iterable<number>; }>()
             },
             self: {
-                description: f(`Gets your avatar`)
+                description: translatable(`Gets your avatar`)
             },
             user: {
-                description: f(`Gets the avatar of the user you chose`)
+                description: translatable(`Gets the avatar of the user you chose`)
             }
         },
         beeMovie: {
             flags: {
-                name: f(`Shows the name of the character the quote is from, if applicable.`),
-                characters: f(`Only give quotes from actual characters (no stage directions).`)
+                name: translatable(`Shows the name of the character the quote is from, if applicable.`),
+                characters: translatable(`Only give quotes from actual characters (no stage directions).`)
             },
             default: {
-                description: f(`Gives a quote from the Bee Movie.`)
+                description: translatable(`Gives a quote from the Bee Movie.`)
             }
         },
         brainfuck: {
             common: {
                 queryInput: {
-                    prompt: f(`This brainfuck code requires user input. Please say what you want to use:`)
+                    prompt: translatable(`This brainfuck code requires user input. Please say what you want to use:`)
                 },
-                noInput: f(`❌ No input was provided!`),
-                unexpectedError: f(`❌ Something went wrong...`),
+                noInput: translatable(`❌ No input was provided!`),
+                unexpectedError: translatable(`❌ Something went wrong...`),
                 success: {
-                    empty: f(`ℹ️ No output...${pointers}`),
-                    default: f(`✅ Output:\n> ${result.output.trim().split(`\n`).join(`\n> `)}${pointers}`)
+                    empty: translatable(`ℹ️ No output...${pointers}`),
+                    default: translatable(`✅ Output:\n> ${result.output.trim().split(`\n`).join(`\n> `)}${pointers}`)
                 }
             },
             default: {
-                description: f(`Executes brainfuck code.`)
+                description: translatable(`Executes brainfuck code.`)
             },
             debug: {
-                description: f(`Executes brainfuck code and returns the pointers.`)
+                description: translatable(`Executes brainfuck code and returns the pointers.`)
             }
         },
         commit: {
             default: {
-                description: f(`Gets a random or specified blargbot commit.`),
-                noCommits: f(`❌ I cant find any commits at the moment, please try again later!`),
-                unknownCommit: f(`❌ I couldn't find the commit!`),
+                description: translatable(`Gets a random or specified blargbot commit.`),
+                noCommits: translatable(`❌ I cant find any commits at the moment, please try again later!`),
+                unknownCommit: translatable(`❌ I couldn't find the commit!`),
                 embed: {
-                    title: f(`${commit.sha.substring(0, 7)} - commit #${commitNumber}`)
+                    title: translatable(`${commit.sha.substring(0, 7)} - commit #${commitNumber}`)
                 }
             }
         },
         decancer: {
             user: {
-                description: f(`Decancers a users display name. If you have permissions, this will also change their nickname`),
-                success: f(`✅ Successfully decancered **${member.mention}**'s name to: \`${decancered}\``)
+                description: translatable(`Decancers a users display name. If you have permissions, this will also change their nickname`),
+                success: translatable(`✅ Successfully decancered **${member.mention}**'s name to: \`${decancered}\``)
             },
             text: {
-                description: f(`Decancers some text to plain ASCII`),
-                success: f(`✅ The decancered version of **${text}** is: \`${decancered}\``)
+                description: translatable(`Decancers some text to plain ASCII`),
+                success: translatable(`✅ The decancered version of **${text}** is: \`${decancered}\``)
             }
         },
         define: {
             default: {
-                description: f(`Gets the definition for the specified word. The word must be in english.`),
-                unavailable: f(`❌ It seems I cant find the definition for that word at the moment!`),
+                description: translatable(`Gets the definition for the specified word. The word must be in english.`),
+                unavailable: translatable(`❌ It seems I cant find the definition for that word at the moment!`),
                 embed: {
-                    title: f(`Definition for ${word}`),
-                    description: f(`**Pronunciation** ${linkPronunciation(defaultIPA)}`),
+                    title: translatable(`Definition for ${word}`),
+                    description: translatable(`**Pronunciation** ${linkPronunciation(defaultIPA)}`),
                     field: {
-                        name: f(`${i + 1}. ${r.partOfSpeech}`),
+                        name: translatable(`${i + 1}. ${r.partOfSpeech}`),
                         value: {
-                            pronunciation: f(`**Pronunciation**: ${linkPronunciation(specificIPA)}\n`),
-                            synonyms: f(`**Synonyms:** ${humanize.smartJoin(r.synonyms.map(s => `\`${s}\``), `, `, ` and `)}\n`),
-                            default: f(`${pronunciation}${synonyms}${definition}`)
+                            pronunciation: translatable(`**Pronunciation**: ${linkPronunciation(specificIPA)}\n`),
+                            synonyms: translatable(`**Synonyms:** ${humanize.smartJoin(r.synonyms.map(s => `\`${s}\``), `, `, ` and `)}\n`),
+                            default: translatable(`${pronunciation}${synonyms}${definition}`)
                         }
                     }
                 }
@@ -1448,23 +1465,23 @@ export const templates = crunchTree(`cluster`, {
         },
         dmErrors: {
             default: {
-                description: f(`Toggles whether to DM you errors.`),
-                enabled: f(`✅ I will now DM you if I have an issue running a command.`),
-                disabled: f(`✅ I won't DM you if I have an issue running a command.`)
+                description: translatable(`Toggles whether to DM you errors.`),
+                enabled: translatable(`✅ I will now DM you if I have an issue running a command.`),
+                disabled: translatable(`✅ I won't DM you if I have an issue running a command.`)
             }
         },
         donate: {
             default: {
-                description: f(`Gets my donation information`),
-                success: f(`✅ Thanks for the interest! Ive sent you a DM with information about donations.`),
+                description: translatable(`Gets my donation information`),
+                success: translatable(`✅ Thanks for the interest! Ive sent you a DM with information about donations.`),
                 embed: {
-                    description: f(`Hi! This is stupid cat, creator of blargbot. I hope you're enjoying it!\n\nI don't like to beg, but right now I'm a student. Tuition is expensive, and maintaining this project isn't exactly free. I have to pay for services such as web servers and domains, not to mention invest time into developing code to make this bot as good as it can be. I don't expect to be paid for what I'm doing; the most important thing to me is that people enjoy what I make, that my product is making people happy. But still, money doesn't grow on trees. If you want to support me and what I'm doing, I have a patreon available for donations. Prefer something with less commitment? I also have a paypal available.\n\nThank you for your time. I really appreciate all of my users! :3`),
+                    description: translatable(`Hi! This is stupid cat, creator of blargbot. I hope you're enjoying it!\n\nI don't like to beg, but right now I'm a student. Tuition is expensive, and maintaining this project isn't exactly free. I have to pay for services such as web servers and domains, not to mention invest time into developing code to make this bot as good as it can be. I don't expect to be paid for what I'm doing; the most important thing to me is that people enjoy what I make, that my product is making people happy. But still, money doesn't grow on trees. If you want to support me and what I'm doing, I have a patreon available for donations. Prefer something with less commitment? I also have a paypal available.\n\nThank you for your time. I really appreciate all of my users! :3`),
                     field: {
                         paypal: {
-                            name: f(`Paypal`)
+                            name: translatable(`Paypal`)
                         },
                         patreon: {
-                            name: f(`Patreon`)
+                            name: translatable(`Patreon`)
                         }
                     }
                 }
@@ -1472,91 +1489,91 @@ export const templates = crunchTree(`cluster`, {
         },
         feedback: {
             errors: {
-                titleTooLong: f(`❌ The first line of your suggestion cannot be more than ${64} characters!`),
-                noType: f(`❌ You need to provide at least 1 feedback type.`),
-                blacklisted: f(`❌ Sorry, ${type === `GUILD` ? `your guild has` : `you have`} been blacklisted from the use of the \`${context.prefix}feedback\` command. If you wish to appeal this, please join my support guild. You can find a link by doing \`${context.prefix}invite\`.`)
+                titleTooLong: translatable(`❌ The first line of your suggestion cannot be more than ${64} characters!`),
+                noType: translatable(`❌ You need to provide at least 1 feedback type.`),
+                blacklisted: translatable(`❌ Sorry, ${type === `GUILD` ? `your guild has` : `you have`} been blacklisted from the use of the \`${context.prefix}feedback\` command. If you wish to appeal this, please join my support guild. You can find a link by doing \`${context.prefix}invite\`.`)
             },
             blacklist: {
-                unknownType: f(`❌ I don't know how to blacklist a ${type}! only \`guild\` and \`user\``),
-                alreadyBlacklisted: f(`❌ That ${type} id is already blacklisted!`),
-                notBlacklisted: f(`❌ That ${type} id is not blacklisted!`),
-                success: f(`✅ The ${type} ${id} has been ${add ? `blacklisted` : `removed from the blacklist`}`)
+                unknownType: translatable(`❌ I don't know how to blacklist a ${type}! only \`guild\` and \`user\``),
+                alreadyBlacklisted: translatable(`❌ That ${type} id is already blacklisted!`),
+                notBlacklisted: translatable(`❌ That ${type} id is not blacklisted!`),
+                success: translatable(`✅ The ${type} ${id} has been ${add ? `blacklisted` : `removed from the blacklist`}`)
             },
             flags: {
-                command: f(`Signify your feedback is for a command`),
-                bbtag: f(`Signify your feedback is for BBTag`),
-                docs: f(`Signify your feedback is for documentation`),
-                other: f(`Signify your feedback is for other functionality`)
+                command: translatable(`Signify your feedback is for a command`),
+                bbtag: translatable(`Signify your feedback is for BBTag`),
+                docs: translatable(`Signify your feedback is for documentation`),
+                other: translatable(`Signify your feedback is for other functionality`)
             },
             general: {
-                description: f(`Give me general feedback about the bot`),
-                unexpectedError: f(`❌ Something went wrong while trying to submit that! Please try again`),
+                description: translatable(`Give me general feedback about the bot`),
+                unexpectedError: translatable(`❌ Something went wrong while trying to submit that! Please try again`),
                 queryType: {
-                    prompt: f(`ℹ️ Please select the types that apply to your suggestion`),
-                    placeholder: f(`Select your suggestion type`)
+                    prompt: translatable(`ℹ️ Please select the types that apply to your suggestion`),
+                    placeholder: translatable(`Select your suggestion type`)
                 },
                 types: {
-                    command: f(`Command`),
-                    bbtag: f(`BBTag`),
-                    documentation: f(`Documentation`),
-                    other: f(`Other Functionality`)
+                    command: translatable(`Command`),
+                    bbtag: translatable(`BBTag`),
+                    documentation: translatable(`Documentation`),
+                    other: translatable(`Other Functionality`)
                 },
                 embed: {
-                    description: f(`**${title}**\n\n${description}`),
+                    description: translatable(`**${title}**\n\n${description}`),
                     field: {
                         types: {
-                            name: f(`Types`)
+                            name: translatable(`Types`)
                         }
                     },
                     footer: {
-                        text: f(`Case ${record} | ${context.message.id}`)
+                        text: translatable(`Case ${record} | ${context.message.id}`)
                     }
                 }
             },
             suggest: {
-                description: f(`Tell me something you want to be added or changed`)
+                description: translatable(`Tell me something you want to be added or changed`)
             },
             report: {
-                description: f(`Let me know about a bug you found`)
+                description: translatable(`Let me know about a bug you found`)
             },
             edit: {
-                description: f(`Edit some feedback you have previously sent`),
-                unknownCase: f(`❌ I couldn't find any feedback with the case number ${caseNumber}!`),
-                notOwner: f(`❌ You cant edit someone elses suggestion.`),
-                success: f(`✅ Your case has been updated.`)
+                description: translatable(`Edit some feedback you have previously sent`),
+                unknownCase: translatable(`❌ I couldn't find any feedback with the case number ${caseNumber}!`),
+                notOwner: translatable(`❌ You cant edit someone elses suggestion.`),
+                success: translatable(`✅ Your case has been updated.`)
             }
 
         },
         help: {
             self: {
-                description: f(`Gets the help message for this command`)
+                description: translatable(`Gets the help message for this command`)
             },
             list: {
-                description: f(`Shows a list of all the available commands`)
+                description: translatable(`Shows a list of all the available commands`)
             },
             command: {
-                description: f(`Shows the help text for the given command`)
+                description: translatable(`Shows the help text for the given command`)
             }
         },
         info: {
             default: {
-                description: f(`Returns some info about me.`),
-                notReady: f(`⚠️ Im still waking up! Try again in a minute or two`),
+                description: translatable(`Returns some info about me.`),
+                notReady: translatable(`⚠️ Im still waking up! Try again in a minute or two`),
                 embed: {
-                    title: f(`About me!`),
-                    description: f(`I am a multipurpose bot with new features implemented regularly, written in typescript using [Eris](https://abal.moe/Eris/).\n\n🎂 I am currently ${ageStr} old!`),
+                    title: translatable(`About me!`),
+                    description: translatable(`I am a multipurpose bot with new features implemented regularly, written in typescript using [Eris](https://abal.moe/Eris/).\n\n🎂 I am currently ${ageStr} old!`),
                     field: {
                         patron: {
-                            name: f(`️️️️️️️️❤️ Special thanks to my patrons! ❤️`)
+                            name: translatable(`️️️️️️️️❤️ Special thanks to my patrons! ❤️`)
                         },
                         donator: {
-                            name: f(`️️️️️️️️❤️ Special thanks to all my other donators! ❤️`)
+                            name: translatable(`️️️️️️️️❤️ Special thanks to all my other donators! ❤️`)
                         },
                         other: {
-                            name: f(`❤️ Special huge thanks to: ❤️`)
+                            name: translatable(`❤️ Special huge thanks to: ❤️`)
                         },
                         details: {
-                            value: f(`For commands, do \`${context.prefix}help\`. For information about supporting me, do \`${context.prefix}donate\`.\nFor any additional information, such as command documentation, please visit my website: <https://blargbot.xyz>`)
+                            value: translatable(`For commands, do \`${context.prefix}help\`. For information about supporting me, do \`${context.prefix}donate\`.\nFor any additional information, such as command documentation, please visit my website: <https://blargbot.xyz>`)
                         }
                     }
                 }
@@ -1564,183 +1581,183 @@ export const templates = crunchTree(`cluster`, {
         },
         insult: {
             someone: {
-                description: f(`Generates a random insult directed at the name supplied.`)
+                description: translatable(`Generates a random insult directed at the name supplied.`)
             },
             default: {
-                description: f(`Generates a random insult.`)
+                description: translatable(`Generates a random insult.`)
             }
         },
         invite: {
             default: {
-                description: f(`Gets you invite information.`),
-                success: f(`Invite me to your guild!\n<${context.util.websiteLink(`invite`)}>\nJoin my support guild!\nhttps://discord.gg/015GVxZxI8rtlJgXF\``)
+                description: translatable(`Gets you invite information.`),
+                success: translatable(`Invite me to your guild!\n<${context.util.websiteLink(`invite`)}>\nJoin my support guild!\nhttps://discord.gg/015GVxZxI8rtlJgXF\``)
             }
         },
         mods: {
             common: {
                 embed: {
-                    title: f(`Moderators`),
+                    title: translatable(`Moderators`),
                     description: {
-                        none: f(`There are no mods with that status!`)
+                        none: translatable(`There are no mods with that status!`)
                     },
                     field: {
                         online: {
-                            name: f(`<${context.config.discord.emotes.online}> Online`)
+                            name: translatable(`<${context.config.discord.emotes.online}> Online`)
                         },
                         online: {
-                            name: f(`<${context.config.discord.emotes.away}> Away`)
+                            name: translatable(`<${context.config.discord.emotes.away}> Away`)
                         },
                         online: {
-                            name: f(`<${context.config.discord.emotes.busy}> Do not disturb`)
+                            name: translatable(`<${context.config.discord.emotes.busy}> Do not disturb`)
                         },
                         online: {
-                            name: f(`<${context.config.discord.emotes.offline}> Offline`)
+                            name: translatable(`<${context.config.discord.emotes.offline}> Offline`)
                         }
                     }
                 }
             },
             all: {
-                description: f(`Gets a list of all mods.`)
+                description: translatable(`Gets a list of all mods.`)
             },
             online: {
-                description: f(`Gets a list of all currently online mods.`)
+                description: translatable(`Gets a list of all currently online mods.`)
             },
             away: {
-                description: f(`Gets a list of all currently away mods.`)
+                description: translatable(`Gets a list of all currently away mods.`)
             },
             dnd: {
-                description: f(`Gets a list of all mods currently set to do not disturb.`)
+                description: translatable(`Gets a list of all mods currently set to do not disturb.`)
             },
             offline: {
-                description: f(`Gets a list of all currently offline mods.`)
+                description: translatable(`Gets a list of all currently offline mods.`)
             }
         },
         names: {
             flags: {
-                all: f(`Gets all the names.`),
-                verbose: f(`Gets more information about the retrieved names.`)
+                all: translatable(`Gets all the names.`),
+                verbose: translatable(`Gets more information about the retrieved names.`)
             },
             list: {
-                description: f(`Returns the names that I've seen the specified user have in the past 30 days.`),
+                description: translatable(`Returns the names that I've seen the specified user have in the past 30 days.`),
                 none: {
-                    ever: f(`ℹ️ I haven't seen any usernames for ${user.mention} yet!`),
-                    since: f(`ℹ️ I haven't seen ${user.mention} change their username since <t:${cutoff.unix()}>!`)
+                    ever: translatable(`ℹ️ I haven't seen any usernames for ${user.mention} yet!`),
+                    since: translatable(`ℹ️ I haven't seen ${user.mention} change their username since <t:${cutoff.unix()}>!`)
                 },
                 embed: {
-                    title: f(`Historical usernames`),
+                    title: translatable(`Historical usernames`),
                     description: {
-                        since: f(`Since <t:${cutoff.unix()}>\n${usernames.map(u => `${u.name} - <t:${moment(u.date).unix()}:R>`).join(`\n`)}`),
-                        ever: f(`${usernames.map(u => `${u.name} - <t:${moment(u.date).unix()}:R>`).join(`\n`)}`)
+                        since: translatable(`Since <t:${cutoff.unix()}>\n${usernames.map(u => `${u.name} - <t:${moment(u.date).unix()}:R>`).join(`\n`)}`),
+                        ever: translatable(`${usernames.map(u => `${u.name} - <t:${moment(u.date).unix()}:R>`).join(`\n`)}`)
                     }
                 }
             },
             remove: {
-                description: f(`Removes the names ive seen you use in the past 30 days`),
-                none: f(`ℹ️ You don't have any usernames to remove!`),
-                notFound: f(`❌ I couldn't find any of the usernames you gave!`),
+                description: translatable(`Removes the names ive seen you use in the past 30 days`),
+                none: translatable(`ℹ️ You don't have any usernames to remove!`),
+                notFound: translatable(`❌ I couldn't find any of the usernames you gave!`),
                 confirm: {
                     prompt: {
-                        some: f(`⚠️ Are you sure you want to remove ${countStr} usernames`),
-                        all: f(`⚠️ Are you sure you want to remove **all usernames**`)
+                        some: translatable(`⚠️ Are you sure you want to remove ${countStr} usernames`),
+                        all: translatable(`⚠️ Are you sure you want to remove **all usernames**`)
                     },
-                    confirm: f(`Yes`),
-                    cancel: f(`No`)
+                    confirm: translatable(`Yes`),
+                    cancel: translatable(`No`)
                 },
-                cancelled: f(`✅ I wont remove any usernames then!`),
-                success: f(`✅ Successfully removed ${countStr}!`)
+                cancelled: translatable(`✅ I wont remove any usernames then!`),
+                success: translatable(`✅ Successfully removed ${countStr}!`)
             }
         },
         nato: {
             default: {
-                description: f(`Translates the given text into the NATO phonetic alphabet.`)
+                description: translatable(`Translates the given text into the NATO phonetic alphabet.`)
             }
         },
         personalPrefix: {
             add: {
-                description: f(`Adds a command prefix just for you!`),
-                alreadyAdded: f(`❌ You already have that as a command prefix.`),
-                success: f(`✅ Your personal command prefix has been added.`)
+                description: translatable(`Adds a command prefix just for you!`),
+                alreadyAdded: translatable(`❌ You already have that as a command prefix.`),
+                success: translatable(`✅ Your personal command prefix has been added.`)
             },
             remove: {
-                description: f(`Removes one of your personal command prefixes`),
-                notAdded: f(`❌ That isn't one of your prefixes.`),
-                success: f(`✅ Your personal command prefix has been removed.`)
+                description: translatable(`Removes one of your personal command prefixes`),
+                notAdded: translatable(`❌ That isn't one of your prefixes.`),
+                success: translatable(`✅ Your personal command prefix has been removed.`)
             },
             list: {
-                description: f(`Lists the your personal command prefixes`),
-                none: f(`ℹ️ You don't have any personal command prefixes set!`),
+                description: translatable(`Lists the your personal command prefixes`),
+                none: translatable(`ℹ️ You don't have any personal command prefixes set!`),
                 embed: {
-                    title: f(`Personal prefixes`),
-                    description: f(`${prefixes.map(x => ` - ${x}`).join(`\n`)}`)
+                    title: translatable(`Personal prefixes`),
+                    description: translatable(`${prefixes.map(x => ` - ${x}`).join(`\n`)}`)
                 }
             }
         },
         ping: {
-            description: f(`Pong!\nFind the command latency.`),
+            description: translatable(`Pong!\nFind the command latency.`),
             default: {
-                description: f(`Gets the current latency.`),
-                pending: f(`ℹ️ ${content}`),
-                success: f(`✅ Pong! (${message.createdAt - context.timestamp}ms)`)
+                description: translatable(`Gets the current latency.`),
+                pending: translatable(`ℹ️ ${content}`),
+                success: translatable(`✅ Pong! (${message.createdAt - context.timestamp}ms)`)
             }
         },
         poll: {
             flags: {
-                time: f(`How long before the poll expires, formatted as '1 day 2 hours 3 minutes and 4 seconds', '1d2h3m4s', or some other combination.`),
-                emojis: f(`The emojis to apply to the poll.`),
-                description: f(`The description of the poll.`),
-                color: f(`The color of the poll (in HEX).`),
-                announce: f(`If specified, it will make an announcement. Requires the proper permissions.`)
+                time: translatable(`How long before the poll expires, formatted as '1 day 2 hours 3 minutes and 4 seconds', '1d2h3m4s', or some other combination.`),
+                emojis: translatable(`The emojis to apply to the poll.`),
+                description: translatable(`The description of the poll.`),
+                color: translatable(`The color of the poll (in HEX).`),
+                announce: translatable(`If specified, it will make an announcement. Requires the proper permissions.`)
             },
             default: {
-                description: f(`Creates a poll for the given question and duration. If no duration is given, defaults to 60 seconds. If emojis are given, they will be used as options for the poll.`),
-                invalidDuration: f(`❌ \`${time}\` is not a valid duration for a poll.`),
-                invalidColor: f(`❌ \`${options.color}\` is not a valid color!`),
-                sendFailed: f(`❌ I wasn't able to send the poll! Please make sure I have the right permissions and try again.`),
-                noAnnouncePerms: f(`❌ Sorry, you don't have permissions to send announcements!`),
-                announceNotSetUp: f(`❌ Announcements on this server aren't set up correctly. Please fix them before trying again.`),
-                emojisMissing: f(`❌ You must provide some emojis to use in the poll.`),
-                emojisInaccessible: f(`❌ I don't have access to some of the emojis you used! Please use different emojis or add me to the server that the emojis are from.`),
-                tooShort: f(`❌ ${time.humanize()} is too short for a poll! Use a longer time`),
-                someEmojisMissing: f(`⚠️ I managed to create the poll, but wasn't able to add some of the emojis to it. Please add them manually (they will still be counted in the results)`)
+                description: translatable(`Creates a poll for the given question and duration. If no duration is given, defaults to 60 seconds. If emojis are given, they will be used as options for the poll.`),
+                invalidDuration: translatable(`❌ \`${time}\` is not a valid duration for a poll.`),
+                invalidColor: translatable(`❌ \`${options.color}\` is not a valid color!`),
+                sendFailed: translatable(`❌ I wasn't able to send the poll! Please make sure I have the right permissions and try again.`),
+                noAnnouncePerms: translatable(`❌ Sorry, you don't have permissions to send announcements!`),
+                announceNotSetUp: translatable(`❌ Announcements on this server aren't set up correctly. Please fix them before trying again.`),
+                emojisMissing: translatable(`❌ You must provide some emojis to use in the poll.`),
+                emojisInaccessible: translatable(`❌ I don't have access to some of the emojis you used! Please use different emojis or add me to the server that the emojis are from.`),
+                tooShort: translatable(`❌ ${time.humanize()} is too short for a poll! Use a longer time`),
+                someEmojisMissing: translatable(`⚠️ I managed to create the poll, but wasn't able to add some of the emojis to it. Please add them manually (they will still be counted in the results)`)
             }
         },
         remind: {
             flags: {
-                channel: f(`Sets the reminder to appear in the current channel rather than a DM`),
-                time: f(`The time before the user is to be reminded, formatted as '1 day 2 hours 3 minutes and 4 seconds', '1d 2h 3m 4s', or some other combination`)
+                channel: translatable(`Sets the reminder to appear in the current channel rather than a DM`),
+                time: translatable(`The time before the user is to be reminded, formatted as '1 day 2 hours 3 minutes and 4 seconds', '1d 2h 3m 4s', or some other combination`)
             },
             default: {
-                description: f(`Reminds you about something after a period of time in a DM.`),
-                durationRequired: f(`❌ The \`-t\` flag is required to set the duration of the reminder!`),
-                durationZero: f(`❌ I cant set a timer for 0 seconds!`),
-                reminderMissing: f(`❌ You need to say what you need reminding of!`),
-                success: f(`✅ Ok, ill ping you ${channel === context.channel ? `here` : `in a DM`} <t:${moment().add(duration).unix()}:R>`)
+                description: translatable(`Reminds you about something after a period of time in a DM.`),
+                durationRequired: translatable(`❌ The \`-t\` flag is required to set the duration of the reminder!`),
+                durationZero: translatable(`❌ I cant set a timer for 0 seconds!`),
+                reminderMissing: translatable(`❌ You need to say what you need reminding of!`),
+                success: translatable(`✅ Ok, ill ping you ${channel === context.channel ? `here` : `in a DM`} <t:${moment().add(duration).unix()}:R>`)
             }
         },
         roles: {
             default: {
-                description: f(`Displays a list of roles and their IDs.`),
+                description: translatable(`Displays a list of roles and their IDs.`),
                 embed: {
-                    title: f(`Roles`)
+                    title: translatable(`Roles`)
                 }
             }
         },
         roll: {
             default: {
-                description: f(`Rolls the dice you tell it to, and adds the modifier`),
-                diceInvalid: f(`❌ \`${dice}\` is not a valid dice!`),
-                tooBig: f(`❌ You're limited to ${maxRolls} of a d${maxFaces}`),
+                description: translatable(`Rolls the dice you tell it to, and adds the modifier`),
+                diceInvalid: translatable(`❌ \`${dice}\` is not a valid dice!`),
+                tooBig: translatable(`❌ You're limited to ${maxRolls} of a d${maxFaces}`),
                 character: {
                     embed: {
-                        description: f(`Stat #${i} - [ ${rolls.join(`, `)} ] > ${total.toString().padStart(2, ` `)} - ${min} > ${(total - min).toString().padStart(2, ` `)}`)
+                        description: translatable(`Stat #${i} - [ ${rolls.join(`, `)} ] > ${total.toString().padStart(2, ` `)} - ${min} > ${(total - min).toString().padStart(2, ` `)}`)
                     }
                 },
                 embed: {
-                    title: f(`🎲 ${rollCount} ${p(rollCount, `roll`)} of a ${faceCount} sided dice:`),
+                    title: translatable(`🎲 ${rollCount} ${p(rollCount, `roll`)} of a ${faceCount} sided dice:`),
                     description: {
-                        modifier: f(`**Modifier**: ${total + modifier} ${sign} ${-modifier}\n`),
-                        natural1: f(`- Natural 1...`),
-                        natural20: f(`- Natural 20`)
+                        modifier: translatable(`**Modifier**: ${total + modifier} ${sign} ${-modifier}\n`),
+                        natural1: translatable(`- Natural 1...`),
+                        natural20: translatable(`- Natural 20`)
                     }
                 }
             }
@@ -1748,151 +1765,151 @@ export const templates = crunchTree(`cluster`, {
         },
         rr: {
             default: {
-                description: f(`Plays russian roulette with a specified number of bullets. If \`emote\` is specified, uses that specific emote.`),
-                notEnoughBullets: f(`❌ Wimp! You need to load at least one bullet.`),
-                guaranteedDeath: f(`⚠️ Do you have a death wish or something? Your revolver can only hold 6 bullets, that's guaranteed death!`),
-                tooManyBullets: f(`⚠️ That's gutsy, but your revolver can only hold 6 bullets!`),
-                jammed: f(`❌ Your revolver jams when you try to close the barrel. Maybe you should try somewhere else...`),
+                description: translatable(`Plays russian roulette with a specified number of bullets. If \`emote\` is specified, uses that specific emote.`),
+                notEnoughBullets: translatable(`❌ Wimp! You need to load at least one bullet.`),
+                guaranteedDeath: translatable(`⚠️ Do you have a death wish or something? Your revolver can only hold 6 bullets, that's guaranteed death!`),
+                tooManyBullets: translatable(`⚠️ That's gutsy, but your revolver can only hold 6 bullets!`),
+                jammed: translatable(`❌ Your revolver jams when you try to close the barrel. Maybe you should try somewhere else...`),
                 confirm: {
-                    prompt: f(`You load ${p(bullets, `a`, numMap[bullets])} ${p(bullets, `bullet`)} into your revolver, give it a spin, and place it against your head`),
-                    confirm: f(`Put the gun down`),
-                    cancel: f(`Pull the trigger`)
+                    prompt: translatable(`You load ${p(bullets, `a`, numMap[bullets])} ${p(bullets, `bullet`)} into your revolver, give it a spin, and place it against your head`),
+                    confirm: translatable(`Put the gun down`),
+                    cancel: translatable(`Pull the trigger`)
                 },
-                chicken: f(`You chicken out and put the gun down.\n${randChoose(chickenMsg)}`),
-                died: f(`***BOOM!*** ${randChoose(deathMsg)}`),
-                lived: f(`*Click!* ${randChoose(liveMsg)}`)
+                chicken: translatable(`You chicken out and put the gun down.\n${randChoose(chickenMsg)}`),
+                died: translatable(`***BOOM!*** ${randChoose(deathMsg)}`),
+                lived: translatable(`*Click!* ${randChoose(liveMsg)}`)
             }
         },
         shard: {
             common: {
                 embed: {
-                    title: f(`Shard ${shard.id}`),
+                    title: translatable(`Shard ${shard.id}`),
                     field: {
                         shard: {
-                            name: f(`Shard ${shard.id.toString()}`),
-                            value: f(`\`\`\`\nStatus: ${discord.cluster.statusEmojiMap[shard.status]}\nLatency: ${shard.latency}ms\nGuilds: ${shard.guilds}\nCluster: ${shard.cluster}\nLast update: ${humanize.duration(moment(), moment(shard.time, `x`), 1)} ago\n\`\`\``)
+                            name: translatable(`Shard ${shard.id.toString()}`),
+                            value: translatable(`\`\`\`\nStatus: ${discord.cluster.statusEmojiMap[shard.status]}\nLatency: ${shard.latency}ms\nGuilds: ${shard.guilds}\nCluster: ${shard.cluster}\nLast update: ${humanize.duration(moment(), moment(shard.time, `x`), 1)} ago\n\`\`\``)
                         },
                         cluster: {
-                            name: f(`Cluster ${clusterData.id.toString()}`),
-                            value: f(`CPU usage: ${clusterData.userCpu.toFixed(1)}\nGuilds: ${clusterData.guilds.toString()}\nRam used: ${humanize.ram(clusterData.rss)}\nStarted <t:${Math.round(clusterData.readyTime / 1000)}:R>`)
+                            name: translatable(`Cluster ${clusterData.id.toString()}`),
+                            value: translatable(`CPU usage: ${clusterData.userCpu.toFixed(1)}\nGuilds: ${clusterData.guilds.toString()}\nRam used: ${humanize.ram(clusterData.rss)}\nStarted <t:${Math.round(clusterData.readyTime / 1000)}:R>`)
                         },
                         shards: {
-                            name: f(`Shards`),
-                            value: f(`\`\`\`\n${clusterData.shards.map(shard => `${shard.id} ${discord.cluster.statusEmojiMap[shard.status]} ${shard.latency}ms`).join(`\n`)}\n\`\`\``)
+                            name: translatable(`Shards`),
+                            value: translatable(`\`\`\`\n${clusterData.shards.map(shard => `${shard.id} ${discord.cluster.statusEmojiMap[shard.status]} ${shard.latency}ms`).join(`\n`)}\n\`\`\``)
                         }
                     }
                 }
             },
             current: {
-                description: f(`Returns information about the shard the current guild is in, along with cluster stats.`),
+                description: translatable(`Returns information about the shard the current guild is in, along with cluster stats.`),
                 dm: {
                     embed: {
-                        description: f(`Discord DMs are on shard \`0\` in cluster \`${context.cluster.id.toString()}\``)
+                        description: translatable(`Discord DMs are on shard \`0\` in cluster \`${context.cluster.id.toString()}\``)
                     }
                 }
             },
             guild: {
-                description: f(`Returns information about the shard \`guildID\` is in, along with cluster stats.`),
-                invalidGuild: f(`❌ \`${guildID}\` is not a valid guildID`),
+                description: translatable(`Returns information about the shard \`guildID\` is in, along with cluster stats.`),
+                invalidGuild: translatable(`❌ \`${guildID}\` is not a valid guildID`),
                 embed: {
                     description: {
-                        here: f(`This guild is on shard \`${clusterData.shard.id}\` and cluster \`${clusterData.cluster.id}\``),
-                        other: f(`Guild \`${guildID}\` is on shard \`${clusterData.shard.id}\` and cluster \`${clusterData.cluster.id}\``)
+                        here: translatable(`This guild is on shard \`${clusterData.shard.id}\` and cluster \`${clusterData.cluster.id}\``),
+                        other: translatable(`Guild \`${guildID}\` is on shard \`${clusterData.shard.id}\` and cluster \`${clusterData.cluster.id}\``)
                     }
                 }
             }
         },
         shards: {
             common: {
-                invalidCluster: f(`❌ Cluster does not exist`),
-                noStats: f(`❌ Cluster ${clusterID} is not online at the moment`),
+                invalidCluster: translatable(`❌ Cluster does not exist`),
+                noStats: translatable(`❌ Cluster ${clusterID} is not online at the moment`),
                 embed: {
-                    title: f(`Shard ${shard.id}`),
+                    title: translatable(`Shard ${shard.id}`),
                     field: {
                         shard: {
-                            name: f(`Shard ${shard.id.toString()}`),
-                            value: f(`\`\`\`\nStatus: ${discord.cluster.statusEmojiMap[shard.status]}\nLatency: ${shard.latency}ms\nGuilds: ${shard.guilds}\nCluster: ${shard.cluster}\nLast update: ${humanize.duration(moment(), moment(shard.time, `x`), 1)} ago\n\`\`\``)
+                            name: translatable(`Shard ${shard.id.toString()}`),
+                            value: translatable(`\`\`\`\nStatus: ${discord.cluster.statusEmojiMap[shard.status]}\nLatency: ${shard.latency}ms\nGuilds: ${shard.guilds}\nCluster: ${shard.cluster}\nLast update: ${humanize.duration(moment(), moment(shard.time, `x`), 1)} ago\n\`\`\``)
                         },
                         cluster: {
-                            name: f(`Cluster ${clusterData.id.toString()}`),
-                            value: f(`CPU usage: ${clusterData.userCpu.toFixed(1)}\nGuilds: ${clusterData.guilds.toString()}\nRam used: ${humanize.ram(clusterData.rss)}\nStarted <t:${Math.round(clusterData.readyTime / 1000)}:R>`)
+                            name: translatable(`Cluster ${clusterData.id.toString()}`),
+                            value: translatable(`CPU usage: ${clusterData.userCpu.toFixed(1)}\nGuilds: ${clusterData.guilds.toString()}\nRam used: ${humanize.ram(clusterData.rss)}\nStarted <t:${Math.round(clusterData.readyTime / 1000)}:R>`)
                         },
                         shards: {
-                            name: f(`Shards`),
-                            value: f(`\`\`\`\n${clusterData.shards.map(shard => `${shard.id} ${discord.cluster.statusEmojiMap[shard.status]} ${shard.latency}ms`).join(`\n`)}\n\`\`\``)
+                            name: translatable(`Shards`),
+                            value: translatable(`\`\`\`\n${clusterData.shards.map(shard => `${shard.id} ${discord.cluster.statusEmojiMap[shard.status]} ${shard.latency}ms`).join(`\n`)}\n\`\`\``)
                         }
                     }
                 }
             },
             flags: {
-                down: f(`If provided, only shows downed shards for \`b!shards\``)
+                down: translatable(`If provided, only shows downed shards for \`b!shards\``)
             },
             all: {
-                description: f(`Shows a list of all shards.`),
-                noneDown: f(`ℹ️ No shards are currently down!`),
-                noStats: f(`❌ No cluster stats yet!`),
+                description: translatable(`Shows a list of all shards.`),
+                noneDown: translatable(`ℹ️ No shards are currently down!`),
+                noStats: translatable(`❌ No cluster stats yet!`),
                 embed: {
-                    title: f(`Shards`),
-                    description: f(`I'm running on \`${clusterCount}\` cluster${clusterCount > 1 ? `s` : ``} and \`${shardConfig.max}\` shard${shardConfig.max > 1 ? `s` : ``}\n`),
+                    title: translatable(`Shards`),
+                    description: translatable(`I'm running on \`${clusterCount}\` cluster${clusterCount > 1 ? `s` : ``} and \`${shardConfig.max}\` shard${shardConfig.max > 1 ? `s` : ``}\n`),
                     field: {
-                        name: f(`Cluster ${cluster.id.toString()}`),
-                        value: f(`Ready since: <t:${Math.round(cluster.readyTime / 1000)}:R>\nRam: ${humanize.ram(cluster.rss)}\n**Shards**:\n\`\`\`\n${cluster.shards.map(shard => `${shard.id} ${discord.cluster.statusEmojiMap[shard.status]} ${shard.latency}ms`).join(`\n`)}\n\`\`\``)
+                        name: translatable(`Cluster ${cluster.id.toString()}`),
+                        value: translatable(`Ready since: <t:${Math.round(cluster.readyTime / 1000)}:R>\nRam: ${humanize.ram(cluster.rss)}\n**Shards**:\n\`\`\`\n${cluster.shards.map(shard => `${shard.id} ${discord.cluster.statusEmojiMap[shard.status]} ${shard.latency}ms`).join(`\n`)}\n\`\`\``)
                     }
                 }
             },
             guild: {
-                description: f(`Shows information about the shard and cluster \`guildID\` is in `),
-                invalidGuild: f(`❌ \`${guildIDStr}\` is not a valid guildID`),
+                description: translatable(`Shows information about the shard and cluster \`guildID\` is in `),
+                invalidGuild: translatable(`❌ \`${guildIDStr}\` is not a valid guildID`),
                 embed: {
                     description: {
-                        here: f(`This guild is on shard \`${clusterData.shard.id}\` and cluster \`${clusterData.cluster.id}\``),
-                        other: f(`Guild \`${guildID}\` is on shard \`${clusterData.shard.id}\` and cluster \`${clusterData.cluster.id}\``)
+                        here: translatable(`This guild is on shard \`${clusterData.shard.id}\` and cluster \`${clusterData.cluster.id}\``),
+                        other: translatable(`Guild \`${guildID}\` is on shard \`${clusterData.shard.id}\` and cluster \`${clusterData.cluster.id}\``)
                     }
                 }
             },
             cluster: {
-                description: f(`Show information about \`cluster\``)
+                description: translatable(`Show information about \`cluster\``)
             }
         },
         ship: {
             default: {
-                description: f(`Gives you the ship name for two users.`),
-                success: f(`❤️ Your ship name is **${firstHalf}${secondHalf}**!`)
+                description: translatable(`Gives you the ship name for two users.`),
+                success: translatable(`❤️ Your ship name is **${firstHalf}${secondHalf}**!`)
             }
         },
         spell: {
             default: {
-                description: f(`Gives you a description for a D&D 5e spell.`),
-                notFound: f(`❌ I couldn't find that spell!`),
+                description: translatable(`Gives you a description for a D&D 5e spell.`),
+                notFound: translatable(`❌ I couldn't find that spell!`),
                 components: {
-                    v: f(`Verbal`),
-                    s: f(`Somatic`),
-                    m: f(`Material`),
-                    f: f(`Focus`),
-                    df: f(`Divine Focus`),
-                    xp: f(`XP Cost`)
+                    v: translatable(`Verbal`),
+                    s: translatable(`Somatic`),
+                    m: translatable(`Material`),
+                    f: translatable(`Focus`),
+                    df: translatable(`Divine Focus`),
+                    xp: translatable(`XP Cost`)
                 },
                 query: {
-                    prompt: f(`🪄 Multiple spells found! Please pick the right one`),
-                    placeholder: f(`Pick a spell`),
+                    prompt: translatable(`🪄 Multiple spells found! Please pick the right one`),
+                    placeholder: translatable(`Pick a spell`),
                     choice: {
-                        description: f(`Level ${s.level} ${s.school}`)
+                        description: translatable(`Level ${s.level} ${s.school}`)
                     }
                 },
                 embed: {
-                    description: f(`*Level ${spell.level} ${spell.school}*\n\n${spell.desc}`),
+                    description: translatable(`*Level ${spell.level} ${spell.school}*\n\n${spell.desc}`),
                     field: {
                         duration: {
-                            name: f(`Duration`)
+                            name: translatable(`Duration`)
                         },
                         range: {
-                            name: f(`Range`)
+                            name: translatable(`Range`)
                         },
                         castingTime: {
-                            name: f(`Casting Time`)
+                            name: translatable(`Casting Time`)
                         },
                         components: {
-                            name: f(`Components`)
+                            name: translatable(`Components`)
                         }
                     }
                 }
@@ -1900,47 +1917,47 @@ export const templates = crunchTree(`cluster`, {
         },
         stats: {
             default: {
-                description: f(`Gives you some information about me`),
+                description: translatable(`Gives you some information about me`),
                 embed: {
-                    title: f(`Bot Statistics`),
+                    title: translatable(`Bot Statistics`),
                     footer: {
-                        text: f(`blargbot`)
+                        text: translatable(`blargbot`)
                     },
                     field: {
                         guilds: {
-                            name: f(`Guilds`)
+                            name: translatable(`Guilds`)
                         },
                         users: {
-                            name: f(`Users`)
+                            name: translatable(`Users`)
                         },
                         channels: {
-                            name: f(`Channels`)
+                            name: translatable(`Channels`)
                         },
                         shards: {
-                            name: f(`Shards`),
-                            value: f(`${context.config.discord.shards.max}`)
+                            name: translatable(`Shards`),
+                            value: translatable(`${context.config.discord.shards.max}`)
                         },
                         clusters: {
-                            name: f(`Clusters`),
-                            value: f(`${Math.ceil(context.config.discord.shards.max / context.config.discord.shards.perCluster)}`)
+                            name: translatable(`Clusters`),
+                            value: translatable(`${Math.ceil(context.config.discord.shards.max / context.config.discord.shards.perCluster)}`)
                         },
                         ram: {
-                            name: f(`RAM`),
-                            value: f(`${humanize.ram(mappedStats.rss)}`)
+                            name: translatable(`RAM`),
+                            value: translatable(`${humanize.ram(mappedStats.rss)}`)
                         },
                         version: {
-                            name: f(`Version`)
+                            name: translatable(`Version`)
                         },
                         uptime: {
-                            name: f(`Uptime`),
-                            value: f(`<t:${context.cluster.createdAt.unix()}:R>`)
+                            name: translatable(`Uptime`),
+                            value: translatable(`<t:${context.cluster.createdAt.unix()}:R>`)
                         },
                         eris: {
-                            name: f(`Eris`),
+                            name: translatable(`Eris`),
                             value: eris.VERSION
                         },
                         nodeJS: {
-                            name: f(`Node.js`)
+                            name: translatable(`Node.js`)
                         }
                     }
                 }
@@ -1948,233 +1965,233 @@ export const templates = crunchTree(`cluster`, {
         },
         status: {
             default: {
-                description: f(`Gets you an image of an HTTP status code.`),
-                notFound: f(`❌ Something terrible has happened! 404 is not found!`)
+                description: translatable(`Gets you an image of an HTTP status code.`),
+                notFound: translatable(`❌ Something terrible has happened! 404 is not found!`)
             }
         },
         syntax: {
             default: {
-                description: f(`Gives you the 'syntax' for a command 😉`),
-                success: f(`❌ Invalid usage!\nProper usage: \`${context.prefix}syntax ${cleanName} ${correctTokens.join(` `)}\``)
+                description: translatable(`Gives you the 'syntax' for a command 😉`),
+                success: translatable(`❌ Invalid usage!\nProper usage: \`${context.prefix}syntax ${cleanName} ${correctTokens.join(` `)}\``)
             }
         },
         tag: {
-            description: f(`Tags are a system of public commands that anyone can create or run, using the BBTag language.\n\nFor more information about BBTag, visit <{subtags}>.\nBy creating a tag, you acknowledge that you agree to the Terms of Service (<{tos}>)`).withArgs<{ subtags: string; tos: string; }>(),
+            description: translatable(`Tags are a system of public commands that anyone can create or run, using the BBTag language.\n\nFor more information about BBTag, visit <{subtags}>.\nBy creating a tag, you acknowledge that you agree to the Terms of Service (<{tos}>)`).withArgs<{ subtags: string; tos: string; }>(),
             common: {
-                debugInDm: f(`ℹ️ Ive sent the debug output in a DM`),
-                done: f(`✅ I hope you found what you were looking for!`)
+                debugInDm: translatable(`ℹ️ Ive sent the debug output in a DM`),
+                done: translatable(`✅ I hope you found what you were looking for!`)
             },
             errors: {
-                noneFound: f(`❌ No results found!`),
-                tagMissing: f(`❌ The \`${tagName}\` tag doesn't exist!`),
-                invalidBBTag: f(`❌ There were errors with the bbtag you provided!\n${bbtag.stringifyAnalysis(analysis)}`),
-                notOwner: f(`❌ You don't own the \`${match.name}\` tag!`),
-                alreadyExists: f(`❌ The \`${match.name}\` tag already exists!`)
+                noneFound: translatable(`❌ No results found!`),
+                tagMissing: translatable(`❌ The \`${tagName}\` tag doesn't exist!`),
+                invalidBBTag: translatable(`❌ There were errors with the bbtag you provided!\n${bbtag.stringifyAnalysis(analysis)}`),
+                notOwner: translatable(`❌ You don't own the \`${match.name}\` tag!`),
+                alreadyExists: translatable(`❌ The \`${match.name}\` tag already exists!`)
 
             },
             run: {
-                description: f(`Runs a user created tag with some arguments`)
+                description: translatable(`Runs a user created tag with some arguments`)
             },
             test: {
                 default: {
-                    description: f(`Uses the BBTag engine to execute the content as if it was a tag`)
+                    description: translatable(`Uses the BBTag engine to execute the content as if it was a tag`)
                 },
                 debug: {
-                    description: f(`Uses the BBTag engine to execute the content as if it was a tag and will return the debug output`),
-                    tagNotOwned: f(`❌ You cannot debug someone elses tag.`)
+                    description: translatable(`Uses the BBTag engine to execute the content as if it was a tag and will return the debug output`),
+                    tagNotOwned: translatable(`❌ You cannot debug someone elses tag.`)
                 }
             },
             docs: {
-                description: f(`Returns helpful information about the specified topic.`)
+                description: translatable(`Returns helpful information about the specified topic.`)
             },
             debug: {
-                description: f(`Runs a user created tag with some arguments. A debug file will be sent in a DM after the tag has finished.`)
+                description: translatable(`Runs a user created tag with some arguments. A debug file will be sent in a DM after the tag has finished.`)
             },
             create: {
-                description: f(`Creates a new tag with the content you give`),
-                success: f(`✅ Tag \`{name}\` created.\n{errors#join(\n)}`).withArgs<{ name: string; errors: Iterable<IFormattable<string>>; }>()
+                description: translatable(`Creates a new tag with the content you give`),
+                success: translatable(`✅ Tag \`{name}\` created.\n{errors#join(\n)}`).withArgs<{ name: string; errors: Iterable<IFormattable<string>>; }>()
             },
             edit: {
-                description: f(`Edits an existing tag to have the content you specify`),
-                success: f(`✅ Tag \`{name}\` edited.\n{errors#join(\n)}`).withArgs<{ name: string; errors: Iterable<IFormattable<string>>; }>()
+                description: translatable(`Edits an existing tag to have the content you specify`),
+                success: translatable(`✅ Tag \`{name}\` edited.\n{errors#join(\n)}`).withArgs<{ name: string; errors: Iterable<IFormattable<string>>; }>()
             },
             set: {
-                description: f(`Sets the tag to have the content you specify. If the tag doesn't exist it will be created.`),
-                success: f(`✅ Tag \`{name}\` set.\n{errors#join(\n)}`).withArgs<{ name: string; errors: Iterable<IFormattable<string>>; }>()
+                description: translatable(`Sets the tag to have the content you specify. If the tag doesn't exist it will be created.`),
+                success: translatable(`✅ Tag \`{name}\` set.\n{errors#join(\n)}`).withArgs<{ name: string; errors: Iterable<IFormattable<string>>; }>()
             },
             delete: {
-                description: f(`Deletes an existing tag`),
-                success: f(`✅ The \`${match.name}\` tag is gone forever!`)
+                description: translatable(`Deletes an existing tag`),
+                success: translatable(`✅ The \`${match.name}\` tag is gone forever!`)
             },
             rename: {
-                description: f(`Renames the tag`),
-                success: f(`✅ The \`${from.name}\` tag has been renamed to \`${to.name}\`.`)
+                description: translatable(`Renames the tag`),
+                success: translatable(`✅ The \`${from.name}\` tag has been renamed to \`${to.name}\`.`)
             },
             raw: {
-                description: f(`Gets the raw contents of the tag`),
-                inline: f(`ℹ️ The raw code for {name} is: \`\`\`{content}\`\`\``).withArgs<{ name: string; content: string; }>(),
-                attached: f(`ℹ️ The raw code for {name} is attached`).withArgs<{ name: string; }>()
+                description: translatable(`Gets the raw contents of the tag`),
+                inline: translatable(`ℹ️ The raw code for {name} is: \`\`\`\n{content}\n\`\`\``).withArgs<{ name: string; content: string; }>(),
+                attached: translatable(`ℹ️ The raw code for {name} is attached`).withArgs<{ name: string; }>()
             },
             list: {
-                description: f(`Lists all tags, or tags made by a specific author`)
+                description: translatable(`Lists all tags, or tags made by a specific author`)
             },
             search: {
-                description: f(`Searches for a tag based on the provided name`)
+                description: translatable(`Searches for a tag based on the provided name`)
             },
             permDelete: {
-                description: f(`Marks the tag name as deleted forever, so no one can ever use it`),
-                notStaff: f(`❌ You cannot disable tags`),
-                success: f(`✅ The \`${tagName}\` tag has been deleted`)
+                description: translatable(`Marks the tag name as deleted forever, so no one can ever use it`),
+                notStaff: translatable(`❌ You cannot disable tags`),
+                success: translatable(`✅ The \`${tagName}\` tag has been deleted`)
             },
             cooldown: {
-                description: f(`Sets the cooldown of a tag, in milliseconds`),
-                cooldownZero: f(`❌ The cooldown must be greater than 0ms`),
-                success: f(`✅ The tag \`${match.name}\` now has a cooldown of \`${humanize.duration(cooldown)}\`.`)
+                description: translatable(`Sets the cooldown of a tag, in milliseconds`),
+                cooldownZero: translatable(`❌ The cooldown must be greater than 0ms`),
+                success: translatable(`✅ The tag \`${match.name}\` now has a cooldown of \`${humanize.duration(cooldown)}\`.`)
             },
             author: {
-                description: f(`Displays the name of the tag's author`)
+                description: translatable(`Displays the name of the tag's author`)
             },
             info: {
-                description: f(`Displays information about a tag`)
+                description: translatable(`Displays information about a tag`)
             },
             top: {
-                description: f(`Displays the top 5 tags`)
+                description: translatable(`Displays the top 5 tags`)
             },
             report: {
-                description: f(`Reports a tag as violating the ToS`),
-                unavailable: f(`❌ Sorry, you cannot report tags at this time. Please try again later!`),
-                deleted: f(`✅ The \`${match.name}\` tag is no longer being reported by you.`),
-                added: f(`✅ The \`${match.name}\` tag has been reported.`)
+                description: translatable(`Reports a tag as violating the ToS`),
+                unavailable: translatable(`❌ Sorry, you cannot report tags at this time. Please try again later!`),
+                deleted: translatable(`✅ The \`${match.name}\` tag is no longer being reported by you.`),
+                added: translatable(`✅ The \`${match.name}\` tag has been reported.`)
             },
             setLang: {
-                description: f(`Sets the language to use when returning the raw text of your tag`),
-                success: f(`✅ Lang for tag \`${match.name}\` set.`)
+                description: translatable(`Sets the language to use when returning the raw text of your tag`),
+                success: translatable(`✅ Lang for tag \`${match.name}\` set.`)
             },
             favorite: {
                 list: {
-                    description: f(`Displays a list of the tags you have favorited`),
-                    none: f(`You have no favorite tags!`),
-                    success: f(`You have ${tags.length} favorite ${p(tags.length, `tag`)}. ${codeBlock(tags.join(`, `), `fix`)}`)
+                    description: translatable(`Displays a list of the tags you have favorited`),
+                    none: translatable(`You have no favorite tags!`),
+                    success: translatable(`You have ${tags.length} favorite ${p(tags.length, `tag`)}. ${codeBlock(tags.join(`, `), `fix`)}`)
                 },
                 toggle: {
-                    description: f(`Adds or removes a tag from your list of favorites`)
+                    description: translatable(`Adds or removes a tag from your list of favorites`)
                 }
             },
             flag: {
                 list: {
-                    description: f(`Lists the flags the tag accepts`),
-                    none: f(`The \`${match.name}\` tag has no flags.`),
-                    success: f(`The \`${match.name}\` tag has the following flags:\n\n${flags.join(`\n`)}`)
+                    description: translatable(`Lists the flags the tag accepts`),
+                    none: translatable(`The \`${match.name}\` tag has no flags.`),
+                    success: translatable(`The \`${match.name}\` tag has the following flags:\n\n${flags.join(`\n`)}`)
                 },
                 create: {
-                    description: f(`Adds multiple flags to your tag. Flags should be of the form \`-<f> <flag> [flag description]\`\ne.g. \`b!t flags add mytag -c category The category you want to use -n name Your name\``),
-                    wordMissing: f(`❌ No word was specified for the \`${flag}\` flag`),
-                    flagExists: f(`❌ The flag \`${flag}\` already exists!`),
-                    wordExists: f(`❌ A flag with the word \`${word}\` already exists!`),
-                    success: f(`✅ The flags for \`${match.name}\` have been updated.`)
+                    description: translatable(`Adds multiple flags to your tag. Flags should be of the form \`-<f> <flag> [flag description]\`\ne.g. \`b!t flags add mytag -c category The category you want to use -n name Your name\``),
+                    wordMissing: translatable(`❌ No word was specified for the \`${flag}\` flag`),
+                    flagExists: translatable(`❌ The flag \`${flag}\` already exists!`),
+                    wordExists: translatable(`❌ A flag with the word \`${word}\` already exists!`),
+                    success: translatable(`✅ The flags for \`${match.name}\` have been updated.`)
                 },
                 delete: {
-                    description: f(`Removes multiple flags from your tag. Flags should be of the form \`-<f>\`\ne.g. \`b!t flags remove mytag -c -n\``),
-                    success: f(`✅ The flags for \`${match.name}\` have been updated.`)
+                    description: translatable(`Removes multiple flags from your tag. Flags should be of the form \`-<f>\`\ne.g. \`b!t flags remove mytag -c -n\``),
+                    success: translatable(`✅ The flags for \`${match.name}\` have been updated.`)
                 }
             }
         },
         time: {
             errors: {
-                timezoneInvalid: f(`❌ \`${timezone}\` is not a valid timezone! See <https://en.wikipedia.org/wiki/List_of_tz_database_time_zones> for timezone codes that I understand.`)
+                timezoneInvalid: translatable(`❌ \`${timezone}\` is not a valid timezone! See <https://en.wikipedia.org/wiki/List_of_tz_database_time_zones> for timezone codes that I understand.`)
             },
             self: {
-                description: f(`Gets the time in your timezone`)
+                description: translatable(`Gets the time in your timezone`)
             },
             user: {
-                description: f(`Gets the current time for the user`),
-                timezoneNotSet: f(`❌ ${user.mention} has not set their timezone with the \`${context.prefix}timezone\` command yet.`),
-                timezoneInvalid: f(`❌ ${user.mention} doesn't have a valid timezone set. They need to update it with the \`${context.prefix}timezone\` command`),
-                success: f(`ℹ️ It is currently **${now.format(`LT`)}** for **${user.mention}**.`)
+                description: translatable(`Gets the current time for the user`),
+                timezoneNotSet: translatable(`❌ ${user.mention} has not set their timezone with the \`${context.prefix}timezone\` command yet.`),
+                timezoneInvalid: translatable(`❌ ${user.mention} doesn't have a valid timezone set. They need to update it with the \`${context.prefix}timezone\` command`),
+                success: translatable(`ℹ️ It is currently **${now.format(`LT`)}** for **${user.mention}**.`)
             },
             timezone: {
-                description: f(`Gets the current time in the timezone`),
-                success: f(`ℹ️ In **${now.zoneAbbr()}**, it is currently **${now.format(`LT`)}**`)
+                description: translatable(`Gets the current time in the timezone`),
+                success: translatable(`ℹ️ In **${now.zoneAbbr()}**, it is currently **${now.format(`LT`)}**`)
             },
             convert: {
-                description: f(`Converts a \`time\` from \`timezone1\` to \`timezone2\``),
-                invalidTime: f(`❌ \`${time}\` is not a valid time! Please use the 12 or 24 hour format, e.g. 1:32pm or 13:32`),
-                success: f(`ℹ️ When it's **${source.format(`LT`)}** in **${source.zoneAbbr()}**, it's **${dest.format(`LT`)}** in **${dest.zoneAbbr()}**.`)
+                description: translatable(`Converts a \`time\` from \`timezone1\` to \`timezone2\``),
+                invalidTime: translatable(`❌ \`${time}\` is not a valid time! Please use the 12 or 24 hour format, e.g. 1:32pm or 13:32`),
+                success: translatable(`ℹ️ When it's **${source.format(`LT`)}** in **${source.zoneAbbr()}**, it's **${dest.format(`LT`)}** in **${dest.zoneAbbr()}**.`)
             }
         },
         timer: {
             flags: {
-                channel: f(`Sets the reminder to appear in the current channel rather than a DM`)
+                channel: translatable(`Sets the reminder to appear in the current channel rather than a DM`)
             },
             default: {
-                description: f(`Sets a timer for the provided duration, formatted as '1 day 2 hours 3 minutes and 4 seconds', '1d2h3m4s', or some other combination.`),
-                durationZero: f(`❌ I cant set a timer for 0 seconds!`),
-                success: f(`✅ Ok, ill ping you ${channel === context.channel ? `here` : `in a DM`} <t:${moment().add(duration).unix()}:R>`)
+                description: translatable(`Sets a timer for the provided duration, formatted as '1 day 2 hours 3 minutes and 4 seconds', '1d2h3m4s', or some other combination.`),
+                durationZero: translatable(`❌ I cant set a timer for 0 seconds!`),
+                success: translatable(`✅ Ok, ill ping you ${channel === context.channel ? `here` : `in a DM`} <t:${moment().add(duration).unix()}:R>`)
             }
         },
         timeZone: {
             get: {
-                description: f(`Gets your current timezone`),
-                notSet: f(`ℹ️ You haven't set a timezone yet.`),
-                timezoneInvalid: f(`⚠️ Your stored timezone code is \`${timezone}\`, which isn't valid! Please update it when possible.`),
-                success: f(`ℹ️ Your stored timezone code is \`${timezone}\`, which is equivalent to ${zone.format(`z (Z)`)}.`)
+                description: translatable(`Gets your current timezone`),
+                notSet: translatable(`ℹ️ You haven't set a timezone yet.`),
+                timezoneInvalid: translatable(`⚠️ Your stored timezone code is \`${timezone}\`, which isn't valid! Please update it when possible.`),
+                success: translatable(`ℹ️ Your stored timezone code is \`${timezone}\`, which is equivalent to ${zone.format(`z (Z)`)}.`)
             },
             set: {
-                description: f(`Sets your current timezone. A list of [allowed timezones can be found on wikipedia](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones#List) under the \`TZ database name\` column`),
-                timezoneInvalid: f(`❌ \`${timezone}\` is not a valid timezone! See <https://en.wikipedia.org/wiki/List_of_tz_database_time_zones> for timezone codes that I understand.`),
-                success: f(`✅ Ok, your timezone code is now set to \`${timezone}\`, which is equivalent to ${zone.format(`z (Z)`)}.`)
+                description: translatable(`Sets your current timezone. A list of [allowed timezones can be found on wikipedia](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones#List) under the \`TZ database name\` column`),
+                timezoneInvalid: translatable(`❌ \`${timezone}\` is not a valid timezone! See <https://en.wikipedia.org/wiki/List_of_tz_database_time_zones> for timezone codes that I understand.`),
+                success: translatable(`✅ Ok, your timezone code is now set to \`${timezone}\`, which is equivalent to ${zone.format(`z (Z)`)}.`)
             }
         },
         todo: {
             list: {
-                description: f(`Shows you your todo list`),
+                description: translatable(`Shows you your todo list`),
                 embed: {
-                    title: f(`Todo list`),
+                    title: translatable(`Todo list`),
                     description: {
-                        none: f(`You have nothing on your list!`),
-                        item: f(`**${i + 1}.** ${e}`),
-                        default: f(`${items.map(i => `**${i.id}.** ${i.value}`).join(`\n`)}`)
+                        none: translatable(`You have nothing on your list!`),
+                        item: translatable(`**${i + 1}.** ${e}`),
+                        default: translatable(`${items.map(i => `**${i.id}.** ${i.value}`).join(`\n`)}`)
                     }
                 }
             },
             remove: {
-                description: f(`Removes an item from your todo list by id`),
-                unknownId: f(`❌ Your todo list doesn't have an item ${index}!`),
-                success: f(`✅ Done!`)
+                description: translatable(`Removes an item from your todo list by id`),
+                unknownId: translatable(`❌ Your todo list doesn't have an item ${index}!`),
+                success: translatable(`✅ Done!`)
             },
             add: {
-                description: f(`Adds an item to your todo list`),
-                success: f(`✅ Done!`)
+                description: translatable(`Adds an item to your todo list`),
+                success: translatable(`✅ Done!`)
             }
         },
         tokenify: {
             default: {
-                description: f(`Converts the given input into a token.`)
+                description: translatable(`Converts the given input into a token.`)
             }
         },
         uptime: {
             default: {
-                description: f(`Gets how long ive been online for`),
-                success: f(`ℹ️ I came online <t:${context.cluster.createdAt.unix()}:R> at <t:${context.cluster.createdAt.unix()}>`)
+                description: translatable(`Gets how long ive been online for`),
+                success: translatable(`ℹ️ I came online <t:${context.cluster.createdAt.unix()}:R> at <t:${context.cluster.createdAt.unix()}>`)
             }
         },
         user: {
             default: {
-                description: f(`Gets information about a user`),
+                description: translatable(`Gets information about a user`),
                 activity: {
-                    default: f(`Not doing anything`),
-                    5: f(`Competing in ${activity.name}`),
-                    4: f(`${activity.name}`),
-                    2: f(`Listening to ${activity.name}`),
-                    0: f(`Playing ${activity.name}`),
-                    1: f(`Streaming ${activity.details}`),
-                    3: f(`Watching ${activity.name}`)
+                    default: translatable(`Not doing anything`),
+                    5: translatable(`Competing in ${activity.name}`),
+                    4: translatable(`${activity.name}`),
+                    2: translatable(`Listening to ${activity.name}`),
+                    0: translatable(`Playing ${activity.name}`),
+                    1: translatable(`Streaming ${activity.details}`),
+                    3: translatable(`Watching ${activity.name}`)
                 },
                 embed: {
-                    description: f(`**User Id**: ${user.id}\n**Created**: ${timestamp(user.createdAt)}`),
+                    description: translatable(`**User Id**: ${user.id}\n**Created**: ${timestamp(user.createdAt)}`),
                     field: {
                         roles: {
-                            name: f(`Roles`)
+                            name: translatable(`Roles`)
                         }
                     }
                 }
@@ -2182,453 +2199,465 @@ export const templates = crunchTree(`cluster`, {
         },
         version: {
             default: {
-                description: f(`Tells you what version I am on`),
-                success: f(`ℹ️ I am running blargbot version ${version}`)
+                description: translatable(`Tells you what version I am on`),
+                success: translatable(`ℹ️ I am running blargbot version ${version}`)
             }
         },
         voteBan: {
-            description: f(`Its a meme, don't worry`),
+            description: translatable(`Its a meme, don't worry`),
             errors: {
-                failed: f(`❌ Seems the petitions office didn't like that one! Please try again`)
+                failed: translatable(`❌ Seems the petitions office didn't like that one! Please try again`)
             },
             list: {
-                description: f(`Gets the people with the most votes to be banned.`),
+                description: translatable(`Gets the people with the most votes to be banned.`),
                 embed: {
-                    title: f(`ℹ️ Top 10 Vote bans`),
+                    title: translatable(`ℹ️ Top 10 Vote bans`),
                     description: {
-                        empty: f(`No petitions have been signed yet!`),
-                        default: f(`${users.map(u => `**${u.position}.** ${u.user.mention} - ${u.count} ${p(u.count, `signature`)}`).join(`\n`)}`)
+                        empty: translatable(`No petitions have been signed yet!`),
+                        default: translatable(`${users.map(u => `**${u.position}.** ${u.user.mention} - ${u.count} ${p(u.count, `signature`)}`).join(`\n`)}`)
                     }
                 }
             },
             info: {
-                description: f(`Checks the status of the petition to ban someone.`),
+                description: translatable(`Checks the status of the petition to ban someone.`),
                 embed: {
-                    title: f(`ℹ️ Vote ban signatures`),
+                    title: translatable(`ℹ️ Vote ban signatures`),
                     description: {
-                        empty: f(`No one has voted to ban ${user.mention} yet.`),
-                        tooMany: f(`${votes.map(v => `<@${v.id}>${v.reason ? ` - ${v.reason}` : ``}`).join(`\n`)}`),
-                        default: f(`${votes.map(v => `<@${v.id}>${v.reason ? ` - ${v.reason}` : ``}`).join(`\n`)}\n... and ${votes.length - 15} more`)
+                        empty: translatable(`No one has voted to ban ${user.mention} yet.`),
+                        tooMany: translatable(`${votes.map(v => `<@${v.id}>${v.reason ? ` - ${v.reason}` : ``}`).join(`\n`)}`),
+                        default: translatable(`${votes.map(v => `<@${v.id}>${v.reason ? ` - ${v.reason}` : ``}`).join(`\n`)}\n... and ${votes.length - 15} more`)
                     }
                 }
             },
             sign: {
-                description: f(`Signs a petition to ban a someone`),
-                alreadySigned: f(`❌ I know you're eager, but you have already signed the petition to ban ${user.mention}!`),
-                success: f(`✅ ${context.author.mention} has signed to ban ${user.mention}! A total of **${newTotal} ${p(newTotal, `person** has`, `people** have`)} signed the petition now.${reason !== undefined ? `\n**Reason**: ${reason}` : ``}`)
+                description: translatable(`Signs a petition to ban a someone`),
+                alreadySigned: translatable(`❌ I know you're eager, but you have already signed the petition to ban ${user.mention}!`),
+                success: translatable(`✅ ${context.author.mention} has signed to ban ${user.mention}! A total of **${newTotal} ${p(newTotal, `person** has`, `people** have`)} signed the petition now.${reason !== undefined ? `\n**Reason**: ${reason}` : ``}`)
             },
             forgive: {
-                description: f(`Removes your signature to ban someone`),
-                notSigned: f(`❌ Thats very kind of you, but you haven't even signed to ban ${user.mention} yet!`),
-                success: f(`✅ ${context.author.mention} reconsidered and forgiven ${user.mention}! A total of **${newTotal} ${p(newTotal, `person** has`, `people** have`)} signed the petition now.`)
+                description: translatable(`Removes your signature to ban someone`),
+                notSigned: translatable(`❌ Thats very kind of you, but you haven't even signed to ban ${user.mention} yet!`),
+                success: translatable(`✅ ${context.author.mention} reconsidered and forgiven ${user.mention}! A total of **${newTotal} ${p(newTotal, `person** has`, `people** have`)} signed the petition now.`)
             }
         },
         warnings: {
             common: {
-                some: f(`⚠️ **${humanize.fullName(member.user)}** has accumulated ${count} ${p(count, `warning`)}.`),
-                none: f(`🎉 **${humanize.fullName(member.user)}** doesn't have any warnings!`),
-                untilTimeout: f(`- ${timeoutAt - count} more warnings before being timed out.`),
-                untilKick: f(`- ${kickAt - count} more warnings before being kicked.`),
-                untilBan: f(`- ${banAt - count} more warnings before being banned.`),
-                success: f(`${lines.join(`\n`)}`)
+                some: translatable(`⚠️ **${humanize.fullName(member.user)}** has accumulated ${count} ${p(count, `warning`)}.`),
+                none: translatable(`🎉 **${humanize.fullName(member.user)}** doesn't have any warnings!`),
+                untilTimeout: translatable(`- ${timeoutAt - count} more warnings before being timed out.`),
+                untilKick: translatable(`- ${kickAt - count} more warnings before being kicked.`),
+                untilBan: translatable(`- ${banAt - count} more warnings before being banned.`),
+                success: translatable(`${lines.join(`\n`)}`)
             },
             self: {
-                description: f(`Gets how many warnings you have`)
+                description: translatable(`Gets how many warnings you have`)
             },
             user: {
-                description: f(`Gets how many warnings the user has`)
+                description: translatable(`Gets how many warnings the user has`)
             }
         },
         xkcd: {
             default: {
-                description: f(`Gets an xkcd comic. If a number is not specified, gets a random one.`),
-                down: f(`❌ Seems like xkcd is down 😟`),
+                description: translatable(`Gets an xkcd comic. If a number is not specified, gets a random one.`),
+                down: translatable(`❌ Seems like xkcd is down 😟`),
                 embed: {
-                    title: f(`xkcd #${comic.num}: ${comic.title}`),
+                    title: translatable(`xkcd #${comic.num}: ${comic.title}`),
                     footer: {
-                        text: f(`xkcd ${comic.year}`)
+                        text: translatable(`xkcd ${comic.year}`)
                     }
                 }
             }
         },
         art: {
             flags: {
-                image: f(`A custom image.`)
+                image: translatable(`A custom image.`)
             },
             user: {
-                description: f(`Shows everyone a work of art.`)
+                description: translatable(`Shows everyone a work of art.`)
             },
             default: {
-                description: f(`Shows everyone a work of art.`),
-                invalidUrl: f(`❌ {url} is not a valid url!`).withArgs<{ url: string; }>()
+                description: translatable(`Shows everyone a work of art.`),
+                invalidUrl: translatable(`❌ {url} is not a valid url!`).withArgs<{ url: string; }>()
             }
         },
         cah: {
             flags: {
-                unofficial: f(`Also show unofficial cards.`)
+                unofficial: translatable(`Also show unofficial cards.`)
             },
             default: {
-                description: f(`Generates a set of Cards Against Humanity cards.`)
+                description: translatable(`Generates a set of Cards Against Humanity cards.`)
             },
             packs: {
-                description: f(`Lists all the Cards against packs I know about`),
-                success: f(`ℹ️ These are the packs I know about:`)
+                description: translatable(`Lists all the Cards against packs I know about`),
+                success: translatable(`ℹ️ These are the packs I know about:`)
             }
         },
         caption: {
             errors: {
-                imageMissing: f(`❌ You didn't tell me what image I should caption!`),
-                captionMissing: f(`❌ You must give at least 1 caption!`),
-                fontInvalid: f(`❌ {font} is not a supported font! Use \`{prefix}caption list\` to see all available fonts`).withArgs<{ font: string; prefix: string; }>()
+                imageMissing: translatable(`❌ You didn't tell me what image I should caption!`),
+                captionMissing: translatable(`❌ You must give at least 1 caption!`),
+                fontInvalid: translatable(`❌ {font} is not a supported font! Use \`{prefix}caption list\` to see all available fonts`).withArgs<{ font: string; prefix: string; }>()
             },
             flags: {
-                top: f(`The top caption.`),
-                bottom: f(`The bottom caption.`),
-                font: f(`The font to use (case insensitive). Use the command with the -l flag to view the available fonts. Defaults to impact.`)
+                top: translatable(`The top caption.`),
+                bottom: translatable(`The bottom caption.`),
+                font: translatable(`The font to use (case insensitive). Use the command with the -l flag to view the available fonts. Defaults to impact.`)
             },
             fonts: {
-                description: f(`Lists the fonts that are supported`),
-                success: f(`ℹ️ The supported fonts are: {fonts#join(, | and )}`).withArgs<{ fonts: Iterable<string>; }>()
+                description: translatable(`Lists the fonts that are supported`),
+                success: translatable(`ℹ️ The supported fonts are: {fonts#join(, | and )}`).withArgs<{ fonts: Iterable<string>; }>()
             },
             attached: {
-                description: f(`Puts captions on an attached image.`)
+                description: translatable(`Puts captions on an attached image.`)
             },
             linked: {
-                description: f(`Puts captions on the image in the URL.`),
-                invalidUrl: f(`❌ {url} is not a valid url!`).withArgs<{ url: string; }>()
+                description: translatable(`Puts captions on the image in the URL.`),
+                invalidUrl: translatable(`❌ {url} is not a valid url!`).withArgs<{ url: string; }>()
             }
         },
         cat: {
             default: {
-                description: f(`Gets a picture of a cat.`)
+                description: translatable(`Gets a picture of a cat.`)
             }
         },
         clint: {
             flags: {
-                image: f(`A custom image.`)
+                image: translatable(`A custom image.`)
             },
             user: {
-                description: f(`I don't even know, to be honest.`)
+                description: translatable(`I don't even know, to be honest.`)
             },
             default: {
-                description: f(`I don't even know, to be honest.`),
-                invalidUrl: f(`❌ {url} is not a valid url!`).withArgs<{ url: string; }>()
+                description: translatable(`I don't even know, to be honest.`),
+                invalidUrl: translatable(`❌ {url} is not a valid url!`).withArgs<{ url: string; }>()
             }
         },
         clippy: {
             default: {
-                description: f(`Clippy the paperclip is here to save the day!`)
+                description: translatable(`Clippy the paperclip is here to save the day!`)
             }
         },
         clyde: {
             default: {
-                description: f(`Give everyone a message from Clyde.`)
+                description: translatable(`Give everyone a message from Clyde.`)
             }
         },
         color: {
             default: {
-                description: f(`Returns the provided colors.`)
+                description: translatable(`Returns the provided colors.`)
             }
         },
         delete: {
             default: {
-                description: f(`Shows that you're about to delete something.`)
+                description: translatable(`Shows that you're about to delete something.`)
             }
         },
         distort: {
             flags: {
-                image: f(`A custom image.`)
+                image: translatable(`A custom image.`)
             },
             user: {
-                description: f(`Turns an avatar into modern art.`)
+                description: translatable(`Turns an avatar into modern art.`)
             },
             default: {
-                description: f(`Turns an image into modern art.`),
-                invalidUrl: f(`❌ {url} is not a valid url!`).withArgs<{ url: string; }>()
+                description: translatable(`Turns an image into modern art.`),
+                invalidUrl: translatable(`❌ {url} is not a valid url!`).withArgs<{ url: string; }>()
             }
         },
         emoji: {
-            description: f(`Gives you a large version of an emoji. If size is specified and the emoji is not a custom emoji, the image will be that size.`),
+            description: translatable(`Gives you a large version of an emoji. If size is specified and the emoji is not a custom emoji, the image will be that size.`),
             flags: {
-                svg: f(`Get the emote as an svg instead of a png.`)
+                svg: translatable(`Get the emote as an svg instead of a png.`)
             },
             default: {
-                description: f(`Gives you a large version of an emoji. If size is specified and the emoji is not a custom emoji, the image will be that size.`),
-                invalidEmoji: f(`❌ No emoji found!`)
+                description: translatable(`Gives you a large version of an emoji. If size is specified and the emoji is not a custom emoji, the image will be that size.`),
+                invalidEmoji: translatable(`❌ No emoji found!`)
             }
         },
         free: {
             flags: {
-                bottom: f(`The bottom caption.`)
+                bottom: translatable(`The bottom caption.`)
             },
             default: {
-                description: f(`Tells everyone what you got for free`)
+                description: translatable(`Tells everyone what you got for free`)
             }
         },
         linus: {
             flags: {
-                image: f(`A custom image.`)
+                image: translatable(`A custom image.`)
             },
             user: {
-                description: f(`Shows a picture of Linus pointing at something on his monitor.`)
+                description: translatable(`Shows a picture of Linus pointing at something on his monitor.`)
             },
             default: {
-                description: f(`Shows a picture of Linus pointing at something on his monitor.`),
-                invalidUrl: f(`❌ {url} is not a valid url!`).withArgs<{ url: string; }>()
+                description: translatable(`Shows a picture of Linus pointing at something on his monitor.`),
+                invalidUrl: translatable(`❌ {url} is not a valid url!`).withArgs<{ url: string; }>()
             }
         },
         pcCheck: {
             default: {
-                description: f(`Tells everyone a reason why they should get their PC checked. Template credits go to Ghosty#8204.`)
+                description: translatable(`Tells everyone a reason why they should get their PC checked. Template credits go to Ghosty#8204.`)
             }
         },
         pixelate: {
             flags: {
-                image: f(`A custom image.`),
-                scale: f(`The amount to pixelate by (defaults to 64)`)
+                image: translatable(`A custom image.`),
+                scale: translatable(`The amount to pixelate by (defaults to 64)`)
             },
             user: {
-                description: f(`Pixelates an image.`)
+                description: translatable(`Pixelates an image.`)
             },
             default: {
-                description: f(`Pixelates an image.`),
-                invalidUrl: f(`❌ {url} is not a valid url!`).withArgs<{ url: string; }>()
+                description: translatable(`Pixelates an image.`),
+                invalidUrl: translatable(`❌ {url} is not a valid url!`).withArgs<{ url: string; }>()
             }
         },
         shit: {
             flags: {
-                plural: f(`Whether or not the text is plural (use ARE instead of IS).`)
+                plural: translatable(`Whether or not the text is plural (use ARE instead of IS).`)
             },
             default: {
-                description: f(`Tells everyone what's shit.`)
+                description: translatable(`Tells everyone what's shit.`)
             }
         },
         sonicSays: {
             default: {
-                description: f(`Sonic wants to share some words of wisdom.`)
+                description: translatable(`Sonic wants to share some words of wisdom.`)
             }
         },
         starVsTheForcesOf: {
             flags: {
-                image: f(`A custom image.`)
+                image: translatable(`A custom image.`)
             },
             user: {
-                description: f(`WHO IS STAR BATTLING THIS EPISODE?`)
+                description: translatable(`WHO IS STAR BATTLING THIS EPISODE?`)
             },
             default: {
-                description: f(`WHO IS STAR BATTLING THIS EPISODE?`),
-                invalidUrl: f(`❌ {url} is not a valid url!`).withArgs<{ url: string; }>()
+                description: translatable(`WHO IS STAR BATTLING THIS EPISODE?`),
+                invalidUrl: translatable(`❌ {url} is not a valid url!`).withArgs<{ url: string; }>()
             }
         },
         stupid: {
             flags: {
-                user: f(`The person who is stupid.`),
-                image: f(`A custom image.`)
+                user: translatable(`The person who is stupid.`),
+                image: translatable(`A custom image.`)
             },
             default: {
-                description: f(`Tells everyone who is stupid.`),
-                invalidUser: f(`❌ I could not find the user \`{user}\``).withArgs<{ user: string; }>()
+                description: translatable(`Tells everyone who is stupid.`),
+                invalidUser: translatable(`❌ I could not find the user \`{user}\``).withArgs<{ user: string; }>()
             }
         },
         theSearch: {
             default: {
-                description: f(`Tells everyone about the progress of the search for intelligent life.`)
+                description: translatable(`Tells everyone about the progress of the search for intelligent life.`)
             }
         },
         truth: {
             default: {
-                description: f(`Shows everyone what is written in the Scroll of Truth.`)
+                description: translatable(`Shows everyone what is written in the Scroll of Truth.`)
             }
         },
         danbooru: {
             default: {
-                description: f(`Gets three pictures from '<https://danbooru.donmai.us/>' using given tags.`),
-                noTags: f(`❌ You need to provide some tags`),
-                unsafeTags: f(`❌ None of the tags you provided were safe!`),
-                noResults: f(`❌ No results were found!`)
+                description: translatable(`Gets three pictures from '<https://danbooru.donmai.us/>' using given tags.`),
+                noTags: translatable(`❌ You need to provide some tags`),
+                unsafeTags: translatable(`❌ None of the tags you provided were safe!`),
+                noResults: translatable(`❌ No results were found!`),
+                success: translatable(`Found **{count}/{total}** posts for tags {tags#map(\`{}\`)#join(, | and )}`).withArgs<{ count: number; total: number; tags: Iterable<string>; }>(),
+                embed: {
+                    author: {
+                        name: translatable(`By {author=UNKNOWN}`).withArgs<{ author?: string; }>()
+                    }
+                }
             }
         },
         rule34: {
             default: {
-                description: f(`Gets three pictures from '<https://rule34.xxx/>' using given tags.`),
-                noTags: f(`❌ You need to provide some tags`),
-                unsafeTags: f(`❌ None of the tags you provided were safe!`),
-                noResults: f(`❌ No results were found!`)
+                description: translatable(`Gets three pictures from '<https://rule34.xxx/>' using given tags.`),
+                noTags: translatable(`❌ You need to provide some tags`),
+                unsafeTags: translatable(`❌ None of the tags you provided were safe!`),
+                noResults: translatable(`❌ No results were found!`),
+                success: translatable(`Found **{count}/{total}** posts for tags {tags#map(\`{}\`)#join(, | and )}`).withArgs<{ count: number; total: number; tags: Iterable<string>; }>(),
+                embed: {
+                    author: {
+                        name: translatable(`By {author=UNKNOWN}`).withArgs<{ author?: string; }>()
+                    }
+                }
             }
         },
         eval: {
             errors: {
-                error: f(`❌ An error occurred!${codeBlock(response.error)}`)
+                error: translatable(`❌ An error occurred!\`\`\`\n{result}\n\`\`\``).withArgs<{ code: string; result: string; }>()
             },
             here: {
-                description: f(`Runs the code you enter on the current cluster`),
-                success: f(`✅ Input:${codeBlock(code, `js`)}Output:${codeBlock(result.result)}`)
+                description: translatable(`Runs the code you enter on the current cluster`),
+                success: translatable(`✅ Input:\`\`\`js\n{code}\n\`\`\`Output:\`\`\`\n{result}\n\`\`\``).withArgs<{ code: string; result: string; }>()
             },
             master: {
-                description: f(`Runs the code you enter on the master process`),
-                success: f(`✅ Master eval input:${codeBlock(code, `js`)}Output:${codeBlock(response.result)}`)
+                description: translatable(`Runs the code you enter on the master process`),
+                success: translatable(`✅ Master eval input:\`\`\`js\n{code}\n\`\`\`Output:\`\`\`\n{result}\n\`\`\``).withArgs<{ code: string; result: string; }>()
             },
             global: {
-                description: f(`Runs the code you enter on all the clusters and aggregates the result`),
+                description: translatable(`Runs the code you enter on all the clusters and aggregates the result`),
                 results: {
-                    template: f(`Global eval input:${codeBlock(code, `js`)}${clusterResults.join(`\n`)}`),
-                    success: f(`✅ Cluster ${id} output:${codeBlock(response.result)}`),
-                    failed: f(`❌ Cluster ${id}: An error occurred!${codeBlock(response.error)}`)
+                    template: translatable(`Global eval input:\`\`\`js\n{code}\n\`\`\`{results#join(\n)}`).withArgs<{ code: string; results: Iterable<IFormattable<string>>; }>(),
+                    success: translatable(`✅ Cluster {clusterId} output:\`\`\`\n{result}\n\`\`\``).withArgs<{ clusterId: number; code: string; result: string; }>(),
+                    failed: translatable(`❌ Cluster {clusterId}: An error occurred!\`\`\`\n{result}\n\`\`\``).withArgs<{ clusterId: number; code: string; result: string; }>()
                 }
             },
             cluster: {
-                description: f(`Runs the code you enter on all the clusters and aggregates the result`),
-                success: f(`✅ Cluster ${clusterId} eval input:${codeBlock(code, `js`)}Output:${codeBlock(response.result)}`)
+                description: translatable(`Runs the code you enter on all the clusters and aggregates the result`),
+                success: translatable(`✅ Cluster {clusterId} eval input:\`\`\`js\n{code}\n\`\`\`Output:\`\`\`\n{result}\n\`\`\``).withArgs<{ clusterId: number; code: string; result: string; }>()
             }
         },
         exec: {
             default: {
-                description: f(`Executes a command on the current shell`),
-                pm2Bad: f(`❌ No! That's dangerous! Do \`b!restart\` instead.\n\nIt's not that I don't trust you, it's just...\n\nI don't trust you.`),
+                description: translatable(`Executes a command on the current shell`),
+                pm2Bad: translatable(`❌ No! That's dangerous! Do \`b!restart\` instead.\n\nIt's not that I don't trust you, it's just...\n\nI don't trust you.`),
                 confirm: {
-                    prompt: f(`⚠️ You are about to execute the following on the command line:${codeBlock(command, `bash`)}`),
-                    confirm: f(`Continue`),
-                    cancel: f(`Cancel`)
+                    prompt: translatable(`⚠️ You are about to execute the following on the command line:\`\`\`bash\n{command}\n\`\`\``).withArgs<{ command: string; }>(),
+                    continue: translatable(`Continue`),
+                    cancel: translatable(`Cancel`)
                 },
-                cancelled: f(`✅ Execution cancelled`),
+                cancelled: translatable(`✅ Execution cancelled`),
                 command: {
-                    pending: f(`ℹ️ Command: \`${command}\`\nRunning...`),
-                    success: f(`✅ Command: \`${command}\``),
-                    error: f(`❌ Command: \`${command}\``)
+                    pending: translatable(`ℹ️ Command: \`{command}\`\nRunning...`).withArgs<{ command: string; }>(),
+                    success: translatable(`✅ Command: \`{command}\``).withArgs<{ command: string; }>(),
+                    error: translatable(`❌ Command: \`{command}\``).withArgs<{ command: string; }>()
                 }
             }
         },
         logLevel: {
             default: {
-                description: f(`Sets the current log level`),
-                success: f(`✅ Log level set to \`${logLevel}\``)
+                description: translatable(`Sets the current log level`),
+                success: translatable(`✅ Log level set to \`{logLevel}\``).withArgs<{ logLevel: string; }>()
             }
         },
         awoo: {
-            description: f(`Awoooooooooo!`),
-            action: f(`**{self#tag}** awoos!`).withArgs<{ self: Eris.User; }>()
+            description: translatable(`Awoooooooooo!`),
+            action: translatable(`**{self#tag}** awoos!`).withArgs<{ self: Eris.User; }>()
         },
         bang: {
-            description: f(`Bang bang!`),
-            action: f(`**{self#tag}** bangs!`).withArgs<{ self: Eris.User; }>()
+            description: translatable(`Bang bang!`),
+            action: translatable(`**{self#tag}** bangs!`).withArgs<{ self: Eris.User; }>()
         },
         bite: {
-            description: f(`Give someone a bite!`),
-            action: f(`**{self#tag}** bites **{target#tag=themselves}**`).withArgs<{ self: Eris.User; target?: Eris.User; }>()
+            description: translatable(`Give someone a bite!`),
+            action: translatable(`**{self#tag}** bites **{target#tag=themselves}**`).withArgs<{ self: Eris.User; target?: Eris.User; }>()
         },
         blush: {
-            description: f(`Show everyone that you're blushing.`),
-            action: f(`**{self#tag}** blushes!`).withArgs<{ self: Eris.User; }>()
+            description: translatable(`Show everyone that you're blushing.`),
+            action: translatable(`**{self#tag}** blushes!`).withArgs<{ self: Eris.User; }>()
         },
         cry: {
-            description: f(`Show everyone that you're crying.`),
-            action: f(`**{self#tag}** cries!`).withArgs<{ self: Eris.User; }>()
+            description: translatable(`Show everyone that you're crying.`),
+            action: translatable(`**{self#tag}** cries!`).withArgs<{ self: Eris.User; }>()
         },
         cuddles: {
-            description: f(`Cuddle with someone.`),
-            action: f(`**{self#tag}** cuddles with **{target#tag=themselves}**`).withArgs<{ self: Eris.User; target?: Eris.User; }>()
+            description: translatable(`Cuddle with someone.`),
+            action: translatable(`**{self#tag}** cuddles with **{target#tag=themselves}**`).withArgs<{ self: Eris.User; target?: Eris.User; }>()
         },
         dance: {
-            description: f(`Break out some sweet, sweet dance moves.`),
-            action: f(`**{self#tag}** dances!`).withArgs<{ self: Eris.User; }>()
+            description: translatable(`Break out some sweet, sweet dance moves.`),
+            action: translatable(`**{self#tag}** dances!`).withArgs<{ self: Eris.User; }>()
         },
         hug: {
-            description: f(`Give somebody a hug.`),
-            action: f(`**{self#tag}** hugs **{target#tag=themselves}**`).withArgs<{ self: Eris.User; target?: Eris.User; }>()
+            description: translatable(`Give somebody a hug.`),
+            action: translatable(`**{self#tag}** hugs **{target#tag=themselves}**`).withArgs<{ self: Eris.User; target?: Eris.User; }>()
         },
         jojo: {
-            description: f(`This must be the work of an enemy stand!`)
+            description: translatable(`This must be the work of an enemy stand!`)
         },
         kiss: {
-            description: f(`Give somebody a kiss.`),
-            action: f(`**{self#tag}** kisses **{target#tag=themselves}**`).withArgs<{ self: Eris.User; target?: Eris.User; }>()
+            description: translatable(`Give somebody a kiss.`),
+            action: translatable(`**{self#tag}** kisses **{target#tag=themselves}**`).withArgs<{ self: Eris.User; target?: Eris.User; }>()
         },
         lewd: {
-            description: f(`T-that's lewd...`),
-            action: f(`**{self#tag}** is lewd 😳!`).withArgs<{ self: Eris.User; }>()
+            description: translatable(`T-that's lewd...`),
+            action: translatable(`**{self#tag}** is lewd 😳!`).withArgs<{ self: Eris.User; }>()
         },
         lick: {
-            description: f(`Give someone a lick. Sluurrpppp!`),
-            action: f(`**{self#tag}** licks **{target#tag=themselves}**`).withArgs<{ self: Eris.User; target?: Eris.User; }>()
+            description: translatable(`Give someone a lick. Sluurrpppp!`),
+            action: translatable(`**{self#tag}** licks **{target#tag=themselves}**`).withArgs<{ self: Eris.User; target?: Eris.User; }>()
         },
         megumin: {
-            description: f(`Darkness blacker than black and darker than dark, I beseech thee, combine with my deep crimson. The time of awakening cometh. Justice, fallen upon the infallible boundary, appear now as an intangible distortion! Dance, Dance, Dance! I desire for my torrent of power a destructive force: a destructive force without equal! Return all creation to cinders, and come from the abyss!`)
+            description: translatable(`Darkness blacker than black and darker than dark, I beseech thee, combine with my deep crimson. The time of awakening cometh. Justice, fallen upon the infallible boundary, appear now as an intangible distortion! Dance, Dance, Dance! I desire for my torrent of power a destructive force: a destructive force without equal! Return all creation to cinders, and come from the abyss!`)
         },
         nom: {
-            description: f(`Nom on somebody.`),
-            action: f(`**{self#tag}** noms on **{target#tag=themselves}**`).withArgs<{ self: Eris.User; target?: Eris.User; }>()
+            description: translatable(`Nom on somebody.`),
+            action: translatable(`**{self#tag}** noms on **{target#tag=themselves}**`).withArgs<{ self: Eris.User; target?: Eris.User; }>()
         },
         owo: {
-            description: f(`owo whats this?`),
-            action: f(`**{self#tag}** owos!`).withArgs<{ self: Eris.User; }>()
+            description: translatable(`owo whats this?`),
+            action: translatable(`**{self#tag}** owos!`).withArgs<{ self: Eris.User; }>()
         },
         pat: {
-            description: f(`Give somebody a lovely pat.`),
-            action: f(`**{self#tag}** pats **{target#tag=themselves}**`).withArgs<{ self: Eris.User; target?: Eris.User; }>()
+            description: translatable(`Give somebody a lovely pat.`),
+            action: translatable(`**{self#tag}** pats **{target#tag=themselves}**`).withArgs<{ self: Eris.User; target?: Eris.User; }>()
         },
         poke: {
-            description: f(`Gives somebody a poke.`),
-            action: f(`**{self#tag}** pokes **{target#tag=themselves}**`).withArgs<{ self: Eris.User; target?: Eris.User; }>()
+            description: translatable(`Gives somebody a poke.`),
+            action: translatable(`**{self#tag}** pokes **{target#tag=themselves}**`).withArgs<{ self: Eris.User; target?: Eris.User; }>()
         },
         pout: {
-            description: f(`Let everyone know that you're being pouty.`),
-            action: f(`**{self#tag}** pouts!`).withArgs<{ self: Eris.User; }>()
+            description: translatable(`Let everyone know that you're being pouty.`),
+            action: translatable(`**{self#tag}** pouts!`).withArgs<{ self: Eris.User; }>()
         },
         punch: {
-            description: f(`Punch someone. They probably deserved it.`),
-            action: f(`**{self#tag}** punches **{target#tag=themselves}**`).withArgs<{ self: Eris.User; target?: Eris.User; }>()
+            description: translatable(`Punch someone. They probably deserved it.`),
+            action: translatable(`**{self#tag}** punches **{target#tag=themselves}**`).withArgs<{ self: Eris.User; target?: Eris.User; }>()
         },
         rem: {
-            description: f(`Worst girl`)
+            description: translatable(`Worst girl`)
         },
         shrug: {
-            description: f(`Let everyone know that you're a bit indifferent.`),
-            action: f(`**{self#tag}** shrugs!`).withArgs<{ self: Eris.User; }>()
+            description: translatable(`Let everyone know that you're a bit indifferent.`),
+            action: translatable(`**{self#tag}** shrugs!`).withArgs<{ self: Eris.User; }>()
         },
         slap: {
-            description: f(`Slaps someone.`),
-            action: f(`**{self#tag}** slaps **{target#tag=themselves}**`).withArgs<{ self: Eris.User; target?: Eris.User; }>()
+            description: translatable(`Slaps someone.`),
+            action: translatable(`**{self#tag}** slaps **{target#tag=themselves}**`).withArgs<{ self: Eris.User; target?: Eris.User; }>()
         },
         sleepy: {
-            description: f(`Let everyone know that you're feeling tired.`),
-            action: f(`**{self#tag}** is sleepy!`).withArgs<{ self: Eris.User; }>()
+            description: translatable(`Let everyone know that you're feeling tired.`),
+            action: translatable(`**{self#tag}** is sleepy!`).withArgs<{ self: Eris.User; }>()
         },
         smile: {
-            description: f(`Smile!`),
-            action: f(`**{self#tag}** smiles!`).withArgs<{ self: Eris.User; }>()
+            description: translatable(`Smile!`),
+            action: translatable(`**{self#tag}** smiles!`).withArgs<{ self: Eris.User; }>()
         },
         smug: {
-            description: f(`Let out your inner smugness.`),
-            action: f(`**{self#tag}** is smug!`).withArgs<{ self: Eris.User; }>()
+            description: translatable(`Let out your inner smugness.`),
+            action: translatable(`**{self#tag}** is smug!`).withArgs<{ self: Eris.User; }>()
         },
         stare: {
-            description: f(`Staaaaaaaaare`),
-            action: f(`**{self#tag}** stares!`).withArgs<{ self: Eris.User; }>()
+            description: translatable(`Staaaaaaaaare`),
+            action: translatable(`**{self#tag}** stares!`).withArgs<{ self: Eris.User; }>()
         },
         thumbsUp: {
-            description: f(`Give a thumbs up!`),
-            action: f(`**{self#tag}** gives a thumbs up!`).withArgs<{ self: Eris.User; }>()
+            description: translatable(`Give a thumbs up!`),
+            action: translatable(`**{self#tag}** gives a thumbs up!`).withArgs<{ self: Eris.User; }>()
         },
         wag: {
-            description: f(`Wagwagwagwag`),
-            action: f(`**{self#tag}** wags!`).withArgs<{ self: Eris.User; }>()
+            description: translatable(`Wagwagwagwag`),
+            action: translatable(`**{self#tag}** wags!`).withArgs<{ self: Eris.User; }>()
         },
         respawn: {
-            description: f(`Cluster respawning only for staff.`),
+            description: translatable(`Cluster respawning only for staff.`),
             default: {
-                description: f(`Respawns the cluster specified`),
-                requested: f(`**${humanize.fullName(context.author)}** has called for a respawn of cluster ${clusterId}.`),
-                success: f(`✅ Cluster ${clusterId} is being respawned and stuff now`)
+                description: translatable(`Respawns the cluster specified`),
+                requested: translatable(`**{user#tag}** has called for a respawn of cluster {clusterId}.`).withArgs<{ user: Eris.User; clusterId: number; }>(),
+                success: translatable(`✅ Cluster {clusterId} is being respawned and stuff now`).withArgs<{ clusterId: number; }>()
             }
         },
         respond: {
             default: {
-                description: f(`Responds to a suggestion, bug report or feature request`),
-                notFound: f(`❌ I couldn't find that feedback!`),
-                userNotFound: f(`⚠️ Feedback successfully updated\n⛔ I couldn't find the user who submitted that feedback`),
-                alertFailed: f(`⚠️ Feedback successfully updated\n⛔ I wasn't able to send the response in the channel where the feedback was initially sent`),
-                success: f(`✅ Feedback successfully updated and response has been sent.`),
-                alert: f(`**Hi, <@${author.ID}>!**  You recently made this suggestion:\n\n**${feedback.Title}**${feedback.Description.length > 0 ? `\n\n${feedback.Description}` : ``}\n\n**${humanize.fullName(context.author)}** has responded to your feedback with this:\n\n${response}\n\nIf you have any further questions or concerns, please join my support guild so that they can talk to you directly. You can get a link by doing \`b!invite\`. Thanks for your time!\n\nYour card has been updated here: <${context.util.websiteLink(`feedback/${id}`)}>`)
+                description: translatable(`Responds to a suggestion, bug report or feature request`),
+                notFound: translatable(`❌ I couldn't find that feedback!`),
+                userNotFound: translatable(`⚠️ Feedback successfully updated\n⛔ I couldn't find the user who submitted that feedback`),
+                alertFailed: translatable(`⚠️ Feedback successfully updated\n⛔ I wasn't able to send the response in the channel where the feedback was initially sent`),
+                success: translatable(`✅ Feedback successfully updated and response has been sent.`),
+                alert: translatable(`**Hi, <@{submitterId}>!**  You recently made this suggestion:\n\n**{title}**{description#bool(\n\n{}|)}\n\n**{respondent#tag}** has responded to your feedback with this:\n\n{response}\n\nIf you have any further questions or concerns, please join my support guild so that they can talk to you directly. You can get a link by doing \`b!invite\`. Thanks for your time!\n\nYour card has been updated here: <{link}>`).withArgs<{ submitterId: string; title: string; description: string; respondent: Eris.User; response: string; link: string; }>()
             }
         }
     }
@@ -2636,7 +2665,7 @@ export const templates = crunchTree(`cluster`, {
 
 export default templates;
 
-function f<T extends string>(template: T, value?: unknown): { (id: string): IFormatString<T>; withArgs<V>(): (id: string) => IFormatStringDefinition<T, V>; } {
+function translatable<T extends string>(template: T, value?: unknown): { (id: string): IFormatString<T>; withArgs<V>(): (id: string) => IFormatStringDefinition<T, V>; } {
     return Object.assign(
         (id: string): IFormatString<T> => TranslatableString.create(id, template, value),
         {
@@ -2648,13 +2677,19 @@ function f<T extends string>(template: T, value?: unknown): { (id: string): IFor
 }
 
 type FormatTree = { [P in string]: FormatTree | ((id: string) => unknown) };
-type FormattedTree<T extends FormatTree> = { [P in keyof T]: T[P] extends (id: string) => infer R ? R : T[P] extends FormatTree ? FormattedTree<T[P]> : never };
+type FormattedTree<T extends FormatTree> = {
+    [P in keyof T]: T[P] extends (id: string) => infer R ? R
+    : T[P] extends FormatTree ? FormattedTree<T[P]>
+    : never
+};
 
 function crunchTree<T extends FormatTree>(prefix: string, value: T): FormattedTree<T> {
     return Object.fromEntries(Object.entries(value).map(([k, v]) => {
         const id = `${prefix}.${k}`;
         if (typeof v === `function`)
             return [k, v(id)] as const;
+        if (`format` in v && typeof v[`format`] === `function`)
+            return [k, v];
         return [k, crunchTree(id, v)] as const;
     })) as FormattedTree<T>;
 }
