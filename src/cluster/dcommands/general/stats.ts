@@ -1,9 +1,9 @@
 import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
-import { avatarColours, CommandType, humanize, randChoose } from '@blargbot/cluster/utils';
-import eris from 'eris';
+import { avatarColours, CommandType, randChoose } from '@blargbot/cluster/utils';
+import Eris from 'eris';
 import moment from 'moment-timezone';
 
-import templates from '../../text';
+import templates, { literal } from '../../text';
 import { CommandResult } from '../../types';
 
 const cmd = templates.commands.stats;
@@ -34,63 +34,67 @@ export class StatsCommand extends GlobalCommand {
         });
         const version = await context.cluster.version.getVersion();
         return {
-            color: randChoose(avatarColours),
-            timestamp: moment().toDate(),
-            title: `Bot Statistics`,
-            footer: {
-                text: `blargbot`,
-                icon_url: context.discord.user.avatarURL
-            },
-            fields: [{
-                name: `Guilds`,
-                value: mappedStats.guilds.toString(),
-                inline: true
-            },
-            {
-                name: `Users`,
-                value: mappedStats.users.toString(),
-                inline: true
-            },
-            {
-                name: `Channels`,
-                value: mappedStats.channels.toString(),
-                inline: true
-            },
-            {
-                name: `Shards`,
-                value: context.config.discord.shards.max.toString(),
-                inline: true
-            },
-            {
-                name: `Clusters`,
-                value: Math.ceil(context.config.discord.shards.max / context.config.discord.shards.perCluster).toString(),
-                inline: true
-            },
-            {
-                name: `RAM`,
-                value: humanize.ram(mappedStats.rss),
-                inline: true
-            },
-            {
-                name: `Version`,
-                value: version,
-                inline: true
-            },
-            {
-                name: `Uptime`,
-                value: `<t:${context.cluster.createdAt.unix()}:R>`,
-                inline: true
-            },
-            {
-                name: `Eris`,
-                value: eris.VERSION,
-                inline: true
-            },
-            {
-                name: `Node.js`,
-                value: process.version,
-                inline: true
-            }
+            embeds: [
+                {
+                    color: randChoose(avatarColours),
+                    timestamp: moment().toDate(),
+                    title: cmd.default.embed.title,
+                    footer: {
+                        text: cmd.default.embed.footer.text,
+                        icon_url: context.discord.user.avatarURL
+                    },
+                    fields: [{
+                        name: cmd.default.embed.field.guilds.name,
+                        value: cmd.default.embed.field.guilds.value({ guildCount: mappedStats.guilds }),
+                        inline: true
+                    },
+                    {
+                        name: cmd.default.embed.field.users.name,
+                        value: cmd.default.embed.field.users.value({ userCount: mappedStats.users }),
+                        inline: true
+                    },
+                    {
+                        name: cmd.default.embed.field.channels.name,
+                        value: cmd.default.embed.field.channels.value({ channelCount: mappedStats.channels }),
+                        inline: true
+                    },
+                    {
+                        name: cmd.default.embed.field.shards.name,
+                        value: cmd.default.embed.field.shards.value({ shardCount: context.config.discord.shards.max }),
+                        inline: true
+                    },
+                    {
+                        name: cmd.default.embed.field.clusters.name,
+                        value: cmd.default.embed.field.clusters.value({ clusterCount: Math.ceil(context.config.discord.shards.max / context.config.discord.shards.perCluster) }),
+                        inline: true
+                    },
+                    {
+                        name: cmd.default.embed.field.ram.name,
+                        value: cmd.default.embed.field.ram.value({ ram: mappedStats.rss }),
+                        inline: true
+                    },
+                    {
+                        name: cmd.default.embed.field.version.name,
+                        value: literal(version),
+                        inline: true
+                    },
+                    {
+                        name: cmd.default.embed.field.uptime.name,
+                        value: cmd.default.embed.field.uptime.value({ startTime: context.cluster.createdAt }),
+                        inline: true
+                    },
+                    {
+                        name: cmd.default.embed.field.eris.name,
+                        value: literal(Eris.VERSION),
+                        inline: true
+                    },
+                    {
+                        name: cmd.default.embed.field.nodeJS.name,
+                        value: literal(process.version),
+                        inline: true
+                    }
+                    ]
+                }
             ]
         };
     }

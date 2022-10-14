@@ -30,14 +30,14 @@ export class TimerCommand extends GlobalCommand {
 
     public async addTimer(context: CommandContext, durationStr: string | undefined, message: string, inChannel: boolean): Promise<CommandResult> {
         if (durationStr === undefined)
-            return `❌ The \`-t\` flag is required to set the duration of the reminder!`;
+            return cmd.default.durationRequired;
 
         const duration = parse.duration(durationStr);
         if (duration === undefined || duration.asMilliseconds() <= 0)
-            return `❌ I cant set a timer for 0 seconds!`;
+            return cmd.default.durationZero;
 
         if (message.length === 0)
-            return `❌ You need to say what you need reminding of!`;
+            return cmd.default.reminderMissing;
 
         const channel = inChannel && guard.isGuildCommandContext(context) ? context.channel : await context.author.getDMChannel();
         const source = inChannel && guard.isGuildCommandContext(context) ? context.channel.guild.id : context.author.id;
@@ -50,7 +50,7 @@ export class TimerCommand extends GlobalCommand {
             content: message
         });
 
-        return `✅ Ok, ill ping you ${channel === context.channel ? `here` : `in a DM`} <t:${moment().add(duration).unix()}:R>`;
+        return cmd.default.success[context.channel === channel ? `here` : `dm`]({ duration });
     }
 
 }

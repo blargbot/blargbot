@@ -3,7 +3,7 @@ import { CommandType, randInt } from '@blargbot/cluster/utils';
 import { mapping } from '@blargbot/mapping';
 import fetch, { Response } from 'node-fetch';
 
-import templates from '../../text';
+import templates, { literal } from '../../text';
 import { CommandResult } from '../../types';
 
 const cmd = templates.commands.commit;
@@ -26,24 +26,28 @@ export class CommitCommand extends GlobalCommand {
     public async getCommit(commitNumber: number | undefined): Promise<CommandResult> {
         const commitCount = await this.#fetchCommitCount();
         if (commitCount === 0)
-            return `❌ I cant find any commits at the moment, please try again later!`;
+            return cmd.default.noCommits;
 
         commitNumber ??= randInt(1, commitCount);
         commitNumber = Math.min(commitCount, Math.max(commitNumber, 1));
 
         const commit = await this.#fetchCommit(commitCount - commitNumber);
         if (commit === undefined)
-            return `❌ I couldnt find the commit!`;
+            return cmd.default.unknownCommit;
 
         return {
-            author: {
-                name: commit.author?.login ?? commit.commit.author.name,
-                icon_url: commit.author?.avatar_url,
-                url: commit.author?.html_url
-            },
-            title: `${commit.sha.substring(0, 7)} - commit #${commitNumber}`,
-            url: commit.html_url,
-            description: commit.commit.message
+            embeds: [
+                {
+                    author: {
+                        name: literal(commit.author?.login ?? commit.commit.author.name),
+                        icon_url: commit.author?.avatar_url,
+                        url: commit.author?.html_url
+                    },
+                    title: cmd.default.embed.title({ commit: commit.sha.slice(0, 7), index: commitNumber }),
+                    url: commit.html_url,
+                    description: literal(commit.commit.message)
+                }
+            ]
         };
     }
 

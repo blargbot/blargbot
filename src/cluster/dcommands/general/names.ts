@@ -1,6 +1,6 @@
 import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
-import { CommandType, pluralise as p } from '@blargbot/cluster/utils';
-import { EmbedOptions, User } from 'eris';
+import { CommandType } from '@blargbot/cluster/utils';
+import { User } from 'eris';
 import moment from 'moment-timezone';
 
 import templates from '../../text';
@@ -35,54 +35,50 @@ export class NamesCommand extends GlobalCommand {
     public async listNames(context: CommandContext, user: User, all: boolean, detailed: boolean): Promise<CommandResult> {
         let usernames = await context.database.users.getUsernames(user.id);
         if (usernames === undefined || usernames.length === 0)
-            return `ℹ️ I havent seen any usernames for ${user.mention} yet!`;
+            return cmd.list.none.ever({ user });
 
-        const embed: EmbedOptions = {
-            author: context.util.embedifyAuthor(user),
-            title: `Historical usernames`
-        };
-
-        if (!all) {
-            const cutoff = moment().add(-30, `days`);
-            embed.description += `Since <t:${cutoff.unix()}>`;
+        const cutoff = moment().add(-30, `days`);
+        if (!all)
             usernames = usernames.filter(u => moment(u.date).isAfter(cutoff));
+        const data = usernames.map(u => ({ name: u.name, time: moment(u.date) }));
 
-            if (usernames.length === 0)
-                return `ℹ️ I havent seen ${user.mention} change their username since <t:${cutoff.unix()}>!`;
-        }
-
-        embed.description = detailed
-            ? usernames.map(u => `${u.name} - <t:${moment(u.date).unix()}:R>`).join(`\n`)
-            : usernames.map(u => u.name).join(`\n`);
-
-        return embed;
+        return {
+            embeds: [
+                {
+                    author: context.util.embedifyAuthor(user),
+                    title: cmd.list.embed.title,
+                    description: cmd.list.embed.description[all ? `ever` : `since`][detailed ? `detailed` : `simple`]({ from: cutoff, usernames: data })
+                }
+            ]
+        };
     }
 
     public async removeNames(context: CommandContext, names: string | undefined): Promise<CommandResult> {
         let usernames = await context.database.users.getUsernames(context.author.id);
         if (usernames === undefined || usernames.length === 0)
-            return `ℹ️ You dont have any usernames to remove!`;
+            return cmd.remove.none;
 
         const nameLookup = names?.toLowerCase();
         usernames = nameLookup === undefined ? usernames : usernames.filter(u => nameLookup.includes(u.name.toLowerCase()));
 
         if (usernames.length === 0)
-            return `❌ I couldnt find any of the usernames you gave!`;
+            return cmd.remove.notFound;
 
-        const countStr = nameLookup === undefined ? `**all usernames**` : `${usernames.length} ${p(usernames.length, `username`)}`;
-        const confirmed = await context.util.queryConfirm({
-            context: context.channel,
-            actors: context.author,
-            prompt: `⚠️ Are you sure you want to remove ${countStr}`,
-            confirm: `Yes`,
-            cancel: `No`,
+        const confirmed = await context.queryConfirm({
+            prompt: nameLookup === undefined
+                ? cmd.remove.confirm.prompt.all
+                : cmd.remove.confirm.prompt.some({ count: usernames.length }),
+            continue: cmd.remove.confirm.continue,
+            cancel: cmd.remove.confirm.cancel,
             fallback: false
         });
 
         if (!confirmed)
-            return `✅ I wont remove any usernames then!`;
+            return cmd.remove.cancelled;
 
         await context.database.users.removeUsernames(context.author.id, nameLookup === undefined ? `all` : usernames.map(u => u.name));
-        return `✅ Successfully removed ${countStr}!`;
+        return nameLookup === undefined
+            ? cmd.remove.success.all
+            : cmd.remove.success.some({ count: usernames.length });
     }
 }

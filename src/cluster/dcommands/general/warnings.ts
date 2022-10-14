@@ -1,6 +1,7 @@
 import { GuildCommand } from '@blargbot/cluster/command';
 import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
-import { CommandType, humanize, pluralise as p } from '@blargbot/cluster/utils';
+import { CommandType } from '@blargbot/cluster/utils';
+import { IFormattable } from '@blargbot/domain/messages/types';
 import { Member } from 'eris';
 
 import templates from '../../text';
@@ -29,21 +30,19 @@ export class WarningsCommand extends GuildCommand {
 
     public async warnings(context: GuildCommandContext, member: Member): Promise<CommandResult> {
         const { count, banAt, kickAt, timeoutAt } = await context.cluster.moderation.warns.details(member);
-        const result: string[] = [
-            count > 0
-                ? `⚠️ **${humanize.fullName(member.user)}** has accumulated ${count} ${p(count, `warning`)}.`
-                : `🎉 **${humanize.fullName(member.user)}** doesn't have any warnings!`
+        const result: Array<IFormattable<string>> = [
+            cmd.common.count({ user: member.user, count })
         ];
 
-        if (timeoutAt !== undefined)
-            result.push(`- ${timeoutAt - count} more warnings before being timed out.`);
+        if (timeoutAt !== undefined && timeoutAt > count)
+            result.push(cmd.common.untilTimeout({ remaining: timeoutAt - count }));
 
-        if (kickAt !== undefined)
-            result.push(`- ${kickAt - count} more warnings before being kicked.`);
+        if (kickAt !== undefined && kickAt > count)
+            result.push(cmd.common.untilKick({ remaining: kickAt - count }));
 
-        if (banAt !== undefined)
-            result.push(`- ${banAt - count} more warnings before being banned.`);
+        if (banAt !== undefined && banAt > count)
+            result.push(cmd.common.untilBan({ remaining: banAt - count }));
 
-        return result.join(`\n`);
+        return cmd.common.success({ parts: result });
     }
 }

@@ -35,22 +35,23 @@ export class BrainfuckCommand extends GlobalCommand {
     public async eval(context: CommandContext, code: string, showPointers: boolean): Promise<CommandResult> {
         let input = ``;
         if (code.includes(`,`)) {
-            const reply = await context.queryText({ prompt: `This brainfuck code requires user input. Please say what you want to use:` });
+            const reply = await context.queryText({ prompt: cmd.common.queryInput.prompt });
             if (reply.state !== `SUCCESS`)
-                return `❌ No input was provided!`;
+                return cmd.common.noInput;
 
             input = reply.value;
         }
 
         try {
             const result = this.#client.execute(code, input);
-            const pointers = showPointers ? `\n\n[${result.memory.list.join(`,`)}]\nPointer: ${result.memory.pointer}` : ``;
-            return result.output.trim().length === 0
-                ? `ℹ️ No output...${pointers}`
-                : `✅ Output:\n> ${result.output.trim().split(`\n`).join(`\n> `)}${pointers}`;
+            const output = result.output.trim();
+            const state = showPointers ? { memory: result.memory.list, pointer: result.memory.pointer } : undefined;
+            return output.length === 0
+                ? cmd.common.success.empty({ state })
+                : cmd.common.success.default({ output, state });
         } catch (ex: unknown) {
             context.logger.error(`Running brainfuck failed. Code:`, code, `Input:`, input, ex);
-            return `❌ Something went wrong...`;
+            return cmd.common.unexpectedError;
         }
     }
 }

@@ -32,24 +32,28 @@ export class ToDoCommand extends GlobalCommand {
     }
 
     public async viewTodo(context: CommandContext): Promise<CommandResult> {
-        const todolist = await context.database.users.getTodo(context.author.id);
+        const todoList = await context.database.users.getTodo(context.author.id) ?? [];
         return {
-            author: context.util.embedifyAuthor(context.author),
-            title: `Todo list`,
-            description: todolist === undefined || todolist.length === 0 ? `You have nothing on your list!` : todolist
-                .map((e, i) => `**${i + 1}.** ${e}`)
-                .join(`\n`)
+            embeds: [
+                {
+                    author: context.util.embedifyAuthor(context.author),
+                    title: cmd.list.embed.title,
+                    description: cmd.list.embed.description({
+                        items: todoList.map((e, i) => ({ id: i, value: e }))
+                    })
+                }
+            ]
         };
     }
 
     public async addItem(context: CommandContext, item: string): Promise<CommandResult> {
         await context.database.users.addTodo(context.author.id, item);
-        return `✅ Done!`;
+        return cmd.add.success;
     }
 
     public async removeItem(context: CommandContext, index: number): Promise<CommandResult> {
         if (!await context.database.users.removeTodo(context.author.id, index - 1))
-            return `❌ Your todo list doesnt have an item ${index}!`;
-        return `✅ Done!`;
+            return cmd.remove.unknownId({ id: index });
+        return cmd.remove.success;
     }
 }

@@ -1,6 +1,7 @@
 import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { ClusterStats, CommandResult, ShardStats } from '@blargbot/cluster/types';
-import { CommandType, discord, guard, humanize, snowflake } from '@blargbot/cluster/utils';
+import { CommandType, discord, guard, snowflake } from '@blargbot/cluster/utils';
+import { IFormattable } from '@blargbot/domain/messages/types';
 import moment from 'moment-timezone';
 
 import templates from '../../text';
@@ -35,43 +36,58 @@ export class ShardCommand extends GlobalCommand {
         return this.showCurrentDMShard(context);
     }
 
-    public async showGuildShard(context: CommandContext, guildID: string): Promise<CommandResult> {
-        if (!snowflake.test(guildID))
-            return `❌ \`${guildID}\` is not a valid guildID`;
-        const clusterData = await discord.cluster.getGuildClusterStats(context.cluster, guildID);
+    public async showGuildShard(context: CommandContext, guildId: string): Promise<CommandResult> {
+        if (!snowflake.test(guildId))
+            return cmd.guild.invalidGuild({ id: guildId });
+        const clusterData = await discord.cluster.getGuildClusterStats(context.cluster, guildId);
 
-        const isSameGuild = guard.isGuildCommandContext(context) ? context.channel.guild.id === guildID : false;
-        const descPrefix = isSameGuild ? `This guild` : `Guild \`${guildID}\``;
-        return this.shardEmbed(context, clusterData.cluster, clusterData.shard, `${descPrefix} is on shard \`${clusterData.shard.id}\` and cluster \`${clusterData.cluster.id}\``);
+        const isSameGuild = guard.isGuildCommandContext(context) ? context.channel.guild.id === guildId : false;
+        return this.#shardEmbed(context, clusterData.cluster, clusterData.shard, cmd.guild.embed.description[isSameGuild ? `here` : `other`]({ shardId: clusterData.shard.id, clusterId: clusterData.cluster.id, guildId }));
     }
 
     public showCurrentDMShard(context: CommandContext): CommandResult {
         const clusterData = discord.cluster.getStats(context.cluster);
-        return this.shardEmbed(context, clusterData, clusterData.shards[0], `Discord DMs are on shard \`0\` in cluster \`${context.cluster.id.toString()}\``); // should be cluster 0 always but idk
+        return this.#shardEmbed(context, clusterData, clusterData.shards[0], cmd.current.dm.embed.description({ clusterId: clusterData.id })); // should be cluster 0 always but idk
     }
 
-    public shardEmbed(context: CommandContext, clusterData: ClusterStats, shard: ShardStats, shardDesc: string): CommandResult {
+    #shardEmbed(context: CommandContext, cluster: ClusterStats, shard: ShardStats, shardDesc: IFormattable<string>): CommandResult {
         return {
-            title: `Shard ${shard.id}`,
-            url: context.util.websiteLink(`shards`),
-            description: shardDesc,
-            fields: [
+            embeds: [
                 {
-                    name: `Shard ${shard.id.toString()}`,
-                    value: `\`\`\`\nStatus: ${discord.cluster.statusEmojiMap[shard.status]}\nLatency: ${shard.latency}ms\nGuilds: ${shard.guilds}\nCluster: ${shard.cluster}\nLast update: ${humanize.duration(moment(), moment(shard.time, `x`), 1)} ago\n\`\`\``
-                },
-                {
-                    name: `Cluster ${clusterData.id.toString()}`,
-                    value: `CPU usage: ${clusterData.userCpu.toFixed(1)
-                        }\nGuilds: ${clusterData.guilds.toString()
-                        }\nRam used: ${humanize.ram(clusterData.rss)
-                        }\nStarted <t:${Math.round(clusterData.readyTime / 1000)}:R>`
-                },
-                {
-                    name: `Shards`,
-                    value: `\`\`\`\n${clusterData.shards.map(shard => {
-                        return `${shard.id} ${discord.cluster.statusEmojiMap[shard.status]} ${shard.latency}ms`;
-                    }).join(`\n`)}\n\`\`\``
+                    title: cmd.common.embed.title({ shardId: shard.id }),
+                    url: context.util.websiteLink(`shards`),
+                    description: shardDesc,
+                    fields: [
+                        {
+                            name: cmd.common.embed.field.shard.name({ shardId: shard.id }),
+                            value: cmd.common.embed.field.shard.value({
+                                clusterId: cluster.id,
+                                guildCount: shard.guilds,
+                                lastUpdate: moment(shard.time, `x`),
+                                latency: shard.latency,
+                                statusEmote: discord.cluster.statusEmojiMap[shard.status]
+                            })
+                        },
+                        {
+                            name: cmd.common.embed.field.cluster.name({ clusterId: cluster.id }),
+                            value: cmd.common.embed.field.cluster.value({
+                                cpu: cluster.userCpu,
+                                guildCount: cluster.guilds,
+                                ram: cluster.rss,
+                                startTime: moment(cluster.readyTime, `x`)
+                            })
+                        },
+                        {
+                            name: cmd.common.embed.field.shards.name,
+                            value: cmd.common.embed.field.shards.value({
+                                shards: cluster.shards.map(s => ({
+                                    id: s.id,
+                                    latency: s.latency,
+                                    statusEmote: discord.cluster.statusEmojiMap[s.status]
+                                }))
+                            })
+                        }
+                    ]
                 }
             ]
         };

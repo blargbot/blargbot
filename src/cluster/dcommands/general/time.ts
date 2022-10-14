@@ -41,21 +41,21 @@ export class TimeCommand extends GlobalCommand {
     public async getUserTime(context: CommandContext, user: User): Promise<CommandResult> {
         const timezone = await context.database.users.getSetting(user.id, `timezone`);
         if (timezone === undefined)
-            return `❌ ${user.mention} has not set their timezone with the \`${context.prefix}timezone\` command yet.`;
+            return cmd.user.timezoneNotSet({ prefix: context.prefix, user });
 
         const now = moment().tz(timezone);
         if (now.zoneAbbr() === ``)
-            return `❌ ${user.mention} doesnt have a valid timezone set. They need to update it with the \`${context.prefix}timezone\` command`;
+            return cmd.user.timezoneInvalid({ prefix: context.prefix, user });
 
-        return `ℹ️ It is currently **${now.format(`LT`)}** for **${user.mention}**.`;
+        return cmd.user.success({ now, user });
     }
 
     public getTime(timezone: string): CommandResult {
         const now = moment().tz(timezone);
         if (now.zoneAbbr() === ``)
-            return `❌ \`${timezone}\` is not a valid timezone! See <https://en.wikipedia.org/wiki/List_of_tz_database_time_zones> for timezone codes that I understand.`;
+            return cmd.errors.timezoneInvalid({ timezone });
 
-        return `ℹ️ In **${now.zoneAbbr()}**, it is currently **${now.format(`LT`)}**`;
+        return cmd.timezone.success({ now, timezone });
     }
 
     public changeTimezone(time: string, from: string, to: string): CommandResult {
@@ -63,11 +63,16 @@ export class TimeCommand extends GlobalCommand {
         const dest = source.clone().tz(to);
 
         if (source.zoneAbbr() === ``)
-            return `❌ \`${from}\` is not a valid timezone! See <https://en.wikipedia.org/wiki/List_of_tz_database_time_zones> for timezone codes that I understand.`;
+            return cmd.errors.timezoneInvalid({ timezone: from });
         if (dest.zoneAbbr() === ``)
-            return `❌ \`${to}\` is not a valid timezone! See <https://en.wikipedia.org/wiki/List_of_tz_database_time_zones> for timezone codes that I understand.`;
+            return cmd.errors.timezoneInvalid({ timezone: to });
         if (!dest.isValid() || !source.isValid())
-            return `❌ \`${time}\` is not a valid time! Please use the 12 or 24 hour format, e.g. 1:32pm or 13:32`;
-        return `ℹ️ When it's **${source.format(`LT`)}** in **${source.zoneAbbr()}**, it's **${dest.format(`LT`)}** in **${dest.zoneAbbr()}**.`;
+            return cmd.convert.invalidTime({ time });
+        return cmd.convert.success({
+            dest,
+            source,
+            destTimezone: dest.zoneAbbr(),
+            sourceTimezone: source.zoneAbbr()
+        });
     }
 }

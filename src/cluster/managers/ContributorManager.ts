@@ -1,13 +1,19 @@
 import { Cluster } from '@blargbot/cluster/Cluster';
+import { TranslatableString } from '@blargbot/domain/messages/index';
+import { IFormattable } from '@blargbot/domain/messages/types';
 import { User } from 'eris';
 import reloadFactory from 'require-reload';
 
+import { literal } from '../text';
+
 const reload = reloadFactory(require);
 
+const unknownUser = TranslatableString.define<{ userId: string; }, string>(`contributor.notFound`, `A user I cant find! (ID: {userId})`);
+
 export class ContributorManager {
-    public patrons: Array<User | string>;
-    public donators: Array<User | string>;
-    public others: Array<{ user: User | string; reason: string; decorator: string; }>;
+    public patrons: Array<User | IFormattable<string>>;
+    public donators: Array<User | IFormattable<string>>;
+    public others: Array<{ user: User | IFormattable<string>; reason: string; decorator: string; }>;
     readonly #cluster: Cluster;
 
     public constructor(
@@ -27,9 +33,9 @@ export class ContributorManager {
         this.others = await Promise.all(config.other.map(async o => ({ ...o, user: await this.#resolveUser(o.user) })));
     }
 
-    async #resolveUser(user: string): Promise<string | User> {
+    async #resolveUser(user: string): Promise<IFormattable<string> | User> {
         if (!/\d+/.test(user))
-            return user;
-        return await this.#cluster.util.getUser(user) ?? `A user I cant find! (ID: ${user})`;
+            return literal(user);
+        return await this.#cluster.util.getUser(user) ?? unknownUser({ userId: user });
     }
 }

@@ -30,6 +30,6 @@ export class ShipCommand extends GlobalCommand {
         const firstHalf = first.username.slice(0, first.username.length / 2);
         const secondHalf = second.username.slice(second.username.length / 2);
 
-        return `❤️ Your ship name is **${firstHalf}${secondHalf}**!`;
+        return cmd.default.success({ name: firstHalf + secondHalf });
     }
 }

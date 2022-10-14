@@ -1,7 +1,7 @@
 import { GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType, randInt } from '@blargbot/cluster/utils';
 
-import templates from '../../text';
+import templates, { literal } from '../../text';
 import { CommandResult } from '../../types';
 
 const cmd = templates.commands.tokenify;
@@ -40,6 +40,6 @@ export class TokenifyCommand extends GlobalCommand {
                 newPasta.push(`\\_`);
         }
 
-        return newPasta.join(``);
+        return literal(newPasta.join(``));
     }
 }

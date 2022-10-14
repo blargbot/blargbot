@@ -1,6 +1,6 @@
 import { codeBlock, defaultStaff, discord, guard, humanize, parse, snowflake } from '@blargbot/cluster/utils';
 import { BaseUtilities } from '@blargbot/core/BaseUtilities';
-import { ChoiceQuery, ChoiceQueryOptions, ChoiceQueryResult as ChoiceResult, ConfirmQuery, ConfirmQueryOptions, EntityFindQueryOptions, EntityPickQueryOptions, EntityQueryOptions, MultipleQuery, MultipleQueryOptions, MultipleResult, QueryButton, TextQuery, TextQueryOptions, TextQueryOptionsParsed, TextQueryResult } from '@blargbot/core/types';
+import { ChoiceQuery, ChoiceQueryOptions, ChoiceQueryResult as ChoiceResult, ConfirmQuery, ConfirmQueryOptions, EntityFindQueryOptions, EntityPickQueryOptions, EntityQueryOptions, MultipleQuery, MultipleQueryOptions, MultipleQueryResult, QueryButton, TextQuery, TextQueryOptions, TextQueryOptionsParsed, TextQueryResult } from '@blargbot/core/types';
 import { ActionRow, AdvancedMessageContent, Button, ComponentInteraction, Constants, Guild, InteractionButton, KnownCategoryChannel, KnownChannel, KnownGuildChannel, KnownMessage, KnownPrivateChannel, KnownTextableChannel, Member, Message, Role, SelectMenu, SelectMenuOptions, User, Webhook } from 'eris';
 import fetch from 'node-fetch';
 
@@ -109,7 +109,7 @@ export class ClusterUtilities extends BaseUtilities {
         };
     }
 
-    public async queryMultiple<T>(options: MultipleQueryOptions<T>): Promise<MultipleResult<T>> {
+    public async queryMultiple<T>(options: MultipleQueryOptions<T>): Promise<MultipleQueryResult<T>> {
         const query = await this.createMultipleQuery(options);
         const result = await query.getResult();
         try {
@@ -346,6 +346,7 @@ export class ClusterUtilities extends BaseUtilities {
             return actorFilter(message.author) && await filter(message);
         }, timeout ?? 60000);
     }
+
     public async queryUser(options: EntityFindQueryOptions): Promise<ChoiceResult<User>>
     public async queryUser(options: EntityPickQueryOptions<User>): Promise<ChoiceResult<User>>
     public async queryUser(options: EntityQueryOptions<User>): Promise<ChoiceResult<User>> {

@@ -1,5 +1,5 @@
 import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
-import { codeBlock, CommandType, parse, pluralise as p, randChoose, randInt, repeat } from '@blargbot/cluster/utils';
+import { CommandType, guard, parse, randChoose, randInt, repeat } from '@blargbot/cluster/utils';
 
 import templates from '../../text';
 import { CommandResult } from '../../types';
@@ -20,62 +20,75 @@ export class RollCommand extends GlobalCommand {
         });
     }
 
-    public rollDice(context: CommandContext, dice: string, modifier?: number, details?: string): CommandResult {
+    public rollDice(context: CommandContext, dice: string, modifier = 0, details?: string): CommandResult {
         switch (dice.toLowerCase()) {
             case `cat`: return {
-                author: context.util.embedifyAuthor(context.author),
-                image: { url: randChoose(cats) }
+                embeds: [{
+                    author: context.util.embedifyAuthor(context.author),
+                    image: { url: randChoose(cats) }
+                }]
             };
             case `rick`: return {
-                author: context.util.embedifyAuthor(context.author),
-                image: { url: randChoose(ricks) }
+                embeds: [{
+                    author: context.util.embedifyAuthor(context.author),
+                    image: { url: randChoose(ricks) }
+                }]
             };
             case `character`: return {
-                author: context.util.embedifyAuthor(context.author),
-                description: codeBlock(repeat(6, i => {
-                    const rolls = repeat(4, () => randInt(1, 6));
-                    const total = rolls.reduce((p, c) => p + c, 0);
-                    const min = Math.min(...rolls);
-                    return `Stat #${i} - [ ${rolls.join(`, `)} ] > ${total.toString().padStart(2, ` `)} - ${min} > ${(total - min).toString().padStart(2, ` `)}`;
-                }).join(`\n`), `xl`)
+                embeds: [{
+                    author: context.util.embedifyAuthor(context.author),
+                    description: cmd.default.character.embed.description({
+                        stats: repeat(6, id => {
+                            const rolls = repeat(4, () => randInt(1, 6));
+                            const total = rolls.reduce((p, c) => p + c, 0);
+                            const min = Math.min(...rolls);
+                            return { id, rolls, total, min, result: total - min };
+                        })
+                    })
+                }]
             };
         }
 
         const match = /^(\d+) ?d ?(\d+)$/.exec(dice);
         if (match === null || match.length !== 3)
-            return `❌ \`${dice}\` is not a valid dice!`;
+            return cmd.default.diceInvalid({ dice });
         const rollCount = parse.int(match[1], { strict: true });
         const faceCount = parse.int(match[2], { strict: true });
 
         if (rollCount === undefined || rollCount < 1 || faceCount === undefined || faceCount < 2)
-            return `❌ \`${dice}\` is not a valid dice!`;
+            return cmd.default.diceInvalid({ dice });
 
         if (rollCount > maxRolls || faceCount > maxFaces)
-            return `❌ Youre limited to ${maxRolls} of a d${maxFaces}`;
+            return cmd.default.tooBig({ maxRolls, maxFaces });
 
         const rolls = repeat(rollCount, () => randInt(1, faceCount));
-        const total = rolls.reduce((p, c) => p + c, 0) + (modifier ?? 0);
-        const modifierText = modifier === undefined || modifier === 0 ? `` : modifier < 0
-            ? `**Modifier**: ${total + modifier} - ${-modifier}\n`
-            : `**Modifier**: ${total - modifier} + ${modifier}\n`;
+        const subtotal = rolls.reduce((p, c) => p + c, 0);
+        const total = subtotal + modifier;
+        const modifierText = modifier === 0 ? undefined
+            : cmd.default.embed.description.modifier({ total: subtotal, sign: modifier < 0 ? `-` : `+`, modifier: Math.abs(modifier) });
 
-        let natText = ``;
+        let natText = undefined;
 
-        switch (rolls[0]) {
-            case 1:
-                if (rollCount === 1 && faceCount === 20)
-                    natText = codeBlock(`- Natural 1...`, `diff`);
-                break;
-            case 20:
-                if (rollCount === 1 && faceCount === 20)
-                    natText = codeBlock(`+ NATURAL 20`, `diff`);
-                break;
+        if (faceCount === 20 && rollCount === 1) {
+            const key = `natural${rolls[0]}` as const;
+            if (guard.hasProperty(cmd.default.embed.description, key))
+                natText = cmd.default.embed.description[key];
         }
 
         return {
-            author: context.util.embedifyAuthor(context.author),
-            title: `🎲 ${rollCount} ${p(rollCount, `roll`)} of a ${faceCount} sided dice:`,
-            description: `${details ?? ``}\n${rolls.join(`, `)}\n${modifierText}**Total**: ${total}${natText}`
+            embeds: [
+                {
+                    author: context.util.embedifyAuthor(context.author),
+                    title: cmd.default.embed.title({ faces: faceCount, rolls: rollCount }),
+                    description: cmd.default.embed.description.layout({
+                        rolls,
+                        total,
+                        details,
+                        modifier: modifierText,
+                        natural: natText
+                    })
+                }
+            ]
         };
     }
 }

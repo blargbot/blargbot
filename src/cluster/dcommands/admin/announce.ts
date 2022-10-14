@@ -55,7 +55,7 @@ export class AnnounceCommand extends GuildCommand {
             return cmd.configure.state[configResult.state];
 
         const config = configResult.detail;
-        const color = discord.getMemberColor(context.message.member);
+        const colour = discord.getMemberColour(context.message.member);
         const mentions: AllowedMentions = config.role.id === config.role.guild.id
             ? { everyone: true }
             : { roles: [config.role.id] };
@@ -65,7 +65,7 @@ export class AnnounceCommand extends GuildCommand {
             embeds: [
                 {
                     description: literal(message),
-                    color: color,
+                    color: colour,
                     author: {
                         name: cmd.default.embed.author.name,
                         icon_url: `http://i.imgur.com/zcGyun6.png`,

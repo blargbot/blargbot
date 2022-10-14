@@ -3,7 +3,7 @@ import { CommandType, randInt } from '@blargbot/cluster/utils';
 import { mapping } from '@blargbot/mapping';
 import fetch from 'node-fetch';
 
-import templates from '../../text';
+import templates, { literal } from '../../text';
 import { CommandResult } from '../../types';
 
 const cmd = templates.commands.xkcd;
@@ -27,20 +27,26 @@ export class XKCDCommand extends GlobalCommand {
         if (comicNumber === undefined) {
             const comic = await this.#requestComic(undefined);
             if (comic === undefined)
-                return `❌ Seems like xkcd is down 😟`;
+                return cmd.default.down;
             comicNumber = randInt(0, comic.num);
         }
 
         const comic = await this.#requestComic(comicNumber);
         if (comic === undefined)
-            return `❌ Seems like xkcd is down 😟`;
+            return cmd.default.down;
 
         return {
-            author: context.util.embedifyAuthor(context.author),
-            title: `xkcd #${comic.num}: ${comic.title}`,
-            description: comic.alt,
-            image: { url: comic.img },
-            footer: { text: `xkcd ${comic.year}` }
+            embeds: [
+                {
+                    author: context.util.embedifyAuthor(context.author),
+                    title: cmd.default.embed.title({ id: comic.num, title: comic.title }),
+                    description: literal(comic.alt),
+                    image: { url: comic.img },
+                    footer: {
+                        text: cmd.default.embed.footer.text({ year: comic.year })
+                    }
+                }
+            ]
         };
     }
 

@@ -2,7 +2,7 @@ import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType, randChoose } from '@blargbot/cluster/utils';
 import script from '@blargbot/res/beemovie.json';
 
-import templates from '../../text';
+import templates, { literal } from '../../text';
 import { CommandResult } from '../../types';
 
 const cmd = templates.commands.beeMovie;
@@ -39,7 +39,7 @@ export class BeemovieCommand extends GlobalCommand {
         const line = randChoose(lines);
 
         if (showName && line.actor !== undefined)
-            return `${context.config.discord.emotes.beemovie} **${line.actor}**\n${line.content}`;
-        return `${context.config.discord.emotes.beemovie} ${line.content}`;
+            return literal(`${context.config.discord.emotes.beemovie} **${line.actor}**\n${line.content}`);
+        return literal(`${context.config.discord.emotes.beemovie} ${line.content}`);
     }
 }

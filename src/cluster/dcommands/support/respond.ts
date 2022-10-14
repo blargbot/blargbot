@@ -34,7 +34,7 @@ export class RespondCommand extends GlobalCommand {
             Notes: `${response} (${humanize.fullName(context.author)})${feedback.Notes !== undefined ? `\n\n${feedback.Notes}` : ``}`
         });
 
-        const author = await context.database.suggestors.get(feedback.Author[0]);
+        const author = await context.database.suggesters.get(feedback.Author[0]);
         if (author === undefined)
             return cmd.default.userNotFound;
 

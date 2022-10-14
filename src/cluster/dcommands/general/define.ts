@@ -1,6 +1,5 @@
 import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType } from '@blargbot/cluster/utils';
-import { guard, humanize } from '@blargbot/core/utils';
 import { mapping } from '@blargbot/mapping';
 import fetch, { RequestInit } from 'node-fetch';
 
@@ -33,34 +32,41 @@ export class DefineCommand extends GlobalCommand {
         });
         const details = wordApiMapping(response);
         if (!details.valid)
-            return `❌ It seems I cant find the definition for that word at the moment!`;
+            return cmd.default.unavailable;
 
         const defaultIPA = details.value.pronunciation.all ?? ``;
 
         return {
-            author: context.util.embedifyAuthor(context.author),
-            title: `Definition for ${word}`,
-            description: defaultIPA !== `` ? `**Pronunciation** ${linkPronunciation(defaultIPA)}` : undefined,
-            fields: details.value.results
-                .slice(0, 15)
-                .map((r, i) => {
-                    const specificIPA = details.value.pronunciation[r.partOfSpeech] ?? defaultIPA;
-                    return {
-                        name: `${i + 1}. ${r.partOfSpeech}`,
-                        value: [
-                            specificIPA !== defaultIPA ? `**Pronunciation**: ${linkPronunciation(specificIPA)}` : undefined,
-                            r.synonyms !== undefined ? `**Synonyms:** ${humanize.smartJoin(r.synonyms.map(s => `\`${s}\``), `, `, ` and `)}` : undefined,
-                            r.definition
-                        ].filter(guard.hasValue).join(`\n`),
-                        inline: true
-                    };
-                })
+            embeds: [
+                {
+                    author: context.util.embedifyAuthor(context.author),
+                    title: cmd.default.embed.title({ word }),
+                    description: defaultIPA !== `` ? cmd.default.embed.description(pronunciation(defaultIPA)) : undefined,
+                    fields: details.value.results
+                        .slice(0, 15)
+                        .map((r, i) => {
+                            const specificIPA = details.value.pronunciation[r.partOfSpeech] ?? defaultIPA;
+                            return {
+                                name: cmd.default.embed.field.name({ index: i + 1, type: r.partOfSpeech }),
+                                value: cmd.default.embed.field.value.default({
+                                    pronunciation: specificIPA !== defaultIPA ? cmd.default.embed.field.value.pronunciation(pronunciation(defaultIPA)) : undefined,
+                                    synonyms: r.synonyms !== undefined ? cmd.default.embed.field.value.synonyms({ synonyms: r.synonyms }) : undefined,
+                                    definition: r.definition
+                                }),
+                                inline: true
+                            };
+                        })
+                }
+            ]
         };
     }
 }
 
-function linkPronunciation(phonetic: string): string {
-    return `[🔈 ${phonetic}](http://ipa-reader.xyz/?text=${encodeURIComponent(phonetic.replace(/'/g, `&apos;`))})`;
+function pronunciation(phonetic: string): { phonetic: string; pronunciation: string; } {
+    return {
+        phonetic,
+        pronunciation: `http://ipa-reader.xyz/?text=${encodeURIComponent(phonetic.replace(/'/g, `&apos;`))})`
+    };
 }
 
 async function fetchSafe(url: string, init?: RequestInit): Promise<unknown> {

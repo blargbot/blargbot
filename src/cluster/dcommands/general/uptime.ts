@@ -22,6 +22,6 @@ export class UptimeCommand extends GlobalCommand {
     }
 
     public getUptime(context: CommandContext): CommandResult {
-        return `ℹ️ I came online <t:${context.cluster.createdAt.unix()}:R> at <t:${context.cluster.createdAt.unix()}>`;
+        return cmd.default.success({ startTime: context.cluster.createdAt });
     }
 }

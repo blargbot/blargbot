@@ -46,7 +46,7 @@ export class Database {
     public get chatlogs(): ChatLogStore { return this.#chatlogs; }
     public get dumps(): DumpStore { return this.#dumps; }
     public get tagVariables(): TagVariableStore { return this.#tagVariables; }
-    public get suggestors(): SuggesterStore { return this.#suggestors; }
+    public get suggesters(): SuggesterStore { return this.#suggestors; }
     public get suggestions(): SuggestionStore { return this.#suggestions; }
 
     public constructor(options: DatabaseOptions) {

@@ -42,15 +42,15 @@ export class DecancerCommand extends GlobalCommand {
         try {
             await member.edit({ nick: decancered });
             member.nick = decancered;
-            return `✅ Successfully decancered **${member.mention}**'s name to: \`${decancered}\``;
+            return cmd.user.success({ user, result: decancered });
         } catch {
             return this.decancerText(member.nick ?? member.username, decancered);
         }
     }
 
-    public decancerText(text: string, decancered?: string): string {
+    public decancerText(text: string, decancered?: string): CommandResult {
         decancered ??= humanize.decancer(text);
-        return `✅ The decancered version of **${text}** is: \`${decancered}\``;
+        return cmd.text.success({ text, result: decancered });
     }
 
 }

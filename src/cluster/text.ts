@@ -1,9 +1,8 @@
 import { AnalysisResult } from "@blargbot/bbtag";
 import { IFormatString, IFormatStringDefinition, IFormattable, TranslatableString } from "@blargbot/domain/messages";
 import { FlagDefinition } from "@blargbot/domain/models/index";
-import { channel } from "diagnostics_channel";
 import * as Eris from "eris";
-import moment, { Duration, Moment } from "moment-timezone";
+import { Duration, Moment } from "moment-timezone";
 
 import { Command } from "./command/Command";
 import { CommandContext } from "./command/CommandContext";
@@ -218,7 +217,7 @@ export const templates = crunchTree(`cluster`, {
                     success: translatable(`✅ **{user#tag}** has been banned.`).withArgs<{ user: Eris.User; }>()
                 },
                 unbanSchedule: {
-                    success: translatable(`✅ **{user#tag}** has been banned and will be unbanned in **{unban#tag}**`).withArgs<{ user: Eris.User; unban: Duration; }>(),
+                    success: translatable(`✅ **{user#tag}** has been banned and will be unbanned **{unban#tag}**`).withArgs<{ user: Eris.User; unban: Duration; }>(),
                     invalid: translatable(`⚠️ **{user#tag}** has been banned, but the duration was either 0 seconds or improperly formatted so they won't automatically be unbanned.`).withArgs<{ user: Eris.User; }>()
                 }
             },
@@ -1171,27 +1170,27 @@ export const templates = crunchTree(`cluster`, {
                 table: {
                     id: {
                         header: translatable(`Id`),
-                        cell: translatable(``).withArgs<{ id: string; }>()
+                        cell: translatable(`{id}`).withArgs<{ id: string; }>()
                     },
                     elapsed: {
                         header: translatable(`Elapsed`),
-                        cell: translatable(``).withArgs<{ startTime: Moment; }>()
+                        cell: translatable(`{startTime#duration(H)}`).withArgs<{ startTime: Moment; }>()
                     },
                     remain: {
                         header: translatable(`Remain`),
-                        cell: translatable(``).withArgs<{ endTime: Moment; }>()
+                        cell: translatable(`endTime#duration(H)`).withArgs<{ endTime: Moment; }>()
                     },
                     user: {
                         header: translatable(`User`),
-                        cell: translatable(``).withArgs<{ user?: Eris.User; }>()
+                        cell: translatable(`{user.username}#{user.discriminator}`).withArgs<{ user?: Eris.User; }>()
                     },
                     type: {
                         header: translatable(`Type`),
-                        cell: translatable(``).withArgs<{ type: string; }>()
+                        cell: translatable(`{type}`).withArgs<{ type: string; }>()
                     },
                     content: {
                         header: translatable(`Content`),
-                        cell: translatable(``).withArgs<{ content: string; }>()
+                        cell: translatable(`{content}`).withArgs<{ content: string; }>()
                     }
                 }
             },
@@ -1382,9 +1381,9 @@ export const templates = crunchTree(`cluster`, {
         },
         avatar: {
             common: {
-                formatInvalid: translatable(`❌ ${format} is not a valid format! Supported formats are ${humanize.smartJoin(allowedFormats, `, `, ` and `)}`),
-                sizeInvalid: translatable(`❌ ${size ?? parsedSize} is not a valid image size! Supported sizes are ${humanize.smartJoin(allowedImageSizes, `, `, ` and `)}`),
-                success: translatable(`✅ <@${user.id}>'s avatar`)
+                formatInvalid: translatable(`❌ {format} is not a valid format! Supported formats are {allowedFormats#join(, | and )}`).withArgs<{ format: string; allowedFormats: Iterable<string>; }>(),
+                sizeInvalid: translatable(`❌ {size} is not a valid image size! Supported sizes are {allowedSizes#join(, | and )}`).withArgs<{ size: string; allowedSizes: Iterable<number>; }>(),
+                success: translatable(`✅ {user#tag}'s avatar`).withArgs<{ user: Eris.User; }>()
             },
             flags: {
                 format: translatable(`The file format. Can be {formats#join(, | or )}.`).withArgs<{ formats: Iterable<string>; }>(),
@@ -1414,8 +1413,8 @@ export const templates = crunchTree(`cluster`, {
                 noInput: translatable(`❌ No input was provided!`),
                 unexpectedError: translatable(`❌ Something went wrong...`),
                 success: {
-                    empty: translatable(`ℹ️ No output...${pointers}`),
-                    default: translatable(`✅ Output:\n> ${result.output.trim().split(`\n`).join(`\n> `)}${pointers}`)
+                    empty: translatable(`ℹ️ No output...{state#bool(\n\n[{memory#join(,)}]|)\nPointer: {pointer}|)}`).withArgs<{ state?: { memory: Iterable<number>; pointer: number; }; }>(),
+                    default: translatable(`✅ Output:{output#split(\n)#map(\n> {})#join()}{state#bool(\n\n[{memory#join(,)}]|)\nPointer: {pointer}|)}`).withArgs<{ output: string; state?: { memory: Iterable<number>; pointer: number; }; }>()
                 }
             },
             default: {
@@ -1431,18 +1430,18 @@ export const templates = crunchTree(`cluster`, {
                 noCommits: translatable(`❌ I cant find any commits at the moment, please try again later!`),
                 unknownCommit: translatable(`❌ I couldn't find the commit!`),
                 embed: {
-                    title: translatable(`${commit.sha.substring(0, 7)} - commit #${commitNumber}`)
+                    title: translatable(`{commit} - commit #{index}`).withArgs<{ commit: string; index: number; }>()
                 }
             }
         },
         decancer: {
             user: {
                 description: translatable(`Decancers a users display name. If you have permissions, this will also change their nickname`),
-                success: translatable(`✅ Successfully decancered **${member.mention}**'s name to: \`${decancered}\``)
+                success: translatable(`✅ Successfully decancered **{user#tag}**'s name to: \`{result}\``).withArgs<{ user: Eris.User; result: string; }>()
             },
             text: {
                 description: translatable(`Decancers some text to plain ASCII`),
-                success: translatable(`✅ The decancered version of **${text}** is: \`${decancered}\``)
+                success: translatable(`✅ The decancered version of **{text}** is: \`{result}\``).withArgs<{ text: string; result: string; }>()
             }
         },
         define: {
@@ -1450,14 +1449,14 @@ export const templates = crunchTree(`cluster`, {
                 description: translatable(`Gets the definition for the specified word. The word must be in english.`),
                 unavailable: translatable(`❌ It seems I cant find the definition for that word at the moment!`),
                 embed: {
-                    title: translatable(`Definition for ${word}`),
-                    description: translatable(`**Pronunciation** ${linkPronunciation(defaultIPA)}`),
+                    title: translatable(`Definition for {word}`).withArgs<{ word: string; }>(),
+                    description: translatable(`**Pronunciation**: [🔈 {phonetic}]({pronunciation})`).withArgs<{ phonetic: string; pronunciation: string; }>(),
                     field: {
-                        name: translatable(`${i + 1}. ${r.partOfSpeech}`),
+                        name: translatable(`{index}. {type}`).withArgs<{ index: number; type: string; }>(),
                         value: {
-                            pronunciation: translatable(`**Pronunciation**: ${linkPronunciation(specificIPA)}\n`),
-                            synonyms: translatable(`**Synonyms:** ${humanize.smartJoin(r.synonyms.map(s => `\`${s}\``), `, `, ` and `)}\n`),
-                            default: translatable(`${pronunciation}${synonyms}${definition}`)
+                            synonyms: translatable(`**Synonyms:** {synonyms#join(, | and )}\n`).withArgs<{ synonyms: Iterable<string>; }>(),
+                            pronunciation: translatable(`**Pronunciation**: [🔈 {phonetic}]({pronunciation})\n`).withArgs<{ phonetic: string; pronunciation: string; }>(),
+                            default: translatable(`{pronunciation}{synonyms}{definition}`).withArgs<{ pronunciation?: IFormattable<string>; synonyms?: IFormattable<string>; definition: string; }>()
                         }
                     }
                 }
@@ -1489,15 +1488,32 @@ export const templates = crunchTree(`cluster`, {
         },
         feedback: {
             errors: {
-                titleTooLong: translatable(`❌ The first line of your suggestion cannot be more than ${64} characters!`),
+                titleTooLong: translatable(`❌ The first line of your suggestion cannot be more than {max} characters!`).withArgs<{ max: number; }>(),
                 noType: translatable(`❌ You need to provide at least 1 feedback type.`),
-                blacklisted: translatable(`❌ Sorry, ${type === `GUILD` ? `your guild has` : `you have`} been blacklisted from the use of the \`${context.prefix}feedback\` command. If you wish to appeal this, please join my support guild. You can find a link by doing \`${context.prefix}invite\`.`)
+                blacklisted: {
+                    guild: translatable(`❌ Sorry, your guild has been blacklisted from the use of the \`{prefix}feedback\` command. If you wish to appeal this, please join my support guild. You can find a link by doing \`{prefix}invite\`.`).withArgs<{ prefix: string; }>(),
+                    user: translatable(`❌ Sorry, you have been blacklisted from the use of the \`{prefix}feedback\` command. If you wish to appeal this, please join my support guild. You can find a link by doing \`{prefix}invite\`.`).withArgs<{ prefix: string; }>()
+                }
+            },
+            types: {
+                feedback: translatable(`Feedback`),
+                bugReport: translatable(`Bug Report`),
+                suggestion: translatable(`Suggestion`)
             },
             blacklist: {
-                unknownType: translatable(`❌ I don't know how to blacklist a ${type}! only \`guild\` and \`user\``),
-                alreadyBlacklisted: translatable(`❌ That ${type} id is already blacklisted!`),
-                notBlacklisted: translatable(`❌ That ${type} id is not blacklisted!`),
-                success: translatable(`✅ The ${type} ${id} has been ${add ? `blacklisted` : `removed from the blacklist`}`)
+                unknownType: translatable(`❌ I don't know how to blacklist a {type}! only \`guild\` and \`user\``).withArgs<{ type: string; }>(),
+                alreadyBlacklisted: {
+                    guild: translatable(`❌ That guild id is already blacklisted!`),
+                    user: translatable(`❌ That user id is already blacklisted!`)
+                },
+                notBlacklisted: {
+                    guild: translatable(`❌ That guild id is not blacklisted!`),
+                    user: translatable(`❌ That user id is not blacklisted!`)
+                },
+                success: {
+                    guild: translatable(`✅ The guild {id} has been {added#bool(blacklisted|removed from the blacklist)}`).withArgs<{ id: string; added: boolean; }>(),
+                    user: translatable(`✅ The user {id} has been {added#bool(blacklisted|removed from the blacklist)}`).withArgs<{ id: string; added: boolean; }>()
+                }
             },
             flags: {
                 command: translatable(`Signify your feedback is for a command`),
@@ -1508,6 +1524,7 @@ export const templates = crunchTree(`cluster`, {
             general: {
                 description: translatable(`Give me general feedback about the bot`),
                 unexpectedError: translatable(`❌ Something went wrong while trying to submit that! Please try again`),
+                success: translatable(`✅ {type} has been sent with the ID {caseId}! 👌\n\nYou can view your {type#lower} here: <{link}>`).withArgs<{ type: IFormattable<string>; caseId: number; link: string; }>(),
                 queryType: {
                     prompt: translatable(`ℹ️ Please select the types that apply to your suggestion`),
                     placeholder: translatable(`Select your suggestion type`)
@@ -1518,15 +1535,17 @@ export const templates = crunchTree(`cluster`, {
                     documentation: translatable(`Documentation`),
                     other: translatable(`Other Functionality`)
                 },
+                dm: translatable(`DM`),
                 embed: {
-                    description: translatable(`**${title}**\n\n${description}`),
+                    description: translatable(`**{title}**\n\n{description}`).withArgs<{ title: string; description: string; }>(),
                     field: {
                         types: {
-                            name: translatable(`Types`)
+                            name: translatable(`Types`),
+                            value: translatable(`{types#join(\n)}`).withArgs<{ types: Iterable<string>; }>()
                         }
                     },
                     footer: {
-                        text: translatable(`Case ${record} | ${context.message.id}`)
+                        text: translatable(`Case {caseId} | {messageId}`).withArgs<{ caseId: number; messageId: string; }>()
                     }
                 }
             },
@@ -1538,7 +1557,7 @@ export const templates = crunchTree(`cluster`, {
             },
             edit: {
                 description: translatable(`Edit some feedback you have previously sent`),
-                unknownCase: translatable(`❌ I couldn't find any feedback with the case number ${caseNumber}!`),
+                unknownCase: translatable(`❌ I couldn't find any feedback with the case number {caseNumber}!`).withArgs<{ caseNumber: number; }>(),
                 notOwner: translatable(`❌ You cant edit someone elses suggestion.`),
                 success: translatable(`✅ Your case has been updated.`)
             }
@@ -1561,36 +1580,55 @@ export const templates = crunchTree(`cluster`, {
                 notReady: translatable(`⚠️ Im still waking up! Try again in a minute or two`),
                 embed: {
                     title: translatable(`About me!`),
-                    description: translatable(`I am a multipurpose bot with new features implemented regularly, written in typescript using [Eris](https://abal.moe/Eris/).\n\n🎂 I am currently ${ageStr} old!`),
+                    description: translatable(`I am a multipurpose bot with new features implemented regularly, written in typescript using [Eris](https://abal.moe/Eris/).\n\n🎂 I am currently {age#duration(F)} old!`).withArgs<{ age: Duration; }>(),
                     field: {
                         patron: {
-                            name: translatable(`️️️️️️️️❤️ Special thanks to my patrons! ❤️`)
+                            name: translatable(`️️️️️️️️❤️ Special thanks to my patrons! ❤️`),
+                            value: translatable(`{patrons#map({#tag})#join(\n)}`).withArgs<{ patrons: Iterable<IFormattable<string> | Eris.User>; }>()
                         },
                         donator: {
-                            name: translatable(`️️️️️️️️❤️ Special thanks to all my other donators! ❤️`)
+                            name: translatable(`️️️️️️️️❤️ Special thanks to all my other donators! ❤️`),
+                            value: translatable(`{donators#map({#tag})#join(\n)}`).withArgs<{ donators: Iterable<IFormattable<string> | Eris.User>; }>()
                         },
                         other: {
-                            name: translatable(`❤️ Special huge thanks to: ❤️`)
+                            name: translatable(`❤️ Special huge thanks to: ❤️`),
+                            value: {
+                                decorators: {
+                                    awesome: translatable(`The awesome {user#tag} for {reason}`).withArgs<{ user: IFormattable<string> | Eris.User; reason: IFormattable<string>; }>(),
+                                    incredible: translatable(`The incredible {user#tag} for {reason}`).withArgs<{ user: IFormattable<string> | Eris.User; reason: IFormattable<string>; }>(),
+                                    amazing: translatable(`The amazing {user#tag} for {reason}`).withArgs<{ user: IFormattable<string> | Eris.User; reason: IFormattable<string>; }>(),
+                                    inspirational: translatable(`The inspirational {user#tag} for {reason}`).withArgs<{ user: IFormattable<string> | Eris.User; reason: IFormattable<string>; }>()
+                                },
+                                reasons: {
+                                    rewrite: translatable(`rewriting me into typescript`),
+                                    donations1k: translatable(`huge financial contributions ($1000)`),
+                                    unknown: translatable(`something but I don't remember`)
+                                },
+                                layout: translatable(`{details#join(\n)}`).withArgs<{ details: Iterable<IFormattable<string>>; }>()
+                            }
                         },
                         details: {
-                            value: translatable(`For commands, do \`${context.prefix}help\`. For information about supporting me, do \`${context.prefix}donate\`.\nFor any additional information, such as command documentation, please visit my website: <https://blargbot.xyz>`)
+                            value: translatable(`For commands, do \`{prefix}help\`. For information about supporting me, do \`{prefix}donate\`.\nFor any additional information, such as command documentation, please visit my website: <https://blargbot.xyz>`).withArgs<{ prefix: string; }>()
                         }
                     }
                 }
+
             }
         },
         insult: {
             someone: {
-                description: translatable(`Generates a random insult directed at the name supplied.`)
+                description: translatable(`Generates a random insult directed at the name supplied.`),
+                success: translatable(`{name}'s {#rand(mother|mom|father|dad|goat|cheese|dick|boob|eye|mouth|nose|ear|sister|sis|brother|bro|seagull|tea|mother-in-law|rabbit|dog|cat|left foot|body|brain|face|favorite thing)} {#rand(smells like|looks like|is|sounds like|appears to be|wants to be|looks just like|smells oddly similar to|is jealous of|is as stupid as|laughs like)} {#rand(a piece of cheese|a smelly fish|jam|tea|a skunk|a fart|a piece of toast|my mom|your mom|my dad|your dad|my sister|your sister|my brother|your brother|my cat|my dog|my lizard|my seagull|gross|farts|ugly|Captain America|javascript|C#|LUA|python3.5|a furry|an anthropomorphic horse|a tentacle monster|fuck|meow|mississippi|the entire UK|Japan|anime|dickgirls|a really stupid cat|a sentient robot|teaching a robot to love|anime girls with really large boobs who want to eat all of your cream|salty|smegma|mouldy cheese|obesity|Donald Trump|stupid people|crabcakes|firepoles|blue waffle|a really bad random insult generators|a terrible AI|cleverbot|b1nzy|a drunken goblin|poorly censored porn|an egg left in the sun for too long|#BREXIT|leaving the EU)}`).withArgs<{ name: string; }>()
             },
             default: {
-                description: translatable(`Generates a random insult.`)
+                description: translatable(`Generates a random insult.`),
+                success: translatable(`Your {#rand(mother|mom|father|dad|goat|cheese|dick|boob|eye|mouth|nose|ear|sister|sis|brother|bro|seagull|tea|mother-in-law|rabbit|dog|cat|left foot|body|brain|face|favorite thing)} {#rand(smells like|looks like|is|sounds like|appears to be|wants to be|looks just like|smells oddly similar to|is jealous of|is as stupid as|laughs like)} {#rand(a piece of cheese|a smelly fish|jam|tea|a skunk|a fart|a piece of toast|my mom|your mom|my dad|your dad|my sister|your sister|my brother|your brother|my cat|my dog|my lizard|my seagull|gross|farts|ugly|Captain America|javascript|C#|LUA|python3.5|a furry|an anthropomorphic horse|a tentacle monster|fuck|meow|mississippi|the entire UK|Japan|anime|dickgirls|a really stupid cat|a sentient robot|teaching a robot to love|anime girls with really large boobs who want to eat all of your cream|salty|smegma|mouldy cheese|obesity|Donald Trump|stupid people|crabcakes|firepoles|blue waffle|a really bad random insult generators|a terrible AI|cleverbot|b1nzy|a drunken goblin|poorly censored porn|an egg left in the sun for too long|#BREXIT|leaving the EU)}`)
             }
         },
         invite: {
             default: {
                 description: translatable(`Gets you invite information.`),
-                success: translatable(`Invite me to your guild!\n<${context.util.websiteLink(`invite`)}>\nJoin my support guild!\nhttps://discord.gg/015GVxZxI8rtlJgXF\``)
+                success: translatable(`Invite me to your guild!\n<{inviteLink}>\nJoin my support guild!\n{guildLink}`).withArgs<{ inviteLink: string; guildLink: string; }>()
             }
         },
         mods: {
@@ -1602,16 +1640,20 @@ export const templates = crunchTree(`cluster`, {
                     },
                     field: {
                         online: {
-                            name: translatable(`<${context.config.discord.emotes.online}> Online`)
+                            name: translatable(`{emote} Online`).withArgs<{ emote: string; }>(),
+                            value: translatable(`{users#map({#tag})#join(\n)}`).withArgs<{ users: Iterable<Eris.User>; }>()
                         },
-                        online: {
-                            name: translatable(`<${context.config.discord.emotes.away}> Away`)
+                        away: {
+                            name: translatable(`{emote} Away`).withArgs<{ emote: string; }>(),
+                            value: translatable(`{users#map({#tag})#join(\n)}`).withArgs<{ users: Iterable<Eris.User>; }>()
                         },
-                        online: {
-                            name: translatable(`<${context.config.discord.emotes.busy}> Do not disturb`)
+                        busy: {
+                            name: translatable(`{emote} Do not disturb`).withArgs<{ emote: string; }>(),
+                            value: translatable(`{users#map({#tag})#join(\n)}`).withArgs<{ users: Iterable<Eris.User>; }>()
                         },
-                        online: {
-                            name: translatable(`<${context.config.discord.emotes.offline}> Offline`)
+                        offline: {
+                            name: translatable(`{emote} Offline`).withArgs<{ emote: string; }>(),
+                            value: translatable(`{users#map({#tag})#join(\n)}`).withArgs<{ users: Iterable<Eris.User>; }>()
                         }
                     }
                 }
@@ -1625,7 +1667,7 @@ export const templates = crunchTree(`cluster`, {
             away: {
                 description: translatable(`Gets a list of all currently away mods.`)
             },
-            dnd: {
+            busy: {
                 description: translatable(`Gets a list of all mods currently set to do not disturb.`)
             },
             offline: {
@@ -1640,14 +1682,20 @@ export const templates = crunchTree(`cluster`, {
             list: {
                 description: translatable(`Returns the names that I've seen the specified user have in the past 30 days.`),
                 none: {
-                    ever: translatable(`ℹ️ I haven't seen any usernames for ${user.mention} yet!`),
-                    since: translatable(`ℹ️ I haven't seen ${user.mention} change their username since <t:${cutoff.unix()}>!`)
+                    ever: translatable(`ℹ️ I haven't seen any usernames for {user#tag} yet!`).withArgs<{ user: Eris.User; }>(),
+                    since: translatable(`ℹ️ I haven't seen {user#tag} change their username since {from#tag}!`).withArgs<{ user: Eris.User; from: Moment; }>()
                 },
                 embed: {
                     title: translatable(`Historical usernames`),
                     description: {
-                        since: translatable(`Since <t:${cutoff.unix()}>\n${usernames.map(u => `${u.name} - <t:${moment(u.date).unix()}:R>`).join(`\n`)}`),
-                        ever: translatable(`${usernames.map(u => `${u.name} - <t:${moment(u.date).unix()}:R>`).join(`\n`)}`)
+                        since: {
+                            detailed: translatable(`Since {from#tag}\n{usernames#map({name} - {time#tag(R)})#join(\n)}`).withArgs<{ from: Moment; usernames: Iterable<{ name: string; time: Moment; }>; }>(),
+                            simple: translatable(`Since {from#tag}\n{usernames#map({name})#join(\n)}`).withArgs<{ from: Moment; usernames: Iterable<{ name: string; }>; }>()
+                        },
+                        ever: {
+                            detailed: translatable(`{usernames#map({name} - {time#tag(R)})#join(\n)}`).withArgs<{ usernames: Iterable<{ name: string; time: Moment; }>; }>(),
+                            simple: translatable(`{usernames#map({name})#join(\n)}`).withArgs<{ usernames: Iterable<{ name: string; }>; }>()
+                        }
                     }
                 }
             },
@@ -1657,14 +1705,17 @@ export const templates = crunchTree(`cluster`, {
                 notFound: translatable(`❌ I couldn't find any of the usernames you gave!`),
                 confirm: {
                     prompt: {
-                        some: translatable(`⚠️ Are you sure you want to remove ${countStr} usernames`),
+                        some: translatable(`⚠️ Are you sure you want to remove {count} usernames`).withArgs<{ count: number; }>(),
                         all: translatable(`⚠️ Are you sure you want to remove **all usernames**`)
                     },
-                    confirm: translatable(`Yes`),
+                    continue: translatable(`Yes`),
                     cancel: translatable(`No`)
                 },
                 cancelled: translatable(`✅ I wont remove any usernames then!`),
-                success: translatable(`✅ Successfully removed ${countStr}!`)
+                success: {
+                    some: translatable(`✅ Successfully removed {count}!`).withArgs<{ count: number; }>(),
+                    all: translatable(`✅ Successfully removed **all usernames**!`)
+                }
             }
         },
         nato: {
@@ -1688,7 +1739,7 @@ export const templates = crunchTree(`cluster`, {
                 none: translatable(`ℹ️ You don't have any personal command prefixes set!`),
                 embed: {
                     title: translatable(`Personal prefixes`),
-                    description: translatable(`${prefixes.map(x => ` - ${x}`).join(`\n`)}`)
+                    description: translatable(`{prefixes#map(- {})#join(\n)}`).withArgs<{ prefixes: Iterable<string>; }>()
                 }
             }
         },
@@ -1696,8 +1747,8 @@ export const templates = crunchTree(`cluster`, {
             description: translatable(`Pong!\nFind the command latency.`),
             default: {
                 description: translatable(`Gets the current latency.`),
-                pending: translatable(`ℹ️ ${content}`),
-                success: translatable(`✅ Pong! (${message.createdAt - context.timestamp}ms)`)
+                pending: translatable(`ℹ️ {#rand(Existence is a lie.|You're going to die some day, perhaps soon.|Nothing matters.|Where do you get off?|There is nothing out there.|You are all alone in an infinite void.|Truth is false.|Forsake everything.|Your existence is pitiful.|We are all already dead.|)}`),
+                success: translatable(`✅ Pong! ({ping#duration(MS)}ms)`).withArgs<{ ping: Duration; }>()
             }
         },
         poll: {
@@ -1705,19 +1756,19 @@ export const templates = crunchTree(`cluster`, {
                 time: translatable(`How long before the poll expires, formatted as '1 day 2 hours 3 minutes and 4 seconds', '1d2h3m4s', or some other combination.`),
                 emojis: translatable(`The emojis to apply to the poll.`),
                 description: translatable(`The description of the poll.`),
-                color: translatable(`The color of the poll (in HEX).`),
+                colour: translatable(`The color of the poll (in HEX).`),
                 announce: translatable(`If specified, it will make an announcement. Requires the proper permissions.`)
             },
             default: {
                 description: translatable(`Creates a poll for the given question and duration. If no duration is given, defaults to 60 seconds. If emojis are given, they will be used as options for the poll.`),
-                invalidDuration: translatable(`❌ \`${time}\` is not a valid duration for a poll.`),
-                invalidColor: translatable(`❌ \`${options.color}\` is not a valid color!`),
+                invalidDuration: translatable(`❌ \`{duration}\` is not a valid duration for a poll.`).withArgs<{ duration: string; }>(),
+                invalidColor: translatable(`❌ \`{color}\` is not a valid color!`).withArgs<{ color: string; }>(),
                 sendFailed: translatable(`❌ I wasn't able to send the poll! Please make sure I have the right permissions and try again.`),
                 noAnnouncePerms: translatable(`❌ Sorry, you don't have permissions to send announcements!`),
                 announceNotSetUp: translatable(`❌ Announcements on this server aren't set up correctly. Please fix them before trying again.`),
                 emojisMissing: translatable(`❌ You must provide some emojis to use in the poll.`),
                 emojisInaccessible: translatable(`❌ I don't have access to some of the emojis you used! Please use different emojis or add me to the server that the emojis are from.`),
-                tooShort: translatable(`❌ ${time.humanize()} is too short for a poll! Use a longer time`),
+                tooShort: translatable(`❌ {time#duration(S)}s is too short for a poll! Use a longer time`).withArgs<{ duration: Duration; }>(),
                 someEmojisMissing: translatable(`⚠️ I managed to create the poll, but wasn't able to add some of the emojis to it. Please add them manually (they will still be counted in the results)`)
             }
         },
@@ -1731,33 +1782,38 @@ export const templates = crunchTree(`cluster`, {
                 durationRequired: translatable(`❌ The \`-t\` flag is required to set the duration of the reminder!`),
                 durationZero: translatable(`❌ I cant set a timer for 0 seconds!`),
                 reminderMissing: translatable(`❌ You need to say what you need reminding of!`),
-                success: translatable(`✅ Ok, ill ping you ${channel === context.channel ? `here` : `in a DM`} <t:${moment().add(duration).unix()}:R>`)
+                success: {
+                    here: translatable(`✅ Ok, ill ping you here {duration#tag}`).withArgs<{ duration: Duration; }>(),
+                    dm: translatable(`✅ Ok, ill ping you in a DM {duration#tag}>`).withArgs<{ duration: Duration; }>()
+                }
             }
         },
         roles: {
             default: {
                 description: translatable(`Displays a list of roles and their IDs.`),
                 embed: {
-                    title: translatable(`Roles`)
+                    title: translatable(`Roles`),
+                    description: translatable(`{roles#map({#tag} - ({id}))#join(\n)}`).withArgs<{ roles: Iterable<Eris.Role>; }>()
                 }
             }
         },
         roll: {
             default: {
                 description: translatable(`Rolls the dice you tell it to, and adds the modifier`),
-                diceInvalid: translatable(`❌ \`${dice}\` is not a valid dice!`),
-                tooBig: translatable(`❌ You're limited to ${maxRolls} of a d${maxFaces}`),
+                diceInvalid: translatable(`❌ \`{dice}\` is not a valid dice!`).withArgs<{ dice: string; }>(),
+                tooBig: translatable(`❌ You're limited to {maxRolls} of a d{maxFaces}`).withArgs<{ maxRolls: number; maxFaces: number; }>(),
                 character: {
                     embed: {
-                        description: translatable(`Stat #${i} - [ ${rolls.join(`, `)} ] > ${total.toString().padStart(2, ` `)} - ${min} > ${(total - min).toString().padStart(2, ` `)}`)
+                        description: translatable(`\`\`\`xl\n{stats#map(Stat #{id} - [{rolls#join(, )}] > {total,2} - {min} > {result,2})#join(\n)}\n\`\`\``).withArgs<{ stats: Iterable<{ id: number; rolls: Iterable<number>; total: number; min: number; result: number; }>; }>()
                     }
                 },
                 embed: {
-                    title: translatable(`🎲 ${rollCount} ${p(rollCount, `roll`)} of a ${faceCount} sided dice:`),
+                    title: translatable(`🎲 {rolls} {rolls#plural(roll|rolls)} of a {faces} sided dice:`).withArgs<{ rolls: number; faces: number; }>(),
                     description: {
-                        modifier: translatable(`**Modifier**: ${total + modifier} ${sign} ${-modifier}\n`),
-                        natural1: translatable(`- Natural 1...`),
-                        natural20: translatable(`- Natural 20`)
+                        modifier: translatable(`**Modifier**: {total} {sign} {modifier}`).withArgs<{ total: number; sign: `+` | `-`; modifier: number; }>(),
+                        natural1: translatable(` - Natural 1...`),
+                        natural20: translatable(` - Natural 20`),
+                        layout: translatable(`{details#bool({}\n|)}{rolls#join(, )}\n{modifier#bool({}\n|)}**Total**: {total}{natural}`).withArgs<{ details?: string; rolls: Iterable<number>; modifier?: IFormattable<string>; total: number; natural?: IFormattable<string>; }>()
                     }
                 }
             }
@@ -1771,31 +1827,31 @@ export const templates = crunchTree(`cluster`, {
                 tooManyBullets: translatable(`⚠️ That's gutsy, but your revolver can only hold 6 bullets!`),
                 jammed: translatable(`❌ Your revolver jams when you try to close the barrel. Maybe you should try somewhere else...`),
                 confirm: {
-                    prompt: translatable(`You load ${p(bullets, `a`, numMap[bullets])} ${p(bullets, `bullet`)} into your revolver, give it a spin, and place it against your head`),
-                    confirm: translatable(`Put the gun down`),
+                    prompt: translatable(`You load {bullets} {bullets#plural(1:bullet|bullets)} into your revolver, give it a spin, and place it against your head`).withArgs<{ bullets: number; }>(),
+                    continue: translatable(`Put the gun down`),
                     cancel: translatable(`Pull the trigger`)
                 },
-                chicken: translatable(`You chicken out and put the gun down.\n${randChoose(chickenMsg)}`),
-                died: translatable(`***BOOM!*** ${randChoose(deathMsg)}`),
-                lived: translatable(`*Click!* ${randChoose(liveMsg)}`)
+                chicken: translatable(`You chicken out and put the gun down.\n{#rand(Maybe try again when youre not feeling so wimpy.|Its ok, fun isn't for everyone!)}`),
+                died: translatable(`***BOOM!*** {#rand(The gun goes off, splattering your brains across the wall. Unlucky!|☠️💥⚰️😵💀💀☠️|Before you know it, it's all over.|At least you had chicken!|I'm ***not*** cleaning that up.|Guns are not toys!|Well, you can't win them all!|W-well... If every porkchop were perfect, we wouldn't have hotdogs? Too bad you're dead either way.|Blame it on the lag!|Today just wasn't your lucky day.|Pssh, foresight is for losers.)}`),
+                lived: translatable(`*Click!* {#rand(The gun clicks, empty. You get to live another day.|You breath a sign of relief as you realize that you aren't going to die today.|As if it would ever go off! Luck is on your side.|You thank RNGesus as you lower the gun.|👼🙏🚫⚰️👌👍👼|You smirk as you realize you survived.)}`)
             }
         },
         shard: {
             common: {
                 embed: {
-                    title: translatable(`Shard ${shard.id}`),
+                    title: translatable(`Shard {shardId}`).withArgs<{ shardId: number; }>(),
                     field: {
                         shard: {
-                            name: translatable(`Shard ${shard.id.toString()}`),
-                            value: translatable(`\`\`\`\nStatus: ${discord.cluster.statusEmojiMap[shard.status]}\nLatency: ${shard.latency}ms\nGuilds: ${shard.guilds}\nCluster: ${shard.cluster}\nLast update: ${humanize.duration(moment(), moment(shard.time, `x`), 1)} ago\n\`\`\``)
+                            name: translatable(`Shard {shardId}`).withArgs<{ shardId: number; }>(),
+                            value: translatable(`\`\`\`\nStatus: {statusEmote}\nLatency: {latency}ms\nGuilds: {guildCount}\nCluster: {clusterId}\nLast update: {lastUpdate#duration(H)}\n\`\`\``).withArgs<{ statusEmote: string; latency: number; guildCount: number; clusterId: number; lastUpdate: Moment; }>()
                         },
                         cluster: {
-                            name: translatable(`Cluster ${clusterData.id.toString()}`),
-                            value: translatable(`CPU usage: ${clusterData.userCpu.toFixed(1)}\nGuilds: ${clusterData.guilds.toString()}\nRam used: ${humanize.ram(clusterData.rss)}\nStarted <t:${Math.round(clusterData.readyTime / 1000)}:R>`)
+                            name: translatable(`Cluster {clusterId}`).withArgs<{ clusterId: number; }>(),
+                            value: translatable(`CPU usage: {cpu#percent(1)}\nGuilds: {guildCount}\nRam used: {ram#bytes}\nStarted {startTime#tag(R)}`).withArgs<{ cpu: number; guildCount: number; ram: number; startTime: Moment; }>()
                         },
                         shards: {
                             name: translatable(`Shards`),
-                            value: translatable(`\`\`\`\n${clusterData.shards.map(shard => `${shard.id} ${discord.cluster.statusEmojiMap[shard.status]} ${shard.latency}ms`).join(`\n`)}\n\`\`\``)
+                            value: translatable(`\`\`\`\n{shards#map({id} {statusEmote} {latency}ms)#join(\n)}\n\`\`\``).withArgs<{ shards: Iterable<{ id: number; statusEmote: string; latency: number; }>; }>()
                         }
                     }
                 }
@@ -1804,17 +1860,17 @@ export const templates = crunchTree(`cluster`, {
                 description: translatable(`Returns information about the shard the current guild is in, along with cluster stats.`),
                 dm: {
                     embed: {
-                        description: translatable(`Discord DMs are on shard \`0\` in cluster \`${context.cluster.id.toString()}\``)
+                        description: translatable(`Discord DMs are on shard \`0\` in cluster \`{clusterId}\``).withArgs<{ clusterId: number; }>()
                     }
                 }
             },
             guild: {
                 description: translatable(`Returns information about the shard \`guildID\` is in, along with cluster stats.`),
-                invalidGuild: translatable(`❌ \`${guildID}\` is not a valid guildID`),
+                invalidGuild: translatable(`❌ \`{id}\` is not a valid guild id`).withArgs<{ id: string; }>(),
                 embed: {
                     description: {
-                        here: translatable(`This guild is on shard \`${clusterData.shard.id}\` and cluster \`${clusterData.cluster.id}\``),
-                        other: translatable(`Guild \`${guildID}\` is on shard \`${clusterData.shard.id}\` and cluster \`${clusterData.cluster.id}\``)
+                        here: translatable(`This guild is on shard \`{shardId}\` and cluster \`{clusterId}\``).withArgs<{ shardId: number; clusterId: number; }>(),
+                        other: translatable(`Guild \`{guildId}\` is on shard \`{shardId}\` and cluster \`{clusterId}\``).withArgs<{ shardId: number; clusterId: number; guildId: string; }>()
                     }
                 }
             }
@@ -1822,21 +1878,20 @@ export const templates = crunchTree(`cluster`, {
         shards: {
             common: {
                 invalidCluster: translatable(`❌ Cluster does not exist`),
-                noStats: translatable(`❌ Cluster ${clusterID} is not online at the moment`),
+                noStats: translatable(`❌ Cluster {clusterId} is not online at the moment`).withArgs<{ clusterId: number; }>(),
                 embed: {
-                    title: translatable(`Shard ${shard.id}`),
                     field: {
                         shard: {
-                            name: translatable(`Shard ${shard.id.toString()}`),
-                            value: translatable(`\`\`\`\nStatus: ${discord.cluster.statusEmojiMap[shard.status]}\nLatency: ${shard.latency}ms\nGuilds: ${shard.guilds}\nCluster: ${shard.cluster}\nLast update: ${humanize.duration(moment(), moment(shard.time, `x`), 1)} ago\n\`\`\``)
+                            name: translatable(`Shard {shardId}`).withArgs<{ shardId: number; }>(),
+                            value: translatable(`\`\`\`\nStatus: {statusEmote}\nLatency: {latency}ms\nGuilds: {guildCount}\nCluster: {clusterId}\nLast update: {lastUpdate#duration(R)}\n\`\`\``).withArgs<{ statusEmote: string; latency: number; guildCount: number; clusterId: number; lastUpdate: Moment; }>()
                         },
                         cluster: {
-                            name: translatable(`Cluster ${clusterData.id.toString()}`),
-                            value: translatable(`CPU usage: ${clusterData.userCpu.toFixed(1)}\nGuilds: ${clusterData.guilds.toString()}\nRam used: ${humanize.ram(clusterData.rss)}\nStarted <t:${Math.round(clusterData.readyTime / 1000)}:R>`)
+                            name: translatable(`Cluster {clusterId}`).withArgs<{ clusterId: number; }>(),
+                            value: translatable(`CPU usage: {cpu#percent(1)}\nGuilds: {guildCount}\nRam used: {ram#bytes}\nStarted {startTime#tag(R)}`).withArgs<{ cpu: number; guildCount: number; ram: number; startTime: Moment; }>()
                         },
                         shards: {
                             name: translatable(`Shards`),
-                            value: translatable(`\`\`\`\n${clusterData.shards.map(shard => `${shard.id} ${discord.cluster.statusEmojiMap[shard.status]} ${shard.latency}ms`).join(`\n`)}\n\`\`\``)
+                            value: translatable(`\`\`\`\n{shards#map({id} {statusEmote} {latency}ms)#join(\n)}\n\`\`\``).withArgs<{ shards: Iterable<{ id: number; statusEmote: string; latency: number; }>; }>()
                         }
                     }
                 }
@@ -1850,20 +1905,20 @@ export const templates = crunchTree(`cluster`, {
                 noStats: translatable(`❌ No cluster stats yet!`),
                 embed: {
                     title: translatable(`Shards`),
-                    description: translatable(`I'm running on \`${clusterCount}\` cluster${clusterCount > 1 ? `s` : ``} and \`${shardConfig.max}\` shard${shardConfig.max > 1 ? `s` : ``}\n`),
+                    description: translatable(`I'm running on \`{clusterCount}\` {clusterCount#plural(1:cluster|clusters)} and \`{shardCount}\` {shardCount#plural(1:shard|shards)}\n`).withArgs<{ clusterCount: number; shardCount: number; }>(),
                     field: {
-                        name: translatable(`Cluster ${cluster.id.toString()}`),
-                        value: translatable(`Ready since: <t:${Math.round(cluster.readyTime / 1000)}:R>\nRam: ${humanize.ram(cluster.rss)}\n**Shards**:\n\`\`\`\n${cluster.shards.map(shard => `${shard.id} ${discord.cluster.statusEmojiMap[shard.status]} ${shard.latency}ms`).join(`\n`)}\n\`\`\``)
+                        name: translatable(`Cluster {clusterId}`).withArgs<{ clusterId: number; }>(),
+                        value: translatable(`Ready since: {startTime#tag(R)}\nRam: {ram#bytes}\n**Shards**:\n\`\`\`\n{shards#map({id} {statusEmote} {latency}ms)#join(\n)}\n\`\`\``).withArgs<{ startTime: Moment; ram: number; shards: Iterable<{ id: number; statusEmote: string; latency: number; }>; }>()
                     }
                 }
             },
             guild: {
                 description: translatable(`Shows information about the shard and cluster \`guildID\` is in `),
-                invalidGuild: translatable(`❌ \`${guildIDStr}\` is not a valid guildID`),
+                invalidGuild: translatable(`❌ \`{guildId}\` is not a valid guildID`).withArgs<{ guildId: string; }>(),
                 embed: {
                     description: {
-                        here: translatable(`This guild is on shard \`${clusterData.shard.id}\` and cluster \`${clusterData.cluster.id}\``),
-                        other: translatable(`Guild \`${guildID}\` is on shard \`${clusterData.shard.id}\` and cluster \`${clusterData.cluster.id}\``)
+                        here: translatable(`This guild is on shard \`{shardId}\` and cluster \`{clusterId}\``).withArgs<{ clusterId: number; shardId: number; }>(),
+                        other: translatable(`Guild \`{guildId}\` is on shard \`{shardId}\` and cluster \`{clusterId}\``).withArgs<{ guildId: string; clusterId: number; shardId: number; }>()
                     }
                 }
             },
@@ -1874,7 +1929,7 @@ export const templates = crunchTree(`cluster`, {
         ship: {
             default: {
                 description: translatable(`Gives you the ship name for two users.`),
-                success: translatable(`❤️ Your ship name is **${firstHalf}${secondHalf}**!`)
+                success: translatable(`❤️ Your ship name is **{name}**!`).withArgs<{ name: string; }>()
             }
         },
         spell: {
@@ -1893,11 +1948,11 @@ export const templates = crunchTree(`cluster`, {
                     prompt: translatable(`🪄 Multiple spells found! Please pick the right one`),
                     placeholder: translatable(`Pick a spell`),
                     choice: {
-                        description: translatable(`Level ${s.level} ${s.school}`)
+                        description: translatable(`Level {level} {school}`).withArgs<{ level: IFormattable<string>; school: IFormattable<string>; }>()
                     }
                 },
                 embed: {
-                    description: translatable(`*Level ${spell.level} ${spell.school}*\n\n${spell.desc}`),
+                    description: translatable(`*Level {level} {school}*\n\n{description}`).withArgs<{ level: IFormattable<string>; school: IFormattable<string>; description: IFormattable<string>; }>(),
                     field: {
                         duration: {
                             name: translatable(`Duration`)
@@ -1925,36 +1980,38 @@ export const templates = crunchTree(`cluster`, {
                     },
                     field: {
                         guilds: {
-                            name: translatable(`Guilds`)
+                            name: translatable(`Guilds`),
+                            value: translatable(`{guildCount}`).withArgs<{ guildCount: number; }>()
                         },
                         users: {
-                            name: translatable(`Users`)
+                            name: translatable(`Users`),
+                            value: translatable(`{userCount}`).withArgs<{ userCount: number; }>()
                         },
                         channels: {
-                            name: translatable(`Channels`)
+                            name: translatable(`Channels`),
+                            value: translatable(`{channelCount}`).withArgs<{ channelCount: number; }>()
                         },
                         shards: {
                             name: translatable(`Shards`),
-                            value: translatable(`${context.config.discord.shards.max}`)
+                            value: translatable(`{shardCount}`).withArgs<{ shardCount: number; }>()
                         },
                         clusters: {
                             name: translatable(`Clusters`),
-                            value: translatable(`${Math.ceil(context.config.discord.shards.max / context.config.discord.shards.perCluster)}`)
+                            value: translatable(`{clusterCount}`).withArgs<{ clusterCount: number; }>()
                         },
                         ram: {
                             name: translatable(`RAM`),
-                            value: translatable(`${humanize.ram(mappedStats.rss)}`)
+                            value: translatable(`{ram#bytes}`).withArgs<{ ram: number; }>()
                         },
                         version: {
                             name: translatable(`Version`)
                         },
                         uptime: {
                             name: translatable(`Uptime`),
-                            value: translatable(`<t:${context.cluster.createdAt.unix()}:R>`)
+                            value: translatable(`{uptime#tag(R)}`).withArgs<{ startTime: Moment; }>()
                         },
                         eris: {
-                            name: translatable(`Eris`),
-                            value: eris.VERSION
+                            name: translatable(`Eris`)
                         },
                         nodeJS: {
                             name: translatable(`Node.js`)
@@ -1972,7 +2029,7 @@ export const templates = crunchTree(`cluster`, {
         syntax: {
             default: {
                 description: translatable(`Gives you the 'syntax' for a command 😉`),
-                success: translatable(`❌ Invalid usage!\nProper usage: \`${context.prefix}syntax ${cleanName} ${correctTokens.join(` `)}\``)
+                success: translatable(`❌ Invalid usage!\nProper usage: \`{prefix}syntax {name} {tokens#join( )}\``).withArgs<{ prefix: string; name: string; tokens: Iterable<string>; }>()
             }
         },
         tag: {
@@ -2098,25 +2155,25 @@ export const templates = crunchTree(`cluster`, {
         },
         time: {
             errors: {
-                timezoneInvalid: translatable(`❌ \`${timezone}\` is not a valid timezone! See <https://en.wikipedia.org/wiki/List_of_tz_database_time_zones> for timezone codes that I understand.`)
+                timezoneInvalid: translatable(`❌ \`{timezone}\` is not a valid timezone! See <https://en.wikipedia.org/wiki/List_of_tz_database_time_zones> for timezone codes that I understand.`).withArgs<{ timezone: string; }>()
             },
             self: {
                 description: translatable(`Gets the time in your timezone`)
             },
             user: {
                 description: translatable(`Gets the current time for the user`),
-                timezoneNotSet: translatable(`❌ ${user.mention} has not set their timezone with the \`${context.prefix}timezone\` command yet.`),
-                timezoneInvalid: translatable(`❌ ${user.mention} doesn't have a valid timezone set. They need to update it with the \`${context.prefix}timezone\` command`),
-                success: translatable(`ℹ️ It is currently **${now.format(`LT`)}** for **${user.mention}**.`)
+                timezoneNotSet: translatable(`❌ {user#tag} has not set their timezone with the \`{prefix}timezone\` command yet.`).withArgs<{ user: Eris.User; prefix: string; }>(),
+                timezoneInvalid: translatable(`❌ {user#tag} doesn't have a valid timezone set. They need to update it with the \`{prefix}timezone\` command`).withArgs<{ user: Eris.User; prefix: string; }>(),
+                success: translatable(`ℹ️ It is currently **{now#time(LT)}** for **{user#tag}**.`).withArgs<{ now: Moment; user: Eris.User; }>()
             },
             timezone: {
                 description: translatable(`Gets the current time in the timezone`),
-                success: translatable(`ℹ️ In **${now.zoneAbbr()}**, it is currently **${now.format(`LT`)}**`)
+                success: translatable(`ℹ️ In **{timezone}**, it is currently **{now#time(LT)}**`).withArgs<{ now: Moment; timezone: string; }>()
             },
             convert: {
                 description: translatable(`Converts a \`time\` from \`timezone1\` to \`timezone2\``),
-                invalidTime: translatable(`❌ \`${time}\` is not a valid time! Please use the 12 or 24 hour format, e.g. 1:32pm or 13:32`),
-                success: translatable(`ℹ️ When it's **${source.format(`LT`)}** in **${source.zoneAbbr()}**, it's **${dest.format(`LT`)}** in **${dest.zoneAbbr()}**.`)
+                invalidTime: translatable(`❌ \`{time}\` is not a valid time! Please use the 12 or 24 hour format, e.g. 1:32pm or 13:32`).withArgs<{ time: string; }>(),
+                success: translatable(`ℹ️ When it's **{source#time(LT)}** in **{sourceTimezone}**, it's **{dest#time(LT)}** in **{destTimezone}**.`).withArgs<{ source: Moment; dest: Moment; sourceTimezone: string; destTimezone: string; }>()
             }
         },
         timer: {
@@ -2126,20 +2183,23 @@ export const templates = crunchTree(`cluster`, {
             default: {
                 description: translatable(`Sets a timer for the provided duration, formatted as '1 day 2 hours 3 minutes and 4 seconds', '1d2h3m4s', or some other combination.`),
                 durationZero: translatable(`❌ I cant set a timer for 0 seconds!`),
-                success: translatable(`✅ Ok, ill ping you ${channel === context.channel ? `here` : `in a DM`} <t:${moment().add(duration).unix()}:R>`)
+                success: {
+                    here: translatable(`✅ Ok, ill ping you here {duration#tag}`).withArgs<{ duration: Duration; }>(),
+                    dm: translatable(`✅ Ok, ill ping you in a DM {duration#tag}`).withArgs<{ duration: Duration; }>()
+                }
             }
         },
         timeZone: {
             get: {
                 description: translatable(`Gets your current timezone`),
                 notSet: translatable(`ℹ️ You haven't set a timezone yet.`),
-                timezoneInvalid: translatable(`⚠️ Your stored timezone code is \`${timezone}\`, which isn't valid! Please update it when possible.`),
-                success: translatable(`ℹ️ Your stored timezone code is \`${timezone}\`, which is equivalent to ${zone.format(`z (Z)`)}.`)
+                timezoneInvalid: translatable(`⚠️ Your stored timezone code is \`{timezone}\`, which isn't valid! Please update it when possible.`).withArgs<{ timezone: string; }>(),
+                success: translatable(`ℹ️ Your stored timezone code is \`{timezone}\`, which is equivalent to {now#time(z \\(Z\\))}.`).withArgs<{ timezone: string; now: Moment; }>()
             },
             set: {
                 description: translatable(`Sets your current timezone. A list of [allowed timezones can be found on wikipedia](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones#List) under the \`TZ database name\` column`),
-                timezoneInvalid: translatable(`❌ \`${timezone}\` is not a valid timezone! See <https://en.wikipedia.org/wiki/List_of_tz_database_time_zones> for timezone codes that I understand.`),
-                success: translatable(`✅ Ok, your timezone code is now set to \`${timezone}\`, which is equivalent to ${zone.format(`z (Z)`)}.`)
+                timezoneInvalid: translatable(`❌ \`{timezone}\` is not a valid timezone! See <https://en.wikipedia.org/wiki/List_of_tz_database_time_zones> for timezone codes that I understand.`).withArgs<{ timezone: string; }>(),
+                success: translatable(`✅ Ok, your timezone code is now set to \`{timezone}\`, which is equivalent to {now#time(z \\(Z\\))}.`).withArgs<{ timezone: string; now: Moment; }>()
             }
         },
         todo: {
@@ -2147,16 +2207,12 @@ export const templates = crunchTree(`cluster`, {
                 description: translatable(`Shows you your todo list`),
                 embed: {
                     title: translatable(`Todo list`),
-                    description: {
-                        none: translatable(`You have nothing on your list!`),
-                        item: translatable(`**${i + 1}.** ${e}`),
-                        default: translatable(`${items.map(i => `**${i.id}.** ${i.value}`).join(`\n`)}`)
-                    }
+                    description: translatable(`{items#plural(0:You have nothing on your list!|{#map(**{id}.** {value})#(\n)})}`).withArgs<{ items: Iterable<{ id: number; value: string; }>; }>()
                 }
             },
             remove: {
                 description: translatable(`Removes an item from your todo list by id`),
-                unknownId: translatable(`❌ Your todo list doesn't have an item ${index}!`),
+                unknownId: translatable(`❌ Your todo list doesn't have an item {id}!`).withArgs<{ id: number; }>(),
                 success: translatable(`✅ Done!`)
             },
             add: {
@@ -2172,7 +2228,7 @@ export const templates = crunchTree(`cluster`, {
         uptime: {
             default: {
                 description: translatable(`Gets how long ive been online for`),
-                success: translatable(`ℹ️ I came online <t:${context.cluster.createdAt.unix()}:R> at <t:${context.cluster.createdAt.unix()}>`)
+                success: translatable(`ℹ️ I came online {startTime#tag(R)} at {startTime#tag}`).withArgs<{ startTime: Moment; }>()
             }
         },
         user: {
@@ -2180,18 +2236,28 @@ export const templates = crunchTree(`cluster`, {
                 description: translatable(`Gets information about a user`),
                 activity: {
                     default: translatable(`Not doing anything`),
-                    5: translatable(`Competing in ${activity.name}`),
-                    4: translatable(`${activity.name}`),
-                    2: translatable(`Listening to ${activity.name}`),
-                    0: translatable(`Playing ${activity.name}`),
-                    1: translatable(`Streaming ${activity.details}`),
-                    3: translatable(`Watching ${activity.name}`)
+                    5: translatable(`Competing in {name}`).withArgs<Eris.Activity>(),
+                    4: translatable(`{emoji#emoji} {name}`).withArgs<Eris.Activity>(),
+                    2: translatable(`Listening to {name}`).withArgs<Eris.Activity>(),
+                    0: translatable(`Playing {name}`).withArgs<Eris.Activity>(),
+                    1: translatable(`Streaming {details}`).withArgs<Eris.Activity>(),
+                    3: translatable(`Watching {name}`).withArgs<Eris.Activity>()
                 },
                 embed: {
-                    description: translatable(`**User Id**: ${user.id}\n**Created**: ${timestamp(user.createdAt)}`),
+                    author: {
+                        name: {
+                            user: translatable(`{user.bot#bool(🤖 |)}{user.name}#{user.discriminator}`).withArgs<{ user: Eris.User; }>(),
+                            member: translatable(`{user.bot#bool(🤖 |)}{user.name}#{user.discriminator}{user#nick#bool( \\({}\\)|)}`).withArgs<{ user: Eris.Member; }>()
+                        }
+                    },
+                    description: {
+                        user: translatable(`**User Id**: {user.id}\n**Created**: {user.createdAt#tag=-}`).withArgs<{ user: Eris.User; }>(),
+                        member: translatable(`**User Id**: {user.id}\n**Created**: {user.createdAt#tag=-}\n**Joined** {user.joinedAt#tag=-}`).withArgs<{ user: Eris.Member; }>()
+                    },
                     field: {
                         roles: {
-                            name: translatable(`Roles`)
+                            name: translatable(`Roles`),
+                            value: translatable(`{roles#plural(0:None|{#map({#tag})#join( )})}`).withArgs<{ roles: Iterable<Eris.Role>; }>()
                         }
                     }
                 }
@@ -2200,7 +2266,7 @@ export const templates = crunchTree(`cluster`, {
         version: {
             default: {
                 description: translatable(`Tells you what version I am on`),
-                success: translatable(`ℹ️ I am running blargbot version ${version}`)
+                success: translatable(`ℹ️ I am running blargbot version {version}`).withArgs<{ version: string; }>()
             }
         },
         voteBan: {
@@ -2212,42 +2278,34 @@ export const templates = crunchTree(`cluster`, {
                 description: translatable(`Gets the people with the most votes to be banned.`),
                 embed: {
                     title: translatable(`ℹ️ Top 10 Vote bans`),
-                    description: {
-                        empty: translatable(`No petitions have been signed yet!`),
-                        default: translatable(`${users.map(u => `**${u.position}.** ${u.user.mention} - ${u.count} ${p(u.count, `signature`)}`).join(`\n`)}`)
-                    }
+                    description: translatable(`{items#plural(0:No petitions have been signed yet!|{#map(**{index}.** <@{userId}> - {count} {count#plural(1:signature|signatures)})#join(\n)})}`).withArgs<{ items: Iterable<{ index: number; userId: string; count: number; }>; }>()
                 }
             },
             info: {
                 description: translatable(`Checks the status of the petition to ban someone.`),
                 embed: {
                     title: translatable(`ℹ️ Vote ban signatures`),
-                    description: {
-                        empty: translatable(`No one has voted to ban ${user.mention} yet.`),
-                        tooMany: translatable(`${votes.map(v => `<@${v.id}>${v.reason ? ` - ${v.reason}` : ``}`).join(`\n`)}`),
-                        default: translatable(`${votes.map(v => `<@${v.id}>${v.reason ? ` - ${v.reason}` : ``}`).join(`\n`)}\n... and ${votes.length - 15} more`)
-                    }
+                    description: translatable(`{votes#plural(0:No one has voted to ban {..user#tag} yet.|{#map(<@{userId}>{reason#bool( - {}|)})#join(\n)})}{excess#bool(\n... and {} more|)`).withArgs<{ user: Eris.User; votes: Iterable<{ userId: string; reason?: string; }>; excess: number; }>()
                 }
             },
             sign: {
                 description: translatable(`Signs a petition to ban a someone`),
-                alreadySigned: translatable(`❌ I know you're eager, but you have already signed the petition to ban ${user.mention}!`),
-                success: translatable(`✅ ${context.author.mention} has signed to ban ${user.mention}! A total of **${newTotal} ${p(newTotal, `person** has`, `people** have`)} signed the petition now.${reason !== undefined ? `\n**Reason**: ${reason}` : ``}`)
+                alreadySigned: translatable(`❌ I know you're eager, but you have already signed the petition to ban {user#tag}!`).withArgs<{ user: Eris.User; }>(),
+                success: translatable(`✅ {user#tag} has signed to ban {target#tag}! A total of **{total} {total#plural(1:person** has|people** have)} signed the petition now.{reason#bool(\n**Reason:** {}|)}`).withArgs<{ user: Eris.User; target: Eris.User; total: number; reason?: string; }>()
             },
             forgive: {
                 description: translatable(`Removes your signature to ban someone`),
-                notSigned: translatable(`❌ Thats very kind of you, but you haven't even signed to ban ${user.mention} yet!`),
-                success: translatable(`✅ ${context.author.mention} reconsidered and forgiven ${user.mention}! A total of **${newTotal} ${p(newTotal, `person** has`, `people** have`)} signed the petition now.`)
+                notSigned: translatable(`❌ Thats very kind of you, but you haven't even signed to ban {user#tag} yet!`).withArgs<{ user: Eris.User; }>(),
+                success: translatable(`✅ {user#tag} reconsidered and forgiven {target#tag}! A total of **{total} {total#plural(1:person** has|people** have)} signed the petition now.`).withArgs<{ user: Eris.User; target: Eris.User; total: number; }>()
             }
         },
         warnings: {
             common: {
-                some: translatable(`⚠️ **${humanize.fullName(member.user)}** has accumulated ${count} ${p(count, `warning`)}.`),
-                none: translatable(`🎉 **${humanize.fullName(member.user)}** doesn't have any warnings!`),
-                untilTimeout: translatable(`- ${timeoutAt - count} more warnings before being timed out.`),
-                untilKick: translatable(`- ${kickAt - count} more warnings before being kicked.`),
-                untilBan: translatable(`- ${banAt - count} more warnings before being banned.`),
-                success: translatable(`${lines.join(`\n`)}`)
+                count: translatable(`{count#plural(0:🎉|⚠️)} **{user#tag}** {count#plural(0:doesn't have any warnings!|1:has accumulated 1 warning|has accumulated {} warnings)}.`).withArgs<{ user: Eris.User; count: number; }>(),
+                untilTimeout: translatable(`- {remaining} more warnings before being timed out.`).withArgs<{ remaining: number; }>(),
+                untilKick: translatable(`- {remaining} more warnings before being kicked.`).withArgs<{ remaining: number; }>(),
+                untilBan: translatable(`- {remaining} more warnings before being banned.`).withArgs<{ remaining: number; }>(),
+                success: translatable(`{parts#join(\n)}`).withArgs<{ parts: Iterable<IFormattable<string>>; }>()
             },
             self: {
                 description: translatable(`Gets how many warnings you have`)
@@ -2261,9 +2319,9 @@ export const templates = crunchTree(`cluster`, {
                 description: translatable(`Gets an xkcd comic. If a number is not specified, gets a random one.`),
                 down: translatable(`❌ Seems like xkcd is down 😟`),
                 embed: {
-                    title: translatable(`xkcd #${comic.num}: ${comic.title}`),
+                    title: translatable(`xkcd #{id}: {title}`).withArgs<{ id: number; title: string; }>(),
                     footer: {
-                        text: translatable(`xkcd ${comic.year}`)
+                        text: translatable(`xkcd {year}`).withArgs<{ year: string; }>()
                     }
                 }
             }
@@ -2676,20 +2734,25 @@ function translatable<T extends string>(template: T, value?: unknown): { (id: st
     );
 }
 
-type FormatTree = { [P in string]: FormatTree | ((id: string) => unknown) };
-type FormattedTree<T extends FormatTree> = {
-    [P in keyof T]: T[P] extends (id: string) => infer R ? R
-    : T[P] extends FormatTree ? FormattedTree<T[P]>
-    : never
-};
+type FormatVal<T extends string> = IFormatString<T> | IFormatStringDefinition<T, never>;
+type FormatProvider<T extends FormatVal<string> = FormatVal<string>> = (id: string) => T;
+type FormatTree = { [P in string]: FormatTree | FormatProvider | Array<FormatTree | FormatProvider> };
+
+type FormattedVal<T extends FormatTree[string]> = T extends FormatProvider<infer R> ? R
+    : T extends FormatTree ? FormattedTree<T>
+    : T extends Array<FormatTree | FormatProvider> ? FormattedArray<T>
+    : never;
+type FormattedArray<T extends Array<FormatTree | FormatProvider>> = { [P in keyof T]: FormattedVal<T[P]> }
+type FormattedTree<T extends FormatTree> = { [P in keyof T]: FormattedVal<T[P]> };
 
 function crunchTree<T extends FormatTree>(prefix: string, value: T): FormattedTree<T> {
-    return Object.fromEntries(Object.entries(value).map(([k, v]) => {
-        const id = `${prefix}.${k}`;
-        if (typeof v === `function`)
-            return [k, v(id)] as const;
-        if (`format` in v && typeof v[`format`] === `function`)
-            return [k, v];
-        return [k, crunchTree(id, v)] as const;
-    })) as FormattedTree<T>;
+    return Object.fromEntries(Object.entries(value).map(([k, v]) => [k, crunchVal(`${prefix}.${k}`, v)] as const)) as FormattedTree<T>;
+}
+
+function crunchVal(id: string, v: FormatTree[string]): FormattedVal<FormatTree[string]> {
+    if (typeof v === `function`)
+        return v(id);
+    if (Array.isArray(v))
+        return v.map((v, i) => crunchVal(`${id}.${i}`, v)) as FormattedVal<FormatTree[string]>;
+    return crunchTree(id, v);
 }

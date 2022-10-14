@@ -1,7 +1,7 @@
 import { GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType } from '@blargbot/cluster/utils';
 
-import templates from '../../text';
+import templates, { literal } from '../../text';
 import { CommandResult } from '../../types';
 
 const cmd = templates.commands.nato;
@@ -39,7 +39,7 @@ export class NatoCommand extends GlobalCommand {
         if (other !== ``)
             result.push(other);
 
-        return result.join(` `);
+        return literal(result.join(` `));
     }
 }
 

@@ -2,7 +2,7 @@ import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType, guard, randChoose } from '@blargbot/cluster/utils';
 import spellsJson from '@blargbot/res/spells.json';
 
-import templates from '../../text';
+import templates, { literal } from '../../text';
 import { CommandResult } from '../../types';
 
 const cmd = templates.commands.spell;
@@ -25,7 +25,7 @@ export class SpellCommand extends GlobalCommand {
     public async getSpell(context: CommandContext, name: string | undefined): Promise<CommandResult> {
         const spell = name === undefined ? randChoose(Object.values(spells)) : await this.#findSpell(context, name);
         if (spell === undefined)
-            return `❌ I couldnt find that spell!`;
+            return cmd.default.notFound;
 
         const normSchool = spell.school.toLowerCase();
         const components = spell.components
@@ -35,14 +35,38 @@ export class SpellCommand extends GlobalCommand {
             .join(`, `);
 
         return {
-            title: spell.name,
-            color: schoolKeys.has<string>(normSchool) ? schools[normSchool] : undefined,
-            description: `*Level ${spell.level} ${spell.school}*\n\n${spell.desc}`,
-            fields: [
-                { name: `Duration`, value: spell.duration, inline: true },
-                { name: `Range`, value: spell.range, inline: true },
-                { name: `Casting Time`, value: spell.casting_time, inline: true },
-                { name: `Components`, value: components, inline: true }
+            embeds: [
+                {
+                    title: literal(spell.name),
+                    color: schoolKeys.has<string>(normSchool) ? schools[normSchool] : undefined,
+                    description: cmd.default.embed.description({
+                        level: literal(spell.level),
+                        description: literal(spell.desc),
+                        school: literal(spell.school)
+                    }),
+                    fields: [
+                        {
+                            name: cmd.default.embed.field.duration.name,
+                            value: literal(spell.duration),
+                            inline: true
+                        },
+                        {
+                            name: cmd.default.embed.field.range.name,
+                            value: literal(spell.range),
+                            inline: true
+                        },
+                        {
+                            name: cmd.default.embed.field.castingTime.name,
+                            value: literal(spell.casting_time),
+                            inline: true
+                        },
+                        {
+                            name: cmd.default.embed.field.components.name,
+                            value: literal(components),
+                            inline: true
+                        }
+                    ]
+                }
             ]
         };
     }
@@ -52,15 +76,22 @@ export class SpellCommand extends GlobalCommand {
         if (exact !== undefined)
             return exact;
 
-        const result = await context.util.queryChoice({
+        const result = await context.queryChoice({
             context: context.message,
             actors: context.author,
-            prompt: `🪄 Multiple spells found! Please pick the right one`,
-            placeholder: `Pick a spell`,
+            prompt: cmd.default.query.prompt,
+            placeholder: cmd.default.query.placeholder,
             choices: Object.values(spells)
                 .filter(guard.hasValue)
                 .filter(s => s.name.toLowerCase().includes(name.toLowerCase()))
-                .map(s => ({ label: s.name, description: `Level ${s.level} ${s.school}`, value: s }))
+                .map(s => ({
+                    label: literal(s.name),
+                    description: cmd.default.query.choice.description({
+                        level: literal(s.level),
+                        school: literal(s.school)
+                    }),
+                    value: s
+                }))
         });
 
         return result.state === `SUCCESS` ? result.value : undefined;

@@ -33,13 +33,17 @@ export class StatusCommand extends GlobalCommand {
             status = 404;
             const response = await fetch(`${service}404.jpg`);
             if (!response.ok || response.headers.get(`content-type`) !== `image/jpeg`)
-                return `❌ Something terrible has happened! 404 is not found!`;
+                return cmd.default.notFound;
             content = await response.buffer();
         }
 
         return {
-            name: `${status}.jpg`,
-            file: content
+            files: [
+                {
+                    name: `${status}.jpg`,
+                    file: content
+                }
+            ]
         };
     }
 }

@@ -31,21 +31,21 @@ export class TimezoneCommand extends GlobalCommand {
     public async getTimezone(context: CommandContext, user: User): Promise<CommandResult> {
         const timezone = await context.database.users.getSetting(user.id, `timezone`);
         if (timezone === undefined)
-            return `ℹ️ You haven't set a timezone yet.`;
+            return cmd.get.notSet;
 
-        const zone = moment().tz(timezone);
-        if (zone.zoneAbbr() === ``)
-            return `⚠️ Your stored timezone code is \`${timezone}\`, which isnt valid! Please update it when possible.`;
+        const now = moment().tz(timezone);
+        if (now.zoneAbbr() === ``)
+            return cmd.get.timezoneInvalid({ timezone });
 
-        return `ℹ️ Your stored timezone code is \`${timezone}\`, which is equivalent to ${zone.format(`z (Z)`)}.`;
+        return cmd.get.success({ timezone, now });
     }
 
     public async setTimezone(context: CommandContext, user: User, timezone: string): Promise<CommandResult> {
-        const zone = moment().tz(timezone);
-        if (zone.zoneAbbr() === ``)
-            return `❌ \`${timezone}\` is not a valid timezone! See <https://en.wikipedia.org/wiki/List_of_tz_database_time_zones> for timezone codes that I understand.`;
+        const now = moment().tz(timezone);
+        if (now.zoneAbbr() === ``)
+            return cmd.set.timezoneInvalid({ timezone });
 
         await context.database.users.setSetting(user.id, `timezone`, timezone);
-        return `✅ Ok, your timezone code is now set to \`${timezone}\`, which is equivalent to ${zone.format(`z (Z)`)}.`;
+        return cmd.set.success({ timezone, now });
     }
 }

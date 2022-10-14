@@ -23,12 +23,13 @@ export class RolesCommand extends GuildCommand {
 
     public showRoles(context: GuildCommandContext): CommandResult {
         return {
-            author: context.util.embedifyAuthor(context.channel.guild),
-            title: `Roles`,
-            description: [...context.channel.guild.roles.values()]
-                .sort((a, b) => b.position - a.position)
-                .map(r => `${r.mention} (${r.id})`)
-                .join(`\n`)
+            embeds: [
+                {
+                    author: context.util.embedifyAuthor(context.channel.guild),
+                    title: cmd.default.embed.title,
+                    description: cmd.default.embed.description({ roles: context.channel.guild.roles.values() })
+                }
+            ]
         };
     }
 }

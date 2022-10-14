@@ -23,11 +23,9 @@ export class InviteCommand extends GlobalCommand {
     }
 
     public invite(context: CommandContext): CommandResult {
-        return [
-            `Invite me to your guild!`,
-            `<${context.util.websiteLink(`invite`)}>`,
-            `Join my support guild!`,
-            `https://discord.gg/015GVxZxI8rtlJgXF\``
-        ].join(`\n`);
+        return cmd.default.success({
+            inviteLink: context.util.websiteLink(`invite`),
+            guildLink: `https://discord.gg/015GVxZxI8rtlJgXF`
+        });
     }
 }

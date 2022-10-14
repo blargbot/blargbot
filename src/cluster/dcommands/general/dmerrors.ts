@@ -22,11 +22,11 @@ export class DMErrorsCommand extends GlobalCommand {
     }
 
     public async toggleDMErrors(context: CommandContext): Promise<CommandResult> {
-        const dmErrors = await context.database.users.getSetting(context.author.id, `dontdmerrors`);
-        await context.database.users.setSetting(context.author.id, `dontdmerrors`, dmErrors !== true);
+        const dmErrors = !(await context.database.users.getSetting(context.author.id, `dontdmerrors`) ?? false);
+        await context.database.users.setSetting(context.author.id, `dontdmerrors`, dmErrors);
 
-        if (dmErrors === true)
-            return `✅ I will now DM you if I have an issue running a command.`;
-        return `✅ I won't DM you if I have an issue running a command.`;
+        return dmErrors
+            ? cmd.default.enabled
+            : cmd.default.disabled;
     }
 }

@@ -191,7 +191,7 @@ export interface ChoiceQuery<T> extends QueryBase<ChoiceQueryResult<T>> {
     prompt: KnownMessage | undefined;
 }
 
-export interface MultipleQuery<T> extends QueryBase<MultipleResult<T>> {
+export interface MultipleQuery<T> extends QueryBase<MultipleQueryResult<T>> {
     prompt: KnownMessage | undefined;
 }
 
@@ -204,7 +204,7 @@ export interface TextQuery<T> extends QueryBase<TextQueryResult<T>> {
 }
 
 export type ChoiceQueryResult<T> = QueryResult<`NO_OPTIONS` | `TIMED_OUT` | `CANCELLED` | `FAILED`, T>;
-export type MultipleResult<T> = QueryResult<`NO_OPTIONS` | `EXCESS_OPTIONS` | `TIMED_OUT` | `CANCELLED` | `FAILED`, T[]>;
+export type MultipleQueryResult<T> = QueryResult<`NO_OPTIONS` | `EXCESS_OPTIONS` | `TIMED_OUT` | `CANCELLED` | `FAILED`, T[]>;
 export type TextQueryResult<T> = QueryResult<`FAILED` | `TIMED_OUT` | `CANCELLED`, T>;
 
 export type QueryButton<TString> =

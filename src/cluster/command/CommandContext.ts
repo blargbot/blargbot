@@ -2,7 +2,7 @@ import { BBTagEngine } from '@blargbot/bbtag';
 import { Cluster, ClusterUtilities } from '@blargbot/cluster';
 import { CommandResult, GuildCommandContext, ICommand } from '@blargbot/cluster/types';
 import { Configuration } from '@blargbot/config';
-import { ChoiceQueryResult, SendContent, SendContext, SlimConfirmQueryOptions, SlimEntityFindQueryOptions, SlimEntityPickQueryOptions, SlimEntityQueryOptions, SlimTextQueryOptions, SlimTextQueryOptionsParsed, TextQueryResult } from '@blargbot/core/types';
+import { ChoiceQueryOptions, ChoiceQueryResult, ConfirmQuery, MultipleQueryOptions, MultipleQueryResult, SendContent, SendContext, SlimConfirmQueryOptions, SlimEntityFindQueryOptions, SlimEntityPickQueryOptions, SlimEntityQueryOptions, SlimTextQueryOptions, SlimTextQueryOptionsParsed, TextQueryResult } from '@blargbot/core/types';
 import { guard } from '@blargbot/core/utils';
 import { Database } from '@blargbot/database';
 import { IFormattable, IFormatter } from '@blargbot/domain/messages/types';
@@ -57,10 +57,7 @@ export class CommandContext<TChannel extends KnownTextableChannel = KnownTextabl
         const payload = toSendContent(content);
         if (content === undefined)
             return undefined;
-        return await this.cluster.util.send(this.message.channel, {
-            messageReference: { messageID: this.message.id, channelID: this.message.channel.id },
-            ...payload
-        });
+        return await message.edit(payload);
     }
 
     public async queryConfirm(options: SlimConfirmQueryOptions<IFormattable<string>>): Promise<boolean | undefined>
@@ -77,6 +74,30 @@ export class CommandContext<TChannel extends KnownTextableChannel = KnownTextabl
             return await this.util.queryConfirm({ ...options, context: this.message, actors: this.author, guild: this.channel.guild });
 
         throw new Error(`Cannot queryChannel without a guild!`);
+    }
+
+    public async createConfirmQuery(options: SlimConfirmQueryOptions<IFormattable<string>>): Promise<ConfirmQuery>
+    public async createConfirmQuery(options: SlimConfirmQueryOptions<IFormattable<string>, boolean>): Promise<ConfirmQuery<boolean>>
+    public async createConfirmQuery(options: SlimConfirmQueryOptions<IFormattable<string>, boolean | undefined>): Promise<ConfirmQuery<boolean | undefined>>
+    public async createConfirmQuery(options: SlimConfirmQueryOptions<IFormattable<string>, boolean | undefined>): Promise<ConfirmQuery<boolean | undefined>> {
+        if (`choices` in options)
+            return await this.util.queryConfirm({ ...options, context: this.message, actors: this.author });
+
+        if (`guild` in options)
+            return await this.util.queryConfirm({ ...options, context: this.message, actors: this.author });
+
+        if (guard.isGuildChannel(this.channel))
+            return await this.util.queryConfirm({ ...options, context: this.message, actors: this.author, guild: this.channel.guild });
+
+        throw new Error(`Cannot queryChannel without a guild!`);
+    }
+
+    public async queryChoice<T>(options: ChoiceQueryOptions<IFormattable<string>, T>): Promise<ChoiceQueryResult<T>> {
+        return await this.util.queryChoice(options);
+    }
+
+    public async queryMultiple<T>(options: MultipleQueryOptions<IFormattable<T>, T>): Promise<MultipleQueryResult<T>> {
+        return await this.util.queryMultiple(options);
     }
 
     public async queryChannel(options: SlimEntityFindQueryOptions<IFormattable<string>>): Promise<ChoiceQueryResult<KnownGuildChannel>>;
@@ -126,6 +147,7 @@ export class CommandContext<TChannel extends KnownTextableChannel = KnownTextabl
 
         throw new Error(`Cannot queryMember without a guild!`);
     }
+
     public async queryUser(options: SlimEntityFindQueryOptions<IFormattable<string>>): Promise<ChoiceQueryResult<User>>;
     public async queryUser(this: GuildCommandContext, options: Omit<SlimEntityFindQueryOptions<IFormattable<string>>, `guild`>): Promise<ChoiceQueryResult<User>>;
     public async queryUser(options: SlimEntityPickQueryOptions<IFormattable<string>, User>): Promise<ChoiceQueryResult<User>>;

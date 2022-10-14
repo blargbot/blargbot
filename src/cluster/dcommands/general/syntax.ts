@@ -22,9 +22,11 @@ export class SyntaxCommand extends GlobalCommand {
     }
 
     public getSyntax(context: CommandContext, commandName: string): CommandResult {
-        const cleanName = commandName.replace(/[\s\n]+/g, ` `);
-        const correctTokens = repeat(randInt(1, 10), i => getToken(i));
-        return `❌ Invalid usage!\nProper usage: \`${context.prefix}syntax ${cleanName} ${correctTokens.join(` `)}\``;
+        return cmd.default.success({
+            name: commandName.replace(/[\s\n]+/g, ` `),
+            prefix: context.prefix,
+            tokens: repeat(randInt(1, 10), i => getToken(i))
+        });
     }
 }
 
