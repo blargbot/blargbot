@@ -280,7 +280,7 @@ export const templates = crunchTree(`cluster`, {
             },
             debug: {
                 description: translatable(`Runs a custom command with some arguments. A debug file will be sent in a DM after the command has finished.`),
-                notOwner: translatable(`❌ You cannot debug someone elses custom command.`),
+                notOwner: translatable(`❌ You cannot debug someone else's custom command.`),
                 success: translatable(`ℹ️ Ive sent the debug output in a DM`)
             },
             create: {
@@ -1558,7 +1558,7 @@ export const templates = crunchTree(`cluster`, {
             edit: {
                 description: translatable(`Edit some feedback you have previously sent`),
                 unknownCase: translatable(`❌ I couldn't find any feedback with the case number {caseNumber}!`).withArgs<{ caseNumber: number; }>(),
-                notOwner: translatable(`❌ You cant edit someone elses suggestion.`),
+                notOwner: translatable(`❌ You cant edit someone else's suggestion.`),
                 success: translatable(`✅ Your case has been updated.`)
             }
 
@@ -1580,7 +1580,7 @@ export const templates = crunchTree(`cluster`, {
                 notReady: translatable(`⚠️ Im still waking up! Try again in a minute or two`),
                 embed: {
                     title: translatable(`About me!`),
-                    description: translatable(`I am a multipurpose bot with new features implemented regularly, written in typescript using [Eris](https://abal.moe/Eris/).\n\n🎂 I am currently {age#duration(F)} old!`).withArgs<{ age: Duration; }>(),
+                    description: translatable(`I am a multi-purpose bot with new features implemented regularly, written in typescript using [Eris](https://abal.moe/Eris/).\n\n🎂 I am currently {age#duration(F)} old!`).withArgs<{ age: Duration; }>(),
                     field: {
                         patron: {
                             name: translatable(`️️️️️️️️❤️ Special thanks to my patrons! ❤️`),
@@ -1618,11 +1618,11 @@ export const templates = crunchTree(`cluster`, {
         insult: {
             someone: {
                 description: translatable(`Generates a random insult directed at the name supplied.`),
-                success: translatable(`{name}'s {#rand(mother|mom|father|dad|goat|cheese|dick|boob|eye|mouth|nose|ear|sister|sis|brother|bro|seagull|tea|mother-in-law|rabbit|dog|cat|left foot|body|brain|face|favorite thing)} {#rand(smells like|looks like|is|sounds like|appears to be|wants to be|looks just like|smells oddly similar to|is jealous of|is as stupid as|laughs like)} {#rand(a piece of cheese|a smelly fish|jam|tea|a skunk|a fart|a piece of toast|my mom|your mom|my dad|your dad|my sister|your sister|my brother|your brother|my cat|my dog|my lizard|my seagull|gross|farts|ugly|Captain America|javascript|C#|LUA|python3.5|a furry|an anthropomorphic horse|a tentacle monster|fuck|meow|mississippi|the entire UK|Japan|anime|dickgirls|a really stupid cat|a sentient robot|teaching a robot to love|anime girls with really large boobs who want to eat all of your cream|salty|smegma|mouldy cheese|obesity|Donald Trump|stupid people|crabcakes|firepoles|blue waffle|a really bad random insult generators|a terrible AI|cleverbot|b1nzy|a drunken goblin|poorly censored porn|an egg left in the sun for too long|#BREXIT|leaving the EU)}`).withArgs<{ name: string; }>()
+                success: translatable(`{name}'s {#rand(mother|mom|father|dad|goat|cheese|dick|boob|eye|mouth|nose|ear|sister|sis|brother|bro|seagull|tea|mother-in-law|rabbit|dog|cat|left foot|body|brain|face|favourite thing)} {#rand(smells like|looks like|is|sounds like|appears to be|wants to be|looks just like|smells oddly similar to|is jealous of|is as stupid as|laughs like)} {#rand(a piece of cheese|a smelly fish|jam|tea|a skunk|a fart|a piece of toast|my mom|your mom|my dad|your dad|my sister|your sister|my brother|your brother|my cat|my dog|my lizard|my seagull|gross|farts|ugly|Captain America|javascript|C#|LUA|python3.5|a furry|an anthropomorphic horse|a tentacle monster|fuck|meow|mississippi|the entire UK|Japan|anime|dickgirls|a really stupid cat|a sentient robot|teaching a robot to love|anime girls with really large boobs who want to eat all of your cream|salty|smegma|mouldy cheese|obesity|Donald Trump|stupid people|crabcakes|firepoles|blue waffle|a really bad random insult generators|a terrible AI|cleverbot|b1nzy|a drunken goblin|poorly censored porn|an egg left in the sun for too long|#BREXIT|leaving the EU)}`).withArgs<{ name: string; }>()
             },
             default: {
                 description: translatable(`Generates a random insult.`),
-                success: translatable(`Your {#rand(mother|mom|father|dad|goat|cheese|dick|boob|eye|mouth|nose|ear|sister|sis|brother|bro|seagull|tea|mother-in-law|rabbit|dog|cat|left foot|body|brain|face|favorite thing)} {#rand(smells like|looks like|is|sounds like|appears to be|wants to be|looks just like|smells oddly similar to|is jealous of|is as stupid as|laughs like)} {#rand(a piece of cheese|a smelly fish|jam|tea|a skunk|a fart|a piece of toast|my mom|your mom|my dad|your dad|my sister|your sister|my brother|your brother|my cat|my dog|my lizard|my seagull|gross|farts|ugly|Captain America|javascript|C#|LUA|python3.5|a furry|an anthropomorphic horse|a tentacle monster|fuck|meow|mississippi|the entire UK|Japan|anime|dickgirls|a really stupid cat|a sentient robot|teaching a robot to love|anime girls with really large boobs who want to eat all of your cream|salty|smegma|mouldy cheese|obesity|Donald Trump|stupid people|crabcakes|firepoles|blue waffle|a really bad random insult generators|a terrible AI|cleverbot|b1nzy|a drunken goblin|poorly censored porn|an egg left in the sun for too long|#BREXIT|leaving the EU)}`)
+                success: translatable(`Your {#rand(mother|mom|father|dad|goat|cheese|dick|boob|eye|mouth|nose|ear|sister|sis|brother|bro|seagull|tea|mother-in-law|rabbit|dog|cat|left foot|body|brain|face|favourite thing)} {#rand(smells like|looks like|is|sounds like|appears to be|wants to be|looks just like|smells oddly similar to|is jealous of|is as stupid as|laughs like)} {#rand(a piece of cheese|a smelly fish|jam|tea|a skunk|a fart|a piece of toast|my mom|your mom|my dad|your dad|my sister|your sister|my brother|your brother|my cat|my dog|my lizard|my seagull|gross|farts|ugly|Captain America|javascript|C#|LUA|python3.5|a furry|an anthropomorphic horse|a tentacle monster|fuck|meow|mississippi|the entire UK|Japan|anime|dickgirls|a really stupid cat|a sentient robot|teaching a robot to love|anime girls with really large boobs who want to eat all of your cream|salty|smegma|mouldy cheese|obesity|Donald Trump|stupid people|crabcakes|firepoles|blue waffle|a really bad random insult generators|a terrible AI|cleverbot|b1nzy|a drunken goblin|poorly censored porn|an egg left in the sun for too long|#BREXIT|leaving the EU)}`)
             }
         },
         invite: {
@@ -1831,7 +1831,7 @@ export const templates = crunchTree(`cluster`, {
                     continue: translatable(`Put the gun down`),
                     cancel: translatable(`Pull the trigger`)
                 },
-                chicken: translatable(`You chicken out and put the gun down.\n{#rand(Maybe try again when youre not feeling so wimpy.|Its ok, fun isn't for everyone!)}`),
+                chicken: translatable(`You chicken out and put the gun down.\n{#rand(Maybe try again when you're not feeling so wimpy.|Its ok, fun isn't for everyone!)}`),
                 died: translatable(`***BOOM!*** {#rand(The gun goes off, splattering your brains across the wall. Unlucky!|☠️💥⚰️😵💀💀☠️|Before you know it, it's all over.|At least you had chicken!|I'm ***not*** cleaning that up.|Guns are not toys!|Well, you can't win them all!|W-well... If every porkchop were perfect, we wouldn't have hotdogs? Too bad you're dead either way.|Blame it on the lag!|Today just wasn't your lucky day.|Pssh, foresight is for losers.)}`),
                 lived: translatable(`*Click!* {#rand(The gun clicks, empty. You get to live another day.|You breath a sign of relief as you realize that you aren't going to die today.|As if it would ever go off! Luck is on your side.|You thank RNGesus as you lower the gun.|👼🙏🚫⚰️👌👍👼|You smirk as you realize you survived.)}`)
             }
@@ -2034,16 +2034,23 @@ export const templates = crunchTree(`cluster`, {
         },
         tag: {
             description: translatable(`Tags are a system of public commands that anyone can create or run, using the BBTag language.\n\nFor more information about BBTag, visit <{subtags}>.\nBy creating a tag, you acknowledge that you agree to the Terms of Service (<{tos}>)`).withArgs<{ subtags: string; tos: string; }>(),
+            request: {
+                name: translatable(`Enter the name of the tag:`),
+                content: translatable(`Enter the tag's contents:`)
+            },
             common: {
                 debugInDm: translatable(`ℹ️ Ive sent the debug output in a DM`),
                 done: translatable(`✅ I hope you found what you were looking for!`)
             },
             errors: {
                 noneFound: translatable(`❌ No results found!`),
-                tagMissing: translatable(`❌ The \`${tagName}\` tag doesn't exist!`),
-                invalidBBTag: translatable(`❌ There were errors with the bbtag you provided!\n${bbtag.stringifyAnalysis(analysis)}`),
-                notOwner: translatable(`❌ You don't own the \`${match.name}\` tag!`),
-                alreadyExists: translatable(`❌ The \`${match.name}\` tag already exists!`)
+                tagMissing: translatable(`❌ The \`{name}\` tag doesn't exist!`).withArgs<{ name: string; }>(),
+                invalidBBTag: translatable(`❌ There were errors with the bbtag you provided!\n{errors#join(\n)}`).withArgs<{ errors: Iterable<IFormattable<string>>; }>(),
+                bbtagError: translatable(`❌ [{location.line},{location.column}]: {message}`).withArgs<AnalysisResult>(),
+                bbtagWarning: translatable(`❌ [{location.line},{location.column}]: {message}`).withArgs<AnalysisResult>(),
+                notOwner: translatable(`❌ You don't own the \`{name}\` tag!`).withArgs<{ name: string; }>(),
+                alreadyExists: translatable(`❌ The \`{name}\` tag already exists!`).withArgs<{ name: string; }>(),
+                deleted: translatable(`❌ The \`{name}\` tag has been permanently deleted{user#bool(by **{#tag}**|)}{reason#bool(\n\nReason: {}|)}`).withArgs<{ name: string; reason?: string; user?: UserTag; }>()
 
             },
             run: {
@@ -2055,7 +2062,7 @@ export const templates = crunchTree(`cluster`, {
                 },
                 debug: {
                     description: translatable(`Uses the BBTag engine to execute the content as if it was a tag and will return the debug output`),
-                    tagNotOwned: translatable(`❌ You cannot debug someone elses tag.`)
+                    tagNotOwned: translatable(`❌ You cannot debug someone else's tag.`)
                 }
             },
             docs: {
@@ -2078,11 +2085,11 @@ export const templates = crunchTree(`cluster`, {
             },
             delete: {
                 description: translatable(`Deletes an existing tag`),
-                success: translatable(`✅ The \`${match.name}\` tag is gone forever!`)
+                success: translatable(`✅ The \`{name}\` tag is gone forever!`).withArgs<{ name: string; }>()
             },
             rename: {
                 description: translatable(`Renames the tag`),
-                success: translatable(`✅ The \`${from.name}\` tag has been renamed to \`${to.name}\`.`)
+                success: translatable(`✅ The \`{oldName}\` tag has been renamed to \`{newName}\`.`).withArgs<{ oldName: string; newName: string; }>()
             },
             raw: {
                 description: translatable(`Gets the raw contents of the tag`),
@@ -2093,63 +2100,114 @@ export const templates = crunchTree(`cluster`, {
                 description: translatable(`Lists all tags, or tags made by a specific author`)
             },
             search: {
-                description: translatable(`Searches for a tag based on the provided name`)
+                description: translatable(`Searches for a tag based on the provided name`),
+                query: {
+                    prompt: translatable(`What would you like to search for?`)
+                }
             },
             permDelete: {
                 description: translatable(`Marks the tag name as deleted forever, so no one can ever use it`),
                 notStaff: translatable(`❌ You cannot disable tags`),
-                success: translatable(`✅ The \`${tagName}\` tag has been deleted`)
+                success: translatable(`✅ The \`{name}\` tag has been deleted`).withArgs<{ name: string; }>(),
+                confirm: {
+                    prompt: translatable(`You are not the owner of the \`{name}\`, are you sure you want to modify it?`).withArgs<{ name: string; }>(),
+                    continue: translatable(`Yes`),
+                    cancel: translatable(`No`)
+                }
             },
             cooldown: {
                 description: translatable(`Sets the cooldown of a tag, in milliseconds`),
                 cooldownZero: translatable(`❌ The cooldown must be greater than 0ms`),
-                success: translatable(`✅ The tag \`${match.name}\` now has a cooldown of \`${humanize.duration(cooldown)}\`.`)
+                success: translatable(`✅ The tag \`{name}\` now has a cooldown of \`{cooldown#duration(MS)}ms\`.`).withArgs<{ name: string; cooldown: Duration; }>()
             },
             author: {
-                description: translatable(`Displays the name of the tag's author`)
+                description: translatable(`Displays the name of the tag's author`),
+                success: translatable(`✅ The tag \`{name}\` was made by **{author#tag}**`).withArgs<{ name: string; author?: UserTag; }>()
             },
             info: {
-                description: translatable(`Displays information about a tag`)
+                description: translatable(`Displays information about a tag`),
+                embed: {
+                    title: translatable(`__**Tag | {name}**__`).withArgs<{ name: string; }>(),
+                    footer: {
+                        text: translatable(`{user.username}#{user.discriminator}`).withArgs<{ user: Eris.User; }>()
+                    },
+                    field: {
+                        author: {
+                            name: translatable(`Author`),
+                            value: translatable(`{user#tag} (id)`).withArgs<{ user: UserTag; id: string; }>()
+                        },
+                        cooldown: {
+                            name: translatable(`Cooldown`),
+                            value: translatable(`{cooldown#duration(D)}`).withArgs<{ cooldown: Duration; }>()
+                        },
+                        lastModified: {
+                            name: translatable(`Last Modified`),
+                            value: translatable(`{lastModified#tag}`).withArgs<{ lastModified: Moment; }>()
+                        },
+                        usage: {
+                            name: translatable(`Used`),
+                            value: translatable(`{count} {count#plural(1:time|times)}`).withArgs<{ count: number; }>()
+                        },
+                        favourited: {
+                            name: translatable(`Favourited`),
+                            value: translatable(`{count} {count#plural(1:time|times)}`).withArgs<{ count: number; }>()
+                        },
+                        reported: {
+                            name: translatable(`⚠️ Reported`),
+                            value: translatable(`{count} {count#plural(1:time|times)}`).withArgs<{ count: number; }>()
+                        },
+                        flags: {
+                            name: translatable(`Flags`),
+                            value: translatable(`{flags#map(\`-{flag}\`/\`--{word}\`: {description})#join(\n)}`).withArgs<{ flags: Iterable<FlagDefinition<string>>; }>()
+                        }
+                    }
+                }
             },
             top: {
-                description: translatable(`Displays the top 5 tags`)
+                description: translatable(`Displays the top 5 tags`),
+                success: translatable(`__Here are the top 10 tags:__\n{tags#map(**{index}.** **{name}** \\(**{author#tag}**\\) - used **{count} {count#plural(1:time|times)}**)#join(\n)}`).withArgs<{ tags: Iterable<{ index: number; name: string; author: UserTag; count: number; }>; }>()
             },
             report: {
                 description: translatable(`Reports a tag as violating the ToS`),
+                blocked: translatable(`❌ Sorry, you cannot report tags.\n{reason}`).withArgs<{ reason: string; }>(),
                 unavailable: translatable(`❌ Sorry, you cannot report tags at this time. Please try again later!`),
-                deleted: translatable(`✅ The \`${match.name}\` tag is no longer being reported by you.`),
-                added: translatable(`✅ The \`${match.name}\` tag has been reported.`)
+                deleted: translatable(`✅ The \`{name}\` tag is no longer being reported by you.`).withArgs<{ name: string; }>(),
+                added: translatable(`✅ The \`{name}\` tag has been reported.`).withArgs<{ name: string; }>(),
+                notification: translatable(`**{user.username}#{user.discriminator}** has reported the tag: {name}\n\n{reason}`).withArgs<{ name: string; reason: string; user: Eris.User; }>(),
+                query: {
+                    prompt: translatable(`Please provide a reason for your report:`)
+                }
             },
             setLang: {
                 description: translatable(`Sets the language to use when returning the raw text of your tag`),
-                success: translatable(`✅ Lang for tag \`${match.name}\` set.`)
+                success: translatable(`✅ Lang for tag \`{name}\` set.`).withArgs<{ name: string; }>()
             },
-            favorite: {
+            favourite: {
                 list: {
-                    description: translatable(`Displays a list of the tags you have favorited`),
-                    none: translatable(`You have no favorite tags!`),
-                    success: translatable(`You have ${tags.length} favorite ${p(tags.length, `tag`)}. ${codeBlock(tags.join(`, `), `fix`)}`)
+                    description: translatable(`Displays a list of the tags you have favourited`),
+                    success: translatable(`{count#plural(0:You have no favourite tags!|You have {} favourite {#plural(1:tag|tags)}. \`\`\`fix\n{..tags#join(, )}\n\`\`\`)}`).withArgs<{ count: number; tags: Iterable<string>; }>()
                 },
                 toggle: {
-                    description: translatable(`Adds or removes a tag from your list of favorites`)
+                    description: translatable(`Adds or removes a tag from your list of favourites`),
+                    added: translatable(`✅ The \`{name}\` tag is now on your favourites list!\n\nNote: there is no way for a tag to tell if you've favourited it, and thus it's impossible to give rewards for favouriting.\nAny tag that claims otherwise is lying, and should be reported.`).withArgs<{ name: string; }>(),
+                    removed: translatable(`✅ The \`{name}\` tag is no longer on your favourites list!`).withArgs<{ name: string; }>()
                 }
             },
             flag: {
+                updated: translatable(`✅ The flags for \`{name}\` have been updated.`).withArgs<{ name: string; }>(),
                 list: {
                     description: translatable(`Lists the flags the tag accepts`),
-                    none: translatable(`The \`${match.name}\` tag has no flags.`),
-                    success: translatable(`The \`${match.name}\` tag has the following flags:\n\n${flags.join(`\n`)}`)
+                    none: translatable(`✅ The \`{name}\` tag has no flags.`).withArgs<{ name: string; }>(),
+                    success: translatable(`✅ The \`{name}\` tag has the following flags:\n\n{flags#map(\`-{flag}\`/\`--{word}\`: {description})#join(\n)}`).withArgs<{ name: string; flags: Iterable<FlagDefinition<string>>; }>()
                 },
                 create: {
                     description: translatable(`Adds multiple flags to your tag. Flags should be of the form \`-<f> <flag> [flag description]\`\ne.g. \`b!t flags add mytag -c category The category you want to use -n name Your name\``),
-                    wordMissing: translatable(`❌ No word was specified for the \`${flag}\` flag`),
-                    flagExists: translatable(`❌ The flag \`${flag}\` already exists!`),
-                    wordExists: translatable(`❌ A flag with the word \`${word}\` already exists!`),
-                    success: translatable(`✅ The flags for \`${match.name}\` have been updated.`)
+                    wordMissing: translatable(`❌ No word was specified for the \`{flag}\` flag`).withArgs<{ flag: string; }>(),
+                    flagExists: translatable(`❌ The flag \`{flag}\` already exists!`).withArgs<{ flag: string; }>(),
+                    wordExists: translatable(`❌ A flag with the word \`{word}\` already exists!`).withArgs<{ word: string; }>()
                 },
                 delete: {
-                    description: translatable(`Removes multiple flags from your tag. Flags should be of the form \`-<f>\`\ne.g. \`b!t flags remove mytag -c -n\``),
-                    success: translatable(`✅ The flags for \`${match.name}\` have been updated.`)
+                    description: translatable(`Removes multiple flags from your tag. Flags should be of the form \`-<f>\`\ne.g. \`b!t flags remove mytag -c -n\``)
                 }
             }
         },
@@ -2197,7 +2255,7 @@ export const templates = crunchTree(`cluster`, {
                 success: translatable(`ℹ️ Your stored timezone code is \`{timezone}\`, which is equivalent to {now#time(z \\(Z\\))}.`).withArgs<{ timezone: string; now: Moment; }>()
             },
             set: {
-                description: translatable(`Sets your current timezone. A list of [allowed timezones can be found on wikipedia](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones#List) under the \`TZ database name\` column`),
+                description: translatable(`Sets your current timezone. A list of [allowed time zones can be found on wikipedia](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones#List) under the \`TZ database name\` column`),
                 timezoneInvalid: translatable(`❌ \`{timezone}\` is not a valid timezone! See <https://en.wikipedia.org/wiki/List_of_tz_database_time_zones> for timezone codes that I understand.`).withArgs<{ timezone: string; }>(),
                 success: translatable(`✅ Ok, your timezone code is now set to \`{timezone}\`, which is equivalent to {now#time(z \\(Z\\))}.`).withArgs<{ timezone: string; now: Moment; }>()
             }
@@ -2246,8 +2304,8 @@ export const templates = crunchTree(`cluster`, {
                 embed: {
                     author: {
                         name: {
-                            user: translatable(`{user.bot#bool(🤖 |)}{user.name}#{user.discriminator}`).withArgs<{ user: Eris.User; }>(),
-                            member: translatable(`{user.bot#bool(🤖 |)}{user.name}#{user.discriminator}{user#nick#bool( \\({}\\)|)}`).withArgs<{ user: Eris.Member; }>()
+                            user: translatable(`{user.bot#bool(🤖 |)}{user.username}#{user.discriminator}`).withArgs<{ user: Eris.User; }>(),
+                            member: translatable(`{user.bot#bool(🤖 |)}{user.username}#{user.discriminator}{user#nick#bool( \\({}\\)|)}`).withArgs<{ user: Eris.Member; }>()
                         }
                     },
                     description: {
@@ -2295,7 +2353,7 @@ export const templates = crunchTree(`cluster`, {
             },
             forgive: {
                 description: translatable(`Removes your signature to ban someone`),
-                notSigned: translatable(`❌ Thats very kind of you, but you haven't even signed to ban {user#tag} yet!`).withArgs<{ user: Eris.User; }>(),
+                notSigned: translatable(`❌ That's very kind of you, but you haven't even signed to ban {user#tag} yet!`).withArgs<{ user: Eris.User; }>(),
                 success: translatable(`✅ {user#tag} reconsidered and forgiven {target#tag}! A total of **{total} {total#plural(1:person** has|people** have)} signed the petition now.`).withArgs<{ user: Eris.User; target: Eris.User; total: number; }>()
             }
         },
@@ -2392,7 +2450,7 @@ export const templates = crunchTree(`cluster`, {
         },
         clippy: {
             default: {
-                description: translatable(`Clippy the paperclip is here to save the day!`)
+                description: translatable(`Clippy the paper clip is here to save the day!`)
             }
         },
         clyde: {

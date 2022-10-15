@@ -54,7 +54,7 @@ export class VoteBanCommand extends GuildCommand {
                             .map((e, i) => ({
                                 userId: e[0],
                                 count: e[1].length,
-                                index: i
+                                index: i + 1
                             }))
                     })
                 }

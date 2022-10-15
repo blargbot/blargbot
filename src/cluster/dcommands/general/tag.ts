@@ -2,15 +2,17 @@ import { bbtag } from '@blargbot/bbtag';
 import { Cluster, ClusterUtilities } from '@blargbot/cluster';
 import { CommandContext, GuildCommand } from '@blargbot/cluster/command';
 import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
-import { codeBlock, CommandType, guard, humanize, parse, pluralise as p } from '@blargbot/cluster/utils';
+import { CommandType, humanize, parse } from '@blargbot/cluster/utils';
 import { SendContent } from '@blargbot/core/types';
+import { IFormattable } from '@blargbot/domain/messages/types';
 import { StoredTag } from '@blargbot/domain/models';
-import { EmbedField, EmbedOptions, FileContent, User } from 'eris';
+import { User } from 'eris';
 import moment, { Duration } from 'moment-timezone';
 import fetch from 'node-fetch';
 
+import { RawBBTagCommandResult } from '../../command/RawBBTagCommandResult';
 import { BBTagDocumentationManager } from '../../managers/documentation/BBTagDocumentationManager';
-import templates from '../../text';
+import templates, { literal } from '../../text';
 
 const cmd = templates.commands.tag;
 
@@ -135,12 +137,12 @@ export class TagCommand extends GuildCommand {
                     subcommands: [
                         {
                             parameters: ``,
-                            description: cmd.favorite.list.description,
+                            description: cmd.favourite.list.description,
                             execute: (ctx) => this.listFavouriteTags(ctx)
                         },
                         {
                             parameters: `{tagName}`,
-                            description: cmd.favorite.toggle.description,
+                            description: cmd.favourite.toggle.description,
                             execute: (ctx, [tagName]) => this.toggleFavouriteTag(ctx, tagName.asString)
                         }
                     ]
@@ -178,12 +180,12 @@ export class TagCommand extends GuildCommand {
         input: string | undefined,
         debug: boolean
     ): Promise<CommandResult> {
-        const match = await this.#requestReadableTag(context, tagName, false);
-        if (typeof match !== `object`)
-            return match;
+        const match = await this.#requestReadableTag(context, tagName);
+        if (`response` in match)
+            return match.response;
 
         if (debug && match.author !== context.author.id)
-            return `❌ You cannot debug someone elses tag.`;
+            return cmd.test.debug.tagNotOwned;
 
         await context.database.tags.incrementUses(match.name, 1);
 
@@ -194,7 +196,7 @@ export class TagCommand extends GuildCommand {
             limit: `tagLimit`,
             rootTagName: match.name,
             authorId: match.author,
-            authorizerId: match.authorizer,
+            authorizerId: match.author,
             flags: match.flags,
             cooldown: match.cooldown,
             prefix: context.prefix
@@ -203,8 +205,8 @@ export class TagCommand extends GuildCommand {
         if (!debug)
             return undefined;
 
-        await context.sendDM(bbtag.createDebugOutput(result));
-        return `ℹ️ Ive sent the debug output in a DM`;
+        await context.send(context.author, bbtag.createDebugOutput(result));
+        return cmd.common.debugInDm;
     }
 
     public async runRaw(
@@ -226,22 +228,22 @@ export class TagCommand extends GuildCommand {
         if (!debug)
             return undefined;
 
-        await context.sendDM(bbtag.createDebugOutput(result));
-        return `ℹ️ Ive sent the debug output in a DM`;
+        await context.send(context.author, bbtag.createDebugOutput(result));
+        return cmd.common.debugInDm;
     }
 
     public async createTag(context: GuildCommandContext, tagName: string | undefined, content: string | undefined): Promise<CommandResult> {
         const match = await this.#requestCreatableTag(context, tagName);
-        if (typeof match !== `object`)
-            return match;
+        if (`response` in match)
+            return match.response;
 
-        return await this.#saveTag(context, `created`, match.name, content, undefined);
+        return await this.#saveTag(context, cmd.create.success, match.name, content, undefined);
     }
 
     public async editTag(context: GuildCommandContext, tagName: string | undefined, content: string | undefined): Promise<CommandResult> {
         const match = await this.#requestEditableTag(context, tagName);
-        if (typeof match !== `object`)
-            return match;
+        if (`response` in match)
+            return match.response;
         if (content === undefined) {
             if (context.message.attachments.length > 0) {
                 const firstAttachment = context.message.attachments[0];
@@ -250,13 +252,13 @@ export class TagCommand extends GuildCommand {
             }
         }
 
-        return await this.#saveTag(context, `edited`, match.name, content, match);
+        return await this.#saveTag(context, cmd.edit.success, match.name, content, match);
     }
 
     public async deleteTag(context: GuildCommandContext, tagName: string | undefined): Promise<CommandResult> {
         const match = await this.#requestEditableTag(context, tagName);
-        if (typeof match !== `object`)
-            return match;
+        if (`response` in match)
+            return match.response;
 
         await context.database.tags.delete(match.name);
         void this.#logChange(context, TagChangeAction.DELETE, context.author, context.id, {
@@ -264,13 +266,13 @@ export class TagCommand extends GuildCommand {
             tag: match.name,
             content: match.content
         });
-        return `✅ The \`${match.name}\` tag is gone forever!`;
+        return cmd.delete.success({ name: match.name });
     }
 
     public async setTag(context: GuildCommandContext, tagName: string | undefined, content: string | undefined): Promise<CommandResult> {
         const match = await this.#requestSettableTag(context, tagName);
-        if (typeof match !== `object`)
-            return match;
+        if (`response` in match)
+            return match.response;
         if (content === undefined) {
             if (context.message.attachments.length > 0) {
                 const firstAttachment = context.message.attachments[0];
@@ -278,17 +280,17 @@ export class TagCommand extends GuildCommand {
                     content = await (await fetch(firstAttachment.url)).text();
             }
         }
-        return await this.#saveTag(context, `set`, match.name, content, match.tag);
+        return await this.#saveTag(context, cmd.set.success, match.name, content, match.tag);
     }
 
     public async renameTag(context: GuildCommandContext, oldName: string | undefined, newName: string | undefined): Promise<CommandResult> {
         const from = await this.#requestEditableTag(context, oldName);
-        if (typeof from !== `object`)
-            return from;
+        if (`response` in from)
+            return from.response;
 
         const to = await this.#requestCreatableTag(context, newName);
-        if (typeof to !== `object`)
-            return to;
+        if (`response` in to)
+            return to.response;
 
         await context.database.tags.delete(from.name);
         await context.database.tags.add({
@@ -300,26 +302,20 @@ export class TagCommand extends GuildCommand {
             oldName: from.name,
             newName: to.name
         });
-        return `✅ The \`${from.name}\` tag has been renamed to \`${to.name}\`.`;
+        return cmd.rename.success({ oldName: from.name, newName: to.name });
     }
 
     public async getRawTag(context: GuildCommandContext, tagName: string | undefined, fileExtension: string): Promise<CommandResult> {
         const match = await this.#requestReadableTag(context, tagName);
-        if (typeof match !== `object`)
-            return match;
+        if (`response` in match)
+            return match.response;
 
-        const response = `ℹ️ The raw code for \`${match.name}\` is:\n\`\`\`${match.lang ?? ``}\n${match.content}\n\`\`\``;
-        return !match.content.includes(`\`\`\``) && guard.checkMessageSize(response)
-            ? response
-            : {
-                content: `ℹ️ The raw code for \`${match.name}\` is attached`,
-                files: [
-                    {
-                        name: `${match.name}.${fileExtension}`,
-                        file: match.content
-                    }
-                ]
-            };
+        return new RawBBTagCommandResult(
+            cmd.raw.inline({ name: match.name, content: match.content }),
+            cmd.raw.attached({ name: match.name }),
+            match.content,
+            `${match.name}.${fileExtension}`
+        );
     }
 
     public async listTags(context: GuildCommandContext, author?: string): Promise<CommandResult> {
@@ -344,15 +340,15 @@ export class TagCommand extends GuildCommand {
         }
 
         switch (await context.util.displayPaged(...args)) {
-            case false: return `❌ No results found!`;
-            case true: return `✅ I hope you found what you were looking for!`;
+            case false: return cmd.errors.noneFound;
+            case true: return cmd.common.done;
             case undefined: return undefined;
         }
     }
 
     public async searchTags(context: GuildCommandContext, query?: string): Promise<CommandResult> {
         if (query === undefined || query.length === 0) {
-            const queryResult = await context.queryText({ prompt: `What would you like to search for?` });
+            const queryResult = await context.queryText({ prompt: cmd.search.query.prompt });
             if (queryResult.state !== `SUCCESS`)
                 return undefined;
 
@@ -372,155 +368,150 @@ export class TagCommand extends GuildCommand {
             `, `);
 
         switch (result) {
-            case false: return `❌ No results found!`;
-            case true: return `✅ I hope you found what you were looking for!`;
+            case false: return cmd.errors.noneFound;
+            case true: return cmd.common.done;
             case undefined: return undefined;
         }
     }
 
     public async disableTag(context: GuildCommandContext, tagName: string, reason: string): Promise<CommandResult> {
         if (!context.util.isBotStaff(context.author.id))
-            return `❌ You cannot disable tags`;
+            return cmd.permDelete.notStaff;
 
         tagName = normalizeName(tagName);
         if (!await context.database.tags.disable(tagName, context.author.id, reason))
-            return `❌ The \`${tagName}\` tag doesn't exist!`;
-        return `✅ The \`${tagName}\` tag has been deleted`;
+            return cmd.errors.tagMissing({ name: tagName });
+        return cmd.permDelete.success({ name: tagName });
     }
 
     public async setTagCooldown(context: GuildCommandContext, tagName: string, cooldown?: Duration): Promise<CommandResult> {
         if (cooldown !== undefined && cooldown.asMilliseconds() < 0)
-            return `❌ The cooldown must be greater than 0ms`;
+            return cmd.cooldown.cooldownZero;
 
         const match = await this.#requestEditableTag(context, tagName);
-        if (typeof match !== `object`)
-            return match;
+        if (`response` in match)
+            return match.response;
 
         await context.database.tags.setProp(match.name, `cooldown`, cooldown?.asMilliseconds());
         cooldown ??= moment.duration();
-        return `✅ The tag \`${match.name}\` now has a cooldown of \`${humanize.duration(cooldown)}\`.`;
+        return cmd.cooldown.success({ name: match.name, cooldown });
     }
 
     public async getTagAuthor(context: GuildCommandContext, tagName: string | undefined): Promise<CommandResult> {
         const match = await this.#requestReadableTag(context, tagName);
-        if (typeof match !== `object`)
-            return match;
+        if (`response` in match)
+            return match.response;
 
-        const response = [];
         const author = await context.database.users.get(match.author);
-        response.push(`✅ The tag \`${match.name}\` was made by **${humanize.fullName(author)}**`);
-        if (match.authorizer !== undefined && match.authorizer !== match.author) {
-            const authorizer = await context.database.users.get(match.authorizer);
-            response.push(`and is authorized by **${humanize.fullName(authorizer)}**`);
-        }
-
-        return response.join(` `);
+        return cmd.author.success({ name: match.name, author });
     }
 
     public async getTagInfo(context: GuildCommandContext, tagName: string | undefined): Promise<CommandResult> {
         const match = await this.#requestReadableTag(context, tagName);
-        if (typeof match !== `object`)
-            return match;
+        if (`response` in match)
+            return match.response;
 
-        const fields: EmbedField[] = [];
-        const embed: EmbedOptions = {
-            title: `__**Tag | ${match.name}**__`,
-            fields: fields,
-            color: 978212,
-            timestamp: new Date(),
-            footer: {
-                text: humanize.fullName(context.author),
-                icon_url: context.author.avatarURL
-            }
-        };
-
-        const favouriteCount = Object.values(match.favourites ?? {}).filter(v => v).length;
         const author = await context.database.users.get(match.author);
-        if (author !== undefined)
-            embed.author = context.util.embedifyAuthor(author);
-
-        fields.push({
-            name: `Author`,
-            value: `${humanize.fullName(author)} (${author?.userid ?? match.author})`,
-            inline: true
-        });
-
-        if (match.authorizer !== undefined && match.authorizer !== match.author) {
-            const authorizer = await context.database.users.get(match.authorizer);
-            fields.push({
-                name: `Authorizer`,
-                value: `${humanize.fullName(authorizer)} (${authorizer?.userid ?? match.authorizer})`,
-                inline: true
-            });
-        }
-
-        if (match.cooldown !== undefined)
-            fields.push({ name: `Cooldown`, value: humanize.duration(moment.duration(match.cooldown)), inline: true });
-
-        fields.push({ name: `Last modified`, value: moment(match.lastmodified.valueOf()).format(`LLLL`), inline: true });
-        fields.push({ name: `Used`, value: `${match.uses} ${p(match.uses, `time`)}`, inline: true });
-        fields.push({ name: `Favourited`, value: `${favouriteCount} ${p(favouriteCount, `time`)}`, inline: true });
-
-        if (match.reports !== undefined && match.reports > 0)
-            fields.push({ name: `⚠️ Reported`, value: `${match.reports} ${p(match.reports, `time`)}`, inline: true });
-
-        const flags = humanize.flags(match.flags ?? []);
-        if (flags.length > 0)
-            fields.push({ name: `Flags`, value: flags.join(`\n`) });
-
-        return { embeds: [embed] };
+        return {
+            embeds: [
+                {
+                    title: cmd.info.embed.title({ name: match.name }),
+                    color: 978212,
+                    timestamp: new Date(),
+                    author: author === undefined ? undefined : context.util.embedifyAuthor(author),
+                    footer: {
+                        text: cmd.info.embed.footer.text({ user: context.author }),
+                        icon_url: context.author.avatarURL
+                    },
+                    fields: [
+                        {
+                            name: cmd.info.embed.field.author.name,
+                            value: cmd.info.embed.field.author.value({ user: author ?? {}, id: author?.userid ?? match.author }),
+                            inline: true
+                        },
+                        ...match.cooldown === undefined ? [] : [{
+                            name: cmd.info.embed.field.cooldown.name,
+                            value: cmd.info.embed.field.cooldown.value({ cooldown: moment.duration(match.cooldown) }),
+                            inline: true
+                        }],
+                        {
+                            name: cmd.info.embed.field.lastModified.name,
+                            value: cmd.info.embed.field.lastModified.value({ lastModified: moment(match.lastmodified) }),
+                            inline: true
+                        },
+                        {
+                            name: cmd.info.embed.field.usage.name,
+                            value: cmd.info.embed.field.usage.value({ count: match.uses }),
+                            inline: true
+                        },
+                        {
+                            name: cmd.info.embed.field.favourited.name,
+                            value: cmd.info.embed.field.favourited.value({ count: Object.values(match.favourites ?? {}).filter(v => v).length }),
+                            inline: true
+                        },
+                        ...match.reports === undefined || match.reports === 0 ? [] : [{
+                            name: cmd.info.embed.field.reported.name,
+                            value: cmd.info.embed.field.reported.value({ count: match.reports }),
+                            inline: true
+                        }],
+                        ...match.flags === undefined || match.flags.length === 0 ? [] : [{
+                            name: cmd.info.embed.field.flags.name,
+                            value: cmd.info.embed.field.flags.value({ flags: match.flags }),
+                            inline: true
+                        }]
+                    ]
+                }
+            ]
+        };
     }
 
     public async getTopTags(context: GuildCommandContext): Promise<CommandResult> {
         const tags = await context.database.tags.top(10);
-        const result = [`__Here are the top 10 tags:__`];
-        let i = 1;
-        for (const tag of tags) {
-            const author = await context.database.users.get(tag.author);
-            result.push(`**${i++}.** **${tag.name}** (**${humanize.fullName(author)}**) - used **${tag.uses} ${p(tag.uses, `time`)}**`);
-        }
-        return result.join(`\n`);
+        return cmd.top.success({
+            tags: await Promise.all(tags.map(async (tag, i) => ({
+                author: await context.database.users.get(tag.author) ?? {},
+                index: i + 1,
+                name: tag.name,
+                count: tag.uses
+            })))
+        });
     }
 
     public async toggleFavouriteTag(context: GuildCommandContext, tagName: string): Promise<CommandResult> {
         const match = await this.#requestReadableTag(context, tagName);
-        if (typeof match !== `object`)
-            return match;
+        if (`response` in match)
+            return match.response;
 
         const isFavourited = match.favourites?.[context.author.id] === true;
         await context.database.tags.setFavourite(match.name, context.author.id, isFavourited);
-        return isFavourited
-            ? `✅ The \`${match.name}\` tag is now on your favourites list!\n\nNote: there is no way for a tag to tell if you've favourited it, and thus it's impossible to give rewards for favouriting.\nAny tag that claims otherwise is lying, and should be reported.`
-            : `✅ The \`${match.name}\` tag is no longer on your favourites list!`;
+        return cmd.favourite.toggle[isFavourited ? `added` : `removed`]({ name: match.name });
     }
 
     public async listFavouriteTags(context: GuildCommandContext): Promise<CommandResult> {
         const tags = await context.database.tags.getFavourites(context.author.id);
-        if (tags.length === 0)
-            return `You have no favourite tags!`;
-        return `You have ${tags.length} favourite ${p(tags.length, `tag`)}. ${codeBlock(tags.join(`, `), `fix`)}`;
+        return cmd.favourite.list.success({ count: tags.length, tags });
     }
 
     public async reportTag(context: GuildCommandContext, tagName: string, reason: string | undefined): Promise<CommandResult> {
         const match = await this.#requestReadableTag(context, tagName);
-        if (typeof match !== `object`)
-            return match;
+        if (`response` in match)
+            return match.response;
 
         const user = await context.database.users.get(context.author.id);
         if (user === undefined)
-            return `❌ Sorry, you cannot report tags at this time. Please try again later!`;
+            return cmd.report.unavailable;
 
         if (user.reportblock !== undefined)
-            return user.reportblock;
+            return cmd.report.blocked({ reason: user.reportblock });
 
         if (reason?.length === 0) reason = undefined;
         if (reason === undefined) {
             if (user.reports?.[match.name] !== undefined) {
                 await context.database.tags.incrementReports(match.name, -1);
                 await context.database.users.setTagReport(context.author.id, match.name, undefined);
-                return `✅ The \`${match.name}\` tag is no longer being reported by you.`;
+                return cmd.report.deleted({ name: match.name });
             }
-            const reasonResult = await context.queryText({ prompt: `Please provide a reason for your report:` });
+            const reasonResult = await context.queryText({ prompt: cmd.report.query.prompt });
             if (reasonResult.state !== `SUCCESS`)
                 return;
 
@@ -530,84 +521,87 @@ export class TagCommand extends GuildCommand {
         if (user.reports?.[match.name] !== undefined)
             await context.database.tags.incrementReports(match.name, 1);
         await context.database.users.setTagReport(context.author.id, match.name, reason);
-        await context.send(context.config.discord.channels.tagreports,
-            `**${humanize.fullName(context.author)}** has reported the tag: ${match.name}\n\n${reason}`);
-        return `✅ The \`${match.name}\` tag has been reported.`;
+        await context.send(context.config.discord.channels.tagreports, cmd.report.notification({ name: match.name, user: context.author, reason }));
+        return cmd.report.added({ name: match.name });
     }
 
     public async getTagFlags(context: GuildCommandContext, tagName: string): Promise<CommandResult> {
         const match = await this.#requestReadableTag(context, tagName);
-        if (typeof match !== `object`)
-            return match;
+        if (`response` in match)
+            return match.response;
 
-        const flags = humanize.flags(match.flags ?? []);
-        if (flags.length === 0)
-            return `The \`${match.name}\` tag has no flags.`;
+        if (match.flags === undefined || match.flags.length === 0)
+            return cmd.flag.list.none({ name: match.name });
 
-        return `The \`${match.name}\` tag has the following flags:\n\n${flags.join(`\n`)}`;
+        return cmd.flag.list.success({ name: match.name, flags: match.flags });
     }
 
     public async addTagFlags(context: GuildCommandContext, tagName: string, flagsRaw: string): Promise<CommandResult> {
         const match = await this.#requestEditableTag(context, tagName);
-        if (typeof match !== `object`)
-            return match;
+        if (`response` in match)
+            return match.response;
 
         const { _, ...addFlags } = parse.flags([], flagsRaw);
         const flags = [...match.flags ?? []];
         for (const [flag, args] of Object.entries(addFlags)) {
             if (args === undefined || args.length === 0)
-                return `❌ No word was specified for the \`${flag}\` flag`;
+                return cmd.flag.create.wordMissing({ flag });
 
             if (flags.some(f => f.flag === flag))
-                return `❌ The flag \`${flag}\` already exists!`;
+                return cmd.flag.create.flagExists({ flag });
 
             const word = args.get(0)?.value.replace(/[^a-z]/gi, ``).toLowerCase() ?? ``;
             if (flags.some(f => f.word === word))
-                return `❌ A flag with the word \`${word}\` already exists!`;
+                return cmd.flag.create.wordExists({ word });
 
             const description = args.slice(1).merge().value.replace(/\n/g, ` `);
             flags.push({ flag, word, description });
         }
 
         await context.database.tags.setProp(match.name, `flags`, flags);
-        return `✅ The flags for \`${match.name}\` have been updated.`;
+        return cmd.flag.updated({ name: match.name });
     }
 
     public async removeTagFlags(context: GuildCommandContext, tagName: string, flagsRaw: string): Promise<CommandResult> {
         const match = await this.#requestEditableTag(context, tagName);
-        if (typeof match !== `object`)
-            return match;
+        if (`response` in match)
+            return match.response;
 
         const { _, ...removeFlags } = parse.flags([], flagsRaw);
         const flags = [...match.flags ?? []]
             .filter(f => removeFlags[f.flag] === undefined);
 
         await context.database.tags.setProp(match.name, `flags`, flags);
-        return `✅ The flags for \`${match.name}\` have been updated.`;
+        return cmd.flag.updated({ name: match.name });
     }
 
     public async setTagLanguage(context: GuildCommandContext, tagName: string, language: string): Promise<CommandResult> {
         const match = await this.#requestEditableTag(context, tagName);
-        if (typeof match !== `object`)
-            return match;
+        if (`response` in match)
+            return match.response;
 
         await context.database.tags.setProp(match.name, `lang`, language);
-        return `✅ Lang for tag \`${match.name}\` set.`;
+        return cmd.setLang.success({ name: match.name });
     }
 
-    async #saveTag(context: GuildCommandContext, operation: string, tagName: string, content: string | undefined, oldTag?: StoredTag): Promise<CommandResult> {
+    async #saveTag(context: GuildCommandContext, success: (value: { name: string; errors: Iterable<IFormattable<string>>; }) => CommandResult, tagName: string, content: string | undefined, oldTag?: StoredTag): Promise<CommandResult> {
         content = await this.#requestTagContent(context, content);
         if (content === undefined)
             return;
 
         const analysis = context.bbtag.check(content);
+        const errors = [];
+        for (const error of analysis.errors)
+            errors.push(cmd.errors.bbtagError(error));
+        for (const warning of analysis.warnings)
+            errors.push(cmd.errors.bbtagWarning(warning));
+
         if (analysis.errors.length > 0)
-            return `❌ There were errors with the bbtag you provided!\n${bbtag.stringifyAnalysis(analysis)}`;
+            return cmd.errors.invalidBBTag({ errors });
 
         await context.database.tags.set({
             name: tagName,
             author: context.author.id,
-            authorizer: oldTag?.authorizer ?? context.author.id,
             content,
             lastmodified: new Date(),
             uses: oldTag?.uses ?? 0,
@@ -620,24 +614,22 @@ export class TagCommand extends GuildCommand {
             content
         });
 
-        return `✅ Tag \`${tagName}\` ${operation}.\n${bbtag.stringifyAnalysis(analysis)}`;
+        return success({ name: tagName, errors });
     }
 
-    async #requestTagName(context: GuildCommandContext, name: string | undefined, query = `Enter the name of the tag or type \`c\` to cancel:`): Promise<string | undefined> {
-        if (name !== undefined) {
-            name = normalizeName(name);
-            if (name.length > 0)
-                return name;
+    async #requestTagName(
+        context: GuildCommandContext,
+        name: string | undefined,
+        query: IFormattable<string> = cmd.request.name): Promise<string | undefined> {
+        if (name === undefined) {
+            const nameResult = await context.queryText({ prompt: query });
+            if (nameResult.state !== `SUCCESS`)
+                return undefined;
+
+            name = nameResult.value;
         }
 
-        if (query.length === 0)
-            return undefined;
-
-        const nameResult = await context.queryText({ prompt: query });
-        if (nameResult.state !== `SUCCESS`)
-            return undefined;
-
-        name = normalizeName(nameResult.value);
+        name = normalizeName(name);
         return name.length > 0 ? name : undefined;
     }
 
@@ -645,7 +637,7 @@ export class TagCommand extends GuildCommand {
         if (content !== undefined && content.length > 0)
             return content;
 
-        const contentResult = await context.queryText({ prompt: `Enter the tag's contents:` });
+        const contentResult = await context.queryText({ prompt: cmd.request.content });
         if (contentResult.state !== `SUCCESS`)
             return undefined;
 
@@ -655,23 +647,21 @@ export class TagCommand extends GuildCommand {
     async #requestSettableTag(
         context: GuildCommandContext,
         tagName: string | undefined,
-        allowQuery = true
-    ): Promise<{ name: string; tag?: StoredTag; } | string | undefined> {
-        const match = await this.#requestTag(context, tagName, allowQuery);
-        if (typeof match !== `object`)
+        query?: IFormattable<string>
+    ): Promise<{ name: string; tag?: StoredTag; } | { response: CommandResult; }> {
+        const match = await this.#requestTag(context, tagName, query);
+        if (`response` in match)
             return match;
 
         if (match.tag !== undefined
             && match.tag.author !== context.author.id
-            && !(context.util.isBotStaff(context.author.id) && await context.util.queryConfirm({
-                actors: [context.author],
-                context: context.channel,
-                prompt: { content: `You are not the owner of the \`${match.name}\`, are you sure you want to modify it?` },
-                confirm: `Yes`,
-                cancel: `No`,
+            && !(context.util.isBotStaff(context.author.id) && await context.queryConfirm({
+                prompt: cmd.permDelete.confirm.prompt({ name: match.name }),
+                continue: cmd.permDelete.confirm.continue,
+                cancel: cmd.permDelete.confirm.cancel,
                 fallback: false
             }))) {
-            return `❌ You don't own the \`${match.name}\` tag!`;
+            return { response: cmd.errors.notOwner({ name: match.name }) };
         }
 
         return { name: match.name, tag: match.tag };
@@ -680,14 +670,14 @@ export class TagCommand extends GuildCommand {
     async #requestEditableTag(
         context: GuildCommandContext,
         tagName: string | undefined,
-        allowQuery = true
-    ): Promise<StoredTag | string | undefined> {
-        const match = await this.#requestSettableTag(context, tagName, allowQuery);
-        if (typeof match !== `object`)
+        query?: IFormattable<string>
+    ): Promise<StoredTag | { response: CommandResult; }> {
+        const match = await this.#requestSettableTag(context, tagName, query);
+        if (`response` in match)
             return match;
 
         if (match.tag === undefined)
-            return `❌ The \`${match.name}\` tag doesn't exist!`;
+            return { response: cmd.errors.tagMissing({ name: match.name }) };
 
         return match.tag;
     }
@@ -695,14 +685,14 @@ export class TagCommand extends GuildCommand {
     async #requestReadableTag(
         context: GuildCommandContext,
         tagName: string | undefined,
-        allowQuery = true
-    ): Promise<StoredTag | string | undefined> {
-        const match = await this.#requestTag(context, tagName, allowQuery);
-        if (typeof match !== `object`)
+        query?: IFormattable<string>
+    ): Promise<StoredTag | { response: CommandResult; }> {
+        const match = await this.#requestTag(context, tagName, query);
+        if (`response` in match)
             return match;
 
         if (match.tag === undefined)
-            return `❌ The \`${match.name}\` tag doesn't exist!`;
+            return { response: cmd.errors.tagMissing({ name: match.name }) };
 
         return match.tag;
     }
@@ -710,14 +700,14 @@ export class TagCommand extends GuildCommand {
     async #requestCreatableTag(
         context: GuildCommandContext,
         tagName: string | undefined,
-        allowQuery = true
-    ): Promise<{ name: string; } | string | undefined> {
-        const match = await this.#requestTag(context, tagName, allowQuery);
-        if (typeof match !== `object`)
+        query?: IFormattable<string>
+    ): Promise<{ name: string; } | { response: CommandResult; }> {
+        const match = await this.#requestTag(context, tagName, query);
+        if (`response` in match)
             return match;
 
         if (match.tag !== undefined)
-            return `❌ The \`${match.name}\` tag already exists!`;
+            return { response: cmd.errors.alreadyExists({ name: match.name }) };
 
         return { name: match.name };
     }
@@ -725,31 +715,24 @@ export class TagCommand extends GuildCommand {
     async #requestTag(
         context: GuildCommandContext,
         tagName: string | undefined,
-        allowQuery: boolean
-    ): Promise<{ name: string; tag?: StoredTag; } | string | undefined> {
-        tagName = await this.#requestTagName(context, tagName, allowQuery ? undefined : ``);
+        query?: IFormattable<string>
+    ): Promise<{ name: string; tag?: StoredTag; } | { response: CommandResult; }> {
+        tagName = await this.#requestTagName(context, tagName, query);
         if (tagName === undefined)
-            return;
+            return { response: undefined };
 
         const tag = await context.database.tags.get(tagName);
         if (tag === undefined)
             return { name: tagName };
         if (tag.deleted === true) {
-            let result = `❌ The \`${tag.name}\` tag has been permanently deleted`;
-            if (tag.deleter !== undefined) {
-                const deleter = await context.database.users.get(tag.deleter);
-                if (deleter !== undefined)
-                    result += ` by **${humanize.fullName(deleter)}**`;
-            }
-            if (tag.reason !== undefined)
-                result += `\n\nReason: ${tag.reason}`;
-            return result;
+            const deleter = tag.deleter !== undefined ? await context.database.users.get(tag.deleter) : undefined;
+            return { response: cmd.errors.deleted({ name: tag.name, reason: tag.reason, user: deleter }) };
         }
 
         return { name: tag.name, tag };
     }
 
-    async #showDocs(ctx: GuildCommandContext, topic: string | undefined): Promise<SendContent> {
+    async #showDocs(ctx: GuildCommandContext, topic: string | undefined): Promise<SendContent<IFormattable<string>>> {
         return await this.#docs.createMessageContent(topic ?? ``, ctx.author, ctx.channel);
     }
 
@@ -759,37 +742,33 @@ export class TagCommand extends GuildCommand {
         user: User,
         messageId: string,
         details: Record<string, string>): Promise<void> {
-        const files: FileContent[] = [];
-        const fields: EmbedField[] = [];
-        if (`tag` in details && `content` in details)
-            files.push({ name: `${details.tag}.bbtag`, file: details.content });
-
-        for (const [key, detail] of Object.entries(details)) {
-            fields.push({
-                name: key,
-                value: humanize.truncate(detail, 1000, `(too long)`),
-                inline: true
-            });
-        }
-
         await context.send(context.config.discord.channels.taglog, {
             embeds: [
                 {
-                    title: action,
+                    title: literal(action),
                     color: tagChangeActionColour[action],
-                    fields,
+                    fields: Object.entries(details).map(([key, detail]) => ({
+                        name: literal(key),
+                        value: literal(humanize.truncate(detail, 1000, `(too long)`)),
+                        inline: true
+                    })),
                     author: {
-                        name: humanize.fullName(user),
+                        name: literal(humanize.fullName(user)),
                         icon_url: user.avatarURL,
                         url: `https://discord.com/users/${user.id}`
                     },
                     timestamp: new Date(),
                     footer: {
-                        text: `MsgID: ${messageId}`
+                        text: literal(`MsgID: ${messageId}`)
                     }
                 }
             ],
-            files
+            files: [
+                ...`tag` in details && `content` in details ? [{
+                    name: `${details.tag}.bbtag`,
+                    file: details.content
+                }] : []
+            ]
         });
     }
 }

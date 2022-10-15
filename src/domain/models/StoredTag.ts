@@ -4,7 +4,6 @@ export interface StoredTag {
     readonly name: string;
     readonly content: string;
     readonly author: string;
-    readonly authorizer?: string;
     readonly uses: number;
     readonly flags?: ReadonlyArray<FlagDefinition<string>>;
     readonly cooldown?: number;
