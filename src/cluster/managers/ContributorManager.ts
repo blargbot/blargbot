@@ -1,10 +1,8 @@
 import { Cluster } from '@blargbot/cluster/Cluster';
 import { TranslatableString } from '@blargbot/domain/messages/index';
-import { IFormattable } from '@blargbot/domain/messages/types';
+import { IFormattable, literal } from '@blargbot/domain/messages/types';
 import { User } from 'eris';
 import reloadFactory from 'require-reload';
-
-import { literal } from '../text';
 
 const reload = reloadFactory(require);
 

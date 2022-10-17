@@ -3,9 +3,9 @@ import { IFormattable, IFormatter } from "@blargbot/domain/messages/types";
 import { ActionRowComponents, Button, EmbedAuthor, EmbedFooter, EmbedOptions, SelectMenu } from "eris";
 
 export class FormattableMessageContent implements IFormattable<SendContent<string>> {
-    readonly #content: SendContent<string | IFormattable<string>>;
+    readonly #content: SendContent<IFormattable<string>>;
 
-    public constructor(content: SendContent<string | IFormattable<string>>) {
+    public constructor(content: SendContent<IFormattable<string>>) {
         this.#content = content;
     }
 

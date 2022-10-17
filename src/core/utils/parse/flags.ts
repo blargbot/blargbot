@@ -2,7 +2,7 @@ import { FlagDefinition, FlagResult, FlagResultValueSet } from '@blargbot/domain
 
 import { guard, humanize } from '../../utils';
 
-export function parseFlags(definitions: Iterable<FlagDefinition>, text: string, strict = false): FlagResult {
+export function parseFlags(definitions: Iterable<FlagDefinition<unknown>>, text: string, strict = false): FlagResult {
     let currentFlag: keyof FlagResult = `_`;
     let currentGroup: StringRange[] = [];
     const defArr = [...definitions];

@@ -1,6 +1,7 @@
 import { GuildCommand } from '@blargbot/cluster/command';
 import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType } from '@blargbot/cluster/utils';
+import { literal } from '@blargbot/domain/messages/types';
 import { FlagResult } from '@blargbot/domain/models';
 import { Member } from 'eris';
 
@@ -27,7 +28,7 @@ export class UnmuteCommand extends GuildCommand {
     }
 
     public async unmute(context: GuildCommandContext, member: Member, flags: FlagResult): Promise<CommandResult> {
-        const state = await context.cluster.moderation.mutes.unmute(member, context.author, flags.r?.merge().value);
+        const state = await context.cluster.moderation.mutes.unmute(member, context.author, literal(flags.r?.merge().value));
         const reason = cmd.default.state[state];
         return typeof reason === `function`
             ? reason({ user: member.user })

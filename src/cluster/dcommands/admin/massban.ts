@@ -1,6 +1,7 @@
 import { GuildCommand } from '@blargbot/cluster/command';
 import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType, guard, parse } from '@blargbot/cluster/utils';
+import { literal } from '@blargbot/domain/messages/types';
 import { FlagResult } from '@blargbot/domain/models';
 
 import templates from '../../text';
@@ -31,7 +32,7 @@ export class MassBanCommand extends GuildCommand {
 
         const reason = flags.r?.merge().value ?? ``;
 
-        const result = await context.cluster.moderation.bans.massBan(context.channel.guild, userIds, context.author, context.author, deleteDays, reason);
+        const result = await context.cluster.moderation.bans.massBan(context.channel.guild, userIds, context.author, context.author, deleteDays, literal(reason));
         if (Array.isArray(result))
             return cmd.default.success({ users: result });
         return cmd.default.state[result];

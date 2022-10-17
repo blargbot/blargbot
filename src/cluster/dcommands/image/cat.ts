@@ -1,9 +1,10 @@
 import { Cluster } from '@blargbot/cluster';
 import { GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType, randInt } from '@blargbot/cluster/utils';
+import { literal } from '@blargbot/domain/messages/types';
 import { Handler as Wolken } from 'wolken';
 
-import templates, { literal } from '../../text';
+import templates from '../../text';
 import { CommandResult } from '../../types';
 
 const cmd = templates.commands.cat;

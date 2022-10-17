@@ -1,5 +1,6 @@
 import { metrics } from '@blargbot/core/Metrics';
 import { Timer } from '@blargbot/core/Timer';
+import { IFormattable } from '@blargbot/domain/messages/types';
 
 import { BBTagContext } from './BBTagContext';
 import { SubtagCall } from './language';
@@ -10,7 +11,7 @@ export abstract class Subtag implements SubtagOptions {
     public readonly name: string;
     public readonly aliases: readonly string[];
     public readonly category: SubtagType;
-    public readonly description: string | undefined;
+    public readonly description: IFormattable<string> | undefined;
     public readonly deprecated: string | boolean;
     public readonly staff: boolean;
     public readonly signatures: readonly SubtagSignature[];

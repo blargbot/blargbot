@@ -1,3 +1,4 @@
+import { TranslatableString } from '@blargbot/domain/messages/index';
 import { Guild } from 'eris';
 
 import { BBTagRuntimeError, TooManyLoopsError } from '../errors';
@@ -5,8 +6,6 @@ import { GlobalLimit } from './GlobalLimit';
 import { staffOnlyRule, UseCountRule } from './rules';
 
 export class CustomCommandLimit extends GlobalLimit {
-    public readonly scopeName = `custom commands`;
-
     public constructor(guild?: Guild) {
         super(`customCommandLimit`);
 

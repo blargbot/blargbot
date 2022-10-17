@@ -55,17 +55,20 @@ export class SendSubtag extends CompiledSubtag {
                 ?? !context.data.allowedMentions.everybody);
 
         try {
-            const sent = await context.util.send(channel, {
-                content: message,
-                embeds: embed !== undefined ? embed : undefined,
-                nsfw: context.data.nsfw,
-                allowedMentions: {
-                    everyone: !disableEveryone,
-                    roles: context.isCC ? context.data.allowedMentions.roles : undefined,
-                    users: context.isCC ? context.data.allowedMentions.users : undefined
-                },
-                files: file !== undefined ? [file] : undefined
-            });
+            const sent = context.data.nsfw === undefined
+                ? await context.util.send(channel, {
+                    content: message,
+                    embeds: embed !== undefined ? embed : undefined,
+                    allowedMentions: {
+                        everyone: !disableEveryone,
+                        roles: context.isCC ? context.data.allowedMentions.roles : undefined,
+                        users: context.isCC ? context.data.allowedMentions.users : undefined
+                    },
+                    files: file !== undefined ? [file] : undefined
+                })
+                : await context.util.send(channel, {
+                    content: context.data.nsfw
+                });
 
             if (sent === undefined)
                 throw new BBTagRuntimeError(`Send unsuccessful`);

@@ -3,8 +3,6 @@ import { GlobalLimit } from './GlobalLimit';
 import { disabledRule, staffOnlyRule, UseCountRule } from './rules';
 
 export class EverythingAutoResponseLimit extends GlobalLimit {
-    public readonly scopeName = `everything autoresponses`;
-
     public constructor() {
         super(`everythingAutoResponseLimit`);
 

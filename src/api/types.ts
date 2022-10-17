@@ -1,4 +1,4 @@
-import { ClusterStats, CommandListResult, GuildPermissionDetails, ICommandDetails, SubtagDetails, SubtagListResult } from '@blargbot/cluster/types';
+import { ClusterStats, CommandListResult, CommandListResultItem, GuildPermissionDetails, SubtagDetails, SubtagListResult } from '@blargbot/cluster/types';
 import { GuildSettingDocs } from '@blargbot/domain/models';
 import { IRoute, IRouterHandler, Request, Response, RouteParameters } from 'express-serve-static-core';
 import { IncomingMessage } from 'http';
@@ -15,7 +15,7 @@ export type ApiIPCContracts = {
     getGuildPermission: { masterGets: { userId: string; guildId: string; }; workerGets: GuildPermissionDetails | undefined; };
     getCommandList: { masterGets: undefined; workerGets: CommandListResult; };
     getGuildSettings: { masterGets: undefined; workerGets: GuildSettingDocs; };
-    getCommand: { masterGets: string; workerGets: ICommandDetails | undefined; };
+    getCommand: { masterGets: string; workerGets: CommandListResultItem | undefined; };
     clusterStats: { masterGets: never; workerGets: Record<number, ClusterStats | undefined>; };
     getMetrics: { masterGets: undefined; workerGets: Record<number | string, metric[]>; };
 }

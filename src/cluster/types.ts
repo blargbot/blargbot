@@ -27,7 +27,7 @@ export type ClusterIPCContract = {
     getClusterStats: { masterGets: undefined; workerGets: Record<number, ClusterStats | undefined>; };
     getCommandList: { masterGets: CommandListResult; workerGets: undefined; };
     getGuildSettings: { masterGets: GuildSettingDocs; workerGets: undefined; };
-    getCommand: { masterGets: ICommandDetails | undefined; workerGets: string; };
+    getCommand: { masterGets: CommandListResultItem | undefined; workerGets: string; };
     metrics: { masterGets: metric[]; workerGets: undefined; };
 }
 
@@ -42,8 +42,8 @@ export interface ICommandManager<T = unknown> {
 export interface ICommandDetails extends Required<CommandPermissions> {
     readonly name: string;
     readonly aliases: readonly string[];
-    readonly category: string;
-    readonly description: string | undefined;
+    readonly category: CommandProperties;
+    readonly description: IFormattable<string> | undefined;
     readonly flags: ReadonlyArray<FlagDefinition<string | IFormattable<string>>>;
     readonly signatures: readonly CommandSignature[];
 }
@@ -168,8 +168,7 @@ export type CommandVariableParser = <TContext extends CommandContext>(this: void
 
 export interface CommandVariableTypeBase<Name extends CommandVariableTypeName> {
     readonly name: Name;
-    readonly descriptionSingular?: string;
-    readonly descriptionPlural?: string;
+    readonly type: Exclude<CommandVariableTypeName, `literal`> | string[];
     readonly priority: number;
     parse: CommandVariableParser;
 }
@@ -279,7 +278,12 @@ export interface GuildPermissionDetails {
 }
 
 export interface CommandListResult {
-    [commandName: string]: ICommandDetails | undefined;
+    [commandName: string]: CommandListResultItem | undefined;
+}
+
+export interface CommandListResultItem extends Omit<ICommandDetails, `category` | `description`> {
+    readonly category: string;
+    readonly description: string;
 }
 
 export interface ClusterStats {
@@ -332,10 +336,11 @@ export interface MassBanDetails {
 export type GuildCommandContext<TChannel extends KnownGuildTextableChannel = KnownGuildTextableChannel> = CommandContext<TChannel>;
 export type PrivateCommandContext<TChannel extends KnownPrivateChannel = KnownPrivateChannel> = CommandContext<TChannel>;
 
-export type CommandPropertiesSet = { [key in CommandType]: CommandProperties; }
+export type CommandPropertiesSet = { [P in CommandType]: CommandProperties; }
 export interface CommandProperties {
-    readonly name: string;
-    readonly description: string;
+    readonly id: string;
+    readonly name: IFormattable<string>;
+    readonly description: IFormattable<string>;
     readonly defaultPerms: bigint;
     readonly isVisible: (util: ClusterUtilities, location?: Guild | KnownTextableChannel, user?: User) => boolean | Promise<boolean>;
     readonly color: number;

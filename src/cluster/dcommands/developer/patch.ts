@@ -1,8 +1,9 @@
 import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType, guard } from '@blargbot/cluster/utils';
+import { literal } from '@blargbot/domain/messages/types';
 import { Constants } from 'eris';
 
-import templates, { literal } from '../../text';
+import templates from '../../text';
 import { CommandResult } from '../../types';
 
 const cmd = templates.commands.patch;
@@ -39,7 +40,7 @@ export class PatchCommand extends GlobalCommand {
         const embed = {
             author: { name: cmd.default.embed.author.name({ version }) },
             title: features === undefined ? undefined : cmd.default.embed.title,
-            description: features === undefined ? undefined : literal(features),
+            description: literal(features),
             fields: [
                 ...fixes === undefined ? [] : [{
                     name: cmd.default.embed.field.bugFixes.name,

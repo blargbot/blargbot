@@ -1,7 +1,8 @@
 import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType, randChoose, randInt } from '@blargbot/cluster/utils';
+import { literal } from '@blargbot/domain/messages/types';
 
-import templates, { literal } from '../../text';
+import templates from '../../text';
 import { CommandResult } from '../../types';
 
 const cmd = templates.commands.rr;

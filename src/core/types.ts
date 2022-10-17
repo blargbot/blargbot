@@ -1,6 +1,6 @@
 import { Snowflake } from '@blargbot/domain/models';
 import { Logger } from '@blargbot/logger';
-import { ActionRow, AdvancedMessageContent, EmbedAuthor, EmbedField, EmbedFooter, EmbedOptions, FileContent, Guild, InteractionButton, KnownMessage, KnownTextableChannel, Member, SelectMenu, SelectMenuOptions, TextableChannel, URLButton, User } from 'eris';
+import { ActionRow, AdvancedMessageContent, EmbedAuthor, EmbedField, EmbedFooter, EmbedOptions, FileContent, Guild, InteractionButton, KnownMessage, Member, Message, SelectMenu, SelectMenuOptions, TextableChannel, URLButton, User } from 'eris';
 
 import { Binder } from './Binder';
 import { WorkerConnection } from './worker';
@@ -123,7 +123,7 @@ type ConfirmQueryOptionsFallback<T extends boolean | undefined> = T extends unde
     : { fallback: boolean; };
 
 export interface QueryOptionsBase<TString> {
-    context: KnownTextableChannel | KnownMessage;
+    context: TextableChannel | Message;
     actors: Iterable<string | User> | string | User;
     prompt?: Omit<SendContent<TString>, `components`> | TString;
     timeout?: number;
@@ -175,7 +175,7 @@ export interface TextQueryOptions<TString> extends TextQueryOptionsBase<TString,
 export type SlimTextQueryOptions<TString> = Omit<TextQueryOptions<TString>, `context` | `actors`>;
 
 export interface TextQueryOptionsParser<TString, T> {
-    (message: KnownMessage): Promise<TextQueryOptionsParseResult<TString, T>> | TextQueryOptionsParseResult<TString, T>;
+    (message: Message): Promise<TextQueryOptionsParseResult<TString, T>> | TextQueryOptionsParseResult<TString, T>;
 }
 
 export type TextQueryOptionsParseResult<TString, T> =
@@ -188,19 +188,19 @@ export interface MultipleQueryOptions<TString, T> extends ChoiceQueryOptions<TSt
 }
 
 export interface ChoiceQuery<T> extends QueryBase<ChoiceQueryResult<T>> {
-    prompt: KnownMessage | undefined;
+    prompt: Message | undefined;
 }
 
 export interface MultipleQuery<T> extends QueryBase<MultipleQueryResult<T>> {
-    prompt: KnownMessage | undefined;
+    prompt: Message | undefined;
 }
 
 export interface ConfirmQuery<T extends boolean | undefined = undefined> extends QueryBase<T> {
-    prompt: KnownMessage | undefined;
+    prompt: Message | undefined;
 }
 
 export interface TextQuery<T> extends QueryBase<TextQueryResult<T>> {
-    messages: readonly KnownMessage[];
+    messages: readonly Message[];
 }
 
 export type ChoiceQueryResult<T> = QueryResult<`NO_OPTIONS` | `TIMED_OUT` | `CANCELLED` | `FAILED`, T>;

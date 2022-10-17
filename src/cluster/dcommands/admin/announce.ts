@@ -2,10 +2,11 @@ import { GuildCommand } from '@blargbot/cluster/command';
 import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType, discord } from '@blargbot/cluster/utils';
 import { humanize } from '@blargbot/core/utils';
+import { literal } from '@blargbot/domain/messages/types';
 import { AllowedMentions, Constants, KnownChannel, Role } from 'eris';
 import moment from 'moment-timezone';
 
-import templates, { literal } from '../../text';
+import templates from '../../text';
 
 const cmd = templates.commands.announce;
 

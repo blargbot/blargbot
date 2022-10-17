@@ -4,7 +4,7 @@ import { CommandContext, GuildCommand } from '@blargbot/cluster/command';
 import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType, humanize, parse } from '@blargbot/cluster/utils';
 import { SendContent } from '@blargbot/core/types';
-import { IFormattable } from '@blargbot/domain/messages/types';
+import { IFormattable, literal } from '@blargbot/domain/messages/types';
 import { StoredTag } from '@blargbot/domain/models';
 import { User } from 'eris';
 import moment, { Duration } from 'moment-timezone';
@@ -12,7 +12,7 @@ import fetch from 'node-fetch';
 
 import { RawBBTagCommandResult } from '../../command/RawBBTagCommandResult';
 import { BBTagDocumentationManager } from '../../managers/documentation/BBTagDocumentationManager';
-import templates, { literal } from '../../text';
+import templates from '../../text';
 
 const cmd = templates.commands.tag;
 
@@ -319,27 +319,38 @@ export class TagCommand extends GuildCommand {
     }
 
     public async listTags(context: GuildCommandContext, author?: string): Promise<CommandResult> {
-        const args: Parameters<ClusterUtilities[`displayPaged`]> = [
-            context.channel,
-            context.author,
-            ` tags`,
-            async (skip, take) => await context.database.tags.list(skip, take),
-            async () => await context.database.tags.count(),
-            100,
-            `, `
-        ];
-
+        let pages: Parameters<ClusterUtilities[`displayPaged`]>[2];
         if (author !== undefined) {
             const result = await context.queryUser({ filter: author });
             if (result.state !== `SUCCESS`)
                 return undefined;
 
-            args[2] += ` made by **${humanize.fullName(result.value)}**`;
-            args[3] = async (skip, take) => await context.database.tags.byAuthor(result.value.id, skip, take);
-            args[4] = async () => await context.database.tags.byAuthorCount(result.value.id);
+            pages = async (page) => {
+                const [total, tags] = await Promise.all([
+                    context.database.tags.byAuthorCount(result.value.id),
+                    context.database.tags.byAuthor(result.value.id, page * 100, 100)
+                ]);
+                return {
+                    content: cmd.list.page.content({ tags }),
+                    pageCount: Math.ceil(total / 100),
+                    header: cmd.list.page.header.byUser({ count: tags.length, total: total, user: result.value })
+                };
+            };
+        } else {
+            pages = async (page) => {
+                const [total, tags] = await Promise.all([
+                    context.database.tags.count(),
+                    context.database.tags.list(page * 100, 100)
+                ]);
+                return {
+                    content: cmd.list.page.content({ tags }),
+                    pageCount: Math.ceil(total / 100),
+                    header: cmd.list.page.header.all({ count: tags.length, total: total })
+                };
+            };
         }
 
-        switch (await context.util.displayPaged(...args)) {
+        switch (await context.util.displayPaged(context.channel, context.author, pages)) {
             case false: return cmd.errors.noneFound;
             case true: return cmd.common.done;
             case undefined: return undefined;
@@ -361,11 +372,17 @@ export class TagCommand extends GuildCommand {
         const result = await context.util.displayPaged(
             context.channel,
             context.author,
-            ` tags matching \`${query}\``,
-            (skip, take) => context.database.tags.search(_query, skip, take),
-            () => context.database.tags.searchCount(_query),
-            100,
-            `, `);
+            async (page) => {
+                const [total, tags] = await Promise.all([
+                    context.database.tags.searchCount(_query),
+                    context.database.tags.search(_query, page * 100, 100)
+                ]);
+                return {
+                    content: cmd.search.page.content({ tags }),
+                    pageCount: Math.ceil(total / 100),
+                    header: cmd.search.page.header({ count: tags.length, total: total, query: _query })
+                };
+            });
 
         switch (result) {
             case false: return cmd.errors.noneFound;

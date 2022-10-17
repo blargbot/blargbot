@@ -1,6 +1,7 @@
 import { GuildCommand } from '@blargbot/cluster/command';
 import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType, parse } from '@blargbot/cluster/utils';
+import { literal } from '@blargbot/domain/messages/types';
 import { FlagResult } from '@blargbot/domain/models';
 import { Member } from 'eris';
 
@@ -32,7 +33,7 @@ export class WarnCommand extends GuildCommand {
         const countStr = flags.c?.merge().value ?? `1`;
         const count = parse.int(countStr, { strict: true }) ?? NaN;
 
-        const result = await context.cluster.moderation.warns.warn(member, context.author, context.discord.user, count, reason);
+        const result = await context.cluster.moderation.warns.warn(member, context.author, context.discord.user, count, literal(reason));
         if (result.state === `success`)
             return cmd.default.state.success[result.type]({ user: member.user, count, warnings: result.warnings });
 

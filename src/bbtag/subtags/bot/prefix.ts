@@ -27,7 +27,7 @@ export class PrefixSubtag extends CompiledSubtag {
         const prefix = await context.database.guilds.getSetting(context.guild.id, `prefix`);
         switch (typeof prefix) {
             case `string`: return prefix;
-            case `undefined`: return context.util.config.discord.defaultPrefix;
+            case `undefined`: return context.util.defaultPrefix;
             default: return prefix[0];
         }
     }

@@ -1,5 +1,7 @@
+import { IFormatter } from '@blargbot/domain/messages/types';
 import { KnownTextableChannel, User } from 'eris';
 
+import templates from '../../text';
 import { Documentation, DocumentationManager } from './DocumentationManager';
 
 export abstract class DocumentationTreeManager extends DocumentationManager {
@@ -14,7 +16,7 @@ export abstract class DocumentationTreeManager extends DocumentationManager {
             return d.items.map(i => ({
                 ...i,
                 tags: [i.name, ...i.tags ?? []],
-                name: `${d.name} - ${i.name}`,
+                name: templates.documentation.name.flat({ parent: d.name, child: i.name }),
                 embed: {
                     ...i.embed,
                     color: i.embed.color ?? d.embed.color
@@ -23,9 +25,11 @@ export abstract class DocumentationTreeManager extends DocumentationManager {
         });
     }
 
-    #matchScore(documentation: Documentation, term: string): Awaitable<number> {
+    #matchScore(documentation: Documentation, term: string, formatter: IFormatter): Awaitable<number> {
         const normTerm = term.trim().toLowerCase();
-        return (documentation.tags ?? [documentation.name]).map(x => x.toLowerCase())
+        return (documentation.tags ?? [documentation.name])
+            .map(x => typeof x === `string` ? x : x.format(formatter))
+            .map(x => x.toLowerCase())
             .map(normTitle => {
                 if (normTitle === normTerm)
                     return Number.MAX_SAFE_INTEGER;
@@ -40,10 +44,10 @@ export abstract class DocumentationTreeManager extends DocumentationManager {
             .reduce((p, c) => p < c ? c : p);
     }
 
-    protected async findDocumentation(term: string, user: User, channel: KnownTextableChannel): Promise<readonly Documentation[]> {
+    protected async findDocumentation(term: string, user: User, channel: KnownTextableChannel, formatter: IFormatter): Promise<readonly Documentation[]> {
         const matches: Array<{ item: Documentation; score: number; }> = [];
         for await (const item of this.#getFlatTree(user, channel)) {
-            const score = await this.#matchScore(item, term);
+            const score = await this.#matchScore(item, term, formatter);
             if (score > 0)
                 matches.push({ item, score });
         }

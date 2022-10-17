@@ -3,6 +3,7 @@ import { Guild, KnownChannel, KnownGuildTextableChannel, KnownTextableChannel, R
 
 import { ClusterUtilities } from '..';
 import { Command } from '../command';
+import templates from '../text';
 import { ICommandManager, Result } from '../types';
 import { guard } from '../utils';
 
@@ -46,7 +47,7 @@ export class AnnouncementManager {
                 actors: [user],
                 context: queryChannel,
                 choices: guild.channels.filter(guard.isTextableChannel).values(),
-                prompt: `ℹ️ Please select the channel that announcements should be put in.`
+                prompt: templates.announcements.prompt.channel
             });
 
             if (result.state === `TIMED_OUT` || result.state === `CANCELLED`)
@@ -67,7 +68,7 @@ export class AnnouncementManager {
             const result = await this.#util.queryRole({
                 actors: [user],
                 context: queryChannel,
-                prompt: `ℹ️ Please select the role to mention when announcing.`,
+                prompt: templates.announcements.prompt.role,
                 guild: guild
             });
 

@@ -2,12 +2,12 @@ import { bbtag } from '@blargbot/bbtag';
 import { GuildCommand } from '@blargbot/cluster/command';
 import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType, guard } from '@blargbot/cluster/utils';
-import { IFormattable } from '@blargbot/domain/messages/types';
+import { IFormattable, literal } from '@blargbot/domain/messages/types';
 import { GuildRolemeEntry } from '@blargbot/domain/models';
 import { Constants } from 'eris';
 
 import { RawBBTagCommandResult } from '../../command/RawBBTagCommandResult';
-import templates, { literal } from '../../text';
+import templates from '../../text';
 
 const cmd = templates.commands.roleMe;
 

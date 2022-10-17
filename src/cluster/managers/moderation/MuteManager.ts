@@ -1,10 +1,12 @@
 import { EnsureMutedRoleResult, MuteResult, UnmuteResult } from '@blargbot/cluster/types';
-import { discord, guard, humanize } from '@blargbot/cluster/utils';
+import { discord, guard } from '@blargbot/cluster/utils';
+import { IFormattable } from '@blargbot/domain/messages/types';
 import { UnmuteEventOptions } from '@blargbot/domain/models';
 import { mapping } from '@blargbot/mapping';
 import { Constants, Guild, KnownGuildChannel, Member, Role, User } from 'eris';
 import moment, { Duration } from 'moment-timezone';
 
+import templates from '../../text';
 import { ModerationManager } from '../ModerationManager';
 import { ModerationManagerBase } from './ModerationManagerBase';
 
@@ -13,7 +15,7 @@ export class MuteManager extends ModerationManagerBase {
         super(manager);
     }
 
-    public async mute(member: Member, moderator: User, reason?: string, duration?: Duration): Promise<MuteResult> {
+    public async mute(member: Member, moderator: User, reason?: IFormattable<string>, duration?: Duration): Promise<MuteResult> {
         const role = await this.#getMuteRole(member.guild);
         if (role === undefined)
             return `roleMissing`;
@@ -28,7 +30,8 @@ export class MuteManager extends ModerationManagerBase {
         if (role.position >= discord.getMemberPosition(self))
             return `roleTooHigh`;
 
-        await member.addRole(role.id, `[${humanize.fullName(moderator)}] ${reason ?? ``}`);
+        const formatter = await this.manager.cluster.util.getFormatter(member.guild);
+        await member.addRole(role.id, templates.moderation.auditLog({ moderator, reason }).format(formatter));
         if (duration !== undefined && duration.asMilliseconds() > 0) {
             await this.modLog.logTempMute(member.guild, member.user, duration, moderator, reason);
             await this.cluster.timeouts.insert(`unmute`, {
@@ -44,7 +47,7 @@ export class MuteManager extends ModerationManagerBase {
         return `success`;
     }
 
-    public async unmute(member: Member, moderator: User, reason?: string): Promise<UnmuteResult> {
+    public async unmute(member: Member, moderator: User, reason?: IFormattable<string>): Promise<UnmuteResult> {
         const role = await this.#getMuteRole(member.guild);
         if (role === undefined || !member.roles.includes(role.id))
             return `notMuted`;
@@ -56,7 +59,8 @@ export class MuteManager extends ModerationManagerBase {
         if (role.position >= discord.getMemberPosition(self))
             return `roleTooHigh`;
 
-        await member.removeRole(role.id, `[${humanize.fullName(moderator)}] ${reason ?? ``}`);
+        const formatter = await this.manager.cluster.util.getFormatter(member.guild);
+        await member.removeRole(role.id, templates.moderation.auditLog({ moderator, reason }).format(formatter));
         await this.modLog.logUnmute(member.guild, member.user, moderator, reason);
 
         return `success`;
@@ -98,8 +102,10 @@ export class MuteManager extends ModerationManagerBase {
                 deny |= Constants.Permissions.voiceSpeak;
             else if (guard.isCategoryChannel(channel))
                 deny |= Constants.Permissions.sendMessages | Constants.Permissions.voiceSpeak;
-            if (deny !== 0n)
-                await channel.editPermission(mutedRole.id, 0n, deny, Constants.PermissionOverwriteTypes.ROLE, `Automatic muted role configuration`);
+            if (deny !== 0n) {
+                const formatter = await this.manager.cluster.util.getFormatter(channel.guild);
+                await channel.editPermission(mutedRole.id, 0n, deny, Constants.PermissionOverwriteTypes.ROLE, templates.mute.createReason.format(formatter));
+            }
         } catch (err: unknown) {
             this.cluster.logger.error(`Failed to set permissions for muted role`, mutedRole.id, `in channel`, channel.id, err);
         }
@@ -123,9 +129,9 @@ export class MuteManager extends ModerationManagerBase {
             return;
 
         const mapResult = mapDuration(event.duration);
-        const duration = mapResult.valid ? humanize.duration(mapResult.value) : `some time`;
+        const duration = mapResult.valid ? mapResult.value : undefined;
 
-        await this.unmute(member, this.cluster.discord.user, `Automatically unmuted after ${duration}.`);
+        await this.unmute(member, this.cluster.discord.user, templates.mute.autoUnmute({ duration }));
     }
 }
 

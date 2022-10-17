@@ -1,9 +1,10 @@
 import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType } from '@blargbot/cluster/utils';
 import { guard } from '@blargbot/core/utils';
+import { literal } from '@blargbot/domain/messages/types';
 import moment from 'moment-timezone';
 
-import templates, { literal } from '../../text';
+import templates from '../../text';
 import { CommandResult } from '../../types';
 
 const cmd = templates.commands.info;

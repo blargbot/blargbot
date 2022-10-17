@@ -2,14 +2,13 @@ import { BBTagEngine } from '@blargbot/bbtag';
 import { Cluster, ClusterUtilities } from '@blargbot/cluster';
 import { CommandResult, GuildCommandContext, ICommand } from '@blargbot/cluster/types';
 import { Configuration } from '@blargbot/config';
+import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent';
 import { ChoiceQueryOptions, ChoiceQueryResult, ConfirmQuery, MultipleQueryOptions, MultipleQueryResult, SendContent, SendContext, SlimConfirmQueryOptions, SlimEntityFindQueryOptions, SlimEntityPickQueryOptions, SlimEntityQueryOptions, SlimTextQueryOptions, SlimTextQueryOptionsParsed, TextQueryResult } from '@blargbot/core/types';
 import { guard } from '@blargbot/core/utils';
 import { Database } from '@blargbot/database';
 import { IFormattable, IFormatter } from '@blargbot/domain/messages/types';
 import { Logger } from '@blargbot/logger';
-import { Client as Discord, KnownChannel, KnownGuildChannel, KnownMessage, KnownTextableChannel, Member, Message, Role, User, Webhook } from 'eris';
-
-import { FormattableMessageContent } from './FormattableMessageContent';
+import { Client as Discord, KnownChannel, KnownGuildChannel, KnownTextableChannel, Member, Message, Role, User, Webhook } from 'eris';
 
 export class CommandContext<TChannel extends KnownTextableChannel = KnownTextableChannel> {
     public get logger(): Logger { return this.cluster.logger; }
@@ -34,28 +33,25 @@ export class CommandContext<TChannel extends KnownTextableChannel = KnownTextabl
     ) {
     }
 
-    public async send(content: CommandResult): Promise<KnownMessage | undefined>
-    public async send(context: SendContext, content: CommandResult): Promise<KnownMessage | undefined>
-    public async send(...args: [CommandResult] | [SendContext, CommandResult]): Promise<KnownMessage | undefined> {
-        const [context, content] = args.length === 1 ? [this.message.channel, toSendContent(args[0])] : [args[0], toSendContent(args[1])];
+    public async send(content: CommandResult): Promise<Message | undefined>
+    public async send(context: SendContext, content: CommandResult): Promise<Message | undefined>
+    public async send(...args: [CommandResult] | [SendContext, CommandResult]): Promise<Message | undefined> {
+        const [context, content] = args.length === 1 ? [this.message.channel, args[0]] : [args[0], args[1]];
         if (content === undefined)
             return undefined;
-        return await this.cluster.util.send(context, content);
+        return await this.cluster.util.send(context, content, this.author);
     }
 
-    public async reply(content: CommandResult): Promise<KnownMessage | undefined> {
-        const payload = toSendContent(content);
+    public async reply(content: CommandResult): Promise<Message | undefined> {
         if (content === undefined)
             return undefined;
-        return await this.cluster.util.send(this.message.channel, {
-            messageReference: { messageID: this.message.id, channelID: this.message.channel.id },
-            ...payload
-        });
+        return await this.cluster.util.reply(this.message, content, this.author);
     }
 
-    public async edit(message: Message, content: CommandResult): Promise<KnownMessage | undefined> {
-        const payload = toSendContent(content);
-        if (content === undefined)
+    public async edit(message: Message, content: CommandResult): Promise<Message | undefined> {
+        const formatter = await this.util.getContentResolver(this.channel);
+        const payload = toSendContent(content, formatter);
+        if (payload === undefined)
             return undefined;
         return await message.edit(payload);
     }

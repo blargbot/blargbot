@@ -18,7 +18,7 @@ export class ClusterGetCommandListHandler extends ClusterEventService<`getComman
             const c = result.detail.command;
             commands[c.name] = {
                 aliases: c.aliases,
-                category: c.category,
+                category: c.category.id,
                 description: c.description,
                 disabled: c.disabled,
                 flags: c.flags,

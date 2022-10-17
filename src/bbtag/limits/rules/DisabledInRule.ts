@@ -1,9 +1,11 @@
-import { humanize } from '@blargbot/core/utils';
+import { IFormattable, TranslatableString } from '@blargbot/domain/messages/index';
 
 import { BBTagContext } from '../../BBTagContext';
 import { BBTagRuntimeError } from '../../errors';
 import { SubtagCall } from '../../language';
 import { RuntimeLimitRule } from '../RuntimeLimitRule';
+
+const disabledInMessage = TranslatableString.define<{ subtagNames: Iterable<string>; }, string>(`bbtag.limits.rules.disabledIn.default`, `Cannot be used in the arguments to {subtagNames#map(\\{{}\\})#join(, | or )}`);
 
 export class DisabledInRule implements RuntimeLimitRule {
     readonly #subtags: readonly string[];
@@ -20,8 +22,8 @@ export class DisabledInRule implements RuntimeLimitRule {
         }
     }
 
-    public displayText(): string {
-        return `Cannot be used in the arguments to ${humanize.smartJoin(this.#subtags.map(s => `{${s}}`), `, `, ` or `)}`;
+    public displayText(): IFormattable<string> {
+        return disabledInMessage({ subtagNames: this.#subtags });
     }
 
     public state(): JToken {

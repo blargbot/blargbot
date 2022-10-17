@@ -8,18 +8,6 @@ import { Command } from "./command/Command";
 import { CommandContext } from "./command/CommandContext";
 import { GuildCommandContext } from "./types";
 
-export function literal(value: string): IFormattable<string>;
-export function literal(value: string | undefined): IFormattable<string> | undefined;
-export function literal(value: string | undefined): IFormattable<string> | undefined {
-    if (value === undefined)
-        return undefined;
-    return {
-        format() {
-            return value;
-        }
-    };
-}
-
 interface UserTag {
     readonly username?: string;
     readonly discriminator?: string;
@@ -27,12 +15,543 @@ interface UserTag {
 
 export const templates = crunchTree(`cluster`, {
     common: {
+        query: {
+            cancel: translatable(`Cancel`),
+            cantUse: translatable(`❌ This isn't for you to use!`),
+            choose: {
+                paged: translatable(`{content#bool(\n{}|)}Page {page}/{pageCount}`).withArgs<{ content?: IFormattable<string>; page: number; pageCount: number; }>()
+            },
+            user: {
+                prompt: {
+                    default: translatable(`ℹ️ Please select a user from the drop down`),
+                    filtered: translatable(`ℹ️ Multiple users matching \`{filter}\` found! Please select one from the drop down.`).withArgs<{ filter: string; }>()
+                },
+                placeholder: translatable(`Select a user`),
+                choice: {
+                    label: translatable(`{user.username}#{user.discriminator}`).withArgs<{ user: Eris.User; }>(),
+                    description: translatable(`Id: {user.id}`).withArgs<{ user: Eris.User; }>()
+                }
+            },
+            member: {
+                prompt: {
+                    default: translatable(`ℹ️ Please select a user from the drop down`),
+                    filtered: translatable(`ℹ️ Multiple users matching \`{filter}\` found! Please select one from the drop down.`).withArgs<{ filter: string; }>()
+                },
+                placeholder: translatable(`Select a user`),
+                choice: {
+                    label: translatable(`{member.nick#bool({}|{~member.username})} ({member.username}#{member.discriminator})`).withArgs<{ member: Eris.Member; }>(),
+                    description: translatable(`Id: {member.id}`).withArgs<{ member: Eris.Member; }>()
+                }
+            },
+            sender: {
+                prompt: {
+                    default: translatable(`ℹ️ Please select a user or webhook from the drop down`),
+                    filtered: translatable(`ℹ️ Multiple users or webhooks matching \`{filter}\` found! Please select one from the drop down.`).withArgs<{ filter: string; }>()
+                },
+                placeholder: translatable(`Select a user or webhook`),
+                choice: {
+                    label: {
+                        user: translatable(`{user.username}#{user.discriminator}`).withArgs<{ user: Eris.User; }>(),
+                        webhook: translatable(`{webhook.name}`).withArgs<{ webhook: Eris.Webhook; }>()
+                    },
+                    description: translatable(`Id: {sender.id}`).withArgs<{ sender: Eris.User | Eris.Webhook; }>()
+                }
+            },
+            role: {
+                prompt: {
+                    default: translatable(`ℹ️ Please select a role from the drop down`),
+                    filtered: translatable(`ℹ️ Multiple roles matching \`{filter}\` found! Please select one from the drop down.`).withArgs<{ filter: string; }>()
+                },
+                placeholder: translatable(`Select a role`),
+                choice: {
+                    label: translatable(`{role.name}`).withArgs<{ role: Eris.Role; }>(),
+                    description: translatable(`Id: {role.id} Color: {role.color#color}`).withArgs<{ role: Eris.Role; }>()
+                }
+            },
+            channel: {
+                prompt: {
+                    default: translatable(`ℹ️ Please select a channel from the drop down`),
+                    filtered: translatable(`ℹ️ Multiple channel matching \`{filter}\` found! Please select one from the drop down.`).withArgs<{ filter: string; }>()
+                },
+                placeholder: translatable(`Select a channel`),
+                choice: {
+                    label: {
+                        guild: translatable(`{channel.name}`).withArgs<{ channel: Eris.GuildChannel; }>(),
+                        dm: translatable(`DM`)
+                    },
+                    description: translatable(`Id: {channel.id}{parent#bool({emoji} {label}|)}`).withArgs<{ channel: Eris.Channel; parent?: { label: IFormattable<string>; emoji: string; }; }>()
+                }
+            },
+            paged: {
+                prompt: translatable(`{header#bool({}\n|)}Page **#{page}/{pageCount}**\n{content}\nType a number between **1 and {pageCount}** to view that page.`).withArgs<{ header: IFormattable<string>; page: number; pageCount: number; content: IFormattable<string>; }>()
+            }
+        }
     },
     regex: {
         tooLong: translatable(`❌ Regex is too long!`),
         invalid: translatable(`❌ Regex is invalid!`),
         unsafe: translatable(`❌ Regex is unsafe!\nIf you are 100% sure your regex is valid, it has likely been blocked due to how I detect catastrophic backtracking.\nYou can find more info about catastrophic backtracking here: <https://www.regular-expressions.info/catastrophic.html>`),
         matchesEverything: translatable(`❌ Your regex cannot match everything!`)
+    },
+    roleme: {
+        failed: translatable(`A roleme was triggered, but I don't have the permissions required to give you your role!`)
+    },
+    poll: {
+        embed: {
+            footer: {
+                text: translatable(`The poll will end`)
+            }
+        },
+        success: {
+            noVotes: translatable(`The votes are in! A total of **{total}** {total#plural(1:vote was|votes were)} collected!\n\n No one voted, how sad 😦`).withArgs<{ total: number; }>(),
+            tie: translatable(`The votes are in! A total of **{total}** {total#plural(1:vote was|votes were)} collected!\n\n It was a tie between these choices at **{count}** {count#plural(1:vote|votes)} each:\n\n{winners#join(, | and )}`).withArgs<{ total: number; count: number; winners: Iterable<string>; }>(),
+            single: translatable(`The votes are in! A total of **{total}** {total#plural(1:vote was|votes were)} collected!\n\n At **{count}** {count#plural(1:vote|votes)}, the winner is:\n\n{winner}`).withArgs<{ total: number; count: number; winner: string; }>()
+        }
+    },
+    guild: {
+        blacklisted: translatable(`Greetings! I regret to inform you that your guild, **{guild.name}** ({guild.id}), is on my blacklist. Sorry about that! I'll be leaving now. I hope you have a nice day.`).withArgs<{ guild: Eris.Guild; }>(),
+        joined: translatable(`☑️ Guild: \`{guild.name}\` (\`{guild.id}\`)! {botGuild#bool(- ***BOT GUILD***|)}\n    Total: **{size}** | Users: **{userCount}** | Bots: **{botCount}** | Percent: **{botFraction#percent}**`).withArgs<{ guild: Eris.Guild; botGuild: boolean; size: number; userCount: number; botCount: number; botFraction: number; }>()
+    },
+    autoresponse: {
+        prompt: translatable(`New AR request from **{user.username}#{user.discriminator}** ({user#tag}):\n**Guild**: {guild.name=UNKNOWN} ({guildId})\n**Channel**: {channelId}\n**Members**: {guild.members.size=??}\n\n{reason#bool({}|*No reason given*)}\n\n\`\`\`js\n{code}\n\`\`\``).withArgs<{ guild?: Eris.Guild; guildId: string; channelId: string; reason?: string; code: string; user: Eris.User; }>(),
+        whitelist: {
+            approved: translatable(`✅ Congratz, your guild has been whitelisted for autoresponses! 🎉\n*It may take up to 15 minutes for them to become available*`),
+            rejected: translatable(`❌ Sorry, your guild has been rejected for autoresponses. 😿`)
+        }
+    },
+    announcements: {
+        prompt: {
+            channel: translatable(`ℹ️ Please select the channel that announcements should be put in.`),
+            role: translatable(`ℹ️ Please select the role to mention when announcing.`)
+        }
+    },
+    modlog: {
+        defaultReason: translatable(`Responsible moderator, please do \`{prefix}reason {caseId}\` to set.`).withArgs<{ prefix: string; caseId: number; }>(),
+        types: {
+            generic: translatable(`Generic`),
+            pardon: translatable(`Pardon`),
+            timeout: translatable(`Timeout`),
+            timeoutClear: translatable(`Timeout Clear`),
+            softBan: translatable(`Soft Ban`),
+            ban: translatable(`Ban`),
+            massBan: translatable(`Mass Ban`),
+            unban: translatable(`Unban`),
+            kick: translatable(`Kick`),
+            unmute: translatable(`Unmute`),
+            mute: translatable(`Mute`),
+            temporaryMute: translatable(`Temporary Mute`),
+            warning: translatable(`Warning`)
+        },
+        embed: {
+            title: translatable(`Case {caseId}`).withArgs<{ caseId: number; }>(),
+            description: translatable(`{users#map({username}#{discriminator} \\({id}\\))#join(\n)}`).withArgs<{ users: Iterable<Eris.User>; }>(),
+            footer: {
+                text: translatable(`{user.username}#{user.discriminator} ({user.id})`).withArgs<{ user: Eris.User; }>()
+            },
+            field: {
+                type: {
+                    name: translatable(`Type`)
+                },
+                reason: {
+                    name: translatable(`Reason`),
+                    value: translatable(`{reason}`).withArgs<{ reason: IFormattable<string>; }>()
+                },
+                pardons: {
+                    name: translatable(`Pardons`),
+                    value: translatable(`Assigned: {count}\nNew Total: {warnings}`).withArgs<{ count: number; warnings: number; }>()
+                },
+                warnings: {
+                    name: translatable(`Warnings`),
+                    value: translatable(`Assigned: {count}\nNew Total: {warnings}`).withArgs<{ count: number; warnings: number; }>()
+                },
+                duration: {
+                    name: translatable(`Duration`),
+                    value: translatable(`{duration#duration(F)}`).withArgs<{ duration: Duration; }>()
+                },
+                user: {
+                    name: translatable(`User`),
+                    value: translatable(`{user.username}#{user.discriminator} ({user.id})`).withArgs<{ user: Eris.User; }>()
+                }
+            }
+        }
+    },
+    eventLog: {
+        disabled: translatable(`❌ Disabled logging of the \`{event}\` event because the channel {channel#tag} doesn't exist or I don't have permission to post messages in it!`).withArgs<{ event: string; channel: Eris.Channel; }>(),
+        events: {
+            timeoutAdded: translatable(`ℹ️ User Was Timed Out`),
+            timeoutRemoved: translatable(`ℹ️ User Timeout Was Removed`),
+            banned: translatable(`ℹ️ User was banned`),
+            unbanned: translatable(`ℹ️ User Was Unbanned`),
+            joined: translatable(`ℹ️ User Joined`),
+            left: translatable(`ℹ️ User Left`),
+            messageDeleted: translatable(`ℹ️ Message Deleted`),
+            messageUpdated: translatable(`ℹ️ Message Updated`),
+            roleRemoved: translatable(`ℹ️ Special Role Removed`),
+            roleAdded: translatable(`ℹ️ Special Role Added`),
+            nicknameUpdated: translatable(`ℹ️ Nickname Updated`),
+            usernameUpdated: translatable(`ℹ️ Username Updated`),
+            avatarUpdated: translatable(`ℹ️ Avatar Updated`)
+        },
+        embed: {
+            description: {
+                avatarUpdated: translatable(`➡️ Old avatar\n⬇️ New avatar`),
+                bulkDelete: translatable(`Bulk Message Delete`),
+                userUpdated: {
+                    username: translatable(`Username changed.`),
+                    discriminator: translatable(`Discriminator changed.`),
+                    both: translatable(`Username changed.\nDiscriminator changed.`)
+                }
+            },
+            field: {
+                reason: {
+                    name: translatable(`Reason`),
+                    value: translatable(`{reason}`).withArgs<{ reason: string; }>()
+                },
+                message: {
+                    name: translatable(`Message Id`),
+                    value: translatable(`{messageId}`).withArgs<{ messageId: string; }>()
+                },
+                channel: {
+                    name: translatable(`Channel`),
+                    value: translatable(`{channelIds#map(<#{}>)#join(\n)}`).withArgs<{ channelIds: Iterable<string>; }>()
+                },
+                oldUsername: {
+                    name: translatable(`Old Name`),
+                    value: translatable(`{user.username}#{user.discriminator}`).withArgs<{ user: Eris.User; }>()
+                },
+                newUsername: {
+                    name: translatable(`New Name`),
+                    value: translatable(`{user.username}#{user.discriminator}`).withArgs<{ user: Eris.User; }>()
+                },
+                oldNickname: {
+                    name: translatable(`Old Nickname`),
+                    value: translatable(`{nickname}`).withArgs<{ nickname: string; }>()
+                },
+                newNickname: {
+                    name: translatable(`New Nickname`),
+                    value: translatable(`{nickname}`).withArgs<{ nickname: string; }>()
+                },
+                role: {
+                    name: translatable(`Role`),
+                    value: translatable(`<@&{roleId}> ({roleId})`).withArgs<{ roleId: string; }>()
+                },
+                updatedBy: {
+                    name: translatable(`Updated By`),
+                    value: translatable(`<@{userId}> ({userId})`).withArgs<{ userId: string; }>()
+                },
+                created: {
+                    name: translatable(`Created`),
+                    value: translatable(`{time#tag}`).withArgs<{ time: Moment; }>()
+                },
+                until: {
+                    name: translatable(`Until`),
+                    value: translatable(`{time#tag}`).withArgs<{ time: Moment; }>()
+                },
+                count: {
+                    name: translatable(`Count`),
+                    value: translatable(`{count}`).withArgs<{ count: number; }>()
+                },
+                content: {
+                    name: {
+                        old: {
+                            unavailable: translatable(`Old Message (Unavailable)`),
+                            empty: translatable(`Old Message (Empty)`),
+                            default: translatable(`Old Message`)
+                        },
+                        new: {
+                            unavailable: translatable(`New Message (Unavailable)`),
+                            empty: translatable(`New Message (Empty)`),
+                            default: translatable(`New Message`)
+                        },
+                        current: {
+                            unavailable: translatable(`Content (Unavailable)`),
+                            empty: translatable(`Content (Empty)`),
+                            default: translatable(`Content`)
+                        }
+                    },
+                    value: {
+                        chatLogsOff: translatable(`This message wasn't logged. ChatLogging is currently turned off`),
+                        unknown: translatable(`This message wasn't logged. ChatLogging was off when it was sent, or it is older than 2 weeks`),
+                        expired: translatable(`This message is no longer logged as it is older than 2 weeks`),
+                        notLogged: translatable(`This message wasn't logged. ChatLogging was off when it was sent.`),
+                        empty: translatable(`This message has no content. It had either an attachment or an embed`),
+                        default: translatable(`{content#overflow({maxLength}|... (too long to display))}`).withArgs<{ content: string; maxLength: number; }>()
+                    }
+                }
+            }
+
+        }
+    },
+    warning: {
+        autoBan: translatable(`[ Auto-Ban ] Exceeded ban limit ({warnings}/{limit})`).withArgs<{ warnings: number; limit: number; }>(),
+        autoKick: translatable(`[ Auto-Ban ] Exceeded ban limit ({warnings}/{limit})`).withArgs<{ warnings: number; limit: number; }>(),
+        autoTimeout: translatable(`[ Auto-Ban ] Exceeded ban limit ({warnings}/{limit})`).withArgs<{ warnings: number; limit: number; }>()
+    },
+    mute: {
+        autoUnmute: translatable(`Automatically unmuted after {duration#duration(F)=some time}.`).withArgs<{ duration?: Duration; }>(),
+        createReason: translatable(`Automatic muted role configuration`)
+    },
+    moderation: {
+        auditLog: translatable(`[{moderator.username}#{moderator.discriminator}] {reason}`).withArgs<{ moderator: Eris.User; reason?: IFormattable<string>; }>()
+    },
+    censor: {
+        warnReason: translatable(`Said a blacklisted phrase.`),
+        mentionSpam: {
+            ban: {
+                reason: translatable(`Mention Spam`),
+                failed: translatable(`{user#tag} is mention spamming, but I lack the permissions to ban them!`).withArgs<{ user: Eris.User; }>()
+            }
+        }
+    },
+    ban: {
+        autoUnban: translatable(`Automatically unbanned after {duration#duration(F)=some time}.`).withArgs<{ duration?: Duration; }>()
+    },
+    documentation: {
+        loading: translatable(`Loading...`),
+        name: {
+            flat: translatable(`{parent} - {child}`).withArgs<{ parent: IFormattable<string>; child: IFormattable<string>; }>()
+        },
+        query: {
+        },
+        paging: {
+            parent: translatable(`Back to {parent}`).withArgs<{ parent: IFormattable<string>; }>(),
+            select: {
+                placeholder: translatable(`{text} - Page {page}/{pageCount}`).withArgs<{ text: IFormattable<string>; page: number; pageCount: number; }>()
+            }
+        },
+        command: {
+            unknown: translatable(`❌ Oops, I couldnt find that command! Try using \`b!help\` for a list of all commands`),
+            invalid: translatable(`❌ This help page isn't valid any more!`),
+            prompt: translatable(`Multiple help pages match \`{term}\``).withArgs<{ term: string; }>(),
+            index: {
+                name: translatable(`Help`),
+                footer: translatable(`For more information about commands, do \`b!help <commandname>\` or visit <{commandsLink}>.\nWant to support the bot? Donation links are available at <{donateLink}> - all donations go directly towards recouping hosting costs.`).withArgs<{ commandsLink: string; donateLink: string; }>(),
+                prompt: translatable(`Pick a command category`)
+            },
+            list: {
+                none: translatable(`No commands`),
+                excess: translatable(`\`\`\`\n{items#join(, )}\n\`\`\`+ {excess} more`).withArgs<{ items: Iterable<IFormattable<string>>; excess: number; }>(),
+                count: translatable(`{count} {count#plural(1:command|commands)}`).withArgs<{ count: number; }>(),
+                default: translatable(`\`\`\`\n{items#join(, )}\n\`\`\``).withArgs<{ items: Iterable<IFormattable<string>>; }>()
+            },
+            categories: {
+                prompt: translatable(`Pick a command`),
+                displayName: translatable(`{category} commands`).withArgs<{ category: IFormattable<string>; }>(),
+                custom: {
+                    noHelp: translatable(`_No help set_`)
+                }
+            },
+            command: {
+                prompt: translatable(`Pick a command signature`),
+                noPerms: translatable(`\`\`\`\n❌ You cannot use b!{name}\n\`\`\`{description}`).withArgs<{ name: string; description?: IFormattable<string>; }>(),
+                aliases: {
+                    name: translatable(`**Aliases**`),
+                    value: translatable(`{aliases#join(, )}`).withArgs<{ aliases: Iterable<string>; }>()
+                },
+                flags: {
+                    name: translatable(`**Flags**`),
+                    value: translatable(`{flags#map(\`-{flag}\`/\`--{word}\`: {description})#join(\n)}`).withArgs<{ flags: Iterable<FlagDefinition<string | IFormattable<string>>>; }>()
+                },
+                usage: {
+                    name: translatable(`ℹ️  {usage}`).withArgs<{ usage: string; }>(),
+                    value: translatable(`{notes#plural(0:|{#map(> {})#join(\n)}\n\n)}{description}`).withArgs<{ notes: Iterable<IFormattable<string>>; description: IFormattable<string>; }>()
+                },
+                notes: {
+                    alias: translatable(`\`{parameter}\` can be replaced with {aliases#join(, | or )}`).withArgs<{ parameter: string; aliases: Iterable<string>; }>(),
+                    type: {
+                        string: {
+                            single: translatable(`\`{name}\` defaults to \`{default}\``).withArgs<{ name: string; default: string; }>()
+                        },
+                        literal: {
+                            single: translatable(`\`{name}\` should be {choices#map(\`{}\`)#join(, | or )}{default#bool(and defaults to \`{default}\`|)}`).withArgs<{ name: string; choices: Iterable<string>; default?: string; }>(),
+                            greedy: translatable(`\`{name}\` are {min#plural(0:|1:|{} or more of )}{choices#map(\`{}\`)#join(, | or )}`).withArgs<{ name: string; choices: Iterable<string>; min: number; }>()
+                        },
+                        boolean: {
+                            single: translatable(`\`{name}\` should be true or false{default#bool(and defaults to \`{default}\`|)}`).withArgs<{ name: string; default?: string; }>(),
+                            greedy: translatable(`\`{name}\` are {min#plural(0:|1:|{} or more )}true or false`).withArgs<{ name: string; min: number; }>()
+                        },
+                        channel: {
+                            single: translatable(`\`{name}\` should be a channel id, mention or name{default#bool(and defaults to \`{default}\`|)}`).withArgs<{ name: string; default?: string; }>(),
+                            greedy: translatable(`\`{name}\` are {min#plural(0:|1:|{} or more )}channel ids, mentions or names`).withArgs<{ name: string; min: number; }>()
+                        },
+                        duration: {
+                            single: translatable(`\`{name}\` should be a duration{default#bool(and defaults to \`{default}\`|)}`).withArgs<{ name: string; default?: string; }>(),
+                            greedy: translatable(`\`{name}\` are {min#plural(0:|1:|{} or more )}durations`).withArgs<{ name: string; min: number; }>()
+                        },
+                        bigint: {
+                            single: translatable(`\`{name}\` should be a whole number{default#bool(and defaults to \`{default}\`|)}`).withArgs<{ name: string; default?: string; }>(),
+                            greedy: translatable(`\`{name}\` are {min#plural(0:|1:|{} or more )}whole numbers`).withArgs<{ name: string; min: number; }>()
+                        },
+                        integer: {
+                            single: translatable(`\`{name}\` should be a whole number{default#bool(and defaults to \`{default}\`|)}`).withArgs<{ name: string; default?: string; }>(),
+                            greedy: translatable(`\`{name}\` are {min#plural(0:|1:|{} or more )}whole numbers`).withArgs<{ name: string; min: number; }>()
+                        },
+                        member: {
+                            single: translatable(`\`{name}\` should be a user id, mention or name{default#bool(and defaults to \`{default}\`|)}`).withArgs<{ name: string; default?: string; }>(),
+                            greedy: translatable(`\`{name}\` are {min#plural(0:|1:|{} or more )}user ids, mentions or names`).withArgs<{ name: string; min: number; }>()
+                        },
+                        number: {
+                            single: translatable(`\`{name}\` should be a number{default#bool(and defaults to \`{default}\`|)}`).withArgs<{ name: string; default?: string; }>(),
+                            greedy: translatable(`\`{name}\` are {min#plural(0:|1:|{} or more )}numbers`).withArgs<{ name: string; min: number; }>()
+                        },
+                        role: {
+                            single: translatable(`\`{name}\` should be a role id, mention or name{default#bool(and defaults to \`{default}\`|)}`).withArgs<{ name: string; default?: string; }>(),
+                            greedy: translatable(`\`{name}\` are {min#plural(0:|1:|{} or more )}role ids, mentions or names`).withArgs<{ name: string; min: number; }>()
+                        },
+                        sender: {
+                            single: translatable(`\`{name}\` should be a user id, mention or name, or a webhook id{default#bool(and defaults to \`{default}\`|)}`).withArgs<{ name: string; default?: string; }>(),
+                            greedy: translatable(`\`{name}\` are {min#plural(0:|1:|{} or more )}user ids, mentions or names, or webhook ids`).withArgs<{ name: string; min: number; }>()
+                        },
+                        user: {
+                            single: translatable(`\`{name}\` should be a user id, mention or name{default#bool(and defaults to \`{default}\`|)}`).withArgs<{ name: string; default?: string; }>(),
+                            greedy: translatable(`\`{name}\` are {min#plural(0:|1:|{} or more )}user ids, mentions or names`).withArgs<{ name: string; min: number; }>()
+                        }
+                    }
+                }
+            }
+        },
+        bbtag: {
+            invalid: translatable(`❌ This bbtag documentation page isn't valid any more!`),
+            unknown: translatable(`❌ Oops, I didn't recognise that topic! Try using \`b!{commandName} docs\` for a list of all topics`).withArgs<{ commandName: string; }>(),
+            prompt: translatable(`Multiple bbtag documentation pages match \`{term}\``).withArgs<{ term: string; }>(),
+            index: {
+                name: translatable(`BBTag`),
+                description: translatable(`Blargbot is equipped with a system of tags called BBTag, designed to mimic a programming language while still remaining simple. You can use this system as the building-blocks to create your own advanced command system, whether it be through public tags or guild-specific custom commands.\n\nCustomizing can prove difficult via discord, fortunately there is an online [BBTag IDE]({editorLink}) which should make developing a little easier.`).withArgs<{ editorLink: string; }>(),
+                prompt: translatable(`Pick a topic`),
+                topics: {
+                    name: translatable(`Topics`),
+                    value: translatable(`For specific information about a topic, please use \`b!{commandName} docs <topic>\` (like \`b!{commandName} docs subtags\`\n- \`terminology\`, for more information about terms like 'subtags', 'tags', etc.  \n- \`variables\`, for more information about variables and the different variable scopes.\n- \`argTypes\`, for more information about the syntax of parameters\n- \`dynamic\`, for information about dynamic subtags\n- \`subtags\`, arguably the most important topic on this list. \`b!{commandName} docs subtags\` displays a list of subtag categories.`).withArgs<{ commandName: string; }>()
+                }
+            },
+            subtags: {
+                name: translatable(`Subtags`),
+                description: translatable(`Subtags are the building blocks of BBTag, and fall into {categories#count} categories:\n\n{categories#map(**{name}** - {description})#join(\n)}`).withArgs<{ categories: Iterable<{ name: IFormattable<string>; description: IFormattable<string>; }>; }>(),
+                prompt: translatable(`Pick a category`)
+            },
+            subtag: {
+                name: translatable(`\\{{name}\\}`).withArgs<{ name: string; }>(),
+                prompt: translatable(`Pick a call signature`),
+                description: {
+                    deprecated: translatable(`**This subtag is deprecated{replacement#bool( and has been replaced by \\{{}\\}|)}**`).withArgs<{ replacement?: string; }>(),
+                    aliases: translatable(`{aliases#plural(0:|**Aliases:** \`\`\`\n{#join(, )}\n\`\`\`)}`).withArgs<{ aliases: Iterable<string>; }>(),
+                    template: translatable(`{parts#join(\n)}`).withArgs<{ parts: Iterable<IFormattable<string>>; }>()
+                },
+                pages: {
+                    signature: {
+                        name: translatable(`Usage: {parameters}`).withArgs<{ parameters: string; }>(),
+                        usage: {
+                            name: translatable(`**Usage**`),
+                            value: {
+                                parameters: translatable(`\`\`\`\n{parameters}\n\`\`\``).withArgs<{ parameters: string; }>(),
+                                modifier: {
+                                    maxLength: translatable(`\`{name}\` can at most be {maxLength} characters long`).withArgs<{ name: string; maxLength: number; }>(),
+                                    defaulted: translatable(`\`{name}\` defaults to \`{defaultValue}\` if{required#bool(| omitted or)} left blank.`).withArgs<{ name: string; defaultValue: string; required: boolean; }>(),
+                                    defaultedMaxLength: translatable(`\`{name}\` can at most be {maxLength} characters long and defaults to \`{defaultValue}\` if{required#bool(| omitted or)} left blank.`).withArgs<{ name: string; defaultValue: string; required: boolean; maxLength: number; }>()
+                                },
+                                template: translatable(`{parts#join(\n)}`).withArgs<{ parts: Iterable<IFormattable<string>>; }>()
+                            }
+                        },
+                        exampleCode: {
+                            name: translatable(`**Example code**`),
+                            value: translatable(`\`\`\`\n{code}\n\`\`\``).withArgs<{ code: IFormattable<string>; }>()
+                        },
+                        exampleIn: {
+                            name: translatable(`**Example user input**`),
+                            value: translatable(`{text#bool(\n{#split(\n)#map(> {})#join(\n)}|_no input_})\n`).withArgs<{ text: IFormattable<string>; }>()
+                        },
+                        exampleOut: {
+                            name: translatable(`**Example output**`),
+                            value: translatable(`{text#bool(\n{#split(\n)#map(> {})#join(\n)}|_no output})\n`).withArgs<{ text: IFormattable<string>; }>()
+                        },
+                        limit: {
+                            name: {
+                                customCommandLimit: translatable(`**Limits for custom commands:**`),
+                                everythingAutoResponseLimit: translatable(`**Limits for custom commands:**`),
+                                generalAutoResponseLimit: translatable(`**Limits for custom commands:**`),
+                                tagLimit: translatable(`**Limits for custom commands:**`)
+                            },
+                            value: translatable(`\`\`\`\n{rules#join(\n)}\n\`\`\``).withArgs<{ rules: Iterable<IFormattable<string>>; }>()
+                        }
+                    }
+                }
+            },
+            subtagCategory: {
+                description: translatable(`{description}\n\n\`\`\`\n{subtags#map(, )}\n\`\`\``).withArgs<{ description: IFormattable<string>; subtags: Iterable<string>; }>(),
+                prompt: translatable(`Pick a subtag`)
+            },
+            variables: {
+                name: translatable(`Variables`),
+                description: translatable(`In BBTag there are {scopeCount} different scopes that can be used for storing your data. These scopes are determined by the first character of your variable name, so choose carefully!`).withArgs<{ scopeCount: number; }>(),
+                prompt: translatable(`Pick a variable scope`),
+                pages: {
+                    variableType: {
+                        name: translatable(`{name} variables (prefix: {prefix})`).withArgs<{ name: IFormattable<string>; prefix: string; }>()
+                    },
+                    commitRollback: {
+                        name: translatable(`\\{commit\\} and \\{rollback\\}`),
+                        value: translatable(`For performance reasons, when a value is \`\\{set\\}\` it wont be immediately populated to the database. \`\\{commit\\}\` and \`\\{rollback\\}\` can be used to manipulate when variables are sent to the database, if at all. \`\\{commit\\}\` will force the given variables to be sent to the database immediately. \`\\{rollback\\}\` will revert the given variables to their original value (start of tag or most recent \`\\{commit\\}\`).\nThere is also an additional prefix for \\{set\\} and \\{get\\} which is \`!\`. This prefix can be combined with other prefixes and will act the same as if you have called \`\\{set\\}\` and then \`\\{commit\\}\` immediately after. e.g. \`\`\`\\{set;!@varname;value\\}\`\`\` is identical to \`\`\`\\{set;@varname;value\\}\\{commit;@varname\\}\`\`\``)
+                    }
+                }
+            },
+            arguments: {
+                name: translatable(`Arguments`),
+                description: translatable(`As you may have noticed, the various help documentation for subtags will have a usage that often look like this: \`\`\`\n\\{subtag;<arg1>;[arg2];<arg3...>\\}\`\`\`This way of formatting arguments is designed to easily be able to tell you what is and is not required.\nAll arguments are separated by \`;\`'s and each will be displayed in a way that tells you what kind of argument it is.\nNOTE: Simple subtags do not accept any arguments and so should not be supplied any.`),
+                prompt: translatable(`Pick a argument type`),
+                pages: {
+                    required: {
+                        name: translatable(`Required arguments <>`),
+                        value: translatable(`Example:\`\`\`\n<arg>\`\`\`Required arguments must be supplied for a subtag to work. If they are not then you will normally be given a \`Not enough args\` error\n\u200B`)
+                    },
+                    optional: {
+                        name: translatable(`Optional arguments []`),
+                        value: translatable(`Example:\`\`\`\n[arg]\`\`\`Optional arguments may or may not be provided. If supplied, optional arguments may either change the functionality of the tag (e.g. \`b!{commandName} docs shuffle\`) or simply replace a default value (e.g. \`b!{commandName} docs username\`).\n\u200B`).withArgs<{ commandName: string; }>()
+                    },
+                    multiple: {
+                        name: translatable(`Multiple arguments ...`),
+                        value: translatable(`Example:\`\`\`\n<arg...>\`\`\`Some arguments can accept multiple values, meaning you are able to list additional values, still separated by \`;\`, which will be included in the execution. (e.g. \`b!{commandName} docs randchoose\`)`).withArgs<{ commandName: string; }>()
+                    },
+                    nested: {
+                        name: translatable(`Nested arguments <<> <>>`),
+                        value: translatable(`Example:\`\`\`\n<<arg1>, [arg2]>\`\`\`Some subtags may have special rules for how their arguments are grouped (e.g. \`b!{commandName} docs switch\`) and will use nested arguments to show that grouping. When actually calling the subtag, you provide the arguments as normal, however you must obey the grouping rules.\nIn the example of \`switch\`, you may optionally supply \`<case>\` and \`<then>\` as many times as you like but they must always be in pairs. e.g. \`{switch;value;case1;then1}\` or \`{switch;value;case1;then1;case2;then2}\` etc`).withArgs<{ commandName: string; }>()
+                    }
+                }
+            },
+            terminology: {
+                name: translatable(`Terminology`),
+                description: translatable(`There are various terms used in BBTag that might not be intuitive, so here is a list of definitions for some of the most important ones:`),
+                prompt: translatable(`Pick a term`),
+                pages: {
+                    bbtag: {
+                        name: translatable(`BBTag`),
+                        value: translatable(`BBTag is a text replacement language. Any text between a \`\\{\` and \`\\}\` pair (called a subtag) will be taken as code and run, with the output of that replacing the whole subtag. Each subtag does something different, and each accepts its own list of arguments.`)
+                    },
+                    subtag: {
+                        name: translatable(`Subtag`),
+                        value: translatable(`A subtag is a pre-defined function that accepts some arguments and returns a single output. Subtags can be called by placing their name between a pair of \`\\{\` and \`\\}\`, with any arguments to be passed to the subtag being separated by \`;\`.\nAs an example:\`\`\`\\{math;+;1;2\\}\`\`\`Subtag: \`math\`\nArguments: \`+\`, \`1\`, \`2\`\nResult: \`3\``)
+                    },
+                    tag: {
+                        name: translatable(`Tag`),
+                        value: translatable(`A tag is a user-made block of text which may or may not contain subtags. Any subtags that it does contain will be executed and be replaced by their output.`)
+                    },
+                    argument: {
+                        name: translatable(`Argument`),
+                        value: translatable(`An argument is a single value which gets given to a subtag. Arguments can be numbers, text, arrays, anything you can type really. Each subtag will require a different argument pattern, so be sure to check what pattern your subtag needs!`)
+                    },
+                    variable: {
+                        name: translatable(`Variable`),
+                        value: translatable(`A variable is a value that is stored in the bots memory ready to access it later on. For more in-depth details about variables, please use \`b!{commandName} docs variable\`.`).withArgs<{ commandName: string; }>()
+                    },
+                    array: {
+                        name: translatable(`Array`),
+                        value: translatable(`An array is a collection of values all grouped together, commonly done so by enclosing them inside \`[]\`. In BBTag, arrays can be assigned to a variable to store them for later use. In this situation, you might see an array displayed like this \`\\{"v":["1","2","3"],"n":"varname"\\}\`. If you do, dont worry, nothing is broken! That is just there to allow you to modify the array in place within certain subtags.`)
+                    }
+                }
+            },
+            dynamic: {
+                name: translatable(`Dynamic`),
+                description: translatable(`In bbtag, even the names of subtags can be dynamic. This can be achieved simply by placing subtags before the first \`;\` of a subtag. \n e.g. \`\`\`\\{user\\{get;~action\\};\\{userid\\}\\}\`\`\` If \`~action\` is set to \`name\`, then this will run the \`username\` subtag, if it is set to \`avatar\` then it will run the \`useravatar\` subtag, and so on. Because dynamic subtags are by definition not set in stone, it is recommended not to use them, and as such you will receive warnings when editing/creating a tag/cc which contains a dynamic subtag. Your tag will function correctly, however some optimizations employed by bbtag will be unable to run on any such tag.`)
+            }
+        }
     },
     commands: {
         $errors: {
@@ -55,7 +574,50 @@ export const templates = crunchTree(`cluster`, {
                 noneNeeded: translatable(`❌ Too many arguments! \`{command.name}\` doesn't need any arguments`).withArgs<{ command: Command; }>(),
                 tooMany: translatable(`❌ Too many arguments! Expected at most {max} {max#plural(1:argument|arguments)}, but you gave {given}`).withArgs<{ max: number; given: number; }>()
             },
-            renderFailed: translatable(`❌ Something went wrong while trying to render that!`)
+            renderFailed: translatable(`❌ Something went wrong while trying to render that!`),
+            messageDeleted: translatable(`**{user.username}#{user.discriminator}** deleted their command message.`).withArgs<{ user: UserTag; }>()
+        },
+        categories: {
+            custom: {
+                name: translatable(`Custom`),
+                description: translatable(`Custom commands.`)
+            },
+            general: {
+                name: translatable(`General`),
+                description: translatable(`General commands.`)
+            },
+            nsfw: {
+                name: translatable(`NSFW`),
+                description: translatable(`Commands that can only be executed in NSFW channels.`)
+            },
+            image: {
+                name: translatable(`Image`),
+                description: translatable(`Commands that generate or display images.`)
+            },
+            admin: {
+                name: translatable(`Admin`),
+                description: translatable(`Powerful commands that require an \`admin\` role or special permissions.`)
+            },
+            social: {
+                name: translatable(`Social`),
+                description: translatable(`Social commands for interacting with other people.`)
+            },
+            owner: {
+                name: translatable(`Blargbot Owner`),
+                description: translatable(`MREOW MEOWWWOW! **purr**`)
+            },
+            developer: {
+                name: translatable(`Blargbot Developer`),
+                description: translatable(`Commands that can only be executed by blargbot developers.`)
+            },
+            staff: {
+                name: translatable(`Blargbot Staff`),
+                description: translatable(`Commands that can only be executed by staff on the official support server.`)
+            },
+            support: {
+                name: translatable(`Blargbot Support`),
+                description: translatable(`Commands that can only be executed by support members on the official support server.`)
+            }
         },
         announce: {
             default: {
@@ -245,9 +807,13 @@ export const templates = crunchTree(`cluster`, {
         bot: {
             reset: {
                 description: translatable(`Resets the bot to the state it is in when joining a guild for the first time.`),
-                prompt: translatable(`⚠️ Are you sure you want to reset the bot to its initial state?\nThis will:\n- Reset all settings back to their defaults\n- Delete all custom commands, autoresponses, rolemes, censors, etc\n- Delete all tag guild variables`),
                 cancelled: translatable(`❌ Reset cancelled`),
-                success: translatable(`✅ I have been reset back to my initial configuration`)
+                success: translatable(`✅ I have been reset back to my initial configuration`),
+                confirm: {
+                    prompt: translatable(`⚠️ Are you sure you want to reset the bot to its initial state?\nThis will:\n- Reset all settings back to their defaults\n- Delete all custom commands, autoresponses, rolemes, censors, etc\n- Delete all tag guild variables`),
+                    cancel: translatable(`No`),
+                    continue: translatable(`Yes`)
+                }
             }
         },
         ccommand: {
@@ -265,7 +831,9 @@ export const templates = crunchTree(`cluster`, {
                 bbtagError: translatable(`❌ [{location.line},{location.column}]: {message}`).withArgs<AnalysisResult>(),
                 bbtagWarning: translatable(`❌ [{location.line},{location.column}]: {message}`).withArgs<AnalysisResult>(),
                 nameReserved: translatable(`❌ The command name \`{name}\` is reserved and cannot be overwritten`).withArgs<{ name: string; }>(),
-                tooLong: translatable(`❌ Command names cannot be longer than {max} characters`).withArgs<{ max: number; }>()
+                tooLong: translatable(`❌ Command names cannot be longer than {max} characters`).withArgs<{ max: number; }>(),
+                importDeleted: translatable(`❌ When the command \`{commandName}\` was imported, the tag \`{tagName}\` was owned by **{author.username}#{author.discriminator}** ({authorId}) but it no longer exists. To continue using this command, please re-create the tag and re-import it.`).withArgs<{ commandName: string; tagName: string; author?: UserTag; authorId: string; }>(),
+                importChanged: translatable(`❌ When the command \`{commandName}\` was imported, the tag \`{tagName}\` was owned by **{oldAuthor.username}#{oldAuthor.discriminator}** ({oldAuthorId}) but it is now owned by **{newAuthor.username}#{newAuthor.discriminator}** ({newAuthorId}). If this is acceptable, please re-import the tag to continue using this command.`).withArgs<{ commandName: string; tagName: string; oldAuthor?: UserTag; oldAuthorId: string; newAuthor?: UserTag; newAuthorId: string; }>()
             },
             test: {
                 default: {
@@ -2097,12 +2665,23 @@ export const templates = crunchTree(`cluster`, {
                 attached: translatable(`ℹ️ The raw code for {name} is attached`).withArgs<{ name: string; }>()
             },
             list: {
-                description: translatable(`Lists all tags, or tags made by a specific author`)
+                description: translatable(`Lists all tags, or tags made by a specific author`),
+                page: {
+                    content: translatable(`\`\`\`fix\n{tags#join(, )}\n\`\`\``).withArgs<{ tags: Iterable<string>; }>(),
+                    header: {
+                        all: translatable(`Found {count}/{total} tags`).withArgs<{ count: number; total: number; }>(),
+                        byUser: translatable(`Found {count}/{total} tags made by {user#tag}`).withArgs<{ count: number; total: number; user: Eris.User; }>()
+                    }
+                }
             },
             search: {
                 description: translatable(`Searches for a tag based on the provided name`),
                 query: {
                     prompt: translatable(`What would you like to search for?`)
+                },
+                page: {
+                    content: translatable(`\`\`\`fix\n{tags#join(, )}\n\`\`\``).withArgs<{ tags: Iterable<string>; }>(),
+                    header: translatable(`Found {count}/{total} tags matching \`{query}\``).withArgs<{ count: number; total: number; query: string; }>()
                 }
             },
             permDelete: {
@@ -2185,7 +2764,7 @@ export const templates = crunchTree(`cluster`, {
             favourite: {
                 list: {
                     description: translatable(`Displays a list of the tags you have favourited`),
-                    success: translatable(`{count#plural(0:You have no favourite tags!|You have {} favourite {#plural(1:tag|tags)}. \`\`\`fix\n{..tags#join(, )}\n\`\`\`)}`).withArgs<{ count: number; tags: Iterable<string>; }>()
+                    success: translatable(`{count#plural(0:You have no favourite tags!|You have {} favourite {#plural(1:tag|tags)}. \`\`\`fix\n{~tags#join(, )}\n\`\`\`)}`).withArgs<{ count: number; tags: Iterable<string>; }>()
                 },
                 toggle: {
                     description: translatable(`Adds or removes a tag from your list of favourites`),
@@ -2343,7 +2922,7 @@ export const templates = crunchTree(`cluster`, {
                 description: translatable(`Checks the status of the petition to ban someone.`),
                 embed: {
                     title: translatable(`ℹ️ Vote ban signatures`),
-                    description: translatable(`{votes#plural(0:No one has voted to ban {..user#tag} yet.|{#map(<@{userId}>{reason#bool( - {}|)})#join(\n)})}{excess#bool(\n... and {} more|)`).withArgs<{ user: Eris.User; votes: Iterable<{ userId: string; reason?: string; }>; excess: number; }>()
+                    description: translatable(`{votes#plural(0:No one has voted to ban {~user#tag} yet.|{#map(<@{userId}>{reason#bool( - {}|)})#join(\n)})}{excess#bool(\n... and {} more|)`).withArgs<{ user: Eris.User; votes: Iterable<{ userId: string; reason?: string; }>; excess: number; }>()
                 }
             },
             sign: {

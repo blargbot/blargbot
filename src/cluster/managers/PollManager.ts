@@ -1,10 +1,13 @@
 import { Cluster } from '@blargbot/cluster';
 import { PollResponse } from '@blargbot/cluster/types';
 import { Emote } from '@blargbot/core/Emote';
-import { pluralise as p } from '@blargbot/core/utils';
+import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent';
+import { literal } from '@blargbot/domain/messages/types';
 import { PollEventOptions } from '@blargbot/domain/models';
 import { AllowedMentions, KnownGuildTextableChannel, User } from 'eris';
 import moment, { Duration } from 'moment-timezone';
+
+import templates from '../text';
 
 export class PollManager {
     readonly #cluster: Cluster;
@@ -53,22 +56,22 @@ export class PollManager {
                 allowedMentions.roles = [result.detail.role.id];
         }
 
-        const poll = await this.#cluster.util.send(channel, {
-            content,
+        const poll = await this.#cluster.util.send(channel, new FormattableMessageContent({
+            content: literal(content),
             allowedMentions,
             embeds: [
                 {
                     author: {
                         icon_url: this.#cluster.util.embedifyAuthor(author).icon_url,
-                        name: title
+                        name: literal(title)
                     },
-                    description: description,
-                    footer: { text: `The poll will end` },
+                    description: literal(description),
+                    footer: { text: templates.poll.embed.footer.text },
                     timestamp: endTime.toDate(),
                     color: colour
                 }
             ]
-        });
+        }));
 
         if (poll === undefined)
             return { state: `FAILED_SEND` };
@@ -120,20 +123,19 @@ export class PollManager {
         const voteCount = Object.values(results).reduce((p, c) => p + c, 0);
         const winners = Object.entries(results).filter(e => e[1] === bestCount).map(e => e[0]);
 
-        const resultStr = bestCount === 0
-            ? `No one voted, how sad 😦`
-            : winners.length > 1
-                ? `It was a tie between these choices at **${bestCount}** ${p(bestCount, `vote`)} each:\n\n${winners.join(``)}`
-                : `At **${bestCount}** ${p(bestCount, `vote`)}, the winner is:\n\n${winners.join(``)}`;
-
-        await this.#cluster.util.send(message, {
+        await this.#cluster.util.reply(message, new FormattableMessageContent({
             embeds: [
                 {
-                    author: author,
-                    description: `The results are in! A total of **${voteCount}** ${p(voteCount, `vote was`, `votes were`)} collected!\n\n${resultStr}`,
+                    author: {
+                        ...author,
+                        name: literal(author.name)
+                    },
+                    description: bestCount === 0 ? templates.poll.success.noVotes({ total: voteCount })
+                        : winners.length > 1 ? templates.poll.success.tie({ total: voteCount, count: bestCount, winners })
+                            : templates.poll.success.single({ total: voteCount, count: bestCount, winner: winners[0] }),
                     color: options.color
                 }
             ]
-        });
+        }));
     }
 }

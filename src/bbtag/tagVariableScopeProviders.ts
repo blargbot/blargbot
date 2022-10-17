@@ -1,3 +1,4 @@
+import { IFormattable } from '@blargbot/domain/messages/types';
 import { TagVariableScope, TagVariableType } from '@blargbot/domain/models';
 
 import { BBTagContext } from './BBTagContext';
@@ -48,8 +49,8 @@ export const tagVariableScopeProviders: readonly TagVariableScopeProvider[] = [
 ];
 
 export interface TagVariableScopeProvider {
-    readonly name: string;
+    readonly name: IFormattable<string>;
     readonly prefix: string;
-    readonly description: string;
+    readonly description: IFormattable<string>;
     getScope(context: BBTagContext): TagVariableScope | undefined;
 }

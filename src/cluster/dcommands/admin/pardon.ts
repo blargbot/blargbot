@@ -1,6 +1,7 @@
 import { GuildCommand } from '@blargbot/cluster/command';
 import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType, parse } from '@blargbot/cluster/utils';
+import { literal } from '@blargbot/domain/messages/types';
 import { FlagResult } from '@blargbot/domain/models';
 import { Member } from 'eris';
 
@@ -31,7 +32,7 @@ export class PardonCommand extends GuildCommand {
         const reason = flags.r?.merge().value;
         const count = parse.int(flags.c?.merge().value ?? 1, { strict: true }) ?? NaN;
 
-        const { state, warnings } = await context.cluster.moderation.warns.pardon(member, context.author, count, reason);
+        const { state, warnings } = await context.cluster.moderation.warns.pardon(member, context.author, count, literal(reason));
         const result = cmd.default.state[state];
         return typeof result === `function`
             ? result({ text: flags.c?.merge().value ?? ``, user: member.user, count, warnings })

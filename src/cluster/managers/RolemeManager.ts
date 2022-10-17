@@ -1,8 +1,11 @@
 import { ExecutionResult } from '@blargbot/bbtag';
 import { Cluster } from '@blargbot/cluster';
+import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent';
 import { guard } from '@blargbot/core/utils';
 import { GuildRolemeEntry } from '@blargbot/domain/models';
 import { KnownGuildTextableChannel, KnownMessage, Message } from 'eris';
+
+import templates from '../text';
 
 export class RolemeManager {
     readonly #cluster: Cluster;
@@ -37,7 +40,7 @@ export class RolemeManager {
                 await this.invokeMessage(message, roleme);
 
             } catch (err: unknown) {
-                await this.#cluster.util.send(message, `A roleme was triggered, but I don't have the permissions required to give you your role!`);
+                await this.#cluster.util.reply(message, new FormattableMessageContent({ content: templates.roleme.failed }));
             }
         }
     }

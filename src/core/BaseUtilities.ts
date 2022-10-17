@@ -1,11 +1,12 @@
 import { Configuration } from '@blargbot/config/Configuration';
 import { FormatEmbedAuthor, SendContent, SendContext } from '@blargbot/core/types';
 import { Database } from '@blargbot/database';
-import { IFormattable } from '@blargbot/domain/messages/types';
+import { TranslatableString } from '@blargbot/domain/messages/index';
+import { IFormattable, IFormatter, literal } from '@blargbot/domain/messages/types';
 import { DiscordChannelTag, DiscordRoleTag, DiscordTagSet, DiscordUserTag, StoredUser } from '@blargbot/domain/models';
 import { Logger } from '@blargbot/logger';
 import { Snowflake } from 'catflake';
-import { AnyGuildChannel, ApiError, ChannelInteraction, Client as Discord, Collection, DiscordRESTError, EmbedAuthor, ExtendedUser, Guild, GuildChannel, KnownChannel, KnownGuildChannel, KnownMessage, KnownTextableChannel, Member, Message, RequestHandler, Role, User, UserChannelInteraction, Webhook } from 'eris';
+import { AdvancedMessageContent, AnyGuildChannel, ApiError, Channel, ChannelInteraction, Client as Discord, Collection, DiscordRESTError, ExtendedUser, Guild, GuildChannel, KnownChannel, KnownGuildChannel, KnownMessage, Member, Message, RequestHandler, Role, TextableChannel, User, UserChannelInteraction, Webhook } from 'eris';
 import moment from 'moment-timezone';
 
 import { BaseClient } from './BaseClient';
@@ -25,28 +26,23 @@ export class BaseUtilities {
     ) {
     }
 
-    async #getSendChannel(context: SendContext): Promise<KnownTextableChannel> {
-        // Process context into a channel and maybe a message
-        switch (typeof context) {
-            // Id provided, get channel object
-            case `string`: {
-                const foundChannel = await this.getChannel(context);
-                if (foundChannel === undefined)
-                    break;
-                else if (guard.isTextableChannel(foundChannel))
-                    return foundChannel;
-                else
-                    throw new Error(`Cannot send messages to the given channel`);
-            }
-            case `object`:
-                // Probably a message provided
-                if (`channel` in context)
-                    return context.channel;
-                // Probably a channel provided
-                return context;
+    async #getSendChannel(context: SendContext): Promise<TextableChannel> {
+        if (typeof context === `string`) {
+            const channel = await this.getChannel(context);
+            if (channel === undefined)
+                throw new Error(`Channel not found`);
+            if (guard.isTextableChannel(channel))
+                return channel;
+            throw new Error(`Channel is not textable`);
         }
+        if (context instanceof User) {
+            return await context.getDMChannel();
+        }
+        return context;
+    }
 
-        throw new Error(`Channel not found`);
+    public async getFormatter(channel: Channel | Guild | string): Promise<IFormatter> {
+
     }
 
     public websiteLink(path?: string): string {
@@ -61,24 +57,24 @@ export class BaseUtilities {
         if (target instanceof User) {
             return {
                 icon_url: target.avatarURL,
-                name: `${humanize.fullName(target)} ${includeId ? `(${target.id})` : ``}`
+                name: literal(`${humanize.fullName(target)} ${includeId ? `(${target.id})` : ``}`)
                 // url: target === this.discord.user ? undefined : `https://discord.com/users/${target.id}`
             };
         } else if (target instanceof Member) {
             return {
                 icon_url: target.avatarURL,
-                name: `${target.nick ?? target.username} ${includeId ? `(${target.id})` : ``}`
+                name: literal(`${target.nick ?? target.username} ${includeId ? `(${target.id})` : ``}`)
                 // url: `https://discord.com/users/${target.id}`
             };
         } else if (target instanceof Guild) {
             return {
                 icon_url: target.iconURL ?? undefined,
-                name: target.name
+                name: literal(target.name)
             };
         } else if (`userid` in target) {
             return {
                 icon_url: target.avatarURL,
-                name: `${target.username ?? `UNKNOWN`} ${includeId ? `(${target.userid})` : ``}`
+                name: literal(`${target.username ?? `UNKNOWN`} ${includeId ? `(${target.userid})` : ``}`)
                 // url: `https://discord.com/users/${target.userid}`
             };
         }
@@ -86,85 +82,70 @@ export class BaseUtilities {
         return target; // never
     }
 
-    public async send<T extends KnownTextableChannel>(context: T, payload: SendContent<string>): Promise<Message<T> | undefined>;
-    public async send(context: SendContext, payload: SendContent<string>): Promise<KnownMessage | undefined>;
-    public async send(context: SendContext, payload: SendContent<string>): Promise<KnownMessage | undefined> {
+    public async reply<T extends TextableChannel>(message: Message<T>, payload: IFormattable<SendContent<string>>, author?: User): Promise<Message<T> | undefined> {
+        return await this.send(message.channel, {
+            format(formatter) {
+                return {
+                    messageReference: {
+                        messageID: message.id,
+                        channelID: message.channel.id,
+                        failIfNotExists: false
+                    },
+                    ...payload.format(formatter)
+                };
+            }
+        }, author);
+    }
+
+    public async send<T extends TextableChannel>(context: T, payload: IFormattable<SendContent<string>>, author?: User): Promise<Message<T> | undefined>;
+    public async send(context: SendContext, payload: IFormattable<SendContent<string>>, author?: User): Promise<Message | undefined>;
+    public async send(context: SendContext, payload: IFormattable<SendContent<string>>, author?: User): Promise<Message | undefined> {
         metrics.sendCounter.inc();
 
-        let channel = await this.#getSendChannel(context);
-        const author = typeof context === `object` && `author` in context ? context.author : undefined;
-
-        if (typeof payload === `string`)
-            payload = { content: payload };
-        else if (`file` in payload)
-            payload = { files: [payload] };
-        else if (isEmbed(payload))
-            payload = { embeds: [payload] };
-
-        let files = payload.files;
-        delete payload.files;
-
-        const replyToExecuting = payload.replyToExecuting ?? true;
-        delete payload.replyToExecuting;
-        if (payload.messageReference === undefined && replyToExecuting && context instanceof Message)
-            payload.messageReference = { failIfNotExists: false, messageID: context.id };
-
-        // Send help messages to DMs if the message is marked as a help message
-        if (payload.isHelp === true
-            && guard.isGuildChannel(channel)
-            && await this.database.guilds.getSetting(channel.guild.id, `dmhelp`) === true
-            && author !== undefined) {
-            await this.send(channel, `📧 DMing you the help 📧`);
-            payload.content = `Here is the help you requested in ${channel.mention}>:\n${payload.content ?? ``}`;
-            channel = await author.getDMChannel();
-        }
+        const channel = await this.#getSendChannel(context);
+        const formatter = await this.getFormatter(channel);
+        const { files = [], ...content } = payload.format(formatter);
 
         // Stringifies embeds if we lack permissions to send embeds
-        if (payload.embeds !== undefined && guard.isGuildChannel(channel)) {
+        if (content.embeds !== undefined && guard.isGuildChannel(channel)) {
             const member = await this.getMember(channel.guild, this.user.id);
             if (member !== undefined && channel.permissionsOf(member).has(`embedLinks`) !== true) {
-                payload.content = `${payload.content ?? ``}${humanize.embed(payload.embeds)}`;
-                delete payload.embeds;
+                content.content = `${content.content ?? ``}${humanize.embed(content.embeds)}`;
+                delete content.embeds;
             }
         }
 
-        payload.content = payload.content?.trim();
-        if (payload.content?.length === 0)
-            payload.content = undefined;
+        content.content = content.content?.trim();
+        if (content.content?.length === 0)
+            content.content = undefined;
 
-        if (payload.nsfw !== undefined && guard.isGuildChannel(channel) && !channel.nsfw) {
-            payload.content = payload.nsfw;
-            payload.embeds = files = undefined;
-        }
-
-        if (payload.content === undefined
-            && (payload.embeds?.length ?? 0) === 0
-            && (files?.length ?? 0) === 0
-            && (payload.components?.length ?? 0) === 0) {
+        if (content.content === undefined
+            && (content.embeds?.length ?? 0) === 0
+            && files.length === 0
+            && (content.components?.length ?? 0) === 0) {
             throw new Error(`No content`);
         }
 
-        if (!guard.checkEmbedSize(payload.embeds)) {
-            const id = await this.generateDumpPage(payload, channel);
+        if (!guard.checkEmbedSize(content.embeds)) {
+            const id = await this.generateDumpPage(content, channel);
             const output = this.websiteLink(`/dumps/${id}`);
-            payload.content = `Oops! I tried to send a message that was too long. If you think this is a bug, please report it!\n\nTo see what I would have said, please visit ${output}`;
-            if (payload.embeds !== undefined)
-                delete payload.embeds;
-        } else if (payload.content !== undefined && !guard.checkMessageSize(payload.content)) {
-            files ??= [];
+            content.content = `Oops! I tried to send a message that was too long. If you think this is a bug, please report it!\n\nTo see what I would have said, please visit ${output}`;
+            if (content.embeds !== undefined)
+                delete content.embeds;
+        } else if (content.content !== undefined && !guard.checkMessageSize(content.content)) {
             files.unshift({
-                file: payload.content,
+                file: content.content,
                 name: `message.txt`
             });
-            payload.content = undefined;
+            content.content = undefined;
         }
-        for (const file of files ?? [])
+        for (const file of files)
             if (typeof file === `object` && `attachment` in file && typeof file.file === `string`)
                 file.file = Buffer.from(file.file);
 
         this.logger.debug(`Sending content: `, JSON.stringify(payload));
         try {
-            return await channel.createMessage(payload, files);
+            return await channel.createMessage(content, files);
         } catch (error: unknown) {
             if (!(error instanceof DiscordRESTError))
                 throw error;
@@ -173,25 +154,24 @@ export class BaseUtilities {
             if (!guard.hasProperty(sendErrors, code))
                 return undefined;
 
-            let result = await sendErrors[code](this, channel, payload, error);
-            if (typeof result === `string` && author !== undefined && await this.canDmErrors(author.id)) {
-                if (guard.isGuildChannel(channel))
-                    result += `\nGuild: ${channel.guild.name} (${channel.guild.id})`;
-
-                const name = guard.isGuildChannel(channel) ? channel.name : `PRIVATE CHANNEL`;
-                result += `\nChannel: ${name} (${channel.id})`;
-                result += `\n\nIf you wish to stop seeing these messages, do the command \`dmerrors\`.`;
-
+            const result = sendErrors[code](this, channel, content, error);
+            if (typeof result === `object` && author !== undefined && await this.canDmErrors(author.id)) {
                 await this.send(author, {
-                    content: result,
-                    messageReference: payload.messageReference
+                    format(formatter) {
+                        return {
+                            content: guard.isGuildChannel(channel)
+                                ? sendErrorGuild({ channel, message: result }).format(formatter)
+                                : sendErrorDm({ channel, message: result }).format(formatter),
+                            messageReference: content.messageReference
+                        };
+                    }
                 });
             }
             return undefined;
         }
     }
 
-    public async addReactions(context: KnownMessage, reactions: Iterable<Emote>): Promise<{ success: Emote[]; failed: Emote[]; }> {
+    public async addReactions(context: Message, reactions: Iterable<Emote>): Promise<{ success: Emote[]; failed: Emote[]; }> {
         const results = { success: [] as Emote[], failed: [] as Emote[] };
         const reacted = new Set<string>();
         let done = false;
@@ -343,7 +323,7 @@ export class BaseUtilities {
         return tag;
     }
 
-    public async generateDumpPage(payload: SendContent<string>, channel: KnownTextableChannel): Promise<Snowflake> {
+    public async generateDumpPage(payload: AdvancedMessageContent, channel: Channel): Promise<Snowflake> {
         const id = snowflake.create();
         await this.database.dumps.add({
             id: id,
@@ -780,30 +760,43 @@ export class BaseUtilities {
 }
 
 const sendErrors = {
-    [ApiError.UNKNOWN_CHANNEL]: () => { /* console.error('10003: Channel not found. ', channel); */ },
-    [ApiError.CANNOT_SEND_EMPTY_MESSAGE]: (util: BaseUtilities, _: unknown, payload: SendContent<string>) => { util.logger.error(`50006: Tried to send an empty message:`, payload); },
-    [ApiError.CANNOT_MESSAGE_USER]: () => { /* console.error('50007: Can\'t send a message to this user!'); */ },
-    [ApiError.CANNOT_SEND_MESSAGES_IN_VOICE_CHANNEL]: () => { /* console.error('50008: Can\'t send messages in a voice channel!'); */ },
-    [ApiError.MISSING_PERMISSIONS]: (util: BaseUtilities) => {
+    [ApiError.UNKNOWN_CHANNEL]() {
+        /* console.error('10003: Channel not found. ', channel); */
+    },
+    [ApiError.CANNOT_SEND_EMPTY_MESSAGE](util: BaseUtilities, _: unknown, payload: AdvancedMessageContent) {
+        util.logger.error(`50006: Tried to send an empty message:`, payload);
+    },
+    [ApiError.CANNOT_MESSAGE_USER]() {
+        /* console.error('50007: Can\'t send a message to this user!'); */
+    },
+    [ApiError.CANNOT_SEND_MESSAGES_IN_VOICE_CHANNEL]() {
+        /* console.error('50008: Can\'t send messages in a voice channel!'); */
+    },
+    [ApiError.MISSING_PERMISSIONS](util: BaseUtilities) {
         util.logger.warn(`50013: Tried sending a message, but had no permissions!`);
-        return `I tried to send a message in response to your command, but didn't have permission to speak. If you think this is an error, please contact the staff on your guild to give me the \`Send Messages\` permission.`;
+        return messageNoPerms;
     },
-    [ApiError.MISSING_ACCESS]: (util: BaseUtilities) => {
+    [ApiError.MISSING_ACCESS](util: BaseUtilities) {
         util.logger.warn(`50001: Missing Access`);
-        return `I tried to send a message in response to your command, but didn't have permission to see the channel. If you think this is an error, please contact the staff on your guild to give me the \`Read Messages\` permission.`;
+        return channelNoPerms;
     },
-    [ApiError.EMBED_DISABLED]: async (util: BaseUtilities, channel: KnownTextableChannel) => {
+    [ApiError.EMBED_DISABLED](util: BaseUtilities) {
         util.logger.warn(`50004: Tried embeding a link, but had no permissions!`);
-        await util.send(channel, { content: `I don't have permission to embed links! This will break several of my commands. Please give me the \`Embed Links\` permission. Thanks!` });
-        return `I tried to send a message in response to your command, but didn't have permission to create embeds. If you think this is an error, please contact the staff on your guild to give me the \`Embed Links\` permission.`;
+        return embedNoPerms;
     },
 
     // try to catch the mystery of the autoresponse-object-in-field-value error
     // https://stop-it.get-some.help/9PtuDEm.png
-    [ApiError.INVALID_FORM_BODY]: (util: BaseUtilities, channel: KnownTextableChannel, payload: SendContent<string>, error: DiscordRESTError) => {
+    [ApiError.INVALID_FORM_BODY](util: BaseUtilities, channel: TextableChannel, payload: AdvancedMessageContent, error: DiscordRESTError) {
         util.logger.error(`${channel.id}|${guard.isGuildChannel(channel) ? channel.name : `PRIVATE CHANNEL`}|${JSON.stringify(payload)}`, error);
     }
 } as const;
+
+const messageNoPerms = TranslatableString.create(`core.utils.send.error.messageNoPerms`, `I tried to send a message in response to your command, but didn't have permission to speak. If you think this is an error, please contact the staff on your guild to give me the \`Send Messages\` permission.`);
+const channelNoPerms = TranslatableString.create(`core.utils.send.error.channelNoPerms`, `I tried to send a message in response to your command, but didn't have permission to see the channel. If you think this is an error, please contact the staff on your guild to give me the \`Read Messages\` permission.`);
+const embedNoPerms = TranslatableString.create(`core.utils.send.error.embedNoPerms`, `I don't have permission to embed links! This will break several of my commands. Please give me the \`Embed Links\` permission. Thanks!`);
+const sendErrorGuild = TranslatableString.define<{ channel: GuildChannel; message: IFormattable<string>; }, string>(`core.utils.send.error.guild`, `{message}\nGuild: {channel.guild.name} ({channel.guild.id})\nChannel: {channel.name} ({channel.id})\n\nIf you wish to stop seeing these messages, do the command \`dmerrors\`.`);
+const sendErrorDm = TranslatableString.define<{ channel: Channel; message: IFormattable<string>; }, string>(`core.utils.send.error.dm`, `{message}\nChannel: PRIVATE CHANNEL ({channel.id})\n\nIf you wish to stop seeing these messages, do the command \`dmerrors\`.`);
 
 function findBest<T>(options: Iterable<T>, evaluator: (value: T) => number): T[] {
     const result = [];

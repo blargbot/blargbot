@@ -5,8 +5,6 @@ import { GlobalLimit } from './GlobalLimit';
 import { disabledRule, UseCountRule } from './rules';
 
 export class TagLimit extends GlobalLimit {
-    public readonly scopeName = `tags`;
-
     public constructor(guild?: Guild) {
         super(`tagLimit`);
 

@@ -209,10 +209,10 @@ export interface SubtagSignatureParameterGroup {
 export interface SubtagSignature {
     readonly subtagName?: string;
     readonly parameters: readonly SubtagSignatureParameter[];
-    readonly description: string;
-    readonly exampleCode: string;
-    readonly exampleIn?: string;
-    readonly exampleOut: string;
+    readonly description: IFormattable<string>;
+    readonly exampleCode: IFormattable<string>;
+    readonly exampleIn?: IFormattable<string>;
+    readonly exampleOut: IFormattable<string>;
 }
 
 type AwaitableIterable<T> = (Iterable<T> | AsyncIterable<T>); // To exclude string
@@ -258,18 +258,19 @@ export interface SubtagOptions {
     readonly name: string;
     readonly aliases?: readonly string[];
     readonly category: SubtagType;
-    readonly description?: string;
+    readonly description?: IFormattable<string>;
     readonly deprecated?: string | boolean;
     readonly staff?: boolean;
     readonly hidden?: boolean;
     readonly signatures: readonly SubtagSignature[];
 }
 
-export type SubtagPropertiesSet = { [key in SubtagType]: SubtagProperties; }
+export type SubtagPropertiesSet = { [P in SubtagType]: SubtagProperties<P>; }
 
-export interface SubtagProperties {
-    readonly name: string;
-    readonly desc: string;
+export interface SubtagProperties<Id extends SubtagType = SubtagType> {
+    readonly id: Id;
+    readonly name: IFormattable<string>;
+    readonly desc: IFormattable<string>;
     readonly hidden?: boolean;
 }
 

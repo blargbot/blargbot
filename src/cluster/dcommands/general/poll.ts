@@ -61,7 +61,16 @@ export class PollCommand extends GuildCommand {
                 break;
         }
 
-        const result = await context.cluster.polls.createPoll(context.channel, context.author, emojis, options.title, options.description, color, time, options.announce ?? false);
+        const result = await context.cluster.polls.createPoll(
+            context.channel,
+            context.author,
+            emojis,
+            options.title,
+            options.description,
+            color,
+            time,
+            options.announce ?? false
+        );
         switch (result.state) {
             case `FAILED_SEND`: return cmd.default.sendFailed;
             case `NO_ANNOUNCE_PERMS`: return cmd.default.noAnnouncePerms;

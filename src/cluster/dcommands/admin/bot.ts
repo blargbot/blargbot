@@ -24,12 +24,16 @@ export class ServerCommand extends GuildCommand {
     }
 
     public async resetGuild(context: GuildCommandContext): Promise<CommandResult> {
-        if (await context.util.queryConfirm({
-            context: context.message,
-            actors: context.author,
-            prompt: cmd.reset.prompt,
-            cancel: { style: Constants.ButtonStyles.SECONDARY, label: `No` },
-            confirm: { style: Constants.ButtonStyles.DANGER, label: `Yes` }
+        if (await context.queryConfirm({
+            prompt: cmd.reset.confirm.prompt,
+            cancel: {
+                style: Constants.ButtonStyles.SECONDARY,
+                label: cmd.reset.confirm.cancel
+            },
+            continue: {
+                style: Constants.ButtonStyles.DANGER,
+                label: cmd.reset.confirm.continue
+            }
         }) !== true) {
             return cmd.reset.cancelled;
         }

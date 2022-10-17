@@ -1,10 +1,10 @@
 import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType, guard } from '@blargbot/cluster/utils';
-import { IFormattable } from '@blargbot/domain/messages/types';
+import { IFormattable, literal } from '@blargbot/domain/messages/types';
 import { EmbedField, EmbedOptions } from 'eris';
 import moment from 'moment-timezone';
 
-import templates, { literal } from '../../text';
+import templates from '../../text';
 import { CommandResult } from '../../types';
 
 const cmd = templates.commands.timers;
@@ -143,7 +143,7 @@ export class TimersCommand extends GlobalCommand {
             embeds: [
                 {
                     title: cmd.info.embed.title({ id: simpleId(timer.id) }),
-                    description: `content` in timer ? literal(timer.content.length > 2000 ? `${timer.content.slice(0, 1997)}...` : timer.content) : undefined,
+                    description: literal(`content` in timer ? timer.content.length > 2000 ? `${timer.content.slice(0, 1997)}...` : timer.content : undefined),
                     fields: [
                         {
                             name: cmd.info.embed.field.type.name,

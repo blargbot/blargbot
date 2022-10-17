@@ -2,10 +2,11 @@ import { GuildCommand } from '@blargbot/cluster/command';
 import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType, createSafeRegExp, getRange, parse, randChoose, randInt } from '@blargbot/cluster/utils';
 import { guard } from '@blargbot/core/utils';
+import { literal } from '@blargbot/domain/messages/index';
 import { GuildFilteredAutoresponse, GuildTriggerTag } from '@blargbot/domain/models';
 
 import { RawBBTagCommandResult } from '../../command/RawBBTagCommandResult';
-import templates, { literal } from '../../text';
+import templates from '../../text';
 
 const cmd = templates.commands.autoResponse;
 
@@ -154,7 +155,7 @@ export class AutoResponseCommand extends GuildCommand {
     }
 
     public async requestWhitelist(context: GuildCommandContext, reason: string): Promise<CommandResult> {
-        switch (await context.cluster.autoresponses.whitelist(context.channel.guild.id, context.channel.id, context.author.id, reason)) {
+        switch (await context.cluster.autoresponses.whitelist(context.channel.guild.id, context.channel.id, context.author, reason)) {
             case `alreadyApproved`: return cmd.whitelist.alreadyApproved;
             case `requested`: return cmd.whitelist.requested;
             default: return undefined;

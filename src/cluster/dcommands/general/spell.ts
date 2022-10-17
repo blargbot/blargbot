@@ -1,8 +1,9 @@
 import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType, guard, randChoose } from '@blargbot/cluster/utils';
+import { literal } from '@blargbot/domain/messages/types';
 import spellsJson from '@blargbot/res/spells.json';
 
-import templates, { literal } from '../../text';
+import templates from '../../text';
 import { CommandResult } from '../../types';
 
 const cmd = templates.commands.spell;

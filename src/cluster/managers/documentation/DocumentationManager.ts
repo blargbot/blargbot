@@ -1,9 +1,11 @@
-import { FormatActionRow, FormatEmbedOptions, FormatSelectMenu, SendContent } from '@blargbot/core/types';
-import { IFormattable } from '@blargbot/domain/messages/types';
-import { Button, ComponentInteraction, Constants, KnownInteraction, KnownTextableChannel, User } from 'eris';
+import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent';
+import { FormatActionRow, FormatButton, FormatEmbedField, FormatEmbedOptions, FormatSelectMenu, FormatSelectMenuOptions, SendContent } from '@blargbot/core/types';
+import { IFormattable, IFormatter } from '@blargbot/domain/messages/types';
+import { ComponentInteraction, Constants, KnownInteraction, KnownTextableChannel, User } from 'eris';
 import moment from 'moment-timezone';
 
 import { Cluster } from '../../Cluster';
+import templates from '../../text';
 
 export type Documentation = DocumentationGroup | DocumentationLeaf | DocumentationPaged;
 
@@ -47,13 +49,15 @@ interface DocumentationPageIdData {
 
 export abstract class DocumentationManager {
     readonly #id: string;
-    readonly #name: string;
+    readonly #invalid: IFormattable<string>;
+    readonly #pickPlaceholder: (value: { term: string; }) => IFormattable<string>;
     readonly #cluster: Cluster;
 
-    public constructor(cluster: Cluster, id: string, name: string) {
+    public constructor(cluster: Cluster, id: string, invalid: IFormattable<string>, pickPlaceholder: (value: { term: string; }) => IFormattable<string>) {
         this.#cluster = cluster;
         this.#id = id;
-        this.#name = name;
+        this.#invalid = invalid;
+        this.#pickPlaceholder = pickPlaceholder;
     }
 
     #createCustomId(details: DocumentationPageIdData): string {
@@ -103,13 +107,14 @@ export abstract class DocumentationManager {
         return BigInt(`0x${hex}`);
     }
 
-    protected abstract findDocumentation(term: string, user: User, channel: KnownTextableChannel): Awaitable<readonly Documentation[]>;
+    protected abstract findDocumentation(term: string, user: User, channel: KnownTextableChannel, formatter: IFormatter): Awaitable<readonly Documentation[]>;
     protected abstract getDocumentation(documentationId: string, user: User, channel: KnownTextableChannel): Awaitable<Documentation | undefined>;
     protected abstract getParent(documentationId: string, user: User, channel: KnownTextableChannel): Awaitable<Documentation | undefined>;
     protected abstract noMatches(term: string, user: User, channel: KnownTextableChannel): Awaitable<SendContent<IFormattable<string>>>;
 
     public async createMessageContent(term: string, user: User, channel: KnownTextableChannel): Promise<SendContent<IFormattable<string>>> {
-        const choices = await this.findDocumentation(term, user, channel);
+        const formatter = await this.#cluster.util.getFormatter(channel);
+        const choices = await this.findDocumentation(term, user, channel, formatter);
         const documentation = choices.length > 1 ? await this.#pickDocumentation(choices, term, user, channel) : choices[0];
         if (documentation === undefined)
             return await this.noMatches(term, user, channel);
@@ -129,26 +134,37 @@ export abstract class DocumentationManager {
         if (idData === undefined)
             return;
 
+        const formatter = await this.#cluster.util.getFormatter(interaction.channel);
         const user = interaction.member?.user ?? interaction.user;
         if (user?.id !== idData.userId) {
-            await interaction.createMessage({ content: `❌ This isn't for you to use!`, flags: Constants.MessageFlags.EPHEMERAL });
+            await interaction.createMessage({
+                content: templates.common.query.cantUse.format(formatter),
+                flags: Constants.MessageFlags.EPHEMERAL
+            });
             return;
         }
 
         await interaction.editParent({
-            embeds: [{ title: `Loading...` }],
+            embeds: [
+                {
+                    title: templates.documentation.loading.format(formatter)
+                }
+            ],
             components: []
         });
 
         const channel = interaction.channel as KnownTextableChannel;
         const documentation = await this.getDocumentation(idData.documentationId, user, channel);
         if (documentation === undefined) {
-            await interaction.createMessage({ content: `❌ This ${this.#name} documentation isn't valid any more!`, flags: Constants.MessageFlags.EPHEMERAL });
+            await interaction.createMessage({
+                content: this.#invalid.format(formatter),
+                flags: Constants.MessageFlags.EPHEMERAL
+            });
             return;
         }
 
         const content = await this.#render(documentation, idData, user, channel, interaction);
-        await interaction.editParent(content);
+        await interaction.editParent(new FormattableMessageContent(content).format(formatter));
     }
 
     async #render(documentation: Documentation, idData: DocumentationPageIdData, user: User, channel: KnownTextableChannel, interaction: ComponentInteraction): Promise<SendContent<IFormattable<string>>> {
@@ -180,7 +196,7 @@ export abstract class DocumentationManager {
                 value: c
             })),
             context: channel,
-            placeholder: `Multiple ${this.#name} documentation match \`${term}\``
+            placeholder: this.#pickPlaceholder({ term })
         });
 
         switch (selected.state) {
@@ -196,82 +212,172 @@ export abstract class DocumentationManager {
 
     async #renderDocumentation(documentation: Documentation, pageGroup: number, pageNumber: number, user: User, channel: KnownTextableChannel): Promise<SendContent<IFormattable<string>>> {
         const parent = await this.getParent(documentation.id, user, channel);
-        const prevPageGroup: Button = {
+        const gotoParent: FormatButton<IFormattable<string>> | undefined = parent === undefined ? undefined : {
             type: Constants.ComponentTypes.BUTTON,
-            custom_id: this.#createCustomId({ documentationId: documentation.id, pageGroup: pageGroup - 1, pageNumber, userId: user.id }),
+            custom_id: this.#createCustomId({ documentationId: parent.id, pageGroup: 0, pageNumber: 0, userId: user.id }),
+            style: Constants.ButtonStyles.PRIMARY,
+            emoji: { name: `⬆` },
+            label: templates.documentation.paging.parent({ parent: parent.name })
+        };
+
+        switch (documentation.type) {
+            case `group`: return this.#renderDocumentationGroup(gotoParent, documentation, pageGroup, pageNumber, user);
+            case `paged`: return this.#renderDocumentationPaged(gotoParent, documentation, pageGroup, pageNumber, user);
+            case `single`: return this.#renderDocumentationSingle(gotoParent, documentation, user);
+        }
+    }
+
+    #createPrevButton(id: string, pageGroup: number, pageNumber: number, userId: string): FormatButton<IFormattable<string>> {
+        return {
+            type: Constants.ComponentTypes.BUTTON,
+            custom_id: this.#createCustomId({ documentationId: id, pageGroup, pageNumber, userId }),
             style: Constants.ButtonStyles.PRIMARY,
             disabled: pageGroup === 0,
             emoji: { name: `⬅` }
         };
+    }
 
-        const [selectOptions, selectText] = documentation.type === `group` ? [documentation.items.filter(opt => opt.hidden !== true), documentation.selectText]
-            : documentation.type === `paged` ? [documentation.pages, documentation.selectText]
-                : [[], ``];
-
-        const lastPage = Math.floor((selectOptions.length - 1) / 25);
-        const nextPageGroup: Button = {
+    #createNextButton(id: string, pageGroup: number, pageNumber: number, userId: string, pageCount: number): FormatButton<IFormattable<string>> {
+        return {
             type: Constants.ComponentTypes.BUTTON,
-            custom_id: this.#createCustomId({ documentationId: documentation.id, pageGroup: pageGroup + 1, pageNumber, userId: user.id }),
+            custom_id: this.#createCustomId({ documentationId: id, pageGroup, pageNumber, userId }),
             style: Constants.ButtonStyles.PRIMARY,
-            disabled: pageGroup >= lastPage,
+            disabled: pageGroup >= pageCount - 1,
             emoji: { name: `➡` }
         };
+    }
 
-        const gotoParent: Button = {
-            type: Constants.ComponentTypes.BUTTON,
-            custom_id: this.#createCustomId({ documentationId: parent?.id ?? ``, pageGroup: 0, pageNumber: 0, userId: user.id }),
-            style: Constants.ButtonStyles.PRIMARY,
-            disabled: parent === undefined,
-            emoji: { name: `⬆` },
-            label: `Back to ${parent?.name ?? ``}`
-        };
-
-        const pageSelect: FormatSelectMenu<IFormattable<string>> = {
+    #createPageSelect<T>(
+        id: string,
+        pageGroup: number,
+        pageNumber: number,
+        pageSize: number,
+        pageCount: number,
+        userId: string,
+        options: readonly T[],
+        placeholder: IFormattable<string>,
+        selector: (doc: T, index: number) => FormatSelectMenuOptions<IFormattable<string>>
+    ): FormatSelectMenu<IFormattable<string>> {
+        return {
             type: Constants.ComponentTypes.SELECT_MENU,
-            custom_id: this.#createCustomId({ documentationId: documentation.id, pageGroup, pageNumber, userId: user.id }),
-            placeholder: selectOptions.length > 25 ? `${selectText} - Page ${pageGroup + 1}/${lastPage + 1}` : selectText,
-            options: selectOptions
-                .map((p, i) => ({
-                    label: p.name,
-                    value: `id` in p ? p.id : i.toString(),
-                    default: documentation.type === `paged` && pageNumber === i
-                }))
-                .slice(pageGroup * 25, (pageGroup + 1) * 25)
+            custom_id: this.#createCustomId({ documentationId: id, pageGroup, pageNumber, userId }),
+            placeholder: options.length > pageSize
+                ? templates.documentation.paging.select.placeholder({
+                    text: placeholder,
+                    page: pageGroup + 1,
+                    pageCount: pageCount
+                })
+                : placeholder,
+            options: options
+                .slice(pageGroup * pageSize, (pageGroup + 1) * pageSize)
+                .map(selector)
         };
+    }
+
+    #createPageControls<T>(
+        gotoParent: FormatButton<IFormattable<string>> | undefined,
+        id: string,
+        pageGroup: number,
+        pageNumber: number,
+        pageSize: number,
+        userId: string,
+        options: readonly T[],
+        placeholder: IFormattable<string>,
+        selector: (doc: T, index: number) => FormatSelectMenuOptions<IFormattable<string>>
+    ): Array<FormatActionRow<IFormattable<string>>> {
+        const pageCount = Math.floor((options.length - 1) / pageSize) + 1;
+        const prevPageGroup = this.#createPrevButton(id, pageGroup - 1, pageNumber, userId);
+        const nextPageGroup = this.#createNextButton(id, pageGroup + 1, pageNumber, userId, pageCount);
+        const pageSelect = this.#createPageSelect(id, pageGroup, pageNumber, pageSize, pageCount, userId, options, placeholder, selector);
 
         const buttonRow = [];
         if (prevPageGroup.disabled !== true || nextPageGroup.disabled !== true)
             buttonRow.push(prevPageGroup, nextPageGroup);
 
-        if (gotoParent.disabled !== true)
+        if (gotoParent !== undefined)
             buttonRow.splice(1, 0, gotoParent); // between paging buttons
 
-        const components: Array<FormatActionRow<IFormattable<string>>> = [];
-
+        const components = [];
         if (pageSelect.options.some(opt => opt.default !== true))
             components.push({ type: Constants.ComponentTypes.ACTION_ROW, components: [pageSelect] });
 
         if (buttonRow.length > 0)
             components.push({ type: Constants.ComponentTypes.ACTION_ROW, components: buttonRow });
 
-        const page = documentation.type === `paged` ? documentation.pages[pageNumber] ?? { embed: {} }
-            : documentation;
+        return components;
+    }
 
+    #createDocumentationEmbed(documentation: Documentation, user: User, fields?: Array<FormatEmbedField<IFormattable<string>>>): FormatEmbedOptions<IFormattable<string>> {
+        return {
+            title: documentation.name,
+            url: documentation.embed.url === undefined ? undefined : this.#cluster.util.websiteLink(documentation.embed.url),
+            description: documentation.embed.description,
+            color: documentation.embed.color,
+            image: documentation.embed.image,
+            thumbnail: documentation.embed.thumbnail,
+            fields: fields,
+            author: this.#cluster.util.embedifyAuthor(user),
+            timestamp: moment().toDate()
+        };
+    }
+
+    #renderDocumentationGroup(gotoParent: FormatButton<IFormattable<string>> | undefined, documentation: DocumentationGroup, pageGroup: number, pageNumber: number, user: User): SendContent<IFormattable<string>> {
         return {
             embeds: [
-                {
-                    title: documentation.name,
-                    url: documentation.embed.url === undefined ? undefined : this.#cluster.util.websiteLink(documentation.embed.url),
-                    description: documentation.embed.description,
-                    color: documentation.embed.color,
-                    image: documentation.embed.image,
-                    thumbnail: documentation.embed.thumbnail,
-                    fields: page.embed.fields,
-                    author: this.#cluster.util.embedifyAuthor(user),
-                    timestamp: moment().toDate()
-                }
+                this.#createDocumentationEmbed(documentation, user, documentation.embed.fields)
             ],
-            components
+            components: this.#createPageControls(
+                gotoParent,
+                documentation.id,
+                pageGroup,
+                pageNumber,
+                25,
+                user.id,
+                documentation.items.filter(opt => opt.hidden !== true),
+                documentation.selectText,
+                p => ({
+                    label: p.name,
+                    value: p.id
+                })
+            )
+        };
+    }
+
+    #renderDocumentationPaged(gotoParent: FormatButton<IFormattable<string>> | undefined, documentation: DocumentationPaged, pageGroup: number, pageNumber: number, user: User): SendContent<IFormattable<string>> {
+        return {
+            embeds: [
+                this.#createDocumentationEmbed(documentation, user, documentation.pages[pageNumber]?.embed.fields)
+            ],
+            components: this.#createPageControls(
+                gotoParent,
+                documentation.id,
+                pageGroup,
+                pageNumber,
+                25,
+                user.id,
+                documentation.pages,
+                documentation.selectText,
+                (p, i) => ({
+                    label: p.name,
+                    value: i.toString(),
+                    default: pageNumber === i
+                })
+            )
+        };
+    }
+    #renderDocumentationSingle(gotoParent: FormatButton<IFormattable<string>> | undefined, documentation: DocumentationLeaf, user: User): SendContent<IFormattable<string>> {
+        return {
+            embeds: [
+                this.#createDocumentationEmbed(documentation, user, documentation.embed.fields)
+            ],
+            components: gotoParent === undefined ? undefined : [
+                {
+                    type: Constants.ComponentTypes.ACTION_ROW,
+                    components: [
+                        gotoParent
+                    ]
+                }
+            ]
         };
     }
 }

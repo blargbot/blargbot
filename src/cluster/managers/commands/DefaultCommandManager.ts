@@ -1,11 +1,12 @@
 import { Cluster } from '@blargbot/cluster';
 import { Command, CommandContext } from '@blargbot/cluster/command';
-import { CommandGetCoreResult, CommandParameter, CommandResult, CommandSignature, ICommand } from '@blargbot/cluster/types';
+import { CommandGetCoreResult, CommandParameter, CommandProperties, CommandResult, CommandSignature, ICommand } from '@blargbot/cluster/types';
 import { commandTypeDetails, guard } from '@blargbot/cluster/utils';
 import { metrics } from '@blargbot/core/Metrics';
 import { ModuleLoader } from '@blargbot/core/modules';
 import { Timer } from '@blargbot/core/Timer';
 import { NextMiddleware } from '@blargbot/core/types';
+import { IFormattable } from '@blargbot/domain/messages/types';
 import { CommandPermissions, FlagDefinition } from '@blargbot/domain/models';
 import { Guild, KnownTextableChannel, User } from 'eris';
 
@@ -81,14 +82,14 @@ class NormalizedCommand implements ICommand<Command> {
     public readonly id: string;
     public readonly name: string;
     public readonly aliases: readonly string[];
-    public readonly description: string | undefined;
+    public readonly description: IFormattable<string> | undefined;
     public readonly signatures: ReadonlyArray<CommandSignature<CommandParameter>>;
     public readonly disabled: boolean;
     public readonly permission: string;
     public readonly roles: readonly string[];
     public readonly hidden: boolean;
-    public readonly category: string;
-    public readonly flags: readonly FlagDefinition[];
+    public readonly category: CommandProperties;
+    public readonly flags: ReadonlyArray<FlagDefinition<IFormattable<string>>>;
     public readonly isOnWebsite: boolean;
 
     public constructor(
@@ -104,7 +105,7 @@ class NormalizedCommand implements ICommand<Command> {
         this.permission = permissions.permission ?? `0`;
         this.roles = permissions.roles ?? [];
         this.hidden = permissions.hidden ?? false;
-        this.category = commandTypeDetails[implementation.category].name;
+        this.category = commandTypeDetails[implementation.category];
         this.flags = implementation.flags;
         this.isOnWebsite = !this.hidden;
     }
@@ -118,8 +119,8 @@ class NormalizedCommand implements ICommand<Command> {
             throw err;
         } finally {
             timer.end();
-            metrics.commandLatency.labels(this.name, commandTypeDetails[this.implementation.category].name.toLowerCase()).observe(timer.elapsed);
-            metrics.commandCounter.labels(this.name, commandTypeDetails[this.implementation.category].name.toLowerCase()).inc();
+            metrics.commandLatency.labels(this.name, commandTypeDetails[this.implementation.category].id).observe(timer.elapsed);
+            metrics.commandCounter.labels(this.name, commandTypeDetails[this.implementation.category].id).inc();
         }
     }
 }

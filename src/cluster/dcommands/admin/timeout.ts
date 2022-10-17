@@ -1,6 +1,7 @@
 import { GuildCommand } from '@blargbot/cluster/command';
 import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType, parse } from '@blargbot/cluster/utils';
+import { literal } from '@blargbot/domain/messages/types';
 import { FlagResult } from '@blargbot/domain/models';
 import { Member } from 'eris';
 import moment from 'moment-timezone';
@@ -34,14 +35,14 @@ export class TimeoutCommand extends GuildCommand {
     }
 
     public async clearTimeout(context: GuildCommandContext, member: Member, reason: string): Promise<CommandResult> {
-        const state = await context.cluster.moderation.timeouts.clearTimeout(member, context.author, context.author, reason);
+        const state = await context.cluster.moderation.timeouts.clearTimeout(member, context.author, context.author, literal(reason));
         return cmd.clear.state[state]({ user: member.user });
     }
 
     public async timeout(context: GuildCommandContext, member: Member, flags: FlagResult): Promise<CommandResult> {
         const reason = flags.r?.merge().value ?? ``;
         const duration = (flags.t !== undefined ? parse.duration(flags.t.merge().value) : undefined) ?? moment.duration(1, `d`);
-        const state = await context.cluster.moderation.timeouts.timeout(member, context.author, context.author, duration, reason);
+        const state = await context.cluster.moderation.timeouts.timeout(member, context.author, context.author, duration, literal(reason));
         return cmd.user.state[state]({ user: member.user });
     }
 }

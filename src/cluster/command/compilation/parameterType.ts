@@ -1,5 +1,5 @@
 import { CommandVariableParser, CommandVariableType, CommandVariableTypeBase, CommandVariableTypeName, CommandVariableTypes } from '@blargbot/cluster/types';
-import { humanize, parse } from '@blargbot/cluster/utils';
+import { parse } from '@blargbot/cluster/utils';
 
 import { createCommandArgument } from './commandArgument';
 
@@ -43,27 +43,11 @@ const typeOrderMap = typeOrder
         return p;
     }, {}) as Record<typeof typeOrder[number], number>;
 
-const typeStrings: { [key in CommandVariableTypeName]: { single: string | undefined; plural: string | undefined; } } = {
-    string: { single: undefined, plural: undefined },
-    get literal(): never { throw new Error(`AAAAAA`); },
-    boolean: { single: `true/false`, plural: `true/false` },
-    channel: { single: `a channel id, mention or name`, plural: `channel ids, mentions or names` },
-    duration: { single: `a duration`, plural: `durations` },
-    bigint: { single: `a whole number`, plural: `whole numbers` },
-    integer: { single: `a whole number`, plural: `whole numbers` },
-    member: { single: `a user id, mention or name`, plural: `user ids, mentions or names` },
-    number: { single: `a number`, plural: `numbers` },
-    role: { single: `a role id, mention or name`, plural: `role ids, mentions or names` },
-    sender: { single: `a user id, mention or name, or a webhook id`, plural: `user ids, mentions or names, or webhook ids` },
-    user: { single: `a user id, mention or name`, plural: `user ids, mentions or names` }
-};
-
-function buildParameter<T extends CommandVariableTypeName>(type: T, parse: CommandVariableParser): CommandVariableTypeBase<T> {
+function buildParameter<T extends Exclude<CommandVariableTypeName, `literal`>>(type: T, parse: CommandVariableParser): CommandVariableTypeBase<T> {
     return {
         name: type,
         priority: typeOrderMap[type],
-        descriptionPlural: typeStrings[type].plural,
-        descriptionSingular: typeStrings[type].single,
+        type,
         parse: parse
     };
 }
@@ -74,7 +58,7 @@ type ParameterTypeFactories = {
 
 const parameterTypes: ParameterTypeFactories = {
     literal(options) {
-        const choices = options.split(`|`).map(c => c.trim());
+        const choices = options.split(`|`).map(c => c.trim()).filter(c => c.length > 0);
         if (choices.length === 0)
             throw new Error(`Literal variable parameters must have at least 1 option`);
 
@@ -83,8 +67,7 @@ const parameterTypes: ParameterTypeFactories = {
         return {
             name: `literal`,
             priority: typeOrderMap.literal,
-            descriptionPlural: humanize.smartJoin(choices.map(c => `\`${c}\``), `, `, ` or `),
-            descriptionSingular: humanize.smartJoin(choices.map(c => `\`${c}\``), `, `, ` or `),
+            type: choices,
             choices,
             parse(value) {
                 const match = lookup.get(value.toLowerCase());

@@ -1,8 +1,9 @@
 import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType, randChoose } from '@blargbot/cluster/utils';
+import { literal } from '@blargbot/domain/messages/types';
 import script from '@blargbot/res/beemovie.json';
 
-import templates, { literal } from '../../text';
+import templates from '../../text';
 import { CommandResult } from '../../types';
 
 const cmd = templates.commands.beeMovie;

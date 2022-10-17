@@ -1,11 +1,13 @@
 import { Cluster } from '@blargbot/cluster';
 import { CommandContext } from '@blargbot/cluster/command';
-import { CommandGetCoreResult, CommandSignature, ICommand } from '@blargbot/cluster/types';
-import { guard, humanize } from '@blargbot/cluster/utils';
+import { CommandGetCoreResult, CommandProperties, CommandSignature, ICommand } from '@blargbot/cluster/types';
+import { CommandType, commandTypeDetails, guard } from '@blargbot/cluster/utils';
 import { metrics } from '@blargbot/core/Metrics';
+import { IFormattable, literal } from '@blargbot/domain/messages/types';
 import { CommandPermissions, FlagDefinition, NamedGuildCommandTag, StoredTag } from '@blargbot/domain/models';
 import { Guild, KnownTextableChannel, User } from 'eris';
 
+import templates from '../../text';
 import { CommandManager } from './CommandManager';
 
 export class CustomCommandManager extends CommandManager<NamedGuildCommandTag> {
@@ -70,7 +72,7 @@ interface CustomCommandDetails {
     readonly tagVars: boolean;
     readonly author: string | undefined;
     readonly authorizer: string | undefined;
-    readonly flags: readonly FlagDefinition[] | undefined;
+    readonly flags: ReadonlyArray<FlagDefinition<string>> | undefined;
     readonly cooldown: number | undefined;
 }
 
@@ -78,9 +80,9 @@ class NormalizedCommandTag implements ICommand<NamedGuildCommandTag> {
     public readonly id: string;
     public readonly name: string;
     public readonly aliases: readonly string[];
-    public readonly category: string;
-    public readonly description: string | undefined;
-    public readonly flags: readonly FlagDefinition[];
+    public readonly category: CommandProperties;
+    public readonly description: IFormattable<string> | undefined;
+    public readonly flags: ReadonlyArray<FlagDefinition<string>>;
     public readonly signatures: readonly CommandSignature[];
     public readonly disabled: boolean;
     public readonly permission: string;
@@ -95,8 +97,8 @@ class NormalizedCommandTag implements ICommand<NamedGuildCommandTag> {
         this.id = implementation.id;
         this.name = implementation.name;
         this.aliases = [];
-        this.category = `Custom`;
-        this.description = implementation.help ?? `_No help set_`;
+        this.category = commandTypeDetails[CommandType.CUSTOM];
+        this.description = literal(implementation.help) ?? templates.documentation.command.categories.custom.noHelp;
         this.flags = tag?.flags ?? (`flags` in implementation ? implementation.flags : []) ?? [];
         this.signatures = [];
         this.disabled = this.implementation.disabled ?? false;
@@ -111,8 +113,8 @@ class NormalizedCommandTag implements ICommand<NamedGuildCommandTag> {
             return;
 
         const details = await this.#getDetails(context);
-        if (typeof details === `string`) {
-            await context.reply(details);
+        if (`response` in details) {
+            await context.reply(details.response);
             return;
         }
 
@@ -133,7 +135,7 @@ class NormalizedCommandTag implements ICommand<NamedGuildCommandTag> {
         return undefined;
     }
 
-    async #getDetails(context: CommandContext): Promise<string | CustomCommandDetails> {
+    async #getDetails(context: CommandContext): Promise<{ response: IFormattable<string>; } | CustomCommandDetails> {
         if (!guard.isGuildImportedCommandTag(this.implementation)) {
             return {
                 author: this.implementation.author ?? undefined,
@@ -147,7 +149,14 @@ class NormalizedCommandTag implements ICommand<NamedGuildCommandTag> {
 
         if (this.tag === undefined) {
             const oldAuthor = await context.util.getUser(this.implementation.author ?? ``);
-            return `❌ When the command \`${context.commandName}\` was imported, the tag \`${this.implementation.alias}\` was owned by **${humanize.fullName(oldAuthor)}** (${this.implementation.author ?? `????`}) but it no longer exists. To continue using this command, please re-create the tag and re-import it.`;
+            return {
+                response: templates.commands.ccommand.errors.importDeleted({
+                    commandName: context.commandName,
+                    tagName: this.implementation.alias,
+                    author: oldAuthor,
+                    authorId: this.implementation.author ?? `????`
+                })
+            };
         }
 
         if (this.implementation.author === this.tag.author || !guard.hasValue(this.implementation.author)) {
@@ -165,6 +174,15 @@ class NormalizedCommandTag implements ICommand<NamedGuildCommandTag> {
 
         const newAuthor = await context.util.getUser(this.tag.author);
         const oldAuthor = await context.util.getUser(this.implementation.author);
-        return `❌ When the command \`${context.commandName}\` was imported, the tag \`${this.implementation.alias}\` was owned by **${humanize.fullName(oldAuthor)}** (${this.implementation.author}) but it is now owned by **${humanize.fullName(newAuthor)}** (${this.tag.author}). If this is acceptable, please re-import the tag to continue using this command.`;
+        return {
+            response: templates.commands.ccommand.errors.importChanged({
+                commandName: context.commandName,
+                tagName: this.implementation.alias,
+                oldAuthor,
+                oldAuthorId: this.implementation.author,
+                newAuthor,
+                newAuthorId: this.tag.author
+            })
+        };
     }
 }

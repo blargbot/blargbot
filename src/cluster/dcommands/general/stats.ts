@@ -1,9 +1,10 @@
 import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { avatarColours, CommandType, randChoose } from '@blargbot/cluster/utils';
+import { literal } from '@blargbot/domain/messages/types';
 import Eris from 'eris';
 import moment from 'moment-timezone';
 
-import templates, { literal } from '../../text';
+import templates from '../../text';
 import { CommandResult } from '../../types';
 
 const cmd = templates.commands.stats;
