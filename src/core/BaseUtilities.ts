@@ -11,8 +11,11 @@ import moment from 'moment-timezone';
 
 import { BaseClient } from './BaseClient';
 import { Emote } from './Emote';
+import { DefaultFormatter, FormatStringCompiler } from "./formatting";
 import { metrics } from './Metrics';
 import { guard, humanize, parse, snowflake } from './utils';
+
+const compiler = new FormatStringCompiler();
 
 export class BaseUtilities {
     public get user(): ExtendedUser { return this.client.discord.user; }
@@ -41,8 +44,9 @@ export class BaseUtilities {
         return context;
     }
 
-    public async getFormatter(channel: Channel | Guild | string): Promise<IFormatter> {
-
+    public getFormatter(target?: Channel | Guild | string): Promise<IFormatter> {
+        target;
+        return Promise.resolve(new DefaultFormatter(new Intl.Locale(`en-GB`), compiler, {}));
     }
 
     public websiteLink(path?: string): string {

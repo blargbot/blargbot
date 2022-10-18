@@ -1,9 +1,12 @@
 import { Cluster } from '@blargbot/cluster';
 import { CommandContext } from '@blargbot/cluster/command';
 import { CommandResult } from '@blargbot/cluster/types';
+import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent';
 import { IMiddleware, NextMiddleware } from '@blargbot/core/types';
-import { humanize, pluralise as p, runMiddleware } from '@blargbot/core/utils';
+import { humanize, runMiddleware } from '@blargbot/core/utils';
 import { KnownMessage } from 'eris';
+
+import templates from '../../../text';
 
 export class CommandMiddleware implements IMiddleware<KnownMessage, boolean> {
     readonly #cluster: Cluster;
@@ -42,14 +45,20 @@ export class CommandMiddleware implements IMiddleware<KnownMessage, boolean> {
             case `NOT_IN_GUILD`:
                 return await next();
             case `BLACKLISTED`:
-                await this.#cluster.util.send(message, `❌ You have been blacklisted from the bot for the following reason: ${result.detail.reason}`);
+                await this.#cluster.util.reply(message, new FormattableMessageContent({
+                    content: templates.commands.$errors.blacklisted({ reason: result.detail.reason })
+                }));
                 return true;
             case `MISSING_ROLE`:
-                await this.#cluster.util.send(message, `❌ You need the role ${humanize.smartJoin(result.detail.reason.map(r => `<@&${r}>`), `, `, ` or `)} in order to use this command!`);
+                await this.#cluster.util.reply(message, new FormattableMessageContent({
+                    content: templates.commands.$errors.roleMissing({ roleIds: result.detail.reason })
+                }));
                 return true;
             case `MISSING_PERMISSIONS`: {
-                const permissions = humanize.permissions(result.detail.reason, true).map(m => `- \`${m}\``);
-                await this.#cluster.util.send(message, `❌ You need ${p(permissions.length, `the following permission`, `any of the following permissions`)} to use this command:\n${permissions.join(`\n`)}`);
+                const permissions = humanize.permissions(result.detail.reason, true);
+                await this.#cluster.util.reply(message, new FormattableMessageContent({
+                    content: templates.commands.$errors.permMissing({ permissions })
+                }));
                 return true;
             }
         }

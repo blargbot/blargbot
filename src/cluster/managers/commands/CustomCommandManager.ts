@@ -1,6 +1,6 @@
 import { Cluster } from '@blargbot/cluster';
 import { CommandContext } from '@blargbot/cluster/command';
-import { CommandGetCoreResult, CommandProperties, CommandSignature, ICommand } from '@blargbot/cluster/types';
+import { CommandGetCoreResult, CommandProperties, ICommand } from '@blargbot/cluster/types';
 import { CommandType, commandTypeDetails, guard } from '@blargbot/cluster/utils';
 import { metrics } from '@blargbot/core/Metrics';
 import { IFormattable, literal } from '@blargbot/domain/messages/types';
@@ -79,11 +79,11 @@ interface CustomCommandDetails {
 class NormalizedCommandTag implements ICommand<NamedGuildCommandTag> {
     public readonly id: string;
     public readonly name: string;
-    public readonly aliases: readonly string[];
+    public readonly aliases: [];
     public readonly category: CommandProperties;
     public readonly description: IFormattable<string> | undefined;
     public readonly flags: ReadonlyArray<FlagDefinition<string>>;
-    public readonly signatures: readonly CommandSignature[];
+    public readonly signatures: [];
     public readonly disabled: boolean;
     public readonly permission: string;
     public readonly roles: readonly string[];

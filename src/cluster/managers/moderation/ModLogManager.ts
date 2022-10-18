@@ -266,6 +266,7 @@ export class ModLogManager {
 
     async #logAction({ guildId, user, reason, fields = [], color = 0x17c484, type, moderator }: ModerationLogOptions): Promise<void> {
         // TODO modlog setting can be channel id or tag
+        type ??= templates.modlog.types.generic;
         const modlogChannelId = await this.cluster.database.guilds.getSetting(guildId, `modlog`);
         if (!guard.hasValue(modlogChannelId)) // TODO Should this still create the modlog entry in the db?
             return;
@@ -281,7 +282,7 @@ export class ModLogManager {
             fields: [
                 {
                     name: templates.modlog.embed.field.type.name,
-                    value: type ??= templates.modlog.types.generic,
+                    value: type,
                     inline: true
                 },
                 {

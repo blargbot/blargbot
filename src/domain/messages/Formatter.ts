@@ -1,14 +1,14 @@
-import { IFormatString, IFormatter } from "./types";
+import { ITemplatedString, IFormatter } from "./types";
 
 export class Formatter implements IFormatter {
     static readonly #compilationCache = new Map<string, (value: unknown) => string>();
-    readonly #transformers: Array<(value: IFormatString<string>) => IFormatString<string>>;
+    readonly #transformers: Array<(value: ITemplatedString<string>) => ITemplatedString<string>>;
 
-    public constructor(transformers: Array<(value: IFormatString<string>) => IFormatString<string>>) {
+    public constructor(transformers: Array<(value: ITemplatedString<string>) => ITemplatedString<string>>) {
         this.#transformers = [...transformers];
     }
 
-    public format(format: IFormatString<string>): string {
+    public format(format: ITemplatedString<string>): string {
         format = this.#transformers.reduce((p, c) => c(p), format);
 
         const impl = this.#getCompiled(format.template);

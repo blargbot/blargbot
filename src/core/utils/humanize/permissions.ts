@@ -1,6 +1,7 @@
+import { IFormattable, TranslatableString } from '@blargbot/domain/messages/index';
 import { Constants, Permission } from 'eris';
 
-export function permissions(permissions: bigint | ReadonlyArray<keyof Constants[`Permissions`]> | Permission, hideAdminUnlessAlone = false): string[] {
+export function permissions(permissions: bigint | ReadonlyArray<keyof Constants[`Permissions`]> | Permission, hideAdminUnlessAlone = false): Array<IFormattable<string>> {
     let flags = typeof permissions === `bigint` ? permissions
         : Array.isArray(permissions) ? permissions.reduce((p, c) => p | Constants.Permissions[c], 0n)
             : permissions.allow;
@@ -8,52 +9,77 @@ export function permissions(permissions: bigint | ReadonlyArray<keyof Constants[
     if (hideAdminUnlessAlone && flags !== Constants.Permissions.administrator)
         flags &= ~Constants.Permissions.administrator; // remove admin flag
 
-    return Object.keys(permMap)
-        .map(BigInt)
-        .filter(f => (flags & f) === f)
-        .map(f => permMap[f.toString() as keyof typeof permMap]);
+    return permDisplay
+        .filter(x => (flags & x.value) === x.value)
+        .map(x => x.display);
 }
 
-const permMap = {
-    [Constants.Permissions.addReactions.toString()]: `add reactions`,
-    [Constants.Permissions.administrator.toString()]: `administrator`,
-    [Constants.Permissions.attachFiles.toString()]: `attach files`,
-    [Constants.Permissions.banMembers.toString()]: `ban members`,
-    [Constants.Permissions.changeNickname.toString()]: `change my nickname`,
-    [Constants.Permissions.voiceConnect.toString()]: `connect to voice`,
-    [Constants.Permissions.createInstantInvite.toString()]: `create invites`,
-    [Constants.Permissions.voiceDeafenMembers.toString()]: `deafen users`,
-    [Constants.Permissions.embedLinks.toString()]: `send embeds`,
-    [Constants.Permissions.kickMembers.toString()]: `kick members`,
-    [Constants.Permissions.manageChannels.toString()]: `manage channels`,
-    [Constants.Permissions.manageEmojisAndStickers.toString()]: `manage emojis/stickers`,
-    [Constants.Permissions.manageGuild.toString()]: `manage server`,
-    [Constants.Permissions.manageMessages.toString()]: `manage messages`,
-    [Constants.Permissions.manageNicknames.toString()]: `manage nicknames`,
-    [Constants.Permissions.manageRoles.toString()]: `manage roles`,
-    [Constants.Permissions.manageThreads.toString()]: `manage threads`,
-    [Constants.Permissions.manageWebhooks.toString()]: `manage webhooks`,
-    [Constants.Permissions.mentionEveryone.toString()]: `mention everyone`,
-    [Constants.Permissions.voiceMoveMembers.toString()]: `move members`,
-    [Constants.Permissions.voiceMuteMembers.toString()]: `mute members`,
-    [Constants.Permissions.voicePrioritySpeaker.toString()]: `be a priority speaker`,
-    [Constants.Permissions.readMessageHistory.toString()]: `read message history`,
-    [Constants.Permissions.voiceRequestToSpeak.toString()]: `request to speak`,
-    [Constants.Permissions.sendMessages.toString()]: `send messages`,
-    [Constants.Permissions.sendTTSMessages.toString()]: `send text-to-speach messages`,
-    [Constants.Permissions.voiceSpeak.toString()]: `speak`,
-    [Constants.Permissions.stream.toString()]: `stream`,
-    [Constants.Permissions.useApplicationCommands.toString()]: `use application commands`,
-    [Constants.Permissions.useExternalEmojis.toString()]: `use external emojis`,
-    [Constants.Permissions.useExternalStickers.toString()]: `use external stickers`,
-    // [Constants.Permissions.usePrivateThreads.toString()]: 'use private threads',
-    // [Constants.Permissions.usePublicThreads.toString()]: 'use public threads',
-    [Constants.Permissions.voiceUseVAD.toString()]: `use voice activity`,
-    [Constants.Permissions.viewAuditLog.toString()]: `view the audit log`,
-    [Constants.Permissions.viewChannel.toString()]: `view channel`,
-    [Constants.Permissions.viewGuildInsights.toString()]: `view insights`,
-    [Constants.Permissions.createPrivateThreads.toString()]: `create private threads`,
-    [Constants.Permissions.createPublicThreads.toString()]: `create public threads`,
-    [Constants.Permissions.sendMessagesInThreads.toString()]: `send messages in threads`,
-    [Constants.Permissions.startEmbeddedActivities.toString()]: `start embedded activities`
-} as const;
+const displayMap: { [P in keyof typeof Constants[`Permissions`]]: string } = {
+    addReactions: `add reactions`,
+    administrator: `administrator`,
+    attachFiles: `attach files`,
+    banMembers: `ban members`,
+    changeNickname: `change my nickname`,
+    voiceConnect: `connect to voice`,
+    createInstantInvite: `create invites`,
+    voiceDeafenMembers: `deafen users`,
+    embedLinks: `send embeds`,
+    kickMembers: `kick members`,
+    manageChannels: `manage channels`,
+    manageEmojisAndStickers: `manage emojis/stickers`,
+    manageGuild: `manage server`,
+    manageMessages: `manage messages`,
+    manageNicknames: `manage nicknames`,
+    manageRoles: `manage roles`,
+    manageThreads: `manage threads`,
+    manageWebhooks: `manage webhooks`,
+    mentionEveryone: `mention everyone`,
+    voiceMoveMembers: `move members`,
+    voiceMuteMembers: `mute members`,
+    voicePrioritySpeaker: `be a priority speaker`,
+    readMessageHistory: `read message history`,
+    voiceRequestToSpeak: `request to speak`,
+    sendMessages: `send messages`,
+    sendTTSMessages: `send text-to-speech messages`,
+    voiceSpeak: `speak`,
+    stream: `stream`,
+    useApplicationCommands: `use application commands`,
+    useExternalEmojis: `use external emojis`,
+    useExternalStickers: `use external stickers`,
+    voiceUseVAD: `use voice activity`,
+    viewAuditLog: `view the audit log`,
+    viewChannel: `view channel`,
+    viewGuildInsights: `view insights`,
+    createPrivateThreads: `create private threads`,
+    createPublicThreads: `create public threads`,
+    sendMessagesInThreads: `send messages in threads`,
+    startEmbeddedActivities: `start embedded activities`,
+    all: `all permissions`,
+    allGuild: `all guild permissions`,
+    allText: `all text permissions`,
+    allVoice: `all voice permissions`,
+    externalEmojis: `use external emojis`,
+    manageEmojis: `manage emojis`,
+    manageEvents: `manage events`,
+    moderateMembers: `moderate guild members`,
+    readMessages: `read messages`,
+    useSlashCommands: `use slash commands`,
+    viewAuditLogs: `view audit logs`,
+    voiceStream: `voice stream`
+};
+
+function isPowerOf2(v: bigint): boolean {
+    return v !== 0n && (v & v - 1n) === 0n; // idk i found it on s/o
+}
+
+const permDisplay = Object.entries(displayMap)
+    .map(x => ({
+        id: x[0],
+        display: x[1],
+        value: Constants.Permissions[x[0]]
+    }))
+    .filter(x => isPowerOf2(x.value)) // Remove any aggregate permissions eris provides, like "all"
+    .map(x => ({
+        value: x.value,
+        display: TranslatableString.create(`constants.discord.permission.${x.id}`, x.display)
+    }));

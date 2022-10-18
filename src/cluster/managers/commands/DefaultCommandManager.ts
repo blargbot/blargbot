@@ -83,7 +83,7 @@ class NormalizedCommand implements ICommand<Command> {
     public readonly name: string;
     public readonly aliases: readonly string[];
     public readonly description: IFormattable<string> | undefined;
-    public readonly signatures: ReadonlyArray<CommandSignature<CommandParameter>>;
+    public readonly signatures: ReadonlyArray<CommandSignature<IFormattable<string>, CommandParameter>>;
     public readonly disabled: boolean;
     public readonly permission: string;
     public readonly roles: readonly string[];

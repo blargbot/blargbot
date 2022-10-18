@@ -39,16 +39,16 @@ export interface ICommandManager<T = unknown> {
     load(commands?: Iterable<string> | boolean): Promise<void>;
 }
 
-export interface ICommandDetails extends Required<CommandPermissions> {
+export interface ICommandDetails<TString> extends Required<CommandPermissions> {
     readonly name: string;
     readonly aliases: readonly string[];
     readonly category: CommandProperties;
-    readonly description: IFormattable<string> | undefined;
-    readonly flags: ReadonlyArray<FlagDefinition<string | IFormattable<string>>>;
-    readonly signatures: readonly CommandSignature[];
+    readonly description: TString | undefined;
+    readonly flags: ReadonlyArray<FlagDefinition<string | TString>>;
+    readonly signatures: ReadonlyArray<CommandSignature<TString>>;
 }
 
-export interface ICommand<T = unknown> extends ICommandDetails, IMiddleware<CommandContext, CommandResult> {
+export interface ICommand<T = unknown> extends ICommandDetails<IFormattable<string>>, IMiddleware<CommandContext, CommandResult> {
     readonly id: string;
     readonly name: string;
     readonly implementation: T;
@@ -97,7 +97,7 @@ export interface CommandOptionsBase {
 }
 
 export interface CommandBaseOptions extends CommandOptionsBase {
-    readonly signatures: readonly CommandSignature[];
+    readonly signatures: ReadonlyArray<CommandSignature<IFormattable<string>>>;
 }
 
 export interface CommandOptions<TContext extends CommandContext> extends CommandOptionsBase {
@@ -215,13 +215,13 @@ export interface CommandHandler<TContext extends CommandContext> {
     readonly execute: (context: TContext) => Promise<CommandResult> | CommandResult;
 }
 
-export interface CommandSignature<TParameter = CommandParameter> {
-    readonly description: IFormattable<string>;
+export interface CommandSignature<TString, TParameter = CommandParameter> {
+    readonly description: TString;
     readonly parameters: readonly TParameter[];
     readonly hidden: boolean;
 }
 
-export interface CommandSignatureHandler<TContext extends CommandContext> extends CommandSignature {
+export interface CommandSignatureHandler<TContext extends CommandContext> extends CommandSignature<IFormattable<string>> {
     readonly execute: (context: TContext, args: readonly CommandArgument[], flags: FlagResult) => Promise<CommandResult> | CommandResult;
 }
 
@@ -281,9 +281,8 @@ export interface CommandListResult {
     [commandName: string]: CommandListResultItem | undefined;
 }
 
-export interface CommandListResultItem extends Omit<ICommandDetails, `category` | `description`> {
+export interface CommandListResultItem extends Omit<ICommandDetails<string>, `category`> {
     readonly category: string;
-    readonly description: string;
 }
 
 export interface ClusterStats {

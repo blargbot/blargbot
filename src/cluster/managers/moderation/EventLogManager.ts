@@ -1,5 +1,5 @@
 import { Cluster } from '@blargbot/cluster';
-import { discord, guard, ModlogColour } from '@blargbot/cluster/utils';
+import { guard, ModlogColour } from '@blargbot/cluster/utils';
 import { BaseUtilities } from '@blargbot/core/BaseUtilities';
 import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent';
 import { FormatEmbedAuthor, FormatEmbedField, FormatEmbedOptions } from '@blargbot/core/types';
@@ -322,7 +322,7 @@ export class EventLogManager {
             case ``:
                 return { name: names.empty, value: values.empty };
             default:
-                return { name: names.default, value: values.default({ content, maxLength: discord.getLimit(`embed.field.value`) }) };
+                return { name: names.default, value: values.default({ content }) };
         }
     }
 

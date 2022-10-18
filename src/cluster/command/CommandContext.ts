@@ -6,7 +6,7 @@ import { FormattableMessageContent } from '@blargbot/core/FormattableMessageCont
 import { ChoiceQueryOptions, ChoiceQueryResult, ConfirmQuery, MultipleQueryOptions, MultipleQueryResult, SendContent, SendContext, SlimConfirmQueryOptions, SlimEntityFindQueryOptions, SlimEntityPickQueryOptions, SlimEntityQueryOptions, SlimTextQueryOptions, SlimTextQueryOptionsParsed, TextQueryResult } from '@blargbot/core/types';
 import { guard } from '@blargbot/core/utils';
 import { Database } from '@blargbot/database';
-import { IFormattable, IFormatter } from '@blargbot/domain/messages/types';
+import { IFormattable } from '@blargbot/domain/messages/types';
 import { Logger } from '@blargbot/logger';
 import { Client as Discord, KnownChannel, KnownGuildChannel, KnownTextableChannel, Member, Message, Role, User, Webhook } from 'eris';
 
@@ -39,61 +39,42 @@ export class CommandContext<TChannel extends KnownTextableChannel = KnownTextabl
         const [context, content] = args.length === 1 ? [this.message.channel, args[0]] : [args[0], args[1]];
         if (content === undefined)
             return undefined;
-        return await this.cluster.util.send(context, content, this.author);
+        return await this.cluster.util.send(context, toSendContent(content), this.author);
     }
 
     public async reply(content: CommandResult): Promise<Message | undefined> {
         if (content === undefined)
             return undefined;
-        return await this.cluster.util.reply(this.message, content, this.author);
+        return await this.cluster.util.reply(this.message, toSendContent(content), this.author);
     }
 
     public async edit(message: Message, content: CommandResult): Promise<Message | undefined> {
-        const formatter = await this.util.getContentResolver(this.channel);
-        const payload = toSendContent(content, formatter);
-        if (payload === undefined)
+        const formatter = await this.util.getFormatter(this.channel);
+        if (content === undefined)
             return undefined;
-        return await message.edit(payload);
+        return await message.edit(toSendContent(content).format(formatter));
     }
 
     public async queryConfirm(options: SlimConfirmQueryOptions<IFormattable<string>>): Promise<boolean | undefined>
     public async queryConfirm(options: SlimConfirmQueryOptions<IFormattable<string>, boolean>): Promise<boolean>
     public async queryConfirm(options: SlimConfirmQueryOptions<IFormattable<string>, boolean | undefined>): Promise<boolean | undefined>
     public async queryConfirm(options: SlimConfirmQueryOptions<IFormattable<string>, boolean | undefined>): Promise<boolean | undefined> {
-        if (`choices` in options)
-            return await this.util.queryConfirm({ ...options, context: this.message, actors: this.author });
-
-        if (`guild` in options)
-            return await this.util.queryConfirm({ ...options, context: this.message, actors: this.author });
-
-        if (guard.isGuildChannel(this.channel))
-            return await this.util.queryConfirm({ ...options, context: this.message, actors: this.author, guild: this.channel.guild });
-
-        throw new Error(`Cannot queryChannel without a guild!`);
+        return await this.util.queryConfirm({ ...options, context: this.message, actors: this.author });
     }
 
     public async createConfirmQuery(options: SlimConfirmQueryOptions<IFormattable<string>>): Promise<ConfirmQuery>
     public async createConfirmQuery(options: SlimConfirmQueryOptions<IFormattable<string>, boolean>): Promise<ConfirmQuery<boolean>>
     public async createConfirmQuery(options: SlimConfirmQueryOptions<IFormattable<string>, boolean | undefined>): Promise<ConfirmQuery<boolean | undefined>>
     public async createConfirmQuery(options: SlimConfirmQueryOptions<IFormattable<string>, boolean | undefined>): Promise<ConfirmQuery<boolean | undefined>> {
-        if (`choices` in options)
-            return await this.util.queryConfirm({ ...options, context: this.message, actors: this.author });
-
-        if (`guild` in options)
-            return await this.util.queryConfirm({ ...options, context: this.message, actors: this.author });
-
-        if (guard.isGuildChannel(this.channel))
-            return await this.util.queryConfirm({ ...options, context: this.message, actors: this.author, guild: this.channel.guild });
-
-        throw new Error(`Cannot queryChannel without a guild!`);
+        return await this.util.createConfirmQuery({ ...options, context: this.message, actors: this.author });
     }
 
     public async queryChoice<T>(options: ChoiceQueryOptions<IFormattable<string>, T>): Promise<ChoiceQueryResult<T>> {
         return await this.util.queryChoice(options);
     }
 
-    public async queryMultiple<T>(options: MultipleQueryOptions<IFormattable<T>, T>): Promise<MultipleQueryResult<T>> {
-        return await this.util.queryMultiple(options);
+    public async queryMultiple<T>(options: MultipleQueryOptions<IFormattable<string>, T>): Promise<MultipleQueryResult<T>> {
+        return await this.util.queryMultiple({ ...options, context: this.message, actors: this.author });
     }
 
     public async queryChannel(options: SlimEntityFindQueryOptions<IFormattable<string>>): Promise<ChoiceQueryResult<KnownGuildChannel>>;
@@ -172,17 +153,20 @@ export class CommandContext<TChannel extends KnownTextableChannel = KnownTextabl
     }
 }
 
-function toSendContent(content: CommandResult, formatter: IFormatter): SendContent<string> | undefined {
-    switch (typeof content) {
-        case `undefined`:
-            return undefined;
-        case `object`: {
-            if (!(`format` in content))
-                return new FormattableMessageContent(content).format(formatter);
-            const formatted = content.format(formatter);
-            if (typeof formatted === `string`)
-                return { content: formatted };
-            return formatted;
-        }
+function toSendContent(content: Exclude<CommandResult, undefined>): IFormattable<SendContent<string>>;
+function toSendContent(content: CommandResult): IFormattable<SendContent<string>> | undefined;
+function toSendContent(content: CommandResult): IFormattable<SendContent<string>> | undefined {
+    if (content === undefined)
+        return undefined;
+    if (`format` in content) {
+        return {
+            format(formatter) {
+                const result = content.format(formatter);
+                return typeof result === `string`
+                    ? { content: result }
+                    : result;
+            }
+        };
     }
+    return new FormattableMessageContent(content);
 }

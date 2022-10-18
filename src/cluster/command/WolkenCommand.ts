@@ -1,9 +1,8 @@
 import { CommandType } from '@blargbot/cluster/utils';
-import { IFormatStringDefinition, IFormattable } from '@blargbot/domain/messages/types';
+import { IFormatStringDefinition, IFormattable, literal } from '@blargbot/domain/messages/types';
 import { User } from 'eris';
 import Wolken from 'wolken';
 
-import { literal } from '../text';
 import { CommandResult } from '../types';
 import { CommandContext } from './CommandContext';
 import { GlobalCommand } from './GlobalCommand';

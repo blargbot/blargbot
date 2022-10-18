@@ -22,7 +22,7 @@ export class TranslatableString<T extends string, V> implements IFormatString<T>
     }
 
     public format(formatter: IFormatter): string {
-        return formatter.format(this);
+        return formatter.format(this.template, this.value);
     }
 
     static #verify(definition: ITranslatableStringDefinition<string, never>): void {

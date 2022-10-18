@@ -15,7 +15,7 @@ export abstract class Command implements CommandBaseOptions, IMiddleware<Command
     public readonly cannotDisable: boolean;
     public readonly description: IFormattable<string> | undefined;
     public readonly flags: ReadonlyArray<FlagDefinition<IFormattable<string>>>;
-    public readonly signatures: readonly CommandSignature[];
+    public readonly signatures: ReadonlyArray<CommandSignature<IFormattable<string>>>;
     public readonly hidden: boolean;
 
     public get names(): readonly string[] { return [this.name, ...this.aliases]; }

@@ -1,10 +1,14 @@
 import { ClusterUtilities } from '@blargbot/cluster/ClusterUtilities';
 import { guard } from '@blargbot/cluster/utils';
+import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent';
 import { metrics } from '@blargbot/core/Metrics';
 import { IMiddleware, NextMiddleware } from '@blargbot/core/types';
+import { literal } from '@blargbot/domain/messages/types';
 import { KnownMessage } from 'eris';
 import fetch from 'node-fetch';
 import { URLSearchParams } from 'url';
+
+import templates from '../../../text';
 
 export class CleverbotMiddleware implements IMiddleware<KnownMessage, boolean> {
     readonly #util: ClusterUtilities;
@@ -35,10 +39,10 @@ export class CleverbotMiddleware implements IMiddleware<KnownMessage, boolean> {
         await context.channel.sendTyping();
         const query = await this.#util.resolveTags(context, context.content);
         try {
-            await this.#util.send(context, await this.#queryCleverbot(query));
+            await this.#util.reply(context, new FormattableMessageContent({ content: literal(await this.#queryCleverbot(query)) }));
         } catch (err: unknown) {
             this.#util.logger.error(err);
-            await this.#util.send(context, `❌ It seems that my clever brain isnt working right now, try again later`);
+            await this.#util.reply(context, new FormattableMessageContent({ content: templates.cleverbot.unavailable }));
         }
     }
 

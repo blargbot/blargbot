@@ -10,7 +10,8 @@ export interface IFormatString<T extends string = string> extends IFormattable<s
 }
 
 export interface IFormatter {
-    format(format: IFormatString): string;
+    readonly locale: Intl.Locale;
+    format(template: string, value: unknown): string;
 }
 
 export function literal<T>(value: Exclude<T, undefined>): IFormattable<T>;

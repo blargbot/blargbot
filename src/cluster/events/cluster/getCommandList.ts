@@ -11,6 +11,7 @@ export class ClusterGetCommandListHandler extends ClusterEventService<`getComman
 
     public async getCommandList(): Promise<CommandListResult> {
         const commands: CommandListResult = {};
+        const formatter = await this.cluster.util.getFormatter();
         for await (const result of this.cluster.commands.default.list()) {
             if (result.state !== `ALLOWED`)
                 continue;
@@ -19,14 +20,20 @@ export class ClusterGetCommandListHandler extends ClusterEventService<`getComman
             commands[c.name] = {
                 aliases: c.aliases,
                 category: c.category.id,
-                description: c.description,
+                description: c.description?.format(formatter),
                 disabled: c.disabled,
-                flags: c.flags,
+                flags: c.flags.map(f => ({
+                    ...f,
+                    description: typeof f.description === `string` ? f.description : f.description.format(formatter)
+                })),
                 hidden: c.hidden,
                 name: c.name,
                 permission: c.permission,
                 roles: c.roles,
-                signatures: c.signatures
+                signatures: c.signatures.map(s => ({
+                    ...s,
+                    description: s.description.format(formatter)
+                }))
             };
         }
         return commands;
