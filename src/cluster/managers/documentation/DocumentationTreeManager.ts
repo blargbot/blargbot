@@ -1,4 +1,4 @@
-import { IFormatter } from '@blargbot/domain/messages/types';
+import { format, IFormatter } from '@blargbot/domain/messages/types';
 import { KnownTextableChannel, User } from 'eris';
 
 import templates from '../../text';
@@ -28,7 +28,7 @@ export abstract class DocumentationTreeManager extends DocumentationManager {
     #matchScore(documentation: Documentation, term: string, formatter: IFormatter): Awaitable<number> {
         const normTerm = term.trim().toLowerCase();
         return (documentation.tags ?? [documentation.name])
-            .map(x => typeof x === `string` ? x : x.format(formatter))
+            .map(x => typeof x === `string` ? x : x[format](formatter))
             .map(x => x.toLowerCase())
             .map(normTitle => {
                 if (normTitle === normTerm)

@@ -1,6 +1,6 @@
 import { TimeoutClearResult, TimeoutResult } from '@blargbot/cluster/types';
 import { clampBy } from '@blargbot/cluster/utils';
-import { IFormattable } from '@blargbot/domain/messages/types';
+import { format, IFormattable } from '@blargbot/domain/messages/types';
 import { Guild, Member, User } from 'eris';
 import moment, { Duration } from 'moment-timezone';
 
@@ -50,7 +50,7 @@ export class TimeoutManager extends ModerationManagerBase {
 
         this.#ignoreTimeoutClears.add(`${guild.id}:${member.id}`);
         const formatter = await this.manager.cluster.util.getFormatter(guild);
-        await guild.editMember(member.id, { communicationDisabledUntil: null }, templates.moderation.auditLog({ moderator, reason }).format(formatter));
+        await guild.editMember(member.id, { communicationDisabledUntil: null }, templates.moderation.auditLog({ moderator, reason })[format](formatter));
         await this.modLog.logTimeoutClear(guild, member.user, moderator, reason);
 
         return `success`;
@@ -77,7 +77,7 @@ export class TimeoutManager extends ModerationManagerBase {
         try {
             const clampedDuration = clampBy(duration, moment.duration(0), maximumTimeoutDuration, d => d.asMilliseconds());
             const formatter = await this.manager.cluster.util.getFormatter(guild);
-            await guild.editMember(userId, { communicationDisabledUntil: moment().utc().add(clampedDuration).toDate() }, templates.moderation.auditLog({ moderator, reason }).format(formatter));
+            await guild.editMember(userId, { communicationDisabledUntil: moment().utc().add(clampedDuration).toDate() }, templates.moderation.auditLog({ moderator, reason })[format](formatter));
         } catch (err: unknown) {
             this.#ignoreTimeouts.delete(`${guild.id}:${userId}`);
             return { error: err };

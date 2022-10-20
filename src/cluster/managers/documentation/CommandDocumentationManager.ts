@@ -1,6 +1,6 @@
 import { FormatEmbedField, SendContent } from '@blargbot/core/types';
 import { discord, guard } from '@blargbot/core/utils';
-import { IFormattable, literal } from '@blargbot/domain/messages/types';
+import { format, IFormattable, literal } from '@blargbot/domain/messages/types';
 import { KnownChannel, KnownTextableChannel, User } from 'eris';
 
 import { Cluster } from '../../Cluster';
@@ -112,14 +112,14 @@ export class CommandDocumentationManager extends DocumentationTreeManager {
 
         const charLimit = discord.getLimit(`embed.field.value`);
         return {
-            format(formatter) {
+            [format](formatter) {
                 for (const result of getPotentialResults()) {
-                    const str = result.format(formatter);
+                    const str = result[format](formatter);
                     if (str.length <= charLimit)
                         return str;
                 }
 
-                return doc.list.count({ count: names.length }).format(formatter);
+                return doc.list.count({ count: names.length })[format](formatter);
             }
         };
     }

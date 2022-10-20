@@ -2896,7 +2896,7 @@ export const templates = crunchTree(`cluster`, {
                     author: {
                         name: {
                             user: translatable(`{user.bot#bool(🤖 |)}{user.username}#{user.discriminator}`).withArgs<{ user: Eris.User; }>(),
-                            member: translatable(`{user.bot#bool(🤖 |)}{user.username}#{user.discriminator}{user#nick#bool( \\({}\\)|)}`).withArgs<{ user: Eris.Member; }>()
+                            member: translatable(`{user.bot#bool(🤖 |)}{user.username}#{user.discriminator}{user.nick#bool( \\({}\\)|)}`).withArgs<{ user: Eris.Member; }>()
                         }
                     },
                     description: {

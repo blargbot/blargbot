@@ -1,6 +1,6 @@
 import { BanResult, KickResult, MassBanResult, UnbanResult } from '@blargbot/cluster/types';
 import { sleep } from '@blargbot/cluster/utils';
-import { IFormattable, literal } from '@blargbot/domain/messages/types';
+import { format, IFormattable, literal } from '@blargbot/domain/messages/types';
 import { UnbanEventOptions } from '@blargbot/domain/models';
 import { mapping } from '@blargbot/mapping';
 import { ApiError, AuditLogActionType, DiscordRESTError, Guild, GuildAuditLog, GuildAuditLogEntry, Member, User } from 'eris';
@@ -100,7 +100,7 @@ export class BanManager extends ModerationManagerBase {
         this.#ignoreBans.add(`${guild.id}:${userId}`);
         try {
             const formatter = await this.manager.cluster.util.getFormatter(guild);
-            await guild.banMember(userId, deleteDays, templates.moderation.auditLog({ moderator, reason }).format(formatter));
+            await guild.banMember(userId, deleteDays, templates.moderation.auditLog({ moderator, reason })[format](formatter));
         } catch (err: unknown) {
             this.#ignoreBans.delete(`${guild.id}:${userId}`);
             return { error: err };
@@ -127,7 +127,7 @@ export class BanManager extends ModerationManagerBase {
 
         this.#ignoreUnbans.add(`${guild.id}:${user.id}`);
         const formatter = await this.manager.cluster.util.getFormatter(guild);
-        await guild.unbanMember(user.id, templates.moderation.auditLog({ moderator, reason }).format(formatter));
+        await guild.unbanMember(user.id, templates.moderation.auditLog({ moderator, reason })[format](formatter));
         await this.modLog.logUnban(guild, user, moderator, reason);
 
         return `success`;
@@ -148,7 +148,7 @@ export class BanManager extends ModerationManagerBase {
         this.#ignoreLeaves.add(`${member.guild.id}:${member.id}`);
         try {
             const formatter = await this.manager.cluster.util.getFormatter(member.guild);
-            await member.guild.kickMember(member.id, templates.moderation.auditLog({ moderator, reason }).format(formatter));
+            await member.guild.kickMember(member.id, templates.moderation.auditLog({ moderator, reason })[format](formatter));
         } catch (err: unknown) {
             this.#ignoreLeaves.delete(`${member.guild.id}:${member.id}`);
             throw err;

@@ -2,7 +2,7 @@ import { Cluster } from '@blargbot/cluster';
 import { guard, humanize, ModlogColour } from '@blargbot/cluster/utils';
 import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent';
 import { FormatEmbedField, FormatEmbedOptions } from '@blargbot/core/types';
-import { IFormattable, literal } from '@blargbot/domain/messages/types';
+import { format, IFormattable, literal } from '@blargbot/domain/messages/types';
 import { Guild, User } from 'eris';
 import { Duration } from 'moment-timezone';
 
@@ -331,8 +331,8 @@ export class ModLogManager {
             modid: moderator?.id,
             msgid: modlogMessage?.id,
             channelid: modlogMessage?.channel.id,
-            reason: reason.format(formatter),
-            type: type.format(formatter),
+            reason: reason[format](formatter),
+            type: type[format](formatter),
             userid: Array.isArray(user) ? user.map(u => u.id).join(`,`) : user.id
         });
     }

@@ -1,6 +1,6 @@
 import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent';
 import { FormatActionRow, FormatButton, FormatEmbedField, FormatEmbedOptions, FormatSelectMenu, FormatSelectMenuOptions, SendContent } from '@blargbot/core/types';
-import { IFormattable, IFormatter } from '@blargbot/domain/messages/types';
+import { format, IFormattable, IFormatter } from '@blargbot/domain/messages/types';
 import { ComponentInteraction, Constants, KnownInteraction, KnownTextableChannel, User } from 'eris';
 import moment from 'moment-timezone';
 
@@ -138,7 +138,7 @@ export abstract class DocumentationManager {
         const user = interaction.member?.user ?? interaction.user;
         if (user?.id !== idData.userId) {
             await interaction.createMessage({
-                content: templates.common.query.cantUse.format(formatter),
+                content: templates.common.query.cantUse[format](formatter),
                 flags: Constants.MessageFlags.EPHEMERAL
             });
             return;
@@ -147,7 +147,7 @@ export abstract class DocumentationManager {
         await interaction.editParent({
             embeds: [
                 {
-                    title: templates.documentation.loading.format(formatter)
+                    title: templates.documentation.loading[format](formatter)
                 }
             ],
             components: []
@@ -157,14 +157,14 @@ export abstract class DocumentationManager {
         const documentation = await this.getDocumentation(idData.documentationId, user, channel);
         if (documentation === undefined) {
             await interaction.createMessage({
-                content: this.#invalid.format(formatter),
+                content: this.#invalid[format](formatter),
                 flags: Constants.MessageFlags.EPHEMERAL
             });
             return;
         }
 
         const content = await this.#render(documentation, idData, user, channel, interaction);
-        await interaction.editParent(new FormattableMessageContent(content).format(formatter));
+        await interaction.editParent(new FormattableMessageContent(content)[format](formatter));
     }
 
     async #render(documentation: Documentation, idData: DocumentationPageIdData, user: User, channel: KnownTextableChannel, interaction: ComponentInteraction): Promise<SendContent<IFormattable<string>>> {
@@ -232,7 +232,7 @@ export abstract class DocumentationManager {
             type: Constants.ComponentTypes.BUTTON,
             custom_id: this.#createCustomId({ documentationId: id, pageGroup, pageNumber, userId }),
             style: Constants.ButtonStyles.PRIMARY,
-            disabled: pageGroup === 0,
+            disabled: pageGroup <= 0,
             emoji: { name: `⬅` }
         };
     }

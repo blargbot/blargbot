@@ -2,7 +2,7 @@ import { Configuration } from '@blargbot/config/Configuration';
 import { FormatEmbedAuthor, SendContent, SendContext } from '@blargbot/core/types';
 import { Database } from '@blargbot/database';
 import { TranslatableString } from '@blargbot/domain/messages/index';
-import { IFormattable, IFormatter, literal } from '@blargbot/domain/messages/types';
+import { format, IFormattable, IFormatter, literal } from '@blargbot/domain/messages/types';
 import { DiscordChannelTag, DiscordRoleTag, DiscordTagSet, DiscordUserTag, StoredUser } from '@blargbot/domain/models';
 import { Logger } from '@blargbot/logger';
 import { Snowflake } from 'catflake';
@@ -11,11 +11,9 @@ import moment from 'moment-timezone';
 
 import { BaseClient } from './BaseClient';
 import { Emote } from './Emote';
-import { DefaultFormatter, FormatStringCompiler } from "./formatting";
+import { DefaultFormatter } from "./formatting";
 import { metrics } from './Metrics';
 import { guard, humanize, parse, snowflake } from './utils';
-
-const compiler = new FormatStringCompiler();
 
 export class BaseUtilities {
     public get user(): ExtendedUser { return this.client.discord.user; }
@@ -46,7 +44,7 @@ export class BaseUtilities {
 
     public getFormatter(target?: Channel | Guild | string): Promise<IFormatter> {
         target;
-        return Promise.resolve(new DefaultFormatter(new Intl.Locale(`en-GB`), compiler, {}));
+        return Promise.resolve(new DefaultFormatter(new Intl.Locale(`en-GB`), this.client.formatCompiler));
     }
 
     public websiteLink(path?: string): string {
@@ -88,14 +86,14 @@ export class BaseUtilities {
 
     public async reply<T extends TextableChannel>(message: Message<T>, payload: IFormattable<SendContent<string>>, author?: User): Promise<Message<T> | undefined> {
         return await this.send(message.channel, {
-            format(formatter) {
+            [format](formatter) {
                 return {
                     messageReference: {
                         messageID: message.id,
                         channelID: message.channel.id,
                         failIfNotExists: false
                     },
-                    ...payload.format(formatter)
+                    ...payload[format](formatter)
                 };
             }
         }, author);
@@ -108,7 +106,7 @@ export class BaseUtilities {
 
         const channel = await this.#getSendChannel(context);
         const formatter = await this.getFormatter(channel);
-        const { files = [], ...content } = payload.format(formatter);
+        const { files = [], ...content } = payload[format](formatter);
 
         // Stringifies embeds if we lack permissions to send embeds
         if (content.embeds !== undefined && guard.isGuildChannel(channel)) {
@@ -161,11 +159,11 @@ export class BaseUtilities {
             const result = sendErrors[code](this, channel, content, error);
             if (typeof result === `object` && author !== undefined && await this.canDmErrors(author.id)) {
                 await this.send(author, {
-                    format(formatter) {
+                    [format](formatter) {
                         return {
                             content: guard.isGuildChannel(channel)
-                                ? sendErrorGuild({ channel, message: result }).format(formatter)
-                                : sendErrorDm({ channel, message: result }).format(formatter),
+                                ? sendErrorGuild({ channel, message: result })[format](formatter)
+                                : sendErrorDm({ channel, message: result })[format](formatter),
                             messageReference: content.messageReference
                         };
                     }

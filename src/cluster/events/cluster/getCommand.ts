@@ -1,6 +1,7 @@
 import { Cluster } from '@blargbot/cluster';
 import { ClusterEventService } from '@blargbot/cluster/serviceTypes';
 import { CommandListResultItem } from '@blargbot/cluster/types';
+import { format } from '@blargbot/domain/messages/types';
 
 export class ClusterGetCommandHandler extends ClusterEventService<`getCommand`> {
     public constructor(
@@ -20,11 +21,11 @@ export class ClusterGetCommandHandler extends ClusterEventService<`getCommand`> 
         return {
             aliases: command.aliases,
             category: command.category.id,
-            description: command.description?.format(formatter),
+            description: command.description?.[format](formatter),
             disabled: command.disabled,
             flags: command.flags.map(f => ({
                 ...f,
-                description: typeof f.description === `string` ? f.description : f.description.format(formatter)
+                description: typeof f.description === `string` ? f.description : f.description[format](formatter)
             })),
             hidden: command.hidden,
             name: command.name,
@@ -32,7 +33,7 @@ export class ClusterGetCommandHandler extends ClusterEventService<`getCommand`> 
             roles: command.roles,
             signatures: command.signatures.map(s => ({
                 ...s,
-                description: s.description.format(formatter)
+                description: s.description[format](formatter)
             }))
         };
     }

@@ -1,6 +1,6 @@
 import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType, guard } from '@blargbot/cluster/utils';
-import { IFormattable, literal } from '@blargbot/domain/messages/types';
+import { format, IFormattable, literal } from '@blargbot/domain/messages/types';
 import { EmbedField, EmbedOptions } from 'eris';
 import moment from 'moment-timezone';
 
@@ -57,8 +57,8 @@ export class TimersCommand extends GlobalCommand {
         ] as const;
 
         const table: IFormattable<string> = {
-            format(formatter) {
-                const headers = columns.map(c => c.header.format(formatter));
+            [format](formatter) {
+                const headers = columns.map(c => c.header[format](formatter));
                 const maxLength = headers.map(s => s.length);
                 const grid: Array<readonly string[]> = [];
                 for (const event of eventsPage.events) {
@@ -75,7 +75,7 @@ export class TimersCommand extends GlobalCommand {
                         user,
                         type: event.type,
                         content
-                    }).format(formatter));
+                    })[format](formatter));
 
                     for (let i = 0; i < row.length; i++)
                         maxLength[i] = Math.max(maxLength[i], row[i].length);

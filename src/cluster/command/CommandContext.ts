@@ -6,7 +6,7 @@ import { FormattableMessageContent } from '@blargbot/core/FormattableMessageCont
 import { ChoiceQueryOptions, ChoiceQueryResult, ConfirmQuery, MultipleQueryOptions, MultipleQueryResult, SendContent, SendContext, SlimConfirmQueryOptions, SlimEntityFindQueryOptions, SlimEntityPickQueryOptions, SlimEntityQueryOptions, SlimTextQueryOptions, SlimTextQueryOptionsParsed, TextQueryResult } from '@blargbot/core/types';
 import { guard } from '@blargbot/core/utils';
 import { Database } from '@blargbot/database';
-import { IFormattable } from '@blargbot/domain/messages/types';
+import { format, IFormattable, isFormattable } from '@blargbot/domain/messages/types';
 import { Logger } from '@blargbot/logger';
 import { Client as Discord, KnownChannel, KnownGuildChannel, KnownTextableChannel, Member, Message, Role, User, Webhook } from 'eris';
 
@@ -52,7 +52,7 @@ export class CommandContext<TChannel extends KnownTextableChannel = KnownTextabl
         const formatter = await this.util.getFormatter(this.channel);
         if (content === undefined)
             return undefined;
-        return await message.edit(toSendContent(content).format(formatter));
+        return await message.edit(toSendContent(content)[format](formatter));
     }
 
     public async queryConfirm(options: SlimConfirmQueryOptions<IFormattable<string>>): Promise<boolean | undefined>
@@ -158,10 +158,10 @@ function toSendContent(content: CommandResult): IFormattable<SendContent<string>
 function toSendContent(content: CommandResult): IFormattable<SendContent<string>> | undefined {
     if (content === undefined)
         return undefined;
-    if (`format` in content) {
+    if (isFormattable(content)) {
         return {
-            format(formatter) {
-                const result = content.format(formatter);
+            [format](formatter) {
+                const result = content[format](formatter);
                 return typeof result === `string`
                     ? { content: result }
                     : result;

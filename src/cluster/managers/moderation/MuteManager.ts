@@ -1,6 +1,6 @@
 import { EnsureMutedRoleResult, MuteResult, UnmuteResult } from '@blargbot/cluster/types';
 import { discord, guard } from '@blargbot/cluster/utils';
-import { IFormattable } from '@blargbot/domain/messages/types';
+import { format, IFormattable } from '@blargbot/domain/messages/types';
 import { UnmuteEventOptions } from '@blargbot/domain/models';
 import { mapping } from '@blargbot/mapping';
 import { Constants, Guild, KnownGuildChannel, Member, Role, User } from 'eris';
@@ -31,7 +31,7 @@ export class MuteManager extends ModerationManagerBase {
             return `roleTooHigh`;
 
         const formatter = await this.manager.cluster.util.getFormatter(member.guild);
-        await member.addRole(role.id, templates.moderation.auditLog({ moderator, reason }).format(formatter));
+        await member.addRole(role.id, templates.moderation.auditLog({ moderator, reason })[format](formatter));
         if (duration !== undefined && duration.asMilliseconds() > 0) {
             await this.modLog.logTempMute(member.guild, member.user, duration, moderator, reason);
             await this.cluster.timeouts.insert(`unmute`, {
@@ -60,7 +60,7 @@ export class MuteManager extends ModerationManagerBase {
             return `roleTooHigh`;
 
         const formatter = await this.manager.cluster.util.getFormatter(member.guild);
-        await member.removeRole(role.id, templates.moderation.auditLog({ moderator, reason }).format(formatter));
+        await member.removeRole(role.id, templates.moderation.auditLog({ moderator, reason })[format](formatter));
         await this.modLog.logUnmute(member.guild, member.user, moderator, reason);
 
         return `success`;
@@ -104,7 +104,7 @@ export class MuteManager extends ModerationManagerBase {
                 deny |= Constants.Permissions.sendMessages | Constants.Permissions.voiceSpeak;
             if (deny !== 0n) {
                 const formatter = await this.manager.cluster.util.getFormatter(channel.guild);
-                await channel.editPermission(mutedRole.id, 0n, deny, Constants.PermissionOverwriteTypes.ROLE, templates.mute.createReason.format(formatter));
+                await channel.editPermission(mutedRole.id, 0n, deny, Constants.PermissionOverwriteTypes.ROLE, templates.mute.createReason[format](formatter));
             }
         } catch (err: unknown) {
             this.cluster.logger.error(`Failed to set permissions for muted role`, mutedRole.id, `in channel`, channel.id, err);

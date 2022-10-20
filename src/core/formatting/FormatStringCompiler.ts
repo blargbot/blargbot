@@ -1,19 +1,48 @@
-import { IFormattable } from "@blargbot/domain/messages/types";
+import { format, isFormattable } from "@blargbot/domain/messages/types";
 
 import { ReplacementContext } from "./ReplacementContext";
 
 export interface IFormatStringCompiler {
-    compile(template: string): (context: ReplacementContext) => string;
+    compile(template: string): ICompiledFormatString;
+}
+
+export interface ICompiledFormatString {
+    readonly template: string;
+    (context: ReplacementContext): string;
+}
+
+export interface IValueResolver {
+    (context: ReplacementContext): unknown;
+}
+
+export interface IValueResolverTransform {
+    transform(compiler: IFormatStringCompiler, resolver: IValueResolver, ...args: string[]): IValueResolver;
+}
+
+export interface IFormatStringCompilerMiddleware {
+    handle(compiler: IFormatStringCompiler, next: (template: string) => ICompiledFormatString, template: string): ICompiledFormatString;
+}
+
+export interface FormatStringCompilerOptions {
+    readonly middleware?: Iterable<IFormatStringCompilerMiddleware>;
+    readonly transformers?: { readonly [P in string]?: IValueResolverTransform };
 }
 
 export class FormatStringCompiler implements IFormatStringCompiler {
-    readonly #transformers: { readonly [P in string]?: ((this: IFormatStringCompiler, ...args: string[]) => (context: ReplacementContext, value: unknown) => unknown); };
+    readonly #transformers: { readonly [P in string]?: IValueResolverTransform };
+    readonly #compile: (template: string) => ICompiledFormatString;
 
-    public constructor(transformers: { readonly [P in string]?: (this: IFormatStringCompiler, ...args: string[]) => (context: ReplacementContext, value: unknown) => unknown; }) {
-        this.#transformers = transformers;
+    public constructor(options?: FormatStringCompilerOptions) {
+        this.#transformers = { ...options?.transformers };
+        this.#compile = [...options?.middleware ?? []]
+            .reverse()
+            .reduce(
+                (p, c) => c.handle.bind(c, this, p),
+                this.#compileCore.bind(this)
+            );
     }
 
-    public compile(template: string): (context: ReplacementContext) => string {
+    public compile(template: string): ICompiledFormatString {
         try {
             return this.#compile(template);
         } catch (err: unknown) {
@@ -27,7 +56,8 @@ export class FormatStringCompiler implements IFormatStringCompiler {
             throw err;
         }
     }
-    #compile(template: string): (context: ReplacementContext) => string {
+
+    #compileCore(template: string): ICompiledFormatString {
         const parts = parse(template);
         const context = `context`;
         const literals: string[] = [];
@@ -57,18 +87,17 @@ export class FormatStringCompiler implements IFormatStringCompiler {
 
         const factory = eval(factorySrc) as (...args: typeof handlers) => (context: ReplacementContext) => string;
 
-        return factory(...handlers);
+        return Object.assign(factory(...handlers), { template });
     }
 
     #createReplacementHandler(details: ReplacementDetails): (context: ReplacementContext) => string {
-        const transformers = details.transformers.map(t => this.#createTransformer(t));
-        const source = this.#createValueSource(...details.path);
+        const source = details.transformers.reduce(
+            (p, c) => this.#createTransformer(p, c),
+            this.#createValueSource(...details.path)
+        );
         const fallback = details.fallback ?? ``;
         return ctx => {
-            let value = source(ctx);
-            for (const transformer of transformers)
-                value = transformer(ctx, value);
-            // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+            const value = source(ctx);
             switch (typeof value) {
                 case `string`: return value.length === 0 ? fallback : value;
                 case `undefined`: return fallback;
@@ -80,7 +109,7 @@ export class FormatStringCompiler implements IFormatStringCompiler {
         };
     }
 
-    #createValueSource(...path: string[]): (context: ReplacementContext) => unknown {
+    #createValueSource(...path: string[]): IValueResolver {
         let getRoot = (v: readonly unknown[]): unknown => v[v.length - 1];
         if (path.length > 0 && path[0].startsWith(`~`)) {
             getRoot = v => v[0];
@@ -96,30 +125,18 @@ export class FormatStringCompiler implements IFormatStringCompiler {
             if (typeof value === `function`)
                 value = value();
             if (isFormattable(value))
-                value = value.format(ctx.formatter);
+                value = value[format](ctx.formatter);
             return value;
         };
     }
 
-    #createTransformer(details: TransformerDetails): (context: ReplacementContext, value: unknown) => unknown {
+    #createTransformer(previous: IValueResolver, details: TransformerDetails): IValueResolver {
         const compiler = this.#transformers[details.name];
         if (compiler === undefined)
             throw new Error(`Unknown transformer ${details.name}`);
 
-        return compiler.call(this, ...details.args);
+        return compiler.transform(this, previous, ...details.args);
     }
-}
-
-export class CachingFormatStringCompiler extends FormatStringCompiler {
-    readonly #formatCache = new Map<string, (context: ReplacementContext) => string>();
-
-    public compile(template: string): (context: ReplacementContext) => string {
-        let result = this.#formatCache.get(template);
-        if (result === undefined)
-            this.#formatCache.set(template, result = super.compile(template));
-        return result;
-    }
-
 }
 
 const enum TemplateTokenType {
@@ -151,13 +168,6 @@ interface ReplacementDetails {
 interface TransformerDetails {
     readonly name: string;
     readonly args: readonly string[];
-}
-
-function isFormattable(value: unknown): value is IFormattable<unknown> {
-    return typeof value === `object`
-        && value !== null
-        && `format` in value
-        && typeof (value as { format: unknown; }).format === `function`;
 }
 
 function share<T>(source: IterableIterator<T>): IterableIterator<T> {

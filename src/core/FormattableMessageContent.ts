@@ -1,5 +1,5 @@
 import { FormatActionRowComponents, FormatButton, FormatEmbedAuthor, FormatEmbedFooter, FormatEmbedOptions, FormatSelectMenu, SendContent } from "@blargbot/core/types";
-import { IFormattable, IFormatter } from "@blargbot/domain/messages/types";
+import { format, IFormattable, IFormatter } from "@blargbot/domain/messages/types";
 import { ActionRowComponents, Button, EmbedAuthor, EmbedFooter, EmbedOptions, SelectMenu } from "eris";
 
 export class FormattableMessageContent implements IFormattable<SendContent<string>> {
@@ -9,7 +9,7 @@ export class FormattableMessageContent implements IFormattable<SendContent<strin
         this.#content = content;
     }
 
-    public format(formatter: IFormatter): SendContent<string> {
+    public [format](formatter: IFormatter): SendContent<string> {
         return {
             ...this.#content,
             content: this.#getString(this.#content.content, formatter),
@@ -27,7 +27,7 @@ export class FormattableMessageContent implements IFormattable<SendContent<strin
         switch (typeof value) {
             case `string`: return value;
             case `undefined`: return value;
-            default: return value.format(formatter);
+            default: return value[format](formatter);
         }
     }
 

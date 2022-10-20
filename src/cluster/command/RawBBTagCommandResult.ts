@@ -1,5 +1,5 @@
 import { SendContent } from "@blargbot/core/types";
-import { IFormattable, IFormatter } from "@blargbot/domain/messages/types";
+import { format, IFormattable, IFormatter } from "@blargbot/domain/messages/types";
 
 import { discord } from "../utils/index";
 
@@ -16,11 +16,11 @@ export class RawBBTagCommandResult implements IFormattable<string | SendContent<
         this.#fileName = fileName;
     }
 
-    public format(formatter: IFormatter): string | SendContent<string> {
+    public [format](formatter: IFormatter): string | SendContent<string> {
         if (this.#content.includes(`\`\`\``))
             return this.#attach(formatter);
 
-        const inlineRaw = this.#inline.format(formatter);
+        const inlineRaw = this.#inline[format](formatter);
         if (discord.getLimit(`content`) < inlineRaw.length)
             return this.#attach(formatter);
 
@@ -29,7 +29,7 @@ export class RawBBTagCommandResult implements IFormattable<string | SendContent<
 
     #attach(formatter: IFormatter): SendContent<string> {
         return {
-            content: this.#attached.format(formatter),
+            content: this.#attached[format](formatter),
             files: [
                 {
                     name: this.#fileName,

@@ -9,7 +9,7 @@ const cmd = templates.commands.prefix;
 export class PrefixCommand extends GuildCommand {
     public constructor() {
         super({
-            name: ``,
+            name: `prefix`,
             category: CommandType.ADMIN,
             definitions: [
                 {

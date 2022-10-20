@@ -2,7 +2,7 @@ import { Cluster } from '@blargbot/cluster';
 import { GuildCommand } from '@blargbot/cluster/command';
 import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { codeBlock, CommandType, defaultStaff, guard, guildSettings, parse } from '@blargbot/cluster/utils';
-import { IFormattable } from '@blargbot/domain/messages/types';
+import { format, IFormattable } from '@blargbot/domain/messages/types';
 import { Guild } from 'eris';
 
 import templates from '../../text';
@@ -154,11 +154,11 @@ function resolveRole(guild: Guild, roleId: string | undefined): IFormattable<str
 
 function settingGroup(values: Array<[key: string & keyof typeof guildSettings, value: string | IFormattable<string> | undefined | boolean | number]>): IFormattable<string> {
     return {
-        format(formatter) {
+        [format](formatter) {
             const mapped = values.map(([key, value = cmd.list.notSet]) => {
                 const setting = guildSettings[key];
-                const strValue = typeof value === `object` ? value.format(formatter) : `${value}`;
-                return [setting.name.format(formatter), strValue.slice(0, 100)] as const;
+                const strValue = typeof value === `object` ? value[format](formatter) : `${value}`;
+                return [setting.name[format](formatter), strValue.slice(0, 100)] as const;
             });
             const keyLength = Math.max(...mapped.map(([key]) => key.length));
             const content = mapped.map(v => `${v[0].padStart(keyLength, ` `)} : ${v[1]}`)
