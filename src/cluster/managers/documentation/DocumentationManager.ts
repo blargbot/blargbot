@@ -17,27 +17,27 @@ export interface DocumentationBase {
 }
 
 export interface DocumentationGroup extends DocumentationBase {
-    readonly type: `group`;
+    readonly type: 'group';
     readonly items: readonly Documentation[];
     readonly selectText: IFormattable<string>;
-    readonly embed: Pick<FormatEmbedOptions<IFormattable<string>>, `color` | `description` | `url` | `image` | `thumbnail` | `fields`>;
+    readonly embed: Pick<FormatEmbedOptions<IFormattable<string>>, 'color' | 'description' | 'url' | 'image' | 'thumbnail' | 'fields'>;
 }
 
 export interface DocumentationLeaf extends DocumentationBase {
-    readonly type: `single`;
-    readonly embed: Pick<FormatEmbedOptions<IFormattable<string>>, `color` | `description` | `url` | `image` | `thumbnail` | `fields`>;
+    readonly type: 'single';
+    readonly embed: Pick<FormatEmbedOptions<IFormattable<string>>, 'color' | 'description' | 'url' | 'image' | 'thumbnail' | 'fields'>;
 }
 
 export interface DocumentationPaged extends DocumentationBase {
-    readonly type: `paged`;
+    readonly type: 'paged';
     readonly pages: readonly DocumentationPage[];
     readonly selectText: IFormattable<string>;
-    readonly embed: Pick<FormatEmbedOptions<IFormattable<string>>, `color` | `description` | `url` | `image` | `thumbnail`>;
+    readonly embed: Pick<FormatEmbedOptions<IFormattable<string>>, 'color' | 'description' | 'url' | 'image' | 'thumbnail'>;
 }
 
 export interface DocumentationPage {
     readonly name: IFormattable<string>;
-    readonly embed: Pick<FormatEmbedOptions<IFormattable<string>>, `fields`>;
+    readonly embed: Pick<FormatEmbedOptions<IFormattable<string>>, 'fields'>;
 }
 
 interface DocumentationPageIdData {
@@ -72,12 +72,12 @@ export abstract class DocumentationManager {
     }
 
     #tryReadCustomId(value: string): DocumentationPageIdData | undefined {
-        const segments = value.split(`|`);
+        const segments = value.split('|');
         if (segments.length < 5)
             return undefined;
 
         const [id, userIdComp, pageGroupComp, pageNumberComp, ...documentationIdSeg] = segments;
-        const documentationId = documentationIdSeg.join(`|`);
+        const documentationId = documentationIdSeg.join('|');
 
         if (id !== this.#id)
             return undefined;
@@ -97,13 +97,13 @@ export abstract class DocumentationManager {
         let hex = value.toString(16);
         if (hex.length % 2 === 1) // Buffer.from(str, 'hex') needs str to be even in length
             hex = `0${hex}`;
-        const buf = Buffer.from(hex, `hex`);
-        return buf.toString(`base64url`); // Might use another base, maybe base128 for even denser values
+        const buf = Buffer.from(hex, 'hex');
+        return buf.toString('base64url'); // Might use another base, maybe base128 for even denser values
     }
 
     #decompress(value: string): bigint {
-        const buf = Buffer.from(value, `base64url`);
-        const hex = buf.toString(`hex`);
+        const buf = Buffer.from(value, 'base64url');
+        const hex = buf.toString('hex');
         return BigInt(`0x${hex}`);
     }
 
@@ -173,15 +173,15 @@ export abstract class DocumentationManager {
                 return await this.#renderDocumentation(documentation, idData.pageGroup, idData.pageNumber, user, channel);
             case 3: { //ComponentType.SelectMenu
                 switch (documentation.type) {
-                    case `group`: {
+                    case 'group': {
                         const documentation = await this.getDocumentation(interaction.data.values[0], user, channel);
                         if (documentation === undefined)
                             return await this.noMatches(interaction.data.values[0], user, channel);
                         return await this.#renderDocumentation(documentation, 0, 0, user, channel);
                     }
-                    case `single`:
+                    case 'single':
                         return await this.#renderDocumentation(documentation, idData.pageGroup, idData.pageNumber, user, channel);
-                    case `paged`:
+                    case 'paged':
                         return await this.#renderDocumentation(documentation, idData.pageGroup, Number(interaction.data.values[0]), user, channel);
                 }
             }
@@ -200,12 +200,12 @@ export abstract class DocumentationManager {
         });
 
         switch (selected.state) {
-            case `CANCELLED`:
-            case `FAILED`:
-            case `NO_OPTIONS`:
-            case `TIMED_OUT`:
+            case 'CANCELLED':
+            case 'FAILED':
+            case 'NO_OPTIONS':
+            case 'TIMED_OUT':
                 return undefined;
-            case `SUCCESS`:
+            case 'SUCCESS':
                 return selected.value;
         }
     }
@@ -216,14 +216,14 @@ export abstract class DocumentationManager {
             type: Constants.ComponentTypes.BUTTON,
             custom_id: this.#createCustomId({ documentationId: parent.id, pageGroup: 0, pageNumber: 0, userId: user.id }),
             style: Constants.ButtonStyles.PRIMARY,
-            emoji: { name: `⬆` },
+            emoji: { name: '⬆' },
             label: templates.documentation.paging.parent({ parent: parent.name })
         };
 
         switch (documentation.type) {
-            case `group`: return this.#renderDocumentationGroup(gotoParent, documentation, pageGroup, pageNumber, user);
-            case `paged`: return this.#renderDocumentationPaged(gotoParent, documentation, pageGroup, pageNumber, user);
-            case `single`: return this.#renderDocumentationSingle(gotoParent, documentation, user);
+            case 'group': return this.#renderDocumentationGroup(gotoParent, documentation, pageGroup, pageNumber, user);
+            case 'paged': return this.#renderDocumentationPaged(gotoParent, documentation, pageGroup, pageNumber, user);
+            case 'single': return this.#renderDocumentationSingle(gotoParent, documentation, user);
         }
     }
 
@@ -233,7 +233,7 @@ export abstract class DocumentationManager {
             custom_id: this.#createCustomId({ documentationId: id, pageGroup, pageNumber, userId }),
             style: Constants.ButtonStyles.PRIMARY,
             disabled: pageGroup <= 0,
-            emoji: { name: `⬅` }
+            emoji: { name: '⬅' }
         };
     }
 
@@ -243,7 +243,7 @@ export abstract class DocumentationManager {
             custom_id: this.#createCustomId({ documentationId: id, pageGroup, pageNumber, userId }),
             style: Constants.ButtonStyles.PRIMARY,
             disabled: pageGroup >= pageCount - 1,
-            emoji: { name: `➡` }
+            emoji: { name: '➡' }
         };
     }
 

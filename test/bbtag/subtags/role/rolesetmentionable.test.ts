@@ -17,14 +17,14 @@ runSubtagTests({
         ...createGetRolePropTestCases({
             quiet: false,
             generateCode(role, ...args) {
-                return `{${[`rolesetmentionable`, role, `true`, ...args].join(`;`)}}`;
+                return `{${['rolesetmentionable', role, 'true', ...args].join(';')}}`;
             },
-            notFound: () => new BBTagRuntimeError(`Role not found`),
+            notFound: () => new BBTagRuntimeError('Role not found'),
             cases: [
                 {
-                    expected: ``,
+                    expected: '',
                     postSetup(role, _, ctx) {
-                        ctx.discord.setup(m => m.editRole(ctx.guild.id, role.id, argument.isDeepEqual({ mentionable: true }), `Command User#0000`))
+                        ctx.discord.setup(m => m.editRole(ctx.guild.id, role.id, argument.isDeepEqual({ mentionable: true }), 'Command User#0000'))
                             .thenResolve(role);
                     }
                 }
@@ -33,14 +33,14 @@ runSubtagTests({
         ...createGetRolePropTestCases({
             quiet: false,
             generateCode(role, ...args) {
-                return `{${[`rolesetmentionable`, role, `false`, ...args].join(`;`)}}`;
+                return `{${['rolesetmentionable', role, 'false', ...args].join(';')}}`;
             },
-            notFound: () => new BBTagRuntimeError(`Role not found`),
+            notFound: () => new BBTagRuntimeError('Role not found'),
             cases: [
                 {
-                    expected: ``,
+                    expected: '',
                     postSetup(role, _, ctx) {
-                        ctx.discord.setup(m => m.editRole(ctx.guild.id, role.id, argument.isDeepEqual({ mentionable: false }), `Command User#0000`))
+                        ctx.discord.setup(m => m.editRole(ctx.guild.id, role.id, argument.isDeepEqual({ mentionable: false }), 'Command User#0000'))
                             .thenResolve(role);
                     }
                 }
@@ -48,14 +48,14 @@ runSubtagTests({
         }),
         ...createGetRolePropTestCases({
             generateCode(role, ...args) {
-                return `{${[`rolesetmentionable`, role, `true`, ...args].join(`;`)}}`;
+                return `{${['rolesetmentionable', role, 'true', ...args].join(';')}}`;
             },
-            notFound: () => new BBTagRuntimeError(`Role not found`),
+            notFound: () => new BBTagRuntimeError('Role not found'),
             cases: [
                 {
-                    expected: ``,
+                    expected: '',
                     postSetup(role, _, ctx) {
-                        ctx.discord.setup(m => m.editRole(ctx.guild.id, role.id, argument.isDeepEqual({ mentionable: true }), `Command User#0000`))
+                        ctx.discord.setup(m => m.editRole(ctx.guild.id, role.id, argument.isDeepEqual({ mentionable: true }), 'Command User#0000'))
                             .thenResolve(role);
                     }
                 }
@@ -63,14 +63,14 @@ runSubtagTests({
         }),
         ...createGetRolePropTestCases({
             generateCode(role, ...args) {
-                return `{${[`rolesetmentionable`, role, ``, ...args].join(`;`)}}`;
+                return `{${['rolesetmentionable', role, '', ...args].join(';')}}`;
             },
-            notFound: () => new BBTagRuntimeError(`Role not found`),
+            notFound: () => new BBTagRuntimeError('Role not found'),
             cases: [
                 {
-                    expected: ``,
+                    expected: '',
                     postSetup(role, _, ctx) {
-                        ctx.discord.setup(m => m.editRole(ctx.guild.id, role.id, argument.isDeepEqual({ mentionable: true }), `Command User#0000`))
+                        ctx.discord.setup(m => m.editRole(ctx.guild.id, role.id, argument.isDeepEqual({ mentionable: true }), 'Command User#0000'))
                             .thenResolve(role);
                     }
                 }
@@ -78,86 +78,86 @@ runSubtagTests({
         }),
         ...createGetRolePropTestCases({
             generateCode(role, ...args) {
-                return `{${[`rolesetmentionable`, role, `false`, ...args].join(`;`)}}`;
+                return `{${['rolesetmentionable', role, 'false', ...args].join(';')}}`;
             },
-            notFound: () => new BBTagRuntimeError(`Role not found`),
+            notFound: () => new BBTagRuntimeError('Role not found'),
             cases: [
                 {
-                    expected: ``,
+                    expected: '',
                     postSetup(role, _, ctx) {
-                        ctx.discord.setup(m => m.editRole(ctx.guild.id, role.id, argument.isDeepEqual({ mentionable: false }), `Command User#0000`))
+                        ctx.discord.setup(m => m.editRole(ctx.guild.id, role.id, argument.isDeepEqual({ mentionable: false }), 'Command User#0000'))
                             .thenResolve(role);
                     }
                 }
             ]
         }),
         {
-            code: `{rolesetmentionable;3298746326924}`,
-            expected: `\`Author cannot edit roles\``,
+            code: '{rolesetmentionable;3298746326924}',
+            expected: '`Author cannot edit roles`',
             errors: [
-                { start: 0, end: 34, error: new BBTagRuntimeError(`Author cannot edit roles`) }
+                { start: 0, end: 34, error: new BBTagRuntimeError('Author cannot edit roles') }
             ],
             setup(ctx) {
-                ctx.roles.authorizer.permissions = `0`;
+                ctx.roles.authorizer.permissions = '0';
             }
         },
         {
-            code: `{rolesetmentionable;3298746326924}`,
-            expected: `\`Role above author\``,
+            code: '{rolesetmentionable;3298746326924}',
+            expected: '`Role above author`',
             errors: [
-                { start: 0, end: 34, error: new BBTagRuntimeError(`Role above author`) }
+                { start: 0, end: 34, error: new BBTagRuntimeError('Role above author') }
             ],
             setup(ctx) {
-                ctx.roles.top.id = `3298746326924`;
+                ctx.roles.top.id = '3298746326924';
             },
             postSetup(bbctx, ctx) {
-                const role = bbctx.guild.roles.get(`3298746326924`);
+                const role = bbctx.guild.roles.get('3298746326924');
                 if (role === undefined)
-                    throw new Error(`Unable to locate role under test`);
+                    throw new Error('Unable to locate role under test');
 
-                ctx.util.setup(m => m.findRoles(bbctx.guild, `3298746326924`))
+                ctx.util.setup(m => m.findRoles(bbctx.guild, '3298746326924'))
                     .thenResolve([role]);
             }
         },
         {
-            code: `{rolesetmentionable;3298746326924}`,
-            expected: `\`Failed to edit role: no perms\``,
+            code: '{rolesetmentionable;3298746326924}',
+            expected: '`Failed to edit role: no perms`',
             errors: [
-                { start: 0, end: 34, error: new BBTagRuntimeError(`Failed to edit role: no perms`, `Test REST error`) }
+                { start: 0, end: 34, error: new BBTagRuntimeError('Failed to edit role: no perms', 'Test REST error') }
             ],
             setup(ctx) {
-                ctx.roles.bot.id = `3298746326924`;
+                ctx.roles.bot.id = '3298746326924';
             },
             postSetup(bbctx, ctx) {
                 const err = ctx.createRESTError(ApiError.MISSING_PERMISSIONS);
-                const role = bbctx.guild.roles.get(`3298746326924`);
+                const role = bbctx.guild.roles.get('3298746326924');
                 if (role === undefined)
-                    throw new Error(`Unable to locate role under test`);
+                    throw new Error('Unable to locate role under test');
 
-                ctx.util.setup(m => m.findRoles(bbctx.guild, `3298746326924`))
+                ctx.util.setup(m => m.findRoles(bbctx.guild, '3298746326924'))
                     .thenResolve([role]);
-                ctx.discord.setup(m => m.editRole(ctx.guild.id, role.id, argument.isDeepEqual({ mentionable: true }), `Command User#0000`))
+                ctx.discord.setup(m => m.editRole(ctx.guild.id, role.id, argument.isDeepEqual({ mentionable: true }), 'Command User#0000'))
                     .thenReject(err);
             }
         },
         {
-            code: `{rolesetmentionable;3298746326924}`,
-            expected: `\`Failed to edit role: no perms\``,
+            code: '{rolesetmentionable;3298746326924}',
+            expected: '`Failed to edit role: no perms`',
             errors: [
-                { start: 0, end: 34, error: new BBTagRuntimeError(`Failed to edit role: no perms`, `Some other error message`) }
+                { start: 0, end: 34, error: new BBTagRuntimeError('Failed to edit role: no perms', 'Some other error message') }
             ],
             setup(ctx) {
-                ctx.roles.bot.id = `3298746326924`;
+                ctx.roles.bot.id = '3298746326924';
             },
             postSetup(bbctx, ctx) {
-                const err = ctx.createRESTError(ApiError.NOT_AUTHORIZED, `Some other error message`);
-                const role = bbctx.guild.roles.get(`3298746326924`);
+                const err = ctx.createRESTError(ApiError.NOT_AUTHORIZED, 'Some other error message');
+                const role = bbctx.guild.roles.get('3298746326924');
                 if (role === undefined)
-                    throw new Error(`Unable to locate role under test`);
+                    throw new Error('Unable to locate role under test');
 
-                ctx.util.setup(m => m.findRoles(bbctx.guild, `3298746326924`))
+                ctx.util.setup(m => m.findRoles(bbctx.guild, '3298746326924'))
                     .thenResolve([role]);
-                ctx.discord.setup(m => m.editRole(ctx.guild.id, role.id, argument.isDeepEqual({ mentionable: true }), `Command User#0000`))
+                ctx.discord.setup(m => m.editRole(ctx.guild.id, role.id, argument.isDeepEqual({ mentionable: true }), 'Command User#0000'))
                     .thenReject(err);
             }
         }

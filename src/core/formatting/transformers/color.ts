@@ -6,9 +6,9 @@ export const color: IValueResolverTransform = {
             const value = source(ctx);
             if (value === undefined)
                 return undefined;
-            if (typeof value !== `number`)
-                throw new Error(`Value must be a number`);
-            return value.toString(16).padStart(6, `0`);
+            if (typeof value !== 'number')
+                throw new Error('Value must be a number');
+            return value.toString(16).padStart(6, '0');
         };
     }
 };

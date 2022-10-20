@@ -11,16 +11,16 @@ const cmd = templates.commands.warnings;
 export class WarningsCommand extends GuildCommand {
     public constructor() {
         super({
-            name: `warnings`,
+            name: 'warnings',
             category: CommandType.GENERAL,
             definitions: [
                 {
-                    parameters: ``,
+                    parameters: '',
                     description: cmd.self.description,
                     execute: (ctx) => this.warnings(ctx, ctx.message.member)
                 },
                 {
-                    parameters: `{user:member+}`,
+                    parameters: '{user:member+}',
                     description: cmd.user.description,
                     execute: (ctx, [user]) => this.warnings(ctx, user.asMember)
                 }

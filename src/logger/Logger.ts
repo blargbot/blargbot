@@ -1,28 +1,28 @@
 import { LogMeta } from 'cat-loggr/ts';
 
 export type LogLevel =
-    | `fatal`
-    | `error`
-    | `warn`
-    | `website`
-    | `ws`
-    | `cluster`
-    | `worker`
-    | `command`
-    | `shardi`
-    | `init`
-    | `info`
-    | `trace`
-    | `output`
-    | `bbtag`
-    | `verbose`
-    | `adebug`
-    | `debug`
-    | `log`
-    | `dir`
-    | `database`
-    | `module`
-    | `middleware`;
+    | 'fatal'
+    | 'error'
+    | 'warn'
+    | 'website'
+    | 'ws'
+    | 'cluster'
+    | 'worker'
+    | 'command'
+    | 'shardi'
+    | 'init'
+    | 'info'
+    | 'trace'
+    | 'output'
+    | 'bbtag'
+    | 'verbose'
+    | 'adebug'
+    | 'debug'
+    | 'log'
+    | 'dir'
+    | 'database'
+    | 'module'
+    | 'middleware';
 
 export type LogMethods = { [P in LogLevel]: (...args: unknown[]) => void }
 

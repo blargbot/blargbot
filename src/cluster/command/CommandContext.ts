@@ -78,67 +78,67 @@ export class CommandContext<TChannel extends KnownTextableChannel = KnownTextabl
     }
 
     public async queryChannel(options: SlimEntityFindQueryOptions<IFormattable<string>>): Promise<ChoiceQueryResult<KnownGuildChannel>>;
-    public async queryChannel(this: GuildCommandContext, options: Omit<SlimEntityFindQueryOptions<IFormattable<string>>, `guild`>): Promise<ChoiceQueryResult<KnownGuildChannel>>;
+    public async queryChannel(this: GuildCommandContext, options: Omit<SlimEntityFindQueryOptions<IFormattable<string>>, 'guild'>): Promise<ChoiceQueryResult<KnownGuildChannel>>;
     public async queryChannel<T extends KnownChannel>(options: SlimEntityPickQueryOptions<IFormattable<string>, T>): Promise<ChoiceQueryResult<T>>;
-    public async queryChannel(options: SlimEntityQueryOptions<IFormattable<string>, KnownChannel> | Omit<SlimEntityFindQueryOptions<IFormattable<string>>, `guild`>): Promise<ChoiceQueryResult<KnownChannel>> {
-        if (`choices` in options)
+    public async queryChannel(options: SlimEntityQueryOptions<IFormattable<string>, KnownChannel> | Omit<SlimEntityFindQueryOptions<IFormattable<string>>, 'guild'>): Promise<ChoiceQueryResult<KnownChannel>> {
+        if ('choices' in options)
             return await this.util.queryChannel({ ...options, context: this.message, actors: this.author });
 
-        if (`guild` in options)
+        if ('guild' in options)
             return await this.util.queryChannel({ ...options, context: this.message, actors: this.author });
 
         if (guard.isGuildChannel(this.channel))
             return await this.util.queryChannel({ ...options, context: this.message, actors: this.author, guild: this.channel.guild });
 
-        throw new Error(`Cannot queryChannel without a guild!`);
+        throw new Error('Cannot queryChannel without a guild!');
     }
 
     public async queryRole(options: SlimEntityFindQueryOptions<IFormattable<string>>): Promise<ChoiceQueryResult<Role>>;
-    public async queryRole(this: GuildCommandContext, options: Omit<SlimEntityFindQueryOptions<IFormattable<string>>, `guild`>): Promise<ChoiceQueryResult<Role>>;
+    public async queryRole(this: GuildCommandContext, options: Omit<SlimEntityFindQueryOptions<IFormattable<string>>, 'guild'>): Promise<ChoiceQueryResult<Role>>;
     public async queryRole(options: SlimEntityPickQueryOptions<IFormattable<string>, Role>): Promise<ChoiceQueryResult<Role>>;
-    public async queryRole(options: SlimEntityQueryOptions<IFormattable<string>, Role> | Omit<SlimEntityFindQueryOptions<IFormattable<string>>, `guild`>): Promise<ChoiceQueryResult<Role>> {
-        if (`choices` in options)
+    public async queryRole(options: SlimEntityQueryOptions<IFormattable<string>, Role> | Omit<SlimEntityFindQueryOptions<IFormattable<string>>, 'guild'>): Promise<ChoiceQueryResult<Role>> {
+        if ('choices' in options)
             return await this.util.queryRole({ ...options, context: this.message, actors: this.author });
 
-        if (`guild` in options)
+        if ('guild' in options)
             return await this.util.queryRole({ ...options, context: this.message, actors: this.author });
 
         if (guard.isGuildChannel(this.channel))
             return await this.util.queryRole({ ...options, context: this.message, actors: this.author, guild: this.channel.guild });
 
-        throw new Error(`Cannot queryRole without a guild!`);
+        throw new Error('Cannot queryRole without a guild!');
     }
 
     public async queryMember(options: SlimEntityFindQueryOptions<IFormattable<string>>): Promise<ChoiceQueryResult<Member>>;
-    public async queryMember(this: GuildCommandContext, options: Omit<SlimEntityFindQueryOptions<IFormattable<string>>, `guild`>): Promise<ChoiceQueryResult<Member>>;
+    public async queryMember(this: GuildCommandContext, options: Omit<SlimEntityFindQueryOptions<IFormattable<string>>, 'guild'>): Promise<ChoiceQueryResult<Member>>;
     public async queryMember(options: SlimEntityPickQueryOptions<IFormattable<string>, Member>): Promise<ChoiceQueryResult<Member>>;
-    public async queryMember(options: SlimEntityQueryOptions<IFormattable<string>, Member> | Omit<SlimEntityFindQueryOptions<IFormattable<string>>, `guild`>): Promise<ChoiceQueryResult<Member>> {
-        if (`choices` in options)
+    public async queryMember(options: SlimEntityQueryOptions<IFormattable<string>, Member> | Omit<SlimEntityFindQueryOptions<IFormattable<string>>, 'guild'>): Promise<ChoiceQueryResult<Member>> {
+        if ('choices' in options)
             return await this.util.queryMember({ ...options, context: this.message, actors: this.author });
 
-        if (`guild` in options)
+        if ('guild' in options)
             return await this.util.queryMember({ ...options, context: this.message, actors: this.author });
 
         if (guard.isGuildChannel(this.channel))
             return await this.util.queryMember({ ...options, context: this.message, actors: this.author, guild: this.channel.guild });
 
-        throw new Error(`Cannot queryMember without a guild!`);
+        throw new Error('Cannot queryMember without a guild!');
     }
 
     public async queryUser(options: SlimEntityFindQueryOptions<IFormattable<string>>): Promise<ChoiceQueryResult<User>>;
-    public async queryUser(this: GuildCommandContext, options: Omit<SlimEntityFindQueryOptions<IFormattable<string>>, `guild`>): Promise<ChoiceQueryResult<User>>;
+    public async queryUser(this: GuildCommandContext, options: Omit<SlimEntityFindQueryOptions<IFormattable<string>>, 'guild'>): Promise<ChoiceQueryResult<User>>;
     public async queryUser(options: SlimEntityPickQueryOptions<IFormattable<string>, User>): Promise<ChoiceQueryResult<User>>;
-    public async queryUser(options: SlimEntityQueryOptions<IFormattable<string>, User> | Omit<SlimEntityFindQueryOptions<IFormattable<string>>, `guild`>): Promise<ChoiceQueryResult<User>> {
-        if (`choices` in options)
+    public async queryUser(options: SlimEntityQueryOptions<IFormattable<string>, User> | Omit<SlimEntityFindQueryOptions<IFormattable<string>>, 'guild'>): Promise<ChoiceQueryResult<User>> {
+        if ('choices' in options)
             return await this.util.queryUser({ ...options, context: this.message, actors: this.author });
 
-        if (`guild` in options)
+        if ('guild' in options)
             return await this.util.queryUser({ ...options, context: this.message, actors: this.author });
 
         if (guard.isGuildChannel(this.channel))
             return await this.util.queryUser({ ...options, context: this.message, actors: this.author, guild: this.channel.guild });
 
-        throw new Error(`Cannot queryUser without a guild!`);
+        throw new Error('Cannot queryUser without a guild!');
     }
 
     public async querySender(options: SlimEntityPickQueryOptions<IFormattable<string>, User | Webhook>): Promise<ChoiceQueryResult<User | Webhook>> {
@@ -162,7 +162,7 @@ function toSendContent(content: CommandResult): IFormattable<SendContent<string>
         return {
             [format](formatter) {
                 const result = content[format](formatter);
-                return typeof result === `string`
+                return typeof result === 'string'
                     ? { content: result }
                     : result;
             }

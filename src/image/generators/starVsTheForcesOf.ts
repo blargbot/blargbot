@@ -3,9 +3,9 @@ import { ImageWorker } from '@blargbot/image/ImageWorker';
 import { ImageResult, StarVsTheForcesOfOptions } from '@blargbot/image/types';
 import sharp from 'sharp';
 
-export class StarVsTheForcesOfGenerator extends BaseImageGenerator<`starVsTheForcesOf`> {
+export class StarVsTheForcesOfGenerator extends BaseImageGenerator<'starVsTheForcesOf'> {
     public constructor(worker: ImageWorker) {
-        super(`starVsTheForcesOf`, worker);
+        super('starVsTheForcesOf', worker);
     }
 
     public async execute({ avatar }: StarVsTheForcesOfOptions): Promise<ImageResult> {
@@ -13,9 +13,9 @@ export class StarVsTheForcesOfGenerator extends BaseImageGenerator<`starVsTheFor
 
         const bgImg = await this.gmConvert(await avatarImg.toBuffer(), x => x
             .matte()
-            .virtualPixel(`transparent`)
+            .virtualPixel('transparent')
             .extent(1468, 1656)
-            .out(`-distort`, `Perspective`, `0,0,0,208  700,0,1468,0  0,700,0,1326  700,700,1468,1656`)
+            .out('-distort', 'Perspective', '0,0,0,208  700,0,1468,0  0,700,0,1326  700,700,1468,1656')
             .resize(734, 828)
             .crop(600, 540, 0, 104)
         );
@@ -26,11 +26,11 @@ export class StarVsTheForcesOfGenerator extends BaseImageGenerator<`starVsTheFor
         const max = Math.max(...channels);
         const scale = channels.map(() => 1);
         const shift = channels.map(c => (c - min) * 32 / (max - min)); // bring all channels into range 0 - 32
-        const foreground = sharp(this.getLocalPath(`starvstheforcesof.png`))
+        const foreground = sharp(this.getLocalPath('starvstheforcesof.png'))
             .resize(960, 540)
             .linear(scale.map(Math.round), shift.map(Math.round));
 
-        const result = sharp({ create: { width: 960, height: 540, channels: 4, background: `transparent` } })
+        const result = sharp({ create: { width: 960, height: 540, channels: 4, background: 'transparent' } })
             .composite([
                 { input: bgImg, left: 430, top: 0 },
                 { input: await foreground.toBuffer(), left: 0, top: 0 }
@@ -38,7 +38,7 @@ export class StarVsTheForcesOfGenerator extends BaseImageGenerator<`starVsTheFor
 
         return {
             data: await result.png().toBuffer(),
-            fileName: `starvstheforcesof.png`
+            fileName: 'starvstheforcesof.png'
         };
     }
 }

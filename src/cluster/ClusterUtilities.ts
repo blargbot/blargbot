@@ -40,7 +40,7 @@ export class ClusterUtilities extends BaseUtilities {
         if (selectData.length === 0) {
             return {
                 prompt: undefined,
-                getResult: () => Promise.resolve({ state: `NO_OPTIONS` }),
+                getResult: () => Promise.resolve({ state: 'NO_OPTIONS' }),
                 cancel() { /* NOOP */ }
             };
         }
@@ -48,12 +48,12 @@ export class ClusterUtilities extends BaseUtilities {
         if (selectData.length === 1) {
             return {
                 prompt: undefined,
-                getResult: () => Promise.resolve({ state: `SUCCESS`, value: Object.values(valueMap)[0] }),
+                getResult: () => Promise.resolve({ state: 'SUCCESS', value: Object.values(valueMap)[0] }),
                 cancel() { /* NOOP */ }
             };
         }
 
-        if (typeof options.prompt === `string`)
+        if (typeof options.prompt === 'string')
             options.prompt = { content: options.prompt };
 
         const content = options.prompt === undefined ? undefined
@@ -98,7 +98,7 @@ export class ClusterUtilities extends BaseUtilities {
             ...choice[format](formatter)
         }));
         if (prompt === undefined)
-            return { prompt: undefined, getResult: () => Promise.resolve({ state: `FAILED` }), cancel() { /* NOOP */ } };
+            return { prompt: undefined, getResult: () => Promise.resolve({ state: 'FAILED' }), cancel() { /* NOOP */ } };
 
         return {
             prompt,
@@ -106,15 +106,15 @@ export class ClusterUtilities extends BaseUtilities {
                 const interaction = await awaiter.wait();
                 await cleanupQuery(prompt, interaction);
                 if (interaction === undefined)
-                    return { state: `TIMED_OUT` };
+                    return { state: 'TIMED_OUT' };
 
                 if (interaction.data.component_type === Constants.ComponentTypes.SELECT_MENU)
-                    return { state: `SUCCESS`, value: valueMap[interaction.data.values[0]] };
+                    return { state: 'SUCCESS', value: valueMap[interaction.data.values[0]] };
 
                 if (interaction.data.custom_id === component.cancelId)
-                    return { state: `CANCELLED` };
+                    return { state: 'CANCELLED' };
 
-                return { state: `TIMED_OUT` };
+                return { state: 'TIMED_OUT' };
             },
             async cancel() {
                 awaiter.cancel();
@@ -145,7 +145,7 @@ export class ClusterUtilities extends BaseUtilities {
         if (selectData.length === 0) {
             return {
                 prompt: undefined,
-                getResult: () => Promise.resolve({ state: `NO_OPTIONS` }),
+                getResult: () => Promise.resolve({ state: 'NO_OPTIONS' }),
                 cancel() { /* NOOP */ }
             };
         }
@@ -153,12 +153,12 @@ export class ClusterUtilities extends BaseUtilities {
         if (selectData.length > 25) {
             return {
                 prompt: undefined,
-                getResult: () => Promise.resolve({ state: `EXCESS_OPTIONS` }),
+                getResult: () => Promise.resolve({ state: 'EXCESS_OPTIONS' }),
                 cancel() { /* NOOP */ }
             };
         }
 
-        if (typeof options.prompt === `string`)
+        if (typeof options.prompt === 'string')
             options.prompt = { content: options.prompt };
 
         const component: MultipleComponentOptions<IFormattable<string>> = {
@@ -177,7 +177,7 @@ export class ClusterUtilities extends BaseUtilities {
 
         const prompt = await this.#sendOrReply(options.context, { ...options.prompt, ...createMultipleBody(component) });
         if (prompt === undefined)
-            return { prompt: undefined, getResult: () => Promise.resolve({ state: `FAILED` }), cancel() { /* NOOP */ } };
+            return { prompt: undefined, getResult: () => Promise.resolve({ state: 'FAILED' }), cancel() { /* NOOP */ } };
 
         return {
             prompt,
@@ -185,15 +185,15 @@ export class ClusterUtilities extends BaseUtilities {
                 const interaction = await awaiter.wait();
                 await cleanupQuery(prompt, interaction);
                 if (interaction === undefined)
-                    return { state: `TIMED_OUT` };
+                    return { state: 'TIMED_OUT' };
 
                 if (interaction.data.component_type === Constants.ComponentTypes.SELECT_MENU)
-                    return { state: `SUCCESS`, value: interaction.data.values.map(id => valueMap[id]) };
+                    return { state: 'SUCCESS', value: interaction.data.values.map(id => valueMap[id]) };
 
                 if (interaction.data.custom_id === component.cancelId)
-                    return { state: `CANCELLED` };
+                    return { state: 'CANCELLED' };
 
-                return { state: `TIMED_OUT` };
+                return { state: 'TIMED_OUT' };
             },
             async cancel() {
                 awaiter.cancel();
@@ -218,7 +218,7 @@ export class ClusterUtilities extends BaseUtilities {
     public async createConfirmQuery(options: ConfirmQueryOptions<IFormattable<string>, boolean>): Promise<ConfirmQuery<boolean>>
     public async createConfirmQuery(options: ConfirmQueryOptions<IFormattable<string>, boolean | undefined>): Promise<ConfirmQuery<boolean | undefined>>
     public async createConfirmQuery(options: ConfirmQueryOptions<IFormattable<string>, boolean | undefined>): Promise<ConfirmQuery<boolean | undefined>> {
-        const payload = typeof options.prompt === `string` ? { content: options.prompt } : options.prompt;
+        const payload = typeof options.prompt === 'string' ? { content: options.prompt } : options.prompt;
 
         const component: ConfirmComponentOptions<IFormattable<string>> = {
             cancelId: snowflake.create().toString(),
@@ -268,7 +268,7 @@ export class ClusterUtilities extends BaseUtilities {
     public async createTextQuery(options: TextQueryOptions<IFormattable<string>>): Promise<TextQuery<string>>
     public async createTextQuery<T>(options: TextQueryOptionsParsed<IFormattable<string>, T> | TextQueryOptions<IFormattable<string>>): Promise<TextQuery<T | string>>
     public async createTextQuery<T>(options: TextQueryOptionsParsed<IFormattable<string>, T> | TextQueryOptions<IFormattable<string>>): Promise<TextQuery<T | string>> {
-        const payload = typeof options.prompt === `string` ? { content: options.prompt } : options.prompt;
+        const payload = typeof options.prompt === 'string' ? { content: options.prompt } : options.prompt;
         const component: TextComponentOptions<IFormattable<string>> = {
             cancelId: snowflake.create().toString(),
             cancelButton: options.cancel ?? templates.common.query.cancel
@@ -298,7 +298,7 @@ export class ClusterUtilities extends BaseUtilities {
         if (prompt === undefined) {
             return {
                 messages: messages,
-                getResult() { return Promise.resolve({ state: `FAILED`, related: messages }); },
+                getResult() { return Promise.resolve({ state: 'FAILED', related: messages }); },
                 cancel() { /* NOOP */ }
             };
         }
@@ -313,15 +313,15 @@ export class ClusterUtilities extends BaseUtilities {
                 messageAwaiter.cancel();
                 await cleanupQuery(prompt, result);
                 if (result === undefined)
-                    return { state: `TIMED_OUT` };
+                    return { state: 'TIMED_OUT' };
 
-                if (`data` in result)
-                    return { state: `CANCELLED` };
+                if ('data' in result)
+                    return { state: 'CANCELLED' };
 
                 messages.push(result);
                 if (parsed?.success === true)
-                    return { state: `SUCCESS`, value: parsed.value };
-                return { state: `CANCELLED` };
+                    return { state: 'SUCCESS', value: parsed.value };
+                return { state: 'CANCELLED' };
             },
             async cancel() {
                 componentAwaiter.cancel();
@@ -372,7 +372,7 @@ export class ClusterUtilities extends BaseUtilities {
     public async queryUser(options: EntityFindQueryOptions<IFormattable<string>>): Promise<ChoiceQueryResult<User>>
     public async queryUser(options: EntityPickQueryOptions<IFormattable<string>, User>): Promise<ChoiceQueryResult<User>>
     public async queryUser(options: EntityQueryOptions<IFormattable<string>, User>): Promise<ChoiceQueryResult<User>> {
-        const matches = `guild` in options ? await this.findUsers(options.guild, options.filter) : [...options.choices];
+        const matches = 'guild' in options ? await this.findUsers(options.guild, options.filter) : [...options.choices];
 
         return await this.queryChoice({
             ...options,
@@ -385,7 +385,7 @@ export class ClusterUtilities extends BaseUtilities {
                 .sort((a, b) => a.sortKey > b.sortKey ? 1 : -1)
                 .map(({ u }) => ({
                     label: templates.common.query.user.choice.label({ user: u }),
-                    emoji: { name: u.bot ? `🤖` : `👤` },
+                    emoji: { name: u.bot ? '🤖' : '👤' },
                     value: u,
                     description: templates.common.query.user.choice.description({ user: u })
                 }))
@@ -406,7 +406,7 @@ export class ClusterUtilities extends BaseUtilities {
                     label: u instanceof User
                         ? templates.common.query.sender.choice.label.user({ user: u })
                         : templates.common.query.sender.choice.label.webhook({ webhook: u }),
-                    emoji: { name: u instanceof User ? u.bot ? `🤖` : `👤` : `🪝` },
+                    emoji: { name: u instanceof User ? u.bot ? '🤖' : '👤' : '🪝' },
                     value: u,
                     description: templates.common.query.sender.choice.description({ sender: u })
                 }))
@@ -416,7 +416,7 @@ export class ClusterUtilities extends BaseUtilities {
     public async queryMember(options: EntityFindQueryOptions<IFormattable<string>>): Promise<ChoiceQueryResult<Member>>
     public async queryMember(options: EntityPickQueryOptions<IFormattable<string>, Member>): Promise<ChoiceQueryResult<Member>>
     public async queryMember(options: EntityQueryOptions<IFormattable<string>, Member>): Promise<ChoiceQueryResult<Member>> {
-        const matches = `guild` in options ? await this.findMembers(options.guild, options.filter) : [...options.choices];
+        const matches = 'guild' in options ? await this.findMembers(options.guild, options.filter) : [...options.choices];
 
         return await this.queryChoice({
             ...options,
@@ -429,7 +429,7 @@ export class ClusterUtilities extends BaseUtilities {
                 .sort((a, b) => a.sortKey > b.sortKey ? 1 : -1)
                 .map(({ m }) => ({
                     label: templates.common.query.member.choice.label({ member: m }),
-                    emoji: { name: m.user.bot ? `🤖` : `👤` },
+                    emoji: { name: m.user.bot ? '🤖' : '👤' },
                     value: m,
                     description: templates.common.query.member.choice.description({ member: m })
                 }))
@@ -439,7 +439,7 @@ export class ClusterUtilities extends BaseUtilities {
     public async queryRole(options: EntityFindQueryOptions<IFormattable<string>>): Promise<ChoiceQueryResult<Role>>
     public async queryRole(options: EntityPickQueryOptions<IFormattable<string>, Role>): Promise<ChoiceQueryResult<Role>>
     public async queryRole(options: EntityQueryOptions<IFormattable<string>, Role>): Promise<ChoiceQueryResult<Role>> {
-        const matches = `guild` in options ? await this.findRoles(options.guild, options.filter) : [...options.choices];
+        const matches = 'guild' in options ? await this.findRoles(options.guild, options.filter) : [...options.choices];
 
         return await this.queryChoice({
             ...options,
@@ -461,7 +461,7 @@ export class ClusterUtilities extends BaseUtilities {
     public async queryChannel(options: EntityFindQueryOptions<IFormattable<string>>): Promise<ChoiceQueryResult<KnownGuildChannel>>;
     public async queryChannel<T extends KnownChannel>(options: EntityPickQueryOptions<IFormattable<string>, T>): Promise<ChoiceQueryResult<T>>;
     public async queryChannel(options: EntityQueryOptions<IFormattable<string>, KnownChannel>): Promise<ChoiceQueryResult<KnownChannel>> {
-        const matches = `guild` in options ? await this.findChannels(options.guild, options.filter) : [...options.choices];
+        const matches = 'guild' in options ? await this.findChannels(options.guild, options.filter) : [...options.choices];
 
         return await this.queryChoice({
             ...options,
@@ -477,7 +477,7 @@ export class ClusterUtilities extends BaseUtilities {
                         details: getChannelLookupSelect(c),
                         parent: guard.isGuildChannel(c) && c.parentID !== null ? c.guild.channels.get(c.parentID) : undefined
                     },
-                    sortKey: `name` in c ? c.name : c.id
+                    sortKey: 'name' in c ? c.name : c.id
                 }))
                 .sort((a, b) => a.sortKey > b.sortKey ? 1 : -1)
                 .map(({ x }) => ({
@@ -520,7 +520,7 @@ export class ClusterUtilities extends BaseUtilities {
 
             const response = await pageQuery.getResult();
             await Promise.allSettled(pageQuery.messages.map(m => m.delete()));
-            if (response.state !== `SUCCESS`)
+            if (response.state !== 'SUCCESS')
                 return undefined;
 
             page = response.value;
@@ -541,11 +541,11 @@ export class ClusterUtilities extends BaseUtilities {
         if (this.config.general.botlisttoken.length > 0) {
             promises.push(
                 fetch(`https://discord.bots.gg/api/v1/bots/${this.user.id}/stats`, {
-                    method: `POST`,
+                    method: 'POST',
                     headers: {
-                        'content-type': `application/json`,
+                        'content-type': 'application/json',
                         'Authorization': this.config.general.botlisttoken,
-                        'User-Agent': `blargbot/1.0 (ratismal)`
+                        'User-Agent': 'blargbot/1.0 (ratismal)'
                     },
                     body: JSON.stringify(stats)
                 })
@@ -554,10 +554,10 @@ export class ClusterUtilities extends BaseUtilities {
 
         if (this.config.general.carbontoken.length > 0) {
             promises.push(
-                fetch(`https://www.carbonitex.net/discord/data/botdata.php`, {
-                    method: `POST`,
+                fetch('https://www.carbonitex.net/discord/data/botdata.php', {
+                    method: 'POST',
                     headers: {
-                        'content-type': `application/json`
+                        'content-type': 'application/json'
                     },
                     body: JSON.stringify({
                         'key': this.config.general.carbontoken,
@@ -577,11 +577,11 @@ export class ClusterUtilities extends BaseUtilities {
             }
             promises.push(
                 fetch(`https://discordbots.org/api/bots/${this.user.id}/stats`, {
-                    method: `POST`,
+                    method: 'POST',
                     headers: {
-                        'content-type': `application/json`,
+                        'content-type': 'application/json',
                         'Authorization': this.config.general.botlistorgtoken,
-                        'User-Agent': `blargbot/1.0 (ratismal)`
+                        'User-Agent': 'blargbot/1.0 (ratismal)'
                     },
                     body: JSON.stringify(shards)
                 })
@@ -589,7 +589,7 @@ export class ClusterUtilities extends BaseUtilities {
         }
 
         if (promises.length > 0)
-            this.logger.info(`Posting to matt`);
+            this.logger.info('Posting to matt');
 
         for (const promise of promises) {
             try {
@@ -626,21 +626,21 @@ export class ClusterUtilities extends BaseUtilities {
         } else if (args[0] instanceof Member) {
             member = args[0];
         } else {
-            const guildId = typeof args[0] === `string` ? args[0] : args[0].id;
+            const guildId = typeof args[0] === 'string' ? args[0] : args[0].id;
 
-            const allow = parse.bigInt(await this.database.guilds.getSetting(guildId, `staffperms`) ?? defaultStaff);
+            const allow = parse.bigInt(await this.database.guilds.getSetting(guildId, 'staffperms') ?? defaultStaff);
             if (allow !== undefined)
-                return m => m.guild.id === guildId && (m.id === m.guild.ownerID || m.permissions.has(`administrator`) || this.hasPerms(m, allow));
+                return m => m.guild.id === guildId && (m.id === m.guild.ownerID || m.permissions.has('administrator') || this.hasPerms(m, allow));
 
-            return m => m.guild.id === guildId && (m.id === m.guild.ownerID || m.permissions.has(`administrator`));
+            return m => m.guild.id === guildId && (m.id === m.guild.ownerID || m.permissions.has('administrator'));
         }
 
         if (member === undefined) return false;
 
         if (member.guild.ownerID === member.id) return true;
-        if (member.permissions.has(`administrator`)) return true;
+        if (member.permissions.has('administrator')) return true;
 
-        const allow = parse.bigInt(await this.database.guilds.getSetting(member.guild.id, `staffperms`) ?? defaultStaff);
+        const allow = parse.bigInt(await this.database.guilds.getSetting(member.guild.id, 'staffperms') ?? defaultStaff);
         return allow !== undefined && this.hasPerms(member, allow);
     }
 
@@ -696,13 +696,13 @@ interface TextComponentOptions<TString> {
 
 function createActorFilter(actors: Iterable<string | User | Member> | string | User | Member): (user?: User) => boolean {
     const userIds = new Set<string>();
-    if (typeof actors === `string`)
+    if (typeof actors === 'string')
         userIds.add(actors);
     else {
-        if (`id` in actors)
+        if ('id' in actors)
             actors = [actors];
         for (const actor of actors)
-            userIds.add(typeof actor === `string` ? actor : actor.id);
+            userIds.add(typeof actor === 'string' ? actor : actor.id);
     }
 
     switch (userIds.size) {
@@ -716,17 +716,17 @@ function createActorFilter(actors: Iterable<string | User | Member> | string | U
     }
 }
 
-function createConfirmBody(options: ConfirmComponentOptions<IFormattable<string>>): IFormattable<Pick<AdvancedMessageContent, `components`>> {
+function createConfirmBody(options: ConfirmComponentOptions<IFormattable<string>>): IFormattable<Pick<AdvancedMessageContent, 'components'>> {
     const confirm = {
         style: Constants.ButtonStyles.SUCCESS,
-        ...typeof options.confirmButton === `string` ? { label: options.confirmButton } : options.confirmButton,
+        ...typeof options.confirmButton === 'string' ? { label: options.confirmButton } : options.confirmButton,
         type: Constants.ComponentTypes.BUTTON,
         custom_id: options.confirmId
     };
 
     const cancel = {
         style: Constants.ButtonStyles.DANGER,
-        ...typeof options.cancelButton === `string` ? { label: options.cancelButton } : options.cancelButton,
+        ...typeof options.cancelButton === 'string' ? { label: options.cancelButton } : options.cancelButton,
         type: Constants.ComponentTypes.BUTTON,
         custom_id: options.cancelId
     };
@@ -741,7 +741,7 @@ function createConfirmBody(options: ConfirmComponentOptions<IFormattable<string>
     });
 }
 
-function createMultipleBody(options: MultipleComponentOptions<IFormattable<string>>): IFormattable<Pick<AdvancedMessageContent, `components`>> {
+function createMultipleBody(options: MultipleComponentOptions<IFormattable<string>>): IFormattable<Pick<AdvancedMessageContent, 'components'>> {
     const select = {
         type: Constants.ComponentTypes.SELECT_MENU,
         custom_id: options.selectId,
@@ -753,7 +753,7 @@ function createMultipleBody(options: MultipleComponentOptions<IFormattable<strin
     const cancel = {
         type: Constants.ComponentTypes.BUTTON,
         custom_id: options.cancelId,
-        emoji: { name: `✖️` },
+        emoji: { name: '✖️' },
         style: Constants.ButtonStyles.DANGER
     };
 
@@ -765,7 +765,7 @@ function createMultipleBody(options: MultipleComponentOptions<IFormattable<strin
     });
 }
 
-function createChoiceBody(options: ChoiceComponentOptions<IFormattable<string>>): IFormattable<Pick<AdvancedMessageContent, `components` | `content`>> {
+function createChoiceBody(options: ChoiceComponentOptions<IFormattable<string>>): IFormattable<Pick<AdvancedMessageContent, 'components' | 'content'>> {
     const select = {
         type: Constants.ComponentTypes.SELECT_MENU,
         custom_id: options.selectId,
@@ -775,7 +775,7 @@ function createChoiceBody(options: ChoiceComponentOptions<IFormattable<string>>)
     const cancel = {
         type: Constants.ComponentTypes.BUTTON,
         custom_id: options.cancelId,
-        emoji: { name: `✖️` },
+        emoji: { name: '✖️' },
         style: Constants.ButtonStyles.DANGER
     };
 
@@ -792,7 +792,7 @@ function createChoiceBody(options: ChoiceComponentOptions<IFormattable<string>>)
     const prev = {
         type: Constants.ComponentTypes.BUTTON,
         custom_id: options.prevId,
-        emoji: { name: `⬅` },
+        emoji: { name: '⬅' },
         style: Constants.ButtonStyles.PRIMARY,
         disabled: options.page === 0
     };
@@ -800,7 +800,7 @@ function createChoiceBody(options: ChoiceComponentOptions<IFormattable<string>>)
     const next = {
         type: Constants.ComponentTypes.BUTTON,
         custom_id: options.nextId,
-        emoji: { name: `➡` },
+        emoji: { name: '➡' },
         style: Constants.ButtonStyles.PRIMARY,
         disabled: options.page === options.lastPage
     };
@@ -814,14 +814,14 @@ function createChoiceBody(options: ChoiceComponentOptions<IFormattable<string>>)
     });
 }
 
-function createTextBody(options: TextComponentOptions<IFormattable<string>>, disabled = false): IFormattable<Pick<AdvancedMessageContent, `components`>> {
+function createTextBody(options: TextComponentOptions<IFormattable<string>>, disabled = false): IFormattable<Pick<AdvancedMessageContent, 'components'>> {
     return new FormattableMessageContent({
         components: [
             {
                 type: Constants.ComponentTypes.ACTION_ROW,
                 components: [{
                     style: Constants.ButtonStyles.SECONDARY,
-                    ...typeof options.cancelButton === `string` ? { label: options.cancelButton } : options.cancelButton,
+                    ...typeof options.cancelButton === 'string' ? { label: options.cancelButton } : options.cancelButton,
                     type: Constants.ComponentTypes.BUTTON,
                     custom_id: options.cancelId,
                     disabled: disabled
@@ -833,17 +833,17 @@ function createTextBody(options: TextComponentOptions<IFormattable<string>>, dis
 
 function getChannelLookupSelect(channel: KnownChannel): { label: IFormattable<string>; emoji: string; } {
     switch (channel.type) {
-        case Constants.ChannelTypes.DM: return { emoji: `🕵️`, label: templates.common.query.channel.choice.label.dm };
-        case Constants.ChannelTypes.GROUP_DM: return { emoji: `👥`, label: templates.common.query.channel.choice.label.dm };
-        case Constants.ChannelTypes.GUILD_CATEGORY: return { emoji: `📁`, label: templates.common.query.channel.choice.label.guild({ channel }) };
-        case Constants.ChannelTypes.GUILD_NEWS: return { emoji: `📰`, label: templates.common.query.channel.choice.label.guild({ channel }) };
-        case Constants.ChannelTypes.GUILD_NEWS_THREAD: return { emoji: `✏️`, label: templates.common.query.channel.choice.label.guild({ channel }) };
-        case Constants.ChannelTypes.GUILD_PRIVATE_THREAD: return { emoji: `✏️`, label: templates.common.query.channel.choice.label.guild({ channel }) };
-        case Constants.ChannelTypes.GUILD_PUBLIC_THREAD: return { emoji: `✏️`, label: templates.common.query.channel.choice.label.guild({ channel }) };
-        case Constants.ChannelTypes.GUILD_STAGE_VOICE: return { emoji: `🔈`, label: templates.common.query.channel.choice.label.guild({ channel }) };
-        case Constants.ChannelTypes.GUILD_STORE: return { emoji: `🛒`, label: templates.common.query.channel.choice.label.guild({ channel }) };
-        case Constants.ChannelTypes.GUILD_TEXT: return { emoji: `✏️`, label: templates.common.query.channel.choice.label.guild({ channel }) };
-        case Constants.ChannelTypes.GUILD_VOICE: return { emoji: `🔈`, label: templates.common.query.channel.choice.label.guild({ channel }) };
+        case Constants.ChannelTypes.DM: return { emoji: '🕵️', label: templates.common.query.channel.choice.label.dm };
+        case Constants.ChannelTypes.GROUP_DM: return { emoji: '👥', label: templates.common.query.channel.choice.label.dm };
+        case Constants.ChannelTypes.GUILD_CATEGORY: return { emoji: '📁', label: templates.common.query.channel.choice.label.guild({ channel }) };
+        case Constants.ChannelTypes.GUILD_NEWS: return { emoji: '📰', label: templates.common.query.channel.choice.label.guild({ channel }) };
+        case Constants.ChannelTypes.GUILD_NEWS_THREAD: return { emoji: '✏️', label: templates.common.query.channel.choice.label.guild({ channel }) };
+        case Constants.ChannelTypes.GUILD_PRIVATE_THREAD: return { emoji: '✏️', label: templates.common.query.channel.choice.label.guild({ channel }) };
+        case Constants.ChannelTypes.GUILD_PUBLIC_THREAD: return { emoji: '✏️', label: templates.common.query.channel.choice.label.guild({ channel }) };
+        case Constants.ChannelTypes.GUILD_STAGE_VOICE: return { emoji: '🔈', label: templates.common.query.channel.choice.label.guild({ channel }) };
+        case Constants.ChannelTypes.GUILD_STORE: return { emoji: '🛒', label: templates.common.query.channel.choice.label.guild({ channel }) };
+        case Constants.ChannelTypes.GUILD_TEXT: return { emoji: '✏️', label: templates.common.query.channel.choice.label.guild({ channel }) };
+        case Constants.ChannelTypes.GUILD_VOICE: return { emoji: '🔈', label: templates.common.query.channel.choice.label.guild({ channel }) };
     }
 }
 

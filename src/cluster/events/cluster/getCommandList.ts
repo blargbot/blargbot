@@ -3,18 +3,18 @@ import { ClusterEventService } from '@blargbot/cluster/serviceTypes';
 import { CommandListResult } from '@blargbot/cluster/types';
 import { format } from '@blargbot/domain/messages/types';
 
-export class ClusterGetCommandListHandler extends ClusterEventService<`getCommandList`> {
+export class ClusterGetCommandListHandler extends ClusterEventService<'getCommandList'> {
     public constructor(
         cluster: Cluster
     ) {
-        super(cluster, `getCommandList`, async ({ reply }) => reply(await this.getCommandList()));
+        super(cluster, 'getCommandList', async ({ reply }) => reply(await this.getCommandList()));
     }
 
     public async getCommandList(): Promise<CommandListResult> {
         const commands: CommandListResult = {};
         const formatter = await this.cluster.util.getFormatter();
         for await (const result of this.cluster.commands.default.list()) {
-            if (result.state !== `ALLOWED`)
+            if (result.state !== 'ALLOWED')
                 continue;
 
             const c = result.detail.command;
@@ -25,7 +25,7 @@ export class ClusterGetCommandListHandler extends ClusterEventService<`getComman
                 disabled: c.disabled,
                 flags: c.flags.map(f => ({
                     ...f,
-                    description: typeof f.description === `string` ? f.description : f.description[format](formatter)
+                    description: typeof f.description === 'string' ? f.description : f.description[format](formatter)
                 })),
                 hidden: c.hidden,
                 name: c.name,

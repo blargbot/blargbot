@@ -10,11 +10,11 @@ const cmd = templates.commands.user;
 export class UserCommand extends GlobalCommand {
     public constructor() {
         super({
-            name: `user`,
+            name: 'user',
             category: CommandType.GENERAL,
             definitions: [
                 {
-                    parameters: `{user:user+?}`,
+                    parameters: '{user:user+?}',
                     description: cmd.default.description,
                     execute: (ctx, [user]) => this.getUser(ctx, user.asOptionalUser ?? ctx.author)
                 }
@@ -78,14 +78,14 @@ export class UserCommand extends GlobalCommand {
 
 function getStatusEmoteId(context: CommandContext, member: Member): string {
     const emote = getStatusEmote(context, member);
-    return parse.entityId(emote) ?? ``;
+    return parse.entityId(emote) ?? '';
 }
 
 function getStatusEmote(context: CommandContext, member: Member): string {
     switch (member.status) {
-        case `dnd`: return context.config.discord.emotes.busy;
-        case `idle`: return context.config.discord.emotes.away;
-        case `online`: return context.config.discord.emotes.online;
+        case 'dnd': return context.config.discord.emotes.busy;
+        case 'idle': return context.config.discord.emotes.away;
+        case 'online': return context.config.discord.emotes.online;
         case undefined: return context.config.discord.emotes.offline;
     }
 }

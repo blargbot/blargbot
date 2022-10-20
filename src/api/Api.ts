@@ -35,7 +35,7 @@ export class Api extends BaseClient {
         this.app.use((req, resp, next) => {
             const requestStr = `${req.method} ${req.url}`;
             const start = performance.now();
-            resp.once(`finish`, () => this.logger.website(`[${resp.statusCode} ${resp.statusMessage}][${Math.round(performance.now() - start)}ms]`, requestStr));
+            resp.once('finish', () => this.logger.website(`[${resp.statusCode} ${resp.statusMessage}][${Math.round(performance.now() - start)}ms]`, requestStr));
             next();
         });
 
@@ -44,7 +44,7 @@ export class Api extends BaseClient {
 
     public async start(): Promise<void> {
         const routes = new ModuleLoader<BaseRoute>(`${__dirname}/routes`, BaseRoute, [this], this.logger);
-        routes.on(`link`, module => module.install(this));
+        routes.on('link', module => module.install(this));
         await routes.init();
 
         await super.start();

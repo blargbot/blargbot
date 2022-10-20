@@ -12,25 +12,25 @@ export interface JsonResolveResult {
 export const json = Object.freeze({
     async resolveObj(context: BBTagContext, input: string): Promise<JsonResolveResult> {
         let obj = this.parse(input);
-        if (typeof obj === `object` && obj !== null)
+        if (typeof obj === 'object' && obj !== null)
             return { variable: undefined, object: obj };
 
         const variable = await context.variables.get(input);
-        if (typeof variable.value === `object` && variable.value !== null)
+        if (typeof variable.value === 'object' && variable.value !== null)
             return { variable: input, object: variable.value };
 
-        if (typeof variable.value !== `string`)
+        if (typeof variable.value !== 'string')
             return { variable: input, object: {} };
 
         obj = this.parse(variable.value);
-        if (typeof obj === `object` && obj !== null)
+        if (typeof obj === 'object' && obj !== null)
             return { variable: input, object: obj };
 
         return { variable: input, object: {} };
     },
     parseObj(input: string): JObject | JArray {
         let obj = this.parse(input) ?? {};
-        if (typeof obj !== `object`)
+        if (typeof obj !== 'object')
             obj = {};
 
         return obj;
@@ -38,7 +38,7 @@ export const json = Object.freeze({
     get(input: JToken | undefined, path: string | readonly string[]): JToken | undefined {
         return this.getPathKeys(path)
             .reduce((obj, part) => {
-                if (typeof obj === `string`)
+                if (typeof obj === 'string')
                     obj = this.parse(obj) ?? obj;
 
                 return getProp(obj, part);
@@ -50,10 +50,10 @@ export const json = Object.freeze({
             .slice(0, -1)
             .reduce(!forceCreate ? getProp : (obj, prop) => {
                 let propVal = getProp(obj, prop);
-                if (typeof propVal === `string`)
+                if (typeof propVal === 'string')
                     propVal = this.parse(propVal) ?? propVal;
 
-                if (typeof propVal !== `object` || propVal === null)
+                if (typeof propVal !== 'object' || propVal === null)
                     propVal = {};
 
                 setProp(obj, prop, propVal);
@@ -64,7 +64,7 @@ export const json = Object.freeze({
         setProp(container, finalProp, value);
     },
     clean(input: JToken): JToken {
-        if (typeof input === `string`) {
+        if (typeof input === 'string') {
             const json = this.parse(input);
             if (json !== undefined && json !== input)
                 return this.clean(json);
@@ -72,7 +72,7 @@ export const json = Object.freeze({
             for (let i = 0; i < input.length; i++) {
                 input[i] = this.clean(input[i]);
             }
-        } else if (typeof input === `object` && input !== null) {
+        } else if (typeof input === 'object' && input !== null) {
             if (tagArray.isTagArray(input))
                 return this.clean(input.v);
 
@@ -83,9 +83,9 @@ export const json = Object.freeze({
         return input;
     },
     getPathKeys(path: string | readonly string[]): readonly string[] {
-        if (typeof path !== `string`)
+        if (typeof path !== 'string')
             return path;
-        return path.split(`.`);
+        return path.split('.');
     },
     parse(value: string): JToken | undefined {
         if (/^\d+/.test(value)) // Dont parse snowflakes
@@ -104,11 +104,11 @@ function getProp(target: JToken | undefined, prop: string): JToken | undefined {
         target = target.v;
 
     switch (typeof target) {
-        case `undefined`:
+        case 'undefined':
             throw new BBTagRuntimeError(`Cannot read property ${prop} of undefined`);
-        case `string`:
+        case 'string':
             return getArrayProp(target, prop);
-        case `object`:
+        case 'object':
             if (target === null)
                 throw new BBTagRuntimeError(`Cannot read property ${prop} of null`);
             if (Array.isArray(target))
@@ -126,9 +126,9 @@ function setProp(target: JToken | undefined, prop: string, value: JToken | undef
         target = target.v;
 
     switch (typeof target) {
-        case `undefined`:
+        case 'undefined':
             throw new BBTagRuntimeError(`Cannot set property ${prop} on undefined`);
-        case `object`:
+        case 'object':
             if (target === null)
                 throw new BBTagRuntimeError(`Cannot set property ${prop} on null`);
             if (Array.isArray(target))
@@ -155,11 +155,11 @@ function setArrayProp<T>(arr: T[], prop: string, value: T): void {
     const key = toArrayKey(prop);
     if (key === undefined) {
         // NO-OP
-    } else if (key === `length`) {
+    } else if (key === 'length') {
         if (value === undefined)
             arr.length = 0;
-        if (typeof value !== `number` || value < 0)
-            throw new BBTagRuntimeError(`Invalid array length`);
+        if (typeof value !== 'number' || value < 0)
+            throw new BBTagRuntimeError('Invalid array length');
         arr.length = value;
     } else if (value === undefined) {
         arr.splice(key, 1);
@@ -168,8 +168,8 @@ function setArrayProp<T>(arr: T[], prop: string, value: T): void {
     }
 }
 
-function toArrayKey(key: string): `length` | number | undefined {
-    if (key === `length`)
-        return `length`;
+function toArrayKey(key: string): 'length' | number | undefined {
+    if (key === 'length')
+        return 'length';
     return parse.int(key);
 }

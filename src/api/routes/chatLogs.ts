@@ -8,11 +8,11 @@ export class ChatLogsRoute extends BaseRoute {
     readonly #api: Api;
 
     public constructor(api: Api) {
-        super(`/chatlogs`);
+        super('/chatlogs');
 
         this.#api = api;
 
-        this.addRoute(`/:id`, {
+        this.addRoute('/:id', {
             get: ({ request }) => this.getLogs(request.params.id)
         });
     }

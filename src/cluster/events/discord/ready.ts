@@ -1,11 +1,11 @@
 import { Cluster } from '@blargbot/cluster';
 import { DiscordEventService } from '@blargbot/core/serviceTypes';
 
-export class DiscordReadyHandler extends DiscordEventService<`ready`> {
+export class DiscordReadyHandler extends DiscordEventService<'ready'> {
     public constructor(
         public readonly cluster: Cluster
     ) {
-        super(cluster.discord, `ready`, cluster.logger, () => this.execute());
+        super(cluster.discord, 'ready', cluster.logger, () => this.execute());
     }
 
     public async execute(): Promise<void> {
@@ -14,7 +14,7 @@ export class DiscordReadyHandler extends DiscordEventService<`ready`> {
             try {
                 await this.cluster.guilds.guildLoaded(guild);
             } catch (err: unknown) {
-                this.cluster.logger.error(`Failed to load guild`, guild.id, `into db`, err);
+                this.cluster.logger.error('Failed to load guild', guild.id, 'into db', err);
             }
         }
         await this.cluster.util.postStats();

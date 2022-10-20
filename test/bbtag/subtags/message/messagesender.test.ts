@@ -8,17 +8,17 @@ runSubtagTests({
     argCountBounds: { min: 0, max: 3 },
     cases: [
         ...createGetMessagePropTestCases({
-            quiet: ``,
+            quiet: '',
             includeNoArgs: true,
             generateCode(...args) {
-                return `{${[`messagesender`, ...args].filter(a => a !== undefined).join(`;`)}}`;
+                return `{${['messagesender', ...args].filter(a => a !== undefined).join(';')}}`;
             },
             cases: [
                 {
-                    expected: `09876554433211234567`,
+                    expected: '09876554433211234567',
                     setup(_, message, ctx) {
                         message.author = ctx.users.other;
-                        ctx.users.other.id = `09876554433211234567`;
+                        ctx.users.other.id = '09876554433211234567';
                     }
                 }
             ]

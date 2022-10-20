@@ -11,20 +11,20 @@ const cmd = templates.commands.names;
 export class NamesCommand extends GlobalCommand {
     public constructor() {
         super({
-            name: `names`,
+            name: 'names',
             category: CommandType.GENERAL,
             flags: [
-                { flag: `a`, word: `all`, description: cmd.flags.all },
-                { flag: `v`, word: `verbose`, description: cmd.flags.verbose }
+                { flag: 'a', word: 'all', description: cmd.flags.all },
+                { flag: 'v', word: 'verbose', description: cmd.flags.verbose }
             ],
             definitions: [
                 {
-                    parameters: `{user:user+?}`,
+                    parameters: '{user:user+?}',
                     description: cmd.list.description,
                     execute: (ctx, [user], flags) => this.listNames(ctx, user.asOptionalUser ?? ctx.author, flags.a !== undefined, flags.v !== undefined)
                 },
                 {
-                    parameters: `remove {names+?}`,
+                    parameters: 'remove {names+?}',
                     description: cmd.remove.description,
                     execute: (ctx, [names]) => this.removeNames(ctx, names.asOptionalString)
                 }
@@ -37,7 +37,7 @@ export class NamesCommand extends GlobalCommand {
         if (usernames === undefined || usernames.length === 0)
             return cmd.list.none.ever({ user });
 
-        const cutoff = moment().add(-30, `days`);
+        const cutoff = moment().add(-30, 'days');
         if (!all)
             usernames = usernames.filter(u => moment(u.date).isAfter(cutoff));
         const data = usernames.map(u => ({ name: u.name, time: moment(u.date) }));
@@ -47,7 +47,7 @@ export class NamesCommand extends GlobalCommand {
                 {
                     author: context.util.embedifyAuthor(user),
                     title: cmd.list.embed.title,
-                    description: cmd.list.embed.description[all ? `ever` : `since`][detailed ? `detailed` : `simple`]({ from: cutoff, usernames: data })
+                    description: cmd.list.embed.description[all ? 'ever' : 'since'][detailed ? 'detailed' : 'simple']({ from: cutoff, usernames: data })
                 }
             ]
         };
@@ -76,7 +76,7 @@ export class NamesCommand extends GlobalCommand {
         if (!confirmed)
             return cmd.remove.cancelled;
 
-        await context.database.users.removeUsernames(context.author.id, nameLookup === undefined ? `all` : usernames.map(u => u.name));
+        await context.database.users.removeUsernames(context.author.id, nameLookup === undefined ? 'all' : usernames.map(u => u.name));
         return nameLookup === undefined
             ? cmd.remove.success.all
             : cmd.remove.success.some({ count: usernames.length });

@@ -6,25 +6,25 @@ import { SubtagType } from '../../utils';
 export class UserAvatarSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: `useravatar`,
+            name: 'useravatar',
             category: SubtagType.USER,
-            description: `If no game is being played, this will return 'nothing'`,
+            description: 'If no game is being played, this will return \'nothing\'',
             definition: [
                 {
                     parameters: [],
-                    description: `Returns the avatar of the executing user.`,
-                    exampleCode: `Your avatar is {useravatar}`,
-                    exampleOut: `Your discrim is (avatar url)`,
-                    returns: `string`,
-                    execute: (ctx) => this.getUserAvatarUrl(ctx, ``, true)
+                    description: 'Returns the avatar of the executing user.',
+                    exampleCode: 'Your avatar is {useravatar}',
+                    exampleOut: 'Your discrim is (avatar url)',
+                    returns: 'string',
+                    execute: (ctx) => this.getUserAvatarUrl(ctx, '', true)
                 },
                 {
-                    parameters: [`user`, `quiet?`],
-                    description: `Returns the avatar of \`user\`. If \`user\` can't be found it will simply return nothing.`,
-                    exampleCode: `Stupid cat's avatar is {useravatar;Stupid cat}`,
-                    exampleOut: `Stupid cat's avatar is (avatar url)`,
-                    returns: `string`,
-                    execute: (ctx, [userId, quiet]) => this.getUserAvatarUrl(ctx, userId.value, quiet.value !== ``)
+                    parameters: ['user', 'quiet?'],
+                    description: 'Returns the avatar of `user`. If `user` can\'t be found it will simply return nothing.',
+                    exampleCode: 'Stupid cat\'s avatar is {useravatar;Stupid cat}',
+                    exampleOut: 'Stupid cat\'s avatar is (avatar url)',
+                    returns: 'string',
+                    execute: (ctx, [userId, quiet]) => this.getUserAvatarUrl(ctx, userId.value, quiet.value !== '')
                 }
             ]
         });
@@ -45,6 +45,6 @@ export class UserAvatarSubtag extends CompiledSubtag {
             return user.avatarURL;
 
         throw new UserNotFoundError(userId)
-            .withDisplay(quiet ? `` : undefined);
+            .withDisplay(quiet ? '' : undefined);
     }
 }

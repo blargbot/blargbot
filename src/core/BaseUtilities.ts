@@ -11,7 +11,7 @@ import moment from 'moment-timezone';
 
 import { BaseClient } from './BaseClient';
 import { Emote } from './Emote';
-import { DefaultFormatter } from "./formatting";
+import { DefaultFormatter } from './formatting';
 import { metrics } from './Metrics';
 import { guard, humanize, parse, snowflake } from './utils';
 
@@ -28,13 +28,13 @@ export class BaseUtilities {
     }
 
     async #getSendChannel(context: SendContext): Promise<TextableChannel> {
-        if (typeof context === `string`) {
+        if (typeof context === 'string') {
             const channel = await this.getChannel(context);
             if (channel === undefined)
-                throw new Error(`Channel not found`);
+                throw new Error('Channel not found');
             if (guard.isTextableChannel(channel))
                 return channel;
-            throw new Error(`Channel is not textable`);
+            throw new Error('Channel is not textable');
         }
         if (context instanceof User) {
             return await context.getDMChannel();
@@ -44,28 +44,28 @@ export class BaseUtilities {
 
     public getFormatter(target?: Channel | Guild | string): Promise<IFormatter> {
         target;
-        return Promise.resolve(new DefaultFormatter(new Intl.Locale(`en-GB`), this.client.formatCompiler));
+        return Promise.resolve(new DefaultFormatter(new Intl.Locale('en-GB'), this.client.formatCompiler));
     }
 
     public websiteLink(path?: string): string {
-        path = path?.replace(/^[/\\]+/, ``);
-        const scheme = this.config.website.secure ? `https` : `http`;
+        path = path?.replace(/^[/\\]+/, '');
+        const scheme = this.config.website.secure ? 'https' : 'http';
         const host = this.config.website.host;
-        const port = this.config.website.port === 80 ? `` : `:${this.config.website.port}`;
-        return `${scheme}://${host}${port}/${path ?? ``}`;
+        const port = this.config.website.port === 80 ? '' : `:${this.config.website.port}`;
+        return `${scheme}://${host}${port}/${path ?? ''}`;
     }
 
     public embedifyAuthor(target: Member | User | Guild | StoredUser, includeId = false): FormatEmbedAuthor<IFormattable<string>> {
         if (target instanceof User) {
             return {
                 icon_url: target.avatarURL,
-                name: literal(`${humanize.fullName(target)} ${includeId ? `(${target.id})` : ``}`)
+                name: literal(`${humanize.fullName(target)} ${includeId ? `(${target.id})` : ''}`)
                 // url: target === this.discord.user ? undefined : `https://discord.com/users/${target.id}`
             };
         } else if (target instanceof Member) {
             return {
                 icon_url: target.avatarURL,
-                name: literal(`${target.nick ?? target.username} ${includeId ? `(${target.id})` : ``}`)
+                name: literal(`${target.nick ?? target.username} ${includeId ? `(${target.id})` : ''}`)
                 // url: `https://discord.com/users/${target.id}`
             };
         } else if (target instanceof Guild) {
@@ -73,10 +73,10 @@ export class BaseUtilities {
                 icon_url: target.iconURL ?? undefined,
                 name: literal(target.name)
             };
-        } else if (`userid` in target) {
+        } else if ('userid' in target) {
             return {
                 icon_url: target.avatarURL,
-                name: literal(`${target.username ?? `UNKNOWN`} ${includeId ? `(${target.userid})` : ``}`)
+                name: literal(`${target.username ?? 'UNKNOWN'} ${includeId ? `(${target.userid})` : ''}`)
                 // url: `https://discord.com/users/${target.userid}`
             };
         }
@@ -111,8 +111,8 @@ export class BaseUtilities {
         // Stringifies embeds if we lack permissions to send embeds
         if (content.embeds !== undefined && guard.isGuildChannel(channel)) {
             const member = await this.getMember(channel.guild, this.user.id);
-            if (member !== undefined && channel.permissionsOf(member).has(`embedLinks`) !== true) {
-                content.content = `${content.content ?? ``}${humanize.embed(content.embeds)}`;
+            if (member !== undefined && channel.permissionsOf(member).has('embedLinks') !== true) {
+                content.content = `${content.content ?? ''}${humanize.embed(content.embeds)}`;
                 delete content.embeds;
             }
         }
@@ -125,7 +125,7 @@ export class BaseUtilities {
             && (content.embeds?.length ?? 0) === 0
             && files.length === 0
             && (content.components?.length ?? 0) === 0) {
-            throw new Error(`No content`);
+            throw new Error('No content');
         }
 
         if (!guard.checkEmbedSize(content.embeds)) {
@@ -137,15 +137,15 @@ export class BaseUtilities {
         } else if (content.content !== undefined && !guard.checkMessageSize(content.content)) {
             files.unshift({
                 file: content.content,
-                name: `message.txt`
+                name: 'message.txt'
             });
             content.content = undefined;
         }
         for (const file of files)
-            if (typeof file === `object` && `attachment` in file && typeof file.file === `string`)
+            if (typeof file === 'object' && 'attachment' in file && typeof file.file === 'string')
                 file.file = Buffer.from(file.file);
 
-        this.logger.debug(`Sending content: `, JSON.stringify(payload));
+        this.logger.debug('Sending content: ', JSON.stringify(payload));
         try {
             return await channel.createMessage(content, files);
         } catch (error: unknown) {
@@ -157,7 +157,7 @@ export class BaseUtilities {
                 return undefined;
 
             const result = sendErrors[code](this, channel, content, error);
-            if (typeof result === `object` && author !== undefined && await this.canDmErrors(author.id)) {
+            if (typeof result === 'object' && author !== undefined && await this.canDmErrors(author.id)) {
                 await this.send(author, {
                     [format](formatter) {
                         return {
@@ -215,7 +215,7 @@ export class BaseUtilities {
         const promiseMap: { [tag: string]: Promise<string>; } = {};
         let match;
         while ((match = regex.exec(message)) !== null) {
-            promiseMap[match[0]] ??= this.resolveTag(`channel` in context ? context.channel : context, match[0]);
+            promiseMap[match[0]] ??= this.resolveTag('channel' in context ? context.channel : context, match[0]);
         }
         const replacements = Object.fromEntries(await Promise.all(Object.entries(promiseMap).map(async e => [e[0], await e[1]] as const)));
         return message.replace(regex, match => replacements[match]);
@@ -223,17 +223,17 @@ export class BaseUtilities {
 
     public async loadDiscordTagData(content: string, guildId: string, cache: DiscordTagSet): Promise<void> {
         for (const match of content.matchAll(/<[^<>\s]+>/g)) {
-            let id = parse.entityId(match[0], `@&`);
+            let id = parse.entityId(match[0], '@&');
             if (id !== undefined) {
                 cache.parsedRoles[id] ??= await this.#getDiscordRoleTag(guildId, id);
                 continue;
             }
-            id = parse.entityId(match[0], `@!`) ?? parse.entityId(match[0], `@`);
+            id = parse.entityId(match[0], '@!') ?? parse.entityId(match[0], '@');
             if (id !== undefined) {
                 cache.parsedUsers[id] ??= await this.#getDiscordUserTag(id);
                 continue;
             }
-            id = parse.entityId(match[0], `#`);
+            id = parse.entityId(match[0], '#');
             if (id !== undefined)
                 cache.parsedChannels[id] ??= await this.#getDiscordChannelTag(id);
         }
@@ -252,7 +252,7 @@ export class BaseUtilities {
         const channel = await this.getChannel(id);
         return {
             id,
-            name: channel === undefined ? undefined : `name` in channel ? channel.name : undefined,
+            name: channel === undefined ? undefined : 'name' in channel ? channel.name : undefined,
             type: channel?.type
         };
     }
@@ -278,15 +278,15 @@ export class BaseUtilities {
     }
 
     public async resolveTag(context: KnownChannel, tag: string): Promise<string> {
-        let id = parse.entityId(tag, `@&`);
+        let id = parse.entityId(tag, '@&');
         if (id !== undefined) { // ROLE
             const role = guard.isGuildChannel(context)
                 ? await this.getRole(context.guild, id)
                 : undefined;
 
-            return `@${role?.name ?? `UNKNOWN ROLE`}`;
+            return `@${role?.name ?? 'UNKNOWN ROLE'}`;
         }
-        id = parse.entityId(tag, `@!`);
+        id = parse.entityId(tag, '@!');
         if (id !== undefined) { // USER (NICKNAME)
             if (guard.isGuildChannel(context)) {
                 const member = await this.getMember(context.guild, tag.substring(2));
@@ -294,33 +294,33 @@ export class BaseUtilities {
                     return member.nick ?? member.username;
             }
             const user = await this.getUser(id);
-            return user === undefined ? `UNKNOWN USER` : `${user.username}#${user.discriminator}`;
+            return user === undefined ? 'UNKNOWN USER' : `${user.username}#${user.discriminator}`;
         }
-        id = parse.entityId(tag, `@`);
+        id = parse.entityId(tag, '@');
         if (id !== undefined) { // USER
             const user = await this.getUser(id);
-            return user === undefined ? `UNKNOWN USER` : `${user.username}#${user.discriminator}`;
+            return user === undefined ? 'UNKNOWN USER' : `${user.username}#${user.discriminator}`;
         }
-        id = parse.entityId(tag, `#`);
+        id = parse.entityId(tag, '#');
         if (id !== undefined) { // CHANNEL
             const channel = await this.getChannel(id);
-            return channel !== undefined && guard.isGuildChannel(channel) ? `#${channel.name}` : ``;
+            return channel !== undefined && guard.isGuildChannel(channel) ? `#${channel.name}` : '';
         }
-        if (tag.startsWith(`<t:`)) { // TIMESTAMP
-            const [, val, format = `f`] = tag.split(`:`);
+        if (tag.startsWith('<t:')) { // TIMESTAMP
+            const [, val, format = 'f'] = tag.split(':');
             const timestamp = moment.unix(parseInt(val));
             switch (format.substring(0, format.length - 1)) {
-                case `t`: return timestamp.format(`HH:mm`);
-                case `T`: return timestamp.format(`HH:mm:ss`);
-                case `d`: return timestamp.format(`DD/MM/yyyy`);
-                case `D`: return timestamp.format(`DD MMMM yyyy`);
-                case `F`: return timestamp.format(`dddd, DD MMMM yyyy HH:mm`);
-                case `R`: return moment.duration(timestamp.diff(moment())).humanize(true);
-                case `f`: return timestamp.format(`DD MMMM yyyy HH:mm`);
+                case 't': return timestamp.format('HH:mm');
+                case 'T': return timestamp.format('HH:mm:ss');
+                case 'd': return timestamp.format('DD/MM/yyyy');
+                case 'D': return timestamp.format('DD MMMM yyyy');
+                case 'F': return timestamp.format('dddd, DD MMMM yyyy HH:mm');
+                case 'R': return moment.duration(timestamp.diff(moment())).humanize(true);
+                case 'f': return timestamp.format('DD MMMM yyyy HH:mm');
             }
         }
-        if (tag.startsWith(`<a:`) || tag.startsWith(`<:`)) { // EMOJI
-            return tag.split(`:`)[1];
+        if (tag.startsWith('<a:') || tag.startsWith('<:')) { // EMOJI
+            return tag.split(':')[1];
         }
         return tag;
     }
@@ -357,7 +357,7 @@ export class BaseUtilities {
     public async isBotStaff(userId: string): Promise<boolean> {
         if (this.isBotDeveloper(userId))
             return true;
-        const police = await this.database.vars.get(`police`);
+        const police = await this.database.vars.get('police');
         return police?.value.includes(userId) ?? false;
     }
 
@@ -365,7 +365,7 @@ export class BaseUtilities {
     public async isBotSupport(userId: string): Promise<boolean> {
         if (await this.isBotStaff(userId))
             return true;
-        const support = await this.database.vars.get(`support`);
+        const support = await this.database.vars.get('support');
         return support?.value.includes(userId) ?? false;
     }
 
@@ -374,13 +374,13 @@ export class BaseUtilities {
     public async getChannel(...args: [string] | [string | Guild, string]): Promise<KnownChannel | undefined> {
         const [guildVal, channelVal] = args.length === 2 ? args : [undefined, args[0]] as const;
 
-        const channelId = parse.entityId(channelVal, `@!?`, true) ?? ``;
-        if (channelId === ``)
+        const channelId = parse.entityId(channelVal, '@!?', true) ?? '';
+        if (channelId === '')
             return undefined;
 
         if (guildVal === undefined)
             return this.discord.getChannel(channelId) ?? await this.#getRestChannel(channelId);
-        const guild = typeof guildVal === `string` ? await this.getGuild(guildVal) : guildVal;
+        const guild = typeof guildVal === 'string' ? await this.getGuild(guildVal) : guildVal;
         if (guild === undefined)
             return undefined;
         const channel = guild.channels.get(channelId) ?? await this.#getRestChannel(channelId);
@@ -410,10 +410,10 @@ export class BaseUtilities {
     }
 
     public async findChannels(guild: string | Guild, query?: string): Promise<KnownGuildChannel[]> {
-        if (typeof guild === `string`)
+        if (typeof guild === 'string')
             guild = await this.getGuild(guild) ?? guild;
 
-        if (typeof guild === `string`)
+        if (typeof guild === 'string')
             return [];
 
         const allChannels = [...guild.channels.values(), ...guild.threads.filter(guard.isThreadChannel)];
@@ -440,7 +440,7 @@ export class BaseUtilities {
             if (normalizedName.startsWith(normalizedQuery)) return 100;
             if (channel.name.includes(query)) return 10;
             if (normalizedName.includes(normalizedQuery)) return 1;
-        } else if (guard.isPrivateChannel(channel) && `recipient` in channel) {
+        } else if (guard.isPrivateChannel(channel) && 'recipient' in channel) {
             return this.userMatchScore(channel.recipient, query);
         }
         return 0;
@@ -448,8 +448,8 @@ export class BaseUtilities {
     }
 
     public async getUser(userId: string): Promise<User | undefined> {
-        userId = parse.entityId(userId, `@!?`, true) ?? ``;
-        if (userId === ``)
+        userId = parse.entityId(userId, '@!?', true) ?? '';
+        if (userId === '')
             return undefined;
 
         try {
@@ -458,7 +458,7 @@ export class BaseUtilities {
             if (err instanceof DiscordRESTError) {
                 switch (err.code) {
                     case ApiError.INVALID_FORM_BODY:
-                        this.logger.error(`Error while getting user`, userId, err);
+                        this.logger.error('Error while getting user', userId, err);
                     // fallthrough
                     case ApiError.MISSING_ACCESS:
                     case ApiError.UNKNOWN_USER:
@@ -480,8 +480,8 @@ export class BaseUtilities {
     }
 
     public async getGuild(guildId: string): Promise<Guild | undefined> {
-        guildId = parse.entityId(guildId) ?? ``;
-        if (guildId === ``)
+        guildId = parse.entityId(guildId) ?? '';
+        if (guildId === '')
             return undefined;
 
         try {
@@ -490,7 +490,7 @@ export class BaseUtilities {
             if (err instanceof DiscordRESTError) {
                 switch (err.code) {
                     case ApiError.INVALID_FORM_BODY:
-                        this.logger.error(`Error while getting guild`, guildId, err);
+                        this.logger.error('Error while getting guild', guildId, err);
                     // fallthrough
                     case ApiError.MISSING_ACCESS:
                     case ApiError.UNKNOWN_GUILD:
@@ -504,11 +504,11 @@ export class BaseUtilities {
     public async getMessage(channel: string, messageId: string, force?: boolean): Promise<KnownMessage | undefined>;
     public async getMessage(channel: KnownChannel, messageId: string, force?: boolean): Promise<KnownMessage | undefined>;
     public async getMessage(channel: string | KnownChannel, messageId: string, force?: boolean): Promise<KnownMessage | undefined> {
-        messageId = parse.entityId(messageId) ?? ``;
-        if (messageId === ``)
+        messageId = parse.entityId(messageId) ?? '';
+        if (messageId === '')
             return undefined;
 
-        const foundChannel = typeof channel === `string` ? await this.getChannel(channel) : channel;
+        const foundChannel = typeof channel === 'string' ? await this.getChannel(channel) : channel;
 
         if (foundChannel === undefined || !guard.isTextableChannel(foundChannel))
             return undefined;
@@ -521,7 +521,7 @@ export class BaseUtilities {
             if (err instanceof DiscordRESTError) {
                 switch (err.code) {
                     case ApiError.INVALID_FORM_BODY:
-                        this.logger.error(`Error while getting message`, messageId, `in channel`, foundChannel.id, err);
+                        this.logger.error('Error while getting message', messageId, 'in channel', foundChannel.id, err);
                     // fallthrough
                     case ApiError.MISSING_ACCESS:
                     case ApiError.UNKNOWN_MESSAGE:
@@ -533,14 +533,14 @@ export class BaseUtilities {
     }
 
     public async getMember(guild: string | Guild, userId: string): Promise<Member | undefined> {
-        userId = parse.entityId(userId) ?? ``;
-        if (userId === ``)
+        userId = parse.entityId(userId) ?? '';
+        if (userId === '')
             return undefined;
 
-        if (typeof guild === `string`)
+        if (typeof guild === 'string')
             guild = await this.getGuild(guild) ?? guild;
 
-        if (typeof guild === `string`)
+        if (typeof guild === 'string')
             return undefined;
 
         try {
@@ -567,14 +567,14 @@ export class BaseUtilities {
         this.#ensuredGuilds.add(guild);
         const initialSize = guild.members.size;
         await guild.fetchAllMembers();
-        this.logger.info(`Cached`, guild.members.size - initialSize, `members in guild`, guild.id, `. Member cache now has`, guild.members.size, `entries`);
+        this.logger.info('Cached', guild.members.size - initialSize, 'members in guild', guild.id, '. Member cache now has', guild.members.size, 'entries');
     }
 
     public async findMembers(guild: string | Guild, query?: string): Promise<Member[]> {
-        if (typeof guild === `string`)
+        if (typeof guild === 'string')
             guild = await this.getGuild(guild) ?? guild;
 
-        if (typeof guild === `string`)
+        if (typeof guild === 'string')
             return [];
 
         if (query === undefined) {
@@ -591,10 +591,10 @@ export class BaseUtilities {
     }
 
     public async getWebhook(guild: string | Guild, webhookId: string): Promise<Webhook | undefined> {
-        if (typeof guild === `string`)
+        if (typeof guild === 'string')
             guild = await this.getGuild(guild) ?? guild;
 
-        if (typeof guild === `string`)
+        if (typeof guild === 'string')
             return undefined;
 
         try {
@@ -613,10 +613,10 @@ export class BaseUtilities {
     }
 
     public async findWebhooks(guild: string | Guild, query?: string): Promise<Webhook[]> {
-        if (typeof guild === `string`)
+        if (typeof guild === 'string')
             guild = await this.getGuild(guild) ?? guild;
 
-        if (typeof guild === `string`)
+        if (typeof guild === 'string')
             return [];
 
         let webhooks: Webhook[];
@@ -636,7 +636,7 @@ export class BaseUtilities {
         if (query === undefined)
             return webhooks;
 
-        const webhookId = parse.entityId(query) ?? ``;
+        const webhookId = parse.entityId(query) ?? '';
         const byId = webhooks.find(w => w.id === webhookId);
         if (byId !== undefined)
             return [byId];
@@ -645,14 +645,14 @@ export class BaseUtilities {
     }
 
     public async getSender(guild: string | Guild, senderId: string): Promise<Member | Webhook | undefined> {
-        senderId = parse.entityId(senderId) ?? ``;
-        if (senderId === ``)
+        senderId = parse.entityId(senderId) ?? '';
+        if (senderId === '')
             return undefined;
 
-        if (typeof guild === `string`)
+        if (typeof guild === 'string')
             guild = await this.getGuild(guild) ?? guild;
 
-        if (typeof guild === `string`)
+        if (typeof guild === 'string')
             return undefined;
 
         const member = await this.getMember(guild, senderId);
@@ -663,10 +663,10 @@ export class BaseUtilities {
     }
 
     public async findSenders(guild: string | Guild, query?: string): Promise<Array<Member | Webhook>> {
-        if (typeof guild === `string`)
+        if (typeof guild === 'string')
             guild = await this.getGuild(guild) ?? guild;
 
-        if (typeof guild === `string`)
+        if (typeof guild === 'string')
             return [];
 
         return (await Promise.all([
@@ -713,13 +713,13 @@ export class BaseUtilities {
     }
 
     public async getRole(guild: string | Guild, roleId: string): Promise<Role | undefined> {
-        roleId = parse.entityId(roleId, `@&`, true) ?? ``;
-        if (roleId === ``)
+        roleId = parse.entityId(roleId, '@&', true) ?? '';
+        if (roleId === '')
             return undefined;
 
-        if (typeof guild === `string`)
+        if (typeof guild === 'string')
             guild = await this.getGuild(guild) ?? guild;
-        if (typeof guild === `string`)
+        if (typeof guild === 'string')
             return undefined;
 
         try {
@@ -732,10 +732,10 @@ export class BaseUtilities {
     }
 
     public async findRoles(guild: string | Guild, query?: string): Promise<Role[]> {
-        if (typeof guild === `string`)
+        if (typeof guild === 'string')
             guild = await this.getGuild(guild) ?? guild;
 
-        if (typeof guild === `string`)
+        if (typeof guild === 'string')
             return [];
 
         if (query === undefined)
@@ -766,7 +766,7 @@ const sendErrors = {
         /* console.error('10003: Channel not found. ', channel); */
     },
     [ApiError.CANNOT_SEND_EMPTY_MESSAGE](util: BaseUtilities, _: unknown, payload: AdvancedMessageContent) {
-        util.logger.error(`50006: Tried to send an empty message:`, payload);
+        util.logger.error('50006: Tried to send an empty message:', payload);
     },
     [ApiError.CANNOT_MESSAGE_USER]() {
         /* console.error('50007: Can\'t send a message to this user!'); */
@@ -775,30 +775,30 @@ const sendErrors = {
         /* console.error('50008: Can\'t send messages in a voice channel!'); */
     },
     [ApiError.MISSING_PERMISSIONS](util: BaseUtilities) {
-        util.logger.warn(`50013: Tried sending a message, but had no permissions!`);
+        util.logger.warn('50013: Tried sending a message, but had no permissions!');
         return messageNoPerms;
     },
     [ApiError.MISSING_ACCESS](util: BaseUtilities) {
-        util.logger.warn(`50001: Missing Access`);
+        util.logger.warn('50001: Missing Access');
         return channelNoPerms;
     },
     [ApiError.EMBED_DISABLED](util: BaseUtilities) {
-        util.logger.warn(`50004: Tried embeding a link, but had no permissions!`);
+        util.logger.warn('50004: Tried embeding a link, but had no permissions!');
         return embedNoPerms;
     },
 
     // try to catch the mystery of the autoresponse-object-in-field-value error
     // https://stop-it.get-some.help/9PtuDEm.png
     [ApiError.INVALID_FORM_BODY](util: BaseUtilities, channel: TextableChannel, payload: AdvancedMessageContent, error: DiscordRESTError) {
-        util.logger.error(`${channel.id}|${guard.isGuildChannel(channel) ? channel.name : `PRIVATE CHANNEL`}|${JSON.stringify(payload)}`, error);
+        util.logger.error(`${channel.id}|${guard.isGuildChannel(channel) ? channel.name : 'PRIVATE CHANNEL'}|${JSON.stringify(payload)}`, error);
     }
 } as const;
 
-const messageNoPerms = TranslatableString.create(`core.utils.send.error.messageNoPerms`, `I tried to send a message in response to your command, but didn't have permission to speak. If you think this is an error, please contact the staff on your guild to give me the \`Send Messages\` permission.`);
-const channelNoPerms = TranslatableString.create(`core.utils.send.error.channelNoPerms`, `I tried to send a message in response to your command, but didn't have permission to see the channel. If you think this is an error, please contact the staff on your guild to give me the \`Read Messages\` permission.`);
-const embedNoPerms = TranslatableString.create(`core.utils.send.error.embedNoPerms`, `I don't have permission to embed links! This will break several of my commands. Please give me the \`Embed Links\` permission. Thanks!`);
-const sendErrorGuild = TranslatableString.define<{ channel: GuildChannel; message: IFormattable<string>; }, string>(`core.utils.send.error.guild`, `{message}\nGuild: {channel.guild.name} ({channel.guild.id})\nChannel: {channel.name} ({channel.id})\n\nIf you wish to stop seeing these messages, do the command \`dmerrors\`.`);
-const sendErrorDm = TranslatableString.define<{ channel: Channel; message: IFormattable<string>; }, string>(`core.utils.send.error.dm`, `{message}\nChannel: PRIVATE CHANNEL ({channel.id})\n\nIf you wish to stop seeing these messages, do the command \`dmerrors\`.`);
+const messageNoPerms = TranslatableString.create('core.utils.send.error.messageNoPerms', 'I tried to send a message in response to your command, but didn\'t have permission to speak. If you think this is an error, please contact the staff on your guild to give me the `Send Messages` permission.');
+const channelNoPerms = TranslatableString.create('core.utils.send.error.channelNoPerms', 'I tried to send a message in response to your command, but didn\'t have permission to see the channel. If you think this is an error, please contact the staff on your guild to give me the `Read Messages` permission.');
+const embedNoPerms = TranslatableString.create('core.utils.send.error.embedNoPerms', 'I don\'t have permission to embed links! This will break several of my commands. Please give me the `Embed Links` permission. Thanks!');
+const sendErrorGuild = TranslatableString.define<{ channel: GuildChannel; message: IFormattable<string>; }, string>('core.utils.send.error.guild', '{message}\nGuild: {channel.guild.name} ({channel.guild.id})\nChannel: {channel.name} ({channel.id})\n\nIf you wish to stop seeing these messages, do the command `dmerrors`.');
+const sendErrorDm = TranslatableString.define<{ channel: Channel; message: IFormattable<string>; }, string>('core.utils.send.error.dm', '{message}\nChannel: PRIVATE CHANNEL ({channel.id})\n\nIf you wish to stop seeing these messages, do the command `dmerrors`.');
 
 function findBest<T>(options: Iterable<T>, evaluator: (value: T) => number): T[] {
     const result = [];
@@ -825,10 +825,10 @@ const erisRequest = RequestHandler.prototype.request;
 RequestHandler.prototype.request = function (...args) {
     try {
         let url;
-        if (args[1].includes(`webhook`)) {
-            url = `/webhooks`;
+        if (args[1].includes('webhook')) {
+            url = '/webhooks';
         } else {
-            url = args[1].replace(/reactions\/.+(\/|$)/g, `reactions/_reaction/`).replace(/\d+/g, `_id`);
+            url = args[1].replace(/reactions\/.+(\/|$)/g, 'reactions/_reaction/').replace(/\d+/g, '_id');
         }
         metrics.httpsRequests.labels(args[0], url).inc();
     } catch (err: unknown) {

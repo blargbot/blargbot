@@ -13,22 +13,22 @@ const cmd = templates.commands.timeout;
 export class TimeoutCommand extends GuildCommand {
     public constructor() {
         super({
-            name: `timeout`,
+            name: 'timeout',
             category: CommandType.ADMIN,
             flags: [
-                { flag: `r`, word: `reason`, description: cmd.flags.reason },
-                { flag: `t`, word: `time`, description: cmd.flags.time }
+                { flag: 'r', word: 'reason', description: cmd.flags.reason },
+                { flag: 't', word: 'time', description: cmd.flags.time }
             ],
             definitions: [
                 {
-                    parameters: `{user:member+}`,
+                    parameters: '{user:member+}',
                     description: cmd.user.description,
                     execute: (ctx, [user], flags) => this.timeout(ctx, user.asMember, flags)
                 },
                 {
-                    parameters: `clear {user:member+}`,
+                    parameters: 'clear {user:member+}',
                     description: cmd.clear.description,
-                    execute: (ctx, [user], flags) => this.clearTimeout(ctx, user.asMember, flags.r?.merge().value ?? ``)
+                    execute: (ctx, [user], flags) => this.clearTimeout(ctx, user.asMember, flags.r?.merge().value ?? '')
                 }
             ]
         });
@@ -40,8 +40,8 @@ export class TimeoutCommand extends GuildCommand {
     }
 
     public async timeout(context: GuildCommandContext, member: Member, flags: FlagResult): Promise<CommandResult> {
-        const reason = flags.r?.merge().value ?? ``;
-        const duration = (flags.t !== undefined ? parse.duration(flags.t.merge().value) : undefined) ?? moment.duration(1, `d`);
+        const reason = flags.r?.merge().value ?? '';
+        const duration = (flags.t !== undefined ? parse.duration(flags.t.merge().value) : undefined) ?? moment.duration(1, 'd');
         const state = await context.cluster.moderation.timeouts.timeout(member, context.author, context.author, duration, literal(reason));
         return cmd.user.state[state]({ user: member.user });
     }

@@ -12,16 +12,16 @@ const cmd = templates.commands.changeLog;
 export class ChangelogCommand extends GuildCommand {
     public constructor() {
         super({
-            name: `changelog`,
+            name: 'changelog',
             category: CommandType.ADMIN,
             definitions: [
                 {
-                    parameters: `subscribe|sub|track`,
+                    parameters: 'subscribe|sub|track',
                     description: cmd.subscribe.description,
                     execute: (ctx) => this.addFollower(ctx)
                 },
                 {
-                    parameters: `unsubscribe|unsub|untrack`,
+                    parameters: 'unsubscribe|unsub|untrack',
                     description: cmd.unsubscribe.description,
                     execute: (ctx) => this.removeFollower(ctx)
                 }
@@ -53,7 +53,7 @@ export class ChangelogCommand extends GuildCommand {
 
     async #getCurrentSubscription(context: GuildCommandContext): Promise<Webhook | IFormattable<string> | undefined> {
         const self = context.channel.guild.members.get(context.discord.user.id);
-        if (self?.permissions.has(`manageWebhooks`) !== true)
+        if (self?.permissions.has('manageWebhooks') !== true)
             return cmd.errors.missingPermissions;
 
         const webhooks = await context.channel.guild.getWebhooks();

@@ -6,24 +6,24 @@ export class CommandsRoute extends BaseRoute {
     readonly #api: Api;
 
     public constructor(api: Api) {
-        super(`/commands`);
+        super('/commands');
 
         this.#api = api;
 
-        this.addRoute(`/`, {
+        this.addRoute('/', {
             get: () => this.listCommands()
-        }).addRoute(`/:commandName`, {
+        }).addRoute('/:commandName', {
             get: ({ request }) => this.getCommand(request.params.commandName)
         });
     }
 
     public async listCommands(): Promise<ApiResponse> {
-        const commands = await this.#api.worker.request(`getCommandList`, undefined);
+        const commands = await this.#api.worker.request('getCommandList', undefined);
         return this.ok(commands);
     }
 
     public async getCommand(name: string): Promise<ApiResponse> {
-        const command = await this.#api.worker.request(`getCommand`, name);
+        const command = await this.#api.worker.request('getCommand', name);
         if (command === undefined)
             return this.notFound();
         return this.ok(command);

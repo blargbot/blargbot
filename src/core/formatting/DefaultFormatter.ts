@@ -1,6 +1,6 @@
-import { IFormatter } from "@blargbot/domain/messages/types";
+import { IFormatter } from '@blargbot/domain/messages/types';
 
-import { IFormatStringCompiler } from "./FormatStringCompiler";
+import { IFormatStringCompiler } from './FormatStringCompiler';
 
 export class DefaultFormatter implements IFormatter {
     readonly #compiler: IFormatStringCompiler;

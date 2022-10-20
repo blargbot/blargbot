@@ -12,14 +12,14 @@ const cmd = templates.commands.unmute;
 export class UnmuteCommand extends GuildCommand {
     public constructor() {
         super({
-            name: `unmute`,
+            name: 'unmute',
             category: CommandType.ADMIN,
             flags: [
-                { flag: `r`, word: `reason`, description: cmd.flags.reason }
+                { flag: 'r', word: 'reason', description: cmd.flags.reason }
             ],
             definitions: [
                 {
-                    parameters: `{user:member+}`,
+                    parameters: '{user:member+}',
                     description: cmd.default.description,
                     execute: (ctx, [user], flags) => this.unmute(ctx, user.asMember, flags)
                 }
@@ -30,7 +30,7 @@ export class UnmuteCommand extends GuildCommand {
     public async unmute(context: GuildCommandContext, member: Member, flags: FlagResult): Promise<CommandResult> {
         const state = await context.cluster.moderation.mutes.unmute(member, context.author, literal(flags.r?.merge().value));
         const reason = cmd.default.state[state];
-        return typeof reason === `function`
+        return typeof reason === 'function'
             ? reason({ user: member.user })
             : reason;
     }

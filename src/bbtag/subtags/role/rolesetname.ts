@@ -8,16 +8,16 @@ import { SubtagType } from '../../utils';
 export class RoleSetNameSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: `rolesetname`,
+            name: 'rolesetname',
             category: SubtagType.ROLE,
             definition: [
                 {
-                    parameters: [`role`, `name`, `quiet?`],
-                    description: `Sets the name of \`role\`.If \`quiet\` is specified, if \`role\` can't be found it will simply return nothing`,
-                    exampleCode: `The admin role is now called administrator. {rolesetname;admin;administrator}`,
-                    exampleOut: `The admin role is now called administrator.`,
-                    returns: `nothing`, //TODO output like true/false
-                    execute: (ctx, [role, name, quiet]) => this.setRolename(ctx, role.value, name.value, quiet.value !== ``)
+                    parameters: ['role', 'name', 'quiet?'],
+                    description: 'Sets the name of `role`.If `quiet` is specified, if `role` can\'t be found it will simply return nothing',
+                    exampleCode: 'The admin role is now called administrator. {rolesetname;admin;administrator}',
+                    exampleOut: 'The admin role is now called administrator.',
+                    returns: 'nothing', //TODO output like true/false
+                    execute: (ctx, [role, name, quiet]) => this.setRolename(ctx, role.value, name.value, quiet.value !== '')
                 }
             ]
         });
@@ -31,7 +31,7 @@ export class RoleSetNameSubtag extends CompiledSubtag {
     ): Promise<void> {
         const topRole = context.roleEditPosition();
         if (topRole <= 0)
-            throw new BBTagRuntimeError(`Author cannot edit roles`);
+            throw new BBTagRuntimeError('Author cannot edit roles');
 
         quiet ||= context.scopes.local.quiet ?? false;
         const role = await context.queryRole(roleStr, { noLookup: quiet });
@@ -40,7 +40,7 @@ export class RoleSetNameSubtag extends CompiledSubtag {
             throw new RoleNotFoundError(roleStr);
 
         if (role.position >= topRole)
-            throw new BBTagRuntimeError(`Role above author`);
+            throw new BBTagRuntimeError('Role above author');
 
         try {
             await role.edit({ name }, context.auditReason());
@@ -51,7 +51,7 @@ export class RoleSetNameSubtag extends CompiledSubtag {
             if (quiet)
                 return;
 
-            throw new BBTagRuntimeError(`Failed to edit role: no perms`, err.message);
+            throw new BBTagRuntimeError('Failed to edit role: no perms', err.message);
         }
     }
 }

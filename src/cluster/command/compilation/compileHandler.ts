@@ -75,7 +75,7 @@ export function compileHandler<TContext extends CommandContext>(
                     case true:
                         args.push(arg.value);
                         break;
-                    case `deferred`: {
+                    case 'deferred': {
                         const result = await arg.getValue();
                         if (!result.success) {
                             state.addFailure(i, result.error);
@@ -114,11 +114,11 @@ function buildBindings<TContext extends CommandContext>(
     signatures: Iterable<CommandSignatureHandler<TContext>>,
     depth: number
 ): ReadonlyArray<Binding<CommandBinderState<TContext>>> {
-    const results = new Map<CommandParameter[`kind`] | `execute`, BindingBuilder<TContext>>();
+    const results = new Map<CommandParameter['kind'] | 'execute', BindingBuilder<TContext>>();
 
     for (const signature of signatures) {
         const parameter = signature.parameters[depth] as CommandParameter | undefined;
-        const key = parameter?.kind ?? `execute`;
+        const key = parameter?.kind ?? 'execute';
 
         let builder = results.get(key);
         if (builder === undefined)
@@ -136,23 +136,23 @@ function buildBindings<TContext extends CommandContext>(
 function getSortKey(parameter: CommandParameter | undefined): string {
     let kindOrder;
     switch (parameter?.kind) {
-        case undefined: return `9`;
-        case `literal`: return `0`;
-        case `singleVar`:
-            kindOrder = `1`;
+        case undefined: return '9';
+        case 'literal': return '0';
+        case 'singleVar':
+            kindOrder = '1';
             break;
-        case `concatVar`:
-            kindOrder = `2`;
+        case 'concatVar':
+            kindOrder = '2';
             break;
-        case `greedyVar`:
-            kindOrder = `3(${parameter.minLength.toString().padStart(10, `0`)})`;
+        case 'greedyVar':
+            kindOrder = `3(${parameter.minLength.toString().padStart(10, '0')})`;
             break;
     }
 
     return `1/${parameter.type.priority}/${kindOrder}/${parameter.raw ? 0 : 1}`;
 }
 
-const bindingBuilderMap: { [P in CommandParameter[`kind`] | `execute`]: <TContext extends CommandContext>(depth: number) => BindingBuilder<TContext> } = {
+const bindingBuilderMap: { [P in CommandParameter['kind'] | 'execute']: <TContext extends CommandContext>(depth: number) => BindingBuilder<TContext> } = {
     execute: createExecuteBindingBuilder,
     literal: createLiteralBindingBuilder,
     singleVar: createSingleVarBindingBuilder,
@@ -166,12 +166,12 @@ function createExecuteBindingBuilder<TContext extends CommandContext>(): Binding
     return {
         * create() {
             if (signature === undefined)
-                throw new Error(`No signature has been set`);
+                throw new Error('No signature has been set');
             yield { binding: new bindings.CommandHandlerBinding(signature), sort: getSortKey(undefined) };
         },
         add(_, s) {
             if (signature !== undefined)
-                throw new Error(`Duplicate handler found!`);
+                throw new Error('Duplicate handler found!');
             signature = s;
         }
     };
@@ -191,14 +191,14 @@ function createLiteralBindingBuilder<TContext extends CommandContext>(depth: num
         add(parameter, signature) {
             if (parameter === undefined)
                 return;
-            if (parameter.kind !== `literal`)
-                throw new Error(`Cannot merge a variable with a literal`);
+            if (parameter.kind !== 'literal')
+                throw new Error('Cannot merge a variable with a literal');
 
             (signatureMap[parameter.name] ??= new Set()).add(signature);
             for (const alias of parameter.alias)
                 (aliasMap[alias] ??= new Set()).add(parameter.name);
 
-            aggregateParameter ??= { kind: `literal`, alias: [], name: parameter.name };
+            aggregateParameter ??= { kind: 'literal', alias: [], name: parameter.name };
             aggregateParameter.alias.push(parameter.name, ...parameter.alias);
         }
     };
@@ -219,8 +219,8 @@ function createSingleVarBindingBuilder<TContext extends CommandContext>(depth: n
             if (parameter === undefined)
                 return;
 
-            if (parameter.kind !== `singleVar`)
-                throw new Error(`Can only merge single variables`);
+            if (parameter.kind !== 'singleVar')
+                throw new Error('Can only merge single variables');
 
             (parameters[getSortKey(parameter)] ??= { parameter, handlers: [] })
                 .handlers.push(signature);
@@ -243,8 +243,8 @@ function createConcatVarBindingBuilder<TContext extends CommandContext>(depth: n
             if (parameter === undefined)
                 return;
 
-            if (parameter.kind !== `concatVar`)
-                throw new Error(`Can only merge concat variables`);
+            if (parameter.kind !== 'concatVar')
+                throw new Error('Can only merge concat variables');
 
             (parameters[getSortKey(parameter)] ??= { parameter, handlers: [] })
                 .handlers.push(signature);
@@ -269,8 +269,8 @@ function createGreedyVarBindingBuilder<TContext extends CommandContext>(depth: n
             if (parameter === undefined)
                 return;
 
-            if (parameter.kind !== `greedyVar`)
-                throw new Error(`Can only merge greedy variables`);
+            if (parameter.kind !== 'greedyVar')
+                throw new Error('Can only merge greedy variables');
 
             const { handlers } = parameters[getSortKey(parameter)] ??= { parameter, handlers: {} };
             (handlers[parameter.minLength] ??= []).push(signature);

@@ -31,14 +31,14 @@ export class BaseRoute {
     #bindWebsocket(api: Api, path: string, handler: AsyncWebsocketHandler<this>): void {
         const wss = new WebSocketServer({
             noServer: true,
-            path: path.replace(/\/$/, ``)
+            path: path.replace(/\/$/, '')
         });
 
-        api.server.on(`upgrade`, (req, sock, head) =>
+        api.server.on('upgrade', (req, sock, head) =>
             wss.handleUpgrade(req, sock, head, (ws, req) =>
-                wss.emit(`connection`, ws, req)));
+                wss.emit('connection', ws, req)));
 
-        wss.on(`connection`, (socket, request) => {
+        wss.on('connection', (socket, request) => {
             void handler.call(this, { socket, request, api });
         });
     }
@@ -54,7 +54,7 @@ export class BaseRoute {
                     await this.unauthorized().execute(response);
                     return;
                 }
-                api.logger.error(`Error while handling`, request.originalUrl, err);
+                api.logger.error('Error while handling', request.originalUrl, err);
                 await this.internalServerError(err).execute(response);
             }
         });
@@ -100,7 +100,7 @@ export class BaseRoute {
         return {
             execute(res) {
                 if (contentType !== undefined)
-                    res.set(`Content-Type`, contentType);
+                    res.set('Content-Type', contentType);
                 res.status(status)
                     .send(body);
             }

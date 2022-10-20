@@ -12,11 +12,11 @@ const cmd = templates.commands.stats;
 export class StatsCommand extends GlobalCommand {
     public constructor() {
         super({
-            name: `stats`,
+            name: 'stats',
             category: CommandType.GENERAL,
             definitions: [
                 {
-                    parameters: ``,
+                    parameters: '',
                     description: cmd.default.description,
                     execute: (ctx) => this.getStats(ctx)
                 }
@@ -25,7 +25,7 @@ export class StatsCommand extends GlobalCommand {
     }
 
     public async getStats(context: CommandContext): Promise<CommandResult> {
-        const clusterStats = Object.values(await context.cluster.worker.request(`getClusterStats`, undefined));
+        const clusterStats = Object.values(await context.cluster.worker.request('getClusterStats', undefined));
         const mappedStats = { guilds: 0, users: 0, channels: 0, rss: 0 };
         clusterStats.forEach(c => {
             mappedStats.guilds += c?.guilds ?? 0;

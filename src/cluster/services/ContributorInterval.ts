@@ -2,11 +2,11 @@ import { Cluster } from '@blargbot/cluster';
 import { IntervalService } from '@blargbot/core/serviceTypes';
 
 export class ContributorInterval extends IntervalService {
-    public readonly type: string = `bbtag`;
+    public readonly type: string = 'bbtag';
     readonly #cluster: Cluster;
 
     public constructor(cluster: Cluster) {
-        super(1, `hour`, cluster.logger, true);
+        super(1, 'hour', cluster.logger, true);
         this.#cluster = cluster;
     }
 

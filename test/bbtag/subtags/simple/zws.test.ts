@@ -7,8 +7,8 @@ runSubtagTests({
     argCountBounds: { min: 0, max: 0 },
     cases: [
         {
-            code: `{zws}`,
-            expected: `\u200b`
+            code: '{zws}',
+            expected: '\u200b'
         }
     ]
 });

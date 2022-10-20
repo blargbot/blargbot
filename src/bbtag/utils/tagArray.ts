@@ -15,7 +15,7 @@ export const tagArray = Object.freeze({
         if (varName === undefined || varName.length === 0)
             return JSON.stringify(array);
         return JSON.stringify({
-            v: `v` in array ? array.v : undefined,
+            v: 'v' in array ? array.v : undefined,
             n: varName
         });
     },
@@ -25,7 +25,7 @@ export const tagArray = Object.freeze({
             value = value.replace(
                 /([[,]\s*)(\d+)\s*\.\.\.\s*(\d+)(\s*[\],])/gi,
                 (_, ...[before, from, to, after]: string[]) =>
-                    before + getRange(parse.int(from) ?? NaN, parse.int(to) ?? NaN).join(`,`) + after);
+                    before + getRange(parse.int(from) ?? NaN, parse.int(to) ?? NaN).join(',') + after);
             result = mapBBTagArrayOrJson(value);
         }
 
@@ -38,7 +38,7 @@ export const tagArray = Object.freeze({
     flattenArray(array: JArray): JArray {
         const result = [];
         for (const arg of array) {
-            const arr = typeof arg === `string` ? this.deserialize(arg) : undefined;
+            const arr = typeof arg === 'string' ? this.deserialize(arg) : undefined;
             if (arr !== undefined)
                 result.push(...arr.v);
             else if (Array.isArray(arg))
@@ -65,7 +65,7 @@ export const tagArray = Object.freeze({
             return obj.v;
 
         const arr = await context.variables.get(value);
-        if (Array.isArray(arr.value) || typeof arr.value === `string`)
+        if (Array.isArray(arr.value) || typeof arr.value === 'string')
             return arr.value;
 
         return undefined;

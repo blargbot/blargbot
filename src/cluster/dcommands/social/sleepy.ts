@@ -5,8 +5,8 @@ import templates from '../../text';
 
 export class SleepyCommand extends WolkenCommand {
     public constructor(cluster: Cluster) {
-        super(`sleepy`, {
-            search: `sleepy`,
+        super('sleepy', {
+            search: 'sleepy',
             ...templates.commands.sleepy,
             wolkeKey: cluster.config.general.wolke
         });

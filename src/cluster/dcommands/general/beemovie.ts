@@ -19,15 +19,15 @@ const scriptMap = script.reduce<{ characterLines: typeof script; allLines: typeo
 export class BeemovieCommand extends GlobalCommand {
     public constructor() {
         super({
-            name: `beemovie`,
+            name: 'beemovie',
             category: CommandType.GENERAL,
             flags: [
-                { flag: `n`, word: `name`, description: cmd.flags.name },
-                { flag: `c`, word: `characters`, description: cmd.flags.characters }
+                { flag: 'n', word: 'name', description: cmd.flags.name },
+                { flag: 'c', word: 'characters', description: cmd.flags.characters }
             ],
             definitions: [
                 {
-                    parameters: ``,
+                    parameters: '',
                     description: cmd.default.description,
                     execute: (ctx, _, flags) => this.getQuote(ctx, flags.n !== undefined, flags.c !== undefined)
                 }
@@ -36,7 +36,7 @@ export class BeemovieCommand extends GlobalCommand {
     }
 
     public getQuote(context: CommandContext, showName: boolean, charactersOnly: boolean): CommandResult {
-        const lines = scriptMap[charactersOnly ? `characterLines` : `allLines`];
+        const lines = scriptMap[charactersOnly ? 'characterLines' : 'allLines'];
         const line = randChoose(lines);
 
         if (showName && line.actor !== undefined)

@@ -11,21 +11,21 @@ const cmd = templates.commands.modLog;
 export class ModlogCommand extends GuildCommand {
     public constructor() {
         super({
-            name: `modlog`,
+            name: 'modlog',
             category: CommandType.ADMIN,
             definitions: [
                 {
-                    parameters: `{channel:channel+?}`,
+                    parameters: '{channel:channel+?}',
                     description: cmd.setChannel.description,
                     execute: (ctx, [channel]) => this.setChannel(ctx, channel.asOptionalChannel ?? ctx.channel)
                 },
                 {
-                    parameters: `disable`,
+                    parameters: 'disable',
                     description: cmd.disable.description,
                     execute: ctx => this.setChannel(ctx, undefined)
                 },
                 {
-                    parameters: `clear|delete {ids:integer[0]}`,
+                    parameters: 'clear|delete {ids:integer[0]}',
                     description: cmd.clear.description,
                     execute: (ctx, [ids]) => this.clearModlog(ctx, ids.asIntegers)
                 }
@@ -39,7 +39,7 @@ export class ModlogCommand extends GuildCommand {
         if (channel !== undefined && !guard.isTextableChannel(channel))
             return cmd.setChannel.notTextChannel;
 
-        await context.database.guilds.setSetting(context.channel.guild.id, `modlog`, channel?.id);
+        await context.database.guilds.setSetting(context.channel.guild.id, 'modlog', channel?.id);
 
         return channel === undefined
             ? cmd.disable.success
@@ -52,7 +52,7 @@ export class ModlogCommand extends GuildCommand {
         if (modlogs === undefined || modlogs.length === 0)
             return cmd.clear.notFound;
 
-        const modlogChanel = await context.database.guilds.getSetting(context.channel.guild.id, `modlog`);
+        const modlogChanel = await context.database.guilds.getSetting(context.channel.guild.id, 'modlog');
         const missingChannel: number[] = [];
         const missingMessage: number[] = [];
         const noperms: number[] = [];

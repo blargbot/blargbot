@@ -18,9 +18,9 @@ export class EventLogManager {
     }
 
     public async userTimedOut(member: Member): Promise<void> {
-        const channel = await this.#getLogChannel(`membertimeout`, member.guild.id);
+        const channel = await this.#getLogChannel('membertimeout', member.guild.id);
         if (channel !== undefined && !await this.#isExempt(member.guild.id, member.user.id) && member.communicationDisabledUntil !== null) {
-            await this.#logEvent(`membertimeout`, channel, this.#eventLogEmbed(templates.eventLog.events.timeoutAdded, member.user, ModlogColour.TIMEOUT, {
+            await this.#logEvent('membertimeout', channel, this.#eventLogEmbed(templates.eventLog.events.timeoutAdded, member.user, ModlogColour.TIMEOUT, {
                 fields: [
                     {
                         name: templates.eventLog.embed.field.until.name,
@@ -33,19 +33,19 @@ export class EventLogManager {
     }
 
     public async userTimeoutCleared(member: Member): Promise<void> {
-        const channel = await this.#getLogChannel(`membertimeoutclear`, member.guild.id);
+        const channel = await this.#getLogChannel('membertimeoutclear', member.guild.id);
         if (channel === undefined || await this.#isExempt(member.guild.id, member.id))
             return;
 
         const now = moment();
         const auditEvents = await tryGetAuditLogs(member.guild, 50, undefined, AuditLogActionType.MEMBER_UPDATE);
         const audit = auditEvents?.entries.find(e => e.targetID === member.id
-            && moment(e.createdAt).isAfter(now.add(-1, `second`))
+            && moment(e.createdAt).isAfter(now.add(-1, 'second'))
             && (e.after?.communicationDisabledUntil === null || (e.after?.communicationDisabledUntil as number) < (e.before?.communicationDisabledUntil as number)));
         const reason = audit?.reason ?? undefined;
         const moderator = audit?.user ?? undefined;
 
-        await this.#logEvent(`membertimeoutclear`, channel, this.#eventLogEmbed(templates.eventLog.events.timeoutRemoved, member.user, ModlogColour.TIMEOUTCLEAR, {
+        await this.#logEvent('membertimeoutclear', channel, this.#eventLogEmbed(templates.eventLog.events.timeoutRemoved, member.user, ModlogColour.TIMEOUTCLEAR, {
             fields: [
                 ...moderator !== undefined ? [{
                     name: templates.eventLog.embed.field.updatedBy.name,
@@ -60,21 +60,21 @@ export class EventLogManager {
     }
 
     public async userBanned(guild: Guild, user: User): Promise<void> {
-        const channel = await this.#getLogChannel(`memberban`, guild.id);
+        const channel = await this.#getLogChannel('memberban', guild.id);
         if (channel !== undefined && !await this.#isExempt(guild.id, user.id))
-            await this.#logEvent(`memberban`, channel, this.#eventLogEmbed(templates.eventLog.events.banned, user, ModlogColour.BAN));
+            await this.#logEvent('memberban', channel, this.#eventLogEmbed(templates.eventLog.events.banned, user, ModlogColour.BAN));
     }
 
     public async userUnbanned(guild: Guild, user: User): Promise<void> {
-        const channel = await this.#getLogChannel(`memberunban`, guild.id);
+        const channel = await this.#getLogChannel('memberunban', guild.id);
         if (channel !== undefined && !await this.#isExempt(guild.id, user.id))
-            await this.#logEvent(`memberunban`, channel, this.#eventLogEmbed(templates.eventLog.events.unbanned, user, ModlogColour.UNBAN));
+            await this.#logEvent('memberunban', channel, this.#eventLogEmbed(templates.eventLog.events.unbanned, user, ModlogColour.UNBAN));
     }
 
     public async userJoined(member: Member): Promise<void> {
-        const channel = await this.#getLogChannel(`memberjoin`, member.guild.id);
+        const channel = await this.#getLogChannel('memberjoin', member.guild.id);
         if (channel !== undefined && !await this.#isExempt(member.guild.id, member.user.id)) {
-            await this.#logEvent(`memberjoin`, channel, this.#eventLogEmbed(templates.eventLog.events.joined, member.user, 0x1ad8bc, {
+            await this.#logEvent('memberjoin', channel, this.#eventLogEmbed(templates.eventLog.events.joined, member.user, 0x1ad8bc, {
                 fields: [
                     {
                         name: templates.eventLog.embed.field.created.name,
@@ -87,20 +87,20 @@ export class EventLogManager {
     }
 
     public async userLeft(member: Member): Promise<void> {
-        const channel = await this.#getLogChannel(`memberleave`, member.guild.id);
+        const channel = await this.#getLogChannel('memberleave', member.guild.id);
         if (channel !== undefined && !await this.#isExempt(member.guild.id, member.user.id))
-            await this.#logEvent(`memberleave`, channel, this.#eventLogEmbed(templates.eventLog.events.left, member.user, 0xd8761a));
+            await this.#logEvent('memberleave', channel, this.#eventLogEmbed(templates.eventLog.events.left, member.user, 0xd8761a));
     }
 
     public async messagesDeleted(messages: readonly PossiblyUncachedMessage[]): Promise<void> {
         if (messages.length === 0)
             return;
 
-        const guildId = `guild` in messages[0].channel ? messages[0].channel.guild?.id : undefined;
+        const guildId = 'guild' in messages[0].channel ? messages[0].channel.guild?.id : undefined;
         if (guildId === undefined)
             return;
 
-        const logChannel = await this.#getLogChannel(`messagedelete`, guildId);
+        const logChannel = await this.#getLogChannel('messagedelete', guildId);
         if (logChannel === undefined)
             return;
 
@@ -110,7 +110,7 @@ export class EventLogManager {
             return;
 
         await Promise.all(details.map(d => this.#logMessageDeleted(guildId, d, logChannel)));
-        await this.#logEvent(`messagedelete`, logChannel, this.#eventLogEmbed(templates.eventLog.events.messageDeleted, undefined, 0xaf1d1d, {
+        await this.#logEvent('messagedelete', logChannel, this.#eventLogEmbed(templates.eventLog.events.messageDeleted, undefined, 0xaf1d1d, {
             description: templates.eventLog.embed.description.bulkDelete,
             fields: [
                 {
@@ -128,11 +128,11 @@ export class EventLogManager {
     }
 
     public async messageDeleted(message: PossiblyUncachedMessage): Promise<void> {
-        const guildId = `guild` in message.channel ? message.channel.guild?.id : undefined;
+        const guildId = 'guild' in message.channel ? message.channel.guild?.id : undefined;
         if (guildId === undefined)
             return;
 
-        const logChannel = await this.#getLogChannel(`messagedelete`, guildId);
+        const logChannel = await this.#getLogChannel('messagedelete', guildId);
         if (logChannel === undefined)
             return;
 
@@ -148,7 +148,7 @@ export class EventLogManager {
         if (guildId === undefined)
             return;
 
-        const logChannel = await this.#getLogChannel(`messageupdate`, guildId);
+        const logChannel = await this.#getLogChannel('messageupdate', guildId);
         if (logChannel === undefined || await this.#isExempt(guildId, message.author.id))
             return;
 
@@ -170,11 +170,11 @@ export class EventLogManager {
                     value: templates.eventLog.embed.field.channel.value({ channelIds: [message.channel.id] }),
                     inline: true
                 },
-                await this.#getContentEmbedField(guildId, `old`, oldContent, lastUpdate),
-                await this.#getContentEmbedField(guildId, `new`, message.content, lastUpdate)
+                await this.#getContentEmbedField(guildId, 'old', oldContent, lastUpdate),
+                await this.#getContentEmbedField(guildId, 'new', message.content, lastUpdate)
             ]
         });
-        await this.#logEvent(`messageupdate`, logChannel, embed);
+        await this.#logEvent('messageupdate', logChannel, embed);
     }
 
     public async roleRemoved(member: Member, roleId: string): Promise<void> {
@@ -184,7 +184,7 @@ export class EventLogManager {
 
         const now = moment();
         const auditEvents = await tryGetAuditLogs(member.guild, 50, undefined, AuditLogActionType.MEMBER_ROLE_UPDATE);
-        const audit = auditEvents?.entries.find(e => e.targetID === member.id && moment(e.createdAt).isAfter(now.add(-1, `second`)));
+        const audit = auditEvents?.entries.find(e => e.targetID === member.id && moment(e.createdAt).isAfter(now.add(-1, 'second')));
         const reason = audit?.reason ?? undefined;
         const moderator = audit?.user ?? undefined;
         await this.#logEvent(`role:${roleId}`, channel, this.#eventLogEmbed(templates.eventLog.events.roleRemoved, member.user, 0, {
@@ -212,7 +212,7 @@ export class EventLogManager {
 
         const now = moment();
         const auditEvents = await tryGetAuditLogs(member.guild, 50, undefined, AuditLogActionType.MEMBER_ROLE_UPDATE);
-        const audit = auditEvents?.entries.find(e => e.targetID === member.id && moment(e.createdAt).isAfter(now.add(-1, `second`)));
+        const audit = auditEvents?.entries.find(e => e.targetID === member.id && moment(e.createdAt).isAfter(now.add(-1, 'second')));
         const reason = audit?.reason ?? undefined;
         const moderator = audit?.user ?? undefined;
         await this.#logEvent(`role:${roleId}`, channel, this.#eventLogEmbed(templates.eventLog.events.roleAdded, member.user, 0, {
@@ -234,9 +234,9 @@ export class EventLogManager {
     }
 
     public async nicknameUpdated(member: Member, oldNickname: string | undefined): Promise<void> {
-        const channel = await this.#getLogChannel(`nickupdate`, member.guild.id);
+        const channel = await this.#getLogChannel('nickupdate', member.guild.id);
         if (channel !== undefined && !await this.#isExempt(member.guild.id, member.user.id)) {
-            await this.#logEvent(`nickupdate`, channel, this.#eventLogEmbed(templates.eventLog.events.nicknameUpdated, member.user, 0xd8af1a, {
+            await this.#logEvent('nickupdate', channel, this.#eventLogEmbed(templates.eventLog.events.nicknameUpdated, member.user, 0xd8af1a, {
                 fields: [
                     {
                         name: templates.eventLog.embed.field.oldNickname.name,
@@ -280,9 +280,9 @@ export class EventLogManager {
             this.#cluster.discord.guilds
                 .filter(g => g.members.get(user.id) !== undefined)
                 .map(async guild => {
-                    const channel = await this.#getLogChannel(`nameupdate`, guild.id);
+                    const channel = await this.#getLogChannel('nameupdate', guild.id);
                     if (channel !== undefined && !await this.#isExempt(guild.id, user.id))
-                        await this.#logEvent(`nameupdate`, channel, embed);
+                        await this.#logEvent('nameupdate', channel, embed);
                 })
         );
     }
@@ -298,28 +298,28 @@ export class EventLogManager {
             this.#cluster.discord.guilds
                 .filter(g => g.members.get(user.id) !== undefined)
                 .map(async guild => {
-                    const channel = await this.#getLogChannel(`avatarupdate`, guild.id);
+                    const channel = await this.#getLogChannel('avatarupdate', guild.id);
                     if (channel !== undefined && !await this.#isExempt(guild.id, user.id))
-                        await this.#logEvent(`avatarupdate`, channel, embed);
+                        await this.#logEvent('avatarupdate', channel, embed);
                 })
         );
     }
 
-    async #getContentEmbedField(guildId: string, name: `old` | `new` | `current`, content: string | undefined, timestamp: Moment | undefined): Promise<FormatEmbedField<IFormattable<string>>> {
+    async #getContentEmbedField(guildId: string, name: 'old' | 'new' | 'current', content: string | undefined, timestamp: Moment | undefined): Promise<FormatEmbedField<IFormattable<string>>> {
         const names = templates.eventLog.embed.field.content.name[name];
         const values = templates.eventLog.embed.field.content.value;
 
         switch (content) {
             case undefined: {
-                if (await this.#cluster.database.guilds.getSetting(guildId, `makelogs`) !== true)
+                if (await this.#cluster.database.guilds.getSetting(guildId, 'makelogs') !== true)
                     return { name: names.unavailable, value: values.chatLogsOff };
                 if (timestamp === undefined)
                     return { name: names.unavailable, value: values.unknown };
-                if (timestamp.add(2, `weeks`).isAfter(moment()))
+                if (timestamp.add(2, 'weeks').isAfter(moment()))
                     return { name: names.unavailable, value: values.expired };
                 return { name: names.unavailable, value: values.notLogged };
             }
-            case ``:
+            case '':
                 return { name: names.empty, value: values.empty };
             default:
                 return { name: names.default, value: values.default({ content }) };
@@ -339,15 +339,15 @@ export class EventLogManager {
                     value: templates.eventLog.embed.field.channel.value({ channelIds: [message.channelId] }),
                     inline: true
                 },
-                await this.#getContentEmbedField(guildId, `current`, message.content, undefined)
+                await this.#getContentEmbedField(guildId, 'current', message.content, undefined)
             ]
         });
 
-        await this.#logEvent(`messagedelete`, logChannel, embed);
+        await this.#logEvent('messagedelete', logChannel, embed);
     }
 
     async #getMessageDetails(message: KnownMessage | { id: string; channel: { id: string; }; }): Promise<MessageDetails> {
-        if (`content` in message)
+        if ('content' in message)
             return { ...message, authorId: message.author.id, channelId: message.channel.id };
 
         const chatlog = await this.#cluster.database.chatlogs.getByMessageId(message.id);
@@ -417,8 +417,8 @@ export class EventLogManager {
 
 function toEmbedAuthor(util: BaseUtilities, user: User | undefined): FormatEmbedAuthor<IFormattable<string>> | undefined {
     switch (typeof user) {
-        case `undefined`: return undefined;
-        case `object`: return util.embedifyAuthor(user, true);
+        case 'undefined': return undefined;
+        case 'object': return util.embedifyAuthor(user, true);
     }
 }
 

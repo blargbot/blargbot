@@ -11,15 +11,15 @@ const cmd = templates.commands.patch;
 export class PatchCommand extends GlobalCommand {
     public constructor() {
         super({
-            name: `patch`,
+            name: 'patch',
             category: CommandType.DEVELOPER,
             flags: [
-                { flag: `f`, word: `fixes`, description: cmd.flags.fixes },
-                { flag: `n`, word: `notes`, description: cmd.flags.notes }
+                { flag: 'f', word: 'fixes', description: cmd.flags.fixes },
+                { flag: 'n', word: 'notes', description: cmd.flags.notes }
             ],
             definitions: [
                 {
-                    parameters: `{features+?}`,
+                    parameters: '{features+?}',
                     description: cmd.default.description,
                     execute: (ctx, [features], flags) => this.patch(ctx, features.asOptionalString, flags.f?.merge().raw, flags.n?.merge().raw)
                 }

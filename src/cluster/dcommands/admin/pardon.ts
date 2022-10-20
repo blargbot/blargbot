@@ -12,15 +12,15 @@ const cmd = templates.commands.pardon;
 export class PardonCommand extends GuildCommand {
     public constructor() {
         super({
-            name: `pardon`,
+            name: 'pardon',
             category: CommandType.ADMIN,
             flags: [
-                { flag: `r`, word: `reason`, description: cmd.flags.reason },
-                { flag: `c`, word: `count`, description: cmd.flags.count }
+                { flag: 'r', word: 'reason', description: cmd.flags.reason },
+                { flag: 'c', word: 'count', description: cmd.flags.count }
             ],
             definitions: [
                 {
-                    parameters: `{user:member+}`,
+                    parameters: '{user:member+}',
                     description: cmd.default.description,
                     execute: (ctx, [user], flags) => this.pardon(ctx, user.asMember, flags)
                 }
@@ -34,8 +34,8 @@ export class PardonCommand extends GuildCommand {
 
         const { state, warnings } = await context.cluster.moderation.warns.pardon(member, context.author, count, literal(reason));
         const result = cmd.default.state[state];
-        return typeof result === `function`
-            ? result({ text: flags.c?.merge().value ?? ``, user: member.user, count, warnings })
+        return typeof result === 'function'
+            ? result({ text: flags.c?.merge().value ?? '', user: member.user, count, warnings })
             : result;
     }
 }

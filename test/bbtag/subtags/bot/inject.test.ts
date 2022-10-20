@@ -11,31 +11,31 @@ runSubtagTests({
     argCountBounds: { min: 1, max: 1 },
     cases: [
         {
-            code: `{inject;{lb}assert{rb}}`,
+            code: '{inject;{lb}assert{rb}}',
             subtags: [new LbSubtag(), new RbSubtag(), new AssertSubtag(ctx => {
                 expect(ctx.parent).to.be.undefined;
                 expect(ctx.data.stackSize).to.equal(123);
-                return `Inject successful`;
+                return 'Inject successful';
             })],
-            expected: `Inject successful`,
+            expected: 'Inject successful',
             setup(ctx) {
                 ctx.options.data = { stackSize: 122 };
             }
         },
         {
-            code: `{inject;{lb}fail}`,
+            code: '{inject;{lb}fail}',
             subtags: [new LbSubtag()],
-            expected: `\`Unmatched '{' at 0\``,
+            expected: '`Unmatched \'{\' at 0`',
             errors: [
-                { start: 0, end: 17, error: new BBTagRuntimeError(`Unmatched '{' at 0`) }
+                { start: 0, end: 17, error: new BBTagRuntimeError('Unmatched \'{\' at 0') }
             ]
         },
         {
-            code: `{inject;fail{rb}}`,
+            code: '{inject;fail{rb}}',
             subtags: [new RbSubtag()],
-            expected: `\`Unexpected '}' at 4\``,
+            expected: '`Unexpected \'}\' at 4`',
             errors: [
-                { start: 0, end: 17, error: new BBTagRuntimeError(`Unexpected '}' at 4`) }
+                { start: 0, end: 17, error: new BBTagRuntimeError('Unexpected \'}\' at 4') }
             ]
         }
     ]

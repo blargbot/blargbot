@@ -6,10 +6,10 @@ runSubtagTests({
     subtag: new MaxSubtag(),
     argCountBounds: { min: 1, max: Infinity },
     cases: [
-        { code: `{max;1;2;3;4;5}`, expected: `5` },
-        { code: `{max;5;4;3;2;1}`, expected: `5` },
-        { code: `{max;16;-1000;32;5;31}`, expected: `32` },
-        { code: `{max;[1,"2",3,4];5;[6,7,"8"]}`, expected: `8` },
-        { code: `{max;[1,"2",3,4];5;["abc",6,7,"8"]}`, expected: `NaN` }
+        { code: '{max;1;2;3;4;5}', expected: '5' },
+        { code: '{max;5;4;3;2;1}', expected: '5' },
+        { code: '{max;16;-1000;32;5;31}', expected: '32' },
+        { code: '{max;[1,"2",3,4];5;[6,7,"8"]}', expected: '8' },
+        { code: '{max;[1,"2",3,4];5;["abc",6,7,"8"]}', expected: 'NaN' }
     ]
 });

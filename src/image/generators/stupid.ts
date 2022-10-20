@@ -3,9 +3,9 @@ import { ImageWorker } from '@blargbot/image/ImageWorker';
 import { ImageResult, StupidOptions } from '@blargbot/image/types';
 import sharp from 'sharp';
 
-export class StupidGenerator extends BaseImageGenerator<`stupid`> {
+export class StupidGenerator extends BaseImageGenerator<'stupid'> {
     public constructor(worker: ImageWorker) {
-        super(`stupid`, worker);
+        super('stupid', worker);
     }
 
     public async execute({ text, avatar }: StupidOptions): Promise<ImageResult> {
@@ -13,21 +13,21 @@ export class StupidGenerator extends BaseImageGenerator<`stupid`> {
         if (avatar !== undefined) {
             const avatarImg = sharp(await this.getRemote(avatar)).ensureAlpha();
             const smallAvatar = avatarImg.clone().resize(74, 74);
-            const bigAvatar = avatarImg.clone().resize(171, 171).rotate(18, { background: `transparent` });
+            const bigAvatar = avatarImg.clone().resize(171, 171).rotate(18, { background: 'transparent' });
             overlays.push(
                 { input: await smallAvatar.toBuffer(), left: 166, top: 131 },
                 { input: await bigAvatar.toBuffer(), left: 277, top: 32 }
             );
         }
 
-        const result = sharp(this.getLocalPath(`stupid.png`))
+        const result = sharp(this.getLocalPath('stupid.png'))
             .composite([
                 ...overlays,
                 {
                     input: await this.renderText(text, {
-                        font: `ARCENA.ttf`,
-                        fill: `black`,
-                        outline: [`white`, 2.5],
+                        font: 'ARCENA.ttf',
+                        fill: 'black',
+                        outline: ['white', 2.5],
                         width: 272,
                         height: 60
                     }),
@@ -38,7 +38,7 @@ export class StupidGenerator extends BaseImageGenerator<`stupid`> {
 
         return {
             data: await result.png().toBuffer(),
-            fileName: `stupid.png`
+            fileName: 'stupid.png'
         };
     }
 }

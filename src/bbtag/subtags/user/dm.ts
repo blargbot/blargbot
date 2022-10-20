@@ -10,23 +10,23 @@ export class DMSubtag extends CompiledSubtag {
 
     public constructor() {
         super({
-            name: `dm`,
+            name: 'dm',
             category: SubtagType.USER,
             definition: [
                 {
-                    parameters: [`user`, `message|embed`],
-                    description: `DMs \`user\` the given \`message|embed\`. If \`message|embed\` is a valid embed, it will be treated as embed. You may only send one DM per execution. Requires author to be staff, and the user to be on the current guild.\nPlease note that \`embed\` is the JSON for an embed object, don't put the \`{embed}\` subtag there, as nothing will show.`,
-                    exampleCode: `{dm;stupid cat;Hello;{embedbuild;title:You're cool}}`,
-                    exampleOut: `DM: Hello\nEmbed: You're cool`,
-                    returns: `nothing`,
+                    parameters: ['user', 'message|embed'],
+                    description: 'DMs `user` the given `message|embed`. If `message|embed` is a valid embed, it will be treated as embed. You may only send one DM per execution. Requires author to be staff, and the user to be on the current guild.\nPlease note that `embed` is the JSON for an embed object, don\'t put the `{embed}` subtag there, as nothing will show.',
+                    exampleCode: '{dm;stupid cat;Hello;{embedbuild;title:You\'re cool}}',
+                    exampleOut: 'DM: Hello\nEmbed: You\'re cool',
+                    returns: 'nothing',
                     execute: (ctx, [user, content]) => this.sendDm(ctx, user.value, content.value, undefined)
                 },
                 {
-                    parameters: [`user`, `message`, `embed`],
-                    description: `DMs \`user\` the given \`message\` and \`embed\`. You may only send one DM per execution. Requires author to be staff, and the user to be on the current guild.\nPlease note that \`embed\` is the JSON for an embed object, don't put the \`{embed}\` subtag there, as nothing will show.`,
-                    exampleCode: `{dm;stupid cat;Hello;{embedbuild;title:You're cool}}`,
-                    exampleOut: `DM: Hello\nEmbed: You're cool`,
-                    returns: `nothing`,
+                    parameters: ['user', 'message', 'embed'],
+                    description: 'DMs `user` the given `message` and `embed`. You may only send one DM per execution. Requires author to be staff, and the user to be on the current guild.\nPlease note that `embed` is the JSON for an embed object, don\'t put the `{embed}` subtag there, as nothing will show.',
+                    exampleCode: '{dm;stupid cat;Hello;{embedbuild;title:You\'re cool}}',
+                    exampleOut: 'DM: Hello\nEmbed: You\'re cool',
+                    returns: 'nothing',
                     execute: (ctx, [user, message, embed]) => this.sendDm(ctx, user.value, message.value, embed.value)
                 }
             ]
@@ -65,8 +65,8 @@ export class DMSubtag extends CompiledSubtag {
                 : await context.util.send(channel, { content: context.data.nsfw });
             cache.count++;
         } catch (e: unknown) {
-            context.logger.error(`DM failed`, e);
-            throw new BBTagRuntimeError(`Could not send DM`);
+            context.logger.error('DM failed', e);
+            throw new BBTagRuntimeError('Could not send DM');
         }
     }
 }

@@ -10,168 +10,168 @@ runSubtagTests({
     argCountBounds: { min: 0, max: 2 },
     cases: [
         ...createGetUserPropTestCases({
-            quiet: ``,
+            quiet: '',
             generateCode(...args) {
-                return `{${[`useractivitytype`, ...args].join(`;`)}}`;
+                return `{${['useractivitytype', ...args].join(';')}}`;
             },
             cases: [
                 {
-                    expected: `playing`,
+                    expected: 'playing',
                     postSetup(member) {
                         member.update({
                             activities: [{
                                 created_at: moment().unix(),
-                                name: `My test game`,
+                                name: 'My test game',
                                 type: ActivityType.Playing
                             }]
                         });
                     }
                 },
                 {
-                    expected: `listening`,
+                    expected: 'listening',
                     postSetup(member) {
                         member.update({
                             activities: [{
                                 created_at: moment().unix(),
-                                name: `Some cool music`,
+                                name: 'Some cool music',
                                 type: ActivityType.Listening
                             }]
                         });
                     }
                 },
                 {
-                    expected: `competing`,
+                    expected: 'competing',
                     postSetup(member) {
                         member.update({
                             activities: [{
                                 created_at: moment().unix(),
-                                name: `Some cool music`,
+                                name: 'Some cool music',
                                 type: ActivityType.Competing
                             }]
                         });
                     }
                 },
                 {
-                    expected: `custom`,
+                    expected: 'custom',
                     postSetup(member) {
                         member.update({
                             activities: [{
                                 created_at: moment().unix(),
-                                name: `Some cool music`,
+                                name: 'Some cool music',
                                 type: ActivityType.Custom
                             }]
                         });
                     }
                 },
                 {
-                    expected: `streaming`,
+                    expected: 'streaming',
                     postSetup(member) {
                         member.update({
                             activities: [{
                                 created_at: moment().unix(),
-                                name: `Some cool music`,
+                                name: 'Some cool music',
                                 type: ActivityType.Streaming
                             }]
                         });
                     }
                 },
                 {
-                    expected: `watching`,
+                    expected: 'watching',
                     postSetup(member) {
                         member.update({
                             activities: [{
                                 created_at: moment().unix(),
-                                name: `Some cool music`,
+                                name: 'Some cool music',
                                 type: ActivityType.Watching
                             }]
                         });
                     }
                 },
                 {
-                    expected: ``
+                    expected: ''
                 }
             ]
         }),
         ...createGetUserPropTestCases({
-            quiet: ``,
+            quiet: '',
             generateCode(...args) {
-                return `{${[`usergametype`, ...args].join(`;`)}}`;
+                return `{${['usergametype', ...args].join(';')}}`;
             },
             cases: [
                 {
-                    expected: `playing`,
+                    expected: 'playing',
                     postSetup(member) {
                         member.update({
                             activities: [{
                                 created_at: moment().unix(),
-                                name: `My test game`,
+                                name: 'My test game',
                                 type: ActivityType.Playing
                             }]
                         });
                     }
                 },
                 {
-                    expected: `listening`,
+                    expected: 'listening',
                     postSetup(member) {
                         member.update({
                             activities: [{
                                 created_at: moment().unix(),
-                                name: `Some cool music`,
+                                name: 'Some cool music',
                                 type: ActivityType.Listening
                             }]
                         });
                     }
                 },
                 {
-                    expected: `competing`,
+                    expected: 'competing',
                     postSetup(member) {
                         member.update({
                             activities: [{
                                 created_at: moment().unix(),
-                                name: `Some cool music`,
+                                name: 'Some cool music',
                                 type: ActivityType.Competing
                             }]
                         });
                     }
                 },
                 {
-                    expected: `custom`,
+                    expected: 'custom',
                     postSetup(member) {
                         member.update({
                             activities: [{
                                 created_at: moment().unix(),
-                                name: `Some cool music`,
+                                name: 'Some cool music',
                                 type: ActivityType.Custom
                             }]
                         });
                     }
                 },
                 {
-                    expected: `streaming`,
+                    expected: 'streaming',
                     postSetup(member) {
                         member.update({
                             activities: [{
                                 created_at: moment().unix(),
-                                name: `Some cool music`,
+                                name: 'Some cool music',
                                 type: ActivityType.Streaming
                             }]
                         });
                     }
                 },
                 {
-                    expected: `watching`,
+                    expected: 'watching',
                     postSetup(member) {
                         member.update({
                             activities: [{
                                 created_at: moment().unix(),
-                                name: `Some cool music`,
+                                name: 'Some cool music',
                                 type: ActivityType.Watching
                             }]
                         });
                     }
                 },
                 {
-                    expected: ``
+                    expected: ''
                 }
             ]
         })

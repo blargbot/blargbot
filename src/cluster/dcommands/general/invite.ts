@@ -9,12 +9,12 @@ const cmd = templates.commands.invite;
 export class InviteCommand extends GlobalCommand {
     public constructor() {
         super({
-            name: `invite`,
-            aliases: [`join`],
+            name: 'invite',
+            aliases: ['join'],
             category: CommandType.GENERAL,
             definitions: [
                 {
-                    parameters: ``,
+                    parameters: '',
                     description: cmd.default.description,
                     execute: (ctx) => this.invite(ctx)
                 }
@@ -24,8 +24,8 @@ export class InviteCommand extends GlobalCommand {
 
     public invite(context: CommandContext): CommandResult {
         return cmd.default.success({
-            inviteLink: context.util.websiteLink(`invite`),
-            guildLink: `https://discord.gg/015GVxZxI8rtlJgXF`
+            inviteLink: context.util.websiteLink('invite'),
+            guildLink: 'https://discord.gg/015GVxZxI8rtlJgXF'
         });
     }
 }

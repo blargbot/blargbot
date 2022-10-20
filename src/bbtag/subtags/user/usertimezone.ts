@@ -6,24 +6,24 @@ import { SubtagType } from '../../utils';
 export class UserTimezoneSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: `usertimezone`,
+            name: 'usertimezone',
             category: SubtagType.USER,
             definition: [
                 {
                     parameters: [],
-                    description: `Returns the set timezone of the user executing the containing tag.`,
-                    exampleCode: `{usertimezone}`,
-                    exampleOut: `UTC`,
-                    returns: `string`,
-                    execute: ctx => this.getUserTimezone(ctx, ``, false)
+                    description: 'Returns the set timezone of the user executing the containing tag.',
+                    exampleCode: '{usertimezone}',
+                    exampleOut: 'UTC',
+                    returns: 'string',
+                    execute: ctx => this.getUserTimezone(ctx, '', false)
                 },
                 {
-                    parameters: [`user`, `quiet?`],
-                    description: `Returns the set timezone code of the specified \`user\`. If \`quiet\` is specified, if \`user\` can't be found it will simply return nothing.If the user has no set timezone, the output will be UTC.`,
-                    exampleCode: `Discord official's timezone is {usertimezone;Discord official}`,
-                    exampleOut: `Discord official's timezone is Europe/Berlin`,
-                    returns: `string`,
-                    execute: (ctx, [userId, quiet]) => this.getUserTimezone(ctx, userId.value, quiet.value !== ``)
+                    parameters: ['user', 'quiet?'],
+                    description: 'Returns the set timezone code of the specified `user`. If `quiet` is specified, if `user` can\'t be found it will simply return nothing.If the user has no set timezone, the output will be UTC.',
+                    exampleCode: 'Discord official\'s timezone is {usertimezone;Discord official}',
+                    exampleOut: 'Discord official\'s timezone is Europe/Berlin',
+                    returns: 'string',
+                    execute: (ctx, [userId, quiet]) => this.getUserTimezone(ctx, userId.value, quiet.value !== '')
                 }
             ]
         });
@@ -39,10 +39,10 @@ export class UserTimezoneSubtag extends CompiledSubtag {
 
         if (user === undefined) {
             throw new UserNotFoundError(userStr)
-                .withDisplay(quiet ? `` : undefined);
+                .withDisplay(quiet ? '' : undefined);
         }
 
-        const userTimezone = await context.database.users.getSetting(user.id, `timezone`);
-        return userTimezone ?? `UTC`;
+        const userTimezone = await context.database.users.getSetting(user.id, 'timezone');
+        return userTimezone ?? 'UTC';
     }
 }

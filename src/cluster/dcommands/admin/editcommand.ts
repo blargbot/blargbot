@@ -11,42 +11,42 @@ const cmd = templates.commands.editCommand;
 export class EditCommandCommand extends GuildCommand {
     public constructor() {
         super({
-            name: `editcommand`,
+            name: 'editcommand',
             category: CommandType.ADMIN,
             cannotDisable: true,
             definitions: [
                 {
-                    parameters: `list`,
+                    parameters: 'list',
                     description: cmd.list.description,
                     execute: (ctx) => this.list(ctx)
                 },
                 {
-                    parameters: `{commands[]} setrole {roles:role[0]}`,
+                    parameters: '{commands[]} setrole {roles:role[0]}',
                     description: cmd.setRole.description,
                     execute: (ctx, [commands, roles]) => this.setRole(ctx, commands.asStrings, roles.asRoles)
                 },
                 {
-                    parameters: `{commands[]} setperm|setperms {permission:bigint?}`,
+                    parameters: '{commands[]} setperm|setperms {permission:bigint?}',
                     description: cmd.setPermissions.description,
                     execute: (ctx, [commands, permissions]) => this.setPermissions(ctx, commands.asStrings, permissions.asOptionalBigint)
                 },
                 {
-                    parameters: `{commands[]} disable`,
+                    parameters: '{commands[]} disable',
                     description: cmd.disable.description,
                     execute: (ctx, [commands]) => this.setDisabled(ctx, commands.asStrings, true)
                 },
                 {
-                    parameters: `{commands[]} enable`,
+                    parameters: '{commands[]} enable',
                     description: cmd.enable.description,
                     execute: (ctx, [commands]) => this.setDisabled(ctx, commands.asStrings, false)
                 },
                 {
-                    parameters: `{commands[]} hide`,
+                    parameters: '{commands[]} hide',
                     description: cmd.hide.description,
                     execute: (ctx, [commands]) => this.setHidden(ctx, commands.asStrings, true)
                 },
                 {
-                    parameters: `{commands[]} show`,
+                    parameters: '{commands[]} show',
                     description: cmd.show.description,
                     execute: (ctx, [commands]) => this.setHidden(ctx, commands.asStrings, false)
                 }
@@ -60,7 +60,7 @@ export class EditCommandCommand extends GuildCommand {
         const defaultPerms = new Map<unknown, string>();
         const commands: ICommand[] = [];
         for await (const result of context.cluster.commands.list(context.channel.guild)) {
-            if (result.state === `ALLOWED`) {
+            if (result.state === 'ALLOWED') {
                 defaultPerms.set(result.detail.command.implementation, result.detail.command.permission);
                 commands.push(result.detail.command);
             }
@@ -84,7 +84,7 @@ export class EditCommandCommand extends GuildCommand {
                 roles: roles.length > 0
                     ? cmd.list.embed.description.roles({ roles })
                     : undefined,
-                permissions: command.permission !== (defaultPerms.get(command.implementation) ?? `0`)
+                permissions: command.permission !== (defaultPerms.get(command.implementation) ?? '0')
                     ? cmd.list.embed.description.permissions({ permission: command.permission })
                     : undefined,
                 disabled: command.disabled

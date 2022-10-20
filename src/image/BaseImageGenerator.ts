@@ -10,7 +10,7 @@ import { ImageWorker } from './ImageWorker';
 import { ImageGeneratorMap, ImageResult, TextOptions } from './types';
 
 const im = gm.subClass({ imageMagick: true });
-const imgDir = path.join(path.dirname(require.resolve(`@blargbot/res/package`)), `img`);
+const imgDir = path.join(path.dirname(require.resolve('@blargbot/res/package')), 'img');
 const emptyBuffer = Buffer.from([]);
 
 export abstract class BaseImageGenerator<T extends keyof ImageGeneratorMap> {
@@ -22,9 +22,9 @@ export abstract class BaseImageGenerator<T extends keyof ImageGeneratorMap> {
             worker.logger.worker(`${key} Requested`);
             try {
                 const result = await this.execute(<ImageGeneratorMap[T]>data);
-                worker.logger.worker(`${key} finished, submitting as base64. Size: ${result?.data.length ?? `NaN`}`);
+                worker.logger.worker(`${key} finished, submitting as base64. Size: ${result?.data.length ?? 'NaN'}`);
                 reply(result === undefined ? null : {
-                    data: result.data.toString(`base64`),
+                    data: result.data.toString('base64'),
                     fileName: result.fileName
                 });
             } catch (err: unknown) {
@@ -46,27 +46,27 @@ export abstract class BaseImageGenerator<T extends keyof ImageGeneratorMap> {
 
     protected async getRemote(url: string): Promise<Buffer> {
         url = url.trim();
-        if (url.startsWith(`<`) && url.endsWith(`>`)) {
+        if (url.startsWith('<') && url.endsWith('>')) {
             url = url.substring(1, url.length - 1);
         }
 
         this.worker.logger.debug(url);
         const response = await fetch(url);
 
-        switch (response.headers.get(`content-type`)) {
-            case `image/gif`:
-            case `image/png`:
-            case `image/jpeg`:
-            case `image/bmp`:
+        switch (response.headers.get('content-type')) {
+            case 'image/gif':
+            case 'image/png':
+            case 'image/jpeg':
+            case 'image/bmp':
                 return await response.buffer();
             default:
-                throw new Error(`Wrong file type!`);
+                throw new Error('Wrong file type!');
         }
     }
 
     protected async gmConvert(source: Buffer, transform: (image: gm.State) => gm.State, format?: string): Promise<Buffer> {
-        const pipeline = im(source).command(`convert`);
-        const result = transform(pipeline).setFormat(format ?? `png`);
+        const pipeline = im(source).command('convert');
+        const result = transform(pipeline).setFormat(format ?? 'png');
         return await promisify<Buffer>(cb => result.toBuffer(cb))();
     }
 
@@ -83,20 +83,20 @@ export abstract class BaseImageGenerator<T extends keyof ImageGeneratorMap> {
     protected async renderText(text: string, options: TextOptions): Promise<Buffer> {
         const caption = `caption:${text.replaceAll(/[\\%@]/g, m => `\\${m}`)}`;
         return await this.gmConvert(emptyBuffer, x => x
-            .out(`-size`, `${options.width}x${options.height ?? ``}`)
-            .font(this.getLocalPath(`fonts`, options.font), options.fontsize)
-            .background(`transparent`)
-            .fill(`black`)
-            .gravity(options.gravity ?? `Center`)
-            .stroke(options.outline?.[0] ?? `none`)
+            .out('-size', `${options.width}x${options.height ?? ''}`)
+            .font(this.getLocalPath('fonts', options.font), options.fontsize)
+            .background('transparent')
+            .fill('black')
+            .gravity(options.gravity ?? 'Center')
+            .stroke(options.outline?.[0] ?? 'none')
             .strokeWidth((options.outline?.[1] ?? 1) * 2)
             .out(caption) // write text with stroke
-            .compose(`xor`)
-            .stroke(`none`)
-            .out(caption, `-composite`) // remove text and half of the stroke
-            .compose(`over`)
-            .fill(options.fill ?? `black`)
-            .out(caption, `-composite`) // write text again, filling in removed region
+            .compose('xor')
+            .stroke('none')
+            .out(caption, '-composite') // remove text and half of the stroke
+            .compose('over')
+            .fill(options.fill ?? 'black')
+            .out(caption, '-composite') // write text again, filling in removed region
         );
     }
 }

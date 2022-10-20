@@ -15,14 +15,14 @@ export class TableflipMiddleware implements IMiddleware<KnownMessage, boolean> {
 
     public async execute(context: KnownMessage, next: NextMiddleware<boolean>): Promise<boolean> {
         const result = next();
-        const flipDir = context.content.includes(`(╯°□°）╯︵ ┻━┻`) ? `unflip`
-            : context.content.includes(`┬─┬ ノ( ゜-゜ノ)`) ? `flip`
+        const flipDir = context.content.includes('(╯°□°）╯︵ ┻━┻') ? 'unflip'
+            : context.content.includes('┬─┬ ノ( ゜-゜ノ)') ? 'flip'
                 : undefined;
 
         if (flipDir === undefined)
             return await result;
 
-        if (guard.isGuildMessage(context) && await this.#util.database.guilds.getSetting(context.channel.guild.id, `tableflip`) === false)
+        if (guard.isGuildMessage(context) && await this.#util.database.guilds.getSetting(context.channel.guild.id, 'tableflip') === false)
             return await result;
 
         await this.#util.reply(context, new FormattableMessageContent({ content: templates.tableflip[flipDir] }));

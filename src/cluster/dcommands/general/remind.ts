@@ -11,16 +11,16 @@ const cmd = templates.commands.remind;
 export class TimerCommand extends GlobalCommand {
     public constructor() {
         super({
-            name: `remind`,
-            aliases: [`remindme`],
+            name: 'remind',
+            aliases: ['remindme'],
             category: CommandType.GENERAL,
             flags: [
-                { flag: `c`, word: `channel`, description: cmd.flags.channel },
-                { flag: `t`, word: `time`, description: cmd.flags.time }
+                { flag: 'c', word: 'channel', description: cmd.flags.channel },
+                { flag: 't', word: 'time', description: cmd.flags.time }
             ],
             definitions: [
                 {
-                    parameters: `{~message+}`,
+                    parameters: '{~message+}',
                     description: cmd.default.description,
                     execute: (ctx, [message], { c: channel, t: time }) => this.addTimer(ctx, time?.merge().value, message.asString, channel !== undefined)
                 }
@@ -42,7 +42,7 @@ export class TimerCommand extends GlobalCommand {
         const channel = inChannel && guard.isGuildCommandContext(context) ? context.channel : await context.author.getDMChannel();
         const source = inChannel && guard.isGuildCommandContext(context) ? context.channel.guild.id : context.author.id;
 
-        await context.cluster.timeouts.insert(`remind`, {
+        await context.cluster.timeouts.insert('remind', {
             source: source,
             user: context.author.id,
             channel: channel.id,
@@ -50,7 +50,7 @@ export class TimerCommand extends GlobalCommand {
             content: message
         });
 
-        return cmd.default.success[context.channel === channel ? `here` : `dm`]({ duration });
+        return cmd.default.success[context.channel === channel ? 'here' : 'dm']({ duration });
     }
 
 }

@@ -5,8 +5,8 @@ import templates from '../../text';
 
 export class JojoCommand extends WolkenCommand {
     public constructor(cluster: Cluster) {
-        super(`jojo`, {
-            search: `jojo`,
+        super('jojo', {
+            search: 'jojo',
             ...templates.commands.jojo,
             wolkeKey: cluster.config.general.wolke
         });

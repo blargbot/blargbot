@@ -4,9 +4,9 @@ import { ImageWorker } from '@blargbot/image/ImageWorker';
 import { DistortOptions, ImageResult } from '@blargbot/image/types';
 import sharp from 'sharp';
 
-export class DistortGenerator extends BaseImageGenerator<`distort`> {
+export class DistortGenerator extends BaseImageGenerator<'distort'> {
     public constructor(worker: ImageWorker) {
-        super(`distort`, worker);
+        super('distort', worker);
     }
 
     public async execute({ avatar }: DistortOptions): Promise<ImageResult> {
@@ -17,7 +17,7 @@ export class DistortGenerator extends BaseImageGenerator<`distort`> {
                 .implode(-randInt(3, 10))
                 .roll(randInt(0, avatarImg.info.width), randInt(0, avatarImg.info.height))
                 .swirl(randInt(120, 180) * randChoose([-1, 1]))),
-            fileName: `distort.png`
+            fileName: 'distort.png'
         };
     }
 }

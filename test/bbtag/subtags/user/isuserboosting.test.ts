@@ -8,25 +8,25 @@ runSubtagTests({
     argCountBounds: { min: 0, max: 2 },
     cases: [
         ...createGetUserPropTestCases({
-            quiet: ``,
+            quiet: '',
             generateCode(...args) {
-                return `{${[`isuserboosting`, ...args].join(`;`)}}`;
+                return `{${['isuserboosting', ...args].join(';')}}`;
             },
             cases: [
                 {
-                    expected: `true`,
+                    expected: 'true',
                     setup(user) {
-                        user.premium_since = `2021-01-01T00:00:00+0000`;
+                        user.premium_since = '2021-01-01T00:00:00+0000';
                     }
                 },
                 {
-                    expected: `false`,
+                    expected: 'false',
                     setup(user) {
                         user.premium_since = null;
                     }
                 },
                 {
-                    expected: `false`,
+                    expected: 'false',
                     setup(user) {
                         user.premium_since = undefined;
                     }

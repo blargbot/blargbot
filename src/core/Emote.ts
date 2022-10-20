@@ -21,7 +21,7 @@ export class Emote {
     public static create(this: void, data: PartialEmoji): Emote {
         if (data.id === null)
             return Emote.parse(data.name);
-        return Emote.parse(`<${data.animated === true ? `a` : ``}:${data.name}:${data.id}>`);
+        return Emote.parse(`<${data.animated === true ? 'a' : ''}:${data.name}:${data.id}>`);
     }
 
     static #findAll(this: void, text: string): [results: Emote[], strict: boolean] {
@@ -29,26 +29,26 @@ export class Emote {
         const emotes: Emote[] = [];
         guildEmoteRegex.lastIndex = 0;
         text = text.replaceAll(guildEmoteRegex, (_, animated: string, name: string, id: Snowflake) => {
-            emotes.push(new Emote(name, id, animated !== ``));
-            return ``;
+            emotes.push(new Emote(name, id, animated !== ''));
+            return '';
         }).replaceAll(guildApiEmoteRegex, (_, name: string, id: Snowflake) => {
             emotes.push(new Emote(name, id));
-            return ``;
+            return '';
         }).replaceAll(discordEmoteRegex, emote => {
             emotes.push(new Emote(emote));
-            return ``;
+            return '';
         }).replaceAll(keycapEmote, emote => {
             emotes.push(new Emote(emote));
-            return ``;
+            return '';
         }).replaceAll(otherEmotes, emote => {
             emotes.push(new Emote(emote));
-            return ``;
+            return '';
         });
         twemoji.parse(text, {
             callback(codepoint) {
                 const emote = twemoji.convert.fromCodePoint(codepoint);
                 emotes.push(new Emote(emote));
-                return text = text.replace(emote, ``);
+                return text = text.replace(emote, '');
             }
         });
 
@@ -74,7 +74,7 @@ export class Emote {
         return this.id === undefined ? this.name : `${this.name}:${this.id}`;
     }
 
-    public toString(): `<${`a` | ``}:${string}:${Snowflake}>` | string {
+    public toString(): `<${'a' | ''}:${string}:${Snowflake}>` | string {
         if (this.id === undefined)
             return this.name;
         if (this.animated)
@@ -89,7 +89,7 @@ const keycapEmote = /[#*0-9]\uFE0F?\u20E3/g;
 const otherEmotes = /©️/g;
 const discordEmotes = Object.values(discordEmoteData)
     .flat()
-    .flatMap(entry => `diversityChildren` in entry ? [entry, ...entry.diversityChildren ?? []] : [entry])
+    .flatMap(entry => 'diversityChildren' in entry ? [entry, ...entry.diversityChildren ?? []] : [entry])
     .map(entry => entry.surrogates);
 
 const isLeaf: unique symbol = Symbol();
@@ -100,9 +100,9 @@ interface CodepointTree {
 const codepointTree = {} as CodepointTree;
 for (const emote of discordEmotes) {
     let node = codepointTree;
-    for (const char of emote.split(``)) {
+    for (const char of emote.split('')) {
         const code = char.codePointAt(0) ?? 0;
-        node = node[code.toString(16).padStart(4, `0`)] ??= {};
+        node = node[code.toString(16).padStart(4, '0')] ??= {};
     }
     Object.assign(node, { [isLeaf]: true });
 }
@@ -118,8 +118,8 @@ function buildRegexStr(tree: CodepointTree): string[] {
                     ? `\\u${codepoint}(?:${innerRegex[0]})?`
                     : `\\u${codepoint}${innerRegex[0]}`;
             return isLeaf in children
-                ? `\\u${codepoint}(?:${innerRegex.join(`|`)})?`
-                : `\\u${codepoint}(?:${innerRegex.join(`|`)})`;
+                ? `\\u${codepoint}(?:${innerRegex.join('|')})?`
+                : `\\u${codepoint}(?:${innerRegex.join('|')})`;
         }).sort((a, b) => b.length - a.length);
 }
-const discordEmoteRegex = new RegExp(buildRegexStr(codepointTree).join(`|`), `g`);
+const discordEmoteRegex = new RegExp(buildRegexStr(codepointTree).join('|'), 'g');

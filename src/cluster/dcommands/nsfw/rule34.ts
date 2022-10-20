@@ -12,12 +12,12 @@ const cmd = templates.commands.rule34;
 export class Rule34Command extends GlobalCommand {
     public constructor() {
         super({
-            name: `rule34`,
-            aliases: [`r34`],
+            name: 'rule34',
+            aliases: ['r34'],
             category: CommandType.NSFW,
             definitions: [
                 {
-                    parameters: `{tags[]}`,
+                    parameters: '{tags[]}',
                     description: cmd.default.description,
                     execute: (_, [tags]) => this.getRule34(tags.asStrings)
                 }
@@ -37,7 +37,7 @@ export class Rule34Command extends GlobalCommand {
         if (tags.length === 0)
             return cmd.default.unsafeTags;
 
-        const response = await requestXmlSafe(`http://rule34.paheal.net/api/danbooru/find_posts/index.xml?tags=${tags.join(`%20`)}&limit=50`);
+        const response = await requestXmlSafe(`http://rule34.paheal.net/api/danbooru/find_posts/index.xml?tags=${tags.join('%20')}&limit=50`);
         const doc = r34Mapping(response);
         if (!doc.valid)
             return cmd.default.noResults;

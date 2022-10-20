@@ -12,51 +12,51 @@ const cmd = templates.commands.log;
 export class LogCommand extends GuildCommand {
     public constructor() {
         super({
-            name: `log`,
+            name: 'log',
             category: CommandType.ADMIN,
             definitions: [
                 {
-                    parameters: `list`,
+                    parameters: 'list',
                     description: cmd.list.description,
                     execute: ctx => this.listEvents(ctx)
                 },
                 {
-                    parameters: `enable {channel:channel} {eventNames[]}`,
+                    parameters: 'enable {channel:channel} {eventNames[]}',
                     description: cmd.enable.description.default({ events: Object.entries(eventDescriptions).map(e => ({ key: e[0], desc: e[1] })) }),
                     execute: (ctx, [channel, eventNames]) => this.setEventChannel(ctx, eventNames.asStrings, channel.asChannel)
                 },
                 {
-                    parameters: `enable {channel:channel} all`,
+                    parameters: 'enable {channel:channel} all',
                     description: cmd.enable.description.all,
                     execute: (ctx, [channel]) => this.setEventChannel(ctx, Object.keys(eventDescriptions), channel.asChannel)
                 },
                 {
-                    parameters: `enable {channel:channel} roles|role {roles:role[]}`,
+                    parameters: 'enable {channel:channel} roles|role {roles:role[]}',
                     description: cmd.enable.description.role,
                     execute: (ctx, [channel, roles]) => this.setEventChannel(ctx, roles.asRoles.map((r: Role) => `role:${r.id}`), channel.asChannel)
                 },
                 {
-                    parameters: `disable {eventNames[]}`,
+                    parameters: 'disable {eventNames[]}',
                     description: cmd.disable.description.default({ events: Object.entries(eventDescriptions).map(e => ({ key: e[0], desc: e[1] })) }),
                     execute: (ctx, [eventNames]) => this.setEventChannel(ctx, eventNames.asStrings, undefined)
                 },
                 {
-                    parameters: `disable all`,
+                    parameters: 'disable all',
                     description: cmd.disable.description.all,
                     execute: (ctx) => this.setEventChannel(ctx, Object.keys(eventDescriptions), undefined)
                 },
                 {
-                    parameters: `disable roles|role {roles:role[]}`,
+                    parameters: 'disable roles|role {roles:role[]}',
                     description: cmd.disable.description.role,
                     execute: (ctx, [roles]) => this.setEventChannel(ctx, roles.asRoles.map((r: Role) => `role:${r.id}`), undefined)
                 },
                 {
-                    parameters: `ignore {users:sender[]}`,
+                    parameters: 'ignore {users:sender[]}',
                     description: cmd.ignore.description,
                     execute: (ctx, [users]) => this.ignoreUsers(ctx, users.asSenders, true)
                 },
                 {
-                    parameters: `track {users:sender[]}`,
+                    parameters: 'track {users:sender[]}',
                     description: cmd.track.description,
                     execute: (ctx, [users]) => this.ignoreUsers(ctx, users.asSenders, false)
                 }
@@ -86,7 +86,7 @@ export class LogCommand extends GuildCommand {
 
         await context.database.guilds.setLogChannel(context.channel.guild.id, validEvents, channel?.id);
         const eventStrings = validEvents.map(e => {
-            if (e.startsWith(`role:`))
+            if (e.startsWith('role:'))
                 return `<@&${e.slice(5)}>`;
             return `\`${e}\``;
         });
@@ -153,5 +153,5 @@ const eventDescriptions: { [key in Exclude<StoredGuildEventLogType, `role:${stri
 };
 
 function isLogEventType(eventName: string): eventName is StoredGuildEventLogType {
-    return eventName.startsWith(`role:`) || guard.hasProperty(eventDescriptions, eventName);
+    return eventName.startsWith('role:') || guard.hasProperty(eventDescriptions, eventName);
 }

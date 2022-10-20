@@ -19,7 +19,7 @@ export class ConcatBinding<TContext extends CommandContext, Name extends Command
     }
 
     public * debugView(): Generator<string> {
-        yield `Concat ${this.parameter.raw ? `raw ` : ``}values into variable '${this.name}'${this.parameter.fallback === undefined ? `` : ` with fallback of '${this.parameter.fallback}'`}`;
+        yield `Concat ${this.parameter.raw ? 'raw ' : ''}values into variable '${this.name}'${this.parameter.fallback === undefined ? '' : ` with fallback of '${this.parameter.fallback}'`}`;
         for (const binding of this.next)
             for (const line of binding.debugView())
                 yield `    ${line}`;

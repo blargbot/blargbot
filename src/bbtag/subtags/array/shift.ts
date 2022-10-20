@@ -6,15 +6,15 @@ import { bbtag, SubtagType } from '../../utils';
 export class ShiftSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: `shift`,
+            name: 'shift',
             category: SubtagType.ARRAY,
             definition: [
                 {
-                    parameters: [`array`],
-                    description: `Returns the first element in \`array\`. If used with a variable this will remove the first element from \`array\` as well.`,
-                    exampleCode: `{shift;["this", "is", "an", "array"]}`,
-                    exampleOut: `this`,
-                    returns: `json|nothing`,
+                    parameters: ['array'],
+                    description: 'Returns the first element in `array`. If used with a variable this will remove the first element from `array` as well.',
+                    exampleCode: '{shift;["this", "is", "an", "array"]}',
+                    exampleOut: 'this',
+                    returns: 'json|nothing',
                     execute: (context, [array]) => this.shift(context, array.value)
                 }
             ]
@@ -27,7 +27,7 @@ export class ShiftSubtag extends CompiledSubtag {
             throw new NotAnArrayError(arrayStr);
 
         if (array.length === 0)
-            return ``;
+            return '';
 
         const result = array.shift();
         if (varName !== undefined)

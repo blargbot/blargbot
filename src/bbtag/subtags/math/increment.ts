@@ -8,23 +8,23 @@ import { SubtagType } from '../../utils';
 export class IncrementSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: `increment`,
+            name: 'increment',
             category: SubtagType.MATH,
             definition: [
                 {
-                    parameters: [`varName`],
-                    description: `Increases \`varName\`'s value by \`1\`. `,
-                    exampleCode: `{set;~counter;0} {repeat;{increment;~counter},;10}`,
-                    exampleOut: `1,2,3,4,5,6,7,8,9,10`,
-                    returns: `number`,
-                    execute: (ctx, [varName]) => this.increment(ctx, varName.value, `1`, `true`)
+                    parameters: ['varName'],
+                    description: 'Increases `varName`\'s value by `1`. ',
+                    exampleCode: '{set;~counter;0} {repeat;{increment;~counter},;10}',
+                    exampleOut: '1,2,3,4,5,6,7,8,9,10',
+                    returns: 'number',
+                    execute: (ctx, [varName]) => this.increment(ctx, varName.value, '1', 'true')
                 },
                 {
-                    parameters: [`varName`, `amount:1`, `floor?:true`],
-                    description: `Increases \`varName\`'s value by \`amount\`. \`floor\` is a boolean, and if it is \`true\` then the value will be rounded down.`,
-                    exampleCode: `{set;~counter;0} {repeat;{increment;~counter;-2},;10}`,
-                    exampleOut: `2,4,6,8,10,12,14,16,18,20`,
-                    returns: `number`,
+                    parameters: ['varName', 'amount:1', 'floor?:true'],
+                    description: 'Increases `varName`\'s value by `amount`. `floor` is a boolean, and if it is `true` then the value will be rounded down.',
+                    exampleCode: '{set;~counter;0} {repeat;{increment;~counter;-2},;10}',
+                    exampleOut: '2,4,6,8,10,12,14,16,18,20',
+                    returns: 'number',
                     execute: (ctx, [varName, amount, floor]) => this.increment(ctx, varName.value, amount.value, floor.value)
                 }
             ]
@@ -43,10 +43,10 @@ export class IncrementSubtag extends CompiledSubtag {
         const valueRaw = await context.variables.get(varName);
         let value: number | undefined;
         switch (typeof valueRaw.value) {
-            case `string`:
+            case 'string':
                 value = parse.float(valueRaw.value);
                 break;
-            case `number`:
+            case 'number':
                 value = valueRaw.value;
                 break;
         }

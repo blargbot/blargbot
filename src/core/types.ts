@@ -66,14 +66,14 @@ export type EvalRequest = { userId: string; code: string; };
 export type MasterEvalRequest = EvalRequest & { type: EvalType; };
 export type GlobalEvalResult = Record<string, EvalResult>;
 export type EvalResult = { success: false; error: string; } | { success: true; result: unknown; };
-export type EvalType = `master` | `global` | `cluster${number}`
+export type EvalType = 'master' | 'global' | `cluster${number}`
 
 export type IPCContract<Worker, Master> = { workerGets: Worker; masterGets: Master; };
 export type IPCContracts<ContractNames extends string = string> = { [ContractName in ContractNames]: IPCContract<unknown, unknown> }
 export type IPCContractNames<Contracts extends IPCContracts> = string & keyof (Contracts & BaseIPCContract);
 
-export type IPCContractMasterGets<Contracts extends IPCContracts, Contract extends IPCContractNames<Contracts>> = (Contracts & BaseIPCContract)[Contract][`masterGets`]
-export type IPCContractWorkerGets<Contracts extends IPCContracts, Contract extends IPCContractNames<Contracts>> = (Contracts & BaseIPCContract)[Contract][`workerGets`]
+export type IPCContractMasterGets<Contracts extends IPCContracts, Contract extends IPCContractNames<Contracts>> = (Contracts & BaseIPCContract)[Contract]['masterGets']
+export type IPCContractWorkerGets<Contracts extends IPCContracts, Contract extends IPCContractNames<Contracts>> = (Contracts & BaseIPCContract)[Contract]['workerGets']
 
 export type GetMasterProcessMessageHandler<Contracts extends IPCContracts, Contract extends IPCContractNames<Contracts>> =
     ProcessMessageHandler<IPCContractMasterGets<Contracts, Contract>, IPCContractWorkerGets<Contracts, Contract>>
@@ -125,7 +125,7 @@ type ConfirmQueryOptionsFallback<T extends boolean | undefined> = T extends unde
 export interface QueryOptionsBase<TString> {
     context: TextableChannel | Message;
     actors: Iterable<string | User> | string | User;
-    prompt?: Omit<SendContent<TString>, `components`> | TString;
+    prompt?: Omit<SendContent<TString>, 'components'> | TString;
     timeout?: number;
 }
 
@@ -140,7 +140,7 @@ export interface QueryBaseResult<T extends string> {
     readonly state: T;
 }
 
-export interface QuerySuccess<T> extends QueryBaseResult<`SUCCESS`> {
+export interface QuerySuccess<T> extends QueryBaseResult<'SUCCESS'> {
     readonly value: T;
 }
 
@@ -149,12 +149,12 @@ export interface ConfirmQueryOptionsBase<TString> extends QueryOptionsBase<TStri
     cancel: QueryButton<TString>;
 }
 
-export type SlimConfirmQueryOptions<TString, T extends boolean | undefined = undefined> = Omit<ConfirmQueryOptions<TString, T>, `context` | `actors`>;
+export type SlimConfirmQueryOptions<TString, T extends boolean | undefined = undefined> = Omit<ConfirmQueryOptions<TString, T>, 'context' | 'actors'>;
 export type ConfirmQueryOptions<TString, T extends boolean | undefined = undefined> = ConfirmQueryOptionsBase<TString> & ConfirmQueryOptionsFallback<T>;
 
 export interface ChoiceQueryOptions<TString, T> extends QueryOptionsBase<TString> {
     placeholder: TString;
-    choices: Iterable<Omit<FormatSelectMenuOptions<TString>, `value`> & { value: T; }>;
+    choices: Iterable<Omit<FormatSelectMenuOptions<TString>, 'value'> & { value: T; }>;
 }
 
 export interface TextQueryOptionsBase<TString, T> extends QueryOptionsBase<TString> {
@@ -166,13 +166,13 @@ export interface TextQueryOptionsParsed<TString, T> extends TextQueryOptionsBase
     parse: TextQueryOptionsParser<TString, T>;
 }
 
-export type SlimTextQueryOptionsParsed<TString, T> = Omit<TextQueryOptionsParsed<TString, T>, `context` | `actors`>;
+export type SlimTextQueryOptionsParsed<TString, T> = Omit<TextQueryOptionsParsed<TString, T>, 'context' | 'actors'>;
 
 export interface TextQueryOptions<TString> extends TextQueryOptionsBase<TString, string> {
     parse?: undefined;
 }
 
-export type SlimTextQueryOptions<TString> = Omit<TextQueryOptions<TString>, `context` | `actors`>;
+export type SlimTextQueryOptions<TString> = Omit<TextQueryOptions<TString>, 'context' | 'actors'>;
 
 export interface TextQueryOptionsParser<TString, T> {
     (message: Message): Promise<TextQueryOptionsParseResult<TString, T>> | TextQueryOptionsParseResult<TString, T>;
@@ -180,7 +180,7 @@ export interface TextQueryOptionsParser<TString, T> {
 
 export type TextQueryOptionsParseResult<TString, T> =
     | { readonly success: true; readonly value: T; }
-    | { readonly success: false; readonly error?: Omit<SendContent<TString>, `components`>; }
+    | { readonly success: false; readonly error?: Omit<SendContent<TString>, 'components'>; }
 
 export interface MultipleQueryOptions<TString, T> extends ChoiceQueryOptions<TString, T> {
     minCount?: number;
@@ -203,13 +203,13 @@ export interface TextQuery<T> extends QueryBase<TextQueryResult<T>> {
     messages: readonly Message[];
 }
 
-export type ChoiceQueryResult<T> = QueryResult<`NO_OPTIONS` | `TIMED_OUT` | `CANCELLED` | `FAILED`, T>;
-export type MultipleQueryResult<T> = QueryResult<`NO_OPTIONS` | `EXCESS_OPTIONS` | `TIMED_OUT` | `CANCELLED` | `FAILED`, T[]>;
-export type TextQueryResult<T> = QueryResult<`FAILED` | `TIMED_OUT` | `CANCELLED`, T>;
+export type ChoiceQueryResult<T> = QueryResult<'NO_OPTIONS' | 'TIMED_OUT' | 'CANCELLED' | 'FAILED', T>;
+export type MultipleQueryResult<T> = QueryResult<'NO_OPTIONS' | 'EXCESS_OPTIONS' | 'TIMED_OUT' | 'CANCELLED' | 'FAILED', T[]>;
+export type TextQueryResult<T> = QueryResult<'FAILED' | 'TIMED_OUT' | 'CANCELLED', T>;
 
 export type QueryButton<TString> =
     | TString
-    | Partial<Omit<FormatInteractionButton<TString>, `disabled` | `type` | `customId`>>
+    | Partial<Omit<FormatInteractionButton<TString>, 'disabled' | 'type' | 'customId'>>
 
 export type EntityQueryOptions<TString, T> =
     | EntityPickQueryOptions<TString, T>
@@ -228,14 +228,14 @@ export interface EntityPickQueryOptions<TString, T> extends BaseEntityQueryOptio
     filter?: string;
 }
 
-export type SlimEntityPickQueryOptions<TString, T> = Omit<EntityPickQueryOptions<TString, T>, `context` | `actors`>;
+export type SlimEntityPickQueryOptions<TString, T> = Omit<EntityPickQueryOptions<TString, T>, 'context' | 'actors'>;
 
 export interface EntityFindQueryOptions<TString> extends BaseEntityQueryOptions<TString> {
     guild: string | Guild;
     filter?: string;
 }
 
-export type SlimEntityFindQueryOptions<TString> = Omit<EntityFindQueryOptions<TString>, `context` | `actors`>;
+export type SlimEntityFindQueryOptions<TString> = Omit<EntityFindQueryOptions<TString>, 'context' | 'actors'>;
 
 export interface BindingSuccess<TState> {
     readonly success: true;

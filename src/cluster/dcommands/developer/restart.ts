@@ -10,22 +10,22 @@ const cmd = templates.commands.restart;
 export class RestartCommand extends GlobalCommand {
     public constructor() {
         super({
-            name: `restart`,
+            name: 'restart',
             category: CommandType.DEVELOPER,
             description: cmd.description,
             definitions: [
                 {
-                    parameters: ``,
+                    parameters: '',
                     execute: (ctx) => this.respawnClusters(ctx),
                     description: cmd.default.description
                 },
                 {
-                    parameters: `kill`,
+                    parameters: 'kill',
                     execute: (ctx) => this.restart(ctx),
                     description: cmd.kill.description
                 },
                 {
-                    parameters: `api`,
+                    parameters: 'api',
                     execute: (ctx) => this.restartWebsites(ctx),
                     description: cmd.api.description
                 }
@@ -34,24 +34,24 @@ export class RestartCommand extends GlobalCommand {
     }
 
     public async restartWebsites(context: CommandContext): Promise<CommandResult> {
-        await context.cluster.worker.request(`respawnApi`, undefined, 60000);
+        await context.cluster.worker.request('respawnApi', undefined, 60000);
         return cmd.api.success;
     }
 
     public async restart(context: CommandContext): Promise<CommandResult> {
         await context.reply(cmd.default.success);
-        await context.database.vars.set(`restart`, {
+        await context.database.vars.set('restart', {
             varvalue: {
                 channel: context.channel.id,
                 time: moment().valueOf()
             }
         });
-        context.cluster.worker.send(`killAll`, undefined);
+        context.cluster.worker.send('killAll', undefined);
         return undefined;
     }
 
     public respawnClusters(context: CommandContext): CommandResult {
-        context.cluster.worker.send(`respawnAll`, { channelId: context.channel.id });
+        context.cluster.worker.send('respawnAll', { channelId: context.channel.id });
         return cmd.kill.success;
     }
 }

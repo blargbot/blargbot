@@ -12,7 +12,7 @@ export class IPCMessageEmitter {
     public get process(): NodeJS.Process | ChildProcess | undefined { return this.#process; }
     public set process(value: NodeJS.Process | ChildProcess | undefined) {
         if (this.#process !== undefined)
-            throw new Error(`Already attached to a process!`);
+            throw new Error('Already attached to a process!');
         if (value === undefined)
             return;
         this.#attach(value);
@@ -28,28 +28,28 @@ export class IPCMessageEmitter {
     #attach(process: NodeJS.Process | ChildProcess): void {
         this.#process = process;
 
-        process.on(`message`, ({ type, data, id }: ProcessMessage) =>
+        process.on('message', ({ type, data, id }: ProcessMessage) =>
             this.emit(type, data, id));
 
         this.#sender = isWorkerProcess(process)
             ? message => process.send(message)
             : () => false;
 
-        if (!(`execPath` in process)) {
+        if (!('execPath' in process)) {
             const relay = (code: string, data?: unknown): void => {
                 this.emit(code, data, snowflake.create());
             };
-            process.on(`exit`, (code, signal) => relay(`exit`, { code, signal }));
-            process.on(`close`, (code, signal) => relay(`close`, { code, signal }));
-            process.on(`disconnect`, () => relay(`disconnect`));
-            process.on(`kill`, code => relay(`kill`, code));
-            process.on(`error`, error => relay(`error`, error));
+            process.on('exit', (code, signal) => relay('exit', { code, signal }));
+            process.on('close', (code, signal) => relay('close', { code, signal }));
+            process.on('disconnect', () => relay('disconnect'));
+            process.on('kill', code => relay('kill', code));
+            process.on('error', error => relay('error', error));
         }
     }
 
     public send(type: string, data?: unknown, id?: Snowflake): boolean {
         if (this.#sender === undefined)
-            throw new Error(`No process has been attached to yet`);
+            throw new Error('No process has been attached to yet');
 
         return this.#sender({ type, id: id ?? snowflake.create(), data });
     }
@@ -57,7 +57,7 @@ export class IPCMessageEmitter {
     protected emit(type: string, data: unknown, id: Snowflake): boolean {
         const context: ProcessMessageContext<unknown, unknown> = { data, id, reply: (data) => this.send(type, data, id) };
         const result = this.#events.emit(`message_${type}`, context);
-        return this.#events.emit(`any`, type, context) || result;
+        return this.#events.emit('any', type, context) || result;
     }
 
     public on(type: string, handler: ProcessMessageHandler): this {
@@ -101,5 +101,5 @@ export class IPCMessageEmitter {
 }
 
 export function isWorkerProcess(process: NodeJS.Process | ChildProcess): process is NodeJS.WorkerProcess | ChildProcess {
-    return typeof process.send === `function`;
+    return typeof process.send === 'function';
 }

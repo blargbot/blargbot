@@ -16,85 +16,85 @@ runSubtagTests({
     cases: [
         ...createGetRolePropTestCases({
             generateCode(role, ...args) {
-                return `{${[`rolesetname`, role, `New name!`, ...args].join(`;`)}}`;
+                return `{${['rolesetname', role, 'New name!', ...args].join(';')}}`;
             },
             cases: [
                 {
-                    expected: ``,
+                    expected: '',
                     postSetup(role, _, ctx) {
-                        ctx.discord.setup(m => m.editRole(ctx.guild.id, role.id, argument.isDeepEqual({ name: `New name!` }), `Command User#0000`))
+                        ctx.discord.setup(m => m.editRole(ctx.guild.id, role.id, argument.isDeepEqual({ name: 'New name!' }), 'Command User#0000'))
                             .thenResolve(role);
                     }
                 }
             ]
         }),
         {
-            code: `{rolesetname;3298746326924;New name!}`,
-            expected: `\`Author cannot edit roles\``,
+            code: '{rolesetname;3298746326924;New name!}',
+            expected: '`Author cannot edit roles`',
             errors: [
-                { start: 0, end: 37, error: new BBTagRuntimeError(`Author cannot edit roles`) }
+                { start: 0, end: 37, error: new BBTagRuntimeError('Author cannot edit roles') }
             ],
             setup(ctx) {
-                ctx.roles.authorizer.permissions = `0`;
+                ctx.roles.authorizer.permissions = '0';
             }
         },
         {
-            code: `{rolesetname;3298746326924;New name!}`,
-            expected: `\`Role above author\``,
+            code: '{rolesetname;3298746326924;New name!}',
+            expected: '`Role above author`',
             errors: [
-                { start: 0, end: 37, error: new BBTagRuntimeError(`Role above author`) }
+                { start: 0, end: 37, error: new BBTagRuntimeError('Role above author') }
             ],
             setup(ctx) {
-                ctx.roles.top.id = `3298746326924`;
+                ctx.roles.top.id = '3298746326924';
             },
             postSetup(bbctx, ctx) {
-                const role = bbctx.guild.roles.get(`3298746326924`);
+                const role = bbctx.guild.roles.get('3298746326924');
                 if (role === undefined)
-                    throw new Error(`Unable to locate role under test`);
+                    throw new Error('Unable to locate role under test');
 
-                ctx.util.setup(m => m.findRoles(bbctx.guild, `3298746326924`))
+                ctx.util.setup(m => m.findRoles(bbctx.guild, '3298746326924'))
                     .thenResolve([role]);
             }
         },
         {
-            code: `{rolesetname;3298746326924;New name!}`,
-            expected: `\`Failed to edit role: no perms\``,
+            code: '{rolesetname;3298746326924;New name!}',
+            expected: '`Failed to edit role: no perms`',
             errors: [
-                { start: 0, end: 37, error: new BBTagRuntimeError(`Failed to edit role: no perms`, `Test REST error`) }
+                { start: 0, end: 37, error: new BBTagRuntimeError('Failed to edit role: no perms', 'Test REST error') }
             ],
             setup(ctx) {
-                ctx.roles.bot.id = `3298746326924`;
+                ctx.roles.bot.id = '3298746326924';
             },
             postSetup(bbctx, ctx) {
                 const err = ctx.createRESTError(ApiError.MISSING_PERMISSIONS);
-                const role = bbctx.guild.roles.get(`3298746326924`);
+                const role = bbctx.guild.roles.get('3298746326924');
                 if (role === undefined)
-                    throw new Error(`Unable to locate role under test`);
+                    throw new Error('Unable to locate role under test');
 
-                ctx.util.setup(m => m.findRoles(bbctx.guild, `3298746326924`))
+                ctx.util.setup(m => m.findRoles(bbctx.guild, '3298746326924'))
                     .thenResolve([role]);
-                ctx.discord.setup(m => m.editRole(ctx.guild.id, role.id, argument.isDeepEqual({ name: `New name!` }), `Command User#0000`))
+                ctx.discord.setup(m => m.editRole(ctx.guild.id, role.id, argument.isDeepEqual({ name: 'New name!' }), 'Command User#0000'))
                     .thenReject(err);
             }
         },
         {
-            code: `{rolesetname;3298746326924;New name!}`,
-            expected: `\`Failed to edit role: no perms\``,
+            code: '{rolesetname;3298746326924;New name!}',
+            expected: '`Failed to edit role: no perms`',
             errors: [
-                { start: 0, end: 37, error: new BBTagRuntimeError(`Failed to edit role: no perms`, `Some other error message`) }
+                { start: 0, end: 37, error: new BBTagRuntimeError('Failed to edit role: no perms', 'Some other error message') }
             ],
             setup(ctx) {
-                ctx.roles.bot.id = `3298746326924`;
+                ctx.roles.bot.id = '3298746326924';
             },
             postSetup(bbctx, ctx) {
-                const err = ctx.createRESTError(ApiError.NOT_AUTHORIZED, `Some other error message`);
-                const role = bbctx.guild.roles.get(`3298746326924`);
+                const err = ctx.createRESTError(ApiError.NOT_AUTHORIZED, 'Some other error message');
+                const role = bbctx.guild.roles.get('3298746326924');
                 if (role === undefined)
-                    throw new Error(`Unable to locate role under test`);
+                    throw new Error('Unable to locate role under test');
 
-                ctx.util.setup(m => m.findRoles(bbctx.guild, `3298746326924`))
+                ctx.util.setup(m => m.findRoles(bbctx.guild, '3298746326924'))
                     .thenResolve([role]);
-                ctx.discord.setup(m => m.editRole(ctx.guild.id, role.id, argument.isDeepEqual({ name: `New name!` }), `Command User#0000`))
+                ctx.discord.setup(m => m.editRole(ctx.guild.id, role.id, argument.isDeepEqual({ name: 'New name!' }), 'Command User#0000'))
                     .thenReject(err);
             }
         }

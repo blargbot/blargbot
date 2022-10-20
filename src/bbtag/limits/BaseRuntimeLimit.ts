@@ -20,8 +20,8 @@ export abstract class BaseRuntimeLimit implements RuntimeLimit {
     #getKeys(key: string, useDefault?: true): [rootKey: string, subKey: string]
     #getKeys(key: string, useDefault: false): [rootKey: string, subKey?: string]
     #getKeys(key: string, useDefault = true): [rootKey: string, subKey?: string] {
-        const keySplit = key.split(`:`, 2);
-        return [keySplit[0], keySplit[1] ?? (useDefault ? `default` : undefined)];
+        const keySplit = key.split(':', 2);
+        return [keySplit[0], keySplit[1] ?? (useDefault ? 'default' : undefined)];
     }
 
     public addRules(rulekey: string | string[], ...rules: RuntimeLimitRule[]): this {

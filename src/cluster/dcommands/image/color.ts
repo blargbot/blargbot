@@ -8,10 +8,10 @@ const cmd = templates.commands.color;
 export class ColorCommand extends GlobalImageCommand {
     public constructor() {
         super({
-            name: `color`,
+            name: 'color',
             definitions: [
                 {
-                    parameters: `{colors[]}`,
+                    parameters: '{colors[]}',
                     description: cmd.default.description,
                     execute: (ctx, [text]) => this.render(ctx, text.asStrings)
                 }
@@ -20,6 +20,6 @@ export class ColorCommand extends GlobalImageCommand {
     }
 
     public async render(context: CommandContext, colors: readonly string[]): Promise<CommandResult> {
-        return await this.renderImage(context, `color`, { color: colors });
+        return await this.renderImage(context, 'color', { color: colors });
     }
 }

@@ -8,15 +8,15 @@ import { SubtagType } from '../../utils';
 export class ChannelDeleteSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: `channeldelete`,
+            name: 'channeldelete',
             category: SubtagType.CHANNEL,
             definition: [
                 {
-                    parameters: [`id`],
-                    description: `Deletes the provided \`channel\`.`,
-                    exampleCode: `{channeldelete;11111111111111111}`,
-                    exampleOut: ``,
-                    returns: `nothing`,
+                    parameters: ['id'],
+                    description: 'Deletes the provided `channel`.',
+                    exampleCode: '{channeldelete;11111111111111111}',
+                    exampleOut: '',
+                    returns: 'nothing',
                     execute: (ctx, [channel]) => this.deleteChannel(ctx, channel.value)
                 }
             ]
@@ -31,10 +31,10 @@ export class ChannelDeleteSubtag extends CompiledSubtag {
          * * when versioning is out and about
          */
         if (channel === undefined)
-            throw new BBTagRuntimeError(`Channel does not exist`);
+            throw new BBTagRuntimeError('Channel does not exist');
 
-        if (!context.hasPermission(channel, `manageChannels`))
-            throw new BBTagRuntimeError(`Author cannot edit this channel`);
+        if (!context.hasPermission(channel, 'manageChannels'))
+            throw new BBTagRuntimeError('Author cannot edit this channel');
 
         try {
             await channel.delete(context.auditReason());
@@ -42,7 +42,7 @@ export class ChannelDeleteSubtag extends CompiledSubtag {
             if (!(err instanceof DiscordRESTError))
                 throw err;
 
-            throw new BBTagRuntimeError(`Failed to edit channel: no perms`, err.message);
+            throw new BBTagRuntimeError('Failed to edit channel: no perms', err.message);
         }
     }
 }

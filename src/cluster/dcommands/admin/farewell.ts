@@ -12,41 +12,41 @@ const cmd = templates.commands.farewell;
 export class FarewellCommand extends GuildCommand {
     public constructor() {
         super({
-            name: `farewell`,
+            name: 'farewell',
             category: CommandType.ADMIN,
             definitions: [
                 {
-                    parameters: `set {~bbtag+}`,
+                    parameters: 'set {~bbtag+}',
                     description: cmd.set.description,
                     execute: (ctx, [bbtag]) => this.setFarewell(ctx, bbtag.asString)
                 },
                 {
-                    parameters: `raw {fileExtension:literal(bbtag|txt)=bbtag}`,
+                    parameters: 'raw {fileExtension:literal(bbtag|txt)=bbtag}',
                     description: cmd.raw.description,
                     execute: (ctx, [fileExtension]) => this.getFarewell(ctx, fileExtension.asLiteral)
                 },
                 {
-                    parameters: `setauthorizer`,
+                    parameters: 'setauthorizer',
                     description: cmd.setAuthorizer.description,
                     execute: (ctx) => this.setAuthorizer(ctx)
                 },
                 {
-                    parameters: `setchannel {channel:channel+}`,
+                    parameters: 'setchannel {channel:channel+}',
                     description: cmd.setChannel.description,
                     execute: (ctx, [channel]) => this.setChannel(ctx, channel.asChannel)
                 },
                 {
-                    parameters: `debug`,
+                    parameters: 'debug',
                     description: cmd.debug.description,
                     execute: (ctx) => this.debug(ctx)
                 },
                 {
-                    parameters: `delete|clear`,
+                    parameters: 'delete|clear',
                     description: cmd.delete.description,
                     execute: (ctx) => this.deleteFarewell(ctx)
                 },
                 {
-                    parameters: `info`,
+                    parameters: 'info',
                     description: cmd.info.description,
                     execute: (ctx) => this.getInfo(ctx)
                 }
@@ -59,7 +59,7 @@ export class FarewellCommand extends GuildCommand {
         if (farewell === undefined)
             return cmd.errors.notSet;
 
-        return cmd.info.success({ authorId: farewell.author ?? `????`, authorizerId: farewell.authorizer ?? farewell.author ?? `????` });
+        return cmd.info.success({ authorId: farewell.author ?? '????', authorizerId: farewell.authorizer ?? farewell.author ?? '????' });
     }
 
     public async setFarewell(context: GuildCommandContext, message: string): Promise<CommandResult> {
@@ -109,15 +109,15 @@ export class FarewellCommand extends GuildCommand {
         if (!guard.isTextableChannel(channel))
             return cmd.setChannel.notTextChannel;
 
-        await context.database.guilds.setSetting(context.channel.guild.id, `farewellchan`, channel.id);
+        await context.database.guilds.setSetting(context.channel.guild.id, 'farewellchan', channel.id);
         return cmd.setChannel.success({ channel });
     }
 
     public async debug(context: GuildCommandContext): Promise<CommandResult> {
         const result = await context.cluster.greetings.farewell(context.message.member);
         switch (result) {
-            case `CHANNEL_MISSING`: return cmd.debug.channelMissing;
-            case `CODE_MISSING`: return cmd.errors.notSet;
+            case 'CHANNEL_MISSING': return cmd.debug.channelMissing;
+            case 'CODE_MISSING': return cmd.errors.notSet;
             default:
                 await context.send(context.author, bbtag.createDebugOutput(result));
                 return cmd.debug.success;

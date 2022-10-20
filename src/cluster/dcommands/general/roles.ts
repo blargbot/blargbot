@@ -9,11 +9,11 @@ const cmd = templates.commands.roles;
 export class RolesCommand extends GuildCommand {
     public constructor() {
         super({
-            name: `roles`,
+            name: 'roles',
             category: CommandType.GENERAL,
             definitions: [
                 {
-                    parameters: ``,
+                    parameters: '',
                     description: cmd.default.description,
                     execute: ctx => this.showRoles(ctx)
                 }

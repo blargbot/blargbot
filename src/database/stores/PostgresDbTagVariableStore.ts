@@ -14,7 +14,7 @@ export class PostgresDbTagVariableStore implements TagVariableStore {
         protected readonly postgres: PostgresDb,
         protected readonly logger: Logger
     ) {
-        this.#table = new PostgresDbTable<BBTagVariable>(postgres, `bbtag_variable`, {
+        this.#table = new PostgresDbTable<BBTagVariable>(postgres, 'bbtag_variable', {
             name: {
                 type: STRING,
                 primaryKey: true,
@@ -66,7 +66,7 @@ export class PostgresDbTagVariableStore implements TagVariableStore {
         for (const [key, value] of Object.entries(values)) {
             const query = {
                 name: key.substring(0, 255),
-                scope: [scope.entityId, scope.name].filter(guard.hasValue).join(`_`),
+                scope: [scope.entityId, scope.name].filter(guard.hasValue).join('_'),
                 type: scope.type
             };
             try {
@@ -85,7 +85,7 @@ export class PostgresDbTagVariableStore implements TagVariableStore {
         const record = await this.#table.get({
             where: {
                 name: name.substring(0, 255),
-                scope: [scope.entityId, scope.name].filter(guard.hasValue).join(`_`),
+                scope: [scope.entityId, scope.name].filter(guard.hasValue).join('_'),
                 type: scope.type
             }
         });

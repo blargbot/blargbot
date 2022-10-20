@@ -11,26 +11,26 @@ const cmd = templates.commands.time;
 export class TimeCommand extends GlobalCommand {
     public constructor() {
         super({
-            name: `time`,
+            name: 'time',
             category: CommandType.GENERAL,
             definitions: [
                 {
-                    parameters: ``,
+                    parameters: '',
                     description: cmd.self.description,
                     execute: (ctx) => this.getUserTime(ctx, ctx.author)
                 },
                 {
-                    parameters: `{user:user+}`,
+                    parameters: '{user:user+}',
                     description: cmd.user.description,
                     execute: (ctx, [user]) => this.getUserTime(ctx, user.asUser)
                 },
                 {
-                    parameters: `in {timezone}`,
+                    parameters: 'in {timezone}',
                     description: cmd.timezone.description,
                     execute: (_, [timezone]) => this.getTime(timezone.asString)
                 },
                 {
-                    parameters: `{timezone1} {timezone2} {time+}`,
+                    parameters: '{timezone1} {timezone2} {time+}',
                     description: cmd.convert.description,
                     execute: (_, [from, to, time]) => this.changeTimezone(time.asString, from.asString, to.asString)
                 }
@@ -39,12 +39,12 @@ export class TimeCommand extends GlobalCommand {
     }
 
     public async getUserTime(context: CommandContext, user: User): Promise<CommandResult> {
-        const timezone = await context.database.users.getSetting(user.id, `timezone`);
+        const timezone = await context.database.users.getSetting(user.id, 'timezone');
         if (timezone === undefined)
             return cmd.user.timezoneNotSet({ prefix: context.prefix, user });
 
         const now = moment().tz(timezone);
-        if (now.zoneAbbr() === ``)
+        if (now.zoneAbbr() === '')
             return cmd.user.timezoneInvalid({ prefix: context.prefix, user });
 
         return cmd.user.success({ now, user });
@@ -52,19 +52,19 @@ export class TimeCommand extends GlobalCommand {
 
     public getTime(timezone: string): CommandResult {
         const now = moment().tz(timezone);
-        if (now.zoneAbbr() === ``)
+        if (now.zoneAbbr() === '')
             return cmd.errors.timezoneInvalid({ timezone });
 
         return cmd.timezone.success({ now, timezone });
     }
 
     public changeTimezone(time: string, from: string, to: string): CommandResult {
-        const source = moment.tz(time, [`hh:mma`, `HH:mm`], true, from);
+        const source = moment.tz(time, ['hh:mma', 'HH:mm'], true, from);
         const dest = source.clone().tz(to);
 
-        if (source.zoneAbbr() === ``)
+        if (source.zoneAbbr() === '')
             return cmd.errors.timezoneInvalid({ timezone: from });
-        if (dest.zoneAbbr() === ``)
+        if (dest.zoneAbbr() === '')
             return cmd.errors.timezoneInvalid({ timezone: to });
         if (!dest.isValid() || !source.isValid())
             return cmd.convert.invalidTime({ time });

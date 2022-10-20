@@ -11,25 +11,25 @@ const cmd = templates.commands.caption;
 export class CaptionCommand extends GlobalImageCommand {
     public constructor() {
         super({
-            name: `caption`,
+            name: 'caption',
             flags: [
-                { flag: `t`, word: `top`, description: cmd.flags.top },
-                { flag: `b`, word: `bottom`, description: cmd.flags.bottom },
-                { flag: `f`, word: `font`, description: cmd.flags.font }
+                { flag: 't', word: 'top', description: cmd.flags.top },
+                { flag: 'b', word: 'bottom', description: cmd.flags.bottom },
+                { flag: 'f', word: 'font', description: cmd.flags.font }
             ],
             definitions: [
                 {
-                    parameters: `fonts`,
+                    parameters: 'fonts',
                     description: cmd.fonts.description,
                     execute: () => this.listFonts()
                 },
                 {
-                    parameters: ``,
+                    parameters: '',
                     description: cmd.attached.description,
                     execute: (ctx, _, flags) => this.render(ctx, ctx.message.attachments[0]?.url, flags.t?.merge().value, flags.b?.merge().value, flags.f?.merge().value)
                 },
                 {
-                    parameters: `{url+}`,
+                    parameters: '{url+}',
                     description: cmd.linked.description,
                     execute: (ctx, [url], flags) => this.render(ctx, url.asString, flags.t?.merge().value, flags.b?.merge().value, flags.f?.merge().value)
                 }
@@ -46,7 +46,7 @@ export class CaptionCommand extends GlobalImageCommand {
         url: string | undefined,
         top: string | undefined,
         bottom: string | undefined,
-        fontName = `impact`
+        fontName = 'impact'
     ): Promise<CommandResult> {
         if (url === undefined)
             return cmd.errors.imageMissing;
@@ -68,7 +68,7 @@ export class CaptionCommand extends GlobalImageCommand {
         if (bottom !== undefined)
             bottom = await context.util.resolveTags(context, bottom);
 
-        return await this.renderImage(context, `caption`, {
+        return await this.renderImage(context, 'caption', {
             url,
             font: fontLookup[fontName],
             top: top,
@@ -78,32 +78,32 @@ export class CaptionCommand extends GlobalImageCommand {
 }
 
 const fontLookup: { [P in ValidFont as FontNames[P]]: P } = {
-    animeace: `animeace.ttf`,
-    annieuseyourtelescope: `AnnieUseYourTelescope.ttf`,
-    arcena: `ARCENA.ttf`,
-    arial: `arial.ttf`,
-    comicjens: `comicjens.ttf`,
-    comicsans: `comicsans.ttf`,
-    delius: `delius.ttf`,
-    impact: `impact.ttf`,
-    indieflower: `IndieFlower.ttf`,
-    roboto: `Roboto-Regular.ttf`,
-    sftoontime: `SFToontime.ttf`,
-    ubuntu: `Ubuntu-Regular.ttf`,
-    whitney: `whitney.ttf`
+    animeace: 'animeace.ttf',
+    annieuseyourtelescope: 'AnnieUseYourTelescope.ttf',
+    arcena: 'ARCENA.ttf',
+    arial: 'arial.ttf',
+    comicjens: 'comicjens.ttf',
+    comicsans: 'comicsans.ttf',
+    delius: 'delius.ttf',
+    impact: 'impact.ttf',
+    indieflower: 'IndieFlower.ttf',
+    roboto: 'Roboto-Regular.ttf',
+    sftoontime: 'SFToontime.ttf',
+    ubuntu: 'Ubuntu-Regular.ttf',
+    whitney: 'whitney.ttf'
 };
 interface FontNames {
-    [`ARCENA.ttf`]: `arcena`;
-    [`arial.ttf`]: `arial`;
-    [`animeace.ttf`]: `animeace`;
-    [`AnnieUseYourTelescope.ttf`]: `annieuseyourtelescope`;
-    [`comicjens.ttf`]: `comicjens`;
-    [`impact.ttf`]: `impact`;
-    [`SFToontime.ttf`]: `sftoontime`;
-    [`delius.ttf`]: `delius`;
-    [`IndieFlower.ttf`]: `indieflower`;
-    [`Roboto-Regular.ttf`]: `roboto`;
-    [`Ubuntu-Regular.ttf`]: `ubuntu`;
-    [`comicsans.ttf`]: `comicsans`;
-    [`whitney.ttf`]: `whitney`;
+    ['ARCENA.ttf']: 'arcena';
+    ['arial.ttf']: 'arial';
+    ['animeace.ttf']: 'animeace';
+    ['AnnieUseYourTelescope.ttf']: 'annieuseyourtelescope';
+    ['comicjens.ttf']: 'comicjens';
+    ['impact.ttf']: 'impact';
+    ['SFToontime.ttf']: 'sftoontime';
+    ['delius.ttf']: 'delius';
+    ['IndieFlower.ttf']: 'indieflower';
+    ['Roboto-Regular.ttf']: 'roboto';
+    ['Ubuntu-Regular.ttf']: 'ubuntu';
+    ['comicsans.ttf']: 'comicsans';
+    ['whitney.ttf']: 'whitney';
 }

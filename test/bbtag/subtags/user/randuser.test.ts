@@ -8,7 +8,7 @@ runSubtagTests({
     argCountBounds: { min: 0, max: 0 },
     cases: [
         {
-            code: `{randuser}`,
+            code: '{randuser}',
             assert(_, result, ctx) {
                 expect(result).to.be.oneOf(Object.values(ctx.users).map(u => u.id));
             },

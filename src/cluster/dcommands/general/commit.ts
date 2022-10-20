@@ -12,11 +12,11 @@ const cmd = templates.commands.commit;
 export class CommitCommand extends GlobalCommand {
     public constructor() {
         super({
-            name: `commit`,
+            name: 'commit',
             category: CommandType.GENERAL,
             definitions: [
                 {
-                    parameters: `{commitNumber:integer?}`,
+                    parameters: '{commitNumber:integer?}',
                     description: cmd.default.description,
                     execute: (_, [commitNumber]) => this.getCommit(commitNumber.asOptionalInteger)
                 }
@@ -54,7 +54,7 @@ export class CommitCommand extends GlobalCommand {
 
     async #fetchCommitCount(): Promise<number> {
         const response = await this.#fetchCommitRaw(0);
-        const link = response.headers.get(`Link`);
+        const link = response.headers.get('Link');
         if (link === null)
             return 0;
 
@@ -99,7 +99,7 @@ interface CommitData {
 
 const commitMapping = mapping.array(
     mapping.object<CommitData>({
-        author: mapping.object<CommitData[`author`]>({
+        author: mapping.object<CommitData['author']>({
             avatar_url: mapping.string,
             html_url: mapping.string,
             login: mapping.string

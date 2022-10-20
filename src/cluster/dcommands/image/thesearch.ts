@@ -8,10 +8,10 @@ const cmd = templates.commands.theSearch;
 export class TheSearchCommand extends GlobalImageCommand {
     public constructor() {
         super({
-            name: `thesearch`,
+            name: 'thesearch',
             definitions: [
                 {
-                    parameters: `{text+}`,
+                    parameters: '{text+}',
                     description: cmd.default.description,
                     execute: (ctx, [text]) => this.render(ctx, text.asString)
                 }
@@ -21,6 +21,6 @@ export class TheSearchCommand extends GlobalImageCommand {
 
     public async render(context: CommandContext, text: string): Promise<CommandResult> {
         text = await context.util.resolveTags(context, text);
-        return await this.renderImage(context, `thesearch`, { text });
+        return await this.renderImage(context, 'thesearch', { text });
     }
 }

@@ -8,14 +8,14 @@ const cmd = templates.commands.shit;
 export class ShitCommand extends GlobalImageCommand {
     public constructor() {
         super({
-            name: `shit`,
-            aliases: [`heck`],
+            name: 'shit',
+            aliases: ['heck'],
             flags: [
-                { flag: `p`, word: `plural`, description: cmd.flags.plural }
+                { flag: 'p', word: 'plural', description: cmd.flags.plural }
             ],
             definitions: [
                 {
-                    parameters: `{text+=Your favourite anime}`,
+                    parameters: '{text+=Your favourite anime}',
                     description: cmd.default.description,
                     execute: (ctx, [text], flags) => this.render(ctx, text.asString, flags.p !== undefined)
                 }
@@ -25,6 +25,6 @@ export class ShitCommand extends GlobalImageCommand {
 
     public async render(context: CommandContext, text: string, plural: boolean): Promise<CommandResult> {
         text = await context.util.resolveTags(context, text);
-        return await this.renderImage(context, `shit`, { text, plural });
+        return await this.renderImage(context, 'shit', { text, plural });
     }
 }

@@ -11,7 +11,7 @@ export class ImagePool extends WorkerPool<ImageConnection> {
 
     public constructor(clusterId: number, config: ImageWorkerConfiguration, logger: Logger) {
         super({
-            type: `Image`,
+            type: 'Image',
             workerCount: config.perCluster,
             defaultTimeout: config.spawnTime,
             logger

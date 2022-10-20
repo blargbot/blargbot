@@ -8,26 +8,26 @@ export class SubtagsRoute extends BaseRoute {
     readonly #api: Api;
 
     public constructor(api: Api) {
-        super(`/subtags`);
+        super('/subtags');
 
         this.#api = api;
 
-        this.addRoute(`/`, {
+        this.addRoute('/', {
             get: () => this.listSubtags()
-        }).addRoute(`/:subtagName`, {
+        }).addRoute('/:subtagName', {
             get: ({ request }) => this.getSubtag(request.params.subtagName)
-        }).addRoute(`/meta/categories`, {
+        }).addRoute('/meta/categories', {
             get: () => this.getCategories()
         });
     }
 
     public async listSubtags(): Promise<ApiResponse> {
-        const subtags: SubtagListResult = await this.#api.worker.request(`getSubtagList`, undefined);
+        const subtags: SubtagListResult = await this.#api.worker.request('getSubtagList', undefined);
         return this.ok(subtags);
     }
 
     public async getSubtag(name: string): Promise<ApiResponse> {
-        const subtag = await this.#api.worker.request(`getSubtag`, name);
+        const subtag = await this.#api.worker.request('getSubtag', name);
         if (subtag === undefined)
             return this.notFound();
         return this.ok(subtag);

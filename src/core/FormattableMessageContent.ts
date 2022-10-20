@@ -1,6 +1,6 @@
-import { FormatActionRowComponents, FormatButton, FormatEmbedAuthor, FormatEmbedFooter, FormatEmbedOptions, FormatSelectMenu, SendContent } from "@blargbot/core/types";
-import { format, IFormattable, IFormatter } from "@blargbot/domain/messages/types";
-import { ActionRowComponents, Button, EmbedAuthor, EmbedFooter, EmbedOptions, SelectMenu } from "eris";
+import { FormatActionRowComponents, FormatButton, FormatEmbedAuthor, FormatEmbedFooter, FormatEmbedOptions, FormatSelectMenu, SendContent } from '@blargbot/core/types';
+import { format, IFormattable, IFormatter } from '@blargbot/domain/messages/types';
+import { ActionRowComponents, Button, EmbedAuthor, EmbedFooter, EmbedOptions, SelectMenu } from 'eris';
 
 export class FormattableMessageContent implements IFormattable<SendContent<string>> {
     readonly #content: SendContent<IFormattable<string>>;
@@ -25,8 +25,8 @@ export class FormattableMessageContent implements IFormattable<SendContent<strin
     #getString(value: string | undefined | IFormattable<string | undefined>, formatter: IFormatter): string | undefined;
     #getString(value: string | undefined | IFormattable<string | undefined>, formatter: IFormatter): string | undefined {
         switch (typeof value) {
-            case `string`: return value;
-            case `undefined`: return value;
+            case 'string': return value;
+            case 'undefined': return value;
             default: return value[format](formatter);
         }
     }

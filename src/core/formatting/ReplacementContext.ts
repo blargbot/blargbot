@@ -1,4 +1,4 @@
-import { IFormatter } from "@blargbot/domain/messages/types";
+import { IFormatter } from '@blargbot/domain/messages/types';
 
 export interface ReplacementContext {
     readonly formatter: IFormatter;

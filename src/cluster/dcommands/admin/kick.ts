@@ -11,14 +11,14 @@ const cmd = templates.commands.kick;
 export class KickCommand extends GuildCommand {
     public constructor() {
         super({
-            name: `kick`,
+            name: 'kick',
             category: CommandType.ADMIN,
             flags: [
-                { flag: `r`, word: `reason`, description: cmd.flags.reason }
+                { flag: 'r', word: 'reason', description: cmd.flags.reason }
             ],
             definitions: [
                 {
-                    parameters: `{user:member+}`,
+                    parameters: '{user:member+}',
                     description: cmd.default.description,
                     execute: (ctx, [user], flags) => this.kick(ctx, user.asMember, flags.r?.merge().value)
                 }

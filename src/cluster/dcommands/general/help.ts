@@ -8,16 +8,16 @@ const cmd = templates.commands.help;
 export class HelpCommand extends GlobalCommand {
     public constructor() {
         super({
-            name: `help`,
+            name: 'help',
             category: CommandType.GENERAL,
             definitions: [
                 {
-                    parameters: ``,
+                    parameters: '',
                     description: cmd.command.description,
-                    execute: (ctx) => ctx.cluster.help.createMessageContent(``, ctx.author, ctx.channel)
+                    execute: (ctx) => ctx.cluster.help.createMessageContent('', ctx.author, ctx.channel)
                 },
                 {
-                    parameters: `{commandName}`,
+                    parameters: '{commandName}',
                     description: cmd.list.description,
                     execute: (ctx, [commandName]) => ctx.cluster.help.createMessageContent(commandName.asString, ctx.author, ctx.channel)
                 }

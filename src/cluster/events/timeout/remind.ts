@@ -6,11 +6,11 @@ import moment from 'moment-timezone';
 
 import templates from '../../text';
 
-export class TimeoutRemindEventService extends TimeoutEventService<`remind`> {
+export class TimeoutRemindEventService extends TimeoutEventService<'remind'> {
     public constructor(protected readonly cluster: Cluster) {
-        super(cluster.timeouts, `remind`, cluster.logger);
+        super(cluster.timeouts, 'remind', cluster.logger);
     }
-    public async execute(event: StoredEvent<`remind`>): Promise<void> {
+    public async execute(event: StoredEvent<'remind'>): Promise<void> {
         await this.cluster.util.send(event.channel, new FormattableMessageContent({
             content: templates.commands.remind.default.event({
                 userId: event.user,

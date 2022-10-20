@@ -8,15 +8,15 @@ import { SubtagType } from '../../utils';
 export class SuppressLookupSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: `suppresslookup`,
+            name: 'suppresslookup',
             category: SubtagType.BOT,
             definition: [
                 {
-                    parameters: [`value?:true`],
-                    description: `Sets whether error messages in the lookup system (query canceled, nothing found) should be suppressed. \`value\` must be a boolean`,
-                    exampleCode: `{suppresslookup}`,
-                    exampleOut: ``,
-                    returns: `nothing`,
+                    parameters: ['value?:true'],
+                    description: 'Sets whether error messages in the lookup system (query canceled, nothing found) should be suppressed. `value` must be a boolean',
+                    exampleCode: '{suppresslookup}',
+                    exampleOut: '',
+                    returns: 'nothing',
                     execute: (ctx, [value]) => this.suppress(ctx, value.value)
                 }
             ]
@@ -25,7 +25,7 @@ export class SuppressLookupSubtag extends CompiledSubtag {
 
     public suppress(context: BBTagContext, value: string): void {
         let suppress: boolean | undefined = true;
-        if (value !== ``) {
+        if (value !== '') {
             suppress = parse.boolean(value);
             if (suppress === undefined)
                 throw new NotABooleanError(value);

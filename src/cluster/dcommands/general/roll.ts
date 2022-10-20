@@ -8,11 +8,11 @@ const cmd = templates.commands.roll;
 export class RollCommand extends GlobalCommand {
     public constructor() {
         super({
-            name: `roll`,
+            name: 'roll',
             category: CommandType.GENERAL,
             definitions: [
                 {
-                    parameters: `{dice=1d20} {modifier:integer?} {details+?}`,
+                    parameters: '{dice=1d20} {modifier:integer?} {details+?}',
                     description: cmd.default.description,
                     execute: (ctx, [dice, modifier, details]) => this.rollDice(ctx, dice.asString, modifier.asOptionalInteger, details.asOptionalString)
                 }
@@ -22,19 +22,19 @@ export class RollCommand extends GlobalCommand {
 
     public rollDice(context: CommandContext, dice: string, modifier = 0, details?: string): CommandResult {
         switch (dice.toLowerCase()) {
-            case `cat`: return {
+            case 'cat': return {
                 embeds: [{
                     author: context.util.embedifyAuthor(context.author),
                     image: { url: randChoose(cats) }
                 }]
             };
-            case `rick`: return {
+            case 'rick': return {
                 embeds: [{
                     author: context.util.embedifyAuthor(context.author),
                     image: { url: randChoose(ricks) }
                 }]
             };
-            case `character`: return {
+            case 'character': return {
                 embeds: [{
                     author: context.util.embedifyAuthor(context.author),
                     description: cmd.default.character.embed.description({
@@ -65,7 +65,7 @@ export class RollCommand extends GlobalCommand {
         const subtotal = rolls.reduce((p, c) => p + c, 0);
         const total = subtotal + modifier;
         const modifierText = modifier === 0 ? undefined
-            : cmd.default.embed.description.modifier({ total: subtotal, sign: modifier < 0 ? `-` : `+`, modifier: Math.abs(modifier) });
+            : cmd.default.embed.description.modifier({ total: subtotal, sign: modifier < 0 ? '-' : '+', modifier: Math.abs(modifier) });
 
         let natText = undefined;
 
@@ -97,13 +97,13 @@ const maxFaces = 2000;
 const maxRolls = 100;
 
 const cats = [
-    `http://gifrific.com/wp-content/uploads/2013/06/Cat-Rolls-In-A-Ball.gif`,
-    `https://media.giphy.com/media/4LTGEdPBPjA10eKu1Dby/giphy.gif`,
-    `https://media.giphy.com/media/yOQFhJjH31dUQ/giphy.gif`
+    'http://gifrific.com/wp-content/uploads/2013/06/Cat-Rolls-In-A-Ball.gif',
+    'https://media.giphy.com/media/4LTGEdPBPjA10eKu1Dby/giphy.gif',
+    'https://media.giphy.com/media/yOQFhJjH31dUQ/giphy.gif'
 ];
 
 const ricks = [
-    `https://media.giphy.com/media/5kq0GCjHA8Rwc/giphy.gif`,
-    `https://giphy.com/gifs/rick-astley-Ju7l5y9osyymQ`,
-    `https://tenor.com/Eszv.gif`
+    'https://media.giphy.com/media/5kq0GCjHA8Rwc/giphy.gif',
+    'https://giphy.com/gifs/rick-astley-Ju7l5y9osyymQ',
+    'https://tenor.com/Eszv.gif'
 ];

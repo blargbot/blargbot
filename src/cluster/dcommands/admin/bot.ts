@@ -11,11 +11,11 @@ const cmd = templates.commands.bot;
 export class ServerCommand extends GuildCommand {
     public constructor() {
         super({
-            name: `bot`,
+            name: 'bot',
             category: CommandType.ADMIN,
             definitions: [
                 {
-                    parameters: `reset`,
+                    parameters: 'reset',
                     description: cmd.reset.description,
                     execute: (ctx) => this.resetGuild(ctx)
                 }

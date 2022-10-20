@@ -4,9 +4,9 @@ import { DiscordEventService } from '@blargbot/core/serviceTypes';
 import { Member, OldMember } from 'eris';
 import moment from 'moment-timezone';
 
-export class DiscordMemberUpdateHandler extends DiscordEventService<`guildMemberUpdate`> {
+export class DiscordMemberUpdateHandler extends DiscordEventService<'guildMemberUpdate'> {
     public constructor(protected readonly cluster: Cluster) {
-        super(cluster.discord, `guildMemberUpdate`, cluster.logger, (_, member, oldMember) => this.execute(member, oldMember));
+        super(cluster.discord, 'guildMemberUpdate', cluster.logger, (_, member, oldMember) => this.execute(member, oldMember));
     }
 
     public async execute(member: Member, oldMember: OldMember | null): Promise<void> {
@@ -23,7 +23,7 @@ export class DiscordMemberUpdateHandler extends DiscordEventService<`guildMember
             promises.push(this.cluster.moderation.eventLog.nicknameUpdated(member, oldMember.nick ?? undefined));
 
         if ((member.communicationDisabledUntil ?? null) !== (oldMember.communicationDisabledUntil ?? null)) {
-            if (typeof member.communicationDisabledUntil === `number`) {
+            if (typeof member.communicationDisabledUntil === 'number') {
                 const now = moment();
                 const memberTimeoutEndDate = moment(member.communicationDisabledUntil);
                 const duration = moment.duration(memberTimeoutEndDate.diff(now));

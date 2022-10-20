@@ -61,7 +61,7 @@ export interface SerializedBBTagContext {
     scope: BBTagRuntimeScope;
     inputRaw: string;
     flags: ReadonlyArray<FlagDefinition<string>>;
-    data: Pick<BBTagContextState, `query` | `ownedMsgs` | `stackSize` | `allowedMentions`>;
+    data: Pick<BBTagContextState, 'query' | 'ownedMsgs' | 'stackSize' | 'allowedMentions'>;
     tagName: string;
     rootTagName: string;
     author: string | undefined;
@@ -73,14 +73,14 @@ export interface SerializedBBTagContext {
 }
 
 export type BBTagContextMessage = Pick<Message<KnownGuildTextableChannel>,
-    | `id`
-    | `createdAt`
-    | `content`
-    | `channel`
-    | `member`
-    | `author`
-    | `attachments`
-    | `embeds`
+    | 'id'
+    | 'createdAt'
+    | 'content'
+    | 'channel'
+    | 'member'
+    | 'author'
+    | 'attachments'
+    | 'embeds'
 >
 export interface BBTagContextState {
     query: {
@@ -233,16 +233,16 @@ type SubtagReturnTypeAtomicMap = SubtagReturnTypeValueMap & {
 }
 
 type SubtagReturnTypeUnion<T extends Array<keyof SubtagReturnTypeAtomicMap>, Other = never> = {
-    [P in ArrayJoin<T, `|`>]: SubtagReturnTypeAtomicMap[T[number]] | Other;
+    [P in ArrayJoin<T, '|'>]: SubtagReturnTypeAtomicMap[T[number]] | Other;
 }
 
-type SubtagReturnTypeMapHelper = Omit<SubtagReturnTypeAtomicMap, `nothing`>
-    & SubtagReturnTypeUnion<[`number`, `number[]`]>
-    & SubtagReturnTypeUnion<[`boolean`, `number`]>
-    & SubtagReturnTypeUnion<[`string`, `nothing`]>
+type SubtagReturnTypeMapHelper = Omit<SubtagReturnTypeAtomicMap, 'nothing'>
+    & SubtagReturnTypeUnion<['number', 'number[]']>
+    & SubtagReturnTypeUnion<['boolean', 'number']>
+    & SubtagReturnTypeUnion<['string', 'nothing']>
     // & SubtagReturnTypeUnion<['json', 'nothing']>
-    & SubtagReturnTypeUnion<[`json[]`, `nothing`]>
-    & SubtagReturnTypeUnion<[`json`, `nothing`]>
+    & SubtagReturnTypeUnion<['json[]', 'nothing']>
+    & SubtagReturnTypeUnion<['json', 'nothing']>
     & {
         unknown: AsyncIterable<string | undefined>;
         nothing: void;

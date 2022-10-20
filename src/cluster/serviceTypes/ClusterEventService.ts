@@ -14,7 +14,7 @@ export abstract class ClusterEventService<Contract extends IPCContractNames<Clus
     ) {
         super();
         this.type = `ClusterEvent:${this.event}`;
-        this.#execute = this.makeSafeCaller(execute, this.cluster.logger, `Cluster event handler`);
+        this.#execute = this.makeSafeCaller(execute, this.cluster.logger, 'Cluster event handler');
     }
 
     public start(): void {

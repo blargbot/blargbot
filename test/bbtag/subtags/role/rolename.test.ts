@@ -8,15 +8,15 @@ runSubtagTests({
     argCountBounds: { min: 1, max: 2 },
     cases: [
         ...createGetRolePropTestCases({
-            quiet: ``,
+            quiet: '',
             generateCode(...args) {
-                return `{${[`rolename`, ...args].join(`;`)}}`;
+                return `{${['rolename', ...args].join(';')}}`;
             },
             cases: [
                 {
-                    expected: `abcdef`,
+                    expected: 'abcdef',
                     setup(role) {
-                        role.name = `abcdef`;
+                        role.name = 'abcdef';
                     }
                 }
             ]

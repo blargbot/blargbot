@@ -8,7 +8,7 @@ import { CommandContext } from './CommandContext';
 import { GlobalCommand } from './GlobalCommand';
 import { RatelimitMiddleware, SendTypingMiddleware, SingleThreadMiddleware } from './middleware';
 
-export interface GlobalImageCommandOptions extends Omit<CommandOptions<CommandContext>, `category`> {
+export interface GlobalImageCommandOptions extends Omit<CommandOptions<CommandContext>, 'category'> {
     dontLimitChannel?: boolean;
     ratelimit?: Duration;
 }
@@ -22,7 +22,7 @@ export abstract class GlobalImageCommand extends GlobalCommand {
 
         if (options.dontLimitChannel !== true)
             this.middleware.push(new SingleThreadMiddleware(c => c.channel.id));
-        this.middleware.push(new RatelimitMiddleware(options.ratelimit ?? duration(5, `seconds`), c => c.author.id));
+        this.middleware.push(new RatelimitMiddleware(options.ratelimit ?? duration(5, 'seconds'), c => c.author.id));
         this.middleware.push(new SendTypingMiddleware());
     }
 

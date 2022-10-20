@@ -25,20 +25,20 @@ export class AutoresponseManager {
 
         setInterval(() => {
             if (this.#executionCounts !== undefined) {
-                cluster.logger.info(`Autoresponse usage summary`, this.#executionCounts);
+                cluster.logger.info('Autoresponse usage summary', this.#executionCounts);
                 this.#executionCounts = undefined;
             }
         }, 60000);
     }
 
-    #logAutoresponses(guildId: string, arId: `${number}` | `everything`): void {
+    #logAutoresponses(guildId: string, arId: `${number}` | 'everything'): void {
         const key = `${guildId}|${arId}`;
         this.#executionCounts ??= {};
         this.#executionCounts[key] = (this.#executionCounts[key] ?? 0) + 1;
     }
 
     public async refresh(): Promise<void> {
-        const whitelist = await this.#cluster.database.vars.get(`arwhitelist`);
+        const whitelist = await this.#cluster.database.vars.get('arwhitelist');
         this.#guilds.clear();
         for (const guildId of whitelist?.values ?? [])
             this.#guilds.add(guildId);
@@ -50,7 +50,7 @@ export class AutoresponseManager {
         if (isChange) {
             if (!this.#cluster.util.isBotStaff(requester.id)) {
                 const guild = this.#cluster.discord.guilds.get(guildId);
-                const code = Buffer.from(JSON.stringify(<ArData>{ channel: channelId, guild: guildId })).toString(`base64`);
+                const code = Buffer.from(JSON.stringify(<ArData>{ channel: channelId, guild: guildId })).toString('base64');
                 const message = await this.#cluster.util.send(
                     this.#cluster.config.discord.channels.autoresponse,
                     new FormattableMessageContent({
@@ -65,13 +65,13 @@ export class AutoresponseManager {
                     })
                 );
                 await Promise.all(Object.keys(emojiValues).map(emoji => message?.addReaction(emoji)));
-                return `requested`;
+                return 'requested';
             }
 
             if (whitelisted) this.#guilds.add(guildId);
             else this.#guilds.delete(guildId);
 
-            await this.#cluster.database.vars.set(`arwhitelist`, { values: [...this.#guilds] });
+            await this.#cluster.database.vars.set('arwhitelist', { values: [...this.#guilds] });
         }
 
         if (isChange) {
@@ -83,11 +83,11 @@ export class AutoresponseManager {
             );
         }
         return whitelisted
-            ? isChange ? `approved` : `alreadyApproved`
-            : isChange ? `rejected` : `alreadyRejected`;
+            ? isChange ? 'approved' : 'alreadyApproved'
+            : isChange ? 'rejected' : 'alreadyRejected';
     }
 
-    public setDebug(guildId: string, id: number | `everything`, userId: string, channelId: string, messageId: string): void {
+    public setDebug(guildId: string, id: number | 'everything', userId: string, channelId: string, messageId: string): void {
         this.#debugOutput[`${guildId}|${id}|${userId}`] = { channelId, messageId };
     }
 
@@ -105,18 +105,18 @@ export class AutoresponseManager {
         await Promise.all(promises);
     }
 
-    async #executeCore(msg: Message<KnownGuildTextableChannel>, id: `${number}` | `everything`, tag: GuildTriggerTag, args: string[]): Promise<void> {
+    async #executeCore(msg: Message<KnownGuildTextableChannel>, id: `${number}` | 'everything', tag: GuildTriggerTag, args: string[]): Promise<void> {
         this.#logAutoresponses(msg.channel.guild.id, id);
 
         const result = await this.#cluster.bbtag.execute(tag.content, {
             message: msg,
-            limit: id === `everything` ? `everythingAutoResponseLimit` : `generalAutoResponseLimit`,
+            limit: id === 'everything' ? 'everythingAutoResponseLimit' : 'generalAutoResponseLimit',
             authorId: tag.author ?? undefined,
             authorizerId: tag.authorizer ?? undefined,
             inputRaw: args.length === 1 ? msg.content : humanize.smartSplit.inverse(args),
             isCC: true,
             rootTagName: `_autoresponse_${id}`,
-            silent: id === `everything`
+            silent: id === 'everything'
         });
 
         const key = `${msg.channel.guild.id}|${id}|${msg.author.id}`;
@@ -143,7 +143,7 @@ export class AutoresponseManager {
             return;
 
         const whitelist = emojiValues[emoji.name];
-        const reason = `${whitelist ? `Approved` : `Rejected`} by ${humanize.fullName(user)}`;
+        const reason = `${whitelist ? 'Approved' : 'Rejected'} by ${humanize.fullName(user)}`;
 
         const promises: Array<Promise<unknown>> = [];
         promises.push(this.whitelist(mapped.value.guild, mapped.value.channel, user, reason, whitelist));
@@ -156,11 +156,11 @@ export class AutoresponseManager {
         await Promise.all(promises);
     }
 
-    async * #findAutoresponses(msg: Message<KnownGuildTextableChannel>, everything: boolean): AsyncGenerator<{ command: GuildTriggerTag; id: `${number}` | `everything`; args: string[]; }> {
+    async * #findAutoresponses(msg: Message<KnownGuildTextableChannel>, everything: boolean): AsyncGenerator<{ command: GuildTriggerTag; id: `${number}` | 'everything'; args: string[]; }> {
         const ars = await this.#cluster.database.guilds.getAutoresponses(msg.channel.guild.id) ?? {};
         if (everything) {
             if (ars.everything !== undefined && ars.everything !== null)
-                yield { command: ars.everything, id: `everything`, args: [msg.content] };
+                yield { command: ars.everything, id: 'everything', args: [msg.content] };
             return;
         }
 

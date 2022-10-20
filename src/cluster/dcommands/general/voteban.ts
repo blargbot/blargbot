@@ -10,28 +10,28 @@ const cmd = templates.commands.voteBan;
 export class VoteBanCommand extends GuildCommand {
     public constructor() {
         super({
-            name: `voteban`,
-            aliases: [`pollban`, `vb`, `pb`],
+            name: 'voteban',
+            aliases: ['pollban', 'vb', 'pb'],
             category: CommandType.GENERAL,
             description: cmd.description,
             definitions: [
                 {
-                    parameters: ``,
+                    parameters: '',
                     description: cmd.list.description,
                     execute: (ctx) => this.getTop(ctx)
                 },
                 {
-                    parameters: `info {user:member+}`,
+                    parameters: 'info {user:member+}',
                     description: cmd.info.description,
                     execute: (ctx, [user]) => this.getVotes(ctx, user.asMember)
                 },
                 {
-                    parameters: `{user:member} {reason+?}`,
+                    parameters: '{user:member} {reason+?}',
                     description: cmd.sign.description,
                     execute: (ctx, [user, reason]) => this.sign(ctx, user.asMember.user, reason.asOptionalString)
                 },
                 {
-                    parameters: `forgive {user:member+}`,
+                    parameters: 'forgive {user:member+}',
                     description: cmd.forgive.description,
                     execute: (ctx, [user]) => this.unsign(ctx, user.asMember.user)
                 }

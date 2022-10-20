@@ -3,13 +3,13 @@ import { WorkerPoolEventService } from '@blargbot/core/serviceTypes';
 import { Master } from '@blargbot/master';
 import Prometheus, { metric } from 'prom-client';
 
-export class ApiGetMetricsHandler extends WorkerPoolEventService<ApiConnection, `getMetrics`> {
+export class ApiGetMetricsHandler extends WorkerPoolEventService<ApiConnection, 'getMetrics'> {
     readonly #master: Master;
 
     public constructor(master: Master) {
         super(
             master.api,
-            `getMetrics`,
+            'getMetrics',
             async ({ reply }) => reply(await this.getCommand()));
         this.#master = master;
     }

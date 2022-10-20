@@ -1,4 +1,4 @@
-import { IFormattable } from "../../messages/types";
+import { IFormattable } from '../../messages/types';
 
 export interface StoredGuildSettings {
     readonly actonlimitsonly?: boolean;
@@ -34,9 +34,9 @@ export type GuildSettingDocs = {
 type GetConfigurableSettingKey<T extends keyof StoredGuildSettings> = GuildSettingTypeName<StoredGuildSettings[T]> extends never ? never : T;
 
 type GuildSettingTypeName<T> =
-    | (T extends string ? `string` | `channel` | `role` | `permission` : never)
-    | (T extends number ? `float` | `int` : never)
-    | (T extends boolean ? `bool` : never)
+    | (T extends string ? 'string' | 'channel' | 'role' | 'permission' : never)
+    | (T extends number ? 'float' | 'int' : never)
+    | (T extends boolean ? 'bool' : never)
 
 type GuildSettingDescriptor<T extends keyof StoredGuildSettings = keyof StoredGuildSettings> = {
     readonly key: T;

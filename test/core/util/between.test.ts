@@ -2,7 +2,7 @@ import { between } from '@blargbot/core/utils';
 import { expect } from 'chai';
 import { describe, it } from 'mocha';
 
-describe(`between`, () => {
+describe('between', () => {
     const data: Array<[value: number, lower: number, upper: number, inclusive: boolean, expected: boolean]> = [
         [5, 0, 10, true, true],
         [5, 0, 10, false, true],
@@ -15,7 +15,7 @@ describe(`between`, () => {
     ];
 
     for (const [value, lower, upper, inclusive, expected] of data) {
-        it(`should identify ${value} as${expected ? `` : ` not`} being between ${lower} and ${upper} (${inclusive ? `inclusive` : `exclusive`})`, () => {
+        it(`should identify ${value} as${expected ? '' : ' not'} being between ${lower} and ${upper} (${inclusive ? 'inclusive' : 'exclusive'})`, () => {
             expect(between(value, lower, upper, inclusive)).to.eq(expected);
         });
     }

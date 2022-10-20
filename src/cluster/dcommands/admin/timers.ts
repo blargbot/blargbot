@@ -12,27 +12,27 @@ const cmd = templates.commands.timers;
 export class TimersCommand extends GlobalCommand {
     public constructor() {
         super({
-            name: `timers`,
-            aliases: [`reminders`, `events`],
+            name: 'timers',
+            aliases: ['reminders', 'events'],
             category: CommandType.ADMIN,
             definitions: [
                 {
-                    parameters: `{page:integer=1}`,
+                    parameters: '{page:integer=1}',
                     description: cmd.list.description,
                     execute: (ctx, [page]) => this.listTimers(ctx, page.asInteger)
                 },
                 {
-                    parameters: `info {timerId}`,
+                    parameters: 'info {timerId}',
                     description: cmd.info.description,
                     execute: (ctx, [timerId]) => this.getTimer(ctx, timerId.asString)
                 },
                 {
-                    parameters: `cancel|delete {timerIds[]}`,
+                    parameters: 'cancel|delete {timerIds[]}',
                     description: cmd.cancel.description,
                     execute: (ctx, [timerIds]) => this.cancelTimers(ctx, timerIds.asStrings)
                 },
                 {
-                    parameters: `clear`,
+                    parameters: 'clear',
                     description: cmd.clear.description,
                     execute: (ctx) => this.clearAllTimers(ctx)
                 }
@@ -62,9 +62,9 @@ export class TimersCommand extends GlobalCommand {
                 const maxLength = headers.map(s => s.length);
                 const grid: Array<readonly string[]> = [];
                 for (const event of eventsPage.events) {
-                    const userId = `user` in event ? event.user : undefined;
+                    const userId = 'user' in event ? event.user : undefined;
                     const user = userId !== undefined ? context.discord.users.get(userId) : undefined;
-                    let content = `content` in event ? event.content : ``;
+                    let content = 'content' in event ? event.content : '';
                     if (content.length > 40)
                         content = `${content.slice(0, 37)}...`;
 
@@ -82,13 +82,13 @@ export class TimersCommand extends GlobalCommand {
                     grid.push(row);
                 }
                 const gridLines: string[] = [];
-                const pushRow = (row: typeof grid[number]): unknown => gridLines.push(row.map((s, i) => s.padEnd(maxLength[i], ` `)).join(` | `));
+                const pushRow = (row: typeof grid[number]): unknown => gridLines.push(row.map((s, i) => s.padEnd(maxLength[i], ' ')).join(' | '));
                 pushRow(headers);
-                gridLines.push(``.padEnd(gridLines[0].length, `-`));
+                gridLines.push(''.padEnd(gridLines[0].length, '-'));
                 for (const row of grid)
                     pushRow(row);
 
-                return gridLines.join(`\n`);
+                return gridLines.join('\n');
             }
         };
 
@@ -118,23 +118,23 @@ export class TimersCommand extends GlobalCommand {
         const fields = embed.fields = [] as EmbedField[];
 
         embed.title = `Timer #${simpleId(timer.id)}`;
-        embed.description = `content` in timer ? timer.content.length > 2000 ? `${timer.content.slice(0, 1997)}...` : timer.content : undefined;
+        embed.description = 'content' in timer ? timer.content.length > 2000 ? `${timer.content.slice(0, 1997)}...` : timer.content : undefined;
         fields.push({
-            name: `Type`,
+            name: 'Type',
             value: timer.type,
             inline: true
         });
 
-        if (`user` in timer) {
+        if ('user' in timer) {
             fields.push({
-                name: `Started by`,
+                name: 'Started by',
                 value: `<@${timer.user}>`,
                 inline: true
             });
         }
 
         fields.push({
-            name: `Duration`,
+            name: 'Duration',
             value: `Started <t:${moment(timer.starttime).unix()}>\nEnds <t:${moment(timer.endtime).unix()}>`,
             inline: false
         });
@@ -143,14 +143,14 @@ export class TimersCommand extends GlobalCommand {
             embeds: [
                 {
                     title: cmd.info.embed.title({ id: simpleId(timer.id) }),
-                    description: literal(`content` in timer ? timer.content.length > 2000 ? `${timer.content.slice(0, 1997)}...` : timer.content : undefined),
+                    description: literal('content' in timer ? timer.content.length > 2000 ? `${timer.content.slice(0, 1997)}...` : timer.content : undefined),
                     fields: [
                         {
                             name: cmd.info.embed.field.type.name,
                             value: literal(timer.type),
                             inline: true
                         },
-                        ... `user` in timer
+                        ... 'user' in timer
                             ? [{
                                 name: cmd.info.embed.field.user.name,
                                 value: cmd.info.embed.field.user.value({ userId: timer.user }),

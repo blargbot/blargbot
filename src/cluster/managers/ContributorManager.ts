@@ -6,7 +6,7 @@ import reloadFactory from 'require-reload';
 
 const reload = reloadFactory(require);
 
-const unknownUser = TranslatableString.define<{ userId: string; }, string>(`contributor.notFound`, `A user I cant find! (ID: {userId})`);
+const unknownUser = TranslatableString.define<{ userId: string; }, string>('contributor.notFound', 'A user I cant find! (ID: {userId})');
 
 export class ContributorManager {
     public patrons: Array<User | IFormattable<string>>;

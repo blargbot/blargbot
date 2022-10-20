@@ -5,14 +5,14 @@ import { parseHex } from './parseHex';
 
 const colorKeys = Object.keys(colors);
 
-export function parseColor(text: number | `random` | string): number | undefined {
-    if (typeof text === `number`)
+export function parseColor(text: number | 'random' | string): number | undefined {
+    if (typeof text === 'number')
         return text;
 
-    text = text.replace(/\s+/g, ``).toLowerCase();
+    text = text.replace(/\s+/g, '').toLowerCase();
 
-    const name = text.toLowerCase().replace(/[^a-z]/g, ``);
-    if (name === `random`)
+    const name = text.toLowerCase().replace(/[^a-z]/g, '');
+    if (name === 'random')
         return randInt(0, 0xffffff);
 
     //By name
@@ -38,7 +38,7 @@ export function parseColor(text: number | `random` | string): number | undefined
     //Hex code with 3 digits
     match = /^#?([0-9a-f]{3})$/i.exec(text);
     if (match !== null)
-        return parseInt(match[1].split(``).map(v => v + v).join(``), 16);
+        return parseInt(match[1].split('').map(v => v + v).join(''), 16);
 
     //Decimal number
     match = /^\.([0-9]{1,8})$/.exec(text);

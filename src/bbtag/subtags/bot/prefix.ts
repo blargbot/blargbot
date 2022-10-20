@@ -5,15 +5,15 @@ import { SubtagType } from '../../utils';
 export class PrefixSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: `prefix`,
+            name: 'prefix',
             category: SubtagType.BOT,
             definition: [
                 {
                     parameters: [],
-                    description: `Gets the command prefix used to call this bbtag.`,
-                    exampleCode: `Your prefix is {prefix}`,
-                    exampleOut: `Your prefix is b!`,
-                    returns: `string`,
+                    description: 'Gets the command prefix used to call this bbtag.',
+                    exampleCode: 'Your prefix is {prefix}',
+                    exampleOut: 'Your prefix is b!',
+                    returns: 'string',
                     execute: ctx => this.getPrefix(ctx)
                 }
             ]
@@ -24,10 +24,10 @@ export class PrefixSubtag extends CompiledSubtag {
         if (context.prefix !== undefined)
             return context.prefix;
 
-        const prefix = await context.database.guilds.getSetting(context.guild.id, `prefix`);
+        const prefix = await context.database.guilds.getSetting(context.guild.id, 'prefix');
         switch (typeof prefix) {
-            case `string`: return prefix;
-            case `undefined`: return context.util.defaultPrefix;
+            case 'string': return prefix;
+            case 'undefined': return context.util.defaultPrefix;
             default: return prefix[0];
         }
     }

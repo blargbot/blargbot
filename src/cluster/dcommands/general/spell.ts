@@ -11,11 +11,11 @@ const cmd = templates.commands.spell;
 export class SpellCommand extends GlobalCommand {
     public constructor() {
         super({
-            name: `spell`,
+            name: 'spell',
             category: CommandType.GENERAL,
             definitions: [
                 {
-                    parameters: `{name?}`,
+                    parameters: '{name?}',
                     description: cmd.default.description,
                     execute: (ctx, [name]) => this.getSpell(ctx, name.asOptionalString)
                 }
@@ -33,7 +33,7 @@ export class SpellCommand extends GlobalCommand {
             .split(/,\s*/g)
             .map(c => ({ component: c, norm: c.toLowerCase() }))
             .map(c => componentKeys.has<string>(c.norm) ? componentMap[c.norm] : c.component)
-            .join(`, `);
+            .join(', ');
 
         return {
             embeds: [
@@ -95,7 +95,7 @@ export class SpellCommand extends GlobalCommand {
                 }))
         });
 
-        return result.state === `SUCCESS` ? result.value : undefined;
+        return result.state === 'SUCCESS' ? result.value : undefined;
     }
 }
 
@@ -104,21 +104,21 @@ for (const spell of spellsJson) {
     spells[spell.name.toLowerCase()] = {
         ...spell,
         desc: spell.desc
-            .replace(/<\/?p>/gi, `\n`)
-            .replace(/<\/?br>/gi, `\n\n`)
-            .replace(/\n{3,}/, `\n\n`)
-            .replace(/<\/?b>/gi, `**`)
+            .replace(/<\/?p>/gi, '\n')
+            .replace(/<\/?br>/gi, '\n\n')
+            .replace(/\n{3,}/, '\n\n')
+            .replace(/<\/?b>/gi, '**')
             .trim()
     };
 }
 
 const componentMap = {
-    v: `Verbal`,
-    s: `Somantic`,
-    m: `Material`,
-    f: `Focus`,
-    df: `Divine Focus`,
-    xp: `XP Cost`
+    v: 'Verbal',
+    s: 'Somantic',
+    m: 'Material',
+    f: 'Focus',
+    df: 'Divine Focus',
+    xp: 'XP Cost'
 } as const;
 const componentKeys = new Set(Object.keys(componentMap));
 

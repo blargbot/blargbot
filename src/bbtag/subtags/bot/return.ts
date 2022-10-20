@@ -8,15 +8,15 @@ import { SubtagType } from '../../utils';
 export class ReturnSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: `return`,
+            name: 'return',
             category: SubtagType.BOT,
             definition: [
                 {
-                    parameters: [`force?:true`],
-                    description: `Stops execution of the tag and returns what has been parsed. If \`force\` is \`true\` then it will also return from any tags calling this tag.`,
-                    exampleCode: `This will display. {return} This will not.`,
-                    exampleOut: `This will display.`,
-                    returns: `nothing`,
+                    parameters: ['force?:true'],
+                    description: 'Stops execution of the tag and returns what has been parsed. If `force` is `true` then it will also return from any tags calling this tag.',
+                    exampleCode: 'This will display. {return} This will not.',
+                    exampleOut: 'This will display.',
+                    returns: 'nothing',
                     execute: (context, [forcedStr]) => this.setReturn(context, forcedStr.value)
                 }
             ]

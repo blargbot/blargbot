@@ -9,47 +9,47 @@ runSubtagTests({
     argCountBounds: { min: 1, max: Infinity },
     cases: [
         {
-            code: `{embed;{escapebbtag;{"title":"Hello!"}}}`,
+            code: '{embed;{escapebbtag;{"title":"Hello!"}}}',
             subtags: [new EscapeBbtagSubtag()],
-            expected: ``,
+            expected: '',
             assert(ctx) {
                 expect(ctx.data.embeds).to.deep.equal([
-                    { title: `Hello!` }
+                    { title: 'Hello!' }
                 ]);
             }
         },
         {
-            code: `{embed;{escapebbtag;{"title":"Hello!"}};{escapebbtag;{"author":{ "name": "abc" }}}}`,
+            code: '{embed;{escapebbtag;{"title":"Hello!"}};{escapebbtag;{"author":{ "name": "abc" }}}}',
             subtags: [new EscapeBbtagSubtag()],
-            expected: ``,
+            expected: '',
             assert(ctx) {
                 expect(ctx.data.embeds).to.deep.equal([
-                    { title: `Hello!` },
-                    { author: { name: `abc` } }
+                    { title: 'Hello!' },
+                    { author: { name: 'abc' } }
                 ]);
             }
         },
         {
-            code: `{embed;{escapebbtag;{"title":"Hello!"}};{escapebbtag;{"title": false}}}`,
+            code: '{embed;{escapebbtag;{"title":"Hello!"}};{escapebbtag;{"title": false}}}',
             subtags: [new EscapeBbtagSubtag()],
-            expected: ``,
+            expected: '',
             assert(ctx) {
                 expect(ctx.data.embeds).to.deep.equal([
-                    { title: `Hello!` },
-                    { fields: [{ name: `Malformed JSON`, value: `{"title":false}` }], malformed: true }
+                    { title: 'Hello!' },
+                    { fields: [{ name: 'Malformed JSON', value: '{"title":false}' }], malformed: true }
                 ]);
             }
         },
         {
-            code: `{embed;{escapebbtag;{"title":"Hello!"}};{escapebbtag;{"author":{ "name": "abc" }}};{escapebbtag;[{"title":"embed array 1"}, {"title": "embed array 2"}]}}`,
+            code: '{embed;{escapebbtag;{"title":"Hello!"}};{escapebbtag;{"author":{ "name": "abc" }}};{escapebbtag;[{"title":"embed array 1"}, {"title": "embed array 2"}]}}',
             subtags: [new EscapeBbtagSubtag()],
-            expected: ``,
+            expected: '',
             assert(ctx) {
                 expect(ctx.data.embeds).to.deep.equal([
-                    { title: `Hello!` },
-                    { author: { name: `abc` } },
-                    { title: `embed array 1` },
-                    { title: `embed array 2` }
+                    { title: 'Hello!' },
+                    { author: { name: 'abc' } },
+                    { title: 'embed array 1' },
+                    { title: 'embed array 2' }
                 ]);
             }
         }

@@ -11,7 +11,7 @@ export class ClusterPool extends WorkerPool<ClusterConnection> {
         logger: Logger
     ) {
         super({
-            type: `Cluster`,
+            type: 'Cluster',
             workerCount: Math.ceil(config.max / config.perCluster),
             defaultTimeout: config.spawnTime + 5000 * config.perCluster,
             logger,
@@ -48,14 +48,14 @@ export class ClusterPool extends WorkerPool<ClusterConnection> {
         if (currentCluster !== undefined) {
             const shardReady: ProcessMessageHandler<number, never> = ({ data: shardId }) => {
                 try {
-                    currentCluster.send(`killshard`, shardId);
+                    currentCluster.send('killshard', shardId);
                 } catch (err: unknown) {
-                    this.logger.error(`Wasn't able to send killShard`, shardId, `message to cluster`, id, err);
+                    this.logger.error('Wasn\'t able to send killShard', shardId, 'message to cluster', id, err);
                 }
             };
 
-            cluster.on(`shardReady`, shardReady);
-            cluster.once(`ready`, () => cluster.off(`shardReady`, shardReady));
+            cluster.on('shardReady', shardReady);
+            cluster.once('ready', () => cluster.off('shardReady', shardReady));
         }
 
         return cluster;

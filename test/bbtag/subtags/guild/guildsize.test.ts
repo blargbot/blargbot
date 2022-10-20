@@ -9,8 +9,8 @@ runSubtagTests({
     argCountBounds: { min: 0, max: 0 },
     cases: [
         {
-            code: `{guildsize}`,
-            expected: `123`,
+            code: '{guildsize}',
+            expected: '123',
             postSetup(bbctx, ctx) {
                 ctx.util.setup(m => m.ensureMemberCache(bbctx.guild))
                     .thenCall(() => {

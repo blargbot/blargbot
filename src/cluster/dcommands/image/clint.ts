@@ -11,18 +11,18 @@ const cmd = templates.commands.clint;
 export class ClintCommand extends GlobalImageCommand {
     public constructor() {
         super({
-            name: `clint`,
+            name: 'clint',
             flags: [
-                { flag: `i`, word: `image`, description: cmd.flags.image }
+                { flag: 'i', word: 'image', description: cmd.flags.image }
             ],
             definitions: [
                 {
-                    parameters: `{user:user+}`,
+                    parameters: '{user:user+}',
                     description: cmd.user.description,
                     execute: (ctx, [user]) => this.renderUser(ctx, user.asUser)
                 },
                 {
-                    parameters: ``,
+                    parameters: '',
                     description: cmd.default.description,
                     execute: (ctx, _, flags) => this.render(
                         ctx,
@@ -45,6 +45,6 @@ export class ClintCommand extends GlobalImageCommand {
         if (!guard.isUrl(url))
             return cmd.default.invalidUrl({ url });
 
-        return await this.renderImage(context, `clint`, { image: url });
+        return await this.renderImage(context, 'clint', { image: url });
     }
 }

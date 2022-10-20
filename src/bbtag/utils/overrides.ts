@@ -1,30 +1,30 @@
 const generalApiOverrides = [
     // API subtags
-    `dm`,
-    `send`,
-    `edit`,
-    `delete`,
-    `kick`,
-    `ban`,
-    `reactadd`,
-    `reactremove`,
-    `roleadd`,
-    `rolecreate`,
-    `roledelete`,
-    `roleremove`,
-    `rolesetmentionable`,
-    `webhook`,
+    'dm',
+    'send',
+    'edit',
+    'delete',
+    'kick',
+    'ban',
+    'reactadd',
+    'reactremove',
+    'roleadd',
+    'rolecreate',
+    'roledelete',
+    'roleremove',
+    'rolesetmentionable',
+    'webhook',
 
     // Moderation subtags
-    `warn`,
-    `modlog`,
-    `pardon`,
+    'warn',
+    'modlog',
+    'pardon',
 
     // Misc subtags
-    `embed`,
-    `waitmessage`,
-    `waitreact`,
-    `sleep`
+    'embed',
+    'waitmessage',
+    'waitreact',
+    'sleep'
 ];
 
 export const overrides = {

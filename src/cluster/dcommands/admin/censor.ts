@@ -14,17 +14,17 @@ const cmd = templates.commands.censor;
 export class CensorCommand extends GuildCommand {
     public constructor() {
         super({
-            name: `censor`,
+            name: 'censor',
             category: CommandType.ADMIN,
             flags: [
-                { flag: `R`, word: `regex`, description: cmd.flags.regex },
-                { flag: `D`, word: `decancer`, description: cmd.flags.decancer },
-                { flag: `w`, word: `weight`, description: cmd.flags.weight },
-                { flag: `r`, word: `reason`, description: cmd.flags.reason }
+                { flag: 'R', word: 'regex', description: cmd.flags.regex },
+                { flag: 'D', word: 'decancer', description: cmd.flags.decancer },
+                { flag: 'w', word: 'weight', description: cmd.flags.weight },
+                { flag: 'r', word: 'reason', description: cmd.flags.reason }
             ],
             definitions: [
                 {
-                    parameters: `add|create {~phrase+}`,
+                    parameters: 'add|create {~phrase+}',
                     description: cmd.add.description,
                     execute: (ctx, [phrase], flags) => this.createCensor(ctx, phrase.asString, {
                         isRegex: flags.R !== undefined,
@@ -34,7 +34,7 @@ export class CensorCommand extends GuildCommand {
                     })
                 },
                 {
-                    parameters: `edit {id:integer} {~phrase+?}`,
+                    parameters: 'edit {id:integer} {~phrase+?}',
                     description: cmd.edit.description,
                     execute: (ctx, [id, phrase], flags) => this.updateCensor(ctx, id.asInteger, phrase.asOptionalString, {
                         isRegex: flags.R !== undefined,
@@ -44,57 +44,57 @@ export class CensorCommand extends GuildCommand {
                     })
                 },
                 {
-                    parameters: `delete|remove {id:integer}`,
+                    parameters: 'delete|remove {id:integer}',
                     description: cmd.delete.description,
                     execute: (ctx, [id]) => this.deleteCensor(ctx, id.asInteger)
                 },
                 {
-                    parameters: `exception {action:literal(add|remove)}`,
+                    parameters: 'exception {action:literal(add|remove)}',
                     subcommands: [
                         {
-                            parameters: `user {user:user+}`,
+                            parameters: 'user {user:user+}',
                             description: cmd.exception.user.description,
-                            execute: (ctx, [action, user]) => this.ignoreUser(ctx, user.asUser, action.asLiteral === `add`)
+                            execute: (ctx, [action, user]) => this.ignoreUser(ctx, user.asUser, action.asLiteral === 'add')
                         },
                         {
-                            parameters: `role {role:role+}`,
+                            parameters: 'role {role:role+}',
                             description: cmd.exception.role.description,
-                            execute: (ctx, [action, role]) => this.ignoreRole(ctx, role.asRole, action.asLiteral === `add`)
+                            execute: (ctx, [action, role]) => this.ignoreRole(ctx, role.asRole, action.asLiteral === 'add')
                         },
                         {
-                            parameters: `channel {channel:channel+}`,
+                            parameters: 'channel {channel:channel+}',
                             description: cmd.exception.channel.description,
-                            execute: (ctx, [action, channel]) => this.ignoreChannel(ctx, channel.asChannel, action.asLiteral === `add`)
+                            execute: (ctx, [action, channel]) => this.ignoreChannel(ctx, channel.asChannel, action.asLiteral === 'add')
                         }
                     ]
                 },
                 {
-                    parameters: `setmessage {id:integer?} {type:literal(delete|timeout|kick|ban)} {~code+?}`,
+                    parameters: 'setmessage {id:integer?} {type:literal(delete|timeout|kick|ban)} {~code+?}',
                     description: cmd.setMessage.description,
                     execute: (ctx, [id, type, code]) => this.setMessage(ctx, id.asOptionalInteger, type.asLiteral, code.asOptionalString)
                 },
                 {
-                    parameters: `setauthorizer {id:integer?} {type:literal(delete|timeout|kick|ban)}`,
+                    parameters: 'setauthorizer {id:integer?} {type:literal(delete|timeout|kick|ban)}',
                     description: cmd.setAuthorizer.description,
                     execute: (ctx, [id, type]) => this.setAuthorizer(ctx, id.asOptionalInteger, type.asLiteral)
                 },
                 {
-                    parameters: `rawmessage {id:integer?} {type:literal(delete|timeout|kick|ban)} {fileExtension:literal(bbtag|txt)=bbtag}`,
+                    parameters: 'rawmessage {id:integer?} {type:literal(delete|timeout|kick|ban)} {fileExtension:literal(bbtag|txt)=bbtag}',
                     description: cmd.rawMessage.description,
                     execute: (ctx, [id, type, fileExtension]) => this.getRawMessage(ctx, id.asOptionalInteger, type.asLiteral, fileExtension.asLiteral)
                 },
                 {
-                    parameters: `debug {id:integer} {type:literal(delete|timeout|kick|ban)}`,
+                    parameters: 'debug {id:integer} {type:literal(delete|timeout|kick|ban)}',
                     description: cmd.debug.description,
                     execute: (ctx, [id, type]) => this.setDebug(ctx, id.asInteger, type.asLiteral)
                 },
                 {
-                    parameters: `list`,
+                    parameters: 'list',
                     description: cmd.list.description,
                     execute: (ctx) => this.list(ctx)
                 },
                 {
-                    parameters: `info {id:integer}`,
+                    parameters: 'info {id:integer}',
                     description: cmd.info.description,
                     execute: (ctx, [id]) => this.showInfo(ctx, id.asInteger)
                 }
@@ -107,12 +107,12 @@ export class CensorCommand extends GuildCommand {
 
         let weight = 1;
         switch (typeof options.weight) {
-            case `string`:
+            case 'string':
                 weight = parseInt(options.weight);
                 if (isNaN(weight))
                     return cmd.errors.weightNotNumber({ value: options.weight });
                 break;
-            case `number`:
+            case 'number':
                 weight = options.weight;
                 break;
         }
@@ -138,12 +138,12 @@ export class CensorCommand extends GuildCommand {
 
         let weight = 1;
         switch (typeof options.weight) {
-            case `string`:
+            case 'string':
                 weight = parseInt(options.weight);
                 if (isNaN(weight))
                     return cmd.errors.weightNotNumber({ value: options.weight });
                 break;
-            case `number`:
+            case 'number':
                 weight = options.weight;
                 break;
         }
@@ -206,7 +206,7 @@ export class CensorCommand extends GuildCommand {
             author: context.author.id
         });
 
-        return cmd.setMessage.success[id === undefined ? `default` : `id`]({ type, id: id ?? 0 });
+        return cmd.setMessage.success[id === undefined ? 'default' : 'id']({ type, id: id ?? 0 });
     }
 
     public async setAuthorizer(context: GuildCommandContext, id: number | undefined, type: string): Promise<CommandResult> {
@@ -215,14 +215,14 @@ export class CensorCommand extends GuildCommand {
 
         const rule = await context.database.guilds.getCensorRule(context.channel.guild.id, id, type);
         if (rule === undefined)
-            return cmd.errors.messageNotSet[id === undefined ? `default` : `id`]({ type, id: id ?? 0 });
+            return cmd.errors.messageNotSet[id === undefined ? 'default' : 'id']({ type, id: id ?? 0 });
 
         await context.database.guilds.setCensorRule(context.channel.guild.id, id, type, {
             ...rule,
             authorizer: context.author.id
         });
 
-        return cmd.setAuthorizer.success[id === undefined ? `default` : `id`]({ type, id: id ?? 0 });
+        return cmd.setAuthorizer.success[id === undefined ? 'default' : 'id']({ type, id: id ?? 0 });
     }
 
     public async getRawMessage(context: GuildCommandContext, id: number | undefined, type: string, fileExtension: string): Promise<CommandResult> {
@@ -231,13 +231,13 @@ export class CensorCommand extends GuildCommand {
 
         const rule = await context.database.guilds.getCensorRule(context.channel.guild.id, id, type);
         if (rule === undefined)
-            return cmd.errors.messageNotSet[id === undefined ? `default` : `id`]({ type, id: id ?? 0 });
+            return cmd.errors.messageNotSet[id === undefined ? 'default' : 'id']({ type, id: id ?? 0 });
 
         return new RawBBTagCommandResult(
-            cmd.rawMessage.inline[id === undefined ? `default` : `id`]({ type, id: id ?? 0, content: rule.content }),
-            cmd.rawMessage.attached[id === undefined ? `default` : `id`]({ type, id: id ?? 0 }),
+            cmd.rawMessage.inline[id === undefined ? 'default' : 'id']({ type, id: id ?? 0, content: rule.content }),
+            cmd.rawMessage.attached[id === undefined ? 'default' : 'id']({ type, id: id ?? 0 }),
             rule.content,
-            `censor-${type}-${id ?? `default`}.${fileExtension}`
+            `censor-${type}-${id ?? 'default'}.${fileExtension}`
         );
     }
 
@@ -267,7 +267,7 @@ export class CensorCommand extends GuildCommand {
         const channels = censors.exception?.channel ?? [];
         const description = Object.entries(censors.list ?? {})
             .filter((e): e is [string, GuildCensor] => e[1] !== undefined)
-            .map(([id, censor]) => cmd.list.embed.description.censor[censor.regex ? `regex` : `text`]({ id: parseInt(id), term: censor.term }));
+            .map(([id, censor]) => cmd.list.embed.description.censor[censor.regex ? 'regex' : 'text']({ id: parseInt(id), term: censor.term }));
 
         return {
             embeds: [
@@ -309,7 +309,7 @@ export class CensorCommand extends GuildCommand {
                     title: cmd.info.embed.title({ id }),
                     fields: [
                         {
-                            name: cmd.info.embed.field.trigger.name[censor.regex ? `regex` : `text`],
+                            name: cmd.info.embed.field.trigger.name[censor.regex ? 'regex' : 'text'],
                             value: literal(censor.term),
                             inline: false
                         },
@@ -362,8 +362,8 @@ function stringifyCensorEvent(event: GuildTriggerTag | undefined): IFormattable<
         return cmd.info.messageFieldValue.notSet;
 
     return cmd.info.messageFieldValue.set({
-        authorId: event.author ?? `????`,
-        authorizerId: event.authorizer ?? event.author ?? `????`
+        authorId: event.author ?? '????',
+        authorizerId: event.authorizer ?? event.author ?? '????'
     });
 }
 

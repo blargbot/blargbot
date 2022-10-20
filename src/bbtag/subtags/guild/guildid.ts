@@ -5,15 +5,15 @@ import { SubtagType } from '../../utils';
 export class GuildIdSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: `guildid`,
+            name: 'guildid',
             category: SubtagType.GUILD,
             definition: [
                 {
                     parameters: [],
-                    description: `Returns the id of the current guild.`,
-                    exampleCode: `The guild's id is {guildid}`,
-                    exampleOut: `The guild's id is 1234567890123456`,
-                    returns: `id`,
+                    description: 'Returns the id of the current guild.',
+                    exampleCode: 'The guild\'s id is {guildid}',
+                    exampleOut: 'The guild\'s id is 1234567890123456',
+                    returns: 'id',
                     execute: (ctx) => this.getGuildId(ctx)
                 }
             ]

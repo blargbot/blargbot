@@ -4,7 +4,7 @@ import { CommandContext } from '../CommandContext';
 import { parseParameterType } from './parameterType';
 
 export function compileSignatures<TContext extends CommandContext>(definitions: ReadonlyArray<CommandDefinition<TContext>>): ReadonlyArray<CommandSignatureHandler<TContext>> {
-    return [...compileSignaturesIter(definitions, ``, false)];
+    return [...compileSignaturesIter(definitions, '', false)];
 }
 
 interface FlatCommandHandlerDefinition<TContext extends CommandContext> {
@@ -19,7 +19,7 @@ function* compileSignaturesIter<TContext extends CommandContext>(
     hidden: boolean
 ): Generator<CommandSignatureHandler<TContext>> {
     for (const definition of definitions) {
-        if (`execute` in definition) {
+        if ('execute' in definition) {
             yield compileSignature({
                 parameters: `${subCommands} ${definition.parameters}`.trim(),
                 definition: definition,
@@ -27,7 +27,7 @@ function* compileSignaturesIter<TContext extends CommandContext>(
             });
         }
 
-        if (`subcommands` in definition) {
+        if ('subcommands' in definition) {
             yield* compileSignaturesIter(definition.subcommands, `${subCommands} ${definition.parameters}`.trim(), definition.hidden ?? hidden);
         }
     }
@@ -48,14 +48,14 @@ function parseParameters(parameters: string): CommandParameter[] {
 
     for (let i = 0; i < parameters.length; i++) {
         switch (parameters[i]) {
-            case ` `: break;
-            case `{`:
+            case ' ': break;
+            case '{':
                 ({ parameter, i } = readVariable(parameters, i));
                 result.push(parameter);
                 break;
             default: {
-                if (!/[a-zA-Z]/.test(parameters[i]) && parameters[i] !== `\\`)
-                    throw new Error(`Literals must start with a letter`);
+                if (!/[a-zA-Z]/.test(parameters[i]) && parameters[i] !== '\\')
+                    throw new Error('Literals must start with a letter');
                 ({ parameter, i } = readLiteral(parameters, i));
                 result.push(parameter);
             }
@@ -76,21 +76,21 @@ function readVariable(parameters: string, i: number): { parameter: CommandVariab
 }
 
 function readVariableName(parameters: string, i: number): { name: string; i: number; } {
-    if (parameters[i] !== `{`)
+    if (parameters[i] !== '{')
         throw new Error(`Expected '{' but got '${parameters[i]}'`);
 
-    let name = ``;
+    let name = '';
     for (i++; i < parameters.length; i++) {
         switch (parameters[i]) {
-            case `}`:
-            case `=`:
-            case `:`:
-            case `[`:
-            case `+`:
-            case `?`:
-            case `!`:
+            case '}':
+            case '=':
+            case ':':
+            case '[':
+            case '+':
+            case '?':
+            case '!':
                 return { name, i: i };
-            case `\\`:
+            case '\\':
                 if (++i >= parameters.length)
                     break;
             //fallthrough
@@ -103,22 +103,22 @@ function readVariableName(parameters: string, i: number): { name: string; i: num
 }
 
 function readVariableType(name: string, parameters: string, i: number): { type: CommandVariableType<CommandVariableTypeName>; i: number; } {
-    if (parameters[i] !== `:`)
-        return { type: parseParameterType(`string`), i: i };
+    if (parameters[i] !== ':')
+        return { type: parseParameterType('string'), i: i };
 
-    let type = ``;
+    let type = '';
     for (i++; i < parameters.length; i++) {
         switch (parameters[i]) {
-            case `}`:
-            case `=`:
-            case `?`:
-            case `!`:
-            case `+`:
-            case `[`:
-                if (type === ``)
-                    type = `string`;
+            case '}':
+            case '=':
+            case '?':
+            case '!':
+            case '+':
+            case '[':
+                if (type === '')
+                    type = 'string';
                 return { type: parseParameterType(type), i: i };
-            case `\\`:
+            case '\\':
                 if (++i >= parameters.length)
                     break;
             //fallthrough
@@ -133,59 +133,59 @@ function readVariableKind(name: string, type: CommandVariableType<CommandVariabl
     let required = true;
     let fallback: string | undefined = undefined;
     const result = { name, type, raw: false };
-    if (name.startsWith(`~`)) {
+    if (name.startsWith('~')) {
         result.raw = true;
         name = result.name = name.slice(1);
     }
 
     switch (parameters[i]) {
-        case `?`:
+        case '?':
             required = false;
         // fallthrough
-        case `!`:
-            if (parameters[++i] !== `}`)
+        case '!':
+            if (parameters[++i] !== '}')
                 throw new Error(`Expected '}' but got '${parameters[i]}' in parameter '${name}'`);
         // fallthrough
-        case `=`: if (required) {
+        case '=': if (required) {
             const res = readFallback(name, parameters, i);
             required &&= res.required;
             fallback ??= res.fallback;
             i = res.i;
         }
         // fallthrough
-        case `}`: return {
+        case '}': return {
             i: i,
-            parameter: { kind: `singleVar`, required, fallback, ...result }
+            parameter: { kind: 'singleVar', required, fallback, ...result }
         };
-        case `+`: switch (parameters[++i]) {
-            case `?`:
+        case '+': switch (parameters[++i]) {
+            case '?':
                 required = false;
             // fallthrough
-            case `!`:
-                if (parameters[++i] !== `}`)
+            case '!':
+                if (parameters[++i] !== '}')
                     throw new Error(`Expected '}' but got '${parameters[i]}' in parameter '${name}'`);
             // fallthrough
-            case `=`: if (required) {
+            case '=': if (required) {
                 const res = readFallback(name, parameters, i);
                 required &&= res.required;
                 fallback ??= res.fallback;
                 i = res.i;
             }
             // fallthrough
-            case `}`: return {
+            case '}': return {
                 i: i,
-                parameter: { kind: `concatVar`, required, fallback, ...result }
+                parameter: { kind: 'concatVar', required, fallback, ...result }
             };
             default:
                 throw new Error(`Invalid parameter '${name}'`);
         }
-        case `[`: {
+        case '[': {
             let minLength;
             ({ minLength, i } = readGreedyCount(name, parameters, i));
-            if (parameters[i] === `}`) {
+            if (parameters[i] === '}') {
                 return {
                     i: i + 1,
-                    parameter: { kind: `greedyVar`, minLength: minLength, ...result }
+                    parameter: { kind: 'greedyVar', minLength: minLength, ...result }
                 };
             }
         }
@@ -194,15 +194,15 @@ function readVariableKind(name: string, type: CommandVariableType<CommandVariabl
 }
 
 function readFallback(name: string, parameters: string, i: number): { fallback: string | undefined; i: number; required: boolean; } {
-    if (parameters[i] !== `=`)
+    if (parameters[i] !== '=')
         return { fallback: undefined, i, required: true };
 
-    let fallback = ``;
+    let fallback = '';
     for (i++; i < parameters.length; i++) {
         switch (parameters[i]) {
-            case `}`:
+            case '}':
                 return { fallback, i: i, required: false };
-            case `\\`:
+            case '\\':
                 if (++i >= parameters.length)
                     break;
             //fallthrough
@@ -214,28 +214,28 @@ function readFallback(name: string, parameters: string, i: number): { fallback: 
 }
 
 function readGreedyCount(name: string, parameters: string, i: number): { minLength: number; i: number; } {
-    if (parameters[i] !== `[`)
+    if (parameters[i] !== '[')
         throw new Error(`Invalid parameter '${name}'`);
 
-    if (parameters[++i] === `]`)
+    if (parameters[++i] === ']')
         return { minLength: 1, i: i + 1 };
 
-    let numbers = ``;
+    let numbers = '';
     for (i; i < parameters.length; i++) {
         switch (parameters[i]) {
-            case `0`:
-            case `1`:
-            case `2`:
-            case `3`:
-            case `4`:
-            case `5`:
-            case `6`:
-            case `7`:
-            case `8`:
-            case `9`:
+            case '0':
+            case '1':
+            case '2':
+            case '3':
+            case '4':
+            case '5':
+            case '6':
+            case '7':
+            case '8':
+            case '9':
                 numbers += parameters[i];
                 break;
-            case `]`: {
+            case ']': {
                 const res = parseInt(numbers);
                 if (isNaN(res))
                     throw new Error(`'${numbers}' is not a valid count`);
@@ -250,17 +250,17 @@ function readGreedyCount(name: string, parameters: string, i: number): { minLeng
 
 function readLiteral(parameters: string, i: number): { parameter: CommandLiteralParameter; i: number; } {
     const results = [];
-    let current = ``;
+    let current = '';
     forLoop:
     for (; i < parameters.length; i++) {
         switch (parameters[i]) {
-            case ` `:
+            case ' ':
                 break forLoop;
-            case `|`:
+            case '|':
                 results.push(current);
-                current = ``;
+                current = '';
                 break;
-            case `\\`:
+            case '\\':
                 if (++i >= parameters.length)
                     break;
             //fallthrough
@@ -278,7 +278,7 @@ function readLiteral(parameters: string, i: number): { parameter: CommandLiteral
         parameter: {
             name,
             alias,
-            kind: `literal`
+            kind: 'literal'
         }
     };
 }

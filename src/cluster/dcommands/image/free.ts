@@ -8,13 +8,13 @@ const cmd = templates.commands.free;
 export class FreeCommand extends GlobalImageCommand {
     public constructor() {
         super({
-            name: `free`,
+            name: 'free',
             flags: [
-                { flag: `b`, word: `bottom`, description: cmd.flags.bottom }
+                { flag: 'b', word: 'bottom', description: cmd.flags.bottom }
             ],
             definitions: [
                 {
-                    parameters: `{caption+}`,
+                    parameters: '{caption+}',
                     description: cmd.default.description,
                     execute: (ctx, [caption], flags) => this.render(ctx, caption.asString, flags.b?.merge().value)
                 }
@@ -23,6 +23,6 @@ export class FreeCommand extends GlobalImageCommand {
     }
 
     public async render(context: CommandContext, caption: string, bottomText: string | undefined): Promise<CommandResult> {
-        return await this.renderImage(context, `free`, { top: caption, bottom: bottomText });
+        return await this.renderImage(context, 'free', { top: caption, bottom: bottomText });
     }
 }

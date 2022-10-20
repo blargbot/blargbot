@@ -1,4 +1,4 @@
-import { ICompiledFormatString, IFormatStringCompiler, IFormatStringCompilerMiddleware } from "../FormatStringCompiler";
+import { ICompiledFormatString, IFormatStringCompiler, IFormatStringCompilerMiddleware } from '../FormatStringCompiler';
 
 export class CacheMiddleware implements IFormatStringCompilerMiddleware {
     readonly #cache: { [P in string]?: ICompiledFormatString; };

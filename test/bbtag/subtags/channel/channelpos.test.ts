@@ -11,14 +11,14 @@ runSubtagTests({
     argCountBounds: { min: 0, max: 2 },
     cases: [
         ...createGetChannelPropTestCases({
-            quiet: ``,
+            quiet: '',
             includeNoArgs: true,
             generateCode(...args) {
-                return `{${[`channelpos`, ...args].join(`;`)}}`;
+                return `{${['channelpos', ...args].join(';')}}`;
             },
             cases: [
                 {
-                    expected: `324`,
+                    expected: '324',
                     setup(channel) {
                         (channel as APITextChannel).position = 324;
                     }
@@ -26,13 +26,13 @@ runSubtagTests({
             ]
         }),
         {
-            code: `{channelpos}`,
-            expected: `\`Threads dont have a position\``,
+            code: '{channelpos}',
+            expected: '`Threads dont have a position`',
             errors: [
-                { start: 0, end: 12, error: new BBTagRuntimeError(`Threads dont have a position`, `<#23948762874624372942> is a thread and doesnt have a position`) }
+                { start: 0, end: 12, error: new BBTagRuntimeError('Threads dont have a position', '<#23948762874624372942> is a thread and doesnt have a position') }
             ],
             setup(ctx) {
-                ctx.channels.command.id = `23948762874624372942`;
+                ctx.channels.command.id = '23948762874624372942';
                 ctx.message.channel_id = ctx.channels.command.id;
                 ctx.channels.command.type = Constants.ChannelTypes.GUILD_PUBLIC_THREAD;
             }

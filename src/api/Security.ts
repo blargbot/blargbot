@@ -17,7 +17,7 @@ export default class Security {
     public static validateToken(token: string): string | null {
         try {
             const payload = verify(token, config.website.sessionSecret);
-            if (typeof payload === `string`)
+            if (typeof payload === 'string')
                 return payload;
             return payload.id as string;
         } catch {

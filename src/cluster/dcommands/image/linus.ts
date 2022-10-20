@@ -11,18 +11,18 @@ const cmd = templates.commands.linus;
 export class LinusCommand extends GlobalImageCommand {
     public constructor() {
         super({
-            name: `linus`,
+            name: 'linus',
             flags: [
-                { flag: `i`, word: `image`, description: cmd.flags.image }
+                { flag: 'i', word: 'image', description: cmd.flags.image }
             ],
             definitions: [
                 {
-                    parameters: `{user:user+}`,
+                    parameters: '{user:user+}',
                     description: cmd.user.description,
                     execute: (ctx, [user]) => this.renderUser(ctx, user.asUser)
                 },
                 {
-                    parameters: ``,
+                    parameters: '',
                     description: cmd.default.description,
                     execute: (ctx, _, flags) => this.render(
                         ctx,
@@ -45,6 +45,6 @@ export class LinusCommand extends GlobalImageCommand {
         if (!guard.isUrl(url))
             return cmd.default.invalidUrl({ url });
 
-        return await this.renderImage(context, `linus`, { image: url });
+        return await this.renderImage(context, 'linus', { image: url });
     }
 }

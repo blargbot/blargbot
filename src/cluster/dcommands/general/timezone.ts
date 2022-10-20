@@ -11,16 +11,16 @@ const cmd = templates.commands.timeZone;
 export class TimezoneCommand extends GlobalCommand {
     public constructor() {
         super({
-            name: `timezone`,
+            name: 'timezone',
             category: CommandType.GENERAL,
             definitions: [
                 {
-                    parameters: ``,
+                    parameters: '',
                     description: cmd.get.description,
                     execute: (ctx) => this.getTimezone(ctx, ctx.author)
                 },
                 {
-                    parameters: `{timezone}`,
+                    parameters: '{timezone}',
                     description: cmd.set.description,
                     execute: (ctx, [timezone]) => this.setTimezone(ctx, ctx.author, timezone.asString)
                 }
@@ -29,12 +29,12 @@ export class TimezoneCommand extends GlobalCommand {
     }
 
     public async getTimezone(context: CommandContext, user: User): Promise<CommandResult> {
-        const timezone = await context.database.users.getSetting(user.id, `timezone`);
+        const timezone = await context.database.users.getSetting(user.id, 'timezone');
         if (timezone === undefined)
             return cmd.get.notSet;
 
         const now = moment().tz(timezone);
-        if (now.zoneAbbr() === ``)
+        if (now.zoneAbbr() === '')
             return cmd.get.timezoneInvalid({ timezone });
 
         return cmd.get.success({ timezone, now });
@@ -42,10 +42,10 @@ export class TimezoneCommand extends GlobalCommand {
 
     public async setTimezone(context: CommandContext, user: User, timezone: string): Promise<CommandResult> {
         const now = moment().tz(timezone);
-        if (now.zoneAbbr() === ``)
+        if (now.zoneAbbr() === '')
             return cmd.set.timezoneInvalid({ timezone });
 
-        await context.database.users.setSetting(user.id, `timezone`, timezone);
+        await context.database.users.setSetting(user.id, 'timezone', timezone);
         return cmd.set.success({ timezone, now });
     }
 }

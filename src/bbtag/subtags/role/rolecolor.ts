@@ -6,16 +6,16 @@ import { SubtagType } from '../../utils';
 export class RoleColorSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: `rolecolor`,
+            name: 'rolecolor',
             category: SubtagType.ROLE,
             definition: [
                 {
-                    parameters: [`role`, `quiet?`],
-                    description: `Returns \`role\`'s hex color code. If \`quiet\` is specified, if \`role\` can't be found it will simply return nothing.`,
-                    exampleCode: `The admin role color is: #{rolecolor;admin}.`,
-                    exampleOut: `The admin role ID is: #1b1b1b.`,
-                    returns: `hex`,
-                    execute: (ctx, [roleId, quiet]) => this.getRoleHexColor(ctx, roleId.value, quiet.value !== ``)
+                    parameters: ['role', 'quiet?'],
+                    description: 'Returns `role`\'s hex color code. If `quiet` is specified, if `role` can\'t be found it will simply return nothing.',
+                    exampleCode: 'The admin role color is: #{rolecolor;admin}.',
+                    exampleOut: 'The admin role ID is: #1b1b1b.',
+                    returns: 'hex',
+                    execute: (ctx, [roleId, quiet]) => this.getRoleHexColor(ctx, roleId.value, quiet.value !== '')
                 }
             ]
         });
@@ -31,7 +31,7 @@ export class RoleColorSubtag extends CompiledSubtag {
 
         if (role === undefined) {
             throw new RoleNotFoundError(roleId)
-                .withDisplay(quiet ? `` : undefined);
+                .withDisplay(quiet ? '' : undefined);
         }
 
         return role.color;

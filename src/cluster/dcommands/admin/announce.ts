@@ -13,26 +13,26 @@ const cmd = templates.commands.announce;
 export class AnnounceCommand extends GuildCommand {
     public constructor() {
         super({
-            name: `announce`,
+            name: 'announce',
             category: CommandType.ADMIN,
             definitions: [
                 {
-                    parameters: `reset`,
+                    parameters: 'reset',
                     description: cmd.reset.description,
                     execute: (ctx) => this.reset(ctx)
                 },
                 {
-                    parameters: `configure {channel:channel?} {role:role?}`,
+                    parameters: 'configure {channel:channel?} {role:role?}',
                     description: cmd.configure.description,
                     execute: (ctx, [channel, role]) => this.configure(ctx, channel.asOptionalChannel, role.asOptionalRole)
                 },
                 {
-                    parameters: `{message+}`,
+                    parameters: '{message+}',
                     description: cmd.default.description,
                     execute: (ctx, [message]) => this.announce(ctx, message.asString)
                 },
                 {
-                    parameters: `info`,
+                    parameters: 'info',
                     description: cmd.info.description,
                     execute: (ctx) => this.showInfo(ctx)
                 }
@@ -52,7 +52,7 @@ export class AnnounceCommand extends GuildCommand {
 
     public async announce(context: GuildCommandContext, message: string): Promise<CommandResult> {
         const configResult = await context.cluster.announcements.loadConfig(context.channel.guild, context.author, context.channel);
-        if (configResult.state !== `Success`)
+        if (configResult.state !== 'Success')
             return cmd.configure.state[configResult.state];
 
         const config = configResult.detail;
@@ -69,7 +69,7 @@ export class AnnounceCommand extends GuildCommand {
                     color: colour,
                     author: {
                         name: cmd.default.embed.author.name,
-                        icon_url: `http://i.imgur.com/zcGyun6.png`,
+                        icon_url: 'http://i.imgur.com/zcGyun6.png',
                         url: `https://blargbot.xyz/user/${context.author.id}`
                     },
                     footer: {

@@ -9,22 +9,22 @@ const cmd = templates.commands.personalPrefix;
 export class PersonalPrefixCommand extends GlobalCommand {
     public constructor() {
         super({
-            name: `personalprefix`,
-            aliases: [`pprefix`],
+            name: 'personalprefix',
+            aliases: ['pprefix'],
             category: CommandType.GENERAL,
             definitions: [
                 {
-                    parameters: `add {prefix}`,
+                    parameters: 'add {prefix}',
                     description: cmd.add.description,
                     execute: (ctx, [prefix]) => this.addPrefix(ctx, prefix.asString)
                 },
                 {
-                    parameters: `remove {prefix}`,
+                    parameters: 'remove {prefix}',
                     description: cmd.remove.description,
                     execute: (ctx, [prefix]) => this.removePrefix(ctx, prefix.asString)
                 },
                 {
-                    parameters: ``,
+                    parameters: '',
                     description: cmd.list.description,
                     execute: (ctx) => this.listPrefixes(ctx)
                 }
@@ -33,7 +33,7 @@ export class PersonalPrefixCommand extends GlobalCommand {
     }
 
     public async listPrefixes(context: CommandContext): Promise<CommandResult> {
-        const prefixes = await context.database.users.getSetting(context.author.id, `prefixes`);
+        const prefixes = await context.database.users.getSetting(context.author.id, 'prefixes');
         if (prefixes === undefined || prefixes.length === 0)
             return cmd.list.none;
 

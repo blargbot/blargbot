@@ -6,16 +6,16 @@ import { /*parse,*/ SubtagType } from '../../utils';
 export class RoleSizeSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: `rolesize`,
+            name: 'rolesize',
             category: SubtagType.ROLE,
-            aliases: [`inrole`],
+            aliases: ['inrole'],
             definition: [
                 {
-                    parameters: [`role`/*, 'quiet?:false'*/], //TODO uncomment quiet parameter for new code
-                    description: `Returns the amount of people in role \`role\``,
-                    exampleCode: `There are {rolesize;11111111111111111} people in the role!`,
-                    exampleOut: `There are 5 people in the role!`,
-                    returns: `number`,
+                    parameters: ['role'/*, 'quiet?:false'*/], //TODO uncomment quiet parameter for new code
+                    description: 'Returns the amount of people in role `role`',
+                    exampleCode: 'There are {rolesize;11111111111111111} people in the role!',
+                    exampleOut: 'There are 5 people in the role!',
+                    returns: 'number',
                     execute: (ctx, [role/*, quiet */]) => this.getRoleSize(ctx, role.value/*, quiet.value !== '' */)
                 }
             ]

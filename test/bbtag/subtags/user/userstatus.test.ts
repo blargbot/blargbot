@@ -8,40 +8,40 @@ runSubtagTests({
     argCountBounds: { min: 0, max: 2 },
     cases: [
         ...createGetUserPropTestCases({
-            quiet: ``,
+            quiet: '',
             generateCode(...args) {
-                return `{${[`userstatus`, ...args].join(`;`)}}`;
+                return `{${['userstatus', ...args].join(';')}}`;
             },
             cases: [
                 {
-                    expected: `dnd`,
+                    expected: 'dnd',
                     postSetup(member) {
                         member.update({
-                            status: `dnd`
+                            status: 'dnd'
                         });
                     }
                 },
                 {
-                    expected: `idle`,
+                    expected: 'idle',
                     postSetup(member) {
                         member.update({
-                            status: `idle`
+                            status: 'idle'
                         });
                     }
                 },
                 {
-                    expected: `offline`,
+                    expected: 'offline',
                     postSetup(member) {
                         member.update({
-                            status: `offline`
+                            status: 'offline'
                         });
                     }
                 },
                 {
-                    expected: `online`,
+                    expected: 'online',
                     postSetup(member) {
                         member.update({
-                            status: `online`
+                            status: 'online'
                         });
                     }
                 }

@@ -9,7 +9,7 @@ export class AirtableSuggesterStore implements SuggesterStore {
     readonly #table: AirtableDbTable<Suggester>;
 
     public constructor(client: AirtableBase, logger: Logger) {
-        this.#table = new AirtableDbTable<Suggester>(client, `Suggestors`, logger);
+        this.#table = new AirtableDbTable<Suggester>(client, 'Suggestors', logger);
     }
 
     public async get(id: string): Promise<Suggester | undefined> {
@@ -18,7 +18,7 @@ export class AirtableSuggesterStore implements SuggesterStore {
     }
 
     public async upsert(userid: string, username: string): Promise<string | undefined> {
-        const current = await this.#table.find(`ID`, userid);
+        const current = await this.#table.find('ID', userid);
         if (current === undefined) {
             const created = await this.#table.create({
                 ID: userid,

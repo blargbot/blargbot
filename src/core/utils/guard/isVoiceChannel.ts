@@ -1,6 +1,6 @@
 import { Constants, KnownChannel, KnownVoiceChannel } from 'eris';
 
-type ChannelType = typeof Constants[`ChannelTypes`];
+type ChannelType = typeof Constants['ChannelTypes'];
 const isVoiceMap: Record<ChannelType[keyof ChannelType], boolean> = {
     [Constants.ChannelTypes.DM]: false,
     [Constants.ChannelTypes.GROUP_DM]: false,

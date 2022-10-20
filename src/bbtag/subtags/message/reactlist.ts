@@ -10,36 +10,36 @@ import { SubtagType } from '../../utils';
 export class ReactListSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: `reactlist`,
+            name: 'reactlist',
             category: SubtagType.MESSAGE,
-            aliases: [`listreact`],
+            aliases: ['listreact'],
             definition: [//! overwritten
                 {
                     parameters: [],
-                    returns: `error`,
-                    execute: (ctx) => { throw new MessageNotFoundError(ctx.channel.id, ``); }
+                    returns: 'error',
+                    execute: (ctx) => { throw new MessageNotFoundError(ctx.channel.id, ''); }
                 },
                 {
-                    parameters: [`messageid`],
-                    returns: `string[]`,
+                    parameters: ['messageid'],
+                    returns: 'string[]',
                     execute: (ctx, [messageid]) => this.getReactions(ctx, messageid.value)
                 },
                 {
-                    parameters: [`arguments+2`],
-                    returns: `string[]`,
+                    parameters: ['arguments+2'],
+                    returns: 'string[]',
                     execute: (ctx, args) => this.getReactionsOrReactors(ctx, ...this.#bindArguments(ctx, args.map(arg => arg.value)))
                 },
                 {
-                    parameters: [`channel?`, `messageId`],
-                    description: `Returns an array of reactions on \`messageid\` in \`channelID\`.`,
-                    exampleCode: `{reactlist;111111111111111111}`,
-                    exampleOut: `["🤔", "👀"]`
+                    parameters: ['channel?', 'messageId'],
+                    description: 'Returns an array of reactions on `messageid` in `channelID`.',
+                    exampleCode: '{reactlist;111111111111111111}',
+                    exampleOut: '["🤔", "👀"]'
                 },
                 {
-                    parameters: [`channel?`, `messageId`, `reactions+`],
-                    description: `Returns an array of users who reacted \`reactions\` on \`messageID\` in \`channelID\`. A user only needs to react to one reaction to be included in the resulting array.`,
-                    exampleCode: `{reactlist;111111111111111111;🤔;👀}\n{reactlist;222222222222222222;111111111111111111;👀}`,
-                    exampleOut: `["278237925009784832", "134133271750639616"]\n["134133271750639616"]`
+                    parameters: ['channel?', 'messageId', 'reactions+'],
+                    description: 'Returns an array of users who reacted `reactions` on `messageID` in `channelID`. A user only needs to react to one reaction to be included in the resulting array.',
+                    exampleCode: '{reactlist;111111111111111111;🤔;👀}\n{reactlist;222222222222222222;111111111111111111;👀}',
+                    exampleOut: '["278237925009784832", "134133271750639616"]\n["134133271750639616"]'
                 }
             ]
         });
@@ -63,7 +63,7 @@ export class ReactListSubtag extends CompiledSubtag {
             return Object.keys(message.reactions);
 
         if (reactions.length === 0)
-            throw new BBTagRuntimeError(`Invalid Emojis`);
+            throw new BBTagRuntimeError('Invalid Emojis');
 
         // List all users per reaction
         const users: string[] = [];
@@ -80,13 +80,13 @@ export class ReactListSubtag extends CompiledSubtag {
         }
 
         if (errors.length > 0)
-            throw new BBTagRuntimeError(`Unknown Emoji: ${  errors.join(`, `)}`);
+            throw new BBTagRuntimeError(`Unknown Emoji: ${  errors.join(', ')}`);
         return [...new Set(users)];
     }
 
     #bindArguments(context: BBTagContext, args: string[]): [channel: string, message: string, reactions: Emote[] | undefined] {
         let channel = context.channel.id;
-        let message = ``;
+        let message = '';
 
         if (args.length >= 2 && snowflake.test(args[1]))
             channel = args.splice(0, 1)[0];

@@ -5,13 +5,13 @@ import { EvalRequest, EvalResult, EvalType, GlobalEvalResult } from '@blargbot/c
 import { Master } from '@blargbot/master';
 import { inspect } from 'util';
 
-export class ClusterMevalHandler extends WorkerPoolEventService<ClusterConnection, `meval`> {
+export class ClusterMevalHandler extends WorkerPoolEventService<ClusterConnection, 'meval'> {
     readonly #master: Master;
 
     public constructor(master: Master) {
         super(
             master.clusters,
-            `meval`,
+            'meval',
             async ({ data, reply }) => {
                 reply(await this.eval(data.type, data.userId, data.code));
             }
@@ -21,14 +21,14 @@ export class ClusterMevalHandler extends WorkerPoolEventService<ClusterConnectio
 
     public async eval(type: EvalType, userId: string, code: string): Promise<GlobalEvalResult | EvalResult> {
         switch (type) {
-            case `master`: {
+            case 'master': {
                 try {
                     return await this.#master.eval(userId, code);
                 } catch (err: unknown) {
                     return { success: false, error: inspect(err) };
                 }
             }
-            case `global`: {
+            case 'global': {
                 const results: GlobalEvalResult = {};
                 const promises: Record<string, Promise<EvalResult>> = {};
                 this.#master.clusters.forEach(id => promises[`${id}`] = this.#getClusterResult(id, { userId, code }));
@@ -51,6 +51,6 @@ export class ClusterMevalHandler extends WorkerPoolEventService<ClusterConnectio
         if (cluster === undefined)
             return { success: false, error: `Cluster ${clusterId} doesnt exist!` };
 
-        return await cluster.request(`ceval`, request);
+        return await cluster.request('ceval', request);
     }
 }

@@ -1,4 +1,4 @@
-import { format, IFormatString, IFormatStringDefinition, IFormatter } from "./types";
+import { format, IFormatString, IFormatStringDefinition, IFormatter } from './types';
 
 export interface ITranslatableStringDefinition<T extends string, V> extends IFormatStringDefinition<T, V> {
     readonly id: string;
@@ -27,12 +27,12 @@ export class TranslatableString<T extends string, V> implements IFormatString<T>
 
     static #verify(definition: ITranslatableStringDefinition<string, never>): void {
         if (!TranslatableString.#defined.has(definition))
-            throw new Error(`Unknown translation`);
+            throw new Error('Unknown translation');
     }
 
     public static define<V, T extends string = string>(id: string, template: T): IFormatStringDefinition<T, V> {
         if (TranslatableString.#idMap.has(id))
-            throw new Error(`Duplicate translation id`);
+            throw new Error('Duplicate translation id');
 
         const result = Object.assign(function (v: V): TranslatableString<T, V> {
             return new TranslatableString(result, v);

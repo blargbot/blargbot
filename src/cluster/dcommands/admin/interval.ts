@@ -11,36 +11,36 @@ const cmd = templates.commands.interval;
 export class IntervalCommand extends GuildCommand {
     public constructor() {
         super({
-            name: `interval`,
+            name: 'interval',
             category: CommandType.ADMIN,
             definitions: [
                 {
-                    parameters: `set {~bbtag+}`,
+                    parameters: 'set {~bbtag+}',
                     description: cmd.set.description,
                     execute: (ctx, [bbtag]) => this.setInterval(ctx, bbtag.asString)
                 },
                 {
-                    parameters: `raw {fileExtension:literal(bbtag|txt)=bbtag}`,
+                    parameters: 'raw {fileExtension:literal(bbtag|txt)=bbtag}',
                     description: cmd.raw.description,
                     execute: (ctx, [fileExtension]) => this.getRaw(ctx, fileExtension.asLiteral)
                 },
                 {
-                    parameters: `delete`,
+                    parameters: 'delete',
                     description: cmd.delete.description,
                     execute: (ctx) => this.deleteInterval(ctx)
                 },
                 {
-                    parameters: `setauthorizer`,
+                    parameters: 'setauthorizer',
                     description: cmd.setAuthorizer.description,
                     execute: (ctx) => this.setAuthorizer(ctx)
                 },
                 {
-                    parameters: `debug`,
+                    parameters: 'debug',
                     description: cmd.debug.description,
                     execute: (ctx) => this.debug(ctx)
                 },
                 {
-                    parameters: `info`,
+                    parameters: 'info',
                     description: cmd.info.description,
                     execute: (ctx) => this.getInfo(ctx)
                 }
@@ -53,7 +53,7 @@ export class IntervalCommand extends GuildCommand {
         if (interval === undefined)
             return cmd.errors.notSet;
 
-        return cmd.info.success({ authorId: interval.author ?? `????`, authorizerId: interval.authorizer ?? interval.author ?? `????` });
+        return cmd.info.success({ authorId: interval.author ?? '????', authorizerId: interval.authorizer ?? interval.author ?? '????' });
     }
 
     public async setInterval(context: GuildCommandContext, code: string): Promise<CommandResult> {
@@ -96,10 +96,10 @@ export class IntervalCommand extends GuildCommand {
 
         const result = await context.cluster.intervals.invoke(context.channel.guild, interval);
         switch (result) {
-            case `FAILED`: return cmd.debug.failed;
-            case `MISSING_AUTHORIZER`: return cmd.debug.authorizerMissing;
-            case `MISSING_CHANNEL`: return cmd.debug.channelMissing;
-            case `TOO_LONG`: return cmd.debug.timedOut({ max: context.cluster.intervals.timeLimit });
+            case 'FAILED': return cmd.debug.failed;
+            case 'MISSING_AUTHORIZER': return cmd.debug.authorizerMissing;
+            case 'MISSING_CHANNEL': return cmd.debug.channelMissing;
+            case 'TOO_LONG': return cmd.debug.timedOut({ max: context.cluster.intervals.timeLimit });
             default:
                 await context.send(context.author, bbtag.createDebugOutput(result));
                 return cmd.debug.success;

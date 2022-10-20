@@ -30,8 +30,8 @@ export class BotStaffManager {
     async #getUsers(): Promise<{ staff: readonly string[]; support: readonly string[]; }> {
         const guild = this.#cluster.discord.guilds.get(this.#cluster.config.discord.guilds.home);
         if (guild === undefined) { // The guild is on another cluster
-            const staff = await this.#cluster.database.vars.get(`police`);
-            const support = await this.#cluster.database.vars.get(`support`);
+            const staff = await this.#cluster.database.vars.get('police');
+            const support = await this.#cluster.database.vars.get('support');
 
             return { staff: staff?.value ?? [], support: support?.value ?? [] };
         }
@@ -40,8 +40,8 @@ export class BotStaffManager {
         const support = await this.#userIdsWithRole(guild, this.#cluster.config.discord.roles.support);
 
         await Promise.all([
-            this.#cluster.database.vars.set(`police`, { value: staff }),
-            this.#cluster.database.vars.set(`support`, { value: support })
+            this.#cluster.database.vars.set('police', { value: staff }),
+            this.#cluster.database.vars.set('support', { value: support })
         ]);
 
         return { staff, support };

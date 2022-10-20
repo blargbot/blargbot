@@ -9,18 +9,18 @@ const cmd = templates.commands.insult;
 export class InsultCommand extends GlobalCommand {
     public constructor() {
         super({
-            name: `insult`,
+            name: 'insult',
             category: CommandType.GENERAL,
             definitions: [
                 {
-                    parameters: `{name+}`,
+                    parameters: '{name+}',
                     description: cmd.someone.description,
                     execute: (_, [name]) => this.insult(name.asString)
                 },
                 {
-                    parameters: ``,
+                    parameters: '',
                     description: cmd.default.description,
-                    execute: () => this.insult(``)
+                    execute: () => this.insult('')
                 }
             ]
         });

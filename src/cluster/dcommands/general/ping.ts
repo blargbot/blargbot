@@ -10,12 +10,12 @@ const cmd = templates.commands.ping;
 export class PingCommand extends GlobalCommand {
     public constructor() {
         super({
-            name: `ping`,
+            name: 'ping',
             category: CommandType.GENERAL,
             description: cmd.description,
             definitions: [
                 {
-                    parameters: ``,
+                    parameters: '',
                     execute: ctx => this.ping(ctx),
                     description: cmd.default.description
                 }

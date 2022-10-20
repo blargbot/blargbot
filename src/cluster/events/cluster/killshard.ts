@@ -1,15 +1,15 @@
 import { Cluster } from '@blargbot/cluster';
 import { ClusterEventService } from '@blargbot/cluster/serviceTypes';
 
-export class ClusterKillShardHandler extends ClusterEventService<`killshard`> {
+export class ClusterKillShardHandler extends ClusterEventService<'killshard'> {
     public constructor(
         cluster: Cluster
     ) {
-        super(cluster, `killshard`, ({ data }) => this.killShard(data));
+        super(cluster, 'killshard', ({ data }) => this.killShard(data));
     }
 
     protected killShard(shardId: number): void {
-        this.cluster.logger.cluster(`Killing shard`, shardId, `without a reconnect.`);
+        this.cluster.logger.cluster('Killing shard', shardId, 'without a reconnect.');
         const shard = this.cluster.discord.shards.get(shardId);
         if (shard === undefined)
             return;

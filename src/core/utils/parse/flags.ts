@@ -3,7 +3,7 @@ import { FlagDefinition, FlagResult, FlagResultValueSet } from '@blargbot/domain
 import { guard, humanize } from '../../utils';
 
 export function parseFlags(definitions: Iterable<FlagDefinition<unknown>>, text: string, strict = false): FlagResult {
-    let currentFlag: keyof FlagResult = `_`;
+    let currentFlag: keyof FlagResult = '_';
     let currentGroup: StringRange[] = [];
     const defArr = [...definitions];
     const resultGroups: FlagResultGroups = { _: [] };
@@ -11,21 +11,21 @@ export function parseFlags(definitions: Iterable<FlagDefinition<unknown>>, text:
     const flagKeys = new Set<string>(defArr.map(d => d.flag));
 
     for (const { start, end, value } of humanize.smartSplitRanges(text)) {
-        const offset = text[start] === `"` && text[end - 1] === `"` ? 1 : 0;
+        const offset = text[start] === '"' && text[end - 1] === '"' ? 1 : 0;
         if (!/^--?[a-z0-9]|^--$/i.test(value)) {
             currentGroup.push({ start, end, value });
-        } else if (text[start] !== `"` && text[start] !== value[0]) {
+        } else if (text[start] !== '"' && text[start] !== value[0]) {
             currentGroup.push({ start, end, value });
-        } else if (value === `--`) {
-            if (currentFlag !== `_`) {
+        } else if (value === '--') {
+            if (currentFlag !== '_') {
                 pushFlagGroup(resultGroups, currentFlag, currentGroup);
-                currentFlag = `_`;
+                currentFlag = '_';
                 currentGroup = [];
             } else {
                 currentGroup.push({ start, end, value });
             }
-        } else if (value.startsWith(`--`)) {
-            const flagStr = value.split(` `)[0];
+        } else if (value.startsWith('--')) {
+            const flagStr = value.split(' ')[0];
             const flag = flagMap.get(flagStr.slice(2));
             if (flag === undefined) {
                 currentGroup.push({ start, end, value });
@@ -38,7 +38,7 @@ export function parseFlags(definitions: Iterable<FlagDefinition<unknown>>, text:
                 currentGroup.push({ start: start + flagStr.length + 1, end, value: value.slice(flagStr.length + 1) });
         } else {
             let flagMatched = !strict;
-            const flagStr = value.split(` `)[0];
+            const flagStr = value.split(' ')[0];
             for (const char of flagStr.slice(1)) {
                 flagMatched ||= flagKeys.has(char);
                 if (guard.isFlagChar(char) && currentFlag !== char && (!strict || flagKeys.has(char))) {
@@ -91,10 +91,10 @@ function toFlagResultSet(source: string, rangeGroups: StringRange[][]): FlagResu
         },
         merge(...args: [] | [start: number, end?: number]) {
             const ranges = args.length === 0 ? rangeGroups : [...jaggedSlice(rangeGroups, ...args)];
-            const result = [...mergeRanges(ranges, ` `)];
+            const result = [...mergeRanges(ranges, ' ')];
             return {
-                value: result.map(r => r.value).join(` `),
-                get raw() { return result.map(r => source.slice(r.start, r.end)).join(` `); }
+                value: result.map(r => r.value).join(' '),
+                get raw() { return result.map(r => source.slice(r.start, r.end)).join(' '); }
             };
         },
         slice(start: number, end?: number) {
@@ -118,7 +118,7 @@ function toFlagResultSet(source: string, rangeGroups: StringRange[][]): FlagResu
 function* jaggedSlice<T>(source: T[][], start: number, end = Infinity): Generator<T[]> {
     let j = 0;
     if (start < 0 || end < 0)
-        throw new Error(`Index out of range`);
+        throw new Error('Index out of range');
 
     for (const group of source) {
         if (j + group.length < start) {

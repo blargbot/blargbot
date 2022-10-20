@@ -7,10 +7,10 @@ runSubtagTests({
     argCountBounds: { min: 0, max: 0 },
     cases: [
         {
-            code: `{guildname}`,
-            expected: `My super cool guild`,
+            code: '{guildname}',
+            expected: 'My super cool guild',
             setup(ctx) {
-                ctx.guild.name = `My super cool guild`;
+                ctx.guild.name = 'My super cool guild';
             }
         }
     ]

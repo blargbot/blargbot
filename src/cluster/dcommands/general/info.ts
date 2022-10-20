@@ -12,11 +12,11 @@ const cmd = templates.commands.info;
 export class InfoCommand extends GlobalCommand {
     public constructor() {
         super({
-            name: `info`,
+            name: 'info',
             category: CommandType.GENERAL,
             definitions: [
                 {
-                    parameters: ``,
+                    parameters: '',
                     description: cmd.default.description,
                     execute: (ctx) => this.showInfo(ctx)
                 }
@@ -61,7 +61,7 @@ export class InfoCommand extends GlobalCommand {
                             })
                         },
                         {
-                            name: literal(`\u200b`),
+                            name: literal('\u200b'),
                             value: cmd.default.embed.field.details.value({ prefix: context.prefix })
                         }
                     ]

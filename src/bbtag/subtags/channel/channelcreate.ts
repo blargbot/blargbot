@@ -10,16 +10,16 @@ import { SubtagType } from '../../utils';
 export class ChannelCreateSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: `channelcreate`,
+            name: 'channelcreate',
             category: SubtagType.CHANNEL,
-            description: `\`type\` is either \`text\`, \`voice\`, \`category\`, \`news\` or \`store\`.\n`,
+            description: '`type` is either `text`, `voice`, `category`, `news` or `store`.\n',
             definition: [
                 {
-                    parameters: [`name`, `type?:text`, `options?:{}`],
-                    description: `Creates a channel with the specified \`options\` of type \`type\`\`options\` is a JSON object, containing any or all of the following properties:\n- \`topic\`\n- \`nsfw\`\n- \`parentID\`\n- \`reason\` (displayed in audit log)\n- \`rateLimitPerUser\`\n- \`bitrate\` (voice)\n- \`userLimit\` (voice)\nReturns the new channel's ID.`,
-                    exampleCode: `{channelcreate;super-channel;;{json;{"parentID":"11111111111111111"}}}`,
-                    exampleOut: `22222222222222222`,
-                    returns: `id`,
+                    parameters: ['name', 'type?:text', 'options?:{}'],
+                    description: 'Creates a channel with the specified `options` of type `type``options` is a JSON object, containing any or all of the following properties:\n- `topic`\n- `nsfw`\n- `parentID`\n- `reason` (displayed in audit log)\n- `rateLimitPerUser`\n- `bitrate` (voice)\n- `userLimit` (voice)\nReturns the new channel\'s ID.',
+                    exampleCode: '{channelcreate;super-channel;;{json;{"parentID":"11111111111111111"}}}',
+                    exampleOut: '22222222222222222',
+                    returns: 'id',
                     execute: (ctx, [name, type, options]) => this.channelCreate(ctx, name.value, type.value, options.value)
                 }
             ]
@@ -32,19 +32,19 @@ export class ChannelCreateSubtag extends CompiledSubtag {
         typeKey: string,
         optionsJson: string
     ): Promise<string> {
-        if (!context.hasPermission(`manageChannels`))
-            throw new BBTagRuntimeError(`Author cannot create channels`);
+        if (!context.hasPermission('manageChannels'))
+            throw new BBTagRuntimeError('Author cannot create channels');
 
         const mapped = mapOptions(optionsJson);
         if (!mapped.valid)
-            throw new BBTagRuntimeError(`Invalid JSON`);
+            throw new BBTagRuntimeError('Invalid JSON');
         const options = mapped.value;
 
         const type = guard.hasProperty(channelTypes, typeKey) ? channelTypes[typeKey] : Constants.ChannelTypes.GUILD_TEXT;
 
         for (const permission of options.permissionOverwrites ?? [])
             if (!context.hasPermission((permission.allow as bigint) | (permission.deny as bigint)))
-                throw new BBTagRuntimeError(`Author missing requested permissions`);
+                throw new BBTagRuntimeError('Author missing requested permissions');
 
         try {
             options.reason ||= context.auditReason();
@@ -54,7 +54,7 @@ export class ChannelCreateSubtag extends CompiledSubtag {
             if (!(err instanceof DiscordRESTError))
                 throw err;
 
-            throw new BBTagRuntimeError(`Failed to create channel: no perms`, err.message);
+            throw new BBTagRuntimeError('Failed to create channel: no perms', err.message);
         }
     }
 }
@@ -80,8 +80,8 @@ const mapOptions = mapping.json(
                 allow: mapping.bigInt.optional.map(v => v ?? 0n),
                 deny: mapping.bigInt.optional.map(v => v ?? 0n),
                 id: mapping.string,
-                type: mapping.in(`role`, `member`)
-                    .map(v => v === `member` ? `user` : v)
+                type: mapping.in('role', 'member')
+                    .map(v => v === 'member' ? 'user' : v)
                     .map(v => Constants.PermissionOverwriteTypes[v.toUpperCase()])
             })
         ).optional,

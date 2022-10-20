@@ -12,22 +12,22 @@ const cmd = templates.commands.settings;
 export class SettingsCommand extends GuildCommand {
     public constructor(cluster: Cluster) {
         super({
-            name: `settings`,
+            name: 'settings',
             category: CommandType.ADMIN,
-            description: cmd.description({ website: cluster.util.websiteLink(`/guilds/settings`) }),
+            description: cmd.description({ website: cluster.util.websiteLink('/guilds/settings') }),
             definitions: [
                 {
-                    parameters: ``,
+                    parameters: '',
                     execute: ctx => this.list(ctx),
                     description: cmd.list.description
                 },
                 {
-                    parameters: `keys`,
+                    parameters: 'keys',
                     description: cmd.keys.description,
                     execute: () => this.keys()
                 },
                 {
-                    parameters: `set {key} {~value+?}`,
+                    parameters: 'set {key} {~value+?}',
                     description: cmd.set.description,
                     execute: (ctx, [setting, value]) => this.set(ctx, setting.asString, value.asOptionalString)
                 }
@@ -50,53 +50,53 @@ export class SettingsCommand extends GuildCommand {
                         {
                             name: cmd.list.groups.general,
                             value: settingGroup([
-                                [`dmhelp`, parse.boolean(settings.dmhelp, false, true)],
-                                [`disablenoperms`, settings.disablenoperms ?? false],
-                                [`social`, settings.social ?? false]
+                                ['dmhelp', parse.boolean(settings.dmhelp, false, true)],
+                                ['disablenoperms', settings.disablenoperms ?? false],
+                                ['social', settings.social ?? false]
                             ])
                         },
                         {
                             name: cmd.list.groups.messages,
                             value: settingGroup([
-                                [`tableflip`, parse.boolean(settings.tableflip, false, true)],
-                                [`nocleverbot`, settings.nocleverbot ?? false],
-                                [`disableeveryone`, settings.disableeveryone ?? false]
+                                ['tableflip', parse.boolean(settings.tableflip, false, true)],
+                                ['nocleverbot', settings.nocleverbot ?? false],
+                                ['disableeveryone', settings.disableeveryone ?? false]
                             ])
                         },
                         {
                             name: cmd.list.groups.channels,
                             value: settingGroup([
-                                [`farewellchan`, resolveChannel(guild, settings.farewellchan) ?? cmd.list.channelValue.none],
-                                [`greetchan`, resolveChannel(guild, settings.greetchan) ?? cmd.list.channelValue.none],
-                                [`modlog`, resolveChannel(guild, settings.modlog)]
+                                ['farewellchan', resolveChannel(guild, settings.farewellchan) ?? cmd.list.channelValue.none],
+                                ['greetchan', resolveChannel(guild, settings.greetchan) ?? cmd.list.channelValue.none],
+                                ['modlog', resolveChannel(guild, settings.modlog)]
                             ])
                         },
                         {
                             name: cmd.list.groups.permission,
                             value: settingGroup([
-                                [`staffperms`, settings.staffperms ?? defaultStaff.toString()],
-                                [`timeoutoverride`, settings.timeoutoverride],
-                                [`kickoverride`, settings.kickoverride],
-                                [`banoverride`, settings.banoverride]
+                                ['staffperms', settings.staffperms ?? defaultStaff.toString()],
+                                ['timeoutoverride', settings.timeoutoverride],
+                                ['kickoverride', settings.kickoverride],
+                                ['banoverride', settings.banoverride]
                             ])
                         },
                         {
                             name: cmd.list.groups.warnings,
                             value: settingGroup([
-                                [`timeoutat`, settings.timeoutat],
-                                [`kickat`, settings.kickat],
-                                [`banat`, settings.banat],
-                                [`actonlimitsonly`, settings.actonlimitsonly]
+                                ['timeoutat', settings.timeoutat],
+                                ['kickat', settings.kickat],
+                                ['banat', settings.banat],
+                                ['actonlimitsonly', settings.actonlimitsonly]
                             ])
                         },
                         {
                             name: cmd.list.groups.moderation,
                             value: settingGroup([
-                                [`makelogs`, parse.boolean(settings.makelogs, false, true)],
-                                [`antimention`, settings.antimention],
-                                [`mutedrole`, resolveRole(guild, settings.mutedrole)],
-                                [`deletenotif`, parse.boolean(settings.deletenotif, false, true)],
-                                [`adminrole`, resolveRole(guild, settings.adminrole)]
+                                ['makelogs', parse.boolean(settings.makelogs, false, true)],
+                                ['antimention', settings.antimention],
+                                ['mutedrole', resolveRole(guild, settings.mutedrole)],
+                                ['deletenotif', parse.boolean(settings.deletenotif, false, true)],
+                                ['adminrole', resolveRole(guild, settings.adminrole)]
                             ])
                         }
                     ]
@@ -112,10 +112,10 @@ export class SettingsCommand extends GuildCommand {
 
         const parsed = await parse.guildSetting(context, context.util, key, value);
         if (!parsed.success)
-            return cmd.set.valueInvalid({ value: value ?? ``, type: cmd.types[guildSettings[key].type] });
+            return cmd.set.valueInvalid({ value: value ?? '', type: cmd.types[guildSettings[key].type] });
 
         if (!await context.database.guilds.setSetting(context.channel.guild.id, key, parsed.value))
-            return cmd.set.alreadySet({ value: value ?? ``, key });
+            return cmd.set.alreadySet({ value: value ?? '', key });
 
         return cmd.set.success({ key, value: parsed.display });
     }
@@ -157,12 +157,12 @@ function settingGroup(values: Array<[key: string & keyof typeof guildSettings, v
         [format](formatter) {
             const mapped = values.map(([key, value = cmd.list.notSet]) => {
                 const setting = guildSettings[key];
-                const strValue = typeof value === `object` ? value[format](formatter) : `${value}`;
+                const strValue = typeof value === 'object' ? value[format](formatter) : `${value}`;
                 return [setting.name[format](formatter), strValue.slice(0, 100)] as const;
             });
             const keyLength = Math.max(...mapped.map(([key]) => key.length));
-            const content = mapped.map(v => `${v[0].padStart(keyLength, ` `)} : ${v[1]}`)
-                .join(`\n`);
+            const content = mapped.map(v => `${v[0].padStart(keyLength, ' ')} : ${v[1]}`)
+                .join('\n');
             return codeBlock(content);
         }
     };

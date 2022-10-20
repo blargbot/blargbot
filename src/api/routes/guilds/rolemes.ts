@@ -8,17 +8,17 @@ export class RolemesRoute extends BaseRoute {
     readonly #api: Api;
 
     public constructor(api: Api) {
-        super(`/guilds`);
+        super('/guilds');
 
         this.#api = api;
 
         this.middleware.push(async (req, _, next) => await this.#checkAccess(req.params.guildId, this.getUserId(req, true)) ?? await next());
 
-        this.addRoute(`/:guildId/rolemes`, {
+        this.addRoute('/:guildId/rolemes', {
             get: ({ request }) => this.listRolemes(request.params.guildId)
         });
 
-        this.addRoute(`/:guildId/rolemes/:id/output`, {
+        this.addRoute('/:guildId/rolemes/:id/output', {
             get: ({ request }) => this.getRoleme(request.params.guildId, request.params.id),
             put: ({ request }) => this.setRoleme(request.params.guildId, request.params.id, request.body, this.getUserId(request)),
             delete: ({ request }) => this.deleteRoleme(request.params.guildId, request.params.id)
@@ -52,7 +52,7 @@ export class RolemesRoute extends BaseRoute {
 
         const result = { ...current, output: { ...current.output, ...mapped.value, author: userId } };
         if (!await this.#api.database.guilds.setRoleme(guildId, id, result))
-            return this.internalServerError(`Failed to save changes`);
+            return this.internalServerError('Failed to save changes');
 
         return this.ok(result.output);
     }
@@ -83,7 +83,7 @@ export class RolemesRoute extends BaseRoute {
         if (userId === undefined)
             return this.unauthorized();
 
-        const perms = await this.#api.worker.request(`getGuildPermission`, { userId, guildId });
+        const perms = await this.#api.worker.request('getGuildPermission', { userId, guildId });
         if (perms === undefined)
             return this.notFound();
 

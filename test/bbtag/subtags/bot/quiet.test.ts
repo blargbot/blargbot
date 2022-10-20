@@ -8,36 +8,36 @@ runSubtagTests({
     argCountBounds: { min: 0, max: 1 },
     cases: [
         {
-            code: `{quiet}`,
-            expected: ``,
+            code: '{quiet}',
+            expected: '',
             assert(ctx) {
                 expect(ctx.scopes.local.quiet).to.be.true;
             }
         },
         {
-            code: `{quiet;}`,
-            expected: ``,
+            code: '{quiet;}',
+            expected: '',
             assert(ctx) {
                 expect(ctx.scopes.local.quiet).to.be.true;
             }
         },
         {
-            code: `{quiet;true}`,
-            expected: ``,
+            code: '{quiet;true}',
+            expected: '',
             assert(ctx) {
                 expect(ctx.scopes.local.quiet).to.be.true;
             }
         },
         {
-            code: `{quiet;false}`,
-            expected: ``,
+            code: '{quiet;false}',
+            expected: '',
             assert(ctx) {
                 expect(ctx.scopes.local.quiet).to.be.false;
             }
         },
         {
-            code: `{quiet;abc}`,
-            expected: ``,
+            code: '{quiet;abc}',
+            expected: '',
             assert(ctx) {
                 expect(ctx.scopes.local.quiet).to.be.undefined;
             }

@@ -23,11 +23,11 @@ export abstract class SubtagLogicWrapper implements SubtagLogic {
 
     protected isIterable(value: unknown): value is Iterable<unknown> | AsyncIterable<unknown> {
         switch (typeof value) {
-            case `object`:
+            case 'object':
                 if (value === null)
                     return false;
                 return Symbol.iterator in value || Symbol.asyncIterator in value;
-            case `string`:
+            case 'string':
                 return true;
             default:
                 return false;

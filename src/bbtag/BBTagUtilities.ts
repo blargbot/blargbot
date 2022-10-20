@@ -48,11 +48,11 @@ export interface BBTagUtilities {
 
     warn(member: Member, moderator: User, count: number, reason?: string): Promise<number>;
     pardon(member: Member, moderator: User, count: number, reason?: string): Promise<number>;
-    ban(guild: Guild, user: User, moderator: User, authorizer: User, deleteDays: number, reason: string, duration: Duration): Promise<`success` | `alreadyBanned` | `noPerms` | `memberTooHigh` | `moderatorNoPerms` | `moderatorTooLow`>;
-    unban(guild: Guild, user: User, moderator: User, authorizer: User, reason?: string): Promise<`success` | `notBanned` | `noPerms` | `moderatorNoPerms`>;
-    timeout(member: Member, moderator: User, authorizer: User, duration: Duration, reason?: string): Promise<`success` | `alreadyTimedOut` | `noPerms` | `memberTooHigh` | `moderatorNoPerms` | `moderatorTooLow`>;
-    clearTimeout(member: Member, moderator: User, authorizer: User, reason?: string): Promise<`success` | `notTimedOut` | `noPerms` | `moderatorNoPerms`>;
-    kick(member: Member, moderator: User, authorizer: User, reason?: string): Promise<`success` | `noPerms` | `memberTooHigh` | `moderatorNoPerms` | `moderatorTooLow`>;
+    ban(guild: Guild, user: User, moderator: User, authorizer: User, deleteDays: number, reason: string, duration: Duration): Promise<'success' | 'alreadyBanned' | 'noPerms' | 'memberTooHigh' | 'moderatorNoPerms' | 'moderatorTooLow'>;
+    unban(guild: Guild, user: User, moderator: User, authorizer: User, reason?: string): Promise<'success' | 'notBanned' | 'noPerms' | 'moderatorNoPerms'>;
+    timeout(member: Member, moderator: User, authorizer: User, duration: Duration, reason?: string): Promise<'success' | 'alreadyTimedOut' | 'noPerms' | 'memberTooHigh' | 'moderatorNoPerms' | 'moderatorTooLow'>;
+    clearTimeout(member: Member, moderator: User, authorizer: User, reason?: string): Promise<'success' | 'notTimedOut' | 'noPerms' | 'moderatorNoPerms'>;
+    kick(member: Member, moderator: User, authorizer: User, reason?: string): Promise<'success' | 'noPerms' | 'memberTooHigh' | 'moderatorNoPerms' | 'moderatorTooLow'>;
     addModlog(guild: Guild, action: string, user: User, moderator?: User, reason?: string, color?: number): Promise<void>;
 
     addReactions(context: Message, reactions: Iterable<Emote>): Promise<{ success: Emote[]; failed: Emote[]; }>;

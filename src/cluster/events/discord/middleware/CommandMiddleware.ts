@@ -27,12 +27,12 @@ export class CommandMiddleware implements IMiddleware<KnownMessage, boolean> {
 
         const commandText = message.content.slice(prefix.length);
         const parts = humanize.smartSplit(commandText, 2);
-        const commandName = (parts[0] ?? ``).toLowerCase();
-        const argsString = parts[1] ?? ``;
+        const commandName = (parts[0] ?? '').toLowerCase();
+        const argsString = parts[1] ?? '';
 
         const result = await this.#cluster.commands.get(commandName, message.channel, message.author);
         switch (result.state) {
-            case `ALLOWED`: {
+            case 'ALLOWED': {
                 const context = new CommandContext(this.#cluster, message, commandText, prefix, commandName, argsString, result.detail.command);
                 const output = await runMiddleware([...this.#middleware, result.detail.command], context, next, () => undefined);
                 if (output !== undefined)
@@ -40,21 +40,21 @@ export class CommandMiddleware implements IMiddleware<KnownMessage, boolean> {
 
                 return true;
             }
-            case `DISABLED`:
-            case `NOT_FOUND`:
-            case `NOT_IN_GUILD`:
+            case 'DISABLED':
+            case 'NOT_FOUND':
+            case 'NOT_IN_GUILD':
                 return await next();
-            case `BLACKLISTED`:
+            case 'BLACKLISTED':
                 await this.#cluster.util.reply(message, new FormattableMessageContent({
                     content: templates.commands.$errors.blacklisted({ reason: result.detail.reason })
                 }));
                 return true;
-            case `MISSING_ROLE`:
+            case 'MISSING_ROLE':
                 await this.#cluster.util.reply(message, new FormattableMessageContent({
                     content: templates.commands.$errors.roleMissing({ roleIds: result.detail.reason })
                 }));
                 return true;
-            case `MISSING_PERMISSIONS`: {
+            case 'MISSING_PERMISSIONS': {
                 const permissions = humanize.permissions(result.detail.reason, true);
                 await this.#cluster.util.reply(message, new FormattableMessageContent({
                     content: templates.commands.$errors.permMissing({ permissions })

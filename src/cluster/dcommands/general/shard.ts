@@ -11,16 +11,16 @@ const cmd = templates.commands.shard;
 export class ShardCommand extends GlobalCommand {
     public constructor() {
         super({
-            name: `shard`,
+            name: 'shard',
             category: CommandType.GENERAL,
             definitions: [
                 {
-                    parameters: ``,
+                    parameters: '',
                     description: cmd.current.description,
                     execute: (ctx) => this.showCurrentShard(ctx)
                 },
                 {
-                    parameters: `{guildID}`,
+                    parameters: '{guildID}',
                     description: cmd.guild.description,
                     execute: (ctx, [guildID]) => this.showGuildShard(ctx, guildID.asString)
                 }
@@ -42,7 +42,7 @@ export class ShardCommand extends GlobalCommand {
         const clusterData = await discord.cluster.getGuildClusterStats(context.cluster, guildId);
 
         const isSameGuild = guard.isGuildCommandContext(context) ? context.channel.guild.id === guildId : false;
-        return this.#shardEmbed(context, clusterData.cluster, clusterData.shard, cmd.guild.embed.description[isSameGuild ? `here` : `other`]({ shardId: clusterData.shard.id, clusterId: clusterData.cluster.id, guildId }));
+        return this.#shardEmbed(context, clusterData.cluster, clusterData.shard, cmd.guild.embed.description[isSameGuild ? 'here' : 'other']({ shardId: clusterData.shard.id, clusterId: clusterData.cluster.id, guildId }));
     }
 
     public showCurrentDMShard(context: CommandContext): CommandResult {
@@ -55,7 +55,7 @@ export class ShardCommand extends GlobalCommand {
             embeds: [
                 {
                     title: cmd.common.embed.title({ shardId: shard.id }),
-                    url: context.util.websiteLink(`shards`),
+                    url: context.util.websiteLink('shards'),
                     description: shardDesc,
                     fields: [
                         {
@@ -63,7 +63,7 @@ export class ShardCommand extends GlobalCommand {
                             value: cmd.common.embed.field.shard.value({
                                 clusterId: cluster.id,
                                 guildCount: shard.guilds,
-                                lastUpdate: moment(shard.time, `x`),
+                                lastUpdate: moment(shard.time, 'x'),
                                 latency: shard.latency,
                                 statusEmote: discord.cluster.statusEmojiMap[shard.status]
                             })
@@ -74,7 +74,7 @@ export class ShardCommand extends GlobalCommand {
                                 cpu: cluster.userCpu,
                                 guildCount: cluster.guilds,
                                 ram: cluster.rss,
-                                startTime: moment(cluster.readyTime, `x`)
+                                startTime: moment(cluster.readyTime, 'x')
                             })
                         },
                         {

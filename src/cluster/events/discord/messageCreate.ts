@@ -10,13 +10,13 @@ import { performance } from 'perf_hooks';
 
 import { AutoresponseMiddleware, CensorMiddleware, ChannelBlacklistMiddleware, ChatLogMiddleware, CleverbotMiddleware, CommandMiddleware, IgnoreBotsMiddleware, IgnoreSelfMiddleware, MessageAwaiterMiddleware, RolemesMiddleware, TableflipMiddleware, UpsertUserMiddleware } from './middleware';
 
-export class DiscordMessageCreateHandler extends DiscordEventService<`messageCreate`> {
+export class DiscordMessageCreateHandler extends DiscordEventService<'messageCreate'> {
     readonly #middleware: Array<IMiddleware<KnownMessage, boolean>>;
 
     public constructor(
         public readonly cluster: Cluster
     ) {
-        super(cluster.discord, `messageCreate`, cluster.logger, (msg) => this.execute(msg));
+        super(cluster.discord, 'messageCreate', cluster.logger, (msg) => this.execute(msg));
         this.#middleware = [
             new ChatLogMiddleware(cluster.moderation.chatLog),
             new IgnoreSelfMiddleware(cluster.logger, cluster.discord),
@@ -31,10 +31,10 @@ export class DiscordMessageCreateHandler extends DiscordEventService<`messageCre
             new CommandMiddleware(cluster, [
                 new ErrorMiddleware(),
                 new RollingRatelimitMiddleware({
-                    period: moment.duration(30, `s`),
+                    period: moment.duration(30, 's'),
                     maxCommands: 15,
-                    cooldown: moment.duration(60, `s`),
-                    penalty: moment.duration(5, `s`),
+                    cooldown: moment.duration(60, 's'),
+                    penalty: moment.duration(5, 's'),
                     key: ctx => ctx.author.id
                 }),
                 new CommandLoggerMiddleware()
@@ -50,7 +50,7 @@ export class DiscordMessageCreateHandler extends DiscordEventService<`messageCre
         }
 
         if (guard.isUncached(message.channel)) {
-            this.cluster.logger.debug(`Got a message in an uncached channel, probably a DM. Resolving it now`);
+            this.cluster.logger.debug('Got a message in an uncached channel, probably a DM. Resolving it now');
             message.channel = await this.cluster.util.getChannel(message.channel.id) ?? message.channel;
         }
         if (!guard.isWellKnownMessage(message))
@@ -62,6 +62,6 @@ export class DiscordMessageCreateHandler extends DiscordEventService<`messageCre
             start: performance.now()
         });
         const handled = await runMiddleware(this.#middleware, message, options, () => false);
-        this.cluster.logger.debug(`Message by`, humanize.fullName(message.author), handled ? `handled` : `ignored`, `in`, performance.now() - options.start, `ms`);
+        this.cluster.logger.debug('Message by', humanize.fullName(message.author), handled ? 'handled' : 'ignored', 'in', performance.now() - options.start, 'ms');
     }
 }

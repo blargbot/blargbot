@@ -11,11 +11,11 @@ export class RespondCommand extends GlobalCommand {
 
     public constructor() {
         super({
-            name: `respond`,
+            name: 'respond',
             category: CommandType.SUPPORT,
             definitions: [
                 {
-                    parameters: `{id:number} {~response+}`,
+                    parameters: '{id:number} {~response+}',
                     description: cmd.default.description,
                     execute: (ctx, [id, response]) => this.respond(ctx, id.asNumber, response.asString)
                 }
@@ -31,7 +31,7 @@ export class RespondCommand extends GlobalCommand {
 
         await context.database.suggestions.update(id, {
             // eslint-disable-next-line @typescript-eslint/naming-convention
-            Notes: `${response} (${humanize.fullName(context.author)})${feedback.Notes !== undefined ? `\n\n${feedback.Notes}` : ``}`
+            Notes: `${response} (${humanize.fullName(context.author)})${feedback.Notes !== undefined ? `\n\n${feedback.Notes}` : ''}`
         });
 
         const author = await context.database.suggesters.get(feedback.Author[0]);

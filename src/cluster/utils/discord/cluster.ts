@@ -7,20 +7,20 @@ import moment, { Moment } from 'moment-timezone';
 const lastReady: Map<number, Moment> = new Map();
 
 function getLastReady(cluster: Cluster, shard: Shard): Moment {
-    if (shard.status === `ready`)
+    if (shard.status === 'ready')
         lastReady.set(shard.id, moment());
 
     return lastReady.get(shard.id)
         ?? cluster.createdAt;
 }
 
-export const statusEmojiMap: { [P in Shard[`status`]]: string } = {
-    'ready': `✅`,
-    'connecting': `♻️`,
-    'resuming': `♻️`,
-    'disconnected': `❌`,
-    'identifying': `📡`,
-    'handshaking': `📡`
+export const statusEmojiMap: { [P in Shard['status']]: string } = {
+    'ready': '✅',
+    'connecting': '♻️',
+    'resuming': '♻️',
+    'disconnected': '❌',
+    'identifying': '📡',
+    'handshaking': '📡'
 };
 
 export function getStats(cluster: Cluster): ClusterStats {
@@ -53,7 +53,7 @@ export async function getGuildClusterStats(cluster: Cluster, guildID: string): P
     if (Math.floor(shardID / cluster.config.discord.shards.perCluster) === cluster.id) {
         clusterData = getStats(cluster);
     } else {
-        const allClusterData = await cluster.worker.request(`getClusterStats`, undefined);
+        const allClusterData = await cluster.worker.request('getClusterStats', undefined);
         const clusterID = Math.floor(shardID / cluster.config.discord.shards.perCluster);
         clusterData = allClusterData[clusterID];
         if (clusterData === undefined)
@@ -68,6 +68,6 @@ export async function getGuildClusterStats(cluster: Cluster, guildID: string): P
 }
 
 export async function getClusterStats(cluster: Cluster, clusterID: number): Promise<ClusterStats | undefined> {
-    const allClusterData = await cluster.worker.request(`getClusterStats`, undefined);
+    const allClusterData = await cluster.worker.request('getClusterStats', undefined);
     return allClusterData[clusterID];
 }

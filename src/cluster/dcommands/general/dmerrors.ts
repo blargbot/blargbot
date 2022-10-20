@@ -9,11 +9,11 @@ const cmd = templates.commands.dmErrors;
 export class DMErrorsCommand extends GlobalCommand {
     public constructor() {
         super({
-            name: `dmerrors`,
+            name: 'dmerrors',
             category: CommandType.GENERAL,
             definitions: [
                 {
-                    parameters: ``,
+                    parameters: '',
                     description: cmd.default.description,
                     execute: ctx => this.toggleDMErrors(ctx)
                 }
@@ -22,8 +22,8 @@ export class DMErrorsCommand extends GlobalCommand {
     }
 
     public async toggleDMErrors(context: CommandContext): Promise<CommandResult> {
-        const dmErrors = !(await context.database.users.getSetting(context.author.id, `dontdmerrors`) ?? false);
-        await context.database.users.setSetting(context.author.id, `dontdmerrors`, dmErrors);
+        const dmErrors = !(await context.database.users.getSetting(context.author.id, 'dontdmerrors') ?? false);
+        await context.database.users.setSetting(context.author.id, 'dontdmerrors', dmErrors);
 
         return dmErrors
             ? cmd.default.enabled

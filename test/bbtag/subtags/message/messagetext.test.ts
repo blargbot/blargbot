@@ -8,22 +8,22 @@ runSubtagTests({
     argCountBounds: { min: 0, max: 3 },
     cases: [
         ...createGetMessagePropTestCases({
-            quiet: ``,
+            quiet: '',
             includeNoArgs: true,
             generateCode(...args) {
-                return `{${[`messagetext`, ...args].filter(a => a !== undefined).join(`;`)}}`;
+                return `{${['messagetext', ...args].filter(a => a !== undefined).join(';')}}`;
             },
             cases: [
                 {
-                    expected: `This is some message content`,
+                    expected: 'This is some message content',
                     setup(_, message) {
-                        message.content = `This is some message content`;
+                        message.content = 'This is some message content';
                     }
                 },
                 {
-                    expected: `abcxyz`,
+                    expected: 'abcxyz',
                     setup(_, message) {
-                        message.content = `abcxyz`;
+                        message.content = 'abcxyz';
                     }
                 }
             ]

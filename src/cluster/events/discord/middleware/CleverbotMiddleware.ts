@@ -27,7 +27,7 @@ export class CleverbotMiddleware implements IMiddleware<KnownMessage, boolean> {
         if (!new RegExp(`^<@!?${this.#util.discord.user.id}>`).test(context.content))
             return false;
 
-        if (await this.#util.database.guilds.getSetting(context.channel.guild.id, `nocleverbot`) === true)
+        if (await this.#util.database.guilds.getSetting(context.channel.guild.id, 'nocleverbot') === true)
             return false;
 
         await this.#reply(context);
@@ -48,15 +48,15 @@ export class CleverbotMiddleware implements IMiddleware<KnownMessage, boolean> {
 
     async #queryCleverbot(message: string): Promise<string> {
         const form = new URLSearchParams();
-        form.append(`input`, message);
+        form.append('input', message);
 
         const result = await fetch(this.#util.config.general.cleverbotApi, {
-            method: `POST`,
+            method: 'POST',
             body: form
         });
         const content = /<font size="2" face="Verdana" color=darkred>(.+)<\/font>/.exec(await result.text());
         if (content !== null)
-            return content[1].replace(/\balice\b/gi, `blargbot`).replace(/<br>/gm, `\n`);
-        return `Hi, I'm blargbot! It's nice to meet you.`;
+            return content[1].replace(/\balice\b/gi, 'blargbot').replace(/<br>/gm, '\n');
+        return 'Hi, I\'m blargbot! It\'s nice to meet you.';
     }
 }

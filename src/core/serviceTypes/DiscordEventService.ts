@@ -15,7 +15,7 @@ export abstract class DiscordEventService<T extends keyof ClientEvents> extends 
     ) {
         super();
         this.type = `DiscordEvent:${this.event}`;
-        this.#execute = this.makeSafeCaller(handler, logger, `Discord event handler`);
+        this.#execute = this.makeSafeCaller(handler, logger, 'Discord event handler');
     }
 
     public start(): void {

@@ -55,7 +55,7 @@ export class Cache<TKey, TValue> {
 }
 
 function toMS(duration: number | Duration): number {
-    return typeof duration === `number`
+    return typeof duration === 'number'
         ? duration
         : duration.asMilliseconds();
 }

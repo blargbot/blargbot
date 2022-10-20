@@ -30,7 +30,7 @@ export class RethinkDb {
             try {
                 yield await cursor.next();
             } catch (err: unknown) {
-                if (err instanceof Error && err.name === `ReqlDriverError` && err.message === `No more rows in the cursor.`)
+                if (err instanceof Error && err.name === 'ReqlDriverError' && err.message === 'No more rows in the cursor.')
                     break;
                 throw err;
             }
@@ -51,7 +51,7 @@ export class RethinkDb {
                 timeout: 10000,
                 ...this.#options
             });
-            connection.on(`close`, () => this.#connection = undefined);
+            connection.on('close', () => this.#connection = undefined);
             return connection;
         } catch (err: unknown) {
             this.#connection = undefined;
@@ -113,16 +113,16 @@ export class RethinkDb {
 function hackySanitize<T>(value: T, removeUndef: boolean): T;
 function hackySanitize(value: unknown, removeUndef: boolean): unknown {
     switch (typeof value) {
-        case `undefined`:
+        case 'undefined':
             return r.literal();
-        case `string`:
-        case `bigint`:
-        case `boolean`:
-        case `function`:
-        case `number`:
-        case `symbol`:
+        case 'string':
+        case 'bigint':
+        case 'boolean':
+        case 'function':
+        case 'number':
+        case 'symbol':
             return value;
-        case `object`:
+        case 'object':
             if (value === null)
                 return value;
             if (Array.isArray(value)) {

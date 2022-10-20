@@ -15,7 +15,7 @@ export function* createArgumentResolvers(signature: SubtagSignatureCallable): It
     if (bindingOrder.greedy.length > 0) {
         const parameterLengths = bindingOrder.permutations.map(p => p.beforeGreedy.length + p.afterGreedy.length).sort();
         if (Math.max(...parameterLengths) - Math.min(...parameterLengths) >= bindingOrder.greedy.length)
-            throw new Error(`There must be fewer optional parameters than the number of repeated parameters!`);
+            throw new Error('There must be fewer optional parameters than the number of repeated parameters!');
 
         for (const { beforeGreedy, afterGreedy } of bindingOrder.permutations)
             yield createVariableResolver(defaultArgs, beforeGreedy, bindingOrder.greedy, afterGreedy);
@@ -24,7 +24,7 @@ export function* createArgumentResolvers(signature: SubtagSignatureCallable): It
 
 function* flatParameters(parameters: Iterable<SubtagSignatureParameter>): Generator<SubtagSignatureValueParameter> {
     for (const parameter of parameters) {
-        if (`nested` in parameter)
+        if ('nested' in parameter)
             yield* flatParameters(parameter.nested);
         else
             yield parameter;
@@ -54,9 +54,9 @@ function createResolverOrder(parameters: readonly SubtagSignatureParameter[], fl
 }
 
 function addParameter(result: ArgumentResolverPermutations, parameter: SubtagSignatureParameter, flatParameters: readonly SubtagSignatureValueParameter[]): void {
-    if (`nested` in parameter) {
+    if ('nested' in parameter) {
         if (result.greedy.length > 0) {
-            throw new Error(`Cannot have multiple greedy parameters!`);
+            throw new Error('Cannot have multiple greedy parameters!');
         }
         const nestedIndexes = parameter.nested.map(p => flatParameters.indexOf(p));
         result.greedy.push(...nestedIndexes);
@@ -119,9 +119,9 @@ function createResolver(
 
 const excessArg: SubtagSignatureValueParameter = {
     autoResolve: true,
-    defaultValue: ``,
+    defaultValue: '',
     maxLength: 1000000,
-    name: `EXCESS_ARG`,
+    name: 'EXCESS_ARG',
     required: false
 };
 
@@ -176,13 +176,13 @@ function* getParameterOrder(
 ): Generator<number, void, undefined> {
     if (greedy.length === 0) {
         if (argCount !== beforeGreedy.length + afterGreedy.length)
-            throw new Error(`Invalid argument count`);
+            throw new Error('Invalid argument count');
         yield* beforeGreedy;
         yield* afterGreedy;
     } else {
         const greedyRepeats = (argCount - beforeGreedy.length - afterGreedy.length) / greedy.length;
         if (greedyRepeats % 1 !== 0)
-            throw new Error(`Invalid argument count`);
+            throw new Error('Invalid argument count');
         yield* beforeGreedy;
         for (let i = 0; i < greedyRepeats; i++)
             yield* greedy;

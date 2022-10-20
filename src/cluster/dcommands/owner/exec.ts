@@ -10,11 +10,11 @@ const cmd = templates.commands.exec;
 export class ExecCommand extends GlobalCommand {
     public constructor() {
         super({
-            name: `exec`,
+            name: 'exec',
             category: CommandType.OWNER,
             definitions: [
                 {
-                    parameters: `{~command+}`,
+                    parameters: '{~command+}',
                     description: cmd.default.description,
                     execute: (ctx, [command]) => this.commandLine(ctx, command.asString)
                 }
@@ -40,7 +40,7 @@ export class ExecCommand extends GlobalCommand {
             const content = cmd.default.command.success({ command });
             const file = {
                 file: Buffer.from(cleanConsole(await execCommandline(command))),
-                name: `output.txt`
+                name: 'output.txt'
             };
             message === undefined
                 ? await context.reply({ content, files: [file] })
@@ -49,7 +49,7 @@ export class ExecCommand extends GlobalCommand {
             const content = cmd.default.command.error({ command });
             const file = {
                 file: Buffer.from(cleanConsole(err instanceof Error ? err.toString() : Object.prototype.toString.call(err))),
-                name: `output.txt`
+                name: 'output.txt'
             };
             message === undefined
                 ? await context.reply({ content, files: [file] })
@@ -70,5 +70,5 @@ async function execCommandline(command: string): Promise<string> {
 
 function cleanConsole(text: string): string {
     // eslint-disable-next-line no-control-regex
-    return text.replace(/\u001b\[.*?m/g, ``);
+    return text.replace(/\u001b\[.*?m/g, '');
 }

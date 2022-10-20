@@ -8,19 +8,19 @@ export const duration: IValueResolverTransform = {
         let format = (duration: Duration): string => duration.humanize();
         switch (args.length) {
             case 0: break;
-            default: throw new Error(`Duration can only accept 1 arg`);
+            default: throw new Error('Duration can only accept 1 arg');
             case 1: switch (args[0]) {
-                case `H`: break;
-                case `S`:
+                case 'H': break;
+                case 'S':
                     format = d => d.asSeconds().toString();
                     break;
-                case `MS`:
+                case 'MS':
                     format = d => d.asMilliseconds().toString();
                     break;
-                case `F`:
+                case 'F':
                     format = d => humanize.duration(d);
                     break;
-                default: throw new Error(`Unrecognised duration format`);
+                default: throw new Error('Unrecognised duration format');
             }
         }
 
@@ -29,9 +29,9 @@ export const duration: IValueResolverTransform = {
             if (value === undefined)
                 return undefined;
 
-            const asDuration = moment.isDuration(value) ? value : typeof value === `number` ? moment.duration(value) : undefined;
+            const asDuration = moment.isDuration(value) ? value : typeof value === 'number' ? moment.duration(value) : undefined;
             if (asDuration === undefined || !asDuration.isValid())
-                throw new Error(`Invalid duration`);
+                throw new Error('Invalid duration');
 
             asDuration.locale(ctx.formatter.locale.baseName);
             return format(asDuration);

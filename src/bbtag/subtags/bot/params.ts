@@ -8,31 +8,31 @@ import { SubtagType } from '../../utils';
 export class ParamsSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: `params`,
+            name: 'params',
             category: SubtagType.BOT,
             definition: [
                 {
                     parameters: [],
-                    description: `Gets the whole input given to the current function call`,
-                    exampleCode: `{func;test;You gave the parameters \`{params}\`}\n{func.test;Hello world!;BBtag is so cool}`,
-                    exampleOut: `You gave the parameters \`Hello world! BBtag is so cool\``,
-                    returns: `string`,
+                    description: 'Gets the whole input given to the current function call',
+                    exampleCode: '{func;test;You gave the parameters `{params}`}\n{func.test;Hello world!;BBtag is so cool}',
+                    exampleOut: 'You gave the parameters `Hello world! BBtag is so cool`',
+                    returns: 'string',
                     execute: (ctx) => this.getAllParams(ctx)
                 },
                 {
-                    parameters: [`index`],
-                    description: `Gets a parameter passed to the current function call`,
-                    exampleCode: `{func;test;The first parameter is \`{params;0}\`}\n{func.test;Hello world!;BBtag is so cool}`,
-                    exampleOut: `The first parameter is \`Hello world!\``,
-                    returns: `string`,
+                    parameters: ['index'],
+                    description: 'Gets a parameter passed to the current function call',
+                    exampleCode: '{func;test;The first parameter is `{params;0}`}\n{func.test;Hello world!;BBtag is so cool}',
+                    exampleOut: 'The first parameter is `Hello world!`',
+                    returns: 'string',
                     execute: (ctx, [index]) => this.getParam(ctx, index.value)
                 },
                 {
-                    parameters: [`start`, `end`],
-                    description: `Gets all the parameters given from \`start\` up to \`end\`. If \`end\` is \`n\` then all parameters after \`start\` will be returned`,
-                    exampleCode: `{func;test;The first parameter is \`{params;2;4}\`}\n{func.test;A;B;C;D;E;F}`,
-                    exampleOut: `C D`,
-                    returns: `string`,
+                    parameters: ['start', 'end'],
+                    description: 'Gets all the parameters given from `start` up to `end`. If `end` is `n` then all parameters after `start` will be returned',
+                    exampleCode: '{func;test;The first parameter is `{params;2;4}`}\n{func.test;A;B;C;D;E;F}',
+                    exampleOut: 'C D',
+                    returns: 'string',
                     execute: (ctx, [start, end]) => this.getParams(ctx, start.value, end.value)
                 }
             ]
@@ -42,14 +42,14 @@ export class ParamsSubtag extends CompiledSubtag {
     public getAllParams(context: BBTagContext): string {
         const params = context.scopes.local.paramsarray;
         if (params === undefined)
-            throw new BBTagRuntimeError(`{params} can only be used inside {function}`);
-        return params.join(` `);
+            throw new BBTagRuntimeError('{params} can only be used inside {function}');
+        return params.join(' ');
     }
 
     public getParam(context: BBTagContext, index: string): string {
         const params = context.scopes.local.paramsarray;
         if (params === undefined)
-            throw new BBTagRuntimeError(`{params} can only be used inside {function}`);
+            throw new BBTagRuntimeError('{params} can only be used inside {function}');
 
         const i = parse.int(index);
         if (i === undefined)
@@ -68,13 +68,13 @@ export class ParamsSubtag extends CompiledSubtag {
     ): string {
         const params = context.scopes.local.paramsarray;
         if (params === undefined)
-            throw new BBTagRuntimeError(`{params} can only be used inside {function}`);
+            throw new BBTagRuntimeError('{params} can only be used inside {function}');
 
         let from = parse.int(start);
         if (from === undefined)
             throw new NotANumberError(start);
 
-        let to = end.toLowerCase() === `n`
+        let to = end.toLowerCase() === 'n'
             ? params.length
             : parse.int(end);
 
@@ -88,6 +88,6 @@ export class ParamsSubtag extends CompiledSubtag {
         if (params.length <= from || from < 0)
             throw new NotEnoughArgumentsError(from + 1, params.length);
 
-        return params.slice(from, to).join(` `);
+        return params.slice(from, to).join(' ');
     }
 }

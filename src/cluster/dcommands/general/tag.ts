@@ -21,147 +21,147 @@ export class TagCommand extends GuildCommand {
 
     public constructor(cluster: Cluster) {
         super({
-            name: `tag`,
-            aliases: [`t`],
+            name: 'tag',
+            aliases: ['t'],
             category: CommandType.GENERAL,
-            description: cmd.description({ subtags: cluster.util.websiteLink(`/bbtag`), tos: cluster.util.websiteLink(`/bbtag/tos`) }),
+            description: cmd.description({ subtags: cluster.util.websiteLink('/bbtag'), tos: cluster.util.websiteLink('/bbtag/tos') }),
             definitions: [
                 {
-                    parameters: `{tagName} {~args+?}`,
+                    parameters: '{tagName} {~args+?}',
                     description: cmd.run.description,
                     execute: (ctx, [tagName, args]) => this.runTag(ctx, tagName.asString, args.asOptionalString, false)
                 },
                 {
-                    parameters: `test|eval|exec|vtest`,
+                    parameters: 'test|eval|exec|vtest',
                     subcommands: [
                         {
-                            parameters: `{~code+}`,
+                            parameters: '{~code+}',
                             description: cmd.test.default.description,
-                            execute: (ctx, [code]) => this.runRaw(ctx, code.asString, ``, false)
+                            execute: (ctx, [code]) => this.runRaw(ctx, code.asString, '', false)
                         },
                         {
-                            parameters: `debug {~code+}`,
+                            parameters: 'debug {~code+}',
                             description: cmd.test.debug.description,
-                            execute: (ctx, [code]) => this.runRaw(ctx, code.asString, ``, true)
+                            execute: (ctx, [code]) => this.runRaw(ctx, code.asString, '', true)
                         }
                     ]
                 },
                 {
-                    parameters: `docs {topic+?}`,
+                    parameters: 'docs {topic+?}',
                     description: cmd.docs.description,
                     execute: (ctx, [topic]) => this.#showDocs(ctx, topic.asOptionalString)
                 },
                 {
-                    parameters: `debug {tagName} {~args+?}`,
+                    parameters: 'debug {tagName} {~args+?}',
                     description: cmd.debug.description,
                     execute: (ctx, [tagName, args]) => this.runTag(ctx, tagName.asString, args.asOptionalString, true)
                 },
                 {
-                    parameters: `create|add {tagName?} {~content+?}`,
+                    parameters: 'create|add {tagName?} {~content+?}',
                     description: cmd.create.description,
                     execute: (ctx, [tagName, content]) => this.createTag(ctx, tagName.asOptionalString, content.asOptionalString)
                 },
                 {
-                    parameters: `edit {tagName?} {~content+?}`,
+                    parameters: 'edit {tagName?} {~content+?}',
                     description: cmd.edit.description,
                     execute: (ctx, [tagName, content]) => this.editTag(ctx, tagName.asOptionalString, content.asOptionalString)
                 },
                 {
-                    parameters: `set {tagName?} {~content+?}`,
+                    parameters: 'set {tagName?} {~content+?}',
                     description: cmd.set.description,
                     execute: (ctx, [tagName, content]) => this.setTag(ctx, tagName.asOptionalString, content.asOptionalString)
                 },
                 {
-                    parameters: `delete|remove {tagName?}`,
+                    parameters: 'delete|remove {tagName?}',
                     description: cmd.delete.description,
                     execute: (ctx, [tagName]) => this.deleteTag(ctx, tagName.asOptionalString)
                 },
                 {
-                    parameters: `rename {oldName?} {newName?}`,
+                    parameters: 'rename {oldName?} {newName?}',
                     description: cmd.rename.description,
                     execute: (ctx, [oldName, newName]) => this.renameTag(ctx, oldName.asOptionalString, newName.asOptionalString)
                 },
                 {
-                    parameters: `raw {tagName?} {fileExtension:literal(bbtag|txt)=bbtag}`,
+                    parameters: 'raw {tagName?} {fileExtension:literal(bbtag|txt)=bbtag}',
                     description: cmd.raw.description,
                     execute: (ctx, [tagName, fileExtension]) => this.getRawTag(ctx, tagName.asOptionalString, fileExtension.asLiteral)
                 },
                 {
-                    parameters: `list {author+?}`,
+                    parameters: 'list {author+?}',
                     description: cmd.list.description,
                     execute: (ctx, [author]) => this.listTags(ctx, author.asOptionalString)
                 },
                 {
-                    parameters: `search {tagName?}`,
+                    parameters: 'search {tagName?}',
                     description: cmd.search.description,
                     execute: (ctx, [tagName]) => this.searchTags(ctx, tagName.asOptionalString)
                 },
                 {
                     hidden: true,
-                    parameters: `permdelete {tagName} {reason+}`,
+                    parameters: 'permdelete {tagName} {reason+}',
                     description: cmd.permDelete.description,
                     execute: (ctx, [tagName, reason]) => this.disableTag(ctx, tagName.asString, reason.asString)
                 },
                 {
-                    parameters: `cooldown {tagName} {duration:duration+=0ms}`,
+                    parameters: 'cooldown {tagName} {duration:duration+=0ms}',
                     description: cmd.cooldown.description,
                     execute: (ctx, [tagName, duration]) => this.setTagCooldown(ctx, tagName.asString, duration.asDuration)
                 },
                 {
-                    parameters: `author {tagName?}`,
+                    parameters: 'author {tagName?}',
                     description: cmd.author.description,
                     execute: (ctx, [tagName]) => this.getTagAuthor(ctx, tagName.asOptionalString)
                 },
                 {
-                    parameters: `info {tagName?}`,
+                    parameters: 'info {tagName?}',
                     description: cmd.info.description,
                     execute: (ctx, [tagName]) => this.getTagInfo(ctx, tagName.asOptionalString)
                 },
                 {
-                    parameters: `top `,
+                    parameters: 'top ',
                     description: cmd.top.description,
                     execute: (ctx) => this.getTopTags(ctx)
                 },
                 {
-                    parameters: `report {tagName} {reason+?}`,
+                    parameters: 'report {tagName} {reason+?}',
                     description: cmd.report.description,
                     execute: (ctx, [tagName, reason]) => this.reportTag(ctx, tagName.asString, reason.asOptionalString)
                 },
                 {
-                    parameters: `setlang {tagName} {language}`,
+                    parameters: 'setlang {tagName} {language}',
                     description: cmd.setLang.description,
                     execute: (ctx, [tagName, language]) => this.setTagLanguage(ctx, tagName.asString, language.asString)
                 },
                 {
-                    parameters: `favourite|favorite|favourites|favorites`,
+                    parameters: 'favourite|favorite|favourites|favorites',
                     subcommands: [
                         {
-                            parameters: ``,
+                            parameters: '',
                             description: cmd.favourite.list.description,
                             execute: (ctx) => this.listFavouriteTags(ctx)
                         },
                         {
-                            parameters: `{tagName}`,
+                            parameters: '{tagName}',
                             description: cmd.favourite.toggle.description,
                             execute: (ctx, [tagName]) => this.toggleFavouriteTag(ctx, tagName.asString)
                         }
                     ]
                 },
                 {
-                    parameters: `flag|flags`,
+                    parameters: 'flag|flags',
                     subcommands: [
                         {
-                            parameters: `{tagName}`,
+                            parameters: '{tagName}',
                             description: cmd.flag.list.description,
                             execute: (ctx, [tagName]) => this.getTagFlags(ctx, tagName.asString)
                         },
                         {
-                            parameters: `create|add {tagName} {~flags+}`,
+                            parameters: 'create|add {tagName} {~flags+}',
                             description: cmd.flag.create.description,
                             execute: (ctx, [tagName, flags]) => this.addTagFlags(ctx, tagName.asString, flags.asString)
                         },
                         {
-                            parameters: `delete|remove {tagName} {~flags+}`,
+                            parameters: 'delete|remove {tagName} {~flags+}',
                             description: cmd.flag.delete.description,
                             execute: (ctx, [tagName, flags]) => this.removeTagFlags(ctx, tagName.asString, flags.asString)
                         }
@@ -170,8 +170,8 @@ export class TagCommand extends GuildCommand {
             ]
         });
 
-        this.#docs = new BBTagDocumentationManager(cluster, `tag`);
-        cluster.discord.on(`interactionCreate`, i => this.#docs.handleInteraction(i));
+        this.#docs = new BBTagDocumentationManager(cluster, 'tag');
+        cluster.discord.on('interactionCreate', i => this.#docs.handleInteraction(i));
     }
 
     public async runTag(
@@ -181,7 +181,7 @@ export class TagCommand extends GuildCommand {
         debug: boolean
     ): Promise<CommandResult> {
         const match = await this.#requestReadableTag(context, tagName);
-        if (`response` in match)
+        if ('response' in match)
             return match.response;
 
         if (debug && match.author !== context.author.id)
@@ -191,9 +191,9 @@ export class TagCommand extends GuildCommand {
 
         const result = await context.bbtag.execute(match.content, {
             message: context.message,
-            inputRaw: input ?? ``,
+            inputRaw: input ?? '',
             isCC: false,
-            limit: `tagLimit`,
+            limit: 'tagLimit',
             rootTagName: match.name,
             authorId: match.author,
             authorizerId: match.author,
@@ -219,8 +219,8 @@ export class TagCommand extends GuildCommand {
             message: context.message,
             inputRaw: input,
             isCC: false,
-            limit: `tagLimit`,
-            rootTagName: `test`,
+            limit: 'tagLimit',
+            rootTagName: 'test',
             authorId: context.author.id,
             prefix: context.prefix
         });
@@ -234,7 +234,7 @@ export class TagCommand extends GuildCommand {
 
     public async createTag(context: GuildCommandContext, tagName: string | undefined, content: string | undefined): Promise<CommandResult> {
         const match = await this.#requestCreatableTag(context, tagName);
-        if (`response` in match)
+        if ('response' in match)
             return match.response;
 
         return await this.#saveTag(context, cmd.create.success, match.name, content, undefined);
@@ -242,12 +242,12 @@ export class TagCommand extends GuildCommand {
 
     public async editTag(context: GuildCommandContext, tagName: string | undefined, content: string | undefined): Promise<CommandResult> {
         const match = await this.#requestEditableTag(context, tagName);
-        if (`response` in match)
+        if ('response' in match)
             return match.response;
         if (content === undefined) {
             if (context.message.attachments.length > 0) {
                 const firstAttachment = context.message.attachments[0];
-                if (firstAttachment.filename.endsWith(`.bbtag`) || firstAttachment.filename.endsWith(`.txt`))
+                if (firstAttachment.filename.endsWith('.bbtag') || firstAttachment.filename.endsWith('.txt'))
                     content = await (await fetch(firstAttachment.url)).text();
             }
         }
@@ -257,12 +257,12 @@ export class TagCommand extends GuildCommand {
 
     public async deleteTag(context: GuildCommandContext, tagName: string | undefined): Promise<CommandResult> {
         const match = await this.#requestEditableTag(context, tagName);
-        if (`response` in match)
+        if ('response' in match)
             return match.response;
 
         await context.database.tags.delete(match.name);
         void this.#logChange(context, TagChangeAction.DELETE, context.author, context.id, {
-            author: `${(await context.database.users.get(match.author))?.username ?? `undefined`} (${match.author})`,
+            author: `${(await context.database.users.get(match.author))?.username ?? 'undefined'} (${match.author})`,
             tag: match.name,
             content: match.content
         });
@@ -271,12 +271,12 @@ export class TagCommand extends GuildCommand {
 
     public async setTag(context: GuildCommandContext, tagName: string | undefined, content: string | undefined): Promise<CommandResult> {
         const match = await this.#requestSettableTag(context, tagName);
-        if (`response` in match)
+        if ('response' in match)
             return match.response;
         if (content === undefined) {
             if (context.message.attachments.length > 0) {
                 const firstAttachment = context.message.attachments[0];
-                if (firstAttachment.filename.endsWith(`.bbtag`) || firstAttachment.filename.endsWith(`.txt`))
+                if (firstAttachment.filename.endsWith('.bbtag') || firstAttachment.filename.endsWith('.txt'))
                     content = await (await fetch(firstAttachment.url)).text();
             }
         }
@@ -285,11 +285,11 @@ export class TagCommand extends GuildCommand {
 
     public async renameTag(context: GuildCommandContext, oldName: string | undefined, newName: string | undefined): Promise<CommandResult> {
         const from = await this.#requestEditableTag(context, oldName);
-        if (`response` in from)
+        if ('response' in from)
             return from.response;
 
         const to = await this.#requestCreatableTag(context, newName);
-        if (`response` in to)
+        if ('response' in to)
             return to.response;
 
         await context.database.tags.delete(from.name);
@@ -307,7 +307,7 @@ export class TagCommand extends GuildCommand {
 
     public async getRawTag(context: GuildCommandContext, tagName: string | undefined, fileExtension: string): Promise<CommandResult> {
         const match = await this.#requestReadableTag(context, tagName);
-        if (`response` in match)
+        if ('response' in match)
             return match.response;
 
         return new RawBBTagCommandResult(
@@ -319,10 +319,10 @@ export class TagCommand extends GuildCommand {
     }
 
     public async listTags(context: GuildCommandContext, author?: string): Promise<CommandResult> {
-        let pages: Parameters<ClusterUtilities[`displayPaged`]>[2];
+        let pages: Parameters<ClusterUtilities['displayPaged']>[2];
         if (author !== undefined) {
             const result = await context.queryUser({ filter: author });
-            if (result.state !== `SUCCESS`)
+            if (result.state !== 'SUCCESS')
                 return undefined;
 
             pages = async (page) => {
@@ -360,7 +360,7 @@ export class TagCommand extends GuildCommand {
     public async searchTags(context: GuildCommandContext, query?: string): Promise<CommandResult> {
         if (query === undefined || query.length === 0) {
             const queryResult = await context.queryText({ prompt: cmd.search.query.prompt });
-            if (queryResult.state !== `SUCCESS`)
+            if (queryResult.state !== 'SUCCESS')
                 return undefined;
 
             query = queryResult.value;
@@ -406,17 +406,17 @@ export class TagCommand extends GuildCommand {
             return cmd.cooldown.cooldownZero;
 
         const match = await this.#requestEditableTag(context, tagName);
-        if (`response` in match)
+        if ('response' in match)
             return match.response;
 
-        await context.database.tags.setProp(match.name, `cooldown`, cooldown?.asMilliseconds());
+        await context.database.tags.setProp(match.name, 'cooldown', cooldown?.asMilliseconds());
         cooldown ??= moment.duration();
         return cmd.cooldown.success({ name: match.name, cooldown });
     }
 
     public async getTagAuthor(context: GuildCommandContext, tagName: string | undefined): Promise<CommandResult> {
         const match = await this.#requestReadableTag(context, tagName);
-        if (`response` in match)
+        if ('response' in match)
             return match.response;
 
         const author = await context.database.users.get(match.author);
@@ -425,7 +425,7 @@ export class TagCommand extends GuildCommand {
 
     public async getTagInfo(context: GuildCommandContext, tagName: string | undefined): Promise<CommandResult> {
         const match = await this.#requestReadableTag(context, tagName);
-        if (`response` in match)
+        if ('response' in match)
             return match.response;
 
         const author = await context.database.users.get(match.author);
@@ -496,12 +496,12 @@ export class TagCommand extends GuildCommand {
 
     public async toggleFavouriteTag(context: GuildCommandContext, tagName: string): Promise<CommandResult> {
         const match = await this.#requestReadableTag(context, tagName);
-        if (`response` in match)
+        if ('response' in match)
             return match.response;
 
         const isFavourited = match.favourites?.[context.author.id] === true;
         await context.database.tags.setFavourite(match.name, context.author.id, isFavourited);
-        return cmd.favourite.toggle[isFavourited ? `added` : `removed`]({ name: match.name });
+        return cmd.favourite.toggle[isFavourited ? 'added' : 'removed']({ name: match.name });
     }
 
     public async listFavouriteTags(context: GuildCommandContext): Promise<CommandResult> {
@@ -511,7 +511,7 @@ export class TagCommand extends GuildCommand {
 
     public async reportTag(context: GuildCommandContext, tagName: string, reason: string | undefined): Promise<CommandResult> {
         const match = await this.#requestReadableTag(context, tagName);
-        if (`response` in match)
+        if ('response' in match)
             return match.response;
 
         const user = await context.database.users.get(context.author.id);
@@ -529,7 +529,7 @@ export class TagCommand extends GuildCommand {
                 return cmd.report.deleted({ name: match.name });
             }
             const reasonResult = await context.queryText({ prompt: cmd.report.query.prompt });
-            if (reasonResult.state !== `SUCCESS`)
+            if (reasonResult.state !== 'SUCCESS')
                 return;
 
             reason = reasonResult.value;
@@ -544,7 +544,7 @@ export class TagCommand extends GuildCommand {
 
     public async getTagFlags(context: GuildCommandContext, tagName: string): Promise<CommandResult> {
         const match = await this.#requestReadableTag(context, tagName);
-        if (`response` in match)
+        if ('response' in match)
             return match.response;
 
         if (match.flags === undefined || match.flags.length === 0)
@@ -555,7 +555,7 @@ export class TagCommand extends GuildCommand {
 
     public async addTagFlags(context: GuildCommandContext, tagName: string, flagsRaw: string): Promise<CommandResult> {
         const match = await this.#requestEditableTag(context, tagName);
-        if (`response` in match)
+        if ('response' in match)
             return match.response;
 
         const { _, ...addFlags } = parse.flags([], flagsRaw);
@@ -567,37 +567,37 @@ export class TagCommand extends GuildCommand {
             if (flags.some(f => f.flag === flag))
                 return cmd.flag.create.flagExists({ flag });
 
-            const word = args.get(0)?.value.replace(/[^a-z]/gi, ``).toLowerCase() ?? ``;
+            const word = args.get(0)?.value.replace(/[^a-z]/gi, '').toLowerCase() ?? '';
             if (flags.some(f => f.word === word))
                 return cmd.flag.create.wordExists({ word });
 
-            const description = args.slice(1).merge().value.replace(/\n/g, ` `);
+            const description = args.slice(1).merge().value.replace(/\n/g, ' ');
             flags.push({ flag, word, description });
         }
 
-        await context.database.tags.setProp(match.name, `flags`, flags);
+        await context.database.tags.setProp(match.name, 'flags', flags);
         return cmd.flag.updated({ name: match.name });
     }
 
     public async removeTagFlags(context: GuildCommandContext, tagName: string, flagsRaw: string): Promise<CommandResult> {
         const match = await this.#requestEditableTag(context, tagName);
-        if (`response` in match)
+        if ('response' in match)
             return match.response;
 
         const { _, ...removeFlags } = parse.flags([], flagsRaw);
         const flags = [...match.flags ?? []]
             .filter(f => removeFlags[f.flag] === undefined);
 
-        await context.database.tags.setProp(match.name, `flags`, flags);
+        await context.database.tags.setProp(match.name, 'flags', flags);
         return cmd.flag.updated({ name: match.name });
     }
 
     public async setTagLanguage(context: GuildCommandContext, tagName: string, language: string): Promise<CommandResult> {
         const match = await this.#requestEditableTag(context, tagName);
-        if (`response` in match)
+        if ('response' in match)
             return match.response;
 
-        await context.database.tags.setProp(match.name, `lang`, language);
+        await context.database.tags.setProp(match.name, 'lang', language);
         return cmd.setLang.success({ name: match.name });
     }
 
@@ -623,7 +623,7 @@ export class TagCommand extends GuildCommand {
             lastmodified: new Date(),
             uses: oldTag?.uses ?? 0,
             flags: [...oldTag?.flags ?? []],
-            lang: oldTag?.lang ?? ``
+            lang: oldTag?.lang ?? ''
         });
 
         void this.#logChange(context, oldTag !== undefined ? TagChangeAction.EDIT : TagChangeAction.CREATE, context.author, context.id, {
@@ -640,7 +640,7 @@ export class TagCommand extends GuildCommand {
         query: IFormattable<string> = cmd.request.name): Promise<string | undefined> {
         if (name === undefined) {
             const nameResult = await context.queryText({ prompt: query });
-            if (nameResult.state !== `SUCCESS`)
+            if (nameResult.state !== 'SUCCESS')
                 return undefined;
 
             name = nameResult.value;
@@ -655,7 +655,7 @@ export class TagCommand extends GuildCommand {
             return content;
 
         const contentResult = await context.queryText({ prompt: cmd.request.content });
-        if (contentResult.state !== `SUCCESS`)
+        if (contentResult.state !== 'SUCCESS')
             return undefined;
 
         return contentResult.value;
@@ -667,7 +667,7 @@ export class TagCommand extends GuildCommand {
         query?: IFormattable<string>
     ): Promise<{ name: string; tag?: StoredTag; } | { response: CommandResult; }> {
         const match = await this.#requestTag(context, tagName, query);
-        if (`response` in match)
+        if ('response' in match)
             return match;
 
         if (match.tag !== undefined
@@ -690,7 +690,7 @@ export class TagCommand extends GuildCommand {
         query?: IFormattable<string>
     ): Promise<StoredTag | { response: CommandResult; }> {
         const match = await this.#requestSettableTag(context, tagName, query);
-        if (`response` in match)
+        if ('response' in match)
             return match;
 
         if (match.tag === undefined)
@@ -705,7 +705,7 @@ export class TagCommand extends GuildCommand {
         query?: IFormattable<string>
     ): Promise<StoredTag | { response: CommandResult; }> {
         const match = await this.#requestTag(context, tagName, query);
-        if (`response` in match)
+        if ('response' in match)
             return match;
 
         if (match.tag === undefined)
@@ -720,7 +720,7 @@ export class TagCommand extends GuildCommand {
         query?: IFormattable<string>
     ): Promise<{ name: string; } | { response: CommandResult; }> {
         const match = await this.#requestTag(context, tagName, query);
-        if (`response` in match)
+        if ('response' in match)
             return match;
 
         if (match.tag !== undefined)
@@ -750,7 +750,7 @@ export class TagCommand extends GuildCommand {
     }
 
     async #showDocs(ctx: GuildCommandContext, topic: string | undefined): Promise<SendContent<IFormattable<string>>> {
-        return await this.#docs.createMessageContent(topic ?? ``, ctx.author, ctx.channel);
+        return await this.#docs.createMessageContent(topic ?? '', ctx.author, ctx.channel);
     }
 
     async #logChange(
@@ -766,7 +766,7 @@ export class TagCommand extends GuildCommand {
                     color: tagChangeActionColour[action],
                     fields: Object.entries(details).map(([key, detail]) => ({
                         name: literal(key),
-                        value: literal(humanize.truncate(detail, 1000, `(too long)`)),
+                        value: literal(humanize.truncate(detail, 1000, '(too long)')),
                         inline: true
                     })),
                     author: {
@@ -781,7 +781,7 @@ export class TagCommand extends GuildCommand {
                 }
             ],
             files: [
-                ...`tag` in details && `content` in details ? [{
+                ...'tag' in details && 'content' in details ? [{
                     name: `${details.tag}.bbtag`,
                     file: details.content
                 }] : []
@@ -791,14 +791,14 @@ export class TagCommand extends GuildCommand {
 }
 
 function normalizeName(title: string): string {
-    return title.replace(/[^\d\w .,/#!$%^&*;:{}[\]=\-_~()]/gi, ``);
+    return title.replace(/[^\d\w .,/#!$%^&*;:{}[\]=\-_~()]/gi, '');
 }
 
 const enum TagChangeAction {
-    CREATE = `Create`,
-    RENAME = `Rename`,
-    EDIT = `Edit`,
-    DELETE = `Delete`
+    CREATE = 'Create',
+    RENAME = 'Rename',
+    EDIT = 'Edit',
+    DELETE = 'Delete'
 }
 
 const tagChangeActionColour: { [P in TagChangeAction]: number } = {

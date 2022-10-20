@@ -8,16 +8,16 @@ runSubtagTests({
     argCountBounds: { min: 0, max: 2 },
     cases: [
         ...createGetChannelPropTestCases({
-            quiet: ``,
+            quiet: '',
             includeNoArgs: true,
             generateCode(...args) {
-                return `{${[`channelid`, ...args].join(`;`)}}`;
+                return `{${['channelid', ...args].join(';')}}`;
             },
             cases: [
                 {
-                    expected: `8237642839674943`,
+                    expected: '8237642839674943',
                     setup(channel) {
-                        channel.id = `8237642839674943`;
+                        channel.id = '8237642839674943';
                     }
                 }
             ]

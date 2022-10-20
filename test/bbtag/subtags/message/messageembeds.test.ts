@@ -8,35 +8,35 @@ runSubtagTests({
     argCountBounds: { min: 0, max: 3 },
     cases: [
         ...createGetMessagePropTestCases({
-            quiet: `[]`,
+            quiet: '[]',
             includeNoArgs: true,
             generateCode(...args) {
-                return `{${[`messageembeds`, ...args].filter(a => a !== undefined).join(`;`)}}`;
+                return `{${['messageembeds', ...args].filter(a => a !== undefined).join(';')}}`;
             },
             cases: [
                 {
-                    title: `No embeds`,
-                    expected: `[]`
+                    title: 'No embeds',
+                    expected: '[]'
                 },
                 {
-                    title: `1 embed`,
-                    expected: `[{"title":"Embed 1"}]`,
+                    title: '1 embed',
+                    expected: '[{"title":"Embed 1"}]',
                     setup(_, message) {
                         message.embeds.push({
-                            title: `Embed 1`
+                            title: 'Embed 1'
                         });
                     }
                 },
                 {
-                    title: `2 embeds`,
-                    expected: `[{"title":"Embed 1"},{"title":"Embed 2"}]`,
+                    title: '2 embeds',
+                    expected: '[{"title":"Embed 1"},{"title":"Embed 2"}]',
                     setup(_, message) {
                         message.embeds.push(
                             {
-                                title: `Embed 1`
+                                title: 'Embed 1'
                             },
                             {
-                                title: `Embed 2`
+                                title: 'Embed 2'
                             }
                         );
                     }

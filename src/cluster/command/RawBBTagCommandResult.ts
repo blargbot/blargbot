@@ -1,7 +1,7 @@
-import { SendContent } from "@blargbot/core/types";
-import { format, IFormattable, IFormatter } from "@blargbot/domain/messages/types";
+import { SendContent } from '@blargbot/core/types';
+import { format, IFormattable, IFormatter } from '@blargbot/domain/messages/types';
 
-import { discord } from "../utils/index";
+import { discord } from '../utils/index';
 
 export class RawBBTagCommandResult implements IFormattable<string | SendContent<string>> {
     readonly #inline: IFormattable<string>;
@@ -17,11 +17,11 @@ export class RawBBTagCommandResult implements IFormattable<string | SendContent<
     }
 
     public [format](formatter: IFormatter): string | SendContent<string> {
-        if (this.#content.includes(`\`\`\``))
+        if (this.#content.includes('```'))
             return this.#attach(formatter);
 
         const inlineRaw = this.#inline[format](formatter);
-        if (discord.getLimit(`content`) < inlineRaw.length)
+        if (discord.getLimit('content') < inlineRaw.length)
             return this.#attach(formatter);
 
         return inlineRaw;

@@ -11,7 +11,7 @@ export class ChatLogManager {
     }
 
     public async messageCreated(message: KnownMessage): Promise<void> {
-        if (!guard.isGuildMessage(message) || await this.cluster.database.guilds.getSetting(message.channel.guild.id, `makelogs`) !== true)
+        if (!guard.isGuildMessage(message) || await this.cluster.database.guilds.getSetting(message.channel.guild.id, 'makelogs') !== true)
             return;
 
         await this.cluster.database.chatlogs.add({
@@ -26,7 +26,7 @@ export class ChatLogManager {
     }
 
     public async messageDeleted(message: PossiblyUncachedMessage): Promise<void> {
-        if (!guard.isGuildMessage(message) || await this.cluster.database.guilds.getSetting(message.channel.guild.id, `makelogs`) !== true)
+        if (!guard.isGuildMessage(message) || await this.cluster.database.guilds.getSetting(message.channel.guild.id, 'makelogs') !== true)
             return;
 
         const chatlog = message instanceof Message
@@ -52,7 +52,7 @@ export class ChatLogManager {
     }
 
     public async messageUpdated(message: Message<PossiblyUncachedTextableChannel>): Promise<void> {
-        if (!guard.isGuildMessage(message) || await this.cluster.database.guilds.getSetting(message.channel.guild.id, `makelogs`) !== true || !guard.hasValue(message.author))
+        if (!guard.isGuildMessage(message) || await this.cluster.database.guilds.getSetting(message.channel.guild.id, 'makelogs') !== true || !guard.hasValue(message.author))
             return;
 
         await this.cluster.database.chatlogs.add({
@@ -76,8 +76,8 @@ export class ChatLogManager {
 
         const channel = await this.cluster.util.getChannel(options.channelId);
 
-        let channelName = ``;
-        let guildName = ``;
+        let channelName = '';
+        let guildName = '';
         if (channel !== undefined && guard.isGuildChannel(channel)) {
             channelName = channel.name;
             guildName = channel.guild.name;

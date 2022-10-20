@@ -6,11 +6,11 @@ export class FeedbackRoute extends BaseRoute {
     readonly #api: Api;
 
     public constructor(api: Api) {
-        super(`/feedback`);
+        super('/feedback');
 
         this.#api = api;
 
-        this.addRoute(`/:id/url`, {
+        this.addRoute('/:id/url', {
             get: ({ request }) => this.getFeedbackUrl(request.params.id)
         });
     }

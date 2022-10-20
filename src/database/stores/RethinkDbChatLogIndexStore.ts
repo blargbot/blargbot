@@ -12,7 +12,7 @@ export class RethinkDbChatLogIndexStore implements ChatLogIndexStore {
         rethinkDb: RethinkDb,
         logger: Logger
     ) {
-        this.#table = new RethinkDbTable(`logs`, rethinkDb, logger);
+        this.#table = new RethinkDbTable('logs', rethinkDb, logger);
     }
 
     public async add(index: ChatLogIndex): Promise<boolean> {

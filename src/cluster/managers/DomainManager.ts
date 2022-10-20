@@ -28,12 +28,12 @@ export class DomainManager {
                 added.push(domain);
         }
 
-        await this.#db.set(`whitelistedDomains`, { values: this.#whitelist });
+        await this.#db.set('whitelistedDomains', { values: this.#whitelist });
 
         return { added, removed };
     }
 
     public async refresh(): Promise<void> {
-        this.#whitelist = (await this.#db.get(`whitelistedDomains`))?.values ?? {};
+        this.#whitelist = (await this.#db.get('whitelistedDomains'))?.values ?? {};
     }
 }

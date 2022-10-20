@@ -8,10 +8,10 @@ export const percent: IValueResolverTransform = {
             case 1:
                 precision = parseInt(args[0]);
                 break;
-            default: throw new Error(`Percent accepts up to 1 value`);
+            default: throw new Error('Percent accepts up to 1 value');
         }
         if (isNaN(precision))
-            throw new Error(`Precision must be a number`);
+            throw new Error('Precision must be a number');
 
         const mult = Math.pow(10, precision + 2);
         const div = Math.pow(10, precision);
@@ -20,8 +20,8 @@ export const percent: IValueResolverTransform = {
             const value = source(ctx);
             if (value === undefined)
                 return undefined;
-            if (typeof value !== `number`)
-                throw new Error(`Value must be a number`);
+            if (typeof value !== 'number')
+                throw new Error('Value must be a number');
             return `${Math.round(value * mult) / div}%`;
         };
     }

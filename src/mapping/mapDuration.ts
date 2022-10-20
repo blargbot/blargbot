@@ -7,9 +7,9 @@ import { TypeMapping } from './types';
 export const mapDuration: TypeMapping<Duration> = createMapping(value => {
     try {
         switch (typeof value) {
-            case `string`:
-            case `object`:
-            case `number`: {
+            case 'string':
+            case 'object':
+            case 'number': {
                 const mapped = duration(value);
                 if (mapped.isValid())
                     return result.success(mapped);

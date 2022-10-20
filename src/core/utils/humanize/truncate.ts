@@ -1,4 +1,4 @@
-export function truncate(text: string, maxLength: number, truncated = ``): string {
+export function truncate(text: string, maxLength: number, truncated = ''): string {
     if (text.length < maxLength)
         return text;
     if (truncated.length > 0)

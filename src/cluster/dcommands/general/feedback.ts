@@ -14,32 +14,32 @@ export class FeedbackCommand extends GlobalCommand {
 
     public constructor() {
         super({
-            name: `feedback`,
+            name: 'feedback',
             category: CommandType.GENERAL,
             flags: [
-                { flag: `c`, word: `command`, description: cmd.flags.command },
-                { flag: `b`, word: `bbtag`, description: cmd.flags.bbtag },
-                { flag: `a`, word: `docs`, description: cmd.flags.docs },
-                { flag: `o`, word: `other`, description: cmd.flags.other }
+                { flag: 'c', word: 'command', description: cmd.flags.command },
+                { flag: 'b', word: 'bbtag', description: cmd.flags.bbtag },
+                { flag: 'a', word: 'docs', description: cmd.flags.docs },
+                { flag: 'o', word: 'other', description: cmd.flags.other }
             ],
             definitions: [
                 {
-                    parameters: `{description+}`,
+                    parameters: '{description+}',
                     description: cmd.general.description,
                     execute: (ctx, [description], flags) => this.submitFeedback(ctx, description.asString, flags)
                 },
                 {
-                    parameters: `suggest|suggestion {description+}`,
+                    parameters: 'suggest|suggestion {description+}',
                     description: cmd.suggest.description,
                     execute: (ctx, [description], flags) => this.submitSuggestion(ctx, description.asString, flags)
                 },
                 {
-                    parameters: `report|bug {description+}`,
+                    parameters: 'report|bug {description+}',
                     description: cmd.report.description,
                     execute: (ctx, [description], flags) => this.submitBugReport(ctx, description.asString, flags)
                 },
                 {
-                    parameters: `edit {caseNumber:integer} {description+}`,
+                    parameters: 'edit {caseNumber:integer} {description+}',
                     description: cmd.edit.description,
                     execute: (ctx, [caseNumber, description], flags) => this.editFeedback(ctx, caseNumber.asInteger, description.asString, flags)
                 }
@@ -51,11 +51,11 @@ export class FeedbackCommand extends GlobalCommand {
 
     public async submitFeedback(context: CommandContext, description: string, flags: FlagResult): Promise<CommandResult> {
         if (context.util.isBotStaff(context.author.id)) {
-            const words = description.toLowerCase().split(` `);
+            const words = description.toLowerCase().split(' ');
             if (words.length >= 3) {
                 switch (words[0]) {
-                    case `blacklist`: return await this.#blacklist(context, true, words[1], words[2]);
-                    case `unblacklist`: return await this.#blacklist(context, false, words[1], words[2]);
+                    case 'blacklist': return await this.#blacklist(context, true, words[1], words[2]);
+                    case 'unblacklist': return await this.#blacklist(context, false, words[1], words[2]);
                 }
             }
         }
@@ -86,7 +86,7 @@ export class FeedbackCommand extends GlobalCommand {
             return cmd.edit.notOwner;
 
         const res = await this.#getSuggestionDetails(context, description, flags);
-        if (`result` in res)
+        if ('result' in res)
             return res.result;
 
         const { title, subTypes } = res;
@@ -112,9 +112,9 @@ export class FeedbackCommand extends GlobalCommand {
         description: string,
         flags: FlagResult
     ): Promise<{ result: CommandResult; } | { description: string; title: string; subTypes: string[]; }> {
-        const sections = description.split(`\n`);
+        const sections = description.split('\n');
         const title = sections[0].trim();
-        description = sections.slice(1).join(`\n`).trim();
+        description = sections.slice(1).join('\n').trim();
 
         if (title.length > 64)
             return { result: cmd.errors.titleTooLong({ max: 64 }) };
@@ -142,7 +142,7 @@ export class FeedbackCommand extends GlobalCommand {
         await context.channel.sendTyping();
 
         const res = await this.#getSuggestionDetails(context, description, flags);
-        if (`result` in res)
+        if ('result' in res)
             return res.result;
 
         const { title, subTypes } = res;
@@ -221,10 +221,10 @@ export class FeedbackCommand extends GlobalCommand {
     async #getSubtypes(context: CommandContext, flags: FlagResult): Promise<string[]> {
         const result = [];
 
-        if (flags.c !== undefined) result.push(`Command`);
-        if (flags.b !== undefined) result.push(`BBTag`);
-        if (flags.a !== undefined) result.push(`Documentation`);
-        if (flags.o !== undefined) result.push(`Other Functionality`);
+        if (flags.c !== undefined) result.push('Command');
+        if (flags.b !== undefined) result.push('BBTag');
+        if (flags.a !== undefined) result.push('Documentation');
+        if (flags.o !== undefined) result.push('Other Functionality');
 
         if (result.length > 0)
             return result;
@@ -236,24 +236,24 @@ export class FeedbackCommand extends GlobalCommand {
             placeholder: cmd.general.queryType.placeholder,
             minCount: 1,
             choices: [
-                { label: cmd.general.types.command, value: `Command`, emoji: { name: `🛠️` } },
-                { label: cmd.general.types.bbtag, value: `BBTag`, emoji: { name: `💻` } },
-                { label: cmd.general.types.documentation, value: `Documentation`, emoji: { name: `📖` } },
-                { label: cmd.general.types.other, value: `Other Functionality`, emoji: { name: `❓` } }
+                { label: cmd.general.types.command, value: 'Command', emoji: { name: '🛠️' } },
+                { label: cmd.general.types.bbtag, value: 'BBTag', emoji: { name: '💻' } },
+                { label: cmd.general.types.documentation, value: 'Documentation', emoji: { name: '📖' } },
+                { label: cmd.general.types.other, value: 'Other Functionality', emoji: { name: '❓' } }
             ]
         });
 
-        return picked.state === `SUCCESS` ? picked.value : [];
+        return picked.state === 'SUCCESS' ? picked.value : [];
     }
 
     async #blacklist(context: CommandContext, add: boolean, type: string, id: string): Promise<CommandResult> {
         if (!isBlacklistType(type))
             return cmd.blacklist.unknownType({ type });
 
-        const blacklist = await context.database.vars.get(`blacklist`) ?? { guilds: [], users: [] };
+        const blacklist = await context.database.vars.get('blacklist') ?? { guilds: [], users: [] };
         const users = [...blacklist.users];
         const guilds = [...blacklist.guilds];
-        const ids = type === `user` ? users : guilds;
+        const ids = type === 'user' ? users : guilds;
 
         if (add) {
             if (ids.includes(id))
@@ -266,29 +266,29 @@ export class FeedbackCommand extends GlobalCommand {
             ids.splice(index, 1);
         }
 
-        await context.database.vars.set(`blacklist`, { users, guilds });
+        await context.database.vars.set('blacklist', { users, guilds });
 
         return cmd.blacklist.success[type]({ id, added: add });
     }
 
-    async #checkBlacklist(context: CommandContext): Promise<false | `guild` | `user`> {
+    async #checkBlacklist(context: CommandContext): Promise<false | 'guild' | 'user'> {
         if (context.util.isBotStaff(context.author.id))
             return false;
 
-        const blacklist = await context.database.vars.get(`blacklist`);
+        const blacklist = await context.database.vars.get('blacklist');
         if (blacklist === undefined)
             return false;
 
         if (blacklist.users.includes(context.author.id))
-            return `user`;
+            return 'user';
 
         if (guard.isGuildCommandContext(context) && blacklist.guilds.includes(context.channel.guild.id))
-            return `guild`;
+            return 'guild';
 
         return false;
     }
 }
 
-function isBlacklistType(value: string): value is `user` | `guild` {
-    return value === `user` || value === `guild`;
+function isBlacklistType(value: string): value is 'user' | 'guild' {
+    return value === 'user' || value === 'guild';
 }

@@ -16,15 +16,15 @@ export class CommandDocumentationManager extends DocumentationTreeManager {
     readonly #cluster: Cluster;
 
     public constructor(cluster: Cluster) {
-        super(cluster, `cmd`, doc.invalid, doc.prompt);
+        super(cluster, 'cmd', doc.invalid, doc.prompt);
         this.#cluster = cluster;
     }
 
     protected async getTree(user: User, channel: KnownTextableChannel): Promise<Documentation> {
         const guild = guard.isGuildChannel(channel) ? channel.guild : undefined;
-        const categories = new Map<string, DocumentationGroup & { items: Mutable<DocumentationGroup[`items`]>; }>();
+        const categories = new Map<string, DocumentationGroup & { items: Mutable<DocumentationGroup['items']>; }>();
         for await (const item of this.#cluster.commands.list(guild, user)) {
-            if (item.state === `NOT_FOUND`)
+            if (item.state === 'NOT_FOUND')
                 continue;
 
             const command = item.detail.command;
@@ -36,7 +36,7 @@ export class CommandDocumentationManager extends DocumentationTreeManager {
                     categories.set(categoryDesc.id, category = {
                         id: categoryDesc.id,
                         name: categoryDesc.name,
-                        type: `group`,
+                        type: 'group',
                         items: [],
                         embed: {
                             color: commandDocumentation.embed.color
@@ -70,10 +70,10 @@ export class CommandDocumentationManager extends DocumentationTreeManager {
             .sort((a, b) => a.name < b.name ? -1 : 1);
 
         return {
-            id: `index`,
+            id: 'index',
             name: doc.index.name,
-            tags: [``],
-            type: `group`,
+            tags: [''],
+            type: 'group',
             embed: {
                 color: 0x7289da,
                 fields: [
@@ -82,10 +82,10 @@ export class CommandDocumentationManager extends DocumentationTreeManager {
                         value: this.#listCommandNames(g.items.filter(i => i.hidden !== true).map(i => i.name))
                     })),
                     {
-                        name: literal(`\u200B`),
+                        name: literal('\u200B'),
                         value: doc.index.footer({
-                            commandsLink: this.#cluster.util.websiteLink(`/commands`),
-                            donateLink: this.#cluster.util.websiteLink(`/donate`)
+                            commandsLink: this.#cluster.util.websiteLink('/commands'),
+                            donateLink: this.#cluster.util.websiteLink('/donate')
                         })
                     }
                 ]
@@ -110,7 +110,7 @@ export class CommandDocumentationManager extends DocumentationTreeManager {
             }
         }
 
-        const charLimit = discord.getLimit(`embed.field.value`);
+        const charLimit = discord.getLimit('embed.field.value');
         return {
             [format](formatter) {
                 for (const result of getPotentialResults()) {
@@ -124,23 +124,23 @@ export class CommandDocumentationManager extends DocumentationTreeManager {
         };
     }
 
-    protected noMatches(): Omit<SendContent<IFormattable<string>>, `components`> {
+    protected noMatches(): Omit<SendContent<IFormattable<string>>, 'components'> {
         return {
             content: doc.unknown,
             embeds: []
         };
     }
 
-    #getCommandDocs(result: Exclude<CommandGetResult, { state: `NOT_FOUND`; }>): Documentation {
+    #getCommandDocs(result: Exclude<CommandGetResult, { state: 'NOT_FOUND'; }>): Documentation {
         let description;
         switch (result.state) {
-            case `ALLOWED`:
+            case 'ALLOWED':
                 break;
-            case `BLACKLISTED`:
-            case `DISABLED`:
-            case `NOT_IN_GUILD`:
-            case `MISSING_PERMISSIONS`:
-            case `MISSING_ROLE`:
+            case 'BLACKLISTED':
+            case 'DISABLED':
+            case 'NOT_IN_GUILD':
+            case 'MISSING_PERMISSIONS':
+            case 'MISSING_ROLE':
                 description = doc.command.noPerms({ name: result.detail.command.name, description: result.detail.command.description });
                 break;
         }
@@ -164,7 +164,7 @@ export class CommandDocumentationManager extends DocumentationTreeManager {
 
         const pages: DocumentationPage[] = [];
         for (const signature of signatures) {
-            const usage = `b!${command.name}${signature.usage !== `` ? ` ${signature.usage}` : ``}`;
+            const usage = `b!${command.name}${signature.usage !== '' ? ` ${signature.usage}` : ''}`;
             pages.push({
                 name: literal(usage),
                 embed: {
@@ -182,8 +182,8 @@ export class CommandDocumentationManager extends DocumentationTreeManager {
         return {
             id: command.id,
             name: literal(command.name),
-            type: `paged`,
-            hidden: result.state !== `ALLOWED`,
+            type: 'paged',
+            hidden: result.state !== 'ALLOWED',
             tags: [command.name, ...command.aliases],
             embed: {
                 url: command.isOnWebsite ? `/commands#${command.name}` : undefined,
@@ -197,27 +197,27 @@ export class CommandDocumentationManager extends DocumentationTreeManager {
 
     *#getParameterNotes(parameter: CommandParameter): Generator<IFormattable<string>> {
         switch (parameter.kind) {
-            case `literal`:
+            case 'literal':
                 if (parameter.alias.length > 0)
                     yield doc.command.notes.alias({ parameter: parameter.name, aliases: parameter.alias });
                 break;
-            case `concatVar`:
-            case `singleVar`: {
+            case 'concatVar':
+            case 'singleVar': {
                 const fallback = parameter.fallback === undefined || parameter.fallback.length === 0 ? undefined : parameter.fallback;
                 const type = parameter.type.type;
-                if (typeof type !== `string`)
+                if (typeof type !== 'string')
                     yield doc.command.notes.type.literal.single({ name: parameter.name, choices: parameter.type.type, default: fallback });
-                else if (type !== `string`)
+                else if (type !== 'string')
                     yield doc.command.notes.type[type].single({ name: parameter.name, default: fallback });
                 else if (fallback !== undefined)
                     yield doc.command.notes.type[type].single({ name: parameter.name, default: fallback });
                 break;
             }
-            case `greedyVar`: {
+            case 'greedyVar': {
                 const type = parameter.type.type;
-                if (typeof type !== `string`)
+                if (typeof type !== 'string')
                     yield doc.command.notes.type.literal.greedy({ name: parameter.name, min: parameter.minLength, choices: parameter.type.type });
-                else if (type !== `string`)
+                else if (type !== 'string')
                     yield doc.command.notes.type[type].greedy({ name: parameter.name, min: parameter.minLength });
                 break;
             }

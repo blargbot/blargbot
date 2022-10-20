@@ -9,11 +9,11 @@ const cmd = templates.commands.logLevel;
 export class LoglevelCommand extends GlobalCommand {
     public constructor() {
         super({
-            name: `loglevel`,
+            name: 'loglevel',
             category: CommandType.OWNER,
             definitions: [
                 {
-                    parameters: `{loglevel}`,
+                    parameters: '{loglevel}',
                     description: cmd.default.description,
                     execute: (ctx, [logLevel]) => this.setLogLevel(ctx, logLevel.asString)
                 }

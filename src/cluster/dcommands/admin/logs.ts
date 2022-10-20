@@ -11,20 +11,20 @@ const cmd = templates.commands.logs;
 export class LogsCommand extends GuildCommand {
     public constructor() {
         super({
-            name: `logs`,
+            name: 'logs',
             category: CommandType.ADMIN,
             flags: [
-                { flag: `t`, word: `type`, description: cmd.flags.type },
-                { flag: `c`, word: `channel`, description: cmd.flags.channel },
-                { flag: `u`, word: `user`, description: cmd.flags.user },
-                { flag: `C`, word: `create`, description: cmd.flags.create },
-                { flag: `U`, word: `update`, description: cmd.flags.update },
-                { flag: `D`, word: `delete`, description: cmd.flags.delete },
-                { flag: `j`, word: `json`, description: cmd.flags.json }
+                { flag: 't', word: 'type', description: cmd.flags.type },
+                { flag: 'c', word: 'channel', description: cmd.flags.channel },
+                { flag: 'u', word: 'user', description: cmd.flags.user },
+                { flag: 'C', word: 'create', description: cmd.flags.create },
+                { flag: 'U', word: 'update', description: cmd.flags.update },
+                { flag: 'D', word: 'delete', description: cmd.flags.delete },
+                { flag: 'j', word: 'json', description: cmd.flags.json }
             ],
             definitions: [
                 {
-                    parameters: `{number:integer=100}`,
+                    parameters: '{number:integer=100}',
                     description: cmd.default.description,
                     execute: (ctx, [number], flags) => this.generateLogs(ctx, {
                         count: number.asInteger,
@@ -42,7 +42,7 @@ export class LogsCommand extends GuildCommand {
         });
     }
     public async generateLogs(context: GuildCommandContext, options: LogsGenerateOptions): Promise<CommandResult> {
-        if (await context.database.guilds.getSetting(context.channel.guild.id, `makelogs`) !== true)
+        if (await context.database.guilds.getSetting(context.channel.guild.id, 'makelogs') !== true)
             return cmd.default.chatlogsDisabled({ prefix: context.prefix });
 
         if (options.count > 1000)
@@ -52,20 +52,20 @@ export class LogsCommand extends GuildCommand {
             return cmd.default.notEnoughLogs;
 
         const channel = await context.queryChannel({ filter: options.channel });
-        if (channel.state !== `SUCCESS`)
+        if (channel.state !== 'SUCCESS')
             return cmd.default.channelMissing({ channel: options.channel });
 
         if (!guard.isGuildChannel(channel.value) || channel.value.guild.id !== context.channel.guild.id)
             return cmd.default.notOnGuild;
 
         const perms = channel.value.permissionsOf(context.message.member);
-        if (!perms.has(`readMessageHistory`))
+        if (!perms.has('readMessageHistory'))
             return cmd.default.noPermissions;
 
         const users = [];
         for (const userStr of options.users) {
             const user = await context.queryUser({ filter: userStr });
-            if (user.state !== `SUCCESS`)
+            if (user.state !== 'SUCCESS')
                 return cmd.default.userMissing({ user: userStr });
             users.push(user.value.id);
         }

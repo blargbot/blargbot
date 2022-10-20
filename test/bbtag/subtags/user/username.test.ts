@@ -8,25 +8,25 @@ runSubtagTests({
     argCountBounds: { min: 0, max: 2 },
     cases: [
         ...createGetUserPropTestCases({
-            quiet: ``,
+            quiet: '',
             generateCode(...args) {
-                return `{${[`username`, ...args].join(`;`)}}`;
+                return `{${['username', ...args].join(';')}}`;
             },
             cases: [
                 {
-                    queryString: `09876509876543211234`,
-                    expected: `abcdef`,
+                    queryString: '09876509876543211234',
+                    expected: 'abcdef',
                     setup(member) {
-                        member.user.id = `09876509876543211234`;
-                        member.user.username = `abcdef`;
+                        member.user.id = '09876509876543211234';
+                        member.user.username = 'abcdef';
                     }
                 },
                 {
-                    queryString: `09876509876543211234`,
-                    expected: `oooh nice username`,
+                    queryString: '09876509876543211234',
+                    expected: 'oooh nice username',
                     setup(member) {
-                        member.user.id = `09876509876543211234`;
-                        member.user.username = `oooh nice username`;
+                        member.user.id = '09876509876543211234';
+                        member.user.username = 'oooh nice username';
                     }
                 }
             ]

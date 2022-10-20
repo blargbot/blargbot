@@ -36,7 +36,7 @@ export class Master extends BaseClient {
             discordConfig: {
                 restMode: true,
                 intents: [],
-                defaultImageFormat: `png`,
+                defaultImageFormat: 'png',
                 defaultImageSize: 512
             }
         });
@@ -49,10 +49,10 @@ export class Master extends BaseClient {
         this.eventHandlers = new ModuleLoader(`${__dirname}/events`, BaseService, [this, options], this.logger, e => e.name);
         this.services = new ModuleLoader(`${__dirname}/services`, BaseService, [this, options], this.logger, e => e.name);
 
-        this.services.on(`add`, module => void module.start());
-        this.services.on(`remove`, module => void module.stop());
-        this.eventHandlers.on(`add`, module => void module.start());
-        this.eventHandlers.on(`remove`, module => void module.stop());
+        this.services.on('add', module => void module.start());
+        this.services.on('remove', module => void module.stop());
+        this.eventHandlers.on('add', module => void module.start());
+        this.eventHandlers.on('remove', module => void module.stop());
     }
 
     public async start(): Promise<void> {
@@ -69,17 +69,17 @@ export class Master extends BaseClient {
     async #hello(): Promise<void> {
         try {
             await fetch(`https://discord.com/api/channels/${this.config.discord.channels.botlog}/messages`, {
-                method: `POST`,
+                method: 'POST',
                 headers: {
                     /* eslint-disable @typescript-eslint/naming-convention */
                     'Authorization': this.config.discord.token,
-                    'Content-Type': `application/json`
+                    'Content-Type': 'application/json'
                     /* eslint-enable @typescript-eslint/naming-convention */
                 },
                 body: JSON.stringify({ content: `My master process just initialized on <t:${moment().unix()}>.` })
             });
         } catch (err: unknown) {
-            this.logger.error(`Could not post startup message`, err);
+            this.logger.error('Could not post startup message', err);
         }
     }
     public async eval(author: string, text: string): Promise<EvalResult> {
@@ -87,7 +87,7 @@ export class Master extends BaseClient {
             throw new Error(`User ${author} does not have permission to run eval`);
 
         try {
-            const code = !text.includes(`\n`)
+            const code = !text.includes('\n')
                 ? `async () => ${text}`
                 : `async () => { ${text} }`;
             const func = eval(code) as () => Promise<unknown>;

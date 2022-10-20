@@ -11,19 +11,19 @@ const cmd = templates.commands.pixelate;
 export class PixelateCommand extends GlobalImageCommand {
     public constructor() {
         super({
-            name: `pixelate`,
+            name: 'pixelate',
             flags: [
-                { flag: `i`, word: `image`, description: cmd.flags.image },
-                { flag: `s`, word: `scale`, description: cmd.flags.scale }
+                { flag: 'i', word: 'image', description: cmd.flags.image },
+                { flag: 's', word: 'scale', description: cmd.flags.scale }
             ],
             definitions: [
                 {
-                    parameters: `{user:user+} {scale:number=64}`,
+                    parameters: '{user:user+} {scale:number=64}',
                     description: cmd.user.description,
                     execute: (ctx, [user, scale]) => this.renderUser(ctx, user.asUser, scale.asNumber)
                 },
                 {
-                    parameters: `{scale:number=64}`,
+                    parameters: '{scale:number=64}',
                     description: cmd.default.description,
                     execute: (ctx, [scale], flags) => this.render(
                         ctx,
@@ -47,6 +47,6 @@ export class PixelateCommand extends GlobalImageCommand {
         if (!guard.isUrl(url))
             return cmd.default.invalidUrl({ url });
 
-        return await this.renderImage(context, `pixelate`, { url: url, scale });
+        return await this.renderImage(context, 'pixelate', { url: url, scale });
     }
 }

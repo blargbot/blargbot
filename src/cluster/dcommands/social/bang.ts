@@ -5,8 +5,8 @@ import templates from '../../text';
 
 export class BangCommand extends WolkenCommand {
     public constructor(cluster: Cluster) {
-        super(`bang`, {
-            search: `bang`,
+        super('bang', {
+            search: 'bang',
             ...templates.commands.bang,
             wolkeKey: cluster.config.general.wolke
         });

@@ -8,24 +8,24 @@ runSubtagTests({
     argCountBounds: { min: 0, max: 1 },
     cases: [
         {
-            code: `{reason}`,
-            expected: ``,
+            code: '{reason}',
+            expected: '',
             assert(ctx) {
-                expect(ctx.scopes.local.reason).to.equal(``);
+                expect(ctx.scopes.local.reason).to.equal('');
             }
         },
         {
-            code: `{reason;}`,
-            expected: ``,
+            code: '{reason;}',
+            expected: '',
             assert(ctx) {
-                expect(ctx.scopes.local.reason).to.equal(``);
+                expect(ctx.scopes.local.reason).to.equal('');
             }
         },
         {
-            code: `{reason;Because i can}`,
-            expected: ``,
+            code: '{reason;Because i can}',
+            expected: '',
             assert(ctx) {
-                expect(ctx.scopes.local.reason).to.equal(`Because i can`);
+                expect(ctx.scopes.local.reason).to.equal('Because i can');
             }
         }
     ]

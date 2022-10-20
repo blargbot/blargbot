@@ -10,11 +10,11 @@ const cmd = templates.commands.donate;
 export class DonateCommand extends GlobalCommand {
     public constructor() {
         super({
-            name: `donate`,
+            name: 'donate',
             category: CommandType.GENERAL,
             definitions: [
                 {
-                    parameters: ``,
+                    parameters: '',
                     description: cmd.default.description,
                     execute: (ctx) => this.donateDetails(ctx)
                 }
@@ -33,12 +33,12 @@ export class DonateCommand extends GlobalCommand {
                     fields: [
                         {
                             name: cmd.default.embed.field.paypal.name,
-                            value: literal(`https://paypal.me/stupidcat`),
+                            value: literal('https://paypal.me/stupidcat'),
                             inline: true
                         },
                         {
                             name: cmd.default.embed.field.patreon.name,
-                            value: literal(`https://www.patreon.com/blargbot`),
+                            value: literal('https://www.patreon.com/blargbot'),
                             inline: true
                         }
                     ]

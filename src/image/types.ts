@@ -100,16 +100,16 @@ export interface ArtOptions {
 }
 
 export type ValidFont =
-    | `ARCENA.ttf`
-    | `arial.ttf`
-    | `animeace.ttf`
-    | `AnnieUseYourTelescope.ttf`
-    | `comicjens.ttf`
-    | `impact.ttf`
-    | `SFToontime.ttf`
-    | `delius.ttf`
-    | `IndieFlower.ttf`
-    | `Roboto-Regular.ttf`
-    | `Ubuntu-Regular.ttf`
-    | `comicsans.ttf`
-    | `whitney.ttf`;
+    | 'ARCENA.ttf'
+    | 'arial.ttf'
+    | 'animeace.ttf'
+    | 'AnnieUseYourTelescope.ttf'
+    | 'comicjens.ttf'
+    | 'impact.ttf'
+    | 'SFToontime.ttf'
+    | 'delius.ttf'
+    | 'IndieFlower.ttf'
+    | 'Roboto-Regular.ttf'
+    | 'Ubuntu-Regular.ttf'
+    | 'comicsans.ttf'
+    | 'whitney.ttf';

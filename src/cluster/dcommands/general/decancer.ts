@@ -10,16 +10,16 @@ const cmd = templates.commands.decancer;
 export class DecancerCommand extends GlobalCommand {
     public constructor() {
         super({
-            name: `decancer`,
+            name: 'decancer',
             category: CommandType.GENERAL,
             definitions: [
                 {
-                    parameters: `user {user:user+}`,
+                    parameters: 'user {user:user+}',
                     description: cmd.user.description,
                     execute: (ctx, [user]) => this.decancerUser(ctx, user.asUser)
                 },
                 {
-                    parameters: `{text+}`,
+                    parameters: '{text+}',
                     description: cmd.text.description,
                     execute: (_, [text]) => this.decancerText(text.asString)
                 }

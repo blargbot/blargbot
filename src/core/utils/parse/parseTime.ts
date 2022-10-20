@@ -2,16 +2,16 @@ import moment, { Moment } from 'moment-timezone';
 
 import { guard } from '../guard';
 
-export function parseTime(text: `now` | `today` | `tomorrow` | `yesterday` | string, format?: string, timezone = `Etc/UTC`): Moment {
+export function parseTime(text: 'now' | 'today' | 'tomorrow' | 'yesterday' | string, format?: string, timezone = 'Etc/UTC'): Moment {
     const now = moment.tz(timezone);
-    if (text === ``)
+    if (text === '')
         return now;
 
     switch (text.toLowerCase()) {
-        case `now`: return now;
-        case `today`: return now.startOf(`day`);
-        case `tomorrow`: return now.startOf(`day`).add(1, `day`);
-        case `yesterday`: return now.startOf(`day`).add(-1, `days`);
+        case 'now': return now;
+        case 'today': return now.startOf('day');
+        case 'tomorrow': return now.startOf('day').add(1, 'day');
+        case 'yesterday': return now.startOf('day').add(-1, 'days');
     }
 
     let match = /^\s*in\s+(-?\d+(?:\.\d+)?)\s+(\S+)\s*$/i.exec(text);
@@ -37,16 +37,16 @@ export function parseTime(text: `now` | `today` | `tomorrow` | `yesterday` | str
 /* eslint-disable @typescript-eslint/naming-convention */
 const prettyTimeMagnitudes = {
     //defaults
-    year: `year`, years: `years`, y: `y`,
-    month: `month`, months: `months`, M: `M`,
-    week: `week`, weeks: `weeks`, w: `w`,
-    day: `day`, days: `days`, d: `d`,
-    hour: `hour`, hours: `hours`, h: `h`,
-    minute: `minute`, minutes: `minutes`, m: `m`,
-    second: `second`, seconds: `seconds`, s: `s`,
-    millisecond: `millisecond`, milliseconds: `milliseconds`, ms: `ms`,
-    quarter: `quarter`, quarters: `quarters`, q: `Q`,
+    year: 'year', years: 'years', y: 'y',
+    month: 'month', months: 'months', M: 'M',
+    week: 'week', weeks: 'weeks', w: 'w',
+    day: 'day', days: 'days', d: 'd',
+    hour: 'hour', hours: 'hours', h: 'h',
+    minute: 'minute', minutes: 'minutes', m: 'm',
+    second: 'second', seconds: 'seconds', s: 's',
+    millisecond: 'millisecond', milliseconds: 'milliseconds', ms: 'ms',
+    quarter: 'quarter', quarters: 'quarters', q: 'Q',
     //Custom
-    mins: `minutes`, min: `minute`
+    mins: 'minutes', min: 'minute'
 } as const;
 /* eslint-enable @typescript-eslint/naming-convention */

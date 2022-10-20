@@ -13,7 +13,7 @@ export class ExecutingSubtagArgumentValue implements SubtagArgument {
     public get raw(): string { return this.code.source; }
     public get value(): string {
         if (this.#value === undefined)
-            throw new Error(`The value is not available yet. Please await the wait() method before attempting to access the value`);
+            throw new Error('The value is not available yet. Please await the wait() method before attempting to access the value');
         return this.#value;
     }
 

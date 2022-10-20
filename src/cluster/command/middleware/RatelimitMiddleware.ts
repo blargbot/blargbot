@@ -26,7 +26,7 @@ export class RatelimitMiddleware<TContext extends CommandContext> implements IMi
             return templates.commands.$errors.rateLimited.local({ duration });
         }
 
-        lastUsage.timestamp = moment().add(99, `years`);
+        lastUsage.timestamp = moment().add(99, 'years');
         try {
             return await next();
         } finally {

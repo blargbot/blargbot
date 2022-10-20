@@ -12,18 +12,18 @@ const cmd = templates.commands.cah;
 export class CAHCommand extends GlobalImageCommand {
     public constructor() {
         super({
-            name: `cah`,
+            name: 'cah',
             flags: [
-                { flag: `u`, word: `unofficial`, description: cmd.flags.unofficial }
+                { flag: 'u', word: 'unofficial', description: cmd.flags.unofficial }
             ],
             definitions: [
                 {
-                    parameters: ``,
+                    parameters: '',
                     description: cmd.default.description,
                     execute: (ctx, _, flags) => this.render(ctx, flags.u !== undefined)
                 },
                 {
-                    parameters: `packs`,
+                    parameters: 'packs',
                     description: cmd.packs.description,
                     execute: (_, __, flags) => this.listPacks(flags.u !== undefined)
                 }
@@ -39,7 +39,7 @@ export class CAHCommand extends GlobalImageCommand {
             return true;
 
         const guild = location instanceof Guild ? location : guard.isGuildChannel(location) ? location.guild : undefined;
-        if (guild === undefined || await util.database.guilds.getSetting(guild.id, `cahnsfw`) !== true)
+        if (guild === undefined || await util.database.guilds.getSetting(guild.id, 'cahnsfw') !== true)
             return true;
 
         return await commandTypeDetails[CommandType.NSFW].isVisible(util, location, user);
@@ -55,7 +55,7 @@ export class CAHCommand extends GlobalImageCommand {
 
         const white = [...whiteIds].map(id => cahData.white[id]);
 
-        return await this.renderImage(context, `cah`, { black: black.text.replaceAll(`_`, `______`), white: white });
+        return await this.renderImage(context, 'cah', { black: black.text.replaceAll('_', '______'), white: white });
     }
 
     public listPacks(unofficial: boolean): CommandResult {
@@ -64,8 +64,8 @@ export class CAHCommand extends GlobalImageCommand {
             content: cmd.packs.success,
             files: [
                 {
-                    file: packNames.join(`\n`),
-                    name: `cah-packs.txt`
+                    file: packNames.join('\n'),
+                    name: 'cah-packs.txt'
                 }
             ]
         };

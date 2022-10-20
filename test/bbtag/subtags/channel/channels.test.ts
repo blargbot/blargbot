@@ -9,24 +9,24 @@ runSubtagTests({
     argCountBounds: { min: 0, max: 2 },
     cases: [
         ...createGetChannelPropTestCases({
-            quiet: ``,
+            quiet: '',
             includeNoArgs: false,
             generateCode(...args) {
-                return `{${[`channels`, ...args].join(`;`)}}`;
+                return `{${['channels', ...args].join(';')}}`;
             },
             cases: [
                 {
-                    expected: `["2398462398472","23098475928447"]`,
+                    expected: '["2398462398472","23098475928447"]',
                     setup(channel, ctx) {
                         channel.type = ChannelType.GuildCategory;
 
                         ctx.channels.abc = SubtagTestContext.createApiChannel({
-                            id: `2398462398472`,
+                            id: '2398462398472',
                             type: ChannelType.GuildText,
                             parent_id: channel.id
                         });
                         ctx.channels.def = SubtagTestContext.createApiChannel({
-                            id: `23098475928447`,
+                            id: '23098475928447',
                             type: ChannelType.GuildText,
                             parent_id: channel.id
                         });
@@ -35,11 +35,11 @@ runSubtagTests({
             ]
         }),
         {
-            code: `{channels}`,
-            expected: `["23489762384769837","342789565384956435"]`,
+            code: '{channels}',
+            expected: '["23489762384769837","342789565384956435"]',
             setup(ctx) {
-                ctx.channels.command.id = `23489762384769837`;
-                ctx.channels.general.id = `342789565384956435`;
+                ctx.channels.command.id = '23489762384769837';
+                ctx.channels.general.id = '342789565384956435';
                 ctx.message.channel_id = ctx.channels.command.id;
             }
         }

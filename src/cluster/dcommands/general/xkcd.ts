@@ -12,11 +12,11 @@ const cmd = templates.commands.xkcd;
 export class XKCDCommand extends GlobalCommand {
     public constructor() {
         super({
-            name: `xkcd`,
+            name: 'xkcd',
             category: CommandType.GENERAL,
             definitions: [
                 {
-                    parameters: `{comicNumber:integer?}`,
+                    parameters: '{comicNumber:integer?}',
                     description: cmd.default.description,
                     execute: (ctx, [comicNumber]) => this.getComic(ctx, comicNumber.asOptionalInteger)
                 }
@@ -52,7 +52,7 @@ export class XKCDCommand extends GlobalCommand {
     }
 
     async #requestComic(comicNumber: number | undefined): Promise<ComicInfo | undefined> {
-        const response = await fetch(`http://xkcd.com/${comicNumber === undefined ? `` : `${comicNumber}/`}info.0.json`);
+        const response = await fetch(`http://xkcd.com/${comicNumber === undefined ? '' : `${comicNumber}/`}info.0.json`);
         try {
             const info = comicInfoMapping(await response.json());
             return info.valid ? info.value : undefined;

@@ -4,16 +4,16 @@ import { SubtagType } from '../../utils';
 export class RegexMatchSubtag extends RegexSubtag {
     public constructor() {
         super({
-            name: `regexmatch`,
+            name: 'regexmatch',
             category: SubtagType.ARRAY, //? Why?
-            aliases: [`match`],
+            aliases: ['match'],
             definition: [
                 {
-                    parameters: [`text`, `~regex#50000`],
-                    description: `Returns an array of everything in \`text\` that matches \`regex\`. Any bbtag in \`regex\` will not be resolved. Please consider using \`{apply}\` for a dynamic regex. \`regex\` will only succeed to compile if it is deemed a safe regular expression (safe regexes do not run in exponential time for any input)`,
-                    exampleCode: `{regexmatch;I have $1 and 25 cents;/\\d+/g}`,
-                    exampleOut: `["1", "25"]`,
-                    returns: `string[]`,
+                    parameters: ['text', '~regex#50000'],
+                    description: 'Returns an array of everything in `text` that matches `regex`. Any bbtag in `regex` will not be resolved. Please consider using `{apply}` for a dynamic regex. `regex` will only succeed to compile if it is deemed a safe regular expression (safe regexes do not run in exponential time for any input)',
+                    exampleCode: '{regexmatch;I have $1 and 25 cents;/\\d+/g}',
+                    exampleOut: '["1", "25"]',
+                    returns: 'string[]',
                     execute: (_, [text, regex]) => this.regexMatch(text.value, regex.raw)
                 }
             ]

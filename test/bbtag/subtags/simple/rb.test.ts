@@ -6,6 +6,6 @@ runSubtagTests({
     subtag: new RbSubtag(),
     argCountBounds: { min: 0, max: 0 },
     cases: [
-        { code: `{rb}`, expected: `}` }
+        { code: '{rb}', expected: '}' }
     ]
 });

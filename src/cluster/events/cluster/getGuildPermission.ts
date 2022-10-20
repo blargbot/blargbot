@@ -2,13 +2,13 @@ import { Cluster } from '@blargbot/cluster';
 import { ClusterEventService } from '@blargbot/cluster/serviceTypes';
 import { GuildPermissionDetails } from '@blargbot/cluster/types';
 
-export class ClusterGetGuildPermssionHandler extends ClusterEventService<`getGuildPermission`> {
+export class ClusterGetGuildPermssionHandler extends ClusterEventService<'getGuildPermission'> {
     public constructor(
         cluster: Cluster
     ) {
         super(
             cluster,
-            `getGuildPermission`,
+            'getGuildPermission',
             async ({ data, reply }) => reply(await this.getGuildPermission(data.guildId, data.userId))
         );
     }
@@ -26,16 +26,16 @@ export class ClusterGetGuildPermssionHandler extends ClusterEventService<`getGui
                 name: member.guild.name
             },
             ...Object.fromEntries(await Promise.all([
-                [`autoresponses`, `autoresponse`] as const,
-                [`ccommands`, `ccommand`] as const,
-                [`censors`, `censor`] as const,
-                [`farewell`, `farewell`] as const,
-                [`greeting`, `greeting`] as const,
-                [`interval`, `interval`] as const,
-                [`rolemes`, `roleme`] as const
+                ['autoresponses', 'autoresponse'] as const,
+                ['ccommands', 'ccommand'] as const,
+                ['censors', 'censor'] as const,
+                ['farewell', 'farewell'] as const,
+                ['greeting', 'greeting'] as const,
+                ['interval', 'interval'] as const,
+                ['rolemes', 'roleme'] as const
             ].map(async ([key, commandName]) => {
                 const command = await this.cluster.commands.default.get(commandName, member.guild, member.user);
-                return [key, command.state === `ALLOWED`] as const;
+                return [key, command.state === 'ALLOWED'] as const;
             })))
         };
     }

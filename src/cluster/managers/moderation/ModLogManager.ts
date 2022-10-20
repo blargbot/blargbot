@@ -229,28 +229,28 @@ export class ModLogManager {
         });
     }
 
-    public async updateReason(guild: Guild, caseId: number | undefined, moderator: User, reason: string): Promise<`SUCCESS` | `MISSING_CASE` | `SUCCESS_NO_MESSAGE`> {
+    public async updateReason(guild: Guild, caseId: number | undefined, moderator: User, reason: string): Promise<'SUCCESS' | 'MISSING_CASE' | 'SUCCESS_NO_MESSAGE'> {
         const modlog = await this.cluster.database.guilds.getModlogCase(guild.id, caseId);
         if (modlog === undefined)
-            return `MISSING_CASE`;
+            return 'MISSING_CASE';
 
         await this.cluster.database.guilds.updateModlogCase(guild.id, modlog.caseid, { reason, modid: moderator.id });
 
         if (modlog.msgid === undefined)
-            return `SUCCESS_NO_MESSAGE`;
+            return 'SUCCESS_NO_MESSAGE';
 
-        const channelId = modlog.channelid ?? await this.cluster.database.guilds.getSetting(guild.id, `modlog`);
+        const channelId = modlog.channelid ?? await this.cluster.database.guilds.getSetting(guild.id, 'modlog');
         if (channelId === undefined)
-            return `SUCCESS_NO_MESSAGE`;
+            return 'SUCCESS_NO_MESSAGE';
 
         const message = await this.cluster.util.getMessage(channelId, modlog.msgid);
         if (message === undefined || message.author.id !== this.cluster.discord.user.id)
-            return `SUCCESS_NO_MESSAGE`;
+            return 'SUCCESS_NO_MESSAGE';
 
         await message.edit({
             embeds: message.embeds.map(e => {
                 const fields = [...e.fields ?? []];
-                fields.splice(fields.findIndex(f => f.name === `Reason`), 1, { name: `Reason`, value: reason, inline: true });
+                fields.splice(fields.findIndex(f => f.name === 'Reason'), 1, { name: 'Reason', value: reason, inline: true });
                 return {
                     ...e,
                     fields,
@@ -261,13 +261,13 @@ export class ModLogManager {
                 };
             })
         });
-        return `SUCCESS`;
+        return 'SUCCESS';
     }
 
     async #logAction({ guildId, user, reason, fields = [], color = 0x17c484, type, moderator }: ModerationLogOptions): Promise<void> {
         // TODO modlog setting can be channel id or tag
         type ??= templates.modlog.types.generic;
-        const modlogChannelId = await this.cluster.database.guilds.getSetting(guildId, `modlog`);
+        const modlogChannelId = await this.cluster.database.guilds.getSetting(guildId, 'modlog');
         if (!guard.hasValue(modlogChannelId)) // TODO Should this still create the modlog entry in the db?
             return;
 
@@ -319,8 +319,8 @@ export class ModLogManager {
         try {
             modlogMessage = await this.cluster.util.send(modlogChannelId, new FormattableMessageContent({ embeds: [embed] }));
         } catch (err: unknown) {
-            if (err instanceof Error && err.message === `Channel not found`)
-                await this.cluster.database.guilds.setSetting(guildId, `modlog`, undefined);
+            if (err instanceof Error && err.message === 'Channel not found')
+                await this.cluster.database.guilds.setSetting(guildId, 'modlog', undefined);
             else
                 throw err;
         }
@@ -333,7 +333,7 @@ export class ModLogManager {
             channelid: modlogMessage?.channel.id,
             reason: reason[format](formatter),
             type: type[format](formatter),
-            userid: Array.isArray(user) ? user.map(u => u.id).join(`,`) : user.id
+            userid: Array.isArray(user) ? user.map(u => u.id).join(',') : user.id
         });
     }
 }

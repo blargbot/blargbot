@@ -6,15 +6,15 @@ import { bbtag, SubtagType } from '../../utils';
 export class PopSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: `pop`,
+            name: 'pop',
             category: SubtagType.ARRAY,
             definition: [
                 {
-                    parameters: [`array`],
-                    description: `Returns the last element in \`array\`. If provided a variable, this will remove the last element from \`array\`as well.`,
-                    exampleCode: `{pop;["this", "is", "an", "array"]}`,
-                    exampleOut: `array`,
-                    returns: `json|nothing`,
+                    parameters: ['array'],
+                    description: 'Returns the last element in `array`. If provided a variable, this will remove the last element from `array`as well.',
+                    exampleCode: '{pop;["this", "is", "an", "array"]}',
+                    exampleOut: 'array',
+                    returns: 'json|nothing',
                     execute: (context, [array]) => this.pop(context, array.value)
                 }
             ]
@@ -27,7 +27,7 @@ export class PopSubtag extends CompiledSubtag {
             throw new NotAnArrayError(arrayStr);
 
         if (array.length === 0)
-            return ``;
+            return '';
 
         const result = array.pop();
         if (varName !== undefined)

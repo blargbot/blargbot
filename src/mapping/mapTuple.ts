@@ -2,7 +2,7 @@ import { createMapping } from './createMapping';
 import { result } from './result';
 import { TypeMapping, TypeMappingImpl } from './types';
 
-type TupleTypeMapping<T extends unknown[]> = { [P in keyof T]: TypeMappingImpl<T[P]> } & { length: T[`length`]; };
+type TupleTypeMapping<T extends unknown[]> = { [P in keyof T]: TypeMappingImpl<T[P]> } & { length: T['length']; };
 export function mapTuple<T extends unknown[]>(mappings: TupleTypeMapping<T>): TypeMapping<T> {
     return createMapping(value => {
         if (!Array.isArray(value))

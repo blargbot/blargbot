@@ -99,16 +99,16 @@ function* tokenize(source: string): IterableIterator<SourceToken> {
 
     for (marker.index = 0; marker.index < source.length; marker.index++, marker.column++) {
         switch (source[marker.index]) {
-            case `{`:
+            case '{':
                 yield* tokens(SourceTokenType.STARTSUBTAG);
                 break;
-            case `;`:
+            case ';':
                 yield* tokens(SourceTokenType.ARGUMENTDELIMITER);
                 break;
-            case `}`:
+            case '}':
                 yield* tokens(SourceTokenType.ENDSUBTAG);
                 break;
-            case `\n`:
+            case '\n':
                 marker.line++;
                 marker.column = -1;
                 break;
@@ -147,12 +147,12 @@ function trim(str: MutableStatement): void {
     modify(str.values, str.values.length - 1, str => str.trimEnd());
 }
 
-function modify(str: MutableStatement[`values`], index: number, mod: (str: string) => string): void {
+function modify(str: MutableStatement['values'], index: number, mod: (str: string) => string): void {
     if (str.length === 0)
         return;
 
     let elem = str[index];
-    if (typeof elem !== `string`)
+    if (typeof elem !== 'string')
         return;
 
     elem = mod(elem);

@@ -48,10 +48,10 @@ export class AggregateCommandManager implements ICommandManager, CommandManagers
         let result: CommandGetResult;
         for (const manager of this.#managersArr) {
             result = await manager.get(name, location, user);
-            if (result.state !== `NOT_FOUND`)
+            if (result.state !== 'NOT_FOUND')
                 return result;
         }
-        return { state: `NOT_FOUND` };
+        return { state: 'NOT_FOUND' };
     }
 
     public async *list(location?: Guild | KnownTextableChannel, user?: User): AsyncGenerator<CommandGetResult> {
@@ -60,10 +60,10 @@ export class AggregateCommandManager implements ICommandManager, CommandManagers
         for (const manager of this.#managersArr) {
             for await (const command of manager.list(location, user)) {
                 switch (command.state) {
-                    case `DISABLED`:
-                    case `MISSING_PERMISSIONS`:
-                    case `MISSING_ROLE`:
-                    case `ALLOWED`: {
+                    case 'DISABLED':
+                    case 'MISSING_PERMISSIONS':
+                    case 'MISSING_ROLE':
+                    case 'ALLOWED': {
                         for (const name of [command.detail.command.name, ...command.detail.command.aliases].map(s => s.toLowerCase())) {
                             let res = results.get(name);
                             if (res === undefined)
@@ -72,9 +72,9 @@ export class AggregateCommandManager implements ICommandManager, CommandManagers
                         }
                         break;
                     }
-                    case `NOT_IN_GUILD`:
-                    case `BLACKLISTED`:
-                    case `NOT_FOUND`:
+                    case 'NOT_IN_GUILD':
+                    case 'BLACKLISTED':
+                    case 'NOT_FOUND':
                         break;
                 }
             }
@@ -82,7 +82,7 @@ export class AggregateCommandManager implements ICommandManager, CommandManagers
 
         const yielded = new Set<CommandGetResult>();
         for (const result of results.values()) {
-            const toYield = result.find(x => x.state === `ALLOWED`) ?? result[0];
+            const toYield = result.find(x => x.state === 'ALLOWED') ?? result[0];
             if (yielded.size < yielded.add(toYield).size)
                 yield toYield;
         }
@@ -103,12 +103,12 @@ export class AggregateCommandManager implements ICommandManager, CommandManagers
         if (!guard.isGuildMessage(message))
             return;
         if (!this.messages.has(message.channel.guild.id, message.id)
-            || await this.#cluster.database.guilds.getSetting(message.channel.guild.id, `deletenotif`) !== true) {
+            || await this.#cluster.database.guilds.getSetting(message.channel.guild.id, 'deletenotif') !== true) {
             return;
         }
 
         let author: { username: string; discriminator: string; } | undefined;
-        if (`author` in message)
+        if ('author' in message)
             author = message.author;
         else {
             const chatlog = await this.#cluster.database.chatlogs.getByMessageId(message.id);

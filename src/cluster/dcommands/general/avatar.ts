@@ -12,20 +12,20 @@ const cmd = templates.commands.avatar;
 export class AvatarCommand extends GlobalCommand {
     public constructor() {
         super({
-            name: `avatar`,
+            name: 'avatar',
             category: CommandType.GENERAL,
             flags: [
-                { flag: `f`, word: `format`, description: cmd.flags.format({ formats: allowedFormats }) },
-                { flag: `s`, word: `size`, description: cmd.flags.size({ sizes: allowedSizes }) }
+                { flag: 'f', word: 'format', description: cmd.flags.format({ formats: allowedFormats }) },
+                { flag: 's', word: 'size', description: cmd.flags.size({ sizes: allowedSizes }) }
             ],
             definitions: [
                 {
-                    parameters: ``,
+                    parameters: '',
                     description: cmd.self.description,
                     execute: (ctx, _, flags) => this.getAvatar(ctx.author, flags.f?.merge().value, flags.s?.merge().value)
                 },
                 {
-                    parameters: `{user:user+}`,
+                    parameters: '{user:user+}',
                     description: cmd.user.description,
                     execute: (_, [user], flags) => this.getAvatar(user.asUser, flags.f?.merge().value, flags.s?.merge().value)
                 }
@@ -35,7 +35,7 @@ export class AvatarCommand extends GlobalCommand {
         this.middleware.push(new SendTypingMiddleware());
     }
 
-    public async getAvatar(user: User, format: string | undefined, size = `512`): Promise<CommandResult> {
+    public async getAvatar(user: User, format: string | undefined, size = '512'): Promise<CommandResult> {
         if (format !== undefined && !allowedFormats.includes(format))
             return cmd.common.formatInvalid({format, allowedFormats});
 
@@ -50,7 +50,7 @@ export class AvatarCommand extends GlobalCommand {
 
         return {
             content: cmd.common.success({ user }),
-            files: [{ file: await avatar.buffer(), name: new URL(avatarUrl).pathname.split(`/`).pop() ?? `${user.id}.${format ?? `png`}` }]
+            files: [{ file: await avatar.buffer(), name: new URL(avatarUrl).pathname.split('/').pop() ?? `${user.id}.${format ?? 'png'}` }]
         };
     }
 }

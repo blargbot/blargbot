@@ -10,15 +10,15 @@ const cmd = templates.commands.timer;
 export class TimerCommand extends GlobalCommand {
     public constructor() {
         super({
-            name: `timer`,
-            aliases: [`stopwatch`],
+            name: 'timer',
+            aliases: ['stopwatch'],
             category: CommandType.GENERAL,
             flags: [
-                { flag: `c`, word: `channel`, description: cmd.flags.channel }
+                { flag: 'c', word: 'channel', description: cmd.flags.channel }
             ],
             definitions: [
                 {
-                    parameters: `{duration:duration+}`,
+                    parameters: '{duration:duration+}',
                     description: cmd.default.description,
                     execute: (ctx, [duration], { c: channel }) => this.addTimer(ctx, duration.asDuration, channel !== undefined)
                 }
@@ -33,7 +33,7 @@ export class TimerCommand extends GlobalCommand {
         const channel = inChannel && guard.isGuildCommandContext(context) ? context.channel : await context.author.getDMChannel();
         const source = inChannel && guard.isGuildCommandContext(context) ? context.channel.guild.id : context.author.id;
 
-        await context.cluster.timeouts.insert(`timer`, {
+        await context.cluster.timeouts.insert('timer', {
             source: source,
             user: context.author.id,
             channel: channel.id,

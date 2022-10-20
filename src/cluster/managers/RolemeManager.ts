@@ -47,15 +47,15 @@ export class RolemeManager {
 
     public async invokeMessage(trigger: Message<KnownGuildTextableChannel>, roleme: GuildRolemeEntry): Promise<ExecutionResult> {
         const tag = roleme.output ?? {
-            content: `Your roles have been edited!`,
-            author: ``
+            content: 'Your roles have been edited!',
+            author: ''
         };
 
         return await this.#cluster.bbtag.execute(tag.content, {
             message: trigger,
-            rootTagName: `roleme`,
-            limit: `customCommandLimit`,
-            inputRaw: ``,
+            rootTagName: 'roleme',
+            limit: 'customCommandLimit',
+            inputRaw: '',
             isCC: true,
             authorId: tag.author ?? undefined,
             authorizerId: tag.authorizer ?? undefined

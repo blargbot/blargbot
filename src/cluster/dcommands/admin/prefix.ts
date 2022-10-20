@@ -9,21 +9,21 @@ const cmd = templates.commands.prefix;
 export class PrefixCommand extends GuildCommand {
     public constructor() {
         super({
-            name: `prefix`,
+            name: 'prefix',
             category: CommandType.ADMIN,
             definitions: [
                 {
-                    parameters: ``,
+                    parameters: '',
                     description: cmd.list.description,
                     execute: ctx => this.listPrefixes(ctx)
                 },
                 {
-                    parameters: `add|set|create {prefix}`,
+                    parameters: 'add|set|create {prefix}',
                     description: cmd.add.description,
                     execute: (ctx, [prefix]) => this.addPrefix(ctx, prefix.asString)
                 },
                 {
-                    parameters: `remove|delete {prefix}`,
+                    parameters: 'remove|delete {prefix}',
                     description: cmd.remove.description,
                     execute: (ctx, [prefix]) => this.removePrefix(ctx, prefix.asString)
                 }
@@ -32,45 +32,45 @@ export class PrefixCommand extends GuildCommand {
     }
 
     public async listPrefixes(context: GuildCommandContext): Promise<CommandResult> {
-        let prefixes = await context.database.guilds.getSetting(context.channel.guild.id, `prefix`) ?? [];
-        if (typeof prefixes === `string`)
+        let prefixes = await context.database.guilds.getSetting(context.channel.guild.id, 'prefix') ?? [];
+        if (typeof prefixes === 'string')
             prefixes = [prefixes];
 
         return cmd.list.success({ guild: context.channel.guild, prefixes });
     }
 
     public async addPrefix(context: GuildCommandContext, prefix: string): Promise<CommandResult> {
-        let prefixes = await context.database.guilds.getSetting(context.channel.guild.id, `prefix`);
+        let prefixes = await context.database.guilds.getSetting(context.channel.guild.id, 'prefix');
         switch (typeof prefixes) {
-            case `undefined`:
+            case 'undefined':
                 prefixes = [prefix];
                 break;
-            case `string`:
+            case 'string':
                 prefixes = [prefixes, prefix];
                 break;
-            case `object`:
+            case 'object':
                 prefixes = [...prefixes, prefix];
                 break;
         }
         prefixes = [...new Set(prefixes)];
-        await context.database.guilds.setSetting(context.channel.guild.id, `prefix`, prefixes);
+        await context.database.guilds.setSetting(context.channel.guild.id, 'prefix', prefixes);
         return cmd.add.success;
     }
 
     public async removePrefix(context: GuildCommandContext, prefix: string): Promise<CommandResult> {
-        let prefixes = await context.database.guilds.getSetting(context.channel.guild.id, `prefix`);
+        let prefixes = await context.database.guilds.getSetting(context.channel.guild.id, 'prefix');
         switch (typeof prefixes) {
-            case `undefined`:
+            case 'undefined':
                 prefixes = [];
                 break;
-            case `string`:
+            case 'string':
                 prefixes = prefixes === prefix ? [] : [prefixes];
                 break;
-            case `object`:
+            case 'object':
                 prefixes = prefixes.filter(p => p !== prefix);
                 break;
         }
-        await context.database.guilds.setSetting(context.channel.guild.id, `prefix`, prefixes);
+        await context.database.guilds.setSetting(context.channel.guild.id, 'prefix', prefixes);
         return cmd.remove.success;
     }
 }

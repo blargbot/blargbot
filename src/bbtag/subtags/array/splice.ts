@@ -9,24 +9,24 @@ import { bbtag, SubtagType } from '../../utils';
 export class SpliceSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: `splice`,
+            name: 'splice',
             category: SubtagType.ARRAY,
-            description: `If used with a variable this will modify the original array.\nReturns an array of removed items.`,
+            description: 'If used with a variable this will modify the original array.\nReturns an array of removed items.',
             definition: [
                 {
-                    parameters: [`array`, `start`, `deleteCount?:0`],
-                    description: `Removes \`deleteCount\` elements from \`array\` starting at \`start\`.`,
-                    exampleCode: `{splice;["this", "is", "an", "array"];1;1}`,
-                    exampleOut: `["is"]`,
-                    returns: `json[]`,
+                    parameters: ['array', 'start', 'deleteCount?:0'],
+                    description: 'Removes `deleteCount` elements from `array` starting at `start`.',
+                    exampleCode: '{splice;["this", "is", "an", "array"];1;1}',
+                    exampleOut: '["is"]',
+                    returns: 'json[]',
                     execute: (ctx, [array, start, delCount]) => this.spliceArray(ctx, array.value, start.value, delCount.value, [])
                 },
                 {
-                    parameters: [`array`, `start`, `deleteCount:0`, `items+`],
-                    description: `Removes \`deleteCount\` elements from \`array\` starting at \`start\`. Then, adds each \`item\` at that position in \`array\`. Returns the removed items.`,
-                    exampleCode: `{set;~array;["this", "is", "an", "array"]} {splice;{get;~array};1;1;was} {get;~array}`,
-                    exampleOut: `["is"] {"v":["this","was","an","array"],"n":"~array"}`,
-                    returns: `json[]`,
+                    parameters: ['array', 'start', 'deleteCount:0', 'items+'],
+                    description: 'Removes `deleteCount` elements from `array` starting at `start`. Then, adds each `item` at that position in `array`. Returns the removed items.',
+                    exampleCode: '{set;~array;["this", "is", "an", "array"]} {splice;{get;~array};1;1;was} {get;~array}',
+                    exampleOut: '["is"] {"v":["this","was","an","array"],"n":"~array"}',
+                    returns: 'json[]',
                     execute: (ctx, [array, start, delCount, ...items]) => this.spliceArray(ctx, array.value, start.value, delCount.value, items.map(arg => arg.value))
                 }
             ]
@@ -41,7 +41,7 @@ export class SpliceSubtag extends CompiledSubtag {
         replaceItems: string[]
     ): Promise<JArray> {
         const arr = await bbtag.tagArray.deserializeOrGetArray(context, arrStr);
-        const fallback = new Lazy(() => parse.int(context.scopes.local.fallback ?? ``));
+        const fallback = new Lazy(() => parse.int(context.scopes.local.fallback ?? ''));
 
         if (arr === undefined)
             throw new NotAnArrayError(arrStr);

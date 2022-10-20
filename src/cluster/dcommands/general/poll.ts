@@ -11,18 +11,18 @@ const cmd = templates.commands.poll;
 export class PollCommand extends GuildCommand {
     public constructor() {
         super({
-            name: `poll`,
+            name: 'poll',
             category: CommandType.GENERAL,
             flags: [
-                { flag: `t`, word: `time`, description: cmd.flags.time },
-                { flag: `e`, word: `emojis`, description: cmd.flags.emojis },
-                { flag: `d`, word: `description`, description: cmd.flags.description },
-                { flag: `c`, word: `colour`, description: cmd.flags.colour },
-                { flag: `a`, word: `announce`, description: cmd.flags.announce }
+                { flag: 't', word: 'time', description: cmd.flags.time },
+                { flag: 'e', word: 'emojis', description: cmd.flags.emojis },
+                { flag: 'd', word: 'description', description: cmd.flags.description },
+                { flag: 'c', word: 'colour', description: cmd.flags.colour },
+                { flag: 'a', word: 'announce', description: cmd.flags.announce }
             ],
             definitions: [
                 {
-                    parameters: `{title+}`,
+                    parameters: '{title+}',
                     description: cmd.default.description,
                     execute: (ctx, [title], flags) => this.createPoll(ctx, {
                         time: flags.t?.merge().value,
@@ -39,22 +39,22 @@ export class PollCommand extends GuildCommand {
 
     public async createPoll(context: GuildCommandContext, options: PollOptions): Promise<CommandResult> {
         const emojis = options.emojis === undefined ? defaultEmotes : Emote.findAll(options.emojis);
-        const time = typeof options.time === `string`
+        const time = typeof options.time === 'string'
             ? parse.duration(options.time) ?? options.time
-            : options.time ?? duration(1, `minute`);
+            : options.time ?? duration(1, 'minute');
 
-        if (typeof time === `string`)
+        if (typeof time === 'string')
             return cmd.default.invalidDuration({ duration: time });
 
         let color: number | undefined;
         switch (typeof options.color) {
-            case `undefined`:
+            case 'undefined':
                 color = randInt(0, 0xffffff);
                 break;
-            case `number`:
+            case 'number':
                 color = options.color;
                 break;
-            case `string`:
+            case 'string':
                 color = parse.color(options.color);
                 if (color === undefined)
                     return cmd.default.invalidColor({ color: options.color });
@@ -72,13 +72,13 @@ export class PollCommand extends GuildCommand {
             options.announce ?? false
         );
         switch (result.state) {
-            case `FAILED_SEND`: return cmd.default.sendFailed;
-            case `NO_ANNOUNCE_PERMS`: return cmd.default.noAnnouncePerms;
-            case `ANNOUNCE_INVALID`: return cmd.default.announceNotSetUp;
-            case `OPTIONS_EMPTY`: return cmd.default.emojisMissing;
-            case `OPTIONS_INVALID`: return cmd.default.emojisInaccessible;
-            case `TOO_SHORT`: return cmd.default.tooShort({ duration: time });
-            case `SUCCESS`:
+            case 'FAILED_SEND': return cmd.default.sendFailed;
+            case 'NO_ANNOUNCE_PERMS': return cmd.default.noAnnouncePerms;
+            case 'ANNOUNCE_INVALID': return cmd.default.announceNotSetUp;
+            case 'OPTIONS_EMPTY': return cmd.default.emojisMissing;
+            case 'OPTIONS_INVALID': return cmd.default.emojisInaccessible;
+            case 'TOO_SHORT': return cmd.default.tooShort({ duration: time });
+            case 'SUCCESS':
                 if (result.failedReactions.length > 0)
                     return cmd.default.someEmojisMissing;
                 return undefined;
@@ -98,6 +98,6 @@ interface PollOptions {
 }
 
 const defaultEmotes = [
-    Emote.parse(`👍`),
-    Emote.parse(`👎`)
+    Emote.parse('👍'),
+    Emote.parse('👎')
 ];

@@ -13,20 +13,20 @@ const cmd = templates.commands.ban;
 export class BanCommand extends GuildCommand {
     public constructor() {
         super({
-            name: `ban`,
+            name: 'ban',
             category: CommandType.ADMIN,
             flags: [
-                { flag: `r`, word: `reason`, description: cmd.flags.reason },
-                { flag: `t`, word: `time`, description: cmd.flags.time }
+                { flag: 'r', word: 'reason', description: cmd.flags.reason },
+                { flag: 't', word: 'time', description: cmd.flags.time }
             ],
             definitions: [
                 {
-                    parameters: `{user:user+} {days:integer=1}`,
+                    parameters: '{user:user+} {days:integer=1}',
                     description: cmd.default.description,
                     execute: (ctx, [user, days], flags) => this.ban(ctx, user.asUser, days.asInteger, flags)
                 },
                 {
-                    parameters: `clear {userId}`,
+                    parameters: 'clear {userId}',
                     description: cmd.clear.description,
                     execute: (ctx, [user], flags) => this.unban(ctx, user.asString, flags)
                 }
@@ -45,11 +45,11 @@ export class BanCommand extends GuildCommand {
     }
 
     public async ban(context: GuildCommandContext, user: User, days: number, flags: FlagResult): Promise<CommandResult> {
-        const reason = flags.r?.merge().value ?? ``;
+        const reason = flags.r?.merge().value ?? '';
         const duration = (flags.t !== undefined ? parse.duration(flags.t.merge().value) : undefined) ?? moment.duration(Infinity);
 
         const state = await context.cluster.moderation.bans.ban(context.channel.guild, user, context.author, context.author, days, literal(reason), duration);
-        if (state !== `success` || flags.t === undefined)
+        if (state !== 'success' || flags.t === undefined)
             return cmd.default.state[state]({ user });
 
         return duration.asMilliseconds() === Infinity

@@ -8,22 +8,22 @@ runSubtagTests({
     argCountBounds: { min: 0, max: 1 },
     cases: [
         {
-            code: `{everyonemention}`,
-            expected: `@everyone`,
+            code: '{everyonemention}',
+            expected: '@everyone',
             assert(ctx) {
                 expect(ctx.data.allowedMentions.everybody).to.be.true;
             }
         },
         {
-            code: `{everyonemention;true}`,
-            expected: `@everyone`,
+            code: '{everyonemention;true}',
+            expected: '@everyone',
             assert(ctx) {
                 expect(ctx.data.allowedMentions.everybody).to.be.true;
             }
         },
         {
-            code: `{everyonemention;false}`,
-            expected: `@everyone`,
+            code: '{everyonemention;false}',
+            expected: '@everyone',
             assert(ctx) {
                 expect(ctx.data.allowedMentions.everybody).to.be.false;
             }

@@ -4,7 +4,7 @@ import { TypeMapping, TypeMappingImpl, TypeMappings } from './types';
 
 export function mapObject<T>(mappings: TypeMappings<T>, options?: { initial?: () => Partial<T>; strict: boolean; }): TypeMapping<T> {
     return createMapping(value => {
-        if (value === undefined || typeof value !== `object` || value === null)
+        if (value === undefined || typeof value !== 'object' || value === null)
             return result.failed;
 
         const objValue = <Record<PropertyKey, unknown>>value;
@@ -36,7 +36,7 @@ export function mapObject<T>(mappings: TypeMappings<T>, options?: { initial?: ()
 }
 
 function splitMapping<T, K extends keyof T>(key: K, mapping: TypeMappings<T>[K]): [PropertyKey | undefined, TypeMappingImpl<T[K]>] {
-    if (typeof mapping !== `object`)
+    if (typeof mapping !== 'object')
         return [key, mapping];
 
     if (mapping.length === 1)

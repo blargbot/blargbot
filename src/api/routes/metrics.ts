@@ -7,13 +7,13 @@ export class MetricsRoute extends BaseRoute {
     readonly #api: Api;
 
     public constructor(api: Api) {
-        super(`/metrics`);
+        super('/metrics');
 
         this.#api = api;
 
-        this.addRoute(`/`, {
+        this.addRoute('/', {
             get: async () => {
-                const retrievedMetrics = await this.#api.worker.request(`getMetrics`, undefined);
+                const retrievedMetrics = await this.#api.worker.request('getMetrics', undefined);
                 metrics.registryCache = Object.values(retrievedMetrics);
                 const register = await metrics.getAggregated();
 

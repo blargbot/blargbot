@@ -19,7 +19,7 @@ export function createLogger(config: Configuration, workerId: string): Logger {
 
     const _logger = logger as unknown as Logger;
 
-    if (config.sentry.base !== ``)
+    if (config.sentry.base !== '')
         logger.addPreHook(createSentryPreHook(config, workerId) as unknown as ArgHookCallback);
 
     const setGlobal = _logger.setGlobal.bind(logger);
@@ -27,17 +27,17 @@ export function createLogger(config: Configuration, workerId: string): Logger {
         _logger.setGlobal = setGlobal;
         const res = _logger.setGlobal(...args);
 
-        process.on(`uncaughtExceptionMonitor`, ex => _logger.error(`Uncaught exception`, ex));
+        process.on('uncaughtExceptionMonitor', ex => _logger.error('Uncaught exception', ex));
         return res;
     };
 
     return _logger;
 }
 
-const logLevels: Record<LogLevel, { color: typeof CatLoggr[`_chalk`]; isError?: boolean; isTrace?: boolean; sentryLevel?: Sentry.SeverityLevel; }> = {
-    fatal: { color: CatLoggr._chalk.red.bgBlack, isError: true, sentryLevel: `fatal` },
-    error: { color: CatLoggr._chalk.black.bgRed, isError: true, sentryLevel: `error` },
-    warn: { color: CatLoggr._chalk.black.bgYellow, isError: true, sentryLevel: `warning` },
+const logLevels: Record<LogLevel, { color: typeof CatLoggr['_chalk']; isError?: boolean; isTrace?: boolean; sentryLevel?: Sentry.SeverityLevel; }> = {
+    fatal: { color: CatLoggr._chalk.red.bgBlack, isError: true, sentryLevel: 'fatal' },
+    error: { color: CatLoggr._chalk.black.bgRed, isError: true, sentryLevel: 'error' },
+    warn: { color: CatLoggr._chalk.black.bgYellow, isError: true, sentryLevel: 'warning' },
     website: { color: CatLoggr._chalk.black.bgCyan },
     ws: { color: CatLoggr._chalk.yellow.bgBlack },
     cluster: { color: CatLoggr._chalk.black.bgMagenta },
@@ -62,14 +62,14 @@ const logLevels: Record<LogLevel, { color: typeof CatLoggr[`_chalk`]; isError?: 
 function createSentryPreHook(config: Configuration, workerId: string): PreHookCallback {
     Sentry.init({
         dsn: config.sentry.base,
-        environment: config.general.isProd !== true ? `development` : `production`,
+        environment: config.general.isProd !== true ? 'development' : 'production',
         integrations: [
             new Sentry.Integrations.Http({ tracing: true })
         ],
         tracesSampleRate: config.sentry.sampleRate
     });
 
-    Sentry.setTag(`worker`, workerId);
+    Sentry.setTag('worker', workerId);
     return (...args) => sentryPreHook(...args);
 }
 
@@ -81,12 +81,12 @@ function sentryPreHook(...[{ args, level, context, shard }]: Parameters<PreHookC
     args = [...args as unknown[]];
     let error = args.find((v): v is Error => v instanceof Error);
     if (error === undefined) {
-        error = new Error(args.splice(0, args.length).join(` `));
+        error = new Error(args.splice(0, args.length).join(' '));
         // eslint-disable-next-line @typescript-eslint/unbound-method
         Error.captureStackTrace(error, CatLoggr.prototype._format);
-        const stack = error.stack?.split(`\n`);
+        const stack = error.stack?.split('\n');
         stack?.splice(1, 1);
-        error.stack = stack?.join(`\n`);
+        error.stack = stack?.join('\n');
     } else
         args.splice(args.indexOf(error), 1);
 

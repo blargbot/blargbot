@@ -6,7 +6,7 @@ import { TypeMapping } from './types';
 
 export const mapDate: TypeMapping<Date> = createMapping(value => {
     switch (typeof value) {
-        case `string`: {
+        case 'string': {
             const mapped = moment(value);
             if (mapped.isValid())
                 return result.success(mapped.toDate());
@@ -14,7 +14,7 @@ export const mapDate: TypeMapping<Date> = createMapping(value => {
             return result.failed;
         }
 
-        case `object`:
+        case 'object':
             if (value === null)
                 return result.failed;
 

@@ -12,22 +12,22 @@ const cmd = templates.commands.tidy;
 export class TidyCommand extends GuildCommand {
     public constructor() {
         super({
-            name: `tidy`,
+            name: 'tidy',
             category: CommandType.ADMIN,
             flags: [
-                { flag: `b`, word: `bots`, description: cmd.flags.bots },
-                { flag: `i`, word: `invites`, description: cmd.flags.invites },
-                { flag: `l`, word: `links`, description: cmd.flags.links },
-                { flag: `e`, word: `embeds`, description: cmd.flags.embeds },
-                { flag: `a`, word: `attachments`, description: cmd.flags.attachments },
-                { flag: `u`, word: `user`, description: cmd.flags.user },
-                { flag: `q`, word: `query`, description: cmd.flags.query },
-                { flag: `I`, word: `invert`, description: cmd.flags.invert },
-                { flag: `y`, word: `yes`, description: cmd.flags.yes }
+                { flag: 'b', word: 'bots', description: cmd.flags.bots },
+                { flag: 'i', word: 'invites', description: cmd.flags.invites },
+                { flag: 'l', word: 'links', description: cmd.flags.links },
+                { flag: 'e', word: 'embeds', description: cmd.flags.embeds },
+                { flag: 'a', word: 'attachments', description: cmd.flags.attachments },
+                { flag: 'u', word: 'user', description: cmd.flags.user },
+                { flag: 'q', word: 'query', description: cmd.flags.query },
+                { flag: 'I', word: 'invert', description: cmd.flags.invert },
+                { flag: 'y', word: 'yes', description: cmd.flags.yes }
             ],
             definitions: [
                 {
-                    parameters: `{count:integer=100}`,
+                    parameters: '{count:integer=100}',
                     description: cmd.default.description,
                     execute: (ctx, [count], flags) => this.tidy(ctx, count.asInteger, {
                         botsOnly: flags.b !== undefined,
@@ -35,8 +35,8 @@ export class TidyCommand extends GuildCommand {
                         links: flags.l !== undefined,
                         embeds: flags.e !== undefined,
                         attachments: flags.a !== undefined,
-                        users: flags.u?.merge().raw.split(`,`).map(s => s.trim()),
-                        query: flags.q?.merge().raw ?? ``,
+                        users: flags.u?.merge().raw.split(',').map(s => s.trim()),
+                        query: flags.q?.merge().raw ?? '',
                         invert: flags.I !== undefined,
                         confirm: flags.y !== undefined
                     })
@@ -55,8 +55,8 @@ export class TidyCommand extends GuildCommand {
 
         const filter = await buildFilter(context, options);
         switch (filter) {
-            case `INVALID_REGEX`: return templates.regex.invalid;
-            case `INVALID_USER`: return cmd.default.invalidUsers;
+            case 'INVALID_REGEX': return templates.regex.invalid;
+            case 'INVALID_USER': return cmd.default.invalidUsers;
         }
 
         const messages: KnownMessage[] = [];
@@ -127,7 +127,7 @@ interface DeleteResult {
     nextTyping: Moment;
 }
 
-async function buildFilter(context: GuildCommandContext, options: TidyOptions): Promise<`INVALID_REGEX` | `INVALID_USER` | ((message: KnownMessage) => boolean)> {
+async function buildFilter(context: GuildCommandContext, options: TidyOptions): Promise<'INVALID_REGEX' | 'INVALID_USER' | ((message: KnownMessage) => boolean)> {
     const conditions: Array<(message: KnownMessage) => boolean> = [];
 
     if (options.attachments)
@@ -140,18 +140,18 @@ async function buildFilter(context: GuildCommandContext, options: TidyOptions): 
         conditions.push(m => guard.hasInvite(m.content));
     if (options.links)
         conditions.push(m => /https?:\/\/.+?\../.test(m.content));
-    if (options.query !== ``) {
+    if (options.query !== '') {
         const result = createSafeRegExp(options.query);
-        if (result.state !== `success`)
-            return `INVALID_REGEX`;
+        if (result.state !== 'success')
+            return 'INVALID_REGEX';
         conditions.push(m => result.regex.test(m.content));
     }
     if (options.users !== undefined) {
         const users = new Set<string>();
         for (const user of new Set(options.users)) {
             const match = await context.queryUser({ filter: user });
-            if (match.state !== `SUCCESS`)
-                return `INVALID_USER`;
+            if (match.state !== 'SUCCESS')
+                return 'INVALID_USER';
             users.add(match.value.id);
         }
         conditions.push(m => users.has(m.author.id));
@@ -189,7 +189,7 @@ async function checkTyping(channel: KnownTextableChannel, nextTyping: Moment): P
         return nextTyping;
 
     await channel.sendTyping();
-    return moment().add(5, `s`);
+    return moment().add(5, 's');
 }
 
 async function deleteMessages(context: GuildCommandContext, nextTyping: Moment, messages: KnownMessage[]): Promise<DeleteResult> {
@@ -203,7 +203,7 @@ async function deleteMessages(context: GuildCommandContext, nextTyping: Moment, 
 }
 
 async function bulkDelete(context: GuildCommandContext, messages: Set<KnownMessage>, result: DeleteResult): Promise<void> {
-    const cutoff = moment().add(-2, `weeks`).add(10, `minutes`);
+    const cutoff = moment().add(-2, 'weeks').add(10, 'minutes');
     const within2Weeks = [...messages].filter(m => cutoff.isBefore(m.createdAt));
     while (within2Weeks.length > 0) {
         result.nextTyping = await checkTyping(context.channel, result.nextTyping);
@@ -224,25 +224,25 @@ async function bulkDelete(context: GuildCommandContext, messages: Set<KnownMessa
 
 async function deleteIndividual(context: GuildCommandContext, messages: Set<KnownMessage>, result: DeleteResult): Promise<void> {
     const promises = [];
-    let state: `discover` | `noperms` | `deleteall` = `discover`;
+    let state: 'discover' | 'noperms' | 'deleteall' = 'discover';
     for (const message of messages) {
         if (message.author.id === context.discord.user.id)
             promises.push(deleteIndividualSafe(context, message, result));
         else switch (state) {
-            case `noperms`:
+            case 'noperms':
                 result.failed.add(message);
                 break;
-            case `deleteall`:
+            case 'deleteall':
                 promises.push(deleteIndividualSafe(context, message, result));
                 break;
-            case `discover`: switch (await deleteIndividualSafe(context, message, result)) {
-                case `NO_PERMS`:
-                    state = `noperms`;
+            case 'discover': switch (await deleteIndividualSafe(context, message, result)) {
+                case 'NO_PERMS':
+                    state = 'noperms';
                     break;
-                case `FAILED`:
+                case 'FAILED':
                     break;
-                case `SUCCESS`:
-                    state = `deleteall`;
+                case 'SUCCESS':
+                    state = 'deleteall';
                     break;
             }
         }
@@ -250,24 +250,24 @@ async function deleteIndividual(context: GuildCommandContext, messages: Set<Know
     await Promise.all(promises);
 }
 
-async function deleteIndividualSafe(context: GuildCommandContext, message: KnownMessage, result: DeleteResult): Promise<`SUCCESS` | `NO_PERMS` | `FAILED`> {
+async function deleteIndividualSafe(context: GuildCommandContext, message: KnownMessage, result: DeleteResult): Promise<'SUCCESS' | 'NO_PERMS' | 'FAILED'> {
     try {
         await message.delete();
         result.success.add(message);
-        return `SUCCESS`;
+        return 'SUCCESS';
     } catch (err: unknown) {
         if (err instanceof DiscordRESTError) {
             switch (err.code) {
                 case ApiError.UNKNOWN_MESSAGE:
                     result.success.add(message);
-                    return `FAILED`;
+                    return 'FAILED';
                 case ApiError.MISSING_PERMISSIONS:
                     result.failed.add(message);
-                    return `NO_PERMS`;
+                    return 'NO_PERMS';
                 default:
                     result.failed.add(message);
-                    context.logger.error(`TidyCommand failed to delete message`, message.id, err);
-                    return `FAILED`;
+                    context.logger.error('TidyCommand failed to delete message', message.id, err);
+                    return 'FAILED';
             }
         }
         throw err;

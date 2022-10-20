@@ -12,54 +12,54 @@ export function getLookupCache<TContext extends CommandContext>(context: TContex
     if (guard.isPrivateCommandContext(context))
         return getPrivateLookupCache(context);
 
-    throw new Error(`Unsupported command context`);
+    throw new Error('Unsupported command context');
 }
 
 function getGuildLookupCache<TContext extends GuildCommandContext>(context: TContext): CommandBinderStateLookupCache {
     return {
         findChannel: createLookup(
-            `channel`,
-            `a channel`,
+            'channel',
+            'a channel',
             async query => (await context.util.findChannels(context.channel.guild, query)).filter(guard.isTextableChannel),
             async (options, query) => {
                 const result = await context.queryChannel({ choices: options, filter: query });
-                return result.state === `SUCCESS` ? result.value : undefined;
+                return result.state === 'SUCCESS' ? result.value : undefined;
             }
         ),
         findUser: createLookup(
-            `user`,
-            `a user`,
+            'user',
+            'a user',
             async query => await context.util.findUsers(context.channel.guild, query),
             async (options, query) => {
                 const result = await context.queryUser({ choices: options, filter: query });
-                return result.state === `SUCCESS` ? result.value : undefined;
+                return result.state === 'SUCCESS' ? result.value : undefined;
             }
         ),
         findSender: createLookup(
-            `sender`,
-            `a sender`,
+            'sender',
+            'a sender',
             async query => (await context.util.findSenders(context.channel.guild, query)).map(s => s instanceof Member ? s.user : s),
             async (options, query) => {
                 const result = await context.querySender({ choices: options, filter: query });
-                return result.state === `SUCCESS` ? result.value : undefined;
+                return result.state === 'SUCCESS' ? result.value : undefined;
             }
         ),
         findRole: createLookup(
-            `role`,
-            `a role`,
+            'role',
+            'a role',
             query => context.util.findRoles(context.channel.guild, query),
             async (options, query) => {
                 const result = await context.queryRole({ choices: options, filter: query });
-                return result.state === `SUCCESS` ? result.value : undefined;
+                return result.state === 'SUCCESS' ? result.value : undefined;
             }
         ),
         findMember: createLookup(
-            `member`,
-            `a member`,
+            'member',
+            'a member',
             query => context.util.findMembers(context.channel.guild, query),
             async (options, query) => {
                 const result = await context.queryMember({ choices: options, filter: query });
-                return result.state === `SUCCESS` ? result.value : undefined;
+                return result.state === 'SUCCESS' ? result.value : undefined;
             }
         )
     };
@@ -68,40 +68,40 @@ function getGuildLookupCache<TContext extends GuildCommandContext>(context: TCon
 function getPrivateLookupCache<TContext extends PrivateCommandContext>(context: TContext): CommandBinderStateLookupCache {
     return {
         findChannel: createLookup(
-            `channel`,
-            `a channel`,
+            'channel',
+            'a channel',
             query => [
                 context.channel
             ].filter(c => context.util.channelMatchScore(c, query) > 0),
             async (options, query) => {
                 const result = await context.queryChannel({ choices: options, filter: query });
-                return result.state === `SUCCESS` ? result.value : undefined;
+                return result.state === 'SUCCESS' ? result.value : undefined;
             }
         ),
         async findSender(str) {
             return await this.findUser(str);
         },
         findUser: createLookup(
-            `user`,
-            `a user`,
+            'user',
+            'a user',
             query => [
                 context.channel.recipient,
                 context.discord.user
             ].filter(u => context.util.userMatchScore(u, query) > 0),
             async (options, query) => {
                 const result = await context.queryUser({ choices: options, filter: query });
-                return result.state === `SUCCESS` ? result.value : undefined;
+                return result.state === 'SUCCESS' ? result.value : undefined;
             }
         ),
         findRole: createLookup(
-            `role`,
-            `a role`,
+            'role',
+            'a role',
             () => [],
             () => undefined
         ),
         findMember: createLookup(
-            `member`,
-            `a member`,
+            'member',
+            'a member',
             () => [],
             () => undefined
         )
@@ -132,10 +132,10 @@ function createLookup<K extends keyof CommandVariableTypeMap>(
                 break;
             default:
                 result = {
-                    success: `deferred`,
+                    success: 'deferred',
                     async getValue() {
                         const current = cache.get(normQuery);
-                        if (current !== undefined && current.success !== `deferred`)
+                        if (current !== undefined && current.success !== 'deferred')
                             return current;
 
                         const value = await select(matches, query);

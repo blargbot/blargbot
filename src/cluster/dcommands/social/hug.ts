@@ -5,8 +5,8 @@ import templates from '../../text';
 
 export class HugCommand extends WolkenCommand {
     public constructor(cluster: Cluster) {
-        super(`hug`, {
-            search: `hug`,
+        super('hug', {
+            search: 'hug',
             ...templates.commands.hug,
             wolkeKey: cluster.config.general.wolke
         });

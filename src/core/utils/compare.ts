@@ -36,7 +36,7 @@ type ExtractBlockTypeCalls<T extends string> = T extends `${infer A}|${infer B}`
     { name: T; args: [left: BlockTypes[A], right: BlockTypes[B]]; }
     : never : never : never;
 
-type TypedSorter = { [P in ExtractBlockTypeCalls<BlockTypePairs> as P[`name`]]: (...args: P[`args`]) => number };
+type TypedSorter = { [P in ExtractBlockTypeCalls<BlockTypePairs> as P['name']]: (...args: P['args']) => number };
 type GenericSorter = { [P in BlockTypePairs]: (left: BlockType, right: BlockType) => number }
 
 const sorter = <GenericSorter><TypedSorter>{

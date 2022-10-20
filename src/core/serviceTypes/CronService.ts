@@ -7,13 +7,13 @@ export abstract class CronService extends BaseService {
     readonly #cronJob: CronJob;
 
     protected constructor(
-        options: Omit<CronJobParameters, `onTick` | `onComplete`>,
+        options: Omit<CronJobParameters, 'onTick' | 'onComplete'>,
         public readonly logger: Logger
     ) {
         super();
         this.#cronJob = new CronJob({
             ...options,
-            onTick: this.makeSafeCaller(() => this.execute(), this.logger, `CronJob`)
+            onTick: this.makeSafeCaller(() => this.execute(), this.logger, 'CronJob')
         });
     }
 

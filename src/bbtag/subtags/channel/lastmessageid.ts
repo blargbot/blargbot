@@ -8,24 +8,24 @@ import { SubtagType } from '../../utils';
 export class LastMessageIdSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: `lastmessageid`,
+            name: 'lastmessageid',
             category: SubtagType.CHANNEL,
-            description: `Returns nothing if the channel doesn't have any messages.`,
+            description: 'Returns nothing if the channel doesn\'t have any messages.',
             definition: [
                 {
                     parameters: [],
-                    description: `Returns the messageID of the last message in the current channel.`,
-                    exampleCode: `{lastmessageid}`,
-                    exampleOut: `1111111111111111`,
-                    returns: `id`,
+                    description: 'Returns the messageID of the last message in the current channel.',
+                    exampleCode: '{lastmessageid}',
+                    exampleOut: '1111111111111111',
+                    returns: 'id',
                     execute: (ctx) => this.getLastMessageID(ctx, ctx.channel.id)
                 },
                 {
-                    parameters: [`channel`],
-                    description: `Returns the messageID of the last message in \`channel\`.`,
-                    exampleCode: `{lastmessageid;1111111111111111}`,
-                    exampleOut: `2222222222222222`,
-                    returns: `id`,
+                    parameters: ['channel'],
+                    description: 'Returns the messageID of the last message in `channel`.',
+                    exampleCode: '{lastmessageid;1111111111111111}',
+                    exampleOut: '2222222222222222',
+                    returns: 'id',
                     execute: (ctx, [channel]) => this.getLastMessageID(ctx, channel.value)
                 }
             ]
@@ -44,7 +44,7 @@ export class LastMessageIdSubtag extends CompiledSubtag {
         if (channel === undefined)
             throw new ChannelNotFoundError(channelStr);
         if (!guard.isTextableChannel(channel))
-            throw new BBTagRuntimeError(`Channel must be a textable channel`);
+            throw new BBTagRuntimeError('Channel must be a textable channel');
 
         return channel.lastMessageID;
     }

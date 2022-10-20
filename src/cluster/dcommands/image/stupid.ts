@@ -9,14 +9,14 @@ const cmd = templates.commands.stupid;
 export class StupidCommand extends GlobalImageCommand {
     public constructor() {
         super({
-            name: `stupid`,
+            name: 'stupid',
             flags: [
-                { flag: `u`, word: `user`, description: cmd.flags.user },
-                { flag: `i`, word: `image`, description: cmd.flags.image }
+                { flag: 'u', word: 'user', description: cmd.flags.user },
+                { flag: 'i', word: 'image', description: cmd.flags.image }
             ],
             definitions: [
                 {
-                    parameters: `{text+}`,
+                    parameters: '{text+}',
                     description: cmd.default.description,
                     execute: (ctx, [text], flags) => flags.u !== undefined
                         ? this.renderUser(ctx, text.asString, flags.u.merge().value)
@@ -38,13 +38,13 @@ export class StupidCommand extends GlobalImageCommand {
             return cmd.default.invalidUser({ user: userStr });
 
         const result = await context.queryMember({ filter: userStr });
-        if (result.state !== `SUCCESS`)
+        if (result.state !== 'SUCCESS')
             return cmd.default.invalidUser({ user: userStr });
         return await this.render(context, text, result.value.user.avatarURL);
     }
 
     public async render(context: CommandContext, text: string, url: string): Promise<CommandResult> {
         text = await context.util.resolveTags(context, text);
-        return await this.renderImage(context, `stupid`, { text, avatar: url });
+        return await this.renderImage(context, 'stupid', { text, avatar: url });
     }
 }

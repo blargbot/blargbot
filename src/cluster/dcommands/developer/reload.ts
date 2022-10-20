@@ -10,23 +10,23 @@ const cmd = templates.commands.reload;
 export class ReloadCommand extends GlobalCommand {
     public constructor() {
         super({
-            name: `reload`,
+            name: 'reload',
             category: CommandType.DEVELOPER,
             definitions: [
                 {
-                    parameters: `commands {commands[0]}`,
+                    parameters: 'commands {commands[0]}',
                     description: cmd.commands.description,
-                    execute: (ctx, [commands]) => this.reloadModules(ctx.cluster.commands, commands.asStrings, `commands`)
+                    execute: (ctx, [commands]) => this.reloadModules(ctx.cluster.commands, commands.asStrings, 'commands')
                 },
                 {
-                    parameters: `events {events[0]}`,
+                    parameters: 'events {events[0]}',
                     description: cmd.events.description,
-                    execute: (ctx, [events]) => this.reloadModules(ctx.cluster.events, events.asStrings, `events`)
+                    execute: (ctx, [events]) => this.reloadModules(ctx.cluster.events, events.asStrings, 'events')
                 },
                 {
-                    parameters: `services {services[0]}`,
+                    parameters: 'services {services[0]}',
                     description: cmd.services.description,
-                    execute: (ctx, [services]) => this.reloadModules(ctx.cluster.services, services.asStrings, `services`)
+                    execute: (ctx, [services]) => this.reloadModules(ctx.cluster.services, services.asStrings, 'services')
                 }
             ]
         });

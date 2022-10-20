@@ -4,7 +4,7 @@ import { MasterWorker } from '@blargbot/master';
 import devAvatars from '@blargbot/res/avatars.dev.json';
 import prdAvatars from '@blargbot/res/avatars.prd.json';
 
-const logger = createLogger(config, `MS`);
+const logger = createLogger(config, 'MS');
 logger.setGlobal();
 
 const avatars = config.general.isProd !== true ? devAvatars : prdAvatars;

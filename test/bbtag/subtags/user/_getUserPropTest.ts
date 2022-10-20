@@ -12,54 +12,54 @@ export function createGetUserPropTestCases(options: GetUserPropTestData): Subtag
 
 export function* createGetUserPropTestCasesIter(options: GetUserPropTestData): Generator<SubtagTestCase, void, undefined> {
     if (options.includeNoArgs !== false)
-        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, `command`, []));
+        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'command', []));
 
-    yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, `command`, [``]));
+    yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'command', ['']));
     if (options.quiet !== false) {
-        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, `command`, [``, ``]));
-        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, `command`, [``, `q`]));
+        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'command', ['', '']));
+        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'command', ['', 'q']));
     }
-    yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, `other`, [c.queryString ?? `other user`]));
+    yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'other', [c.queryString ?? 'other user']));
     if (options.quiet !== false) {
-        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, `other`, [c.queryString ?? `other user`, ``]));
-        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, `other`, [c.queryString ?? `other user`, `q`]));
+        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'other', [c.queryString ?? 'other user', '']));
+        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'other', [c.queryString ?? 'other user', 'q']));
     }
     yield {
-        code: options.generateCode(`unknown user`),
-        expected: `\`No user found\``,
+        code: options.generateCode('unknown user'),
+        expected: '`No user found`',
         errors: [
-            { start: 0, end: options.generateCode(`unknown user`).length, error: new UserNotFoundError(`unknown user`) }
+            { start: 0, end: options.generateCode('unknown user').length, error: new UserNotFoundError('unknown user') }
         ],
         setup(ctx) {
-            ctx.util.setup(m => m.getUser(`unknown user`), false).thenResolve(undefined);
-            ctx.util.setup(m => m.findMembers(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id).value, `unknown user`))
+            ctx.util.setup(m => m.getUser('unknown user'), false).thenResolve(undefined);
+            ctx.util.setup(m => m.findMembers(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id).value, 'unknown user'))
                 .verifiable(1)
                 .thenResolve([]);
         }
     };
     if (options.quiet !== false) {
         yield {
-            code: options.generateCode(`unknown user`, ``),
-            expected: `\`No user found\``,
+            code: options.generateCode('unknown user', ''),
+            expected: '`No user found`',
             errors: [
-                { start: 0, end: options.generateCode(`unknown user`, ``).length, error: new UserNotFoundError(`unknown user`) }
+                { start: 0, end: options.generateCode('unknown user', '').length, error: new UserNotFoundError('unknown user') }
             ],
             setup(ctx) {
-                ctx.util.setup(m => m.getUser(`unknown user`), false).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id).value, `unknown user`))
+                ctx.util.setup(m => m.getUser('unknown user'), false).thenResolve(undefined);
+                ctx.util.setup(m => m.findMembers(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id).value, 'unknown user'))
                     .verifiable(1)
                     .thenResolve([]);
             }
         };
         yield {
-            code: options.generateCode(`unknown user`, `q`),
-            expected: options.quiet ?? `\`No user found\``,
+            code: options.generateCode('unknown user', 'q'),
+            expected: options.quiet ?? '`No user found`',
             errors: [
-                { start: 0, end: options.generateCode(`unknown user`, `q`).length, error: new UserNotFoundError(`unknown user`).withDisplay(options.quiet) }
+                { start: 0, end: options.generateCode('unknown user', 'q').length, error: new UserNotFoundError('unknown user').withDisplay(options.quiet) }
             ],
             setup(ctx) {
-                ctx.util.setup(m => m.getUser(`unknown user`), false).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id).value, `unknown user`))
+                ctx.util.setup(m => m.getUser('unknown user'), false).thenResolve(undefined);
+                ctx.util.setup(m => m.findMembers(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id).value, 'unknown user'))
                     .verifiable(1)
                     .thenResolve([]);
             }
@@ -79,12 +79,12 @@ interface GetUserPropTestCase {
     error?: BBTagRuntimeError;
     queryString?: string;
     generateCode?: (...args: [userStr?: string, quietStr?: string]) => string;
-    setup?: (member: RequiredProps<APIGuildMember, `user`>, context: SubtagTestContext) => void;
+    setup?: (member: RequiredProps<APIGuildMember, 'user'>, context: SubtagTestContext) => void;
     postSetup?: (member: Member, context: BBTagContext, test: SubtagTestContext) => void;
     assert?: (result: string, member: Member, context: BBTagContext, test: SubtagTestContext) => void;
 }
 
-function createTestCase(data: GetUserPropTestData, testCase: GetUserPropTestCase, memberKey: keyof SubtagTestContext[`members`], args: Parameters<GetUserPropTestData[`generateCode`]>): SubtagTestCase {
+function createTestCase(data: GetUserPropTestData, testCase: GetUserPropTestCase, memberKey: keyof SubtagTestContext['members'], args: Parameters<GetUserPropTestData['generateCode']>): SubtagTestCase {
     const code = testCase.generateCode?.(...args) ?? data.generateCode(...args);
     return {
         code,
@@ -96,8 +96,8 @@ function createTestCase(data: GetUserPropTestData, testCase: GetUserPropTestCase
         postSetup(bbctx, ctx) {
             const member = bbctx.guild.members.get(ctx.members[memberKey].user.id);
             if (member === undefined)
-                throw new Error(`Cannot find the member under test`);
-            if (args[0] !== undefined && args[0] !== ``) {
+                throw new Error('Cannot find the member under test');
+            if (args[0] !== undefined && args[0] !== '') {
                 ctx.util.setup(m => m.getUser(args[0] as string), false).thenResolve(undefined);
                 ctx.util.setup(m => m.findMembers(member.guild, args[0]))
                     .thenResolve([member]);
@@ -110,7 +110,7 @@ function createTestCase(data: GetUserPropTestData, testCase: GetUserPropTestCase
                 return;
             const member = bbctx.guild.members.get(ctx.members[memberKey].user.id);
             if (member === undefined)
-                throw new Error(`Cannot find the member under test`);
+                throw new Error('Cannot find the member under test');
             testCase.assert(result, member, bbctx, ctx);
         }
     };

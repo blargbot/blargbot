@@ -9,11 +9,11 @@ const cmd = templates.commands.uptime;
 export class UptimeCommand extends GlobalCommand {
     public constructor() {
         super({
-            name: `uptime`,
+            name: 'uptime',
             category: CommandType.GENERAL,
             definitions: [
                 {
-                    parameters: ``,
+                    parameters: '',
                     description: cmd.default.description,
                     execute: (ctx) => this.getUptime(ctx)
                 }

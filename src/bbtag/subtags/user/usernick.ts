@@ -6,24 +6,24 @@ import { SubtagType } from '../../utils';
 export class UserNickSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: `usernick`,
+            name: 'usernick',
             category: SubtagType.USER,
             definition: [
                 {
                     parameters: [],
-                    description: `Returns the nickname of the executing user.`,
-                    exampleCode: `Your nick is {usernick}!`,
-                    exampleOut: `Your nick is Cool Dude 1337!`,
-                    returns: `string`,
-                    execute: (ctx) => this.getUserNick(ctx, ``, true)
+                    description: 'Returns the nickname of the executing user.',
+                    exampleCode: 'Your nick is {usernick}!',
+                    exampleOut: 'Your nick is Cool Dude 1337!',
+                    returns: 'string',
+                    execute: (ctx) => this.getUserNick(ctx, '', true)
                 },
                 {
-                    parameters: [`user`, `quiet?`],
-                    description: `Returns \`user\`'s nickname. If \`quiet\` is specified, if \`user\` can't be found it will simply return nothing.`,
-                    exampleCode: `Stupid cat's nickname is {usernick;Stupid cat}!`,
-                    exampleOut: `Stupid cat's nickname is Secretly Awoken`,
-                    returns: `string`,
-                    execute: (ctx, [userId, quiet]) => this.getUserNick(ctx, userId.value, quiet.value !== ``)
+                    parameters: ['user', 'quiet?'],
+                    description: 'Returns `user`\'s nickname. If `quiet` is specified, if `user` can\'t be found it will simply return nothing.',
+                    exampleCode: 'Stupid cat\'s nickname is {usernick;Stupid cat}!',
+                    exampleOut: 'Stupid cat\'s nickname is Secretly Awoken',
+                    returns: 'string',
+                    execute: (ctx, [userId, quiet]) => this.getUserNick(ctx, userId.value, quiet.value !== '')
                 }
             ]
         });
@@ -39,7 +39,7 @@ export class UserNickSubtag extends CompiledSubtag {
 
         if (member === undefined) {
             throw new UserNotFoundError(userId)
-                .withDisplay(quiet ? `` : undefined);
+                .withDisplay(quiet ? '' : undefined);
         }
 
         return member.nick ?? member.username;

@@ -1,6 +1,6 @@
-import { format, isFormattable } from "@blargbot/domain/messages/types";
+import { format, isFormattable } from '@blargbot/domain/messages/types';
 
-import { ReplacementContext } from "./ReplacementContext";
+import { ReplacementContext } from './ReplacementContext';
 
 export interface IFormatStringCompiler {
     compile(template: string): ICompiledFormatString;
@@ -59,14 +59,14 @@ export class FormatStringCompiler implements IFormatStringCompiler {
 
     #compileCore(template: string): ICompiledFormatString {
         const parts = parse(template);
-        const context = `context`;
+        const context = 'context';
         const literals: string[] = [];
         const joinValues: string[] = [];
         const argNames: string[] = [];
         const handlers: Array<(context: ReplacementContext) => string> = [];
         let i = 0;
         for (const part of parts) {
-            if (typeof part === `string`) {
+            if (typeof part === 'string') {
                 joinValues.push(JSON.stringify(part));
                 literals.push(part);
             } else {
@@ -79,11 +79,11 @@ export class FormatStringCompiler implements IFormatStringCompiler {
 
         let factorySrc: string;
         if (joinValues.length === 0)
-            factorySrc = `() => () => ""`;
+            factorySrc = '() => () => ""';
         else if (joinValues.length === literals.length)
-            factorySrc = `() => () => ${JSON.stringify(literals.join(``))}`;
+            factorySrc = `() => () => ${JSON.stringify(literals.join(''))}`;
         else
-            factorySrc = `(${argNames.join(`, `)}) => (${context}) => ${joinValues.join(` + `)}`;
+            factorySrc = `(${argNames.join(', ')}) => (${context}) => ${joinValues.join(' + ')}`;
 
         const factory = eval(factorySrc) as (...args: typeof handlers) => (context: ReplacementContext) => string;
 
@@ -95,13 +95,13 @@ export class FormatStringCompiler implements IFormatStringCompiler {
             (p, c) => this.#createTransformer(p, c),
             this.#createValueSource(...details.path)
         );
-        const fallback = details.fallback ?? ``;
+        const fallback = details.fallback ?? '';
         return ctx => {
             const value = source(ctx);
             switch (typeof value) {
-                case `string`: return value.length === 0 ? fallback : value;
-                case `undefined`: return fallback;
-                case `object`:
+                case 'string': return value.length === 0 ? fallback : value;
+                case 'undefined': return fallback;
+                case 'object':
                     if (value === null)
                         return fallback;
             }
@@ -111,18 +111,18 @@ export class FormatStringCompiler implements IFormatStringCompiler {
 
     #createValueSource(...path: string[]): IValueResolver {
         let getRoot = (v: readonly unknown[]): unknown => v[v.length - 1];
-        if (path.length > 0 && path[0].startsWith(`~`)) {
+        if (path.length > 0 && path[0].startsWith('~')) {
             getRoot = v => v[0];
             path[0] = path[0].slice(1);
         }
         return ctx => {
             let value = getRoot(ctx.valueStack);
             for (const key of path) {
-                if (typeof value !== `object` || value === null)
+                if (typeof value !== 'object' || value === null)
                     return undefined;
                 value = (value as Record<string, unknown>)[key];
             }
-            if (typeof value === `function`)
+            if (typeof value === 'function')
                 value = value();
             if (isFormattable(value))
                 value = value[format](ctx.formatter);
@@ -204,14 +204,14 @@ function parseReplacement(tokens: IterableIterator<TemplateToken>, prevToken: Te
             break;
         }
         if (prevToken.type !== TemplateTokenType.REPLACEMENT_END)
-            throw new Error(`Expected replacement end but got something else`);
+            throw new Error('Expected replacement end but got something else');
     }
     return { path, transformers, fallback };
 }
 
 function parsePath(tokens: IterableIterator<TemplateToken>, prevToken: TemplateToken): [result: string[], lastToken: TemplateToken] {
     if (prevToken.type !== TemplateTokenType.REPLACEMENT_START)
-        throw new Error(`Unexpected replacement path`);
+        throw new Error('Unexpected replacement path');
     const result: string[] = [];
     const current: string[] = [];
     for (const token of tokens) {
@@ -220,18 +220,18 @@ function parsePath(tokens: IterableIterator<TemplateToken>, prevToken: TemplateT
             case TemplateTokenType.TRANSFORM_START:
             case TemplateTokenType.DEFAULT_START:
                 if (current.length > 0)
-                    result.push(current.join(``));
+                    result.push(current.join(''));
                 return [result, token];
             case TemplateTokenType.PATH_SEPARATOR:
                 if (current.length > 0)
-                    result.push(current.splice(0, Number.MAX_VALUE).join(``));
+                    result.push(current.splice(0, Number.MAX_VALUE).join(''));
                 break;
             default:
                 current.push(token.content);
                 break;
         }
     }
-    throw new Error(`Unexpected end of template`);
+    throw new Error('Unexpected end of template');
 }
 
 function parseTransformers(tokens: IterableIterator<TemplateToken>, prevToken: TemplateToken): [result: TransformerDetails[], lastToken: TemplateToken] {
@@ -253,7 +253,7 @@ function parseTransformer(tokens: IterableIterator<TemplateToken>, prevToken: Te
 
 function parseTransformerName(tokens: IterableIterator<TemplateToken>, prevToken: TemplateToken): [result: string, lastToken: TemplateToken] {
     if (prevToken.type !== TemplateTokenType.TRANSFORM_START)
-        throw new Error(`Unexpected transformer name`);
+        throw new Error('Unexpected transformer name');
     const result = [];
     for (const token of tokens) {
         switch (token.type) {
@@ -264,21 +264,21 @@ function parseTransformerName(tokens: IterableIterator<TemplateToken>, prevToken
             case TemplateTokenType.TRANSFORM_ARGS_SEPARATOR:
             case TemplateTokenType.DEFAULT_START:
                 if (result.length === 0)
-                    throw new Error(`Transformer name cannot be empty`);
-                return [result.join(``), token];
+                    throw new Error('Transformer name cannot be empty');
+                return [result.join(''), token];
             default:
                 result.push(token.content);
         }
     }
-    throw new Error(`Unexpected end of template`);
+    throw new Error('Unexpected end of template');
 }
 
 function parseTransformerArgs(tokens: IterableIterator<TemplateToken>, prevToken: TemplateToken): [result: string[], lastToken: TemplateToken] {
     switch (prevToken.type) {
         case TemplateTokenType.TRANSFORM_ARGS_SEPARATOR:
-            throw new Error(`Unexpected args separator`);
+            throw new Error('Unexpected args separator');
         case TemplateTokenType.TRANSFORM_ARGS_END:
-            throw new Error(`Unexpected args end`);
+            throw new Error('Unexpected args end');
         case TemplateTokenType.REPLACEMENT_END:
         case TemplateTokenType.TRANSFORM_START:
         case TemplateTokenType.DEFAULT_START:
@@ -298,7 +298,7 @@ function parseTransformerArgs(tokens: IterableIterator<TemplateToken>, prevToken
 
 function parseTransformerArg(tokens: IterableIterator<TemplateToken>, prevToken: TemplateToken): [result: string, lastToken: TemplateToken] {
     if (prevToken.type !== TemplateTokenType.TRANSFORM_ARGS_START && prevToken.type !== TemplateTokenType.TRANSFORM_ARGS_SEPARATOR)
-        throw new Error(`Unexpected transformer arg`);
+        throw new Error('Unexpected transformer arg');
     const result = [];
     let bracketCount = 1;
     for (const token of tokens) {
@@ -308,16 +308,16 @@ function parseTransformerArg(tokens: IterableIterator<TemplateToken>, prevToken:
                 break;
             case TemplateTokenType.TRANSFORM_ARGS_END:
                 if (--bracketCount === 0)
-                    return [result.join(``), token];
+                    return [result.join(''), token];
                 break;
             case TemplateTokenType.TRANSFORM_ARGS_SEPARATOR:
                 if (bracketCount <= 1)
-                    return [result.join(``), token];
+                    return [result.join(''), token];
                 break;
         }
         result.push(token.content);
     }
-    throw new Error(`Unexpected end of template`);
+    throw new Error('Unexpected end of template');
 }
 
 function parseDefault(tokens: IterableIterator<TemplateToken>, prevToken: TemplateToken): [result: string | undefined, lastToken: TemplateToken] {
@@ -328,12 +328,12 @@ function parseDefault(tokens: IterableIterator<TemplateToken>, prevToken: Templa
     for (const token of tokens) {
         switch (token.type) {
             case TemplateTokenType.REPLACEMENT_END:
-                return [result.join(``), token];
+                return [result.join(''), token];
             default:
                 result.push(token.content);
         }
     }
-    throw new Error(`Unexpected end of template`);
+    throw new Error('Unexpected end of template');
 }
 
 function* tokenize(template: string): Generator<TemplateToken> {
@@ -350,7 +350,7 @@ function* tokenize(template: string): Generator<TemplateToken> {
 
     for (let i = 0; i < template.length; i++) {
         switch (template[i]) {
-            case `\\`:
+            case '\\':
                 if (i >= template.length - 1)
                     continue;
                 yield* token(TemplateTokenType.ESCAPED, i++, i + 1, template[i]);
@@ -368,12 +368,12 @@ function* tokenize(template: string): Generator<TemplateToken> {
 }
 
 const tokenMap: { [P in string]?: TemplateTokenType } = {
-    [`{`]: TemplateTokenType.REPLACEMENT_START,
-    [`}`]: TemplateTokenType.REPLACEMENT_END,
-    [`.`]: TemplateTokenType.PATH_SEPARATOR,
-    [`#`]: TemplateTokenType.TRANSFORM_START,
-    [`(`]: TemplateTokenType.TRANSFORM_ARGS_START,
-    [`|`]: TemplateTokenType.TRANSFORM_ARGS_SEPARATOR,
-    [`)`]: TemplateTokenType.TRANSFORM_ARGS_END,
-    [`=`]: TemplateTokenType.DEFAULT_START
+    ['{']: TemplateTokenType.REPLACEMENT_START,
+    ['}']: TemplateTokenType.REPLACEMENT_END,
+    ['.']: TemplateTokenType.PATH_SEPARATOR,
+    ['#']: TemplateTokenType.TRANSFORM_START,
+    ['(']: TemplateTokenType.TRANSFORM_ARGS_START,
+    ['|']: TemplateTokenType.TRANSFORM_ARGS_SEPARATOR,
+    [')']: TemplateTokenType.TRANSFORM_ARGS_END,
+    ['=']: TemplateTokenType.DEFAULT_START
 };

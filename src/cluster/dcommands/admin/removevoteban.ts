@@ -10,17 +10,17 @@ const cmd = templates.commands.removeVoteBan;
 export class RemoveVotebanCommand extends GuildCommand {
     public constructor() {
         super({
-            name: `removevoteban`,
-            aliases: [`rvoteban`, `rvb`],
+            name: 'removevoteban',
+            aliases: ['rvoteban', 'rvb'],
             category: CommandType.ADMIN,
             definitions: [
                 {
-                    parameters: `{user:user+}`,
+                    parameters: '{user:user+}',
                     description: cmd.user.description,
                     execute: (ctx, [user]) => this.clearUser(ctx, user.asUser)
                 },
                 {
-                    parameters: ``,
+                    parameters: '',
                     description: cmd.all.description,
                     execute: (ctx) => this.clearAll(ctx)
                 }

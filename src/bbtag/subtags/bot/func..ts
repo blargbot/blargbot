@@ -6,13 +6,13 @@ import { SubtagType } from '../../utils';
 export class FunctionInvokeSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: `func.`,
+            name: 'func.',
             category: SubtagType.BOT,
             hidden: true,
             definition: [
                 {
-                    parameters: [`args*`],
-                    returns: `string`,
+                    parameters: ['args*'],
+                    returns: 'string',
                     execute: (ctx, args) => this.invokeFunction(ctx, args.subtagName.slice(5), args.map(arg => arg.value))
                 }
             ]

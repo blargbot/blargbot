@@ -11,11 +11,11 @@ export class DumpsRoute extends BaseRoute {
     readonly #api: Api;
 
     public constructor(api: Api) {
-        super(`/dumps`);
+        super('/dumps');
 
         this.#api = api;
 
-        this.addRoute(`/:id`, {
+        this.addRoute('/:id', {
             get: ({ request }) => this.getDump(request.params.id)
         });
     }

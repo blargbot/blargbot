@@ -70,8 +70,8 @@ export class CensorManager extends ModerationManagerBase {
 
             const result = await this.cluster.bbtag.execute(tag.content, {
                 message: message,
-                rootTagName: `censor`,
-                limit: `customCommandLimit`,
+                rootTagName: 'censor',
+                limit: 'customCommandLimit',
                 inputRaw: message.content,
                 isCC: true,
                 authorId: tag.author ?? undefined,
@@ -86,11 +86,11 @@ export class CensorManager extends ModerationManagerBase {
     }
 
     async #censorMentions(message: Message<KnownGuildTextableChannel>): Promise<boolean> {
-        const antimention = await this.cluster.database.guilds.getSetting(message.channel.guild.id, `antimention`);
+        const antimention = await this.cluster.database.guilds.getSetting(message.channel.guild.id, 'antimention');
         if (antimention === undefined)
             return false;
 
-        const parsedAntiMention = typeof antimention === `string` ? parseInt(antimention) : antimention;
+        const parsedAntiMention = typeof antimention === 'string' ? parseInt(antimention) : antimention;
         if (parsedAntiMention === 0 || isNaN(parsedAntiMention) || message.mentions.length + message.roleMentions.length < parsedAntiMention)
             return false;
 
@@ -103,13 +103,13 @@ export class CensorManager extends ModerationManagerBase {
             templates.censor.mentionSpam.ban.reason,
             moment.duration(Infinity)
         )) {
-            case `success`:
-            case `memberTooHigh`:
-            case `alreadyBanned`:
+            case 'success':
+            case 'memberTooHigh':
+            case 'alreadyBanned':
                 return true;
-            case `noPerms`:
-            case `moderatorNoPerms`:
-            case `moderatorTooLow`:
+            case 'noPerms':
+            case 'moderatorNoPerms':
+            case 'moderatorTooLow':
                 await this.cluster.util.reply(message, new FormattableMessageContent({
                     content: templates.censor.mentionSpam.ban.failed({ user: message.author })
                 }));

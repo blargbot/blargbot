@@ -9,14 +9,14 @@ runSubtagTests({
     argCountBounds: { min: 0, max: 0 },
     cases: [
         {
-            code: `{guildbans}`,
-            expected: `["23946327849364832","32967423897649864"]`,
+            code: '{guildbans}',
+            expected: '["23946327849364832","32967423897649864"]',
             setup(ctx) {
                 const user1 = ctx.createMock(User);
                 const user2 = ctx.createMock(User);
 
-                user1.setup(m => m.id).thenReturn(`23946327849364832`);
-                user2.setup(m => m.id).thenReturn(`32967423897649864`);
+                user1.setup(m => m.id).thenReturn('23946327849364832');
+                user2.setup(m => m.id).thenReturn('32967423897649864');
 
                 ctx.discord.setup(m => m.getGuildBans(ctx.guild.id, undefined))
                     .thenResolve([
@@ -26,10 +26,10 @@ runSubtagTests({
             }
         },
         {
-            code: `{guildbans}`,
-            expected: `\`Missing required permissions\``,
+            code: '{guildbans}',
+            expected: '`Missing required permissions`',
             errors: [
-                { start: 0, end: 11, error: new BBTagRuntimeError(`Missing required permissions`, `Test REST error`) }
+                { start: 0, end: 11, error: new BBTagRuntimeError('Missing required permissions', 'Test REST error') }
             ],
             setup(ctx) {
                 const error = ctx.createRESTError(ApiError.MISSING_PERMISSIONS);

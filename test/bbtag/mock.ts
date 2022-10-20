@@ -17,10 +17,10 @@ export class Mock<T> {
     public constructor(clazz?: (new (...args: never[]) => T) | (Function & { prototype: T; }), strict = true) {
         const ctx = {} as Record<PropertyKey, unknown>;
 
-        if (typeof clazz === `function` && typeof clazz.prototype === `object`)
+        if (typeof clazz === 'function' && typeof clazz.prototype === 'object')
             Object.setPrototypeOf(ctx, <object | null>clazz.prototype);
 
-        for (const symbol of [Symbol.toPrimitive, `then`, `catch`])
+        for (const symbol of [Symbol.toPrimitive, 'then', 'catch'])
             if (!(symbol in ctx))
                 ctx[symbol] = undefined;
 
@@ -41,10 +41,10 @@ export class Mock<T> {
                 'verifiable': {
                     value: (verifier: number | ((verifier: MethodStubVerificator<T>) => void)) => {
                         switch (typeof verifier) {
-                            case `function`:
+                            case 'function':
                                 this.#assertions.push(() => verifier(verify(call)));
                                 break;
-                            case `number`:
+                            case 'number':
                                 this.#assertions.push(() => verify(call).times(verifier));
                                 break;
                         }
@@ -67,7 +67,7 @@ export class Mock<T> {
         switch (errors.length) {
             case 0: break;
             case 1: throw errors[0];
-            default: throw new AggregateError(errors, errors.join(`\n`));
+            default: throw new AggregateError(errors, errors.join('\n'));
         }
     }
 
@@ -115,7 +115,7 @@ export const argument = {
         return this.is((x): x is TypeofMap[T] => typeof x === type);
     },
     matches<T extends string = string>(pattern: RegExp): MockArgumentFilter<T> {
-        return this.is((x): x is T => typeof x === `string` && pattern.test(x));
+        return this.is((x): x is T => typeof x === 'string' && pattern.test(x));
     },
     isDeepEqual<T>(value: T, ignoreExcessUndefined = true): T {
         return new DeepEqualMatcher<T>(value, !ignoreExcessUndefined) as unknown as T;
@@ -155,10 +155,10 @@ class StrictMocker extends Mocker {
     public constructor(clazz?: (new (...args: never[]) => unknown) | (Function & { prototype: unknown; }), strict = false) {
         const ctx = {} as Record<PropertyKey, unknown>;
 
-        if (typeof clazz === `function` && typeof clazz.prototype === `object`)
+        if (typeof clazz === 'function' && typeof clazz.prototype === 'object')
             Object.setPrototypeOf(ctx, <object | null>clazz.prototype);
 
-        for (const symbol of [Symbol.toPrimitive, `then`, `catch`])
+        for (const symbol of [Symbol.toPrimitive, 'then', 'catch'])
             if (!(symbol in ctx))
                 ctx[symbol] = undefined;
 
@@ -187,19 +187,19 @@ class MethodNotConfiguredStub extends AbstractMethodStub implements MethodStub {
             throw new MethodNotConfiguredError(`The '${this.name}' method/property hasnt been configured to accept 0 arguments`);
         const strArgs = args.map(a => {
             if (a === undefined)
-                return `undefined`;
+                return 'undefined';
             if (isProxy(a)) {
                 const proto = Object.getPrototypeOf(a) as object;
                 return `<PROXY ${proto.constructor.name}>`;
             }
             if (a instanceof Base) {
                 const b: Base & { name?: string; } = a;
-                if (`name` in b && typeof b.name === `string`)
+                if ('name' in b && typeof b.name === 'string')
                     return `<Eris.${a.constructor.name} ${b.id} (${JSON.stringify(b.name)})>`;
                 return `<Eris.${a.constructor.name} ${a.id}>`;
             }
             try {
-                return JSON.stringify(a, (_, value) => typeof value === `bigint` ? value.toString() : value as unknown);
+                return JSON.stringify(a, (_, value) => typeof value === 'bigint' ? value.toString() : value as unknown);
             } catch (err: unknown) {
                 if (!(err instanceof MethodNotConfiguredError))
                     throw err;
@@ -207,7 +207,7 @@ class MethodNotConfiguredStub extends AbstractMethodStub implements MethodStub {
             }
         });
 
-        throw new MethodNotConfiguredError(`The '${this.name}' method hasnt been configured to accept the arguments: [${strArgs.join(`,`)}]`);
+        throw new MethodNotConfiguredError(`The '${this.name}' method hasnt been configured to accept the arguments: [${strArgs.join(',')}]`);
     }
 
     public getValue(): never {
@@ -271,7 +271,7 @@ class DeepEqualMatcher<T> extends Matcher {
         if (typeof left !== typeof right)
             return false;
 
-        if (typeof left !== `object` || typeof right !== `object`)
+        if (typeof left !== 'object' || typeof right !== 'object')
             return false;
 
         if (left === null && right === null)

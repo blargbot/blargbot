@@ -9,11 +9,11 @@ const cmd = templates.commands.version;
 export class VersionCommand extends GlobalCommand {
     public constructor() {
         super({
-            name: `version`,
+            name: 'version',
             category: CommandType.GENERAL,
             definitions: [
                 {
-                    parameters: ``,
+                    parameters: '',
                     description: cmd.default.description,
                     execute: (ctx) => this.getVersion(ctx)
                 }

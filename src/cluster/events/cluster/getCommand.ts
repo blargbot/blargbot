@@ -3,17 +3,17 @@ import { ClusterEventService } from '@blargbot/cluster/serviceTypes';
 import { CommandListResultItem } from '@blargbot/cluster/types';
 import { format } from '@blargbot/domain/messages/types';
 
-export class ClusterGetCommandHandler extends ClusterEventService<`getCommand`> {
+export class ClusterGetCommandHandler extends ClusterEventService<'getCommand'> {
     public constructor(
         cluster: Cluster
     ) {
-        super(cluster, `getCommand`, async ({ data, reply }) => reply(await this.getCommand(data)));
+        super(cluster, 'getCommand', async ({ data, reply }) => reply(await this.getCommand(data)));
     }
 
     public async getCommand(name: string): Promise<CommandListResultItem | undefined> {
         const formatter = await this.cluster.util.getFormatter();
         const result = await this.cluster.commands.default.get(name);
-        if (result.state !== `ALLOWED`)
+        if (result.state !== 'ALLOWED')
             return undefined;
 
         const command = result.detail.command;
@@ -25,7 +25,7 @@ export class ClusterGetCommandHandler extends ClusterEventService<`getCommand`> 
             disabled: command.disabled,
             flags: command.flags.map(f => ({
                 ...f,
-                description: typeof f.description === `string` ? f.description : f.description[format](formatter)
+                description: typeof f.description === 'string' ? f.description : f.description[format](formatter)
             })),
             hidden: command.hidden,
             name: command.name,

@@ -11,14 +11,14 @@ const cmd = templates.commands.unban;
 export class UnbanCommand extends GuildCommand {
     public constructor() {
         super({
-            name: `unban`,
+            name: 'unban',
             category: CommandType.ADMIN,
             flags: [
-                { flag: `r`, word: `reason`, description: cmd.flags.reason }
+                { flag: 'r', word: 'reason', description: cmd.flags.reason }
             ],
             definitions: [
                 {
-                    parameters: `{userId}`,
+                    parameters: '{userId}',
                     description: cmd.default.description,
                     execute: (ctx, [user], flags) => this.unban(ctx, user.asString, flags)
                 }

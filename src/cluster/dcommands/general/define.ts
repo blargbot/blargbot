@@ -11,11 +11,11 @@ const cmd = templates.commands.define;
 export class DefineCommand extends GlobalCommand {
     public constructor() {
         super({
-            name: `define`,
+            name: 'define',
             category: CommandType.GENERAL,
             definitions: [
                 {
-                    parameters: `{word}`,
+                    parameters: '{word}',
                     description: cmd.default.description,
                     execute: (ctx, [word]) => this.define(ctx, word.asString)
                 }
@@ -27,21 +27,21 @@ export class DefineCommand extends GlobalCommand {
         const response = await fetchSafe(`https://wordsapiv1.p.rapidapi.com/words/${word}`, {
             headers: {
                 'x-rapidapi-key': context.config.general.mashape,
-                'x-rapidapi-host': `wordsapiv1.p.rapidapi.com`
+                'x-rapidapi-host': 'wordsapiv1.p.rapidapi.com'
             }
         });
         const details = wordApiMapping(response);
         if (!details.valid)
             return cmd.default.unavailable;
 
-        const defaultIPA = details.value.pronunciation.all ?? ``;
+        const defaultIPA = details.value.pronunciation.all ?? '';
 
         return {
             embeds: [
                 {
                     author: context.util.embedifyAuthor(context.author),
                     title: cmd.default.embed.title({ word }),
-                    description: defaultIPA !== `` ? cmd.default.embed.description(pronunciation(defaultIPA)) : undefined,
+                    description: defaultIPA !== '' ? cmd.default.embed.description(pronunciation(defaultIPA)) : undefined,
                     fields: details.value.results
                         .slice(0, 15)
                         .map((r, i) => {
@@ -65,7 +65,7 @@ export class DefineCommand extends GlobalCommand {
 function pronunciation(phonetic: string): { phonetic: string; pronunciation: string; } {
     return {
         phonetic,
-        pronunciation: `http://ipa-reader.xyz/?text=${encodeURIComponent(phonetic.replace(/'/g, `&apos;`))})`
+        pronunciation: `http://ipa-reader.xyz/?text=${encodeURIComponent(phonetic.replace(/'/g, '&apos;'))})`
     };
 }
 

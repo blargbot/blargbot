@@ -5,23 +5,23 @@ import { mapping } from '@blargbot/mapping';
 import { BaseRoute } from '../../BaseRoute';
 import { ApiResponse } from '../../types';
 
-type CensorRuleType = `timeout` | `kick` | `ban` | `delete`;
+type CensorRuleType = 'timeout' | 'kick' | 'ban' | 'delete';
 
 export class CensorsRoute extends BaseRoute {
     readonly #api: Api;
 
     public constructor(api: Api) {
-        super(`/guilds`);
+        super('/guilds');
 
         this.#api = api;
 
         this.middleware.push(async (req, _, next) => await this.#checkAccess(req.params.guildId, this.getUserId(req, true)) ?? await next());
 
-        this.addRoute(`/:guildId/censors`, {
+        this.addRoute('/:guildId/censors', {
             get: ({ request }) => this.listCensors(request.params.guildId)
         });
 
-        for (const type of [`delete`, `ban`, `kick`] as const) {
+        for (const type of ['delete', 'ban', 'kick'] as const) {
             this.addRoute(`/:guildId/censors/${type}Message`, {
                 get: ({ request }) => this.getCensorDefaultMessage(request.params.guildId, type),
                 put: ({ request }) => this.setCensorDefaultMessage(request.params.guildId, type, request.body, this.getUserId(request)),
@@ -53,7 +53,7 @@ export class CensorsRoute extends BaseRoute {
         const current = await this.#api.database.guilds.getCensorRule(guildId, undefined, type);
         const result = { ...current, ...mapped.value, author: userId };
         if (!await this.#api.database.guilds.setCensorRule(guildId, undefined, type, result))
-            return this.internalServerError(`Failed to update record`);
+            return this.internalServerError('Failed to update record');
 
         return this.ok(result);
     }
@@ -91,7 +91,7 @@ export class CensorsRoute extends BaseRoute {
 
         const result = { ...current[`${type}Message`], ...mapped.value, author: userId };
         if (!await this.#api.database.guilds.setCensorRule(guildId, id, type, result))
-            return this.internalServerError(`Failed to update record`);
+            return this.internalServerError('Failed to update record');
 
         return this.ok(result);
     }
@@ -120,7 +120,7 @@ export class CensorsRoute extends BaseRoute {
         if (userId === undefined)
             return this.unauthorized();
 
-        const perms = await this.#api.worker.request(`getGuildPermission`, { userId, guildId });
+        const perms = await this.#api.worker.request('getGuildPermission', { userId, guildId });
         if (perms === undefined)
             return this.notFound();
 

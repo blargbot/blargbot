@@ -10,26 +10,26 @@ runSubtagTests({
     argCountBounds: { min: 1, max: 2 },
     cases: [
         {
-            code: `{jsonstringify;{j;{}}}`,
-            expected: `{}`,
+            code: '{jsonstringify;{j;{}}}',
+            expected: '{}',
             subtags: [new JsonSubtag()]
         },
         {
-            code: `{jsonstringify;{j;{"abc":123}}}`,
+            code: '{jsonstringify;{j;{"abc":123}}}',
             expected: `{
     "abc": 123
 }`,
             subtags: [new JsonSubtag()]
         },
         {
-            code: `{jsonstringify;{j;{"abc":123}};2}`,
+            code: '{jsonstringify;{j;{"abc":123}};2}',
             expected: `{
   "abc": 123
 }`,
             subtags: [new JsonSubtag()]
         },
         {
-            code: `{jsonstringify;{j;{"abc":123,"def":{"ghi":[1,2,3]}}}}`,
+            code: '{jsonstringify;{j;{"abc":123,"def":{"ghi":[1,2,3]}}}}',
             expected: `{
     "abc": 123,
     "def": {
@@ -43,23 +43,23 @@ runSubtagTests({
             subtags: [new JsonSubtag()]
         },
         {
-            code: `{jsonstringify;"abc"}`,
-            expected: `{}`
+            code: '{jsonstringify;"abc"}',
+            expected: '{}'
         },
         {
-            code: `{jsonstringify;def}`,
-            expected: `{}`
+            code: '{jsonstringify;def}',
+            expected: '{}'
         },
         {
-            code: `{jsonstringify;123}`,
-            expected: `{}`
+            code: '{jsonstringify;123}',
+            expected: '{}'
         },
         {
-            code: `{jsonstringify;false}`,
-            expected: `{}`
+            code: '{jsonstringify;false}',
+            expected: '{}'
         },
         {
-            code: `{jsonstringify;["a","b",1,2]}`,
+            code: '{jsonstringify;["a","b",1,2]}',
             expected: `[
     "a",
     "b",
@@ -68,7 +68,7 @@ runSubtagTests({
 ]`
         },
         {
-            code: `{jsonstringify;myVar}`,
+            code: '{jsonstringify;myVar}',
             expected: `{
     "abc": 123,
     "def": {
@@ -80,15 +80,15 @@ runSubtagTests({
     }
 }`,
             setup(ctx) {
-                ctx.options.tagName = `testTag`;
+                ctx.options.tagName = 'testTag';
                 ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.myVar`] = { abc: 123, def: { ghi: [1, 2, 3] } };
             }
         },
         {
-            code: `{jsonstringify;true;abc}`,
-            expected: `\`Not a number\``,
+            code: '{jsonstringify;true;abc}',
+            expected: '`Not a number`',
             errors: [
-                { start: 0, end: 24, error: new NotANumberError(`abc`) }
+                { start: 0, end: 24, error: new NotANumberError('abc') }
             ]
         }
     ]

@@ -14,17 +14,17 @@ const cmd = templates.commands.roleMe;
 export class RolemeCommand extends GuildCommand {
     public constructor() {
         super({
-            name: `roleme`,
+            name: 'roleme',
             category: CommandType.ADMIN,
             flags: [
-                { flag: `a`, word: `add`, description: cmd.flags.add },
-                { flag: `r`, word: `remove`, description: cmd.flags.remove },
-                { flag: `C`, word: `case`, description: cmd.flags.case },
-                { flag: `c`, word: `channels`, description: cmd.flags.channels }
+                { flag: 'a', word: 'add', description: cmd.flags.add },
+                { flag: 'r', word: 'remove', description: cmd.flags.remove },
+                { flag: 'C', word: 'case', description: cmd.flags.case },
+                { flag: 'c', word: 'channels', description: cmd.flags.channels }
             ],
             definitions: [
                 {
-                    parameters: `add|create {~phrase+}`,
+                    parameters: 'add|create {~phrase+}',
                     description: cmd.add.description,
                     execute: (ctx, [phrase], flags) => this.addRoleme(ctx, phrase.asString, {
                         caseSensitive: flags.C !== undefined,
@@ -34,12 +34,12 @@ export class RolemeCommand extends GuildCommand {
                     })
                 },
                 {
-                    parameters: `remove|delete {rolemeId:integer}`,
+                    parameters: 'remove|delete {rolemeId:integer}',
                     description: cmd.remove.description,
                     execute: (ctx, [id]) => this.deleteRoleme(ctx, id.asInteger)
                 },
                 {
-                    parameters: `edit {rolemeId:integer} {~newPhrase+?}`,
+                    parameters: 'edit {rolemeId:integer} {~newPhrase+?}',
                     description: cmd.edit.description,
                     execute: (ctx, [id, phrase], flags) => this.editRoleme(ctx, id.asInteger, phrase.asOptionalString, {
                         caseSensitive: flags.C !== undefined,
@@ -49,32 +49,32 @@ export class RolemeCommand extends GuildCommand {
                     })
                 },
                 {
-                    parameters: `setmessage {rolemeId:integer} {~bbtag+?}`,
+                    parameters: 'setmessage {rolemeId:integer} {~bbtag+?}',
                     description: cmd.setMessage.description,
                     execute: (ctx, [id, bbtag]) => this.setMessage(ctx, id.asInteger, bbtag.asOptionalString)
                 },
                 {
-                    parameters: `rawmessage {rolemeId:integer} {fileExtension:literal(bbtag|txt)=bbtag}`,
+                    parameters: 'rawmessage {rolemeId:integer} {fileExtension:literal(bbtag|txt)=bbtag}',
                     description: cmd.rawMessage.description,
                     execute: (ctx, [id, fileExtension]) => this.getRawMessage(ctx, id.asInteger, fileExtension.asLiteral)
                 },
                 {
-                    parameters: `debugmessage {rolemeId:integer}`,
+                    parameters: 'debugmessage {rolemeId:integer}',
                     description: cmd.debugMessage.description,
                     execute: (ctx, [id]) => this.debugMessage(ctx, id.asInteger)
                 },
                 {
-                    parameters: `setauthorizer {rolemeId:integer}`,
+                    parameters: 'setauthorizer {rolemeId:integer}',
                     description: cmd.setAuthorizer.description,
                     execute: (ctx, [id]) => this.setAuthorizer(ctx, id.asInteger)
                 },
                 {
-                    parameters: `info {rolemeId:integer}`,
+                    parameters: 'info {rolemeId:integer}',
                     description: cmd.info.description,
                     execute: (ctx, [id]) => this.showInfo(ctx, id.asInteger)
                 },
                 {
-                    parameters: `list`,
+                    parameters: 'list',
                     description: cmd.list.description,
                     execute: (ctx) => this.listRolemes(ctx)
                 }
@@ -92,12 +92,12 @@ export class RolemeCommand extends GuildCommand {
         });
 
         switch (roleme) {
-            case `FAILED`: return cmd.add.unexpectedError;
-            case `INVALID_CHANNELS`: return cmd.errors.missingChannels;
-            case `INVALID_ROLES`: return cmd.errors.missingRoles;
-            case `NO_ROLES`: return cmd.errors.noRoles;
-            case `NO_TRIGGER`: return cmd.errors.noTrigger;
-            case `TIMED_OUT`: return undefined;
+            case 'FAILED': return cmd.add.unexpectedError;
+            case 'INVALID_CHANNELS': return cmd.errors.missingChannels;
+            case 'INVALID_ROLES': return cmd.errors.missingRoles;
+            case 'NO_ROLES': return cmd.errors.noRoles;
+            case 'NO_TRIGGER': return cmd.errors.noTrigger;
+            case 'TIMED_OUT': return undefined;
         }
 
         const rolemes = await context.database.guilds.getRolemes(context.channel.guild.id);
@@ -121,31 +121,31 @@ export class RolemeCommand extends GuildCommand {
         });
 
         switch (roleme) {
-            case `FAILED`: return cmd.edit.unexpectedError;
-            case `INVALID_CHANNELS`: return cmd.errors.missingChannels;
-            case `INVALID_ROLES`: return cmd.errors.missingRoles;
-            case `NO_ROLES`: return cmd.errors.noRoles;
-            case `NO_TRIGGER`: return cmd.errors.noTrigger;
-            case `TIMED_OUT`: return undefined;
+            case 'FAILED': return cmd.edit.unexpectedError;
+            case 'INVALID_CHANNELS': return cmd.errors.missingChannels;
+            case 'INVALID_ROLES': return cmd.errors.missingRoles;
+            case 'NO_ROLES': return cmd.errors.noRoles;
+            case 'NO_TRIGGER': return cmd.errors.noTrigger;
+            case 'TIMED_OUT': return undefined;
         }
 
         await context.database.guilds.setRoleme(context.channel.guild.id, id, roleme);
         return cmd.edit.success({ id });
     }
 
-    async #buildRoleme(context: GuildCommandContext, roleme: GuildRolemeEntry): Promise<GuildRolemeEntry | `TIMED_OUT` | `NO_ROLES` | `NO_TRIGGER` | `FAILED` | `INVALID_CHANNELS` | `INVALID_ROLES`> {
-        const result: Mutable<GuildRolemeEntry> = { casesensitive: false, channels: [], message: ``, add: [], remove: [] };
+    async #buildRoleme(context: GuildCommandContext, roleme: GuildRolemeEntry): Promise<GuildRolemeEntry | 'TIMED_OUT' | 'NO_ROLES' | 'NO_TRIGGER' | 'FAILED' | 'INVALID_CHANNELS' | 'INVALID_ROLES'> {
+        const result: Mutable<GuildRolemeEntry> = { casesensitive: false, channels: [], message: '', add: [], remove: [] };
 
-        if (roleme.message !== ``) {
+        if (roleme.message !== '') {
             result.message = roleme.message;
             result.casesensitive = roleme.casesensitive;
         } else {
             const trigger = await context.queryText({ prompt: cmd.common.triggerQuery });
 
             switch (trigger.state) {
-                case `CANCELLED`: return `NO_TRIGGER`;
-                case `SUCCESS`: break;
-                default: return `TIMED_OUT`;
+                case 'CANCELLED': return 'NO_TRIGGER';
+                case 'SUCCESS': break;
+                default: return 'TIMED_OUT';
             }
 
             const caseSensitive = await context.queryConfirm({
@@ -161,7 +161,7 @@ export class RolemeCommand extends GuildCommand {
             });
 
             if (caseSensitive === undefined)
-                return `TIMED_OUT`;
+                return 'TIMED_OUT';
 
             result.message = trigger.value;
             result.casesensitive = caseSensitive;
@@ -171,11 +171,11 @@ export class RolemeCommand extends GuildCommand {
             const channels = [];
             for (const channelStr of roleme.channels) {
                 const channel = await context.queryChannel({ filter: channelStr });
-                if (channel.state === `SUCCESS` && guard.isTextableChannel(channel.value))
+                if (channel.state === 'SUCCESS' && guard.isTextableChannel(channel.value))
                     channels.push(channel.value.id);
             }
             if (channels.length === 0)
-                return `INVALID_CHANNELS`;
+                return 'INVALID_CHANNELS';
             result.channels = channels;
         } else if (roleme.add.length === 0 && roleme.remove.length === 0) {
             const channels = await context.queryText({
@@ -188,32 +188,32 @@ export class RolemeCommand extends GuildCommand {
             });
 
             switch (channels.state) {
-                case `CANCELLED`: break;
-                case `SUCCESS`:
+                case 'CANCELLED': break;
+                case 'SUCCESS':
                     result.channels = channels.value;
                     break;
-                default: return `TIMED_OUT`;
+                default: return 'TIMED_OUT';
             }
         }
 
         if (roleme.add.length === 0 && roleme.remove.length === 0) {
-            const toAdd = await this.#requestRoles(context, `add`);
-            if (typeof toAdd === `string`)
+            const toAdd = await this.#requestRoles(context, 'add');
+            if (typeof toAdd === 'string')
                 return toAdd;
             result.add = toAdd;
 
-            const toRemove = await this.#requestRoles(context, `remove`);
-            if (typeof toRemove === `string`)
+            const toRemove = await this.#requestRoles(context, 'remove');
+            if (typeof toRemove === 'string')
                 return toRemove;
             result.remove = toRemove;
 
             if (result.add.length === 0 && result.remove.length === 0)
-                return `NO_ROLES`;
+                return 'NO_ROLES';
         } else {
             const toAdd = [];
             for (const roleStr of result.add) {
                 const role = await context.queryRole({ filter: roleStr });
-                if (role.state === `SUCCESS`)
+                if (role.state === 'SUCCESS')
                     toAdd.push(role.value.id);
             }
             result.add = toAdd;
@@ -221,13 +221,13 @@ export class RolemeCommand extends GuildCommand {
             const toRemove = [];
             for (const roleStr of result.remove) {
                 const role = await context.queryRole({ filter: roleStr });
-                if (role.state === `SUCCESS`)
+                if (role.state === 'SUCCESS')
                     toRemove.push(role.value.id);
             }
             result.remove = toRemove;
 
             if (result.remove.length === 0 && result.add.length === 0)
-                return `INVALID_ROLES`;
+                return 'INVALID_ROLES';
         }
 
         return result;
@@ -342,8 +342,8 @@ export class RolemeCommand extends GuildCommand {
                             {
                                 name: cmd.info.embed.field.message.name,
                                 value: cmd.info.embed.field.message.value({
-                                    authorId: roleme.output.author ?? `????`,
-                                    authorizerId: roleme.output.authorizer ?? roleme.output.author ?? `????`
+                                    authorId: roleme.output.author ?? '????',
+                                    authorizerId: roleme.output.authorizer ?? roleme.output.author ?? '????'
                                 }),
                                 inline: true
                             }
@@ -389,14 +389,14 @@ export class RolemeCommand extends GuildCommand {
         };
     }
 
-    async #requestRoles(context: GuildCommandContext, mode: `add` | `remove`): Promise<string[] | `TIMED_OUT` | `FAILED`> {
+    async #requestRoles(context: GuildCommandContext, mode: 'add' | 'remove'): Promise<string[] | 'TIMED_OUT' | 'FAILED'> {
         const result = await context.queryText<string[]>({
             prompt: cmd.common.rolesQuery.prompt[mode],
             parse: async message => {
                 const roles = [];
-                for (const line of message.content.split(`\n`)) {
+                for (const line of message.content.split('\n')) {
                     const role = await context.queryRole({ filter: line });
-                    if (role.state === `SUCCESS`)
+                    if (role.state === 'SUCCESS')
                         roles.push(role.value.id);
                 }
 
@@ -411,8 +411,8 @@ export class RolemeCommand extends GuildCommand {
         });
 
         switch (result.state) {
-            case `CANCELLED`: return [];
-            case `SUCCESS`: return result.value;
+            case 'CANCELLED': return [];
+            case 'SUCCESS': return result.value;
             default: return result.state;
         }
     }

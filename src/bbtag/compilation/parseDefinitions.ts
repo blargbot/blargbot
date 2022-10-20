@@ -36,19 +36,19 @@ function getSignature(definition: AnySubtagSignatureOptions, parameters: readonl
 }
 
 function parseArgument(parameter: SubtagSignatureParameterOptions): SubtagSignatureParameter {
-    if (typeof parameter === `object`)
+    if (typeof parameter === 'object')
         return createParameterGroup(parameter.repeat.map(parseArgument), parameter.minCount ?? 0);
 
     let autoResolve = true;
-    if (parameter.startsWith(`~`)) {
+    if (parameter.startsWith('~')) {
         autoResolve = false;
         parameter = parameter.slice(1);
     }
 
-    let startDefault = parameter.indexOf(`:`);
+    let startDefault = parameter.indexOf(':');
     if (startDefault === -1)
         startDefault = parameter.length + 1;
-    let startMaxLength = parameter.lastIndexOf(`#`);
+    let startMaxLength = parameter.lastIndexOf('#');
     if (startMaxLength === -1)
         startMaxLength = parameter.length + 1;
 
@@ -62,16 +62,16 @@ function parseArgument(parameter: SubtagSignatureParameterOptions): SubtagSignat
     let required = true;
     let greedy: number | false = false;
     switch (name[name.length - 1]) {
-        case `?`:
+        case '?':
             required = false;
             break;
-        case `*`:
+        case '*':
             greedy = 0;
             break;
-        case `+`:
+        case '+':
             greedy = 1;
             break;
-        case `!`:
+        case '!':
             break;
         default: {
             const match = /^(.*?)\+(\d)$/.exec(name);
@@ -79,7 +79,7 @@ function parseArgument(parameter: SubtagSignatureParameterOptions): SubtagSignat
                 greedy = parseInt(match[2]);
                 name = match[1];
             }
-            name += `!`;
+            name += '!';
         }
     }
 
@@ -97,8 +97,8 @@ function parseArgument(parameter: SubtagSignatureParameterOptions): SubtagSignat
 function createParameterGroup(parameters: SubtagSignatureParameter[], minCount: number): SubtagSignatureParameterGroup {
     const nested = [];
     for (const p of parameters) {
-        if (`nested` in p || !p.required)
-            throw new Error(`All parameters inside a parameter group must be required`);
+        if ('nested' in p || !p.required)
+            throw new Error('All parameters inside a parameter group must be required');
         nested.push(p);
     }
     return { nested, minRepeats: minCount };
@@ -117,7 +117,7 @@ function getExecute(definition: AnySubtagSignatureOptions, parameters: readonly 
 const logicWrappers: { [P in keyof SubtagReturnTypeMap]: new (factory: SubtagLogic<Awaitable<SubtagReturnTypeMap[P]>>) => SubtagLogic } = {
     'unknown': DeferredSubtagLogic,
     'number': StringifySubtagLogic,
-    'hex': StringSubtagLogic.withConversion(val => val.toString(16).padStart(6, `0`)),
+    'hex': StringSubtagLogic.withConversion(val => val.toString(16).padStart(6, '0')),
     'number[]': ArraySubtagLogic,
     'boolean': StringifySubtagLogic,
     'boolean|number': StringifySubtagLogic,

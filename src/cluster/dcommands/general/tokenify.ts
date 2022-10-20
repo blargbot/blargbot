@@ -10,11 +10,11 @@ const cmd = templates.commands.tokenify;
 export class TokenifyCommand extends GlobalCommand {
     public constructor() {
         super({
-            name: `tokenify`,
+            name: 'tokenify',
             category: CommandType.GENERAL,
             definitions: [
                 {
-                    parameters: `{input+}`,
+                    parameters: '{input+}',
                     description: cmd.default.description,
                     execute: (_, [input]) => this.tokenify(input.asString)
                 }
@@ -23,7 +23,7 @@ export class TokenifyCommand extends GlobalCommand {
     }
 
     public tokenify(input: string): CommandResult {
-        const pasta = input.replace(/[^0-9a-z]/gi, ``).toLowerCase();
+        const pasta = input.replace(/[^0-9a-z]/gi, '').toLowerCase();
         const newPasta = [];
 
         for (let i = 0; i < pasta.length; i++) {
@@ -34,13 +34,13 @@ export class TokenifyCommand extends GlobalCommand {
             if (i === pasta.length - 1)
                 newPasta.length; // NOOP
             else if (randInt(1, 20) === 1)
-                newPasta.push(`.`);
+                newPasta.push('.');
             else if (randInt(1, 30) === 1)
-                newPasta.push(`-`);
+                newPasta.push('-');
             else if (randInt(1, 30) === 30)
-                newPasta.push(`\\_`);
+                newPasta.push('\\_');
         }
 
-        return literal(newPasta.join(``));
+        return literal(newPasta.join(''));
     }
 }

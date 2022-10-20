@@ -12,17 +12,17 @@ export class BrainfuckCommand extends GlobalCommand {
 
     public constructor() {
         super({
-            name: `brainfuck`,
-            aliases: [`bf`],
+            name: 'brainfuck',
+            aliases: ['bf'],
             category: CommandType.GENERAL,
             definitions: [
                 {
-                    parameters: `{code+}`,
+                    parameters: '{code+}',
                     description: cmd.default.description,
                     execute: (ctx, [code]) => this.eval(ctx, code.asString, false)
                 },
                 {
-                    parameters: `debug {code+}`,
+                    parameters: 'debug {code+}',
                     description: cmd.debug.description,
                     execute: (ctx, [code]) => this.eval(ctx, code.asString, true)
                 }
@@ -33,10 +33,10 @@ export class BrainfuckCommand extends GlobalCommand {
     }
 
     public async eval(context: CommandContext, code: string, showPointers: boolean): Promise<CommandResult> {
-        let input = ``;
-        if (code.includes(`,`)) {
+        let input = '';
+        if (code.includes(',')) {
             const reply = await context.queryText({ prompt: cmd.common.queryInput.prompt });
-            if (reply.state !== `SUCCESS`)
+            if (reply.state !== 'SUCCESS')
                 return cmd.common.noInput;
 
             input = reply.value;
@@ -50,7 +50,7 @@ export class BrainfuckCommand extends GlobalCommand {
                 ? cmd.common.success.empty({ state })
                 : cmd.common.success.default({ output, state });
         } catch (ex: unknown) {
-            context.logger.error(`Running brainfuck failed. Code:`, code, `Input:`, input, ex);
+            context.logger.error('Running brainfuck failed. Code:', code, 'Input:', input, ex);
             return cmd.common.unexpectedError;
         }
     }

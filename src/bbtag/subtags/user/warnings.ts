@@ -6,16 +6,16 @@ import { SubtagType } from '../../utils';
 export class WarningsSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: `warnings`,
+            name: 'warnings',
             category: SubtagType.USER,
             definition: [
                 {
-                    parameters: [`user?`, `quiet?`],
-                    description: `Gets the number of warnings \`user\` has. \`user\` defaults to the user who executed the containing tag.`,
-                    exampleCode: `You have {warnings} warning(s)!`,
-                    exampleOut: `You have 0 warning(s)!`,
-                    returns: `number`,
-                    execute: (context, [user, quiet]) => this.getUserWarnings(context, user.value, quiet.value !== ``)
+                    parameters: ['user?', 'quiet?'],
+                    description: 'Gets the number of warnings `user` has. `user` defaults to the user who executed the containing tag.',
+                    exampleCode: 'You have {warnings} warning(s)!',
+                    exampleOut: 'You have 0 warning(s)!',
+                    returns: 'number',
+                    execute: (context, [user, quiet]) => this.getUserWarnings(context, user.value, quiet.value !== '')
                 }
             ]
         });

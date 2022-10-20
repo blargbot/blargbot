@@ -11,11 +11,11 @@ const cmd = templates.commands.blacklist;
 export class BlacklistCommandBase extends GuildCommand {
     public constructor() {
         super({
-            name: `blacklist`,
+            name: 'blacklist',
             category: CommandType.ADMIN,
             definitions: [
                 {
-                    parameters: `{channel:channel+?}`,
+                    parameters: '{channel:channel+?}',
                     description: cmd.default.description,
                     execute: (ctx, [channel]) => this.blacklist(ctx, channel.asOptionalChannel ?? ctx.channel)
                 }
@@ -27,9 +27,9 @@ export class BlacklistCommandBase extends GuildCommand {
         if (!guard.isGuildChannel(channel) || channel.guild !== context.channel.guild)
             return cmd.default.notInServer;
 
-        const wasBlacklisted = await context.cluster.database.guilds.getChannelSetting(context.channel.guild.id, channel.id, `blacklisted`) ?? false;
-        await context.cluster.database.guilds.setChannelSetting(context.channel.guild.id, channel.id, `blacklisted`, !wasBlacklisted);
+        const wasBlacklisted = await context.cluster.database.guilds.getChannelSetting(context.channel.guild.id, channel.id, 'blacklisted') ?? false;
+        await context.cluster.database.guilds.setChannelSetting(context.channel.guild.id, channel.id, 'blacklisted', !wasBlacklisted);
 
-        return cmd.default.success[wasBlacklisted ? `added` : `removed`]({ channel });
+        return cmd.default.success[wasBlacklisted ? 'added' : 'removed']({ channel });
     }
 }

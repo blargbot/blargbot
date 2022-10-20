@@ -25,7 +25,7 @@ export class ClusterStatsManager {
             return;
 
         this.#activeClusters.set(cluster.id, cluster);
-        this.#apis.forEach((_, api) => api?.send(`clusterStats`, this.getAll()));
+        this.#apis.forEach((_, api) => api?.send('clusterStats', this.getAll()));
     }
 
     public get(cluster: ClusterConnection): ClusterStats | undefined {

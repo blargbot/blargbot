@@ -19,24 +19,24 @@ export class CustomCommandManager extends CommandManager<NamedGuildCommandTag> {
 
     protected async getCore(name: string, location?: Guild | KnownTextableChannel): Promise<CommandGetCoreResult<NamedGuildCommandTag>> {
         if (location === undefined)
-            return { state: `NOT_FOUND` };
+            return { state: 'NOT_FOUND' };
 
         const guild = location instanceof Guild ? location
             : guard.isGuildChannel(location) ? location.guild
                 : undefined;
 
         if (guild === undefined)
-            return { state: `NOT_FOUND` };
+            return { state: 'NOT_FOUND' };
 
         const command = await this.cluster.database.guilds.getCommand(guild.id, name);
         if (command === undefined)
-            return { state: `NOT_FOUND` };
+            return { state: 'NOT_FOUND' };
 
         const impl = guard.isGuildImportedCommandTag(command)
             ? await this.cluster.database.tags.get(command.alias)
             : undefined;
 
-        return { state: `FOUND`, detail: new NormalizedCommandTag(command, impl) };
+        return { state: 'FOUND', detail: new NormalizedCommandTag(command, impl) };
     }
 
     public load(): Promise<void> {
@@ -99,10 +99,10 @@ class NormalizedCommandTag implements ICommand<NamedGuildCommandTag> {
         this.aliases = [];
         this.category = commandTypeDetails[CommandType.CUSTOM];
         this.description = literal(implementation.help) ?? templates.documentation.command.categories.custom.noHelp;
-        this.flags = tag?.flags ?? (`flags` in implementation ? implementation.flags : []) ?? [];
+        this.flags = tag?.flags ?? ('flags' in implementation ? implementation.flags : []) ?? [];
         this.signatures = [];
         this.disabled = this.implementation.disabled ?? false;
-        this.permission = this.implementation.permission ?? `0`;
+        this.permission = this.implementation.permission ?? '0';
         this.roles = this.implementation.roles ?? [];
         this.hidden = this.implementation.hidden ?? false;
         this.isOnWebsite = false;
@@ -113,14 +113,14 @@ class NormalizedCommandTag implements ICommand<NamedGuildCommandTag> {
             return;
 
         const details = await this.#getDetails(context);
-        if (`response` in details) {
+        if ('response' in details) {
             await context.reply(details.response);
             return;
         }
 
         const { content, ...options } = details;
 
-        metrics.commandCounter.labels(`custom`, `custom`).inc();
+        metrics.commandCounter.labels('custom', 'custom').inc();
         await context.cluster.bbtag.execute(content, {
             ...options,
             authorId: options.author,
@@ -129,7 +129,7 @@ class NormalizedCommandTag implements ICommand<NamedGuildCommandTag> {
             message: context.message,
             inputRaw: context.argsString,
             isCC: true,
-            limit: `customCommandLimit`,
+            limit: 'customCommandLimit',
             prefix: context.prefix
         });
         return undefined;
@@ -148,13 +148,13 @@ class NormalizedCommandTag implements ICommand<NamedGuildCommandTag> {
         }
 
         if (this.tag === undefined) {
-            const oldAuthor = await context.util.getUser(this.implementation.author ?? ``);
+            const oldAuthor = await context.util.getUser(this.implementation.author ?? '');
             return {
                 response: templates.commands.ccommand.errors.importDeleted({
                     commandName: context.commandName,
                     tagName: this.implementation.alias,
                     author: oldAuthor,
-                    authorId: this.implementation.author ?? `????`
+                    authorId: this.implementation.author ?? '????'
                 })
             };
         }

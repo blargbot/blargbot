@@ -11,13 +11,13 @@ runSubtagTests({
             quiet: false,
             includeNoArgs: true,
             generateCode(...args) {
-                return `{${[`messagetime`, ...args].filter(a => a !== undefined).join(`;`)}}`;
+                return `{${['messagetime', ...args].filter(a => a !== undefined).join(';')}}`;
             },
             cases: [
                 {
-                    expected: `1609459200000`,
+                    expected: '1609459200000',
                     setup(_, message) {
-                        message.timestamp = `2021-01-01T00:00:00+0000`;
+                        message.timestamp = '2021-01-01T00:00:00+0000';
                     }
                 }
             ]
@@ -26,13 +26,13 @@ runSubtagTests({
             quiet: false,
             includeNoArgs: true,
             generateCode(...args) {
-                return `{${[`messagetime`, ...args, `DD/MM/YYYY`].filter(a => a !== undefined).join(`;`)}}`;
+                return `{${['messagetime', ...args, 'DD/MM/YYYY'].filter(a => a !== undefined).join(';')}}`;
             },
             cases: [
                 {
-                    expected: `01/01/2021`,
+                    expected: '01/01/2021',
                     setup(_, message) {
-                        message.timestamp = `2021-01-01T00:00:00+0000`;
+                        message.timestamp = '2021-01-01T00:00:00+0000';
                     }
                 }
             ]

@@ -36,29 +36,29 @@ export abstract class WolkenCommand extends GlobalCommand {
             category: CommandType.SOCIAL,
             definitions: [
                 options.user !== true ? {
-                    parameters: ``,
+                    parameters: '',
                     description: options.description,
                     execute: (ctx) => this.render(ctx, options.search, options.action, undefined)
                 } : {
-                    parameters: `{user:user+?}`,
+                    parameters: '{user:user+?}',
                     description: options.description,
                     execute: (ctx, [user]) => this.render(ctx, options.search, options.action, user.asOptionalUser ?? ctx.author)
                 }
             ]
         });
 
-        this.#client = new Wolken(options.wolkeKey, `Wolke`, `blargbot/6.0.0`);
+        this.#client = new Wolken(options.wolkeKey, 'Wolke', 'blargbot/6.0.0');
     }
 
-    public async render(context: CommandContext, type: string, action: WolkeOptions[`action`], target: User | undefined): Promise<CommandResult> {
-        const image = await this.#client.getRandom({ type, allowNSFW: false, filetype: `gif` });
+    public async render(context: CommandContext, type: string, action: WolkeOptions['action'], target: User | undefined): Promise<CommandResult> {
+        const image = await this.#client.getRandom({ type, allowNSFW: false, filetype: 'gif' });
         const self = context.author;
         return {
             embeds: [
                 {
                     description: action?.({ self, target }),
                     image: { url: image.url },
-                    footer: { text: literal(`Powered by weeb.sh`) }
+                    footer: { text: literal('Powered by weeb.sh') }
                 }
             ]
         };

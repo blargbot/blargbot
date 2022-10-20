@@ -9,21 +9,21 @@ const cmd = templates.commands.todo;
 export class ToDoCommand extends GlobalCommand {
     public constructor() {
         super({
-            name: `todo`,
+            name: 'todo',
             category: CommandType.GENERAL,
             definitions: [
                 {
-                    parameters: ``,
+                    parameters: '',
                     description: cmd.list.description,
                     execute: ctx => this.viewTodo(ctx)
                 },
                 {
-                    parameters: `remove {itemId:integer}`,
+                    parameters: 'remove {itemId:integer}',
                     description: cmd.remove.description,
                     execute: (ctx, [itemId]) => this.removeItem(ctx, itemId.asInteger)
                 },
                 {
-                    parameters: `add {item+}`,
+                    parameters: 'add {item+}',
                     description: cmd.add.description,
                     execute: (ctx, [item]) => this.addItem(ctx, item.asString)
                 }

@@ -9,12 +9,12 @@ const cmd = templates.commands.addDomain;
 export class AddDomainCommand extends GlobalCommand {
     public constructor() {
         super({
-            name: `adddomain`,
+            name: 'adddomain',
             category: CommandType.DEVELOPER,
-            aliases: [`addomain`],
+            aliases: ['addomain'],
             definitions: [
                 {
-                    parameters: `{domains[]}`,
+                    parameters: '{domains[]}',
                     description: cmd.default.description,
                     execute: (ctx, [domains]) => this.toggleDomains(ctx, domains.asStrings)
                 }

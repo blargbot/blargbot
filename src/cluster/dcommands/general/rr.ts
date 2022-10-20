@@ -10,11 +10,11 @@ const cmd = templates.commands.rr;
 export class RussianRouletteCommand extends GlobalCommand {
     public constructor() {
         super({
-            name: `rr`,
+            name: 'rr',
             category: CommandType.GENERAL,
             definitions: [
                 {
-                    parameters: `{bullets:integer=1} {emote?}`,
+                    parameters: '{bullets:integer=1} {emote?}',
                     description: cmd.default.description,
                     execute: (ctx, [bullets, emote]) => this.play(ctx, bullets.asInteger, emote.asOptionalString)
                 }
@@ -35,11 +35,11 @@ export class RussianRouletteCommand extends GlobalCommand {
             prompt: cmd.default.confirm.prompt({ bullets }),
             continue: {
                 label: cmd.default.confirm.continue,
-                emoji: { name: `😅` }
+                emoji: { name: '😅' }
             },
             cancel: {
                 label: cmd.default.confirm.cancel,
-                emoji: { name: `😖` }
+                emoji: { name: '😖' }
             },
             fallback: true // "cancel" is the positive action here
         });
@@ -53,16 +53,16 @@ export class RussianRouletteCommand extends GlobalCommand {
         if (await query.getResult()) {
             await Promise.all([
                 context.edit(query.prompt, cmd.default.chicken),
-                you?.edit(`🐔`)
+                you?.edit('🐔')
             ]);
         } else if (randInt(1, 6) <= bullets) {
             await Promise.all([
-                you?.edit(`💥🔫`),
+                you?.edit('💥🔫'),
                 context.edit(query.prompt, cmd.default.died)
             ]);
         } else {
             await Promise.all([
-                you?.edit(`😌🔫`),
+                you?.edit('😌🔫'),
                 context.edit(query.prompt, cmd.default.lived)
             ]);
         }
@@ -71,4 +71,4 @@ export class RussianRouletteCommand extends GlobalCommand {
     }
 }
 
-const emotes = [`😀`, `😬`, `😂`, `😃`, `😄`, `😉`, `😨`, `😣`, `😖`, `😫`, `😤`, `😳`, `😐`, `😑`, `😷`, `😭`, `😪`, `😜`, `😊`, `😺`];
+const emotes = ['😀', '😬', '😂', '😃', '😄', '😉', '😨', '😣', '😖', '😫', '😤', '😳', '😐', '😑', '😷', '😭', '😪', '😜', '😊', '😺'];

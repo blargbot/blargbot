@@ -33,13 +33,13 @@ export class BBTagDocumentationManager extends DocumentationTreeManager {
             }, new Map<SubtagType, Set<Subtag>>);
 
         return {
-            id: `index`,
+            id: 'index',
             name: doc.index.name,
-            type: `group`,
-            tags: [``],
+            type: 'group',
+            tags: [''],
             embed: {
                 color: 0xefff00,
-                description: doc.index.description({ editorLink: this.#cluster.util.websiteLink(`bbtag/editor`) }),
+                description: doc.index.description({ editorLink: this.#cluster.util.websiteLink('bbtag/editor') }),
                 fields: [
                     {
                         name: doc.index.topics.name,
@@ -50,12 +50,12 @@ export class BBTagDocumentationManager extends DocumentationTreeManager {
             selectText: doc.index.prompt,
             items: [
                 {
-                    id: `subtags`,
+                    id: 'subtags',
                     name: doc.subtags.name,
-                    type: `group`,
-                    tags: [`subtags`, `all`, `categories`, `category`],
+                    type: 'group',
+                    tags: ['subtags', 'all', 'categories', 'category'],
                     embed: {
-                        url: `/bbtag/subtags`,
+                        url: '/bbtag/subtags',
                         description: doc.subtags.description({
                             categories: [...subtagGroups.keys()]
                                 .map(id => tagTypeDetails[id])
@@ -70,7 +70,7 @@ export class BBTagDocumentationManager extends DocumentationTreeManager {
                         .map(({ category, subtags }) => ({
                             id: `category_${category.id}`,
                             name: category.name,
-                            type: `group`,
+                            type: 'group',
                             selectText: doc.subtagCategory.prompt,
                             items: subtags.map(s => this.#getSubtagDocs(s)),
                             hidden: category.hidden,
@@ -80,10 +80,10 @@ export class BBTagDocumentationManager extends DocumentationTreeManager {
                         }))
                 },
                 {
-                    id: `variables`,
+                    id: 'variables',
                     name: doc.variables.name,
-                    type: `paged`,
-                    tags: [`variables`],
+                    type: 'paged',
+                    tags: ['variables'],
                     embed: {
                         description: doc.variables.description({ scopeCount: tagVariableScopeProviders.length })
                     },
@@ -101,17 +101,17 @@ export class BBTagDocumentationManager extends DocumentationTreeManager {
                         }
                     ].map(x => ({
                         name: x.name,
-                        type: `leaf`,
+                        type: 'leaf',
                         embed: {
                             fields: [x]
                         }
                     }))
                 },
                 {
-                    id: `arguments`,
+                    id: 'arguments',
                     name: doc.arguments.name,
-                    type: `paged`,
-                    tags: [`arguments`, `argtypes`],
+                    type: 'paged',
+                    tags: ['arguments', 'argtypes'],
                     embed: {
                         description: doc.arguments.description
                     },
@@ -135,17 +135,17 @@ export class BBTagDocumentationManager extends DocumentationTreeManager {
                         }
                     ].map(x => ({
                         name: x.name,
-                        type: `leaf`,
+                        type: 'leaf',
                         embed: {
                             fields: [x]
                         }
                     }))
                 },
                 {
-                    id: `terminology`,
+                    id: 'terminology',
                     name: doc.terminology.name,
-                    type: `paged`,
-                    tags: [`terms`, `terminology`, `definitions`, `define`],
+                    type: 'paged',
+                    tags: ['terms', 'terminology', 'definitions', 'define'],
                     embed: {
                         description: doc.terminology.description
                     },
@@ -177,16 +177,16 @@ export class BBTagDocumentationManager extends DocumentationTreeManager {
                         }
                     ].map(x => ({
                         name: x.name,
-                        type: `leaf`,
+                        type: 'leaf',
                         embed: {
                             fields: [x]
                         }
                     }))
                 },
                 {
-                    id: `dynamic`,
+                    id: 'dynamic',
                     name: doc.dynamic.name,
-                    type: `single`,
+                    type: 'single',
                     embed: {
                         description: doc.dynamic.description
                     }
@@ -198,7 +198,7 @@ export class BBTagDocumentationManager extends DocumentationTreeManager {
     #getSubtagDocs(subtag: Subtag): DocumentationPaged {
         const description = [];
         if (subtag.deprecated !== false)
-            description.push(doc.subtag.description.deprecated({ replacement: typeof subtag.deprecated === `string` ? subtag.deprecated : undefined }));
+            description.push(doc.subtag.description.deprecated({ replacement: typeof subtag.deprecated === 'string' ? subtag.deprecated : undefined }));
         if (subtag.aliases.length > 0)
             description.push(doc.subtag.description.aliases({ aliases: subtag.aliases }));
         if (subtag.description !== undefined)
@@ -207,7 +207,7 @@ export class BBTagDocumentationManager extends DocumentationTreeManager {
         return {
             id: `subtag_${subtag.name}`,
             name: doc.subtag.name({ name: subtag.name }),
-            type: `paged`,
+            type: 'paged',
             embed: {
                 url: `bbtag/subtags/#${encodeURIComponent(subtag.name)}`,
                 description: description.length === 0 ? undefined : doc.subtag.description.template({ parts: description }),
@@ -233,7 +233,7 @@ export class BBTagDocumentationManager extends DocumentationTreeManager {
                             parts: [
                                 doc.subtag.pages.signature.usage.value.parameters({ parameters }),
                                 ...signature.parameters
-                                    .flatMap<SubtagSignatureValueParameter>(p => `nested` in p ? p.nested : [p])
+                                    .flatMap<SubtagSignatureValueParameter>(p => 'nested' in p ? p.nested : [p])
                                     .map(this.#getParameterModifiers)
                                     .filter(guard.hasValue),
                                 signature.description
@@ -267,7 +267,7 @@ export class BBTagDocumentationManager extends DocumentationTreeManager {
     }
 
     #getParameterModifiers(this: void, parameter: SubtagSignatureValueParameter): IFormattable<string> | undefined {
-        const hasDefault = parameter.defaultValue !== ``;
+        const hasDefault = parameter.defaultValue !== '';
         return parameter.maxLength !== 1_000_000
             ? hasDefault
                 ? doc.subtag.pages.signature.usage.value.modifier.defaultedMaxLength(parameter)
@@ -281,7 +281,7 @@ export class BBTagDocumentationManager extends DocumentationTreeManager {
         return this.#tree ??= this.#loadTree();
     }
 
-    protected noMatches(): Omit<SendContent<IFormattable<string>>, `components`> {
+    protected noMatches(): Omit<SendContent<IFormattable<string>>, 'components'> {
         return {
             content: doc.unknown({ commandName: this.#commandName }),
             embeds: []

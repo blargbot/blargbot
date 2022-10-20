@@ -17,79 +17,79 @@ runSubtagTests({
             quiet: false,
             includeNoArgs: false,
             generateCode(...args) {
-                return `{${[`channeldelete`, ...args].join(`;`)}}`;
+                return `{${['channeldelete', ...args].join(';')}}`;
             },
-            notFound: () => new BBTagRuntimeError(`Channel does not exist`),
+            notFound: () => new BBTagRuntimeError('Channel does not exist'),
             cases: [
                 {
-                    expected: ``,
+                    expected: '',
                     setup(channel, ctx) {
-                        ctx.discord.setup(m => m.deleteChannel(channel.id, `Command User#0000`)).thenResolve(undefined);
+                        ctx.discord.setup(m => m.deleteChannel(channel.id, 'Command User#0000')).thenResolve(undefined);
                     }
                 }
             ]
         }),
         {
-            title: `Authorizer is admin`,
-            code: `{channeldelete;2384762844234324}`,
-            expected: ``,
+            title: 'Authorizer is admin',
+            code: '{channeldelete;2384762844234324}',
+            expected: '',
             setup(ctx) {
                 ctx.roles.authorizer.permissions = Constants.Permissions.administrator.toString();
-                ctx.channels.command.id = `2384762844234324`;
+                ctx.channels.command.id = '2384762844234324';
                 ctx.message.channel_id = ctx.channels.command.id;
-                ctx.discord.setup(m => m.deleteChannel(`2384762844234324`, `Command User#0000`)).thenResolve(undefined);
+                ctx.discord.setup(m => m.deleteChannel('2384762844234324', 'Command User#0000')).thenResolve(undefined);
             }
         },
         {
-            title: `Authorizer has perms for specific channel`,
-            code: `{channeldelete;2384762844234324}`,
-            expected: ``,
+            title: 'Authorizer has perms for specific channel',
+            code: '{channeldelete;2384762844234324}',
+            expected: '',
             setup(ctx) {
-                ctx.roles.authorizer.permissions = `0`;
+                ctx.roles.authorizer.permissions = '0';
                 ctx.channels.command.permission_overwrites = [
-                    { id: ctx.roles.authorizer.id, type: OverwriteType.Role, allow: Constants.Permissions.manageChannels.toString(), deny: `0` }
+                    { id: ctx.roles.authorizer.id, type: OverwriteType.Role, allow: Constants.Permissions.manageChannels.toString(), deny: '0' }
                 ];
-                ctx.channels.command.id = `2384762844234324`;
+                ctx.channels.command.id = '2384762844234324';
                 ctx.message.channel_id = ctx.channels.command.id;
-                ctx.discord.setup(m => m.deleteChannel(`2384762844234324`, `Command User#0000`)).thenResolve(undefined);
+                ctx.discord.setup(m => m.deleteChannel('2384762844234324', 'Command User#0000')).thenResolve(undefined);
             }
         },
         {
-            code: `{channeldelete;2384762844234324}`,
-            expected: `\`Author cannot edit this channel\``,
+            code: '{channeldelete;2384762844234324}',
+            expected: '`Author cannot edit this channel`',
             errors: [
-                { start: 0, end: 32, error: new BBTagRuntimeError(`Author cannot edit this channel`) }
+                { start: 0, end: 32, error: new BBTagRuntimeError('Author cannot edit this channel') }
             ],
             setup(ctx) {
-                ctx.roles.authorizer.permissions = `0`;
-                ctx.channels.command.id = `2384762844234324`;
+                ctx.roles.authorizer.permissions = '0';
+                ctx.channels.command.id = '2384762844234324';
                 ctx.message.channel_id = ctx.channels.command.id;
             }
         },
         {
-            code: `{channeldelete;2384762844234324}`,
-            expected: `\`Failed to edit channel: no perms\``,
+            code: '{channeldelete;2384762844234324}',
+            expected: '`Failed to edit channel: no perms`',
             errors: [
-                { start: 0, end: 32, error: new BBTagRuntimeError(`Failed to edit channel: no perms`, `Test REST error`) }
+                { start: 0, end: 32, error: new BBTagRuntimeError('Failed to edit channel: no perms', 'Test REST error') }
             ],
             setup(ctx) {
                 const err = ctx.createRESTError(ApiError.MISSING_PERMISSIONS);
-                ctx.channels.command.id = `2384762844234324`;
+                ctx.channels.command.id = '2384762844234324';
                 ctx.message.channel_id = ctx.channels.command.id;
-                ctx.discord.setup(m => m.deleteChannel(`2384762844234324`, `Command User#0000`)).thenReject(err);
+                ctx.discord.setup(m => m.deleteChannel('2384762844234324', 'Command User#0000')).thenReject(err);
             }
         },
         {
-            code: `{channeldelete;2384762844234324}`,
-            expected: `\`Failed to edit channel: no perms\``,
+            code: '{channeldelete;2384762844234324}',
+            expected: '`Failed to edit channel: no perms`',
             errors: [
-                { start: 0, end: 32, error: new BBTagRuntimeError(`Failed to edit channel: no perms`, `Some other error message`) }
+                { start: 0, end: 32, error: new BBTagRuntimeError('Failed to edit channel: no perms', 'Some other error message') }
             ],
             setup(ctx) {
-                const err = ctx.createRESTError(ApiError.NOT_AUTHORIZED, `Some other error message`);
-                ctx.channels.command.id = `2384762844234324`;
+                const err = ctx.createRESTError(ApiError.NOT_AUTHORIZED, 'Some other error message');
+                ctx.channels.command.id = '2384762844234324';
                 ctx.message.channel_id = ctx.channels.command.id;
-                ctx.discord.setup(m => m.deleteChannel(`2384762844234324`, `Command User#0000`)).thenReject(err);
+                ctx.discord.setup(m => m.deleteChannel('2384762844234324', 'Command User#0000')).thenReject(err);
             }
         }
     ]

@@ -1,6 +1,6 @@
 import { Constants, KnownChannel, KnownThreadableChannel } from 'eris';
 
-type ChannelType = typeof Constants[`ChannelTypes`];
+type ChannelType = typeof Constants['ChannelTypes'];
 const isThreadableMap: Record<ChannelType[keyof ChannelType], boolean> = {
     [Constants.ChannelTypes.DM]: false,
     [Constants.ChannelTypes.GROUP_DM]: false,

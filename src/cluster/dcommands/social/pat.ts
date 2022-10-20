@@ -5,8 +5,8 @@ import templates from '../../text';
 
 export class PatCommand extends WolkenCommand {
     public constructor(cluster: Cluster) {
-        super(`pat`, {
-            search: `pat`,
+        super('pat', {
+            search: 'pat',
             user: true,
             ...templates.commands.pat,
             wolkeKey: cluster.config.general.wolke
