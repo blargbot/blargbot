@@ -220,7 +220,7 @@ export class BBTagDocumentationManager extends DocumentationTreeManager {
         };
     }
 
-    #toSubtagSignaturePage(subtag: Subtag, signature: SubtagSignature): DocumentationPage {
+    #toSubtagSignaturePage(subtag: Subtag, signature: SubtagSignature<IFormattable<string>>): DocumentationPage {
         const parameters = bbtag.stringifyParameters(signature.subtagName ?? subtag.name, signature.parameters);
 
         return {

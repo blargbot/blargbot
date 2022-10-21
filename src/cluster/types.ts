@@ -1,4 +1,4 @@
-import { Subtag } from '@blargbot/bbtag';
+import { SubtagOptions } from '@blargbot/bbtag';
 import { Command, CommandContext, ScopedCommand } from '@blargbot/cluster/command';
 import { CommandType, ModerationType } from '@blargbot/cluster/utils';
 import { EvalRequest, EvalResult, GlobalEvalResult, IMiddleware, MasterEvalRequest, SendContent } from '@blargbot/core/types';
@@ -257,7 +257,7 @@ export interface SubtagListResult {
     [tagName: string]: SubtagDetails | undefined;
 }
 
-export type SubtagDetails = Omit<Subtag, 'execute' | 'hidden'>;
+export type SubtagDetails = SubtagOptions<string>
 
 export interface GuildDetails {
     readonly id: string;

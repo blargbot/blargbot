@@ -1,4 +1,4 @@
-import { IFormatter } from '@blargbot/domain/messages/types';
+import { IFormatString, IFormatter } from '@blargbot/domain/messages/types';
 
 import { IFormatStringCompiler } from './FormatStringCompiler';
 
@@ -12,9 +12,9 @@ export class DefaultFormatter implements IFormatter {
         this.#compiler = compiler;
     }
 
-    public format(template: string, value: unknown): string {
-        const formatter = this.#compiler.compile(template);
-        const valueStack: unknown[] = [value];
+    public format(string: IFormatString): string {
+        const formatter = this.#compiler.compile(string.template);
+        const valueStack: unknown[] = [string.value];
         return formatter({
             formatter: this,
             valueStack: valueStack,
