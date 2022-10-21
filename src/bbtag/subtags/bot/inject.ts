@@ -1,6 +1,9 @@
 import { CompiledSubtag } from '../../compilation';
+import templates from '../../text';
 import { BBTagRuntimeState } from '../../types';
 import { bbtag, SubtagType } from '../../utils';
+
+const tag = templates.subtags.inject;
 
 export class InjectSubtag extends CompiledSubtag {
     public constructor() {

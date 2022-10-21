@@ -2,7 +2,10 @@ import { default as Brainfuck } from 'brainfuck-node';
 
 import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError } from '../../errors';
+import templates from '../../text';
 import { SubtagType } from '../../utils';
+
+const tag = templates.subtags.brainfuck;
 
 export class BrainfuckSubtag extends CompiledSubtag {
     readonly #bfClient: Brainfuck;

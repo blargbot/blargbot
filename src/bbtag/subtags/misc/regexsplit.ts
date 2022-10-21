@@ -1,5 +1,8 @@
 import { RegexSubtag } from '../../RegexSubtag';
+import templates from '../../text';
 import { SubtagType } from '../../utils';
+
+const tag = templates.subtags.regexsplit;
 
 export class RegexSplitSubtag extends RegexSubtag {
     public constructor() {

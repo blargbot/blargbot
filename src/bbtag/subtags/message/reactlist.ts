@@ -5,7 +5,10 @@ import { ApiError, DiscordRESTError } from 'eris';
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '../../errors';
+import templates from '../../text';
 import { SubtagType } from '../../utils';
+
+const tag = templates.subtags.reactlist;
 
 export class ReactListSubtag extends CompiledSubtag {
     public constructor() {
@@ -80,7 +83,7 @@ export class ReactListSubtag extends CompiledSubtag {
         }
 
         if (errors.length > 0)
-            throw new BBTagRuntimeError(`Unknown Emoji: ${  errors.join(', ')}`);
+            throw new BBTagRuntimeError(`Unknown Emoji: ${errors.join(', ')}`);
         return [...new Set(users)];
     }
 

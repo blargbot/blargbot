@@ -4,7 +4,10 @@ import { between, parse } from '@blargbot/core/utils';
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError, NotANumberError } from '../../errors';
+import templates from '../../text';
 import { SubtagType } from '../../utils';
+
+const tag = templates.subtags.base;
 
 export class BaseNumberSubtag extends CompiledSubtag {
     public constructor() {

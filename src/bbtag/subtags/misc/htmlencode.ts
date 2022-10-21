@@ -1,7 +1,10 @@
 import { encode } from 'html-entities';
 
 import { CompiledSubtag } from '../../compilation';
+import templates from '../../text';
 import { SubtagType } from '../../utils';
+
+const tag = templates.subtags.htmlencode;
 
 export class HtmlEncodeSubtag extends CompiledSubtag {
     public constructor() {

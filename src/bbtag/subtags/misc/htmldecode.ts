@@ -1,7 +1,10 @@
 import { decode } from 'html-entities';
 
 import { CompiledSubtag } from '../../compilation';
+import templates from '../../text';
 import { SubtagType } from '../../utils';
+
+const tag = templates.subtags.htmldecode;
 
 export class HtmlDecodeSubtag extends CompiledSubtag {
     public constructor() {

@@ -1,6 +1,9 @@
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
+import templates from '../../text';
 import { SubtagType } from '../../utils';
+
+const tag = templates.subtags.fallback;
 
 export class FallBackSubtag extends CompiledSubtag {
     public constructor() {

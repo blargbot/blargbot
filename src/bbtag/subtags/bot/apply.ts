@@ -4,7 +4,10 @@ import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError, UnknownSubtagError } from '../../errors';
 import { SubtagCall } from '../../language';
+import templates from '../../text';
 import { bbtag, SubtagType } from '../../utils';
+
+const tag = templates.subtags.apply;
 
 export class ApplySubtag extends CompiledSubtag {
     public constructor() {

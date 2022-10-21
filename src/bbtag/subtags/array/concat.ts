@@ -1,5 +1,8 @@
 import { CompiledSubtag } from '../../compilation';
+import templates from '../../text';
 import { bbtag, SubtagType } from '../../utils';
+
+const tag = templates.subtags.concat;
 
 export class ConcatSubtag extends CompiledSubtag {
     public constructor() {

@@ -1,6 +1,9 @@
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
+import templates from '../../text';
 import { bbtag, SubtagType } from '../../utils';
+
+const tag = templates.subtags.jsonclean;
 
 export class JsonCleanSubtag extends CompiledSubtag {
     public constructor() {

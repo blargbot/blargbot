@@ -1,7 +1,10 @@
 import { createHash } from 'crypto';
 
 import { CompiledSubtag } from '../../compilation';
+import templates from '../../text';
 import { SubtagType } from '../../utils';
+
+const tag = templates.subtags.md5;
 
 export class Md5Subtag extends CompiledSubtag {
     public constructor() {

@@ -1,7 +1,10 @@
 import { humanize } from '@blargbot/core/utils';
 
 import { CompiledSubtag } from '../../compilation';
+import templates from '../../text';
 import { SubtagType } from '../../utils';
+
+const tag = templates.subtags.decancer;
 
 export class DecancerSubtag extends CompiledSubtag {
     public constructor() {

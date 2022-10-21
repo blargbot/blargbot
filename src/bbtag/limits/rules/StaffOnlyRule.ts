@@ -1,18 +1,14 @@
-import { TranslatableString } from '@blargbot/domain/messages/index';
-
-import { BBTagContext } from '../../BBTagContext';
 import { StaffOnlyError } from '../../errors';
+import templates from '../../text';
 import { RuntimeLimitRule } from '../RuntimeLimitRule';
 
-const notStaffError = TranslatableString.create('bbtag.limits.rules.notStagg.default', 'Authorizer must be staff');
-
 export const staffOnlyRule: RuntimeLimitRule = Object.seal({
-    async check(context: BBTagContext) {
+    async check(context) {
         if (!await context.isStaff)
             throw new StaffOnlyError(context.authorizerId ?? context.guild.id);
     },
     displayText() {
-        return notStaffError;
+        return templates.limits.rules.staffOnly.default;
     },
     state() {
         return null;

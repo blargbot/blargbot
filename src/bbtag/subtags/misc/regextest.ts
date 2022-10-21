@@ -1,5 +1,8 @@
 import { RegexSubtag } from '../../RegexSubtag';
+import templates from '../../text';
 import { SubtagType } from '../../utils';
+
+const tag = templates.subtags.regextest;
 
 export class RegexTestSubtag extends RegexSubtag {
     public constructor() {

@@ -2,7 +2,10 @@ import { parse } from '@blargbot/core/utils';
 
 import { CompiledSubtag } from '../../compilation';
 import { InvalidOperatorError, NotANumberError } from '../../errors';
+import templates from '../../text';
 import { bbtag, SubtagType } from '../../utils';
+
+const tag = templates.subtags.math;
 
 export class MathSubtag extends CompiledSubtag {
     public constructor() {

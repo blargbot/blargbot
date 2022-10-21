@@ -4,7 +4,10 @@ import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError, NotANumberError } from '../../errors';
 import { tagVariableScopeProviders } from '../../tagVariableScopeProviders';
+import templates from '../../text';
 import { SubtagType } from '../../utils';
+
+const tag = templates.subtags.get;
 
 export class GetSubtag extends CompiledSubtag {
     public constructor() {
@@ -15,7 +18,7 @@ export class GetSubtag extends CompiledSubtag {
                 {
                     parameters: ['name'],
                     description: `Returns the stored variable \`varName\`.\nYou can use a character prefix to determine the scope of your variable.\nValid scopes are: ${tagVariableScopeProviders.map((s) => `${s.prefix.length === 0 ? 'no prefix' : `\`${s.prefix}\``} (${s.name})`).join(', ')
-                    }. For more information, use \`b!t docs variable\` or \`b!cc docs variable\``,
+                        }. For more information, use \`b!t docs variable\` or \`b!cc docs variable\``,
                     exampleCode: '{set;var1;This is local var1}\n{set;~var2;This is temporary var2}\n{get;var1}\n{get;~var2}',
                     exampleOut: 'This is local var1\nThis is temporary var2',
                     returns: 'json|nothing',

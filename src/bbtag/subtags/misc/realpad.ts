@@ -2,7 +2,10 @@ import { parse } from '@blargbot/core/utils';
 
 import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError, NotANumberError } from '../../errors';
+import templates from '../../text';
 import { SubtagType } from '../../utils';
+
+const tag = templates.subtags.realpad;
 
 export class RealPadSubtag extends CompiledSubtag {
     public constructor() {
@@ -46,7 +49,7 @@ export class RealPadSubtag extends CompiledSubtag {
             throw new BBTagRuntimeError('Filler must be 1 character');
 
         if (directionStr !== 'right' && directionStr !== 'left')
-            throw new BBTagRuntimeError('Invalid direction', `${directionStr  } is invalid`);
+            throw new BBTagRuntimeError('Invalid direction', `${directionStr} is invalid`);
         const direction: 'right' | 'left' = directionStr;
 
         const padAmount = Math.max(0, length - text.length);

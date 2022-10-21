@@ -1,7 +1,10 @@
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
 import { SubtagCall } from '../../language';
+import templates from '../../text';
 import { SubtagType } from '../../utils';
+
+const tag = templates.subtags.debug;
 
 export class DebugSubtag extends CompiledSubtag {
     public constructor() {

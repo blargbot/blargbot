@@ -1,5 +1,8 @@
 import { CompiledSubtag } from '../../compilation';
+import templates from '../../text';
 import { SubtagType } from '../../utils';
+
+const tag = templates.subtags.subtagexists;
 
 export class SubtagExistsSubtag extends CompiledSubtag {
     public constructor() {

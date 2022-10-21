@@ -1,6 +1,9 @@
 import { BBTagContext } from '../../BBTagContext';
 import { RegexSubtag } from '../../RegexSubtag';
+import templates from '../../text';
 import { SubtagType } from '../../utils';
+
+const tag = templates.subtags.regexreplace;
 
 export class RegexReplaceSubtag extends RegexSubtag {
     public constructor() {

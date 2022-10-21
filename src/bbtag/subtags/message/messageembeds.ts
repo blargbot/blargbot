@@ -3,7 +3,10 @@ import { Embed } from 'eris';
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
 import { ChannelNotFoundError, MessageNotFoundError } from '../../errors';
+import templates from '../../text';
 import { SubtagType } from '../../utils';
+
+const tag = templates.subtags.messageembeds;
 
 export class MessageEmbedsSubtag extends CompiledSubtag {
     public constructor() {

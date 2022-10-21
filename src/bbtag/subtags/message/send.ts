@@ -5,7 +5,10 @@ import { DiscordRESTError, EmbedOptions, FileContent } from 'eris';
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError, ChannelNotFoundError } from '../../errors';
+import templates from '../../text';
 import { SubtagType } from '../../utils';
+
+const tag = templates.subtags.send;
 
 export class SendSubtag extends CompiledSubtag {
     public constructor() {

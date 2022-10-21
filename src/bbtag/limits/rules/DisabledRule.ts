@@ -1,22 +1,18 @@
-import { IFormattable, TranslatableString } from '@blargbot/domain/messages/index';
-
-import { BBTagContext } from '../../BBTagContext';
 import { SubtagDisabledError } from '../../errors';
+import templates from '../../text';
 import { RuntimeLimitRule } from '../RuntimeLimitRule';
 
-const disabledMessage = TranslatableString.define<{ subtagName: string; }, string>('bbtag.limits.rules.disabled.default', '\\{{subtagName}\\} is disabled');
-
 export const disabledRule: RuntimeLimitRule = Object.seal({
-    check(context: BBTagContext, subtagName: string): void {
+    check(context, subtagName) {
         throw new SubtagDisabledError(subtagName, context.limit.id);
     },
-    displayText(subtagName: string): IFormattable<string> {
-        return disabledMessage({ subtagName });
+    displayText(subtagName) {
+        return templates.limits.rules.disabled.default({ subtagName });
     },
-    state(): JToken {
+    state() {
         return null;
     },
-    load(): void {
+    load() {
         // NOOP
     }
 });

@@ -4,7 +4,10 @@ import { ApiError, DiscordRESTError } from 'eris';
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '../../errors';
+import templates from '../../text';
 import { SubtagType } from '../../utils';
+
+const tag = templates.subtags.delete;
 
 export class DeleteSubtag extends CompiledSubtag {
     public constructor() {

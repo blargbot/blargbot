@@ -1,6 +1,9 @@
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
+import templates from '../../text';
 import { SubtagType } from '../../utils';
+
+const tag = templates.subtags.commandname;
 
 export class CommandNameSubtag extends CompiledSubtag {
     public constructor() {

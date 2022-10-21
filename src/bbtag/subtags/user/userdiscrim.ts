@@ -1,7 +1,10 @@
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
 import { UserNotFoundError } from '../../errors';
+import templates from '../../text';
 import { SubtagType } from '../../utils';
+
+const tag = templates.subtags.userdiscrim;
 
 export class UserDiscrimSubtag extends CompiledSubtag {
     public constructor() {

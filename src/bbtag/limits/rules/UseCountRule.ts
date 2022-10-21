@@ -1,12 +1,10 @@
-import { TranslatableString } from '@blargbot/domain/messages/index';
 import { IFormattable } from '@blargbot/domain/messages/types';
 import { mapping } from '@blargbot/mapping';
 
 import { BBTagContext } from '../../BBTagContext';
 import { BBTagRuntimeError } from '../../errors';
+import templates from '../../text';
 import { RuntimeLimitRule } from '../RuntimeLimitRule';
-
-const defaultUseCountRuleError = TranslatableString.define<{ count: number; }, string>('bbtag.limits.rules.useCount.default', 'Maximum {count} uses');
 
 export class UseCountRule implements RuntimeLimitRule {
     readonly #errorMessage: IFormattable<string>;
@@ -16,7 +14,7 @@ export class UseCountRule implements RuntimeLimitRule {
 
     public constructor(
         count: number,
-        errorMessage: IFormattable<string> | ((value: { count: number; }) => IFormattable<string>) = defaultUseCountRuleError,
+        errorMessage: IFormattable<string> | ((value: { count: number; }) => IFormattable<string>) = templates.limits.rules.useCount.default,
         error: string | ((subtagName: string) => BBTagRuntimeError) = 'Usage'
     ) {
         this.#initial = count;

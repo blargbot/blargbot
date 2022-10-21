@@ -1,7 +1,7 @@
 import { Timer } from '@blargbot/core/Timer';
 import { sleep } from '@blargbot/core/utils';
 import { Database } from '@blargbot/database';
-import { TranslatableString } from '@blargbot/domain/messages/index';
+import { FormatString } from '@blargbot/domain/messages/index';
 import { Logger } from '@blargbot/logger';
 import { Client as Discord } from 'eris';
 import moment from 'moment-timezone';
@@ -15,9 +15,9 @@ import { TagCooldownManager } from './TagCooldownManager';
 import { AnalysisResults, BBTagContextOptions, BBTagRuntimeState, ExecutionResult } from './types';
 import { bbtag as bbtagUtil } from './utils';
 
-const unnamedSubtag = TranslatableString.create('bbtag.analysis.unnamedSubtag', 'Unnamed subtag');
-const dynamicSubtag = TranslatableString.create('bbtag.analysis.dynamicSubtag', 'Dynamic subtag');
-const subtagDeprecated = TranslatableString.define<Subtag>('bbtag.analysis.subtagDeprecated', '{{name}} is deprecated. Use `\\{{deprecated}\\}` instead');
+const unnamedSubtag = FormatString.create('bbtag.analysis.unnamedSubtag', 'Unnamed subtag');
+const dynamicSubtag = FormatString.create('bbtag.analysis.dynamicSubtag', 'Dynamic subtag');
+const subtagDeprecated = FormatString.define<Subtag>('bbtag.analysis.subtagDeprecated', '{{name}} is deprecated. Use `\\{{deprecated}\\}` instead');
 
 export class BBTagEngine {
     readonly #cooldowns: TagCooldownManager;

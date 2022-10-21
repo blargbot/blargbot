@@ -2,7 +2,10 @@ import { parse } from '@blargbot/core/utils';
 
 import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError } from '../../errors';
+import templates from '../../text';
 import { SubtagType } from '../../utils';
+
+const tag = templates.subtags.time;
 
 export class TimeSubtag extends CompiledSubtag {
     public constructor() {

@@ -1,11 +1,10 @@
-import { IFormattable, TranslatableString } from '@blargbot/domain/messages/index';
+import { IFormattable } from '@blargbot/domain/messages/index';
 
 import { BBTagContext } from '../../BBTagContext';
 import { BBTagRuntimeError } from '../../errors';
 import { SubtagCall } from '../../language';
+import templates from '../../text';
 import { RuntimeLimitRule } from '../RuntimeLimitRule';
-
-const disabledInMessage = TranslatableString.define<{ subtagNames: Iterable<string>; }, string>('bbtag.limits.rules.disabledIn.default', 'Cannot be used in the arguments to {subtagNames#map(\\{{}\\})#join(, | or )}');
 
 export class DisabledInRule implements RuntimeLimitRule {
     readonly #subtags: readonly string[];
@@ -23,7 +22,7 @@ export class DisabledInRule implements RuntimeLimitRule {
     }
 
     public displayText(): IFormattable<string> {
-        return disabledInMessage({ subtagNames: this.#subtags });
+        return templates.limits.rules.disabledIn.default({ subtagNames: this.#subtags });
     }
 
     public state(): JToken {

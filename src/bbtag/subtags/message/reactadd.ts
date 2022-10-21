@@ -4,7 +4,10 @@ import { snowflake } from '@blargbot/core/utils';
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '../../errors';
+import templates from '../../text';
 import { SubtagType } from '../../utils';
+
+const tag = templates.subtags.reactadd;
 
 export class ReactAddSubtag extends CompiledSubtag {
     public constructor() {

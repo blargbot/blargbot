@@ -1,7 +1,10 @@
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
 import { UserNotFoundError } from '../../errors';
+import templates from '../../text';
 import { SubtagType } from '../../utils';
+
+const tag = templates.subtags.useractivitytype;
 
 const activityTypeMap = {
     default: '',
@@ -19,7 +22,7 @@ export class UserActivityTypeSubtag extends CompiledSubtag {
             name: 'useractivitytype',
             aliases: ['usergametype'],
             category: SubtagType.USER,
-            description: `Activity types can be any of \`${  Object.values(activityTypeMap).filter(type => type).join(', ')  }\``,
+            description: `Activity types can be any of \`${Object.values(activityTypeMap).filter(type => type).join(', ')}\``,
             definition: [
                 {
                     parameters: [],

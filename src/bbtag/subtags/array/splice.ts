@@ -4,7 +4,10 @@ import { parse } from '@blargbot/core/utils';
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
 import { NotAnArrayError, NotANumberError } from '../../errors';
+import templates from '../../text';
 import { bbtag, SubtagType } from '../../utils';
+
+const tag = templates.subtags.splice;
 
 export class SpliceSubtag extends CompiledSubtag {
     public constructor() {

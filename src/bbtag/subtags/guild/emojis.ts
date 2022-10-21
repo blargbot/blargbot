@@ -1,6 +1,9 @@
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
+import templates from '../../text';
 import { SubtagType } from '../../utils';
+
+const tag = templates.subtags.emojis;
 
 //TODO IMO this should return an array of emoji IDs instead of an array of emojis
 export class EmojisSubtag extends CompiledSubtag {

@@ -1,12 +1,11 @@
 import { Cluster } from '@blargbot/cluster/Cluster';
-import { TranslatableString } from '@blargbot/domain/messages/index';
 import { IFormattable, literal } from '@blargbot/domain/messages/types';
 import { User } from 'eris';
 import reloadFactory from 'require-reload';
 
-const reload = reloadFactory(require);
+import templates from '../text';
 
-const unknownUser = TranslatableString.define<{ userId: string; }, string>('contributor.notFound', 'A user I cant find! (ID: {userId})');
+const reload = reloadFactory(require);
 
 export class ContributorManager {
     public patrons: Array<User | IFormattable<string>>;
@@ -34,6 +33,6 @@ export class ContributorManager {
     async #resolveUser(user: string): Promise<IFormattable<string> | User> {
         if (!/\d+/.test(user))
             return literal(user);
-        return await this.#cluster.util.getUser(user) ?? unknownUser({ userId: user });
+        return await this.#cluster.util.getUser(user) ?? templates.contributors.notFound({ userId: user });
     }
 }

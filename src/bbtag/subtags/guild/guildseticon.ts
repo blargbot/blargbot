@@ -6,7 +6,10 @@ import fetch from 'node-fetch';
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError } from '../../errors';
+import templates from '../../text';
 import { SubtagType } from '../../utils';
+
+const tag = templates.subtags.guildseticon;
 
 export class GuildSetIconSubtag extends CompiledSubtag {
     public constructor() {

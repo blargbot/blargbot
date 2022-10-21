@@ -3,7 +3,10 @@ import { guard } from '@blargbot/core/utils';
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
 import { ChannelNotFoundError } from '../../errors';
+import templates from '../../text';
 import { SubtagType } from '../../utils';
+
+const tag = templates.subtags.channelisvoice;
 
 export class ChannelIsVoiceSubtag extends CompiledSubtag {
     public constructor() {

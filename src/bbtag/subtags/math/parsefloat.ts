@@ -1,7 +1,10 @@
 import { parse } from '@blargbot/core/utils';
 
 import { CompiledSubtag } from '../../compilation';
+import templates from '../../text';
 import { SubtagType } from '../../utils';
+
+const tag = templates.subtags.parsefloat;
 
 export class ParseFloatSubtag extends CompiledSubtag {
     public constructor() {

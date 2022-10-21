@@ -4,6 +4,8 @@ import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeState } from '../../types';
 import { bbtag, SubtagType } from '../../utils';
 
+const tag = templates.subtags.map;
+
 export class MapSubtag extends CompiledSubtag {
     public constructor() {
         super({

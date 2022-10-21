@@ -2,8 +2,11 @@ import { parse } from '@blargbot/core/utils';
 
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
+import templates from '../../text';
 import { BBTagRuntimeState } from '../../types';
 import { SubtagType } from '../../utils';
+
+const tag = templates.subtags.return;
 
 export class ReturnSubtag extends CompiledSubtag {
     public constructor() {

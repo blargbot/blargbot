@@ -4,7 +4,10 @@ import { Constants, DiscordRESTError } from 'eris';
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError } from '../../errors';
+import templates from '../../text';
 import { SubtagType } from '../../utils';
+
+const tag = templates.subtags.channelsetperms;
 
 export class ChannelSetPermsSubtag extends CompiledSubtag {
     public constructor() {

@@ -1,7 +1,10 @@
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
 import { tagVariableScopeProviders } from '../../tagVariableScopeProviders';
+import templates from '../../text';
 import { bbtag, SubtagType } from '../../utils';
+
+const tag = templates.subtags.set;
 
 export class SetSubtag extends CompiledSubtag {
     public constructor() {

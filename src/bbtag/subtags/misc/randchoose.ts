@@ -3,7 +3,10 @@ import { randChoose } from '@blargbot/core/utils';
 import { SubtagArgument } from '../../arguments';
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
+import templates from '../../text';
 import { bbtag, SubtagType } from '../../utils';
+
+const tag = templates.subtags.randchoose;
 
 export class RandChooseSubtag extends CompiledSubtag {
     public constructor() {

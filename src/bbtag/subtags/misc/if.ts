@@ -3,7 +3,10 @@ import { parse } from '@blargbot/core/utils';
 import { SubtagArgument } from '../../arguments';
 import { CompiledSubtag } from '../../compilation';
 import { InvalidOperatorError, NotABooleanError } from '../../errors';
+import templates from '../../text';
 import { bbtag, SubtagType } from '../../utils';
+
+const tag = templates.subtags.if;
 
 export class IfSubtag extends CompiledSubtag {
     public constructor() {

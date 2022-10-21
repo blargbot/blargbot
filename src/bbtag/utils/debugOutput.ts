@@ -1,17 +1,10 @@
-import { TranslatableString } from '@blargbot/domain/messages/TranslatableString';
 import { IFormattable } from '@blargbot/domain/messages/types';
 import { FileContent } from 'eris';
 
 import { SubtagCall } from '../language';
+import templates from '../text';
 import { ExecutionResult } from '../types';
 import { stringify } from './stringify';
-
-const content = TranslatableString.define<{ active: number; committed: number; database: number; total: number; }>('bbtag.debug.summary', `\`\`\`js
-         Execution Time: {active#duration(MS)}ms
-    Variables Committed: {committed}
-Database Execution Time: {database#duration(MS)}ms
-   Total Execution Time: {total#duration(MS)}ms
-\`\`\``);
 
 export function createDebugOutput(result: ExecutionResult): { content: IFormattable<string>; files: FileContent[]; } {
     const performance: Record<string, unknown> = {};
@@ -27,7 +20,7 @@ export function createDebugOutput(result: ExecutionResult): { content: IFormatta
     }
 
     return {
-        content: content({
+        content: templates.debug.summary({
             active: result.duration.active,
             committed: result.database.committed,
             database: result.duration.database,

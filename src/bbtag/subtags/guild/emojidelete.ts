@@ -3,7 +3,10 @@ import { DiscordRESTError } from 'eris';
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError } from '../../errors';
+import templates from '../../text';
 import { SubtagType } from '../../utils';
+
+const tag = templates.subtags.emojidelete;
 
 export class EmojiDeleteSubtag extends CompiledSubtag {
     public constructor() {
@@ -34,7 +37,7 @@ export class EmojiDeleteSubtag extends CompiledSubtag {
                 throw err;
 
             const parts = err.message.split('\n').map(m => m.trim());
-            throw new BBTagRuntimeError(`Failed to delete emoji: ${  parts.length > 1 ? parts[1] : parts[0]}`);
+            throw new BBTagRuntimeError(`Failed to delete emoji: ${parts.length > 1 ? parts[1] : parts[0]}`);
         }
     }
 }

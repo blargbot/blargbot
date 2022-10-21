@@ -1,7 +1,10 @@
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError, UserNotFoundError } from '../../errors';
+import templates from '../../text';
 import { SubtagType } from '../../utils';
+
+const tag = templates.subtags.usersetnick;
 
 export class UserSetNickSubtag extends CompiledSubtag {
     public constructor() {

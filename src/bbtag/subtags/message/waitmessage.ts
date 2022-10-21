@@ -4,7 +4,10 @@ import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError, ChannelNotFoundError, NotANumberError, UserNotFoundError } from '../../errors';
 import { Statement } from '../../language';
+import templates from '../../text';
 import { bbtag, SubtagType } from '../../utils';
+
+const tag = templates.subtags.waitmessage;
 
 const defaultCondition = bbtag.parse('true');
 

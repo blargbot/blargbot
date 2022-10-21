@@ -2,7 +2,10 @@ import { guard } from '@blargbot/core/utils';
 
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
+import templates from '../../text';
 import { SubtagType } from '../../utils';
+
+const tag = templates.subtags.flagset;
 
 export class FlagSetSubtag extends CompiledSubtag {
     public constructor() {

@@ -1,7 +1,10 @@
 import { guard, parse } from '@blargbot/core/utils';
 
 import { CompiledSubtag } from '../../compilation';
+import templates from '../../text';
 import { bbtag, SubtagType } from '../../utils';
+
+const tag = templates.subtags.min;
 
 export class MinSubtag extends CompiledSubtag {
     public constructor() {

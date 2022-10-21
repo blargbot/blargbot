@@ -4,7 +4,10 @@ import { DiscordRESTError } from 'eris';
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError, NotANumberError } from '../../errors';
+import templates from '../../text';
 import { SubtagType } from '../../utils';
+
+const tag = templates.subtags.channelsetpos;
 
 export class ChannelSetPosSubtag extends CompiledSubtag {
     public constructor() {

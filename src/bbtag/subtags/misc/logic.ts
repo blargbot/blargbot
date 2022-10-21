@@ -2,7 +2,10 @@ import { parse } from '@blargbot/core/utils';
 
 import { CompiledSubtag } from '../../compilation';
 import { InvalidOperatorError, NotABooleanError } from '../../errors';
+import templates from '../../text';
 import { bbtag, LogicOperator, SubtagType } from '../../utils';
+
+const tag = templates.subtags.logic;
 
 export class LogicSubtag extends CompiledSubtag {
     public constructor() {

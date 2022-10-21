@@ -1,4 +1,4 @@
-import { IFormattable, TranslatableString } from '@blargbot/domain/messages/index';
+import { IFormattable, FormatString } from '@blargbot/domain/messages/index';
 import { Constants, Permission } from 'eris';
 
 export function permissions(permissions: bigint | ReadonlyArray<keyof Constants['Permissions']> | Permission, hideAdminUnlessAlone = false): Array<IFormattable<string>> {
@@ -81,5 +81,5 @@ const permDisplay = Object.entries(displayMap)
     .filter(x => isPowerOf2(x.value)) // Remove any aggregate permissions eris provides, like "all"
     .map(x => ({
         value: x.value,
-        display: TranslatableString.create(`constants.discord.permission.${x.id}`, x.display)
+        display: FormatString.create(`constants.discord.permission.${x.id}`, x.display)
     }));

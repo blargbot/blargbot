@@ -4,8 +4,11 @@ import { SubtagArgument } from '../../arguments';
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError, NotANumberError } from '../../errors';
+import templates from '../../text';
 import { BBTagRuntimeState } from '../../types';
 import { SubtagType } from '../../utils';
+
+const tag = templates.subtags.repeat;
 
 export class RepeatSubtag extends CompiledSubtag {
     public constructor() {

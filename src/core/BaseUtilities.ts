@@ -1,7 +1,6 @@
 import { Configuration } from '@blargbot/config/Configuration';
 import { FormatEmbedAuthor, SendContent, SendContext } from '@blargbot/core/types';
 import { Database } from '@blargbot/database';
-import { TranslatableString } from '@blargbot/domain/messages/index';
 import { format, IFormattable, IFormatter, literal } from '@blargbot/domain/messages/types';
 import { DiscordChannelTag, DiscordRoleTag, DiscordTagSet, DiscordUserTag, StoredUser } from '@blargbot/domain/models';
 import { Logger } from '@blargbot/logger';
@@ -13,6 +12,7 @@ import { BaseClient } from './BaseClient';
 import { Emote } from './Emote';
 import { DefaultFormatter } from './formatting';
 import { metrics } from './Metrics';
+import templates from './text';
 import { guard, humanize, parse, snowflake } from './utils';
 
 export class BaseUtilities {
@@ -162,8 +162,8 @@ export class BaseUtilities {
                     [format](formatter) {
                         return {
                             content: guard.isGuildChannel(channel)
-                                ? sendErrorGuild({ channel, message: result })[format](formatter)
-                                : sendErrorDm({ channel, message: result })[format](formatter),
+                                ? templates.utils.send.errors.guild({ channel, message: result })[format](formatter)
+                                : templates.utils.send.errors.dm({ channel, message: result })[format](formatter),
                             messageReference: content.messageReference
                         };
                     }
@@ -776,15 +776,15 @@ const sendErrors = {
     },
     [ApiError.MISSING_PERMISSIONS](util: BaseUtilities) {
         util.logger.warn('50013: Tried sending a message, but had no permissions!');
-        return messageNoPerms;
+        return templates.utils.send.errors.messageNoPerms;
     },
     [ApiError.MISSING_ACCESS](util: BaseUtilities) {
         util.logger.warn('50001: Missing Access');
-        return channelNoPerms;
+        return templates.utils.send.errors.channelNoPerms;
     },
     [ApiError.EMBED_DISABLED](util: BaseUtilities) {
         util.logger.warn('50004: Tried embeding a link, but had no permissions!');
-        return embedNoPerms;
+        return templates.utils.send.errors.embedNoPerms;
     },
 
     // try to catch the mystery of the autoresponse-object-in-field-value error
@@ -793,12 +793,6 @@ const sendErrors = {
         util.logger.error(`${channel.id}|${guard.isGuildChannel(channel) ? channel.name : 'PRIVATE CHANNEL'}|${JSON.stringify(payload)}`, error);
     }
 } as const;
-
-const messageNoPerms = TranslatableString.create('core.utils.send.error.messageNoPerms', 'I tried to send a message in response to your command, but didn\'t have permission to speak. If you think this is an error, please contact the staff on your guild to give me the `Send Messages` permission.');
-const channelNoPerms = TranslatableString.create('core.utils.send.error.channelNoPerms', 'I tried to send a message in response to your command, but didn\'t have permission to see the channel. If you think this is an error, please contact the staff on your guild to give me the `Read Messages` permission.');
-const embedNoPerms = TranslatableString.create('core.utils.send.error.embedNoPerms', 'I don\'t have permission to embed links! This will break several of my commands. Please give me the `Embed Links` permission. Thanks!');
-const sendErrorGuild = TranslatableString.define<{ channel: GuildChannel; message: IFormattable<string>; }, string>('core.utils.send.error.guild', '{message}\nGuild: {channel.guild.name} ({channel.guild.id})\nChannel: {channel.name} ({channel.id})\n\nIf you wish to stop seeing these messages, do the command `dmerrors`.');
-const sendErrorDm = TranslatableString.define<{ channel: Channel; message: IFormattable<string>; }, string>('core.utils.send.error.dm', '{message}\nChannel: PRIVATE CHANNEL ({channel.id})\n\nIf you wish to stop seeing these messages, do the command `dmerrors`.');
 
 function findBest<T>(options: Iterable<T>, evaluator: (value: T) => number): T[] {
     const result = [];

@@ -2,7 +2,10 @@ import { parse } from '@blargbot/core/utils';
 
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
+import templates from '../../text';
 import { SubtagType } from '../../utils';
+
+const tag = templates.subtags.heremention;
 
 export class HereMentionSubtag extends CompiledSubtag {
     public constructor() {

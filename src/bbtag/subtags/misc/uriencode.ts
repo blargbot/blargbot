@@ -1,5 +1,8 @@
 import { CompiledSubtag } from '../../compilation';
+import templates from '../../text';
 import { SubtagType } from '../../utils';
+
+const tag = templates.subtags.uriencode;
 
 export class UriEncodeSubtag extends CompiledSubtag {
     public constructor() {

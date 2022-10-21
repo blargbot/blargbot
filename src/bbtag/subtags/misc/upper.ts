@@ -1,5 +1,8 @@
 import { CompiledSubtag } from '../../compilation';
+import templates from '../../text';
 import { SubtagType } from '../../utils';
+
+const tag = templates.subtags.upper;
 
 export class UpperSubtag extends CompiledSubtag {
     public constructor() {

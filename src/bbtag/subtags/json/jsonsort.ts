@@ -3,7 +3,10 @@ import { compare, parse } from '@blargbot/core/utils';
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError, NotAnArrayError } from '../../errors';
+import templates from '../../text';
 import { bbtag, SubtagType } from '../../utils';
+
+const tag = templates.subtags.jsonsort;
 
 export class JsonSortSubtag extends CompiledSubtag {
     public constructor() {

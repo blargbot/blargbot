@@ -3,7 +3,10 @@ import { EmbedAuthor, EmbedField, EmbedFooter, EmbedOptions } from 'eris';
 
 import { CompiledSubtag } from '../../compilation';
 import { InvalidEmbedError } from '../../errors';
+import templates from '../../text';
 import { SubtagType } from '../../utils';
+
+const tag = templates.subtags.embedbuild;
 
 export class EmbedBuildSubtag extends CompiledSubtag {
     public constructor() {

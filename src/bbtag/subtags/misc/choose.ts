@@ -3,7 +3,10 @@ import { parse } from '@blargbot/core/utils';
 import { SubtagArgument } from '../../arguments';
 import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError, NotANumberError } from '../../errors';
+import templates from '../../text';
 import { SubtagType } from '../../utils';
+
+const tag = templates.subtags.choose;
 
 export class ChooseSubtag extends CompiledSubtag {
     public constructor() {

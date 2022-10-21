@@ -2,7 +2,10 @@ import { parse } from '@blargbot/core/utils';
 
 import { SubtagArgument } from '../../arguments';
 import { CompiledSubtag } from '../../compilation';
+import templates from '../../text';
 import { bbtag, SubtagType } from '../../utils';
+
+const tag = templates.subtags.switch;
 
 export class SwitchSubtag extends CompiledSubtag {
     public constructor() {

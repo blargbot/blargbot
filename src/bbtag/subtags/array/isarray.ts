@@ -1,6 +1,8 @@
 import { CompiledSubtag } from '../../compilation';
 import { bbtag, SubtagType } from '../../utils';
 
+const tag = templates.subtags.isarray;
+
 export class IsArraySubtag extends CompiledSubtag {
     public constructor() {
         super({

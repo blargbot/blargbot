@@ -3,7 +3,10 @@ import { guard, parse } from '@blargbot/core/utils';
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
 import { RoleNotFoundError, UserNotFoundError } from '../../errors';
+import templates from '../../text';
 import { bbtag, SubtagType } from '../../utils';
+
+const tag = templates.subtags.userhasroles;
 
 export class UserHasRolesSubtag extends CompiledSubtag {
     public constructor() {

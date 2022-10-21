@@ -6,7 +6,10 @@ import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError } from '../../errors';
 import { getLock } from '../../getLock';
 import { tagVariableScopeProviders } from '../../tagVariableScopeProviders';
+import templates from '../../text';
 import { SubtagType } from '../../utils';
+
+const tag = templates.subtags.lock;
 
 export class LockSubtag extends CompiledSubtag {
     public constructor() {

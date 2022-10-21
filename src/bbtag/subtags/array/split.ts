@@ -1,5 +1,8 @@
 import { CompiledSubtag } from '../../compilation';
+import templates from '../../text';
 import { SubtagType } from '../../utils';
+
+const tag = templates.subtags.split;
 
 export class SplitSubtag extends CompiledSubtag {
     public constructor() {

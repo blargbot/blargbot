@@ -3,14 +3,17 @@ import { Constants } from 'eris';
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
 import { ChannelNotFoundError } from '../../errors';
+import templates from '../../text';
 import { SubtagType } from '../../utils';
+
+const tag = templates.subtags.channeltype;
 
 export class ChannelTypeSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'channeltype',
             category: SubtagType.CHANNEL,
-            description: `Possible results: ${  Object.values(channelTypes).map(t => `\`${  t  }\``).join(', ')}`,
+            description: `Possible results: ${Object.values(channelTypes).map(t => `\`${t}\``).join(', ')}`,
             definition: [
                 {
                     parameters: [],

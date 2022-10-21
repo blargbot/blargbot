@@ -21,6 +21,7 @@
         "allowUnusedLabels": false,
         "moduleResolution": "Node16",
         "skipLibCheck": true,
+        "noEmit": true,
         "lib": [
             "ES2021"
         ]

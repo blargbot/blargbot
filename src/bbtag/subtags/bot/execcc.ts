@@ -3,8 +3,11 @@ import { humanize, parse } from '@blargbot/core/utils';
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError } from '../../errors';
+import templates from '../../text';
 import { BBTagRuntimeState } from '../../types';
 import { bbtag, SubtagType } from '../../utils';
+
+const tag = templates.subtags.execcc;
 
 export class ExecccSubtag extends CompiledSubtag {
     public constructor() {

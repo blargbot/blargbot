@@ -3,7 +3,10 @@ import { parse } from '@blargbot/core/utils';
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
 import { NotANumberError, NotEnoughArgumentsError } from '../../errors';
+import templates from '../../text';
 import { SubtagType } from '../../utils';
+
+const tag = templates.subtags.args;
 
 export class ArgsSubtag extends CompiledSubtag {
     public constructor() {

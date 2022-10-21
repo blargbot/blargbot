@@ -4,7 +4,10 @@ import moment from 'moment-timezone';
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
 import { ChannelNotFoundError, MessageNotFoundError } from '../../errors';
+import templates from '../../text';
 import { SubtagType } from '../../utils';
+
+const tag = templates.subtags.messagetime;
 
 export class MessageTimeSubtag extends CompiledSubtag {
     public constructor() {

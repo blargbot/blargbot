@@ -6,7 +6,10 @@ import fetch from 'node-fetch';
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError } from '../../errors';
+import templates from '../../text';
 import { bbtag, SubtagType } from '../../utils';
+
+const tag = templates.subtags.emojicreate;
 
 interface EmojiCreateOptions {
     name: string;

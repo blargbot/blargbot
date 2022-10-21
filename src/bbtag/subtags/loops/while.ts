@@ -1,8 +1,11 @@
 import { SubtagArgument } from '../../arguments';
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
+import templates from '../../text';
 import { BBTagRuntimeState } from '../../types';
 import { bbtag, SubtagType } from '../../utils';
+
+const tag = templates.subtags.while;
 
 export class WhileSubtag extends CompiledSubtag {
     public constructor() {

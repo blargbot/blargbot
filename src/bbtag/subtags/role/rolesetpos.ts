@@ -4,7 +4,10 @@ import { DiscordRESTError } from 'eris';
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError, NotANumberError, RoleNotFoundError } from '../../errors';
+import templates from '../../text';
 import { SubtagType } from '../../utils';
+
+const tag = templates.subtags.rolesetpos;
 
 export class RoleSetPosSubtag extends CompiledSubtag {
     public constructor() {

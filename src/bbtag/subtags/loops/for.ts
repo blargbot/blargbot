@@ -4,8 +4,11 @@ import { SubtagArgument } from '../../arguments';
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
 import { AggregateBBTagError, BBTagRuntimeError, InvalidOperatorError, NotANumberError } from '../../errors';
+import templates from '../../text';
 import { BBTagRuntimeState } from '../../types';
 import { bbtag, OrdinalOperator, SubtagType } from '../../utils';
+
+const tag = templates.subtags.for;
 
 export class ForSubtag extends CompiledSubtag {
     public constructor() {

@@ -3,7 +3,10 @@ import { parse } from '@blargbot/core/utils';
 import { SubtagArgumentArray } from '../../arguments';
 import { CompiledSubtag } from '../../compilation';
 import { InvalidOperatorError, NotABooleanError, NotANumberError } from '../../errors';
+import templates from '../../text';
 import { bbtag, LogicOperator, NumericOperator, OrdinalOperator, StringOperator, SubtagType } from '../../utils';
+
+const tag = templates.subtags.operator;
 
 export class OperatorSubtag extends CompiledSubtag {
     public constructor() {

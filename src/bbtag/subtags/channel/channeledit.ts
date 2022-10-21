@@ -5,7 +5,10 @@ import { DiscordRESTError, EditChannelOptions } from 'eris';
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError } from '../../errors';
+import templates from '../../text';
 import { SubtagType } from '../../utils';
+
+const tag = templates.subtags.channeledit;
 
 export class ChannelEditSubtag extends CompiledSubtag {
     public constructor() {

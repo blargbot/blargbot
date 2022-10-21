@@ -3,6 +3,8 @@ import { CompiledSubtag } from '../../compilation';
 import { NotAnArrayError } from '../../errors';
 import { bbtag, SubtagType } from '../../utils';
 
+const tag = templates.subtags.push;
+
 export class PushSubtag extends CompiledSubtag {
     public constructor() {
         super({

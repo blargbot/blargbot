@@ -4,7 +4,10 @@ import { EmbedOptions } from 'eris';
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '../../errors';
+import templates from '../../text';
 import { SubtagType } from '../../utils';
+
+const tag = templates.subtags.edit;
 
 export class EditSubtag extends CompiledSubtag {
     public constructor() {

@@ -5,7 +5,10 @@ import { SubtagArgumentArray } from '../../arguments';
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError, UserNotFoundError } from '../../errors';
+import templates from '../../text';
 import { SubtagType } from '../../utils';
+
+const tag = templates.subtags.reactremove;
 
 export class ReactRemoveSubtag extends CompiledSubtag {
     public constructor() {
@@ -87,7 +90,7 @@ export class ReactRemoveSubtag extends CompiledSubtag {
         }
 
         if (errored.length > 0)
-            throw new BBTagRuntimeError(`Unknown Emoji: ${  errored.join(', ')}`);
+            throw new BBTagRuntimeError(`Unknown Emoji: ${errored.join(', ')}`);
     }
 
     async #bindArguments(context: BBTagContext, rawArgs: SubtagArgumentArray): Promise<[channel: string, message: string, user: string, reactions: Emote[] | undefined]> {

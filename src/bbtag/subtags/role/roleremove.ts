@@ -3,7 +3,10 @@ import { Role } from 'eris';
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError, RoleNotFoundError, UserNotFoundError } from '../../errors';
+import templates from '../../text';
 import { bbtag, SubtagType } from '../../utils';
+
+const tag = templates.subtags.roleremove;
 
 export class RoleRemoveSubtag extends CompiledSubtag {
     public constructor() {

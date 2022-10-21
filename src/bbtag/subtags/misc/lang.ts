@@ -1,5 +1,8 @@
 import { CompiledSubtag } from '../../compilation';
+import templates from '../../text';
 import { SubtagType } from '../../utils';
+
+const tag = templates.subtags.lang;
 
 export class LangSubtag extends CompiledSubtag {
     public constructor() {

@@ -1,5 +1,8 @@
 import { CompiledSubtag } from '../../compilation';
+import templates from '../../text';
 import { SubtagType } from '../../utils';
+
+const tag = templates.subtags.base64encode;
 
 export class Base64EncodeSubtag extends CompiledSubtag {
     public constructor() {

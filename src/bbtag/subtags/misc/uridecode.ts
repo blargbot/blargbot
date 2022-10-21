@@ -1,6 +1,9 @@
 import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError } from '../../errors';
+import templates from '../../text';
 import { SubtagType } from '../../utils';
+
+const tag = templates.subtags.uridecode;
 
 export class UriDecodeSubtag extends CompiledSubtag {
     public constructor() {

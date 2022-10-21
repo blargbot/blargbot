@@ -2,7 +2,10 @@ import moment from 'moment-timezone';
 
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
+import templates from '../../text';
 import { SubtagType } from '../../utils';
+
+const tag = templates.subtags.guildcreatedat;
 
 export class GuildCreatedAtSubtag extends CompiledSubtag {
     public constructor() {

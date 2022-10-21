@@ -6,6 +6,8 @@ import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeState } from '../../types';
 import { bbtag, SubtagType } from '../../utils';
 
+const tag = templates.subtags.filter;
+
 export class FilterSubtag extends CompiledSubtag {
     public constructor() {
         super({
