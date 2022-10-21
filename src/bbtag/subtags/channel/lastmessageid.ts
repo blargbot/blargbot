@@ -13,21 +13,21 @@ export class LastMessageIdSubtag extends CompiledSubtag {
         super({
             name: 'lastmessageid',
             category: SubtagType.CHANNEL,
-            description: 'Returns nothing if the channel doesn\'t have any messages.',
+            description: tag.description,
             definition: [
                 {
                     parameters: [],
-                    description: 'Returns the messageID of the last message in the current channel.',
-                    exampleCode: '{lastmessageid}',
-                    exampleOut: '1111111111111111',
+                    description: tag.current.description,
+                    exampleCode: tag.current.exampleCode,
+                    exampleOut: tag.current.exampleOut,
                     returns: 'id',
                     execute: (ctx) => this.getLastMessageID(ctx, ctx.channel.id)
                 },
                 {
                     parameters: ['channel'],
-                    description: 'Returns the messageID of the last message in `channel`.',
-                    exampleCode: '{lastmessageid;1111111111111111}',
-                    exampleOut: '2222222222222222',
+                    description: tag.channel.description,
+                    exampleCode: tag.channel.exampleCode,
+                    exampleOut: tag.channel.exampleOut,
                     returns: 'id',
                     execute: (ctx, [channel]) => this.getLastMessageID(ctx, channel.value)
                 }

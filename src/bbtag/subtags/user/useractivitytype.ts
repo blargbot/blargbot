@@ -6,37 +6,27 @@ import { SubtagType } from '../../utils';
 
 const tag = templates.subtags.useractivitytype;
 
-const activityTypeMap = {
-    default: '',
-    0: 'playing',
-    1: 'streaming',
-    2: 'listening',
-    3: 'watching',
-    4: 'custom',
-    5: 'competing'
-} as const;
-
 export class UserActivityTypeSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'useractivitytype',
             aliases: ['usergametype'],
             category: SubtagType.USER,
-            description: `Activity types can be any of \`${Object.values(activityTypeMap).filter(type => type).join(', ')}\``,
+            description: tag.description({ types: Object.values(activityTypeMap) }),
             definition: [
                 {
                     parameters: [],
-                    description: 'Returns the type of activity the executing user is currently doing (playing, streaming).',
-                    exampleCode: 'You are {useractivitytype} right now!',
-                    exampleOut: 'You are streaming right now!',
+                    description: tag.target.description,
+                    exampleCode: tag.target.exampleCode,
+                    exampleOut: tag.target.exampleOut,
                     returns: 'string',
                     execute: (ctx) => this.getUserActivityType(ctx, '', true)
                 },
                 {
                     parameters: ['user', 'quiet?'],
-                    description: 'Returns the activity type `user` is currently doing. If `quiet` is specified, if `user` can\'t be found it will simply return nothing.',
-                    exampleCode: 'Stupid cat is {useractivitytype;Stupid cat} cats',
-                    exampleOut: 'Stupid cat is streaming cats',
+                    description: tag.user.description,
+                    exampleCode: tag.user.exampleCode,
+                    exampleOut: tag.user.exampleOut,
                     returns: 'string',
                     execute: (ctx, [userId, quiet]) => this.getUserActivityType(ctx, userId.value, quiet.value !== '')
                 }
@@ -61,3 +51,13 @@ export class UserActivityTypeSubtag extends CompiledSubtag {
         return activityTypeMap[activityId].toLowerCase();
     }
 }
+
+const activityTypeMap = {
+    default: '',
+    0: 'playing',
+    1: 'streaming',
+    2: 'listening',
+    3: 'watching',
+    4: 'custom',
+    5: 'competing'
+} as const;

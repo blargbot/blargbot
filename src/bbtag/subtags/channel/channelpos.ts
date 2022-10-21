@@ -15,21 +15,21 @@ export class ChannelPosSubtag extends CompiledSubtag {
             name: 'channelpos',
             aliases: ['categorypos'],
             category: SubtagType.CHANNEL,
-            description: 'The position is the index per channel type (text, voice or category) in the channel list.',
+            description: tag.description,
             definition: [
                 {
                     parameters: [],
-                    description: 'Returns the position of the current channel.',
-                    exampleCode: 'This channel is in position {channelpos}',
-                    exampleOut: 'This channel is in position 1',
+                    description: tag.current.description,
+                    exampleCode: tag.current.exampleCode,
+                    exampleOut: tag.current.exampleOut,
                     returns: 'number',
                     execute: (ctx) => this.#getChanelPosition(ctx.channel)
                 },
                 {
                     parameters: ['channel', 'quiet?'],
-                    description: 'Returns the position of the given `channel`. If it cannot be found returns `No channel found`, or nothing if `quiet` is `true`.',
-                    exampleCode: 'The position of test-channel is {channelpos;test-channel}',
-                    exampleOut: 'The position of test-channel is 0',
+                    description: tag.channel.description,
+                    exampleCode: tag.channel.exampleCode,
+                    exampleOut: tag.channel.exampleOut,
                     returns: 'number',
                     execute: (ctx, [channel, quiet]) => this.getChannelPosition(ctx, channel.value, quiet.value !== '')
                 }

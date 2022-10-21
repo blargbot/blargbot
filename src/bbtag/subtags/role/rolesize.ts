@@ -15,9 +15,9 @@ export class RoleSizeSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['role'/*, 'quiet?:false'*/], //TODO uncomment quiet parameter for new code
-                    description: 'Returns the amount of people in role `role`',
-                    exampleCode: 'There are {rolesize;11111111111111111} people in the role!',
-                    exampleOut: 'There are 5 people in the role!',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'number',
                     execute: (ctx, [role/*, quiet */]) => this.getRoleSize(ctx, role.value/*, quiet.value !== '' */)
                 }

@@ -13,9 +13,9 @@ export class GuildIdSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: [],
-                    description: 'Returns the id of the current guild.',
-                    exampleCode: 'The guild\'s id is {guildid}',
-                    exampleOut: 'The guild\'s id is 1234567890123456',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'id',
                     execute: (ctx) => this.getGuildId(ctx)
                 }

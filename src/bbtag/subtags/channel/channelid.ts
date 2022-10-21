@@ -15,17 +15,17 @@ export class ChannelIdSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: [],
-                    description: 'Returns the ID of the current channel.',
-                    exampleCode: '{channelid}',
-                    exampleOut: '111111111111111',
+                    description: tag.current.description,
+                    exampleCode: tag.current.exampleCode,
+                    exampleOut: tag.current.exampleOut,
                     returns: 'id',
                     execute: (ctx) => this.getChannelId(ctx, ctx.channel.id, true)
                 },
                 {
                     parameters: ['channel', 'quiet?'],
-                    description: 'Returns the ID of the given channel. If it cannot be found returns `No channel found`, or nothing if `quiet` is `true`.',
-                    exampleCode: '{channelid;cool channel}\n{channelid;some channel that doesn\'t exist;true}',
-                    exampleOut: '111111111111111\n(nothing is returned here)',
+                    description: tag.channel.description,
+                    exampleCode: tag.channel.exampleCode,
+                    exampleOut: tag.channel.exampleOut,
                     returns: 'id',
                     execute: (ctx, [channel, quiet]) => this.getChannelId(ctx, channel.value, quiet.value !== '')
 

@@ -14,22 +14,21 @@ export class UserHasRolesSubtag extends CompiledSubtag {
             name: 'userhasroles',
             category: SubtagType.USER,
             aliases: ['hasroles'],
-            description: 'This subtag checks if a user has *all* of the provided `roleids`. Use `{userhasrole}` to check if a user has *any* of the provided `roleids`. `roleids` can be an array of role IDs, or a single role ID. For a list of roles and their corresponding IDs, use `b!roles`' +  //TODO context.getRole instead
-                '\nReturns a boolean.',
+            description: tag.description,
             definition: [
                 {
                     parameters: ['roleids'],
-                    description: 'Checks if the executing user has *all* of the provided `roleids`.',
-                    exampleCode: '{if;{userhasroles;["{roleid;moderator}","{roleid;admin}"];You are a moderator and admin; You are not a moderator and admin}',
-                    exampleOut: 'You are not a moderator and admin',
+                    description: tag.target.description,
+                    exampleCode: tag.target.exampleCode,
+                    exampleOut: tag.target.exampleOut,
                     returns: 'boolean',
                     execute: (ctx, [roles]) => this.userHasRoles(ctx, roles.value, '', false)
                 },
                 {
                     parameters: ['roleids', 'user', 'quiet?'],
-                    description: 'Checks if `user` has *all* of the provided `roleids`. If `quiet` is specified, if `user` or any `roleid` can\'t be found it will simply return `false`.',
-                    exampleCode: '{if;{userhasroles;["{roleid;moderator}","{roleid;admin}"];Stupid cat};Stupid cat is a moderator and admin;Stupid cat is not a moderator and admin}',
-                    exampleOut: 'Stupid cat is a moderator and admin',
+                    description: tag.user.description,
+                    exampleCode: tag.user.exampleCode,
+                    exampleOut: tag.user.exampleOut,
                     returns: 'boolean',
                     execute: (ctx, [roles, user, quiet]) => this.userHasRoles(ctx, roles.value, user.value, quiet.value !== '')
                 }

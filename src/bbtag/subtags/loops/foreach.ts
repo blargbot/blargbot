@@ -15,9 +15,9 @@ export class ForeachSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['variable', 'array#10000000', '~code'],
-                    description: 'For every element in `array`, a variable called `variable` will be set and then `code` will be run.\nIf `element` is not an array, it will iterate over each character intead.',
-                    exampleCode: '{set;~array;apples;oranges;c#}\n{foreach;~element;~array;I like {get;~element}{newline}}',
-                    exampleOut: 'I like apples\nI like oranges\nI like c#',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'loop',
                     execute: (context, [variable, array, code]) => this.foreach(context, variable.value, array.value, code)
                 }

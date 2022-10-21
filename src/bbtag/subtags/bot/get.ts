@@ -17,18 +17,17 @@ export class GetSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['name'],
-                    description: `Returns the stored variable \`varName\`.\nYou can use a character prefix to determine the scope of your variable.\nValid scopes are: ${tagVariableScopeProviders.map((s) => `${s.prefix.length === 0 ? 'no prefix' : `\`${s.prefix}\``} (${s.name})`).join(', ')
-                        }. For more information, use \`b!t docs variable\` or \`b!cc docs variable\``,
-                    exampleCode: '{set;var1;This is local var1}\n{set;~var2;This is temporary var2}\n{get;var1}\n{get;~var2}',
-                    exampleOut: 'This is local var1\nThis is temporary var2',
+                    description: tag.value.description({ scopes: tagVariableScopeProviders }),
+                    exampleCode: tag.value.exampleCode,
+                    exampleOut: tag.value.exampleOut,
                     returns: 'json|nothing',
                     execute: async (ctx, [name]) => await this.get(ctx, name.value)
                 },
                 {
                     parameters: ['name', 'index'],
-                    description: 'When variable `name` is an array this will return the element at index `index`. If `index` is empty the entire array will be returned. If variable is not an array it will return the whole variable.',
-                    exampleCode: '{set;myArray;["abc","def","ghi"]}{get;myArray;1}',
-                    exampleOut: 'def',
+                    description: tag.index.description,
+                    exampleCode: tag.index.exampleCode,
+                    exampleOut: tag.index.exampleOut,
                     returns: 'json|nothing',
                     execute: async (ctx, [name, index]) => await this.getArray(ctx, name.value, index.value)
                 }

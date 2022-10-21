@@ -17,9 +17,9 @@ export class ExecSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['tag', 'args*'],
-                    description: 'Executes another `tag`, giving it `args` as the input. Useful for modules.\n`{exec}` executes `tag` as if `tag`\'s code was in the root tag/ccommand.',
-                    exampleCode: 'Let me do a tag for you. {exec;f}',
-                    exampleOut: 'Let me do a tag for you. User#1111 has paid their respects. Total respects given: 5',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'string',
                     execute: (ctx, [tag, ...args]) => this.execTag(ctx, tag.value, args.map(a => a.value))
                 }

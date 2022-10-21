@@ -13,9 +13,9 @@ export class GuildOwnerIdSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: [],
-                    description: 'Returns the id of the guild\'s owner.',
-                    exampleCode: 'The owner\'s id is {guildownerid}.',
-                    exampleOut: 'The owner\'s id is 1234567890123456.',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'id',
                     execute: (ctx) => this.getGuildOwnerId(ctx)
                 }

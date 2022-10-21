@@ -16,9 +16,9 @@ export class ChooseSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['choice', '~options+'],
-                    description: 'Chooses from the given `options`, where `choice` is the index of the option to select.',
-                    exampleCode: 'I feel like eating {choose;1;cake;pie;pudding} today.',
-                    exampleOut: 'I feel like eating pie today.',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'string',
                     execute: (_, [choice, ...options]) => this.choose(choice.value, options)
                 }

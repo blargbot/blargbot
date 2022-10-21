@@ -10,22 +10,22 @@ export class NumFormatSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'numformat',
-            description: 'If `roundTo` is not provided, but the number does have decimals, rounds to `3` by default. Any precision for decimals will be lost e.g: `100.000000000`becomes `100` and `100.3100000000` becomes `100.31`',
+            description: tag.description,
             category: SubtagType.MATH,
             definition: [
                 {
                     parameters: ['number', 'roundTo'],
-                    description: 'Rounds `number` to `roundTo` digits. `roundTo` can be left empty.',
-                    exampleCode: '{numformat;123456.789;2}\n{numformat;123456.789;-3}\n{numformat;100.10000;}',
-                    exampleOut: '123456.79\n123000\n100.1',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'string',
                     execute: (_, [numberStr, roundToStr]) => this.numFormat(numberStr.value, roundToStr.value, '.', '')
                 },
                 {
                     parameters: ['number', 'roundTo', 'decimal:.', 'thousands?:'],
-                    description: 'Rounds `number` to `roundTo` digits. Uses `decimal` as the decimal separator and `thousands` for the thousands separator. To skip `roundTo` or `decimal` leave them empty.',
-                    exampleCode: '{numformat;3.1415;4;,}\n{numformat;100000;;;.}',
-                    exampleOut: '3,1415\n100.000',
+                    description: tag.separator.description,
+                    exampleCode: tag.separator.exampleCode,
+                    exampleOut: tag.separator.exampleOut,
                     returns: 'string',
                     execute: (_, [numberStr, roundToStr, decimal, thousands]) => this.numFormat(numberStr.value, roundToStr.value, decimal.value, thousands.value)
                 }

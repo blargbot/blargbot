@@ -15,17 +15,17 @@ export class IsStaffSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: [],
-                    description: 'Checks if the tag author is staff',
-                    exampleCode: '{if;{isstaff};The author is a staff member!;The author is not a staff member :(}',
-                    exampleOut: 'The author is a staff member!',
+                    description: tag.target.description,
+                    exampleCode: tag.target.exampleCode,
+                    exampleOut: tag.target.exampleOut,
                     returns: 'boolean',
                     execute: ctx => ctx.isStaff
                 },
                 {
                     parameters: ['user', 'quiet?'],
-                    description: 'Checks if `user` is a member of staff. If the `user` cannot be found `false` will be returned.',
-                    exampleCode: '{if;{isstaff;{userid}};You are a staff member!;You are not a staff member :(}',
-                    exampleOut: 'You are not a staff member :(',
+                    description: tag.user.description,
+                    exampleCode: tag.user.exampleCode,
+                    exampleOut: tag.user.exampleOut,
                     returns: 'boolean',
                     execute: (ctx, [user, quiet]) => this.isStaff(ctx, user.value, quiet.value !== '')
                 }

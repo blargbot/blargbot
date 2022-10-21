@@ -12,9 +12,9 @@ export class SubtagExistsSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['subtag'],
-                    description: 'Checks to see if `subtag` exists.',
-                    exampleCode: '{subtagexists;ban} {subtagexists;AllenKey}',
-                    exampleOut: 'true false',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'boolean',
                     execute: (ctx, [subtag]) => ctx.subtags.get(subtag.value) !== undefined
                 }

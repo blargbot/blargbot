@@ -15,9 +15,9 @@ export class ReactRemoveAllSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['channel?', 'messageId'],
-                    description: 'Removes all reactions from `messageId`.\n`channelId` defaults to the current channel.',
-                    exampleCode: '{reactremoveall;12345678901234;:thinking:}',
-                    exampleOut: '(removed all the reactions)',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'nothing',
                     execute: (ctx, [channel, message]) => this.removeAllReactions(ctx, channel.value, message.value)
                 }

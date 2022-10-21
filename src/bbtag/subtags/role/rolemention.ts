@@ -16,9 +16,9 @@ export class RoleMentionSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['role', 'quiet?', 'noPing?:false'],
-                    description: 'Returns a mention of `role`. If `quiet` is specified, if `role` can\'t be found it will simply return nothing.',
-                    exampleCode: 'The admin role will be mentioned: {rolemention;Admin}',
-                    exampleOut: 'The admin role will be mentioned: @\u200BAdminstrator',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'string',
                     execute: (ctx, [roleId, quiet, noPing]) => this.roleMention(ctx, roleId.value, quiet.value !== '', noPing.value)
                 }

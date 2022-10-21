@@ -17,9 +17,9 @@ export class SliceSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['array', 'start', 'end?:999999999999'],
-                    description: 'Grabs elements between the zero-indexed `start` and `end` points (inclusive) from `array`.',
-                    exampleCode: '{slice;["this", "is", "an", "array"];1}',
-                    exampleOut: '["is","an","array"]',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'json[]',
                     execute: (ctx, [array, start, end]) => this.slice(ctx, array.value, start.value, end.value)
                 }

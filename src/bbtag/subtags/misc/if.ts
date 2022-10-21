@@ -13,37 +13,37 @@ export class IfSubtag extends CompiledSubtag {
         super({
             name: 'if',
             category: SubtagType.MISC,
-            description: `If \`evaluator\` and \`value2\` are provided, \`value1\` is evaluated against \`value2\` using \`evaluator\`. If they are not provided, \`value1\` is read as \`true\` or \`false\`. If the resulting value is \`true\` then the tag returns \`then\`, otherwise it returns \`else\`.\nValid evaluators are \`${Object.keys(bbtag.comparisonOperators).join('`, `')}\`.`,
+            description: tag.description({ operators: Object.keys(bbtag.comparisonOperators) }),
             definition: [
                 {
                     parameters: ['boolean', '~then'],
-                    description: 'If `boolean` is `true`, return `then`, else do nothing.',
-                    exampleCode: '{if;{iscc};This is a custom command!}',
-                    exampleOut: 'This is a custom command!',
+                    description: tag.value.description,
+                    exampleCode: tag.value.exampleCode,
+                    exampleOut: tag.value.exampleOut,
                     returns: 'string',
                     execute: (_, [bool, thenCode]) => this.simpleBooleanCheck(bool.value, thenCode)
                 },
                 {
                     parameters: ['boolean', '~then', '~else'],
-                    description: 'If `boolean` is `true`, return `then`, else execute `else`',
-                    exampleCode: '{if;{iscc};This is a custom command!;This isnt a custom command!}',
-                    exampleOut: 'This isnt a custom command!',
+                    description: tag.valueElse.description,
+                    exampleCode: tag.valueElse.exampleCode,
+                    exampleOut: tag.valueElse.exampleOut,
                     returns: 'string',
                     execute: (_, [bool, thenCode, elseCode]) => this.simpleBooleanCheck(bool.value, thenCode, elseCode)
                 },
                 {
                     parameters: ['value1', 'evaluator', 'value2', '~then'],
-                    description: '`Value1` is evaluated against `value2` using `evaluator`, if the resulting value is `true` then the tag returns `then`.',
-                    exampleCode: '{if;{userid};==;103347843934212096;Hi stupid cat!}',
-                    exampleOut: 'Hi stupid cat!',
+                    description: tag.conditionThen.description,
+                    exampleCode: tag.conditionThen.exampleCode,
+                    exampleOut: tag.conditionThen.exampleOut,
                     returns: 'string',
                     execute: (_, [value1, evaluator, value2, thenCode]) => this.evaluatorCheck(value1.value, evaluator.value, value2.value, thenCode)
                 },
                 {
                     parameters: ['value1', 'evaluator', 'value2', '~then', '~else'],
-                    description: '`Value1` is evaluated against `value2` using `evaluator`, if the resulting value is `true` then the tag returns `then`, otherwise it returns `else`',
-                    exampleCode: '{if;{userid};==;103347843934212096;Hi stupid cat!;Who are you stranger?}',
-                    exampleOut: 'Who are you stranger?',
+                    description: tag.conditionElse.description,
+                    exampleCode: tag.conditionElse.exampleCode,
+                    exampleOut: tag.conditionElse.exampleOut,
                     returns: 'string',
                     execute: (_, [value1, evaluator, value2, thenCode, elseCode]) => this.evaluatorCheck(value1.value, evaluator.value, value2.value, thenCode, elseCode)
                 }

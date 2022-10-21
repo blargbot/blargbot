@@ -13,9 +13,9 @@ export class Base64DecodeSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['text'],
-                    description: 'Converts the provided base64 to a UTF-8 string.',
-                    exampleCode: '{base64decode;RmFuY3kh}',
-                    exampleOut: 'Fancy!',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'string',
                     execute: (_, [text]) => this.decode(text.value)
                 }

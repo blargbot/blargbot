@@ -17,9 +17,9 @@ export class ChannelIsCategorySubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['channel', 'quiet?'],
-                    description: 'Checks if `channel` is a category. If it cannot be found returns `No channel found`, or `false` if `quiet` is `true`.',
-                    exampleCode: '{channeliscategory;cool category}\n{channeliscategory;category that doesn\'t exist}',
-                    exampleOut: 'true\n(nothing is returned here)',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'boolean',
                     execute: (ctx, [channel, quiet]) => this.isCategory(ctx, channel.value, quiet.value !== '')
 

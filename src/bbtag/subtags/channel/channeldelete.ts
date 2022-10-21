@@ -16,9 +16,9 @@ export class ChannelDeleteSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['id'],
-                    description: 'Deletes the provided `channel`.',
-                    exampleCode: '{channeldelete;11111111111111111}',
-                    exampleOut: '',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'nothing',
                     execute: (ctx, [channel]) => this.deleteChannel(ctx, channel.value)
                 }

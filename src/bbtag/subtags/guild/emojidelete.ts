@@ -16,9 +16,9 @@ export class EmojiDeleteSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['id'], //TODO possibly an emote lookup for emote names? Would be neat, would allow not relying on the try/catch for unknown emojis too
-                    description: 'Deletes an emoji with the provided `id`',
-                    exampleCode: '{emojidelete;11111111111111111}',
-                    exampleOut: '', //TODO meaningful output like `true`/`false`,
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut, //TODO meaningful output like `true`/`false`,
                     returns: 'nothing',
                     execute: (ctx, [id]) => this.deleteEmoji(ctx, id.value)
                 }

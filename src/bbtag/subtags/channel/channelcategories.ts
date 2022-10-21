@@ -16,9 +16,9 @@ export class ChannelCategoriesSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: [],
-                    description: 'Returns an array of category IDs on the current guild.',
-                    exampleCode: 'This guild has {length;{categories}} categories.',
-                    exampleOut: 'This guild has 7 categories.',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'id[]',
                     execute: (ctx) => this.getChannelCategories(ctx)
                 }

@@ -14,9 +14,9 @@ export class RoleMembersSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['role', 'quiet?'],
-                    description: 'Returns an array of members in `role`. If `quiet` is specified, if `role` can\'t be found it will simply return nothing.',
-                    exampleCode: 'The admins are: {rolemembers;Admin}.',
-                    exampleOut: 'The admins are: ["11111111111111111","22222222222222222"].',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'id[]',
                     execute: (ctx, [roleId, quiet]) => this.getRoleMembers(ctx, roleId.value, quiet.value !== '')
                 }

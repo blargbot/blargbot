@@ -16,9 +16,9 @@ export class Md5Subtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['text'],
-                    description: 'Converts the provided text to md5.',
-                    exampleCode: '{md5;Woosh whap phew!}',
-                    exampleOut: '71d97a11f770a34d7f8cf1f1d8749d85',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'string',
                     execute: (_, [text]) => this.md5Hash(text.value)
                 }

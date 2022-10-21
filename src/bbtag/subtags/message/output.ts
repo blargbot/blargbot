@@ -14,9 +14,9 @@ export class OutputSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['text?'],
-                    description: 'Forces an early send of the default output message, using `text` as the text to show. If this is used then there will be no output sent once the tag finishes. Only 1 `{output}` may be used per tag/cc. If a second `{output}` is used then the result of the first `{output}` will be returned instead.\nThe message id of the output that was sent will be returned.',
-                    exampleCode: '{output;Hello!}',
-                    exampleOut: 'Hello!',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'id',
                     execute: (ctx, [text]) => this.sendTagOutput(ctx, text.value)
                 }

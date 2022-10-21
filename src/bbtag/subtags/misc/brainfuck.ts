@@ -16,9 +16,9 @@ export class BrainfuckSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['code', 'input?'],
-                    description: 'Interprets `code` as brainfuck, using `input` as the text for `,`.',
-                    exampleCode: '{brainfuck;-[------->+<]>-.-[->+++++<]>++.+++++++..+++.[--->+<]>-----.---[->+++<]>.-[--->+<]>---.+++.------.--------.-[--->+<]>.}',
-                    exampleOut: 'Hello World!',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'string',
                     execute: (_, [code, input]) => this.runBrainfuck(code.value, input.value)
                 }

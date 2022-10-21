@@ -15,17 +15,17 @@ export class WhileSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['~boolean', '~code'],
-                    description: 'This will continuously execute `code` for as long as `boolean` returns `true`.',
-                    exampleCode: '{set;~x;0}\n{set;~end;false}\n{while;{get;~end};\n\t{if;{increment;~x};==;10;\n\t\t{set;~end;true}\n\t}\n}\n{get;~end}',
-                    exampleOut: '10',
+                    description: tag.value.description,
+                    exampleCode: tag.value.exampleCode,
+                    exampleOut: tag.value.exampleOut,
                     returns: 'loop',
                     execute: (ctx, [bool, code]) => this.while(ctx, bool, '==', 'true', code)
                 },
                 {
                     parameters: ['~value1', '~evaluator', '~value2', '~code'],
-                    description: `This will continuously execute \`code\` for as long as the condition returns \`true\`. The condition is as follows:\nIf \`evaluator\` and \`value2\` are provided, \`value1\` is evaluated against \`value2\` using \`evaluator\`. Valid evaluators are \`${Object.keys(bbtag.comparisonOperators).join('`, `')}\`.`,
-                    exampleCode: '{set;~x;0}\n{while;{get;~x};<=;10;{increment;~x},}',
-                    exampleOut: '1,2,3,4,5,6,7,8,9,10,11,',
+                    description: tag.condition.description({ operators: Object.keys(bbtag.comparisonOperators) }),
+                    exampleCode: tag.condition.exampleCode,
+                    exampleOut: tag.condition.exampleOut,
                     returns: 'loop',
                     execute: (ctx, [val1, evaluator, val2, code]) => this.while(ctx, val1, evaluator, val2, code)
                 }

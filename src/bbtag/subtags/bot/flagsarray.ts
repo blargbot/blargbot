@@ -13,10 +13,10 @@ export class FlagsArraySubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: [],
-                    description: 'Returns an array of all flags provided.',
-                    exampleCode: '{flagsarray}',
-                    exampleIn: 'Hello -dc world',
-                    exampleOut: '["_","d","c"]',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleIn: tag.default.exampleIn,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'string[]',
                     execute: (ctx) => this.flagKeys(ctx)
                 }

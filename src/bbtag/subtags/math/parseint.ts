@@ -14,9 +14,9 @@ export class ParseIntSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['number'],
-                    description: 'Returns an integer from `text`. If it wasn\'t a number, returns `NaN`.',
-                    exampleCode: '{parseint;abcd} {parseint;1234} {parseint;12cd}',
-                    exampleOut: 'NaN 1234 12',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'number',
                     execute: (_, [number]) => this.parseInt(number.value)
                 }

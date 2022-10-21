@@ -16,18 +16,18 @@ export class IsUserBoostingSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: [],
-                    description: 'Returns `true` if the executing user is boosting the guild and `false` if not.',
-                    exampleCode: '{if;{isuserboosting};Yes you are boosting;You should consider boosting}',
-                    exampleOut: 'You should consider boosting',
+                    description: tag.target.description,
+                    exampleCode: tag.target.exampleCode,
+                    exampleOut: tag.target.exampleOut,
                     returns: 'boolean',
                     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                     execute: (ctx) => this.isUserBoosting(ctx.member!)
                 },
                 {
                     parameters: ['user', 'quiet?'],
-                    description: 'Returns `true` if the `user` is boosting the guild and `false` if not. If `quiet` is specified, if `user` can\'t be found it will simply return nothing.',
-                    exampleCode: '{if;{isuserboosting;stupid cat};stupid cat is boosting!; no boosting here :(}',
-                    exampleOut: 'stupid cat is boosting!',
+                    description: tag.user.description,
+                    exampleCode: tag.user.exampleCode,
+                    exampleOut: tag.user.exampleOut,
                     returns: 'boolean',
                     execute: (ctx, [user, quiet]) => this.findIsUserBoosting(ctx, user.value, quiet.value !== '')
                 }

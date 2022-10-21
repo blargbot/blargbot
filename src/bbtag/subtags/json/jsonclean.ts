@@ -14,9 +14,9 @@ export class JsonCleanSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['input:{}'],
-                    description: 'Using the `input` as a base, cleans up the JSON file structure, parsing stringified nested objects/arrays. Will not mutate the original object.',
-                    exampleCode: '{jsonclean;{j;{"test":"[]"}}}',
-                    exampleOut: '{"test":[]}',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'json',
                     execute: (ctx, [input]) => this.cleanJson(ctx, input.value)
                 }

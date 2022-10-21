@@ -17,25 +17,34 @@ export class SlowmodeSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: [],
-                    description: 'Removes slowmode for the current channel.',
-                    exampleCode: '{slowmode}',
-                    exampleOut: '(slowmode is now disabled)',
+                    description: tag.clearCurrent.description,
+                    exampleCode: tag.clearCurrent.exampleCode,
+                    exampleOut: tag.clearCurrent.exampleOut,
                     returns: 'nothing',
                     execute: (ctx) => this.setSlowmode(ctx, ctx.channel.id, '0')
                 },
                 {
                     parameters: ['channel|time'],
-                    description: 'Removes slowmode from `channel`. If `channel` cannot be resolved directly, it will enable slowmode for the current channel and set the cooldown to `time`',
-                    exampleCode: '{slowmode;testing-grounds}\n{slowmode;10}',
-                    exampleOut: '(disabled slowmode in testing-grounds)\n(set slow mode to 10 seconds)',
                     returns: 'nothing',
-                    execute: (ctx, [channel]) => this.setSlowmode(ctx, channel.value, '')
+                    execute: (ctx, [arg]) => this.setSlowmode(ctx, arg.value, '')
+                },
+                {
+                    parameters: ['channel'],
+                    description: tag.clearChannel.description,
+                    exampleCode: tag.clearChannel.exampleCode,
+                    exampleOut: tag.clearChannel.exampleOut
+                },
+                {
+                    parameters: ['time'],
+                    description: tag.setCurrent.description,
+                    exampleCode: tag.setCurrent.exampleCode,
+                    exampleOut: tag.setCurrent.exampleOut
                 },
                 {
                     parameters: ['channel', 'time:0'],
-                    description: 'Enables slowmode in `channel` and set the cooldown to `time`. If `channel` cannot be resolved directly, it will remove slowmode in the current channel (unless `channel` is a valid number, then the slowmode cooldown will be set to `channel` in the current channel).', //TODO thank backwards compatibility
-                    exampleCode: '{slowmode;testing-grounds;10}\n{slowmode;50;doesn\'t matter}',
-                    exampleOut: '(set slowmode cooldown to 10 seconds in testing-grounds)\n(set slowmode to 50s in the current channel)',
+                    description: tag.setChannel.description, //TODO thank backwards compatibility
+                    exampleCode: tag.setChannel.exampleCode,
+                    exampleOut: tag.setChannel.exampleOut,
                     returns: 'nothing',
                     execute: (ctx, [channel, time]) => this.setSlowmode(ctx, channel.value, time.value)
                 }

@@ -17,9 +17,9 @@ export class RoleSetPosSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['role', 'position', 'quiet?'],
-                    description: 'Sets the position of `role`. If `quiet` is specified, if `role` can\'t be found it will simply return nothing.',
-                    exampleCode: 'The admin role is now at position 3. {rolesetpos;admin;3}',
-                    exampleOut: 'The admin role is now at position 3.',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'boolean',
                     execute: (ctx, [role, position, quiet]) => this.setRolePosition(ctx, role.value, position.value, quiet.value !== '')
                 }

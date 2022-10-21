@@ -24,15 +24,15 @@ export class ReactRemoveSubtag extends CompiledSubtag {
                 },
                 {
                     parameters: ['channel?', 'messageId'],
-                    description: 'Removes all reactions of the executing user from `messageID` in `channel`.',
-                    exampleCode: '{reactremove;12345678901234}',
-                    exampleOut: '(removed all reactions on 12345678901234)'
+                    description: tag.all.description,
+                    exampleCode: tag.all.exampleCode,
+                    exampleOut: tag.all.exampleOut
                 },
                 {
                     parameters: ['channel?', 'messageId', 'reactions+'],
-                    description: 'Removes `reactions` `user` reacted on `messageID` in `channel`.',
-                    exampleCode: '{reactremove;12345678901234;111111111111111111;🤔}',
-                    exampleOut: '(removed the 🤔 reaction on 12345678901234 from user 111111111111111111)'
+                    description: tag.user.description,
+                    exampleCode: tag.user.exampleCode,
+                    exampleOut: tag.user.exampleOut
                 }
             ]
         });

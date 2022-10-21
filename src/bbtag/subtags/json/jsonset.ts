@@ -14,25 +14,25 @@ export class JsonSetSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['input:{}', 'path'],
-                    description: 'Deletes the value at `path`. `input` can be a JSON object or array',
-                    exampleCode: '{set;~json;{json;{"key" : "value"}}}\n{jset;~json;key}\n{get;~json}',
-                    exampleOut: '{}',
+                    description: tag.delete.description,
+                    exampleCode: tag.delete.exampleCode,
+                    exampleOut: tag.delete.exampleOut,
                     returns: 'json|nothing',
                     execute: (ctx, [input, path]) => this.setValue(ctx, input.value, path.value, undefined, false)
                 },
                 {
                     parameters: ['input:{}', 'path', 'value'],
-                    description: 'Using the `input` as a base, navigates the provided dot-notated `path` and assigns the `value`. `input` can be a JSON object, array, or string. If a string is provided, a variable with the same name will be used.If `create` is not empty, will create/convert any missing keys.',
-                    exampleCode: '{jsonset;;path.to.key;value;create}',
-                    exampleOut: '{"path":{"to":{"key":"value"}}}',
+                    description: tag.set.description,
+                    exampleCode: tag.set.exampleCode,
+                    exampleOut: tag.set.exampleOut,
                     returns: 'json|nothing',
                     execute: (ctx, [input, path, value]) => this.setValue(ctx, input.value, path.value, value.value, false)
                 },
                 {
-                    parameters: ['input:{}', 'path', 'value', 'create?'],
-                    description: 'Using the `input` as a base, navigates the provided dot-notated `path` and assigns the `value`. `input` can be a JSON object, array, or string. If a string is provided, a variable with the same name will be used.If `create` is not empty, will create/convert any missing keys.',
-                    exampleCode: '{jsonset;;path.to.key;value;create}',
-                    exampleOut: '{"path":{"to":{"key":"value"}}}',
+                    parameters: ['input:{}', 'path', 'value', 'create'],
+                    description: tag.create.description,
+                    exampleCode: tag.create.exampleCode,
+                    exampleOut: tag.create.exampleOut,
                     returns: 'json|nothing',
                     execute: (ctx, [input, path, value]) => this.setValue(ctx, input.value, path.value, value.value, true)
                 }

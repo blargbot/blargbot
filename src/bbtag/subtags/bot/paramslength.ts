@@ -14,9 +14,9 @@ export class ParamsLengthSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: [],
-                    description: 'Gets the number of parameters passed to the current function',
-                    exampleCode: '{func.test;{paramslength}}\n{func.test;a;b;c;d}',
-                    exampleOut: '["a","b","c","d"]',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'number',
                     execute: (ctx) => this.getParamsLength(ctx)
                 }

@@ -15,9 +15,9 @@ export class MathSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['operator', 'numbers+'],
-                    description: `Accepts multiple \`values\` and returns the result of \`operator\` on them. Valid operators are \`${Object.keys(bbtag.numericOperators).join('`, `')}\`\nSee \`{operators}\` for a shorter way of performing numeric operations.`,
-                    exampleCode: '2 + 3 + 6 - 2 = {math;-;{math;+;2;3;6};2}',
-                    exampleOut: '2 + 3 + 6 - 2 = 9',
+                    description: tag.default.description({ operators: Object.keys(bbtag.numericOperators) }),
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'number',
                     execute: (_, [operator, ...values]) => this.doMath(operator.value, values.map(arg => arg.value))
                 }

@@ -13,21 +13,21 @@ export class WarnSubtag extends CompiledSubtag {
         super({
             name: 'warn',
             category: SubtagType.USER,
-            description: '`user` defaults to the executing user.',
+            description: tag.description,
             definition: [
                 {
                     parameters: ['user?'],
-                    description: 'Gives `user` one warning. This will return the amount of warnings `user` has after executing.',
-                    exampleCode: 'Be warned! {warn}',
-                    exampleOut: 'Be warned! 1',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'number',
                     execute: (ctx, [user]) => this.warnUser(ctx, user.value, '1', '')
                 },
                 {
                     parameters: ['user', 'count:1', 'reason?'],
-                    description: 'Gives `user` `count` warnings.',
-                    exampleCode: 'Be warned Stupid cat! {warn;Stupid cat;9001;For being too cool}',
-                    exampleOut: 'Be warned Stupid cat! 9001',
+                    description: tag.withReason.description,
+                    exampleCode: tag.withReason.exampleCode,
+                    exampleOut: tag.withReason.exampleOut,
                     returns: 'number',
                     execute: (ctx, [user, count, reason]) => this.warnUser(ctx, user.value, count.value, reason.value)
                 }

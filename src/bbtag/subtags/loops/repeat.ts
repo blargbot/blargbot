@@ -19,9 +19,9 @@ export class RepeatSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['~code', 'amount'],
-                    description: 'Repeatedly executes `code` `amount` times.',
-                    exampleCode: '{repeat;e;10}',
-                    exampleOut: 'eeeeeeeeee',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'loop',
                     execute: (ctx, [code, amount]) => this.repeat(ctx, amount.value, code)
                 }

@@ -15,17 +15,17 @@ export class ChannelNameSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: [],
-                    description: 'Returns the name of the current channel.',
-                    exampleCode: 'This channel\'s name is {channelname}',
-                    exampleOut: 'This channel\'s name is test-channel',
+                    description: tag.current.description,
+                    exampleCode: tag.current.exampleCode,
+                    exampleOut: tag.current.exampleOut,
                     returns: 'string',
                     execute: (ctx) => this.getChannelName(ctx, ctx.channel.id, true)
                 },
                 {
                     parameters: ['channel', 'quiet?'],
-                    description: 'Returns the name of the given `channel`. If it cannot be found returns `No channel found`, or nothing if `quiet` is `true`.',
-                    exampleCode: '{channelname;111111111111111}',
-                    exampleOut: 'cooler-test-channel',
+                    description: tag.channel.description,
+                    exampleCode: tag.channel.exampleCode,
+                    exampleOut: tag.channel.exampleOut,
                     returns: 'string',
                     execute: (ctx, [channel, quiet]) => this.getChannelName(ctx, channel.value, quiet.value !== '')
                 }

@@ -13,9 +13,9 @@ export class DumpSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['text'],
-                    description: 'Dumps the provided text to a blargbot output page. These expire after 7 days.',
-                    exampleCode: '{dump;Hello, world!}',
-                    exampleOut: 'https://blargbot.xyz/output/1111111111111111',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'string',
                     execute: (ctx, [text]) => this.createDump(ctx, text.value)
                 }

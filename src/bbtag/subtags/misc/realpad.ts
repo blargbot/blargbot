@@ -15,17 +15,17 @@ export class RealPadSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['text', 'length'],
-                    description: 'Pads `text` using space until it has `length` characters. Spaces are added on the right side.',
-                    exampleCode: '{realpad;Hello;10} world!',
-                    exampleOut: 'Hello      world!',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'string',
                     execute: (_, [text, length]) => this.realPad(text.value, length.value, ' ', 'right')
                 },
                 {
                     parameters: ['text', 'length', 'filler: ', 'direction?:right'],
-                    description: 'Pads `text` using `filler` until it has `length` characters. `filler` is applied to the  `direction` of `text`.',
-                    exampleCode: '{realpad;ABC;6;0;left}',
-                    exampleOut: '000ABC',
+                    description: tag.withDirection.description,
+                    exampleCode: tag.withDirection.exampleCode,
+                    exampleOut: tag.withDirection.exampleOut,
                     returns: 'string',
                     execute: (_, [text, length, filler, direction]) => this.realPad(text.value, length.value, filler.value, direction.value.toLowerCase())
                 }

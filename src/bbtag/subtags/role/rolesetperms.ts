@@ -18,17 +18,17 @@ export class RoleSetPermsSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['role'],
-                    description: 'Removes all perms from `role`',
-                    exampleCode: '{rolesetperms;Support}',
-                    exampleOut: '(perms have been changed)', //TODO meaningful output
+                    description: tag.clear.description,
+                    exampleCode: tag.clear.exampleCode,
+                    exampleOut: tag.clear.exampleOut, //TODO meaningful output
                     returns: 'nothing',
                     execute: (ctx, [role]) => this.roleSetPerms(ctx, role.value, '0', '')
                 },
                 {
                     parameters: ['role', 'permissions:0', 'quiet?'],
-                    description: 'Sets the permissions of `role` with the provided `permissions` number. This will not apply any permissions the authorizer can\'t grant. Additionally, this will completely overwrite the role\'s existing permissions. If `quiet` is specified, if `role` can\'t be found it will simply return nothing',
-                    exampleCode: 'The admin role now has the administrator permission. {rolesetperms;admin;8}',
-                    exampleOut: 'The admin role now has the administrator permission.',
+                    description: tag.set.description,
+                    exampleCode: tag.set.exampleCode,
+                    exampleOut: tag.set.exampleOut,
                     returns: 'nothing',
                     execute: (ctx, [role, permissions, quiet]) => this.roleSetPerms(ctx, role.value, permissions.value, quiet.value)
                 }

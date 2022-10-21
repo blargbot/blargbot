@@ -14,9 +14,9 @@ export class RoleNameSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['role', 'quiet?'],
-                    description: 'Returns `role`\'s name. If `quiet` is specified, if `role` can\'t be found it will simply return nothing.',
-                    exampleCode: 'The admin role name is: {rolename;admin}.',
-                    exampleOut: 'The admin role name is: Adminstrator.',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'string',
                     execute: (ctx, [roleId, quiet]) => this.getRoleName(ctx, roleId.value, quiet.value !== '')
                 }

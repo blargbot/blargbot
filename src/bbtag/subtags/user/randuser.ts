@@ -15,9 +15,9 @@ export class RandUserSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: [],
-                    description: 'Returns the id of a random user on the current guild.',
-                    exampleCode: '{username;{randuser}} is a lovely person! {username;{randuser}} isn\'t as good.',
-                    exampleOut: 'abalabahaha is a lovely person! stupid cat isn\'t as good.',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'id',
                     execute: ctx => this.randomUser(ctx)
                 }

@@ -12,9 +12,9 @@ export class ZwsSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: [],
-                    description: 'Returns a single zero width space (unicode 200B)',
-                    exampleCode: '{zws}',
-                    exampleOut: '\u200B',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'string',
                     execute: () => this.getZws()
                 }

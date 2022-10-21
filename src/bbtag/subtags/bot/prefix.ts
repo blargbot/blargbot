@@ -13,9 +13,9 @@ export class PrefixSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: [],
-                    description: 'Gets the command prefix used to call this bbtag.',
-                    exampleCode: 'Your prefix is {prefix}',
-                    exampleOut: 'Your prefix is b!',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'string',
                     execute: ctx => this.getPrefix(ctx)
                 }

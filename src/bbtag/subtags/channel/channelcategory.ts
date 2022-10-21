@@ -15,17 +15,17 @@ export class ChannelCategorySubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: [],
-                    description: 'Returns the category ID of the current channel.',
-                    exampleCode: '{channelcategory}',
-                    exampleOut: '111111111111111',
+                    description: tag.current.description,
+                    exampleCode: tag.current.exampleCode,
+                    exampleOut: tag.current.exampleOut,
                     returns: 'id',
                     execute: (ctx) => this.getCategory(ctx, ctx.channel.id, true)
                 },
                 {
                     parameters: ['channel', 'quiet?'],
-                    description: 'Returns the category ID of the provided `channel`. If the provided `channel` is a category this returns nothing. If it cannot be found returns `No channel found`, or nothing if `quiet` is `true`.',
-                    exampleCode: '{channelcategory;cool channel}\n{channelcategory;cool category}',
-                    exampleOut: '111111111111111\n(nothing is returned here)',
+                    description: tag.channel.description,
+                    exampleCode: tag.channel.exampleCode,
+                    exampleOut: tag.channel.exampleOut,
                     returns: 'id',
                     execute: (ctx, [channel, quiet]) => this.getCategory(ctx, channel.value, quiet.value !== '')
                 }

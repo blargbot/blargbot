@@ -16,9 +16,9 @@ export class SuppressLookupSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['value?:true'],
-                    description: 'Sets whether error messages in the lookup system (query canceled, nothing found) should be suppressed. `value` must be a boolean',
-                    exampleCode: '{suppresslookup}',
-                    exampleOut: '',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'nothing',
                     execute: (ctx, [value]) => this.suppress(ctx, value.value)
                 }

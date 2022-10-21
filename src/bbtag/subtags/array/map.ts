@@ -1,6 +1,7 @@
 import { SubtagArgument } from '../../arguments';
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
+import templates from '../../text';
 import { BBTagRuntimeState } from '../../types';
 import { bbtag, SubtagType } from '../../utils';
 
@@ -14,9 +15,9 @@ export class MapSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['variable', 'array#10000000', '~code'],
-                    description: 'Provides a way to populate an array by executing a function on each of its elements, more info [here](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map)\nFor every element in `array`, a variable called `variable` will be set to the current element. The output of `function` will be the new value of the element. This will return the new array, and will not modify the original.',
-                    exampleCode: '{map;~item;["apples","oranges","pears"];{upper;{get;~item}}}',
-                    exampleOut: '["APPLES","ORANGES","PEARS"]',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'string[]',
                     execute: (context, [varName, array, code]) => this.map(context, varName.value, array.value, code)
                 }

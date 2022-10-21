@@ -13,9 +13,9 @@ export class RegexMatchSubtag extends RegexSubtag {
             definition: [
                 {
                     parameters: ['text', '~regex#50000'],
-                    description: 'Returns an array of everything in `text` that matches `regex`. Any bbtag in `regex` will not be resolved. Please consider using `{apply}` for a dynamic regex. `regex` will only succeed to compile if it is deemed a safe regular expression (safe regexes do not run in exponential time for any input)',
-                    exampleCode: '{regexmatch;I have $1 and 25 cents;/\\d+/g}',
-                    exampleOut: '["1", "25"]',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'string[]',
                     execute: (_, [text, regex]) => this.regexMatch(text.value, regex.raw)
                 }

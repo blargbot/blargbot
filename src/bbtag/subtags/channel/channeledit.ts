@@ -18,9 +18,9 @@ export class ChannelEditSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['channel', 'options?:{}'],
-                    description: 'Edits a channel with the given information.\n`options` is a JSON object, containing any or all of the following properties:\n- `name`\n- `topic`\n- `nsfw`\n- `parentID`\n- `reason` (displayed in audit log)\n- `rateLimitPerUser`\n- `bitrate` (voice)\n- `userLimit` (voice)\nReturns the channel\'s ID.',
-                    exampleCode: '{channeledit;11111111111111111;{j;{"name": "super-cool-channel"}}}',
-                    exampleOut: '11111111111111111',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'id',
                     execute: (ctx, [channel, options]) => this.channelEdit(ctx, channel.value, options.value)
                 }

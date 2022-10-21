@@ -12,21 +12,21 @@ export class UserActivitySubtag extends CompiledSubtag {
             name: 'useractivity',
             aliases: ['usergame'],
             category: SubtagType.USER,
-            description: 'If no game is being played, this will return \'nothing\'',
+            description: tag.description,
             definition: [
                 {
                     parameters: [],
-                    description: 'Returns the name of the activity the executing user is currently doing. ',
-                    exampleCode: 'You are listening to {useractivity}',
-                    exampleOut: 'You are listening to bad music',
+                    description: tag.target.description,
+                    exampleCode: tag.target.exampleCode,
+                    exampleOut: tag.target.exampleOut,
                     returns: 'string',
                     execute: (ctx) => this.getUserActivity(ctx, '', true)
                 },
                 {
                     parameters: ['user', 'quiet?'],
-                    description: 'Returns the name of the activity `user` is currently doing. If `user` can\'t be found it will simply return nothing.',
-                    exampleCode: 'Stupid cat is playing {useractivity;Stupid cat}',
-                    exampleOut: 'Stupid cat is playing nothing',
+                    description: tag.user.description,
+                    exampleCode: tag.user.exampleCode,
+                    exampleOut: tag.user.exampleOut,
                     returns: 'string',
                     execute: (ctx, [userId, quiet]) => this.getUserActivity(ctx, userId.value, quiet.value !== '')
                 }

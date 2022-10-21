@@ -12,9 +12,9 @@ export class UriEncodeSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['text'],
-                    description: 'Encodes `text` in URI format. Useful for constructing links.',
-                    exampleCode: '{uriencode;Hello world!}',
-                    exampleOut: 'Hello%20world!',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'string',
                     execute: (_, [text]) => this.encodeUri(text.value)
                 }

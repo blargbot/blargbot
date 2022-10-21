@@ -13,9 +13,9 @@ export class IsCCSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: [],
-                    description: 'Checks if the tag is being run from within a cc. Returns a boolean (`true` or `false`)',
-                    exampleCode: '{if;{iscc};{dm;{userid};You have mail!};Boo, this only works in cc\'s}',
-                    exampleOut: 'Boo, this only works in cc\'s',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'boolean',
                     execute: (ctx) => this.isCC(ctx)
                 }

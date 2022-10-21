@@ -14,9 +14,9 @@ export class MinSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['numbers+'],
-                    description: 'Returns the smallest entry out of `numbers`. If an array is provided, it will be expanded to its individual values.',
-                    exampleCode: '{min;50;2;65}',
-                    exampleOut: '2',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'number',
                     execute: (_, values) => this.min(values.map(arg => arg.value))
                 }

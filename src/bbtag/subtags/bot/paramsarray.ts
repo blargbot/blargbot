@@ -14,9 +14,9 @@ export class ParamsArraySubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: [],
-                    description: 'Gets the parameters passed to the current function as an array',
-                    exampleCode: '{func.test;{paramsarray}}\n{func.test;a;b;c;d}',
-                    exampleOut: '["a","b","c","d"]',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'json[]',
                     execute: (ctx) => this.getParamsArray(ctx)
                 }

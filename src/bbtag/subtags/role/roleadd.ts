@@ -14,21 +14,21 @@ export class RoleAddSubtag extends CompiledSubtag {
             name: 'roleadd',
             category: SubtagType.ROLE,
             aliases: ['addrole'],
-            description: '`role` can be either a roleID or role mention.',
+            description: tag.description,
             definition: [
                 {
                     parameters: ['role'],
-                    description: 'Gives the executing user `role`. Returns `true` if role was given, else an error will be shown.',
-                    exampleCode: 'Have a role! {roleadd;11111111111111111}',
-                    exampleOut: 'Have a role! true',
+                    description: tag.target.description,
+                    exampleCode: tag.target.exampleCode,
+                    exampleOut: tag.target.exampleOut,
                     returns: 'boolean',
                     execute: (ctx, [role]) => this.addRole(ctx, role.value, ctx.user.id, false)
                 },
                 {
                     parameters: ['role', 'user', 'quiet?'],
-                    description: 'Gives `user` the chosen `role`. Returns `true` if role was given, else an error will be shown. If `quiet` is specified, if a user can\'t be found it will simply return `false`',
-                    exampleCode: 'Stupid cat have a role! {roleadd;Bot;Stupid cat}',
-                    exampleOut: 'Stupid cat have a role! true',
+                    description: tag.other.description,
+                    exampleCode: tag.other.exampleCode,
+                    exampleOut: tag.other.exampleOut,
                     returns: 'boolean',
                     execute: (ctx, [role, user, quiet]) => this.addRole(ctx, role.value, user.value, quiet.value !== '')
                 }

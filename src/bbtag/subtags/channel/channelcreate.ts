@@ -15,13 +15,13 @@ export class ChannelCreateSubtag extends CompiledSubtag {
         super({
             name: 'channelcreate',
             category: SubtagType.CHANNEL,
-            description: '`type` is either `text`, `voice`, `category`, `news` or `store`.\n',
+            description: tag.description,
             definition: [
                 {
                     parameters: ['name', 'type?:text', 'options?:{}'],
-                    description: 'Creates a channel with the specified `options` of type `type``options` is a JSON object, containing any or all of the following properties:\n- `topic`\n- `nsfw`\n- `parentID`\n- `reason` (displayed in audit log)\n- `rateLimitPerUser`\n- `bitrate` (voice)\n- `userLimit` (voice)\nReturns the new channel\'s ID.',
-                    exampleCode: '{channelcreate;super-channel;;{json;{"parentID":"11111111111111111"}}}',
-                    exampleOut: '22222222222222222',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'id',
                     execute: (ctx, [name, type, options]) => this.channelCreate(ctx, name.value, type.value, options.value)
                 }

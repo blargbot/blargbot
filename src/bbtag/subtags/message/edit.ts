@@ -14,27 +14,42 @@ export class EditSubtag extends CompiledSubtag {
         super({
             name: 'edit',
             category: SubtagType.MESSAGE,
-            description: '`text` and `embed` can both be set to `_delete` to remove either the message content or embed.Please note that `embed` is the JSON for an embed object or an array of embed objects, don\'t put `{embed}` there, as nothing will show. Only messages created by the bot may be edited.',
+            description: tag.description,
             definition: [
+                {
+                    parameters: ['messageId', 'text'],
+                    description: tag.inCurrentText.description,
+                    exampleCode: tag.inCurrentText.exampleCode,
+                    exampleOut: tag.inCurrentText.exampleOut
+                },
+                {
+                    parameters: ['messageId', 'embed'],
+                    description: tag.inCurrentEmbed.description,
+                    exampleCode: tag.inCurrentEmbed.exampleCode,
+                    exampleOut: tag.inCurrentEmbed.exampleOut
+                },
                 {
                     parameters: ['messageId', 'text|embed'],
                     returns: 'nothing',
-                    description: 'Edits `messageID` in the current channel to say `text` or `embed`',
-                    exampleCode: '{edit;111111111111111111;{embedbuild;title:Hello world}}',
-                    exampleOut: '',
                     execute: (ctx, [messageId, content]) => this.edit(ctx, ctx.channel.id, messageId.value, content.value)
                 },
                 {
                     parameters: ['messageId', 'text', 'embed'],
-                    description: 'Edits `messageID` in the current channel to say `text` and `embed`',
-                    exampleCode: '{edit;111111111111111111;Hello world;{embedbuild;title:Foo bar}}',
-                    exampleOut: ''
+                    description: tag.inCurrentFull.description,
+                    exampleCode: tag.inCurrentFull.exampleCode,
+                    exampleOut: tag.inCurrentFull.exampleOut
                 },
                 {
-                    parameters: ['channel', 'messageId', 'text|embed'],
-                    description: 'Edits `messageID` in `channelID` to say `text` or `embed`',
-                    exampleCode: '{edit;111111111111111111;222222222222222222;Hello world}',
-                    exampleOut: ''
+                    parameters: ['channel', 'messageId', 'text'],
+                    description: tag.inOtherText.description,
+                    exampleCode: tag.inOtherText.exampleCode,
+                    exampleOut: tag.inOtherText.exampleOut
+                },
+                {
+                    parameters: ['channel', 'messageId', 'embed'],
+                    description: tag.inOtherEmbed.description,
+                    exampleCode: tag.inOtherEmbed.exampleCode,
+                    exampleOut: tag.inOtherEmbed.exampleOut
                 },
                 {
                     parameters: ['messageId|channelId', 'messageId|text', '(text|embed)|(embed)'],
@@ -53,9 +68,9 @@ export class EditSubtag extends CompiledSubtag {
                 {
                     parameters: ['channel', 'messageID', 'text', 'embed'],
                     returns: 'nothing',
-                    description: 'Edits `messageID` in `channelID` to say `text` and `embed`',
-                    exampleCode: '{edit;111111111111111111;222222222222222222;Hello world;{embedbuild;title:Foo bar}}',
-                    exampleOut: '',
+                    description: tag.inOtherFull.description,
+                    exampleCode: tag.inOtherFull.exampleCode,
+                    exampleOut: tag.inOtherFull.exampleOut,
                     execute: (ctx, [channelId, messageId, text, embed]) => this.edit(ctx, channelId.value, messageId.value, text.value, embed.value)
                 }
             ]

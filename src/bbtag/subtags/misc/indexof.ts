@@ -16,9 +16,9 @@ export class IndexOfSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['text|array', 'searchfor', 'start?:0'],
-                    description: 'Finds the index of `searchfor` in `text|array`, after `start`. `text|array` can either be plain text or an array. If it\'s not found, returns -1.',
-                    exampleCode: 'The index of "o" in "hello world" is {indexof;hello world;o}',
-                    exampleOut: 'The index of "o" in "hello world" is 4',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'number',
                     execute: (ctx, [text, search, start]) => this.indexOf(ctx, text.value, search.value, start.value)
                 }

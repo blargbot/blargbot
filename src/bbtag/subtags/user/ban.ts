@@ -21,29 +21,29 @@ export class BanSubtag extends CompiledSubtag {
         super({
             name: 'ban',
             category: SubtagType.USER,
-            description: '`daysToDelete` is the number of days to delete messages for. `duration`',
+            description: tag.description,
             definition: [
                 {
                     parameters: ['user', 'daysToDelete?:1'],
-                    description: 'Bans `user`. If the ban is succesful `true` will be returned, else it will return an error.',
-                    exampleCode: '{ban;Stupid cat;4}',
-                    exampleOut: 'true',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'boolean|number',
                     execute: (ctx, [user, deleteDays]) => this.banMember(ctx, user.value, deleteDays.value, '', '', false)
                 },
                 {
                     parameters: ['user', 'daysToDelete:1', 'reason', 'timeToUnban?'],
-                    description: 'Bans `user` for duration `timeToUnban` with `reason`.',
-                    exampleCode: '{ban;Stupid cat;;Not clicking enough kittens;30d}',
-                    exampleOut: 'true (stupid cat will be unbanned after 30d)',
+                    description: tag.withReason.description,
+                    exampleCode: tag.withReason.exampleCode,
+                    exampleOut: tag.withReason.exampleOut,
                     returns: 'boolean|number',
                     execute: (ctx, [user, deleteDays, reason, unbanAfter]) => this.banMember(ctx, user.value, deleteDays.value, reason.value, unbanAfter.value, false)
                 },
                 {
                     parameters: ['user', 'daysToDelete:1', 'reason', 'timeToUnban', 'noPerms'],
-                    description: 'Bans `user` for duration `timeToUnban` with `reason`. If `noPerms` is provided and not an empty string, do not check if the command executor is actually able to ban people.Only provide this if you know what you\'re doing.',
-                    exampleCode: '{ban;Stupid cat;;For being stupid;;anythingcangohere}',
-                    exampleOut: 'true (anyone can use this cc regardless of perms)',
+                    description: tag.noPerms.description,
+                    exampleCode: tag.noPerms.exampleCode,
+                    exampleOut: tag.noPerms.exampleOut,
                     returns: 'boolean|number',
                     execute: (ctx, [user, deleteDays, reason, unbanAfter, noPerms]) => this.banMember(ctx, user.value, deleteDays.value, reason.value, unbanAfter.value, noPerms.value !== '')
                 }

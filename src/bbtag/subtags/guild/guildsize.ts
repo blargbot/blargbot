@@ -14,9 +14,9 @@ export class GuildSizeSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: [],
-                    description: 'Returns the number of members on the current guild.',
-                    exampleCode: 'This guild has {guildsize} members.',
-                    exampleOut: 'This guild has 123 members.',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'number',
                     execute: (ctx) => this.getMemberCount(ctx)
                 }

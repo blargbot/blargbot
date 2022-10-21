@@ -17,13 +17,13 @@ export class RequestSubtag extends CompiledSubtag {
         super({
             name: 'request',
             category: SubtagType.BOT,
-            description: 'Only certain whitelisted domains can be used for `url`. See [here](https://blargbot.xyz/domains) for the list.The output is a JSON object with the following structure. It is recommended to use {jsonget} to navigate it.\n```json\n{\n  "body": {}, // the body of the request\n  "status": 200, // the HTTP status code\n  "statusText": "OK", // the human readable translation of the status code\n  "date": "Thu, 1 Jan 1970 00:00:00 GMT", // the date sent in the headers\n  "contentType": "application/json", // the content type of the response\n  "url": "https://fancy.url/here" // the url that was requested\n}\n```',
+            description: tag.description,
             definition: [
                 {
                     parameters: ['url', 'options?', 'data?'],
-                    description: 'Performs a HTTP request to `url`, with provided `options` and `data`.`options` is a JSON object with the following structure. It is recommended to use {jsonset} to create it.\n```json\n{\n  "method": "GET|POST|PUT|PATCH|DELETE", // defaults to GET\n  "headers": { "key": "value" }\n}\n```If the method is GET and a JSON object is provided for `data`, it will be formatted as query strings.',
-                    exampleCode: '{jget;{request;https://example.com/update/user;{jset;;method;POST};{jset;;user;Stupid cat}};body}',
-                    exampleOut: 'Stupid cat updated!',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'json',
                     execute: (ctx, [url, options, data]) => this.requestUrl(ctx, url.value, options.value, data.value)
                 }

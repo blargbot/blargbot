@@ -14,9 +14,9 @@ export class RoleIdSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['role', 'quiet?'],
-                    description: 'Returns `role`\'s ID. If `quiet` is specified, if `role` can\'t be found it will simply return nothing.',
-                    exampleCode: 'The admin role ID is: {roleid;admin}.',
-                    exampleOut: 'The admin role ID is: 123456789123456.',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'id',
                     execute: (ctx, [roleId, quiet]) => this.getRoleId(ctx, roleId.value, quiet.value !== '')
                 }

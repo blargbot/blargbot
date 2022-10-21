@@ -13,9 +13,9 @@ export class FileSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['file', 'filename'],
-                    description: 'Sets the output attachment to the provided `file` and `filename`. If `file` starts with `buffer:`, the following text will be parsed as base64 to a raw buffer - useful for uploading images.',
-                    exampleCode: '{file;Hello, world!;readme.txt}',
-                    exampleOut: '(a file labeled readme.txt containing "Hello, world!")',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'nothing',
                     execute: (ctx, [file, fileName]) => this.attachFile(ctx, fileName.value, file.value)
                 }

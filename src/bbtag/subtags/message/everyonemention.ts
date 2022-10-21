@@ -16,9 +16,9 @@ export class EveryoneMentionSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['mention?'],
-                    description: 'Returns the mention of `@everyone`.\nThis requires the `disableeveryone` setting to be false. If `mention` is set to `true`, `@everyone` will ping, else it will be silent.',
-                    exampleCode: '{everyonemention}',
-                    exampleOut: '@everyone',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'string',
                     execute: (ctx, [mention]) => this.everyoneMention(ctx, mention.value)
                 }

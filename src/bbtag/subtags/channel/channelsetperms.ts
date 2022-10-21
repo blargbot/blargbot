@@ -17,17 +17,17 @@ export class ChannelSetPermsSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['channel', 'type', 'memberid|roleid'], //TODO allow member/role names
-                    description: 'Deletes the permission overwrites of `memberid|roleid` in `channel`.\nReturns the channel\'s ID.',
-                    exampleCode: '{channelsetperms;11111111111111111;member;222222222222222222}',
-                    exampleOut: '11111111111111111',
+                    description: tag.current.description,
+                    exampleCode: tag.current.exampleCode,
+                    exampleOut: tag.current.exampleOut,
                     returns: 'id',
                     execute: (ctx, [channel, type, item]) => this.channelSetPerms(ctx, channel.value, type.value, item.value, undefined, undefined)
                 },
                 {
                     parameters: ['channel', 'type', 'memberid|roleid', 'allow', 'deny?'],
-                    description: 'Sets the permissions of a `member` or `role` in `channel`\n`type` is either `member` or `role`, and `memberid|roleid` corresponds to the id of the member or role.\nProvide `allow` and `deny` as numbers, which can be calculated [here](https://discordapi.com/permissions.html). Returns the channel\'s ID.',
-                    exampleCode: '{channelsetperms;11111111111111111;member;222222222222222222;1024;2048}',
-                    exampleOut: '11111111111111111',
+                    description: tag.channel.description,
+                    exampleCode: tag.channel.exampleCode,
+                    exampleOut: tag.channel.exampleOut,
                     returns: 'id',
                     execute: (ctx, [channel, type, entityId, allow, deny]) => this.channelSetPerms(ctx, channel.value, type.value, entityId.value, parse.bigInt(allow.value), parse.bigInt(deny.value))
                 }

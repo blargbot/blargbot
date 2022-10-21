@@ -16,25 +16,25 @@ export class MessageEmbedsSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: [],
-                    description: 'Returns an array of embeds of the invoking message.',
-                    exampleCode: 'You sent an embed: "{messageembeds}"',
-                    exampleOut: 'You sent an embed: "[{"title":"Hello!"}]"',
+                    description: tag.trigger.description,
+                    exampleCode: tag.trigger.exampleCode,
+                    exampleOut: tag.trigger.exampleOut,
                     returns: 'embed[]',
                     execute: (ctx) => this.getMessageEmbeds(ctx, ctx.channel.id, ctx.message.id, false)
                 },
                 {
                     parameters: ['messageid'],
-                    description: 'Returns an array of embeds of `messageid` in the current channel',
-                    exampleCode: 'Someone sent a message with embeds: "{messageembeds;1111111111111}"',
-                    exampleOut: 'Someone sent a message with attachments: "[{"title":"Hello!"}]"',
+                    description: tag.inCurrent.description,
+                    exampleCode: tag.inCurrent.exampleCode,
+                    exampleOut: tag.inCurrent.exampleOut,
                     returns: 'embed[]',
                     execute: (ctx, [messageId]) => this.getMessageEmbeds(ctx, ctx.channel.id, messageId.value, false)
                 },
                 {
                     parameters: ['channel', 'messageid', 'quiet?'],
-                    description: 'Returns an array of embeds of `messageid` from `channel`. If `quiet` is provided and `channel` cannot be found, this will return an empty array.',
-                    exampleCode: 'Someone sent a message in #support with embeds: "{messageembeds;support;1111111111111}"',
-                    exampleOut: 'Someone sent a message in #support with embeds: "[{"title":"Hello!"}]"',
+                    description: tag.inOther.description,
+                    exampleCode: tag.inOther.exampleCode,
+                    exampleOut: tag.inOther.exampleOut,
                     returns: 'embed[]',
                     execute: (ctx, [channel, message, quiet]) => this.getMessageEmbeds(ctx, channel.value, message.value, quiet.value !== '')
                 }

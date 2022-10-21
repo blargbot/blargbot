@@ -14,17 +14,17 @@ export class UnbanSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['user'],
-                    description: 'Unbans `user`.',
-                    exampleCode: '{unban;@user} @user was unbanned!',
-                    exampleOut: '@user was unbanned!',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'boolean',
                     execute: (ctx, [user]) => this.unbanUser(ctx, user.value, '', false)
                 },
                 {
                     parameters: ['user', 'reason', 'noPerms?'],
-                    description: 'Unbans `user` with the given `reason`.If `noPerms` is provided and not an empty string, do not check if the command executor is actually able to ban people. Only provide this if you know what you\'re doing.',
-                    exampleCode: '{unban;@stupid cat;I made a mistake} @stupid cat has been unbanned',
-                    exampleOut: 'true @stupid cat has been unbanned',
+                    description: tag.withReason.description,
+                    exampleCode: tag.withReason.exampleCode,
+                    exampleOut: tag.withReason.exampleOut,
                     returns: 'boolean',
                     execute: (ctx, [user, reason, noPerms]) => this.unbanUser(ctx, user.value, reason.value, noPerms.value !== '')
                 }

@@ -16,25 +16,25 @@ export class ParamsSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: [],
-                    description: 'Gets the whole input given to the current function call',
-                    exampleCode: '{func;test;You gave the parameters `{params}`}\n{func.test;Hello world!;BBtag is so cool}',
-                    exampleOut: 'You gave the parameters `Hello world! BBtag is so cool`',
+                    description: tag.all.description,
+                    exampleCode: tag.all.exampleCode,
+                    exampleOut: tag.all.exampleOut,
                     returns: 'string',
                     execute: (ctx) => this.getAllParams(ctx)
                 },
                 {
                     parameters: ['index'],
-                    description: 'Gets a parameter passed to the current function call',
-                    exampleCode: '{func;test;The first parameter is `{params;0}`}\n{func.test;Hello world!;BBtag is so cool}',
-                    exampleOut: 'The first parameter is `Hello world!`',
+                    description: tag.indexed.description,
+                    exampleCode: tag.indexed.exampleCode,
+                    exampleOut: tag.indexed.exampleOut,
                     returns: 'string',
                     execute: (ctx, [index]) => this.getParam(ctx, index.value)
                 },
                 {
                     parameters: ['start', 'end'],
-                    description: 'Gets all the parameters given from `start` up to `end`. If `end` is `n` then all parameters after `start` will be returned',
-                    exampleCode: '{func;test;The first parameter is `{params;2;4}`}\n{func.test;A;B;C;D;E;F}',
-                    exampleOut: 'C D',
+                    description: tag.range.description,
+                    exampleCode: tag.range.exampleCode,
+                    exampleOut: tag.range.exampleOut,
                     returns: 'string',
                     execute: (ctx, [start, end]) => this.getParams(ctx, start.value, end.value)
                 }

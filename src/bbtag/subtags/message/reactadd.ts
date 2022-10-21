@@ -15,7 +15,7 @@ export class ReactAddSubtag extends CompiledSubtag {
             name: 'reactadd',
             category: SubtagType.MESSAGE,
             aliases: ['addreact'],
-            description: 'Please note that to be able to add a reaction, I must be on the server that you got that reaction from. If I am not, then I will return an error if you are trying to apply the reaction to another message.',
+            description: tag.description,
             definition: [//! Overwritten
                 {
                     parameters: ['arguments+'],
@@ -24,21 +24,21 @@ export class ReactAddSubtag extends CompiledSubtag {
                 },
                 {
                     parameters: ['reactions+'],
-                    description: 'Adds `reactions` to the output message of this tag.',
-                    exampleCode: 'This will have reactions! {reactadd;🤔;👀}',
-                    exampleOut: 'This will have reactions! (reacted with 🤔 and 👀)'
+                    description: tag.output.description,
+                    exampleCode: tag.output.exampleCode,
+                    exampleOut: tag.output.exampleOut
                 },
                 {
                     parameters: ['messageid', 'reactions+'],
-                    description: 'Adds `reactions` to `messageid` in the current channel.',
-                    exampleCode: '{reactadd;11111111111111111;🤔;👀}',
-                    exampleOut: '(11111111111111111 now has reactions 🤔 and 👀)'
+                    description: tag.inCurrent.description,
+                    exampleCode: tag.inCurrent.exampleCode,
+                    exampleOut: tag.inCurrent.exampleOut
                 },
                 {
                     parameters: ['channel', 'messageid', 'reactions+'],
-                    description: 'Adds `reactions` to `messageid` in `channelid`. `channelid` must be an ID, use of `{channelid} is advised`.',
-                    exampleCode: '{reactadd;11111111111111111;22222222222222222;🤔;👀}',
-                    exampleOut: '(22222222222222222 in 11111111111111111 now has reactions 🤔 and 👀)'
+                    description: tag.inOther.description,
+                    exampleCode: tag.inOther.exampleCode,
+                    exampleOut: tag.inOther.exampleOut
                 }
             ]
         });

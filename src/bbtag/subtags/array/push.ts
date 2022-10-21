@@ -1,6 +1,7 @@
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
 import { NotAnArrayError } from '../../errors';
+import templates from '../../text';
 import { bbtag, SubtagType } from '../../utils';
 
 const tag = templates.subtags.push;
@@ -13,9 +14,9 @@ export class PushSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['array', 'values+'],
-                    description: 'Pushes `values` onto the end of `array`. If provided a variable, this will update the original variable. Otherwise, it will simply output the new array.',
-                    exampleCode: '{push;["this", "is", "an"];array}',
-                    exampleOut: '["this","is","an","array"]',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'json[]|nothing',
                     execute: (context, [array, ...values]) => this.push(context, array.value, values.map(v => v.value))
                 }

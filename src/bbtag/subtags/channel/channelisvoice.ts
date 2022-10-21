@@ -17,17 +17,17 @@ export class ChannelIsVoiceSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: [],
-                    description: 'Checks if the current channel is a voice channel.',
-                    exampleCode: '{if;{isvoice};How did you even call the command?;Yeah you can write stuff here}',
-                    exampleOut: 'Yeah you can write stuff here',
+                    description: tag.current.description,
+                    exampleCode: tag.current.exampleCode,
+                    exampleOut: tag.current.exampleOut,
                     returns: 'boolean',
                     execute: (ctx) => this.isVoiceChannel(ctx, ctx.channel.id, true)
                 },
                 {
                     parameters: ['channel', 'quiet?'],
-                    description: 'Checks if `channel` is a voice channel. If it cannot be found returns `No channel found`, or `false` if `quiet` is `true`.',
-                    exampleCode: '{isvoice;blarg podcats}',
-                    exampleOut: 'true',
+                    description: tag.channel.description,
+                    exampleCode: tag.channel.exampleCode,
+                    exampleOut: tag.channel.exampleOut,
                     returns: 'boolean',
                     execute: (ctx, [channel, quiet]) => this.isVoiceChannel(ctx, channel.value, quiet.value !== '')
                 }

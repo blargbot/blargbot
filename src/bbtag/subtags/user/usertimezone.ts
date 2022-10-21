@@ -14,17 +14,17 @@ export class UserTimezoneSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: [],
-                    description: 'Returns the set timezone of the user executing the containing tag.',
-                    exampleCode: '{usertimezone}',
-                    exampleOut: 'UTC',
+                    description: tag.target.description,
+                    exampleCode: tag.target.exampleCode,
+                    exampleOut: tag.target.exampleOut,
                     returns: 'string',
                     execute: ctx => this.getUserTimezone(ctx, '', false)
                 },
                 {
                     parameters: ['user', 'quiet?'],
-                    description: 'Returns the set timezone code of the specified `user`. If `quiet` is specified, if `user` can\'t be found it will simply return nothing.If the user has no set timezone, the output will be UTC.',
-                    exampleCode: 'Discord official\'s timezone is {usertimezone;Discord official}',
-                    exampleOut: 'Discord official\'s timezone is Europe/Berlin',
+                    description: tag.user.description,
+                    exampleCode: tag.user.exampleCode,
+                    exampleOut: tag.user.exampleOut,
                     returns: 'string',
                     execute: (ctx, [userId, quiet]) => this.getUserTimezone(ctx, userId.value, quiet.value !== '')
                 }

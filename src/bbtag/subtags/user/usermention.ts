@@ -16,17 +16,17 @@ export class UserMentionSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: [],
-                    description: 'Mentions the executing user.',
-                    exampleCode: 'Hello, {usermention}!',
-                    exampleOut: 'Hello, @user!',
+                    description: tag.target.description,
+                    exampleCode: tag.target.exampleCode,
+                    exampleOut: tag.target.exampleOut,
                     returns: 'string',
                     execute: (ctx) => this.userMention(ctx, ctx.user.id, false, 'false')
                 },
                 {
                     parameters: ['user', 'quiet?', 'noPing?:false'],
-                    description: 'Mentions `user`. If `quiet` is specified, if `user` can\'t be found it will simply return nothing.',
-                    exampleCode: 'Hello, {usermention;Stupidcat}!',
-                    exampleOut: 'Hello, @Stupid cat!',
+                    description: tag.user.description,
+                    exampleCode: tag.user.exampleCode,
+                    exampleOut: tag.user.exampleOut,
                     returns: 'string',
                     execute: (ctx, [userId, quiet, noPing]) => this.userMention(ctx, userId.value, quiet.value !== '', noPing.value)
                 }

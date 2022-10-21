@@ -16,17 +16,17 @@ export class AbsSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['number'],
-                    description: 'Gets the absolute value of `number`',
-                    exampleCode: '{abs;-535}',
-                    exampleOut: '535',
+                    description: tag.value.description,
+                    exampleCode: tag.value.exampleCode,
+                    exampleOut: tag.value.exampleOut,
                     returns: 'number|number[]',
                     execute: (_, [value]) => this.absSingle(value.value)
                 },
                 {
                     parameters: ['numbers+2'],
-                    description: 'Gets the absolute value of each `numbers` and returns an array containing the results',
-                    exampleCode: '{abs;-535;123;-42}',
-                    exampleOut: '[535, 123, 42]',
+                    description: tag.array.description,
+                    exampleCode: tag.array.exampleCode,
+                    exampleOut: tag.array.exampleOut,
                     returns: 'number[]',
                     execute: (_, values) => this.absMultiple(values.map(arg => arg.value))
                 }

@@ -15,9 +15,9 @@ export class UserSetNickSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['nick', 'user?'],
-                    description: 'Sets `user`\'s nickname to `nick`. Leave `nick` blank to reset their nickname.',
-                    exampleCode: '{usersetnick;super cool nickname}\n{//;Reset the the nickname}\n{usersetnick;}',
-                    exampleOut: '', //TODO meaningful output
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'nothing',
                     execute: (ctx, [nick, user]) => this.setUserNick(ctx, nick.value, user.value)
                 }

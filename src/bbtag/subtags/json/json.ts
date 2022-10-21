@@ -11,14 +11,16 @@ export class JsonSubtag extends CompiledSubtag {
             name: 'json',
             category: SubtagType.JSON,
             aliases: ['j'],
-            definition: [{
-                parameters: ['~input?:{}'],
-                description: 'Defines a raw JSON object. Usage of subtags is disabled in `input`, inside `input` all brackets are required to match.',
-                exampleCode: '{json;{\n  "key": "value"\n}}',
-                exampleOut: '{\n  "key": "value"\n}',
-                returns: 'json',
-                execute: (_, [value]) => this.getJson(value.raw)
-            }]
+            definition: [
+                {
+                    parameters: ['~input?:{}'],
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
+                    returns: 'json',
+                    execute: (_, [value]) => this.getJson(value.raw)
+                }
+            ]
         });
     }
 

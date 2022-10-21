@@ -16,9 +16,9 @@ export class GuildBansSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: [],
-                    description: 'Returns an array of banned users in the current guild.',
-                    exampleCode: 'This guild has {length;{guildbans}} banned users.',
-                    exampleOut: 'This guild has 123 banned users.',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'id[]',
                     execute: (ctx) => this.getGuildBans(ctx)
                 }

@@ -12,9 +12,9 @@ export class UpperSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['text'],
-                    description: 'Returns `text` as uppercase.',
-                    exampleCode: '{upper;this will become uppercase}',
-                    exampleOut: 'THIS WILL BECOME UPPERCASE',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'string',
                     execute: (_, [text]) => this.uppercase(text.value)
                 }

@@ -15,17 +15,17 @@ export class UserIsBotSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: [],
-                    description: 'Returns whether the executing user is a bot.',
-                    exampleCode: 'Are you a bot? {userisbot}',
-                    exampleOut: 'Are you a bot? false',
+                    description: tag.target.description,
+                    exampleCode: tag.target.exampleCode,
+                    exampleOut: tag.target.exampleOut,
                     returns: 'boolean',
                     execute: (ctx) => this.getUserIsBot(ctx, '', true)
                 },
                 {
                     parameters: ['user', 'quiet?'],
-                    description: 'Returns whether a `user` is a bot. If `quiet` is specified, if `user` can\'t be found it will simply return nothing.',
-                    exampleCode: 'Is Stupid cat a bot? {userisbot;Stupid cat}',
-                    exampleOut: 'Is Stupid cat a bot? false',
+                    description: tag.user.description,
+                    exampleCode: tag.user.exampleCode,
+                    exampleOut: tag.user.exampleOut,
                     returns: 'boolean',
                     execute: (ctx, [userId, quiet]) => this.getUserIsBot(ctx, userId.value, quiet.value !== '')
                 }

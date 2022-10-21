@@ -18,9 +18,9 @@ export class ChannelSetPosSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['channel', 'position'],
-                    description: 'Moves a channel to the provided position.',
-                    exampleCode: '{channelsetpos;11111111111111111;5}',
-                    exampleOut: '',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'nothing',
                     execute: (ctx, [channel, position]) => this.setChannelPosition(ctx, channel.value, position.value)
                 }

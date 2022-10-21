@@ -14,9 +14,9 @@ export class WarningsSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['user?', 'quiet?'],
-                    description: 'Gets the number of warnings `user` has. `user` defaults to the user who executed the containing tag.',
-                    exampleCode: 'You have {warnings} warning(s)!',
-                    exampleOut: 'You have 0 warning(s)!',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'number',
                     execute: (context, [user, quiet]) => this.getUserWarnings(context, user.value, quiet.value !== '')
                 }

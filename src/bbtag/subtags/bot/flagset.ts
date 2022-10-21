@@ -15,10 +15,10 @@ export class FlagSetSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['flagName'],
-                    description: 'Returns `true` or `false`, depending on whether the specified case-sensitive flag code has been set or not.',
-                    exampleCode: '{flagset;a} {flagset;_}',
-                    exampleIn: 'Hello, -a world!',
-                    exampleOut: 'true false',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleIn: tag.default.exampleIn,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'boolean',
                     execute: (ctx, [flagName]) => this.isFlagSet(ctx, flagName.value)
                 }

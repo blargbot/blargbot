@@ -15,9 +15,9 @@ export class RolePermsSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['role', 'quiet?'],
-                    description: 'Returns `role`\'s permission number. If `quiet` is specified, if `role` can\'t be found it will simply return nothing.',
-                    exampleCode: 'The admin role\'s permissions are: {roleperms;admin}.',
-                    exampleOut: 'The admin role\'s permissions are: 8.',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'number',
                     execute: (ctx, [userId, quiet]) => this.getRolePerms(ctx, userId.value, quiet.value !== '')
                 }

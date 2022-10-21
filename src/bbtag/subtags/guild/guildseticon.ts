@@ -19,9 +19,9 @@ export class GuildSetIconSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['image'],
-                    description: 'Updates the current guild\'s icon with the provided image. `image` is either a link to an image, or a base64 encoded data url (`data:<content-type>;base64,<base64-data>`). You may need to use {semi} for the latter.',
-                    exampleCode: '{guildseticon;https://some.cool/image.png}',
-                    exampleOut: '', //TODO meaningful output
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut, //TODO meaningful output
                     returns: 'nothing',
                     execute: (ctx, [image]) => this.setGuildIcon(ctx, image.value)
 

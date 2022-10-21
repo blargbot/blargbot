@@ -17,17 +17,17 @@ export class ChannelIsNsfwSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: [],
-                    description: 'Checks if the current channel is a NSFW channel.',
-                    exampleCode: '{if;{isnsfw};Spooky nsfw stuff;fluffy bunnies}',
-                    exampleOut: 'fluffy bunnies',
+                    description: tag.current.description,
+                    exampleCode: tag.current.exampleCode,
+                    exampleOut: tag.current.exampleOut,
                     returns: 'boolean',
                     execute: (ctx) => this.isNsfwChannel(ctx, ctx.channel.id, true)
                 },
                 {
                     parameters: ['channel', 'quiet?'],
-                    description: 'Checks if `channel` is a NSFW channel. If it cannot be found returns `No channel found`, or `false` if `quiet` is `true`.',
-                    exampleCode: '{isnsfw;SFW Cat pics}',
-                    exampleOut: 'true',
+                    description: tag.channel.description,
+                    exampleCode: tag.channel.exampleCode,
+                    exampleOut: tag.channel.exampleOut,
                     returns: 'boolean',
                     execute: (ctx, [channel, quiet]) => this.isNsfwChannel(ctx, channel.value, quiet.value !== '')
                 }

@@ -16,21 +16,21 @@ export class WaitMessageSubtag extends CompiledSubtag {
         super({
             name: 'waitmessage',
             category: SubtagType.MESSAGE,
-            description: `Pauses the command until one of the given users sends a message in any of the given channels. When a message is sent, \`condition\` will be run to determine if the message can be accepted. If no message has been accepted within \`timeout\` then the subtag returns \`Wait timed out\`, otherwise it returns an array containing the channel Id, then the message Id. \n\n\`channels\` defaults to the current channel.\n\`users\` defaults to the current user.\n\`condition\` must return \`true\` or \`false\`\n\`timeout\` is a number of seconds. This is limited to 300\n\n While inside the \`condition\` parameter, none of the following subtags may be used: \`${bbtag.overrides.waitmessage.join(', ')}\`\nAlso, the current message becomes the users message that is to be checked. This means that \`{channelid}\`, \`{messageid}\`, \`{userid}\` and all related subtags will change their values.`,
+            description: tag.description({ disabled: bbtag.overrides.waitmessage }),
             definition: [
                 {
                     parameters: [],
-                    description: 'Pauses the command until the executing user sends a message in the current channel.',
-                    exampleCode: '{waitmessage}',
-                    exampleOut: '["111111111111111","2222222222222"]',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'id[]',
                     execute: (ctx) => this.awaitMessage(ctx, '', '', defaultCondition, '60')
                 },
                 {
                     parameters: ['channelIDs', 'userIDs?', '~condition?:true', 'timeout?:60'],
-                    description: 'Pauses the command until `condition` returns true when one of `userIDs` sends a message in one of `channelIDs`.',
-                    exampleCode: '{waitmessage;111111111111111;{userid;stupid cat};{bool;{username};startswith;stupid};50}',
-                    exampleOut: '["111111111111111", "103347843934212096"]',
+                    description: tag.filtered.description,
+                    exampleCode: tag.filtered.exampleCode,
+                    exampleOut: tag.filtered.exampleOut,
                     returns: 'id[]',
                     execute: (ctx, [channelIDs, userIDs, condition, timeout]) => this.awaitMessage(ctx, channelIDs.value, userIDs.value, condition.code, timeout.value)
                 }

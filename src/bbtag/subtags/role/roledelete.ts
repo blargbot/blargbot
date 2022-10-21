@@ -16,9 +16,9 @@ export class RoleDeleteSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['role', 'quiet?'],
-                    description: 'Deletes `role`. If `quiet` is specified, if `role` can\'t be found it will return nothing.\nWarning: this subtag is able to delete roles managed by integrations.',
-                    exampleCode: '{roledelete;Super Cool Role!}',
-                    exampleOut: '(rip no more super cool roles for anyone)',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'nothing',
                     execute: (ctx, [role, quiet]) => this.deleteRole(ctx, role.value, quiet.value !== '')
                 }

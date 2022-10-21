@@ -16,21 +16,21 @@ export class ColorSubtag extends CompiledSubtag {
         super({
             name: 'color',
             category: SubtagType.MISC,
-            description: 'If `inputFormat` is omitted or left empty, the format of `color` is automatically calculated, but might be innaccurate. For accuracy and known `color` formats use `inputFormat`. It converts all ways between `rgb`, `hsl`, `hsv`, `hwb`, `cmyk`, `ansi16`, `hex` strings, and CSS `keyword`s (will round to closest).', //TODO document the other formats too perhaps? As these are supported/working. (lab, lch, ansi256, hcg, apple, gray, xyz)
+            description: tag.description, //TODO document the other formats too perhaps? As these are supported/working. (lab, lch, ansi256, hcg, apple, gray, xyz)
             definition: [
                 {
                     parameters: ['color', 'outputFormat?:hex'],
-                    description: 'Converts a color to `outputFormat`.',
-                    exampleCode: '{color;#4286f4;RGB}',
-                    exampleOut: '[66,134,244]',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'string',
                     execute: (ctx, [color, format]) => this.parseColor(ctx, color.value, format.value, undefined)
                 },
                 {
                     parameters: ['color', 'outputFormat:hex', 'inputFormat'],
-                    description: 'Converts a color of `inputFormat` to `outputFormat`. If `inputFormat` is left empty, it will be automatically calculated.',
-                    exampleCode: '{color;[66,134,244];hex;RGB}',
-                    exampleOut: '#4286f4',
+                    description: tag.convert.description,
+                    exampleCode: tag.convert.exampleCode,
+                    exampleOut: tag.convert.exampleOut,
                     returns: 'string',
                     execute: (ctx, [color, outFormat, inFormat]) => this.parseColor(ctx, color.value, outFormat.value, inFormat.value)
                 }

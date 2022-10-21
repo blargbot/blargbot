@@ -14,9 +14,9 @@ export class HtmlEncodeSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['text'],
-                    description: 'Encodes `text` with escaped html entities.',
-                    exampleCode: '{htmlencode;<hello, world>}',
-                    exampleOut: '&lt;hello, world&gt;',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'string',
                     execute: (_, [text]) => this.htmlEncode(text.value) // TODO: use subtag.source
                 }

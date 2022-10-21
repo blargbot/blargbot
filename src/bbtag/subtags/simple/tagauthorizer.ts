@@ -14,9 +14,9 @@ export class TagAuthorizerSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: [],
-                    description: 'Returns the user ID of the tag/cc authorizer',
-                    exampleCode: '{username;{tagauthorizer}} authorized this tag!',
-                    exampleOut: 'stupid cat authorized this tag!',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'id',
                     execute: (ctx) => this.getAuthorizer(ctx)
                 }

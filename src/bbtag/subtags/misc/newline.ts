@@ -17,9 +17,9 @@ export class NewlineSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['count?:1'],
-                    description: 'Will be replaced by `count` newline characters (\\n).',
-                    exampleCode: 'Hello,{newline}world!',
-                    exampleOut: 'Hello,\nworld!',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'string',
                     execute: (ctx, [count]) => this.getNewlines(ctx, count.value)
                 }

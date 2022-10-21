@@ -15,25 +15,25 @@ export class MessageTextSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: [],
-                    description: 'Returns the text of the executing message.',
-                    exampleCode: 'You sent "text"',
-                    exampleOut: 'You sent "b!t test You sent "{text}""`',
+                    description: tag.trigger.description,
+                    exampleCode: tag.trigger.exampleCode,
+                    exampleOut: tag.trigger.exampleOut,
                     returns: 'string',
                     execute: (ctx) => this.getMessageText(ctx, ctx.channel.id, ctx.message.id, false)
                 },
                 {
                     parameters: ['messageid'],
-                    description: 'Returns the text of `messageid` in the current channel.',
-                    exampleCode: 'Message 1111111111111 contained: "{text;1111111111111}"',
-                    exampleOut: 'Message 1111111111111 contained: "Hello world!"',
+                    description: tag.inCurrent.description,
+                    exampleCode: tag.inCurrent.exampleCode,
+                    exampleOut: tag.inCurrent.exampleOut,
                     returns: 'string',
                     execute: (ctx, [messageId]) => this.getMessageText(ctx, ctx.channel.id, messageId.value, false)
                 },
                 {
                     parameters: ['channel', 'messageid', 'quiet?'],
-                    description: 'Returns the text of `messageid` in `channel`. If `quiet` is provided and `channel` cannot be found, this will return nothing.',
-                    exampleCode: 'Message 1111111111111 in #support contained: "{text;support;1111111111111}"',
-                    exampleOut: 'Message 1111111111111 in #support contained: "Spooky Stuff"',
+                    description: tag.inOther.description,
+                    exampleCode: tag.inOther.exampleCode,
+                    exampleOut: tag.inOther.exampleOut,
                     returns: 'string',
                     execute: (ctx, [channel, messageId, quiet]) => this.getMessageText(ctx, channel.value, messageId.value, quiet.value !== '')
                 }

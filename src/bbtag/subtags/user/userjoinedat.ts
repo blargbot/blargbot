@@ -13,21 +13,21 @@ export class UserJoinedAtSubtag extends CompiledSubtag {
         super({
             name: 'userjoinedat',
             category: SubtagType.USER,
-            description: 'For a list of formats see the [moment documentation](http://momentjs.com/docs/#/displaying/format/) for more information.',
+            description: tag.description,
             definition: [
                 {
                     parameters: ['format?:YYYY-MM-DDTHH:mm:ssZ'],
-                    description: 'Returns the date that the executing user joined the guild, using `format` for the output, in UTC+0.\n',
-                    exampleCode: 'Your account joined this guild on {usercreatedat;YYYY/MM/DD HH:mm:ss}',
-                    exampleOut: 'Your account joined this guild on 2016/01/01 01:00:00.',
+                    description: tag.target.description,
+                    exampleCode: tag.target.exampleCode,
+                    exampleOut: tag.target.exampleOut,
                     returns: 'string',
                     execute: (ctx, [format]) => this.getUserJoinDate(ctx, format.value, '', false)
                 },
                 {
                     parameters: ['format:YYYY-MM-DDTHH:mm:ssZ', 'user', 'quiet?'],
-                    description: 'Returns the date that `user` joined the current guild using `format` for the output, in UTC+0. if `user` can\'t be found it will simply return nothing.',
-                    exampleCode: 'Stupid cat joined this guild on {userjoinedat;YYYY/MM/DD HH:mm:ss;Stupid cat}',
-                    exampleOut: 'Stupid cat joined this guild on 2016/06/19 23:30:30',
+                    description: tag.user.description,
+                    exampleCode: tag.user.exampleCode,
+                    exampleOut: tag.user.exampleOut,
                     returns: 'string',
                     execute: (ctx, [format, userId, quiet]) => this.getUserJoinDate(ctx, format.value, userId.value, quiet.value !== '')
                 }

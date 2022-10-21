@@ -12,9 +12,9 @@ export class ConcatSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['values+'],
-                    description: 'Takes `values` and joins them together to form a single array. If `values` is an array, it\'s flattened into the resulting array.',
-                    exampleCode: 'Two arrays: {concat;["this", "is"];["an", "array"]}\nStrings and an array: {concat;a;b;c;[1, 2, 3]}',
-                    exampleOut: 'Two arrays: ["this","is","an","array"]\nStrings and an array: ["a","b","c", 1, 2, 3]',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'json[]',
                     execute: (_, [...arrays]) => this.concatArrays(arrays.map((arr) => arr.value))
                 }

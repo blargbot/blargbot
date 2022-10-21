@@ -14,9 +14,9 @@ export class ParseFloatSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['number'],
-                    description: 'Returns an floating point number from `text`. If it wasn\'t a number, returns `NaN`.',
-                    exampleCode: '{parsefloat;abcd} {parsefloat;12.34} {parsefloat;1.2cd}',
-                    exampleOut: 'NaN 12.34 1.2',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'number',
                     execute: (_, [number]) => this.parseFloat(number.value)
                 }

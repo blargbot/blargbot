@@ -13,9 +13,9 @@ export class UriDecodeSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['text'],
-                    description: 'Decodes `text` from URI format.',
-                    exampleCode: '{uridecode;Hello%20world}',
-                    exampleOut: 'Hello world!',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'string',
                     execute: (_, [text]) => this.decodeUri(text.value)
                 }

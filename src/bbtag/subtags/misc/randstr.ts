@@ -16,9 +16,9 @@ export class RandStrSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['chars', 'length'],
-                    description: 'Creates a random string with characters from `chars` that is `length` characters long.',
-                    exampleCode: '{randstr;abcdefghijklmnopqrstuvwxyz;9}',
-                    exampleOut: 'kgzyqcvda',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'string',
                     execute: (ctx, [chars, count]) => this.randStr(ctx, chars.value, count.value)
                 }

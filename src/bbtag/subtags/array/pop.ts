@@ -1,6 +1,7 @@
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
 import { NotAnArrayError } from '../../errors';
+import templates from '../../text';
 import { bbtag, SubtagType } from '../../utils';
 
 const tag = templates.subtags.pop;
@@ -13,9 +14,9 @@ export class PopSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['array'],
-                    description: 'Returns the last element in `array`. If provided a variable, this will remove the last element from `array`as well.',
-                    exampleCode: '{pop;["this", "is", "an", "array"]}',
-                    exampleOut: 'array',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'json|nothing',
                     execute: (context, [array]) => this.pop(context, array.value)
                 }

@@ -17,17 +17,17 @@ export class RoleSetColorSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['role'],
-                    description: 'Sets the color of `role` to \'#000000\'. This is transparent.',
-                    exampleCode: 'The admin role is now colourless. {rolesetcolor;admin}',
-                    exampleOut: 'The admin role is now colourless.',
+                    description: tag.clear.description,
+                    exampleCode: tag.clear.exampleCode,
+                    exampleOut: tag.clear.exampleOut,
                     returns: 'nothing', //TODO output like true/false
                     execute: (ctx, [role]) => this.setRolecolor(ctx, role.value, '', false)
                 },
                 {
                     parameters: ['role', 'color', 'quiet?'],
-                    description: 'Sets the `color` of `role`.If `quiet` is specified, if `role` can\'t be found it will simply return nothing',
-                    exampleCode: 'The admin role is now white. {rolesetcolor;admin;white}',
-                    exampleOut: 'The admin role is now white.',
+                    description: tag.set.description,
+                    exampleCode: tag.set.exampleCode,
+                    exampleOut: tag.set.exampleOut,
                     returns: 'nothing', //TODO output like true/false
                     execute: (ctx, [role, color, quiet]) => this.setRolecolor(ctx, role.value, color.value, quiet.value !== '')
                 }

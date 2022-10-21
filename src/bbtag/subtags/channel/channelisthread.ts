@@ -17,17 +17,17 @@ export class ChannelIsThreadSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: [],
-                    description: 'Checks if the current channel is a thread channel.',
-                    exampleCode: '{if;{isthread};Cool, this is a thread channel!;Boo, this is a regular text channel}',
-                    exampleOut: 'Cool, this is a thread channel!',
+                    description: tag.current.description,
+                    exampleCode: tag.current.exampleCode,
+                    exampleOut: tag.current.exampleOut,
                     returns: 'boolean',
                     execute: (ctx) => this.isThreadChannel(ctx, ctx.channel.id, true)
                 },
                 {
                     parameters: ['channel', 'quiet?'],
-                    description: 'Checks if `channel` is a thread channel. If it cannot be found returns `No channel found`, or `false` if `quiet` is `true`.',
-                    exampleCode: '{isthread;blarg podcats}',
-                    exampleOut: 'true',
+                    description: tag.channel.description,
+                    exampleCode: tag.channel.exampleCode,
+                    exampleOut: tag.channel.exampleOut,
                     returns: 'boolean',
                     execute: (ctx, [channel, quiet]) => this.isThreadChannel(ctx, channel.value, quiet.value !== '')
                 }

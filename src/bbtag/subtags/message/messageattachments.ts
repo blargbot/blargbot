@@ -15,25 +15,25 @@ export class MessageAttachmentsSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: [],
-                    description: 'Returns an array of attachments of the invoking message.',
-                    exampleCode: 'You sent the attachments "{messageattachments}"',
-                    exampleOut: 'You sent the attachments "["https://cdn.discordapp.com/attachments/1111111111111/111111111111111/thisisntreal.png"]"',
+                    description: tag.trigger.description,
+                    exampleCode: tag.trigger.exampleCode,
+                    exampleOut: tag.trigger.exampleOut,
                     returns: 'string[]',
                     execute: (ctx) => this.getMessageAttachments(ctx, ctx.channel.id, ctx.message.id, false)
                 },
                 {
                     parameters: ['messageid'],
-                    description: 'Returns an array of attachments of `messageid` in the current channel',
-                    exampleCode: 'Someone sent a message with attachments: "{messageattachments;1111111111111}"',
-                    exampleOut: 'Someone sent a message with attachments: "["https://cdn.discordapp.com/attachments/1111111111111/111111111111111/thisisntreal.png"]"',
+                    description: tag.inCurrent.description,
+                    exampleCode: tag.inCurrent.exampleCode,
+                    exampleOut: tag.inCurrent.exampleOut,
                     returns: 'string[]',
                     execute: (ctx, [messageId]) => this.getMessageAttachments(ctx, ctx.channel.id, messageId.value, false)
                 },
                 {
                     parameters: ['channel', 'messageid', 'quiet?'],
-                    description: 'Returns an array of attachments of `messageid` from `channel`. If `quiet` is provided and `channel` cannot be found, this will return an empty array.',
-                    exampleCode: 'Someone sent a message in #support with attachments: "{messageattachments;support;1111111111111}"',
-                    exampleOut: 'Someone sent a message in #support with attachments: "["https://cdn.discordapp.com/attachments/1111111111111/111111111111111/thisisntreal.png"]"',
+                    description: tag.inOther.description,
+                    exampleCode: tag.inOther.exampleCode,
+                    exampleOut: tag.inOther.exampleOut,
                     returns: 'string[]',
                     execute: (ctx, [channel, message, quiet]) => this.getMessageAttachments(ctx, channel.value, message.value, quiet.value !== '')
                 }

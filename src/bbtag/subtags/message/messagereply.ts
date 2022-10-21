@@ -14,25 +14,25 @@ export class MessageReplySubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: [],
-                    description: 'Returns the ID of the invoking message\'s parent message.',
-                    exampleCode: 'You replied to the message {messagereply}',
-                    exampleOut: 'You replied to the message 1111111111111',
+                    description: tag.trigger.description,
+                    exampleCode: tag.trigger.exampleCode,
+                    exampleOut: tag.trigger.exampleOut,
                     returns: 'id',
                     execute: (ctx) => this.getMessageReplyId(ctx, ctx.channel.id, ctx.message.id, false)
                 },
                 {
                     parameters: ['messageid'],
-                    description: '',
-                    exampleCode: '',
-                    exampleOut: '',
+                    description: tag.inCurrent.description,
+                    exampleCode: tag.inCurrent.exampleCode,
+                    exampleOut: tag.inCurrent.exampleOut,
                     returns: 'id',
                     execute: (ctx, [message]) => this.getMessageReplyId(ctx, ctx.channel.id, message.value, false)
                 },
                 {
                     parameters: ['channel', 'messageid', 'quiet?'],
-                    description: 'Returns the ID of the parent message of the provided `message`.',
-                    exampleCode: 'Someone replied to the message {messagereply;general;2222222222222}',
-                    exampleOut: 'Someone replied to the message 1111111111111',
+                    description: tag.inOther.description,
+                    exampleCode: tag.inOther.exampleCode,
+                    exampleOut: tag.inOther.exampleOut,
                     returns: 'id',
                     execute: (ctx, [channel, message, quiet]) => this.getMessageReplyId(ctx, channel.value, message.value, quiet.value !== '')
                 }

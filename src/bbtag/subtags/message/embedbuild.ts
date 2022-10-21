@@ -14,13 +14,13 @@ export class EmbedBuildSubtag extends CompiledSubtag {
             name: 'embedbuild',
             category: SubtagType.MESSAGE,
             aliases: ['buildembed'],
-            description: `This tag is designed to allow you to generate embed code for \`{webhook}\` and \`{embed}\` with much less effort.\nThis tag uses a key/value system, with each entry in \`values\` looking like \`key:value\`.\n\nValid keys are:\n${fieldKeys.map(key => `\`${key}\``).join(',')}\n\nYou can find information about embeds [here (embed structure)](https://discordapp.com/developers/docs/resources/channel#embed-object) and [here (embed limits)](https://discordapp.com/developers/docs/resources/channel#embed-limits) as well as a useful tool for testing embeds [here](https://leovoel.github.io/embed-visualizer/)`,
+            description: tag.description({ keys: fieldKeys }),
             definition: [
                 {
                     parameters: ['values+'],
-                    description: 'Builds the embed json',
-                    exampleCode: '{embedbuild;\n  title:hello!;\n  description:I am an example embed;\n  fields.name:Field 1;\n  fields.value:This is the first field!;\n  fields.name:Field 2;\n  fields.value:This is the next field and is inline!;\n  fields.inline:true\n}',
-                    exampleOut: '{"title":"hello!","description":"I am an example embed","fields":[{"name":"Field 1","value":"This is the first field!"},{"name":"Field 2","value":"This is the next field and is inline!","inline":true}]}',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'json',
                     execute: (_, args) => this.buildEmbed(args.map(arg => arg.value))
                 }

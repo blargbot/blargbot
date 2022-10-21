@@ -12,9 +12,9 @@ export class RbSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: [],
-                    description: 'Returns `}`',
-                    exampleCode: 'This is a bracket! {rb}',
-                    exampleOut: 'This is a bracket! }',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'string',
                     execute: () => this.getCloseBrace()
                 }

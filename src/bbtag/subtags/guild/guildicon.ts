@@ -13,9 +13,9 @@ export class GuildIconSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: [],
-                    description: 'Returns the icon of the current guild. If it doesn\'t exist returns nothing.',
-                    exampleCode: 'The guild\'s icon is {guildicon}',
-                    exampleOut: 'The guild\'s icon is (icon url)',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'string|nothing',
                     execute: (ctx) => this.getGuildIcon(ctx)
                 }

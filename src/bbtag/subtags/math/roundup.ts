@@ -16,9 +16,9 @@ export class RoundUpSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['number'],
-                    description: 'Rounds `number` up.',
-                    exampleCode: '{roundup;1.23}',
-                    exampleOut: '2',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'number',
                     execute: (_, [number]) => this.roundup(number.value)
                 }

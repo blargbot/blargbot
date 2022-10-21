@@ -13,9 +13,9 @@ export class GuildNameSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: [],
-                    description: 'Returns the name of the current guild.',
-                    exampleCode: 'This guild\'s name is {guildname}.',
-                    exampleOut: 'This guild\'s name is TestGuild.',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'string',
                     execute: (ctx) => this.getGuildName(ctx)
                 }

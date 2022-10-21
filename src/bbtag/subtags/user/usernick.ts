@@ -14,17 +14,17 @@ export class UserNickSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: [],
-                    description: 'Returns the nickname of the executing user.',
-                    exampleCode: 'Your nick is {usernick}!',
-                    exampleOut: 'Your nick is Cool Dude 1337!',
+                    description: tag.target.description,
+                    exampleCode: tag.target.exampleCode,
+                    exampleOut: tag.target.exampleOut,
                     returns: 'string',
                     execute: (ctx) => this.getUserNick(ctx, '', true)
                 },
                 {
                     parameters: ['user', 'quiet?'],
-                    description: 'Returns `user`\'s nickname. If `quiet` is specified, if `user` can\'t be found it will simply return nothing.',
-                    exampleCode: 'Stupid cat\'s nickname is {usernick;Stupid cat}!',
-                    exampleOut: 'Stupid cat\'s nickname is Secretly Awoken',
+                    description: tag.user.description,
+                    exampleCode: tag.user.exampleCode,
+                    exampleOut: tag.user.exampleOut,
                     returns: 'string',
                     execute: (ctx, [userId, quiet]) => this.getUserNick(ctx, userId.value, quiet.value !== '')
                 }

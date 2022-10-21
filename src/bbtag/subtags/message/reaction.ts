@@ -14,9 +14,9 @@ export class ReactionSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: [],
-                    description: 'Gets the reaction that triggered {waitreact}',
-                    exampleCode: '{waitreact;11111111111111111;{bool;{reaction};==;✅}}',
-                    exampleOut: '["111111111111111","12345678912345","3333333333333","✅"]',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'string',
                     execute: (ctx) => this.getReaction(ctx)
                 }

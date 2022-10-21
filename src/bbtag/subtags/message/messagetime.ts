@@ -46,21 +46,21 @@ export class MessageTimeSubtag extends CompiledSubtag {
                 },
                 {
                     parameters: ['format?:x'],
-                    description: 'Returns the send time of the executing message in `format`',
-                    exampleCode: 'The send timestamp of your message is "{messagetime}"',
-                    exampleOut: 'The send timestamp of your message is "1628782144703"'
+                    description: tag.trigger.description,
+                    exampleCode: tag.trigger.exampleCode,
+                    exampleOut: tag.trigger.exampleOut
                 },
                 {
                     parameters: ['messageid', 'format?:x'],
-                    description: 'Returns the send time of `messageid` in `format`',
-                    exampleCode: 'The send timestamp of message 11111111111111 is "{messagetime;11111111111111}',
-                    exampleOut: 'The send timestamp of message 11111111111111 is "1628782144703"'
+                    description: tag.inCurrent.description,
+                    exampleCode: tag.inCurrent.exampleCode,
+                    exampleOut: tag.inCurrent.exampleOut
                 },
                 {
                     parameters: ['channel', 'messageid', 'format?:x'],
-                    description: 'Returns the send time of `messageid` from `channel` in `format`.',
-                    exampleCode: 'Message 11111111111111 in #support was sent at {messagetime;support;11111111111111;HH:mm}',
-                    exampleOut: 'Message 11111111111111 in #support was sent at 18:09'
+                    description: tag.inOther.description,
+                    exampleCode: tag.inOther.exampleCode,
+                    exampleOut: tag.inOther.exampleOut
                 }
             ]
         });

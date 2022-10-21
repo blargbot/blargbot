@@ -14,22 +14,22 @@ export class UserBoostDateSubtag extends CompiledSubtag {
         super({
             name: 'userboostdate',
             category: SubtagType.USER,
-            description: 'See the [moment documentation](http://momentjs.com/docs/#/displaying/format/) for more information about formats. If user is not boosting the guild, returns `User not boosting`',
+            description: tag.description,
             definition: [
                 {
                     parameters: ['format?:YYYY-MM-DDTHH:mm:ssZ'],
-                    description: 'Returns the date that the executing user started boosting the guild using `format` for the output, in UTC+0.',
-                    exampleCode: 'Your account started boosting this guild on {userboostdate;YYYY/MM/DD HH:mm:ss}',
-                    exampleOut: 'Your account started boosting this guild on 2020/02/27 00:00:00',
+                    description: tag.target.description,
+                    exampleCode: tag.target.exampleCode,
+                    exampleOut: tag.target.exampleOut,
                     returns: 'string',
                     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                     execute: (ctx, [format]) => this.getUserBoostDate(ctx.member!, format.value)
                 },
                 {
                     parameters: ['format:YYYY-MM-DDTHH:mm:ssZ', 'user', 'quiet?'],
-                    description: 'Returns the date that `user` started boosting the current guild using `format` for the output, in UTC+0. If `quiet` is specified, if `user` can\'t be found it will simply return nothing.',
-                    exampleCode: 'Stupid cat started boosting this guild on {userboostdate;YYYY/MM/DD HH:mm:ss;stupid cat}',
-                    exampleOut: 'Stupid cat started boosting this guild on 2020/02/27 00:00:00',
+                    description: tag.user.description,
+                    exampleCode: tag.user.exampleCode,
+                    exampleOut: tag.user.exampleOut,
                     returns: 'string',
                     execute: (context, [format, user, quiet]) => this.findUserBoostDate(context, format.value, user.value, quiet.value !== '')
                 }

@@ -14,21 +14,21 @@ export class UserSetRolesSubtag extends CompiledSubtag {
             name: 'usersetroles',
             aliases: ['setroles'],
             category: SubtagType.USER,
-            description: '`roleArray` must be an array formatted like `["role1", "role2"]`',
+            description: tag.description,
             definition: [
                 {
                     parameters: ['roleArray?'],
-                    description: 'Sets the roles of the current user to `roleArray`.',
-                    exampleCode: '{usersetroles;["1111111111111"]}',
-                    exampleOut: 'true',
+                    description: tag.target.description,
+                    exampleCode: tag.target.exampleCode,
+                    exampleOut: tag.target.exampleOut,
                     returns: 'boolean',
                     execute: (ctx, [roles]) => this.userSetRole(ctx, roles.value, ctx.user.id, false)
                 },
                 {
                     parameters: ['roleArray', 'user', 'quiet?'],
-                    description: 'Sets the roles of `user` to `roleArray`. If quiet is provided, all errors will return `false`.',
-                    exampleCode: '{usersetroles;["1111111111111"];stupid cat}',
-                    exampleOut: 'true',
+                    description: tag.user.description,
+                    exampleCode: tag.user.exampleCode,
+                    exampleOut: tag.user.exampleOut,
                     returns: 'boolean',
                     execute: (ctx, [roles, user, quiet]) => this.userSetRole(ctx, roles.value, user.value, quiet.value !== '')
                 }

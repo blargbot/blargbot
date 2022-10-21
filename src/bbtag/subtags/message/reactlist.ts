@@ -34,15 +34,15 @@ export class ReactListSubtag extends CompiledSubtag {
                 },
                 {
                     parameters: ['channel?', 'messageId'],
-                    description: 'Returns an array of reactions on `messageid` in `channelID`.',
-                    exampleCode: '{reactlist;111111111111111111}',
-                    exampleOut: '["🤔", "👀"]'
+                    description: tag.reactions.description,
+                    exampleCode: tag.reactions.exampleCode,
+                    exampleOut: tag.reactions.exampleOut
                 },
                 {
                     parameters: ['channel?', 'messageId', 'reactions+'],
-                    description: 'Returns an array of users who reacted `reactions` on `messageID` in `channelID`. A user only needs to react to one reaction to be included in the resulting array.',
-                    exampleCode: '{reactlist;111111111111111111;🤔;👀}\n{reactlist;222222222222222222;111111111111111111;👀}',
-                    exampleOut: '["278237925009784832", "134133271750639616"]\n["134133271750639616"]'
+                    description: tag.users.description,
+                    exampleCode: tag.users.exampleCode,
+                    exampleOut: tag.users.exampleOut
                 }
             ]
         });

@@ -14,21 +14,21 @@ export class RoleRemoveSubtag extends CompiledSubtag {
             name: 'roleremove',
             category: SubtagType.ROLE,
             aliases: ['removerole'],
-            description: '`role` can be either a roleID or role mention.',
+            description: tag.description,
             definition: [
                 {
                     parameters: ['role'],
-                    description: 'Removes `role` from the executing user. Returns `true` if role was removed, else an error will be shown.',
-                    exampleCode: 'No more role! {roleremove;11111111111111111}',
-                    exampleOut: 'No more role! true',
+                    description: tag.target.description,
+                    exampleCode: tag.target.exampleCode,
+                    exampleOut: tag.target.exampleOut,
                     returns: 'boolean',
                     execute: (ctx, [role]) => this.removeRole(ctx, role.value, ctx.user.id, false)
                 },
                 {
                     parameters: ['role', 'user', 'quiet?'],
-                    description: 'Remove the chosen `role` from  `user`. Returns `true` if role was removed, else an error will be shown. If `quiet` is specified, if a user can\'t be found it will simply return `false`',
-                    exampleCode: 'Stupid cat no more role! {roleremove;Bot;Stupid cat}',
-                    exampleOut: 'Stupid cat no more role! true',
+                    description: tag.other.description,
+                    exampleCode: tag.other.exampleCode,
+                    exampleOut: tag.other.exampleOut,
                     returns: 'boolean',
                     execute: (ctx, [role, user, quiet]) => this.removeRole(ctx, role.value, user.value, quiet.value !== '')
                 }

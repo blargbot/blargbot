@@ -14,9 +14,9 @@ export class PadSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['direction', 'back', 'text'],
-                    description: 'Places `text` ontop of `back` with it being aligned to the opposite of `direction`. If `text` is longer than `back` then it will simply overlap',
-                    exampleCode: '{pad;left;000000;ABC}',
-                    exampleOut: '000ABC',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'string',
                     execute: (_, [direction, back, text]) => this.pad(direction.value, back.value, text.value)
                 }

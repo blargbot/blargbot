@@ -13,21 +13,21 @@ export class TimeoutSubtag extends CompiledSubtag {
         super({
             name: 'timeout',
             category: SubtagType.USER,
-            description: 'If the timeout is successful, `Success` will be returned, otherwise the error will be given. ',
+            description: tag.description,
             definition: [
                 {
                     parameters: ['user', 'duration'],
-                    description: 'Times out `user` for the specified amount of time. Maximum is 28 days.',
-                    exampleCode: '{timeout;stupid cat;1d} @stupid cat was timed out for 1 day!',
-                    exampleOut: 'Success @stupid cat was timed out for 1 day!',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'string',
                     execute: (ctx, [user, duration]) => this.timeoutMember(ctx, user.value, duration.value, '', false)
                 },
                 {
                     parameters: ['user', 'duration', 'reason', 'noPerms?'],
-                    description: 'Times out `user` for the specified amount of time. Maximum is 28 days.If `noPerms` is provided and not an empty string, do not check if the command executor is actually able to time out people. Only provide this if you know what you\'re doing.',
-                    exampleCode: '{timeout;stupid cat;1d;because I can} @stupid cat was timed out for 1 day!',
-                    exampleOut: 'Success @stupid cat was timed out for 1 day, because I can!',
+                    description: tag.withReason.description,
+                    exampleCode: tag.withReason.exampleCode,
+                    exampleOut: tag.withReason.exampleOut,
                     returns: 'string',
                     execute: (ctx, [user, duration, reason, noPerms]) => this.timeoutMember(ctx, user.value, duration.value, reason.value, noPerms.value !== '')
                 }

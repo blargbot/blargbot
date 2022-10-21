@@ -14,21 +14,21 @@ export class SpliceSubtag extends CompiledSubtag {
         super({
             name: 'splice',
             category: SubtagType.ARRAY,
-            description: 'If used with a variable this will modify the original array.\nReturns an array of removed items.',
+            description: tag.description,
             definition: [
                 {
                     parameters: ['array', 'start', 'deleteCount?:0'],
-                    description: 'Removes `deleteCount` elements from `array` starting at `start`.',
-                    exampleCode: '{splice;["this", "is", "an", "array"];1;1}',
-                    exampleOut: '["is"]',
+                    description: tag.delete.description,
+                    exampleCode: tag.delete.exampleCode,
+                    exampleOut: tag.delete.exampleOut,
                     returns: 'json[]',
                     execute: (ctx, [array, start, delCount]) => this.spliceArray(ctx, array.value, start.value, delCount.value, [])
                 },
                 {
                     parameters: ['array', 'start', 'deleteCount:0', 'items+'],
-                    description: 'Removes `deleteCount` elements from `array` starting at `start`. Then, adds each `item` at that position in `array`. Returns the removed items.',
-                    exampleCode: '{set;~array;["this", "is", "an", "array"]} {splice;{get;~array};1;1;was} {get;~array}',
-                    exampleOut: '["is"] {"v":["this","was","an","array"],"n":"~array"}',
+                    description: tag.replace.description,
+                    exampleCode: tag.replace.exampleCode,
+                    exampleOut: tag.replace.exampleOut,
                     returns: 'json[]',
                     execute: (ctx, [array, start, delCount, ...items]) => this.spliceArray(ctx, array.value, start.value, delCount.value, items.map(arg => arg.value))
                 }

@@ -18,9 +18,9 @@ export class SleepSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['duration'],
-                    description: 'Pauses the current tag for the specified amount of time. Maximum is 5 minutes',
-                    exampleCode: '{sleep;10s}{send;{channelid};Hi!}',
-                    exampleOut: '(After 10s) Hi!',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'nothing',
                     execute: (_, [duration]) => this.sleep(duration.value)
                 }

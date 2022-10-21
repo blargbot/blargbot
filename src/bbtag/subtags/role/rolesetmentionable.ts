@@ -17,17 +17,17 @@ export class RoleSetMentionableSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['role'],
-                    description: 'Set `role` to mentionable.',
-                    exampleCode: 'The admin role is now mentionable. {rolesetmentionable;admin}',
-                    exampleOut: 'The admin role is now mentionable.',
+                    description: tag.enable.description,
+                    exampleCode: tag.enable.exampleCode,
+                    exampleOut: tag.enable.exampleOut,
                     returns: 'nothing', //TODO output like true/false
                     execute: (ctx, [role]) => this.setRolementionable(ctx, role.value, 'true', false)
                 },
                 {
                     parameters: ['role', 'value:true', 'quiet?'],
-                    description: 'Sets whether `role` can be mentioned. `value` can be either `true` to set the role as mentionable, or anything else to set it to unmentionable. If `quiet` is specified, if `role` can\'t be found it will simply return nothing',
-                    exampleCode: 'The admin role is no longer mentionable. {rolesetmentionable;admin;false}',
-                    exampleOut: 'The admin role is no longer mentionable.',
+                    description: tag.set.description,
+                    exampleCode: tag.set.exampleCode,
+                    exampleOut: tag.set.exampleOut,
                     returns: 'nothing', //TODO output like true/false
                     execute: (ctx, [role, value, quiet]) => this.setRolementionable(ctx, role.value, value.value, quiet.value !== '')
                 }

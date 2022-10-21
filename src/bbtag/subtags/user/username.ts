@@ -14,17 +14,17 @@ export class UserNameSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: [],
-                    description: 'Returns the username of the executing user.',
-                    exampleCode: 'Your username is {username}!',
-                    exampleOut: 'Your username is Cool Dude 1337!',
+                    description: tag.target.description,
+                    exampleCode: tag.target.exampleCode,
+                    exampleOut: tag.target.exampleOut,
                     returns: 'string',
                     execute: (ctx) => this.getUserName(ctx, ctx.user.id, true)
                 },
                 {
                     parameters: ['user', 'quiet?'],
-                    description: 'Returns `user`\'s username. If `quiet` is specified, if `user` can\'t be found it will simply return nothing.',
-                    exampleCode: 'Stupid cat\'s username is {username;Stupid cat}!',
-                    exampleOut: 'Stupid cat\'s username is Stupid cat!',
+                    description: tag.user.description,
+                    exampleCode: tag.user.exampleCode,
+                    exampleOut: tag.user.exampleOut,
                     returns: 'string',
                     execute: (ctx, [userId, quiet]) => this.getUserName(ctx, userId.value, quiet.value !== '')
                 }

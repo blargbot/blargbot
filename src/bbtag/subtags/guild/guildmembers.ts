@@ -13,9 +13,9 @@ export class GuildMembersSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: [],
-                    description: 'Returns an array of user IDs of the members on the current guild. This only includes **cached** members, for getting the amount of members in a guild **always** use `{guildsize}`',
-                    exampleCode: 'This guild has {length;{guildmembers}} members.',
-                    exampleOut: 'This guild has 123 members.',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'id[]',
                     execute: (ctx) => this.getMembers(ctx)
                 }

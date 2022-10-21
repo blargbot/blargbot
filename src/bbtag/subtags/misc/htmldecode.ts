@@ -14,9 +14,9 @@ export class HtmlDecodeSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['text+'],
-                    description: 'Decodes html entities from `text`.',
-                    exampleCode: '{htmldecode;&lt;hello, world&gt;}',
-                    exampleOut: '<hello, world>',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'string',
                     execute: (_, text) => this.htmlDecode(text.map(arg => arg.value).join(';'))
                 }

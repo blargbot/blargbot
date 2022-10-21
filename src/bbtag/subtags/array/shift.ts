@@ -1,6 +1,7 @@
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
 import { NotAnArrayError } from '../../errors';
+import templates from '../../text';
 import { bbtag, SubtagType } from '../../utils';
 
 const tag = templates.subtags.shift;
@@ -13,9 +14,9 @@ export class ShiftSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['array'],
-                    description: 'Returns the first element in `array`. If used with a variable this will remove the first element from `array` as well.',
-                    exampleCode: '{shift;["this", "is", "an", "array"]}',
-                    exampleOut: 'this',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'json|nothing',
                     execute: (context, [array]) => this.shift(context, array.value)
                 }

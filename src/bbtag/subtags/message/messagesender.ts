@@ -15,25 +15,25 @@ export class MessageSenderSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: [],
-                    description: 'Returns the id of the author of the executing message.',
-                    exampleCode: 'That was sent by "{sender}"',
-                    exampleOut: 'That was sent by "1111111111111"',
+                    description: tag.trigger.description,
+                    exampleCode: tag.trigger.exampleCode,
+                    exampleOut: tag.trigger.exampleOut,
                     returns: 'id',
                     execute: (ctx) => this.getMessageSender(ctx, ctx.channel.id, ctx.message.id, false)
                 },
                 {
                     parameters: ['messageid'],
-                    description: 'Returns the id of the author of `messageid` in the current channel.',
-                    exampleCode: 'Message 1111111111111 was sent by {sender;1111111111111}',
-                    exampleOut: 'Message 1111111111111 was sent by 2222222222222',
+                    description: tag.inCurrent.description,
+                    exampleCode: tag.inCurrent.exampleCode,
+                    exampleOut: tag.inCurrent.exampleOut,
                     returns: 'id',
                     execute: (ctx, [messageId]) => this.getMessageSender(ctx, ctx.channel.id, messageId.value, false)
                 },
                 {
                     parameters: ['channel', 'messageid', 'quiet?'],
-                    description: 'Returns the id of the author of `messageid` in `channel`. If `quiet` is provided and `channel` cannot be found, this will return nothing.',
-                    exampleCode: 'Message 1111111111111 in #support was sent by {sender;support;1111111111111}',
-                    exampleOut: 'Message 1111111111111 in #support was sent by 2222222222222',
+                    description: tag.inOther.description,
+                    exampleCode: tag.inOther.exampleCode,
+                    exampleOut: tag.inOther.exampleOut,
                     returns: 'id',
                     execute: (ctx, [channel, message, quiet]) => this.getMessageSender(ctx, channel.value, message.value, quiet.value !== '')
                 }

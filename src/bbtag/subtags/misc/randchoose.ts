@@ -16,17 +16,17 @@ export class RandChooseSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['choiceArray'],
-                    description: 'Picks one random entry from `choiceArray`.',
-                    exampleCode: 'I feel like eating {randchoose;["pie", "cake", "pudding"]} today',
-                    exampleOut: 'I feel like eating pie today',
+                    description: tag.array.description,
+                    exampleCode: tag.array.exampleCode,
+                    exampleOut: tag.array.exampleOut,
                     returns: 'json',
                     execute: (ctx, [choice]) => this.randChoose(ctx, choice.value)
                 },
                 {
                     parameters: ['~choices+2'],
-                    description: 'Picks one random entry from `choices`',
-                    exampleCode: 'I feel like eating {randchoose;cake;pie;pudding} today',
-                    exampleOut: 'I feel like eating pudding today.',
+                    description: tag.args.description,
+                    exampleCode: tag.args.exampleCode,
+                    exampleOut: tag.args.exampleOut,
                     returns: 'string',
                     execute: (_, choices) => this.randChooseArg(choices)
                 }

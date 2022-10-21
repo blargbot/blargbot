@@ -13,9 +13,9 @@ export class InjectSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['code'],
-                    description: 'Executes any arbitrary BBTag that is within `code` and returns the result. Useful for making dynamic code, or as a testing tool (`{inject;{args}}`)',
-                    exampleCode: 'Random Number: {inject;{lb}randint{semi}1{semi}4{rb}}',
-                    exampleOut: 'Random Number: 3',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'string',
                     execute: async (context, [code]) => {
                         return await context.withStack(async () => {

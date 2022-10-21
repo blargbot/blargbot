@@ -13,9 +13,9 @@ export class MessageIdSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: [],
-                    description: 'Returns the ID of the invoking message.',
-                    exampleCode: 'The message id was {messageid}',
-                    exampleOut: 'The message id was 111111111111111111',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'id',
                     execute: (ctx) => this.getMessageId(ctx)
                 }

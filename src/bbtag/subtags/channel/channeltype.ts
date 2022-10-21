@@ -13,21 +13,21 @@ export class ChannelTypeSubtag extends CompiledSubtag {
         super({
             name: 'channeltype',
             category: SubtagType.CHANNEL,
-            description: `Possible results: ${Object.values(channelTypes).map(t => `\`${t}\``).join(', ')}`,
+            description: tag.description({ types: Object.values(channelTypes) }),
             definition: [
                 {
                     parameters: [],
-                    description: 'Returns the type the current channel.',
-                    exampleCode: '{channeltype}',
-                    exampleOut: 'text',
+                    description: tag.current.description,
+                    exampleCode: tag.current.exampleCode,
+                    exampleOut: tag.current.exampleOut,
                     returns: 'string',
                     execute: (ctx) => this.getChannelType(ctx, ctx.channel.id, true)
                 },
                 {
                     parameters: ['channel', 'quiet?'],
-                    description: 'Returns the type the given `channel`. If it cannot be found returns `No channel found`, or nothing if `quiet` is `true`.',
-                    exampleCode: '{channeltype;cool channel}\n{channeltype;some channel that doesn\'t exist;true}',
-                    exampleOut: 'voice\n(nothing is returned here)',
+                    description: tag.channel.description,
+                    exampleCode: tag.channel.exampleCode,
+                    exampleOut: tag.channel.exampleOut,
                     returns: 'string',
                     execute: (ctx, [channel, quiet]) => this.getChannelType(ctx, channel.value, quiet.value !== '')
 

@@ -12,10 +12,10 @@ export class LengthSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['value'],
-                    description: 'Gives the amount of characters in `value`, or the number of elements if it is an array.',
-                    exampleCode: 'What you said is {length;{args}} chars long.',
-                    exampleIn: 'Hello',
-                    exampleOut: 'What you said is 5 chars long.',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleIn: tag.default.exampleIn,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'number',
                     execute: (_, [value]) => this.getLength(value.value)
                 }

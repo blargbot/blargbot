@@ -12,9 +12,9 @@ export class TrimSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['text'],
-                    description: 'Trims whitespace and newlines before and after `text`.',
-                    exampleCode: 'Hello {trim;{space;10}beautiful{space;10}} World',
-                    exampleOut: 'Hello beautiful World',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'string',
                     execute: (_, [text]) => this.trim(text.value)
                 }

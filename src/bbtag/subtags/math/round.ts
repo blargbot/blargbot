@@ -15,9 +15,9 @@ export class RoundSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['number'],
-                    description: 'Rounds `number` to the nearest whole number.',
-                    exampleCode: '{round;1.23}',
-                    exampleOut: '1',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'number',
                     execute: (_, [number]) => this.round(number.value)
                 }

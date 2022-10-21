@@ -11,21 +11,21 @@ export class EmojisSubtag extends CompiledSubtag {
         super({
             name: 'emojis',
             category: SubtagType.GUILD,
-            description: 'Please not that Discord will remove all the emojis from a message which contains an emoji that blarg can\'t use. For example, blargbot can\'t use a role-restricted emoji if it doesn\'t have the role. Learn more [here](https://discordapp.com/developers/docs/resources/emoji).',
+            description: tag.description,
             definition: [
                 {
                     parameters: [],
-                    description: 'Returns an array of emojis in the current guild.',
-                    exampleCode: 'This guild has {length;{emojis}} emojis.',
-                    exampleOut: 'This guild has 23 emojis.',
+                    description: tag.all.description,
+                    exampleCode: tag.all.exampleCode,
+                    exampleOut: tag.all.exampleOut,
                     returns: 'string[]',
                     execute: (context) => this.getAllEmojis(context)
                 },
                 {
                     parameters: ['role'],
-                    description: 'Returns an array of emojis whitelisted for the provided `role`',
-                    exampleCode: 'Cool gang has {length;{emojis;Cool gang}} emojis.',
-                    exampleOut: 'Cool gang has 6 emojis.',
+                    description: tag.forRole.description,
+                    exampleCode: tag.forRole.exampleCode,
+                    exampleOut: tag.forRole.exampleOut,
                     returns: 'string[]',
                     execute: (ctx, [role]) => this.getEmojisForRole(ctx, role.value)
                 }

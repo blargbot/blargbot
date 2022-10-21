@@ -14,9 +14,9 @@ export class JsonValuesSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['object:{}#10000000', 'path?'],
-                    description: 'Retrieves all values from provided the JSON object. `object` can be a JSON object, array, or string. If a string is provided, a variable with the same name will be used.\n`path` is a dot-noted series of properties.',
-                    exampleCode: '{set;~json;{json;{"key": "value", "key2" : "value2"}}\n{jsonvalues;~json}',
-                    exampleOut: '["value","value2"]',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'json',
                     execute: (ctx, [input, path]) => this.getJsonValue(ctx, input.value, path.value)
                 }

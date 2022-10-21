@@ -16,9 +16,9 @@ export class TimerSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['~code', 'duration'],
-                    description: 'Executes `code` after `duration`. Three timers are allowed per custom command, with no recursive timers.',
-                    exampleCode: '{timer;Hello!;20s}',
-                    exampleOut: '(after 20 seconds:) Hello!',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'nothing',
                     execute: (ctx, [code, duration]) => this.queueTimer(ctx, code.raw, duration.value)
                 }

@@ -11,21 +11,21 @@ export class UserStatusSubtag extends CompiledSubtag {
         super({
             name: 'userstatus',
             category: SubtagType.USER,
-            description: 'Returned status can be one of `online`, `idle`, `dnd` or `offline`',
+            description: tag.description,
             definition: [
                 {
                     parameters: [],
-                    description: 'Returns the status of the user.',
-                    exampleCode: 'You are currently {userstatus}',
-                    exampleOut: 'You are currently online',
+                    description: tag.target.description,
+                    exampleCode: tag.target.exampleCode,
+                    exampleOut: tag.target.exampleOut,
                     returns: 'string',
                     execute: (ctx) => this.getUserStatus(ctx, '', true)
                 },
                 {
                     parameters: ['user', 'quiet?'],
-                    description: 'Returns the status of `user`. If `quiet` is specified, if `user` can\'t be found it will simply return nothing.',
-                    exampleCode: 'Stupid cat is currently {userstatus;stupid cat}',
-                    exampleOut: 'Stupid cat is currently online',
+                    description: tag.user.description,
+                    exampleCode: tag.user.exampleCode,
+                    exampleOut: tag.user.exampleOut,
                     returns: 'string',
                     execute: (ctx, [userId, quiet]) => this.getUserStatus(ctx, userId.value, quiet.value !== '')
                 }

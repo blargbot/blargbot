@@ -15,29 +15,29 @@ export class SendSubtag extends CompiledSubtag {
         super({
             name: 'send',
             category: SubtagType.MESSAGE,
-            description: 'If `embed` is an array, multiple embeds will be added to the message payload.',
+            description: tag.description,
             definition: [
                 {
                     parameters: ['channel', 'message', 'embed', 'fileContent', 'fileName?:file.txt'],
-                    description: 'Sends `message` and `embed` to `channel` with an attachment, and returns the message id. `channel` is either an id or channel mention. If `fileContent` starts with `buffer:` then the following text will be parsed as base64 to a raw buffer.\n**Note:** `embed` is the JSON for an embed, don\'t put the `{embed}` subtag there, as nothing will show',
-                    exampleCode: '{send;{channelid};Hello there!;{embedbuild;title:This is a cool embed};Wow, look at this text file!;test.txt}',
-                    exampleOut: '23946728937462847243',
+                    description: tag.full.description,
+                    exampleCode: tag.full.exampleCode,
+                    exampleOut: tag.full.exampleOut,
                     returns: 'id',
                     execute: (ctx, [channel, message, embed, fileContent, fileName]) => this.send(ctx, channel.value, message.value, parse.embed(embed.value), { file: fileContent.value, name: fileName.value })
                 },
                 {
                     parameters: ['channel', 'message', 'embed'],
-                    description: 'Sends `message` and `embed` to `channel`, and returns the message id. `channel` is either an id or channel mention.\n**Note:** `embed` is the JSON for an embed, don\'t put the `{embed}` subtag there, as nothing will show',
-                    exampleCode: '{send;{channelid};Hello there!;{embedbuild;title:This is a cool embed}}',
-                    exampleOut: '349587638464585678545',
+                    description: tag.textAndEmbed.description,
+                    exampleCode: tag.textAndEmbed.exampleCode,
+                    exampleOut: tag.textAndEmbed.exampleOut,
                     returns: 'id',
                     execute: (ctx, [channel, message, embed]) => this.send(ctx, channel.value, message.value, parse.embed(embed.value))
                 },
                 {
                     parameters: ['channel', 'content'],
-                    description: 'Sends `content` to `channel`, and returns the message id. `channel` is either an id or channel mention.\n**Note:** `content` is the text to send or the JSON for an embed, don\'t put the `{embed}` subtag there, as nothing will show',
-                    exampleCode: '{send;{channelid};{embedbuild;title:This is a cool embed}',
-                    exampleOut: '9458678957457694324',
+                    description: tag.textOrEmbed.description,
+                    exampleCode: tag.textOrEmbed.exampleCode,
+                    exampleOut: tag.textOrEmbed.exampleOut,
                     returns: 'id',
                     execute: (ctx, [channel, content]) => this.send(ctx, channel.value, ...resolveContent(content.value))
                 }

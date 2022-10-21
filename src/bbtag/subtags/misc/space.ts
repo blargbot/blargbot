@@ -17,9 +17,9 @@ export class SpaceSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['count?:1'],
-                    description: 'Will be replaced by `count` spaces. If `count` is less than `0`, no spaces will be returned.',
-                    exampleCode: 'Hello,{space;4}world!',
-                    exampleOut: 'Hello,    world!',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'string',
                     execute: (ctx, [count]) => this.getSpaces(ctx, count.value)
                 }

@@ -14,7 +14,7 @@ export class MessageEditTimeSubtag extends CompiledSubtag {
         super({
             name: 'messageedittime',
             category: SubtagType.MESSAGE,
-            description: 'If the message is not edited, this will return the current time instead.\n\n**Note:** there are plans to change this behaviour, but due to backwards-compatibility this remains unchanged.', //TODO Change this
+            description: tag.description, //TODO Change this
             definition: [
                 {
                     parameters: [],
@@ -46,21 +46,21 @@ export class MessageEditTimeSubtag extends CompiledSubtag {
                 },
                 {
                     parameters: ['format?:x'],
-                    description: 'Returns the edit time of the executing message in `format`',
-                    exampleCode: 'The edit timestamp of your message is "{messageedittime}"',
-                    exampleOut: 'The edit timestamp of your message is "1628782144703"'
+                    description: tag.trigger.description,
+                    exampleCode: tag.trigger.exampleCode,
+                    exampleOut: tag.trigger.exampleOut
                 },
                 {
                     parameters: ['messageid', 'format?:x'],
-                    description: 'Returns the edit time of `messageid` in `format`',
-                    exampleCode: 'The edit timestamp of message 11111111111111 is "{messageedittime;11111111111111}',
-                    exampleOut: 'The edit timestamp of message 11111111111111 is "1628782144703"'
+                    description: tag.inCurrent.description,
+                    exampleCode: tag.inCurrent.exampleCode,
+                    exampleOut: tag.inCurrent.exampleOut
                 },
                 {
                     parameters: ['channel', 'messageid', 'format?:x'],
-                    description: 'Returns the edit time of `messageid` from `channel` in `format`.',
-                    exampleCode: 'Message 11111111111111 in #support was edited at {messageedittime;support;11111111111111;HH:mm}',
-                    exampleOut: 'Message 11111111111111 in #support was edited at 18:09'
+                    description: tag.inOther.description,
+                    exampleCode: tag.inOther.exampleCode,
+                    exampleOut: tag.inOther.exampleOut
                 }
             ]
         });

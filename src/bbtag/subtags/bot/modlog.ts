@@ -13,13 +13,13 @@ export class ModlogSubtag extends CompiledSubtag {
         super({
             name: 'modlog',
             category: SubtagType.BOT,
-            description: 'If `moderator` is not provided or left empty, it will default to blargbot.',
+            description: tag.description,
             definition: [
                 {
                     parameters: ['action', 'user', 'moderator?', 'reason?', 'color?'],
-                    description: 'Creates a custom modlog entry with the given `action` and `user` with `reason`. `color` can be a [HTML color](https://www.w3schools.com/colors/colors_names.asp), hex, (r,g,b) or a valid color number. .',
-                    exampleCode: 'You did a bad! {modlog;Bad;{userid};;They did a bad;#ffffff}',
-                    exampleOut: 'You did a bad! (modlog entry with white embed colour and reason \'They did a bad!\'',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'nothing',
                     execute: (ctx, [action, user, moderator, reason, color]) => this.createModlog(ctx, action.value, user.value, moderator.value, reason.value, color.value)
                 }

@@ -13,10 +13,10 @@ export class ArgsArraySubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: [],
-                    description: 'Gets user input as an array.',
-                    exampleCode: 'Your input was {argsarray}',
-                    exampleIn: 'Hello world!',
-                    exampleOut: 'Your input was ["Hello","world!"]',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleIn: tag.default.exampleIn,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'string[]',
                     execute: (ctx) => this.getInput(ctx)
                 }
