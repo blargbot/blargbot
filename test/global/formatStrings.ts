@@ -2,6 +2,7 @@
 import '@blargbot/bbtag/text';
 import '@blargbot/cluster/text';
 import '@blargbot/core/text';
+import '@blargbot/core/utils/humanize/permissions';
 
 import { FormatStringCompiler, transformers } from '@blargbot/core/formatting';
 import { FormatString } from '@blargbot/domain/messages';

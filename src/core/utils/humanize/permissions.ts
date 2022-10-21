@@ -1,4 +1,4 @@
-import { IFormattable, FormatString } from '@blargbot/domain/messages/index';
+import { FormatString, IFormattable } from '@blargbot/domain/messages/index';
 import { Constants, Permission } from 'eris';
 
 export function permissions(permissions: bigint | ReadonlyArray<keyof Constants['Permissions']> | Permission, hideAdminUnlessAlone = false): Array<IFormattable<string>> {

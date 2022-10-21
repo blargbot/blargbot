@@ -23,6 +23,6 @@ export class SemiSubtag extends CompiledSubtag {
     }
 
     public getSemiColon(): ';' {
-        return `;`;
+        return ';';
     }
 }
