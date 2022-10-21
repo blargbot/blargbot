@@ -17,7 +17,7 @@ export class FormatString<T extends string, V> implements IFormatString<T> {
     }
 
     public [format](formatter: IFormatter): string {
-        return formatter.format(this.template, this.value);
+        return formatter.format(this);
     }
 
     static #verify(definition: IFormatStringDefinition<string, never>): void {

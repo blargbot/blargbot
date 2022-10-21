@@ -18,7 +18,7 @@ export interface IFormatString<T extends string = string> extends IFormattable<s
 
 export interface IFormatter {
     readonly locale: Intl.Locale;
-    format(template: string, value: unknown): string;
+    format(string: IFormatString): string;
 }
 
 export function literal<T>(value: Exclude<T, undefined>): IFormattable<T>;
