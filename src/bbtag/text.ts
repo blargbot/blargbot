@@ -1,6 +1,8 @@
 import { FormatString } from '@blargbot/domain/messages/FormatString';
 import { IFormattable } from '@blargbot/domain/messages/types';
 
+import { Subtag } from './Subtag';
+
 export const templates = FormatString.defineTree('bbtag', t => ({
     debug: {
         summary: t<{ active: number; committed: number; database: number; total: number; }>()(`\`\`\`js
@@ -27,6 +29,11 @@ Database Execution Time: {database#duration(MS)}ms
                 default: t<{ subtagNames: Iterable<string>; }>()('Cannot be used in the arguments to {subtagNames#map(\\{{}\\})#join(, | or )}')
             }
         }
+    },
+    analysis: {
+        unnamed: t('Unnamed subtag'),
+        dynamic: t('Dynamic subtag'),
+        deprecated: t<Subtag>()('\\{{name}\\} is deprecated. Use `\\{{deprecated}\\}` instead')
     },
     subtag: {
         types: {

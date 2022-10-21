@@ -447,6 +447,34 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@blargbot/global-tests@workspace:test/global":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/global-tests@workspace:test/global"
+  dependencies:
+    "@blargbot/bbtag": "workspace:^"
+    "@blargbot/cluster": "workspace:^"
+    "@blargbot/config": "workspace:^"
+    "@blargbot/core": "workspace:^"
+    "@blargbot/database": "workspace:^"
+    "@blargbot/domain": "workspace:^"
+    "@blargbot/logger": "workspace:^"
+    "@blargbot/master": "workspace:^"
+    "@types/chai": ^4.3.3
+    "@types/chai-datetime": ^0.0.37
+    "@types/eris": "workspace:^"
+    "@types/mocha": ^10.0.0
+    chai: ^4.3.6
+    chai-bytes: ^0.1.2
+    chai-datetime: ^1.8.0
+    chai-exclude: ^2.1.0
+    discord-api-types: ^0.37.12
+    eris: ^0.17.1
+    mocha: ^10.0.0
+    moment-timezone: ^0.5.37
+    ts-mockito: ^2.6.1
+  languageName: unknown
+  linkType: soft
+
 "@blargbot/image@workspace:^, @blargbot/image@workspace:src/image":
   version: 0.0.0-use.local
   resolution: "@blargbot/image@workspace:src/image"
@@ -488,7 +516,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@blargbot/master@workspace:src/master":
+"@blargbot/master@workspace:^, @blargbot/master@workspace:src/master":
   version: 0.0.0-use.local
   resolution: "@blargbot/master@workspace:src/master"
   dependencies:

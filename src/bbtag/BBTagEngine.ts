@@ -1,7 +1,6 @@
 import { Timer } from '@blargbot/core/Timer';
 import { sleep } from '@blargbot/core/utils';
 import { Database } from '@blargbot/database';
-import { FormatString } from '@blargbot/domain/messages/index';
 import { Logger } from '@blargbot/logger';
 import { Client as Discord } from 'eris';
 import moment from 'moment-timezone';
@@ -12,12 +11,9 @@ import { BBTagRuntimeError, InternalServerError, SubtagStackOverflowError, TagCo
 import { Statement, SubtagCall } from './language';
 import { Subtag } from './Subtag';
 import { TagCooldownManager } from './TagCooldownManager';
+import templates from './text';
 import { AnalysisResults, BBTagContextOptions, BBTagRuntimeState, ExecutionResult } from './types';
 import { bbtag as bbtagUtil } from './utils';
-
-const unnamedSubtag = FormatString.create('bbtag.analysis.unnamedSubtag', 'Unnamed subtag');
-const dynamicSubtag = FormatString.create('bbtag.analysis.dynamicSubtag', 'Dynamic subtag');
-const subtagDeprecated = FormatString.define<Subtag>('bbtag.analysis.subtagDeprecated', '{{name}} is deprecated. Use `\\{{deprecated}\\}` instead');
 
 export class BBTagEngine {
     readonly #cooldowns: TagCooldownManager;
@@ -186,9 +182,9 @@ export class BBTagEngine {
 
         for (const call of getSubtagCalls(statement)) {
             if (call.name.values.length === 0)
-                result.warnings.push({ location: call.start, message: unnamedSubtag });
+                result.warnings.push({ location: call.start, message: templates.analysis.unnamed });
             else if (call.name.values.some(p => typeof p !== 'string'))
-                result.warnings.push({ location: call.start, message: dynamicSubtag });
+                result.warnings.push({ location: call.start, message: templates.analysis.dynamic });
             else {
                 const subtag = this.subtags.get(call.name.values.join(''));
                 // TODO Detect unknown subtags
@@ -198,7 +194,7 @@ export class BBTagEngine {
                             break;
                     // fallthrough
                     case 'string':
-                        result.warnings.push({ location: call.start, message: subtagDeprecated(subtag) });
+                        result.warnings.push({ location: call.start, message: templates.analysis.deprecated(subtag) });
                 }
             }
         }
