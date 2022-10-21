@@ -1,9 +1,9 @@
 import { Configuration } from '@blargbot/config';
 import { Emote } from '@blargbot/core/Emote';
-import { ChoiceQueryResult, EntityPickQueryOptions, SendContent, SendContext } from '@blargbot/core/types';
+import { ChoiceQueryResult, EntityPickQueryOptions } from '@blargbot/core/types';
 import { Database } from '@blargbot/database';
 import { Logger } from '@blargbot/logger';
-import { AdvancedMessageContent, Client as Discord, Guild, KnownChannel, KnownGuildChannel, KnownMessage, Member, Message, Role, TextableChannel, User } from 'eris';
+import { AdvancedMessageContent, Client as Discord, FileContent, Guild, KnownChannel, KnownGuildChannel, KnownMessage, Member, Message, Role, TextableChannel, User } from 'eris';
 import { Duration } from 'moment-timezone';
 
 import { BBTagContext } from './BBTagContext';
@@ -19,13 +19,17 @@ export interface InjectionContext {
     readonly util: BBTagUtilities;
 }
 
+export interface BBTagSendContent extends Omit<AdvancedMessageContent, 'embed' | 'messageReferenceID'> {
+    files?: FileContent[];
+    nsfw?: string;
+}
+
 export interface BBTagUtilities {
     defaultPrefix: string;
 
     isUserStaff(member: Member): Promise<boolean>;
 
-    send<T extends TextableChannel>(context: T, payload: SendContent<string>, author?: User): Promise<Message<T> | undefined>;
-    send(context: SendContext, payload: SendContent<string>, author?: User): Promise<Message | undefined>;
+    send<T extends TextableChannel>(channel: T, payload: BBTagSendContent, author?: User): Promise<Message<T> | undefined>;
 
     getChannel(channelId: string): Promise<KnownChannel | undefined>;
     getChannel(guild: string | Guild, channelId: string): Promise<KnownGuildChannel | undefined>;

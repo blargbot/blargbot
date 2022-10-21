@@ -20,7 +20,6 @@ export const emoji: IValueResolverTransform = {
             return emote.id !== undefined
                 ? `<${emote.animated === true ? 'a' : ''}:${emote.id}:${emote.name}>`
                 : emote.name;
-
         };
     }
 };

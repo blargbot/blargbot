@@ -314,6 +314,16 @@ function parseTransformerArg(tokens: IterableIterator<TemplateToken>, prevToken:
                 if (bracketCount <= 1)
                     return [result.join(''), token];
                 break;
+            case TemplateTokenType.ESCAPED:
+                switch (token.content) {
+                    case '(':
+                    case ')':
+                    case '|':
+                        break;
+                    default:
+                        result.push('\\');
+                }
+                break;
         }
         result.push(token.content);
     }

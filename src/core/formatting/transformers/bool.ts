@@ -13,7 +13,7 @@ export const bool: IValueResolverTransform = {
         return ctx => {
             const value = source(ctx);
             // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-            ctx.withValue(value, value ? truthy : falsy);
+            return ctx.withValue(value, value ? truthy : falsy);
         };
     }
 };

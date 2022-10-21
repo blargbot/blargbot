@@ -391,20 +391,17 @@ export class BBTagContext implements BBTagContextOptions {
             this.engine.logger.log('Allowed mentions:', this.data.allowedMentions, disableEveryone);
         }
         try {
-            const response = this.data.nsfw === undefined
-                ? await this.engine.util.send(this.message.channel, {
-                    content: text,
-                    embeds: this.data.embeds !== undefined ? this.data.embeds : undefined,
-                    allowedMentions: {
-                        everyone: !disableEveryone,
-                        roles: this.isCC ? this.data.allowedMentions.roles : undefined,
-                        users: this.isCC ? this.data.allowedMentions.users : undefined
-                    },
-                    files: this.data.file !== undefined ? [this.data.file] : undefined
-                })
-                : await this.engine.util.send(this.message.channel, {
-                    content: this.data.nsfw
-                });
+            const response = await this.engine.util.send(this.message.channel, {
+                content: text,
+                embeds: this.data.embeds !== undefined ? this.data.embeds : undefined,
+                nsfw: this.data.nsfw,
+                allowedMentions: {
+                    everyone: !disableEveryone,
+                    roles: this.isCC ? this.data.allowedMentions.roles : undefined,
+                    users: this.isCC ? this.data.allowedMentions.users : undefined
+                },
+                files: this.data.file !== undefined ? [this.data.file] : undefined
+            });
 
             if (response !== undefined) {
                 await this.util.addReactions(response, [...new Set(this.data.reactions)].map(Emote.parse));

@@ -8,7 +8,9 @@ import { SubtagType } from '../../utils';
 const tag = templates.subtags.hash;
 
 export class HashSubtag extends CompiledSubtag {
-    public static methods: readonly string[] = getHashes().filter(h => allowedHashes.has(h));
+    public static get methods(): readonly string[] {
+        return getHashes().filter(h => allowedHashes.has(h));
+    }
 
     public constructor() {
         super({

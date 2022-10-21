@@ -42,7 +42,6 @@ runSubtagTests({
                 ctx.util.setup(m => m.addReactions(message, argument.isDeepEqual(emotes))).thenResolve({ success: emotes, failed: [] });
                 ctx.util.setup(m => m.send(bbctx.message.channel, argument.isDeepEqual({
                     content: '',
-                    replyToExecuting: false,
                     embeds: embeds,
                     files: files,
                     nsfw: 'This is the nsfw message',
@@ -85,7 +84,6 @@ runSubtagTests({
                 ctx.util.setup(m => m.addReactions(message, argument.isDeepEqual(emotes))).thenResolve({ success: emotes, failed: [] });
                 ctx.util.setup(m => m.send(bbctx.message.channel, argument.isDeepEqual({
                     content: '',
-                    replyToExecuting: false,
                     embeds: embeds,
                     files: files,
                     nsfw: 'This is the nsfw message',
@@ -127,7 +125,6 @@ runSubtagTests({
                 ctx.util.setup(m => m.addReactions(message, argument.isDeepEqual(emotes))).thenResolve({ success: emotes, failed: [] });
                 ctx.util.setup(m => m.send(bbctx.message.channel, argument.isDeepEqual({
                     content: 'This is my message content',
-                    replyToExecuting: false,
                     embeds: embeds,
                     files: files,
                     nsfw: 'This is the nsfw message',
@@ -170,7 +167,6 @@ runSubtagTests({
                 ctx.util.setup(m => m.addReactions(message, argument.isDeepEqual(emotes))).thenResolve({ success: emotes, failed: [] });
                 ctx.util.setup(m => m.send(bbctx.message.channel, argument.isDeepEqual({
                     content: 'This is my message content',
-                    replyToExecuting: false,
                     embeds: embeds,
                     files: files,
                     nsfw: 'This is the nsfw message',
@@ -207,7 +203,6 @@ runSubtagTests({
                 ctx.util.setup(m => m.addReactions(message, argument.isDeepEqual([]))).thenResolve({ success: [], failed: [] });
                 ctx.util.setup(m => m.send(bbctx.message.channel, argument.isDeepEqual({
                     content: 'This is my message content',
-                    replyToExecuting: false,
                     embeds: [],
                     files: undefined,
                     nsfw: undefined,

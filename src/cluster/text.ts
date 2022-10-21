@@ -461,7 +461,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
                         },
                         exampleOut: {
                             name: t('**Example output**'),
-                            value: t<{ text: IFormattable<string>; }>()('{text#bool(\n{#split(\n)#map(> {})#join(\n)}|_no output)}\n')
+                            value: t<{ text: IFormattable<string>; }>()('{text#bool(\n{#split(\n)#map(> {})#join(\n)}|_no output_)}\n')
                         },
                         limit: {
                             name: {
@@ -476,7 +476,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
                 }
             },
             subtagCategory: {
-                description: t<{ description: IFormattable<string>; subtags: Iterable<string>; }>()('{description}\n\n```\n{subtags#map(, )}\n```'),
+                description: t<{ description: IFormattable<string>; subtags: Iterable<string>; }>()('{description}\n\n```\n{subtags#join(, )}\n```'),
                 prompt: t('Pick a subtag')
             },
             variables: {

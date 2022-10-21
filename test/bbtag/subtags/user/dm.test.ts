@@ -1,7 +1,7 @@
 import { UserNotFoundError } from '@blargbot/bbtag/errors';
 import { EscapeBbtagSubtag } from '@blargbot/bbtag/subtags/misc/escapebbtag';
 import { DMSubtag } from '@blargbot/bbtag/subtags/user/dm';
-import { Guild, Member, User } from 'eris';
+import { Guild, Member, PrivateChannel, User } from 'eris';
 
 import { argument } from '../../mock';
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
@@ -30,16 +30,18 @@ runSubtagTests({
             setup(ctx) {
                 const member = ctx.createMock(Member);
                 const user = ctx.createMock(User);
+                const channel = ctx.createMock(PrivateChannel);
                 member.setup(x => x.id).thenReturn(ctx.users.other.id);
                 member.setup(x => x.user).thenReturn(user.instance);
+                user.setup(m => m.getDMChannel()).thenResolve(channel.instance);
 
                 ctx.util.setup(m => m.findMembers(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id).value, 'other user'))
                     .verifiable(1)
                     .thenResolve([member.instance]);
-                ctx.util.setup(m => m.send(user.instance, argument.isDeepEqual({ content: `The following message was sent from **__Test Guild__** (${ctx.guild.id}), and was sent by **__Command User#0000__** (${ctx.users.command.id}):` })))
+                ctx.util.setup(m => m.send(channel.instance, argument.isDeepEqual({ content: `The following message was sent from **__Test Guild__** (${ctx.guild.id}), and was sent by **__Command User#0000__** (${ctx.users.command.id}):` })))
                     .verifiable(1)
                     .thenResolve();
-                ctx.util.setup(m => m.send(user.instance, argument.isDeepEqual({ content: 'Hello!' })))
+                ctx.util.setup(m => m.send(channel.instance, argument.isDeepEqual({ content: 'Hello!' })))
                     .verifiable(1)
                     .thenResolve();
             }
@@ -51,16 +53,18 @@ runSubtagTests({
             setup(ctx) {
                 const member = ctx.createMock(Member);
                 const user = ctx.createMock(User);
+                const channel = ctx.createMock(PrivateChannel);
                 member.setup(x => x.id).thenReturn(ctx.users.other.id);
                 member.setup(x => x.user).thenReturn(user.instance);
+                user.setup(m => m.getDMChannel()).thenResolve(channel.instance);
 
                 ctx.util.setup(m => m.findMembers(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id).value, 'other user'))
                     .verifiable(1)
                     .thenResolve([member.instance]);
-                ctx.util.setup(m => m.send(user.instance, argument.isDeepEqual({ content: `The following message was sent from **__Test Guild__** (${ctx.guild.id}), and was sent by **__Command User#0000__** (${ctx.users.command.id}):` })))
+                ctx.util.setup(m => m.send(channel.instance, argument.isDeepEqual({ content: `The following message was sent from **__Test Guild__** (${ctx.guild.id}), and was sent by **__Command User#0000__** (${ctx.users.command.id}):` })))
                     .verifiable(1)
                     .thenResolve();
-                ctx.util.setup(m => m.send(user.instance, argument.isDeepEqual({ embeds: [{ title: 'Hi!' }] })))
+                ctx.util.setup(m => m.send(channel.instance, argument.isDeepEqual({ embeds: [{ title: 'Hi!' }] })))
                     .verifiable(1)
                     .thenResolve();
             }
@@ -72,16 +76,18 @@ runSubtagTests({
             setup(ctx) {
                 const member = ctx.createMock(Member);
                 const user = ctx.createMock(User);
+                const channel = ctx.createMock(PrivateChannel);
                 member.setup(x => x.id).thenReturn(ctx.users.other.id);
                 member.setup(x => x.user).thenReturn(user.instance);
+                user.setup(m => m.getDMChannel()).thenResolve(channel.instance);
 
                 ctx.util.setup(m => m.findMembers(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id).value, 'other user'))
                     .verifiable(1)
                     .thenResolve([member.instance]);
-                ctx.util.setup(m => m.send(user.instance, argument.isDeepEqual({ content: `The following message was sent from **__Test Guild__** (${ctx.guild.id}), and was sent by **__Command User#0000__** (${ctx.users.command.id}):` })))
+                ctx.util.setup(m => m.send(channel.instance, argument.isDeepEqual({ content: `The following message was sent from **__Test Guild__** (${ctx.guild.id}), and was sent by **__Command User#0000__** (${ctx.users.command.id}):` })))
                     .verifiable(1)
                     .thenResolve();
-                ctx.util.setup(m => m.send(user.instance, argument.isDeepEqual({ content: 'Hello there!', embeds: [{ title: 'General Kenobi!' }] })))
+                ctx.util.setup(m => m.send(channel.instance, argument.isDeepEqual({ content: 'Hello there!', embeds: [{ title: 'General Kenobi!' }] })))
                     .verifiable(1)
                     .thenResolve();
             }
@@ -93,16 +99,18 @@ runSubtagTests({
             setup(ctx) {
                 const member = ctx.createMock(Member);
                 const user = ctx.createMock(User);
+                const channel = ctx.createMock(PrivateChannel);
                 member.setup(x => x.id).thenReturn(ctx.users.other.id);
                 member.setup(x => x.user).thenReturn(user.instance);
+                user.setup(m => m.getDMChannel()).thenResolve(channel.instance);
 
                 ctx.util.setup(m => m.findMembers(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id).value, 'other user'))
                     .verifiable(1)
                     .thenResolve([member.instance]);
-                ctx.util.setup(m => m.send(user.instance, argument.isDeepEqual({ content: `The following message was sent from **__Test Guild__** (${ctx.guild.id}), and was sent by **__Command User#0000__** (${ctx.users.command.id}):` })))
+                ctx.util.setup(m => m.send(channel.instance, argument.isDeepEqual({ content: `The following message was sent from **__Test Guild__** (${ctx.guild.id}), and was sent by **__Command User#0000__** (${ctx.users.command.id}):` })))
                     .verifiable(1)
                     .thenResolve();
-                ctx.util.setup(m => m.send(user.instance, argument.isDeepEqual({ content: '{ "title": "this isnt actually an embed" }', embeds: [{ title: 'General Kenobi!' }] })))
+                ctx.util.setup(m => m.send(channel.instance, argument.isDeepEqual({ content: '{ "title": "this isnt actually an embed" }', embeds: [{ title: 'General Kenobi!' }] })))
                     .verifiable(1)
                     .thenResolve();
             }
@@ -113,16 +121,18 @@ runSubtagTests({
             setup(ctx) {
                 const member = ctx.createMock(Member);
                 const user = ctx.createMock(User);
+                const channel = ctx.createMock(PrivateChannel);
                 member.setup(x => x.id).thenReturn(ctx.users.other.id);
                 member.setup(x => x.user).thenReturn(user.instance);
+                user.setup(m => m.getDMChannel()).thenResolve(channel.instance);
 
                 ctx.util.setup(m => m.findMembers(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id).value, 'other user'))
                     .verifiable(x => x.times(5))
                     .thenResolve([member.instance]);
-                ctx.util.setup(m => m.send(user.instance, argument.isDeepEqual({ content: `The following message was sent from **__Test Guild__** (${ctx.guild.id}), and was sent by **__Command User#0000__** (${ctx.users.command.id}):` })))
+                ctx.util.setup(m => m.send(channel.instance, argument.isDeepEqual({ content: `The following message was sent from **__Test Guild__** (${ctx.guild.id}), and was sent by **__Command User#0000__** (${ctx.users.command.id}):` })))
                     .verifiable(x => x.times(1))
                     .thenResolve();
-                ctx.util.setup(m => m.send(user.instance, argument.isDeepEqual({ content: 'Hi!' })))
+                ctx.util.setup(m => m.send(channel.instance, argument.isDeepEqual({ content: 'Hi!' })))
                     .verifiable(x => x.times(5))
                     .thenResolve();
             }
@@ -133,16 +143,18 @@ runSubtagTests({
             setup(ctx) {
                 const member = ctx.createMock(Member);
                 const user = ctx.createMock(User);
+                const channel = ctx.createMock(PrivateChannel);
                 member.setup(x => x.id).thenReturn(ctx.users.other.id);
                 member.setup(x => x.user).thenReturn(user.instance);
+                user.setup(m => m.getDMChannel()).thenResolve(channel.instance);
 
                 ctx.util.setup(m => m.findMembers(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id).value, 'other user'))
                     .verifiable(x => x.times(6))
                     .thenResolve([member.instance]);
-                ctx.util.setup(m => m.send(user.instance, argument.isDeepEqual({ content: `The following message was sent from **__Test Guild__** (${ctx.guild.id}), and was sent by **__Command User#0000__** (${ctx.users.command.id}):` })))
+                ctx.util.setup(m => m.send(channel.instance, argument.isDeepEqual({ content: `The following message was sent from **__Test Guild__** (${ctx.guild.id}), and was sent by **__Command User#0000__** (${ctx.users.command.id}):` })))
                     .verifiable(x => x.times(2))
                     .thenResolve();
-                ctx.util.setup(m => m.send(user.instance, argument.isDeepEqual({ content: 'Hi!' })))
+                ctx.util.setup(m => m.send(channel.instance, argument.isDeepEqual({ content: 'Hi!' })))
                     .verifiable(x => x.times(6))
                     .thenResolve();
             }

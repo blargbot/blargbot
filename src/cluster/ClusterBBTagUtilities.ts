@@ -1,11 +1,12 @@
-import { AwaitReactionsResponse, BBTagContext, BBTagUtilities } from '@blargbot/bbtag';
+import { AwaitReactionsResponse, BBTagContext, BBTagSendContent, BBTagUtilities } from '@blargbot/bbtag';
 import { Emote } from '@blargbot/core/Emote';
-import { ChoiceQueryResult, EntityPickQueryOptions, SendContent, SendContext } from '@blargbot/core/types';
+import { ChoiceQueryResult, EntityPickQueryOptions, SendContent } from '@blargbot/core/types';
 import { IFormattable, literal } from '@blargbot/domain/messages/types';
 import { AdvancedMessageContent, Guild, KnownChannel, KnownGuildChannel, KnownMessage, Member, Message, Role, TextableChannel, User } from 'eris';
 import moment, { Duration } from 'moment-timezone';
 
 import { Cluster } from './Cluster';
+import { guard } from './utils/index';
 
 export class ClusterBBTagUtilities implements BBTagUtilities {
     public get defaultPrefix(): string {
@@ -15,10 +16,10 @@ export class ClusterBBTagUtilities implements BBTagUtilities {
     public constructor(public readonly cluster: Cluster) {
     }
 
-    public async send<T extends TextableChannel>(context: T, payload: SendContent<string>, author?: User | undefined): Promise<Message<T> | undefined>;
-    public async send(context: SendContext, payload: SendContent<string>, author?: User | undefined): Promise<Message<TextableChannel> | undefined>;
-    public async send(context: SendContext, payload: SendContent<string>, author?: User | undefined): Promise<Message<TextableChannel> | undefined> {
-        return await this.cluster.util.send(context, literal(payload), author);
+    public async send<T extends TextableChannel>(channel: T, payload: BBTagSendContent, author?: User | undefined): Promise<Message<T> | undefined> {
+        return payload.nsfw !== undefined && guard.isGuildChannel(channel) && !channel.nsfw
+            ? await this.cluster.util.send(channel, literal({ content: payload.nsfw, allowedMentions: payload.allowedMentions }))
+            : await this.cluster.util.send(channel, literal(payload), author);
     }
 
     public async getChannel(channelId: string): Promise<KnownChannel | undefined>;
