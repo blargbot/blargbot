@@ -3,10 +3,10 @@ import { BBTagRuntimeError, NotANumberError } from '@blargbot/bbtag/errors';
 import { MessageIdSubtag } from '@blargbot/bbtag/subtags/message/messageid';
 import { WaitMessageSubtag } from '@blargbot/bbtag/subtags/message/waitmessage';
 import { OperatorSubtag } from '@blargbot/bbtag/subtags/misc/operator';
+import { argument, Mock } from '@blargbot/test-util/mock';
 import { expect } from 'chai';
 import { Guild, KnownMessage, Member, Message, TextChannel, User } from 'eris';
 
-import { argument, Mock } from '../../mock';
 import { MarkerError, runSubtagTests, SubtagTestContext } from '../SubtagTestSuite';
 
 type AwaitCondition = Exclude<Parameters<BBTagUtilities['awaitMessage']>[1], undefined>;

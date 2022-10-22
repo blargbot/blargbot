@@ -1,8 +1,8 @@
 import { BBTagRuntimeError, NotAnArrayError, RoleNotFoundError } from '@blargbot/bbtag/errors';
 import { UserSetRolesSubtag } from '@blargbot/bbtag/subtags/user/usersetroles';
+import { argument } from '@blargbot/test-util/mock';
 import { Constants } from 'eris';
 
-import { argument } from '../../mock';
 import { runSubtagTests } from '../SubtagTestSuite';
 import { createGetUserPropTestCases } from './_getUserPropTest';
 

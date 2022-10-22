@@ -1,9 +1,9 @@
 import { BBTagContext } from '@blargbot/bbtag';
 import { BBTagRuntimeError, UserNotFoundError } from '@blargbot/bbtag/errors';
+import { argument } from '@blargbot/test-util/mock';
 import { APIGuildMember } from 'discord-api-types/v9';
 import { Guild, Member } from 'eris';
 
-import { argument } from '../../mock';
 import { SubtagTestCase, SubtagTestContext } from '../SubtagTestSuite';
 
 export function createGetUserPropTestCases(options: GetUserPropTestData): SubtagTestCase[] {

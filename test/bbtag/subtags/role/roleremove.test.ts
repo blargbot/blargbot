@@ -1,8 +1,8 @@
 import { BBTagRuntimeError, RoleNotFoundError, UserNotFoundError } from '@blargbot/bbtag/errors';
 import { RoleRemoveSubtag } from '@blargbot/bbtag/subtags/role/roleremove';
+import { argument } from '@blargbot/test-util/mock';
 import { Constants } from 'eris';
 
-import { argument } from '../../mock';
 import { runSubtagTests } from '../SubtagTestSuite';
 
 runSubtagTests({

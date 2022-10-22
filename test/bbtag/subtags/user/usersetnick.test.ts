@@ -1,8 +1,8 @@
 import { UserNotFoundError } from '@blargbot/bbtag/errors';
 import { UserSetNickSubtag } from '@blargbot/bbtag/subtags/user/usersetnick';
+import { argument } from '@blargbot/test-util/mock';
 import { Member } from 'eris';
 
-import { argument } from '../../mock';
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
 
 runSubtagTests({

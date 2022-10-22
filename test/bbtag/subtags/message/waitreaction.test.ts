@@ -7,10 +7,10 @@ import { WaitReactionSubtag } from '@blargbot/bbtag/subtags/message/waitreaction
 import { OperatorSubtag } from '@blargbot/bbtag/subtags/misc/operator';
 import { AwaitReactionsResponse } from '@blargbot/bbtag/types';
 import { Emote } from '@blargbot/core/Emote';
+import { argument } from '@blargbot/test-util/mock';
 import { expect } from 'chai';
 import { Guild, KnownMessage, Member, Message, TextChannel, User } from 'eris';
 
-import { argument } from '../../mock';
 import { MarkerError, runSubtagTests, SubtagTestContext } from '../SubtagTestSuite';
 
 type AwaitCondition = Exclude<Parameters<BBTagUtilities['awaitReaction']>[1], undefined>;

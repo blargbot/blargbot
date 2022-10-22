@@ -1,19 +1,16 @@
 {
-    "name": "@blargbot/core-tests",
+    "name": "@blargbot/test-util",
     "version": "1.0.0",
     "private": true,
     "dependencies": {
         "@blargbot/core": "workspace:^",
         "@blargbot/domain": "workspace:^",
-        "@blargbot/test-util": "workspace:^",
         "chai": "^4.3.6",
-        "eris": "^0.17.1",
         "mocha": "^10.0.0",
         "ts-mockito": "^2.6.1"
     },
     "devDependencies": {
         "@types/chai": "^4.3.3",
-        "@types/eris": "workspace:^",
         "@types/mocha": "^10.0.0"
     }
 }

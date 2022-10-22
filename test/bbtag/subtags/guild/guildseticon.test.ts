@@ -1,9 +1,9 @@
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
 import { GuildSetIconSubtag } from '@blargbot/bbtag/subtags/guild/guildseticon';
 import { SemiSubtag } from '@blargbot/bbtag/subtags/simple/semi';
+import { argument } from '@blargbot/test-util/mock';
 import { Constants } from 'eris';
 
-import { argument } from '../../mock';
 import { runSubtagTests } from '../SubtagTestSuite';
 
 runSubtagTests({

@@ -1,4 +1,3 @@
-import { Base } from 'eris';
 import { instance, verify, when } from 'ts-mockito';
 import { Matcher } from 'ts-mockito/lib/matcher/type/Matcher';
 import { StrictEqualMatcher } from 'ts-mockito/lib/matcher/type/StrictEqualMatcher';
@@ -191,12 +190,6 @@ class MethodNotConfiguredStub extends AbstractMethodStub implements MethodStub {
             if (isProxy(a)) {
                 const proto = Object.getPrototypeOf(a) as object;
                 return `<PROXY ${proto.constructor.name}>`;
-            }
-            if (a instanceof Base) {
-                const b: Base & { name?: string; } = a;
-                if ('name' in b && typeof b.name === 'string')
-                    return `<Eris.${a.constructor.name} ${b.id} (${JSON.stringify(b.name)})>`;
-                return `<Eris.${a.constructor.name} ${a.id}>`;
             }
             try {
                 return JSON.stringify(a, (_, value) => typeof value === 'bigint' ? value.toString() : value as unknown);

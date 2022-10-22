@@ -1,9 +1,9 @@
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
 import { WebhookSubtag } from '@blargbot/bbtag/subtags/message/webhook';
 import { EscapeBbtagSubtag } from '@blargbot/bbtag/subtags/misc/escapebbtag';
+import { argument } from '@blargbot/test-util/mock';
 import { expect } from 'chai';
 
-import { argument } from '../../mock';
 import { runSubtagTests } from '../SubtagTestSuite';
 
 runSubtagTests({

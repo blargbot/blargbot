@@ -1,10 +1,10 @@
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
 import { ChannelEditSubtag } from '@blargbot/bbtag/subtags/channel/channeledit';
 import { EscapeBbtagSubtag } from '@blargbot/bbtag/subtags/misc/escapebbtag';
+import { argument } from '@blargbot/test-util/mock';
 import { ChannelType } from 'discord-api-types/v9';
 import { ApiError, Constants } from 'eris';
 
-import { argument } from '../../mock';
 import { runSubtagTests } from '../SubtagTestSuite';
 
 runSubtagTests({

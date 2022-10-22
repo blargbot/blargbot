@@ -285,6 +285,7 @@ __metadata:
     "@blargbot/database": "workspace:^"
     "@blargbot/domain": "workspace:^"
     "@blargbot/logger": "workspace:^"
+    "@blargbot/test-util": "workspace:^"
     "@types/chai": ^4.3.3
     "@types/chai-datetime": ^0.0.37
     "@types/eris": "workspace:^"
@@ -373,9 +374,13 @@ __metadata:
   resolution: "@blargbot/core-tests@workspace:test/core"
   dependencies:
     "@blargbot/core": "workspace:^"
+    "@blargbot/domain": "workspace:^"
+    "@blargbot/test-util": "workspace:^"
     "@types/chai": ^4.3.3
+    "@types/eris": "workspace:^"
     "@types/mocha": ^10.0.0
     chai: ^4.3.6
+    eris: ^0.17.1
     mocha: ^10.0.0
     ts-mockito: ^2.6.1
   languageName: unknown
@@ -540,6 +545,20 @@ __metadata:
 "@blargbot/res@workspace:^, @blargbot/res@workspace:src/res":
   version: 0.0.0-use.local
   resolution: "@blargbot/res@workspace:src/res"
+  languageName: unknown
+  linkType: soft
+
+"@blargbot/test-util@workspace:^, @blargbot/test-util@workspace:test/testUtil":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/test-util@workspace:test/testUtil"
+  dependencies:
+    "@blargbot/core": "workspace:^"
+    "@blargbot/domain": "workspace:^"
+    "@types/chai": ^4.3.3
+    "@types/mocha": ^10.0.0
+    chai: ^4.3.6
+    mocha: ^10.0.0
+    ts-mockito: ^2.6.1
   languageName: unknown
   linkType: soft
 

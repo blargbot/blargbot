@@ -1,8 +1,8 @@
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
 import { RoleCreateSubtag } from '@blargbot/bbtag/subtags/role/rolecreate';
+import { argument } from '@blargbot/test-util/mock';
 import { ApiError, Constants } from 'eris';
 
-import { argument } from '../../mock';
 import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite';
 
 runSubtagTests({

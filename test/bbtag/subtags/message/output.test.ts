@@ -1,10 +1,10 @@
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
 import { OutputSubtag } from '@blargbot/bbtag/subtags/message/output';
 import { Emote } from '@blargbot/core/Emote';
+import { argument } from '@blargbot/test-util/mock';
 import { expect } from 'chai';
 import { KnownGuildTextableChannel } from 'eris';
 
-import { argument } from '../../mock';
 import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite';
 
 const emotes = [Emote.parse('<a:test:120272372032032937>'), Emote.parse('<:alsoatest:23094632472398746234>'), Emote.parse('🤔')];

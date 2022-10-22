@@ -102,6 +102,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       {\
         "name": "@blargbot/global-tests",\
         "reference": "workspace:test/global"\
+      },\
+      {\
+        "name": "@blargbot/test-util",\
+        "reference": "workspace:test/testUtil"\
       }\
     ],\
     "enableTopLevelFallback": true,\
@@ -122,6 +126,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@blargbot/mapping", ["workspace:src/mapping"]],\
       ["@blargbot/master", ["workspace:src/master"]],\
       ["@blargbot/res", ["workspace:src/res"]],\
+      ["@blargbot/test-util", ["workspace:test/testUtil"]],\
       ["@types/blargbot-image-api", ["workspace:definitions/blargbot-image-api"]],\
       ["@types/brainfuck-node", ["workspace:definitions/brainfuck-node"]],\
       ["@types/catflake", ["workspace:definitions/catflake"]],\
@@ -506,6 +511,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/database", "workspace:src/database"],\
             ["@blargbot/domain", "workspace:src/domain"],\
             ["@blargbot/logger", "workspace:src/logger"],\
+            ["@blargbot/test-util", "workspace:test/testUtil"],\
             ["@types/chai", "npm:4.3.3"],\
             ["@types/chai-datetime", "npm:0.0.37"],\
             ["@types/eris", "workspace:definitions/eris"],\
@@ -611,9 +617,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["@blargbot/core-tests", "workspace:test/core"],\
             ["@blargbot/core", "workspace:src/core"],\
+            ["@blargbot/domain", "workspace:src/domain"],\
+            ["@blargbot/test-util", "workspace:test/testUtil"],\
             ["@types/chai", "npm:4.3.3"],\
+            ["@types/eris", "workspace:definitions/eris"],\
             ["@types/mocha", "patch:@types/mocha@npm%3A10.0.0#./.yarn/patches/@types-mocha-npm-10.0.0-a2509f7d26.patch::version=10.0.0&hash=decf1a&locator=blargbot%40workspace%3A."],\
             ["chai", "npm:4.3.6"],\
+            ["eris", "npm:0.17.1"],\
             ["mocha", "npm:10.0.0"],\
             ["ts-mockito", "npm:2.6.1"]\
           ],\
@@ -761,6 +771,22 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./src/res/",\
           "packageDependencies": [\
             ["@blargbot/res", "workspace:src/res"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
+      ["@blargbot/test-util", [\
+        ["workspace:test/testUtil", {\
+          "packageLocation": "./test/testUtil/",\
+          "packageDependencies": [\
+            ["@blargbot/test-util", "workspace:test/testUtil"],\
+            ["@blargbot/core", "workspace:src/core"],\
+            ["@blargbot/domain", "workspace:src/domain"],\
+            ["@types/chai", "npm:4.3.3"],\
+            ["@types/mocha", "patch:@types/mocha@npm%3A10.0.0#./.yarn/patches/@types-mocha-npm-10.0.0-a2509f7d26.patch::version=10.0.0&hash=decf1a&locator=blargbot%40workspace%3A."],\
+            ["chai", "npm:4.3.6"],\
+            ["mocha", "npm:10.0.0"],\
+            ["ts-mockito", "npm:2.6.1"]\
           ],\
           "linkType": "SOFT"\
         }]\

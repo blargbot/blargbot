@@ -1,9 +1,9 @@
 import { UserNotFoundError } from '@blargbot/bbtag/errors';
 import { EscapeBbtagSubtag } from '@blargbot/bbtag/subtags/misc/escapebbtag';
 import { DMSubtag } from '@blargbot/bbtag/subtags/user/dm';
+import { argument } from '@blargbot/test-util/mock';
 import { Guild, Member, PrivateChannel, User } from 'eris';
 
-import { argument } from '../../mock';
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
 
 runSubtagTests({

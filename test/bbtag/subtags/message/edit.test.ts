@@ -1,10 +1,10 @@
 import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '@blargbot/bbtag/errors';
 import { EditSubtag } from '@blargbot/bbtag/subtags/message/edit';
 import { EscapeBbtagSubtag } from '@blargbot/bbtag/subtags/misc/escapebbtag';
+import { argument } from '@blargbot/test-util/mock';
 import { expect } from 'chai';
 import { KnownGuildTextableChannel } from 'eris';
 
-import { argument } from '../../mock';
 import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite';
 
 runSubtagTests({

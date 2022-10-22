@@ -9,6 +9,7 @@ import { Database } from '@blargbot/database';
 import { GuildCommandTag, StoredTag, TagVariableType } from '@blargbot/domain/models';
 import { GuildStore, TagStore, TagVariableStore, UserStore } from '@blargbot/domain/stores';
 import { Logger } from '@blargbot/logger';
+import { argument, Mock } from '@blargbot/test-util/mock';
 import { expect } from 'chai';
 import * as chai from 'chai';
 import chaiBytes from 'chai-bytes';
@@ -24,8 +25,6 @@ import moment, { Moment } from 'moment-timezone';
 import path from 'path';
 import { anything } from 'ts-mockito';
 import { inspect } from 'util';
-
-import { argument, Mock } from '../mock';
 
 chai.use(chaiExclude);
 chai.use(chaiBytes);
@@ -173,7 +172,7 @@ export class SubtagTestContext {
         const args = new Array(100).fill(argument.any().value) as unknown[];
         for (let i = 0; i < args.length; i++) {
             this.logger.setup(m => m.error(...args.slice(0, i)), false).thenCall((...args: unknown[]) => {
-                throw args.find(x => x instanceof Error) ?? new Error(`Unexpected logger error: ${  inspect(args)}`);
+                throw args.find(x => x instanceof Error) ?? new Error(`Unexpected logger error: ${inspect(args)}`);
             });
         }
 

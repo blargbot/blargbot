@@ -1,8 +1,8 @@
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
 import { RoleSetPermsSubtag } from '@blargbot/bbtag/subtags/role/rolesetperms';
+import { argument } from '@blargbot/test-util/mock';
 import { ApiError, Constants } from 'eris';
 
-import { argument } from '../../mock';
 import { runSubtagTests } from '../SubtagTestSuite';
 import { createGetRolePropTestCases } from './_getRolePropTest';
 

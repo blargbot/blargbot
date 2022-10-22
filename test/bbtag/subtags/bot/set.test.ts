@@ -1,9 +1,9 @@
 import { SetSubtag } from '@blargbot/bbtag/subtags/bot/set';
 import { guard, snowflake } from '@blargbot/core/utils';
 import { TagVariableScope, TagVariableType } from '@blargbot/domain/models';
+import { argument } from '@blargbot/test-util/mock';
 import { expect } from 'chai';
 
-import { argument } from '../../mock';
 import { runSubtagTests, SubtagTestCase } from '../SubtagTestSuite';
 
 runSubtagTests({

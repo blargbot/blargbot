@@ -1,9 +1,9 @@
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
 import { EmojiCreateSubtag } from '@blargbot/bbtag/subtags/guild/emojicreate';
 import { SemiSubtag } from '@blargbot/bbtag/subtags/simple/semi';
+import { argument } from '@blargbot/test-util/mock';
 import { Constants } from 'eris';
 
-import { argument } from '../../mock';
 import { runSubtagTests } from '../SubtagTestSuite';
 
 runSubtagTests({

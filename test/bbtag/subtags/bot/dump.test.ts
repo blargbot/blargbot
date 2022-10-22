@@ -1,6 +1,6 @@
 import { DumpSubtag } from '@blargbot/bbtag/subtags/bot/dump';
+import { argument } from '@blargbot/test-util/mock';
 
-import { argument } from '../../mock';
 import { runSubtagTests } from '../SubtagTestSuite';
 
 runSubtagTests({
