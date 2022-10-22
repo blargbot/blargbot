@@ -7,7 +7,7 @@
     ".mts"
   ],
   "include": [
-    "src/bbtag/**/*.{js,ts,mjs,mts,cjs,cts}"
+    "src/**/*.{js,ts,mjs,mts,cjs,cts}"
   ],
   "exclude": [
     "coverage/**",
@@ -25,8 +25,8 @@
   ],
   "all": true,
   "instrument": true,
-  "branches": 80,
-  "lines": 80,
-  "functions": 80,
-  "statements": 80
+  "branches": 27,
+  "lines": 34,
+  "functions": 33,
+  "statements": 34
 }
