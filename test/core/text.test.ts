@@ -1,6 +1,6 @@
 import templates from '@blargbot/core/text';
 import { literal } from '@blargbot/domain/messages/types';
-import { makeMock as quickMock } from '@blargbot/test-util/makeMock';
+import { quickMock } from '@blargbot/test-util/quickMock';
 import { runFormatTreeTests } from '@blargbot/test-util/runFormatTreeTests';
 import { Channel, Guild, GuildChannel } from 'eris';
 import { describe } from 'mocha';

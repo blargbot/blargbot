@@ -123,7 +123,7 @@ Database Execution Time: {database#duration(MS)}ms
         },
         filter: {
             default: {
-                description: t<{ disabled: Iterable<string>; }>()('For every element in `array`, a variable called `variable` will be set and `code` will be executed. Returns a new array containing all the elements that returned the value `true`.\n\n While inside the `code` parameter, none of the following subtags may be used: `{disabled#join(, )}`'),
+                description: t<{ disabled: Iterable<string>; }>()('For every element in `array`, a variable called `variable` will be set and `code` will be executed. Returns a new array containing all the elements that returned the value `true`.\n\n While inside the `code` parameter, none of the following subtags may be used: {disabled#map(`\\{{}\\}`)#join(, )}'),
                 exampleOut: t('["apples","apple juice"]'),
                 exampleCode: t('\\{set;~array;apples;apple juice;grapefruit\\}\n\\{filter;~element;~array;\\{bool;\\{get;~element\\};startswith;apple\\}\\}')
             }
@@ -357,7 +357,7 @@ Database Execution Time: {database#duration(MS)}ms
         },
         lock: {
             default: {
-                description: t('Provides read/write locking functionality for bbtag. This is a very advanced feature, so it is reccomended that you first [read about the concept of locks](https://en.wikipedia.org/wiki/Lock_\\(computer_science\\)).\n\nIn simple terms, a lock allows commands running at the same time to cooperate and wait for eachother to finish what they are doing before "releasing the lock" and letting other commands use that lock. This can be used to secure against data being edited by 2 things at the same time, which can cause inconsistencies.\n\nThere can be multiple `read` locks held at once or a single `write` lock. This means that if all your command is doing is reading some data then as long as nothing is writing to it, it will be allowed, otherwise the command will wait until it can aquire a lock.\n\n`mode` must be either `read` or `write`.\n`key` can be anything. This follows the same scoping rules as variables do.\n`code` will be run once the lock is acquired'),
+                description: t('Provides read/write locking functionality for bbtag. This is a very advanced feature, so it is reccomended that you first [read about the concept of locks](https://en.wikipedia.org/wiki/Lock_(computer_science)).\n\nIn simple terms, a lock allows commands running at the same time to cooperate and wait for eachother to finish what they are doing before "releasing the lock" and letting other commands use that lock. This can be used to secure against data being edited by 2 things at the same time, which can cause inconsistencies.\n\nThere can be multiple `read` locks held at once or a single `write` lock. This means that if all your command is doing is reading some data then as long as nothing is writing to it, it will be allowed, otherwise the command will wait until it can aquire a lock.\n\n`mode` must be either `read` or `write`.\n`key` can be anything. This follows the same scoping rules as variables do.\n`code` will be run once the lock is acquired'),
                 exampleOut: t('\nStart\nMiddle\nEnd\nStart\nMiddle\nEnd\nThis order is guaranteed always. Without a lock it isnt'),
                 exampleCode: t('\n\\{//;in 2 command run in quick succession\\}\n\\{lock;write;key;\n  \\{void;\n    \\{send;\\{channelid\\};Start\\}\n    \\{send;\\{channelid\\};Middle\\}\n    \\{send;\\{channelid\\};End\\}\n  \\}\n\\}\nThis order is guaranteed always. Without a lock it isnt')
             }
@@ -454,7 +454,7 @@ Database Execution Time: {database#duration(MS)}ms
             variables: {
                 description: t('Rollback provided `variables`'),
                 exampleOut: t('Hello!'),
-                exampleCode: t('\\{set;var;Hello!\\}\n\\{commit;varr\\}\n\\{set;var;GoodBye!\\}\n\\{rollback;var\\}\n\\{get;var\\}')
+                exampleCode: t('\\{set;var;Hello!\\}\n\\{commit;var\\}\n\\{set;var;GoodBye!\\}\n\\{rollback;var\\}\n\\{get;var\\}')
             }
         },
         set: {
@@ -917,7 +917,7 @@ Database Execution Time: {database#duration(MS)}ms
                 exampleCode: t('\\{set;~x;0\\}\n\\{set;~end;false\\}\n\\{while;\\{get;~end\\};\n\t\\{if;\\{increment;~x\\};==;10;\n\t\t\\{set;~end;true\\}\n\t\\}\n\\}\n\\{get;~end\\}')
             },
             condition: {
-                description: t<{ operators: Iterable<string>; }>()('This will continuously execute `code` for as long as the condition returns `true`. The condition is as follows:\nIf `evaluator` and `value2` are provided, `value1` is evaluated against `value2` using `evaluator`. Valid evaluators are {operators#map(`{}`)#join(, )}.'),
+                description: t<{ operators: Iterable<string>; }>()('This will continuously execute `code` for as long as the condition returns `true`. The condition is as follows:\nIf `evaluator` and `value2` are provided, `value1` is evaluated against `value2` using `evaluator`. Valid evaluators are {operators#map(`{}`)#join(, | and )}.'),
                 exampleOut: t('1,2,3,4,5,6,7,8,9,10,11,'),
                 exampleCode: t('\\{set;~x;0\\}\n\\{while;\\{get;~x\\};<=;10;\\{increment;~x\\},\\}')
             }
@@ -967,7 +967,7 @@ Database Execution Time: {database#duration(MS)}ms
         },
         math: {
             default: {
-                description: t<{ operators: Iterable<string>; }>()('Accepts multiple `values` and returns the result of `operator` on them. Valid operators are {operators#map(`{}`)#join(, )}\nSee `\\{operators\\}` for a shorter way of performing numeric operations.'),
+                description: t<{ operators: Iterable<string>; }>()('Accepts multiple `values` and returns the result of `operator` on them. Valid operators are {operators#map(`{}`)#join(, | and )}\nSee `\\{operators\\}` for a shorter way of performing numeric operations.'),
                 exampleOut: t('2 + 3 + 6 - 2 = 9'),
                 exampleCode: t('2 + 3 + 6 - 2 = \\{math;-;\\{math;+;2;3;6\\};2\\}')
             }
@@ -1423,7 +1423,7 @@ Database Execution Time: {database#duration(MS)}ms
         },
         bool: {
             default: {
-                description: t<{ operators: Iterable<string>; }>()('Evaluates `arg1` and `arg2` using the `evaluator` and returns `true` or `false`. Valid evaluators are {operators#map(`{}`)#join(, )}\nThe positions of `evaluator` and `arg1` can be swapped.'),
+                description: t<{ operators: Iterable<string>; }>()('Evaluates `arg1` and `arg2` using the `evaluator` and returns `true` or `false`. Valid evaluators are {operators#map(`{}`)#join(, | and )}\nThe positions of `evaluator` and `arg1` can be swapped.'),
                 exampleOut: t('true'),
                 exampleCode: t('\\{bool;5;<=;10\\}')
             }
@@ -1522,7 +1522,7 @@ Database Execution Time: {database#duration(MS)}ms
             }
         },
         if: {
-            description: t<{ operators: Iterable<string>; }>()('If `evaluator` and `value2` are provided, `value1` is evaluated against `value2` using `evaluator`. If they are not provided, `value1` is read as `true` or `false`. If the resulting value is `true` then the tag returns `then`, otherwise it returns `else`.\nValid evaluators are {operators#map(`{}`)#join(, )}.'),
+            description: t<{ operators: Iterable<string>; }>()('If `evaluator` and `value2` are provided, `value1` is evaluated against `value2` using `evaluator`. If they are not provided, `value1` is read as `true` or `false`. If the resulting value is `true` then the tag returns `then`, otherwise it returns `else`.\nValid evaluators are {operators#map(`{}`)#join(, | and )}.'),
             value: {
                 description: t('If `boolean` is `true`, return `then`, else do nothing.'),
                 exampleOut: t('This is a custom command!'),
@@ -1568,7 +1568,7 @@ Database Execution Time: {database#duration(MS)}ms
         },
         logic: {
             default: {
-                description: t<{ operators: Iterable<string>; }>()('Accepts 1 or more boolean `values` (`true` or `false`) and returns the result of `operator` on them. Valid logic operators are {operators#map(`{}`)#join(, )}.See `\\{operators\\}` for a shorter way of performing logic operations.'),
+                description: t<{ operators: Iterable<string>; }>()('Accepts 1 or more boolean `values` (`true` or `false`) and returns the result of `operator` on them. Valid logic operators are {operators#map(`{}`)#join(, | and )}.See `\\{operators\\}` for a shorter way of performing logic operations.'),
                 exampleOut: t('false'),
                 exampleCode: t('\\{logic;&&;true;false\\}')
             }
@@ -2214,7 +2214,7 @@ Database Execution Time: {database#duration(MS)}ms
             }
         },
         useractivitytype: {
-            description: t<{ types: Iterable<string>; }>()('Activity types can be any of {types#map(`{}`)#join(, )}'),
+            description: t<{ types: Iterable<string>; }>()('Activity types can be any of {types#map(`{}`)#join(, | or )}'),
             target: {
                 description: t('Returns the type of activity the executing user is currently doing (playing, streaming).'),
                 exampleOut: t('You are streaming right now!'),

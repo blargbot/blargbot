@@ -186,6 +186,8 @@ function* parse(template: string): Generator<string | ReplacementDetails> {
     for (const token of tokens) {
         if (token.type === TemplateTokenType.REPLACEMENT_START)
             yield parseReplacement(sharedTokens, token);
+        else if (token.type === TemplateTokenType.ESCAPED && token.content !== '{' && token.content !== '}')
+            yield `\\${token.content}`;
         else
             yield token.content;
     }

@@ -30,7 +30,9 @@ function runFormatTreeTestsCore<T extends object>(prefix: string[], source: T, c
             });
         } else if (isFormattable(v)) {
             const c = cases[key] as string | Iterable<string>;
-            const allowed = typeof c === 'string' ? [c] : [...c];
+            const assert: (v: unknown) => void = typeof c === 'string'
+                ? v => expect(v).to.eq(c)
+                : v => expect(v).to.be.oneOf([...c]);
             describe(path.join('.'), () => {
                 it('should display correctly', () => {
                     //arrange
@@ -41,7 +43,7 @@ function runFormatTreeTestsCore<T extends object>(prefix: string[], source: T, c
                     const result = v[format](formatter);
 
                     // assert
-                    expect(result).to.be.oneOf(allowed);
+                    assert(result);
                 });
             });
         } else if (typeof v === 'object' && v !== null) {
