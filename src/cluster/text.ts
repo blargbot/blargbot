@@ -726,6 +726,11 @@ export const templates = FormatString.defineTree('cluster', t => ({
                 description: t('Commands that can only be executed by support members on the official support server.')
             }
         },
+        i18n: {
+            exports: {
+                description: t('Generates a JSON file containing all the keys blargbot currently uses for translation')
+            }
+        },
         announce: {
             default: {
                 description: t('Resets the current configuration for announcements'),
