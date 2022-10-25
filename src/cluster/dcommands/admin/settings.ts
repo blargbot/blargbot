@@ -136,7 +136,7 @@ function resolveChannel(guild: Guild, channelId: string | undefined): IFormattab
         return undefined;
     const channel = guild.channels.get(channelId)
         ?? guild.channels.find(c => c.name.toLowerCase() === channelId.toLowerCase());
-    return channel === undefined
+    return channel === undefined || !guard.isGuildChannel(channel)
         ? cmd.list.channelValue.unknown({ channelId })
         : cmd.list.channelValue.default({ channel });
 }

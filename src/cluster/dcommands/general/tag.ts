@@ -506,7 +506,7 @@ export class TagCommand extends GuildCommand {
 
     public async listFavouriteTags(context: GuildCommandContext): Promise<CommandResult> {
         const tags = await context.database.tags.getFavourites(context.author.id);
-        return cmd.favourite.list.success({ count: tags.length, tags });
+        return cmd.favourite.list.success({ tags });
     }
 
     public async reportTag(context: GuildCommandContext, tagName: string, reason: string | undefined): Promise<CommandResult> {

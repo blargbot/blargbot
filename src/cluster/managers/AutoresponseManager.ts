@@ -50,6 +50,8 @@ export class AutoresponseManager {
         if (isChange) {
             if (!this.#cluster.util.isBotStaff(requester.id)) {
                 const guild = this.#cluster.discord.guilds.get(guildId);
+                if (guild === undefined)
+                    throw new Error('Failed to find guild');
                 const code = Buffer.from(JSON.stringify(<ArData>{ channel: channelId, guild: guildId })).toString('base64');
                 const message = await this.#cluster.util.send(
                     this.#cluster.config.discord.channels.autoresponse,
@@ -57,7 +59,6 @@ export class AutoresponseManager {
                         content: templates.autoresponse.prompt({
                             user: requester,
                             channelId,
-                            guildId,
                             guild,
                             reason,
                             code

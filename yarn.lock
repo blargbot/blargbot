@@ -328,6 +328,25 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@blargbot/cluster-tests@workspace:test/cluster":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/cluster-tests@workspace:test/cluster"
+  dependencies:
+    "@blargbot/bbtag": "workspace:^"
+    "@blargbot/cluster": "workspace:^"
+    "@blargbot/core": "workspace:^"
+    "@blargbot/domain": "workspace:^"
+    "@blargbot/test-util": "workspace:^"
+    "@types/chai": ^4.3.3
+    "@types/eris": "workspace:^"
+    "@types/mocha": ^10.0.0
+    chai: ^4.3.6
+    eris: ^0.17.1
+    mocha: ^10.0.0
+    moment-timezone: ^0.5.37
+  languageName: unknown
+  linkType: soft
+
 "@blargbot/cluster@workspace:^, @blargbot/cluster@workspace:src/cluster":
   version: 0.0.0-use.local
   resolution: "@blargbot/cluster@workspace:src/cluster"
@@ -458,25 +477,12 @@ __metadata:
   dependencies:
     "@blargbot/bbtag": "workspace:^"
     "@blargbot/cluster": "workspace:^"
-    "@blargbot/config": "workspace:^"
     "@blargbot/core": "workspace:^"
-    "@blargbot/database": "workspace:^"
     "@blargbot/domain": "workspace:^"
-    "@blargbot/logger": "workspace:^"
-    "@blargbot/master": "workspace:^"
     "@types/chai": ^4.3.3
-    "@types/chai-datetime": ^0.0.37
-    "@types/eris": "workspace:^"
     "@types/mocha": ^10.0.0
     chai: ^4.3.6
-    chai-bytes: ^0.1.2
-    chai-datetime: ^1.8.0
-    chai-exclude: ^2.1.0
-    discord-api-types: ^0.37.12
-    eris: ^0.17.1
     mocha: ^10.0.0
-    moment-timezone: ^0.5.37
-    ts-mockito: ^2.6.1
   languageName: unknown
   linkType: soft
 
@@ -521,7 +527,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@blargbot/master@workspace:^, @blargbot/master@workspace:src/master":
+"@blargbot/master@workspace:src/master":
   version: 0.0.0-use.local
   resolution: "@blargbot/master@workspace:src/master"
   dependencies:

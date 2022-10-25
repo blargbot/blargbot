@@ -1,9 +1,20 @@
-import { Subtag } from '@blargbot/bbtag';
+import { Subtag, SubtagType } from '@blargbot/bbtag';
 import templates from '@blargbot/bbtag/text';
 import { literal } from '@blargbot/domain/messages/types';
 import { quickMock } from '@blargbot/test-util/quickMock';
 import { runFormatTreeTests } from '@blargbot/test-util/runFormatTreeTests';
 import { describe } from 'mocha';
+
+class TestSubtag extends Subtag {
+    protected executeCore: Subtag['executeCore'] = () => {
+        throw new Error('Method not implemented');
+    };
+}
+const subtag = (): Subtag => new TestSubtag({
+    category: SubtagType.MISC,
+    name: '',
+    signatures: []
+});
 
 describe('BBTag format strings', () => {
     runFormatTreeTests(templates, {
@@ -85,7 +96,7 @@ Database Execution Time: 678ms
             deprecated: [
                 {
                     name: 'default',
-                    input: [quickMock(Subtag, { name: 'abc', deprecated: 'def' })],
+                    input: [quickMock(subtag, { name: 'abc', deprecated: 'def' })],
                     expected: '{abc} is deprecated. Use `{def}` instead'
                 }
             ]

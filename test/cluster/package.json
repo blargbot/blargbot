@@ -1,5 +1,5 @@
 {
-    "name": "@blargbot/global-tests",
+    "name": "@blargbot/cluster-tests",
     "version": "1.0.0",
     "private": true,
     "dependencies": {
@@ -7,11 +7,15 @@
         "@blargbot/cluster": "workspace:^",
         "@blargbot/core": "workspace:^",
         "@blargbot/domain": "workspace:^",
+        "@blargbot/test-util": "workspace:^",
         "chai": "^4.3.6",
-        "mocha": "^10.0.0"
+        "eris": "^0.17.1",
+        "mocha": "^10.0.0",
+        "moment-timezone": "^0.5.37"
     },
     "devDependencies": {
         "@types/chai": "^4.3.3",
+        "@types/eris": "workspace:^",
         "@types/mocha": "^10.0.0"
     }
 }

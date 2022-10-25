@@ -1,7 +1,8 @@
 import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType } from '@blargbot/cluster/utils';
 import { guard } from '@blargbot/core/utils';
-import { literal } from '@blargbot/domain/messages/types';
+import { IFormattable, literal } from '@blargbot/domain/messages/types';
+import { User } from 'eris';
 import moment from 'moment-timezone';
 
 import templates from '../../text';
@@ -37,12 +38,16 @@ export class InfoCommand extends GlobalCommand {
                     fields: [
                         {
                             name: cmd.default.embed.field.patron.name,
-                            value: cmd.default.embed.field.patron.value({ patrons: context.cluster.contributors.patrons }),
+                            value: cmd.default.embed.field.patron.value({
+                                patrons: context.cluster.contributors.patrons.map(template)
+                            }),
                             inline: true
                         },
                         {
                             name: cmd.default.embed.field.donator.name,
-                            value: cmd.default.embed.field.donator.value({ donators: context.cluster.contributors.donators }),
+                            value: cmd.default.embed.field.donator.value({
+                                donators: context.cluster.contributors.donators.map(template)
+                            }),
                             inline: true
                         },
                         {
@@ -56,7 +61,7 @@ export class InfoCommand extends GlobalCommand {
                                         ? cmd.default.embed.field.other.value.reasons[x.reason]
                                         : cmd.default.embed.field.other.value.reasons.unknown;
 
-                                    return decorator({ user: x.user, reason: reason });
+                                    return decorator({ user: template(x.user), reason: reason });
                                 })
                             })
                         },
@@ -69,4 +74,10 @@ export class InfoCommand extends GlobalCommand {
             ]
         };
     }
+}
+
+function template(value: User | IFormattable<string>): IFormattable<string> {
+    return value instanceof User
+        ? literal(value.mention)
+        : value;
 }

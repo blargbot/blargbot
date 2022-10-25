@@ -4,7 +4,7 @@ import { IValueResolverTransform } from '../FormatStringCompiler';
 
 export const time: IValueResolverTransform = {
     transform(_compiler, source, ...args) {
-        const format = args.join('|');
+        const format = args.length === 0 ? undefined : args.join('|');
         return ctx => {
             const value = source(ctx);
             if (value === undefined)

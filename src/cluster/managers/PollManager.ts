@@ -130,7 +130,7 @@ export class PollManager {
                         ...author,
                         name: literal(author.name)
                     },
-                    description: bestCount === 0 ? templates.poll.success.noVotes({ total: voteCount })
+                    description: bestCount === 0 ? templates.poll.success.noVotes
                         : winners.length > 1 ? templates.poll.success.tie({ total: voteCount, count: bestCount, winners })
                             : templates.poll.success.single({ total: voteCount, count: bestCount, winner: winners[0] }),
                     color: options.color

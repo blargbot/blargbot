@@ -96,6 +96,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:test/bbtag"\
       },\
       {\
+        "name": "@blargbot/cluster-tests",\
+        "reference": "workspace:test/cluster"\
+      },\
+      {\
         "name": "@blargbot/core-tests",\
         "reference": "workspace:test/core"\
       },\
@@ -115,6 +119,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@blargbot/bbtag", ["workspace:src/bbtag"]],\
       ["@blargbot/bbtag-tests", ["workspace:test/bbtag"]],\
       ["@blargbot/cluster", ["workspace:src/cluster"]],\
+      ["@blargbot/cluster-tests", ["workspace:test/cluster"]],\
       ["@blargbot/config", ["workspace:src/config"]],\
       ["@blargbot/core", ["workspace:src/core"]],\
       ["@blargbot/core-tests", ["workspace:test/core"]],\
@@ -566,6 +571,27 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "SOFT"\
         }]\
       ]],\
+      ["@blargbot/cluster-tests", [\
+        ["workspace:test/cluster", {\
+          "packageLocation": "./test/cluster/",\
+          "packageDependencies": [\
+            ["@blargbot/cluster-tests", "workspace:test/cluster"],\
+            ["@blargbot/bbtag", "workspace:src/bbtag"],\
+            ["@blargbot/cluster", "workspace:src/cluster"],\
+            ["@blargbot/core", "workspace:src/core"],\
+            ["@blargbot/domain", "workspace:src/domain"],\
+            ["@blargbot/test-util", "workspace:test/testUtil"],\
+            ["@types/chai", "npm:4.3.3"],\
+            ["@types/eris", "workspace:definitions/eris"],\
+            ["@types/mocha", "patch:@types/mocha@npm%3A10.0.0#./.yarn/patches/@types-mocha-npm-10.0.0-a2509f7d26.patch::version=10.0.0&hash=decf1a&locator=blargbot%40workspace%3A."],\
+            ["chai", "npm:4.3.6"],\
+            ["eris", "npm:0.17.1"],\
+            ["mocha", "npm:10.0.0"],\
+            ["moment-timezone", "npm:0.5.37"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
       ["@blargbot/config", [\
         ["workspace:src/config", {\
           "packageLocation": "./src/config/",\
@@ -673,25 +699,12 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/global-tests", "workspace:test/global"],\
             ["@blargbot/bbtag", "workspace:src/bbtag"],\
             ["@blargbot/cluster", "workspace:src/cluster"],\
-            ["@blargbot/config", "workspace:src/config"],\
             ["@blargbot/core", "workspace:src/core"],\
-            ["@blargbot/database", "workspace:src/database"],\
             ["@blargbot/domain", "workspace:src/domain"],\
-            ["@blargbot/logger", "workspace:src/logger"],\
-            ["@blargbot/master", "workspace:src/master"],\
             ["@types/chai", "npm:4.3.3"],\
-            ["@types/chai-datetime", "npm:0.0.37"],\
-            ["@types/eris", "workspace:definitions/eris"],\
             ["@types/mocha", "patch:@types/mocha@npm%3A10.0.0#./.yarn/patches/@types-mocha-npm-10.0.0-a2509f7d26.patch::version=10.0.0&hash=decf1a&locator=blargbot%40workspace%3A."],\
             ["chai", "npm:4.3.6"],\
-            ["chai-bytes", "virtual:94580678571635b8fa683d1ccf0d1493f27441684157cd3c71327884aaa620119eb99f1b6fb9168cfe69174ff44ca73b71d597b5e675b7d6ecf9ae214b4d650b#npm:0.1.2"],\
-            ["chai-datetime", "npm:1.8.0"],\
-            ["chai-exclude", "virtual:94580678571635b8fa683d1ccf0d1493f27441684157cd3c71327884aaa620119eb99f1b6fb9168cfe69174ff44ca73b71d597b5e675b7d6ecf9ae214b4d650b#npm:2.1.0"],\
-            ["discord-api-types", "npm:0.37.12"],\
-            ["eris", "npm:0.17.1"],\
-            ["mocha", "npm:10.0.0"],\
-            ["moment-timezone", "npm:0.5.37"],\
-            ["ts-mockito", "npm:2.6.1"]\
+            ["mocha", "npm:10.0.0"]\
           ],\
           "linkType": "SOFT"\
         }]\

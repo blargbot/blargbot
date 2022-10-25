@@ -5,8 +5,6 @@ import * as Eris from 'eris';
 import { Duration, Moment } from 'moment-timezone';
 
 import { Command } from './command/Command';
-import { CommandContext } from './command/CommandContext';
-import { GuildCommandContext } from './types';
 
 interface UserTag {
     readonly username?: string;
@@ -19,7 +17,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
             cancel: t('Cancel'),
             cantUse: t('❌ This isn\'t for you to use!'),
             choose: {
-                paged: t<{ content?: IFormattable<string>; page: number; pageCount: number; }>()('{content#bool(\n{}|)}Page {page}/{pageCount}')
+                paged: t<{ content?: IFormattable<string>; page: number; pageCount: number; }>()('{content#bool({}\n|)}Page {page}/{pageCount}')
             },
             user: {
                 prompt: {
@@ -103,7 +101,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
             }
         },
         success: {
-            noVotes: t<{ total: number; }>()('The votes are in! A total of **{total}** {total#plural(1:vote was|votes were)} collected!\n\n No one voted, how sad 😦'),
+            noVotes: t('The votes are in! A total of **0** votes were collected!\n\n No one voted, how sad 😦'),
             tie: t<{ total: number; count: number; winners: Iterable<string>; }>()('The votes are in! A total of **{total}** {total#plural(1:vote was|votes were)} collected!\n\n It was a tie between these choices at **{count}** {count#plural(1:vote|votes)} each:\n\n{winners#join(, | and )}'),
             single: t<{ total: number; count: number; winner: string; }>()('The votes are in! A total of **{total}** {total#plural(1:vote was|votes were)} collected!\n\n At **{count}** {count#plural(1:vote|votes)}, the winner is:\n\n{winner}')
         }
@@ -113,7 +111,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
         joined: t<{ guild: Eris.Guild; botGuild: boolean; size: number; userCount: number; botCount: number; botFraction: number; }>()('☑️ Guild: `{guild.name}` (`{guild.id}`)! {botGuild#bool(- ***BOT GUILD***|)}\n    Total: **{size}** | Users: **{userCount}** | Bots: **{botCount}** | Percent: **{botFraction#percent}**')
     },
     autoresponse: {
-        prompt: t<{ guild?: Eris.Guild; guildId: string; channelId: string; reason?: string; code: string; user: Eris.User; }>()('New AR request from **{user.username}#{user.discriminator}** ({user#tag}):\n**Guild**: {guild.name=UNKNOWN} ({guildId})\n**Channel**: {channelId}\n**Members**: {guild.members.size=??}\n\n{reason#bool({}|*No reason given*)}\n\n```js\n{code}\n```'),
+        prompt: t<{ guild: Eris.Guild; channelId: string; reason: string; code: string; user: Eris.User; }>()('New AR request from **{user.username}#{user.discriminator}** ({user#tag}):\n**Guild**: {guild.name} ({guild.id})\n**Channel**: {channelId}\n**Members**: {guild.members.size}\n\n{reason}\n\n```js\n{code}\n```'),
         whitelist: {
             approved: t('✅ Congratz, your guild has been whitelisted for autoresponses! 🎉\n*It may take up to 15 minutes for them to become available*'),
             rejected: t('❌ Sorry, your guild has been rejected for autoresponses. 😿')
@@ -357,53 +355,53 @@ export const templates = FormatString.defineTree('cluster', t => ({
                     value: t<{ notes: Iterable<IFormattable<string>>; description: IFormattable<string>; }>()('{notes#plural(0:|{#map(> {})#join(\n)}\n\n)}{description}')
                 },
                 notes: {
-                    alias: t<{ parameter: string; aliases: Iterable<string>; }>()('`{parameter}` can be replaced with {aliases#join(, | or )}'),
+                    alias: t<{ parameter: string; aliases: Iterable<string>; }>()('`{parameter}` can be replaced with {aliases#map(`{}`)#join(, | or )}'),
                     type: {
                         string: {
                             single: t<{ name: string; default: string; }>()('`{name}` defaults to `{default}`')
                         },
                         literal: {
-                            single: t<{ name: string; choices: Iterable<string>; default?: string; }>()('`{name}` should be {choices#map(`{}`)#join(, | or )}{default#bool(and defaults to `{default}`|)}'),
+                            single: t<{ name: string; choices: Iterable<string>; default?: string; }>()('`{name}` should be {choices#map(`{}`)#join(, | or )}{default#bool( and defaults to `{default}`|)}'),
                             greedy: t<{ name: string; choices: Iterable<string>; min: number; }>()('`{name}` are {min#plural(0:|1:|{} or more of )}{choices#map(`{}`)#join(, | or )}')
                         },
                         boolean: {
-                            single: t<{ name: string; default?: string; }>()('`{name}` should be true or false{default#bool(and defaults to `{default}`|)}'),
+                            single: t<{ name: string; default?: string; }>()('`{name}` should be true or false{default#bool( and defaults to `{default}`|)}'),
                             greedy: t<{ name: string; min: number; }>()('`{name}` are {min#plural(0:|1:|{} or more )}true or false')
                         },
                         channel: {
-                            single: t<{ name: string; default?: string; }>()('`{name}` should be a channel id, mention or name{default#bool(and defaults to `{default}`|)}'),
+                            single: t<{ name: string; default?: string; }>()('`{name}` should be a channel id, mention or name{default#bool( and defaults to `{default}`|)}'),
                             greedy: t<{ name: string; min: number; }>()('`{name}` are {min#plural(0:|1:|{} or more )}channel ids, mentions or names')
                         },
                         duration: {
-                            single: t<{ name: string; default?: string; }>()('`{name}` should be a duration{default#bool(and defaults to `{default}`|)}'),
+                            single: t<{ name: string; default?: string; }>()('`{name}` should be a duration{default#bool( and defaults to `{default}`|)}'),
                             greedy: t<{ name: string; min: number; }>()('`{name}` are {min#plural(0:|1:|{} or more )}durations')
                         },
                         bigint: {
-                            single: t<{ name: string; default?: string; }>()('`{name}` should be a whole number{default#bool(and defaults to `{default}`|)}'),
+                            single: t<{ name: string; default?: string; }>()('`{name}` should be a whole number{default#bool( and defaults to `{default}`|)}'),
                             greedy: t<{ name: string; min: number; }>()('`{name}` are {min#plural(0:|1:|{} or more )}whole numbers')
                         },
                         integer: {
-                            single: t<{ name: string; default?: string; }>()('`{name}` should be a whole number{default#bool(and defaults to `{default}`|)}'),
+                            single: t<{ name: string; default?: string; }>()('`{name}` should be a whole number{default#bool( and defaults to `{default}`|)}'),
                             greedy: t<{ name: string; min: number; }>()('`{name}` are {min#plural(0:|1:|{} or more )}whole numbers')
                         },
                         member: {
-                            single: t<{ name: string; default?: string; }>()('`{name}` should be a user id, mention or name{default#bool(and defaults to `{default}`|)}'),
+                            single: t<{ name: string; default?: string; }>()('`{name}` should be a user id, mention or name{default#bool( and defaults to `{default}`|)}'),
                             greedy: t<{ name: string; min: number; }>()('`{name}` are {min#plural(0:|1:|{} or more )}user ids, mentions or names')
                         },
                         number: {
-                            single: t<{ name: string; default?: string; }>()('`{name}` should be a number{default#bool(and defaults to `{default}`|)}'),
+                            single: t<{ name: string; default?: string; }>()('`{name}` should be a number{default#bool( and defaults to `{default}`|)}'),
                             greedy: t<{ name: string; min: number; }>()('`{name}` are {min#plural(0:|1:|{} or more )}numbers')
                         },
                         role: {
-                            single: t<{ name: string; default?: string; }>()('`{name}` should be a role id, mention or name{default#bool(and defaults to `{default}`|)}'),
+                            single: t<{ name: string; default?: string; }>()('`{name}` should be a role id, mention or name{default#bool( and defaults to `{default}`|)}'),
                             greedy: t<{ name: string; min: number; }>()('`{name}` are {min#plural(0:|1:|{} or more )}role ids, mentions or names')
                         },
                         sender: {
-                            single: t<{ name: string; default?: string; }>()('`{name}` should be a user id, mention or name, or a webhook id{default#bool(and defaults to `{default}`|)}'),
+                            single: t<{ name: string; default?: string; }>()('`{name}` should be a user id, mention or name, or a webhook id{ default#bool(and defaults to `{default}`|)}'),
                             greedy: t<{ name: string; min: number; }>()('`{name}` are {min#plural(0:|1:|{} or more )}user ids, mentions or names, or webhook ids')
                         },
                         user: {
-                            single: t<{ name: string; default?: string; }>()('`{name}` should be a user id, mention or name{default#bool(and defaults to `{default}`|)}'),
+                            single: t<{ name: string; default?: string; }>()('`{name}` should be a user id, mention or name{default#bool( and defaults to `{default}`|)}'),
                             greedy: t<{ name: string; min: number; }>()('`{name}` are {min#plural(0:|1:|{} or more )}user ids, mentions or names')
                         }
                     }
@@ -661,19 +659,19 @@ export const templates = FormatString.defineTree('cluster', t => ({
         $errors: {
             generic: t<{ token: string; }>()('❌ Something went wrong while handling your command!\nError id: `{token}`'),
             alreadyRunning: t('❌ Sorry, this command is already running! Please wait and try again.'),
-            guildOnly: t<CommandContext>()('❌ `{prefix}{commandName}` can only be used on guilds.'),
-            privateOnly: t<CommandContext>()('❌ `{prefix}{commandName}` can only be used in private messages.'),
+            guildOnly: t<{ prefix: string; commandName: string; }>()('❌ `{prefix}{commandName}` can only be used on guilds.'),
+            privateOnly: t<{ prefix: string; commandName: string; }>()('❌ `{prefix}{commandName}` can only be used in private messages.'),
             rateLimited: {
                 local: t<{ duration: Duration; }>()('❌ Sorry, you ran this command too recently! Please try again in {delay#duration(S)} seconds.'),
                 global: t<{ duration: Duration; penalty: Duration; }>()('❌ Sorry, you\'ve been running too many commands. To prevent abuse, I\'m going to have to time you out for `{duration#duration(S)}s`.\n\nContinuing to spam commands will lengthen your timeout by `{penalty#duration(S)}s`!')
             },
             missingPermission: {
                 generic: t('❌ Oops, I don\'t seem to have permission to do that!'),
-                guild: t<GuildCommandContext>()('❌ Hi! You asked me to do something, but I didn\'t have permission to do it! Please make sure I have permissions to do what you asked.\nGuild: {channel.guild.name}\nChannel: {channel#tag}\nCommand: {commandText}\n\nIf you wish to stop seeing these messages, do the command `{prefix}dmerrors`.')
+                guild: t<{ channel: Eris.GuildChannel; commandText: string; prefix: string; }>()('❌ Hi! You asked me to do something, but I didn\'t have permission to do it! Please make sure I have permissions to do what you asked.\nGuild: {channel.guild.name}\nChannel: {channel#tag}\nCommand: {commandText}\n\nIf you wish to stop seeing these messages, do the command `{prefix}dmerrors`.')
             },
             arguments: {
-                invalid: t<{ value: string; types: string[]; }>()('❌ Invalid arguments! `{value}` isn\'t {types#map(`{}`)#join(, | or )}'),
-                missing: t<{ missing: string[]; }>()('❌ Not enough arguments! You need to provide {missing#map(`{}`)#join(, | or )}'),
+                invalid: t<{ value: string; types: Iterable<string>; }>()('❌ Invalid arguments! `{value}` isn\'t {types#map(`{}`)#join(, | or )}'),
+                missing: t<{ missing: Iterable<string>; }>()('❌ Not enough arguments! You need to provide {missing#map(`{}`)#join(, | or )}'),
                 unknown: t('❌ I couldn\'t understand those arguments!'),
                 noneNeeded: t<{ command: Command; }>()('❌ Too many arguments! `{command.name}` doesn\'t need any arguments'),
                 tooMany: t<{ max: number; given: number; }>()('❌ Too many arguments! Expected at most {max} {max#plural(1:argument|arguments)}, but you gave {given}')
@@ -744,7 +742,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
             },
             reset: {
                 description: t('Resets the current configuration for announcements'),
-                success: t<CommandContext>()('✅ Announcement configuration reset! Do `{prefix}announce configure` to reconfigure it.')
+                success: t<{ prefix: string; }>()('✅ Announcement configuration reset! Do `{prefix}announce configure` to reconfigure it.')
             },
             configure: {
                 description: t('Resets the current configuration for announcements'),
@@ -760,7 +758,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
             },
             info: {
                 description: t('Displays the current configuration for announcements on this server'),
-                unconfigured: t<CommandContext>()('ℹ️ Announcements are not yet configured for this server. Please use `{prefix}announce configure` to set them up'),
+                unconfigured: t<{ prefix: string; }>()('ℹ️ Announcements are not yet configured for this server. Please use `{prefix}announce configure` to set them up'),
                 details: t<{ channel?: Eris.Channel; role?: Eris.Role; }>()('ℹ️ Announcements will be sent in {channel#tag=`<unconfigured>`} and will mention {role#tag=`<unconfigured>`}')
             }
         },
@@ -823,7 +821,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
                 everythingCannotHavePattern: t('❌ Autoresponses that respond to everything cannot have a pattern'),
                 tooMany: t<{ max: number; }>()('❌ You already have {max} autoresponses!'),
                 missingEFlag: t('❌ If you want to respond to everything, you need to use the `-e` flag.'),
-                success: t<{ context: CommandContext; id: 'everything' | number; }>()('✅ Your autoresponse has been added! Use `{prefix}autoresponse set {id} <bbtag>` to change the code that it runs')
+                success: t<{ prefix: string; id: 'everything' | number; }>()('✅ Your autoresponse has been added! Use `{prefix}autoresponse set {id} <bbtag>` to change the code that it runs')
             },
             delete: {
                 description: t('Deletes an autoresponse. Ids can be seen when using the `list` subcommand'),
@@ -941,11 +939,11 @@ export const templates = FormatString.defineTree('cluster', t => ({
                 isHidden: t<{ name: string; }>()('❌ The `{name}` custom command is a hidden command!'),
                 invalidBBTag: t<{ errors: Iterable<IFormattable<string>>; }>()('❌ There were errors with the bbtag you provided!\n{errors#join(\n)}'),
                 bbtagError: t<AnalysisResult>()('❌ [{location.line},{location.column}]: {message}'),
-                bbtagWarning: t<AnalysisResult>()('❌ [{location.line},{location.column}]: {message}'),
+                bbtagWarning: t<AnalysisResult>()('⚠️ [{location.line},{location.column}]: {message}'),
                 nameReserved: t<{ name: string; }>()('❌ The command name `{name}` is reserved and cannot be overwritten'),
                 tooLong: t<{ max: number; }>()('❌ Command names cannot be longer than {max} characters'),
-                importDeleted: t<{ commandName: string; tagName: string; author?: UserTag; authorId: string; }>()('❌ When the command `{commandName}` was imported, the tag `{tagName}` was owned by **{author.username}#{author.discriminator}** ({authorId}) but it no longer exists. To continue using this command, please re-create the tag and re-import it.'),
-                importChanged: t<{ commandName: string; tagName: string; oldAuthor?: UserTag; oldAuthorId: string; newAuthor?: UserTag; newAuthorId: string; }>()('❌ When the command `{commandName}` was imported, the tag `{tagName}` was owned by **{oldAuthor.username}#{oldAuthor.discriminator}** ({oldAuthorId}) but it is now owned by **{newAuthor.username}#{newAuthor.discriminator}** ({newAuthorId}). If this is acceptable, please re-import the tag to continue using this command.')
+                importDeleted: t<{ commandName: string; tagName: string; author?: UserTag; authorId: string; }>()('❌ When the command `{commandName}` was imported, the tag `{tagName}` was owned by **{author.username=UNKNOWN}#{author.discriminator=????}** ({authorId}) but it no longer exists. To continue using this command, please re-create the tag and re-import it.'),
+                importChanged: t<{ commandName: string; tagName: string; oldAuthor?: UserTag; oldAuthorId: string; newAuthor?: UserTag; newAuthorId: string; }>()('❌ When the command `{commandName}` was imported, the tag `{tagName}` was owned by **{oldAuthor.username=UNKNOWN}#{oldAuthor.discriminator=????}** ({oldAuthorId}) but it is now owned by **{newAuthor.username=UNKNOWN}#{newAuthor.discriminator=????}** ({newAuthorId}). If this is acceptable, please re-import the tag to continue using this command.')
             },
             test: {
                 default: {
@@ -1038,7 +1036,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
             },
             setRole: {
                 description: t('Sets the roles that are allowed to use the command'),
-                success: t<{ name: string; roles: Iterable<Eris.Role>; }>()('✅ Roles for custom command `{name}` set to {roles#map({mention})#join(, | and )}.')
+                success: t<{ name: string; roles: Iterable<Eris.Role>; }>()('✅ Roles for custom command `{name}` set to {roles#map({#tag})#join(, | and )}.')
             },
             shrinkwrap: {
                 description: t('Bundles up the given commands into a single file that you can download and install into another server'),
@@ -1056,9 +1054,9 @@ export const templates = FormatString.defineTree('cluster', t => ({
                 fileMissing: t('❌ You have to upload the installation file, or give me a URL to one.'),
                 malformed: t('❌ Your installation file was malformed.'),
                 confirm: {
-                    unsigned: t('⚠️ **Warning**: This installation file is **unsigned**. It did not come from me. Please double check to make sure you want to go through with this.\n\n'),
-                    tampered: t('⚠️ **Warning**: This installation file\'s signature is **incorrect**. There is a 100% chance that it has been tampered with. Please double check to make sure you want to go through with this.\n\n'),
-                    prompt: t<{ warning?: IFormattable<string>; steps: Iterable<IFormattable<string>>; }>()('{warning}Salutations! You have discovered the super handy CommandInstaller9000!\n\nIf you decide to proceed, this will:\n{steps#join(\n)}\nThis will also:\n - Set you as the author for all imported commands'),
+                    unsigned: t('⚠️ **Warning**: This installation file is **unsigned**. It did not come from me. Please double check to make sure you want to go through with this.'),
+                    tampered: t('⚠️ **Warning**: This installation file\'s signature is **incorrect**. There is a 100% chance that it has been tampered with. Please double check to make sure you want to go through with this.'),
+                    prompt: t<{ warning?: IFormattable<string>; steps: Iterable<IFormattable<string>>; }>()('{warning#bool({}\n\n|)}Salutations! You have discovered the super handy CommandInstaller9000!\n\nIf you decide to proceed, this will:\n{steps#join(\n)}\nThis will also:\n - Set you as the author for all imported commands'),
                     import: t<{ name: string; }>()('✅ Import the command `{name}`'),
                     skip: t<{ name: string; }>()('❌ Ignore the command `{name}` as a command with that name already exists'),
                     continue: t('Confirm'),
@@ -1235,11 +1233,11 @@ export const templates = FormatString.defineTree('cluster', t => ({
                     title: t('ℹ️ Edited commands'),
                     description: {
                         name: t<{ name: string; }>()('**{name}**\n'),
-                        roles: t<{ roles: Iterable<Eris.Role>; }>()('- Roles: {roles#map({mention})#join(, )}\n'),
+                        roles: t<{ roles: Iterable<Eris.Role>; }>()('- Roles: {roles#map({#tag})#join(, )}\n'),
                         permissions: t<{ permission: string; }>()('- Permission: {permission}\n'),
                         disabled: t('- Disabled\n'),
                         hidden: t('- Hidden\n'),
-                        template: t<{ commands: Iterable<{ name: IFormattable<string>; roles?: IFormattable<string>; permissions?: IFormattable<string>; disabled?: IFormattable<string>; hidden?: IFormattable<string>; }>; }>()('{commands#map({name}{roles}{permissions}{disabled}{hidden})#join()}')
+                        template: t<{ commands: Iterable<{ name: IFormattable<string>; roles?: IFormattable<string>; permissions?: IFormattable<string>; disabled?: IFormattable<string>; hidden?: IFormattable<string>; }>; }>()('{commands#map({name}{roles}{permissions}{disabled}{hidden})#join(\n)}')
                     }
                 }
             },
@@ -1291,7 +1289,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
                 description: t('Sets the channel the farewell message will be sent in.'),
                 notOnGuild: t('❌ The farewell channel must be on this server!'),
                 notTextChannel: t('❌ The farewell channel must be a text channel!'),
-                success: t<{ channel: Eris.Channel; }>()('✅ Farewell messages will now be sent in {mention}')
+                success: t<{ channel: Eris.Channel; }>()('✅ Farewell messages will now be sent in {channel#tag}')
             },
             debug: {
                 description: t('Executes the farewell message as if you left the server and provides the debug output.'),
@@ -1328,7 +1326,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
                 description: t('Sets the channel the greeting message will be sent in.'),
                 notOnGuild: t('❌ The greeting channel must be on this server!'),
                 notTextChannel: t('❌ The greeting channel must be a text channel!'),
-                success: t<{ channel: Eris.Channel; }>()('✅ Greeting messages will now be sent in {mention}')
+                success: t<{ channel: Eris.Channel; }>()('✅ Greeting messages will now be sent in {channel#tag}')
             },
             debug: {
                 description: t('Executes the greeting message as if you left the server and provides the debug output.'),
@@ -1522,10 +1520,10 @@ export const templates = FormatString.defineTree('cluster', t => ({
             clear: {
                 description: t('Deletes specific modlog entries. If you don\'t provide any, all the entries will be removed'),
                 notFound: t('❌ No modlogs were found!'),
-                channelMissing: t<{ modlogs: Iterable<number>; }>()('\n⛔ I couldn\'t find the modlog channel for cases {modlogs#map(`{}`)#join(, | and )}'),
-                messageMissing: t<{ modlogs: Iterable<number>; }>()('\n⛔ I couldn\'t find the modlog message for cases {modlogs#map(`{}`)#join(, | and )}'),
-                permissionMissing: t<{ modlogs: Iterable<number>; }>()('\n⛔ I didn\'t have permission to delete the modlog for cases {modlogs#map(`{}`)#join(, | and )}'),
-                success: t<{ count: number; errors: Iterable<IFormattable<string>>; }>()('✅ I successfully deleted {count} {count#plural(1:modlog|modlogs)} from my database.{errors#join()}')
+                channelMissing: t<{ modlogs: Iterable<number>; }>()('⛔ I couldn\'t find the modlog channel for cases {modlogs#map(`{}`)#join(, | and )}'),
+                messageMissing: t<{ modlogs: Iterable<number>; }>()('⛔ I couldn\'t find the modlog message for cases {modlogs#map(`{}`)#join(, | and )}'),
+                permissionMissing: t<{ modlogs: Iterable<number>; }>()('⛔ I didn\'t have permission to delete the modlog for cases {modlogs#map(`{}`)#join(, | and )}'),
+                success: t<{ count: number; errors: Iterable<IFormattable<string>>; }>()('✅ I successfully deleted {count} {count#plural(1:modlog|modlogs)} from my database.{errors#map(\n{})#join()}')
             }
         },
         mute: {
@@ -1582,7 +1580,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
         prefix: {
             list: {
                 description: t('Lists all the current prefixes on this server'),
-                success: t<{ guild: Eris.Guild; prefixes: Iterable<string>; }>()('ℹ️ {guild#tag} has {prefixes#plural(0:no custom prefixes|the following prefixes:\n{#map( - {})#join(\n)})}')
+                success: t<{ guild: Eris.Guild; prefixes: Iterable<string>; }>()('ℹ️ {guild.name} has {prefixes#plural(0:no custom prefixes|the following prefixes:\n{#map( - {})#join(\n)})}')
             },
             add: {
                 description: t('Adds a command prefix to this server'),
@@ -1735,7 +1733,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
                 description: t('Gets the current settings for this guild'),
                 notConfigured: t('❌ Your guild is not correctly configured yet! Please try again later'),
                 channelValue: {
-                    default: t<{ channel: Eris.Channel; }>()('{channel.name} ({channel.id})'),
+                    default: t<{ channel: Eris.GuildChannel; }>()('{channel.name} ({channel.id})'),
                     unknown: t<{ channelId: string; }>()('Unknown channel ({channelId})'),
                     none: t('Default Channel')
                 },
@@ -1801,8 +1799,8 @@ export const templates = FormatString.defineTree('cluster', t => ({
                 noMessages: t('❌ I couldn\'t find any matching messages!'),
                 confirmQuery: {
                     prompt: {
-                        foundAll: t<{ total: number; breakdown: Iterable<{ user: Eris.User; count: number; }>; }>()('ℹ️ I am about to attempt to delete {total} {total#plural(1:message|messages)}. Are you sure you wish to continue?\n{breakdown#map({user#tag} - {count} {count#plural(1:message|messages)})}'),
-                        foundSome: t<{ total: number; searched: number; breakdown: Iterable<{ user: Eris.User; count: number; }>; }>()('ℹ️ I am about to attempt to delete {total} {total#plural(1:message|messages)} after searching through {searched} {searched#plural(1:message|messages)}. Are you sure you wish to continue?\n{breakdown#map({user#tag} - {count} {count#plural(1:message|messages)})}')
+                        foundAll: t<{ total: number; breakdown: Iterable<{ user: Eris.User; count: number; }>; }>()('ℹ️ I am about to attempt to delete {total} {total#plural(1:message|messages)}. Are you sure you wish to continue?\n{breakdown#map({user#tag} - {count} {count#plural(1:message|messages)})#join(\n)}'),
+                        foundSome: t<{ total: number; searched: number; breakdown: Iterable<{ user: Eris.User; count: number; }>; }>()('ℹ️ I am about to attempt to delete {total} {total#plural(1:message|messages)} after searching through {searched} {searched#plural(1:message|messages)}. Are you sure you wish to continue?\n{breakdown#map({user#tag} - {count} {count#plural(1:message|messages)})#join(\n)}')
                     },
                     cancel: t('Cancel'),
                     continue: t('Continue')
@@ -1810,8 +1808,8 @@ export const templates = FormatString.defineTree('cluster', t => ({
                 cancelled: t('✅ Tidy cancelled, No messages will be deleted'),
                 deleteFailed: t('❌ I wasn\'t able to delete any of the messages! Please make sure I have permission to manage messages'),
                 success: {
-                    default: t<{ deleted: number; success: Iterable<{ user: Eris.User; count: number; }>; }>()('✅ Deleted {deleted} {success#plural(1:message|messages)}:\n{success#map({user#tag} - {count} {count#plural(1:message|messages)})}'),
-                    partial: t<{ deleted: number; success: Iterable<{ user: Eris.User; count: number; }>; failed: Iterable<{ user: Eris.User; count: number; }>; }>()('⚠️ I managed to delete {deleted} of the messages I attempted to delete.\n{success#map({user#tag} - {count} {count#plural(1:message|messages)})}\n\nFailed:\n{failed#map({user#tag} - {count} {count#plural(1:message|messages)})}')
+                    default: t<{ deleted: number; success: Iterable<{ user: Eris.User; count: number; }>; }>()('✅ Deleted {deleted} {success#plural(1:message|messages)}:\n{success#map({user#tag} - {count} {count#plural(1:message|messages)})#join(\n)}'),
+                    partial: t<{ deleted: number; success: Iterable<{ user: Eris.User; count: number; }>; failed: Iterable<{ user: Eris.User; count: number; }>; }>()('⚠️ I managed to delete {deleted} of the messages I attempted to delete.\n{success#map({user#tag} - {count} {count#plural(1:message|messages)})}\n\nFailed:\n{failed#map({user#tag} - {count} {count#plural(1:message|messages)})#join(\n)}')
                 }
             }
         },
@@ -1961,7 +1959,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
                     countNaN: t<{ value: string; }>()('❌ {value} isn\'t a number!'),
                     countNegative: t('❌ I cant give a negative amount of warnings!'),
                     countZero: t('❌ I cant give zero warnings!'),
-                    memberTooHigh: t<{ user: Eris.User; count: number; }>()('⚠️ **{user#tag}** has been given {count} {count#plural(1:warning|warnings)}.\n⛔ They went over the limit for {action}s but they are above me so I couldn\'t {action} them.'),
+                    memberTooHigh: t<{ user: Eris.User; count: number; action: IFormattable<string>; }>()('⚠️ **{user#tag}** has been given {count} {count#plural(1:warning|warnings)}.\n⛔ They went over the limit for {action}s but they are above me so I couldn\'t {action} them.'),
                     moderatorTooLow: t<{ user: Eris.User; count: number; action: IFormattable<string>; }>()('⚠️ **{user#tag}** has been given {count} {count#plural(1:warning|warnings)}.\n⛔ They went over the limit for {action}s but they are above you so I didn\'t {action} them.'),
                     noPerms: t<{ user: Eris.User; count: number; action: IFormattable<string>; }>()('⚠️ **{user#tag}** has been given {count} {count#plural(1:warning|warnings)}.\n⛔ They went over the limit for {action}s but I don\'t have permission to {action} them.'),
                     moderatorNoPerms: t<{ user: Eris.User; count: number; action: IFormattable<string>; }>()('⚠️ **{user#tag}** has been given {count} {count#plural(1:warning|warnings)}.\n⛔ They went over the limit for {action}s but you don\'t have permission to {action} them.'),
@@ -1978,7 +1976,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
         },
         addDomain: {
             default: {
-                description: t('Toggles multiple domains to the domain whitelist for use with the {request} subtag'),
+                description: t('Toggles multiple domains to the domain whitelist for use with the \\{request\\} subtag'),
                 success: t<{ added: Iterable<string>; removed: Iterable<string>; }>()('✅ Boy howdy, thanks for the domains!{added#plural(0:|\nThese ones are great!```\n{#join(\n)}\n```)}{removed#plural(0:|\nI always hated these ones anyway.```\n{#join(\n)}\n```)}\nJust remember: it might take up to 15 minutes for these to go live.')
             }
         },
@@ -2264,20 +2262,20 @@ export const templates = FormatString.defineTree('cluster', t => ({
                     field: {
                         patron: {
                             name: t('️️️️️️️️❤️ Special thanks to my patrons! ❤️'),
-                            value: t<{ patrons: Iterable<IFormattable<string> | Eris.User>; }>()('{patrons#map({#tag})#join(\n)}')
+                            value: t<{ patrons: Iterable<IFormattable<string>>; }>()('{patrons#join(\n)}')
                         },
                         donator: {
                             name: t('️️️️️️️️❤️ Special thanks to all my other donators! ❤️'),
-                            value: t<{ donators: Iterable<IFormattable<string> | Eris.User>; }>()('{donators#map({#tag})#join(\n)}')
+                            value: t<{ donators: Iterable<IFormattable<string>>; }>()('{donators#join(\n)}')
                         },
                         other: {
                             name: t('❤️ Special huge thanks to: ❤️'),
                             value: {
                                 decorators: {
-                                    awesome: t<{ user: IFormattable<string> | Eris.User; reason: IFormattable<string>; }>()('The awesome {user#tag} for {reason}'),
-                                    incredible: t<{ user: IFormattable<string> | Eris.User; reason: IFormattable<string>; }>()('The incredible {user#tag} for {reason}'),
-                                    amazing: t<{ user: IFormattable<string> | Eris.User; reason: IFormattable<string>; }>()('The amazing {user#tag} for {reason}'),
-                                    inspirational: t<{ user: IFormattable<string> | Eris.User; reason: IFormattable<string>; }>()('The inspirational {user#tag} for {reason}')
+                                    awesome: t<{ user: IFormattable<string>; reason: IFormattable<string>; }>()('The awesome {user} for {reason}'),
+                                    incredible: t<{ user: IFormattable<string>; reason: IFormattable<string>; }>()('The incredible {user} for {reason}'),
+                                    amazing: t<{ user: IFormattable<string>; reason: IFormattable<string>; }>()('The amazing {user} for {reason}'),
+                                    inspirational: t<{ user: IFormattable<string>; reason: IFormattable<string>; }>()('The inspirational {user} for {reason}')
                                 },
                                 reasons: {
                                     rewrite: t('rewriting me into typescript'),
@@ -2877,7 +2875,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
             favourite: {
                 list: {
                     description: t('Displays a list of the tags you have favourited'),
-                    success: t<{ count: number; tags: Iterable<string>; }>()('{count#plural(0:You have no favourite tags!|You have {} favourite {#plural(1:tag|tags)}. ```fix\n{~tags#join(, )}\n```)}')
+                    success: t<{ tags: Iterable<string>; }>()('{count#plural(0:You have no favourite tags!|You have {} favourite {#plural(1:tag|tags)}. ```fix\n{~tags#join(, )}\n```)}')
                 },
                 toggle: {
                     description: t('Adds or removes a tag from your list of favourites'),
@@ -3296,7 +3294,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
         },
         eval: {
             errors: {
-                error: t<{ code: string; result: string; }>()('❌ An error occurred!```\n{result}\n```')
+                error: t<{ result: string; }>()('❌ An error occurred!```\n{result}\n```')
             },
             here: {
                 description: t('Runs the code you enter on the current cluster'),
@@ -3310,8 +3308,8 @@ export const templates = FormatString.defineTree('cluster', t => ({
                 description: t('Runs the code you enter on all the clusters and aggregates the result'),
                 results: {
                     template: t<{ code: string; results: Iterable<IFormattable<string>>; }>()('Global eval input:```js\n{code}\n```{results#join(\n)}'),
-                    success: t<{ clusterId: number; code: string; result: string; }>()('✅ Cluster {clusterId} output:```\n{result}\n```'),
-                    failed: t<{ clusterId: number; code: string; result: string; }>()('❌ Cluster {clusterId}: An error occurred!```\n{result}\n```')
+                    success: t<{ clusterId: number; result: string; }>()('✅ Cluster {clusterId} output:```\n{result}\n```'),
+                    failed: t<{ clusterId: number; result: string; }>()('❌ Cluster {clusterId}: An error occurred!```\n{result}\n```')
                 }
             },
             cluster: {

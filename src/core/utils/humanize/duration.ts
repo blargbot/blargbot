@@ -5,17 +5,19 @@ import { smartJoin } from './smartJoin';
 export function duration(duration: Duration, partsLimit?: number): string;
 export function duration(start: Moment, end: Moment, partsLimit?: number): string;
 export function duration(...args: [Duration, number?] | [Moment, Moment, number?]): string {
-    let diff;
+    let diff: Duration;
     let partsLimit: number | undefined;
     if (!moment.isDuration(args[0]) && moment.isMoment(args[1])) {
         diff = moment.duration(args[0].diff(args[1]));
         partsLimit = args[2];
     } else {
-        diff = args[0];
+        diff = args[0] as Duration;
         partsLimit = typeof args[1] === 'number' ? args[1] : undefined;
     }
 
     const parts = [];
+    if (diff.years() > 0) parts.push(pluralDuration('year', diff.years()));
+    if (diff.months() > 0) parts.push(pluralDuration('month', diff.months()));
     if (diff.days() > 0) parts.push(pluralDuration('day', diff.days()));
     if (diff.hours() > 0) parts.push(pluralDuration('hour', diff.hours()));
     if (diff.minutes() > 0) parts.push(pluralDuration('minute', diff.minutes()));
@@ -30,5 +32,5 @@ export function duration(...args: [Duration, number?] | [Moment, Moment, number?
 }
 
 function pluralDuration(text: string, amount: number): string {
-    return `${amount} ${text}${  amount > 1 ? 's' : ''}`;
+    return `${amount} ${text}${amount > 1 ? 's' : ''}`;
 }

@@ -257,7 +257,7 @@ export class AutoResponseCommand extends GuildCommand {
             if (pattern !== undefined)
                 return cmd.create.everythingCannotHavePattern;
             await context.database.guilds.setAutoresponse(context.channel.guild.id, 'everything', tag);
-            return cmd.create.success({ context, id: 'everything' });
+            return cmd.create.success({ prefix: context.prefix, id: 'everything' });
         }
 
         const ids = Object.entries(ars.filtered ?? {}).filter(ar => guard.hasValue(ar[1])).map(ar => parseInt(ar[0]));
@@ -275,7 +275,7 @@ export class AutoResponseCommand extends GuildCommand {
 
         const id = Math.max(...ids, 0) + 1;
         await context.database.guilds.setAutoresponse(context.channel.guild.id, id, { ...tag, regex: isRegex, term: pattern });
-        return cmd.create.success({ context, id });
+        return cmd.create.success({ prefix: context.prefix, id });
 
     }
 

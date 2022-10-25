@@ -44,7 +44,7 @@ export class EvalCommand extends GlobalCommand {
         const response = await context.cluster.eval(userId, code);
         return response.success
             ? cmd.here.success({ code, result: inspect(response.result, { depth: 10 }) })
-            : cmd.errors.error({ code, result: response.error });
+            : cmd.errors.error({ result: response.error });
     }
 
     public async mastereval(context: CommandContext, userId: string, code: string): Promise<CommandResult> {
@@ -53,7 +53,7 @@ export class EvalCommand extends GlobalCommand {
         const response = await this.#requestEval(context, { type: 'master', userId, code });
         return response.success
             ? cmd.master.success({ code, result: inspect(response.result, { depth: 10 }) })
-            : cmd.errors.error({ code, result: response.error });
+            : cmd.errors.error({ result: response.error });
     }
 
     public async globaleval(context: CommandContext, userId: string, code: string): Promise<CommandResult> {
@@ -61,14 +61,14 @@ export class EvalCommand extends GlobalCommand {
 
         const response = await this.#requestEval(context, { type: 'global', userId, code });
         if (response.success === false)
-            return cmd.errors.error({ code, result: response.error as string });
+            return cmd.errors.error({ result: response.error as string });
 
         return cmd.global.results.template({
             code,
             results: Object.entries(<GlobalEvalResult>response)
                 .map(([clusterId, response]) => response.success
-                    ? cmd.global.results.success({ clusterId: Number(clusterId), code, result: inspect(response.result, { depth: 10 }) })
-                    : cmd.global.results.failed({ clusterId: Number(clusterId), code, result: inspect(response.error, { depth: 10 }) }))
+                    ? cmd.global.results.success({ clusterId: Number(clusterId), result: inspect(response.result, { depth: 10 }) })
+                    : cmd.global.results.failed({ clusterId: Number(clusterId), result: inspect(response.error, { depth: 10 }) }))
         });
     }
 
@@ -78,7 +78,7 @@ export class EvalCommand extends GlobalCommand {
         const response = await this.#requestEval(context, { type: `cluster${clusterId}`, userId, code });
         return response.success
             ? cmd.cluster.success({ clusterId, code, result: inspect(response.result, { depth: 10 }) })
-            : cmd.errors.error({ code, result: response.error });
+            : cmd.errors.error({ result: response.error });
     }
 
     async #requestEval(context: CommandContext, data: MasterEvalRequest & { type: `cluster${number}` | 'master'; }): Promise<EvalResult>

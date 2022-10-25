@@ -2,8 +2,13 @@ import templates from '@blargbot/core/text';
 import { literal } from '@blargbot/domain/messages/types';
 import { quickMock } from '@blargbot/test-util/quickMock';
 import { runFormatTreeTests } from '@blargbot/test-util/runFormatTreeTests';
-import { Channel, Guild, GuildChannel } from 'eris';
+import Eris from 'eris';
 import { describe } from 'mocha';
+
+const client = (): Eris.Client => new Eris.Client('');
+const guild = (): Eris.Guild => new Eris.Guild({ id: '' }, client());
+const channel = (): Eris.Channel => new Eris.Channel({ id: '' }, client());
+const guildChannel = (): Eris.GuildChannel => new Eris.GuildChannel({ id: '' }, client());
 
 describe('Core format strings', () => {
     runFormatTreeTests(templates, {
@@ -17,7 +22,7 @@ describe('Core format strings', () => {
                         {
                             name: 'default',
                             input: [{
-                                channel: quickMock(Channel, {
+                                channel: quickMock(channel, {
                                     id: '123'
                                 }),
                                 message: literal('abc')
@@ -29,10 +34,10 @@ describe('Core format strings', () => {
                         {
                             name: 'default',
                             input: [{
-                                channel: quickMock(GuildChannel, {
+                                channel: quickMock(guildChannel, {
                                     id: '123',
                                     name: 'MyChannel',
-                                    guild: quickMock(Guild, {
+                                    guild: quickMock(guild, {
                                         name: 'MyGuild',
                                         id: '456'
                                     })
