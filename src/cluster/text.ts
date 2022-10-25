@@ -2824,11 +2824,11 @@ export const templates = FormatString.defineTree('cluster', t => ({
                     field: {
                         author: {
                             name: t('Author'),
-                            value: t<{ user: UserTag; id: string; }>()('{user#tag} (id)')
+                            value: t<{ user: UserTag; id: string; }>()('{user#tag} ({id})')
                         },
                         cooldown: {
                             name: t('Cooldown'),
-                            value: t<{ cooldown: Duration; }>()('{cooldown#duration(H)}')
+                            value: t<{ cooldown: Duration; }>()('{cooldown#duration(F)}')
                         },
                         lastModified: {
                             name: t('Last Modified'),
@@ -2875,7 +2875,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
             favourite: {
                 list: {
                     description: t('Displays a list of the tags you have favourited'),
-                    success: t<{ tags: Iterable<string>; }>()('{count#plural(0:You have no favourite tags!|You have {} favourite {#plural(1:tag|tags)}. ```fix\n{~tags#join(, )}\n```)}')
+                    success: t<{ tags: Iterable<string>; }>()('{tags#count#plural(0:You have no favourite tags!|You have {} favourite {#plural(1:tag|tags)}. ```fix\n{~tags#join(, )}\n```)}')
                 },
                 toggle: {
                     description: t('Adds or removes a tag from your list of favourites'),
@@ -2986,7 +2986,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
                 activity: {
                     default: t('Not doing anything'),
                     5: t<Eris.Activity>()('Competing in {name}'),
-                    4: t<Eris.Activity>()('{emoji#emoji} {name}'),
+                    4: t<Eris.Activity>()('{emoji#bool({#emoji} |}{name}'),
                     2: t<Eris.Activity>()('Listening to {name}'),
                     0: t<Eris.Activity>()('Playing {name}'),
                     1: t<Eris.Activity>()('Streaming {details}'),
@@ -3050,7 +3050,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
         },
         warnings: {
             common: {
-                count: t<{ user: Eris.User; count: number; }>()('{count#plural(0:🎉|⚠️)} **{user#tag}** {count#plural(0:doesn\'t have any warnings!|1:has accumulated 1 warning|has accumulated {} warnings)}.'),
+                count: t<{ user: Eris.User; count: number; }>()('{count#plural(0:🎉|⚠️)} **{user#tag}** {count#plural(0:doesn\'t have any warnings!|1:has accumulated 1 warning.|has accumulated {} warnings.)}'),
                 untilTimeout: t<{ remaining: number; }>()('- {remaining} more warnings before being timed out.'),
                 untilKick: t<{ remaining: number; }>()('- {remaining} more warnings before being kicked.'),
                 untilBan: t<{ remaining: number; }>()('- {remaining} more warnings before being banned.'),

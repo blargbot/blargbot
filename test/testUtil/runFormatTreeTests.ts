@@ -14,9 +14,11 @@ function runFormatTreeTestsCore<T extends object>(prefix: string[], source: T, c
         if (typeof v === 'function') {
             const factory = v as (...args: unknown[]) => IFormattable<string>;
             const c = cases[key] as Array<{ name: string; input: unknown[]; expected: string | (() => string) | ((value: string) => void); }>;
-            describe(path.join('.'), () => {
+            const name = path.join('.');
+            describe(name, () => {
                 for (const scenario of c) {
                     it(`should handle the "${scenario.name}" case`, () => {
+                        name;
                         //arrange
                         const compiler = new FormatStringCompiler({ transformers });
                         const formatter = new DefaultFormatter(new Intl.Locale('en-GB'), compiler);

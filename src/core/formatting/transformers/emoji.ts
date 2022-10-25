@@ -18,7 +18,7 @@ export const emoji: IValueResolverTransform = {
                 throw new Error('Emote missing name');
             const emote = value as { name: string; id?: string; animated?: boolean; };
             return emote.id !== undefined
-                ? `<${emote.animated === true ? 'a' : ''}:${emote.id}:${emote.name}>`
+                ? `<${emote.animated === true ? 'a' : ''}:${emote.name}:${emote.id}>`
                 : emote.name;
         };
     }

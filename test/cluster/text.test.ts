@@ -7139,7 +7139,7 @@ describe('BBTag format strings', () => {
                         {
                             name: 'default',
                             input: [{ now: moment(1234568890), user: quickMock(user, { mention: '<@userId>' }) }],
-                            expected: 'ℹ️ It is currently **07:56** for **<@userId>**.'
+                            expected: 'ℹ️ It is currently **6:56 AM** for **<@userId>**.'
                         }
                     ]
                 },
@@ -7149,7 +7149,7 @@ describe('BBTag format strings', () => {
                         {
                             name: 'default',
                             input: [{ now: moment(1234568890), timezone: 'UTC' }],
-                            expected: 'ℹ️ In **UTC**, it is currently **07:56**'
+                            expected: 'ℹ️ In **UTC**, it is currently **6:56 AM**'
                         }
                     ]
                 },
@@ -7166,7 +7166,7 @@ describe('BBTag format strings', () => {
                         {
                             name: 'default',
                             input: [{ source: moment(1234568890), dest: moment(1294568890), sourceTimezone: 'right now', destTimezone: 'the future' }],
-                            expected: 'ℹ️ When it\'s **07:56** in **right now**, it\'s **08:56** in **the future**.'
+                            expected: 'ℹ️ When it\'s **6:56 AM** in **right now**, it\'s **11:36 PM** in **the future**.'
                         }
                     ]
                 }
@@ -7182,7 +7182,7 @@ describe('BBTag format strings', () => {
                         {
                             name: 'default',
                             input: [{ userId: 'userId', start: moment(1234568890) }],
-                            expected: '⏰ *Bzzt!* <@userId>, the timer you set <t:1234567:R> has gone off! *Bzzt!* ⏰'
+                            expected: '⏰ *Bzzt!* <@userId>, the timer you set <t:1234568:R> has gone off! *Bzzt!* ⏰'
                         }
                     ],
                     success: {
@@ -7218,7 +7218,7 @@ describe('BBTag format strings', () => {
                         {
                             name: 'default',
                             input: [{ timezone: 'the future', now: moment().utcOffset('UTC+05:00') }],
-                            expected: 'ℹ️ Your stored timezone code is `the future`, which is equivalent to +05:00.'
+                            expected: 'ℹ️ Your stored timezone code is `the future`, which is equivalent to UTC +05:00.'
                         }
                     ]
                 },
@@ -7235,7 +7235,7 @@ describe('BBTag format strings', () => {
                         {
                             name: 'default',
                             input: [{ timezone: 'the future', now: moment().utcOffset('UTC+05:00') }],
-                            expected: '✅ Ok, your timezone code is now set to `the future`, which is equivalent to +05:00.'
+                            expected: '✅ Ok, your timezone code is now set to `the future`, which is equivalent to UTC +05:00.'
                         }
                     ]
                 }
@@ -7293,7 +7293,7 @@ describe('BBTag format strings', () => {
                         {
                             name: 'default',
                             input: [{ startTime: moment(1234568890) }],
-                            expected: 'ℹ️ I came online <t:1234567:R> at <t:1234567:f>'
+                            expected: 'ℹ️ I came online <t:1234568:R> at <t:1234568:f>'
                         }
                     ]
                 }
@@ -7349,7 +7349,7 @@ describe('BBTag format strings', () => {
                         1: [
                             {
                                 name: 'default',
-                                input: [quickMock(activity, { name: 'from a hot tub' })],
+                                input: [quickMock(activity, { details: 'from a hot tub' })],
                                 expected: 'Streaming from a hot tub'
                             }
                         ],
@@ -7366,9 +7366,14 @@ describe('BBTag format strings', () => {
                             name: {
                                 user: [
                                     {
-                                        name: 'default',
-                                        input: [{ user: quickMock(user, { username: 'userUsername', discriminator: 'userDiscrim' }) }],
-                                        expected: '{user.bot#bool(🤖 |)}userUsername#userDiscrim'
+                                        name: 'bot',
+                                        input: [{ user: quickMock(user, { bot: true, username: 'userUsername', discriminator: 'userDiscrim' }) }],
+                                        expected: '🤖 userUsername#userDiscrim'
+                                    },
+                                    {
+                                        name: 'user',
+                                        input: [{ user: quickMock(user, { bot: false, username: 'userUsername', discriminator: 'userDiscrim' }) }],
+                                        expected: 'userUsername#userDiscrim'
                                     }
                                 ],
                                 member: [
@@ -7477,7 +7482,7 @@ describe('BBTag format strings', () => {
                                         { index: 3, userId: 'user3Id', count: 456 }
                                     ]
                                 }],
-                                expected: '**1.** <@user1Id> - 1 signature\n**2.** <@user2Id> - 123 signatures\n**3.** <@user3Id> - 4565 signatures'
+                                expected: '**1.** <@user1Id> - 1 signature\n**2.** <@user2Id> - 123 signatures\n**3.** <@user3Id> - 456 signatures'
                             }
                         ]
                     }
@@ -7572,7 +7577,7 @@ describe('BBTag format strings', () => {
                         {
                             name: 'none',
                             input: [{ user: quickMock(user, { mention: '<@userId>' }), count: 0 }],
-                            expected: '🎉|⚠️ **<@userId>** doesn\'t have any warnings!'
+                            expected: '🎉 **<@userId>** doesn\'t have any warnings!'
                         },
                         {
                             name: 'single',
