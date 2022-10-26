@@ -1,5 +1,9 @@
 import { IFormatterMiddleware } from '../Formatter';
-import { format, IFormatString, IFormatter, ITranslationSource } from '../types';
+import { format, IFormatString, IFormatter } from '../types';
+
+export interface ITranslationSource {
+    getTranslation(id: string, locale: Intl.Locale): string | undefined;
+}
 
 export class TranslationMiddleware implements IFormatterMiddleware {
     readonly #source: ITranslationSource;

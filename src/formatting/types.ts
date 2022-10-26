@@ -20,7 +20,3 @@ export interface IFormatter {
     readonly locale: Intl.Locale;
     format(string: IFormatString): string;
 }
-
-export interface ITranslationSource {
-    getTranslation(id: string, locale: Intl.Locale): string | undefined;
-}
