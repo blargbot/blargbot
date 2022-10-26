@@ -81,7 +81,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
                 }
             },
             paged: {
-                prompt: t<{ header: IFormattable<string>; page: number; pageCount: number; content: IFormattable<string>; }>()('{header#bool({}\n|)}Page **#{page}/{pageCount}**\n{content}\nType a number between **1 and {pageCount}** to view that page.')
+                prompt: t<{ header?: IFormattable<string>; page: number; pageCount: number; content: IFormattable<string>; }>()('{header#bool({}\n|)}Page **#{page}/{pageCount}**\n{content}\nType a number between **1 and {pageCount}** to view that page.')
             }
         }
     },
@@ -290,7 +290,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
         createReason: t('Automatic muted role configuration')
     },
     moderation: {
-        auditLog: t<{ moderator: Eris.User; reason?: IFormattable<string>; }>()('[{moderator.username}#{moderator.discriminator}] {reason}')
+        auditLog: t<{ moderator: Eris.User; reason?: IFormattable<string>; }>()('[{moderator.username}#{moderator.discriminator}]{reason#bool( {}|)}')
     },
     censor: {
         warnReason: t('Said a blacklisted phrase.'),
@@ -361,47 +361,47 @@ export const templates = FormatString.defineTree('cluster', t => ({
                             single: t<{ name: string; default: string; }>()('`{name}` defaults to `{default}`')
                         },
                         literal: {
-                            single: t<{ name: string; choices: Iterable<string>; default?: string; }>()('`{name}` should be {choices#map(`{}`)#join(, | or )}{default#bool( and defaults to `{default}`|)}'),
+                            single: t<{ name: string; choices: Iterable<string>; default?: string; }>()('`{name}` should be {choices#map(`{}`)#join(, | or )}{default#bool( and defaults to `{}`|)}'),
                             greedy: t<{ name: string; choices: Iterable<string>; min: number; }>()('`{name}` are {min#plural(0:|1:|{} or more of )}{choices#map(`{}`)#join(, | or )}')
                         },
                         boolean: {
-                            single: t<{ name: string; default?: string; }>()('`{name}` should be true or false{default#bool( and defaults to `{default}`|)}'),
+                            single: t<{ name: string; default?: string; }>()('`{name}` should be true or false{default#bool( and defaults to `{}`|)}'),
                             greedy: t<{ name: string; min: number; }>()('`{name}` are {min#plural(0:|1:|{} or more )}true or false')
                         },
                         channel: {
-                            single: t<{ name: string; default?: string; }>()('`{name}` should be a channel id, mention or name{default#bool( and defaults to `{default}`|)}'),
+                            single: t<{ name: string; default?: string; }>()('`{name}` should be a channel id, mention or name{default#bool( and defaults to `{}`|)}'),
                             greedy: t<{ name: string; min: number; }>()('`{name}` are {min#plural(0:|1:|{} or more )}channel ids, mentions or names')
                         },
                         duration: {
-                            single: t<{ name: string; default?: string; }>()('`{name}` should be a duration{default#bool( and defaults to `{default}`|)}'),
+                            single: t<{ name: string; default?: string; }>()('`{name}` should be a duration{default#bool( and defaults to `{}`|)}'),
                             greedy: t<{ name: string; min: number; }>()('`{name}` are {min#plural(0:|1:|{} or more )}durations')
                         },
                         bigint: {
-                            single: t<{ name: string; default?: string; }>()('`{name}` should be a whole number{default#bool( and defaults to `{default}`|)}'),
+                            single: t<{ name: string; default?: string; }>()('`{name}` should be a whole number{default#bool( and defaults to `{}`|)}'),
                             greedy: t<{ name: string; min: number; }>()('`{name}` are {min#plural(0:|1:|{} or more )}whole numbers')
                         },
                         integer: {
-                            single: t<{ name: string; default?: string; }>()('`{name}` should be a whole number{default#bool( and defaults to `{default}`|)}'),
+                            single: t<{ name: string; default?: string; }>()('`{name}` should be a whole number{default#bool( and defaults to `{}`|)}'),
                             greedy: t<{ name: string; min: number; }>()('`{name}` are {min#plural(0:|1:|{} or more )}whole numbers')
                         },
                         member: {
-                            single: t<{ name: string; default?: string; }>()('`{name}` should be a user id, mention or name{default#bool( and defaults to `{default}`|)}'),
+                            single: t<{ name: string; default?: string; }>()('`{name}` should be a user id, mention or name{default#bool( and defaults to `{}`|)}'),
                             greedy: t<{ name: string; min: number; }>()('`{name}` are {min#plural(0:|1:|{} or more )}user ids, mentions or names')
                         },
                         number: {
-                            single: t<{ name: string; default?: string; }>()('`{name}` should be a number{default#bool( and defaults to `{default}`|)}'),
+                            single: t<{ name: string; default?: string; }>()('`{name}` should be a number{default#bool( and defaults to `{}`|)}'),
                             greedy: t<{ name: string; min: number; }>()('`{name}` are {min#plural(0:|1:|{} or more )}numbers')
                         },
                         role: {
-                            single: t<{ name: string; default?: string; }>()('`{name}` should be a role id, mention or name{default#bool( and defaults to `{default}`|)}'),
+                            single: t<{ name: string; default?: string; }>()('`{name}` should be a role id, mention or name{default#bool( and defaults to `{}`|)}'),
                             greedy: t<{ name: string; min: number; }>()('`{name}` are {min#plural(0:|1:|{} or more )}role ids, mentions or names')
                         },
                         sender: {
-                            single: t<{ name: string; default?: string; }>()('`{name}` should be a user id, mention or name, or a webhook id{ default#bool(and defaults to `{default}`|)}'),
+                            single: t<{ name: string; default?: string; }>()('`{name}` should be a user id, mention or name, or a webhook id{default#bool( and defaults to `{}`|)}'),
                             greedy: t<{ name: string; min: number; }>()('`{name}` are {min#plural(0:|1:|{} or more )}user ids, mentions or names, or webhook ids')
                         },
                         user: {
-                            single: t<{ name: string; default?: string; }>()('`{name}` should be a user id, mention or name{default#bool( and defaults to `{default}`|)}'),
+                            single: t<{ name: string; default?: string; }>()('`{name}` should be a user id, mention or name{default#bool( and defaults to `{}`|)}'),
                             greedy: t<{ name: string; min: number; }>()('`{name}` are {min#plural(0:|1:|{} or more )}user ids, mentions or names')
                         }
                     }
@@ -510,7 +510,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
                     },
                     nested: {
                         name: t('Nested arguments <<> <>>'),
-                        value: t<{ commandName: string; }>()('Example:```\n<<arg1>, [arg2]>```Some subtags may have special rules for how their arguments are grouped (e.g. `b!{commandName} docs switch`) and will use nested arguments to show that grouping. When actually calling the subtag, you provide the arguments as normal, however you must obey the grouping rules.\nIn the example of `switch`, you may optionally supply `<case>` and `<then>` as many times as you like but they must always be in pairs. e.g. `{switch;value;case1;then1}` or `{switch;value;case1;then1;case2;then2}` etc')
+                        value: t<{ commandName: string; }>()('Example:```\n<<arg1>, [arg2]>```Some subtags may have special rules for how their arguments are grouped (e.g. `b!{commandName} docs switch`) and will use nested arguments to show that grouping. When actually calling the subtag, you provide the arguments as normal, however you must obey the grouping rules.\nIn the example of `switch`, you may optionally supply `<case>` and `<then>` as many times as you like but they must always be in pairs. e.g. `\\{switch;value;case1;then1\\}` or `\\{switch;value;case1;then1;case2;then2\\}` etc')
                     }
                 }
             },
@@ -662,7 +662,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
             guildOnly: t<{ prefix: string; commandName: string; }>()('❌ `{prefix}{commandName}` can only be used on guilds.'),
             privateOnly: t<{ prefix: string; commandName: string; }>()('❌ `{prefix}{commandName}` can only be used in private messages.'),
             rateLimited: {
-                local: t<{ duration: Duration; }>()('❌ Sorry, you ran this command too recently! Please try again in {delay#duration(S)} seconds.'),
+                local: t<{ duration: Duration; }>()('❌ Sorry, you ran this command too recently! Please try again in {duration#duration(S)} seconds.'),
                 global: t<{ duration: Duration; penalty: Duration; }>()('❌ Sorry, you\'ve been running too many commands. To prevent abuse, I\'m going to have to time you out for `{duration#duration(S)}s`.\n\nContinuing to spam commands will lengthen your timeout by `{penalty#duration(S)}s`!')
             },
             missingPermission: {
@@ -1006,8 +1006,8 @@ export const templates = FormatString.defineTree('cluster', t => ({
             },
             author: {
                 description: t('Displays the name of the custom command\'s author'),
-                noAuthorizer: t<{ name: string; author?: UserTag; }>()('✅ The custom command `{name}` was made by **{author#tag}**'),
-                withAuthorizer: t<{ name: string; author?: UserTag; authorizer?: UserTag; }>()('✅ The custom command `{name}` was made by **{author#tag}** and is authorized by **{authorizer#tag}**')
+                noAuthorizer: t<{ name: string; author?: UserTag; }>()('✅ The custom command `{name}` was made by **{author.username=UNKNOWN}#{author.discriminator=????}**'),
+                withAuthorizer: t<{ name: string; author?: UserTag; authorizer?: UserTag; }>()('✅ The custom command `{name}` was made by **{author.username=UNKNOWN}#{author.discriminator=????}** and is authorized by **{authorizer.username=UNKNOWN}#{authorizer.discriminator=????}**')
             },
             flag: {
                 updated: t<{ name: string; }>()('✅ The flags for `{name}` have been updated.'),
@@ -1068,7 +1068,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
             import: {
                 description: t('Imports a tag as a ccommand, retaining all data such as author variables'),
                 tagMissing: t<{ name: string; }>()('❌ The `{name}` tag doesn\'t exist!'),
-                success: t<{ tagName: string; commandName: string; author?: UserTag; authorizer?: UserTag; }>()('✅ The tag `{tagName}` by **{author#tag}** has been imported as `{commandName}` and is authorized by **{authorizer#tag}**')
+                success: t<{ tagName: string; commandName: string; author?: UserTag; authorizer?: UserTag; }>()('✅ The tag `{tagName}` by **{author.username=UNKNOWN}#{author.discriminator=????}** has been imported as `{commandName}` and is authorized by **{authorizer.username=UNKNOWN}#{authorizer.discriminator=????}**')
             }
         },
         censor: {
@@ -1503,7 +1503,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
                     moderatorNoPerms: t('❌ You don\'t have permission to ban anyone! Make sure you have the `ban members` permission or one of the permissions specified in the `ban override` setting and try again.'),
                     noUsers: t('❌ None of the user ids you gave were valid users!')
                 },
-                success: t<{ users: Iterable<Eris.User>; }>()('✅ The following user(s) have been banned:\n{users#map(`{#tag}`)#join(\n)}')
+                success: t<{ users: Iterable<Eris.User>; }>()('✅ The following user(s) have been banned:\n{users#map({#tag})#join(\n)}')
             }
         },
         modLog: {
@@ -1686,7 +1686,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
                         },
                         channels: {
                             name: t('Channels'),
-                            value: t<{ channelIds: Iterable<string>; }>()('{roleIds#plural(0:Anywhere|{#map(<#{}>)#join(\n)})}')
+                            value: t<{ channelIds: Iterable<string>; }>()('{channelIds#plural(0:Anywhere|{#map(<#{}>)#join(\n)})}')
                         },
                         message: {
                             name: t('Message'),
@@ -1808,8 +1808,8 @@ export const templates = FormatString.defineTree('cluster', t => ({
                 cancelled: t('✅ Tidy cancelled, No messages will be deleted'),
                 deleteFailed: t('❌ I wasn\'t able to delete any of the messages! Please make sure I have permission to manage messages'),
                 success: {
-                    default: t<{ deleted: number; success: Iterable<{ user: Eris.User; count: number; }>; }>()('✅ Deleted {deleted} {success#plural(1:message|messages)}:\n{success#map({user#tag} - {count} {count#plural(1:message|messages)})#join(\n)}'),
-                    partial: t<{ deleted: number; success: Iterable<{ user: Eris.User; count: number; }>; failed: Iterable<{ user: Eris.User; count: number; }>; }>()('⚠️ I managed to delete {deleted} of the messages I attempted to delete.\n{success#map({user#tag} - {count} {count#plural(1:message|messages)})}\n\nFailed:\n{failed#map({user#tag} - {count} {count#plural(1:message|messages)})#join(\n)}')
+                    default: t<{ deleted: number; success: Iterable<{ user: Eris.User; count: number; }>; }>()('✅ Deleted {deleted} {deleted#plural(1:message|messages)}:\n{success#map({user#tag} - {count} {count#plural(1:message|messages)})#join(\n)}'),
+                    partial: t<{ deleted: number; success: Iterable<{ user: Eris.User; count: number; }>; failed: Iterable<{ user: Eris.User; count: number; }>; }>()('⚠️ I managed to delete {deleted} of the messages I attempted to delete.\n{success#map({user#tag} - {count} {count#plural(1:message|messages)})#join(\n)}\n\nFailed:\n{failed#map({user#tag} - {count} {count#plural(1:message|messages)})#join(\n)}')
                 }
             }
         },
@@ -1856,11 +1856,11 @@ export const templates = FormatString.defineTree('cluster', t => ({
                     },
                     remain: {
                         header: t('Remain'),
-                        cell: t<{ endTime: Moment; }>()('endTime#duration(H)')
+                        cell: t<{ endTime: Moment; }>()('{endTime#duration(H)}')
                     },
                     user: {
                         header: t('User'),
-                        cell: t<{ user?: Eris.User; }>()('{user.username}#{user.discriminator}')
+                        cell: t<{ user?: Eris.User; }>()('{user#bool({username}#{discriminator}|)}')
                     },
                     type: {
                         header: t('Type'),
@@ -1896,7 +1896,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
                 description: t('Cancels currently active timers'),
                 timersMissing: t<{ count: number; }>()('❌ I couldn\'t find {count#plural(1:the timer|any of the timers)} you specified!'),
                 success: {
-                    default: t<{ success: Iterable<string>; }>()('✅ Cancelled {success#count#plural(1:{} timer|{} timers)}:\n{timers#map(`{}`)#join(\n)}'),
+                    default: t<{ success: Iterable<string>; }>()('✅ Cancelled {success#count#plural(1:{} timer|{} timers)}:\n{success#map(`{}`)#join(\n)}'),
                     partial: t<{ success: Iterable<string>; fail: Iterable<string>; }>()('⚠️ Cancelled {success#count#plural(1:{} timer|{} timers)}:\n{success#map(`{}`)#join(\n)}\nCould not find {fail#count#plural(1:{} timer|{} timers)}:\n{fail#map(`{}`)#join(\n)}')
                 }
             },
@@ -2446,7 +2446,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
                 announceNotSetUp: t('❌ Announcements on this server aren\'t set up correctly. Please fix them before trying again.'),
                 emojisMissing: t('❌ You must provide some emojis to use in the poll.'),
                 emojisInaccessible: t('❌ I don\'t have access to some of the emojis you used! Please use different emojis or add me to the server that the emojis are from.'),
-                tooShort: t<{ duration: Duration; }>()('❌ {time#duration(S)}s is too short for a poll! Use a longer time'),
+                tooShort: t<{ duration: Duration; }>()('❌ {duration#duration(S)}s is too short for a poll! Use a longer time'),
                 someEmojisMissing: t('⚠️ I managed to create the poll, but wasn\'t able to add some of the emojis to it. Please add them manually (they will still be counted in the results)')
             }
         },
@@ -2463,7 +2463,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
                 event: t<{ userId: string; start: Moment; content: string; }>()('⏰ Hi, <@{userId}>! You asked me to remind you about this {start#tag(R)}:\n{content}'),
                 success: {
                     here: t<{ duration: Duration; }>()('✅ Ok, ill ping you here {duration#tag}'),
-                    dm: t<{ duration: Duration; }>()('✅ Ok, ill ping you in a DM {duration#tag}>')
+                    dm: t<{ duration: Duration; }>()('✅ Ok, ill ping you in a DM {duration#tag}')
                 }
             }
         },
@@ -2522,7 +2522,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
                     field: {
                         shard: {
                             name: t<{ shardId: number; }>()('Shard {shardId}'),
-                            value: t<{ statusEmote: string; latency: number; guildCount: number; clusterId: number; lastUpdate: Moment; }>()('```\nStatus: {statusEmote}\nLatency: {latency}ms\nGuilds: {guildCount}\nCluster: {clusterId}\nLast update: {lastUpdate#duration(H)}\n```')
+                            value: t<{ statusEmote: string; latency: number; guildCount: number; clusterId: number; lastUpdate: Moment; }>()('```\nStatus: {statusEmote}\nLatency: {latency}ms\nGuilds: {guildCount}\nCluster: {clusterId}\nLast update: {lastUpdate#time(LT)}\n```')
                         },
                         cluster: {
                             name: t<{ clusterId: number; }>()('Cluster {clusterId}'),
@@ -2562,7 +2562,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
                     field: {
                         shard: {
                             name: t<{ shardId: number; }>()('Shard {shardId}'),
-                            value: t<{ statusEmote: string; latency: number; guildCount: number; clusterId: number; lastUpdate: Moment; }>()('```\nStatus: {statusEmote}\nLatency: {latency}ms\nGuilds: {guildCount}\nCluster: {clusterId}\nLast update: {lastUpdate#duration(H)}\n```')
+                            value: t<{ statusEmote: string; latency: number; guildCount: number; clusterId: number; lastUpdate: Moment; }>()('```\nStatus: {statusEmote}\nLatency: {latency}ms\nGuilds: {guildCount}\nCluster: {clusterId}\nLast update: {lastUpdate#time(LT)}\n```')
                         },
                         cluster: {
                             name: t<{ clusterId: number; }>()('Cluster {clusterId}'),
@@ -2687,7 +2687,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
                         },
                         uptime: {
                             name: t('Uptime'),
-                            value: t<{ startTime: Moment; }>()('{uptime#tag(R)}')
+                            value: t<{ startTime: Moment; }>()('{startTime#tag(R)}')
                         },
                         eris: {
                             name: t('Eris')
@@ -2726,10 +2726,10 @@ export const templates = FormatString.defineTree('cluster', t => ({
                 tagMissing: t<{ name: string; }>()('❌ The `{name}` tag doesn\'t exist!'),
                 invalidBBTag: t<{ errors: Iterable<IFormattable<string>>; }>()('❌ There were errors with the bbtag you provided!\n{errors#join(\n)}'),
                 bbtagError: t<AnalysisResult>()('❌ [{location.line},{location.column}]: {message}'),
-                bbtagWarning: t<AnalysisResult>()('❌ [{location.line},{location.column}]: {message}'),
+                bbtagWarning: t<AnalysisResult>()('⚠️ [{location.line},{location.column}]: {message}'),
                 notOwner: t<{ name: string; }>()('❌ You don\'t own the `{name}` tag!'),
                 alreadyExists: t<{ name: string; }>()('❌ The `{name}` tag already exists!'),
-                deleted: t<{ name: string; reason?: string; user?: UserTag; }>()('❌ The `{name}` tag has been permanently deleted{user#bool(by **{#tag}**|)}{reason#bool(\n\nReason: {}|)}')
+                deleted: t<{ name: string; reason?: string; user?: UserTag; }>()('❌ The `{name}` tag has been permanently deleted{user#bool( by **{username=UNKNOWN}#{discriminator=????}**|)}{reason#bool(\n\nReason: {}|)}')
 
             },
             run: {
@@ -2812,7 +2812,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
             },
             author: {
                 description: t('Displays the name of the tag\'s author'),
-                success: t<{ name: string; author?: UserTag; }>()('✅ The tag `{name}` was made by **{author#tag}**')
+                success: t<{ name: string; author?: UserTag; }>()('✅ The tag `{name}` was made by **{author.username=UNKNOWN}#{author.discriminator=????}**')
             },
             info: {
                 description: t('Displays information about a tag'),
@@ -2824,7 +2824,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
                     field: {
                         author: {
                             name: t('Author'),
-                            value: t<{ user: UserTag; id: string; }>()('{user#tag} ({id})')
+                            value: t<{ user: UserTag; id: string; }>()('{user.username=UNKNOWN}#{user.discriminator=????} ({id})')
                         },
                         cooldown: {
                             name: t('Cooldown'),
@@ -2855,7 +2855,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
             },
             top: {
                 description: t('Displays the top 5 tags'),
-                success: t<{ tags: Iterable<{ index: number; name: string; author: UserTag; count: number; }>; }>()('__Here are the top 10 tags:__\n{tags#map(**{index}.** **{name}** \\(**{author#tag}**\\) - used **{count} {count#plural(1:time|times)}**)#join(\n)}')
+                success: t<{ tags: Iterable<{ index: number; name: string; author: UserTag; count: number; }>; }>()('__Here are the top 10 tags:__\n{tags#map(**{index}.** **{name}** \\(**{author.username=UNKNOWN}#{author.discriminator=????}**\\) - used **{count} {count#plural(1:time|times)}**)#join(\n)}')
             },
             report: {
                 description: t('Reports a tag as violating the ToS'),
@@ -2986,7 +2986,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
                 activity: {
                     default: t('Not doing anything'),
                     5: t<Eris.Activity>()('Competing in {name}'),
-                    4: t<Eris.Activity>()('{emoji#bool({#emoji} |}{name}'),
+                    4: t<Eris.Activity>()('{emoji#bool({#emoji} |)}{name}'),
                     2: t<Eris.Activity>()('Listening to {name}'),
                     0: t<Eris.Activity>()('Playing {name}'),
                     1: t<Eris.Activity>()('Streaming {details}'),
@@ -3000,8 +3000,8 @@ export const templates = FormatString.defineTree('cluster', t => ({
                         }
                     },
                     description: {
-                        user: t<{ user: Eris.User; }>()('**User Id**: {user.id}\n**Created**: {user.createdAt#tag=-}'),
-                        member: t<{ user: Eris.Member; }>()('**User Id**: {user.id}\n**Created**: {user.createdAt#tag=-}\n**Joined** {user.joinedAt#tag=-}')
+                        user: t<{ user: Eris.User; }>()('**User Id**: {user.id}\n**Created**: {user.createdAt#bool(<t:{}:f>|-)}'),
+                        member: t<{ user: Eris.Member; }>()('**User Id**: {user.id}\n**Created**: {user.createdAt#bool(<t:{}:f>|-)}\n**Joined** {user.joinedAt#bool(<t:{}:f>|-)}')
                     },
                     field: {
                         roles: {

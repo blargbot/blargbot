@@ -52,7 +52,7 @@ const webhook: () => Eris.Webhook = () => ({
     type: 1
 });
 
-describe('BBTag format strings', () => {
+describe('Cluster format strings', () => {
     runFormatTreeTests(templates, {
         common: {
             query: {
@@ -253,7 +253,7 @@ describe('BBTag format strings', () => {
                         },
                         {
                             name: 'without header',
-                            input: [{ header: literal('header text'), page: 123, pageCount: 456, content: literal('some content') }],
+                            input: [{ page: 123, pageCount: 456, content: literal('some content') }],
                             expected: 'Page **#123/456**\nsome content\nType a number between **1 and 456** to view that page.'
                         }
                     ]
@@ -436,7 +436,7 @@ describe('BBTag format strings', () => {
                             {
                                 name: 'default',
                                 input: [{ duration: moment.duration(1234567) }],
-                                expected: '2 minutes, 3 seconds and 456 milliseconds'
+                                expected: '20 minutes, 34 seconds and 567 milliseconds'
                             }
                         ]
                     },
@@ -677,7 +677,7 @@ describe('BBTag format strings', () => {
                 {
                     name: 'with duration',
                     input: [{ duration: moment.duration(1234567) }],
-                    expected: 'Automatically unmuted after 2 minutes, 3 seconds and 456 milliseconds.'
+                    expected: 'Automatically unmuted after 20 minutes, 34 seconds and 567 milliseconds.'
                 },
                 {
                     name: 'without duration',
@@ -697,7 +697,7 @@ describe('BBTag format strings', () => {
                 {
                     name: 'with reason',
                     input: [{ moderator: quickMock(user, { username: 'moderatorUsername', discriminator: 'moderatorDiscrim' }), reason: literal('My cool reason') }],
-                    expected: '[moderatorUsername#moderatorDiscrim] my cool reason'
+                    expected: '[moderatorUsername#moderatorDiscrim] My cool reason'
                 }
             ]
         },
@@ -726,7 +726,7 @@ describe('BBTag format strings', () => {
                 {
                     name: 'with duration',
                     input: [{ duration: moment.duration(1234567) }],
-                    expected: 'Automatically unbanned after 2 minutes, 3 seconds and 456 milliseconds.'
+                    expected: 'Automatically unbanned after 20 minutes, 34 seconds and 567 milliseconds.'
                 }
             ]
         },
@@ -882,7 +882,7 @@ describe('BBTag format strings', () => {
                                     ],
                                     description: literal('This is a description')
                                 }],
-                                expected: '> note 1\n> node 2\n> note 3\n\nThis is a description'
+                                expected: '> note 1\n> note 2\n> note 3\n\nThis is a description'
                             },
                             {
                                 name: 'no notes',
@@ -1289,7 +1289,7 @@ describe('BBTag format strings', () => {
                             {
                                 name: 'default',
                                 input: [{ commandName: 'myCommand' }],
-                                expected: 'For specific information about a topic, please use `b!myCommand docs <topic>` (like `b!{commandName} docs subtags`\n- `terminology`, for more information about terms like \'subtags\', \'tags\', etc.  \n- `variables`, for more information about variables and the different variable scopes.\n- `argTypes`, for more information about the syntax of parameters\n- `dynamic`, for information about dynamic subtags\n- `subtags`, arguably the most important topic on this list. `b!{commandName} docs subtags` displays a list of subtag categories.'
+                                expected: 'For specific information about a topic, please use `b!myCommand docs <topic>` (like `b!myCommand docs subtags`\n- `terminology`, for more information about terms like \'subtags\', \'tags\', etc.  \n- `variables`, for more information about variables and the different variable scopes.\n- `argTypes`, for more information about the syntax of parameters\n- `dynamic`, for information about dynamic subtags\n- `subtags`, arguably the most important topic on this list. `b!myCommand docs subtags` displays a list of subtag categories.'
                             }
                         ]
                     }
@@ -1450,7 +1450,7 @@ describe('BBTag format strings', () => {
                                     {
                                         name: 'empty',
                                         input: [{ text: literal('') }],
-                                        expected: '_no output\n'
+                                        expected: '_no output_\n'
                                     }
                                 ]
                             },
@@ -1594,7 +1594,7 @@ describe('BBTag format strings', () => {
         },
         tableflip: {
             flip: v => expect(v).to.be.oneOf([
-                'Whoops! Let me get that for you ┬──┬ ¯\\_(ツ)',
+                'Whoops! Let me get that for you ┬──┬ ¯\\\\_(ツ)',
                 '(ヘ･_･)ヘ┳━┳ What are you, an animal?',
                 'Can you not? ヘ(´° □°)ヘ┳━┳',
                 'Tables are not meant to be flipped ┬──┬ ノ( ゜-゜ノ)',
@@ -1604,7 +1604,7 @@ describe('BBTag format strings', () => {
                 'Flipping tables with elegance! (/¯◡ ‿ ◡)/¯ ~ ┻━┻'
             ]),
             unflip: v => expect(v).to.be.oneOf([
-                '┬──┬ ¯\\_(ツ) A table unflipped is a table saved!',
+                '┬──┬ ¯\\\\_(ツ) A table unflipped is a table saved!',
                 '┣ﾍ(≧∇≦ﾍ)… (≧∇≦)/┳━┳ Unflip that table!',
                 'Yay! Cleaning up! ┣ﾍ(^▽^ﾍ)Ξ(ﾟ▽ﾟ*)ﾉ┳━┳',
                 'ヘ(´° □°)ヘ┳━┳ Was that so hard?',
@@ -1748,14 +1748,14 @@ describe('BBTag format strings', () => {
                     local: [
                         {
                             name: 'default',
-                            input: [{ duration: moment.duration(1234567) }],
+                            input: [{ duration: moment.duration(123000) }],
                             expected: '❌ Sorry, you ran this command too recently! Please try again in 123 seconds.'
                         }
                     ],
                     global: [
                         {
                             name: 'default',
-                            input: [{ duration: moment.duration(1234567), penalty: moment.duration(7654321) }],
+                            input: [{ duration: moment.duration(123000), penalty: moment.duration(765000) }],
                             expected: '❌ Sorry, you\'ve been running too many commands. To prevent abuse, I\'m going to have to time you out for `123s`.\n\nContinuing to spam commands will lengthen your timeout by `765s`!'
                         }
                     ]
@@ -2534,7 +2534,7 @@ describe('BBTag format strings', () => {
                     success: [
                         {
                             name: 'default',
-                            input: [{ name: 'myCommand', cooldown: moment.duration(1234567) }],
+                            input: [{ name: 'myCommand', cooldown: moment.duration(123456) }],
                             expected: '✅ The custom command `myCommand` now has a cooldown of `123456ms`.'
                         }
                     ]
@@ -2620,7 +2620,7 @@ describe('BBTag format strings', () => {
                             {
                                 name: 'default',
                                 input: [{ flag: '1' }],
-                                expected: '❌ The flag `123` already exists!'
+                                expected: '❌ The flag `1` already exists!'
                             }
                         ],
                         wordExists: [
@@ -3021,7 +3021,7 @@ describe('BBTag format strings', () => {
                                     {
                                         name: 'some',
                                         input: [{ roles: ['roleId1', 'roleId2', 'roleId3'] }],
-                                        expected: '<@roleId1> <@roleId2> <@roleId3>'
+                                        expected: '<@&roleId1> <@&roleId2> <@&roleId3>'
                                     }
                                 ]
                             },
@@ -3036,7 +3036,7 @@ describe('BBTag format strings', () => {
                                     {
                                         name: 'some',
                                         input: [{ channels: ['channelId1', 'channelId2', 'channelId3'] }],
-                                        expected: '<@channelId1> <@channelId2> <@channelId3>'
+                                        expected: '<#channelId1> <#channelId2> <#channelId3>'
                                     }
                                 ]
                             }
@@ -3411,7 +3411,7 @@ describe('BBTag format strings', () => {
                     timedOut: [
                         {
                             name: 'default',
-                            input: [{ max: moment.duration(1234567) }],
+                            input: [{ max: moment.duration(123000) }],
                             expected: '❌ The interval took longer than the max allowed time (123s)'
                         }
                     ],
@@ -4323,14 +4323,14 @@ describe('BBTag format strings', () => {
                     timeTooLong: [
                         {
                             name: 'default',
-                            input: [{ duration: moment.duration(1234567) }],
+                            input: [{ duration: moment.duration(123000) }],
                             expected: '❌ `time` must be less than 123s'
                         }
                     ],
                     success: [
                         {
                             name: 'default',
-                            input: [{ duration: moment.duration(1234567), channel: quickMock(channel, { mention: '<#channelId>' }) }],
+                            input: [{ duration: moment.duration(123000), channel: quickMock(channel, { mention: '<#channelId>' }) }],
                             expected: '✅ Slowmode has been set to 1 message every 123s in <#channelId>'
                         }
                     ]
@@ -4383,7 +4383,7 @@ describe('BBTag format strings', () => {
                                             { user: quickMock(user, { mention: '<@user3Id>' }), count: 567 }
                                         ]
                                     }],
-                                    expected: 'ℹ️ I am about to attempt to delete 1 message. Are you sure you wish to continue?\n<@user1Id> - 1 message\n<@user2Id> - 234 message\n<@user3Id> - 567 message'
+                                    expected: 'ℹ️ I am about to attempt to delete 1 message. Are you sure you wish to continue?\n<@user1Id> - 1 message\n<@user2Id> - 234 messages\n<@user3Id> - 567 messages'
                                 },
                                 {
                                     name: 'multiple',
@@ -4395,7 +4395,7 @@ describe('BBTag format strings', () => {
                                             { user: quickMock(user, { mention: '<@user3Id>' }), count: 567 }
                                         ]
                                     }],
-                                    expected: 'ℹ️ I am about to attempt to delete 123 messages. Are you sure you wish to continue?\n<@user1Id> - 1 message\n<@user2Id> - 234 message\n<@user3Id> - 567 message'
+                                    expected: 'ℹ️ I am about to attempt to delete 123 messages. Are you sure you wish to continue?\n<@user1Id> - 1 message\n<@user2Id> - 234 messages\n<@user3Id> - 567 messages'
                                 }
                             ],
                             foundSome: [
@@ -4475,7 +4475,7 @@ describe('BBTag format strings', () => {
                                         { user: quickMock(user, { mention: '<@user6Id>' }), count: 101 }
                                     ]
                                 }],
-                                expected: '⚠️ I managed to delete 123 of the messages I attempted to delete.\n<@user1Id> - 1 message\n<@user2Id> - 23 messages\n<@user3Id> - 45 messages\n\nFailed:\n<@user4Id> - 67 message\n<@user5Id> - 89 messages\n<@user6Id> - 101 messages'
+                                expected: '⚠️ I managed to delete 123 of the messages I attempted to delete.\n<@user1Id> - 1 message\n<@user2Id> - 23 messages\n<@user3Id> - 45 messages\n\nFailed:\n<@user4Id> - 67 messages\n<@user5Id> - 89 messages\n<@user6Id> - 101 messages'
                             }
                         ]
                     }
@@ -4689,7 +4689,7 @@ describe('BBTag format strings', () => {
                                     {
                                         name: 'default',
                                         input: [{ start: moment(123456789), end: moment(987654321) }],
-                                        expected: 'Started <t:1234567:f>\nEnds <t:9876543:f>'
+                                        expected: 'Started <t:123456:f>\nEnds <t:987654:f>'
                                     }
                                 ]
                             }
@@ -5161,14 +5161,14 @@ describe('BBTag format strings', () => {
                         {
                             name: 'default',
                             input: [{ formats: ['png', 'jpg', 'svg'] }],
-                            expected: 'The file format. Can be png, jpg and svg.'
+                            expected: 'The file format. Can be png, jpg or svg.'
                         }
                     ],
                     size: [
                         {
                             name: 'default',
                             input: [{ sizes: [64, 128, 512] }],
-                            expected: 'The file size. Can be 64, 128 and 512.'
+                            expected: 'The file size. Can be 64, 128 or 512.'
                         }
                     ]
                 },
@@ -5212,12 +5212,12 @@ describe('BBTag format strings', () => {
                             {
                                 name: 'without state',
                                 input: [{ output: 'brainfuck hard\nalso multiple\nlines' }],
-                                expected: '✅ Output:> brainfuck hard\n> also multiple\n> lines'
+                                expected: '✅ Output:\n> brainfuck hard\n> also multiple\n> lines'
                             },
                             {
                                 name: 'with state',
                                 input: [{ output: 'brainfuck hard\nalso multiple\nlines', state: { memory: [234, 2342, 6656, 213, 776, 4564, 35], pointer: 3 } }],
-                                expected: '✅ Output:> brainfuck hard\n> also multiple\n> lines\n\n[234,2342,6656,213,776,4564,35]\nPointer: 3'
+                                expected: '✅ Output:\n> brainfuck hard\n> also multiple\n> lines\n\n[234,2342,6656,213,776,4564,35]\nPointer: 3'
                             }
                         ]
                     }
@@ -5781,7 +5781,7 @@ describe('BBTag format strings', () => {
                             {
                                 name: 'default',
                                 input: [{ user: quickMock(user, { mention: '<@userId>' }), from: moment(1234567890) }],
-                                expected: 'ℹ️ I haven\'t seen <@userId> change their username since <t:1234567:R>!'
+                                expected: 'ℹ️ I haven\'t seen <@userId> change their username since <t:1234567:f>!'
                             }
                         ]
                     },
@@ -5800,7 +5800,7 @@ describe('BBTag format strings', () => {
                                                 { name: 'username 3', time: moment(1234570890) }
                                             ]
                                         }],
-                                        expected: 'Since <t:1234567:R>\nusername 1 - <t:1234568:R>\nusername 2 - <t:1234569:R>\nusername 3 - <t:1234570:R>'
+                                        expected: 'Since <t:1234567:f>\nusername 1 - <t:1234568:R>\nusername 2 - <t:1234569:R>\nusername 3 - <t:1234570:R>'
                                     }
                                 ],
                                 simple: [
@@ -5814,7 +5814,7 @@ describe('BBTag format strings', () => {
                                                 { name: 'username 3' }
                                             ]
                                         }],
-                                        expected: 'Since <t:1234567:R>\nusername 1\nusername 2\nusername 3'
+                                        expected: 'Since <t:1234567:f>\nusername 1\nusername 2\nusername 3'
                                     }
                                 ]
                             },
@@ -5930,7 +5930,7 @@ describe('BBTag format strings', () => {
                     success: [
                         {
                             name: 'default',
-                            input: [{ ping: moment.duration(1234567) }],
+                            input: [{ ping: moment.duration(123456) }],
                             expected: '✅ Pong! (123456ms)'
                         }
                     ]
@@ -5968,7 +5968,7 @@ describe('BBTag format strings', () => {
                     tooShort: [
                         {
                             name: 'default',
-                            input: [{ duration: moment.duration(1234567) }],
+                            input: [{ duration: moment.duration(123000) }],
                             expected: '❌ 123s is too short for a poll! Use a longer time'
                         }
                     ],
@@ -6170,7 +6170,7 @@ describe('BBTag format strings', () => {
                                     {
                                         name: 'default',
                                         input: [{ statusEmote: '💀', latency: 123, guildCount: 456, clusterId: 789, lastUpdate: moment(1234568890) }],
-                                        expected: '```\nStatus: 💀\nLatency: 123ms\nGuilds: 456\nCluster: 789\nLast update: 7:56:07 AM\n```'
+                                        expected: '```\nStatus: 💀\nLatency: 123ms\nGuilds: 456\nCluster: 789\nLast update: 6:56 AM\n```'
                                     }
                                 ]
                             },
@@ -6186,7 +6186,7 @@ describe('BBTag format strings', () => {
                                     {
                                         name: 'default',
                                         input: [{ cpu: 0.2345, guildCount: 123, ram: 123456789, startTime: moment(1234568890) }],
-                                        expected: 'CPU usage: 23.5%\nGuilds: 123\nRam used: 123.46MB\nStarted <t:1234568:R>'
+                                        expected: 'CPU usage: 23.5%\nGuilds: 123\nRam used: 117.74 MB\nStarted <t:1234568:R>'
                                     }
                                 ]
                             },
@@ -6276,7 +6276,7 @@ describe('BBTag format strings', () => {
                                     {
                                         name: 'default',
                                         input: [{ statusEmote: '💀', latency: 123, guildCount: 456, clusterId: 789, lastUpdate: moment(1234568890) }],
-                                        expected: '```\nStatus: 💀\nLatency: 123ms\nGuilds: 456\nCluster: 789\nLast update: 7:56:07 AM\n```'
+                                        expected: '```\nStatus: 💀\nLatency: 123ms\nGuilds: 456\nCluster: 789\nLast update: 6:56 AM\n```'
                                     }
                                 ]
                             },
@@ -6292,7 +6292,7 @@ describe('BBTag format strings', () => {
                                     {
                                         name: 'default',
                                         input: [{ cpu: 0.2345, guildCount: 123, ram: 123456789, startTime: moment(1234568890) }],
-                                        expected: 'CPU usage: 23.5%\nGuilds: 123\nRam used: 123.46MB\nStarted <t:1234568:R>'
+                                        expected: 'CPU usage: 23.5%\nGuilds: 123\nRam used: 117.74 MB\nStarted <t:1234568:R>'
                                     }
                                 ]
                             },
@@ -6356,7 +6356,7 @@ describe('BBTag format strings', () => {
                                             { id: 3, statusEmote: '☠️', latency: 789 }
                                         ]
                                     }],
-                                    expected: 'Ready since: <t:1234568:R>\nRam: 123.46MB\n**Shards**:\n```\n1 💀 123ms\n2 😵 456ms\n3 ☠️ 789ms\n```'
+                                    expected: 'Ready since: <t:1234568:R>\nRam: 117.74 MB\n**Shards**:\n```\n1 💀 123ms\n2 😵 456ms\n3 ☠️ 789ms\n```'
                                 }
                             ]
                         }
@@ -6521,7 +6521,7 @@ describe('BBTag format strings', () => {
                                     {
                                         name: 'default',
                                         input: [{ ram: 123456789 }],
-                                        expected: '123.46MB'
+                                        expected: '117.74 MB'
                                     }
                                 ]
                             },
@@ -6813,7 +6813,7 @@ describe('BBTag format strings', () => {
                     success: [
                         {
                             name: 'default',
-                            input: [{ name: 'myTag', cooldown: moment.duration(1234567) }],
+                            input: [{ name: 'myTag', cooldown: moment.duration(123456) }],
                             expected: '✅ The tag `myTag` now has a cooldown of `123456ms`.'
                         }
                     ]
@@ -6869,7 +6869,7 @@ describe('BBTag format strings', () => {
                                     {
                                         name: 'default',
                                         input: [{ cooldown: moment.duration(1234567) }],
-                                        expected: '2 minutes, 3 seconds and 456 milliseconds'
+                                        expected: '20 minutes, 34 seconds and 567 milliseconds'
                                     }
                                 ]
                             },
@@ -7019,12 +7019,12 @@ describe('BBTag format strings', () => {
                             {
                                 name: 'one',
                                 input: [{ tags: ['tag1'] }],
-                                expected: 'You have 1 favourite tag. ```fix\ntag1\n```)}'
+                                expected: 'You have 1 favourite tag. ```fix\ntag1\n```'
                             },
                             {
                                 name: 'some',
                                 input: [{ tags: ['tag1', 'tag2', 'tag3'] }],
-                                expected: 'You have 3 favourite tags. ```fix\ntag1, tag2, tag3\n```)}'
+                                expected: 'You have 3 favourite tags. ```fix\ntag1, tag2, tag3\n```'
                             }
                         ]
                     },
@@ -7218,7 +7218,7 @@ describe('BBTag format strings', () => {
                         {
                             name: 'default',
                             input: [{ timezone: 'the future', now: moment().utcOffset('UTC+05:00') }],
-                            expected: 'ℹ️ Your stored timezone code is `the future`, which is equivalent to UTC +05:00.'
+                            expected: 'ℹ️ Your stored timezone code is `the future`, which is equivalent to UTC (+05:00).'
                         }
                     ]
                 },
@@ -7235,7 +7235,7 @@ describe('BBTag format strings', () => {
                         {
                             name: 'default',
                             input: [{ timezone: 'the future', now: moment().utcOffset('UTC+05:00') }],
-                            expected: '✅ Ok, your timezone code is now set to `the future`, which is equivalent to UTC +05:00.'
+                            expected: '✅ Ok, your timezone code is now set to `the future`, which is equivalent to UTC (+05:00).'
                         }
                     ]
                 }

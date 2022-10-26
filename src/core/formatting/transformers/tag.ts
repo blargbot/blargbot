@@ -31,8 +31,6 @@ export const tag: IValueResolverTransform = {
                 return `<t:${value.unix()}:${format ?? 'f'}>`;
             if (moment.isDuration(value))
                 return `<t:${moment().add(value).unix()}:R>`;
-            if ('username' in value && 'discriminator' in value)
-                return `${String((value as { username: unknown; }).username)}#${String((value as { discriminator: unknown; }).discriminator)}`;
             throw new Error('Unrecognised item, failed to get the tag for it');
         };
     }
