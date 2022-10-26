@@ -1,6 +1,7 @@
 import { Subtag, SubtagType } from '@blargbot/bbtag';
 import templates from '@blargbot/bbtag/text';
-import { util } from '@blargbot/formatting';
+import * as coreTransformers from '@blargbot/core/formatting';
+import { transformers, util } from '@blargbot/formatting';
 import { quickMock } from '@blargbot/test-util/quickMock';
 import { runFormatTreeTests } from '@blargbot/test-util/runFormatTreeTests';
 import { describe } from 'mocha';
@@ -18,6 +19,11 @@ const subtag = (): Subtag => new TestSubtag({
 
 describe('BBTag format strings', () => {
     runFormatTreeTests(templates, {
+        transformers: {
+            ...transformers,
+            ...coreTransformers
+        }
+    }, {
         debug: {
             summary: [
                 {

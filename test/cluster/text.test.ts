@@ -1,7 +1,8 @@
 import { Command } from '@blargbot/cluster/command/index';
 import templates from '@blargbot/cluster/text';
 import { CommandType } from '@blargbot/cluster/utils/index';
-import { util } from '@blargbot/formatting';
+import * as coreTransformers from '@blargbot/core/formatting';
+import { transformers, util } from '@blargbot/formatting';
 import { quickMock } from '@blargbot/test-util/quickMock';
 import { runFormatTreeTests } from '@blargbot/test-util/runFormatTreeTests';
 import { expect } from 'chai';
@@ -54,6 +55,11 @@ const webhook: () => Eris.Webhook = () => ({
 
 describe('Cluster format strings', () => {
     runFormatTreeTests(templates, {
+        transformers: {
+            ...transformers,
+            ...coreTransformers
+        }
+    }, {
         common: {
             query: {
                 cancel: 'Cancel',

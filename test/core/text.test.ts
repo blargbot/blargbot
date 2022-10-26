@@ -1,5 +1,6 @@
+import * as coreTransformers from '@blargbot/core/formatting';
 import templates from '@blargbot/core/text';
-import { util } from '@blargbot/formatting';
+import { transformers, util } from '@blargbot/formatting';
 import { quickMock } from '@blargbot/test-util/quickMock';
 import { runFormatTreeTests } from '@blargbot/test-util/runFormatTreeTests';
 import Eris from 'eris';
@@ -12,6 +13,11 @@ const guildChannel = (): Eris.GuildChannel => new Eris.GuildChannel({ id: '' }, 
 
 describe('Core format strings', () => {
     runFormatTreeTests(templates, {
+        transformers: {
+            ...transformers,
+            ...coreTransformers
+        }
+    }, {
         utils: {
             send: {
                 errors: {

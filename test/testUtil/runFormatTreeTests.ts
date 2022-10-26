@@ -1,12 +1,12 @@
-import { format, FormatString, FormatStringCompiler, Formatter, IFormattable, transformers, util } from '@blargbot/formatting';
+import { format, FormatString, FormatStringCompiler, FormatStringCompilerOptions, Formatter, IFormattable, util } from '@blargbot/formatting';
 import { expect } from 'chai';
 import { describe, it } from 'mocha';
 
-export function runFormatTreeTests<T extends object>(source: T, cases: TestCasesHelper<T>): void {
-    runFormatTreeTestsCore([], source, cases);
+export function runFormatTreeTests<T extends object>(source: T, options: FormatStringCompilerOptions, cases: TestCasesHelper<T>): void {
+    runFormatTreeTestsCore([], source, options, cases);
 }
 
-function runFormatTreeTestsCore<T extends object>(prefix: string[], source: T, cases: TestCasesHelper<T>): void {
+function runFormatTreeTestsCore<T extends object>(prefix: string[], source: T, options: FormatStringCompilerOptions, cases: TestCasesHelper<T>): void {
     for (const [key, v] of Object.entries(source) as Array<[string & keyof T, T[string & keyof T]]>) {
         const path = [...prefix, key];
         if (typeof v === 'function') {
@@ -18,7 +18,7 @@ function runFormatTreeTestsCore<T extends object>(prefix: string[], source: T, c
                     it(`should handle the "${scenario.name}" case`, () => {
                         name;
                         //arrange
-                        const compiler = new FormatStringCompiler({ transformers });
+                        const compiler = new FormatStringCompiler(options);
                         const formatter = new Formatter(new Intl.Locale('en-GB'), [], compiler);
                         const formattable = factory(...scenario.input);
                         const check = typeof scenario.expected === 'string' ? () => scenario.expected : scenario.expected;
@@ -41,7 +41,7 @@ function runFormatTreeTestsCore<T extends object>(prefix: string[], source: T, c
             describe(path.join('.'), () => {
                 it('should display correctly', () => {
                     //arrange
-                    const compiler = new FormatStringCompiler({ transformers });
+                    const compiler = new FormatStringCompiler(options);
                     const formatter = new Formatter(new Intl.Locale('en-GB'), [], compiler);
                     const check = typeof c === 'string' ? () => c : c;
 
@@ -56,7 +56,7 @@ function runFormatTreeTestsCore<T extends object>(prefix: string[], source: T, c
                 });
             });
         } else if (typeof v === 'object' && v !== null) {
-            runFormatTreeTestsCore(path, v, cases[key] as TestCasesHelper<T[keyof T]>);
+            runFormatTreeTestsCore(path, v, options, cases[key] as TestCasesHelper<T[keyof T]>);
         }
     }
 }
