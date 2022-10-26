@@ -1,6 +1,6 @@
 import * as transformers from './transformers';
 
-export * from './DefaultFormatter';
+export * from './Formatter';
 export * from './FormatStringCompiler';
 export * from './middleware';
 

@@ -35,8 +35,7 @@ export class FormatStringCompiler implements IFormatStringCompiler {
     public constructor(options?: FormatStringCompilerOptions) {
         this.#transformers = { ...options?.transformers };
         this.#compile = [...options?.middleware ?? []]
-            .reverse()
-            .reduce(
+            .reduceRight(
                 (p, c) => c.handle.bind(c, this, p),
                 this.#compileCore.bind(this)
             );

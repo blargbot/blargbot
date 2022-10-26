@@ -1,4 +1,4 @@
-import { DefaultFormatter, FormatStringCompiler, transformers } from '@blargbot/core/formatting';
+import { FormatStringCompiler, Formatter, transformers } from '@blargbot/core/formatting';
 import { FormatString } from '@blargbot/domain/messages/FormatString';
 import { format, IFormattable, isFormattable } from '@blargbot/domain/messages/types';
 import { expect } from 'chai';
@@ -21,7 +21,7 @@ function runFormatTreeTestsCore<T extends object>(prefix: string[], source: T, c
                         name;
                         //arrange
                         const compiler = new FormatStringCompiler({ transformers });
-                        const formatter = new DefaultFormatter(new Intl.Locale('en-GB'), compiler);
+                        const formatter = new Formatter(new Intl.Locale('en-GB'), [], compiler);
                         const formattable = factory(...scenario.input);
                         const check = typeof scenario.expected === 'string' ? () => scenario.expected : scenario.expected;
 
@@ -44,7 +44,7 @@ function runFormatTreeTestsCore<T extends object>(prefix: string[], source: T, c
                 it('should display correctly', () => {
                     //arrange
                     const compiler = new FormatStringCompiler({ transformers });
-                    const formatter = new DefaultFormatter(new Intl.Locale('en-GB'), compiler);
+                    const formatter = new Formatter(new Intl.Locale('en-GB'), [], compiler);
                     const check = typeof c === 'string' ? () => c : c;
 
                     // act

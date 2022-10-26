@@ -10,7 +10,7 @@ import moment from 'moment-timezone';
 
 import { BaseClient } from './BaseClient';
 import { Emote } from './Emote';
-import { DefaultFormatter } from './formatting';
+import { Formatter } from './formatting';
 import { metrics } from './Metrics';
 import templates from './text';
 import { guard, humanize, parse, snowflake } from './utils';
@@ -44,7 +44,7 @@ export class BaseUtilities {
 
     public getFormatter(target?: Channel | Guild | string): Promise<IFormatter> {
         target;
-        return Promise.resolve(new DefaultFormatter(new Intl.Locale('en-GB'), this.client.formatCompiler));
+        return Promise.resolve(new Formatter(new Intl.Locale('en-GB'), [], this.client.formatCompiler));
     }
 
     public websiteLink(path?: string): string {
