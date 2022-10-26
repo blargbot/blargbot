@@ -1,4 +1,4 @@
-import { IFormattable } from '@blargbot/domain/messages/types';
+import { IFormattable } from '@blargbot/formatting';
 import { mapping } from '@blargbot/mapping';
 
 import { BBTagContext } from '../../BBTagContext';

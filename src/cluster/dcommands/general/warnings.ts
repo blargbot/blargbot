@@ -1,7 +1,7 @@
 import { GuildCommand } from '@blargbot/cluster/command';
 import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType } from '@blargbot/cluster/utils';
-import { IFormattable } from '@blargbot/domain/messages/types';
+import { IFormattable } from '@blargbot/formatting';
 import { Member } from 'eris';
 
 import templates from '../../text';

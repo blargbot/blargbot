@@ -6,8 +6,8 @@ import { metrics } from '@blargbot/core/Metrics';
 import { ModuleLoader } from '@blargbot/core/modules';
 import { Timer } from '@blargbot/core/Timer';
 import { NextMiddleware } from '@blargbot/core/types';
-import { IFormattable } from '@blargbot/domain/messages/types';
 import { CommandPermissions, FlagDefinition } from '@blargbot/domain/models';
+import { IFormattable } from '@blargbot/formatting';
 import { Guild, KnownTextableChannel, User } from 'eris';
 
 import { CommandManager } from './CommandManager';

@@ -2,8 +2,8 @@ import { Cluster } from '@blargbot/cluster';
 import { PollResponse } from '@blargbot/cluster/types';
 import { Emote } from '@blargbot/core/Emote';
 import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent';
-import { literal } from '@blargbot/domain/messages/types';
 import { PollEventOptions } from '@blargbot/domain/models';
+import { util } from '@blargbot/formatting';
 import { AllowedMentions, KnownGuildTextableChannel, User } from 'eris';
 import moment, { Duration } from 'moment-timezone';
 
@@ -57,15 +57,15 @@ export class PollManager {
         }
 
         const poll = await this.#cluster.util.send(channel, new FormattableMessageContent({
-            content: literal(content),
+            content: util.literal(content),
             allowedMentions,
             embeds: [
                 {
                     author: {
                         icon_url: this.#cluster.util.embedifyAuthor(author).icon_url,
-                        name: literal(title)
+                        name: util.literal(title)
                     },
-                    description: literal(description),
+                    description: util.literal(description),
                     footer: { text: templates.poll.embed.footer.text },
                     timestamp: endTime.toDate(),
                     color: colour
@@ -128,7 +128,7 @@ export class PollManager {
                 {
                     author: {
                         ...author,
-                        name: literal(author.name)
+                        name: util.literal(author.name)
                     },
                     description: bestCount === 0 ? templates.poll.success.noVotes
                         : winners.length > 1 ? templates.poll.success.tie({ total: voteCount, count: bestCount, winners })

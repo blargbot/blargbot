@@ -1,7 +1,7 @@
 import { Command } from '@blargbot/cluster/command/index';
 import templates from '@blargbot/cluster/text';
 import { CommandType } from '@blargbot/cluster/utils/index';
-import { literal } from '@blargbot/domain/messages/types';
+import { util } from '@blargbot/formatting';
 import { quickMock } from '@blargbot/test-util/quickMock';
 import { runFormatTreeTests } from '@blargbot/test-util/runFormatTreeTests';
 import { expect } from 'chai';
@@ -62,7 +62,7 @@ describe('Cluster format strings', () => {
                     paged: [
                         {
                             name: 'with content',
-                            input: [{ content: literal('some content'), page: 123, pageCount: 456 }],
+                            input: [{ content: util.literal('some content'), page: 123, pageCount: 456 }],
                             expected: 'some content\nPage 123/456'
                         },
                         {
@@ -233,7 +233,7 @@ describe('Cluster format strings', () => {
                         description: [
                             {
                                 name: 'with parent',
-                                input: [{ channel: quickMock(channel, { id: 'channelId' }), parent: { label: literal('parent label'), emoji: '🤔' } }],
+                                input: [{ channel: quickMock(channel, { id: 'channelId' }), parent: { label: util.literal('parent label'), emoji: '🤔' } }],
                                 expected: 'Id: channelId🤔 parent label'
                             },
                             {
@@ -248,12 +248,12 @@ describe('Cluster format strings', () => {
                     prompt: [
                         {
                             name: 'with header',
-                            input: [{ header: literal('header text'), page: 123, pageCount: 456, content: literal('some content') }],
+                            input: [{ header: util.literal('header text'), page: 123, pageCount: 456, content: util.literal('some content') }],
                             expected: 'header text\nPage **#123/456**\nsome content\nType a number between **1 and 456** to view that page.'
                         },
                         {
                             name: 'without header',
-                            input: [{ page: 123, pageCount: 456, content: literal('some content') }],
+                            input: [{ page: 123, pageCount: 456, content: util.literal('some content') }],
                             expected: 'Page **#123/456**\nsome content\nType a number between **1 and 456** to view that page.'
                         }
                     ]
@@ -405,7 +405,7 @@ describe('Cluster format strings', () => {
                         value: [
                             {
                                 name: 'default',
-                                input: [{ reason: literal('My cool reason') }],
+                                input: [{ reason: util.literal('My cool reason') }],
                                 expected: 'My cool reason'
                             }
                         ]
@@ -696,7 +696,7 @@ describe('Cluster format strings', () => {
                 },
                 {
                     name: 'with reason',
-                    input: [{ moderator: quickMock(user, { username: 'moderatorUsername', discriminator: 'moderatorDiscrim' }), reason: literal('My cool reason') }],
+                    input: [{ moderator: quickMock(user, { username: 'moderatorUsername', discriminator: 'moderatorDiscrim' }), reason: util.literal('My cool reason') }],
                     expected: '[moderatorUsername#moderatorDiscrim] My cool reason'
                 }
             ]
@@ -736,7 +736,7 @@ describe('Cluster format strings', () => {
                 flat: [
                     {
                         name: 'default',
-                        input: [{ parent: literal('parent documentation'), child: literal('child documentation') }],
+                        input: [{ parent: util.literal('parent documentation'), child: util.literal('child documentation') }],
                         expected: 'parent documentation - child documentation'
                     }
                 ]
@@ -747,7 +747,7 @@ describe('Cluster format strings', () => {
                 parent: [
                     {
                         name: 'default',
-                        input: [{ parent: literal('parent documentation') }],
+                        input: [{ parent: util.literal('parent documentation') }],
                         expected: 'Back to parent documentation'
                     }
                 ],
@@ -755,7 +755,7 @@ describe('Cluster format strings', () => {
                     placeholder: [
                         {
                             name: 'default',
-                            input: [{ text: literal('some text'), page: 123, pageCount: 456 }],
+                            input: [{ text: util.literal('some text'), page: 123, pageCount: 456 }],
                             expected: 'some text - Page 123/456'
                         }
                     ]
@@ -787,7 +787,7 @@ describe('Cluster format strings', () => {
                     excess: [
                         {
                             name: 'default',
-                            input: [{ items: [literal('cmd1'), literal('cmd2'), literal('cmd3')], excess: 123 }],
+                            input: [{ items: [util.literal('cmd1'), util.literal('cmd2'), util.literal('cmd3')], excess: 123 }],
                             expected: '```\ncmd1, cmd2, cmd3\n```+ 123 more'
                         }
                     ],
@@ -806,7 +806,7 @@ describe('Cluster format strings', () => {
                     default: [
                         {
                             name: 'default',
-                            input: [{ items: [literal('cmd1'), literal('cmd2'), literal('cmd3')] }],
+                            input: [{ items: [util.literal('cmd1'), util.literal('cmd2'), util.literal('cmd3')] }],
                             expected: '```\ncmd1, cmd2, cmd3\n```'
                         }
                     ]
@@ -816,7 +816,7 @@ describe('Cluster format strings', () => {
                     displayName: [
                         {
                             name: 'default',
-                            input: [{ category: literal('Cool') }],
+                            input: [{ category: util.literal('Cool') }],
                             expected: 'Cool commands'
                         }
                     ],
@@ -829,7 +829,7 @@ describe('Cluster format strings', () => {
                     noPerms: [
                         {
                             name: 'with description',
-                            input: [{ name: 'myCommand', description: literal('Because I said so') }],
+                            input: [{ name: 'myCommand', description: util.literal('Because I said so') }],
                             expected: '```\n❌ You cannot use b!myCommand\n```Because I said so'
                         },
                         {
@@ -856,7 +856,7 @@ describe('Cluster format strings', () => {
                                 input: [{
                                     flags: [
                                         { flag: '1', word: 'flag1', description: 'Hmmmmm' },
-                                        { flag: '2', word: 'flag2', description: literal('AAAAAAA') }
+                                        { flag: '2', word: 'flag2', description: util.literal('AAAAAAA') }
                                     ]
                                 }],
                                 expected: '`-1`/`--flag1`: Hmmmmm\n`-2`/`--flag2`: AAAAAAA'
@@ -876,11 +876,11 @@ describe('Cluster format strings', () => {
                                 name: 'with notes',
                                 input: [{
                                     notes: [
-                                        literal('note 1'),
-                                        literal('note 2'),
-                                        literal('note 3')
+                                        util.literal('note 1'),
+                                        util.literal('note 2'),
+                                        util.literal('note 3')
                                     ],
-                                    description: literal('This is a description')
+                                    description: util.literal('This is a description')
                                 }],
                                 expected: '> note 1\n> note 2\n> note 3\n\nThis is a description'
                             },
@@ -888,7 +888,7 @@ describe('Cluster format strings', () => {
                                 name: 'no notes',
                                 input: [{
                                     notes: [],
-                                    description: literal('This is a description')
+                                    description: util.literal('This is a description')
                                 }],
                                 expected: 'This is a description'
                             }
@@ -1301,9 +1301,9 @@ describe('Cluster format strings', () => {
                             name: 'default',
                             input: [{
                                 categories: [
-                                    { name: literal('Category 1'), description: literal('Cool commands') },
-                                    { name: literal('Category 2'), description: literal('Awesome commands') },
-                                    { name: literal('Category 3'), description: literal('Amazing commands') }
+                                    { name: util.literal('Category 1'), description: util.literal('Cool commands') },
+                                    { name: util.literal('Category 2'), description: util.literal('Awesome commands') },
+                                    { name: util.literal('Category 3'), description: util.literal('Amazing commands') }
                                 ]
                             }],
                             expected: 'Subtags are the building blocks of BBTag, and fall into 3 categories:\n\n**Category 1** - Cool commands\n**Category 2** - Awesome commands\n**Category 3** - Amazing commands'
@@ -1348,7 +1348,7 @@ describe('Cluster format strings', () => {
                         template: [
                             {
                                 name: 'default',
-                                input: [{ parts: [literal('line 1'), literal('line 2'), literal('line 3')] }],
+                                input: [{ parts: [util.literal('line 1'), util.literal('line 2'), util.literal('line 3')] }],
                                 expected: 'line 1\nline 2\nline 3'
                             }
                         ]
@@ -1408,7 +1408,7 @@ describe('Cluster format strings', () => {
                                     template: [
                                         {
                                             name: 'default',
-                                            input: [{ parts: [literal('line 1'), literal('line 2'), literal('line 3')] }],
+                                            input: [{ parts: [util.literal('line 1'), util.literal('line 2'), util.literal('line 3')] }],
                                             expected: 'line 1\nline 2\nline 3'
                                         }
                                     ]
@@ -1419,7 +1419,7 @@ describe('Cluster format strings', () => {
                                 value: [
                                     {
                                         name: 'default',
-                                        input: [{ code: literal('Look at my programming skills') }],
+                                        input: [{ code: util.literal('Look at my programming skills') }],
                                         expected: '```\nLook at my programming skills\n```'
                                     }
                                 ]
@@ -1429,12 +1429,12 @@ describe('Cluster format strings', () => {
                                 value: [
                                     {
                                         name: 'given',
-                                        input: [{ text: literal('This is my user input\nand is spread across\nmultiple lines') }],
+                                        input: [{ text: util.literal('This is my user input\nand is spread across\nmultiple lines') }],
                                         expected: '\n> This is my user input\n> and is spread across\n> multiple lines\n'
                                     },
                                     {
                                         name: 'empty',
-                                        input: [{ text: literal('') }],
+                                        input: [{ text: util.literal('') }],
                                         expected: '_no input_\n'
                                     }
                                 ]
@@ -1444,12 +1444,12 @@ describe('Cluster format strings', () => {
                                 value: [
                                     {
                                         name: 'given',
-                                        input: [{ text: literal('This is the tag output\nand is spread across\nmultiple lines') }],
+                                        input: [{ text: util.literal('This is the tag output\nand is spread across\nmultiple lines') }],
                                         expected: '\n> This is the tag output\n> and is spread across\n> multiple lines\n'
                                     },
                                     {
                                         name: 'empty',
-                                        input: [{ text: literal('') }],
+                                        input: [{ text: util.literal('') }],
                                         expected: '_no output_\n'
                                     }
                                 ]
@@ -1464,7 +1464,7 @@ describe('Cluster format strings', () => {
                                 value: [
                                     {
                                         name: 'default',
-                                        input: [{ rules: [literal('rule 1'), literal('rule 2'), literal('rule 3')] }],
+                                        input: [{ rules: [util.literal('rule 1'), util.literal('rule 2'), util.literal('rule 3')] }],
                                         expected: '```\nrule 1\nrule 2\nrule 3\n```'
                                     }
                                 ]
@@ -1476,7 +1476,7 @@ describe('Cluster format strings', () => {
                     description: [
                         {
                             name: 'default',
-                            input: [{ description: literal('Some cool description'), subtags: ['subtag1', 'subtag2', 'subtag3'] }],
+                            input: [{ description: util.literal('Some cool description'), subtags: ['subtag1', 'subtag2', 'subtag3'] }],
                             expected: 'Some cool description\n\n```\nsubtag1, subtag2, subtag3\n```'
                         }
                     ],
@@ -1497,7 +1497,7 @@ describe('Cluster format strings', () => {
                             name: [
                                 {
                                     name: 'default',
-                                    input: [{ name: literal('cool'), prefix: '!!' }],
+                                    input: [{ name: util.literal('cool'), prefix: '!!' }],
                                     expected: 'cool variables (prefix: !!)'
                                 }
                             ]
@@ -1831,12 +1831,12 @@ describe('Cluster format strings', () => {
                 permMissing: [
                     {
                         name: 'single',
-                        input: [{ permissions: [literal('perm 1')] }],
+                        input: [{ permissions: [util.literal('perm 1')] }],
                         expected: '❌ You need the following permission to use this command:\nperm 1'
                     },
                     {
                         name: 'multiple',
-                        input: [{ permissions: [literal('perm 1'), literal('perm 2'), literal('perm 3')] }],
+                        input: [{ permissions: [util.literal('perm 1'), util.literal('perm 2'), util.literal('perm 3')] }],
                         expected: '❌ You need any of the following permissions to use this command:\nperm 1\nperm 2\nperm 3'
                     }
                 ]
@@ -2365,21 +2365,21 @@ describe('Cluster format strings', () => {
                     invalidBBTag: [
                         {
                             name: 'default',
-                            input: [{ errors: [literal('error 1'), literal('error 2'), literal('error 3')] }],
+                            input: [{ errors: [util.literal('error 1'), util.literal('error 2'), util.literal('error 3')] }],
                             expected: '❌ There were errors with the bbtag you provided!\nerror 1\nerror 2\nerror 3'
                         }
                     ],
                     bbtagError: [
                         {
                             name: 'default',
-                            input: [{ location: { line: 123, column: 456, index: 789 }, message: literal('Ya dummy!') }],
+                            input: [{ location: { line: 123, column: 456, index: 789 }, message: util.literal('Ya dummy!') }],
                             expected: '❌ [123,456]: Ya dummy!'
                         }
                     ],
                     bbtagWarning: [
                         {
                             name: 'default',
-                            input: [{ location: { line: 123, column: 456, index: 789 }, message: literal('Ya dummy!') }],
+                            input: [{ location: { line: 123, column: 456, index: 789 }, message: util.literal('Ya dummy!') }],
                             expected: '⚠️ [123,456]: Ya dummy!'
                         }
                     ],
@@ -2453,7 +2453,7 @@ describe('Cluster format strings', () => {
                     success: [
                         {
                             name: 'default',
-                            input: [{ name: 'myCommand', errors: [literal('error 1'), literal('error 2'), literal('error 3')] }],
+                            input: [{ name: 'myCommand', errors: [util.literal('error 1'), util.literal('error 2'), util.literal('error 3')] }],
                             expected: '✅ Custom command `myCommand` created.\nerror 1\nerror 2\nerror 3'
                         }
                     ]
@@ -2463,7 +2463,7 @@ describe('Cluster format strings', () => {
                     success: [
                         {
                             name: 'default',
-                            input: [{ name: 'myCommand', errors: [literal('error 1'), literal('error 2'), literal('error 3')] }],
+                            input: [{ name: 'myCommand', errors: [util.literal('error 1'), util.literal('error 2'), util.literal('error 3')] }],
                             expected: '✅ Custom command `myCommand` edited.\nerror 1\nerror 2\nerror 3'
                         }
                     ]
@@ -2473,7 +2473,7 @@ describe('Cluster format strings', () => {
                     success: [
                         {
                             name: 'default',
-                            input: [{ name: 'myCommand', errors: [literal('error 1'), literal('error 2'), literal('error 3')] }],
+                            input: [{ name: 'myCommand', errors: [util.literal('error 1'), util.literal('error 2'), util.literal('error 3')] }],
                             expected: '✅ Custom command `myCommand` set.\nerror 1\nerror 2\nerror 3'
                         }
                     ]
@@ -2683,7 +2683,7 @@ describe('Cluster format strings', () => {
                         prompt: [
                             {
                                 name: 'default',
-                                input: [{ steps: [literal('step 1'), literal('step 2'), literal('step 3')] }],
+                                input: [{ steps: [util.literal('step 1'), util.literal('step 2'), util.literal('step 3')] }],
                                 expected: 'Salutations! You have discovered the super handy ShrinkWrapper9000!\n\nIf you decide to proceed, this will:\nstep 1\nstep 2\nstep 3\nThis will not:\n - Export variables\n - Export authors or authorizers\n - Export dependencies'
                             }
                         ],
@@ -2710,12 +2710,12 @@ describe('Cluster format strings', () => {
                         prompt: [
                             {
                                 name: 'with warning',
-                                input: [{ warning: literal('My cool warning'), steps: [literal('step 1'), literal('step 2'), literal('step 3')] }],
+                                input: [{ warning: util.literal('My cool warning'), steps: [util.literal('step 1'), util.literal('step 2'), util.literal('step 3')] }],
                                 expected: 'My cool warning\n\nSalutations! You have discovered the super handy CommandInstaller9000!\n\nIf you decide to proceed, this will:\nstep 1\nstep 2\nstep 3\nThis will also:\n - Set you as the author for all imported commands'
                             },
                             {
                                 name: 'no warning',
-                                input: [{ steps: [literal('step 1'), literal('step 2'), literal('step 3')] }],
+                                input: [{ steps: [util.literal('step 1'), util.literal('step 2'), util.literal('step 3')] }],
                                 expected: 'Salutations! You have discovered the super handy CommandInstaller9000!\n\nIf you decide to proceed, this will:\nstep 1\nstep 2\nstep 3\nThis will also:\n - Set you as the author for all imported commands'
                             }
                         ],
@@ -2972,7 +2972,7 @@ describe('Cluster format strings', () => {
                             value: [
                                 {
                                     name: 'default',
-                                    input: [{ censors: [literal('censor 1'), literal('censor 2'), literal('censor 3')] }],
+                                    input: [{ censors: [util.literal('censor 1'), util.literal('censor 2'), util.literal('censor 3')] }],
                                     expected: 'censor 1\ncensor 2\ncensor 3'
                                 }
                             ],
@@ -3167,22 +3167,22 @@ describe('Cluster format strings', () => {
                                     name: 'default',
                                     input: [{
                                         commands: [
-                                            { name: literal('name 1'), roles: literal('role 1'), permissions: literal('perm 1'), disabled: literal('disabled 1'), hidden: literal('hidden 1') },
-                                            { name: literal('name 2'), roles: literal('role 2'), permissions: literal('perm 2'), disabled: literal('disabled 2') },
-                                            { name: literal('name 3'), roles: literal('role 3'), permissions: literal('perm 3'), hidden: literal('hidden 3') },
-                                            { name: literal('name 4'), roles: literal('role 4'), disabled: literal('disabled 4'), hidden: literal('hidden 4') },
-                                            { name: literal('name 5'), permissions: literal('perm 5'), disabled: literal('disabled 5'), hidden: literal('hidden 5') },
-                                            { name: literal('name 6'), roles: literal('role 6'), permissions: literal('perm 6') },
-                                            { name: literal('name 7'), roles: literal('role 7'), disabled: literal('disabled 7') },
-                                            { name: literal('name 8'), permissions: literal('perm 8'), disabled: literal('disabled 8') },
-                                            { name: literal('name 9'), roles: literal('role 9'), hidden: literal('hidden 9') },
-                                            { name: literal('name 10'), permissions: literal('perm 10'), hidden: literal('hidden 10') },
-                                            { name: literal('name 11'), disabled: literal('disabled 11'), hidden: literal('hidden 11') },
-                                            { name: literal('name 12'), roles: literal('role 12') },
-                                            { name: literal('name 13'), permissions: literal('perm 13') },
-                                            { name: literal('name 14'), disabled: literal('disabled 14') },
-                                            { name: literal('name 15'), hidden: literal('hidden 15') },
-                                            { name: literal('name 16') }
+                                            { name: util.literal('name 1'), roles: util.literal('role 1'), permissions: util.literal('perm 1'), disabled: util.literal('disabled 1'), hidden: util.literal('hidden 1') },
+                                            { name: util.literal('name 2'), roles: util.literal('role 2'), permissions: util.literal('perm 2'), disabled: util.literal('disabled 2') },
+                                            { name: util.literal('name 3'), roles: util.literal('role 3'), permissions: util.literal('perm 3'), hidden: util.literal('hidden 3') },
+                                            { name: util.literal('name 4'), roles: util.literal('role 4'), disabled: util.literal('disabled 4'), hidden: util.literal('hidden 4') },
+                                            { name: util.literal('name 5'), permissions: util.literal('perm 5'), disabled: util.literal('disabled 5'), hidden: util.literal('hidden 5') },
+                                            { name: util.literal('name 6'), roles: util.literal('role 6'), permissions: util.literal('perm 6') },
+                                            { name: util.literal('name 7'), roles: util.literal('role 7'), disabled: util.literal('disabled 7') },
+                                            { name: util.literal('name 8'), permissions: util.literal('perm 8'), disabled: util.literal('disabled 8') },
+                                            { name: util.literal('name 9'), roles: util.literal('role 9'), hidden: util.literal('hidden 9') },
+                                            { name: util.literal('name 10'), permissions: util.literal('perm 10'), hidden: util.literal('hidden 10') },
+                                            { name: util.literal('name 11'), disabled: util.literal('disabled 11'), hidden: util.literal('hidden 11') },
+                                            { name: util.literal('name 12'), roles: util.literal('role 12') },
+                                            { name: util.literal('name 13'), permissions: util.literal('perm 13') },
+                                            { name: util.literal('name 14'), disabled: util.literal('disabled 14') },
+                                            { name: util.literal('name 15'), hidden: util.literal('hidden 15') },
+                                            { name: util.literal('name 16') }
                                         ]
                                     }],
                                     expected: 'name 1role 1perm 1disabled 1hidden 1\nname 2role 2perm 2disabled 2\nname 3role 3perm 3hidden 3\nname 4role 4disabled 4hidden 4\nname 5perm 5disabled 5hidden 5\nname 6role 6perm 6\nname 7role 7disabled 7\nname 8perm 8disabled 8\nname 9role 9hidden 9\nname 10perm 10hidden 10\nname 11disabled 11hidden 11\nname 12role 12\nname 13perm 13\nname 14disabled 14\nname 15hidden 15\nname 16'
@@ -3534,7 +3534,7 @@ describe('Cluster format strings', () => {
                                         },
                                         {
                                             name: 'some',
-                                            input: [{ entries: [literal('event 1'), literal('event 2'), literal('event 3')] }],
+                                            input: [{ entries: [util.literal('event 1'), util.literal('event 2'), util.literal('event 3')] }],
                                             expected: 'event 1\nevent 2\nevent 3'
                                         }
                                     ]
@@ -3550,9 +3550,9 @@ describe('Cluster format strings', () => {
                                 name: 'default',
                                 input: [{
                                     events: [
-                                        { key: 'event 1', desc: literal('event 1 description') },
-                                        { key: 'event 2', desc: literal('event 2 description') },
-                                        { key: 'event 3', desc: literal('event 3 description') }
+                                        { key: 'event 1', desc: util.literal('event 1 description') },
+                                        { key: 'event 2', desc: util.literal('event 2 description') },
+                                        { key: 'event 3', desc: util.literal('event 3 description') }
                                     ]
                                 }],
                                 expected: 'Sets the channel to log the given events to. Available events are:\n`event 1` - event 1 description\n`event 2` - event 2 description\n`event 3` - event 3 description'
@@ -3590,9 +3590,9 @@ describe('Cluster format strings', () => {
                                 name: 'default',
                                 input: [{
                                     events: [
-                                        { key: 'event 1', desc: literal('event 1 description') },
-                                        { key: 'event 2', desc: literal('event 2 description') },
-                                        { key: 'event 3', desc: literal('event 3 description') }
+                                        { key: 'event 1', desc: util.literal('event 1 description') },
+                                        { key: 'event 2', desc: util.literal('event 2 description') },
+                                        { key: 'event 3', desc: util.literal('event 3 description') }
                                     ]
                                 }],
                                 expected: 'Disables logging of the given events. Available events are:\n`event 1` - event 1 description\n`event 2` - event 2 description\n`event 3` - event 3 description'
@@ -3773,12 +3773,12 @@ describe('Cluster format strings', () => {
                     success: [
                         {
                             name: 'single',
-                            input: [{ count: 1, errors: [literal('error 1'), literal('error 2'), literal('error 3')] }],
+                            input: [{ count: 1, errors: [util.literal('error 1'), util.literal('error 2'), util.literal('error 3')] }],
                             expected: '✅ I successfully deleted 1 modlog from my database.\nerror 1\nerror 2\nerror 3'
                         },
                         {
                             name: 'multiple',
-                            input: [{ count: 123, errors: [literal('error 1'), literal('error 2'), literal('error 3')] }],
+                            input: [{ count: 123, errors: [util.literal('error 1'), util.literal('error 2'), util.literal('error 3')] }],
                             expected: '✅ I successfully deleted 123 modlogs from my database.\nerror 1\nerror 2\nerror 3'
                         },
                         {
@@ -4168,9 +4168,9 @@ describe('Cluster format strings', () => {
                                     name: 'default',
                                     input: [{
                                         groups: [
-                                            { name: literal('group 1'), entries: [literal('group 1 entry 1'), literal('group 1 entry 2'), literal('group 1 entry 3')] },
-                                            { name: literal('group 2'), entries: [literal('group 2 entry 1'), literal('group 2 entry 2'), literal('group 2 entry 3')] },
-                                            { name: literal('group 3'), entries: [literal('group 3 entry 1'), literal('group 3 entry 2'), literal('group 3 entry 3')] }
+                                            { name: util.literal('group 1'), entries: [util.literal('group 1 entry 1'), util.literal('group 1 entry 2'), util.literal('group 1 entry 3')] },
+                                            { name: util.literal('group 2'), entries: [util.literal('group 2 entry 1'), util.literal('group 2 entry 2'), util.literal('group 2 entry 3')] },
+                                            { name: util.literal('group 3'), entries: [util.literal('group 3 entry 1'), util.literal('group 3 entry 2'), util.literal('group 3 entry 3')] }
                                         ]
                                     }],
                                     expected: 'group 1\ngroup 1 entry 1\ngroup 1 entry 2\ngroup 1 entry 3\n\ngroup 2\ngroup 2 entry 1\ngroup 2 entry 2\ngroup 2 entry 3\n\ngroup 3\ngroup 3 entry 1\ngroup 3 entry 2\ngroup 3 entry 3'
@@ -4266,9 +4266,9 @@ describe('Cluster format strings', () => {
                             name: 'default',
                             input: [{
                                 settings: [
-                                    { name: literal('setting 1'), key: 'setting1', type: literal('type 1') },
-                                    { name: literal('setting 2'), key: 'setting2', type: literal('type 2') },
-                                    { name: literal('setting 3'), key: 'setting3', type: literal('type 3') }
+                                    { name: util.literal('setting 1'), key: 'setting1', type: util.literal('type 1') },
+                                    { name: util.literal('setting 2'), key: 'setting2', type: util.literal('type 2') },
+                                    { name: util.literal('setting 3'), key: 'setting3', type: util.literal('type 3') }
                                 ]
                             }],
                             expected: 'ℹ️ You can use `settings set <key> [value]` to set the following settings. All settings are case insensitive.\n - **setting 1:** `SETTING1` (type 1)\n - **setting 2:** `SETTING2` (type 2)\n - **setting 3:** `SETTING3` (type 3)'
@@ -4281,7 +4281,7 @@ describe('Cluster format strings', () => {
                     valueInvalid: [
                         {
                             name: 'default',
-                            input: [{ value: 'invalid value', type: literal('type 1') }],
+                            input: [{ value: 'invalid value', type: util.literal('type 1') }],
                             expected: '❌ `invalid value` is not a type 1'
                         }
                     ],
@@ -4581,12 +4581,12 @@ describe('Cluster format strings', () => {
                     success: [
                         {
                             name: 'with paging',
-                            input: [{ table: literal('some cool table'), paging: literal('page 1/2') }],
+                            input: [{ table: util.literal('some cool table'), paging: util.literal('page 1/2') }],
                             expected: 'ℹ️ Here are the currently active timers:```prolog\nsome cool table\n```page 1/2'
                         },
                         {
                             name: 'without paging',
-                            input: [{ table: literal('some cool table') }],
+                            input: [{ table: util.literal('some cool table') }],
                             expected: 'ℹ️ Here are the currently active timers:```prolog\nsome cool table\n```'
                         }
                     ],
@@ -4841,48 +4841,48 @@ describe('Cluster format strings', () => {
                         memberTooHigh: [
                             {
                                 name: 'single',
-                                input: [{ user: quickMock(user, { mention: '<@userId>' }), count: 1, action: literal('smile') }],
+                                input: [{ user: quickMock(user, { mention: '<@userId>' }), count: 1, action: util.literal('smile') }],
                                 expected: '⚠️ **<@userId>** has been given 1 warning.\n⛔ They went over the limit for smiles but they are above me so I couldn\'t smile them.'
                             },
                             {
                                 name: 'multiple',
-                                input: [{ user: quickMock(user, { mention: '<@userId>' }), count: 123, action: literal('smile') }],
+                                input: [{ user: quickMock(user, { mention: '<@userId>' }), count: 123, action: util.literal('smile') }],
                                 expected: '⚠️ **<@userId>** has been given 123 warnings.\n⛔ They went over the limit for smiles but they are above me so I couldn\'t smile them.'
                             }
                         ],
                         moderatorTooLow: [
                             {
                                 name: 'single',
-                                input: [{ user: quickMock(user, { mention: '<@userId>' }), count: 1, action: literal('smile') }],
+                                input: [{ user: quickMock(user, { mention: '<@userId>' }), count: 1, action: util.literal('smile') }],
                                 expected: '⚠️ **<@userId>** has been given 1 warning.\n⛔ They went over the limit for smiles but they are above you so I didn\'t smile them.'
                             },
                             {
                                 name: 'multiple',
-                                input: [{ user: quickMock(user, { mention: '<@userId>' }), count: 123, action: literal('smile') }],
+                                input: [{ user: quickMock(user, { mention: '<@userId>' }), count: 123, action: util.literal('smile') }],
                                 expected: '⚠️ **<@userId>** has been given 123 warnings.\n⛔ They went over the limit for smiles but they are above you so I didn\'t smile them.'
                             }
                         ],
                         noPerms: [
                             {
                                 name: 'single',
-                                input: [{ user: quickMock(user, { mention: '<@userId>' }), count: 1, action: literal('smile') }],
+                                input: [{ user: quickMock(user, { mention: '<@userId>' }), count: 1, action: util.literal('smile') }],
                                 expected: '⚠️ **<@userId>** has been given 1 warning.\n⛔ They went over the limit for smiles but I don\'t have permission to smile them.'
                             },
                             {
                                 name: 'multiple',
-                                input: [{ user: quickMock(user, { mention: '<@userId>' }), count: 123, action: literal('smile') }],
+                                input: [{ user: quickMock(user, { mention: '<@userId>' }), count: 123, action: util.literal('smile') }],
                                 expected: '⚠️ **<@userId>** has been given 123 warnings.\n⛔ They went over the limit for smiles but I don\'t have permission to smile them.'
                             }
                         ],
                         moderatorNoPerms: [
                             {
                                 name: 'single',
-                                input: [{ user: quickMock(user, { mention: '<@userId>' }), count: 1, action: literal('smile') }],
+                                input: [{ user: quickMock(user, { mention: '<@userId>' }), count: 1, action: util.literal('smile') }],
                                 expected: '⚠️ **<@userId>** has been given 1 warning.\n⛔ They went over the limit for smiles but you don\'t have permission to smile them.'
                             },
                             {
                                 name: 'multiple',
-                                input: [{ user: quickMock(user, { mention: '<@userId>' }), count: 123, action: literal('smile') }],
+                                input: [{ user: quickMock(user, { mention: '<@userId>' }), count: 123, action: util.literal('smile') }],
                                 expected: '⚠️ **<@userId>** has been given 123 warnings.\n⛔ They went over the limit for smiles but you don\'t have permission to smile them.'
                             }
                         ],
@@ -5312,17 +5312,17 @@ describe('Cluster format strings', () => {
                                 default: [
                                     {
                                         name: 'all parts',
-                                        input: [{ pronunciation: literal('Woah, thats how its pronounced?\n'), synonyms: literal('Woah, this word has synonyms!\n'), definition: 'This is a definition I guess' }],
+                                        input: [{ pronunciation: util.literal('Woah, thats how its pronounced?\n'), synonyms: util.literal('Woah, this word has synonyms!\n'), definition: 'This is a definition I guess' }],
                                         expected: 'Woah, thats how its pronounced?\nWoah, this word has synonyms!\nThis is a definition I guess'
                                     },
                                     {
                                         name: 'no synonyms',
-                                        input: [{ pronunciation: literal('Woah, thats how its pronounced?\n'), definition: 'This is a definition I guess' }],
+                                        input: [{ pronunciation: util.literal('Woah, thats how its pronounced?\n'), definition: 'This is a definition I guess' }],
                                         expected: 'Woah, thats how its pronounced?\nThis is a definition I guess'
                                     },
                                     {
                                         name: 'no pronunciation',
-                                        input: [{ synonyms: literal('Woah, this word has synonyms!\n'), definition: 'This is a definition I guess' }],
+                                        input: [{ synonyms: util.literal('Woah, this word has synonyms!\n'), definition: 'This is a definition I guess' }],
                                         expected: 'Woah, this word has synonyms!\nThis is a definition I guess'
                                     },
                                     {
@@ -5447,7 +5447,7 @@ describe('Cluster format strings', () => {
                     success: [
                         {
                             name: 'default',
-                            input: [{ type: literal('Feedback'), caseId: 123, link: 'https://blargbot.xyz/feedback/123' }],
+                            input: [{ type: util.literal('Feedback'), caseId: 123, link: 'https://blargbot.xyz/feedback/123' }],
                             expected: '✅ Feedback has been sent with the ID 123! 👌\n\nYou can view your feedback here: <https://blargbot.xyz/feedback/123>'
                         }
                     ],
@@ -5543,7 +5543,7 @@ describe('Cluster format strings', () => {
                                 value: [
                                     {
                                         name: 'default',
-                                        input: [{ patrons: [literal('person 1'), literal('person 2'), literal('person 3')] }],
+                                        input: [{ patrons: [util.literal('person 1'), util.literal('person 2'), util.literal('person 3')] }],
                                         expected: 'person 1\nperson 2\nperson 3'
                                     }
                                 ]
@@ -5553,7 +5553,7 @@ describe('Cluster format strings', () => {
                                 value: [
                                     {
                                         name: 'default',
-                                        input: [{ donators: [literal('person 1'), literal('person 2'), literal('person 3')] }],
+                                        input: [{ donators: [util.literal('person 1'), util.literal('person 2'), util.literal('person 3')] }],
                                         expected: 'person 1\nperson 2\nperson 3'
                                     }
                                 ]
@@ -5565,28 +5565,28 @@ describe('Cluster format strings', () => {
                                         awesome: [
                                             {
                                                 name: 'default',
-                                                input: [{ user: literal('person 1'), reason: literal('existing') }],
+                                                input: [{ user: util.literal('person 1'), reason: util.literal('existing') }],
                                                 expected: 'The awesome person 1 for existing'
                                             }
                                         ],
                                         incredible: [
                                             {
                                                 name: 'default',
-                                                input: [{ user: literal('person 1'), reason: literal('existing') }],
+                                                input: [{ user: util.literal('person 1'), reason: util.literal('existing') }],
                                                 expected: 'The incredible person 1 for existing'
                                             }
                                         ],
                                         amazing: [
                                             {
                                                 name: 'default',
-                                                input: [{ user: literal('person 1'), reason: literal('existing') }],
+                                                input: [{ user: util.literal('person 1'), reason: util.literal('existing') }],
                                                 expected: 'The amazing person 1 for existing'
                                             }
                                         ],
                                         inspirational: [
                                             {
                                                 name: 'default',
-                                                input: [{ user: literal('person 1'), reason: literal('existing') }],
+                                                input: [{ user: util.literal('person 1'), reason: util.literal('existing') }],
                                                 expected: 'The inspirational person 1 for existing'
                                             }
                                         ]
@@ -5599,7 +5599,7 @@ describe('Cluster format strings', () => {
                                     layout: [
                                         {
                                             name: 'default',
-                                            input: [{ details: [literal('line 1'), literal('line 2'), literal('line 3')] }],
+                                            input: [{ details: [util.literal('line 1'), util.literal('line 2'), util.literal('line 3')] }],
                                             expected: 'line 1\nline 2\nline 3'
                                         }
                                     ]
@@ -6099,9 +6099,9 @@ describe('Cluster format strings', () => {
                                     input: [{
                                         details: 'these are some details',
                                         rolls: [1, 2, 3, 4],
-                                        modifier: literal('this is a modifier'),
+                                        modifier: util.literal('this is a modifier'),
                                         total: 123,
-                                        natural: literal(' - Natural aaaaaaa')
+                                        natural: util.literal(' - Natural aaaaaaa')
                                     }],
                                     expected: 'these are some details\n1, 2, 3, 4\nthis is a modifier\n**Total**: 123 - Natural aaaaaaa'
                                 },
@@ -6425,7 +6425,7 @@ describe('Cluster format strings', () => {
                             description: [
                                 {
                                     name: 'default',
-                                    input: [{ level: literal('1'), school: literal('Harvard') }],
+                                    input: [{ level: util.literal('1'), school: util.literal('Harvard') }],
                                     expected: 'Level 1 Harvard'
                                 }
                             ]
@@ -6435,7 +6435,7 @@ describe('Cluster format strings', () => {
                         description: [
                             {
                                 name: 'default',
-                                input: [{ level: literal('1'), school: literal('Harvard'), description: literal('Idk I didnt go') }],
+                                input: [{ level: util.literal('1'), school: util.literal('Harvard'), description: util.literal('Idk I didnt go') }],
                                 expected: '*Level 1 Harvard*\n\nIdk I didnt go'
                             }
                         ],
@@ -6594,21 +6594,21 @@ describe('Cluster format strings', () => {
                     invalidBBTag: [
                         {
                             name: 'default',
-                            input: [{ errors: [literal('error 1'), literal('error 2'), literal('error 3')] }],
+                            input: [{ errors: [util.literal('error 1'), util.literal('error 2'), util.literal('error 3')] }],
                             expected: '❌ There were errors with the bbtag you provided!\nerror 1\nerror 2\nerror 3'
                         }
                     ],
                     bbtagError: [
                         {
                             name: 'default',
-                            input: [{ location: { line: 123, column: 456, index: 789 }, message: literal('Ya dummy!') }],
+                            input: [{ location: { line: 123, column: 456, index: 789 }, message: util.literal('Ya dummy!') }],
                             expected: '❌ [123,456]: Ya dummy!'
                         }
                     ],
                     bbtagWarning: [
                         {
                             name: 'default',
-                            input: [{ location: { line: 123, column: 456, index: 789 }, message: literal('Ya dummy!') }],
+                            input: [{ location: { line: 123, column: 456, index: 789 }, message: util.literal('Ya dummy!') }],
                             expected: '⚠️ [123,456]: Ya dummy!'
                         }
                     ],
@@ -6673,7 +6673,7 @@ describe('Cluster format strings', () => {
                     success: [
                         {
                             name: 'default',
-                            input: [{ name: 'myTag', errors: [literal('error 1'), literal('error 2'), literal('error 3')] }],
+                            input: [{ name: 'myTag', errors: [util.literal('error 1'), util.literal('error 2'), util.literal('error 3')] }],
                             expected: '✅ Tag `myTag` created.\nerror 1\nerror 2\nerror 3'
                         }
                     ]
@@ -6683,7 +6683,7 @@ describe('Cluster format strings', () => {
                     success: [
                         {
                             name: 'default',
-                            input: [{ name: 'myTag', errors: [literal('error 1'), literal('error 2'), literal('error 3')] }],
+                            input: [{ name: 'myTag', errors: [util.literal('error 1'), util.literal('error 2'), util.literal('error 3')] }],
                             expected: '✅ Tag `myTag` edited.\nerror 1\nerror 2\nerror 3'
                         }
                     ]
@@ -6693,7 +6693,7 @@ describe('Cluster format strings', () => {
                     success: [
                         {
                             name: 'default',
-                            input: [{ name: 'myTag', errors: [literal('error 1'), literal('error 2'), literal('error 3')] }],
+                            input: [{ name: 'myTag', errors: [util.literal('error 1'), util.literal('error 2'), util.literal('error 3')] }],
                             expected: '✅ Tag `myTag` set.\nerror 1\nerror 2\nerror 3'
                         }
                     ]
@@ -7614,7 +7614,7 @@ describe('Cluster format strings', () => {
                     success: [
                         {
                             name: 'default',
-                            input: [{ parts: [literal('part 1'), literal('part 2'), literal('part 3')] }],
+                            input: [{ parts: [util.literal('part 1'), util.literal('part 2'), util.literal('part 3')] }],
                             expected: 'part 1\npart 2\npart 3'
                         }
                     ]
@@ -7997,7 +7997,7 @@ describe('Cluster format strings', () => {
                         template: [
                             {
                                 name: 'default',
-                                input: [{ code: 'leet hax', results: [literal('im in'), literal('ive hacked the mainframe'), literal('enhance')] }],
+                                input: [{ code: 'leet hax', results: [util.literal('im in'), util.literal('ive hacked the mainframe'), util.literal('enhance')] }],
                                 expected: 'Global eval input:```js\nleet hax\n```im in\nive hacked the mainframe\nenhance'
                             }
                         ],

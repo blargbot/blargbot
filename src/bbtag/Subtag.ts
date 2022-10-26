@@ -1,6 +1,6 @@
 import { metrics } from '@blargbot/core/Metrics';
 import { Timer } from '@blargbot/core/Timer';
-import { IFormattable } from '@blargbot/domain/messages/types';
+import { IFormattable } from '@blargbot/formatting';
 
 import { BBTagContext } from './BBTagContext';
 import { SubtagCall } from './language';

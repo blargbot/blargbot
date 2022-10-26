@@ -2,8 +2,8 @@ import { GuildCommand } from '@blargbot/cluster/command';
 import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType, ModerationType } from '@blargbot/cluster/utils';
 import { guard } from '@blargbot/core/utils';
-import { IFormattable, literal } from '@blargbot/domain/messages/types';
 import { GuildCensor, GuildTriggerTag } from '@blargbot/domain/models';
+import { IFormattable, util } from '@blargbot/formatting';
 import { KnownChannel, Role, User } from 'eris';
 
 import { RawBBTagCommandResult } from '../../command/RawBBTagCommandResult';
@@ -310,7 +310,7 @@ export class CensorCommand extends GuildCommand {
                     fields: [
                         {
                             name: cmd.info.embed.field.trigger.name[censor.regex ? 'regex' : 'text'],
-                            value: literal(censor.term),
+                            value: util.literal(censor.term),
                             inline: false
                         },
                         {

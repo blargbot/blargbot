@@ -8,6 +8,7 @@
         "@blargbot/core": "workspace:^",
         "@blargbot/database": "workspace:^",
         "@blargbot/domain": "workspace:^",
+        "@blargbot/formatting": "workspace:^",
         "@blargbot/image": "workspace:^",
         "@blargbot/logger": "workspace:^",
         "@blargbot/mapping": "workspace:^",

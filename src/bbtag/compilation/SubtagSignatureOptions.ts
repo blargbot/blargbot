@@ -1,4 +1,4 @@
-import { IFormattable } from '@blargbot/domain/messages/types';
+import { IFormattable } from '@blargbot/formatting';
 
 import { SubtagSignature } from '../types';
 import { SubtagSignatureParameterOptions } from './SubtagSignatureParameterOptions';

@@ -1,7 +1,7 @@
 import { bbtag, limits, Subtag, SubtagSignature, SubtagSignatureValueParameter, SubtagType, tagTypeDetails, tagVariableScopeProviders } from '@blargbot/bbtag';
 import { SendContent } from '@blargbot/core/types';
 import { guard } from '@blargbot/core/utils';
-import { IFormattable } from '@blargbot/domain/messages/types';
+import { IFormattable } from '@blargbot/formatting';
 
 import { Cluster } from '../../Cluster';
 import templates from '../../text';

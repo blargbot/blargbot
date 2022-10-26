@@ -5,6 +5,7 @@
     "dependencies": {
         "@blargbot/core": "workspace:^",
         "@blargbot/domain": "workspace:^",
+        "@blargbot/formatting": "workspace:^",
         "@blargbot/test-util": "workspace:^",
         "chai": "^4.3.6",
         "eris": "^0.17.1",

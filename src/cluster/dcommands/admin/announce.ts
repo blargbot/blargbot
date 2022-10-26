@@ -2,7 +2,7 @@ import { GuildCommand } from '@blargbot/cluster/command';
 import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType, discord } from '@blargbot/cluster/utils';
 import { humanize } from '@blargbot/core/utils';
-import { literal } from '@blargbot/domain/messages/types';
+import { util } from '@blargbot/formatting';
 import { AllowedMentions, Constants, KnownChannel, Role } from 'eris';
 import moment from 'moment-timezone';
 
@@ -62,10 +62,10 @@ export class AnnounceCommand extends GuildCommand {
             : { roles: [config.role.id] };
 
         const announcement = await context.send(config.channel, {
-            content: literal(config.role.mention),
+            content: util.literal(config.role.mention),
             embeds: [
                 {
-                    description: literal(message),
+                    description: util.literal(message),
                     color: colour,
                     author: {
                         name: cmd.default.embed.author.name,
@@ -73,7 +73,7 @@ export class AnnounceCommand extends GuildCommand {
                         url: `https://blargbot.xyz/user/${context.author.id}`
                     },
                     footer: {
-                        text: literal(humanize.fullName(context.author)),
+                        text: util.literal(humanize.fullName(context.author)),
                         icon_url: context.author.avatarURL
                     },
                     timestamp: moment(context.timestamp).toDate()

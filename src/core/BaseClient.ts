@@ -1,10 +1,11 @@
 import { Configuration } from '@blargbot/config';
 import { BaseUtilities } from '@blargbot/core/BaseUtilities';
 import { Database } from '@blargbot/database';
+import * as Formatting from '@blargbot/formatting';
 import { Logger } from '@blargbot/logger';
 import { Client as Discord, ClientOptions as DiscordOptions, OAuthTeamMemberState } from 'eris';
 
-import * as Formatting from './formatting';
+import * as transformers from './formatting';
 import { getRange } from './utils';
 
 export interface BaseClientOptions {
@@ -33,6 +34,7 @@ export class BaseClient {
             middleware: [...options.formatterOptions?.middleware ?? [], new Formatting.CacheMiddleware()],
             transformers: {
                 ...Formatting.transformers,
+                ...transformers,
                 ...options.formatterOptions?.transformers
             }
         });

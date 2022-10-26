@@ -3,8 +3,8 @@ import { CommandContext } from '@blargbot/cluster/command';
 import { CommandGetCoreResult, CommandProperties, ICommand } from '@blargbot/cluster/types';
 import { CommandType, commandTypeDetails, guard } from '@blargbot/cluster/utils';
 import { metrics } from '@blargbot/core/Metrics';
-import { IFormattable, literal } from '@blargbot/domain/messages/types';
 import { CommandPermissions, FlagDefinition, NamedGuildCommandTag, StoredTag } from '@blargbot/domain/models';
+import { IFormattable, util } from '@blargbot/formatting';
 import { Guild, KnownTextableChannel, User } from 'eris';
 
 import templates from '../../text';
@@ -98,7 +98,7 @@ class NormalizedCommandTag implements ICommand<NamedGuildCommandTag> {
         this.name = implementation.name;
         this.aliases = [];
         this.category = commandTypeDetails[CommandType.CUSTOM];
-        this.description = literal(implementation.help) ?? templates.documentation.command.categories.custom.noHelp;
+        this.description = util.literal(implementation.help) ?? templates.documentation.command.categories.custom.noHelp;
         this.flags = tag?.flags ?? ('flags' in implementation ? implementation.flags : []) ?? [];
         this.signatures = [];
         this.disabled = this.implementation.disabled ?? false;

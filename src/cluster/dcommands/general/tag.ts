@@ -4,8 +4,8 @@ import { CommandContext, GuildCommand } from '@blargbot/cluster/command';
 import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType, humanize, parse } from '@blargbot/cluster/utils';
 import { SendContent } from '@blargbot/core/types';
-import { IFormattable, literal } from '@blargbot/domain/messages/types';
 import { StoredTag } from '@blargbot/domain/models';
+import { IFormattable, util } from '@blargbot/formatting';
 import { User } from 'eris';
 import moment, { Duration } from 'moment-timezone';
 import fetch from 'node-fetch';
@@ -762,21 +762,21 @@ export class TagCommand extends GuildCommand {
         await context.send(context.config.discord.channels.taglog, {
             embeds: [
                 {
-                    title: literal(action),
+                    title: util.literal(action),
                     color: tagChangeActionColour[action],
                     fields: Object.entries(details).map(([key, detail]) => ({
-                        name: literal(key),
-                        value: literal(humanize.truncate(detail, 1000, '(too long)')),
+                        name: util.literal(key),
+                        value: util.literal(humanize.truncate(detail, 1000, '(too long)')),
                         inline: true
                     })),
                     author: {
-                        name: literal(humanize.fullName(user)),
+                        name: util.literal(humanize.fullName(user)),
                         icon_url: user.avatarURL,
                         url: `https://discord.com/users/${user.id}`
                     },
                     timestamp: new Date(),
                     footer: {
-                        text: literal(`MsgID: ${messageId}`)
+                        text: util.literal(`MsgID: ${messageId}`)
                     }
                 }
             ],

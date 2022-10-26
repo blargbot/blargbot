@@ -1,4 +1,4 @@
-import { IFormattable } from '@blargbot/domain/messages/types';
+import { IFormattable } from '@blargbot/formatting';
 
 import { BBTagContext } from '../BBTagContext';
 import { SerializedRuntimeLimit } from '../types';

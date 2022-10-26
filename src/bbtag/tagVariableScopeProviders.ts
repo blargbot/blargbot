@@ -1,5 +1,5 @@
-import { IFormattable } from '@blargbot/domain/messages/types';
 import { TagVariableScope, TagVariableType } from '@blargbot/domain/models';
+import { IFormattable } from '@blargbot/formatting';
 
 import { BBTagContext } from './BBTagContext';
 import templates from './text';

@@ -1,7 +1,7 @@
 import { Cluster } from '@blargbot/cluster';
 import { GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType, randInt } from '@blargbot/cluster/utils';
-import { literal } from '@blargbot/domain/messages/types';
+import { util } from '@blargbot/formatting';
 import { Handler as Wolken } from 'wolken';
 
 import templates from '../../text';
@@ -34,7 +34,7 @@ export class CatCommand extends GlobalCommand {
             embeds: [
                 {
                     image: { url: res.url },
-                    footer: { text: literal('Powered by weeb.sh') },
+                    footer: { text: util.literal('Powered by weeb.sh') },
                     color: randInt(0x1, 0xffffff)
                 }
             ]

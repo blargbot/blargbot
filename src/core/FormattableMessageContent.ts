@@ -1,5 +1,5 @@
 import { FormatActionRowComponents, FormatButton, FormatEmbedAuthor, FormatEmbedFooter, FormatEmbedOptions, FormatSelectMenu, SendContent } from '@blargbot/core/types';
-import { format, IFormattable, IFormatter } from '@blargbot/domain/messages/types';
+import { format, IFormattable, IFormatter } from '@blargbot/formatting';
 import { ActionRowComponents, Button, EmbedAuthor, EmbedFooter, EmbedOptions, SelectMenu } from 'eris';
 
 export class FormattableMessageContent implements IFormattable<SendContent<string>> {

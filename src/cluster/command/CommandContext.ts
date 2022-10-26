@@ -6,7 +6,7 @@ import { FormattableMessageContent } from '@blargbot/core/FormattableMessageCont
 import { ChoiceQueryOptions, ChoiceQueryResult, ConfirmQuery, MultipleQueryOptions, MultipleQueryResult, SendContent, SendContext, SlimConfirmQueryOptions, SlimEntityFindQueryOptions, SlimEntityPickQueryOptions, SlimEntityQueryOptions, SlimTextQueryOptions, SlimTextQueryOptionsParsed, TextQueryResult } from '@blargbot/core/types';
 import { guard } from '@blargbot/core/utils';
 import { Database } from '@blargbot/database';
-import { format, IFormattable, isFormattable } from '@blargbot/domain/messages/types';
+import { format, IFormattable, util } from '@blargbot/formatting';
 import { Logger } from '@blargbot/logger';
 import { Client as Discord, KnownChannel, KnownGuildChannel, KnownTextableChannel, Member, Message, Role, User, Webhook } from 'eris';
 
@@ -158,7 +158,7 @@ function toSendContent(content: CommandResult): IFormattable<SendContent<string>
 function toSendContent(content: CommandResult): IFormattable<SendContent<string>> | undefined {
     if (content === undefined)
         return undefined;
-    if (isFormattable(content)) {
+    if (util.isFormattable(content)) {
         return {
             [format](formatter) {
                 const result = content[format](formatter);

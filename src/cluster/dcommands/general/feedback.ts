@@ -1,8 +1,8 @@
 import { CommandContext, GlobalCommand, SendTypingMiddleware } from '@blargbot/cluster/command';
 import { CommandType, guard } from '@blargbot/cluster/utils';
 import { humanize } from '@blargbot/core/utils';
-import { IFormattable, literal } from '@blargbot/domain/messages/types';
 import { FlagResult } from '@blargbot/domain/models';
+import { IFormattable, util } from '@blargbot/formatting';
 import moment from 'moment-timezone';
 
 import templates from '../../text';
@@ -186,8 +186,8 @@ export class FeedbackCommand extends GlobalCommand {
                         },
                         guard.isGuildCommandContext(context)
                             ? {
-                                name: literal(context.channel.guild.name),
-                                value: literal(context.channel.guild.id),
+                                name: util.literal(context.channel.guild.name),
+                                value: util.literal(context.channel.guild.id),
                                 inline: true
                             }
                             : {
@@ -197,13 +197,13 @@ export class FeedbackCommand extends GlobalCommand {
                             },
                         guard.isGuildCommandContext(context)
                             ? {
-                                name: literal(context.channel.name),
-                                value: literal(context.channel.id),
+                                name: util.literal(context.channel.name),
+                                value: util.literal(context.channel.id),
                                 inline: true
                             }
                             : {
                                 name: cmd.general.dm,
-                                value: literal(context.channel.id),
+                                value: util.literal(context.channel.id),
                                 inline: true
                             }
                     ],

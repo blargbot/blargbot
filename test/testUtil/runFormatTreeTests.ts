@@ -1,6 +1,4 @@
-import { FormatStringCompiler, Formatter, transformers } from '@blargbot/core/formatting';
-import { FormatString } from '@blargbot/domain/messages/FormatString';
-import { format, IFormattable, isFormattable } from '@blargbot/domain/messages/types';
+import { format, FormatString, FormatStringCompiler, Formatter, IFormattable, transformers, util } from '@blargbot/formatting';
 import { expect } from 'chai';
 import { describe, it } from 'mocha';
 
@@ -38,7 +36,7 @@ function runFormatTreeTestsCore<T extends object>(prefix: string[], source: T, c
                     });
                 }
             });
-        } else if (isFormattable(v)) {
+        } else if (util.isFormattable(v)) {
             const c = cases[key] as string | (() => string) | ((value: string) => void);
             describe(path.join('.'), () => {
                 it('should display correctly', () => {

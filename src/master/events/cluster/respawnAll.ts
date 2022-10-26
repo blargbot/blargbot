@@ -2,7 +2,7 @@ import { ClusterConnection } from '@blargbot/cluster';
 import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent';
 import { WorkerPoolEventService } from '@blargbot/core/serviceTypes';
 import { Timer } from '@blargbot/core/Timer';
-import { literal } from '@blargbot/domain/messages/types';
+import { util } from '@blargbot/formatting';
 import { Master } from '@blargbot/master';
 
 export class ClusterRespawnAllHandler extends WorkerPoolEventService<ClusterConnection, 'respawnAll'> {
@@ -24,7 +24,7 @@ export class ClusterRespawnAllHandler extends WorkerPoolEventService<ClusterConn
         await this.#master.clusters.spawnAll();
         timer.end();
         await this.#master.util.send(channelId, new FormattableMessageContent({
-            content: literal(`I'm back! It only took me ${timer.format()}.`)
+            content: util.literal(`I'm back! It only took me ${timer.format()}.`)
         }));
         this.#master.logger.log('Respawn complete');
     }

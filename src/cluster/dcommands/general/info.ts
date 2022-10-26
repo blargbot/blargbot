@@ -1,7 +1,7 @@
 import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType } from '@blargbot/cluster/utils';
 import { guard } from '@blargbot/core/utils';
-import { IFormattable, literal } from '@blargbot/domain/messages/types';
+import { IFormattable, util } from '@blargbot/formatting';
 import { User } from 'eris';
 import moment from 'moment-timezone';
 
@@ -66,7 +66,7 @@ export class InfoCommand extends GlobalCommand {
                             })
                         },
                         {
-                            name: literal('\u200b'),
+                            name: util.literal('\u200b'),
                             value: cmd.default.embed.field.details.value({ prefix: context.prefix })
                         }
                     ]
@@ -78,6 +78,6 @@ export class InfoCommand extends GlobalCommand {
 
 function template(value: User | IFormattable<string>): IFormattable<string> {
     return value instanceof User
-        ? literal(value.mention)
+        ? util.literal(value.mention)
         : value;
 }

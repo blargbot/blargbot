@@ -1,5 +1,5 @@
 import { Cluster } from '@blargbot/cluster/Cluster';
-import { IFormattable, literal } from '@blargbot/domain/messages/types';
+import { IFormattable, util } from '@blargbot/formatting';
 import { User } from 'eris';
 import reloadFactory from 'require-reload';
 
@@ -32,7 +32,7 @@ export class ContributorManager {
 
     async #resolveUser(user: string): Promise<IFormattable<string> | User> {
         if (!/\d+/.test(user))
-            return literal(user);
+            return util.literal(user);
         return await this.#cluster.util.getUser(user) ?? templates.contributors.notFound({ userId: user });
     }
 }

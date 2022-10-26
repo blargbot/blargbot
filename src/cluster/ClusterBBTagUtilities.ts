@@ -1,7 +1,7 @@
 import { AwaitReactionsResponse, BBTagContext, BBTagSendContent, BBTagUtilities } from '@blargbot/bbtag';
 import { Emote } from '@blargbot/core/Emote';
 import { ChoiceQueryResult, EntityPickQueryOptions, SendContent } from '@blargbot/core/types';
-import { IFormattable, literal } from '@blargbot/domain/messages/types';
+import { IFormattable, util } from '@blargbot/formatting';
 import { AdvancedMessageContent, Guild, KnownChannel, KnownGuildChannel, KnownMessage, Member, Message, Role, TextableChannel, User } from 'eris';
 import moment, { Duration } from 'moment-timezone';
 
@@ -18,8 +18,8 @@ export class ClusterBBTagUtilities implements BBTagUtilities {
 
     public async send<T extends TextableChannel>(channel: T, payload: BBTagSendContent, author?: User | undefined): Promise<Message<T> | undefined> {
         return payload.nsfw !== undefined && guard.isGuildChannel(channel) && !channel.nsfw
-            ? await this.cluster.util.send(channel, literal({ content: payload.nsfw, allowedMentions: payload.allowedMentions }))
-            : await this.cluster.util.send(channel, literal(payload), author);
+            ? await this.cluster.util.send(channel, util.literal({ content: payload.nsfw, allowedMentions: payload.allowedMentions }))
+            : await this.cluster.util.send(channel, util.literal(payload), author);
     }
 
     public async getChannel(channelId: string): Promise<KnownChannel | undefined>;
@@ -79,15 +79,15 @@ export class ClusterBBTagUtilities implements BBTagUtilities {
     }
 
     public timeout(member: Member, moderator: User, authorizer: User, duration: Duration, reason?: string | undefined): Promise<'noPerms' | 'success' | 'alreadyTimedOut' | 'memberTooHigh' | 'moderatorNoPerms' | 'moderatorTooLow'> {
-        return this.cluster.moderation.timeouts.timeout(member, moderator, authorizer, duration, literal(reason));
+        return this.cluster.moderation.timeouts.timeout(member, moderator, authorizer, duration, util.literal(reason));
     }
 
     public clearTimeout(member: Member, moderator: User, authorizer: User, reason?: string | undefined): Promise<'noPerms' | 'success' | 'moderatorNoPerms' | 'notTimedOut'> {
-        return this.cluster.moderation.timeouts.clearTimeout(member, moderator, authorizer, literal(reason));
+        return this.cluster.moderation.timeouts.clearTimeout(member, moderator, authorizer, util.literal(reason));
     }
 
     public addModlog(guild: Guild, action: string, user: User, moderator?: User, reason?: string, color?: number): Promise<void> {
-        return this.cluster.moderation.modLog.logCustom(guild, literal(action), user, moderator, literal(reason), color);
+        return this.cluster.moderation.modLog.logCustom(guild, util.literal(action), user, moderator, util.literal(reason), color);
     }
 
     public canRequestDomain(domain: string): boolean {
@@ -101,7 +101,7 @@ export class ClusterBBTagUtilities implements BBTagUtilities {
     public queryMember(options: EntityPickQueryOptions<string, Member>): Promise<ChoiceQueryResult<Member>> {
         return this.cluster.util.queryMember({
             ...options,
-            placeholder: literal(options.placeholder),
+            placeholder: util.literal(options.placeholder),
             prompt: toPrompt(options.prompt)
         });
     }
@@ -109,7 +109,7 @@ export class ClusterBBTagUtilities implements BBTagUtilities {
     public queryRole(options: EntityPickQueryOptions<string, Role>): Promise<ChoiceQueryResult<Role>> {
         return this.cluster.util.queryRole({
             ...options,
-            placeholder: literal(options.placeholder),
+            placeholder: util.literal(options.placeholder),
             prompt: toPrompt(options.prompt)
         });
     }
@@ -119,31 +119,31 @@ export class ClusterBBTagUtilities implements BBTagUtilities {
     public queryChannel(options: EntityPickQueryOptions<string, KnownChannel>): Promise<ChoiceQueryResult<KnownChannel>> {
         return this.cluster.util.queryChannel({
             ...options,
-            placeholder: literal(options.placeholder),
+            placeholder: util.literal(options.placeholder),
             prompt: toPrompt(options.prompt)
         });
     }
 
     public async warn(member: Member, moderator: User, count: number, reason?: string): Promise<number> {
-        const result = await this.cluster.moderation.warns.warn(member, moderator, this.cluster.discord.user, count, literal(reason));
+        const result = await this.cluster.moderation.warns.warn(member, moderator, this.cluster.discord.user, count, util.literal(reason));
         return result.warnings;
     }
 
     public async pardon(member: Member, moderator: User, count: number, reason?: string): Promise<number> {
-        const result = await this.cluster.moderation.warns.pardon(member, moderator, count, literal(reason));
+        const result = await this.cluster.moderation.warns.pardon(member, moderator, count, util.literal(reason));
         return result.warnings;
     }
 
     public ban(guild: Guild, user: User, moderator: User, authorizer: User, deleteDays: number, reason: string, duration: moment.Duration): Promise<'success' | 'alreadyBanned' | 'noPerms' | 'memberTooHigh' | 'moderatorNoPerms' | 'moderatorTooLow'> {
-        return this.cluster.moderation.bans.ban(guild, user, moderator, authorizer, deleteDays, literal(reason), duration);
+        return this.cluster.moderation.bans.ban(guild, user, moderator, authorizer, deleteDays, util.literal(reason), duration);
     }
 
     public unban(guild: Guild, user: User, moderator: User, authorizer: User, reason?: string): Promise<'success' | 'noPerms' | 'moderatorNoPerms' | 'notBanned'> {
-        return this.cluster.moderation.bans.unban(guild, user, moderator, authorizer, literal(reason));
+        return this.cluster.moderation.bans.unban(guild, user, moderator, authorizer, util.literal(reason));
     }
 
     public kick(member: Member, moderator: User, authorizer: User, reason?: string): Promise<'success' | 'noPerms' | 'memberTooHigh' | 'moderatorNoPerms' | 'moderatorTooLow'> {
-        return this.cluster.moderation.bans.kick(member, moderator, authorizer, literal(reason));
+        return this.cluster.moderation.bans.kick(member, moderator, authorizer, util.literal(reason));
     }
 
     public awaitReaction(messages: string[], filter: (reaction: AwaitReactionsResponse) => Awaitable<boolean>, timeoutMs: number): Promise<AwaitReactionsResponse | undefined> {
@@ -175,26 +175,26 @@ function toPrompt(value: string | Omit<SendContent<string>, 'components'> | unde
     switch (typeof value) {
         case 'string':
         case 'undefined':
-            return literal(value);
+            return util.literal(value);
         default: return {
             ...value,
-            content: literal(value.content),
+            content: util.literal(value.content),
             embeds: value.embeds?.map(e => ({
                 ...e,
-                title: literal(e.title),
-                description: literal(e.description),
+                title: util.literal(e.title),
+                description: util.literal(e.description),
                 author: e.author === undefined ? undefined : {
                     ...e.author,
-                    name: literal(e.author.name)
+                    name: util.literal(e.author.name)
                 },
                 footer: e.footer === undefined ? undefined : {
                     ...e.footer,
-                    text: literal(e.footer.text)
+                    text: util.literal(e.footer.text)
                 },
                 fields: e.fields?.map(f => ({
                     ...f,
-                    name: literal(f.name),
-                    value: literal(f.value)
+                    name: util.literal(f.name),
+                    value: util.literal(f.value)
                 }))
             }))
         };

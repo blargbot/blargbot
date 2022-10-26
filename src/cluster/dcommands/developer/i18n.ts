@@ -1,4 +1,4 @@
-import { FormatString } from '@blargbot/domain/messages/FormatString';
+import { FormatString } from '@blargbot/formatting';
 
 import { GlobalCommand } from '../../command/GlobalCommand';
 import templates from '../../text';

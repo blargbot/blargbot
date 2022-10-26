@@ -1,8 +1,8 @@
 import { GuildCommand } from '@blargbot/cluster/command';
 import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType } from '@blargbot/cluster/utils';
-import { literal } from '@blargbot/domain/messages/types';
 import { FlagResult } from '@blargbot/domain/models';
+import { util } from '@blargbot/formatting';
 
 import templates from '../../text';
 
@@ -32,7 +32,7 @@ export class UnbanCommand extends GuildCommand {
             return cmd.default.userNotFound;
 
         const reason = flags.r?.merge().value;
-        const state = await context.cluster.moderation.bans.unban(context.channel.guild, user, context.author, context.author, literal(reason));
+        const state = await context.cluster.moderation.bans.unban(context.channel.guild, user, context.author, context.author, util.literal(reason));
         return cmd.default.state[state]({ user });
     }
 }

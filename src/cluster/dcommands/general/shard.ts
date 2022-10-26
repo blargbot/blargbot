@@ -1,7 +1,7 @@
 import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { ClusterStats, CommandResult, ShardStats } from '@blargbot/cluster/types';
 import { CommandType, discord, guard, snowflake } from '@blargbot/cluster/utils';
-import { IFormattable } from '@blargbot/domain/messages/types';
+import { IFormattable } from '@blargbot/formatting';
 import moment from 'moment-timezone';
 
 import templates from '../../text';

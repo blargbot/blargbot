@@ -3,8 +3,8 @@ import { guard, ModlogColour } from '@blargbot/cluster/utils';
 import { BaseUtilities } from '@blargbot/core/BaseUtilities';
 import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent';
 import { FormatEmbedAuthor, FormatEmbedField, FormatEmbedOptions } from '@blargbot/core/types';
-import { IFormattable } from '@blargbot/domain/messages/types';
 import { StoredGuildEventLogType } from '@blargbot/domain/models';
+import { IFormattable } from '@blargbot/formatting';
 import { ApiError, AuditLogActionType, DiscordRESTError, Guild, GuildAuditLog, KnownGuildTextableChannel, KnownMessage, Member, Message, OldMessage, PossiblyUncachedMessage, PossiblyUncachedTextableChannel, User } from 'eris';
 import moment, { Moment } from 'moment-timezone';
 

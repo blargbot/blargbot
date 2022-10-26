@@ -1,5 +1,4 @@
-import { FormatString } from '@blargbot/domain/messages/FormatString';
-import { IFormattable } from '@blargbot/domain/messages/types';
+import { FormatString, IFormattable } from '@blargbot/formatting';
 import { Channel, GuildChannel } from 'eris';
 
 export const templates = FormatString.defineTree('core', t => ({

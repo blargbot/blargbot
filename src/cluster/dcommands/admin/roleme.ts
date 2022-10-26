@@ -2,8 +2,8 @@ import { bbtag } from '@blargbot/bbtag';
 import { GuildCommand } from '@blargbot/cluster/command';
 import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType, guard } from '@blargbot/cluster/utils';
-import { IFormattable, literal } from '@blargbot/domain/messages/types';
 import { GuildRolemeEntry } from '@blargbot/domain/models';
+import { IFormattable, util } from '@blargbot/formatting';
 import { Constants } from 'eris';
 
 import { RawBBTagCommandResult } from '../../command/RawBBTagCommandResult';
@@ -320,7 +320,7 @@ export class RolemeCommand extends GuildCommand {
                     fields: [
                         {
                             name: cmd.info.embed.field.phrase.name({ caseSensitive: roleme.casesensitive }),
-                            value: literal(roleme.message),
+                            value: util.literal(roleme.message),
                             inline: true
                         },
                         {

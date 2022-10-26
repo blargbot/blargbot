@@ -2,7 +2,7 @@ import { ClusterConnection } from '@blargbot/cluster';
 import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent';
 import { WorkerPoolEventService } from '@blargbot/core/serviceTypes';
 import { WorkerState } from '@blargbot/core/worker';
-import { literal } from '@blargbot/domain/messages/types';
+import { util } from '@blargbot/formatting';
 import { Master } from '@blargbot/master';
 import moment from 'moment-timezone';
 
@@ -20,7 +20,7 @@ export class ClusterExitHandler extends WorkerPoolEventService<ClusterConnection
         void this.master.util.send(
             this.master.config.discord.channels.shardlog,
             new FormattableMessageContent({
-                content: literal(`Cluster ${worker.id} has died.`),
+                content: util.literal(`Cluster ${worker.id} has died.`),
                 files: [{
                     file: worker.logs.join('\n'),
                     name: `cluster ${worker.id}.log`

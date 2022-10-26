@@ -1,7 +1,7 @@
 import { Cluster } from '@blargbot/cluster';
 import { ClusterEventService } from '@blargbot/cluster/serviceTypes';
 import { SubtagDetails } from '@blargbot/cluster/types';
-import { format } from '@blargbot/domain/messages/types';
+import { format } from '@blargbot/formatting';
 
 export class ClusterGetSubtagHandler extends ClusterEventService<'getSubtag'> {
     public constructor(

@@ -1,6 +1,6 @@
 import { GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType } from '@blargbot/cluster/utils';
-import { literal } from '@blargbot/domain/messages/types';
+import { util } from '@blargbot/formatting';
 
 import templates from '../../text';
 import { CommandResult } from '../../types';
@@ -40,7 +40,7 @@ export class NatoCommand extends GlobalCommand {
         if (other !== '')
             result.push(other);
 
-        return literal(result.join(' '));
+        return util.literal(result.join(' '));
     }
 }
 

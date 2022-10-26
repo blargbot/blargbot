@@ -1,6 +1,6 @@
 import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType, guard, randChoose } from '@blargbot/cluster/utils';
-import { literal } from '@blargbot/domain/messages/types';
+import { util } from '@blargbot/formatting';
 import spellsJson from '@blargbot/res/spells.json';
 
 import templates from '../../text';
@@ -38,32 +38,32 @@ export class SpellCommand extends GlobalCommand {
         return {
             embeds: [
                 {
-                    title: literal(spell.name),
+                    title: util.literal(spell.name),
                     color: schoolKeys.has<string>(normSchool) ? schools[normSchool] : undefined,
                     description: cmd.default.embed.description({
-                        level: literal(spell.level),
-                        description: literal(spell.desc),
-                        school: literal(spell.school)
+                        level: util.literal(spell.level),
+                        description: util.literal(spell.desc),
+                        school: util.literal(spell.school)
                     }),
                     fields: [
                         {
                             name: cmd.default.embed.field.duration.name,
-                            value: literal(spell.duration),
+                            value: util.literal(spell.duration),
                             inline: true
                         },
                         {
                             name: cmd.default.embed.field.range.name,
-                            value: literal(spell.range),
+                            value: util.literal(spell.range),
                             inline: true
                         },
                         {
                             name: cmd.default.embed.field.castingTime.name,
-                            value: literal(spell.casting_time),
+                            value: util.literal(spell.casting_time),
                             inline: true
                         },
                         {
                             name: cmd.default.embed.field.components.name,
-                            value: literal(components),
+                            value: util.literal(components),
                             inline: true
                         }
                     ]
@@ -86,10 +86,10 @@ export class SpellCommand extends GlobalCommand {
                 .filter(guard.hasValue)
                 .filter(s => s.name.toLowerCase().includes(name.toLowerCase()))
                 .map(s => ({
-                    label: literal(s.name),
+                    label: util.literal(s.name),
                     description: cmd.default.query.choice.description({
-                        level: literal(s.level),
-                        school: literal(s.school)
+                        level: util.literal(s.level),
+                        school: util.literal(s.school)
                     }),
                     value: s
                 }))

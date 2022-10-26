@@ -1,6 +1,6 @@
 import { AnalysisResult } from '@blargbot/bbtag';
-import { FormatString, IFormattable } from '@blargbot/domain/messages';
 import { FlagDefinition } from '@blargbot/domain/models/index';
+import { FormatString, IFormattable } from '@blargbot/formatting';
 import * as Eris from 'eris';
 import { Duration, Moment } from 'moment-timezone';
 

@@ -1,8 +1,8 @@
 import { Configuration } from '@blargbot/config/Configuration';
 import { FormatEmbedAuthor, SendContent, SendContext } from '@blargbot/core/types';
 import { Database } from '@blargbot/database';
-import { format, IFormattable, IFormatter, literal } from '@blargbot/domain/messages/types';
 import { DiscordChannelTag, DiscordRoleTag, DiscordTagSet, DiscordUserTag, StoredUser } from '@blargbot/domain/models';
+import { format, Formatter, IFormattable, IFormatter, TranslationMiddleware, util } from '@blargbot/formatting';
 import { Logger } from '@blargbot/logger';
 import { Snowflake } from 'catflake';
 import { AdvancedMessageContent, AnyGuildChannel, ApiError, Channel, ChannelInteraction, Client as Discord, Collection, DiscordRESTError, ExtendedUser, Guild, GuildChannel, KnownChannel, KnownGuildChannel, KnownMessage, Member, Message, RequestHandler, Role, TextableChannel, User, UserChannelInteraction, Webhook } from 'eris';
@@ -10,12 +10,12 @@ import moment from 'moment-timezone';
 
 import { BaseClient } from './BaseClient';
 import { Emote } from './Emote';
-import { Formatter } from './formatting';
 import { metrics } from './Metrics';
 import templates from './text';
 import { guard, humanize, parse, snowflake } from './utils';
 
 export class BaseUtilities {
+    readonly #translator: TranslationMiddleware;
     public get user(): ExtendedUser { return this.client.discord.user; }
     public get discord(): Discord { return this.client.discord; }
     public get database(): Database { return this.client.database; }
@@ -25,6 +25,9 @@ export class BaseUtilities {
     public constructor(
         public readonly client: BaseClient
     ) {
+        this.#translator = new TranslationMiddleware({
+            getTranslation: () => undefined
+        });
     }
 
     async #getSendChannel(context: SendContext): Promise<TextableChannel> {
@@ -44,7 +47,7 @@ export class BaseUtilities {
 
     public getFormatter(target?: Channel | Guild | string): Promise<IFormatter> {
         target;
-        return Promise.resolve(new Formatter(new Intl.Locale('en-GB'), [], this.client.formatCompiler));
+        return Promise.resolve(new Formatter(new Intl.Locale('en-GB'), [this.#translator], this.client.formatCompiler));
     }
 
     public websiteLink(path?: string): string {
@@ -59,24 +62,24 @@ export class BaseUtilities {
         if (target instanceof User) {
             return {
                 icon_url: target.avatarURL,
-                name: literal(`${humanize.fullName(target)} ${includeId ? `(${target.id})` : ''}`)
+                name: util.literal(`${humanize.fullName(target)} ${includeId ? `(${target.id})` : ''}`)
                 // url: target === this.discord.user ? undefined : `https://discord.com/users/${target.id}`
             };
         } else if (target instanceof Member) {
             return {
                 icon_url: target.avatarURL,
-                name: literal(`${target.nick ?? target.username} ${includeId ? `(${target.id})` : ''}`)
+                name: util.literal(`${target.nick ?? target.username} ${includeId ? `(${target.id})` : ''}`)
                 // url: `https://discord.com/users/${target.id}`
             };
         } else if (target instanceof Guild) {
             return {
                 icon_url: target.iconURL ?? undefined,
-                name: literal(target.name)
+                name: util.literal(target.name)
             };
         } else if ('userid' in target) {
             return {
                 icon_url: target.avatarURL,
-                name: literal(`${target.username ?? 'UNKNOWN'} ${includeId ? `(${target.userid})` : ''}`)
+                name: util.literal(`${target.username ?? 'UNKNOWN'} ${includeId ? `(${target.userid})` : ''}`)
                 // url: `https://discord.com/users/${target.userid}`
             };
         }

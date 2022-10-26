@@ -1,5 +1,5 @@
 import templates from '@blargbot/core/text';
-import { literal } from '@blargbot/domain/messages/types';
+import { util } from '@blargbot/formatting';
 import { quickMock } from '@blargbot/test-util/quickMock';
 import { runFormatTreeTests } from '@blargbot/test-util/runFormatTreeTests';
 import Eris from 'eris';
@@ -25,7 +25,7 @@ describe('Core format strings', () => {
                                 channel: quickMock(channel, {
                                     id: '123'
                                 }),
-                                message: literal('abc')
+                                message: util.literal('abc')
                             }],
                             expected: 'abc\nChannel: PRIVATE CHANNEL (123)\n\nIf you wish to stop seeing these messages, do the command `dmerrors`.'
                         }
@@ -42,7 +42,7 @@ describe('Core format strings', () => {
                                         id: '456'
                                     })
                                 }),
-                                message: literal('abc')
+                                message: util.literal('abc')
                             }],
                             expected: 'abc\nGuild: MyGuild (456)\nChannel: MyChannel (123)\n\nIf you wish to stop seeing these messages, do the command `dmerrors`.'
                         }

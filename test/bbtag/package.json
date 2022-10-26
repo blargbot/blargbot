@@ -8,6 +8,7 @@
         "@blargbot/core": "workspace:^",
         "@blargbot/database": "workspace:^",
         "@blargbot/domain": "workspace:^",
+        "@blargbot/formatting": "workspace:^",
         "@blargbot/logger": "workspace:^",
         "@blargbot/test-util": "workspace:^",
         "chai": "^4.3.6",

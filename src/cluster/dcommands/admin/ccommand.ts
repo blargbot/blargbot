@@ -4,8 +4,8 @@ import { GuildCommand } from '@blargbot/cluster/command';
 import { CommandResult, CustomCommandShrinkwrap, GuildCommandContext, GuildShrinkwrap, ICommand, SignedGuildShrinkwrap } from '@blargbot/cluster/types';
 import { codeBlock, CommandType, guard, parse, snowflake } from '@blargbot/cluster/utils';
 import { Configuration } from '@blargbot/config';
-import { IFormattable, literal } from '@blargbot/domain/messages/types';
 import { FlagDefinition, NamedGuildCommandTag, NamedGuildSourceCommandTag } from '@blargbot/domain/models';
+import { IFormattable, util } from '@blargbot/formatting';
 import { mapping } from '@blargbot/mapping';
 import { createHmac } from 'crypto';
 import { Role } from 'eris';
@@ -315,11 +315,11 @@ export class CustomCommandCommand extends GuildCommand {
                             commands: any
                         },
                         ...Object.entries(grouped)
-                            .map(([role, commands]) => ({ name: literal(role), commands }))
+                            .map(([role, commands]) => ({ name: util.literal(role), commands }))
                     ].filter(x => x.commands.length > 0)
                         .map(x => ({
                             name: x.name,
-                            value: literal(codeBlock(x.commands.join(', '), 'ini')),
+                            value: util.literal(codeBlock(x.commands.join(', '), 'ini')),
                             inline: true
                         }))
                 }

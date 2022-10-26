@@ -1,4 +1,4 @@
-import { format, IFormatter } from '@blargbot/domain/messages/types';
+import { format, IFormatter } from '@blargbot/formatting';
 import { KnownTextableChannel, User } from 'eris';
 
 import templates from '../../text';

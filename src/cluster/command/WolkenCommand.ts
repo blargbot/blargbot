@@ -1,5 +1,5 @@
 import { CommandType } from '@blargbot/cluster/utils';
-import { IFormatStringDefinition, IFormattable, literal } from '@blargbot/domain/messages/types';
+import { IFormatStringDefinition, IFormattable, util } from '@blargbot/formatting';
 import { User } from 'eris';
 import Wolken from 'wolken';
 
@@ -58,7 +58,7 @@ export abstract class WolkenCommand extends GlobalCommand {
                 {
                     description: action?.({ self, target }),
                     image: { url: image.url },
-                    footer: { text: literal('Powered by weeb.sh') }
+                    footer: { text: util.literal('Powered by weeb.sh') }
                 }
             ]
         };

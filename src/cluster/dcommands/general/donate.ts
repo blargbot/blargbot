@@ -1,6 +1,6 @@
 import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType } from '@blargbot/cluster/utils';
-import { literal } from '@blargbot/domain/messages/types';
+import { util } from '@blargbot/formatting';
 
 import templates from '../../text';
 import { CommandResult } from '../../types';
@@ -33,12 +33,12 @@ export class DonateCommand extends GlobalCommand {
                     fields: [
                         {
                             name: cmd.default.embed.field.paypal.name,
-                            value: literal('https://paypal.me/stupidcat'),
+                            value: util.literal('https://paypal.me/stupidcat'),
                             inline: true
                         },
                         {
                             name: cmd.default.embed.field.patreon.name,
-                            value: literal('https://www.patreon.com/blargbot'),
+                            value: util.literal('https://www.patreon.com/blargbot'),
                             inline: true
                         }
                     ]

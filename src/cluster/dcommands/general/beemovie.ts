@@ -1,6 +1,6 @@
 import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType, randChoose } from '@blargbot/cluster/utils';
-import { literal } from '@blargbot/domain/messages/types';
+import { util } from '@blargbot/formatting';
 import script from '@blargbot/res/beemovie.json';
 
 import templates from '../../text';
@@ -40,7 +40,7 @@ export class BeemovieCommand extends GlobalCommand {
         const line = randChoose(lines);
 
         if (showName && line.actor !== undefined)
-            return literal(`${context.config.discord.emotes.beemovie} **${line.actor}**\n${line.content}`);
-        return literal(`${context.config.discord.emotes.beemovie} ${line.content}`);
+            return util.literal(`${context.config.discord.emotes.beemovie} **${line.actor}**\n${line.content}`);
+        return util.literal(`${context.config.discord.emotes.beemovie} ${line.content}`);
     }
 }

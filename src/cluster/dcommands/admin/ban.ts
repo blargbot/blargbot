@@ -1,8 +1,8 @@
 import { GuildCommand } from '@blargbot/cluster/command';
 import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType, parse } from '@blargbot/cluster/utils';
-import { literal } from '@blargbot/domain/messages/types';
 import { FlagResult } from '@blargbot/domain/models';
+import { util } from '@blargbot/formatting';
 import { User } from 'eris';
 import moment from 'moment-timezone';
 
@@ -40,7 +40,7 @@ export class BanCommand extends GuildCommand {
             return cmd.clear.userNotFound;
 
         const reason = flags.r?.merge().value;
-        const result = await context.cluster.moderation.bans.unban(context.channel.guild, user, context.author, context.author, literal(reason));
+        const result = await context.cluster.moderation.bans.unban(context.channel.guild, user, context.author, context.author, util.literal(reason));
         return cmd.clear.state[result]({ user });
     }
 
@@ -48,7 +48,7 @@ export class BanCommand extends GuildCommand {
         const reason = flags.r?.merge().value ?? '';
         const duration = (flags.t !== undefined ? parse.duration(flags.t.merge().value) : undefined) ?? moment.duration(Infinity);
 
-        const state = await context.cluster.moderation.bans.ban(context.channel.guild, user, context.author, context.author, days, literal(reason), duration);
+        const state = await context.cluster.moderation.bans.ban(context.channel.guild, user, context.author, context.author, days, util.literal(reason), duration);
         if (state !== 'success' || flags.t === undefined)
             return cmd.default.state[state]({ user });
 

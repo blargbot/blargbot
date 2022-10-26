@@ -2,7 +2,7 @@ import { defaultStaff, discord, guard, parse, snowflake } from '@blargbot/cluste
 import { BaseUtilities } from '@blargbot/core/BaseUtilities';
 import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent';
 import { ChoiceQuery, ChoiceQueryOptions, ChoiceQueryResult, ConfirmQuery, ConfirmQueryOptions, EntityFindQueryOptions, EntityPickQueryOptions, EntityQueryOptions, FormatSelectMenuOptions, MultipleQuery, MultipleQueryOptions, MultipleQueryResult, QueryButton, SendContent, TextQuery, TextQueryOptions, TextQueryOptionsParsed, TextQueryResult } from '@blargbot/core/types';
-import { format, IFormattable, isFormattable, literal } from '@blargbot/domain/messages/types';
+import { format, IFormattable, util } from '@blargbot/formatting';
 import { ActionRow, AdvancedMessageContent, Button, ComponentInteraction, Constants, Guild, KnownCategoryChannel, KnownChannel, KnownGuildChannel, KnownPrivateChannel, KnownTextableChannel, Member, Message, Role, SelectMenu, TextableChannel, User, Webhook } from 'eris';
 import fetch from 'node-fetch';
 
@@ -57,7 +57,7 @@ export class ClusterUtilities extends BaseUtilities {
             options.prompt = { content: options.prompt };
 
         const content = options.prompt === undefined ? undefined
-            : isFormattable(options.prompt) ? options.prompt : options.prompt.content;
+            : util.isFormattable(options.prompt) ? options.prompt : options.prompt.content;
 
         const component: ChoiceComponentOptions<IFormattable<string>> = {
             content,
@@ -92,8 +92,8 @@ export class ClusterUtilities extends BaseUtilities {
 
         const choice = createChoiceBody(component);
         const promptContent = options.prompt === undefined ? undefined
-            : new FormattableMessageContent(isFormattable(options.prompt) ? { content: options.prompt } : options.prompt);
-        const prompt = await this.#sendOrReply(options.context, literal({
+            : new FormattableMessageContent(util.isFormattable(options.prompt) ? { content: options.prompt } : options.prompt);
+        const prompt = await this.#sendOrReply(options.context, util.literal({
             ...promptContent?.[format](formatter),
             ...choice[format](formatter)
         }));

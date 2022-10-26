@@ -2,7 +2,7 @@ import { Cluster } from '@blargbot/cluster';
 import { guard, humanize, ModlogColour } from '@blargbot/cluster/utils';
 import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent';
 import { FormatEmbedField, FormatEmbedOptions } from '@blargbot/core/types';
-import { format, IFormattable, literal } from '@blargbot/domain/messages/types';
+import { format, IFormattable, util } from '@blargbot/formatting';
 import { Guild, User } from 'eris';
 import { Duration } from 'moment-timezone';
 
@@ -81,7 +81,7 @@ export class ModLogManager {
         if (moderator === undefined && reason === undefined) {
             try {
                 const banObject = await guild.getBan(user.id);
-                reason = literal(banObject.reason ?? undefined);
+                reason = util.literal(banObject.reason ?? undefined);
             } catch (e: unknown) {
                 //NOOP
             }

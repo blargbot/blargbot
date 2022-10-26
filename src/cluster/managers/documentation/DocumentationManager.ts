@@ -1,6 +1,6 @@
 import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent';
 import { FormatActionRow, FormatButton, FormatEmbedField, FormatEmbedOptions, FormatSelectMenu, FormatSelectMenuOptions, SendContent } from '@blargbot/core/types';
-import { format, IFormattable, IFormatter } from '@blargbot/domain/messages/types';
+import { format, IFormattable, IFormatter } from '@blargbot/formatting';
 import { ComponentInteraction, Constants, KnownInteraction, KnownTextableChannel, User } from 'eris';
 import moment from 'moment-timezone';
 

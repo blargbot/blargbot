@@ -1,8 +1,8 @@
 import { bbtag } from '@blargbot/bbtag';
 import { guard, ModerationType } from '@blargbot/cluster/utils';
 import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent';
-import { literal } from '@blargbot/domain/messages/types';
 import { GuildCensor, GuildCensorExceptions } from '@blargbot/domain/models';
+import { util } from '@blargbot/formatting';
 import { KnownGuildTextableChannel, Message, PossiblyUncachedTextableChannel } from 'eris';
 import moment from 'moment-timezone';
 
@@ -56,7 +56,7 @@ export class CensorManager extends ModerationManagerBase {
                 this.cluster.discord.user,
                 this.cluster.discord.user,
                 censor.weight,
-                literal(censor.reason) ?? templates.censor.warnReason
+                util.literal(censor.reason) ?? templates.censor.warnReason
             );
             const tag = censor[`${result.type}Message`] ?? censors.rule?.[`${result.type}Message`];
             if (tag !== undefined)

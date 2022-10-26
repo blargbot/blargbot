@@ -1,6 +1,6 @@
 import { TimeoutClearResult, TimeoutResult } from '@blargbot/cluster/types';
 import { clampBy } from '@blargbot/cluster/utils';
-import { format, IFormattable } from '@blargbot/domain/messages/types';
+import { format, IFormattable } from '@blargbot/formatting';
 import { Guild, Member, User } from 'eris';
 import moment, { Duration } from 'moment-timezone';
 

@@ -284,6 +284,7 @@ __metadata:
     "@blargbot/core": "workspace:^"
     "@blargbot/database": "workspace:^"
     "@blargbot/domain": "workspace:^"
+    "@blargbot/formatting": "workspace:^"
     "@blargbot/logger": "workspace:^"
     "@blargbot/test-util": "workspace:^"
     "@types/chai": ^4.3.3
@@ -310,6 +311,7 @@ __metadata:
     "@blargbot/core": "workspace:^"
     "@blargbot/database": "workspace:^"
     "@blargbot/domain": "workspace:^"
+    "@blargbot/formatting": "workspace:^"
     "@blargbot/logger": "workspace:^"
     "@blargbot/mapping": "workspace:^"
     "@types/brainfuck-node": "workspace:^"
@@ -336,6 +338,7 @@ __metadata:
     "@blargbot/cluster": "workspace:^"
     "@blargbot/core": "workspace:^"
     "@blargbot/domain": "workspace:^"
+    "@blargbot/formatting": "workspace:^"
     "@blargbot/test-util": "workspace:^"
     "@types/chai": ^4.3.3
     "@types/eris": "workspace:^"
@@ -356,6 +359,7 @@ __metadata:
     "@blargbot/core": "workspace:^"
     "@blargbot/database": "workspace:^"
     "@blargbot/domain": "workspace:^"
+    "@blargbot/formatting": "workspace:^"
     "@blargbot/image": "workspace:^"
     "@blargbot/logger": "workspace:^"
     "@blargbot/mapping": "workspace:^"
@@ -394,6 +398,7 @@ __metadata:
   dependencies:
     "@blargbot/core": "workspace:^"
     "@blargbot/domain": "workspace:^"
+    "@blargbot/formatting": "workspace:^"
     "@blargbot/test-util": "workspace:^"
     "@types/chai": ^4.3.3
     "@types/eris": "workspace:^"
@@ -413,6 +418,7 @@ __metadata:
     "@blargbot/config": "workspace:^"
     "@blargbot/database": "workspace:^"
     "@blargbot/domain": "workspace:^"
+    "@blargbot/formatting": "workspace:^"
     "@blargbot/logger": "workspace:^"
     "@blargbot/mapping": "workspace:^"
     "@blargbot/res": "workspace:^"
@@ -467,22 +473,14 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@blargbot/domain@workspace:src/domain"
   dependencies:
+    "@blargbot/formatting": "workspace:^"
     moment-timezone: ^0.5.37
   languageName: unknown
   linkType: soft
 
-"@blargbot/global-tests@workspace:test/global":
+"@blargbot/formatting@workspace:^, @blargbot/formatting@workspace:src/formatting":
   version: 0.0.0-use.local
-  resolution: "@blargbot/global-tests@workspace:test/global"
-  dependencies:
-    "@blargbot/bbtag": "workspace:^"
-    "@blargbot/cluster": "workspace:^"
-    "@blargbot/core": "workspace:^"
-    "@blargbot/domain": "workspace:^"
-    "@types/chai": ^4.3.3
-    "@types/mocha": ^10.0.0
-    chai: ^4.3.6
-    mocha: ^10.0.0
+  resolution: "@blargbot/formatting@workspace:src/formatting"
   languageName: unknown
   linkType: soft
 
@@ -536,6 +534,7 @@ __metadata:
     "@blargbot/config": "workspace:^"
     "@blargbot/core": "workspace:^"
     "@blargbot/domain": "workspace:^"
+    "@blargbot/formatting": "workspace:^"
     "@blargbot/logger": "workspace:^"
     "@blargbot/res": "workspace:^"
     "@types/eris": "workspace:^"
@@ -560,6 +559,7 @@ __metadata:
   dependencies:
     "@blargbot/core": "workspace:^"
     "@blargbot/domain": "workspace:^"
+    "@blargbot/formatting": "workspace:^"
     "@types/chai": ^4.3.3
     "@types/mocha": ^10.0.0
     chai: ^4.3.6

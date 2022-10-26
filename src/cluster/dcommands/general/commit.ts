@@ -1,6 +1,6 @@
 import { GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType, randInt } from '@blargbot/cluster/utils';
-import { literal } from '@blargbot/domain/messages/types';
+import { util } from '@blargbot/formatting';
 import { mapping } from '@blargbot/mapping';
 import fetch, { Response } from 'node-fetch';
 
@@ -40,13 +40,13 @@ export class CommitCommand extends GlobalCommand {
             embeds: [
                 {
                     author: {
-                        name: literal(commit.author?.login ?? commit.commit.author.name),
+                        name: util.literal(commit.author?.login ?? commit.commit.author.name),
                         icon_url: commit.author?.avatar_url,
                         url: commit.author?.html_url
                     },
                     title: cmd.default.embed.title({ commit: commit.sha.slice(0, 7), index: commitNumber }),
                     url: commit.html_url,
-                    description: literal(commit.commit.message)
+                    description: util.literal(commit.commit.message)
                 }
             ]
         };

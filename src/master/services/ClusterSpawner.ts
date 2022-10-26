@@ -1,7 +1,7 @@
 import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent';
 import { BaseService } from '@blargbot/core/serviceTypes';
 import { humanize } from '@blargbot/core/utils';
-import { literal } from '@blargbot/domain/messages/types';
+import { util } from '@blargbot/formatting';
 import { Master } from '@blargbot/master';
 import moment from 'moment-timezone';
 
@@ -22,7 +22,7 @@ export class ClusterSpawner extends BaseService {
 
         if (restart?.varvalue !== undefined) {
             void this.master.util.send(restart.varvalue.channel, new FormattableMessageContent({
-                content: literal(`Ok I'm back. It took me ${humanize.duration(moment(), moment(restart.varvalue.time))}.`)
+                content: util.literal(`Ok I'm back. It took me ${humanize.duration(moment(), moment(restart.varvalue.time))}.`)
             }));
             void this.master.database.vars.delete('restart');
         }

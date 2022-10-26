@@ -1,8 +1,8 @@
 import { GuildCommand } from '@blargbot/cluster/command';
 import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType, guard } from '@blargbot/cluster/utils';
-import { IFormattable } from '@blargbot/domain/messages/types';
 import { StoredGuildEventLogType } from '@blargbot/domain/models';
+import { IFormattable } from '@blargbot/formatting';
 import { KnownChannel, Role, User, Webhook } from 'eris';
 
 import templates from '../../text';

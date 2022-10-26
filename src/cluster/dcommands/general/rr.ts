@@ -1,6 +1,6 @@
 import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType, randChoose, randInt } from '@blargbot/cluster/utils';
-import { literal } from '@blargbot/domain/messages/types';
+import { util } from '@blargbot/formatting';
 
 import templates from '../../text';
 import { CommandResult } from '../../types';
@@ -49,7 +49,7 @@ export class RussianRouletteCommand extends GlobalCommand {
             return cmd.default.jammed;
         }
 
-        const you = await context.send(context.channel, literal(`${emote}🔫`));
+        const you = await context.send(context.channel, util.literal(`${emote}🔫`));
         if (await query.getResult()) {
             await Promise.all([
                 context.edit(query.prompt, cmd.default.chicken),

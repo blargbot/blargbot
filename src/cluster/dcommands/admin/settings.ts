@@ -2,7 +2,7 @@ import { Cluster } from '@blargbot/cluster';
 import { GuildCommand } from '@blargbot/cluster/command';
 import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { codeBlock, CommandType, defaultStaff, guard, guildSettings, parse } from '@blargbot/cluster/utils';
-import { format, IFormattable } from '@blargbot/domain/messages/types';
+import { format, IFormattable } from '@blargbot/formatting';
 import { Guild } from 'eris';
 
 import templates from '../../text';

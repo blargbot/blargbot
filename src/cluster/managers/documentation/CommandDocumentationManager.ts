@@ -1,6 +1,6 @@
 import { FormatEmbedField, SendContent } from '@blargbot/core/types';
 import { discord, guard } from '@blargbot/core/utils';
-import { format, IFormattable, literal } from '@blargbot/domain/messages/types';
+import { format, IFormattable, util } from '@blargbot/formatting';
 import { KnownChannel, KnownTextableChannel, User } from 'eris';
 
 import { Cluster } from '../../Cluster';
@@ -82,7 +82,7 @@ export class CommandDocumentationManager extends DocumentationTreeManager {
                         value: this.#listCommandNames(g.items.filter(i => i.hidden !== true).map(i => i.name))
                     })),
                     {
-                        name: literal('\u200B'),
+                        name: util.literal('\u200B'),
                         value: doc.index.footer({
                             commandsLink: this.#cluster.util.websiteLink('/commands'),
                             donateLink: this.#cluster.util.websiteLink('/donate')
@@ -166,7 +166,7 @@ export class CommandDocumentationManager extends DocumentationTreeManager {
         for (const signature of signatures) {
             const usage = `b!${command.name}${signature.usage !== '' ? ` ${signature.usage}` : ''}`;
             pages.push({
-                name: literal(usage),
+                name: util.literal(usage),
                 embed: {
                     fields: [
                         ...fields,
@@ -181,7 +181,7 @@ export class CommandDocumentationManager extends DocumentationTreeManager {
 
         return {
             id: command.id,
-            name: literal(command.name),
+            name: util.literal(command.name),
             type: 'paged',
             hidden: result.state !== 'ALLOWED',
             tags: [command.name, ...command.aliases],
@@ -234,7 +234,7 @@ export class CommandDocumentationManager extends DocumentationTreeManager {
                     ?? channel.guild.roles.find(r => r.name.toLowerCase() === roleStr.toLowerCase());
 
                 if (role !== undefined)
-                    yield { name: literal(role.name), id: role.id };
+                    yield { name: util.literal(role.name), id: role.id };
             }
         }
     }

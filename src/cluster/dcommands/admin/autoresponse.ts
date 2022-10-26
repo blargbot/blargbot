@@ -2,8 +2,8 @@ import { GuildCommand } from '@blargbot/cluster/command';
 import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType, createSafeRegExp, getRange, parse, randChoose, randInt } from '@blargbot/cluster/utils';
 import { guard } from '@blargbot/core/utils';
-import { literal } from '@blargbot/domain/messages/index';
 import { GuildFilteredAutoresponse, GuildTriggerTag } from '@blargbot/domain/models';
+import { util } from '@blargbot/formatting';
 
 import { RawBBTagCommandResult } from '../../command/RawBBTagCommandResult';
 import templates from '../../text';
@@ -222,7 +222,7 @@ export class AutoResponseCommand extends GuildCommand {
                     fields: [
                         ...'term' in match.ar ? [{
                             name: cmd.info.embed.field.trigger.name[match.ar.regex ? 'regex' : 'text'],
-                            value: literal(match.ar.term)
+                            value: util.literal(match.ar.term)
                         }] : [],
                         {
                             name: cmd.info.embed.field.author.name,

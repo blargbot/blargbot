@@ -1,6 +1,6 @@
 import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType, randInt } from '@blargbot/cluster/utils';
-import { literal } from '@blargbot/domain/messages/types';
+import { util } from '@blargbot/formatting';
 import { mapping } from '@blargbot/mapping';
 import fetch from 'node-fetch';
 
@@ -41,7 +41,7 @@ export class XKCDCommand extends GlobalCommand {
                 {
                     author: context.util.embedifyAuthor(context.author),
                     title: cmd.default.embed.title({ id: comic.num, title: comic.title }),
-                    description: literal(comic.alt),
+                    description: util.literal(comic.alt),
                     image: { url: comic.img },
                     footer: {
                         text: cmd.default.embed.footer.text({ year: comic.year })

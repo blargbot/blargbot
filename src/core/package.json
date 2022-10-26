@@ -7,6 +7,7 @@
         "@blargbot/config": "workspace:^",
         "@blargbot/database": "workspace:^",
         "@blargbot/domain": "workspace:^",
+        "@blargbot/formatting": "workspace:^",
         "@blargbot/logger": "workspace:^",
         "@blargbot/mapping": "workspace:^",
         "@blargbot/res": "workspace:^",

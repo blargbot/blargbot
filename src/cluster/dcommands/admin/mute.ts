@@ -1,8 +1,8 @@
 import { GuildCommand } from '@blargbot/cluster/command';
 import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType, parse } from '@blargbot/cluster/utils';
-import { literal } from '@blargbot/domain/messages/types';
 import { FlagResult } from '@blargbot/domain/models';
+import { util } from '@blargbot/formatting';
 import { Member } from 'eris';
 
 import templates from '../../text';
@@ -36,7 +36,7 @@ export class MuteCommand extends GuildCommand {
 
     public async unmute(context: GuildCommandContext, member: Member, flags: FlagResult): Promise<CommandResult> {
         const reason = flags.r?.merge().value;
-        const state = await context.cluster.moderation.mutes.unmute(member, context.author, literal(reason));
+        const state = await context.cluster.moderation.mutes.unmute(member, context.author, util.literal(reason));
         const result = cmd.clear.state[state];
         return typeof result === 'function'
             ? result({ user: member.user })
@@ -51,7 +51,7 @@ export class MuteCommand extends GuildCommand {
         const reason = flags.r?.merge().value;
         const rawDuration = flags.t !== undefined ? parse.duration(flags.t.merge().value) : undefined;
         const duration = rawDuration === undefined || rawDuration.asMilliseconds() <= 0 ? undefined : rawDuration;
-        const state = await context.cluster.moderation.mutes.mute(member, context.author, literal(reason), duration);
+        const state = await context.cluster.moderation.mutes.mute(member, context.author, util.literal(reason), duration);
         if (state !== 'success') {
             const result = cmd.default.state[state];
             return typeof result === 'function'

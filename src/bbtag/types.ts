@@ -1,6 +1,6 @@
 import { Emote } from '@blargbot/core/Emote';
-import { IFormattable } from '@blargbot/domain/messages/types';
 import { FlagDefinition, NamedGuildCommandTag, StoredTag } from '@blargbot/domain/models';
+import { IFormattable } from '@blargbot/formatting';
 import { Attachment, Embed, EmbedOptions, FileContent, KnownGuildTextableChannel, KnownMessage, Message, User } from 'eris';
 import ReadWriteLock from 'rwlock';
 

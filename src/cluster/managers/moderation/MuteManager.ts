@@ -1,7 +1,7 @@
 import { EnsureMutedRoleResult, MuteResult, UnmuteResult } from '@blargbot/cluster/types';
 import { discord, guard } from '@blargbot/cluster/utils';
-import { format, IFormattable } from '@blargbot/domain/messages/types';
 import { UnmuteEventOptions } from '@blargbot/domain/models';
+import { format, IFormattable } from '@blargbot/formatting';
 import { mapping } from '@blargbot/mapping';
 import { Constants, Guild, KnownGuildChannel, Member, Role, User } from 'eris';
 import moment, { Duration } from 'moment-timezone';

@@ -1,6 +1,6 @@
 import { PardonResult, WarnDetails, WarnResult } from '@blargbot/cluster/types';
 import { ModerationType } from '@blargbot/cluster/utils';
-import { IFormattable } from '@blargbot/domain/messages/types';
+import { IFormattable } from '@blargbot/formatting';
 import { Member, User } from 'eris';
 import moment from 'moment-timezone';
 

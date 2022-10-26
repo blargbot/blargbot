@@ -2,7 +2,7 @@ import { GuildCommand } from '@blargbot/cluster/command';
 import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType } from '@blargbot/cluster/utils';
 import { humanize } from '@blargbot/core/utils';
-import { IFormattable, isFormattable } from '@blargbot/domain/messages/types';
+import { IFormattable, util } from '@blargbot/formatting';
 import { Webhook } from 'eris';
 
 import templates from '../../text';
@@ -33,7 +33,7 @@ export class ChangelogCommand extends GuildCommand {
         const current = await this.#getCurrentSubscription(context);
         if (current === undefined)
             return cmd.subscribe.alreadySubscribed;
-        if (isFormattable(current))
+        if (util.isFormattable(current))
             return current;
 
         await context.discord.followChannel(context.config.discord.channels.changelog, context.channel.id);
@@ -44,7 +44,7 @@ export class ChangelogCommand extends GuildCommand {
         const current = await this.#getCurrentSubscription(context);
         if (current === undefined)
             return cmd.unsubscribe.notSubscribed;
-        if (isFormattable(current))
+        if (util.isFormattable(current))
             return current;
 
         await context.discord.deleteWebhook(current.id, undefined, `${humanize.fullName(context.author)} unsubscribed channel to changelog updates`);

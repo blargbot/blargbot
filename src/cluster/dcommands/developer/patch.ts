@@ -1,6 +1,6 @@
 import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType, guard } from '@blargbot/cluster/utils';
-import { literal } from '@blargbot/domain/messages/types';
+import { util } from '@blargbot/formatting';
 import { Constants } from 'eris';
 
 import templates from '../../text';
@@ -40,15 +40,15 @@ export class PatchCommand extends GlobalCommand {
         const embed = {
             author: { name: cmd.default.embed.author.name({ version }) },
             title: features === undefined ? undefined : cmd.default.embed.title,
-            description: literal(features),
+            description: util.literal(features),
             fields: [
                 ...fixes === undefined ? [] : [{
                     name: cmd.default.embed.field.bugFixes.name,
-                    value: literal(fixes)
+                    value: util.literal(fixes)
                 }],
                 ...notes === undefined ? [] : [{
                     name: cmd.default.embed.field.otherNotes.name,
-                    value: literal(notes)
+                    value: util.literal(notes)
                 }]
             ],
             color: 0x2df952
@@ -67,7 +67,7 @@ export class PatchCommand extends GlobalCommand {
             return cmd.default.cancelled;
 
         const changelog = await context.send(channel, {
-            content: literal(role?.mention),
+            content: util.literal(role?.mention),
             embeds: [embed],
             allowedMentions: {
                 roles: role === undefined ? undefined : [role.id]

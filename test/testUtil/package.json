@@ -5,6 +5,7 @@
     "dependencies": {
         "@blargbot/core": "workspace:^",
         "@blargbot/domain": "workspace:^",
+        "@blargbot/formatting": "workspace:^",
         "chai": "^4.3.6",
         "mocha": "^10.0.0",
         "ts-mockito": "^2.6.1"

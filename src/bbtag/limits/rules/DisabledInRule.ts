@@ -1,4 +1,4 @@
-import { IFormattable } from '@blargbot/domain/messages/index';
+import { IFormattable } from '@blargbot/formatting';
 
 import { BBTagContext } from '../../BBTagContext';
 import { BBTagRuntimeError } from '../../errors';

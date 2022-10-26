@@ -1,5 +1,5 @@
 import { SendContent } from '@blargbot/core/types';
-import { format, IFormattable, IFormatter } from '@blargbot/domain/messages/types';
+import { format, IFormattable, IFormatter } from '@blargbot/formatting';
 
 import { discord } from '../utils/index';
 

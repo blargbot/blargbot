@@ -1,6 +1,6 @@
 import { Subtag, SubtagType } from '@blargbot/bbtag';
 import templates from '@blargbot/bbtag/text';
-import { literal } from '@blargbot/domain/messages/types';
+import { util } from '@blargbot/formatting';
 import { quickMock } from '@blargbot/test-util/quickMock';
 import { runFormatTreeTests } from '@blargbot/test-util/runFormatTreeTests';
 import { describe } from 'mocha';
@@ -425,9 +425,9 @@ Database Execution Time: 678ms
                             name: 'default',
                             input: [{
                                 scopes: [
-                                    { prefix: 'x', name: literal('Test scope') },
-                                    { prefix: '', name: literal('Default scope') },
-                                    { prefix: 'aaaa', name: literal('aaaa') }
+                                    { prefix: 'x', name: util.literal('Test scope') },
+                                    { prefix: '', name: util.literal('Default scope') },
+                                    { prefix: 'aaaa', name: util.literal('aaaa') }
                                 ]
                             }],
                             expected: 'Returns the stored variable `varName`.\nYou can use a character prefix to determine the scope of your variable.\nValid scopes are: `x` (Test scope), no prefix (Default scope) and `aaaa` (aaaa). For more information, use `b!t docs variable` or `b!cc docs variable`'
@@ -563,9 +563,9 @@ Database Execution Time: 678ms
                             name: 'default',
                             input: [{
                                 scopes: [
-                                    { prefix: 'x', name: literal('Test scope') },
-                                    { prefix: '', name: literal('Default scope') },
-                                    { prefix: 'aaaa', name: literal('aaaa') }
+                                    { prefix: 'x', name: util.literal('Test scope') },
+                                    { prefix: '', name: util.literal('Default scope') },
+                                    { prefix: 'aaaa', name: util.literal('aaaa') }
                                 ]
                             }],
                             expected: 'Stores `value` under `name`. These variables are saved between sessions. You can use a character prefix to determine the scope of your variable.\nValid scopes are: `x` (Test scope), no prefix (Default scope) and `aaaa` (aaaa).\nFor performance reasons, variables are not immediately stored to the database. See `{commit}` and `{rollback}`for more information, or use `b!t docs variable` or `b!cc docs variable`'

@@ -1,7 +1,7 @@
 import { BanResult, KickResult, MassBanResult, UnbanResult } from '@blargbot/cluster/types';
 import { sleep } from '@blargbot/cluster/utils';
-import { format, IFormattable, literal } from '@blargbot/domain/messages/types';
 import { UnbanEventOptions } from '@blargbot/domain/models';
+import { format, IFormattable, util } from '@blargbot/formatting';
 import { mapping } from '@blargbot/mapping';
 import { ApiError, AuditLogActionType, DiscordRESTError, Guild, GuildAuditLog, GuildAuditLogEntry, Member, User } from 'eris';
 import moment, { Duration } from 'moment-timezone';
@@ -177,7 +177,7 @@ export class BanManager extends ModerationManagerBase {
             return;
 
         const log = await this.#findAuditLog(guild, user.id, AuditLogActionType.MEMBER_BAN_ADD);
-        await this.modLog.logBan(guild, user, log?.user, literal(log?.reason ?? undefined));
+        await this.modLog.logBan(guild, user, log?.user, util.literal(log?.reason ?? undefined));
     }
 
     public async userUnbanned(guild: Guild, user: User): Promise<void> {
@@ -185,7 +185,7 @@ export class BanManager extends ModerationManagerBase {
             return;
 
         const log = await this.#findAuditLog(guild, user.id, AuditLogActionType.MEMBER_BAN_REMOVE);
-        await this.modLog.logUnban(guild, user, log?.user, literal(log?.reason ?? undefined));
+        await this.modLog.logUnban(guild, user, log?.user, util.literal(log?.reason ?? undefined));
     }
 
     public async userLeft(member: Member): Promise<void> {
@@ -196,7 +196,7 @@ export class BanManager extends ModerationManagerBase {
         if (log === undefined) // no kick audit log, so they probably just left. Dont log.
             return;
 
-        await this.modLog.logKick(member.guild, member.user, log.user, literal(log.reason ?? undefined));
+        await this.modLog.logKick(member.guild, member.user, log.user, util.literal(log.reason ?? undefined));
     }
 
     async #findAuditLog(guild: Guild, targetId: string, type: AuditLogActionType): Promise<GuildAuditLogEntry | undefined> {

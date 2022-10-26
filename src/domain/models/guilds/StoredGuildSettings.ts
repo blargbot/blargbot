@@ -1,4 +1,4 @@
-import { IFormattable } from '../../messages/types';
+import { IFormattable } from '@blargbot/formatting';
 
 export interface StoredGuildSettings {
     readonly actonlimitsonly?: boolean;

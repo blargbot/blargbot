@@ -1,5 +1,4 @@
-import { FormatString } from '@blargbot/domain/messages/FormatString';
-import { IFormattable } from '@blargbot/domain/messages/types';
+import { FormatString, IFormattable } from '@blargbot/formatting';
 
 import { Subtag } from './Subtag';
 

@@ -1,6 +1,6 @@
 import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { avatarColours, CommandType, randChoose } from '@blargbot/cluster/utils';
-import { literal } from '@blargbot/domain/messages/types';
+import { util } from '@blargbot/formatting';
 import Eris from 'eris';
 import moment from 'moment-timezone';
 
@@ -76,7 +76,7 @@ export class StatsCommand extends GlobalCommand {
                     },
                     {
                         name: cmd.default.embed.field.version.name,
-                        value: literal(version),
+                        value: util.literal(version),
                         inline: true
                     },
                     {
@@ -86,12 +86,12 @@ export class StatsCommand extends GlobalCommand {
                     },
                     {
                         name: cmd.default.embed.field.eris.name,
-                        value: literal(Eris.VERSION),
+                        value: util.literal(Eris.VERSION),
                         inline: true
                     },
                     {
                         name: cmd.default.embed.field.nodeJS.name,
-                        value: literal(process.version),
+                        value: util.literal(process.version),
                         inline: true
                     }
                     ]

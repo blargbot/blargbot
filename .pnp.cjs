@@ -72,6 +72,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:src/domain"\
       },\
       {\
+        "name": "@blargbot/formatting",\
+        "reference": "workspace:src/formatting"\
+      },\
+      {\
         "name": "@blargbot/image",\
         "reference": "workspace:src/image"\
       },\
@@ -104,10 +108,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:test/core"\
       },\
       {\
-        "name": "@blargbot/global-tests",\
-        "reference": "workspace:test/global"\
-      },\
-      {\
         "name": "@blargbot/test-util",\
         "reference": "workspace:test/testUtil"\
       }\
@@ -125,7 +125,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@blargbot/core-tests", ["workspace:test/core"]],\
       ["@blargbot/database", ["workspace:src/database"]],\
       ["@blargbot/domain", ["workspace:src/domain"]],\
-      ["@blargbot/global-tests", ["workspace:test/global"]],\
+      ["@blargbot/formatting", ["workspace:src/formatting"]],\
       ["@blargbot/image", ["workspace:src/image"]],\
       ["@blargbot/logger", ["workspace:src/logger"]],\
       ["@blargbot/mapping", ["workspace:src/mapping"]],\
@@ -486,6 +486,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/core", "workspace:src/core"],\
             ["@blargbot/database", "workspace:src/database"],\
             ["@blargbot/domain", "workspace:src/domain"],\
+            ["@blargbot/formatting", "workspace:src/formatting"],\
             ["@blargbot/logger", "workspace:src/logger"],\
             ["@blargbot/mapping", "workspace:src/mapping"],\
             ["@types/brainfuck-node", "workspace:definitions/brainfuck-node"],\
@@ -515,6 +516,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/core", "workspace:src/core"],\
             ["@blargbot/database", "workspace:src/database"],\
             ["@blargbot/domain", "workspace:src/domain"],\
+            ["@blargbot/formatting", "workspace:src/formatting"],\
             ["@blargbot/logger", "workspace:src/logger"],\
             ["@blargbot/test-util", "workspace:test/testUtil"],\
             ["@types/chai", "npm:4.3.3"],\
@@ -544,6 +546,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/core", "workspace:src/core"],\
             ["@blargbot/database", "workspace:src/database"],\
             ["@blargbot/domain", "workspace:src/domain"],\
+            ["@blargbot/formatting", "workspace:src/formatting"],\
             ["@blargbot/image", "workspace:src/image"],\
             ["@blargbot/logger", "workspace:src/logger"],\
             ["@blargbot/mapping", "workspace:src/mapping"],\
@@ -580,6 +583,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/cluster", "workspace:src/cluster"],\
             ["@blargbot/core", "workspace:src/core"],\
             ["@blargbot/domain", "workspace:src/domain"],\
+            ["@blargbot/formatting", "workspace:src/formatting"],\
             ["@blargbot/test-util", "workspace:test/testUtil"],\
             ["@types/chai", "npm:4.3.3"],\
             ["@types/eris", "workspace:definitions/eris"],\
@@ -610,6 +614,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/config", "workspace:src/config"],\
             ["@blargbot/database", "workspace:src/database"],\
             ["@blargbot/domain", "workspace:src/domain"],\
+            ["@blargbot/formatting", "workspace:src/formatting"],\
             ["@blargbot/logger", "workspace:src/logger"],\
             ["@blargbot/mapping", "workspace:src/mapping"],\
             ["@blargbot/res", "workspace:src/res"],\
@@ -644,6 +649,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/core-tests", "workspace:test/core"],\
             ["@blargbot/core", "workspace:src/core"],\
             ["@blargbot/domain", "workspace:src/domain"],\
+            ["@blargbot/formatting", "workspace:src/formatting"],\
             ["@blargbot/test-util", "workspace:test/testUtil"],\
             ["@types/chai", "npm:4.3.3"],\
             ["@types/eris", "workspace:definitions/eris"],\
@@ -687,24 +693,17 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./src/domain/",\
           "packageDependencies": [\
             ["@blargbot/domain", "workspace:src/domain"],\
+            ["@blargbot/formatting", "workspace:src/formatting"],\
             ["moment-timezone", "npm:0.5.37"]\
           ],\
           "linkType": "SOFT"\
         }]\
       ]],\
-      ["@blargbot/global-tests", [\
-        ["workspace:test/global", {\
-          "packageLocation": "./test/global/",\
+      ["@blargbot/formatting", [\
+        ["workspace:src/formatting", {\
+          "packageLocation": "./src/formatting/",\
           "packageDependencies": [\
-            ["@blargbot/global-tests", "workspace:test/global"],\
-            ["@blargbot/bbtag", "workspace:src/bbtag"],\
-            ["@blargbot/cluster", "workspace:src/cluster"],\
-            ["@blargbot/core", "workspace:src/core"],\
-            ["@blargbot/domain", "workspace:src/domain"],\
-            ["@types/chai", "npm:4.3.3"],\
-            ["@types/mocha", "patch:@types/mocha@npm%3A10.0.0#./.yarn/patches/@types-mocha-npm-10.0.0-a2509f7d26.patch::version=10.0.0&hash=decf1a&locator=blargbot%40workspace%3A."],\
-            ["chai", "npm:4.3.6"],\
-            ["mocha", "npm:10.0.0"]\
+            ["@blargbot/formatting", "workspace:src/formatting"]\
           ],\
           "linkType": "SOFT"\
         }]\
@@ -766,6 +765,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/config", "workspace:src/config"],\
             ["@blargbot/core", "workspace:src/core"],\
             ["@blargbot/domain", "workspace:src/domain"],\
+            ["@blargbot/formatting", "workspace:src/formatting"],\
             ["@blargbot/logger", "workspace:src/logger"],\
             ["@blargbot/res", "workspace:src/res"],\
             ["@types/eris", "workspace:definitions/eris"],\
@@ -795,6 +795,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/test-util", "workspace:test/testUtil"],\
             ["@blargbot/core", "workspace:src/core"],\
             ["@blargbot/domain", "workspace:src/domain"],\
+            ["@blargbot/formatting", "workspace:src/formatting"],\
             ["@types/chai", "npm:4.3.3"],\
             ["@types/mocha", "patch:@types/mocha@npm%3A10.0.0#./.yarn/patches/@types-mocha-npm-10.0.0-a2509f7d26.patch::version=10.0.0&hash=decf1a&locator=blargbot%40workspace%3A."],\
             ["chai", "npm:4.3.6"],\
