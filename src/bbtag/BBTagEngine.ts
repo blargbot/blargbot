@@ -30,19 +30,19 @@ export class BBTagEngine {
         const subtags = new Map<string, Subtag>();
         this.subtags = subtags;
         for (const subtag of dependencies.subtags) {
-            const current = subtags.get(subtag.name);
-            if (current?.name === subtag.name)
-                throw new Error(`Duplicate subtag with name ${JSON.stringify(subtag.name)} found`);
-            subtags.set(subtag.name, subtag);
-
-            for (const alias of subtag.aliases) {
-                const current = subtags.get(alias);
-                if (current === undefined)
-                    subtags.set(alias, subtag);
-                else if (current.name !== alias)
-                    throw new Error(`Duplicate subtag with alias ${JSON.stringify(alias)} found`);
+            for (const name of BBTagEngine.#subtagNames(subtag)) {
+                const current = subtags.get(name);
+                if (current !== undefined)
+                    throw new Error(`Duplicate subtag with name ${JSON.stringify(subtag.name)} found`);
+                subtags.set(name, subtag);
             }
         }
+    }
+
+    static * #subtagNames(subtag: Subtag): Generator<string> {
+        yield subtag.name.toLowerCase();
+        for (const alias of subtag.aliases)
+            yield alias.toLowerCase();
     }
 
     public async execute(source: string, options: BBTagContextOptions): Promise<ExecutionResult>

@@ -33,5 +33,13 @@
   },
   "eslint.nodePath": ".yarn/sdks",
   "typescript.enablePromptUseWorkspaceTsdk": true,
-  "cSpell.language": "en-GB"
+  "cSpell.language": "en-GB",
+  "cSpell.words": [
+    "blargbot",
+    "cooldown",
+    "nsfw",
+    "subtag",
+    "subtags",
+    "timedout"
+  ]
 }

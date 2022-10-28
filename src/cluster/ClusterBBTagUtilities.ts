@@ -86,7 +86,7 @@ export class ClusterBBTagUtilities implements BBTagUtilities {
         return this.cluster.moderation.timeouts.clearTimeout(member, moderator, authorizer, util.literal(reason));
     }
 
-    public addModlog(guild: Guild, action: string, user: User, moderator?: User, reason?: string, color?: number): Promise<void> {
+    public addModLog(guild: Guild, action: string, user: User, moderator?: User, reason?: string, color?: number): Promise<void> {
         return this.cluster.moderation.modLog.logCustom(guild, util.literal(action), user, moderator, util.literal(reason), color);
     }
 

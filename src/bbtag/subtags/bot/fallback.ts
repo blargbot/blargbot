@@ -5,7 +5,7 @@ import { SubtagType } from '../../utils';
 
 const tag = templates.subtags.fallback;
 
-export class FallBackSubtag extends CompiledSubtag {
+export class FallbackSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'fallback',

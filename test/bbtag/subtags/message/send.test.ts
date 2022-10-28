@@ -1,6 +1,6 @@
 import { BBTagRuntimeError, ChannelNotFoundError } from '@blargbot/bbtag/errors';
 import { SendSubtag } from '@blargbot/bbtag/subtags/message/send';
-import { EscapeBbtagSubtag } from '@blargbot/bbtag/subtags/misc/escapebbtag';
+import { EscapeBBTagSubtag } from '@blargbot/bbtag/subtags/misc/escapeBBTag';
 import { argument } from '@blargbot/test-util/mock';
 import { expect } from 'chai';
 import { KnownGuildTextableChannel, Message } from 'eris';
@@ -177,7 +177,7 @@ runSubtagTests({
         {
             title: 'Custom command',
             code: '{send;1923681361978632931;{escapebbtag;{"title":"New embed!"}}}',
-            subtags: [new EscapeBbtagSubtag()],
+            subtags: [new EscapeBBTagSubtag()],
             expected: '239476239742340234',
             setup(ctx) {
                 ctx.options.isCC = true;
@@ -259,7 +259,7 @@ runSubtagTests({
         {
             title: 'Tag command',
             code: '{send;1923681361978632931;{escapebbtag;{"title":"New embed!"}}}',
-            subtags: [new EscapeBbtagSubtag()],
+            subtags: [new EscapeBBTagSubtag()],
             expected: '239476239742340234',
             setup(ctx) {
                 ctx.options.isCC = false;
@@ -299,7 +299,7 @@ runSubtagTests({
         {
             title: 'Custom command',
             code: '{send;1923681361978632931;abc;{escapebbtag;{"title":"New embed!"}}}',
-            subtags: [new EscapeBbtagSubtag()],
+            subtags: [new EscapeBBTagSubtag()],
             expected: '239476239742340234',
             setup(ctx) {
                 ctx.options.isCC = true;
@@ -342,7 +342,7 @@ runSubtagTests({
         {
             title: 'Tag command',
             code: '{send;1923681361978632931;abc;{escapebbtag;{"title":"New embed!"}}}',
-            subtags: [new EscapeBbtagSubtag()],
+            subtags: [new EscapeBBTagSubtag()],
             expected: '239476239742340234',
             setup(ctx) {
                 ctx.options.isCC = false;
@@ -382,7 +382,7 @@ runSubtagTests({
         {
             title: 'Custom command',
             code: '{send;1923681361978632931;abc;{escapebbtag;{"title":"New embed!"}};my file content}',
-            subtags: [new EscapeBbtagSubtag()],
+            subtags: [new EscapeBBTagSubtag()],
             expected: '239476239742340234',
             setup(ctx) {
                 ctx.options.isCC = true;
@@ -425,7 +425,7 @@ runSubtagTests({
         {
             title: 'Tag command',
             code: '{send;1923681361978632931;abc;{escapebbtag;{"title":"New embed!"}};my file content}',
-            subtags: [new EscapeBbtagSubtag()],
+            subtags: [new EscapeBBTagSubtag()],
             expected: '239476239742340234',
             setup(ctx) {
                 ctx.options.isCC = false;
@@ -465,7 +465,7 @@ runSubtagTests({
         {
             title: 'Custom command',
             code: '{send;1923681361978632931;abc;{escapebbtag;{"title":"New embed!"}};buffer:abcdef}',
-            subtags: [new EscapeBbtagSubtag()],
+            subtags: [new EscapeBBTagSubtag()],
             expected: '239476239742340234',
             setup(ctx) {
                 ctx.options.isCC = true;
@@ -514,7 +514,7 @@ runSubtagTests({
         {
             title: 'Tag command',
             code: '{send;1923681361978632931;abc;{escapebbtag;{"title":"New embed!"}};buffer:abcdef}',
-            subtags: [new EscapeBbtagSubtag()],
+            subtags: [new EscapeBBTagSubtag()],
             expected: '239476239742340234',
             setup(ctx) {
                 ctx.options.isCC = false;
@@ -560,7 +560,7 @@ runSubtagTests({
         {
             title: 'Custom command',
             code: '{send;1923681361978632931;abc;{escapebbtag;{"title":"New embed!"}};my file content;test.zip}',
-            subtags: [new EscapeBbtagSubtag()],
+            subtags: [new EscapeBBTagSubtag()],
             expected: '239476239742340234',
             setup(ctx) {
                 ctx.options.isCC = true;
@@ -603,7 +603,7 @@ runSubtagTests({
         {
             title: 'Tag command',
             code: '{send;1923681361978632931;abc;{escapebbtag;{"title":"New embed!"}};my file content;test.zip}',
-            subtags: [new EscapeBbtagSubtag()],
+            subtags: [new EscapeBBTagSubtag()],
             expected: '239476239742340234',
             setup(ctx) {
                 ctx.options.isCC = false;
@@ -643,7 +643,7 @@ runSubtagTests({
         {
             title: 'Custom command',
             code: '{send;1923681361978632931;abc;{escapebbtag;{"title":"New embed!"}};buffer:abcdef;test.zip}',
-            subtags: [new EscapeBbtagSubtag()],
+            subtags: [new EscapeBBTagSubtag()],
             expected: '239476239742340234',
             setup(ctx) {
                 ctx.options.isCC = true;
@@ -692,7 +692,7 @@ runSubtagTests({
         {
             title: 'Tag command',
             code: '{send;1923681361978632931;abc;{escapebbtag;{"title":"New embed!"}};buffer:abcdef;test.zip}',
-            subtags: [new EscapeBbtagSubtag()],
+            subtags: [new EscapeBBTagSubtag()],
             expected: '239476239742340234',
             setup(ctx) {
                 ctx.options.isCC = false;

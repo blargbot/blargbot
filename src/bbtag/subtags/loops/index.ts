@@ -1,4 +1,4 @@
 export * from './for';
-export * from './foreach';
+export * from './forEach';
 export * from './repeat';
 export * from './while';

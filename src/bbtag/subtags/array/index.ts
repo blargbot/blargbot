@@ -1,6 +1,6 @@
 export * from './concat';
 export * from './filter';
-export * from './isarray';
+export * from './isArray';
 export * from './join';
 export * from './map';
 export * from './pop';

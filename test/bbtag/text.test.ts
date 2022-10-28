@@ -216,7 +216,7 @@ Database Execution Time: 678ms
                     exampleCode: '{set;~array;apples;apple juice;grapefruit}\n{filter;~element;~array;{bool;{get;~element};startswith;apple}}'
                 }
             },
-            isarray: {
+            isArray: {
                 default: {
                     description: 'Determines whether `text` is a valid array.',
                     exampleOut: 'true false',
@@ -309,7 +309,7 @@ Database Execution Time: 678ms
                 default: {
                     description: 'Executes `subtag`, using the `args` as parameters. If `args` is an array, it will get deconstructed to it\'s individual elements.',
                     exampleOut: '3',
-                    exampleCode: '{apply;randint;[1,4]}'
+                    exampleCode: '{apply;randomInt;[1,4]}'
                 }
             },
             args: {
@@ -332,12 +332,12 @@ Database Execution Time: 678ms
                     exampleCode: '{args;2;4}'
                 }
             },
-            commandname: {
+            commandName: {
                 default: {
                     description: 'Gets the name of the current tag or custom command.',
                     exampleIn: 'b!cc test',
                     exampleOut: 'This command is test',
-                    exampleCode: 'This command is {commandname}'
+                    exampleCode: 'This command is {commandName}'
                 }
             },
             commit: {
@@ -367,18 +367,18 @@ Database Execution Time: 678ms
                     exampleCode: '{dump;Hello, world!}'
                 }
             },
-            exec: {
+            execTag: {
                 default: {
-                    description: 'Executes another `tag`, giving it `args` as the input. Useful for modules.\n`{exec}` executes `tag` as if `tag`\'s code was in the root tag/ccommand.',
+                    description: 'Executes the `name` tag, giving it `args` as the input. Useful for modules.\n`{execTag}` executes the tag as if its code was in the root command.',
                     exampleOut: 'Let me do a tag for you. User#1111 has paid their respects. Total respects given: 5',
-                    exampleCode: 'Let me do a tag for you. {exec;f}'
+                    exampleCode: 'Let me do a tag for you. {execTag;f}'
                 }
             },
-            execcc: {
+            execCustomCommand: {
                 default: {
-                    description: 'Executes another `ccommand`, giving it `args` as the input. Useful for modules.\n`{exec}` executes `ccommand` as if `ccommand`\'s code was in the root ccommand.',
-                    exampleOut: 'Let me do a ccommand for you. User#1111 has paid their respects. Total respects given: 5',
-                    exampleCode: 'Let me do a ccommand for you. {execcc;f}'
+                    description: 'Executes the `name` custom command, giving it `args` as the input. Useful for modules.\n`{execCustomCommand}` executes the command as if its code was in the root command.',
+                    exampleOut: 'Let me do a command for you. User#1111 has paid their respects. Total respects given: 5',
+                    exampleCode: 'Let me do a command for you. {execCustomCommand;f}'
                 }
             },
             fallback: {
@@ -401,27 +401,27 @@ Database Execution Time: 678ms
                     exampleCode: '{flag;a} {flag;_}'
                 }
             },
-            flagsarray: {
+            flagsArray: {
                 default: {
                     description: 'Returns an array of all flags provided.',
                     exampleIn: 'Hello -dc world',
                     exampleOut: '["_","d","c"]',
-                    exampleCode: '{flagsarray}'
+                    exampleCode: '{flagsArray}'
                 }
             },
-            flagset: {
+            flagSet: {
                 default: {
                     description: 'Returns `true` or `false`, depending on whether the specified case-sensitive flag code has been set or not.',
                     exampleIn: 'Hello, -a world!',
                     exampleOut: 'true false',
-                    exampleCode: '{flagset;a} {flagset;_}'
+                    exampleCode: '{flagSet;a} {flagSet;_}'
                 }
             },
             function: {
                 default: {
-                    description: 'Defines a function called `name`. Functions are called in the same way as subtags, however they are prefixed with `func.`. While inside the `code` block of a function, you may use the `params`, `paramsarray` and `paramslength` subtags to access the values passed to the function. These function identically to their `args` counterparts. \n\nPlease note that there is a recursion limit of 200 which is also shared by `{exec}`, `{execcc}` and `{inject}`.',
+                    description: 'Defines a function called `name`. Functions are called in the same way as subtags, however they are prefixed with `func.`. While inside the `code` block of a function, you may use the `params`, `paramsArray` and `paramsLength` subtags to access the values passed to the function. These function identically to their `args` counterparts. \n\nPlease note that there is a recursion limit of 200 which is also shared by `{execTag}`, `{execCustomCommand}` and `{inject}`.',
                     exampleOut: '["1","2","3","4"]',
-                    exampleCode: '{function;test;{paramsarray}} {func.test;1;2;3;4}'
+                    exampleCode: '{function;test;{paramsArray}} {func.test;1;2;3;4}'
                 }
             },
             get: {
@@ -452,22 +452,22 @@ Database Execution Time: 678ms
                 default: {
                     description: 'Executes any arbitrary BBTag that is within `code` and returns the result. Useful for making dynamic code, or as a testing tool (`{inject;{args}}`)',
                     exampleOut: 'Random Number: 3',
-                    exampleCode: 'Random Number: {inject;{lb}randint{semi}1{semi}4{rb}}'
+                    exampleCode: 'Random Number: {inject;{lb}randomInt{semi}1{semi}4{rb}}'
                 }
             },
             lock: {
                 default: {
                     description: 'Provides read/write locking functionality for bbtag. This is a very advanced feature, so it is recommended that you first [read about the concept of locks](https://en.wikipedia.org/wiki/Lock_(computer_science)).\n\nIn simple terms, a lock allows commands running at the same time to cooperate and wait for each other to finish what they are doing before "releasing the lock" and letting other commands use that lock. This can be used to secure against data being edited by 2 things at the same time, which can cause inconsistencies.\n\nThere can be multiple `read` locks held at once or a single `write` lock. This means that if all your command is doing is reading some data then as long as nothing is writing to it, it will be allowed, otherwise the command will wait until it can acquire a lock.\n\n`mode` must be either `read` or `write`.\n`key` can be anything. This follows the same scoping rules as variables do.\n`code` will be run once the lock is acquired',
                     exampleOut: '\nStart\nMiddle\nEnd\nStart\nMiddle\nEnd\nThis order is guaranteed always. Without a lock it isn\'t',
-                    exampleCode: '\n{//;in 2 command run in quick succession}\n{lock;write;key;\n  {void;\n    {send;{channelid};Start}\n    {send;{channelid};Middle}\n    {send;{channelid};End}\n  }\n}\nThis order is guaranteed always. Without a lock it isn\'t'
+                    exampleCode: '\n{//;in 2 command run in quick succession}\n{lock;write;key;\n  {void;\n    {send;{channelId};Start}\n    {send;{channelId};Middle}\n    {send;{channelId};End}\n  }\n}\nThis order is guaranteed always. Without a lock it isn\'t'
                 }
             },
-            modlog: {
+            modLog: {
                 description: 'If `moderator` is not provided or left empty, it will default to blargbot.',
                 default: {
-                    description: 'Creates a custom modlog entry with the given `action` and `user` with `reason`. `color` can be a [HTML color](https://www.w3schools.com/colors/colors_names.asp), hex, (r,g,b) or a valid color number. .',
-                    exampleOut: 'You did a bad! (modlog entry with white embed colour and reason \'They did a bad!\'',
-                    exampleCode: 'You did a bad! {modlog;Bad;{userid};;They did a bad;#ffffff}'
+                    description: 'Creates a custom modLog entry with the given `action` and `user` with `reason`. `color` can be a [HTML color](https://www.w3schools.com/colors/colors_names.asp), hex, (r,g,b) or a valid color number. .',
+                    exampleOut: 'You did a bad! (modLog entry with white embed colour and reason \'They did a bad!\'',
+                    exampleCode: 'You did a bad! {modLog;Bad;{userId};;They did a bad;#ffffff}'
                 }
             },
             nsfw: {
@@ -494,18 +494,18 @@ Database Execution Time: 678ms
                     exampleCode: '{func;test;The first parameter is `{params;2;4}`}\n{func.test;A;B;C;D;E;F}'
                 }
             },
-            paramsarray: {
+            paramsArray: {
                 default: {
                     description: 'Gets the parameters passed to the current function as an array',
                     exampleOut: '["a","b","c","d"]',
-                    exampleCode: '{func.test;{paramsarray}}\n{func.test;a;b;c;d}'
+                    exampleCode: '{func.test;{paramsArray}}\n{func.test;a;b;c;d}'
                 }
             },
-            paramslength: {
+            paramsLength: {
                 default: {
                     description: 'Gets the number of parameters passed to the current function',
                     exampleOut: '["a","b","c","d"]',
-                    exampleCode: '{func.test;{paramslength}}\n{func.test;a;b;c;d}'
+                    exampleCode: '{func.test;{paramsLength}}\n{func.test;a;b;c;d}'
                 }
             },
             prefix: {
@@ -519,22 +519,22 @@ Database Execution Time: 678ms
                 default: {
                     description: 'Tells any subtags that rely on a `quiet` field to be/not be quiet based on `isQuiet. `isQuiet` must be a boolean',
                     exampleOut: 'cat',
-                    exampleCode: '{quiet} {usermention;cat}'
+                    exampleCode: '{quiet} {userMention;cat}'
                 }
             },
             reason: {
                 default: {
-                    description: 'Sets the reason for the next API call (ex. roleadd, roleremove, ban, etc.). If `reason` is empty the reason will be empty',
+                    description: 'Sets the reason for the next API call (ex. roleAdd, roleRemove, ban, etc.). If `reason` is empty the reason will be empty',
                     exampleOut: '("This will show up in the audit logs" showed up)',
-                    exampleCode: '{reason;This will show up in the audit logs!}{roleadd;111111111111}'
+                    exampleCode: '{reason;This will show up in the audit logs!}{roleAdd;111111111111}'
                 }
             },
             request: {
-                description: 'Only certain whitelisted domains can be used for `url`. See [here](https://blargbot.xyz/domains) for the list.The output is a JSON object with the following structure. It is recommended to use {jsonget} to navigate it.\n```json\n{\n  "body": {}, // the body of the request\n  "status": 200, // the HTTP status code\n  "statusText": "OK", // the human readable translation of the status code\n  "date": "Thu, 1 Jan 1970 00:00:00 GMT", // the date sent in the headers\n  "contentType": "application/json", // the content type of the response\n  "url": "https://fancy.url/here" // the url that was requested\n}\n```',
+                description: 'Only certain whitelisted domains can be used for `url`. See [here](https://blargbot.xyz/domains) for the list.The output is a JSON object with the following structure. It is recommended to use {jsonGet} to navigate it.\n```json\n{\n  "body": {}, // the body of the request\n  "status": 200, // the HTTP status code\n  "statusText": "OK", // the human readable translation of the status code\n  "date": "Thu, 1 Jan 1970 00:00:00 GMT", // the date sent in the headers\n  "contentType": "application/json", // the content type of the response\n  "url": "https://fancy.url/here" // the url that was requested\n}\n```',
                 default: {
-                    description: 'Performs a HTTP request to `url`, with provided `options` and `data`.`options` is a JSON object with the following structure. It is recommended to use {jsonset} to create it.\n```json\n{\n  "method": "GET|POST|PUT|PATCH|DELETE", // defaults to GET\n  "headers": { "key": "value" }\n}\n```If the method is GET and a JSON object is provided for `data`, it will be formatted as query strings.',
+                    description: 'Performs a HTTP request to `url`, with provided `options` and `data`.`options` is a JSON object with the following structure. It is recommended to use {jsonSet} to create it.\n```json\n{\n  "method": "GET|POST|PUT|PATCH|DELETE", // defaults to GET\n  "headers": { "key": "value" }\n}\n```If the method is GET and a JSON object is provided for `data`, it will be formatted as query strings.',
                     exampleOut: 'Stupid cat updated!',
-                    exampleCode: '{jget;{request;https://example.com/update/user;{jset;;method;POST};{jset;;user;Stupid cat}};body}'
+                    exampleCode: '{jGet;{request;https://example.com/update/user;{jset;;method;POST};{jset;;user;Stupid cat}};body}'
                 }
             },
             return: {
@@ -581,7 +581,7 @@ Database Execution Time: 678ms
                     exampleCode: '{set;var1;This is local var1}\n{set;~var2;This is temporary var2}\n{get;var1}\n{get;~var2}'
                 },
                 array: {
-                    description: 'Stores an array under `name`.\nWhen getting the array, you\'ll notice it retrieved an object, In this object `v` is the array itself, and `n` is the `name` of the variable. If the array itself needs to be returned instead of object, in for example `{jset;;array;{get;~array}}`, you can use `{slice;<arrayname>;0}`. In array subtags `{get} will work as intended.`',
+                    description: 'Stores an array under `name`.\nWhen getting the array, you\'ll notice it retrieved an object, In this object `v` is the array itself, and `n` is the `name` of the variable. If the array itself needs to be returned instead of object, in for example `{jSet;;array;{get;~array}}`, you can use `{slice;<arrayName>;0}`. In array subtags `{get} will work as intended.`',
                     exampleOut: '{"v":["this","is","an","array"],"n":"var3"}',
                     exampleCode: '{set;var3;this;is;an;array}\n{get;var3}'
                 }
@@ -590,21 +590,21 @@ Database Execution Time: 678ms
                 default: {
                     description: 'Pauses the current tag for the specified amount of time. Maximum is 5 minutes',
                     exampleOut: '(After 10s) Hi!',
-                    exampleCode: '{sleep;10s}{send;{channelid};Hi!}'
+                    exampleCode: '{sleep;10s}{send;{channelId};Hi!}'
                 }
             },
-            subtagexists: {
+            subtagExists: {
                 default: {
                     description: 'Checks to see if `subtag` exists.',
                     exampleOut: 'true false',
-                    exampleCode: '{subtagexists;ban} {subtagexists;AllenKey}'
+                    exampleCode: '{subtagExists;ban} {subtagExists;AllenKey}'
                 }
             },
-            suppresslookup: {
+            suppressLookup: {
                 default: {
                     description: 'Sets whether error messages in the lookup system (query canceled, nothing found) should be suppressed. `value` must be a boolean',
                     exampleOut: '',
-                    exampleCode: '{suppresslookup}'
+                    exampleCode: '{suppressLookup}'
                 }
             },
             throw: {
@@ -621,171 +621,171 @@ Database Execution Time: 678ms
                     exampleCode: '{timer;Hello!;20s}'
                 }
             },
-            channelcategories: {
+            channelCategories: {
                 default: {
-                    description: 'Returns an array of category IDs on the current guild.',
+                    description: 'Returns an array of category ids on the current guild.',
                     exampleOut: 'This guild has 7 categories.',
                     exampleCode: 'This guild has {length;{categories}} categories.'
                 }
             },
-            channelcategory: {
+            channelCategory: {
                 current: {
-                    description: 'Returns the category ID of the current channel.',
+                    description: 'Returns the category id of the current channel.',
                     exampleOut: '111111111111111',
-                    exampleCode: '{channelcategory}'
+                    exampleCode: '{channelCategory}'
                 },
                 channel: {
-                    description: 'Returns the category ID of the provided `channel`. If the provided `channel` is a category this returns nothing. If it cannot be found returns `No channel found`, or nothing if `quiet` is `true`.',
+                    description: 'Returns the category id of the provided `channel`. If the provided `channel` is a category this returns nothing. If it cannot be found returns `No channel found`, or nothing if `quiet` is `true`.',
                     exampleOut: '111111111111111\n(nothing is returned here)',
-                    exampleCode: '{channelcategory;cool channel}\n{channelcategory;cool category}'
+                    exampleCode: '{channelCategory;cool channel}\n{channelCategory;cool category}'
                 }
             },
-            channelcreate: {
+            channelCreate: {
                 description: '`type` is either `text`, `voice`, `category`, `news` or `store`.\n',
                 default: {
-                    description: 'Creates a channel with the specified `options` of type `type``options` is a JSON object, containing any or all of the following properties:\n- `topic`\n- `nsfw`\n- `parentID`\n- `reason` (displayed in audit log)\n- `rateLimitPerUser`\n- `bitrate` (voice)\n- `userLimit` (voice)\nReturns the new channel\'s ID.',
+                    description: 'Creates a channel with the specified `options` of type `type``options` is a JSON object, containing any or all of the following properties:\n- `topic`\n- `nsfw`\n- `parentId`\n- `reason` (displayed in audit log)\n- `rateLimitPerUser`\n- `bitrate` (voice)\n- `userLimit` (voice)\nReturns the new channel\'s id.',
                     exampleOut: '22222222222222222',
-                    exampleCode: '{channelcreate;super-channel;;{json;{"parentID":"11111111111111111"}}}'
+                    exampleCode: '{channelCreate;super-channel;;{json;{"parentId":"11111111111111111"}}}'
                 }
             },
-            channeldelete: {
+            channelDelete: {
                 default: {
                     description: 'Deletes the provided `channel`.',
                     exampleOut: '',
-                    exampleCode: '{channeldelete;11111111111111111}'
+                    exampleCode: '{channelDelete;11111111111111111}'
                 }
             },
-            channeledit: {
+            channelEdit: {
                 default: {
-                    description: 'Edits a channel with the given information.\n`options` is a JSON object, containing any or all of the following properties:\n- `name`\n- `topic`\n- `nsfw`\n- `parentID`\n- `reason` (displayed in audit log)\n- `rateLimitPerUser`\n- `bitrate` (voice)\n- `userLimit` (voice)\nReturns the channel\'s ID.',
+                    description: 'Edits a channel with the given information.\n`options` is a JSON object, containing any or all of the following properties:\n- `name`\n- `topic`\n- `nsfw`\n- `parentId`\n- `reason` (displayed in audit log)\n- `rateLimitPerUser`\n- `bitrate` (voice)\n- `userLimit` (voice)\nReturns the channel\'s id.',
                     exampleOut: '11111111111111111',
-                    exampleCode: '{channeledit;11111111111111111;{j;{"name": "super-cool-channel"}}}'
+                    exampleCode: '{channelEdit;11111111111111111;{j;{"name": "super-cool-channel"}}}'
                 }
             },
-            channelid: {
+            channelId: {
                 current: {
-                    description: 'Returns the ID of the current channel.',
+                    description: 'Returns the id of the current channel.',
                     exampleOut: '111111111111111',
-                    exampleCode: '{channelid}'
+                    exampleCode: '{channelId}'
                 },
                 channel: {
-                    description: 'Returns the ID of the given channel. If it cannot be found returns `No channel found`, or nothing if `quiet` is `true`.',
+                    description: 'Returns the id of the given channel. If it cannot be found returns `No channel found`, or nothing if `quiet` is `true`.',
                     exampleOut: '111111111111111\n(nothing is returned here)',
-                    exampleCode: '{channelid;cool channel}\n{channelid;some channel that doesn\'t exist;true}'
+                    exampleCode: '{channelId;cool channel}\n{channelId;some channel that doesn\'t exist;true}'
                 }
             },
-            channeliscategory: {
+            channelIsCategory: {
                 default: {
                     description: 'Checks if `channel` is a category. If it cannot be found returns `No channel found`, or `false` if `quiet` is `true`.',
                     exampleOut: 'true\n(nothing is returned here)',
-                    exampleCode: '{channeliscategory;cool category}\n{channeliscategory;category that doesn\'t exist}'
+                    exampleCode: '{channelIsCategory;cool category}\n{channelIsCategory;category that doesn\'t exist}'
                 }
             },
-            channelisnsfw: {
+            channelIsNsfw: {
                 current: {
                     description: 'Checks if the current channel is a NSFW channel.',
                     exampleOut: 'fluffy bunnies',
-                    exampleCode: '{if;{isnsfw};Spooky nsfw stuff;fluffy bunnies}'
+                    exampleCode: '{if;{channelIsNsfw};Spooky nsfw stuff;fluffy bunnies}'
                 },
                 channel: {
                     description: 'Checks if `channel` is a NSFW channel. If it cannot be found returns `No channel found`, or `false` if `quiet` is `true`.',
                     exampleOut: 'true',
-                    exampleCode: '{isnsfw;SFW Cat pics}'
+                    exampleCode: '{channelIsNsfw;SFW Cat pics}'
                 }
             },
-            channelistext: {
+            channelIsText: {
                 current: {
                     description: 'Checks if the current channel is a text channel.',
                     exampleOut: 'Yeah you can write stuff here',
-                    exampleCode: '{if;{istext};Yeah you can write stuff here;How did you even call the command?}'
+                    exampleCode: '{if;{channelIsText};Yeah you can write stuff here;How did you even call the command?}'
                 },
                 channel: {
                     description: 'Checks if `channel` is a text channel. If it cannot be found returns `No channel found`, or `false` if `quiet` is `true`.',
                     exampleOut: 'true',
-                    exampleCode: '{istext;feature discussions}'
+                    exampleCode: '{channelIsText;feature discussions}'
                 }
             },
-            channelisthread: {
+            channelIsThread: {
                 current: {
                     description: 'Checks if the current channel is a thread channel.',
                     exampleOut: 'Cool, this is a thread channel!',
-                    exampleCode: '{if;{isthread};Cool, this is a thread channel!;Boo, this is a regular text channel}'
+                    exampleCode: '{if;{channelIsThread};Cool, this is a thread channel!;Boo, this is a regular text channel}'
                 },
                 channel: {
                     description: 'Checks if `channel` is a thread channel. If it cannot be found returns `No channel found`, or `false` if `quiet` is `true`.',
                     exampleOut: 'true',
-                    exampleCode: '{isthread;blargbot podcast}'
+                    exampleCode: '{channelIsThread;blargbot podcast}'
                 }
             },
-            channelisvoice: {
+            channelIsVoice: {
                 current: {
                     description: 'Checks if the current channel is a voice channel.',
                     exampleOut: 'Yeah you can write stuff here',
-                    exampleCode: '{if;{isvoice};How did you even call the command?;Yeah you can write stuff here}'
+                    exampleCode: '{if;{channelIsVoice};How did you even call the command?;Yeah you can write stuff here}'
                 },
                 channel: {
                     description: 'Checks if `channel` is a voice channel. If it cannot be found returns `No channel found`, or `false` if `quiet` is `true`.',
                     exampleOut: 'true',
-                    exampleCode: '{isvoice;blargbot podcast}'
+                    exampleCode: '{channelIsVoice;blargbot podcast}'
                 }
             },
-            channelname: {
+            channelName: {
                 current: {
                     description: 'Returns the name of the current channel.',
                     exampleOut: 'This channel\'s name is test-channel',
-                    exampleCode: 'This channel\'s name is {channelname}'
+                    exampleCode: 'This channel\'s name is {channelName}'
                 },
                 channel: {
                     description: 'Returns the name of the given `channel`. If it cannot be found returns `No channel found`, or nothing if `quiet` is `true`.',
                     exampleOut: 'cooler-test-channel',
-                    exampleCode: '{channelname;111111111111111}'
+                    exampleCode: '{channelName;111111111111111}'
                 }
             },
-            channelpos: {
+            channelPosition: {
                 description: 'The position is the index per channel type (text, voice or category) in the channel list.',
                 current: {
                     description: 'Returns the position of the current channel.',
                     exampleOut: 'This channel is in position 1',
-                    exampleCode: 'This channel is in position {channelpos}'
+                    exampleCode: 'This channel is in position {channelPosition}'
                 },
                 channel: {
                     description: 'Returns the position of the given `channel`. If it cannot be found returns `No channel found`, or nothing if `quiet` is `true`.',
                     exampleOut: 'The position of test-channel is 0',
-                    exampleCode: 'The position of test-channel is {channelpos;test-channel}'
+                    exampleCode: 'The position of test-channel is {channelPosition;test-channel}'
                 }
             },
             channels: {
                 current: {
-                    description: 'Returns an array of channel IDs in the current guild',
+                    description: 'Returns an array of channel ids in the current guild',
                     exampleOut: 'This guild has {length;{channels}} channels.',
                     exampleCode: 'This guild has {length;{channels}} channels.'
                 },
                 channel: {
-                    description: 'Returns an array of channel IDs in within the given `category`. If `category` is not a category, returns an empty array. If `category` cannot be found returns `No channel found`, or nothing if `quiet` is `true`.',
+                    description: 'Returns an array of channel ids in within the given `category`. If `category` is not a category, returns an empty array. If `category` cannot be found returns `No channel found`, or nothing if `quiet` is `true`.',
                     exampleOut: 'Category cat-channels has 6 channels.',
                     exampleCode: 'Category cat-channels has {length;{channels;cat-channels}} channels.'
                 }
             },
-            channelsetperms: {
+            channelSetPermissions: {
                 current: {
-                    description: 'Deletes the permission overwrites of `memberid|roleid` in `channel`.\nReturns the channel\'s ID.',
+                    description: 'Deletes the permission overwrites of `memberId|roleId` in `channel`.\nReturns the channel\'s id.',
                     exampleOut: '11111111111111111',
-                    exampleCode: '{channelsetperms;11111111111111111;member;222222222222222222}'
+                    exampleCode: '{channelSetPermissions;11111111111111111;member;222222222222222222}'
                 },
                 channel: {
-                    description: 'Sets the permissions of a `member` or `role` in `channel`\n`type` is either `member` or `role`, and `memberid|roleid` corresponds to the id of the member or role.\nProvide `allow` and `deny` as numbers, which can be calculated [here](https://discordapi.com/permissions.html). Returns the channel\'s ID.',
+                    description: 'Sets the permissions of a `member` or `role` in `channel`\n`type` is either `member` or `role`, and `memberId|roleId` corresponds to the id of the member or role.\nProvide `allow` and `deny` as numbers, which can be calculated [here](https://discordapi.com/permissions.html). Returns the channel\'s id.',
                     exampleOut: '11111111111111111',
-                    exampleCode: '{channelsetperms;11111111111111111;member;222222222222222222;1024;2048}'
+                    exampleCode: '{channelSetPermissions;11111111111111111;member;222222222222222222;1024;2048}'
                 }
             },
-            channelsetpos: {
+            channelSetPosition: {
                 default: {
                     description: 'Moves a channel to the provided position.',
                     exampleOut: '',
-                    exampleCode: '{channelsetpos;11111111111111111;5}'
+                    exampleCode: '{channelSetPosition;11111111111111111;5}'
                 }
             },
-            channeltype: {
+            channelType: {
                 description: [
                     {
                         name: 'default',
@@ -796,61 +796,61 @@ Database Execution Time: 678ms
                 current: {
                     description: 'Returns the type the current channel.',
                     exampleOut: 'text',
-                    exampleCode: '{channeltype}'
+                    exampleCode: '{channelType}'
                 },
                 channel: {
                     description: 'Returns the type the given `channel`. If it cannot be found returns `No channel found`, or nothing if `quiet` is `true`.',
                     exampleOut: 'voice\n(nothing is returned here)',
-                    exampleCode: '{channeltype;cool channel}\n{channeltype;some channel that doesn\'t exist;true}'
+                    exampleCode: '{channelType;cool channel}\n{channelType;some channel that doesn\'t exist;true}'
                 }
             },
-            lastmessageid: {
+            lastMessageId: {
                 description: 'Returns nothing if the channel doesn\'t have any messages.',
                 current: {
-                    description: 'Returns the messageID of the last message in the current channel.',
+                    description: 'Returns the messageId of the last message in the current channel.',
                     exampleOut: '1111111111111111',
-                    exampleCode: '{lastmessageid}'
+                    exampleCode: '{lastMessageId}'
                 },
                 channel: {
-                    description: 'Returns the messageID of the last message in `channel`.',
+                    description: 'Returns the messageId of the last message in `channel`.',
                     exampleOut: '2222222222222222',
-                    exampleCode: '{lastmessageid;1111111111111111}'
+                    exampleCode: '{lastMessageId;1111111111111111}'
                 }
             },
-            slowmode: {
+            slowMode: {
                 clearCurrent: {
-                    description: 'Removes slowmode for the current channel.',
-                    exampleOut: '(slowmode is now disabled)',
-                    exampleCode: '{slowmode}'
+                    description: 'Removes slow mode for the current channel.',
+                    exampleOut: '(slow mode is now disabled)',
+                    exampleCode: '{slowMode}'
                 },
                 clearChannel: {
-                    description: 'Removes slowmode for the given `channel`',
-                    exampleOut: '(disabled slowmode in testing-grounds)',
-                    exampleCode: '{slowmode;testing-grounds}'
+                    description: 'Removes slow mode for the given `channel`',
+                    exampleOut: '(disabled slow mode in testing-grounds)',
+                    exampleCode: '{slowMode;testing-grounds}'
                 },
                 setCurrent: {
-                    description: 'Enables slowmode in the current channel and set the cooldown to `time`.',
+                    description: 'Enables slow mode in the current channel and set the cooldown to `time`.',
                     exampleOut: '(set slow mode to 10 seconds)',
-                    exampleCode: '{slowmode;10}'
+                    exampleCode: '{slowMode;10}'
                 },
                 setChannel: {
-                    description: 'Enables slowmode in `channel` and set the cooldown to `time`.',
-                    exampleOut: '(set slowmode cooldown to 10 seconds in testing-grounds)\n(set slowmode to 50s in the current channel)',
-                    exampleCode: '{slowmode;testing-grounds;10}\n{slowmode;50;doesn\'t matter}'
+                    description: 'Enables slow mode in `channel` and set the cooldown to `time`.',
+                    exampleOut: '(set slow mode cooldown to 10 seconds in testing-grounds)\n(set slow mode to 50s in the current channel)',
+                    exampleCode: '{slowMode;testing-grounds;10}\n{slowMode;50;doesn\'t matter}'
                 }
             },
-            emojicreate: {
+            emojiCreate: {
                 default: {
-                    description: 'Creates a emoji with the given name and image. `image` is either a link to an image, or a base64 encoded data url (`data:<content-type>;base64,<base64-data>`). You may need to use {semi} for the latter.`roles`, if provided, will restrict the emoji\'s usage to the specified roles. Must be an array of roles.Returns the new emojis\'s ID.',
+                    description: 'Creates a emoji with the given name and image. `image` is either a link to an image, or a base64 encoded data url (`data:<content-type>;base64,<base64-data>`). You may need to use {semi} for the latter.`roles`, if provided, will restrict the emoji\'s usage to the specified roles. Must be an array of roles.Returns the new emojis\'s id.',
                     exampleOut: '11111111111111111',
-                    exampleCode: '{emojicreate;fancy_emote;https://some.cool/image.png;["Cool gang"]}'
+                    exampleCode: '{emojiCreate;fancy_emote;https://some.cool/image.png;["Cool gang"]}'
                 }
             },
-            emojidelete: {
+            emojiDelete: {
                 default: {
                     description: 'Deletes an emoji with the provided `id`',
                     exampleOut: '',
-                    exampleCode: '{emojidelete;11111111111111111}'
+                    exampleCode: '{emojiDelete;11111111111111111}'
                 }
             },
             emojis: {
@@ -866,74 +866,74 @@ Database Execution Time: 678ms
                     exampleCode: 'Cool gang has {length;{emojis;Cool gang}} emojis.'
                 }
             },
-            guildbans: {
+            guildBans: {
                 default: {
                     description: 'Returns an array of banned users in the current guild.',
                     exampleOut: 'This guild has 123 banned users.',
-                    exampleCode: 'This guild has {length;{guildbans}} banned users.'
+                    exampleCode: 'This guild has {length;{guildBans}} banned users.'
                 }
             },
-            guildcreatedat: {
+            guildCreatedAt: {
                 default: {
                     description: 'Returns the date the current guild was created, in UTC+0. If a `format` code is specified, the date is formatted accordingly. Leave blank for default formatting. See the [moment documentation](http://momentjs.com/docs/#/displaying/format/) for more information.',
                     exampleOut: 'This guild was created on 2016/01/01 01:00:00',
-                    exampleCode: 'This guild was created on {guildcreatedat;YYYY/MM/DD HH:mm:ss}'
+                    exampleCode: 'This guild was created on {guildCreatedAt;YYYY/MM/DD HH:mm:ss}'
                 }
             },
-            guildfeatures: {
+            guildFeatures: {
                 default: {
                     description: 'Returns an array of guild feature strings. For a full list click [this link](https://discord.com/developers/docs/resources/guild#guild-object-guild-features).',
                     exampleOut: '["COMMUNITY","COMMERCE","NEWS","PREVIEW_ENABLED","WELCOME_SCREEN_ENABLED","MEMBER_VERIFICATION_GATE_ENABLED","THREADS_ENABLED"]',
-                    exampleCode: '{guildfeatures}'
+                    exampleCode: '{guildFeatures}'
                 }
             },
-            guildicon: {
+            guildIcon: {
                 default: {
                     description: 'Returns the icon of the current guild. If it doesn\'t exist returns nothing.',
                     exampleOut: 'The guild\'s icon is (icon url)',
-                    exampleCode: 'The guild\'s icon is {guildicon}'
+                    exampleCode: 'The guild\'s icon is {guildIcon}'
                 }
             },
-            guildid: {
+            guildId: {
                 default: {
                     description: 'Returns the id of the current guild.',
                     exampleOut: 'The guild\'s id is 1234567890123456',
-                    exampleCode: 'The guild\'s id is {guildid}'
+                    exampleCode: 'The guild\'s id is {guildId}'
                 }
             },
-            guildmembers: {
+            guildMembers: {
                 default: {
-                    description: 'Returns an array of user IDs of the members on the current guild. This only includes **cached** members, for getting the amount of members in a guild **always** use `{guildsize}`',
+                    description: 'Returns an array of user ids of the members on the current guild.',
                     exampleOut: 'This guild has 123 members.',
-                    exampleCode: 'This guild has {length;{guildmembers}} members.'
+                    exampleCode: 'This guild has {length;{guildMembers}} members.'
                 }
             },
-            guildname: {
+            guildName: {
                 default: {
                     description: 'Returns the name of the current guild.',
                     exampleOut: 'This guild\'s name is TestGuild.',
-                    exampleCode: 'This guild\'s name is {guildname}.'
+                    exampleCode: 'This guild\'s name is {guildName}.'
                 }
             },
-            guildownerid: {
+            guildOwnerId: {
                 default: {
                     description: 'Returns the id of the guild\'s owner.',
                     exampleOut: 'The owner\'s id is 1234567890123456.',
-                    exampleCode: 'The owner\'s id is {guildownerid}.'
+                    exampleCode: 'The owner\'s id is {guildOwnerId}.'
                 }
             },
-            guildseticon: {
+            guildSetIcon: {
                 default: {
                     description: 'Updates the current guild\'s icon with the provided image. `image` is either a link to an image, or a base64 encoded data url (`data:<content-type>;base64,<base64-data>`). You may need to use {semi} for the latter.',
                     exampleOut: '',
-                    exampleCode: '{guildseticon;https://some.cool/image.png}'
+                    exampleCode: '{guildSetIcon;https://some.cool/image.png}'
                 }
             },
-            guildsize: {
+            guildSize: {
                 default: {
                     description: 'Returns the number of members on the current guild.',
                     exampleOut: 'This guild has 123 members.',
-                    exampleCode: 'This guild has {guildsize} members.'
+                    exampleCode: 'This guild has {guildSize} members.'
                 }
             },
             json: {
@@ -943,68 +943,68 @@ Database Execution Time: 678ms
                     exampleCode: '{json;{\n  "key": "value"\n}}'
                 }
             },
-            jsonclean: {
+            jsonClean: {
                 default: {
                     description: 'Using the `input` as a base, cleans up the JSON file structure, parsing stringified nested objects/arrays. Will not mutate the original object.',
                     exampleOut: '{"test":[]}',
-                    exampleCode: '{jsonclean;{j;{"test":"[]"}}}'
+                    exampleCode: '{jsonClean;{j;{"test":"[]"}}}'
                 }
             },
-            jsonget: {
+            jsonGet: {
                 parse: {
                     description: 'Gets a json value. Works with arrays too!\n`input` can be a JSON object, array, or string. If a string is provided, a variable with the same name will be used.',
                     exampleOut: 'one',
-                    exampleCode: '{jsonget;{j;{\n  "array": [\n    "zero",\n    { "value": "one" },\n    "two"\n  ]\n}};array.1.value}'
+                    exampleCode: '{jsonGet;{j;{\n  "array": [\n    "zero",\n    { "value": "one" },\n    "two"\n  ]\n}};array.1.value}'
                 },
                 path: {
                     description: 'Navigates the path of a JSON object. Works with arrays too!\n`input` can be a JSON object, array, or string. If a string is provided, a variable with the same name will be used.\n`path` is a dot-noted series of properties.',
                     exampleOut: 'one',
-                    exampleCode: '{jsonget;{j;{\n  "array": [\n    "zero",\n    { "value": "one" },\n    "two"\n  ]\n}};array.1.value}'
+                    exampleCode: '{jsonGet;{j;{\n  "array": [\n    "zero",\n    { "value": "one" },\n    "two"\n  ]\n}};array.1.value}'
                 }
             },
-            jsonkeys: {
+            jsonKeys: {
                 default: {
                     description: 'Retrieves all keys from provided the JSON object. `object` can be a JSON object, array, or string. If a string is provided, a variable with the same name will be used.\n`path` is a dot-noted series of properties.',
                     exampleOut: '["key","key2"]',
-                    exampleCode: '{set;~json;{json;{"key": "value", "key2" : "value2"}}\n{jsonkeys;~json}'
+                    exampleCode: '{set;~json;{json;{"key": "value", "key2" : "value2"}}\n{jsonKeys;~json}'
                 }
             },
-            jsonset: {
+            jsonSet: {
                 delete: {
                     description: 'Deletes the value at `path`. `input` can be a JSON object or array',
                     exampleOut: '{}',
-                    exampleCode: '{set;~json;{json;{"key" : "value"}}}\n{jset;~json;key}\n{get;~json}'
+                    exampleCode: '{set;~json;{json;{"key" : "value"}}}\n{jsonSet;~json;key}\n{get;~json}'
                 },
                 set: {
                     description: 'Using the `input` as a base, navigates the provided dot-notated `path` and assigns the `value`. `input` can be a JSON object, array, or string. If a string is provided, a variable with the same name will be used.If `create` is not empty, will create/convert any missing keys.',
                     exampleOut: '{"path":{"to":{"key":"value"}}}',
-                    exampleCode: '{jsonset;;path.to.key;value;create}'
+                    exampleCode: '{jsonSet;;path.to.key;value;create}'
                 },
                 create: {
                     description: 'Using the `input` as a base, navigates the provided dot-notated `path` and assigns the `value`. `input` can be a JSON object, array, or string. If a string is provided, a variable with the same name will be used.If `create` is not empty, will create/convert any missing keys.',
                     exampleOut: '{"path":{"to":{"key":"value"}}}',
-                    exampleCode: '{jsonset;;path.to.key;value;create}'
+                    exampleCode: '{jsonSet;;path.to.key;value;create}'
                 }
             },
-            jsonsort: {
+            jsonSort: {
                 default: {
                     description: 'Sorts an array of objects based on the provided `path`.\n`path` is a dot-noted series of properties.\nIf `descending` is provided, sorts in descending order.\nIf provided a variable, will modify the original `array`.',
                     exampleOut: '[\n  "{\\"points\\":3,\\"name\\":\\"UNO\\"}",\n  "{\\"points\\":6,\\"name\\":\\"Stupid cat\\"}",\n  "{\\"points\\":10,\\"name\\":\\"Blargbot\\"}",\n  "{\\"points\\":12,\\"name\\":\\"Winner\\"}"\n]',
-                    exampleCode: '{set;~array;{json;[\n  {"points" : 10, "name" : "Blargbot"},\n  {"points" : 3, "name" : "UNO"},\n  {"points" : 6, "name" : "Stupid cat"},\n  {"points" : 12, "name" : "Winner"}\n]}}\n{jsonstringify;{jsonsort;{slice;{get;~array};0};points};2}'
+                    exampleCode: '{set;~array;{json;[\n  {"points" : 10, "name" : "Blargbot"},\n  {"points" : 3, "name" : "UNO"},\n  {"points" : 6, "name" : "Stupid cat"},\n  {"points" : 12, "name" : "Winner"}\n]}}\n{jsonStringify;{jsonSort;{slice;{get;~array};0};points};2}'
                 }
             },
-            jsonstringify: {
+            jsonStringify: {
                 default: {
                     description: 'Pretty-prints the provided JSON `input` with the provided `indent`.',
                     exampleOut: '[\n    "one",\n    "two",\n    "three"\n]',
-                    exampleCode: '{jsonstringify;["one","two","three"]}'
+                    exampleCode: '{jsonStringify;["one","two","three"]}'
                 }
             },
-            jsonvalues: {
+            jsonValues: {
                 default: {
                     description: 'Retrieves all values from provided the JSON object. `object` can be a JSON object, array, or string. If a string is provided, a variable with the same name will be used.\n`path` is a dot-noted series of properties.',
                     exampleOut: '["value","value2"]',
-                    exampleCode: '{set;~json;{json;{"key": "value", "key2" : "value2"}}\n{jsonvalues;~json}'
+                    exampleCode: '{set;~json;{json;{"key": "value", "key2" : "value2"}}\n{jsonValues;~json}'
                 }
             },
             for: {
@@ -1014,11 +1014,11 @@ Database Execution Time: 678ms
                     exampleCode: '{for;~index;0;<;10;{get;~index},}'
                 }
             },
-            foreach: {
+            forEach: {
                 default: {
                     description: 'For every element in `array`, a variable called `variable` will be set and then `code` will be run.\nIf `element` is not an array, it will iterate over each character instead.',
                     exampleOut: 'I like apples\nI like oranges\nI like c#',
-                    exampleCode: '{set;~array;apples;oranges;c#}\n{foreach;~element;~array;I like {get;~element}{newline}}'
+                    exampleCode: '{set;~array;apples;oranges;c#}\n{forEach;~element;~array;I like {get;~element}{newline}}'
                 }
             },
             repeat: {
@@ -1046,16 +1046,16 @@ Database Execution Time: 678ms
                     exampleCode: '{set;~x;0}\n{while;{get;~x};<=;10;{increment;~x},}'
                 }
             },
-            abs: {
+            absolute: {
                 value: {
                     description: 'Gets the absolute value of `number`',
                     exampleOut: '535',
-                    exampleCode: '{abs;-535}'
+                    exampleCode: '{absolute;-535}'
                 },
                 array: {
                     description: 'Gets the absolute value of each `numbers` and returns an array containing the results',
                     exampleOut: '[535, 123, 42]',
-                    exampleCode: '{abs;-535;123;-42}'
+                    exampleCode: '{absolute;-535;123;-42}'
                 }
             },
             base: {
@@ -1116,38 +1116,38 @@ Database Execution Time: 678ms
                     exampleCode: '{min;50;2;65}'
                 }
             },
-            numformat: {
+            numberFormat: {
                 description: 'If `roundTo` is not provided, but the number does have decimals, rounds to `3` by default. Any precision for decimals will be lost e.g: `100.000000000`becomes `100` and `100.3100000000` becomes `100.31`',
                 default: {
                     description: 'Rounds `number` to `roundTo` digits. `roundTo` can be left empty.',
                     exampleOut: '123456.79\n123000\n100.1',
-                    exampleCode: '{numformat;123456.789;2}\n{numformat;123456.789;-3}\n{numformat;100.10000;}'
+                    exampleCode: '{numberFormat;123456.789;2}\n{numberFormat;123456.789;-3}\n{numberFormat;100.10000;}'
                 },
                 separator: {
                     description: 'Rounds `number` to `roundTo` digits. Uses `decimal` as the decimal separator and `thousands` for the thousands separator. To skip `roundTo` or `decimal` leave them empty.',
                     exampleOut: '3,1415\n100.000',
-                    exampleCode: '{numformat;3.1415;4;,}\n{numformat;100000;;;.}'
+                    exampleCode: '{numberFormat;3.1415;4;,}\n{numberFormat;100000;;;.}'
                 }
             },
-            parsefloat: {
+            parseFloat: {
                 default: {
                     description: 'Returns an floating point number from `text`. If it wasn\'t a number, returns `NaN`.',
                     exampleOut: 'NaN 12.34 1.2',
-                    exampleCode: '{parsefloat;abcd} {parsefloat;12.34} {parsefloat;1.2cd}'
+                    exampleCode: '{parseFloat;abcd} {parseFloat;12.34} {parseFloat;1.2cd}'
                 }
             },
-            parseint: {
+            parseInt: {
                 default: {
                     description: 'Returns an integer from `text`. If it wasn\'t a number, returns `NaN`.',
                     exampleOut: 'NaN 1234 12',
-                    exampleCode: '{parseint;abcd} {parseint;1234} {parseint;12cd}'
+                    exampleCode: '{parseInt;abcd} {parseInt;1234} {parseInt;12cd}'
                 }
             },
-            randint: {
+            randomInt: {
                 default: {
                     description: 'Chooses a random whole number between `min` and `max` (inclusive).',
                     exampleOut: 'You rolled a 5.',
-                    exampleCode: 'You rolled a {randint;1;6}.'
+                    exampleCode: 'You rolled a {randomInt;1;6}.'
                 }
             },
             round: {
@@ -1157,22 +1157,22 @@ Database Execution Time: 678ms
                     exampleCode: '{round;1.23}'
                 }
             },
-            rounddown: {
+            roundDown: {
                 default: {
                     description: 'Rounds `number` down.',
                     exampleOut: '1',
-                    exampleCode: '{rounddown;1.23}'
+                    exampleCode: '{roundDown;1.23}'
                 }
             },
-            roundup: {
+            roundUp: {
                 default: {
                     description: 'Rounds `number` up.',
                     exampleOut: '2',
-                    exampleCode: '{roundup;1.23}'
+                    exampleCode: '{roundUp;1.23}'
                 }
             },
             delete: {
-                description: 'Only ccommands can delete other messages.',
+                description: 'Only custom commands can delete other messages.',
                 trigger: {
                     description: 'Deletes the message that invoked the command',
                     exampleOut: '(the message got deleted idk how to do examples for this)',
@@ -1181,55 +1181,55 @@ Database Execution Time: 678ms
                 inCurrent: {
                     description: 'Deletes the specified `messageId` from the current channel.',
                     exampleOut: '(the message `111111111111111111` got deleted idk how to do examples for this)',
-                    exampleCode: '{//;The message with ID `111111111111111111` will be deleted}\n{delete;111111111111111111}'
+                    exampleCode: '{//;The message with id `111111111111111111` will be deleted}\n{delete;111111111111111111}'
                 },
                 inOther: {
                     description: 'Deletes the specified `messageId` from channel `channel`.',
                     exampleOut: '(the message `2222222222222222` from channel `1111111111111111` got deleted)',
-                    exampleCode: '{//;The message with ID `2222222222222222` from channel `1111111111111111` will be deleted}\n{delete;111111111111111111;2222222222222222}'
+                    exampleCode: '{//;The message with id `2222222222222222` from channel `1111111111111111` will be deleted}\n{delete;111111111111111111;2222222222222222}'
                 }
             },
             edit: {
                 description: '`text` and `embed` can both be set to `_delete` to remove either the message content or embed.Please note that `embed` is the JSON for an embed object or an array of embed objects, don\'t put `{embed}` there, as nothing will show. Only messages created by the bot may be edited.',
                 inCurrentText: {
-                    description: 'Edits `messageID` in the current channel to say `text`',
+                    description: 'Edits `messageId` in the current channel to say `text`',
                     exampleOut: '',
-                    exampleCode: '{edit;111111111111111111;{embedbuild;title:Hello world}}'
+                    exampleCode: '{edit;111111111111111111;{embedBuild;title:Hello world}}'
                 },
                 inCurrentEmbed: {
-                    description: 'Edits `messageID` in the current channel to say `embed`',
+                    description: 'Edits `messageId` in the current channel to say `embed`',
                     exampleOut: '',
-                    exampleCode: '{edit;111111111111111111;{embedbuild;title:Hello world}}'
+                    exampleCode: '{edit;111111111111111111;{embedBuild;title:Hello world}}'
                 },
                 inCurrentFull: {
-                    description: 'Edits `messageID` in the current channel to say `text` and `embed`',
+                    description: 'Edits `messageId` in the current channel to say `text` and `embed`',
                     exampleOut: '',
-                    exampleCode: '{edit;111111111111111111;Hello world;{embedbuild;title:Foo bar}}'
+                    exampleCode: '{edit;111111111111111111;Hello world;{embedBuild;title:Foo bar}}'
                 },
                 inOtherText: {
-                    description: 'Edits `messageID` in `channelID` to say `text`',
+                    description: 'Edits `messageId` in `channelId` to say `text`',
                     exampleOut: '',
                     exampleCode: '{edit;111111111111111111;222222222222222222;Hello world}'
                 },
                 inOtherEmbed: {
-                    description: 'Edits `messageID` in `channelID` to say `embed`',
+                    description: 'Edits `messageId` in `channelId` to say `embed`',
                     exampleOut: '',
                     exampleCode: '{edit;111111111111111111;222222222222222222;Hello world}'
                 },
                 inOtherFull: {
-                    description: 'Edits `messageID` in `channelID` to say `text` and `embed`',
+                    description: 'Edits `messageId` in `channelId` to say `text` and `embed`',
                     exampleOut: '',
-                    exampleCode: '{edit;111111111111111111;222222222222222222;Hello world;{embedbuild;title:Foo bar}}'
+                    exampleCode: '{edit;111111111111111111;222222222222222222;Hello world;{embedBuild;title:Foo bar}}'
                 }
             },
             embed: {
                 default: {
-                    description: 'Takes whatever input you pass to `embed` and attempts to form an embed from it. `embed` must be a valid json embed object. Multiple embeds can be provided.\nThis subtag works well with `{embedbuild}`. If attempting to use inside of a `{send}`, `{edit}` or `{dm}`, you should not include `{embed}`, and instead just pass the content direct to `{send}`/`{edit}`/`{dm}`\nYou can find information about embeds [here (embed structure)](https://discordapp.com/developers/docs/resources/channel#embed-object) and [here (embed limits)](https://discordapp.com/developers/docs/resources/channel#embed-limits) as well as a useful tool for testing embeds [here](https://leovoel.github.io/embed-visualizer/)',
+                    description: 'Takes whatever input you pass to `embed` and attempts to form an embed from it. `embed` must be a valid json embed object. Multiple embeds can be provided.\nThis subtag works well with `{embedBuild}`. If attempting to use inside of a `{send}`, `{edit}` or `{dm}`, you should not include `{embed}`, and instead just pass the content direct to `{send}`/`{edit}`/`{dm}`\nYou can find information about embeds [here (embed structure)](https://discordapp.com/developers/docs/resources/channel#embed-object) and [here (embed limits)](https://discordapp.com/developers/docs/resources/channel#embed-limits) as well as a useful tool for testing embeds [here](https://leovoel.github.io/embed-visualizer/)',
                     exampleOut: '(an embed with "Hello!" as the title)',
                     exampleCode: '{embed;{lb}"title":"Hello!"{rb}}'
                 }
             },
-            embedbuild: {
+            embedBuild: {
                 description: [
                     {
                         name: 'default',
@@ -1240,14 +1240,14 @@ Database Execution Time: 678ms
                 default: {
                     description: 'Builds the embed json',
                     exampleOut: '{"title":"hello!","description":"I am an example embed","fields":[{"name":"Field 1","value":"This is the first field!"},{"name":"Field 2","value":"This is the next field and is inline!","inline":true}]}',
-                    exampleCode: '{embedbuild;\n  title:hello!;\n  description:I am an example embed;\n  fields.name:Field 1;\n  fields.value:This is the first field!;\n  fields.name:Field 2;\n  fields.value:This is the next field and is inline!;\n  fields.inline:true\n}'
+                    exampleCode: '{embedBuild;\n  title:hello!;\n  description:I am an example embed;\n  fields.name:Field 1;\n  fields.value:This is the first field!;\n  fields.name:Field 2;\n  fields.value:This is the next field and is inline!;\n  fields.inline:true\n}'
                 }
             },
-            everyonemention: {
+            everyoneMention: {
                 default: {
                     description: 'Returns the mention of `@everyone`.\nThis requires the `disableeveryone` setting to be false. If `mention` is set to `true`, `@everyone` will ping, else it will be silent.',
                     exampleOut: '@everyone',
-                    exampleCode: '{everyonemention}'
+                    exampleCode: '{everyoneMention}'
                 }
             },
             file: {
@@ -1257,151 +1257,151 @@ Database Execution Time: 678ms
                     exampleCode: '{file;Hello, world!;readme.txt}'
                 }
             },
-            heremention: {
+            hereMention: {
                 default: {
                     description: 'Returns the mention of `@here`.\nThis requires the `disableeveryone` setting to be false. If `mention` is set to `true`, `@here` will ping, else it will be silent.',
                     exampleOut: '@here',
-                    exampleCode: '{heremention}'
+                    exampleCode: '{hereMention}'
                 }
             },
-            messageattachments: {
+            messageAttachments: {
                 trigger: {
                     description: 'Returns an array of attachments of the invoking message.',
                     exampleOut: 'You sent the attachments "["https://cdn.discordapp.com/attachments/1111111111111/111111111111111/thisisntreal.png"]"',
-                    exampleCode: 'You sent the attachments "{messageattachments}"'
+                    exampleCode: 'You sent the attachments "{messageAttachments}"'
                 },
                 inCurrent: {
-                    description: 'Returns an array of attachments of `messageid` in the current channel',
+                    description: 'Returns an array of attachments of `messageId` in the current channel',
                     exampleOut: 'Someone sent a message with attachments: "["https://cdn.discordapp.com/attachments/1111111111111/111111111111111/thisisntreal.png"]"',
-                    exampleCode: 'Someone sent a message with attachments: "{messageattachments;1111111111111}"'
+                    exampleCode: 'Someone sent a message with attachments: "{messageAttachments;1111111111111}"'
                 },
                 inOther: {
-                    description: 'Returns an array of attachments of `messageid` from `channel`. If `quiet` is provided and `channel` cannot be found, this will return an empty array.',
+                    description: 'Returns an array of attachments of `messageId` from `channel`. If `quiet` is provided and `channel` cannot be found, this will return an empty array.',
                     exampleOut: 'Someone sent a message in #support with attachments: "["https://cdn.discordapp.com/attachments/1111111111111/111111111111111/thisisntreal.png"]"',
-                    exampleCode: 'Someone sent a message in #support with attachments: "{messageattachments;support;1111111111111}"'
+                    exampleCode: 'Someone sent a message in #support with attachments: "{messageAttachments;support;1111111111111}"'
                 }
             },
-            messageedittime: {
+            messageEditTime: {
                 description: 'If the message is not edited, this will return the current time instead.\n\n**Note:** there are plans to change this behaviour, but due to backwards-compatibility this remains unchanged.',
                 trigger: {
                     description: 'Returns the edit time of the executing message in `format`',
                     exampleOut: 'The edit timestamp of your message is "1628782144703"',
-                    exampleCode: 'The edit timestamp of your message is "{messageedittime}"'
+                    exampleCode: 'The edit timestamp of your message is "{messageEditTime}"'
                 },
                 inCurrent: {
-                    description: 'Returns the edit time of `messageid` in `format`',
+                    description: 'Returns the edit time of `messageId` in `format`',
                     exampleOut: 'The edit timestamp of message 11111111111111 is "1628782144703"',
-                    exampleCode: 'The edit timestamp of message 11111111111111 is "{messageedittime;11111111111111}'
+                    exampleCode: 'The edit timestamp of message 11111111111111 is "{messageEditTime;11111111111111}'
                 },
                 inOther: {
-                    description: 'Returns the edit time of `messageid` from `channel` in `format`.',
+                    description: 'Returns the edit time of `messageId` from `channel` in `format`.',
                     exampleOut: 'Message 11111111111111 in #support was edited at 18:09',
-                    exampleCode: 'Message 11111111111111 in #support was edited at {messageedittime;support;11111111111111;HH:mm}'
+                    exampleCode: 'Message 11111111111111 in #support was edited at {messageEditTime;support;11111111111111;HH:mm}'
                 }
             },
-            messageembeds: {
+            messageEmbeds: {
                 trigger: {
                     description: 'Returns an array of embeds of the invoking message.',
                     exampleOut: 'You sent an embed: "[{"title":"Hello!"}]"',
-                    exampleCode: 'You sent an embed: "{messageembeds}"'
+                    exampleCode: 'You sent an embed: "{messageEmbeds}"'
                 },
                 inCurrent: {
-                    description: 'Returns an array of embeds of `messageid` in the current channel',
+                    description: 'Returns an array of embeds of `messageId` in the current channel',
                     exampleOut: 'Someone sent a message with attachments: "[{"title":"Hello!"}]"',
-                    exampleCode: 'Someone sent a message with embeds: "{messageembeds;1111111111111}"'
+                    exampleCode: 'Someone sent a message with embeds: "{messageEmbeds;1111111111111}"'
                 },
                 inOther: {
-                    description: 'Returns an array of embeds of `messageid` from `channel`. If `quiet` is provided and `channel` cannot be found, this will return an empty array.',
+                    description: 'Returns an array of embeds of `messageId` from `channel`. If `quiet` is provided and `channel` cannot be found, this will return an empty array.',
                     exampleOut: 'Someone sent a message in #support with embeds: "[{"title":"Hello!"}]"',
-                    exampleCode: 'Someone sent a message in #support with embeds: "{messageembeds;support;1111111111111}"'
+                    exampleCode: 'Someone sent a message in #support with embeds: "{messageEmbeds;support;1111111111111}"'
                 }
             },
-            messageid: {
+            messageId: {
                 default: {
-                    description: 'Returns the ID of the invoking message.',
+                    description: 'Returns the id of the invoking message.',
                     exampleOut: 'The message id was 111111111111111111',
-                    exampleCode: 'The message id was {messageid}'
+                    exampleCode: 'The message id was {messageId}'
                 }
             },
-            messagereply: {
+            messageReply: {
                 trigger: {
-                    description: 'Returns the ID of the invoking message\'s parent message.',
+                    description: 'Returns the id of the invoking message\'s parent message.',
                     exampleOut: 'You replied to the message 1111111111111',
-                    exampleCode: 'You replied to the message {messagereply}'
+                    exampleCode: 'You replied to the message {messageReply}'
                 },
                 inCurrent: {
-                    description: 'Returns the ID of the parent message of the provided `message`.',
+                    description: 'Returns the id of the parent message of the provided `message`.',
                     exampleOut: 'Someone replied to the message 1111111111111',
-                    exampleCode: 'Someone replied to the message {messagereply;2222222222222}'
+                    exampleCode: 'Someone replied to the message {messageReply;2222222222222}'
                 },
                 inOther: {
-                    description: 'Returns the ID of the parent message of the provided `message`.',
+                    description: 'Returns the id of the parent message of the provided `message`.',
                     exampleOut: 'Someone replied to the message 1111111111111',
-                    exampleCode: 'Someone replied to the message {messagereply;general;2222222222222}'
+                    exampleCode: 'Someone replied to the message {messageReply;general;2222222222222}'
                 }
             },
-            messagesender: {
+            messageSender: {
                 trigger: {
                     description: 'Returns the id of the author of the executing message.',
                     exampleOut: 'That was sent by "1111111111111"',
-                    exampleCode: 'That was sent by "{sender}"'
+                    exampleCode: 'That was sent by "{messageSender}"'
                 },
                 inCurrent: {
-                    description: 'Returns the id of the author of `messageid` in the current channel.',
+                    description: 'Returns the id of the author of `messageId` in the current channel.',
                     exampleOut: 'Message 1111111111111 was sent by 2222222222222',
-                    exampleCode: 'Message 1111111111111 was sent by {sender;1111111111111}'
+                    exampleCode: 'Message 1111111111111 was sent by {messageSender;1111111111111}'
                 },
                 inOther: {
-                    description: 'Returns the id of the author of `messageid` in `channel`. If `quiet` is provided and `channel` cannot be found, this will return nothing.',
+                    description: 'Returns the id of the author of `messageId` in `channel`. If `quiet` is provided and `channel` cannot be found, this will return nothing.',
                     exampleOut: 'Message 1111111111111 in #support was sent by 2222222222222',
-                    exampleCode: 'Message 1111111111111 in #support was sent by {sender;support;1111111111111}'
+                    exampleCode: 'Message 1111111111111 in #support was sent by {messageSender;support;1111111111111}'
                 }
             },
-            messagetext: {
+            messageText: {
                 trigger: {
                     description: 'Returns the text of the executing message.',
-                    exampleOut: 'You sent "b!t test You sent "{text}""`',
-                    exampleCode: 'You sent "text"'
+                    exampleOut: 'You sent "text"',
+                    exampleCode: 'You sent "b!t test You sent "{messageText}""`'
                 },
                 inCurrent: {
-                    description: 'Returns the text of `messageid` in the current channel.',
+                    description: 'Returns the text of `messageId` in the current channel.',
                     exampleOut: 'Message 1111111111111 contained: "Hello world!"',
-                    exampleCode: 'Message 1111111111111 contained: "{text;1111111111111}"'
+                    exampleCode: 'Message 1111111111111 contained: "{messageText;1111111111111}"'
                 },
                 inOther: {
-                    description: 'Returns the text of `messageid` in `channel`. If `quiet` is provided and `channel` cannot be found, this will return nothing.',
+                    description: 'Returns the text of `messageId` in `channel`. If `quiet` is provided and `channel` cannot be found, this will return nothing.',
                     exampleOut: 'Message 1111111111111 in #support contained: "Spooky Stuff"',
-                    exampleCode: 'Message 1111111111111 in #support contained: "{text;support;1111111111111}"'
+                    exampleCode: 'Message 1111111111111 in #support contained: "{messageText;support;1111111111111}"'
                 }
             },
-            messagetime: {
+            messageTime: {
                 trigger: {
                     description: 'Returns the send time of the executing message in `format`',
                     exampleOut: 'The send timestamp of your message is "1628782144703"',
-                    exampleCode: 'The send timestamp of your message is "{messagetime}"'
+                    exampleCode: 'The send timestamp of your message is "{messageTime}"'
                 },
                 inCurrent: {
-                    description: 'Returns the send time of `messageid` in `format`',
+                    description: 'Returns the send time of `messageId` in `format`',
                     exampleOut: 'The send timestamp of message 11111111111111 is "1628782144703"',
-                    exampleCode: 'The send timestamp of message 11111111111111 is "{messagetime;11111111111111}'
+                    exampleCode: 'The send timestamp of message 11111111111111 is "{messageTime;11111111111111}'
                 },
                 inOther: {
-                    description: 'Returns the send time of `messageid` from `channel` in `format`.',
+                    description: 'Returns the send time of `messageId` from `channel` in `format`.',
                     exampleOut: 'Message 11111111111111 in #support was sent at 18:09',
-                    exampleCode: 'Message 11111111111111 in #support was sent at {messagetime;support;11111111111111;HH:mm}'
+                    exampleCode: 'Message 11111111111111 in #support was sent at {messageTime;support;11111111111111;HH:mm}'
                 }
             },
-            messagetype: {
+            messageType: {
                 description: 'For more info about message types, visit the [discord docs]().',
                 trigger: {
                     description: 'Returns the message type of the executing message.',
                     exampleOut: '0',
-                    exampleCode: '{messagetype}'
+                    exampleCode: '{messageType}'
                 },
                 other: {
-                    description: '`channel` defaults to the current channel.\n\nReturns the message type of `messageID` in `channel`',
+                    description: '`channel` defaults to the current channel.\n\nReturns the message type of `messageId` in `channel`',
                     exampleOut: '19\n0',
-                    exampleCode: '{messagetype;12345678912345;123465145791}\n{messagetype;1234567891234}'
+                    exampleCode: '{messageType;12345678912345;123465145791}\n{messageType;1234567891234}'
                 }
             },
             output: {
@@ -1411,67 +1411,67 @@ Database Execution Time: 678ms
                     exampleCode: '{output;Hello!}'
                 }
             },
-            reactadd: {
+            reactionAdd: {
                 description: 'Please note that to be able to add a reaction, I must be on the server that you got that reaction from. If I am not, then I will return an error if you are trying to apply the reaction to another message.',
                 output: {
                     description: 'Adds `reactions` to the output message of this tag.',
                     exampleOut: 'This will have reactions! (reacted with 🤔 and 👀)',
-                    exampleCode: 'This will have reactions! {reactadd;🤔;👀}'
+                    exampleCode: 'This will have reactions! {reactionAdd;🤔;👀}'
                 },
                 inCurrent: {
-                    description: 'Adds `reactions` to `messageid` in the current channel.',
+                    description: 'Adds `reactions` to `messageId` in the current channel.',
                     exampleOut: '(11111111111111111 now has reactions 🤔 and 👀)',
-                    exampleCode: '{reactadd;11111111111111111;🤔;👀}'
+                    exampleCode: '{reactionAdd;11111111111111111;🤔;👀}'
                 },
                 inOther: {
-                    description: 'Adds `reactions` to `messageid` in `channelid`. `channelid` must be an ID, use of `{channelid} is advised`.',
+                    description: 'Adds `reactions` to `messageId` in `channelId`. `channelId` must be an id, use of `{channelId} is advised`.',
                     exampleOut: '(22222222222222222 in 11111111111111111 now has reactions 🤔 and 👀)',
-                    exampleCode: '{reactadd;11111111111111111;22222222222222222;🤔;👀}'
+                    exampleCode: '{reactionAdd;11111111111111111;22222222222222222;🤔;👀}'
                 }
             },
             reaction: {
                 default: {
-                    description: 'Gets the reaction that triggered {waitreact}',
+                    description: 'Gets the reaction that triggered {waitReaction}',
                     exampleOut: '["111111111111111","12345678912345","3333333333333","✅"]',
-                    exampleCode: '{waitreact;11111111111111111;{bool;{reaction};==;✅}}'
+                    exampleCode: '{waitReaction;11111111111111111;{bool;{reaction};==;✅}}'
                 }
             },
-            reactionuser: {
+            reactionUser: {
                 default: {
-                    description: 'Gets the user whose reaction that triggered {waitreact}',
+                    description: 'Gets the user whose reaction that triggered {waitReaction}',
                     exampleOut: '["111111111111111","12345678912345","3333333333333","✅"]',
-                    exampleCode: '{waitreact;11111111111111111;{bool;{reactuser};==;3333333333333}}'
+                    exampleCode: '{waitReaction;11111111111111111;{bool;{reactionUser};==;3333333333333}}'
                 }
             },
-            reactlist: {
+            reactionList: {
                 reactions: {
-                    description: 'Returns an array of reactions on `messageid` in `channelID`.',
+                    description: 'Returns an array of reactions on `messageId` in `channelId`.',
                     exampleOut: '["🤔", "👀"]',
-                    exampleCode: '{reactlist;111111111111111111}'
+                    exampleCode: '{reactionList;111111111111111111}'
                 },
                 users: {
-                    description: 'Returns an array of users who reacted `reactions` on `messageID` in `channelID`. A user only needs to react to one reaction to be included in the resulting array.',
+                    description: 'Returns an array of users who reacted `reactions` on `messageId` in `channelId`. A user only needs to react to one reaction to be included in the resulting array.',
                     exampleOut: '["278237925009784832", "134133271750639616"]\n["134133271750639616"]',
-                    exampleCode: '{reactlist;111111111111111111;🤔;👀}\n{reactlist;222222222222222222;111111111111111111;👀}'
+                    exampleCode: '{reactionList;111111111111111111;🤔;👀}\n{reactionList;222222222222222222;111111111111111111;👀}'
                 }
             },
-            reactremove: {
+            reactionRemove: {
                 all: {
-                    description: 'Removes all reactions of the executing user from `messageID` in `channel`.',
+                    description: 'Removes all reactions of the executing user from `messageId` in `channel`.',
                     exampleOut: '(removed all reactions on 12345678901234)',
-                    exampleCode: '{reactremove;12345678901234}'
+                    exampleCode: '{reactionRemove;12345678901234}'
                 },
                 user: {
-                    description: 'Removes `reactions` `user` reacted on `messageID` in `channel`.',
+                    description: 'Removes `reactions` `user` reacted on `messageId` in `channel`.',
                     exampleOut: '(removed the 🤔 reaction on 12345678901234 from user 111111111111111111)',
-                    exampleCode: '{reactremove;12345678901234;111111111111111111;🤔}'
+                    exampleCode: '{reactionRemove;12345678901234;111111111111111111;🤔}'
                 }
             },
-            reactremoveall: {
+            reactionRemoveAll: {
                 default: {
                     description: 'Removes all reactions from `messageId`.\n`channelId` defaults to the current channel.',
                     exampleOut: '(removed all the reactions)',
-                    exampleCode: '{reactremoveall;12345678901234;:thinking:}'
+                    exampleCode: '{reactionRemoveAll;12345678901234;:thinking:}'
                 }
             },
             send: {
@@ -1479,57 +1479,57 @@ Database Execution Time: 678ms
                 full: {
                     description: 'Sends `message` and `embed` to `channel` with an attachment, and returns the message id. `channel` is either an id or channel mention. If `fileContent` starts with `buffer:` then the following text will be parsed as base64 to a raw buffer.\n**Note:** `embed` is the JSON for an embed, don\'t put the `{embed}` subtag there, as nothing will show',
                     exampleOut: '23946728937462847243',
-                    exampleCode: '{send;{channelid};Hello there!;{embedbuild;title:This is a cool embed};Wow, look at this text file!;test.txt}'
+                    exampleCode: '{send;{channelId};Hello there!;{embedBuild;title:This is a cool embed};Wow, look at this text file!;test.txt}'
                 },
                 textAndEmbed: {
                     description: 'Sends `message` and `embed` to `channel`, and returns the message id. `channel` is either an id or channel mention.\n**Note:** `embed` is the JSON for an embed, don\'t put the `{embed}` subtag there, as nothing will show',
                     exampleOut: '349587638464585678545',
-                    exampleCode: '{send;{channelid};Hello there!;{embedbuild;title:This is a cool embed}}'
+                    exampleCode: '{send;{channelId};Hello there!;{embedBuild;title:This is a cool embed}}'
                 },
                 textOrEmbed: {
                     description: 'Sends `content` to `channel`, and returns the message id. `channel` is either an id or channel mention.\n**Note:** `content` is the text to send or the JSON for an embed, don\'t put the `{embed}` subtag there, as nothing will show',
                     exampleOut: '9458678957457694324',
-                    exampleCode: '{send;{channelid};{embedbuild;title:This is a cool embed}'
+                    exampleCode: '{send;{channelId};{embedBuild;title:This is a cool embed}'
                 }
             },
-            waitmessage: {
+            waitMessage: {
                 description: [
                     {
                         name: 'default',
                         input: [{ disabled: ['abc', 'def', 'ghi'] }],
-                        expected: 'Pauses the command until one of the given users sends a message in any of the given channels. When a message is sent, `condition` will be run to determine if the message can be accepted. If no message has been accepted within `timeout` then the subtag returns `Wait timed out`, otherwise it returns an array containing the channel Id, then the message Id. \n\n`channels` defaults to the current channel.\n`users` defaults to the current user.\n`condition` must return `true` or `false`\n`timeout` is a number of seconds. This is limited to 300\n\n While inside the `condition` parameter, none of the following subtags may be used: `abc`, `def`, `ghi`\nAlso, the current message becomes the users message that is to be checked. This means that `{channelid}`, `{messageid}`, `{userid}` and all related subtags will change their values.'
+                        expected: 'Pauses the command until one of the given users sends a message in any of the given channels. When a message is sent, `condition` will be run to determine if the message can be accepted. If no message has been accepted within `timeout` then the subtag returns `Wait timed out`, otherwise it returns an array containing the channel id, then the message id. \n\n`channels` defaults to the current channel.\n`users` defaults to the current user.\n`condition` must return `true` or `false`\n`timeout` is a number of seconds. This is limited to 300\n\n While inside the `condition` parameter, none of the following subtags may be used: `abc`, `def`, `ghi`\nAlso, the current message becomes the users message that is to be checked. This means that `{channelId}`, `{messageId}`, `{userId}` and all related subtags will change their values.'
                     }
                 ],
                 default: {
                     description: 'Pauses the command until the executing user sends a message in the current channel.',
                     exampleOut: '["111111111111111","2222222222222"]',
-                    exampleCode: '{waitmessage}'
+                    exampleCode: '{waitMessage}'
                 },
                 filtered: {
-                    description: 'Pauses the command until `condition` returns true when one of `userIDs` sends a message in one of `channelIDs`.',
+                    description: 'Pauses the command until `condition` returns true when one of `userIds` sends a message in one of `channelIds`.',
                     exampleOut: '["111111111111111", "103347843934212096"]',
-                    exampleCode: '{waitmessage;111111111111111;{userid;stupid cat};{bool;{username};startswith;stupid};50}'
+                    exampleCode: '{waitMessage;111111111111111;{userId;stupid cat};{bool;{username};startswith;stupid};50}'
                 }
             },
-            waitreaction: {
+            waitReaction: {
                 description: [
                     {
                         name: 'default',
                         input: [{ disabled: ['abc', 'def', 'ghi'] }],
-                        expected: 'Pauses the command until one of the given `users` adds any given `reaction` on any of the given `messages`. When a `reaction` is added, `condition` will be run to determine if the reaction can be accepted. If no reaction has been accepted within `timeout` then the subtag returns `Wait timed out`, otherwise it returns an array containing the channel Id, the message Id, the user id and the reaction, in that order. \n\n`userIDs` defaults to the current user if left blank or omitted.\n`reactions` defaults to any reaction if left blank or omitted.\n`condition` must return `true` or `false`\n`timeout` is a number of seconds. This is limited to 300\n\n While inside the `condition` parameter, none of the following subtags may be used: `abc`, `def`, `ghi`\nAlso, the current message becomes the message the reaction was added to, and the user becomes the person who sent the message. This means that `{channelid}`, `{messageid}`, `{userid}` and all related subtags will change their values.\nFinally, while inside the `condition` parameter, you can use the temporary subtag `{reaction}` to get the current reaction and the `{reactuser}` temporary subtag to get the user who reacted.\n`messages`, `users` and `reactions` can either be single values eg: `{waitreact;1234567891234;stupid cat;🤔}`, or they can be arrays eg: `{waitreact;["1234567891234","98765432219876"];stupid cat;["🤔"]}'
+                        expected: 'Pauses the command until one of the given `users` adds any given `reaction` on any of the given `messages`. When a `reaction` is added, `condition` will be run to determine if the reaction can be accepted. If no reaction has been accepted within `timeout` then the subtag returns `Wait timed out`, otherwise it returns an array containing the channel id, the message id, the user id and the reaction, in that order. \n\n`userIds` defaults to the current user if left blank or omitted.\n`reactions` defaults to any reaction if left blank or omitted.\n`condition` must return `true` or `false`\n`timeout` is a number of seconds. This is limited to 300\n\n While inside the `condition` parameter, none of the following subtags may be used: `abc`, `def`, `ghi`\nAlso, the current message becomes the message the reaction was added to, and the user becomes the person who sent the message. This means that `{channelId}`, `{messageId}`, `{userId}` and all related subtags will change their values.\nFinally, while inside the `condition` parameter, you can use the temporary subtag `{reaction}` to get the current reaction and the `{reactionUser}` temporary subtag to get the user who reacted.\n`messages`, `users` and `reactions` can either be single values eg: `{waitReaction;1234567891234;stupid cat;🤔}`, or they can be arrays eg: `{waitReaction;["1234567891234","98765432219876"];stupid cat;["🤔"]}'
                     }
                 ],
                 default: {
-                    description: 'Waits for any reaction on `messages` from the executing user or `userIDs` if provided.',
+                    description: 'Waits for any reaction on `messages` from the executing user or `userIds` if provided.',
                     exampleIn: '(reaction is added)',
                     exampleOut: '["111111111111111","12345678912345","3333333333333","🤔"]',
-                    exampleCode: '{waitreaction;12345678912345;stupid cat}'
+                    exampleCode: '{waitReaction;12345678912345;stupid cat}'
                 },
                 filtered: {
-                    description: 'Waits for any of `reactions` on `messages` from `userIDs`, if `condition` returns `true` this will return the response array. If no reaction was matched within `timeout`, `Wait timed out` will be returned.',
+                    description: 'Waits for any of `reactions` on `messages` from `userIds`, if `condition` returns `true` this will return the response array. If no reaction was matched within `timeout`, `Wait timed out` will be returned.',
                     exampleIn: '(some random user reacted with 🤔)\n(blargbot reacted with 🤔)',
                     exampleOut: '["111111111111111","12345678912345","134133271750639616","🤔"]',
-                    exampleCode: '{waitreaction;12345678912345;["{userid;stupid cat}","{userid;blargbot}"];["🤔", "👀"];;120}'
+                    exampleCode: '{waitReaction;12345678912345;["{userId;stupid cat}","{userId;blargbot}"];["🤔", "👀"];;120}'
                 }
             },
             webhook: {
@@ -1547,7 +1547,7 @@ Database Execution Time: 678ms
                 withUser: {
                     description: 'Executes a webhook. `avatarURL` must be a valid URL.',
                     exampleOut: '(in the webhook channel) Some content! (sent by "Not blargbot" with blargbot\'s pfp',
-                    exampleCode: '{webhook;1111111111111111;t.OK-en;Some content!;;Not blargbot;{useravatar;blargbot}}'
+                    exampleCode: '{webhook;1111111111111111;t.OK-en;Some content!;;Not blargbot;{userAvatar;blargbot}}'
                 },
                 withFile: {
                     description: 'Executes a webhook. If file starts with buffer:, the following text will be parsed as base64 to a raw buffer.',
@@ -1555,14 +1555,14 @@ Database Execution Time: 678ms
                     exampleCode: '{webhook;1111111111111111;t.OK-en;;;;;Hello, world!;readme.txt}'
                 }
             },
-            base64decode: {
+            base64Decode: {
                 default: {
                     description: 'Converts the provided base64 to a UTF-8 string.',
                     exampleOut: 'Fancy!',
                     exampleCode: '{base64decode;RmFuY3kh}'
                 }
             },
-            base64encode: {
+            base64Encode: {
                 default: {
                     description: 'Converts the provided text to base64.',
                     exampleOut: 'RmFuY3kh!',
@@ -1642,11 +1642,11 @@ Database Execution Time: 678ms
                     exampleCode: '{decancer;ḩ̸̪̓̍a̶̗̤̎́h̵͉͓͗̀ā̷̜̼̄ ̷̧̓í̴̯̎m̵͚̜̽ ̸̛̝ͅs̴͚̜̈o̴̦̗̊ ̷͎͋ȩ̵͐d̶͎̂̇g̴̲͓̀͝y̶̠̓̿}'
                 }
             },
-            escapebbtag: {
+            escapeBBTag: {
                 default: {
                     description: 'Returns `input` without resolving any BBTagThis effectively returns the characters `{`, `}` and `;` as is, without the use of `{rb}`, `{lb}` and `{semi}`.\n**NOTE:** Brackets inside code must come in pairs. A `{` has to be followed by a `}` somewhere and a `} has to have a {` before it',
                     exampleOut: '{set;~index;1}',
-                    exampleCode: '{escapebbtag;{set;~index;1}}'
+                    exampleCode: '{escapeBBTag;{set;~index;1}}'
                 }
             },
             hash: {
@@ -1667,18 +1667,18 @@ Database Execution Time: 678ms
                     exampleCode: '{hash;sha256;brown}'
                 }
             },
-            htmldecode: {
+            htmlDecode: {
                 default: {
                     description: 'Decodes html entities from `text`.',
                     exampleOut: '<hello, world>',
-                    exampleCode: '{htmldecode;&lt;hello, world&gt;}'
+                    exampleCode: '{htmlDecode;&lt;hello, world&gt;}'
                 }
             },
-            htmlencode: {
+            htmlEncode: {
                 default: {
                     description: 'Encodes `text` with escaped html entities.',
                     exampleOut: '&lt;hello, world&gt;',
-                    exampleCode: '{htmlencode;<hello, world>}'
+                    exampleCode: '{htmlEncode;<hello, world>}'
                 }
             },
             if: {
@@ -1692,27 +1692,27 @@ Database Execution Time: 678ms
                 value: {
                     description: 'If `boolean` is `true`, return `then`, else do nothing.',
                     exampleOut: 'This is a custom command!',
-                    exampleCode: '{if;{iscc};This is a custom command!}'
+                    exampleCode: '{if;{isCustomCommand};This is a custom command!}'
                 },
                 valueElse: {
                     description: 'If `boolean` is `true`, return `then`, else execute `else`',
                     exampleOut: 'This isn\'t a custom command!',
-                    exampleCode: '{if;{iscc};This is a custom command!;This isn\'t a custom command!}'
+                    exampleCode: '{if;{isCustomCommand};This is a custom command!;This isn\'t a custom command!}'
                 },
                 conditionThen: {
                     description: '`Value1` is evaluated against `value2` using `evaluator`, if the resulting value is `true` then the tag returns `then`.',
                     exampleOut: 'Hi stupid cat!',
-                    exampleCode: '{if;{userid};==;103347843934212096;Hi stupid cat!}'
+                    exampleCode: '{if;{userId};==;103347843934212096;Hi stupid cat!}'
                 },
                 conditionElse: {
                     description: '`Value1` is evaluated against `value2` using `evaluator`, if the resulting value is `true` then the tag returns `then`, otherwise it returns `else`',
                     exampleOut: 'Who are you stranger?',
-                    exampleCode: '{if;{userid};==;103347843934212096;Hi stupid cat!;Who are you stranger?}'
+                    exampleCode: '{if;{userId};==;103347843934212096;Hi stupid cat!;Who are you stranger?}'
                 }
             },
-            indexof: {
+            indexOf: {
                 default: {
-                    description: 'Finds the index of `searchfor` in `text|array`, after `start`. `text|array` can either be plain text or an array. If it\'s not found, returns -1.',
+                    description: 'Finds the index of `searchFor` in `text|array`, after `start`. `text|array` can either be plain text or an array. If it\'s not found, returns -1.',
                     exampleOut: 'The index of "o" in "hello world" is 4',
                     exampleCode: 'The index of "o" in "hello world" is {indexof;hello world;o}'
                 }
@@ -1875,69 +1875,69 @@ Database Execution Time: 678ms
                     exampleCode: '{pad;left;000000;ABC}'
                 }
             },
-            randchoose: {
+            randomChoose: {
                 array: {
                     description: 'Picks one random entry from `choiceArray`.',
                     exampleOut: 'I feel like eating pie today',
-                    exampleCode: 'I feel like eating {randchoose;["pie", "cake", "pudding"]} today'
+                    exampleCode: 'I feel like eating {randomChoose;["pie", "cake", "pudding"]} today'
                 },
                 args: {
                     description: 'Picks one random entry from `choices`',
                     exampleOut: 'I feel like eating pudding today.',
-                    exampleCode: 'I feel like eating {randchoose;cake;pie;pudding} today'
+                    exampleCode: 'I feel like eating {randomChoose;cake;pie;pudding} today'
                 }
             },
-            randstr: {
+            randomString: {
                 default: {
                     description: 'Creates a random string with characters from `chars` that is `length` characters long.',
                     exampleOut: 'kgzyqcvda',
-                    exampleCode: '{randstr;abcdefghijklmnopqrstuvwxyz;9}'
+                    exampleCode: '{randomString;abcdefghijklmnopqrstuvwxyz;9}'
                 }
             },
-            realpad: {
+            realPad: {
                 default: {
                     description: 'Pads `text` using space until it has `length` characters. Spaces are added on the right side.',
                     exampleOut: 'Hello      world!',
-                    exampleCode: '{realpad;Hello;10} world!'
+                    exampleCode: '{realPad;Hello;10} world!'
                 },
                 withDirection: {
                     description: 'Pads `text` using `filler` until it has `length` characters. `filler` is applied to the  `direction` of `text`.',
                     exampleOut: '000ABC',
-                    exampleCode: '{realpad;ABC;6;0;left}'
+                    exampleCode: '{realPad;ABC;6;0;left}'
                 }
             },
-            regexmatch: {
+            regexMatch: {
                 default: {
                     description: 'Returns an array of everything in `text` that matches `regex`. Any bbtag in `regex` will not be resolved. Please consider using `{apply}` for a dynamic regex. `regex` will only succeed to compile if it is deemed a safe regular expression (safe regexes do not run in exponential time for any input)',
                     exampleOut: '["1", "25"]',
-                    exampleCode: '{regexmatch;I have $1 and 25 cents;/\\d+/g}'
+                    exampleCode: '{regexMatch;I have $1 and 25 cents;/\\d+/g}'
                 }
             },
-            regexreplace: {
+            regexReplace: {
                 description: 'Any bbtag in `regex` will not be resolved. Please consider using `{apply}` for a dynamic regex. `regex` will only succeed to compile if it is deemed a safe regular expression (safe regexes do not run in exponential time for any input)',
                 output: {
-                    description: 'Replaces the `regex` phrase with `replacewith`. This is executed on the output of the containing tag.',
+                    description: 'Replaces the `regex` phrase with `replaceWith`. This is executed on the output of the containing tag.',
                     exampleOut: 'I like to eat pie.',
-                    exampleCode: 'I like to eat cheese. {regexreplace;/cheese/;pie}'
+                    exampleCode: 'I like to eat cheese. {regexReplace;/cheese/;pie}'
                 },
                 text: {
                     description: 'Replace the `regex` phrase with `replaceWith`. This is executed on `text`.',
                     exampleOut: 'I likn ta cansumn chnnsn.',
-                    exampleCode: 'I like {regexreplace;to consume;/o/gi;a} cheese. {regexreplace;/e/gi;n}'
+                    exampleCode: 'I like {regexReplace;to consume;/o/gi;a} cheese. {regexReplace;/e/gi;n}'
                 }
             },
-            regexsplit: {
+            regexSplit: {
                 default: {
                     description: 'Splits the given text using the given `regex` as the split rule. Any bbtag in `regex` will not be resolved. Please consider using `{apply}` for a dynamic regex. `regex` will only succeed to compile if it is deemed a safe regular expression (safe regexes do not run in exponential time for any input)',
                     exampleOut: '["Hello","there","I","am","hungry"]',
-                    exampleCode: '{regexsplit;Hello      there, I       am hungry;/[\\s,]+/}'
+                    exampleCode: '{regexSplit;Hello      there, I       am hungry;/[\\s,]+/}'
                 }
             },
-            regextest: {
+            regexTest: {
                 default: {
                     description: 'Tests if the `regex` phrase matches the `text`, and returns a boolean (true/false). Any bbtag in `regex` will not be resolved. Please consider using `{apply}` for a dynamic regex. `regex` will only succeed to compile if it is deemed a safe regular expression (safe regexes do not run in exponential time for any input)',
                     exampleOut: 'true false',
-                    exampleCode: '{regextest;apple;/p+/i} {regextest;banana;/p+/i}'
+                    exampleCode: '{regexTest;apple;/p+/i} {regexTest;banana;/p+/i}'
                 }
             },
             replace: {
@@ -2010,18 +2010,18 @@ Database Execution Time: 678ms
                     exampleCode: '{upper;this will become uppercase}'
                 }
             },
-            uridecode: {
+            uriDecode: {
                 default: {
                     description: 'Decodes `text` from URI format.',
                     exampleOut: 'Hello world!',
-                    exampleCode: '{uridecode;Hello%20world}'
+                    exampleCode: '{uriDecode;Hello%20world}'
                 }
             },
-            uriencode: {
+            uriEncode: {
                 default: {
                     description: 'Encodes `text` in URI format. Useful for constructing links.',
                     exampleOut: 'Hello%20world!',
-                    exampleCode: '{uriencode;Hello world!}'
+                    exampleCode: '{uriEncode;Hello world!}'
                 }
             },
             void: {
@@ -2031,93 +2031,93 @@ Database Execution Time: 678ms
                     exampleCode: '{void;This won\'t be output!}'
                 }
             },
-            roleadd: {
-                description: '`role` can be either a roleID or role mention.',
+            roleAdd: {
+                description: '`role` can be either a roleId or role mention.',
                 target: {
                     description: 'Gives the executing user `role`. Returns `true` if role was given, else an error will be shown.',
                     exampleOut: 'Have a role! true',
-                    exampleCode: 'Have a role! {roleadd;11111111111111111}'
+                    exampleCode: 'Have a role! {roleAdd;11111111111111111}'
                 },
                 other: {
                     description: 'Gives `user` the chosen `role`. Returns `true` if role was given, else an error will be shown. If `quiet` is specified, if a user can\'t be found it will simply return `false`',
                     exampleOut: 'Stupid cat have a role! true',
-                    exampleCode: 'Stupid cat have a role! {roleadd;Bot;Stupid cat}'
+                    exampleCode: 'Stupid cat have a role! {roleAdd;Bot;Stupid cat}'
                 }
             },
-            rolecolor: {
+            roleColor: {
                 default: {
                     description: 'Returns `role`\'s hex color code. If `quiet` is specified, if `role` can\'t be found it will simply return nothing.',
-                    exampleOut: 'The admin role ID is: #1b1b1b.',
-                    exampleCode: 'The admin role color is: #{rolecolor;admin}.'
+                    exampleOut: 'The admin role id is: #1b1b1b.',
+                    exampleCode: 'The admin role color is: #{roleColor;admin}.'
                 }
             },
-            rolecreate: {
+            roleCreate: {
                 default: {
-                    description: '`color` can be a [HTML color](https://www.w3schools.com/colors/colors_names.asp), hex, (r,g,b) or a valid color number. Provide `permissions` as a number, which can be calculated [here](https://discordapi.com/permissions.html) `hoisted` is if the role should be displayed separately from other roles.\nReturns the new role\'s ID.',
+                    description: '`color` can be a [HTML color](https://www.w3schools.com/colors/colors_names.asp), hex, (r,g,b) or a valid color number. Provide `permissions` as a number, which can be calculated [here](https://discordapi.com/permissions.html) `hoisted` is if the role should be displayed separately from other roles.\nReturns the new role\'s id.',
                     exampleOut: '1298731238361728931',
-                    exampleCode: '{rolecreate;myNewRole;red}'
+                    exampleCode: '{roleCreate;myNewRole;red}'
                 }
             },
-            roledelete: {
+            roleDelete: {
                 default: {
                     description: 'Deletes `role`. If `quiet` is specified, if `role` can\'t be found it will return nothing.\nWarning: this subtag is able to delete roles managed by integrations.',
                     exampleOut: '(rip no more super cool roles for anyone)',
-                    exampleCode: '{roledelete;Super Cool Role!}'
+                    exampleCode: '{roleDelete;Super Cool Role!}'
                 }
             },
-            roleid: {
+            roleId: {
                 default: {
-                    description: 'Returns `role`\'s ID. If `quiet` is specified, if `role` can\'t be found it will simply return nothing.',
-                    exampleOut: 'The admin role ID is: 123456789123456.',
-                    exampleCode: 'The admin role ID is: {roleid;admin}.'
+                    description: 'Returns `role`\'s id. If `quiet` is specified, if `role` can\'t be found it will simply return nothing.',
+                    exampleOut: 'The admin role id is: 123456789123456.',
+                    exampleCode: 'The admin role id is: {roleId;admin}.'
                 }
             },
-            rolemembers: {
+            roleMembers: {
                 default: {
                     description: 'Returns an array of members in `role`. If `quiet` is specified, if `role` can\'t be found it will simply return nothing.',
                     exampleOut: 'The admins are: ["11111111111111111","22222222222222222"].',
-                    exampleCode: 'The admins are: {rolemembers;Admin}.'
+                    exampleCode: 'The admins are: {roleMembers;Admin}.'
                 }
             },
-            rolemention: {
+            roleMention: {
                 default: {
                     description: 'Returns a mention of `role`. If `quiet` is specified, if `role` can\'t be found it will simply return nothing.',
                     exampleOut: 'The admin role will be mentioned: @Administrator',
-                    exampleCode: 'The admin role will be mentioned: {rolemention;Admin}'
+                    exampleCode: 'The admin role will be mentioned: {roleMention;Admin}'
                 }
             },
-            rolename: {
+            roleName: {
                 default: {
                     description: 'Returns `role`\'s name. If `quiet` is specified, if `role` can\'t be found it will simply return nothing.',
                     exampleOut: 'The admin role name is: Administrator.',
-                    exampleCode: 'The admin role name is: {rolename;admin}.'
+                    exampleCode: 'The admin role name is: {roleName;admin}.'
                 }
             },
-            roleperms: {
+            rolePermissions: {
                 default: {
                     description: 'Returns `role`\'s permission number. If `quiet` is specified, if `role` can\'t be found it will simply return nothing.',
                     exampleOut: 'The admin role\'s permissions are: 8.',
-                    exampleCode: 'The admin role\'s permissions are: {roleperms;admin}.'
+                    exampleCode: 'The admin role\'s permissions are: {rolePermissions;admin}.'
                 }
             },
-            rolepos: {
+            rolePosition: {
                 default: {
                     description: 'Returns the position of `role`. If `quiet` is specified, if `role` can\'t be found it will simply return nothing.\n**Note**: the highest role will have the highest position, and the lowest role will have the lowest position and therefore return `0` (`@everyone`).',
                     exampleOut: 'The position of Mayor is 10',
-                    exampleCode: 'The position of Mayor is {rolepos;Mayor}'
+                    exampleCode: 'The position of Mayor is {rolePosition;Mayor}'
                 }
             },
-            roleremove: {
-                description: '`role` can be either a roleID or role mention.',
+            roleRemove: {
+                description: '`role` can be either a roleId or role mention.',
                 target: {
                     description: 'Removes `role` from the executing user. Returns `true` if role was removed, else an error will be shown.',
                     exampleOut: 'No more role! true',
-                    exampleCode: 'No more role! {roleremove;11111111111111111}'
+                    exampleCode: 'No more role! {roleRemove;11111111111111111}'
                 },
                 other: {
                     description: 'Remove the chosen `role` from  `user`. Returns `true` if role was removed, else an error will be shown. If `quiet` is specified, if a user can\'t be found it will simply return `false`',
                     exampleOut: 'Stupid cat no more role! true',
-                    exampleCode: 'Stupid cat no more role! {roleremove;Bot;Stupid cat}'
+                    exampleCode: 'Stupid cat no more role! {roleRemove;Bot;Stupid cat}'
                 }
             },
             roles: {
@@ -2132,84 +2132,84 @@ Database Execution Time: 678ms
                     exampleCode: 'Stupid cat has the roles: {roles;Stupid cat}'
                 }
             },
-            rolesetcolor: {
+            roleSetColor: {
                 clear: {
                     description: 'Sets the color of `role` to \'#000000\'. This is transparent.',
                     exampleOut: 'The admin role is now colourless.',
-                    exampleCode: 'The admin role is now colourless. {rolesetcolor;admin}'
+                    exampleCode: 'The admin role is now colourless. {roleSetColor;admin}'
                 },
                 set: {
                     description: 'Sets the `color` of `role`.If `quiet` is specified, if `role` can\'t be found it will simply return nothing',
                     exampleOut: 'The admin role is now white.',
-                    exampleCode: 'The admin role is now white. {rolesetcolor;admin;white}'
+                    exampleCode: 'The admin role is now white. {roleSetColor;admin;white}'
                 }
             },
-            rolesetmentionable: {
+            roleSetMentionable: {
                 enable: {
                     description: 'Set `role` to mentionable.',
                     exampleOut: 'The admin role is now mentionable.',
-                    exampleCode: 'The admin role is now mentionable. {rolesetmentionable;admin}'
+                    exampleCode: 'The admin role is now mentionable. {roleSetMentionable;admin}'
                 },
                 set: {
                     description: 'Sets whether `role` can be mentioned. `value` can be either `true` to set the role as mentionable, or anything else to set it to unmentionable. If `quiet` is specified, if `role` can\'t be found it will simply return nothing',
                     exampleOut: 'The admin role is no longer mentionable.',
-                    exampleCode: 'The admin role is no longer mentionable. {rolesetmentionable;admin;false}'
+                    exampleCode: 'The admin role is no longer mentionable. {roleSetMentionable;admin;false}'
                 }
             },
-            rolesetname: {
+            roleSetName: {
                 default: {
                     description: 'Sets the name of `role`.If `quiet` is specified, if `role` can\'t be found it will simply return nothing',
                     exampleOut: 'The admin role is now called administrator.',
-                    exampleCode: 'The admin role is now called administrator. {rolesetname;admin;administrator}'
+                    exampleCode: 'The admin role is now called administrator. {roleSetName;admin;administrator}'
                 }
             },
-            rolesetperms: {
+            roleSetPermissions: {
                 clear: {
                     description: 'Removes all perms from `role`',
                     exampleOut: '(perms have been changed)',
-                    exampleCode: '{rolesetperms;Support}'
+                    exampleCode: '{roleSetPermissions;Support}'
                 },
                 set: {
                     description: 'Sets the permissions of `role` with the provided `permissions` number. This will not apply any permissions the authorizer can\'t grant. Additionally, this will completely overwrite the role\'s existing permissions. If `quiet` is specified, if `role` can\'t be found it will simply return nothing',
                     exampleOut: 'The admin role now has the administrator permission.',
-                    exampleCode: 'The admin role now has the administrator permission. {rolesetperms;admin;8}'
+                    exampleCode: 'The admin role now has the administrator permission. {roleSetPermissions;admin;8}'
                 }
             },
-            rolesetpos: {
+            roleSetPosition: {
                 default: {
                     description: 'Sets the position of `role`. If `quiet` is specified, if `role` can\'t be found it will simply return nothing.',
                     exampleOut: 'The admin role is now at position 3.',
-                    exampleCode: 'The admin role is now at position 3. {rolesetpos;admin;3}'
+                    exampleCode: 'The admin role is now at position 3. {roleSetPosition;admin;3}'
                 }
             },
-            rolesize: {
+            roleSize: {
                 default: {
                     description: 'Returns the amount of people in role `role`',
                     exampleOut: 'There are 5 people in the role!',
-                    exampleCode: 'There are {rolesize;11111111111111111} people in the role!'
+                    exampleCode: 'There are {roleSize;11111111111111111} people in the role!'
                 }
             },
-            argsarray: {
+            argsArray: {
                 default: {
                     description: 'Gets user input as an array.',
                     exampleIn: 'Hello world!',
                     exampleOut: 'Your input was ["Hello","world!"]',
-                    exampleCode: 'Your input was {argsarray}'
+                    exampleCode: 'Your input was {argsArray}'
                 }
             },
-            argslength: {
+            argsLength: {
                 default: {
                     description: 'Return the number of arguments the user provided.',
                     exampleIn: 'I am saying things.',
                     exampleOut: 'You said 4 words.',
-                    exampleCode: 'You said {argslength} words.'
+                    exampleCode: 'You said {argsLength} words.'
                 }
             },
-            iscc: {
+            isCustomCommand: {
                 default: {
                     description: 'Checks if the tag is being run from within a cc. Returns a boolean (`true` or `false`)',
                     exampleOut: 'Boo, this only works in cc\'s',
-                    exampleCode: '{if;{iscc};{dm;{userid};You have mail!};Boo, this only works in cc\'s}'
+                    exampleCode: '{if;{isCustomCommand};{dm;{userId};You have mail!};Boo, this only works in cc\'s}'
                 }
             },
             lb: {
@@ -2234,18 +2234,18 @@ Database Execution Time: 678ms
                     exampleCode: 'This is a semicolon! {semi}'
                 }
             },
-            tagauthor: {
+            tagAuthor: {
                 default: {
-                    description: 'Returns the user ID of the tag/cc author',
+                    description: 'Returns the user id of the tag/cc author',
                     exampleOut: 'This tag was created by stupid cat',
-                    exampleCode: 'This tag was created by {username;{tagauthor}}'
+                    exampleCode: 'This tag was created by {username;{tagAuthor}}'
                 }
             },
-            tagauthorizer: {
+            tagAuthorizer: {
                 default: {
-                    description: 'Returns the user ID of the tag/cc authorizer',
+                    description: 'Returns the user id of the tag/cc authorizer',
                     exampleOut: 'stupid cat authorized this tag!',
-                    exampleCode: '{username;{tagauthorizer}} authorized this tag!'
+                    exampleCode: '{username;{tagAuthorizer}} authorized this tag!'
                 }
             },
             zws: {
@@ -2277,41 +2277,41 @@ Database Execution Time: 678ms
                 text: {
                     description: 'DMs `user` the given `message`. You may only send one DM per execution. Requires author to be staff, and the user to be on the current guild.',
                     exampleOut: 'DM: Hello\nEmbed: You\'re cool',
-                    exampleCode: '{dm;stupid cat;Hello;{embedbuild;title:You\'re cool}}'
+                    exampleCode: '{dm;stupid cat;Hello;{embedBuild;title:You\'re cool}}'
                 },
                 embed: {
                     description: 'DMs `user` the given `embed`. You may only send one DM per execution. Requires author to be staff, and the user to be on the current guild.\nPlease note that `embed` is the JSON for an embed object, don\'t put the `{embed}` subtag there, as nothing will show.',
                     exampleOut: 'DM: Hello\nEmbed: You\'re cool',
-                    exampleCode: '{dm;stupid cat;Hello;{embedbuild;title:You\'re cool}}'
+                    exampleCode: '{dm;stupid cat;Hello;{embedBuild;title:You\'re cool}}'
                 },
                 full: {
                     description: 'DMs `user` the given `message` and `embed`. You may only send one DM per execution. Requires author to be staff, and the user to be on the current guild.\nPlease note that `embed` is the JSON for an embed object, don\'t put the `{embed}` subtag there, as nothing will show.',
                     exampleOut: 'DM: Hello\nEmbed: You\'re cool',
-                    exampleCode: '{dm;stupid cat;Hello;{embedbuild;title:You\'re cool}}'
+                    exampleCode: '{dm;stupid cat;Hello;{embedBuild;title:You\'re cool}}'
                 }
             },
-            isstaff: {
+            isStaff: {
                 target: {
                     description: 'Checks if the tag author is staff',
                     exampleOut: 'The author is a staff member!',
-                    exampleCode: '{if;{isstaff};The author is a staff member!;The author is not a staff member :(}'
+                    exampleCode: '{if;{isStaff};The author is a staff member!;The author is not a staff member :(}'
                 },
                 user: {
                     description: 'Checks if `user` is a member of staff. If the `user` cannot be found `false` will be returned.',
                     exampleOut: 'You are not a staff member :(',
-                    exampleCode: '{if;{isstaff;{userid}};You are a staff member!;You are not a staff member :(}'
+                    exampleCode: '{if;{isStaff;{userId}};You are a staff member!;You are not a staff member :(}'
                 }
             },
-            isuserboosting: {
+            isUserBoosting: {
                 target: {
                     description: 'Returns `true` if the executing user is boosting the guild and `false` if not.',
                     exampleOut: 'You should consider boosting',
-                    exampleCode: '{if;{isuserboosting};Yes you are boosting;You should consider boosting}'
+                    exampleCode: '{if;{isUserBoosting};Yes you are boosting;You should consider boosting}'
                 },
                 user: {
                     description: 'Returns `true` if the `user` is boosting the guild and `false` if not. If `quiet` is specified, if `user` can\'t be found it will simply return nothing.',
                     exampleOut: 'stupid cat is boosting!',
-                    exampleCode: '{if;{isuserboosting;stupid cat};stupid cat is boosting!; no boosting here :(}'
+                    exampleCode: '{if;{isUserBoosting;stupid cat};stupid cat is boosting!; no boosting here :(}'
                 }
             },
             kick: {
@@ -2340,11 +2340,11 @@ Database Execution Time: 678ms
                     exampleCode: 'Be pardoned 9001 times, Stupid cat! {pardon;Stupid cat;9001}'
                 }
             },
-            randuser: {
+            randomUser: {
                 default: {
                     description: 'Returns the id of a random user on the current guild.',
                     exampleOut: 'abalabahaha is a lovely person! stupid cat isn\'t as good.',
-                    exampleCode: '{username;{randuser}} is a lovely person! {username;{randuser}} isn\'t as good.'
+                    exampleCode: '{username;{randomUser}} is a lovely person! {username;{randomUser}} isn\'t as good.'
                 }
             },
             timeout: {
@@ -2372,20 +2372,20 @@ Database Execution Time: 678ms
                     exampleCode: '{unban;@stupid cat;I made a mistake} @stupid cat has been unbanned'
                 }
             },
-            useractivity: {
+            userActivity: {
                 description: 'If no game is being played, this will return \'nothing\'',
                 target: {
                     description: 'Returns the name of the activity the executing user is currently doing. ',
                     exampleOut: 'You are listening to bad music',
-                    exampleCode: 'You are listening to {useractivity}'
+                    exampleCode: 'You are listening to {userActivity}'
                 },
                 user: {
                     description: 'Returns the name of the activity `user` is currently doing. If `user` can\'t be found it will simply return nothing.',
                     exampleOut: 'Stupid cat is playing nothing',
-                    exampleCode: 'Stupid cat is playing {useractivity;Stupid cat}'
+                    exampleCode: 'Stupid cat is playing {userActivity;Stupid cat}'
                 }
             },
-            useractivitytype: {
+            userActivityType: {
                 description: [
                     {
                         name: 'default',
@@ -2396,232 +2396,232 @@ Database Execution Time: 678ms
                 target: {
                     description: 'Returns the type of activity the executing user is currently doing (playing, streaming).',
                     exampleOut: 'You are streaming right now!',
-                    exampleCode: 'You are {useractivitytype} right now!'
+                    exampleCode: 'You are {userActivityType} right now!'
                 },
                 user: {
                     description: 'Returns the activity type `user` is currently doing. If `quiet` is specified, if `user` can\'t be found it will simply return nothing.',
                     exampleOut: 'Stupid cat is streaming cats',
-                    exampleCode: 'Stupid cat is {useractivitytype;Stupid cat} cats'
+                    exampleCode: 'Stupid cat is {userActivityType;Stupid cat} cats'
                 }
             },
-            useravatar: {
+            userAvatar: {
                 description: 'If no game is being played, this will return \'nothing\'',
                 target: {
                     description: 'Returns the avatar of the executing user.',
                     exampleOut: 'Your avatar is (avatar url)',
-                    exampleCode: 'Your avatar is {useravatar}'
+                    exampleCode: 'Your avatar is {userAvatar}'
                 },
                 user: {
                     description: 'Returns the avatar of `user`. If `user` can\'t be found it will simply return nothing.',
                     exampleOut: 'Stupid cat\'s avatar is (avatar url)',
-                    exampleCode: 'Stupid cat\'s avatar is {useravatar;Stupid cat}'
+                    exampleCode: 'Stupid cat\'s avatar is {userAvatar;Stupid cat}'
                 }
             },
-            userboostdate: {
+            userBoostDate: {
                 description: 'See the [moment documentation](http://momentjs.com/docs/#/displaying/format/) for more information about formats. If user is not boosting the guild, returns `User not boosting`',
                 target: {
                     description: 'Returns the date that the executing user started boosting the guild using `format` for the output, in UTC+0.',
                     exampleOut: 'Your account started boosting this guild on 2020/02/27 00:00:00',
-                    exampleCode: 'Your account started boosting this guild on {userboostdate;YYYY/MM/DD HH:mm:ss}'
+                    exampleCode: 'Your account started boosting this guild on {userBoostDate;YYYY/MM/DD HH:mm:ss}'
                 },
                 user: {
                     description: 'Returns the date that `user` started boosting the current guild using `format` for the output, in UTC+0. If `quiet` is specified, if `user` can\'t be found it will simply return nothing.',
                     exampleOut: 'Stupid cat started boosting this guild on 2020/02/27 00:00:00',
-                    exampleCode: 'Stupid cat started boosting this guild on {userboostdate;YYYY/MM/DD HH:mm:ss;stupid cat}'
+                    exampleCode: 'Stupid cat started boosting this guild on {userBoostDate;YYYY/MM/DD HH:mm:ss;stupid cat}'
                 }
             },
-            usercreatedat: {
+            userCreatedAt: {
                 target: {
                     description: 'Returns the account creation date of the executing user in `format`.',
                     exampleOut: 'Your account was created on 2017-02-06T18:58:10+00:00',
-                    exampleCode: 'Your account was created on {usercreatedat}'
+                    exampleCode: 'Your account was created on {userCreatedAt}'
                 },
                 user: {
                     description: 'Returns the account creation date of `user` in `format`. If `quiet` is specified, if `user` can\'t be found it will simply return nothing.',
                     exampleOut: 'Stupid cat\'s account was created on 2015-10-13T04:27:26Z',
-                    exampleCode: 'Stupid cat\'s account was created on {usercreatedat;;Stupid cat}'
+                    exampleCode: 'Stupid cat\'s account was created on {userCreatedAt;;Stupid cat}'
                 }
             },
-            userdiscrim: {
+            userDiscriminator: {
                 description: 'If no game is being played, this will return \'nothing\'',
                 target: {
                     description: 'Returns the discriminator of the executing user.',
                     exampleOut: 'Your discriminator is 1234',
-                    exampleCode: 'Your discriminator is {userdiscrim}'
+                    exampleCode: 'Your discriminator is {userDiscriminator}'
                 },
                 user: {
                     description: 'Returns `user`\'s discriminator. If `user` can\'t be found it will simply return nothing.',
                     exampleOut: 'Stupid cat\'s discriminator is 8160',
-                    exampleCode: 'Stupid cat\'s discriminator is {userdiscrim;Stupid cat}'
+                    exampleCode: 'Stupid cat\'s discriminator is {userDiscriminator;Stupid cat}'
                 }
             },
-            userhasrole: {
-                description: 'This subtag checks if a user has *any* of the provided `roleids`. Use `{userhasroles}` to check if a user has *all* of the provided `roleids`. `roleids` can be an array of role IDs, or a single role ID. For a list of roles and their corresponding IDs, use `b!roles`\nReturns a boolean.',
+            userHasRole: {
+                description: 'This subtag checks if a user has *any* of the provided `roleIds`. Use `{userHasRoles}` to check if a user has *all* of the provided `roleIds`. `roleIds` can be an array of role ids, or a single role id. For a list of roles and their corresponding ids, use `b!roles`\nReturns a boolean.',
                 target: {
-                    description: 'Checks if the executing user has *any* of the provided `roleids`.',
+                    description: 'Checks if the executing user has *any* of the provided `roleIds`.',
                     exampleOut: 'You are a moderator',
-                    exampleCode: '{if;{userhasrole;{roleid;moderator}};You are a moderator; You are not a moderator}'
+                    exampleCode: '{if;{userHasRole;{roleId;moderator}};You are a moderator; You are not a moderator}'
                 },
                 user: {
-                    description: 'Checks if `user` has *any* of the provided `roleids`. If `quiet` is specified, if `user` or any `roleid` can\'t be found it will simply return `false`.',
+                    description: 'Checks if `user` has *any* of the provided `roleIds`. If `quiet` is specified, if `user` or any `roleId` can\'t be found it will simply return `false`.',
                     exampleOut: 'Stupid cat is a moderator',
-                    exampleCode: '{if;{userhasrole;{userid;moderator};Stupid cat};Stupid cat is a moderator;Stupid cat is not a moderator}'
+                    exampleCode: '{if;{userHasRole;{userId;moderator};Stupid cat};Stupid cat is a moderator;Stupid cat is not a moderator}'
                 }
             },
-            userhasroles: {
-                description: 'This subtag checks if a user has *all* of the provided `roleids`. Use `{userhasrole}` to check if a user has *any* of the provided `roleids`. `roleids` can be an array of role IDs, or a single role ID. For a list of roles and their corresponding IDs, use `b!roles`\nReturns a boolean.',
+            userHasRoles: {
+                description: 'This subtag checks if a user has *all* of the provided `roleIds`. Use `{userHasRole}` to check if a user has *any* of the provided `roleIds`. `roleIds` can be an array of role ids, or a single role id. For a list of roles and their corresponding ids, use `b!roles`\nReturns a boolean.',
                 target: {
-                    description: 'Checks if the executing user has *all* of the provided `roleids`.',
+                    description: 'Checks if the executing user has *all* of the provided `roleIds`.',
                     exampleOut: 'You are not a moderator and admin',
-                    exampleCode: '{if;{userhasroles;["{roleid;moderator}","{roleid;admin}"];You are a moderator and admin; You are not a moderator and admin}'
+                    exampleCode: '{if;{userHasRoles;["{roleId;moderator}","{roleId;admin}"];You are a moderator and admin; You are not a moderator and admin}'
                 },
                 user: {
-                    description: 'Checks if `user` has *all* of the provided `roleids`. If `quiet` is specified, if `user` or any `roleid` can\'t be found it will simply return `false`.',
+                    description: 'Checks if `user` has *all* of the provided `roleIds`. If `quiet` is specified, if `user` or any `roleId` can\'t be found it will simply return `false`.',
                     exampleOut: 'Stupid cat is a moderator and admin',
-                    exampleCode: '{if;{userhasroles;["{roleid;moderator}","{roleid;admin}"];Stupid cat};Stupid cat is a moderator and admin;Stupid cat is not a moderator and admin}'
+                    exampleCode: '{if;{userHasRoles;["{roleId;moderator}","{roleId;admin}"];Stupid cat};Stupid cat is a moderator and admin;Stupid cat is not a moderator and admin}'
                 }
             },
-            userid: {
+            userId: {
                 target: {
-                    description: 'Returns the user ID of the executing user.',
+                    description: 'Returns the user id of the executing user.',
                     exampleOut: 'Your id is 123456789123456',
-                    exampleCode: 'Your id is {userid}'
+                    exampleCode: 'Your id is {userId}'
                 },
                 user: {
-                    description: 'Returns `user`\'s ID. If `quiet` is specified, if `user` can\'t be found it will simply return nothing.',
-                    exampleOut: 'This is Stupid cat\'s user ID 103347843934212096',
-                    exampleCode: 'This is Stupid cat\'s user ID {userid;Stupid cat}'
+                    description: 'Returns `user`\'s id. If `quiet` is specified, if `user` can\'t be found it will simply return nothing.',
+                    exampleOut: 'This is Stupid cat\'s user id 103347843934212096',
+                    exampleCode: 'This is Stupid cat\'s user id {userId;Stupid cat}'
                 }
             },
-            userisbot: {
+            userIsBot: {
                 target: {
                     description: 'Returns whether the executing user is a bot.',
                     exampleOut: 'Are you a bot? false',
-                    exampleCode: 'Are you a bot? {userisbot}'
+                    exampleCode: 'Are you a bot? {userIsBot}'
                 },
                 user: {
                     description: 'Returns whether a `user` is a bot. If `quiet` is specified, if `user` can\'t be found it will simply return nothing.',
                     exampleOut: 'Is Stupid cat a bot? false',
-                    exampleCode: 'Is Stupid cat a bot? {userisbot;Stupid cat}'
+                    exampleCode: 'Is Stupid cat a bot? {userIsBot;Stupid cat}'
                 }
             },
-            userjoinedat: {
+            userJoinedAt: {
                 description: 'For a list of formats see the [moment documentation](http://momentjs.com/docs/#/displaying/format/) for more information.',
                 target: {
                     description: 'Returns the date that the executing user joined the guild, using `format` for the output, in UTC+0.\n',
                     exampleOut: 'Your account joined this guild on 2016/01/01 01:00:00.',
-                    exampleCode: 'Your account joined this guild on {usercreatedat;YYYY/MM/DD HH:mm:ss}'
+                    exampleCode: 'Your account joined this guild on {userJoinedAt;YYYY/MM/DD HH:mm:ss}'
                 },
                 user: {
                     description: 'Returns the date that `user` joined the current guild using `format` for the output, in UTC+0. if `user` can\'t be found it will simply return nothing.',
                     exampleOut: 'Stupid cat joined this guild on 2016/06/19 23:30:30',
-                    exampleCode: 'Stupid cat joined this guild on {userjoinedat;YYYY/MM/DD HH:mm:ss;Stupid cat}'
+                    exampleCode: 'Stupid cat joined this guild on {userJoinedAt;YYYY/MM/DD HH:mm:ss;Stupid cat}'
                 }
             },
-            usermention: {
+            userMention: {
                 target: {
                     description: 'Mentions the executing user.',
                     exampleOut: 'Hello, @user!',
-                    exampleCode: 'Hello, {usermention}!'
+                    exampleCode: 'Hello, {userMention}!'
                 },
                 user: {
                     description: 'Mentions `user`. If `quiet` is specified, if `user` can\'t be found it will simply return nothing.',
                     exampleOut: 'Hello, @Stupid cat!',
-                    exampleCode: 'Hello, {usermention;stupid cat}!'
+                    exampleCode: 'Hello, {userMention;stupid cat}!'
                 }
             },
-            username: {
+            userName: {
                 target: {
                     description: 'Returns the username of the executing user.',
                     exampleOut: 'Your username is Cool Dude 1337!',
-                    exampleCode: 'Your username is {username}!'
+                    exampleCode: 'Your username is {userName}!'
                 },
                 user: {
                     description: 'Returns `user`\'s username. If `quiet` is specified, if `user` can\'t be found it will simply return nothing.',
                     exampleOut: 'Stupid cat\'s username is Stupid cat!',
-                    exampleCode: 'Stupid cat\'s username is {username;Stupid cat}!'
+                    exampleCode: 'Stupid cat\'s username is {userName;Stupid cat}!'
                 }
             },
-            usernick: {
+            userNickname: {
                 target: {
                     description: 'Returns the nickname of the executing user.',
                     exampleOut: 'Your nick is Cool Dude 1337!',
-                    exampleCode: 'Your nick is {usernick}!'
+                    exampleCode: 'Your nick is {userNickname}!'
                 },
                 user: {
                     description: 'Returns `user`\'s nickname. If `quiet` is specified, if `user` can\'t be found it will simply return nothing.',
                     exampleOut: 'Stupid cat\'s nickname is Secretly Awoken',
-                    exampleCode: 'Stupid cat\'s nickname is {usernick;Stupid cat}!'
+                    exampleCode: 'Stupid cat\'s nickname is {userNickname;Stupid cat}!'
                 }
             },
-            userroles: {
+            userRoles: {
                 target: {
                     description: 'Returns the roles of the executing user.',
                     exampleOut: 'Your roles are ["1111111111111111","2222222222222222"]!',
-                    exampleCode: 'Your roles are {userroles}!'
+                    exampleCode: 'Your roles are {userRoles}!'
                 },
                 user: {
                     description: 'Returns `user`\'s roles as an array. If `quiet` is specified, if `user` can\'t be found it will simply return nothing.',
                     exampleOut: 'Stupid cat\'s roles are ["1111111111111111","2222222222222222", "3333333333333333"]',
-                    exampleCode: 'Stupid cat\'s roles are {userroles;stupid cat}'
+                    exampleCode: 'Stupid cat\'s roles are {userRoles;stupid cat}'
                 }
             },
-            usersetnick: {
+            userSetNickname: {
                 default: {
                     description: 'Sets `user`\'s nickname to `nick`. Leave `nick` blank to reset their nickname.',
                     exampleOut: '',
-                    exampleCode: '{usersetnick;super cool nickname}\n{//;Reset the the nickname}\n{usersetnick;}'
+                    exampleCode: '{userSetNickname;super cool nickname}\n{//;Reset the the nickname}\n{userSetNickname;}'
                 }
             },
-            usersetroles: {
+            userSetRoles: {
                 description: '`roleArray` must be an array formatted like `["role1", "role2"]`',
                 target: {
                     description: 'Sets the roles of the current user to `roleArray`.',
                     exampleOut: 'true',
-                    exampleCode: '{usersetroles;["1111111111111"]}'
+                    exampleCode: '{userSetRoles;["1111111111111"]}'
                 },
                 user: {
                     description: 'Sets the roles of `user` to `roleArray`. If quiet is provided, all errors will return `false`.',
                     exampleOut: 'true',
-                    exampleCode: '{usersetroles;["1111111111111"];stupid cat}'
+                    exampleCode: '{userSetRoles;["1111111111111"];stupid cat}'
                 }
             },
-            userstatus: {
+            userStatus: {
                 description: 'Returned status can be one of `online`, `idle`, `dnd` or `offline`',
                 target: {
                     description: 'Returns the status of the user.',
                     exampleOut: 'You are currently online',
-                    exampleCode: 'You are currently {userstatus}'
+                    exampleCode: 'You are currently {userStatus}'
                 },
                 user: {
                     description: 'Returns the status of `user`. If `quiet` is specified, if `user` can\'t be found it will simply return nothing.',
                     exampleOut: 'Stupid cat is currently online',
-                    exampleCode: 'Stupid cat is currently {userstatus;stupid cat}'
+                    exampleCode: 'Stupid cat is currently {userStatus;stupid cat}'
                 }
             },
-            usertimeout: {
+            userTimeout: {
                 description: 'See the [moment documentation](http://momentjs.com/docs/#/displaying/format/) for more information about formats. If user has never been timed out in the guild, returns `User not timed out`',
                 target: {
                     description: 'Returns the executing user\'s timeout date using `format` for the output, in UTC+0.',
                     exampleOut: 'You have been timed out until 2021/01/01 00:00:00',
-                    exampleCode: 'You have been timed out until {usertimeout;YYYY/MM/DD HH:mm:ss}'
+                    exampleCode: 'You have been timed out until {userTimeout;YYYY/MM/DD HH:mm:ss}'
                 },
                 user: {
                     description: 'Returns a `user`\'s timeout date using `format` for the output, in UTC+0. If `quiet` is specified, if `user` can\'t be found it will simply return nothing.',
                     exampleOut: 'stupid cat is timed out until 2021/01/01 00:00:00',
-                    exampleCode: 'stupid cat is timed out until {usertimeout;YYYY/MM/DD HH:mm:ss;stupid cat}'
+                    exampleCode: 'stupid cat is timed out until {userTimeout;YYYY/MM/DD HH:mm:ss;stupid cat}'
                 }
             },
-            usertimezone: {
+            userTimeZone: {
                 target: {
                     description: 'Returns the set timezone of the user executing the containing tag.',
                     exampleOut: 'UTC',
-                    exampleCode: '{usertimezone}'
+                    exampleCode: '{userTimeZone}'
                 },
                 user: {
                     description: 'Returns the set timezone code of the specified `user`. If `quiet` is specified, if `user` can\'t be found it will simply return nothing.If the user has no set timezone, the output will be UTC.',
                     exampleOut: 'Discord official\'s timezone is Europe/Berlin',
-                    exampleCode: 'Discord official\'s timezone is {usertimezone;Discord official}'
+                    exampleCode: 'Discord official\'s timezone is {userTimeZone;Discord official}'
                 }
             },
             warn: {

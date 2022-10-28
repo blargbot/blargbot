@@ -57,7 +57,7 @@ export interface BBTagUtilities {
     timeout(member: Member, moderator: User, authorizer: User, duration: Duration, reason?: string): Promise<'success' | 'alreadyTimedOut' | 'noPerms' | 'memberTooHigh' | 'moderatorNoPerms' | 'moderatorTooLow'>;
     clearTimeout(member: Member, moderator: User, authorizer: User, reason?: string): Promise<'success' | 'notTimedOut' | 'noPerms' | 'moderatorNoPerms'>;
     kick(member: Member, moderator: User, authorizer: User, reason?: string): Promise<'success' | 'noPerms' | 'memberTooHigh' | 'moderatorNoPerms' | 'moderatorTooLow'>;
-    addModlog(guild: Guild, action: string, user: User, moderator?: User, reason?: string, color?: number): Promise<void>;
+    addModLog(guild: Guild, action: string, user: User, moderator?: User, reason?: string, color?: number): Promise<void>;
 
     addReactions(context: Message, reactions: Iterable<Emote>): Promise<{ success: Emote[]; failed: Emote[]; }>;
     awaitReaction(messages: string[], filter: (reaction: AwaitReactionsResponse) => Awaitable<boolean>, timeoutMs: number): Promise<AwaitReactionsResponse | undefined>;

@@ -1,4 +1,4 @@
-import { ChannelIsTextSubtag } from '@blargbot/bbtag/subtags/channel/channelistext';
+import { ChannelIsTextSubtag } from '@blargbot/bbtag/subtags/channel/channelIsText';
 import { Constants } from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite';

@@ -1,5 +1,5 @@
 import { EmbedSubtag } from '@blargbot/bbtag/subtags/message/embed';
-import { EscapeBbtagSubtag } from '@blargbot/bbtag/subtags/misc/escapebbtag';
+import { EscapeBBTagSubtag } from '@blargbot/bbtag/subtags/misc/escapeBBTag';
 import { expect } from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite';
@@ -10,7 +10,7 @@ runSubtagTests({
     cases: [
         {
             code: '{embed;{escapebbtag;{"title":"Hello!"}}}',
-            subtags: [new EscapeBbtagSubtag()],
+            subtags: [new EscapeBBTagSubtag()],
             expected: '',
             assert(ctx) {
                 expect(ctx.data.embeds).to.deep.equal([
@@ -20,7 +20,7 @@ runSubtagTests({
         },
         {
             code: '{embed;{escapebbtag;{"title":"Hello!"}};{escapebbtag;{"author":{ "name": "abc" }}}}',
-            subtags: [new EscapeBbtagSubtag()],
+            subtags: [new EscapeBBTagSubtag()],
             expected: '',
             assert(ctx) {
                 expect(ctx.data.embeds).to.deep.equal([
@@ -31,7 +31,7 @@ runSubtagTests({
         },
         {
             code: '{embed;{escapebbtag;{"title":"Hello!"}};{escapebbtag;{"title": false}}}',
-            subtags: [new EscapeBbtagSubtag()],
+            subtags: [new EscapeBBTagSubtag()],
             expected: '',
             assert(ctx) {
                 expect(ctx.data.embeds).to.deep.equal([
@@ -42,7 +42,7 @@ runSubtagTests({
         },
         {
             code: '{embed;{escapebbtag;{"title":"Hello!"}};{escapebbtag;{"author":{ "name": "abc" }}};{escapebbtag;[{"title":"embed array 1"}, {"title": "embed array 2"}]}}',
-            subtags: [new EscapeBbtagSubtag()],
+            subtags: [new EscapeBBTagSubtag()],
             expected: '',
             assert(ctx) {
                 expect(ctx.data.embeds).to.deep.equal([

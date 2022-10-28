@@ -1,5 +1,5 @@
 import { UserNotFoundError } from '@blargbot/bbtag/errors';
-import { EscapeBbtagSubtag } from '@blargbot/bbtag/subtags/misc/escapebbtag';
+import { EscapeBBTagSubtag } from '@blargbot/bbtag/subtags/misc/escapeBBTag';
 import { DMSubtag } from '@blargbot/bbtag/subtags/user/dm';
 import { argument } from '@blargbot/test-util/mock';
 import { Guild, Member, PrivateChannel, User } from 'eris';
@@ -48,7 +48,7 @@ runSubtagTests({
         },
         {
             code: '{dm;other user;{escapebbtag;{ "title": "Hi!" }}}',
-            subtags: [new EscapeBbtagSubtag()],
+            subtags: [new EscapeBBTagSubtag()],
             expected: '',
             setup(ctx) {
                 const member = ctx.createMock(Member);
@@ -71,7 +71,7 @@ runSubtagTests({
         },
         {
             code: '{dm;other user;Hello there!;{escapebbtag;{ "title": "General Kenobi!" }}}',
-            subtags: [new EscapeBbtagSubtag()],
+            subtags: [new EscapeBBTagSubtag()],
             expected: '',
             setup(ctx) {
                 const member = ctx.createMock(Member);
@@ -94,7 +94,7 @@ runSubtagTests({
         },
         {
             code: '{dm;other user;{escapebbtag;{ "title": "this isnt actually an embed" }};{escapebbtag;{ "title": "General Kenobi!" }}}',
-            subtags: [new EscapeBbtagSubtag()],
+            subtags: [new EscapeBBTagSubtag()],
             expected: '',
             setup(ctx) {
                 const member = ctx.createMock(Member);

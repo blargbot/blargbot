@@ -1,11 +1,11 @@
 import { UnknownSubtagError } from '@blargbot/bbtag/errors';
-import { FallBackSubtag } from '@blargbot/bbtag/subtags/bot/fallback';
+import { FallbackSubtag } from '@blargbot/bbtag/subtags/bot/fallback';
 import { expect } from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 
 runSubtagTests({
-    subtag: new FallBackSubtag(),
+    subtag: new FallbackSubtag(),
     argCountBounds: { min: 0, max: 1 },
     cases: [
         {
