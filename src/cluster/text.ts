@@ -318,7 +318,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
             }
         },
         command: {
-            unknown: t('❌ Oops, I couldnt find that command! Try using `b!help` for a list of all commands'),
+            unknown: t('❌ Oops, I couldn\'t find that command! Try using `b!help` for a list of all commands'),
             invalid: t('❌ This help page isn\'t valid any more!'),
             prompt: t<{ term: string; }>()('Multiple help pages match `{term}`'),
             index: {
@@ -541,7 +541,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
                     },
                     array: {
                         name: t('Array'),
-                        value: t('An array is a collection of values all grouped together, commonly done so by enclosing them inside `[]`. In BBTag, arrays can be assigned to a variable to store them for later use. In this situation, you might see an array displayed like this `\\{"v":["1","2","3"],"n":"varname"\\}`. If you do, dont worry, nothing is broken! That is just there to allow you to modify the array in place within certain subtags.')
+                        value: t('An array is a collection of values all grouped together, commonly done so by enclosing them inside `[]`. In BBTag, arrays can be assigned to a variable to store them for later use. In this situation, you might see an array displayed like this `\\{"v":["1","2","3"],"n":"varname"\\}`. If you do, don\'t worry, nothing is broken! That is just there to allow you to modify the array in place within certain subtags.')
                     }
                 }
             },
@@ -556,7 +556,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
         unflip: t('{#rand(┬──┬ ¯\\\\_(ツ) A table unflipped is a table saved!|┣ﾍ(≧∇≦ﾍ)… (≧∇≦)/┳━┳ Unflip that table!|Yay! Cleaning up! ┣ﾍ(^▽^ﾍ)Ξ(ﾟ▽ﾟ*)ﾉ┳━┳|ヘ(´° □°)ヘ┳━┳ Was that so hard?|(ﾉ´･ω･)ﾉ ﾐ ┸━┸ Here comes the entropy!|I\'m sorry, did you just pick that up? ༼ﾉຈل͜ຈ༽ﾉ︵┻━┻|Get back on the ground! (╯ರ ~ ರ)╯︵ ┻━┻|No need to be so serious! (ﾉ≧∇≦)ﾉ ﾐ ┸━┸)}')
     },
     cleverbot: {
-        unavailable: t('❌ It seems that my clever brain isnt working right now, try again later')
+        unavailable: t('❌ It seems that my clever brain isn\'t working right now, try again later')
     },
     settings: {
         makelogs: {

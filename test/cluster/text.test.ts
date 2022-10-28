@@ -94,8 +94,8 @@ describe('Cluster format strings', () => {
                         label: [
                             {
                                 name: 'default',
-                                input: [{ user: quickMock(user, { username: 'userUsername', discriminator: 'userDiscrim' }) }],
-                                expected: 'userUsername#userDiscrim'
+                                input: [{ user: quickMock(user, { username: 'userUsername', discriminator: 'userDiscriminator' }) }],
+                                expected: 'userUsername#userDiscriminator'
                             }
                         ],
                         description: [
@@ -158,8 +158,8 @@ describe('Cluster format strings', () => {
                             user: [
                                 {
                                     name: 'default',
-                                    input: [{ user: quickMock(user, { username: 'userUsername', discriminator: 'userDiscrim' }) }],
-                                    expected: 'userUsername#userDiscrim'
+                                    input: [{ user: quickMock(user, { username: 'userUsername', discriminator: 'userDiscriminator' }) }],
+                                    expected: 'userUsername#userDiscriminator'
                                 }
                             ],
                             webhook: [
@@ -334,8 +334,8 @@ describe('Cluster format strings', () => {
             prompt: [
                 {
                     name: 'default',
-                    input: [{ guild: quickMock(guild, { name: 'guildName', id: 'guildId', members: quickMock(members, { size: 123 }) }), channelId: 'channelId', reason: 'my cool reason', code: 'super secret code', user: quickMock(user, { username: 'userUsername', discriminator: 'userDiscrim', mention: '<@userId>' }) }],
-                    expected: 'New AR request from **userUsername#userDiscrim** (<@userId>):\n**Guild**: guildName (guildId)\n**Channel**: channelId\n**Members**: 123\n\nmy cool reason\n\n```js\nsuper secret code\n```'
+                    input: [{ guild: quickMock(guild, { name: 'guildName', id: 'guildId', members: quickMock(members, { size: 123 }) }), channelId: 'channelId', reason: 'my cool reason', code: 'super secret code', user: quickMock(user, { username: 'userUsername', discriminator: 'userDiscriminator', mention: '<@userId>' }) }],
+                    expected: 'New AR request from **userUsername#userDiscriminator** (<@userId>):\n**Guild**: guildName (guildId)\n**Channel**: channelId\n**Members**: 123\n\nmy cool reason\n\n```js\nsuper secret code\n```'
                 }
             ],
             whitelist: {
@@ -397,8 +397,8 @@ describe('Cluster format strings', () => {
                     text: [
                         {
                             name: 'default',
-                            input: [{ user: quickMock(user, { username: 'userUsername', discriminator: 'userDiscrim', id: 'userId' }) }],
-                            expected: 'userUsername#userDiscrim (userId)'
+                            input: [{ user: quickMock(user, { username: 'userUsername', discriminator: 'userDiscriminator', id: 'userId' }) }],
+                            expected: 'userUsername#userDiscriminator (userId)'
                         }
                     ]
                 },
@@ -451,8 +451,8 @@ describe('Cluster format strings', () => {
                         value: [
                             {
                                 name: 'default',
-                                input: [{ user: quickMock(user, { username: 'userUsername', discriminator: 'userDiscrim', id: 'userId' }) }],
-                                expected: 'userUsername#userDiscrim (userId)'
+                                input: [{ user: quickMock(user, { username: 'userUsername', discriminator: 'userDiscriminator', id: 'userId' }) }],
+                                expected: 'userUsername#userDiscriminator (userId)'
                             }
                         ]
                     }
@@ -528,8 +528,8 @@ describe('Cluster format strings', () => {
                         value: [
                             {
                                 name: 'default',
-                                input: [{ user: quickMock(user, { username: 'userUsername', discriminator: 'userDiscrim' }) }],
-                                expected: 'userUsername#userDiscrim'
+                                input: [{ user: quickMock(user, { username: 'userUsername', discriminator: 'userDiscriminator' }) }],
+                                expected: 'userUsername#userDiscriminator'
                             }
                         ]
                     },
@@ -538,8 +538,8 @@ describe('Cluster format strings', () => {
                         value: [
                             {
                                 name: 'default',
-                                input: [{ user: quickMock(user, { username: 'userUsername', discriminator: 'userDiscrim' }) }],
-                                expected: 'userUsername#userDiscrim'
+                                input: [{ user: quickMock(user, { username: 'userUsername', discriminator: 'userDiscriminator' }) }],
+                                expected: 'userUsername#userDiscriminator'
                             }
                         ]
                     },
@@ -697,13 +697,13 @@ describe('Cluster format strings', () => {
             auditLog: [
                 {
                     name: 'without reason',
-                    input: [{ moderator: quickMock(user, { username: 'moderatorUsername', discriminator: 'moderatorDiscrim' }) }],
-                    expected: '[moderatorUsername#moderatorDiscrim]'
+                    input: [{ moderator: quickMock(user, { username: 'moderatorUsername', discriminator: 'moderatorDiscriminator' }) }],
+                    expected: '[moderatorUsername#moderatorDiscriminator]'
                 },
                 {
                     name: 'with reason',
-                    input: [{ moderator: quickMock(user, { username: 'moderatorUsername', discriminator: 'moderatorDiscrim' }), reason: util.literal('My cool reason') }],
-                    expected: '[moderatorUsername#moderatorDiscrim] My cool reason'
+                    input: [{ moderator: quickMock(user, { username: 'moderatorUsername', discriminator: 'moderatorDiscriminator' }), reason: util.literal('My cool reason') }],
+                    expected: '[moderatorUsername#moderatorDiscriminator] My cool reason'
                 }
             ]
         },
@@ -768,7 +768,7 @@ describe('Cluster format strings', () => {
                 }
             },
             command: {
-                unknown: '❌ Oops, I couldnt find that command! Try using `b!help` for a list of all commands',
+                unknown: '❌ Oops, I couldn\'t find that command! Try using `b!help` for a list of all commands',
                 invalid: '❌ This help page isn\'t valid any more!',
                 prompt: [
                     {
@@ -1588,7 +1588,7 @@ describe('Cluster format strings', () => {
                         },
                         array: {
                             name: 'Array',
-                            value: 'An array is a collection of values all grouped together, commonly done so by enclosing them inside `[]`. In BBTag, arrays can be assigned to a variable to store them for later use. In this situation, you might see an array displayed like this `{"v":["1","2","3"],"n":"varname"}`. If you do, dont worry, nothing is broken! That is just there to allow you to modify the array in place within certain subtags.'
+                            value: 'An array is a collection of values all grouped together, commonly done so by enclosing them inside `[]`. In BBTag, arrays can be assigned to a variable to store them for later use. In this situation, you might see an array displayed like this `{"v":["1","2","3"],"n":"varname"}`. If you do, don\'t worry, nothing is broken! That is just there to allow you to modify the array in place within certain subtags.'
                         }
                     }
                 },
@@ -1621,7 +1621,7 @@ describe('Cluster format strings', () => {
             ])
         },
         cleverbot: {
-            unavailable: '❌ It seems that my clever brain isnt working right now, try again later'
+            unavailable: '❌ It seems that my clever brain isn\'t working right now, try again later'
         },
         settings: {
             makelogs: {
@@ -1816,8 +1816,8 @@ describe('Cluster format strings', () => {
                 messageDeleted: [
                     {
                         name: 'default',
-                        input: [{ user: { username: 'userUsername', discriminator: 'userDiscrim' } }],
-                        expected: '**userUsername#userDiscrim** deleted their command message.'
+                        input: [{ user: { username: 'userUsername', discriminator: 'userDiscriminator' } }],
+                        expected: '**userUsername#userDiscriminator** deleted their command message.'
                     }
                 ],
                 blacklisted: [
@@ -2406,8 +2406,8 @@ describe('Cluster format strings', () => {
                     importDeleted: [
                         {
                             name: 'with author',
-                            input: [{ commandName: 'myCommand', tagName: 'myTag', author: { username: 'authorUsername', discriminator: 'authorDiscrim' }, authorId: 'authorId' }],
-                            expected: '❌ When the command `myCommand` was imported, the tag `myTag` was owned by **authorUsername#authorDiscrim** (authorId) but it no longer exists. To continue using this command, please re-create the tag and re-import it.'
+                            input: [{ commandName: 'myCommand', tagName: 'myTag', author: { username: 'authorUsername', discriminator: 'authorDiscriminator' }, authorId: 'authorId' }],
+                            expected: '❌ When the command `myCommand` was imported, the tag `myTag` was owned by **authorUsername#authorDiscriminator** (authorId) but it no longer exists. To continue using this command, please re-create the tag and re-import it.'
                         },
                         {
                             name: 'without author',
@@ -2418,18 +2418,18 @@ describe('Cluster format strings', () => {
                     importChanged: [
                         {
                             name: 'with both',
-                            input: [{ commandName: 'myCommand', tagName: 'myTag', oldAuthor: { username: 'oldAuthorUsername', discriminator: 'oldAuthorDiscrim' }, oldAuthorId: 'oldAuthorId', newAuthor: { username: 'newAuthorUsername', discriminator: 'newAuthorDiscrim' }, newAuthorId: 'newAuthorId' }],
-                            expected: '❌ When the command `myCommand` was imported, the tag `myTag` was owned by **oldAuthorUsername#oldAuthorDiscrim** (oldAuthorId) but it is now owned by **newAuthorUsername#newAuthorDiscrim** (newAuthorId). If this is acceptable, please re-import the tag to continue using this command.'
+                            input: [{ commandName: 'myCommand', tagName: 'myTag', oldAuthor: { username: 'oldAuthorUsername', discriminator: 'oldAuthorDiscriminator' }, oldAuthorId: 'oldAuthorId', newAuthor: { username: 'newAuthorUsername', discriminator: 'newAuthorDiscriminator' }, newAuthorId: 'newAuthorId' }],
+                            expected: '❌ When the command `myCommand` was imported, the tag `myTag` was owned by **oldAuthorUsername#oldAuthorDiscriminator** (oldAuthorId) but it is now owned by **newAuthorUsername#newAuthorDiscriminator** (newAuthorId). If this is acceptable, please re-import the tag to continue using this command.'
                         },
                         {
                             name: 'without old author',
-                            input: [{ commandName: 'myCommand', tagName: 'myTag', oldAuthorId: 'oldAuthorId', newAuthor: { username: 'newAuthorUsername', discriminator: 'newAuthorDiscrim' }, newAuthorId: 'newAuthorId' }],
-                            expected: '❌ When the command `myCommand` was imported, the tag `myTag` was owned by **UNKNOWN#????** (oldAuthorId) but it is now owned by **newAuthorUsername#newAuthorDiscrim** (newAuthorId). If this is acceptable, please re-import the tag to continue using this command.'
+                            input: [{ commandName: 'myCommand', tagName: 'myTag', oldAuthorId: 'oldAuthorId', newAuthor: { username: 'newAuthorUsername', discriminator: 'newAuthorDiscriminator' }, newAuthorId: 'newAuthorId' }],
+                            expected: '❌ When the command `myCommand` was imported, the tag `myTag` was owned by **UNKNOWN#????** (oldAuthorId) but it is now owned by **newAuthorUsername#newAuthorDiscriminator** (newAuthorId). If this is acceptable, please re-import the tag to continue using this command.'
                         },
                         {
                             name: 'without new author',
-                            input: [{ commandName: 'myCommand', tagName: 'myTag', oldAuthor: { username: 'oldAuthorUsername', discriminator: 'oldAuthorDiscrim' }, oldAuthorId: 'oldAuthorId', newAuthorId: 'newAuthorId' }],
-                            expected: '❌ When the command `myCommand` was imported, the tag `myTag` was owned by **oldAuthorUsername#oldAuthorDiscrim** (oldAuthorId) but it is now owned by **UNKNOWN#????** (newAuthorId). If this is acceptable, please re-import the tag to continue using this command.'
+                            input: [{ commandName: 'myCommand', tagName: 'myTag', oldAuthor: { username: 'oldAuthorUsername', discriminator: 'oldAuthorDiscriminator' }, oldAuthorId: 'oldAuthorId', newAuthorId: 'newAuthorId' }],
+                            expected: '❌ When the command `myCommand` was imported, the tag `myTag` was owned by **oldAuthorUsername#oldAuthorDiscriminator** (oldAuthorId) but it is now owned by **UNKNOWN#????** (newAuthorId). If this is acceptable, please re-import the tag to continue using this command.'
                         },
                         {
                             name: 'without either',
@@ -2550,8 +2550,8 @@ describe('Cluster format strings', () => {
                     noAuthorizer: [
                         {
                             name: 'with author',
-                            input: [{ name: 'myCommand', author: { username: 'authorUsername', discriminator: 'authorDiscrim' } }],
-                            expected: '✅ The custom command `myCommand` was made by **authorUsername#authorDiscrim**'
+                            input: [{ name: 'myCommand', author: { username: 'authorUsername', discriminator: 'authorDiscriminator' } }],
+                            expected: '✅ The custom command `myCommand` was made by **authorUsername#authorDiscriminator**'
                         },
                         {
                             name: 'without author',
@@ -2562,18 +2562,18 @@ describe('Cluster format strings', () => {
                     withAuthorizer: [
                         {
                             name: 'with both',
-                            input: [{ name: 'myCommand', author: { username: 'authorUsername', discriminator: 'authorDiscrim' }, authorizer: { username: 'authorizerUsername', discriminator: 'authorizerDiscrim' } }],
-                            expected: '✅ The custom command `myCommand` was made by **authorUsername#authorDiscrim** and is authorized by **authorizerUsername#authorizerDiscrim**'
+                            input: [{ name: 'myCommand', author: { username: 'authorUsername', discriminator: 'authorDiscriminator' }, authorizer: { username: 'authorizerUsername', discriminator: 'authorizerDiscriminator' } }],
+                            expected: '✅ The custom command `myCommand` was made by **authorUsername#authorDiscriminator** and is authorized by **authorizerUsername#authorizerDiscriminator**'
                         },
                         {
                             name: 'without authorizer',
-                            input: [{ name: 'myCommand', author: { username: 'authorUsername', discriminator: 'authorDiscrim' } }],
-                            expected: '✅ The custom command `myCommand` was made by **authorUsername#authorDiscrim** and is authorized by **UNKNOWN#????**'
+                            input: [{ name: 'myCommand', author: { username: 'authorUsername', discriminator: 'authorDiscriminator' } }],
+                            expected: '✅ The custom command `myCommand` was made by **authorUsername#authorDiscriminator** and is authorized by **UNKNOWN#????**'
                         },
                         {
                             name: 'without author',
-                            input: [{ name: 'myCommand', authorizer: { username: 'authorizerUsername', discriminator: 'authorizerDiscrim' } }],
-                            expected: '✅ The custom command `myCommand` was made by **UNKNOWN#????** and is authorized by **authorizerUsername#authorizerDiscrim**'
+                            input: [{ name: 'myCommand', authorizer: { username: 'authorizerUsername', discriminator: 'authorizerDiscriminator' } }],
+                            expected: '✅ The custom command `myCommand` was made by **UNKNOWN#????** and is authorized by **authorizerUsername#authorizerDiscriminator**'
                         },
                         {
                             name: 'without either',
@@ -2757,18 +2757,18 @@ describe('Cluster format strings', () => {
                     success: [
                         {
                             name: 'with both',
-                            input: [{ tagName: 'myTag', commandName: 'myCommand', author: { username: 'authorUsername', discriminator: 'authorDiscrim' }, authorizer: { username: 'authorizerUsername', discriminator: 'authorizerDiscrim' } }],
-                            expected: '✅ The tag `myTag` by **authorUsername#authorDiscrim** has been imported as `myCommand` and is authorized by **authorizerUsername#authorizerDiscrim**'
+                            input: [{ tagName: 'myTag', commandName: 'myCommand', author: { username: 'authorUsername', discriminator: 'authorDiscriminator' }, authorizer: { username: 'authorizerUsername', discriminator: 'authorizerDiscriminator' } }],
+                            expected: '✅ The tag `myTag` by **authorUsername#authorDiscriminator** has been imported as `myCommand` and is authorized by **authorizerUsername#authorizerDiscriminator**'
                         },
                         {
                             name: 'without author',
-                            input: [{ tagName: 'myTag', commandName: 'myCommand', authorizer: { username: 'authorizerUsername', discriminator: 'authorizerDiscrim' } }],
-                            expected: '✅ The tag `myTag` by **UNKNOWN#????** has been imported as `myCommand` and is authorized by **authorizerUsername#authorizerDiscrim**'
+                            input: [{ tagName: 'myTag', commandName: 'myCommand', authorizer: { username: 'authorizerUsername', discriminator: 'authorizerDiscriminator' } }],
+                            expected: '✅ The tag `myTag` by **UNKNOWN#????** has been imported as `myCommand` and is authorized by **authorizerUsername#authorizerDiscriminator**'
                         },
                         {
                             name: 'with authorizer',
-                            input: [{ tagName: 'myTag', commandName: 'myCommand', author: { username: 'authorUsername', discriminator: 'authorDiscrim' } }],
-                            expected: '✅ The tag `myTag` by **authorUsername#authorDiscrim** has been imported as `myCommand` and is authorized by **UNKNOWN#????**'
+                            input: [{ tagName: 'myTag', commandName: 'myCommand', author: { username: 'authorUsername', discriminator: 'authorDiscriminator' } }],
+                            expected: '✅ The tag `myTag` by **authorUsername#authorDiscriminator** has been imported as `myCommand` and is authorized by **UNKNOWN#????**'
                         },
                         {
                             name: 'without author',
@@ -4632,8 +4632,8 @@ describe('Cluster format strings', () => {
                             cell: [
                                 {
                                     name: 'with user',
-                                    input: [{ user: quickMock(user, { username: 'userUsername', discriminator: 'userDiscrim' }) }],
-                                    expected: 'userUsername#userDiscrim'
+                                    input: [{ user: quickMock(user, { username: 'userUsername', discriminator: 'userDiscriminator' }) }],
+                                    expected: 'userUsername#userDiscriminator'
                                 },
                                 {
                                     name: 'without user',
@@ -5318,13 +5318,13 @@ describe('Cluster format strings', () => {
                                 default: [
                                     {
                                         name: 'all parts',
-                                        input: [{ pronunciation: util.literal('Woah, thats how its pronounced?\n'), synonyms: util.literal('Woah, this word has synonyms!\n'), definition: 'This is a definition I guess' }],
-                                        expected: 'Woah, thats how its pronounced?\nWoah, this word has synonyms!\nThis is a definition I guess'
+                                        input: [{ pronunciation: util.literal('Woah, that\'s how its pronounced?\n'), synonyms: util.literal('Woah, this word has synonyms!\n'), definition: 'This is a definition I guess' }],
+                                        expected: 'Woah, that\'s how its pronounced?\nWoah, this word has synonyms!\nThis is a definition I guess'
                                     },
                                     {
                                         name: 'no synonyms',
-                                        input: [{ pronunciation: util.literal('Woah, thats how its pronounced?\n'), definition: 'This is a definition I guess' }],
-                                        expected: 'Woah, thats how its pronounced?\nThis is a definition I guess'
+                                        input: [{ pronunciation: util.literal('Woah, that\'s how its pronounced?\n'), definition: 'This is a definition I guess' }],
+                                        expected: 'Woah, that\'s how its pronounced?\nThis is a definition I guess'
                                     },
                                     {
                                         name: 'no pronunciation',
@@ -6441,8 +6441,8 @@ describe('Cluster format strings', () => {
                         description: [
                             {
                                 name: 'default',
-                                input: [{ level: util.literal('1'), school: util.literal('Harvard'), description: util.literal('Idk I didnt go') }],
-                                expected: '*Level 1 Harvard*\n\nIdk I didnt go'
+                                input: [{ level: util.literal('1'), school: util.literal('Harvard'), description: util.literal('Idk I didn\'t go') }],
+                                expected: '*Level 1 Harvard*\n\nIdk I didn\'t go'
                             }
                         ],
                         field: {
@@ -6635,13 +6635,13 @@ describe('Cluster format strings', () => {
                     deleted: [
                         {
                             name: 'with both',
-                            input: [{ name: 'myTag', reason: 'My cool reason', user: { username: 'userUsername', discriminator: 'userDiscrim' } }],
-                            expected: '❌ The `myTag` tag has been permanently deleted by **userUsername#userDiscrim**\n\nReason: My cool reason'
+                            input: [{ name: 'myTag', reason: 'My cool reason', user: { username: 'userUsername', discriminator: 'userDiscriminator' } }],
+                            expected: '❌ The `myTag` tag has been permanently deleted by **userUsername#userDiscriminator**\n\nReason: My cool reason'
                         },
                         {
                             name: 'without reason',
-                            input: [{ name: 'myTag', user: { username: 'userUsername', discriminator: 'userDiscrim' } }],
-                            expected: '❌ The `myTag` tag has been permanently deleted by **userUsername#userDiscrim**'
+                            input: [{ name: 'myTag', user: { username: 'userUsername', discriminator: 'userDiscriminator' } }],
+                            expected: '❌ The `myTag` tag has been permanently deleted by **userUsername#userDiscriminator**'
                         },
                         {
                             name: 'without user',
@@ -6829,8 +6829,8 @@ describe('Cluster format strings', () => {
                     success: [
                         {
                             name: 'with author',
-                            input: [{ name: 'myTag', author: { username: 'userUsername', discriminator: 'userDiscrim' } }],
-                            expected: '✅ The tag `myTag` was made by **userUsername#userDiscrim**'
+                            input: [{ name: 'myTag', author: { username: 'userUsername', discriminator: 'userDiscriminator' } }],
+                            expected: '✅ The tag `myTag` was made by **userUsername#userDiscriminator**'
                         },
                         {
                             name: 'without author',
@@ -6853,8 +6853,8 @@ describe('Cluster format strings', () => {
                             text: [
                                 {
                                     name: 'default',
-                                    input: [{ user: quickMock(user, { username: 'userUsername', discriminator: 'userDiscrim' }) }],
-                                    expected: 'userUsername#userDiscrim'
+                                    input: [{ user: quickMock(user, { username: 'userUsername', discriminator: 'userDiscriminator' }) }],
+                                    expected: 'userUsername#userDiscriminator'
                                 }
                             ]
                         },
@@ -6864,8 +6864,8 @@ describe('Cluster format strings', () => {
                                 value: [
                                     {
                                         name: 'default',
-                                        input: [{ user: { username: 'userUsername', discriminator: 'userDiscrim' }, id: '823764872346847234' }],
-                                        expected: 'userUsername#userDiscrim (823764872346847234)'
+                                        input: [{ user: { username: 'userUsername', discriminator: 'userDiscriminator' }, id: '823764872346847234' }],
+                                        expected: 'userUsername#userDiscriminator (823764872346847234)'
                                     }
                                 ]
                             },
@@ -6959,12 +6959,12 @@ describe('Cluster format strings', () => {
                             name: 'default',
                             input: [{
                                 tags: [
-                                    { index: 1, name: 'tag1', author: { username: 'author1Username', discriminator: 'author1Discrim' }, count: 1 },
-                                    { index: 2, name: 'tag2', author: { username: 'author2Username', discriminator: 'author2Discrim' }, count: 123 },
-                                    { index: 3, name: 'tag3', author: { username: 'author3Username', discriminator: 'author3Discrim' }, count: 456 }
+                                    { index: 1, name: 'tag1', author: { username: 'author1Username', discriminator: 'author1Discriminator' }, count: 1 },
+                                    { index: 2, name: 'tag2', author: { username: 'author2Username', discriminator: 'author2Discriminator' }, count: 123 },
+                                    { index: 3, name: 'tag3', author: { username: 'author3Username', discriminator: 'author3Discriminator' }, count: 456 }
                                 ]
                             }],
-                            expected: '__Here are the top 10 tags:__\n**1.** **tag1** (**author1Username#author1Discrim**) - used **1 time**\n**2.** **tag2** (**author2Username#author2Discrim**) - used **123 times**\n**3.** **tag3** (**author3Username#author3Discrim**) - used **456 times**'
+                            expected: '__Here are the top 10 tags:__\n**1.** **tag1** (**author1Username#author1Discriminator**) - used **1 time**\n**2.** **tag2** (**author2Username#author2Discriminator**) - used **123 times**\n**3.** **tag3** (**author3Username#author3Discriminator**) - used **456 times**'
                         }
                     ]
                 },
@@ -6995,8 +6995,8 @@ describe('Cluster format strings', () => {
                     notification: [
                         {
                             name: 'default',
-                            input: [{ name: 'myTag', reason: 'Because I said so', user: quickMock(user, { username: 'userUsername', discriminator: 'userDiscrim' }) }],
-                            expected: '**userUsername#userDiscrim** has reported the tag: myTag\n\nBecause I said so'
+                            input: [{ name: 'myTag', reason: 'Because I said so', user: quickMock(user, { username: 'userUsername', discriminator: 'userDiscriminator' }) }],
+                            expected: '**userUsername#userDiscriminator** has reported the tag: myTag\n\nBecause I said so'
                         }
                     ],
                     query: {
@@ -7373,30 +7373,30 @@ describe('Cluster format strings', () => {
                                 user: [
                                     {
                                         name: 'bot',
-                                        input: [{ user: quickMock(user, { bot: true, username: 'userUsername', discriminator: 'userDiscrim' }) }],
-                                        expected: '🤖 userUsername#userDiscrim'
+                                        input: [{ user: quickMock(user, { bot: true, username: 'userUsername', discriminator: 'userDiscriminator' }) }],
+                                        expected: '🤖 userUsername#userDiscriminator'
                                     },
                                     {
                                         name: 'user',
-                                        input: [{ user: quickMock(user, { bot: false, username: 'userUsername', discriminator: 'userDiscrim' }) }],
-                                        expected: 'userUsername#userDiscrim'
+                                        input: [{ user: quickMock(user, { bot: false, username: 'userUsername', discriminator: 'userDiscriminator' }) }],
+                                        expected: 'userUsername#userDiscriminator'
                                     }
                                 ],
                                 member: [
                                     {
                                         name: 'user with nick',
-                                        input: [{ user: quickMock(member, { bot: false, username: 'userUsername', discriminator: 'userDiscrim', nick: 'userNick' }) }],
-                                        expected: 'userUsername#userDiscrim (userNick)'
+                                        input: [{ user: quickMock(member, { bot: false, username: 'userUsername', discriminator: 'userDiscriminator', nick: 'userNick' }) }],
+                                        expected: 'userUsername#userDiscriminator (userNick)'
                                     },
                                     {
                                         name: 'user without nick',
-                                        input: [{ user: quickMock(member, { bot: false, username: 'userUsername', discriminator: 'userDiscrim' }) }],
-                                        expected: 'userUsername#userDiscrim'
+                                        input: [{ user: quickMock(member, { bot: false, username: 'userUsername', discriminator: 'userDiscriminator' }) }],
+                                        expected: 'userUsername#userDiscriminator'
                                     },
                                     {
                                         name: 'bot',
-                                        input: [{ user: quickMock(member, { bot: true, username: 'userUsername', discriminator: 'userDiscrim' }) }],
-                                        expected: '🤖 userUsername#userDiscrim'
+                                        input: [{ user: quickMock(member, { bot: true, username: 'userUsername', discriminator: 'userDiscriminator' }) }],
+                                        expected: '🤖 userUsername#userDiscriminator'
                                     }
                                 ]
                             }
@@ -7972,8 +7972,8 @@ describe('Cluster format strings', () => {
                     error: [
                         {
                             name: 'default',
-                            input: [{ result: 'idk what happend, needs more testing bro' }],
-                            expected: '❌ An error occurred!```\nidk what happend, needs more testing bro\n```'
+                            input: [{ result: 'idk what happened, needs more testing bro' }],
+                            expected: '❌ An error occurred!```\nidk what happened, needs more testing bro\n```'
                         }
                     ]
                 },

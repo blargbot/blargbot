@@ -135,7 +135,7 @@ Database Execution Time: 678ms
                 },
                 bot: {
                     name: 'Blargbot',
-                    description: 'Subtags that integrate with blargbots custom functions.'
+                    description: 'Subtags that integrate with blargbot\'s custom functions.'
                 },
                 message: {
                     name: 'Message',
@@ -457,9 +457,9 @@ Database Execution Time: 678ms
             },
             lock: {
                 default: {
-                    description: 'Provides read/write locking functionality for bbtag. This is a very advanced feature, so it is reccomended that you first [read about the concept of locks](https://en.wikipedia.org/wiki/Lock_(computer_science)).\n\nIn simple terms, a lock allows commands running at the same time to cooperate and wait for eachother to finish what they are doing before "releasing the lock" and letting other commands use that lock. This can be used to secure against data being edited by 2 things at the same time, which can cause inconsistencies.\n\nThere can be multiple `read` locks held at once or a single `write` lock. This means that if all your command is doing is reading some data then as long as nothing is writing to it, it will be allowed, otherwise the command will wait until it can aquire a lock.\n\n`mode` must be either `read` or `write`.\n`key` can be anything. This follows the same scoping rules as variables do.\n`code` will be run once the lock is acquired',
-                    exampleOut: '\nStart\nMiddle\nEnd\nStart\nMiddle\nEnd\nThis order is guaranteed always. Without a lock it isnt',
-                    exampleCode: '\n{//;in 2 command run in quick succession}\n{lock;write;key;\n  {void;\n    {send;{channelid};Start}\n    {send;{channelid};Middle}\n    {send;{channelid};End}\n  }\n}\nThis order is guaranteed always. Without a lock it isnt'
+                    description: 'Provides read/write locking functionality for bbtag. This is a very advanced feature, so it is recommended that you first [read about the concept of locks](https://en.wikipedia.org/wiki/Lock_(computer_science)).\n\nIn simple terms, a lock allows commands running at the same time to cooperate and wait for each other to finish what they are doing before "releasing the lock" and letting other commands use that lock. This can be used to secure against data being edited by 2 things at the same time, which can cause inconsistencies.\n\nThere can be multiple `read` locks held at once or a single `write` lock. This means that if all your command is doing is reading some data then as long as nothing is writing to it, it will be allowed, otherwise the command will wait until it can acquire a lock.\n\n`mode` must be either `read` or `write`.\n`key` can be anything. This follows the same scoping rules as variables do.\n`code` will be run once the lock is acquired',
+                    exampleOut: '\nStart\nMiddle\nEnd\nStart\nMiddle\nEnd\nThis order is guaranteed always. Without a lock it isn\'t',
+                    exampleCode: '\n{//;in 2 command run in quick succession}\n{lock;write;key;\n  {void;\n    {send;{channelid};Start}\n    {send;{channelid};Middle}\n    {send;{channelid};End}\n  }\n}\nThis order is guaranteed always. Without a lock it isn\'t'
                 }
             },
             modlog: {
@@ -545,7 +545,7 @@ Database Execution Time: 678ms
                 }
             },
             rollback: {
-                description: 'For optimization reasons, variables are not stored in the database immediately when you use `{set}`. Instead they are cached, and will be saved to the database when the tag finishes. If you have some `variables` that you dont want to be changed, you can use this to revert them back to their value at the start of the tag, or the most recent `{commit}`.\n`variables` defaults to all values accessed up to this point.\n`{commit}` is the counterpart to this.',
+                description: 'For optimization reasons, variables are not stored in the database immediately when you use `{set}`. Instead they are cached, and will be saved to the database when the tag finishes. If you have some `variables` that you don\'t want to be changed, you can use this to revert them back to their value at the start of the tag, or the most recent `{commit}`.\n`variables` defaults to all values accessed up to this point.\n`{commit}` is the counterpart to this.',
                 all: {
                     description: 'Rollback all variables',
                     exampleOut: 'Hello!',
@@ -610,7 +610,7 @@ Database Execution Time: 678ms
             throw: {
                 default: {
                     description: 'Throws `error`.',
-                    exampleOut: '​`Custom Error`​',
+                    exampleOut: '`Custom Error`',
                     exampleCode: '{throw;Custom Error}'
                 }
             },
@@ -714,7 +714,7 @@ Database Execution Time: 678ms
                 channel: {
                     description: 'Checks if `channel` is a thread channel. If it cannot be found returns `No channel found`, or `false` if `quiet` is `true`.',
                     exampleOut: 'true',
-                    exampleCode: '{isthread;blarg podcats}'
+                    exampleCode: '{isthread;blargbot podcast}'
                 }
             },
             channelisvoice: {
@@ -726,7 +726,7 @@ Database Execution Time: 678ms
                 channel: {
                     description: 'Checks if `channel` is a voice channel. If it cannot be found returns `No channel found`, or `false` if `quiet` is `true`.',
                     exampleOut: 'true',
-                    exampleCode: '{isvoice;blarg podcats}'
+                    exampleCode: '{isvoice;blargbot podcast}'
                 }
             },
             channelname: {
@@ -854,7 +854,7 @@ Database Execution Time: 678ms
                 }
             },
             emojis: {
-                description: 'Please not that Discord will remove all the emojis from a message which contains an emoji that blarg can\'t use. For example, blargbot can\'t use a role-restricted emoji if it doesn\'t have the role. Learn more [here](https://discordapp.com/developers/docs/resources/emoji).',
+                description: 'Please note that Discord will remove all the emojis from a message which contains an emoji that blargbot can\'t use. For example, blargbot can\'t use a role-restricted emoji if it doesn\'t have the role. Learn more [here](https://discordapp.com/developers/docs/resources/emoji).',
                 all: {
                     description: 'Returns an array of emojis in the current guild.',
                     exampleOut: 'This guild has 23 emojis.',
@@ -1016,7 +1016,7 @@ Database Execution Time: 678ms
             },
             foreach: {
                 default: {
-                    description: 'For every element in `array`, a variable called `variable` will be set and then `code` will be run.\nIf `element` is not an array, it will iterate over each character intead.',
+                    description: 'For every element in `array`, a variable called `variable` will be set and then `code` will be run.\nIf `element` is not an array, it will iterate over each character instead.',
                     exampleOut: 'I like apples\nI like oranges\nI like c#',
                     exampleCode: '{set;~array;apples;oranges;c#}\n{foreach;~element;~array;I like {get;~element}{newline}}'
                 }
@@ -1438,7 +1438,7 @@ Database Execution Time: 678ms
             },
             reactionuser: {
                 default: {
-                    description: 'Gets the user whos reaction that triggered {waitreact}',
+                    description: 'Gets the user whose reaction that triggered {waitreact}',
                     exampleOut: '["111111111111111","12345678912345","3333333333333","✅"]',
                     exampleCode: '{waitreact;11111111111111111;{bool;{reactuser};==;3333333333333}}'
                 }
@@ -1527,9 +1527,9 @@ Database Execution Time: 678ms
                 },
                 filtered: {
                     description: 'Waits for any of `reactions` on `messages` from `userIDs`, if `condition` returns `true` this will return the response array. If no reaction was matched within `timeout`, `Wait timed out` will be returned.',
-                    exampleIn: '(some random user reacted with 🤔)\n(titansmasher reacted with 🤔)',
-                    exampleOut: '["111111111111111","12345678912345","135556895086870528","🤔"]',
-                    exampleCode: '{waitreaction;12345678912345;["{userid;stupid cat}","{userid;titansmasher}"];["🤔", "👀"];;120}'
+                    exampleIn: '(some random user reacted with 🤔)\n(blargbot reacted with 🤔)',
+                    exampleOut: '["111111111111111","12345678912345","134133271750639616","🤔"]',
+                    exampleCode: '{waitreaction;12345678912345;["{userid;stupid cat}","{userid;blargbot}"];["🤔", "👀"];;120}'
                 }
             },
             webhook: {
@@ -1546,7 +1546,7 @@ Database Execution Time: 678ms
                 },
                 withUser: {
                     description: 'Executes a webhook. `avatarURL` must be a valid URL.',
-                    exampleOut: '(in the webhook channel) Some content! (sent by "Not blargbot" with blarg\'s pfp',
+                    exampleOut: '(in the webhook channel) Some content! (sent by "Not blargbot" with blargbot\'s pfp',
                     exampleCode: '{webhook;1111111111111111;t.OK-en;Some content!;;Not blargbot;{useravatar;blargbot}}'
                 },
                 withFile: {
@@ -1616,7 +1616,7 @@ Database Execution Time: 678ms
                 }
             },
             color: {
-                description: 'If `inputFormat` is omitted or left empty, the format of `color` is automatically calculated, but might be innaccurate. For accuracy and known `color` formats use `inputFormat`. It converts all ways between `rgb`, `hsl`, `hsv`, `hwb`, `cmyk`, `ansi16`, `hex` strings, and CSS `keyword`s (will round to closest).',
+                description: 'If `inputFormat` is omitted or left empty, the format of `color` is automatically calculated, but might be inaccurate. For accuracy and known `color` formats use `inputFormat`. It converts all ways between `rgb`, `hsl`, `hsv`, `hwb`, `cmyk`, `ansi16`, `hex` strings, and CSS `keyword`s (will round to closest).',
                 default: {
                     description: 'Converts a color to `outputFormat`.',
                     exampleOut: '[66,134,244]',
@@ -1651,7 +1651,7 @@ Database Execution Time: 678ms
             },
             hash: {
                 basic: {
-                    description: 'Returns the numeric hash of `text`, based on the unicode value of each individual character. This results in seemingly randomly generated numbers that are constant for each specific query.\nNOTE: This hash isnt a particularly robust one, it is a quick implementation that was thrown together. To use a proper hash function, specify the `algorithm`',
+                    description: 'Returns the numeric hash of `text`, based on the unicode value of each individual character. This results in seemingly randomly generated numbers that are constant for each specific query.\nNOTE: This hash isn\'t a particularly robust one, it is a quick implementation that was thrown together. To use a proper hash function, specify the `algorithm`',
                     exampleOut: 'The hash of brown is 94011702.',
                     exampleCode: 'The hash of brown is {hash;brown}.'
                 },
@@ -1660,7 +1660,7 @@ Database Execution Time: 678ms
                         {
                             name: 'default',
                             input: [{ methods: ['abc', 'def', 'ghi'] }],
-                            expected: 'Perfoms a hash on the given `text`. If the `text` starts with `buffer:` then it will first be decoded as a base64 string. If it starts with `text:` then it will be treated as plaintext. The hash result will be returned as a hex number.\nSupported `algorithm`s are: `abc`, `def`, `ghi`'
+                            expected: 'Performs a hash on the given `text`. If the `text` starts with `buffer:` then it will first be decoded as a base64 string. If it starts with `text:` then it will be treated as plaintext. The hash result will be returned as a hex number.\nSupported `algorithm`s are: `abc`, `def`, `ghi`'
                         }
                     ],
                     exampleOut: 'The hash of brown is 5eb67f9f8409b9c3f739735633cbdf92121393d0e13bd0f464b1b2a6a15ad2dc',
@@ -1696,8 +1696,8 @@ Database Execution Time: 678ms
                 },
                 valueElse: {
                     description: 'If `boolean` is `true`, return `then`, else execute `else`',
-                    exampleOut: 'This isnt a custom command!',
-                    exampleCode: '{if;{iscc};This is a custom command!;This isnt a custom command!}'
+                    exampleOut: 'This isn\'t a custom command!',
+                    exampleCode: '{if;{iscc};This is a custom command!;This isn\'t a custom command!}'
                 },
                 conditionThen: {
                     description: '`Value1` is evaluated against `value2` using `evaluator`, if the resulting value is `true` then the tag returns `then`.',
@@ -1860,7 +1860,7 @@ Database Execution Time: 678ms
                 ['endswith']: {
                     description: 'Returns `true` if the first `value` ends with all the rest. If the first `value` is an array then the last element must equal all the remaining values.',
                     exampleOut: 'true false',
-                    exampleCode: '{endswith;abcdefghi;ghi;fghi;hi} {endswith;["abc","def","ghi"];"]}'
+                    exampleCode: '{endswith;abcdefghi;ghi;hi} {endswith;["abc","def","ghi"];"]}'
                 },
                 ['startswith']: {
                     description: 'Returns `true` if the first `value` starts with all the rest. If the first `value` is an array then the first element must equal all the remaining values.',
@@ -1870,7 +1870,7 @@ Database Execution Time: 678ms
             },
             pad: {
                 default: {
-                    description: 'Places `text` ontop of `back` with it being aligned to the opposite of `direction`. If `text` is longer than `back` then it will simply overlap',
+                    description: 'Places `text` on top of `back` with it being aligned to the opposite of `direction`. If `text` is longer than `back` then it will simply overlap',
                     exampleOut: '000ABC',
                     exampleCode: '{pad;left;000000;ABC}'
                 }
@@ -1942,12 +1942,12 @@ Database Execution Time: 678ms
             },
             replace: {
                 output: {
-                    description: 'Replaces the first occurence of `phrase` with `replaceWith`. This is executed on the output from the containing tag.',
+                    description: 'Replaces the first occurrence of `phrase` with `replaceWith`. This is executed on the output from the containing tag.',
                     exampleOut: 'Bye world!',
                     exampleCode: 'Hello world! {replace;Hello;Bye}'
                 },
                 text: {
-                    description: 'Replaces the first occurence of `phrase` in `text` with `replaceWith`.',
+                    description: 'Replaces the first occurrence of `phrase` in `text` with `replaceWith`.',
                     exampleOut: 'I like to nom ham. ham',
                     exampleCode: 'I like {replace;to eat;eat;nom} cheese. {replace;cheese;ham}'
                 }
@@ -1978,7 +1978,7 @@ Database Execution Time: 678ms
                     description: 'Compares `value` against each `case` and executes the first `then` that matches. If no matches are found, `default` is executed. Each `case` can optionally be an array to allow matching against multiple values.',
                     exampleIn: 'hit Danny',
                     exampleOut: 'Got it, i\'ll hit Danny for you!',
-                    exampleCode: '{switch;{args;0};\n  hi;Hello!;\n  ["punch","bop","hit"];Got it, i\'ll hit {args;1} for you!;\n  I dont know how to do that!\n}'
+                    exampleCode: '{switch;{args;0};\n  hi;Hello!;\n  ["punch","bop","hit"];Got it, i\'ll hit {args;1} for you!;\n  I don\'t know how to do that!\n}'
                 }
             },
             time: {
@@ -2082,14 +2082,14 @@ Database Execution Time: 678ms
             rolemention: {
                 default: {
                     description: 'Returns a mention of `role`. If `quiet` is specified, if `role` can\'t be found it will simply return nothing.',
-                    exampleOut: 'The admin role will be mentioned: @​Adminstrator',
+                    exampleOut: 'The admin role will be mentioned: @Administrator',
                     exampleCode: 'The admin role will be mentioned: {rolemention;Admin}'
                 }
             },
             rolename: {
                 default: {
                     description: 'Returns `role`\'s name. If `quiet` is specified, if `role` can\'t be found it will simply return nothing.',
-                    exampleOut: 'The admin role name is: Adminstrator.',
+                    exampleOut: 'The admin role name is: Administrator.',
                     exampleCode: 'The admin role name is: {rolename;admin}.'
                 }
             },
@@ -2258,7 +2258,7 @@ Database Execution Time: 678ms
             ban: {
                 description: '`daysToDelete` is the number of days to delete messages for. `duration`',
                 default: {
-                    description: 'Bans `user`. If the ban is succesful `true` will be returned, else it will return an error.',
+                    description: 'Bans `user`. If the ban is successful `true` will be returned, else it will return an error.',
                     exampleOut: 'true',
                     exampleCode: '{ban;Stupid cat;4}'
                 },
@@ -2408,7 +2408,7 @@ Database Execution Time: 678ms
                 description: 'If no game is being played, this will return \'nothing\'',
                 target: {
                     description: 'Returns the avatar of the executing user.',
-                    exampleOut: 'Your discrim is (avatar url)',
+                    exampleOut: 'Your avatar is (avatar url)',
                     exampleCode: 'Your avatar is {useravatar}'
                 },
                 user: {
@@ -2446,8 +2446,8 @@ Database Execution Time: 678ms
                 description: 'If no game is being played, this will return \'nothing\'',
                 target: {
                     description: 'Returns the discriminator of the executing user.',
-                    exampleOut: 'Your discrim is 1234',
-                    exampleCode: 'Your discrim is {userdiscrim}'
+                    exampleOut: 'Your discriminator is 1234',
+                    exampleCode: 'Your discriminator is {userdiscrim}'
                 },
                 user: {
                     description: 'Returns `user`\'s discriminator. If `user` can\'t be found it will simply return nothing.',
@@ -2527,7 +2527,7 @@ Database Execution Time: 678ms
                 user: {
                     description: 'Mentions `user`. If `quiet` is specified, if `user` can\'t be found it will simply return nothing.',
                     exampleOut: 'Hello, @Stupid cat!',
-                    exampleCode: 'Hello, {usermention;Stupidcat}!'
+                    exampleCode: 'Hello, {usermention;stupid cat}!'
                 }
             },
             username: {
@@ -2563,7 +2563,7 @@ Database Execution Time: 678ms
                 user: {
                     description: 'Returns `user`\'s roles as an array. If `quiet` is specified, if `user` can\'t be found it will simply return nothing.',
                     exampleOut: 'Stupid cat\'s roles are ["1111111111111111","2222222222222222", "3333333333333333"]',
-                    exampleCode: 'Stupid cat\'s roles are {userroles;stupidcat}'
+                    exampleCode: 'Stupid cat\'s roles are {userroles;stupid cat}'
                 }
             },
             usersetnick: {
@@ -2607,7 +2607,7 @@ Database Execution Time: 678ms
                     exampleCode: 'You have been timed out until {usertimeout;YYYY/MM/DD HH:mm:ss}'
                 },
                 user: {
-                    description: 'Returns a `user`\'s timeout date using `format` for the outpt, in UTC+0. If `quiet` is specified, if `user` can\'t be found it will simply return nothing.',
+                    description: 'Returns a `user`\'s timeout date using `format` for the output, in UTC+0. If `quiet` is specified, if `user` can\'t be found it will simply return nothing.',
                     exampleOut: 'stupid cat is timed out until 2021/01/01 00:00:00',
                     exampleCode: 'stupid cat is timed out until {usertimeout;YYYY/MM/DD HH:mm:ss;stupid cat}'
                 }

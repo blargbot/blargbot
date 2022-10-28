@@ -62,7 +62,7 @@ Database Execution Time: {database#duration(MS)}ms
             },
             bot: {
                 name: t('Blargbot'),
-                description: t('Subtags that integrate with blargbots custom functions.')
+                description: t('Subtags that integrate with blargbot\'s custom functions.')
             },
             message: {
                 name: t('Message'),
@@ -356,9 +356,9 @@ Database Execution Time: {database#duration(MS)}ms
         },
         lock: {
             default: {
-                description: t('Provides read/write locking functionality for bbtag. This is a very advanced feature, so it is reccomended that you first [read about the concept of locks](https://en.wikipedia.org/wiki/Lock_(computer_science)).\n\nIn simple terms, a lock allows commands running at the same time to cooperate and wait for eachother to finish what they are doing before "releasing the lock" and letting other commands use that lock. This can be used to secure against data being edited by 2 things at the same time, which can cause inconsistencies.\n\nThere can be multiple `read` locks held at once or a single `write` lock. This means that if all your command is doing is reading some data then as long as nothing is writing to it, it will be allowed, otherwise the command will wait until it can aquire a lock.\n\n`mode` must be either `read` or `write`.\n`key` can be anything. This follows the same scoping rules as variables do.\n`code` will be run once the lock is acquired'),
-                exampleOut: t('\nStart\nMiddle\nEnd\nStart\nMiddle\nEnd\nThis order is guaranteed always. Without a lock it isnt'),
-                exampleCode: t('\n\\{//;in 2 command run in quick succession\\}\n\\{lock;write;key;\n  \\{void;\n    \\{send;\\{channelid\\};Start\\}\n    \\{send;\\{channelid\\};Middle\\}\n    \\{send;\\{channelid\\};End\\}\n  \\}\n\\}\nThis order is guaranteed always. Without a lock it isnt')
+                description: t('Provides read/write locking functionality for bbtag. This is a very advanced feature, so it is reccomended that you first [read about the concept of locks](https://en.wikipedia.org/wiki/Lock_(computer_science)).\n\nIn simple terms, a lock allows commands running at the same time to cooperate and wait for each other to finish what they are doing before "releasing the lock" and letting other commands use that lock. This can be used to secure against data being edited by 2 things at the same time, which can cause inconsistencies.\n\nThere can be multiple `read` locks held at once or a single `write` lock. This means that if all your command is doing is reading some data then as long as nothing is writing to it, it will be allowed, otherwise the command will wait until it can acquire a lock.\n\n`mode` must be either `read` or `write`.\n`key` can be anything. This follows the same scoping rules as variables do.\n`code` will be run once the lock is acquired'),
+                exampleOut: t('\nStart\nMiddle\nEnd\nStart\nMiddle\nEnd\nThis order is guaranteed always. Without a lock it isn\'t'),
+                exampleCode: t('\n\\{//;in 2 command run in quick succession\\}\n\\{lock;write;key;\n  \\{void;\n    \\{send;\\{channelid\\};Start\\}\n    \\{send;\\{channelid\\};Middle\\}\n    \\{send;\\{channelid\\};End\\}\n  \\}\n\\}\nThis order is guaranteed always. Without a lock it isn\'t')
             }
         },
         modlog: {
@@ -444,7 +444,7 @@ Database Execution Time: {database#duration(MS)}ms
             }
         },
         rollback: {
-            description: t('For optimization reasons, variables are not stored in the database immediately when you use `\\{set\\}`. Instead they are cached, and will be saved to the database when the tag finishes. If you have some `variables` that you dont want to be changed, you can use this to revert them back to their value at the start of the tag, or the most recent `\\{commit\\}`.\n`variables` defaults to all values accessed up to this point.\n`\\{commit\\}` is the counterpart to this.'),
+            description: t('For optimization reasons, variables are not stored in the database immediately when you use `\\{set\\}`. Instead they are cached, and will be saved to the database when the tag finishes. If you have some `variables` that you don\'t want to be changed, you can use this to revert them back to their value at the start of the tag, or the most recent `\\{commit\\}`.\n`variables` defaults to all values accessed up to this point.\n`\\{commit\\}` is the counterpart to this.'),
             all: {
                 description: t('Rollback all variables'),
                 exampleOut: t('Hello!'),
@@ -497,7 +497,7 @@ Database Execution Time: {database#duration(MS)}ms
         throw: {
             default: {
                 description: t('Throws `error`.'),
-                exampleOut: t('​`Custom Error`​'),
+                exampleOut: t('`Custom Error`'),
                 exampleCode: t('\\{throw;Custom Error\\}')
             }
         },
@@ -601,7 +601,7 @@ Database Execution Time: {database#duration(MS)}ms
             channel: {
                 description: t('Checks if `channel` is a thread channel. If it cannot be found returns `No channel found`, or `false` if `quiet` is `true`.'),
                 exampleOut: t('true'),
-                exampleCode: t('\\{isthread;blarg podcats\\}')
+                exampleCode: t('\\{isthread;blargbot podcast\\}')
             }
         },
         channelisvoice: {
@@ -613,7 +613,7 @@ Database Execution Time: {database#duration(MS)}ms
             channel: {
                 description: t('Checks if `channel` is a voice channel. If it cannot be found returns `No channel found`, or `false` if `quiet` is `true`.'),
                 exampleOut: t('true'),
-                exampleCode: t('\\{isvoice;blarg podcats\\}')
+                exampleCode: t('\\{isvoice;blargbot podcast\\}')
             }
         },
         channelname: {
@@ -735,7 +735,7 @@ Database Execution Time: {database#duration(MS)}ms
             }
         },
         emojis: {
-            description: t('Please not that Discord will remove all the emojis from a message which contains an emoji that blarg can\'t use. For example, blargbot can\'t use a role-restricted emoji if it doesn\'t have the role. Learn more [here](https://discordapp.com/developers/docs/resources/emoji).'),
+            description: t('Please note that Discord will remove all the emojis from a message which contains an emoji that blargbot can\'t use. For example, blargbot can\'t use a role-restricted emoji if it doesn\'t have the role. Learn more [here](https://discordapp.com/developers/docs/resources/emoji).'),
             all: {
                 description: t('Returns an array of emojis in the current guild.'),
                 exampleOut: t('This guild has 23 emojis.'),
@@ -897,7 +897,7 @@ Database Execution Time: {database#duration(MS)}ms
         },
         foreach: {
             default: {
-                description: t('For every element in `array`, a variable called `variable` will be set and then `code` will be run.\nIf `element` is not an array, it will iterate over each character intead.'),
+                description: t('For every element in `array`, a variable called `variable` will be set and then `code` will be run.\nIf `element` is not an array, it will iterate over each character instead.'),
                 exampleOut: t('I like apples\nI like oranges\nI like c#'),
                 exampleCode: t('\\{set;~array;apples;oranges;c#\\}\n\\{foreach;~element;~array;I like \\{get;~element\\}\\{newline\\}\\}')
             }
@@ -1301,7 +1301,7 @@ Database Execution Time: {database#duration(MS)}ms
         },
         reactionuser: {
             default: {
-                description: t('Gets the user whos reaction that triggered \\{waitreact\\}'),
+                description: t('Gets the user whose reaction that triggered \\{waitreact\\}'),
                 exampleOut: t('["111111111111111","12345678912345","3333333333333","✅"]'),
                 exampleCode: t('\\{waitreact;11111111111111111;\\{bool;\\{reactuser\\};==;3333333333333\\}\\}')
             }
@@ -1378,9 +1378,9 @@ Database Execution Time: {database#duration(MS)}ms
             },
             filtered: {
                 description: t('Waits for any of `reactions` on `messages` from `userIDs`, if `condition` returns `true` this will return the response array. If no reaction was matched within `timeout`, `Wait timed out` will be returned.'),
-                exampleIn: t('(some random user reacted with 🤔)\n(titansmasher reacted with 🤔)'),
-                exampleOut: t('["111111111111111","12345678912345","135556895086870528","🤔"]'),
-                exampleCode: t('\\{waitreaction;12345678912345;["\\{userid;stupid cat\\}","\\{userid;titansmasher\\}"];["🤔", "👀"];;120\\}')
+                exampleIn: t('(some random user reacted with 🤔)\n(blargbot reacted with 🤔)'),
+                exampleOut: t('["111111111111111","12345678912345","134133271750639616","🤔"]'),
+                exampleCode: t('\\{waitreaction;12345678912345;["\\{userid;stupid cat\\}","\\{userid;blargbot\\}"];["🤔", "👀"];;120\\}')
             }
         },
         webhook: {
@@ -1397,7 +1397,7 @@ Database Execution Time: {database#duration(MS)}ms
             },
             withUser: {
                 description: t('Executes a webhook. `avatarURL` must be a valid URL.'),
-                exampleOut: t('(in the webhook channel) Some content! (sent by "Not blargbot" with blarg\'s pfp'),
+                exampleOut: t('(in the webhook channel) Some content! (sent by "Not blargbot" with blargbot\'s pfp'),
                 exampleCode: t('\\{webhook;1111111111111111;t.OK-en;Some content!;;Not blargbot;\\{useravatar;blargbot\\}\\}')
             },
             withFile: {
@@ -1461,7 +1461,7 @@ Database Execution Time: {database#duration(MS)}ms
             }
         },
         color: {
-            description: t('If `inputFormat` is omitted or left empty, the format of `color` is automatically calculated, but might be innaccurate. For accuracy and known `color` formats use `inputFormat`. It converts all ways between `rgb`, `hsl`, `hsv`, `hwb`, `cmyk`, `ansi16`, `hex` strings, and CSS `keyword`s (will round to closest).'),
+            description: t('If `inputFormat` is omitted or left empty, the format of `color` is automatically calculated, but might be inaccurate. For accuracy and known `color` formats use `inputFormat`. It converts all ways between `rgb`, `hsl`, `hsv`, `hwb`, `cmyk`, `ansi16`, `hex` strings, and CSS `keyword`s (will round to closest).'),
             default: {
                 description: t('Converts a color to `outputFormat`.'),
                 exampleOut: t('[66,134,244]'),
@@ -1496,12 +1496,12 @@ Database Execution Time: {database#duration(MS)}ms
         },
         hash: {
             basic: {
-                description: t('Returns the numeric hash of `text`, based on the unicode value of each individual character. This results in seemingly randomly generated numbers that are constant for each specific query.\nNOTE: This hash isnt a particularly robust one, it is a quick implementation that was thrown together. To use a proper hash function, specify the `algorithm`'),
+                description: t('Returns the numeric hash of `text`, based on the unicode value of each individual character. This results in seemingly randomly generated numbers that are constant for each specific query.\nNOTE: This hash isn\'t a particularly robust one, it is a quick implementation that was thrown together. To use a proper hash function, specify the `algorithm`'),
                 exampleOut: t('The hash of brown is 94011702.'),
                 exampleCode: t('The hash of brown is \\{hash;brown\\}.')
             },
             secure: {
-                description: t<{ methods: Iterable<string>; }>()('Perfoms a hash on the given `text`. If the `text` starts with `buffer:` then it will first be decoded as a base64 string. If it starts with `text:` then it will be treated as plaintext. The hash result will be returned as a hex number.\nSupported `algorithm`s are: {methods#map(`{}`)#join(, )}'),
+                description: t<{ methods: Iterable<string>; }>()('Performs a hash on the given `text`. If the `text` starts with `buffer:` then it will first be decoded as a base64 string. If it starts with `text:` then it will be treated as plaintext. The hash result will be returned as a hex number.\nSupported `algorithm`s are: {methods#map(`{}`)#join(, )}'),
                 exampleOut: t('The hash of brown is 5eb67f9f8409b9c3f739735633cbdf92121393d0e13bd0f464b1b2a6a15ad2dc'),
                 exampleCode: t('\\{hash;sha256;brown\\}')
             }
@@ -1529,8 +1529,8 @@ Database Execution Time: {database#duration(MS)}ms
             },
             valueElse: {
                 description: t('If `boolean` is `true`, return `then`, else execute `else`'),
-                exampleOut: t('This isnt a custom command!'),
-                exampleCode: t('\\{if;\\{iscc\\};This is a custom command!;This isnt a custom command!\\}')
+                exampleOut: t('This isn\'t a custom command!'),
+                exampleCode: t('\\{if;\\{iscc\\};This is a custom command!;This isn\'t a custom command!\\}')
             },
             conditionThen: {
                 description: t('`Value1` is evaluated against `value2` using `evaluator`, if the resulting value is `true` then the tag returns `then`.'),
@@ -1687,7 +1687,7 @@ Database Execution Time: {database#duration(MS)}ms
             ['endswith']: {
                 description: t('Returns `true` if the first `value` ends with all the rest. If the first `value` is an array then the last element must equal all the remaining values.'),
                 exampleOut: t('true false'),
-                exampleCode: t('\\{endswith;abcdefghi;ghi;fghi;hi\\} \\{endswith;["abc","def","ghi"];"]\\}')
+                exampleCode: t('\\{endswith;abcdefghi;ghi;hi\\} \\{endswith;["abc","def","ghi"];"]\\}')
             },
             ['startswith']: {
                 description: t('Returns `true` if the first `value` starts with all the rest. If the first `value` is an array then the first element must equal all the remaining values.'),
@@ -1697,7 +1697,7 @@ Database Execution Time: {database#duration(MS)}ms
         },
         pad: {
             default: {
-                description: t('Places `text` ontop of `back` with it being aligned to the opposite of `direction`. If `text` is longer than `back` then it will simply overlap'),
+                description: t('Places `text` on top of `back` with it being aligned to the opposite of `direction`. If `text` is longer than `back` then it will simply overlap'),
                 exampleOut: t('000ABC'),
                 exampleCode: t('\\{pad;left;000000;ABC\\}')
             }
@@ -1769,12 +1769,12 @@ Database Execution Time: {database#duration(MS)}ms
         },
         replace: {
             output: {
-                description: t('Replaces the first occurence of `phrase` with `replaceWith`. This is executed on the output from the containing tag.'),
+                description: t('Replaces the first occurrence of `phrase` with `replaceWith`. This is executed on the output from the containing tag.'),
                 exampleOut: t('Bye world!'),
                 exampleCode: t('Hello world! \\{replace;Hello;Bye\\}')
             },
             text: {
-                description: t('Replaces the first occurence of `phrase` in `text` with `replaceWith`.'),
+                description: t('Replaces the first occurrence of `phrase` in `text` with `replaceWith`.'),
                 exampleOut: t('I like to nom ham. ham'),
                 exampleCode: t('I like \\{replace;to eat;eat;nom\\} cheese. \\{replace;cheese;ham\\}')
             }
@@ -1805,7 +1805,7 @@ Database Execution Time: {database#duration(MS)}ms
                 description: t('Compares `value` against each `case` and executes the first `then` that matches. If no matches are found, `default` is executed. Each `case` can optionally be an array to allow matching against multiple values.'),
                 exampleIn: t('hit Danny'),
                 exampleOut: t('Got it, i\'ll hit Danny for you!'),
-                exampleCode: t('\\{switch;\\{args;0\\};\n  hi;Hello!;\n  ["punch","bop","hit"];Got it, i\'ll hit \\{args;1\\} for you!;\n  I dont know how to do that!\n\\}')
+                exampleCode: t('\\{switch;\\{args;0\\};\n  hi;Hello!;\n  ["punch","bop","hit"];Got it, i\'ll hit \\{args;1\\} for you!;\n  I don\'t know how to do that!\n\\}')
             }
         },
         time: {
@@ -1909,14 +1909,14 @@ Database Execution Time: {database#duration(MS)}ms
         rolemention: {
             default: {
                 description: t('Returns a mention of `role`. If `quiet` is specified, if `role` can\'t be found it will simply return nothing.'),
-                exampleOut: t('The admin role will be mentioned: @​Adminstrator'),
+                exampleOut: t('The admin role will be mentioned: @Administrator'),
                 exampleCode: t('The admin role will be mentioned: \\{rolemention;Admin\\}')
             }
         },
         rolename: {
             default: {
                 description: t('Returns `role`\'s name. If `quiet` is specified, if `role` can\'t be found it will simply return nothing.'),
-                exampleOut: t('The admin role name is: Adminstrator.'),
+                exampleOut: t('The admin role name is: Administrator.'),
                 exampleCode: t('The admin role name is: \\{rolename;admin\\}.')
             }
         },
@@ -2085,7 +2085,7 @@ Database Execution Time: {database#duration(MS)}ms
         ban: {
             description: t('`daysToDelete` is the number of days to delete messages for. `duration`'),
             default: {
-                description: t('Bans `user`. If the ban is succesful `true` will be returned, else it will return an error.'),
+                description: t('Bans `user`. If the ban is successful `true` will be returned, else it will return an error.'),
                 exampleOut: t('true'),
                 exampleCode: t('\\{ban;Stupid cat;4\\}')
             },
@@ -2229,7 +2229,7 @@ Database Execution Time: {database#duration(MS)}ms
             description: t('If no game is being played, this will return \'nothing\''),
             target: {
                 description: t('Returns the avatar of the executing user.'),
-                exampleOut: t('Your discrim is (avatar url)'),
+                exampleOut: t('Your avatar is (avatar url)'),
                 exampleCode: t('Your avatar is \\{useravatar\\}')
             },
             user: {
@@ -2267,8 +2267,8 @@ Database Execution Time: {database#duration(MS)}ms
             description: t('If no game is being played, this will return \'nothing\''),
             target: {
                 description: t('Returns the discriminator of the executing user.'),
-                exampleOut: t('Your discrim is 1234'),
-                exampleCode: t('Your discrim is \\{userdiscrim\\}')
+                exampleOut: t('Your discriminator is 1234'),
+                exampleCode: t('Your discriminator is \\{userdiscrim\\}')
             },
             user: {
                 description: t('Returns `user`\'s discriminator. If `user` can\'t be found it will simply return nothing.'),
@@ -2348,7 +2348,7 @@ Database Execution Time: {database#duration(MS)}ms
             user: {
                 description: t('Mentions `user`. If `quiet` is specified, if `user` can\'t be found it will simply return nothing.'),
                 exampleOut: t('Hello, @Stupid cat!'),
-                exampleCode: t('Hello, \\{usermention;Stupidcat\\}!')
+                exampleCode: t('Hello, \\{usermention;stupid cat\\}!')
             }
         },
         username: {
@@ -2384,7 +2384,7 @@ Database Execution Time: {database#duration(MS)}ms
             user: {
                 description: t('Returns `user`\'s roles as an array. If `quiet` is specified, if `user` can\'t be found it will simply return nothing.'),
                 exampleOut: t('Stupid cat\'s roles are ["1111111111111111","2222222222222222", "3333333333333333"]'),
-                exampleCode: t('Stupid cat\'s roles are \\{userroles;stupidcat\\}')
+                exampleCode: t('Stupid cat\'s roles are \\{userroles;stupid cat\\}')
             }
         },
         usersetnick: {
@@ -2428,7 +2428,7 @@ Database Execution Time: {database#duration(MS)}ms
                 exampleCode: t('You have been timed out until \\{usertimeout;YYYY/MM/DD HH:mm:ss\\}')
             },
             user: {
-                description: t('Returns a `user`\'s timeout date using `format` for the outpt, in UTC+0. If `quiet` is specified, if `user` can\'t be found it will simply return nothing.'),
+                description: t('Returns a `user`\'s timeout date using `format` for the output, in UTC+0. If `quiet` is specified, if `user` can\'t be found it will simply return nothing.'),
                 exampleOut: t('stupid cat is timed out until 2021/01/01 00:00:00'),
                 exampleCode: t('stupid cat is timed out until \\{usertimeout;YYYY/MM/DD HH:mm:ss;stupid cat\\}')
             }
