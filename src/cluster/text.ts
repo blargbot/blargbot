@@ -91,6 +91,9 @@ export const templates = FormatString.defineTree('cluster', t => ({
         unsafe: t('❌ Regex is unsafe!\nIf you are 100% sure your regex is valid, it has likely been blocked due to how I detect catastrophic backtracking.\nYou can find more info about catastrophic backtracking here: <https://www.regular-expressions.info/catastrophic.html>'),
         matchesEverything: t('❌ Your regex cannot match everything!')
     },
+    respawn: {
+        success: t<{ duration: Duration; }>()('Ok I\'m back. It took me {duration#duration(F)}')
+    },
     roleme: {
         failed: t('A roleme was triggered, but I don\'t have the permissions required to give you your role!')
     },

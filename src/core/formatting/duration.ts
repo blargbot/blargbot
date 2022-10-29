@@ -1,29 +1,37 @@
-import { IValueResolverTransform } from '@blargbot/formatting';
+import { format, IFormatter, IValueResolverTransform } from '@blargbot/formatting';
 import moment, { Duration } from 'moment-timezone';
 
-import { humanize } from '../utils';
+import templates from '../text';
+
+const formats: { [P in string]?: (duration: Duration, formatter: IFormatter) => string } = {
+    ['']: d => d.humanize(),
+    ['H']: d => d.humanize(),
+    ['S']: (d, f) => d.asSeconds().toLocaleString(f.locale),
+    ['MS']: (d, f) => d.asMilliseconds().toLocaleString(f.locale),
+    ['F'](d, f) {
+        const comparer = new Intl.Collator(f.locale.toString());
+        return templates.common.duration.full.template({
+            parts: (['year', 'month', 'day', 'hour', 'minute', 'second', 'millisecond'] as const)
+                .map(x => ({
+                    value: d.get(x),
+                    ...templates.common.duration.full[x]
+                }))
+                .map(x => ({
+                    order: x.order[format](f),
+                    display: x.display({ value: x.value })[format](f)
+                }))
+                .filter(x => x.display.length > 0)
+                .sort((a, b) => comparer.compare(a.order, b.order))
+                .map(x => x.display)
+        })[format](f);
+    }
+};
 
 export const duration: IValueResolverTransform = {
     transform(_compiler, source, ...args) {
-        let format = (duration: Duration): string => duration.humanize();
-        switch (args.length) {
-            case 0: break;
-            default: throw new Error('Duration can only accept 1 arg');
-            case 1: switch (args[0]) {
-                case 'H': break;
-                case 'S':
-                    format = d => d.asSeconds().toString();
-                    break;
-                case 'MS':
-                    format = d => d.asMilliseconds().toString();
-                    break;
-                case 'F':
-                    format = d => humanize.duration(d);
-                    break;
-                default: throw new Error('Unrecognised duration format');
-            }
-        }
-
+        const fmt = formats[args.join('|')];
+        if (fmt === undefined)
+            throw new Error(`Unknown format ${JSON.stringify(args.join('|'))}`);
         return ctx => {
             const value = source(ctx);
             if (value === undefined)
@@ -36,8 +44,10 @@ export const duration: IValueResolverTransform = {
             if (asDuration === undefined || !asDuration.isValid())
                 throw new Error('Invalid duration');
 
-            asDuration.locale(ctx.formatter.locale.baseName);
-            return format(asDuration);
+            return fmt(
+                asDuration.locale(ctx.formatter.locale.baseName),
+                ctx.formatter
+            );
         };
     }
 };

@@ -272,6 +272,15 @@ describe('Cluster format strings', () => {
             unsafe: '❌ Regex is unsafe!\nIf you are 100% sure your regex is valid, it has likely been blocked due to how I detect catastrophic backtracking.\nYou can find more info about catastrophic backtracking here: <https://www.regular-expressions.info/catastrophic.html>',
             matchesEverything: '❌ Your regex cannot match everything!'
         },
+        respawn: {
+            success: [
+                {
+                    name: 'default',
+                    input: [{ duration: moment.duration(1234567) }],
+                    expected: 'Ok I\'m back. It took me 20 minutes, 34 seconds and 567 milliseconds'
+                }
+            ]
+        },
         roleme: {
             failed: 'A roleme was triggered, but I don\'t have the permissions required to give you your role!'
         },
@@ -2541,7 +2550,7 @@ describe('Cluster format strings', () => {
                         {
                             name: 'default',
                             input: [{ name: 'myCommand', cooldown: moment.duration(123456) }],
-                            expected: '✅ The custom command `myCommand` now has a cooldown of `123456ms`.'
+                            expected: '✅ The custom command `myCommand` now has a cooldown of `123,456ms`.'
                         }
                     ]
                 },
@@ -5937,7 +5946,7 @@ describe('Cluster format strings', () => {
                         {
                             name: 'default',
                             input: [{ ping: moment.duration(123456) }],
-                            expected: '✅ Pong! (123456ms)'
+                            expected: '✅ Pong! (123,456ms)'
                         }
                     ]
                 }
@@ -6820,7 +6829,7 @@ describe('Cluster format strings', () => {
                         {
                             name: 'default',
                             input: [{ name: 'myTag', cooldown: moment.duration(123456) }],
-                            expected: '✅ The tag `myTag` now has a cooldown of `123456ms`.'
+                            expected: '✅ The tag `myTag` now has a cooldown of `123,456ms`.'
                         }
                     ]
                 },

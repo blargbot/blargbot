@@ -1,6 +1,5 @@
 import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType } from '@blargbot/cluster/utils';
-import { humanize } from '@blargbot/core/utils';
 
 import templates from '../../text';
 import { CommandResult } from '../../types';
@@ -31,7 +30,7 @@ export class RespondCommand extends GlobalCommand {
 
         await context.database.suggestions.update(id, {
             // eslint-disable-next-line @typescript-eslint/naming-convention
-            Notes: `${response} (${humanize.fullName(context.author)})${feedback.Notes !== undefined ? `\n\n${feedback.Notes}` : ''}`
+            Notes: `${response} (${context.author.username}#${context.author.discriminator})${feedback.Notes !== undefined ? `\n\n${feedback.Notes}` : ''}`
         });
 
         const author = await context.database.suggesters.get(feedback.Author[0]);

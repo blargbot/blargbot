@@ -1,7 +1,6 @@
 import { GuildCommand } from '@blargbot/cluster/command';
 import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType } from '@blargbot/cluster/utils';
-import { humanize } from '@blargbot/core/utils';
 import { IFormattable, util } from '@blargbot/formatting';
 import { Webhook } from 'eris';
 
@@ -47,7 +46,7 @@ export class ChangelogCommand extends GuildCommand {
         if (util.isFormattable(current))
             return current;
 
-        await context.discord.deleteWebhook(current.id, undefined, `${humanize.fullName(context.author)} unsubscribed channel to changelog updates`);
+        await context.discord.deleteWebhook(current.id, undefined, `${context.author.username}#${context.author.discriminator} unsubscribed channel to changelog updates`);
         return cmd.unsubscribe.success;
     }
 

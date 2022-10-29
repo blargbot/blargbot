@@ -238,9 +238,10 @@ export class BBTagContext implements BBTagContextOptions {
 
     public auditReason(user: User = this.user): string {
         const reason = this.scopes.local.reason ?? '';
+        const tag = `${user.username}#${user.discriminator}`;
         return reason.length > 0
-            ? `${humanize.fullName(user)}: ${reason}`
-            : humanize.fullName(user);
+            ? `${tag}: ${reason}`
+            : tag;
     }
 
     public eval(bbtag: SubtagCall | Statement): Awaitable<string> {

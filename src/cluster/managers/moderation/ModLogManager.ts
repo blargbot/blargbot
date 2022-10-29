@@ -1,5 +1,5 @@
 import { Cluster } from '@blargbot/cluster';
-import { guard, humanize, ModlogColour } from '@blargbot/cluster/utils';
+import { guard, ModlogColour } from '@blargbot/cluster/utils';
 import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent';
 import { FormatEmbedField, FormatEmbedOptions } from '@blargbot/core/types';
 import { format, IFormattable, util } from '@blargbot/formatting';
@@ -255,7 +255,7 @@ export class ModLogManager {
                     ...e,
                     fields,
                     footer: {
-                        text: `${humanize.fullName(moderator)} (${moderator.id})`,
+                        text: `${moderator.username}#${moderator.discriminator} (${moderator.id})`,
                         icon_url: moderator.avatarURL
                     }
                 };

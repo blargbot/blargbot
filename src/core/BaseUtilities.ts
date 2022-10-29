@@ -62,7 +62,7 @@ export class BaseUtilities {
         if (target instanceof User) {
             return {
                 icon_url: target.avatarURL,
-                name: util.literal(`${humanize.fullName(target)} ${includeId ? `(${target.id})` : ''}`)
+                name: util.literal(`${target.username}#${target.discriminator} ${includeId ? `(${target.id})` : ''}`)
                 // url: target === this.discord.user ? undefined : `https://discord.com/users/${target.id}`
             };
         } else if (target instanceof Member) {
@@ -684,7 +684,7 @@ export class BaseUtilities {
         const normalizedDisplayname = displayName.toLowerCase();
         const normalizedQuery = query.toLowerCase();
 
-        if (humanize.fullName(member.user) === query) return Infinity;
+        if (`${member.username}#${member.discriminator}` === query) return Infinity;
         if (displayName.startsWith(query)) score += 100;
         if (normalizedDisplayname.startsWith(normalizedQuery)) score += 10;
         if (normalizedDisplayname.includes(normalizedQuery)) score += 1;
@@ -696,7 +696,7 @@ export class BaseUtilities {
         const normalizedUsername = user.username.toLowerCase();
         const normalizedQuery = query.toLowerCase();
 
-        if (humanize.fullName(user) === query) return Infinity;
+        if (`${user.username}#${user.discriminator}` === query) return Infinity;
         if (user.username.startsWith(query)) score += 100;
         if (normalizedUsername.startsWith(normalizedQuery)) score += 10;
         if (normalizedUsername.includes(normalizedQuery)) score += 1;

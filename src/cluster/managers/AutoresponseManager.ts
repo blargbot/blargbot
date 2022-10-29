@@ -144,7 +144,7 @@ export class AutoresponseManager {
             return;
 
         const whitelist = emojiValues[emoji.name];
-        const reason = `${whitelist ? 'Approved' : 'Rejected'} by ${humanize.fullName(user)}`;
+        const reason = `${whitelist ? 'Approved' : 'Rejected'} by ${user.username}#${user.discriminator}`;
 
         const promises: Array<Promise<unknown>> = [];
         promises.push(this.whitelist(mapped.value.guild, mapped.value.channel, user, reason, whitelist));

@@ -1,6 +1,5 @@
 import { CommandContext, GlobalCommand, SendTypingMiddleware } from '@blargbot/cluster/command';
 import { CommandType, guard } from '@blargbot/cluster/utils';
-import { humanize } from '@blargbot/core/utils';
 import { FlagResult } from '@blargbot/domain/models';
 import { IFormattable, util } from '@blargbot/formatting';
 import moment from 'moment-timezone';
@@ -81,7 +80,7 @@ export class FeedbackCommand extends GlobalCommand {
         if (suggestion === undefined)
             return cmd.edit.unknownCase({ caseNumber });
 
-        const suggester = await context.database.suggesters.upsert(context.author.id, humanize.fullName(context.author));
+        const suggester = await context.database.suggesters.upsert(context.author.id, `${context.author.username}#${context.author.discriminator}`);
         if (suggester === undefined || !suggestion.Author.includes(suggester))
             return cmd.edit.notOwner;
 
@@ -148,7 +147,7 @@ export class FeedbackCommand extends GlobalCommand {
         const { title, subTypes } = res;
         description = res.description;
 
-        const suggester = await context.database.suggesters.upsert(context.author.id, humanize.fullName(context.author));
+        const suggester = await context.database.suggesters.upsert(context.author.id, `${context.author.username}#${context.author.discriminator}`);
         if (suggester === undefined)
             return cmd.general.unexpectedError;
 

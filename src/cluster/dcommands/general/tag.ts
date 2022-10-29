@@ -2,7 +2,7 @@ import { bbtag } from '@blargbot/bbtag';
 import { Cluster, ClusterUtilities } from '@blargbot/cluster';
 import { CommandContext, GuildCommand } from '@blargbot/cluster/command';
 import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
-import { CommandType, humanize, parse } from '@blargbot/cluster/utils';
+import { CommandType, discord, parse } from '@blargbot/cluster/utils';
 import { SendContent } from '@blargbot/core/types';
 import { StoredTag } from '@blargbot/domain/models';
 import { IFormattable, util } from '@blargbot/formatting';
@@ -766,11 +766,11 @@ export class TagCommand extends GuildCommand {
                     color: tagChangeActionColour[action],
                     fields: Object.entries(details).map(([key, detail]) => ({
                         name: util.literal(key),
-                        value: util.literal(humanize.truncate(detail, 1000, '(too long)')),
+                        value: util.literal(discord.overflowText('embed.field.value', detail, '(too long)')),
                         inline: true
                     })),
                     author: {
-                        name: util.literal(humanize.fullName(user)),
+                        name: util.literal(`${user.username}#${user.discriminator}`),
                         icon_url: user.avatarURL,
                         url: `https://discord.com/users/${user.id}`
                     },
