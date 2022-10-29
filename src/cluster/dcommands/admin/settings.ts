@@ -146,7 +146,7 @@ export class SettingsCommand extends GuildCommand {
                     total++;
             locales.push({ locale, completion: total / defined.length });
         }
-        return cmd.languages.success({ locales });
+        return cmd.languages.success({ locales: locales.sort((a, b) => b.completion - a.completion) });
     }
 }
 
@@ -192,7 +192,8 @@ function resolveLanguage(language: string | undefined, translator: FileSystemTra
     if (language === undefined)
         return undefined;
 
-    const keys = translator.locales.get(language);
+    const keys = translator.locales.get(language)
+        ?? translator.locales.get(language = 'en');
     if (keys === undefined)
         return undefined;
 

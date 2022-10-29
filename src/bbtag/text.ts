@@ -490,7 +490,7 @@ Database Execution Time: {database#duration(MS)}ms
         suppressLookup: {
             default: {
                 description: 'Sets whether error messages in the lookup system (query canceled, nothing found) should be suppressed. `value` must be a boolean',
-                exampleOut: '',
+                exampleOut: '{}',
                 exampleCode: '\\{suppressLookup\\}'
             }
         },
@@ -538,7 +538,7 @@ Database Execution Time: {database#duration(MS)}ms
         channelDelete: {
             default: {
                 description: 'Deletes the provided `channel`.',
-                exampleOut: '',
+                exampleOut: '{}',
                 exampleCode: '\\{channelDelete;11111111111111111\\}'
             }
         },
@@ -668,7 +668,7 @@ Database Execution Time: {database#duration(MS)}ms
         channelSetPosition: {
             default: {
                 description: 'Moves a channel to the provided position.',
-                exampleOut: '',
+                exampleOut: '{}',
                 exampleCode: '\\{channelSetPosition;11111111111111111;5\\}'
             }
         },
@@ -730,7 +730,7 @@ Database Execution Time: {database#duration(MS)}ms
         emojiDelete: {
             default: {
                 description: 'Deletes an emoji with the provided `id`',
-                exampleOut: '',
+                exampleOut: '{}',
                 exampleCode: '\\{emojiDelete;11111111111111111\\}'
             }
         },
@@ -806,7 +806,7 @@ Database Execution Time: {database#duration(MS)}ms
         guildSetIcon: {
             default: {
                 description: 'Updates the current guild\'s icon with the provided image. `image` is either a link to an image, or a base64 encoded data url (`data:<content-type>;base64,<base64-data>`). You may need to use \\{semi\\} for the latter.',
-                exampleOut: '',
+                exampleOut: '{}',
                 exampleCode: '\\{guildSetIcon;https://some.cool/image.png\\}'
             }
         },
@@ -1062,32 +1062,32 @@ Database Execution Time: {database#duration(MS)}ms
             description: '`text` and `embed` can both be set to `_delete` to remove either the message content or embed.Please note that `embed` is the JSON for an embed object or an array of embed objects, don\'t put `\\{embed\\}` there, as nothing will show. Only messages created by the bot may be edited.',
             inCurrentText: {
                 description: 'Edits `messageId` in the current channel to say `text`',
-                exampleOut: '',
+                exampleOut: '{}',
                 exampleCode: '\\{edit;111111111111111111;\\{embedBuild;title:Hello world\\}\\}'
             },
             inCurrentEmbed: {
                 description: 'Edits `messageId` in the current channel to say `embed`',
-                exampleOut: '',
+                exampleOut: '{}',
                 exampleCode: '\\{edit;111111111111111111;\\{embedBuild;title:Hello world\\}\\}'
             },
             inCurrentFull: {
                 description: 'Edits `messageId` in the current channel to say `text` and `embed`',
-                exampleOut: '',
+                exampleOut: '{}',
                 exampleCode: '\\{edit;111111111111111111;Hello world;\\{embedBuild;title:Foo bar\\}\\}'
             },
             inOtherText: {
                 description: 'Edits `messageId` in `channelId` to say `text`',
-                exampleOut: '',
+                exampleOut: '{}',
                 exampleCode: '\\{edit;111111111111111111;222222222222222222;Hello world\\}'
             },
             inOtherEmbed: {
                 description: 'Edits `messageId` in `channelId` to say `embed`',
-                exampleOut: '',
+                exampleOut: '{}',
                 exampleCode: '\\{edit;111111111111111111;222222222222222222;Hello world\\}'
             },
             inOtherFull: {
                 description: 'Edits `messageId` in `channelId` to say `text` and `embed`',
-                exampleOut: '',
+                exampleOut: '{}',
                 exampleCode: '\\{edit;111111111111111111;222222222222222222;Hello world;\\{embedBuild;title:Foo bar\\}\\}'
             }
         },
@@ -1854,7 +1854,7 @@ Database Execution Time: {database#duration(MS)}ms
         void: {
             default: {
                 description: 'Executes `code` but does not return the output from it. Useful for silent functionality',
-                exampleOut: '',
+                exampleOut: '{}',
                 exampleCode: '\\{void;This won\'t be output!\\}'
             }
         },
@@ -2390,7 +2390,7 @@ Database Execution Time: {database#duration(MS)}ms
         userSetNickname: {
             default: {
                 description: 'Sets `user`\'s nickname to `nick`. Leave `nick` blank to reset their nickname.',
-                exampleOut: '',
+                exampleOut: '{}',
                 exampleCode: '\\{userSetNickname;super cool nickname\\}\n\\{//;Reset the the nickname\\}\n\\{userSetNickname;\\}'
             }
         },

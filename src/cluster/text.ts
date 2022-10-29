@@ -1766,7 +1766,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
             },
             languages: {
                 description: 'Lists all the languages supported and their completion',
-                success: t<{ locales: Iterable<{ locale: string; completion: number; }>; }>('✅ The following locales are supported:\n{locales#plural(0:- None yet 😦|{#map(- `{locale}` - {completion#percent} complete)#join(\n)})}\n\nIf you want to help contribute a new langauge, or improve an existing one, contributions are being accepted!')
+                success: t<{ locales: Iterable<{ locale: string; completion: number; }>; }>('✅ The following locales are supported:\n{locales#plural(0:- None yet 😦|{#map(- `{locale}` - {completion#percent} complete)#join(\n)})}\n\n> If you want to help contribute a new langauge, or improve an existing one, contributions are being accepted!')
             },
             set: {
                 description: 'Sets the given setting key to have a certain value. If `value` is omitted, the setting is reverted to its default value',

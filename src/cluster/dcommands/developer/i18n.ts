@@ -14,15 +14,15 @@ export class I18nCommand extends GlobalCommand {
             category: CommandType.DEVELOPER,
             definitions: [
                 {
-                    parameters: 'export',
+                    parameters: 'export {withValue:literal(keys|values)=values}',
                     description: cmd.exports.description,
-                    execute: () => this.export()
+                    execute: (_, [full]) => this.export(full.asString === 'values')
                 }
             ]
         });
     }
 
-    public export(): CommandResult {
+    public export(includeValues: boolean): CommandResult {
         const result: I18nExport = {};
         for (const entry of FormatString.list()) {
             const path = entry.id.split('.');
@@ -38,21 +38,20 @@ export class I18nCommand extends GlobalCommand {
             if (current[name] !== undefined)
                 throw new Error(`Key conflict - ${entry.id} conflicts with another key`);
 
-            current[name] = entry.template;
+            current[name] = includeValues ? entry.template : null;
         }
 
         return {
-            files: [
-                {
-                    file: JSON.stringify(result),
-                    name: 'blargbot-strings.json'
-                }
-            ]
+            files: Object.entries(result)
+                .map(([key, data]) => ({
+                    file: JSON.stringify(data),
+                    name: `${key}.json`
+                }))
         };
     }
 
 }
 
 interface I18nExport {
-    [key: string]: string | I18nExport | undefined;
+    [key: string]: string | I18nExport | undefined | null;
 }
