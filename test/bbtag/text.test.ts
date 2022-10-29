@@ -1392,7 +1392,7 @@ Database Execution Time: 678ms
                 }
             },
             messageType: {
-                description: 'For more info about message types, visit the [discord docs]().',
+                description: 'For more info about message types, visit the [discord docs](https://discord.com/developers/docs/resources/channel#message-object-message-types).',
                 trigger: {
                     description: 'Returns the message type of the executing message.',
                     exampleOut: '0',

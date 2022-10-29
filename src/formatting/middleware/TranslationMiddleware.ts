@@ -14,7 +14,7 @@ export class TranslationMiddleware implements IFormatterMiddleware {
         this.#logger = errorLogger;
     }
 
-    public handle(formatter: IFormatter, next: (string: IFormatString<string>) => string, string: IFormatString<string>): string {
+    public handle(formatter: IFormatter, next: (string: IFormatString) => string, string: IFormatString): string {
         const translated = this.#source.getTranslation(string.id, formatter.locale);
         if (translated !== undefined) {
             try {
@@ -27,7 +27,7 @@ export class TranslationMiddleware implements IFormatterMiddleware {
     }
 }
 
-function makeTranslated(value: IFormatString<string>, template: string): IFormatString<string> {
+function makeTranslated(value: IFormatString, template: string): IFormatString {
     return Object.defineProperty(
         Object.create(value),
         'template',

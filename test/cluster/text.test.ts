@@ -4311,7 +4311,14 @@ describe('Cluster format strings', () => {
                     description: 'Lists all the languages supported and their completion',
                     success: [
                         {
-                            name: 'partial',
+                            name: 'none',
+                            input: [{
+                                locales: []
+                            }],
+                            expected: '✅ The following locales are supported:\n- None yet 😦\n\nIf you want to help contribute a new langauge, or improve an existing one, contributions are being accepted!'
+                        },
+                        {
+                            name: 'some',
                             input: [{
                                 locales: [
                                     { locale: 'en-GB', completion: 1 },
@@ -4319,7 +4326,7 @@ describe('Cluster format strings', () => {
                                     { locale: 'es-SP', completion: 0.5 }
                                 ]
                             }],
-                            expected: '✅ The following locales are supported:\n`en-GB` - 100% complete\n`fr` - 0% complete\n`es-SP` - 50% complete\n\nIf you want to help contribute a new langauge, or improve an existing one, contributions are being accepted!'
+                            expected: '✅ The following locales are supported:\n- `en-GB` - 100% complete\n- `fr` - 0% complete\n- `es-SP` - 50% complete\n\nIf you want to help contribute a new langauge, or improve an existing one, contributions are being accepted!'
                         }
                     ]
                 },

@@ -4,15 +4,15 @@ export interface IFormattable<T> {
     [format](formatter: IFormatter): T;
 }
 
-export interface IFormatStringDefinition<T extends string, V = never> {
+export interface IFormatStringDefinition<T = never> {
     readonly id: string;
-    readonly template: T;
-    (value: V): IFormatString<T>;
+    readonly template: string;
+    (value: T): IFormatString;
 }
 
-export interface IFormatString<T extends string = string> extends IFormattable<string> {
+export interface IFormatString extends IFormattable<string> {
     readonly id: string;
-    readonly template: T;
+    readonly template: string;
     readonly value: unknown;
 }
 

@@ -1,14 +1,14 @@
 import { format, IFormatString, IFormatStringDefinition, IFormatter } from './types';
 
-export class FormatString<T extends string, V> implements IFormatString<T> {
-    static readonly #defined = new Set<IFormatStringDefinition<string, never>>();
-    static readonly #idMap = new Map<string, IFormatStringDefinition<string, never>>();
+export class FormatString<T> implements IFormatString {
+    static readonly #defined = new Set<IFormatStringDefinition<never>>();
+    static readonly #idMap = new Map<string, IFormatStringDefinition<never>>();
 
     public readonly id: string;
-    public readonly template: T;
-    public readonly value: V;
+    public readonly template: string;
+    public readonly value: T;
 
-    public constructor(definition: IFormatStringDefinition<T, V>, value: V) {
+    public constructor(definition: IFormatStringDefinition<T>, value: T) {
         FormatString.#verify(definition);
         this.template = definition.template;
         this.id = definition.id;
@@ -20,16 +20,16 @@ export class FormatString<T extends string, V> implements IFormatString<T> {
         return formatter.format(this);
     }
 
-    static #verify(definition: IFormatStringDefinition<string, never>): void {
+    static #verify(definition: IFormatStringDefinition<never>): void {
         if (!FormatString.#defined.has(definition))
             throw new Error('Unknown translation');
     }
 
-    public static define<V, T extends string = string>(id: string, template: T): IFormatStringDefinition<T, V> {
+    public static define<T>(id: string, template: string): IFormatStringDefinition<T> {
         if (FormatString.#idMap.has(id))
             throw new Error('Duplicate translation id');
 
-        const result = Object.assign(function (v: V): FormatString<T, V> {
+        const result = Object.assign(function (v: T): FormatString<T> {
             return new FormatString(result, v);
         }, { id, template });
 
@@ -48,42 +48,47 @@ export class FormatString<T extends string, V> implements IFormatString<T> {
     static #defineTree(prefix: string, tree: FormatTreeDefinition): FormatTree<FormatTreeDefinition> {
         const result: FormatTree<FormatTreeDefinition> = {};
         for (const [key, entry] of Object.entries(tree)) {
-            result[key] = typeof entry === 'function'
-                ? entry(`${prefix}.${key}`)
-                : this.#defineTree(`${prefix}.${key}`, entry);
+            switch (typeof entry) {
+                case 'string':
+                    result[key] = FormatString.create(`${prefix}.${key}`, entry);
+                    break;
+                case 'function':
+                    result[key] = entry(`${prefix}.${key}`);
+                    break;
+                case 'object':
+                    result[key] = this.#defineTree(`${prefix}.${key}`, entry);
+                    break;
+            }
         }
         return result;
     }
 
-    public static create<T extends string>(id: string, template: T, value?: unknown): IFormatString<T> {
+    public static create<T extends string>(id: string, template: T, value?: unknown): IFormatString {
         return FormatString.define(id, template)(value);
     }
 
-    public static list(): Iterable<IFormatStringDefinition<string, never>> {
+    public static list(): Iterable<IFormatStringDefinition<never>> {
         return FormatString.#defined.values();
     }
 }
 
 Object.freeze(FormatString);
 
-function treeUtil<V>(): <T extends string>(template: T) => FormatTreeEntryFactory<IFormatStringDefinition<T, V>>;
-function treeUtil<T extends string>(template: T, value?: unknown): FormatTreeEntryFactory<IFormatString<T>>;
-function treeUtil(...args: [] | [template: string, value?: unknown]): FormatTreeEntryFactory | ((template: string) => FormatTreeEntryFactory) {
-    return args.length === 0
-        ? (t: string) => (id: string) => FormatString.define(id, t)
-        : (id: string) => FormatString.create(id, ...args);
+function treeUtil<T>(template: string): (id: string) => IFormatStringDefinition<T> {
+    return (id: string) => FormatString.define(id, template);
 }
 
 type FormatTreeUtil = typeof treeUtil;
-type FormatTreeEntryDefinition<T extends string = string> = IFormatString<T> | IFormatStringDefinition<T, never>;
-type FormatTreeEntryFactory<T extends FormatTreeEntryDefinition = FormatTreeEntryDefinition> = (id: string) => T;
+type FormatTreeEntryFactory<V = never> = (id: string) => IFormatStringDefinition<V>;
 type FormatTreeDefinition = {
-    [P in string]: FormatTreeDefinition | FormatTreeEntryFactory
+    [P in string]: FormatTreeDefinition | FormatTreeEntryFactory | string
 };
 
 type FormatTree<T extends FormatTreeDefinition> = {
     [P in keyof T]: FormatTreeEntry<T[P]>
 };
-type FormatTreeEntry<T extends FormatTreeDefinition[string]> = T extends FormatTreeEntryFactory<infer R> ? R
+type FormatTreeEntry<T extends FormatTreeDefinition[string]> =
+    T extends FormatTreeEntryFactory<infer R> ? IFormatStringDefinition<R>
+    : T extends string ? IFormatString
     : T extends FormatTreeDefinition ? FormatTree<T>
     : never;

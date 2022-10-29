@@ -16,11 +16,11 @@ export interface WolkeOptionsBase {
 }
 
 export interface WolkeSelfOptions extends WolkeOptionsBase {
-    action?: IFormatStringDefinition<string, { self: User; }>;
+    action?: IFormatStringDefinition<{ self: User; }>;
     user?: false;
 }
 export interface WolkeUserOptions extends WolkeOptionsBase {
-    action: IFormatStringDefinition<string, { self: User; target?: User; }>;
+    action: IFormatStringDefinition<{ self: User; target?: User; }>;
     user: true;
 }
 
