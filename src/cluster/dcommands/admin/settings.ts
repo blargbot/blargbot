@@ -2,7 +2,8 @@ import { Cluster } from '@blargbot/cluster';
 import { GuildCommand } from '@blargbot/cluster/command';
 import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { codeBlock, CommandType, defaultStaff, guard, guildSettings, parse } from '@blargbot/cluster/utils';
-import { format, IFormattable } from '@blargbot/formatting';
+import { FileSystemTranslationSource } from '@blargbot/core/i18n/index';
+import { format, FormatString, IFormattable } from '@blargbot/formatting';
 import { Guild } from 'eris';
 
 import templates from '../../text';
@@ -25,6 +26,11 @@ export class SettingsCommand extends GuildCommand {
                     parameters: 'keys',
                     description: cmd.keys.description,
                     execute: () => this.keys()
+                },
+                {
+                    parameters: 'languages',
+                    description: cmd.languages.description,
+                    execute: ctx => this.languages(ctx)
                 },
                 {
                     parameters: 'set {key} {~value+?}',
@@ -68,7 +74,8 @@ export class SettingsCommand extends GuildCommand {
                             value: settingGroup([
                                 ['farewellchan', resolveChannel(guild, settings.farewellchan) ?? cmd.list.channelValue.none],
                                 ['greetchan', resolveChannel(guild, settings.greetchan) ?? cmd.list.channelValue.none],
-                                ['modlog', resolveChannel(guild, settings.modlog)]
+                                ['modlog', resolveChannel(guild, settings.modlog)],
+                                ['language', resolveLanguage(settings.language, context.util.translator)]
                             ])
                         },
                         {
@@ -128,6 +135,19 @@ export class SettingsCommand extends GuildCommand {
         }));
         return cmd.keys.success({ settings });
     }
+
+    public languages(context: GuildCommandContext): CommandResult {
+        const defined = [...FormatString.list()].map(s => s.id);
+        const locales = [];
+        for (const [locale, keys] of context.util.translator.locales) {
+            let total = 0;
+            for (const key of defined)
+                if (keys.has(key))
+                    total++;
+            locales.push({ locale, completion: total / defined.length });
+        }
+        return cmd.languages.success({ locales });
+    }
 }
 
 function resolveChannel(guild: Guild, channelId: string | undefined): IFormattable<string> | undefined {
@@ -166,4 +186,23 @@ function settingGroup(values: Array<[key: string & keyof typeof guildSettings, v
             return codeBlock(content);
         }
     };
+}
+
+function resolveLanguage(language: string | undefined, translator: FileSystemTranslationSource): IFormattable<string> | undefined {
+    if (language === undefined)
+        return undefined;
+
+    const keys = translator.locales.get(language);
+    if (keys === undefined)
+        return undefined;
+
+    let count = 0;
+    let provided = 0;
+    for (const key of FormatString.list()) {
+        count++;
+        if (keys.has(key.id))
+            provided++;
+    }
+
+    return cmd.list.localeValue({ locale: language, completion: provided / count });
 }

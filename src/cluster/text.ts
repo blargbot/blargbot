@@ -653,6 +653,10 @@ export const templates = FormatString.defineTree('cluster', t => ({
         greetchan: {
             name: t('Greeting channel'),
             description: t('Sets the channel for the greeting message to be sent in')
+        },
+        language: {
+            name: t('Blargbot language'),
+            description: t('Sets the language blargbot should respond in')
         }
     },
     contributors: {
@@ -1730,7 +1734,8 @@ export const templates = FormatString.defineTree('cluster', t => ({
                 role: t('role'),
                 int: t('int'),
                 float: t('float'),
-                permission: t('permission')
+                permission: t('permission'),
+                locale: t('language')
             },
             list: {
                 description: t('Gets the current settings for this guild'),
@@ -1744,6 +1749,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
                     default: t<{ role: Eris.Role; }>()('{role.name} ({role.id})'),
                     unknown: t<{ roleId: string; }>()('Unknown role ({roleId})')
                 },
+                localeValue: t<{ locale: string; completion: number; }>()('{locale}{completion#plural(1:| - {#percent} complete)}'),
                 notSet: t('Not set'),
                 groups: {
                     general: t('General'),
@@ -1757,6 +1763,10 @@ export const templates = FormatString.defineTree('cluster', t => ({
             keys: {
                 description: t('Lists all the setting keys and their types'),
                 success: t<{ settings: Iterable<{ name: IFormattable<string>; key: string; type: IFormattable<string>; }>; }>()('ℹ️ You can use `settings set <key> [value]` to set the following settings. All settings are case insensitive.\n{settings#map( - **{name}:** `{key#upper}` ({type}))#join(\n)}')
+            },
+            languages: {
+                description: t('Lists all the languages supported and their completion'),
+                success: t<{ locales: Iterable<{ locale: string; completion: number; }>; }>()('✅ The following locales are supported:\n{locales#map(`{locale}` - {completion#percent} complete)#join(\n)}\n\nIf you want to help contribute a new langauge, or improve an existing one, contributions are being accepted!')
             },
             set: {
                 description: t('Sets the given setting key to have a certain value. If `value` is omitted, the setting is reverted to its default value'),

@@ -7,9 +7,11 @@ import { Logger } from '@blargbot/logger';
 import { Snowflake } from 'catflake';
 import { AdvancedMessageContent, AnyGuildChannel, ApiError, Channel, ChannelInteraction, Client as Discord, Collection, DiscordRESTError, ExtendedUser, Guild, GuildChannel, KnownChannel, KnownGuildChannel, KnownMessage, Member, Message, RequestHandler, Role, TextableChannel, User, UserChannelInteraction, Webhook } from 'eris';
 import moment from 'moment-timezone';
+import path from 'path';
 
 import { BaseClient } from './BaseClient';
 import { Emote } from './Emote';
+import { FileSystemTranslationSource } from './i18n/index';
 import { metrics } from './Metrics';
 import templates from './text';
 import { guard, humanize, parse, snowflake } from './utils';
@@ -21,13 +23,18 @@ export class BaseUtilities {
     public get database(): Database { return this.client.database; }
     public get logger(): Logger { return this.client.logger; }
     public get config(): Configuration { return this.client.config; }
+    public readonly translator: FileSystemTranslationSource;
 
     public constructor(
         public readonly client: BaseClient
     ) {
-        this.#translator = new TranslationMiddleware({
-            getTranslation: () => undefined
-        });
+        this.translator = new FileSystemTranslationSource(
+            path.join(
+                path.dirname(require.resolve('@blargbot/res/package')),
+                'i18n'
+            )
+        );
+        this.#translator = new TranslationMiddleware(this.translator, client.logger.error.bind(client.logger));
     }
 
     async #getSendChannel(context: SendContext): Promise<TextableChannel> {
@@ -45,9 +52,14 @@ export class BaseUtilities {
         return context;
     }
 
-    public getFormatter(target?: Channel | Guild | string): Promise<IFormatter> {
-        target;
-        return Promise.resolve(new Formatter(new Intl.Locale('en-GB'), [this.#translator], this.client.formatCompiler));
+    public async getFormatter(target?: Channel | Guild | string): Promise<IFormatter> {
+        const guildId = typeof target === 'object' ? target instanceof Guild ? target.id : guard.isGuildChannel(target) ? target.guild.id : undefined : target;
+        const localeStr = guildId === undefined ? undefined : await this.database.guilds.getSetting(guildId, 'language');
+        return new Formatter(
+            new Intl.Locale(localeStr ?? 'en-GB'),
+            [this.#translator],
+            this.client.formatCompiler
+        );
     }
 
     public websiteLink(path?: string): string {

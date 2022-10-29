@@ -25,6 +25,7 @@ export interface StoredGuildSettings {
     readonly tableflip?: boolean;
     readonly timeoutat?: number;
     readonly timeoutoverride?: string;
+    readonly language?: string;
 }
 
 export type GuildSettingDocs = {
@@ -34,7 +35,7 @@ export type GuildSettingDocs = {
 type GetConfigurableSettingKey<T extends keyof StoredGuildSettings> = GuildSettingTypeName<StoredGuildSettings[T]> extends never ? never : T;
 
 type GuildSettingTypeName<T> =
-    | (T extends string ? 'string' | 'channel' | 'role' | 'permission' : never)
+    | (T extends string ? 'string' | 'channel' | 'role' | 'permission' | 'locale' : never)
     | (T extends number ? 'float' | 'int' : never)
     | (T extends boolean ? 'bool' : never)
 

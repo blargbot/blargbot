@@ -26,8 +26,6 @@ export class BaseClient {
     public get ownerIds(): readonly string[] { return this.#owners; }
 
     public constructor(options: BaseClientOptions) {
-        this.util = new BaseUtilities(this);
-
         this.logger = options.logger;
         this.config = options.config;
         this.formatCompiler = new Formatting.FormatStringCompiler({
@@ -39,7 +37,6 @@ export class BaseClient {
             }
         });
         this.discord = new Discord(this.config.discord.token, options.discordConfig);
-
         this.database = new Database({
             logger: this.logger,
             rethink: this.config.rethink,
@@ -49,6 +46,8 @@ export class BaseClient {
             shouldCacheGuild: id => this.discord.guilds.has(id),
             shouldCacheUser: id => this.discord.users.has(id)
         });
+
+        this.util = new BaseUtilities(this);
     }
 
     protected async connectDiscordGateway(): Promise<void> {

@@ -325,7 +325,7 @@ export class ModLogManager {
                 throw err;
         }
 
-        const formatter = await this.cluster.util.getFormatter(modlogChannelId);
+        const formatter = await this.cluster.util.getFormatter(guildId);
         await this.cluster.database.guilds.addModlogCase(guildId, {
             caseid: caseId,
             modid: moderator?.id,

@@ -1724,6 +1724,10 @@ describe('Cluster format strings', () => {
             greetchan: {
                 name: 'Greeting channel',
                 description: 'Sets the channel for the greeting message to be sent in'
+            },
+            language: {
+                name: 'Blargbot language',
+                description: 'Sets the language blargbot should respond in'
             }
         },
         contributors: {
@@ -4226,7 +4230,8 @@ describe('Cluster format strings', () => {
                     role: 'role',
                     int: 'int',
                     float: 'float',
-                    permission: 'permission'
+                    permission: 'permission',
+                    locale: 'language'
                 },
                 list: {
                     description: 'Gets the current settings for this guild',
@@ -4264,6 +4269,18 @@ describe('Cluster format strings', () => {
                             }
                         ]
                     },
+                    localeValue: [
+                        {
+                            name: 'partial',
+                            input: [{ locale: 'en-GB', completion: 0.8765543 }],
+                            expected: 'en-GB - 87.66% complete'
+                        },
+                        {
+                            name: 'complete',
+                            input: [{ locale: 'en-GB', completion: 1 }],
+                            expected: 'en-GB'
+                        }
+                    ],
                     notSet: 'Not set',
                     groups: {
                         general: 'General',
@@ -4287,6 +4304,22 @@ describe('Cluster format strings', () => {
                                 ]
                             }],
                             expected: 'ℹ️ You can use `settings set <key> [value]` to set the following settings. All settings are case insensitive.\n - **setting 1:** `SETTING1` (type 1)\n - **setting 2:** `SETTING2` (type 2)\n - **setting 3:** `SETTING3` (type 3)'
+                        }
+                    ]
+                },
+                languages: {
+                    description: 'Lists all the languages supported and their completion',
+                    success: [
+                        {
+                            name: 'partial',
+                            input: [{
+                                locales: [
+                                    { locale: 'en-GB', completion: 1 },
+                                    { locale: 'fr', completion: 0 },
+                                    { locale: 'es-SP', completion: 0.5 }
+                                ]
+                            }],
+                            expected: '✅ The following locales are supported:\n`en-GB` - 100% complete\n`fr` - 0% complete\n`es-SP` - 50% complete\n\nIf you want to help contribute a new langauge, or improve an existing one, contributions are being accepted!'
                         }
                     ]
                 },

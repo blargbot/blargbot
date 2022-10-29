@@ -140,5 +140,11 @@ export const guildSettings: GuildSettingDocs = {
         name: templates.settings.greetchan.name,
         desc: templates.settings.greetchan.description,
         type: 'channel'
+    },
+    language: {
+        key: 'language',
+        name: templates.settings.language.name,
+        desc: templates.settings.language.description,
+        type: 'locale'
     }
 };
