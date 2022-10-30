@@ -56,7 +56,7 @@ export class BaseUtilities {
         const guildId = typeof target === 'object' ? target instanceof Guild ? target.id : guard.isGuildChannel(target) ? target.guild.id : undefined : target;
         const localeStr = guildId === undefined ? undefined : await this.database.guilds.getSetting(guildId, 'language');
         return new Formatter(
-            new Intl.Locale(localeStr ?? 'en-GB'),
+            new Intl.Locale(localeStr ?? 'en'),
             [this.#translator],
             this.client.formatCompiler
         );

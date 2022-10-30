@@ -19,7 +19,7 @@ function runFormatTreeTestsCore<T extends object>(prefix: string[], source: T, o
                         name;
                         //arrange
                         const compiler = new FormatStringCompiler(options);
-                        const formatter = new Formatter(new Intl.Locale('en-GB'), [], compiler);
+                        const formatter = new Formatter(new Intl.Locale('en'), [], compiler);
                         const formattable = factory(...scenario.input);
                         const check = typeof scenario.expected === 'string' ? () => scenario.expected : scenario.expected;
 
@@ -42,7 +42,7 @@ function runFormatTreeTestsCore<T extends object>(prefix: string[], source: T, o
                 it('should display correctly', () => {
                     //arrange
                     const compiler = new FormatStringCompiler(options);
-                    const formatter = new Formatter(new Intl.Locale('en-GB'), [], compiler);
+                    const formatter = new Formatter(new Intl.Locale('en'), [], compiler);
                     const check = typeof c === 'string' ? () => c : c;
 
                     // act
