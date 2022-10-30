@@ -1,7 +1,7 @@
 import { CommitSubtag } from '@blargbot/bbtag/subtags/bot/commit';
 import { TagVariableType } from '@blargbot/domain/models';
+import { argument } from '@blargbot/test-util/mock';
 
-import { argument } from '../../mock';
 import { runSubtagTests } from '../SubtagTestSuite';
 
 runSubtagTests({

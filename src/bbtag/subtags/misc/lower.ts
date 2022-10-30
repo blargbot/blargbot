@@ -1,5 +1,8 @@
 import { CompiledSubtag } from '../../compilation';
+import templates from '../../text';
 import { SubtagType } from '../../utils';
+
+const tag = templates.subtags.lower;
 
 export class LowerSubtag extends CompiledSubtag {
     public constructor() {
@@ -9,9 +12,9 @@ export class LowerSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['text'],
-                    description: 'Returns `text` as lowercase.',
-                    exampleCode: '{lower;THIS WILL BECOME LOWERCASE}',
-                    exampleOut: 'this will become lowercase',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'string',
                     execute: (_, [text]) => this.lowercase(text.value)
                 }

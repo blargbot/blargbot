@@ -3,7 +3,10 @@ import { shuffle } from '@blargbot/core/utils';
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
 import { NotAnArrayError } from '../../errors';
+import templates from '../../text';
 import { bbtag, SubtagType } from '../../utils';
+
+const tag = templates.subtags.shuffle;
 
 export class ShuffleSubtag extends CompiledSubtag {
     public constructor() {
@@ -13,18 +16,18 @@ export class ShuffleSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: [],
-                    description: 'Shuffles the `{args}` the user provided.',
-                    exampleCode: '{shuffle} {args;0} {args;1} {args;2}',
-                    exampleIn: 'one two three',
-                    exampleOut: 'three one two',
+                    description: tag.args.description,
+                    exampleCode: tag.args.exampleCode,
+                    exampleIn: tag.args.exampleIn,
+                    exampleOut: tag.args.exampleOut,
                     returns: 'nothing',
                     execute: (ctx) => this.shuffleInput(ctx)
                 },
                 {
                     parameters: ['array'],
-                    description: 'Shuffles the `{args}` the user provided, or the elements of `array`. If used with a variable this will modify the original array',
-                    exampleCode: '{shuffle;[1,2,3,4,5,6]}',
-                    exampleOut: '[5,3,2,6,1,4]',
+                    description: tag.array.description,
+                    exampleCode: tag.array.exampleCode,
+                    exampleOut: tag.array.exampleOut,
                     returns: 'json[]|nothing',
                     execute: (ctx, [array]) => this.shuffle(ctx, array.value)
                 }

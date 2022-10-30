@@ -1,15 +1,14 @@
 import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType } from '@blargbot/cluster/utils';
-import { humanize } from '@blargbot/core/utils';
-import { EmbedOptions } from 'eris';
+import { guard } from '@blargbot/core/utils';
+import { IFormattable, util } from '@blargbot/formatting';
+import { User } from 'eris';
 import moment from 'moment-timezone';
 
-const year = [undefined, 'year', 'years'];
-const month = [undefined, 'month', 'months'];
-const day = [undefined, 'day', 'days'];
-const hour = [undefined, 'hour', 'hours'];
-const minute = [undefined, 'minute', 'minutes'];
-const second = [undefined, 'second', 'seconds'];
+import templates from '../../text';
+import { CommandResult } from '../../types';
+
+const cmd = templates.commands.info;
 
 export class InfoCommand extends GlobalCommand {
     public constructor() {
@@ -19,63 +18,66 @@ export class InfoCommand extends GlobalCommand {
             definitions: [
                 {
                     parameters: '',
-                    description: 'Returns some info about me.',
+                    description: cmd.default.description,
                     execute: (ctx) => this.showInfo(ctx)
                 }
             ]
         });
     }
-    public showInfo(context: CommandContext): EmbedOptions | string {
+    public showInfo(context: CommandContext): CommandResult {
         if (context.cluster.contributors.patrons.length === 0)
-            return this.warning('Im still waking up! Try again in a minute or two');
+            return cmd.default.notReady;
 
         const age = moment.duration(moment().diff(1444708800000));
-        const ageStr = humanize.smartJoin(
-            [
-                { val: age.years(), quantity: year },
-                { val: age.months(), quantity: month },
-                { val: age.days(), quantity: day },
-                { val: age.hours(), quantity: hour },
-                { val: age.minutes(), quantity: minute },
-                { val: age.seconds(), quantity: second }
-            ]
-                .map(x => ({ val: x.val, quantity: x.quantity[Math.min(x.val, x.quantity.length - 1)] }))
-                .filter(x => x.quantity !== undefined)
-                .map(x => `${x.val} ${x.quantity ?? ''}`),
-            ', ',
-            ', and '
-        );
-
         return {
-            author: context.util.embedifyAuthor(context.discord.user),
-            title: 'About me!',
-            description: `I am a multipurpose bot with new features implemented regularly, written in typescript using [Eris](https://abal.moe/Eris/).
-                    
-🎂 I am currently ${ageStr} old!`,
-            fields: [
+            embeds: [
                 {
-                    name: '️️️️️️️️❤️ Special thanks to my patrons! ❤️',
-                    value: context.cluster.contributors.patrons.map(u => typeof u === 'string' ? u : humanize.fullName(u)).join('\n'),
-                    inline: true
-                },
-                {
-                    name: '️️️️️️️️❤️ Special thanks to all my other donators! ❤️',
-                    value: context.cluster.contributors.donators.map(u => typeof u === 'string' ? u : humanize.fullName(u)).join('\n'),
-                    inline: true
-                },
-                {
-                    name: '❤️ Special huge thanks to: ❤️',
-                    value: context.cluster.contributors.others.map(x => {
-                        const user = typeof x.user === 'string' ? x.user : humanize.fullName(x.user);
-                        return `🎉 The ${x.decorator} **${user}** for ${x.reason}!`;
-                    }).join('\n')
-                },
-                {
-                    name: '\u200b',
-                    value: `For commands, do \`${context.prefix}help\`. For information about supporting me, do \`${context.prefix}donate\`. 
-For any additional information, such as command documentation, please visit my website: <https://blargbot.xyz>`
+                    author: context.util.embedifyAuthor(context.discord.user),
+                    title: cmd.default.embed.title,
+                    description: cmd.default.embed.description({ age }),
+                    fields: [
+                        {
+                            name: cmd.default.embed.field.patron.name,
+                            value: cmd.default.embed.field.patron.value({
+                                patrons: context.cluster.contributors.patrons.map(template)
+                            }),
+                            inline: true
+                        },
+                        {
+                            name: cmd.default.embed.field.donator.name,
+                            value: cmd.default.embed.field.donator.value({
+                                donators: context.cluster.contributors.donators.map(template)
+                            }),
+                            inline: true
+                        },
+                        {
+                            name: cmd.default.embed.field.other.name,
+                            value: cmd.default.embed.field.other.value.layout({
+                                details: context.cluster.contributors.others.map(x => {
+                                    const decorator = guard.hasProperty(cmd.default.embed.field.other.value.decorators, x.decorator)
+                                        ? cmd.default.embed.field.other.value.decorators[x.decorator]
+                                        : cmd.default.embed.field.other.value.decorators.amazing;
+                                    const reason = guard.hasProperty(cmd.default.embed.field.other.value.reasons, x.reason)
+                                        ? cmd.default.embed.field.other.value.reasons[x.reason]
+                                        : cmd.default.embed.field.other.value.reasons.unknown;
+
+                                    return decorator({ user: template(x.user), reason: reason });
+                                })
+                            })
+                        },
+                        {
+                            name: util.literal('\u200b'),
+                            value: cmd.default.embed.field.details.value({ prefix: context.prefix })
+                        }
+                    ]
                 }
             ]
         };
     }
+}
+
+function template(value: User | IFormattable<string>): IFormattable<string> {
+    return value instanceof User
+        ? util.literal(value.mention)
+        : value;
 }

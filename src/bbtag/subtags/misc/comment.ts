@@ -1,5 +1,8 @@
 import { CompiledSubtag } from '../../compilation';
+import templates from '../../text';
 import { SubtagType } from '../../utils';
+
+const tag = templates.subtags.comment;
 
 export class CommentSubtag extends CompiledSubtag {
     public constructor() {
@@ -10,9 +13,9 @@ export class CommentSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['~anything*'],
-                    description: 'Does nothing. Your code is simply ignored.',
-                    exampleCode: 'This is a sentence. {//;This is a comment.}',
-                    exampleOut: 'This is a sentence.',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'nothing',
                     execute: () => this.doNothing()
                 }

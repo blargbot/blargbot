@@ -1,5 +1,9 @@
 import { CommandContext, GlobalImageCommand } from '@blargbot/cluster/command';
-import { ImageResult } from '@blargbot/image/types';
+
+import templates from '../../text';
+import { CommandResult } from '../../types';
+
+const cmd = templates.commands.clippy;
 
 export class ClippyCommand extends GlobalImageCommand {
     public constructor() {
@@ -9,14 +13,14 @@ export class ClippyCommand extends GlobalImageCommand {
             definitions: [
                 {
                     parameters: '{text+}',
-                    description: 'Clippy the paperclip is here to save the day!',
+                    description: cmd.default.description,
                     execute: (ctx, [text]) => this.render(ctx, text.asString)
                 }
             ]
         });
     }
 
-    public async render(context: CommandContext, text: string): Promise<string | ImageResult> {
+    public async render(context: CommandContext, text: string): Promise<CommandResult> {
         text = await context.util.resolveTags(context, text);
         return await this.renderImage(context, 'clippy', { text });
     }

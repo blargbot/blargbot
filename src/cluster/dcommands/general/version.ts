@@ -1,6 +1,11 @@
 import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType } from '@blargbot/cluster/utils';
 
+import templates from '../../text';
+import { CommandResult } from '../../types';
+
+const cmd = templates.commands.version;
+
 export class VersionCommand extends GlobalCommand {
     public constructor() {
         super({
@@ -9,16 +14,16 @@ export class VersionCommand extends GlobalCommand {
             definitions: [
                 {
                     parameters: '',
-                    description: 'Tells you what version I am on',
+                    description: cmd.default.description,
                     execute: (ctx) => this.getVersion(ctx)
                 }
             ]
         });
     }
 
-    public async getVersion(context: CommandContext): Promise<string> {
+    public async getVersion(context: CommandContext): Promise<CommandResult> {
         const version = await context.cluster.version.getVersion();
 
-        return this.info(`I am running blargbot version ${version}`);
+        return cmd.default.success({ version });
     }
 }

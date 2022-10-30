@@ -1,8 +1,13 @@
 import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType, randInt } from '@blargbot/cluster/utils';
+import { util } from '@blargbot/formatting';
 import { mapping } from '@blargbot/mapping';
-import { EmbedOptions } from 'eris';
 import fetch from 'node-fetch';
+
+import templates from '../../text';
+import { CommandResult } from '../../types';
+
+const cmd = templates.commands.xkcd;
 
 export class XKCDCommand extends GlobalCommand {
     public constructor() {
@@ -12,31 +17,37 @@ export class XKCDCommand extends GlobalCommand {
             definitions: [
                 {
                     parameters: '{comicNumber:integer?}',
-                    description: 'Gets an xkcd comic. If a number is not specified, gets a random one.',
+                    description: cmd.default.description,
                     execute: (ctx, [comicNumber]) => this.getComic(ctx, comicNumber.asOptionalInteger)
                 }
             ]
         });
     }
 
-    public async getComic(context: CommandContext, comicNumber: number | undefined): Promise<string | EmbedOptions> {
+    public async getComic(context: CommandContext, comicNumber: number | undefined): Promise<CommandResult> {
         if (comicNumber === undefined) {
             const comic = await this.#requestComic(undefined);
             if (comic === undefined)
-                return this.error('Seems like xkcd is down 😟');
+                return cmd.default.down;
             comicNumber = randInt(0, comic.num);
         }
 
         const comic = await this.#requestComic(comicNumber);
         if (comic === undefined)
-            return this.error('Seems like xkcd is down 😟');
+            return cmd.default.down;
 
         return {
-            author: context.util.embedifyAuthor(context.author),
-            title: `xkcd #${comic.num}: ${comic.title}`,
-            description: comic.alt,
-            image: { url: comic.img },
-            footer: { text: `xkcd ${comic.year}` }
+            embeds: [
+                {
+                    author: context.util.embedifyAuthor(context.author),
+                    title: cmd.default.embed.title({ id: comic.num, title: comic.title }),
+                    description: util.literal(comic.alt),
+                    image: { url: comic.img },
+                    footer: {
+                        text: cmd.default.embed.footer.text({ year: comic.year })
+                    }
+                }
+            ]
         };
     }
 

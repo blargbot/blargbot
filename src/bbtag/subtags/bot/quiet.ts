@@ -2,7 +2,10 @@ import { parse } from '@blargbot/core/utils';
 
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
+import templates from '../../text';
 import { SubtagType } from '../../utils';
+
+const tag = templates.subtags.quiet;
 
 export class QuietSubtag extends CompiledSubtag {
     public constructor() {
@@ -12,9 +15,9 @@ export class QuietSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['isQuiet?:true'],
-                    description: 'Tells any subtags that rely on a `quiet` field to be/not be quiet based on `isQuiet. `isQuiet` must be a boolean',
-                    exampleCode: '{quiet} {usermention;cat}',
-                    exampleOut: 'cat',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'nothing',
                     execute: (ctx, [quiet]) => this.setQuiet(ctx, quiet.value)
                 }

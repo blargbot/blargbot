@@ -1,7 +1,10 @@
 import { parse } from '@blargbot/core/utils';
 
 import { CompiledSubtag } from '../../compilation';
+import templates from '../../text';
 import { SubtagType } from '../../utils';
+
+const tag = templates.subtags.unindent;
 
 export class UnindentSubtag extends CompiledSubtag {
     public constructor() {
@@ -12,9 +15,9 @@ export class UnindentSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['text', 'level?'],
-                    description: 'Unindents text (or code!). If no level is provided, attempts to guess the indentation level past the first line.',
-                    exampleCode: '```\n{unindent;\n  hello\n  world\n}\n```',
-                    exampleOut: '```\nhello\nworld\n```',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'string',
                     execute: (_, [text, level]) => this.unindent(text.value, level.value)
                 }

@@ -1,30 +1,31 @@
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError, UserNotFoundError } from '../../errors';
+import templates from '../../text';
 import { SubtagType } from '../../utils';
+
+const tag = templates.subtags.kick;
 
 export class KickSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'kick',
             category: SubtagType.USER,
-            description: 'If the kick is successful, `Success` will be returned, otherwise the error will be given. ',
+            description: tag.description,
             definition: [
                 {
                     parameters: ['user'],
-                    description: 'Kicks `user`.',
-                    exampleCode: '{kick;stupid cat} @stupid cat was kicked!',
-                    exampleOut: 'Success @stupid cat was kicked!',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'string',
                     execute: (ctx, [user]) => this.kickMember(ctx, user.value, '', false)
                 },
                 {
                     parameters: ['user', 'reason', 'noPerms?'],
-                    description: 'Kicks `user`. ' +
-                        'If `noPerms` is provided and not an empty string, do not check if the command executor is actually able to kick people. ' +
-                        'Only provide this if you know what you\'re doing.',
-                    exampleCode: '{kick;stupid cat;because I can} @stupid cat was kicked!',
-                    exampleOut: 'Success @stupid cat was kicked, because I can!',
+                    description: tag.withReason.description,
+                    exampleCode: tag.withReason.exampleCode,
+                    exampleOut: tag.withReason.exampleOut,
                     returns: 'string',
                     execute: (ctx, [user, reason, noPerms]) => this.kickMember(ctx, user.value, reason.value, noPerms.value !== '')
                 }

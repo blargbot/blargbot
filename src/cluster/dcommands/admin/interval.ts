@@ -1,9 +1,12 @@
 import { bbtag } from '@blargbot/bbtag';
 import { GuildCommand } from '@blargbot/cluster/command';
-import { GuildCommandContext } from '@blargbot/cluster/types';
-import { codeBlock, CommandType, guard } from '@blargbot/cluster/utils';
-import { SendContent } from '@blargbot/core/types';
-import { humanize } from '@blargbot/core/utils';
+import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
+import { CommandType } from '@blargbot/cluster/utils';
+
+import { RawBBTagCommandResult } from '../../command/RawBBTagCommandResult';
+import templates from '../../text';
+
+const cmd = templates.commands.interval;
 
 export class IntervalCommand extends GuildCommand {
     public constructor() {
@@ -13,104 +16,93 @@ export class IntervalCommand extends GuildCommand {
             definitions: [
                 {
                     parameters: 'set {~bbtag+}',
-                    description: 'Sets the bbtag to run every 15 minutes',
+                    description: cmd.set.description,
                     execute: (ctx, [bbtag]) => this.setInterval(ctx, bbtag.asString)
                 },
                 {
                     parameters: 'raw {fileExtension:literal(bbtag|txt)=bbtag}',
-                    description: 'Gets the current code that the interval is running',
+                    description: cmd.raw.description,
                     execute: (ctx, [fileExtension]) => this.getRaw(ctx, fileExtension.asLiteral)
                 },
                 {
                     parameters: 'delete',
-                    description: 'Deletes the current interval',
+                    description: cmd.delete.description,
                     execute: (ctx) => this.deleteInterval(ctx)
                 },
                 {
                     parameters: 'setauthorizer',
-                    description: 'Sets the interval to run using your permissions',
+                    description: cmd.setAuthorizer.description,
                     execute: (ctx) => this.setAuthorizer(ctx)
                 },
                 {
                     parameters: 'debug',
-                    description: 'Runs the interval now and sends the debug output',
+                    description: cmd.debug.description,
                     execute: (ctx) => this.debug(ctx)
                 },
                 {
                     parameters: 'info',
-                    description: 'Shows information about the current interval',
+                    description: cmd.info.description,
                     execute: (ctx) => this.getInfo(ctx)
                 }
             ]
         });
     }
 
-    public async getInfo(context: GuildCommandContext): Promise<string> {
+    public async getInfo(context: GuildCommandContext): Promise<CommandResult> {
         const interval = await context.database.guilds.getInterval(context.channel.guild.id);
         if (interval === undefined)
-            return this.error('No interval has been set yet!');
+            return cmd.errors.notSet;
 
-        const authorizer = interval.authorizer ?? interval.author;
-        return this.info(`The current interval was last edited by <@${interval.author ?? 0}> (${interval.author ?? '????'}) and is authorized by <@${authorizer ?? 0}> (${authorizer ?? '????'})`);
+        return cmd.info.success({ authorId: interval.author ?? '????', authorizerId: interval.authorizer ?? interval.author ?? '????' });
     }
 
-    public async setInterval(context: GuildCommandContext, code: string): Promise<string> {
+    public async setInterval(context: GuildCommandContext, code: string): Promise<CommandResult> {
         const interval = await context.database.guilds.getInterval(context.channel.guild.id) ?? {};
         await context.database.guilds.setInterval(context.channel.guild.id, { ...interval, content: code, author: context.author.id });
-        return this.success('The interval has been set');
+        return cmd.set.success;
     }
 
-    public async deleteInterval(context: GuildCommandContext): Promise<string> {
+    public async getRaw(context: GuildCommandContext, fileExtension: string): Promise<CommandResult> {
         const interval = await context.database.guilds.getInterval(context.channel.guild.id);
         if (interval === undefined)
-            return this.error('There is no interval currently set up!');
+            return cmd.errors.notSet;
 
+        return new RawBBTagCommandResult(
+            cmd.raw.inline({ content: interval.content }),
+            cmd.raw.attached,
+            interval.content,
+            `interval.${fileExtension}`
+        );
+    }
+
+    public async deleteInterval(context: GuildCommandContext): Promise<CommandResult> {
         await context.database.guilds.setInterval(context.channel.guild.id, undefined);
-        return this.success('The interval has been deleted');
+        return cmd.delete.success;
     }
 
-    public async getRaw(context: GuildCommandContext, fileExtension: string): Promise<string | SendContent> {
+    public async setAuthorizer(context: GuildCommandContext): Promise<CommandResult> {
         const interval = await context.database.guilds.getInterval(context.channel.guild.id);
         if (interval === undefined)
-            return this.error('There is no interval currently set up!');
-
-        const response = this.info(`The raw code for the interval is:\n${codeBlock(interval.content)}`);
-        return !interval.content.includes('```') && guard.checkMessageSize(response)
-            ? response
-            : {
-                content: this.info('The raw code for the interval is attached'),
-                files: [
-                    {
-                        name: `interval.${fileExtension}`,
-                        file: interval.content
-                    }
-                ]
-            };
-    }
-
-    public async setAuthorizer(context: GuildCommandContext): Promise<string> {
-        const interval = await context.database.guilds.getInterval(context.channel.guild.id);
-        if (interval === undefined)
-            return this.error('There is no interval currently set up!');
+            return cmd.errors.notSet;
 
         await context.database.guilds.setInterval(context.channel.guild.id, { ...interval, authorizer: context.author.id });
-        return this.success('Your permissions will now be used when the interval runs');
+        return cmd.setAuthorizer.success;
     }
 
-    public async debug(context: GuildCommandContext): Promise<string | SendContent> {
+    public async debug(context: GuildCommandContext): Promise<CommandResult> {
         const interval = await context.database.guilds.getInterval(context.channel.guild.id);
         if (interval === undefined)
-            return this.error('There is no interval currently set up!');
+            return cmd.errors.notSet;
 
         const result = await context.cluster.intervals.invoke(context.channel.guild, interval);
         switch (result) {
-            case 'FAILED': return this.error('There was an error while running the interval!');
-            case 'MISSING_AUTHORIZER': return this.error('I couldnt find the user who authorizes the interval!');
-            case 'MISSING_CHANNEL': return this.error('I wasnt able to figure out which channel to run the interval in!');
-            case 'TOO_LONG': return this.error(`The interval took longer than the max allowed time (${humanize.duration(context.cluster.intervals.timeLimit)})`);
+            case 'FAILED': return cmd.debug.failed;
+            case 'MISSING_AUTHORIZER': return cmd.debug.authorizerMissing;
+            case 'MISSING_CHANNEL': return cmd.debug.channelMissing;
+            case 'TOO_LONG': return cmd.debug.timedOut({ max: context.cluster.intervals.timeLimit });
             default:
-                await context.sendDM(bbtag.createDebugOutput(result));
-                return this.info('Ive sent the debug output in a DM');
+                await context.send(context.author, bbtag.createDebugOutput(result));
+                return cmd.debug.success;
         }
     }
 }

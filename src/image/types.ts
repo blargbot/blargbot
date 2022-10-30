@@ -28,18 +28,18 @@ export interface ImageResult<T = Buffer> {
 }
 
 export interface ImageGeneratorMap extends CommandMap {
-    'truth': TruthOptions;
-    'starVsTheForcesOf': StarVsTheForcesOfOptions;
-    'stupid': StupidOptions;
-    'pixelate': PixelateOptions;
-    'free': FreeOptions;
-    'distort': DistortOptions;
-    'clyde': ClydeOptions;
-    'clippy': ClippyOptions;
-    'caption': CaptionOptions;
-    'cah': CahOptions;
-    'art': ArtOptions;
-    'emoji': EmojiOptions;
+    truth: TruthOptions;
+    starVsTheForcesOf: StarVsTheForcesOfOptions;
+    stupid: StupidOptions;
+    pixelate: PixelateOptions;
+    free: FreeOptions;
+    distort: DistortOptions;
+    clyde: ClydeOptions;
+    clippy: ClippyOptions;
+    caption: CaptionOptions;
+    cah: CahOptions;
+    art: ArtOptions;
+    emoji: EmojiOptions;
 }
 
 export interface EmojiOptions {

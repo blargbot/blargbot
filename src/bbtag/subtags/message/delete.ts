@@ -4,36 +4,39 @@ import { ApiError, DiscordRESTError } from 'eris';
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '../../errors';
+import templates from '../../text';
 import { SubtagType } from '../../utils';
+
+const tag = templates.subtags.delete;
 
 export class DeleteSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'delete',
-            description: 'Only ccommands can delete other messages.',
+            description: tag.description,
             category: SubtagType.MESSAGE,
             definition: [
                 {
                     parameters: [],
-                    description: 'Deletes the message that invoked the command',
-                    exampleCode: '{//;The message that triggered this will be deleted} {delete}',
-                    exampleOut: '(the message got deleted idk how to do examples for this)',
+                    description: tag.trigger.description,
+                    exampleCode: tag.trigger.exampleCode,
+                    exampleOut: tag.trigger.exampleOut,
                     returns: 'nothing',
                     execute: (ctx) => this.deleteMessage(ctx, ctx.channel.id, ctx.message.id)
                 },
                 {
                     parameters: ['messageId'],
-                    description: 'Deletes the specified `messageId` from the current channel.',
-                    exampleCode: '{//;The message with ID `111111111111111111` will be deleted}\n{delete;111111111111111111}',
-                    exampleOut: '(the message `111111111111111111` got deleted idk how to do examples for this)',
+                    description: tag.inCurrent.description,
+                    exampleCode: tag.inCurrent.exampleCode,
+                    exampleOut: tag.inCurrent.exampleOut,
                     returns: 'nothing',
                     execute: (ctx, [messageId]) => this.deleteMessage(ctx, ctx.channel.id, messageId.value)
                 },
                 {
                     parameters: ['channel', 'messageId'],
-                    description: 'Deletes the specified `messageId` from channel `channel`.',
-                    exampleCode: '{//;The message with ID `2222222222222222` from channel `1111111111111111` will be deleted}\n{delete;111111111111111111;2222222222222222}',
-                    exampleOut: '(the message `2222222222222222` from channel `1111111111111111` got deleted)',
+                    description: tag.inOther.description,
+                    exampleCode: tag.inOther.exampleCode,
+                    exampleOut: tag.inOther.exampleOut,
                     returns: 'nothing',
                     execute: (ctx, [channel, messageId]) => this.deleteMessage(ctx, channel.value, messageId.value)
                 }

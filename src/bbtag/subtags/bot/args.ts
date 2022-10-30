@@ -3,7 +3,10 @@ import { parse } from '@blargbot/core/utils';
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
 import { NotANumberError, NotEnoughArgumentsError } from '../../errors';
+import templates from '../../text';
 import { SubtagType } from '../../utils';
+
+const tag = templates.subtags.args;
 
 export class ArgsSubtag extends CompiledSubtag {
     public constructor() {
@@ -13,28 +16,28 @@ export class ArgsSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: [],
-                    description: 'Gets the whole user input',
-                    exampleCode: 'You said {args}',
-                    exampleIn: 'Hello world! BBtag is so cool',
-                    exampleOut: 'You said Hello world! BBtag is so cool',
+                    description: tag.all.description,
+                    exampleCode: tag.all.exampleCode,
+                    exampleIn: tag.all.exampleIn,
+                    exampleOut: tag.all.exampleOut,
                     returns: 'string',
                     execute: (ctx) => this.getAllArgs(ctx)
                 },
                 {
                     parameters: ['index'],
-                    description: 'Gets a word from the user input at the `index` position',
-                    exampleCode: '{args;1}',
-                    exampleIn: 'Hello world! BBtag is so cool',
-                    exampleOut: 'world!',
+                    description: tag.indexed.description,
+                    exampleCode: tag.indexed.exampleCode,
+                    exampleIn: tag.indexed.exampleIn,
+                    exampleOut: tag.indexed.exampleOut,
                     returns: 'string',
                     execute: (ctx, [index]) => this.getArg(ctx, index.value)
                 },
                 {
                     parameters: ['start', 'end'],
-                    description: 'Gets all the words in the user input from `start` up to `end`. If `end` is `n` then all words after `start` will be returned',
-                    exampleCode: '{args;2;4}',
-                    exampleIn: 'Hello world! BBtag is so cool',
-                    exampleOut: 'BBtag is',
+                    description: tag.range.description,
+                    exampleCode: tag.range.exampleCode,
+                    exampleIn: tag.range.exampleIn,
+                    exampleOut: tag.range.exampleOut,
                     returns: 'string',
                     execute: (ctx, [start, end]) => this.getArgs(ctx, start.value, end.value)
                 }

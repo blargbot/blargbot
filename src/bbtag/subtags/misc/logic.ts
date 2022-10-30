@@ -2,7 +2,10 @@ import { parse } from '@blargbot/core/utils';
 
 import { CompiledSubtag } from '../../compilation';
 import { InvalidOperatorError, NotABooleanError } from '../../errors';
+import templates from '../../text';
 import { bbtag, LogicOperator, SubtagType } from '../../utils';
+
+const tag = templates.subtags.logic;
 
 export class LogicSubtag extends CompiledSubtag {
     public constructor() {
@@ -12,11 +15,9 @@ export class LogicSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['operator', 'values+'],
-                    description: 'Accepts 1 or more boolean `values` (`true` or `false`) and returns the result of `operator` on them. ' +
-                        'Valid logic operators are `' + [...Object.keys(bbtag.logicOperators), '^'].join('`, `') + '`.' +
-                        'See `{operators}` for a shorter way of performing logic operations.',
-                    exampleCode: '{logic;&&;true;false}',
-                    exampleOut: 'false',
+                    description: tag.default.description({ operators: [...Object.keys(bbtag.logicOperators), '^'] }),
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'boolean',
                     execute: (_, values) => this.applyLogicOperation(values.map(arg => arg.value))
                 }

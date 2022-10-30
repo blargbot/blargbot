@@ -1,6 +1,9 @@
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
+import templates from '../../text';
 import { SubtagType } from '../../utils';
+
+const tag = templates.subtags.dump;
 
 export class DumpSubtag extends CompiledSubtag {
     public constructor() {
@@ -10,9 +13,9 @@ export class DumpSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['text'],
-                    description: 'Dumps the provided text to a blargbot output page. These expire after 7 days.',
-                    exampleCode: '{dump;Hello, world!}',
-                    exampleOut: 'https://blargbot.xyz/output/1111111111111111',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'string',
                     execute: (ctx, [text]) => this.createDump(ctx, text.value)
                 }
@@ -21,7 +24,7 @@ export class DumpSubtag extends CompiledSubtag {
     }
 
     public async createDump(context: BBTagContext, text: string): Promise<string> {
-        const id = await context.util.generateDumpPage(text, context.channel);
+        const id = await context.util.generateDumpPage({ content: text }, context.channel);
         return context.util.websiteLink(`dumps/${id}`);
     }
 }

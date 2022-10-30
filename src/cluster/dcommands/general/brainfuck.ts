@@ -2,6 +2,11 @@ import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType } from '@blargbot/cluster/utils';
 import Brainfuck from 'brainfuck-node';
 
+import templates from '../../text';
+import { CommandResult } from '../../types';
+
+const cmd = templates.commands.brainfuck;
+
 export class BrainfuckCommand extends GlobalCommand {
     readonly #client: Brainfuck;
 
@@ -13,12 +18,12 @@ export class BrainfuckCommand extends GlobalCommand {
             definitions: [
                 {
                     parameters: '{code+}',
-                    description: 'Executes brainfuck code.',
+                    description: cmd.default.description,
                     execute: (ctx, [code]) => this.eval(ctx, code.asString, false)
                 },
                 {
                     parameters: 'debug {code+}',
-                    description: 'Executes brainfuck code and returns the pointers.',
+                    description: cmd.debug.description,
                     execute: (ctx, [code]) => this.eval(ctx, code.asString, true)
                 }
             ]
@@ -27,25 +32,26 @@ export class BrainfuckCommand extends GlobalCommand {
         this.#client = new Brainfuck();
     }
 
-    public async eval(context: CommandContext, code: string, showPointers: boolean): Promise<string> {
+    public async eval(context: CommandContext, code: string, showPointers: boolean): Promise<CommandResult> {
         let input = '';
         if (code.includes(',')) {
-            const reply = await context.queryText({ prompt: 'This brainfuck code requires user input. Please say what you want to use:' });
+            const reply = await context.queryText({ prompt: cmd.common.queryInput.prompt });
             if (reply.state !== 'SUCCESS')
-                return this.error('No input was provided!');
+                return cmd.common.noInput;
 
             input = reply.value;
         }
 
         try {
             const result = this.#client.execute(code, input);
-            const pointers = showPointers ? `\n\n[${result.memory.list.join(',')}]\nPointer: ${result.memory.pointer}` : '';
-            return result.output.trim().length === 0
-                ? this.info(`No output...${pointers}`)
-                : this.success(`Output:\n> ${result.output.trim().split('\n').join('\n> ')}${pointers}`);
+            const output = result.output.trim();
+            const state = showPointers ? { memory: result.memory.list, pointer: result.memory.pointer } : undefined;
+            return output.length === 0
+                ? cmd.common.success.empty({ state })
+                : cmd.common.success.default({ output, state });
         } catch (ex: unknown) {
             context.logger.error('Running brainfuck failed. Code:', code, 'Input:', input, ex);
-            return this.error('Something went wrong...');
+            return cmd.common.unexpectedError;
         }
     }
 }

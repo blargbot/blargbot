@@ -1,5 +1,11 @@
 import { GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType, randInt } from '@blargbot/cluster/utils';
+import { util } from '@blargbot/formatting';
+
+import templates from '../../text';
+import { CommandResult } from '../../types';
+
+const cmd = templates.commands.tokenify;
 
 export class TokenifyCommand extends GlobalCommand {
     public constructor() {
@@ -9,14 +15,14 @@ export class TokenifyCommand extends GlobalCommand {
             definitions: [
                 {
                     parameters: '{input+}',
-                    description: 'Converts the given input into a token.',
+                    description: cmd.default.description,
                     execute: (_, [input]) => this.tokenify(input.asString)
                 }
             ]
         });
     }
 
-    public tokenify(input: string): string {
+    public tokenify(input: string): CommandResult {
         const pasta = input.replace(/[^0-9a-z]/gi, '').toLowerCase();
         const newPasta = [];
 
@@ -35,6 +41,6 @@ export class TokenifyCommand extends GlobalCommand {
                 newPasta.push('\\_');
         }
 
-        return newPasta.join('');
+        return util.literal(newPasta.join(''));
     }
 }

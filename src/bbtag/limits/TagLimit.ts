@@ -1,12 +1,11 @@
 import { Guild } from 'eris';
 
 import { BBTagRuntimeError, TooManyLoopsError } from '../errors';
+import templates from '../text';
 import { GlobalLimit } from './GlobalLimit';
 import { disabledRule, UseCountRule } from './rules';
 
 export class TagLimit extends GlobalLimit {
-    public readonly scopeName = 'tags';
-
     public constructor(guild?: Guild) {
         super('tagLimit');
 
@@ -44,17 +43,17 @@ export class TagLimit extends GlobalLimit {
             .addRules('edit', new UseCountRule(10))
             .addRules('delete', new UseCountRule(16))
             .addRules('reactremove', new UseCountRule(10))
-            .addRules('reactremove:requests', new UseCountRule(40, 'requests', 'Request'))
+            .addRules('reactremove:requests', new UseCountRule(40, templates.limits.rules.useCount.requests, 'Request'))
             .addRules('waitmessage', new UseCountRule(5))
             .addRules('waitreaction', new UseCountRule(20))
             .addRules([
                 'for:loops',
                 'repeat:loops',
                 'while:loops'
-            ], new UseCountRule(10000, 'loops', () => new TooManyLoopsError(10000)))
-            .addRules('foreach:loops', new UseCountRule((guild?.memberCount ?? 0) + 100000, 'loops', () => new TooManyLoopsError(100000)))
-            .addRules('map:loops', new UseCountRule((guild?.memberCount ?? 0) + 100000, 'loops', () => new TooManyLoopsError(100000)))
-            .addRules('filter:loops', new UseCountRule((guild?.memberCount ?? 0) + 100000, 'loops', () => new BBTagRuntimeError('Max safeloops reached')))
+            ], new UseCountRule(10000, templates.limits.rules.useCount.loops, () => new TooManyLoopsError(10000)))
+            .addRules('foreach:loops', new UseCountRule((guild?.memberCount ?? 0) + 100000, templates.limits.rules.useCount.loops, () => new TooManyLoopsError(100000)))
+            .addRules('map:loops', new UseCountRule((guild?.memberCount ?? 0) + 100000, templates.limits.rules.useCount.loops, () => new TooManyLoopsError(100000)))
+            .addRules('filter:loops', new UseCountRule((guild?.memberCount ?? 0) + 100000, templates.limits.rules.useCount.loops, () => new BBTagRuntimeError('Max safeloops reached')))
             .addRules('dump', new UseCountRule(5));
     }
 

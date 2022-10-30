@@ -1,3 +1,4 @@
+import templates from '../text';
 import { SubtagPropertiesSet } from '../types';
 
 export enum SubtagType {
@@ -18,55 +19,68 @@ export enum SubtagType {
 
 export const tagTypeDetails: SubtagPropertiesSet = {
     [SubtagType.SIMPLE]: {
-        name: 'Simple',
-        desc: 'Subtags that require no arguments.'
+        id: SubtagType.SIMPLE,
+        name: templates.subtag.types.simple.name,
+        desc: templates.subtag.types.simple.description
     },
     [SubtagType.MISC]: {
-        name: 'Miscellaneous',
-        desc: 'Miscellaneous subtags for general things.'
+        id: SubtagType.MISC,
+        name: templates.subtag.types.misc.name,
+        desc: templates.subtag.types.misc.description
     },
     [SubtagType.ARRAY]: {
-        name: 'Array',
-        desc: 'Subtags designed specifically for arrays.'
+        id: SubtagType.ARRAY,
+        name: templates.subtag.types.array.name,
+        desc: templates.subtag.types.array.description
     },
     [SubtagType.JSON]: {
-        name: 'JSON',
-        desc: 'Subtags designed for JSON objects.'
+        id: SubtagType.JSON,
+        name: templates.subtag.types.json.name,
+        desc: templates.subtag.types.json.description
     },
     [SubtagType.MATH]: {
-        name: 'Math',
-        desc: 'Subtags designed for mathematical purposes.'
+        id: SubtagType.MATH,
+        name: templates.subtag.types.math.name,
+        desc: templates.subtag.types.math.description
     },
     [SubtagType.LOOPS]: {
-        name: 'Loops',
-        desc: 'Subtags that iterate over arrays/strings.'
+        id: SubtagType.LOOPS,
+        name: templates.subtag.types.loops.name,
+        desc: templates.subtag.types.loops.description
     },
     [SubtagType.BOT]: {
-        name: 'Blargbot',
-        desc: 'Subtags that integrate with blargbots custom functions.'
+        id: SubtagType.BOT,
+        name: templates.subtag.types.bot.name,
+        desc: templates.subtag.types.bot.description
     },
     [SubtagType.MESSAGE]: {
-        name: 'Message',
-        desc: 'Subtags that interact with messages.'
+        id: SubtagType.MESSAGE,
+        name: templates.subtag.types.message.name,
+        desc: templates.subtag.types.message.description
     },
     [SubtagType.CHANNEL]: {
-        name: 'Channel',
-        desc: 'Subtags that interact with channels.'
+        id: SubtagType.CHANNEL,
+        name: templates.subtag.types.channel.name,
+        desc: templates.subtag.types.channel.description
     },
     [SubtagType.THREAD]: {
-        name: 'Thread',
-        desc: 'Subtags that interact with threads.'
+        id: SubtagType.THREAD,
+        name: templates.subtag.types.thread.name,
+        desc: templates.subtag.types.thread.description
     },
     [SubtagType.USER]: {
-        name: 'User',
-        desc: 'Subtags that interact with users.'
+        id: SubtagType.USER,
+        name: templates.subtag.types.user.name,
+        desc: templates.subtag.types.user.description
     },
     [SubtagType.ROLE]: {
-        name: 'Role',
-        desc: 'Subtags that interact with roles.'
+        id: SubtagType.ROLE,
+        name: templates.subtag.types.role.name,
+        desc: templates.subtag.types.role.description
     },
     [SubtagType.GUILD]: {
-        name: 'Guild',
-        desc: 'Subtags that interact with guilds.'
+        id: SubtagType.GUILD,
+        name: templates.subtag.types.guild.name,
+        desc: templates.subtag.types.guild.description
     }
 };

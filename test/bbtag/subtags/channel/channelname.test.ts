@@ -1,4 +1,4 @@
-import { ChannelNameSubtag } from '@blargbot/bbtag/subtags/channel/channelname';
+import { ChannelNameSubtag } from '@blargbot/bbtag/subtags/channel/channelName';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 import { createGetChannelPropTestCases } from './_getChannelPropTest';

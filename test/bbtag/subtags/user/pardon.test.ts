@@ -1,8 +1,8 @@
 import { NotANumberError, UserNotFoundError } from '@blargbot/bbtag/errors';
 import { PardonSubtag } from '@blargbot/bbtag/subtags/user/pardon';
+import { argument } from '@blargbot/test-util/mock';
 import { Guild, Member } from 'eris';
 
-import { argument } from '../../mock';
 import { runSubtagTests } from '../SubtagTestSuite';
 
 runSubtagTests({

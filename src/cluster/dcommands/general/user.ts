@@ -1,7 +1,11 @@
 import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType, discord, guard, parse } from '@blargbot/cluster/utils';
-import { Activity, Constants, EmbedOptions, Member, User } from 'eris';
-import moment from 'moment-timezone';
+import { Member, User } from 'eris';
+
+import templates from '../../text';
+import { CommandResult } from '../../types';
+
+const cmd = templates.commands.user;
 
 export class UserCommand extends GlobalCommand {
     public constructor() {
@@ -11,63 +15,65 @@ export class UserCommand extends GlobalCommand {
             definitions: [
                 {
                     parameters: '{user:user+?}',
-                    description: 'Gets information about a user',
+                    description: cmd.default.description,
                     execute: (ctx, [user]) => this.getUser(ctx, user.asOptionalUser ?? ctx.author)
                 }
             ]
         });
     }
 
-    public async getUser(context: CommandContext, user: User): Promise<EmbedOptions> {
-        const result = {
-            ...<EmbedOptions>{},
-            author: context.util.embedifyAuthor(user),
-            thumbnail: {
-                url: user.avatarURL
-            },
-            description: `**User Id**: ${user.id}\n**Created**: ${timestamp(user.createdAt)}`
-        };
-
-        if (guard.isGuildCommandContext(context)) {
-            const member = await context.util.getMember(context.channel.guild, user.id);
-            if (member !== undefined) {
-                result.description += `\n**Joined**: ${timestamp(member.joinedAt)}
-**Permission**: [${member.permissions.allow}](https://discordapi.com/permissions.html#${member.permissions.allow})`;
-                result.fields = [
+    public async getUser(context: CommandContext, user: User): Promise<CommandResult> {
+        const member = guard.isGuildCommandContext(context) ? await context.util.getMember(context.channel.guild, user.id) : undefined;
+        if (member === undefined) {
+            return {
+                embeds: [
                     {
-                        name: 'Roles',
-                        value: member.roles
-                            .map(r => ({ id: r, pos: member.guild.roles.get(r)?.position ?? -Infinity }))
-                            .filter(r => r.pos !== 0) // @everyone
-                            .sort((a, b) => b.pos - a.pos) // descending
-                            .map(r => `<@&${r.id}>`)
-                            .join(' ') + '\u200b'
+                        author: {
+                            name: cmd.default.embed.author.name.user({ user }),
+                            icon_url: user.avatarURL
+                        },
+                        thumbnail: {
+                            url: user.avatarURL
+                        },
+                        description: cmd.default.embed.description.user({ user })
                     }
-                ];
-                if (member.nick !== null)
-                    result.author.name += ` (${member.nick})`;
-                result.color = discord.getMemberColor(member);
-                result.footer = {
-                    icon_url: `https://cdn.discordapp.com/emojis/${getStatusEmoteId(context, member)}.png`,
-                    text: getActivityString(member.activities?.[0])
-                };
-            }
+                ]
+            };
         }
-
-        if (user.bot)
-            result.author.name = `🤖 ${result.author.name}`;
-
-        return result;
+        const activity = member.activities?.[0];
+        return {
+            embeds: [
+                {
+                    author: {
+                        name: cmd.default.embed.author.name.member({ user: member }),
+                        icon_url: member.user.avatarURL
+                    },
+                    thumbnail: {
+                        url: member.avatarURL
+                    },
+                    color: discord.getMemberColour(member),
+                    description: cmd.default.embed.description.member({ user: member }),
+                    fields: [
+                        {
+                            name: cmd.default.embed.field.roles.name,
+                            value: cmd.default.embed.field.roles.value({
+                                roles: member.roles.map(r => member.guild.roles.get(r))
+                                    .filter((r): r is Exclude<typeof r, undefined> => r !== undefined)
+                                    .filter(r => r.position !== 0)
+                                    .sort((a, b) => b.position - a.position)
+                            })
+                        }
+                    ],
+                    footer: {
+                        icon_url: `https://cdn.discordapp.com/emojis/${getStatusEmoteId(context, member)}.png`,
+                        text: activity === undefined
+                            ? cmd.default.activity.default
+                            : cmd.default.activity[activity.type](activity)
+                    }
+                }
+            ]
+        };
     }
-
-}
-
-function timestamp(value: number | null): string {
-    if (value === null)
-        return '-';
-
-    const unix = moment(value).unix();
-    return `<t:${unix}>`;
 }
 
 function getStatusEmoteId(context: CommandContext, member: Member): string {
@@ -81,17 +87,5 @@ function getStatusEmote(context: CommandContext, member: Member): string {
         case 'idle': return context.config.discord.emotes.away;
         case 'online': return context.config.discord.emotes.online;
         case undefined: return context.config.discord.emotes.offline;
-    }
-}
-
-function getActivityString(activity: Activity | undefined): string {
-    switch (activity?.type) {
-        case undefined: return 'Not doing anything';
-        case Constants.ActivityTypes.COMPETING: return `Competing in ${activity.name}`;
-        case Constants.ActivityTypes.CUSTOM: return activity.name;
-        case Constants.ActivityTypes.LISTENING: return `Listening to ${activity.name}`;
-        case Constants.ActivityTypes.GAME: return `Playing ${activity.name}`;
-        case Constants.ActivityTypes.STREAMING: return `Streaming ${activity.details ?? ''}`.trim();
-        case Constants.ActivityTypes.WATCHING: return `Watching ${activity.name}`;
     }
 }

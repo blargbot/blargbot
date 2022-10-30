@@ -2,6 +2,11 @@ import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType } from '@blargbot/cluster/utils';
 import { exec } from 'child_process';
 
+import templates from '../../text';
+import { CommandResult } from '../../types';
+
+const cmd = templates.commands.update;
+
 export class UpdateCommand extends GlobalCommand {
     public constructor() {
         super({
@@ -10,18 +15,18 @@ export class UpdateCommand extends GlobalCommand {
             definitions: [
                 {
                     parameters: '{semVer:literal(patch|minor|major)=patch}',
-                    description: 'Updates the codebase to the latest commit.',
+                    description: cmd.default.description,
                     execute: (ctx, [type]) => this.update(ctx, type.asLiteral)
                 }
             ]
         });
     }
 
-    public async update(context: CommandContext, type: string): Promise<string> {
+    public async update(context: CommandContext, type: string): Promise<CommandResult> {
         const oldCommit = await execCommandline('git rev-parse HEAD');
 
         if ((await this.#showCommand(context, 'git pull')).includes('Already up to date'))
-            return this.success('No update required!');
+            return cmd.default.noUpdate;
 
         try {
             await this.#showCommand(context, 'yarn install');
@@ -29,7 +34,7 @@ export class UpdateCommand extends GlobalCommand {
             context.logger.error(err);
             await this.#showCommand(context, `git reset --hard ${oldCommit}`);
             // Dont need to do yarn install on the old commit as yarn doesnt modify node_modules if it fails
-            return this.error('Failed to update due to a package issue');
+            return cmd.default.packageIssue;
         }
 
         try {
@@ -39,7 +44,7 @@ export class UpdateCommand extends GlobalCommand {
 
             const version = await context.cluster.version.getVersion();
             const newCommit = await execCommandline('git rev-parse HEAD');
-            return this.success(`Updated to version ${version} commit \`${newCommit}\`!\nRun \`${context.prefix}restart\` to gracefully start all the clusters on this new version.`);
+            return cmd.default.success({ commit: newCommit, prefix: context.prefix, version });
         } catch (err: unknown) {
             context.logger.error(err);
         }
@@ -49,33 +54,37 @@ export class UpdateCommand extends GlobalCommand {
             await this.#showCommand(context, `git reset --hard ${oldCommit}`);
             await this.#showCommand(context, 'yarn install');
             await this.#showCommand(context, 'yarn run rebuild');
-            return this.error(`Failed to update due to a build issue, but successfully rolled back to commit \`${oldCommit}\``);
+            return cmd.default.buildIssue({ commit: oldCommit });
         } catch (err: unknown) {
             context.logger.error(err);
-            return this.error('A fatal error has occurred while rolling back the latest commit! Manual intervention is required ASAP.');
+            return cmd.default.rollbackIssue;
         }
     }
 
     async #showCommand(context: CommandContext, command: string): Promise<string> {
-        const message = await context.reply(this.info(`Command: \`${command}\`\nRunning...`));
+        const message = await context.reply(cmd.default.command.pending({ command }));
         try {
             await context.channel.sendTyping();
             const result = cleanConsole(await execCommandline(command));
-            const content = this.success(`Command: \`${command}\``);
-            const files = result.length === 0 ? [] : [{
+            const content = cmd.default.command.success({ command });
+            const file = {
                 file: Buffer.from(result),
                 name: 'output.txt'
-            }];
-            await (message?.channel.editMessage(message.id, { content, file: files }) ?? context.reply({ content, files }));
+            };
+            message === undefined
+                ? await context.reply({ content, files: [file] })
+                : await context.edit(message, { content, files: [file] });
             return result;
         } catch (err: unknown) {
-            const content = this.error(`Command: \`${command}\``);
+            const content = cmd.default.command.error({ command });
             const result = cleanConsole(err instanceof Error ? err.toString() : Object.prototype.toString.call(err));
-            const files = result.length === 0 ? [] : [{
+            const file = {
                 file: Buffer.from(result),
                 name: 'output.txt'
-            }];
-            await (message?.channel.editMessage(message.id, { content, file: files }) ?? context.reply({ content, files }));
+            };
+            message === undefined
+                ? await context.reply({ content, files: [file] })
+                : await context.edit(message, { content, files: [file] });
             throw err;
         }
     }

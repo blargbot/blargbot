@@ -1,7 +1,12 @@
 import { GuildCommand } from '@blargbot/cluster/command';
-import { GuildCommandContext } from '@blargbot/cluster/types';
-import { CommandType, humanize } from '@blargbot/cluster/utils';
+import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
+import { CommandType } from '@blargbot/cluster/utils';
 import { FlagResult } from '@blargbot/domain/models';
+import { util } from '@blargbot/formatting';
+
+import templates from '../../text';
+
+const cmd = templates.commands.unban;
 
 export class UnbanCommand extends GuildCommand {
     public constructor() {
@@ -9,31 +14,25 @@ export class UnbanCommand extends GuildCommand {
             name: 'unban',
             category: CommandType.ADMIN,
             flags: [
-                { flag: 'r', word: 'reason', description: 'The reason for the ban.' }
+                { flag: 'r', word: 'reason', description: cmd.flags.reason }
             ],
             definitions: [
                 {
                     parameters: '{userId}',
-                    description: 'Unbans a user.\n' +
-                        'If mod-logging is enabled, the ban will be logged.',
+                    description: cmd.default.description,
                     execute: (ctx, [user], flags) => this.unban(ctx, user.asString, flags)
                 }
             ]
         });
     }
 
-    public async unban(context: GuildCommandContext, userId: string, flags: FlagResult): Promise<string> {
+    public async unban(context: GuildCommandContext, userId: string, flags: FlagResult): Promise<CommandResult> {
         const user = await context.util.getUser(userId);
         if (user === undefined)
-            return this.error('I couldn\'t find that user!');
+            return cmd.default.userNotFound;
 
         const reason = flags.r?.merge().value;
-
-        switch (await context.cluster.moderation.bans.unban(context.channel.guild, user, context.author, context.author, reason)) {
-            case 'notBanned': return this.error(`**${humanize.fullName(user)}** is not currently banned!`);
-            case 'noPerms': return this.error(`I don't have permission to unban **${humanize.fullName(user)}**! Make sure I have the \`ban members\` permission and try again.`);
-            case 'moderatorNoPerms': return this.error(`You don't have permission to unban **${humanize.fullName(user)}**! Make sure you have the \`ban members\` permission or one of the permissions specified in the \`ban override\` setting and try again.`);
-            case 'success': return this.success(`**${humanize.fullName(user)}** has been unbanned.`);
-        }
+        const state = await context.cluster.moderation.bans.unban(context.channel.guild, user, context.author, context.author, util.literal(reason));
+        return cmd.default.state[state]({ user });
     }
 }

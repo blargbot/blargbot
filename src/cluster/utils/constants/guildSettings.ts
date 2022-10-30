@@ -1,142 +1,150 @@
 import { GuildSettingDocs } from '@blargbot/domain/models';
 
+import templates from '../../text';
+
 export const guildSettings: GuildSettingDocs = {
     makelogs: {
         key: 'makelogs',
-        name: 'Make ChatLogs',
-        desc: 'Whether to record chat logs or not.',
+        name: templates.settings.makelogs.name,
+        desc: templates.settings.makelogs.description,
         type: 'bool'
     },
     cahnsfw: {
         key: 'cahnsfw',
-        name: 'Is CAH NSFW',
-        desc: 'Whether \'cah\' can only be done in nsfw channels or not.',
+        name: templates.settings.cahnsfw.name,
+        desc: templates.settings.cahnsfw.description,
         type: 'bool'
     },
     deletenotif: {
         key: 'deletenotif',
-        name: 'Delete notifications',
-        desc: 'If enabled, notifies you if a user deleted their command.',
+        name: templates.settings.deletenotif.name,
+        desc: templates.settings.deletenotif.description,
         type: 'bool'
     },
     modlog: {
         key: 'modlog',
-        name: 'Modlog channel',
-        desc: 'The id of the modlog channel. You can also use the <code>modlog</code> command',
+        name: templates.settings.modlog.name,
+        desc: templates.settings.modlog.description,
         type: 'channel'
     },
     mutedrole: {
         key: 'mutedrole',
-        name: 'Muted role',
-        desc: 'The id of the muted role.',
+        name: templates.settings.mutedrole.name,
+        desc: templates.settings.mutedrole.description,
         type: 'role'
     },
     tableflip: {
         key: 'tableflip',
-        name: 'Tableflips',
-        desc: 'Whether the bot should respond to tableflips/unflips.',
+        name: templates.settings.tableflip.name,
+        desc: templates.settings.tableflip.description,
         type: 'bool'
     },
     antimention: {
         key: 'antimention',
-        name: 'Anti-mention',
-        desc: 'The number of unique mentions required to warrant a ban (for anti-mention spam). Set to \'0\' to disable. Recommended: 25',
+        name: templates.settings.antimention.name,
+        desc: templates.settings.antimention.description,
         type: 'int'
     },
     dmhelp: {
         key: 'dmhelp',
-        name: 'DM help',
-        desc: 'Whether or not to dm help messages or output them in channels',
+        name: templates.settings.dmhelp.name,
+        desc: templates.settings.dmhelp.description,
         type: 'bool'
     },
     staffperms: {
         key: 'staffperms',
-        name: 'Staff permissions',
-        desc: 'The numeric value of permissions that designate a staff member. If a user has any of the permissions and permoverride is enabled, allows them to execute any command regardless of role. See <a href=https://discordapi.com/permissions.html>here</a> for a permission calculator.',
+        name: templates.settings.staffperms.name,
+        desc: templates.settings.staffperms.description,
         type: 'permission'
     },
     timeoutoverride: {
         key: 'timeoutoverride',
-        name: 'Timeout override',
-        desc: 'Same as staffperms, but allows users to use the timeout command regardless of permissions',
+        name: templates.settings.timeoutoverride.name,
+        desc: templates.settings.timeoutoverride.description,
         type: 'permission'
     },
     kickoverride: {
         key: 'kickoverride',
-        name: 'Kick override',
-        desc: 'Same as staffperms, but allows users to use the kick command regardless of permissions',
+        name: templates.settings.kickoverride.name,
+        desc: templates.settings.kickoverride.description,
         type: 'permission'
     },
     banoverride: {
         key: 'banoverride',
-        name: 'Ban override',
-        desc: 'Same as staffperms, but allows users to use the ban/hackban/unban commands regardless of permissions',
+        name: templates.settings.banoverride.name,
+        desc: templates.settings.banoverride.description,
         type: 'permission'
     },
     banat: {
         key: 'banat',
-        name: 'Ban at',
-        desc: 'The number of warnings before a ban. Set to 0 or below to disable.',
+        name: templates.settings.banat.name,
+        desc: templates.settings.banat.description,
         type: 'int'
     },
     kickat: {
         key: 'kickat',
-        name: 'Kick at',
-        desc: 'The number of warnings before a kick. Set to 0 or below to disable.',
+        name: templates.settings.kickat.name,
+        desc: templates.settings.kickat.description,
         type: 'int'
     },
     timeoutat: {
         key: 'timeoutat',
-        name: 'Time Out at',
-        desc: 'The number of warnings before a timeout. Set to 0 or below to disable.',
+        name: templates.settings.timeoutat.name,
+        desc: templates.settings.timeoutat.description,
         type: 'int'
     },
     actonlimitsonly: {
         key: 'actonlimitsonly',
-        name: 'Act on Limits Only',
-        desc: 'Whether to kick/ban on a warning count that is in between the kickat and banat values.',
+        name: templates.settings.actonlimitsonly.name,
+        desc: templates.settings.actonlimitsonly.description,
         type: 'bool'
     },
     adminrole: {
         key: 'adminrole',
-        name: 'Admin role',
-        desc: 'The Admin role.',
+        name: templates.settings.adminrole.name,
+        desc: templates.settings.adminrole.description,
         type: 'role'
     },
     nocleverbot: {
         key: 'nocleverbot',
-        name: 'No cleverbot',
-        desc: 'Disables cleverbot functionality',
+        name: templates.settings.nocleverbot.name,
+        desc: templates.settings.nocleverbot.description,
         type: 'bool'
     },
     disableeveryone: {
         key: 'disableeveryone',
-        name: 'Disable everyone pings',
-        desc: 'Disables everyone pings in custom commands.',
+        name: templates.settings.disableeveryone.name,
+        desc: templates.settings.disableeveryone.description,
         type: 'bool'
     },
     disablenoperms: {
         key: 'disablenoperms',
-        name: 'Disable no perms',
-        desc: 'Disables the \'You need the role to use this command\' message.',
+        name: templates.settings.disablenoperms.name,
+        desc: templates.settings.disablenoperms.description,
         type: 'bool'
     },
     social: {
         key: 'social',
-        name: 'Social commands',
-        desc: 'Enables social commands.',
+        name: templates.settings.social.name,
+        desc: templates.settings.social.description,
         type: 'bool'
     },
     farewellchan: {
         key: 'farewellchan',
-        name: 'Farewell channel',
-        desc: 'Sets the channel for the farewell message to be sent in',
+        name: templates.settings.farewellchan.name,
+        desc: templates.settings.farewellchan.description,
         type: 'channel'
     },
     greetchan: {
         key: 'greetchan',
-        name: 'Greeting channel',
-        desc: 'Sets the channel for the greeting message to be sent in',
+        name: templates.settings.greetchan.name,
+        desc: templates.settings.greetchan.description,
         type: 'channel'
+    },
+    language: {
+        key: 'language',
+        name: templates.settings.language.name,
+        desc: templates.settings.language.description,
+        type: 'locale'
     }
 };

@@ -2,39 +2,44 @@ import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType } from '@blargbot/cluster/utils';
 import moment from 'moment-timezone';
 
+import templates from '../../text';
+import { CommandResult } from '../../types';
+
+const cmd = templates.commands.restart;
+
 export class RestartCommand extends GlobalCommand {
     public constructor() {
         super({
             name: 'restart',
             category: CommandType.DEVELOPER,
-            description: 'Restarts blargbot, or one of its components',
+            description: cmd.description,
             definitions: [
                 {
                     parameters: '',
-                    execute: (ctx) => this.#respawnClusters(ctx),
-                    description: 'Restarts all the clusters'
+                    execute: (ctx) => this.respawnClusters(ctx),
+                    description: cmd.default.description
                 },
                 {
                     parameters: 'kill',
-                    execute: (ctx) => this.#restart(ctx),
-                    description: 'Kills the master process, ready for pm2 to restart it'
+                    execute: (ctx) => this.restart(ctx),
+                    description: cmd.kill.description
                 },
                 {
                     parameters: 'api',
-                    execute: (ctx) => this.#restartWebsites(ctx),
-                    description: 'Restarts the api process'
+                    execute: (ctx) => this.restartWebsites(ctx),
+                    description: cmd.api.description
                 }
             ]
         });
     }
 
-    async #restartWebsites(context: CommandContext): Promise<string> {
+    public async restartWebsites(context: CommandContext): Promise<CommandResult> {
         await context.cluster.worker.request('respawnApi', undefined, 60000);
-        return this.success('Api has been respawned.');
+        return cmd.api.success;
     }
 
-    async #restart(context: CommandContext): Promise<undefined> {
-        await context.reply('Ah! You\'ve killed me! D:');
+    public async restart(context: CommandContext): Promise<CommandResult> {
+        await context.reply(cmd.default.success);
         await context.database.vars.set('restart', {
             varvalue: {
                 channel: context.channel.id,
@@ -45,8 +50,8 @@ export class RestartCommand extends GlobalCommand {
         return undefined;
     }
 
-    #respawnClusters(context: CommandContext): string {
+    public respawnClusters(context: CommandContext): CommandResult {
         context.cluster.worker.send('respawnAll', { channelId: context.channel.id });
-        return 'Ah! You\'ve killed me but in a way that minimizes downtime! D:';
+        return cmd.kill.success;
     }
 }

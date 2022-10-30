@@ -3,7 +3,10 @@ import { parse } from '@blargbot/core/utils';
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
 import { NotABooleanError, NotANumberError } from '../../errors';
+import templates from '../../text';
 import { SubtagType } from '../../utils';
+
+const tag = templates.subtags.decrement;
 
 export class DecrementSubtag extends CompiledSubtag {
     public constructor() {
@@ -13,18 +16,17 @@ export class DecrementSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['varName'],
-                    description: 'Decreases `varName`\'s value by `1`. ',
-                    exampleCode: '{set;~counter;0} {repeat;{decrement;~counter},;10}',
-                    exampleOut: '-1,-2,-3,-4,-5,-6,-7,-8,-9,-10',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'number',
                     execute: (ctx, [{ value }]) => this.decrement(ctx, value, '1', 'true')
                 },
                 {
                     parameters: ['varName', 'amount:1', 'floor?:true'],
-                    description: 'Decreases `varName`\'s value by `amount`. ' +
-                        '`floor` is a boolean, and if it is `true` then the value will be rounded down.',
-                    exampleCode: '{set;~counter;0} {repeat;{decrement;~counter;-2},;10}',
-                    exampleOut: '-2,-4,-6,-8,-10,-12,-14,-16,-18,-20',
+                    description: tag.count.description,
+                    exampleCode: tag.count.exampleCode,
+                    exampleOut: tag.count.exampleOut,
                     returns: 'number',
                     execute: (ctx, [varName, amount, floor]) => this.decrement(ctx, varName.value, amount.value, floor.value)
                 }

@@ -1,4 +1,5 @@
 import { guard, parse } from '@blargbot/core/utils';
+import { IFormattable } from '@blargbot/formatting';
 
 import { BBTagContext } from '../BBTagContext';
 import { BBTagRuntimeError } from '../errors';
@@ -11,7 +12,7 @@ import { compileSignatures } from './compileSignatures';
 import { CompositeSubtagHandler } from './CompositeSubtagHandler';
 import { parseDefinitions } from './parseDefinitions';
 
-export interface DefinedSubtagOptions extends Omit<SubtagOptions, 'signatures'> {
+export interface DefinedSubtagOptions extends Omit<SubtagOptions<IFormattable<string>>, 'signatures'> {
     readonly definition: readonly AnySubtagSignatureOptions[];
 }
 

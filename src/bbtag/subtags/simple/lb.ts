@@ -1,18 +1,21 @@
 import { CompiledSubtag } from '../../compilation';
+import templates from '../../text';
 import { SubtagType } from '../../utils';
+
+const tag = templates.subtags.lb;
 
 export class LbSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'lb',
             category: SubtagType.SIMPLE,
-            description: 'Will be replaced by `{` on execution.',
+            description: tag.description,
             definition: [
                 {
                     parameters: [],
-                    description: 'Returns `{`',
-                    exampleCode: 'This is a bracket! {lb}',
-                    exampleOut: 'This is a bracket! {',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'string',
                     execute: () => this.getOpenBrace()
                 }

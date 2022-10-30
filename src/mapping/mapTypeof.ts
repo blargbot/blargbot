@@ -11,12 +11,12 @@ export function mapTypeof<T extends keyof TypeofMapping>(typeofStr: T): TypeMapp
 }
 
 export type TypeofMapping = {
-    'string': string;
-    'number': number;
-    'boolean': boolean;
-    'bigint': bigint;
-    'symbol': symbol;
-    'object': object;
+    string: string;
+    number: number;
+    boolean: boolean;
+    bigint: bigint;
+    symbol: symbol;
+    object: object;
     // eslint-disable-next-line @typescript-eslint/ban-types
-    'function': Function;
+    function: Function;
 }

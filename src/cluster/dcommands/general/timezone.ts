@@ -3,6 +3,11 @@ import { CommandType } from '@blargbot/cluster/utils';
 import { User } from 'eris';
 import moment from 'moment-timezone';
 
+import templates from '../../text';
+import { CommandResult } from '../../types';
+
+const cmd = templates.commands.timeZone;
+
 export class TimezoneCommand extends GlobalCommand {
     public constructor() {
         super({
@@ -11,36 +16,36 @@ export class TimezoneCommand extends GlobalCommand {
             definitions: [
                 {
                     parameters: '',
-                    description: 'Gets your current timezone',
+                    description: cmd.get.description,
                     execute: (ctx) => this.getTimezone(ctx, ctx.author)
                 },
                 {
                     parameters: '{timezone}',
-                    description: 'Sets your current timezone. A list of [allowed timezones can be found on wikipedia](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones#List) under the `TZ database name` column',
+                    description: cmd.set.description,
                     execute: (ctx, [timezone]) => this.setTimezone(ctx, ctx.author, timezone.asString)
                 }
             ]
         });
     }
 
-    public async getTimezone(context: CommandContext, user: User): Promise<string> {
+    public async getTimezone(context: CommandContext, user: User): Promise<CommandResult> {
         const timezone = await context.database.users.getSetting(user.id, 'timezone');
         if (timezone === undefined)
-            return this.info('You haven\'t set a timezone yet.');
+            return cmd.get.notSet;
 
-        const zone = moment().tz(timezone);
-        if (zone.zoneAbbr() === '')
-            return this.warning(`Your stored timezone code is \`${timezone}\`, which isnt valid! Please update it when possible.`);
+        const now = moment().tz(timezone);
+        if (now.zoneAbbr() === '')
+            return cmd.get.timezoneInvalid({ timezone });
 
-        return this.info(`Your stored timezone code is \`${timezone}\`, which is equivalent to ${zone.format('z (Z)')}.`);
+        return cmd.get.success({ timezone, now });
     }
 
-    public async setTimezone(context: CommandContext, user: User, timezone: string): Promise<string> {
-        const zone = moment().tz(timezone);
-        if (zone.zoneAbbr() === '')
-            return this.error(`\`${timezone}\` is not a valid timezone! See <https://en.wikipedia.org/wiki/List_of_tz_database_time_zones> for timezone codes that I understand.`);
+    public async setTimezone(context: CommandContext, user: User, timezone: string): Promise<CommandResult> {
+        const now = moment().tz(timezone);
+        if (now.zoneAbbr() === '')
+            return cmd.set.timezoneInvalid({ timezone });
 
         await context.database.users.setSetting(user.id, 'timezone', timezone);
-        return this.success(`Ok, your timezone code is now set to \`${timezone}\`, which is equivalent to ${zone.format('z (Z)')}.`);
+        return cmd.set.success({ timezone, now });
     }
 }

@@ -2,6 +2,7 @@ import { CommandResult } from '@blargbot/cluster/types';
 import { IMiddleware, NextMiddleware } from '@blargbot/core/types';
 import moment, { Duration, Moment } from 'moment-timezone';
 
+import templates from '../../text';
 import { CommandContext } from '../CommandContext';
 
 interface RollingRatelimitMiddlewareOptions {
@@ -41,7 +42,6 @@ export class RollingRatelimitMiddleware implements IMiddleware<CommandContext, C
             return await next();
 
         timeout = this.#timeouts[key] = moment().add(this.#options.cooldown);
-        return `❌ Sorry, you've been running too many commands. To prevent abuse, I'm going to have to time you out for \`${this.#options.cooldown.asSeconds()}s\`.\n\n` +
-            `Continuing to spam commands will lengthen your timeout by \`${this.#options.penalty.asSeconds()}s\`!`;
+        return templates.commands.$errors.rateLimited.global({ duration: this.#options.cooldown, penalty: this.#options.penalty });
     }
 }

@@ -1,8 +1,9 @@
-import { CommandOptions } from '@blargbot/cluster/types';
+import { CommandOptions, CommandResult } from '@blargbot/cluster/types';
 import { CommandType } from '@blargbot/cluster/utils';
-import { ImageGeneratorMap, ImageResult } from '@blargbot/image/types';
+import { ImageGeneratorMap } from '@blargbot/image/types';
 import { Duration, duration } from 'moment-timezone';
 
+import templates from '../text';
 import { CommandContext } from './CommandContext';
 import { GlobalCommand } from './GlobalCommand';
 import { RatelimitMiddleware, SendTypingMiddleware, SingleThreadMiddleware } from './middleware';
@@ -25,10 +26,18 @@ export abstract class GlobalImageCommand extends GlobalCommand {
         this.middleware.push(new SendTypingMiddleware());
     }
 
-    protected async renderImage<T extends keyof ImageGeneratorMap>(context: CommandContext, command: T, data: ImageGeneratorMap[T]): Promise<ImageResult | string> {
+    protected async renderImage<T extends keyof ImageGeneratorMap>(context: CommandContext, command: T, data: ImageGeneratorMap[T]): Promise<CommandResult> {
         const result = await context.cluster.images.render(command, data);
         if (result === undefined || result.data.length === 0)
-            return this.error('Something went wrong while trying to render that!');
-        return result;
+            return templates.commands.$errors.renderFailed;
+
+        return {
+            files: [
+                {
+                    file: result.data,
+                    name: result.fileName
+                }
+            ]
+        };
     }
 }

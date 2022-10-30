@@ -1,6 +1,8 @@
 import { ClusterConnection } from '@blargbot/cluster';
+import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent';
 import { IntervalService } from '@blargbot/core/serviceTypes';
 import { WorkerState } from '@blargbot/core/worker';
+import { util } from '@blargbot/formatting';
 import { Master } from '@blargbot/master';
 import moment from 'moment-timezone';
 
@@ -49,13 +51,13 @@ export class ClusterMonitor extends IntervalService {
         await Promise.all([
             this.master.util.send(
                 this.master.config.discord.channels.shardlog,
-                {
-                    content: `Respawning unresponsive cluster ${cluster.id}...\n${issues.join('\n')}`,
+                new FormattableMessageContent({
+                    content: util.literal(`Respawning unresponsive cluster ${cluster.id}...\n${issues.join('\n')}`),
                     files: [{
                         file: cluster.logs.join('\n'),
                         name: `cluster ${cluster.id}.log`
                     }]
-                }),
+                })),
             this.master.clusters.spawn(cluster.id)
         ]);
     }

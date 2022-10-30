@@ -3,7 +3,10 @@ import { parse } from '@blargbot/core/utils';
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError } from '../../errors';
+import templates from '../../text';
 import { SubtagType } from '../../utils';
+
+const tag = templates.subtags.timer;
 
 export class TimerSubtag extends CompiledSubtag {
     public constructor() {
@@ -13,10 +16,9 @@ export class TimerSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['~code', 'duration'],
-                    description: 'Executes `code` after `duration`. ' +
-                        'Three timers are allowed per custom command, with no recursive timers.',
-                    exampleCode: '{timer;Hello!;20s}',
-                    exampleOut: '(after 20 seconds:) Hello!',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'nothing',
                     execute: (ctx, [code, duration]) => this.queueTimer(ctx, code.raw, duration.value)
                 }

@@ -1,22 +1,23 @@
 import { metrics } from '@blargbot/core/Metrics';
 import { Timer } from '@blargbot/core/Timer';
+import { IFormattable } from '@blargbot/formatting';
 
 import { BBTagContext } from './BBTagContext';
 import { SubtagCall } from './language';
 import { SubtagOptions, SubtagSignature } from './types';
 import { SubtagType } from './utils';
 
-export abstract class Subtag implements SubtagOptions {
+export abstract class Subtag implements SubtagOptions<IFormattable<string>> {
     public readonly name: string;
     public readonly aliases: readonly string[];
     public readonly category: SubtagType;
-    public readonly description: string | undefined;
+    public readonly description: IFormattable<string> | undefined;
     public readonly deprecated: string | boolean;
     public readonly staff: boolean;
-    public readonly signatures: readonly SubtagSignature[];
+    public readonly signatures: ReadonlyArray<SubtagSignature<IFormattable<string>>>;
     public readonly hidden: boolean;
 
-    public constructor(options: SubtagOptions) {
+    public constructor(options: SubtagOptions<IFormattable<string>>) {
         this.name = options.name;
         this.aliases = options.aliases ?? [];
         this.category = options.category;

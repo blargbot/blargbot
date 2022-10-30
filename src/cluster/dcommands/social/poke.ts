@@ -1,13 +1,14 @@
 import { Cluster } from '@blargbot/cluster';
 import { WolkenCommand } from '@blargbot/cluster/command';
 
+import templates from '../../text';
+
 export class PokeCommand extends WolkenCommand {
     public constructor(cluster: Cluster) {
         super('poke', {
             search: 'poke',
-            action: 'pokes',
             user: true,
-            description: 'Gives somebody a poke.',
+            ...templates.commands.poke,
             wolkeKey: cluster.config.general.wolke
         });
     }

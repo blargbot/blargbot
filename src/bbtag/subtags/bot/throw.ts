@@ -1,6 +1,9 @@
 import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError } from '../../errors';
+import templates from '../../text';
 import { SubtagType } from '../../utils';
+
+const tag = templates.subtags.throw;
 
 export class ThrowSubtag extends CompiledSubtag {
     public constructor() {
@@ -10,9 +13,9 @@ export class ThrowSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['error?:A custom error occurred'],
-                    description: 'Throws `error`.',
-                    exampleCode: '{throw;Custom Error}',
-                    exampleOut: '\u200B`Custom Error`\u200B',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'error',
                     execute: (_, [error]) => this.throwError(error.value)
                 }

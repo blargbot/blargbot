@@ -3,7 +3,10 @@ import moment from 'moment-timezone';
 
 import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError } from '../../errors';
+import templates from '../../text';
 import { SubtagType } from '../../utils';
+
+const tag = templates.subtags.sleep;
 
 const maxSleep = moment.duration(5, 'minutes');
 
@@ -15,9 +18,9 @@ export class SleepSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['duration'],
-                    description: 'Pauses the current tag for the specified amount of time. Maximum is 5 minutes',
-                    exampleCode: '{sleep;10s}{send;{channelid};Hi!}',
-                    exampleOut: '(After 10s) Hi!',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'nothing',
                     execute: (_, [duration]) => this.sleep(duration.value)
                 }

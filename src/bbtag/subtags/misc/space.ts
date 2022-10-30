@@ -3,7 +3,10 @@ import { parse } from '@blargbot/core/utils';
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
 import { NotANumberError } from '../../errors';
+import templates from '../../text';
 import { SubtagType } from '../../utils';
+
+const tag = templates.subtags.space;
 
 export class SpaceSubtag extends CompiledSubtag {
     public constructor() {
@@ -14,9 +17,9 @@ export class SpaceSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['count?:1'],
-                    description: 'Will be replaced by `count` spaces. If `count` is less than `0`, no spaces will be returned.',
-                    exampleCode: 'Hello,{space;4}world!',
-                    exampleOut: 'Hello,    world!',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'string',
                     execute: (ctx, [count]) => this.getSpaces(ctx, count.value)
                 }

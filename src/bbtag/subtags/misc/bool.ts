@@ -2,7 +2,10 @@ import { parse } from '@blargbot/core/utils';
 
 import { CompiledSubtag } from '../../compilation';
 import { InvalidOperatorError } from '../../errors';
+import templates from '../../text';
 import { bbtag, SubtagType } from '../../utils';
+
+const tag = templates.subtags.bool;
 
 export class BoolSubtag extends CompiledSubtag {
     public constructor() {
@@ -12,12 +15,9 @@ export class BoolSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['arg1', 'evaluator', 'arg2'],
-                    description:
-                        'Evaluates `arg1` and `arg2` using the `evaluator` and returns `true` or `false`. ' +
-                        'Valid evaluators are `' + Object.keys(bbtag.comparisonOperators).join('`, `') + '`\n' +
-                        'The positions of `evaluator` and `arg1` can be swapped.',
-                    exampleCode: '{bool;5;<=;10}',
-                    exampleOut: 'true',
+                    description: tag.default.description({ operators: Object.keys(bbtag.comparisonOperators) }),
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'boolean',
                     execute: (_, [arg1, evaluator, arg2]) => this.runCondition(arg1.value, evaluator.value, arg2.value)
                 }

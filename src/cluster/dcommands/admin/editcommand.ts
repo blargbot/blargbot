@@ -1,9 +1,12 @@
 import { GuildCommand } from '@blargbot/cluster/command';
-import { GuildCommandContext, ICommand } from '@blargbot/cluster/types';
-import { codeBlock, CommandType } from '@blargbot/cluster/utils';
-import { guard } from '@blargbot/core/utils';
+import { CommandResult, GuildCommandContext, ICommand } from '@blargbot/cluster/types';
+import { CommandType } from '@blargbot/cluster/utils';
 import { CommandPermissions } from '@blargbot/domain/models';
-import { EmbedOptions, Role } from 'eris';
+import { Role } from 'eris';
+
+import templates from '../../text';
+
+const cmd = templates.commands.editCommand;
 
 export class EditCommandCommand extends GuildCommand {
     public constructor() {
@@ -14,44 +17,44 @@ export class EditCommandCommand extends GuildCommand {
             definitions: [
                 {
                     parameters: 'list',
-                    description: 'Shows a list of modified commands',
+                    description: cmd.list.description,
                     execute: (ctx) => this.list(ctx)
                 },
                 {
                     parameters: '{commands[]} setrole {roles:role[0]}',
-                    description: 'Sets the role required to run the listed commands',
+                    description: cmd.setRole.description,
                     execute: (ctx, [commands, roles]) => this.setRole(ctx, commands.asStrings, roles.asRoles)
                 },
                 {
                     parameters: '{commands[]} setperm|setperms {permission:bigint?}',
-                    description: 'Sets the permssions required to run the listed commands. If a user has any of the permissions, they will be able to use the command.',
+                    description: cmd.setPermissions.description,
                     execute: (ctx, [commands, permissions]) => this.setPermissions(ctx, commands.asStrings, permissions.asOptionalBigint)
                 },
                 {
                     parameters: '{commands[]} disable',
-                    description: 'Disables the listed commands, so no one but the owner can use them',
+                    description: cmd.disable.description,
                     execute: (ctx, [commands]) => this.setDisabled(ctx, commands.asStrings, true)
                 },
                 {
                     parameters: '{commands[]} enable',
-                    description: 'Enables the listed commands, allowing anyone with the correct permissions or roles to use them',
+                    description: cmd.enable.description,
                     execute: (ctx, [commands]) => this.setDisabled(ctx, commands.asStrings, false)
                 },
                 {
                     parameters: '{commands[]} hide',
-                    description: 'Hides the listed commands. They can still be executed, but wont show up in help',
+                    description: cmd.hide.description,
                     execute: (ctx, [commands]) => this.setHidden(ctx, commands.asStrings, true)
                 },
                 {
                     parameters: '{commands[]} show',
-                    description: 'Reveals the listed commands in help',
+                    description: cmd.show.description,
                     execute: (ctx, [commands]) => this.setHidden(ctx, commands.asStrings, false)
                 }
             ]
         });
     }
 
-    public async list(context: GuildCommandContext): Promise<string | EmbedOptions> {
+    public async list(context: GuildCommandContext): Promise<CommandResult> {
         const lines = [];
         const commandNames = new Set<string>();
         const defaultPerms = new Map<unknown, string>();
@@ -68,8 +71,6 @@ export class EditCommandCommand extends GuildCommand {
             if (name === undefined)
                 continue;
 
-            lines.push(`**${name}**`);
-            const len = lines.length;
             const roles = [];
             for (const roleStr of command.roles) {
                 const role = await context.util.getRole(context.channel.guild, roleStr)
@@ -78,70 +79,77 @@ export class EditCommandCommand extends GuildCommand {
                     roles.push(role);
             }
 
-            if (roles.length > 0)
-                lines.push(`- Roles: ${roles.map(r => r.mention).join(', ')}`);
+            const fmt = {
+                name: cmd.list.embed.description.name({ name }),
+                roles: roles.length > 0
+                    ? cmd.list.embed.description.roles({ roles })
+                    : undefined,
+                permissions: command.permission !== (defaultPerms.get(command.implementation) ?? '0')
+                    ? cmd.list.embed.description.permissions({ permission: command.permission })
+                    : undefined,
+                disabled: command.disabled
+                    ? cmd.list.embed.description.disabled
+                    : undefined,
+                hidden: command.hidden
+                    ? cmd.list.embed.description.hidden
+                    : undefined
+            };
+            if (fmt.roles === undefined && fmt.permissions === undefined && fmt.disabled === undefined && fmt.hidden === undefined)
+                continue;
 
-            if (command.permission !== (defaultPerms.get(command.implementation) ?? '0'))
-                lines.push(`- Permission: ${command.permission}`);
-
-            const tagged = [
-                command.disabled === true ? 'Disabled' : undefined,
-                command.hidden === true ? 'Hidden' : undefined
-            ].filter(guard.hasValue);
-            if (tagged.length > 0)
-                lines.push(`- ${tagged.join(', ')}`);
-
-            if (len === lines.length)
-                lines.pop();
+            lines.push(fmt);
         }
 
         if (lines.length === 0)
-            return this.info('You havent modified any commands');
+            return cmd.list.none;
 
         return {
-            author: context.util.embedifyAuthor(context.channel.guild),
-            title: this.info('Edited commands'),
-            description: lines.join('\n')
+            embeds: [
+                {
+                    author: context.util.embedifyAuthor(context.channel.guild),
+                    title: cmd.list.embed.title,
+                    description: cmd.list.embed.description.template({ commands: lines })
+                }
+            ]
         };
     }
 
-    public async setRole(context: GuildCommandContext, commands: readonly string[], roles: readonly Role[] | undefined): Promise<string> {
+    public async setRole(context: GuildCommandContext, commands: readonly string[], roles: readonly Role[] | undefined): Promise<CommandResult> {
         if (roles?.length === 0)
             roles = undefined;
 
         const updatedCommands = await this.#editCommands(context, commands, { roles: roles?.map(r => r.id) });
 
-        if (roles === undefined)
-            return this.success(`Removed the role requirement for the following commands:\n${codeBlock(updatedCommands, 'fix')}`);
-        return this.success(`Set the role requirement for the following commands:\n${codeBlock(updatedCommands, 'fix')}`);
+        return roles === undefined
+            ? cmd.setRole.set({ commands: updatedCommands })
+            : cmd.setRole.removed({ commands: updatedCommands });
     }
 
-    public async setPermissions(context: GuildCommandContext, commands: readonly string[], permissions: bigint | undefined): Promise<string> {
+    public async setPermissions(context: GuildCommandContext, commands: readonly string[], permissions: bigint | undefined): Promise<CommandResult> {
         const updatedCommands = await this.#editCommands(context, commands, { permission: permissions?.toString() });
 
-        if (permissions === undefined)
-            return this.success(`Removed the permissions for the following commands:\n${codeBlock(updatedCommands, 'fix')}`);
-        return this.success(`Set the permissions for the following commands:\n${codeBlock(updatedCommands, 'fix')}`);
+        return permissions === undefined
+            ? cmd.setPermissions.set({ commands: updatedCommands })
+            : cmd.setPermissions.removed({ commands: updatedCommands });
     }
 
-    public async setDisabled(context: GuildCommandContext, commands: readonly string[], disabled: boolean): Promise<string> {
+    public async setDisabled(context: GuildCommandContext, commands: readonly string[], disabled: boolean): Promise<CommandResult> {
         const updatedCommands = await this.#editCommands(context, commands, { disabled: disabled ? true : undefined });
 
-        if (!disabled)
-            return this.success(`Enabled the following commands:\n${codeBlock(updatedCommands, 'fix')}`);
-        return this.success(`Disabled the following commands:\n${codeBlock(updatedCommands, 'fix')}`);
+        return disabled
+            ? cmd.disable.success({ commands: updatedCommands })
+            : cmd.enable.success({ commands: updatedCommands });
     }
 
-    public async setHidden(context: GuildCommandContext, commands: readonly string[], hidden: boolean): Promise<string> {
+    public async setHidden(context: GuildCommandContext, commands: readonly string[], hidden: boolean): Promise<CommandResult> {
         const updatedCommands = await this.#editCommands(context, commands, { hidden: hidden ? true : undefined });
 
-        if (!hidden)
-            return this.success(`The following commands are no longer hidden:\n${codeBlock(updatedCommands, 'fix')}`);
-        return this.success(`The following commands are now hidden:\n${codeBlock(updatedCommands, 'fix')}`);
+        return hidden
+            ? cmd.hide.success({ commands: updatedCommands })
+            : cmd.show.success({ commands: updatedCommands });
     }
 
-    async #editCommands(context: GuildCommandContext, commands: readonly string[], update: Partial<CommandPermissions>): Promise<string> {
-        const changed = await context.cluster.commands.configure(context.author, commands, context.channel.guild, update);
-        return changed.join(', ');
+    async #editCommands(context: GuildCommandContext, commands: readonly string[], update: Partial<CommandPermissions>): Promise<Iterable<string>> {
+        return await context.cluster.commands.configure(context.author, commands, context.channel.guild, update);
     }
 }

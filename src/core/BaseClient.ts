@@ -1,27 +1,42 @@
 import { Configuration } from '@blargbot/config';
 import { BaseUtilities } from '@blargbot/core/BaseUtilities';
 import { Database } from '@blargbot/database';
+import * as Formatting from '@blargbot/formatting';
 import { Logger } from '@blargbot/logger';
 import { Client as Discord, ClientOptions as DiscordOptions, OAuthTeamMemberState } from 'eris';
 
+import * as transformers from './formatting';
 import { getRange } from './utils';
+
+export interface BaseClientOptions {
+    readonly logger: Logger;
+    readonly config: Configuration;
+    readonly formatterOptions?: Formatting.FormatStringCompilerOptions;
+    readonly discordConfig: DiscordOptions;
+}
 
 export class BaseClient {
     #owners: readonly string[] = [];
+    public readonly logger: Logger;
+    public readonly config: Configuration;
     public readonly util: BaseUtilities;
+    public readonly formatCompiler: Formatting.IFormatStringCompiler;
     public readonly database: Database;
     public readonly discord: Discord;
     public get ownerIds(): readonly string[] { return this.#owners; }
 
-    public constructor(
-        public readonly logger: Logger,
-        public readonly config: Configuration,
-        discordConfig: DiscordOptions
-    ) {
-        this.util = new BaseUtilities(this);
-
-        this.discord = new Discord(this.config.discord.token, discordConfig);
-
+    public constructor(options: BaseClientOptions) {
+        this.logger = options.logger;
+        this.config = options.config;
+        this.formatCompiler = new Formatting.FormatStringCompiler({
+            middleware: [...options.formatterOptions?.middleware ?? [], new Formatting.CacheMiddleware()],
+            transformers: {
+                ...Formatting.transformers,
+                ...transformers,
+                ...options.formatterOptions?.transformers
+            }
+        });
+        this.discord = new Discord(this.config.discord.token, options.discordConfig);
         this.database = new Database({
             logger: this.logger,
             rethink: this.config.rethink,
@@ -31,6 +46,8 @@ export class BaseClient {
             shouldCacheGuild: id => this.discord.guilds.has(id),
             shouldCacheUser: id => this.discord.users.has(id)
         });
+
+        this.util = new BaseUtilities(this);
     }
 
     protected async connectDiscordGateway(): Promise<void> {

@@ -1,6 +1,10 @@
 import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType } from '@blargbot/cluster/utils';
-import { EmbedOptions } from 'eris';
+
+import templates from '../../text';
+import { CommandResult } from '../../types';
+
+const cmd = templates.commands.personalPrefix;
 
 export class PersonalPrefixCommand extends GlobalCommand {
     public constructor() {
@@ -11,44 +15,48 @@ export class PersonalPrefixCommand extends GlobalCommand {
             definitions: [
                 {
                     parameters: 'add {prefix}',
-                    description: 'Adds a command prefix just for you!',
+                    description: cmd.add.description,
                     execute: (ctx, [prefix]) => this.addPrefix(ctx, prefix.asString)
                 },
                 {
                     parameters: 'remove {prefix}',
-                    description: 'Removes one of your personal command prefixes',
+                    description: cmd.remove.description,
                     execute: (ctx, [prefix]) => this.removePrefix(ctx, prefix.asString)
                 },
                 {
                     parameters: '',
-                    description: 'Lists the your personal command prefixes',
+                    description: cmd.list.description,
                     execute: (ctx) => this.listPrefixes(ctx)
                 }
             ]
         });
     }
 
-    public async listPrefixes(context: CommandContext): Promise<string | EmbedOptions> {
+    public async listPrefixes(context: CommandContext): Promise<CommandResult> {
         const prefixes = await context.database.users.getSetting(context.author.id, 'prefixes');
         if (prefixes === undefined || prefixes.length === 0)
-            return this.info('You dont have any personal command prefixes set!');
+            return cmd.list.none;
 
         return {
-            author: context.util.embedifyAuthor(context.author),
-            title: 'Personal prefixes',
-            description: prefixes.map(p => ` - ${p}`).join('\n')
+            embeds: [
+                {
+                    author: context.util.embedifyAuthor(context.author),
+                    title: cmd.list.embed.title,
+                    description: cmd.list.embed.description({ prefixes })
+                }
+            ]
         };
     }
 
-    public async addPrefix(context: CommandContext, prefix: string): Promise<string> {
+    public async addPrefix(context: CommandContext, prefix: string): Promise<CommandResult> {
         if (!await context.database.users.addPrefix(context.author.id, prefix.toLowerCase()))
-            return this.error('You already have that as a command prefix.');
-        return this.success('Your personal command prefix has been added.');
+            return cmd.add.alreadyAdded;
+        return cmd.add.success;
     }
 
-    public async removePrefix(context: CommandContext, prefix: string): Promise<string> {
+    public async removePrefix(context: CommandContext, prefix: string): Promise<CommandResult> {
         if (!await context.database.users.removePrefix(context.author.id, prefix.toLowerCase()))
-            return this.error('That isnt one of your prefixes.');
-        return this.success('Your personal command prefix has been removed.');
+            return cmd.remove.notAdded;
+        return cmd.remove.success;
     }
 }

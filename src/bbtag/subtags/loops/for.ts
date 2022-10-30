@@ -4,8 +4,11 @@ import { SubtagArgument } from '../../arguments';
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
 import { AggregateBBTagError, BBTagRuntimeError, InvalidOperatorError, NotANumberError } from '../../errors';
+import templates from '../../text';
 import { BBTagRuntimeState } from '../../types';
 import { bbtag, OrdinalOperator, SubtagType } from '../../utils';
+
+const tag = templates.subtags.for;
 
 export class ForSubtag extends CompiledSubtag {
     public constructor() {
@@ -15,11 +18,9 @@ export class ForSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['variable', 'initial', 'comparison', 'limit', 'increment?:1', '~code'],
-                    description: 'To start, `variable` is set to `initial`. Then, the tag will loop, first checking `variable` against `limit` using `comparison`. ' +
-                        'If the check succeeds, `code` will be run before `variable` being incremented by `increment` and the cycle repeating.\n' +
-                        'This is very useful for repeating an action (or similar action) a set number of times. Edits to `variable` inside `code` will be ignored',
-                    exampleCode: '{for;~index;0;<;10;{get;~index},}',
-                    exampleOut: '0,1,2,3,4,5,6,7,8,9,',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'loop',
                     execute: (ctx, [variable, initial, operator, limit, increment, code]) => this.for(ctx, variable.value, initial.value, operator.value, limit.value, increment.value, code)
                 }

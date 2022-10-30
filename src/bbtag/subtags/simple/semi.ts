@@ -1,5 +1,8 @@
 import { CompiledSubtag } from '../../compilation';
+import templates from '../../text';
 import { SubtagType } from '../../utils';
+
+const tag = templates.subtags.semi;
 
 export class SemiSubtag extends CompiledSubtag {
     public constructor() {
@@ -9,9 +12,9 @@ export class SemiSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: [],
-                    description: 'Returns `;`',
-                    exampleCode: 'This is a semicolon! {semi}',
-                    exampleOut: 'This is a semicolon! ;',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'string',
                     execute: () => this.getSemiColon()
                 }

@@ -1,5 +1,8 @@
 import { CompiledSubtag } from '../../compilation';
+import templates from '../../text';
 import { SubtagType } from '../../utils';
+
+const tag = templates.subtags.split;
 
 export class SplitSubtag extends CompiledSubtag {
     public constructor() {
@@ -9,9 +12,9 @@ export class SplitSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['text', 'splitter?'],
-                    description: 'Splits `text` using `splitter`, and the returns an array.',
-                    exampleCode: '{split;Hello! This is a sentence.;{space}}',
-                    exampleOut: '["Hello!","This","is","a","sentence."]',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'string[]',
                     execute: (_, [text, splitter]) => this.split(text.value, splitter.value)
                 }

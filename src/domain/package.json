@@ -3,6 +3,7 @@
     "version": "1.0.0",
     "private": true,
     "dependencies": {
+        "@blargbot/formatting": "workspace:^",
         "moment-timezone": "^0.5.37"
     }
 }

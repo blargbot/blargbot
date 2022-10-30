@@ -1,9 +1,9 @@
-import { Subtag } from '@blargbot/bbtag';
+import { SubtagOptions } from '@blargbot/bbtag';
 import { Command, CommandContext, ScopedCommand } from '@blargbot/cluster/command';
 import { CommandType, ModerationType } from '@blargbot/cluster/utils';
-import { EvalRequest, EvalResult, GlobalEvalResult, IMiddleware, MasterEvalRequest, SendPayload } from '@blargbot/core/types';
+import { EvalRequest, EvalResult, GlobalEvalResult, IMiddleware, MasterEvalRequest, SendContent } from '@blargbot/core/types';
 import { CommandPermissions, FlagDefinition, FlagResult, GuildSettingDocs, GuildSourceCommandTag, NamedGuildCommandTag } from '@blargbot/domain/models';
-import { ImageResult } from '@blargbot/image/types';
+import { IFormattable } from '@blargbot/formatting';
 import { Guild, KnownChannel, KnownGuildTextableChannel, KnownMessage, KnownPrivateChannel, KnownTextableChannel, Member, Role, Shard, User, Webhook } from 'eris';
 import { Duration } from 'moment-timezone';
 import { metric } from 'prom-client';
@@ -11,24 +11,24 @@ import { metric } from 'prom-client';
 import { ClusterUtilities } from './ClusterUtilities';
 
 export type ClusterIPCContract = {
-    'shardReady': { masterGets: number; workerGets: never; };
-    'meval': { masterGets: MasterEvalRequest; workerGets: GlobalEvalResult | EvalResult; };
-    'killshard': { masterGets: never; workerGets: number; };
-    'ceval': { masterGets: EvalResult; workerGets: EvalRequest; };
-    'getSubtagList': { masterGets: SubtagListResult; workerGets: undefined; };
-    'getSubtag': { masterGets: SubtagDetails | undefined; workerGets: string; };
-    'getGuildPermissionList': { masterGets: GuildPermissionDetails[]; workerGets: { userId: string; }; };
-    'getGuildPermission': { masterGets: GuildPermissionDetails | undefined; workerGets: { userId: string; guildId: string; }; };
-    'respawn': { masterGets: { id?: number; channel: string; }; workerGets: boolean; };
-    'respawnApi': { masterGets: undefined; workerGets: boolean; };
-    'respawnAll': { masterGets: { channelId: string; }; workerGets: boolean; };
-    'killAll': { masterGets: undefined; workerGets: undefined; };
-    'clusterStats': { masterGets: ClusterStats; workerGets: never; };
-    'getClusterStats': { masterGets: undefined; workerGets: Record<number, ClusterStats | undefined>; };
-    'getCommandList': { masterGets: CommandListResult; workerGets: undefined; };
-    'getGuildSettings': { masterGets: GuildSettingDocs; workerGets: undefined; };
-    'getCommand': { masterGets: ICommandDetails | undefined; workerGets: string; };
-    'metrics': { masterGets: metric[]; workerGets: undefined; };
+    shardReady: { masterGets: number; workerGets: never; };
+    meval: { masterGets: MasterEvalRequest; workerGets: GlobalEvalResult | EvalResult; };
+    killshard: { masterGets: never; workerGets: number; };
+    ceval: { masterGets: EvalResult; workerGets: EvalRequest; };
+    getSubtagList: { masterGets: SubtagListResult; workerGets: undefined; };
+    getSubtag: { masterGets: SubtagDetails | undefined; workerGets: string; };
+    getGuildPermissionList: { masterGets: GuildPermissionDetails[]; workerGets: { userId: string; }; };
+    getGuildPermission: { masterGets: GuildPermissionDetails | undefined; workerGets: { userId: string; guildId: string; }; };
+    respawn: { masterGets: { id?: number; channel: string; }; workerGets: boolean; };
+    respawnApi: { masterGets: undefined; workerGets: boolean; };
+    respawnAll: { masterGets: { channelId: string; }; workerGets: boolean; };
+    killAll: { masterGets: undefined; workerGets: undefined; };
+    clusterStats: { masterGets: ClusterStats; workerGets: never; };
+    getClusterStats: { masterGets: undefined; workerGets: Record<number, ClusterStats | undefined>; };
+    getCommandList: { masterGets: CommandListResult; workerGets: undefined; };
+    getGuildSettings: { masterGets: GuildSettingDocs; workerGets: undefined; };
+    getCommand: { masterGets: CommandListResultItem | undefined; workerGets: string; };
+    metrics: { masterGets: metric[]; workerGets: undefined; };
 }
 
 export interface ICommandManager<T = unknown> {
@@ -39,16 +39,16 @@ export interface ICommandManager<T = unknown> {
     load(commands?: Iterable<string> | boolean): Promise<void>;
 }
 
-export interface ICommandDetails extends Required<CommandPermissions> {
+export interface ICommandDetails<TString> extends Required<CommandPermissions> {
     readonly name: string;
     readonly aliases: readonly string[];
-    readonly category: string;
-    readonly description: string | undefined;
-    readonly flags: readonly FlagDefinition[];
-    readonly signatures: readonly CommandSignature[];
+    readonly category: CommandProperties;
+    readonly description: TString | undefined;
+    readonly flags: ReadonlyArray<FlagDefinition<string | TString>>;
+    readonly signatures: ReadonlyArray<CommandSignature<TString>>;
 }
 
-export interface ICommand<T = unknown> extends ICommandDetails, IMiddleware<CommandContext, CommandResult> {
+export interface ICommand<T = unknown> extends ICommandDetails<IFormattable<string>>, IMiddleware<CommandContext, CommandResult> {
     readonly id: string;
     readonly name: string;
     readonly implementation: T;
@@ -91,13 +91,13 @@ export interface CommandOptionsBase {
     readonly aliases?: readonly string[];
     readonly category: CommandType;
     readonly cannotDisable?: boolean;
-    readonly description?: string;
-    readonly flags?: readonly FlagDefinition[];
+    readonly description?: IFormattable<string>;
+    readonly flags?: ReadonlyArray<FlagDefinition<IFormattable<string>>>;
     readonly hidden?: boolean;
 }
 
 export interface CommandBaseOptions extends CommandOptionsBase {
-    readonly signatures: readonly CommandSignature[];
+    readonly signatures: ReadonlyArray<CommandSignature<IFormattable<string>>>;
 }
 
 export interface CommandOptions<TContext extends CommandContext> extends CommandOptionsBase {
@@ -105,8 +105,8 @@ export interface CommandOptions<TContext extends CommandContext> extends Command
 }
 
 export type CommandResult =
-    | ImageResult
-    | SendPayload
+    | SendContent<IFormattable<string>>
+    | IFormattable<string | SendContent<string>>
     | undefined;
 
 export type CommandDefinition<TContext extends CommandContext> =
@@ -120,7 +120,7 @@ export type CommandParameter =
     | CommandLiteralParameter;
 
 export interface CommandHandlerDefinition<TContext extends CommandContext> {
-    readonly description: string;
+    readonly description: IFormattable<string>;
     readonly parameters: string;
     readonly hidden?: boolean;
     readonly execute: (context: TContext, args: readonly CommandArgument[], flags: FlagResult) => Promise<CommandResult> | CommandResult;
@@ -148,18 +148,18 @@ export interface SubcommandDefinitionHolder<TContext extends CommandContext> {
 }
 
 export type CommandVariableTypeMap = {
-    'literal': string;
-    'bigint': bigint;
-    'integer': number;
-    'number': number;
-    'role': Role;
-    'channel': KnownChannel;
-    'user': User;
-    'sender': User | Webhook;
-    'member': Member;
-    'duration': Duration;
-    'boolean': boolean;
-    'string': string;
+    literal: string;
+    bigint: bigint;
+    integer: number;
+    number: number;
+    role: Role;
+    channel: KnownChannel;
+    user: User;
+    sender: User | Webhook;
+    member: Member;
+    duration: Duration;
+    boolean: boolean;
+    string: string;
 }
 
 export type CommandVariableTypeName = keyof CommandVariableTypeMap;
@@ -168,8 +168,7 @@ export type CommandVariableParser = <TContext extends CommandContext>(this: void
 
 export interface CommandVariableTypeBase<Name extends CommandVariableTypeName> {
     readonly name: Name;
-    readonly descriptionSingular?: string;
-    readonly descriptionPlural?: string;
+    readonly type: Exclude<CommandVariableTypeName, 'literal'> | string[];
     readonly priority: number;
     parse: CommandVariableParser;
 }
@@ -216,13 +215,13 @@ export interface CommandHandler<TContext extends CommandContext> {
     readonly execute: (context: TContext) => Promise<CommandResult> | CommandResult;
 }
 
-export interface CommandSignature<TParameter = CommandParameter> {
-    readonly description: string;
+export interface CommandSignature<TString, TParameter = CommandParameter> {
+    readonly description: TString;
     readonly parameters: readonly TParameter[];
     readonly hidden: boolean;
 }
 
-export interface CommandSignatureHandler<TContext extends CommandContext> extends CommandSignature {
+export interface CommandSignatureHandler<TContext extends CommandContext> extends CommandSignature<IFormattable<string>> {
     readonly execute: (context: TContext, args: readonly CommandArgument[], flags: FlagResult) => Promise<CommandResult> | CommandResult;
 }
 
@@ -258,7 +257,7 @@ export interface SubtagListResult {
     [tagName: string]: SubtagDetails | undefined;
 }
 
-export type SubtagDetails = Omit<Subtag, 'execute' | 'hidden'>;
+export type SubtagDetails = SubtagOptions<string>
 
 export interface GuildDetails {
     readonly id: string;
@@ -279,7 +278,11 @@ export interface GuildPermissionDetails {
 }
 
 export interface CommandListResult {
-    [commandName: string]: ICommandDetails | undefined;
+    [commandName: string]: CommandListResultItem | undefined;
+}
+
+export interface CommandListResultItem extends Omit<ICommandDetails<string>, 'category'> {
+    readonly category: string;
 }
 
 export interface ClusterStats {
@@ -332,10 +335,11 @@ export interface MassBanDetails {
 export type GuildCommandContext<TChannel extends KnownGuildTextableChannel = KnownGuildTextableChannel> = CommandContext<TChannel>;
 export type PrivateCommandContext<TChannel extends KnownPrivateChannel = KnownPrivateChannel> = CommandContext<TChannel>;
 
-export type CommandPropertiesSet = { [key in CommandType]: CommandProperties; }
+export type CommandPropertiesSet = { [P in CommandType]: CommandProperties; }
 export interface CommandProperties {
-    readonly name: string;
-    readonly description: string;
+    readonly id: string;
+    readonly name: IFormattable<string>;
+    readonly description: IFormattable<string>;
     readonly defaultPerms: bigint;
     readonly isVisible: (util: ClusterUtilities, location?: Guild | KnownTextableChannel, user?: User) => boolean | Promise<boolean>;
     readonly color: number;
@@ -443,7 +447,7 @@ export interface CommandBinderStateFailureReason {
     notEnoughArgs?: string[];
     tooManyArgs?: boolean;
     parseFailed?: {
-        attemptedValue: string;
+        value: string;
         types: string[];
     };
 }

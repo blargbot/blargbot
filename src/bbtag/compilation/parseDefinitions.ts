@@ -1,4 +1,5 @@
 import { parse } from '@blargbot/core/utils';
+import { IFormattable } from '@blargbot/formatting';
 
 import { ArrayOrValueSubtagLogicWrapper, ArraySubtagLogic, DeferredSubtagLogic, IgnoreSubtagLogic, StringifySubtagLogic, StringIterableSubtagLogic, StringSubtagLogic, SubtagLogic } from '../logic';
 import { SubtagReturnTypeMap, SubtagSignature, SubtagSignatureParameter, SubtagSignatureParameterGroup, SubtagSignatureValueParameter } from '../types';
@@ -7,13 +8,13 @@ import { SubtagSignatureCallable } from './SubtagSignatureCallable';
 import { SubtagSignatureParameterOptions } from './SubtagSignatureParameterOptions';
 
 export function parseDefinitions(definitions: readonly AnySubtagSignatureOptions[]): ReadonlyArray<{
-    readonly signature?: SubtagSignature;
+    readonly signature?: SubtagSignature<IFormattable<string>>;
     readonly implementation?: SubtagSignatureCallable;
 }> {
     return definitions.map(parseDefinition);
 }
 
-function parseDefinition(definition: AnySubtagSignatureOptions): { signature?: SubtagSignature; implementation?: SubtagSignatureCallable; } {
+function parseDefinition(definition: AnySubtagSignatureOptions): { signature?: SubtagSignature<IFormattable<string>>; implementation?: SubtagSignatureCallable; } {
     const parameters = definition.parameters.map(parseArgument);
     return {
         signature: getSignature(definition, parameters),
@@ -21,7 +22,7 @@ function parseDefinition(definition: AnySubtagSignatureOptions): { signature?: S
     };
 }
 
-function getSignature(definition: AnySubtagSignatureOptions, parameters: readonly SubtagSignatureParameter[]): SubtagSignature | undefined {
+function getSignature(definition: AnySubtagSignatureOptions, parameters: readonly SubtagSignatureParameter[]): SubtagSignature<IFormattable<string>> | undefined {
     if (definition.description === undefined)
         return undefined;
 

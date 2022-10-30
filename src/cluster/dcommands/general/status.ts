@@ -1,7 +1,11 @@
 import { GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType, randChoose } from '@blargbot/cluster/utils';
-import { FileContent } from 'eris';
 import fetch from 'node-fetch';
+
+import templates from '../../text';
+import { CommandResult } from '../../types';
+
+const cmd = templates.commands.status;
 
 export class StatusCommand extends GlobalCommand {
     public constructor() {
@@ -11,14 +15,14 @@ export class StatusCommand extends GlobalCommand {
             definitions: [
                 {
                     parameters: '{status:integer} {animal?}',
-                    description: 'Gets you an image of an HTTP status code.',
+                    description: cmd.default.description,
                     execute: (_, [status, animal]) => this.getStatus(status.asInteger, animal.asOptionalString)
                 }
             ]
         });
     }
 
-    public async getStatus(status: number, animal: string | undefined): Promise<string | FileContent> {
+    public async getStatus(status: number, animal: string | undefined): Promise<CommandResult> {
         animal = animal?.toLowerCase();
         const service = statusKeys.has(animal) ? statusSites[animal] : randChoose(Object.values(statusSites));
         const response = await fetch(`${service}${status}.jpg`);
@@ -29,13 +33,17 @@ export class StatusCommand extends GlobalCommand {
             status = 404;
             const response = await fetch(`${service}404.jpg`);
             if (!response.ok || response.headers.get('content-type') !== 'image/jpeg')
-                return this.error('Something terrible has happened! 404 is not found!');
+                return cmd.default.notFound;
             content = await response.buffer();
         }
 
         return {
-            name: `${status}.jpg`,
-            file: content
+            files: [
+                {
+                    name: `${status}.jpg`,
+                    file: content
+                }
+            ]
         };
     }
 }

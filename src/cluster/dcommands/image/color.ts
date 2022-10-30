@@ -1,5 +1,9 @@
 import { CommandContext, GlobalImageCommand } from '@blargbot/cluster/command';
-import { ImageResult } from '@blargbot/image/types';
+
+import templates from '../../text';
+import { CommandResult } from '../../types';
+
+const cmd = templates.commands.color;
 
 export class ColorCommand extends GlobalImageCommand {
     public constructor() {
@@ -8,14 +12,14 @@ export class ColorCommand extends GlobalImageCommand {
             definitions: [
                 {
                     parameters: '{colors[]}',
-                    description: 'Returns the provided colors.',
+                    description: cmd.default.description,
                     execute: (ctx, [text]) => this.render(ctx, text.asStrings)
                 }
             ]
         });
     }
 
-    public async render(context: CommandContext, colors: readonly string[]): Promise<string | ImageResult> {
+    public async render(context: CommandContext, colors: readonly string[]): Promise<CommandResult> {
         return await this.renderImage(context, 'color', { color: colors });
     }
 }

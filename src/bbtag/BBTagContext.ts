@@ -38,7 +38,7 @@ export class BBTagContext implements BBTagContextOptions {
     public readonly message: BBTagContextMessage;
     public readonly inputRaw: string;
     public readonly input: string[];
-    public readonly flags: readonly FlagDefinition[];
+    public readonly flags: ReadonlyArray<FlagDefinition<string>>;
     public readonly isCC: boolean;
     public readonly tagVars: boolean;
     public readonly authorId: string | undefined;
@@ -238,9 +238,10 @@ export class BBTagContext implements BBTagContextOptions {
 
     public auditReason(user: User = this.user): string {
         const reason = this.scopes.local.reason ?? '';
+        const tag = `${user.username}#${user.discriminator}`;
         return reason.length > 0
-            ? `${humanize.fullName(user)}: ${reason}`
-            : humanize.fullName(user);
+            ? `${tag}: ${reason}`
+            : tag;
     }
 
     public eval(bbtag: SubtagCall | Statement): Awaitable<string> {
@@ -342,7 +343,7 @@ export class BBTagContext implements BBTagContextOptions {
         type: string,
         fetch: (id: string) => Promise<T | undefined>,
         find: (query: string) => Promise<T[]>,
-        query: (options: EntityPickQueryOptions<T>) => Promise<ChoiceQueryResult<T>>,
+        query: (options: EntityPickQueryOptions<string, T>) => Promise<ChoiceQueryResult<T>>,
         options: FindEntityOptions
     ): Promise<T | undefined> {
         const cached = this.data.query[cacheKey][queryString];
@@ -360,7 +361,7 @@ export class BBTagContext implements BBTagContextOptions {
             case 'FAILED':
             case 'NO_OPTIONS':
                 if (!noErrors) {
-                    await this.util.send(this.channel, `No ${type.toLowerCase()} matching \`${queryString}\` found in ${this.isCC ? 'custom command' : 'tag'} \`${this.rootTagName}\`.`);
+                    await this.util.send(this.channel, { content: `No ${type.toLowerCase()} matching \`${queryString}\` found in ${this.isCC ? 'custom command' : 'tag'} \`${this.rootTagName}\`.` });
                     this.data.query.count++;
                 }
                 return undefined;
@@ -368,7 +369,7 @@ export class BBTagContext implements BBTagContextOptions {
             case 'CANCELLED':
                 this.data.query.count = Infinity;
                 if (!noErrors)
-                    await this.util.send(this.channel, `${type} query canceled in ${this.isCC ? 'custom command' : 'tag'} \`${this.rootTagName}\`.`);
+                    await this.util.send(this.channel, { content: `${type} query canceled in ${this.isCC ? 'custom command' : 'tag'} \`${this.rootTagName}\`.` });
                 return undefined;
             case 'SUCCESS':
                 this.data.query[cacheKey][queryString] = result.value.id;
@@ -391,19 +392,17 @@ export class BBTagContext implements BBTagContextOptions {
             this.engine.logger.log('Allowed mentions:', this.data.allowedMentions, disableEveryone);
         }
         try {
-            const response = await this.engine.util.send(this.message,
-                {
-                    content: text,
-                    replyToExecuting: false,
-                    embeds: this.data.embeds !== undefined ? this.data.embeds : undefined,
-                    nsfw: this.data.nsfw,
-                    allowedMentions: {
-                        everyone: !disableEveryone,
-                        roles: this.isCC ? this.data.allowedMentions.roles : undefined,
-                        users: this.isCC ? this.data.allowedMentions.users : undefined
-                    },
-                    files: this.data.file !== undefined ? [this.data.file] : undefined
-                });
+            const response = await this.engine.util.send(this.message.channel, {
+                content: text,
+                embeds: this.data.embeds !== undefined ? this.data.embeds : undefined,
+                nsfw: this.data.nsfw,
+                allowedMentions: {
+                    everyone: !disableEveryone,
+                    roles: this.isCC ? this.data.allowedMentions.roles : undefined,
+                    users: this.isCC ? this.data.allowedMentions.users : undefined
+                },
+                files: this.data.file !== undefined ? [this.data.file] : undefined
+            });
 
             if (response !== undefined) {
                 await this.util.addReactions(response, [...new Set(this.data.reactions)].map(Emote.parse));

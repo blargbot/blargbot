@@ -10,10 +10,10 @@ import reloadFactory from 'require-reload';
 const reload = reloadFactory(require);
 
 interface ModuleLoaderEvents<TModule> {
-    'add': [module: TModule];
-    'remove': [module: TModule];
-    'unlink': [module: TModule, key: string];
-    'link': [module: TModule, key: string];
+    add: [module: TModule];
+    remove: [module: TModule];
+    unlink: [module: TModule, key: string];
+    link: [module: TModule, key: string];
 }
 
 export abstract class BaseModuleLoader<TModule> extends EventEmitter<ModuleLoaderEvents<TModule>> {

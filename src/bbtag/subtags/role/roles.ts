@@ -3,7 +3,10 @@ import { guard } from '@blargbot/core/utils';
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
 import { UserNotFoundError } from '../../errors';
+import templates from '../../text';
 import { SubtagType } from '../../utils';
+
+const tag = templates.subtags.roles;
 
 export class RolesSubtag extends CompiledSubtag {
     public constructor() {
@@ -13,17 +16,17 @@ export class RolesSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: [],
-                    description: 'Returns an array of roles on the current guild.',
-                    exampleCode: 'The roles on this guild are: {roles}.',
-                    exampleOut: 'The roles on this guild are: ["11111111111111111","22222222222222222"].',
+                    description: tag.guild.description,
+                    exampleCode: tag.guild.exampleCode,
+                    exampleOut: tag.guild.exampleOut,
                     returns: 'id[]',
                     execute: (ctx) => this.getGuildRoles(ctx)
                 },
                 {
                     parameters: ['user', 'quiet?'],
-                    description: 'Returns `user`\'s roles in the current guild. If `quiet` is specified, if `user` can\'t be found it will simply return nothing.',
-                    exampleCode: 'Stupid cat has the roles: {roles;Stupid cat}',
-                    exampleOut: 'Stupid cat has the roles: ["11111111111111111","22222222222222222"]',
+                    description: tag.user.description,
+                    exampleCode: tag.user.exampleCode,
+                    exampleOut: tag.user.exampleOut,
                     returns: 'id[]',
                     execute: (ctx, [userId, quiet]) => this.getUserRoles(ctx, userId.value, quiet.value !== '')
                 }

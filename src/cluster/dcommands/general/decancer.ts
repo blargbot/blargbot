@@ -2,6 +2,11 @@ import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType, guard, humanize } from '@blargbot/cluster/utils';
 import { User } from 'eris';
 
+import templates from '../../text';
+import { CommandResult } from '../../types';
+
+const cmd = templates.commands.decancer;
+
 export class DecancerCommand extends GlobalCommand {
     public constructor() {
         super({
@@ -10,19 +15,19 @@ export class DecancerCommand extends GlobalCommand {
             definitions: [
                 {
                     parameters: 'user {user:user+}',
-                    description: 'Decancers a users display name. If you have permissions, this will also change their nickname',
+                    description: cmd.user.description,
                     execute: (ctx, [user]) => this.decancerUser(ctx, user.asUser)
                 },
                 {
                     parameters: '{text+}',
-                    description: 'Decancers some text to plain ASCII',
+                    description: cmd.text.description,
                     execute: (_, [text]) => this.decancerText(text.asString)
                 }
             ]
         });
     }
 
-    public async decancerUser(context: CommandContext, user: User): Promise<string> {
+    public async decancerUser(context: CommandContext, user: User): Promise<CommandResult> {
         if (!guard.isGuildCommandContext(context))
             return this.decancerText(user.username);
 
@@ -37,15 +42,15 @@ export class DecancerCommand extends GlobalCommand {
         try {
             await member.edit({ nick: decancered });
             member.nick = decancered;
-            return this.success(`Successfully decancered **${member.mention}**'s name to: \`${decancered}\``);
+            return cmd.user.success({ user, result: decancered });
         } catch {
             return this.decancerText(member.nick ?? member.username, decancered);
         }
     }
 
-    public decancerText(text: string, decancered?: string): string {
+    public decancerText(text: string, decancered?: string): CommandResult {
         decancered ??= humanize.decancer(text);
-        return this.success(`The decancered version of **${text}** is: \`${decancered}\``);
+        return cmd.text.success({ text, result: decancered });
     }
 
 }

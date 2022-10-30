@@ -1,6 +1,10 @@
 import { GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType } from '@blargbot/cluster/utils';
 
+import templates from '../../text';
+
+const cmd = templates.commands.help;
+
 export class HelpCommand extends GlobalCommand {
     public constructor() {
         super({
@@ -9,12 +13,12 @@ export class HelpCommand extends GlobalCommand {
             definitions: [
                 {
                     parameters: '',
-                    description: 'Shows a list of all the available commands',
+                    description: cmd.command.description,
                     execute: (ctx) => ctx.cluster.help.createMessageContent('', ctx.author, ctx.channel)
                 },
                 {
                     parameters: '{commandName}',
-                    description: 'Shows the help text for the given command',
+                    description: cmd.list.description,
                     execute: (ctx, [commandName]) => ctx.cluster.help.createMessageContent(commandName.asString, ctx.author, ctx.channel)
                 }
             ]

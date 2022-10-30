@@ -1,6 +1,7 @@
 import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { guard } from '@blargbot/cluster/utils';
 
+import templates from '../text';
 import { CommandContext } from './CommandContext';
 import { ScopedCommand } from './ScopedCommand';
 
@@ -10,6 +11,6 @@ export abstract class GuildCommand extends ScopedCommand<GuildCommandContext> {
     }
 
     protected handleInvalidContext(context: CommandContext): Awaitable<CommandResult> {
-        return this.error(`\`${context.prefix}${context.commandName}\` can only be used on guilds.`);
+        return templates.commands.$errors.guildOnly(context);
     }
 }

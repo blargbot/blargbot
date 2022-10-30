@@ -3,28 +3,31 @@ import { parse } from '@blargbot/core/utils';
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
 import { NotANumberError, UserNotFoundError } from '../../errors';
+import templates from '../../text';
 import { SubtagType } from '../../utils';
+
+const tag = templates.subtags.pardon;
 
 export class PardonSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'pardon',
             category: SubtagType.USER,
-            description: '`user` defaults to the executing user. Returns the new warning count',
+            description: tag.description,
             definition: [
                 {
                     parameters: ['user?'],
-                    description: 'Gives `user` one pardon.',
-                    exampleCode: 'Be pardoned! {pardon}',
-                    exampleOut: 'Be pardoned! 0',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'number',
                     execute: (ctx, [user]) => this.pardon(ctx, user.value, '1', '')
                 },
                 {
                     parameters: ['user', 'count:1', 'reason?'],
-                    description: 'Gives `user` `count` pardons with `reason`.',
-                    exampleCode: 'Be pardoned 9001 times, Stupid cat! {pardon;Stupid cat;9001}',
-                    exampleOut: 'Be pardoned 9001 times, Stupid cat! 0',
+                    description: tag.withReason.description,
+                    exampleCode: tag.withReason.exampleCode,
+                    exampleOut: tag.withReason.exampleOut,
                     returns: 'number',
                     execute: (ctx, [user, count, reason]) => this.pardon(ctx, user.value, count.value, reason.value)
                 }

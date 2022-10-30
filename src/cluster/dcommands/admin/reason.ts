@@ -1,6 +1,10 @@
 import { GuildCommand } from '@blargbot/cluster/command';
-import { GuildCommandContext } from '@blargbot/cluster/types';
+import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType } from '@blargbot/cluster/utils';
+
+import templates from '../../text';
+
+const cmd = templates.commands.reason;
 
 export class ReasonCommand extends GuildCommand {
     public constructor() {
@@ -10,23 +14,20 @@ export class ReasonCommand extends GuildCommand {
             definitions: [
                 {
                     parameters: '{caseId:integer?} {reason+}',
-                    description: 'Sets the reason for an action on the modlog.',
+                    description: cmd.default.description,
                     execute: (ctx, [caseId, reason]) => this.setReason(ctx, caseId.asOptionalInteger, reason.asString)
                 }
             ]
         });
     }
 
-    public async setReason(context: GuildCommandContext, caseId: number | undefined, reason: string): Promise<string> {
+    public async setReason(context: GuildCommandContext, caseId: number | undefined, reason: string): Promise<CommandResult> {
         switch (await context.cluster.moderation.modLog.updateReason(context.channel.guild, caseId, context.author, reason)) {
-            case 'MISSING_CASE':
-                if (caseId === undefined)
-                    return this.error('There arent any modlog entries yet!');
-                return this.error(`I couldnt find a modlog entry with a case if od ${caseId}`);
-            case 'SUCCESS_NO_MESSAGE':
-                return this.warning('The modlog has been updated! I couldnt find the message to update however.');
-            case 'SUCCESS':
-                return this.success('The modlog has been updated!');
+            case 'MISSING_CASE': return caseId === undefined
+                ? cmd.default.none
+                : cmd.default.unknownCase({ caseId });
+            case 'SUCCESS_NO_MESSAGE': return cmd.default.success.messageMissing;
+            case 'SUCCESS': return cmd.default.success.default;
         }
     }
 }

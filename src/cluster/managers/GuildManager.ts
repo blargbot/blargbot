@@ -1,8 +1,10 @@
+import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent';
 import { metrics } from '@blargbot/core/Metrics';
 import { Guild } from 'eris';
 import moment from 'moment-timezone';
 
 import { Cluster } from '../Cluster';
+import templates from '../text';
 
 export class GuildManager {
     #blacklist: Record<string, boolean | undefined> | undefined;
@@ -36,7 +38,9 @@ export class GuildManager {
     }
 
     async #guildBlacklisted(guild: Guild): Promise<void> {
-        await this.#cluster.util.sendDM(guild.ownerID, `Greetings! I regret to inform you that your guild, **${guild.name}** (${guild.id}), is on my blacklist. Sorry about that! I'll be leaving now. I hope you have a nice day.`);
+        const user = await this.#cluster.util.getUser(guild.ownerID);
+        if (user !== undefined)
+            await this.#cluster.util.send(user, new FormattableMessageContent({ content: templates.guild.blacklisted({ guild }) }));
         await guild.leave();
     }
 
@@ -52,10 +56,17 @@ export class GuildManager {
             await this.#cluster.util.ensureMemberCache(guild);
             const users = guild.members.filter(m => !m.user.bot).length;
             const bots = guild.members.size - users;
-            const percent = Math.floor(bots / guild.members.size * 10000) / 100;
-            const message = `:ballot_box_with_check: Guild: \`${guild.name}\` (\`${guild.id}\`)! ${percent >= 80 ? '- ***BOT GUILD***' : ''}\n` +
-                `    Total: **${guild.members.size}** | Users: **${users}** | Bots: **${bots}** | Percent: **${percent}**`;
-            await this.#cluster.util.send(this.#cluster.config.discord.channels.joinlog, message);
+            const percent = Math.floor(bots / guild.members.size * 100) / 100;
+            await this.#cluster.util.send(this.#cluster.config.discord.channels.joinlog, new FormattableMessageContent({
+                content: templates.guild.joined({
+                    guild,
+                    botGuild: percent >= 0.8,
+                    botCount: bots,
+                    size: guild.members.size,
+                    botFraction: percent,
+                    userCount: users
+                })
+            }));
         }
     }
 

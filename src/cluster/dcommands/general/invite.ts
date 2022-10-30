@@ -1,6 +1,11 @@
 import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType } from '@blargbot/cluster/utils';
 
+import templates from '../../text';
+import { CommandResult } from '../../types';
+
+const cmd = templates.commands.invite;
+
 export class InviteCommand extends GlobalCommand {
     public constructor() {
         super({
@@ -10,19 +15,17 @@ export class InviteCommand extends GlobalCommand {
             definitions: [
                 {
                     parameters: '',
-                    description: 'Gets you invite information.',
+                    description: cmd.default.description,
                     execute: (ctx) => this.invite(ctx)
                 }
             ]
         });
     }
 
-    public invite(context: CommandContext): string {
-        return [
-            'Invite me to your guild!',
-            `<${context.util.websiteLink('invite')}>`,
-            'Join my support guild!',
-            'https://discord.gg/015GVxZxI8rtlJgXF`'
-        ].join('\n');
+    public invite(context: CommandContext): CommandResult {
+        return cmd.default.success({
+            inviteLink: context.util.websiteLink('invite'),
+            guildLink: 'https://discord.gg/015GVxZxI8rtlJgXF'
+        });
     }
 }

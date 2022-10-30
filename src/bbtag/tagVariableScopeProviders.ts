@@ -1,51 +1,46 @@
 import { TagVariableScope, TagVariableType } from '@blargbot/domain/models';
+import { IFormattable } from '@blargbot/formatting';
 
 import { BBTagContext } from './BBTagContext';
+import templates from './text';
 
 export const tagVariableScopeProviders: readonly TagVariableScopeProvider[] = [
     {
-        name: 'Server',
+        name: templates.subtag.variables.server.name,
         prefix: '_',
-        description: 'Server variables (also referred to as Guild variables) are commonly used if you wish to store data on a per server level. ' +
-            'They are however stored in 2 separate \'pools\', one for tags and one for custom commands, meaning they cannot be used to pass data between the two\n' +
-            'This makes then very useful for communicating data between tags that are intended to be used within 1 server at a time.',
+        description: templates.subtag.variables.server.description,
         getScope: (context) => ({
             type: context.tagVars ? TagVariableType.TAGGUILD : TagVariableType.GUILD,
             entityId: context.guild.id
         })
     },
     {
-        name: 'Author',
+        name: templates.subtag.variables.author.name,
         prefix: '@',
-        description: 'Author variables are stored against the author of the tag, meaning that only tags made by you can access or edit your author variables.\n' +
-            'These are very useful when you have a set of tags that are designed to be used by people between servers, effectively allowing servers to communicate with eachother.',
+        description: templates.subtag.variables.author.description,
         getScope: (context) => ({
             type: TagVariableType.AUTHOR,
             entityId: context.authorId
         })
     },
     {
-        name: 'Global',
+        name: templates.subtag.variables.global.name,
         prefix: '*',
-        description: 'Global variables are completely public, anyone can read **OR EDIT** your global variables.\n' +
-            'These are very useful if you like pain.',
+        description: templates.subtag.variables.global.description,
         getScope: () => ({
             type: TagVariableType.GLOBAL
         })
     },
     {
-        name: 'Temporary',
+        name: templates.subtag.variables.temporary.name,
         prefix: '~',
-        description: 'Temporary variables are never stored to the database, meaning they are by far the fastest variable type.\n' +
-            'If you are working with data which you only need to store for later use within the same tag call, then you should use temporary variables over any other type',
+        description: templates.subtag.variables.temporary.description,
         getScope: () => undefined
     },
     {
-        name: 'Local',
+        name: templates.subtag.variables.local.name,
         prefix: '',
-        description: 'Local variables are the default variable type, only usable if your variable name doesnt start with one of the other prefixes. ' +
-            'These variables are only accessible by the tag that created them, meaning there is no possibility to share the values with any other tag.\n' +
-            'These are useful if you are intending to create a single tag which is usable anywhere, as the variables are not confined to a single server, just a single tag',
+        description: templates.subtag.variables.local.description,
         getScope: (context) => ({
             type: context.tagVars ? TagVariableType.LOCAL : TagVariableType.GUILDLOCAL,
             entityId: context.tagVars ? undefined : context.guild.id,
@@ -55,8 +50,8 @@ export const tagVariableScopeProviders: readonly TagVariableScopeProvider[] = [
 ];
 
 export interface TagVariableScopeProvider {
-    readonly name: string;
+    readonly name: IFormattable<string>;
     readonly prefix: string;
-    readonly description: string;
+    readonly description: IFormattable<string>;
     getScope(context: BBTagContext): TagVariableScope | undefined;
 }

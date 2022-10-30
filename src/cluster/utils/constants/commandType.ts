@@ -2,10 +2,12 @@ import { CommandPropertiesSet } from '@blargbot/cluster/types';
 import { guard } from '@blargbot/cluster/utils';
 import { Guild } from 'eris';
 
+import templates from '../../text';
 import { defaultStaff } from './defaultStaff';
 
 export enum CommandType {
-    GENERAL = 1,
+    CUSTOM,
+    GENERAL,
     OWNER,
     NSFW,
     IMAGE,
@@ -13,19 +15,29 @@ export enum CommandType {
     SOCIAL,
     DEVELOPER,
     STAFF,
-    SUPPORT
+    SUPPORT,
 }
 
 export const commandTypeDetails: CommandPropertiesSet = {
-    [CommandType.GENERAL]: {
-        name: 'General',
+    [CommandType.CUSTOM]: {
+        id: 'Custom',
+        name: templates.commands.categories.custom.name,
         isVisible: () => true,
-        description: 'General commands.',
+        description: templates.commands.categories.custom.description,
+        color: 0x7289da,
+        defaultPerms: 0n
+    },
+    [CommandType.GENERAL]: {
+        id: 'General',
+        name: templates.commands.categories.general.name,
+        isVisible: () => true,
+        description: templates.commands.categories.general.description,
         color: 0xefff00,
         defaultPerms: 0n
     },
     [CommandType.NSFW]: {
-        name: 'NSFW',
+        id: 'NSFW',
+        name: templates.commands.categories.nsfw.name,
         isVisible(...[, location]) {
             if (location instanceof Guild || location === undefined || guard.isPrivateChannel(location))
                 return true;
@@ -35,26 +47,29 @@ export const commandTypeDetails: CommandPropertiesSet = {
 
             return false;
         },
-        description: 'Commands that can only be executed in NSFW channels.',
+        description: templates.commands.categories.nsfw.description,
         color: 0x010101,
         defaultPerms: 0n
     },
     [CommandType.IMAGE]: {
-        name: 'Image',
+        id: 'Image',
+        name: templates.commands.categories.image.name,
         isVisible: () => true,
-        description: 'Commands that generate or display images.',
+        description: templates.commands.categories.image.description,
         color: 0xefff00,
         defaultPerms: 0n
     },
     [CommandType.ADMIN]: {
-        name: 'Admin',
+        id: 'Admin',
+        name: templates.commands.categories.admin.name,
         isVisible: () => true,
         defaultPerms: defaultStaff,
-        description: 'Powerful commands that require an `admin` role or special permissions.',
+        description: templates.commands.categories.admin.description,
         color: 0xff0000
     },
     [CommandType.SOCIAL]: {
-        name: 'Social',
+        id: 'Social',
+        name: templates.commands.categories.social.name,
         async isVisible(util, location) {
             if (location instanceof Guild)
                 return await util.database.guilds.getSetting(location.id, 'social') ?? false;
@@ -64,43 +79,47 @@ export const commandTypeDetails: CommandPropertiesSet = {
 
             return await util.database.guilds.getSetting(location.guild.id, 'social') ?? false;
         },
-        description: 'Social commands for interacting with other people',
+        description: templates.commands.categories.social.description,
         color: 0xefff00,
         defaultPerms: 0n
     },
     [CommandType.OWNER]: {
-        name: 'Blargbot Owner',
+        id: 'Blargbot Owner',
+        name: templates.commands.categories.owner.name,
         isVisible(...[util, , author]) {
             return author !== undefined && util.isBotOwner(author.id);
         },
-        description: 'MREOW MEOWWWOW! **purr**',
+        description: templates.commands.categories.owner.description,
         color: 0xff0000,
         defaultPerms: 0n
     },
     [CommandType.DEVELOPER]: {
-        name: 'Blargbot Developer',
+        id: 'Blargbot Developer',
+        name: templates.commands.categories.developer.name,
         isVisible(...[util, , author]) {
             return author !== undefined && util.isBotDeveloper(author.id);
         },
-        description: 'Commands that can only be executed by blargbot developers.',
+        description: templates.commands.categories.developer.description,
         color: 0xff0000,
         defaultPerms: 0n
     },
     [CommandType.STAFF]: {
-        name: 'Blargbot Staff',
+        id: 'Blargbot Staff',
+        name: templates.commands.categories.staff.name,
         isVisible(...[util, , author]) {
             return author !== undefined && util.isBotStaff(author.id);
         },
-        description: 'Commands that can only be executed by staff on the official support server.',
+        description: templates.commands.categories.staff.description,
         color: 0xff0000,
         defaultPerms: 0n
     },
     [CommandType.SUPPORT]: {
-        name: 'Blargbot Support',
+        id: 'Blargbot Support',
+        name: templates.commands.categories.support.name,
         isVisible(...[util, , author]) {
             return author !== undefined && util.isBotSupport(author.id);
         },
-        description: 'Commands that can only be executed by support members on the official support server.',
+        description: templates.commands.categories.support.description,
         color: 0xff0000,
         defaultPerms: 0n
     }

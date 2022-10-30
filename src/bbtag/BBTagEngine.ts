@@ -11,6 +11,7 @@ import { BBTagRuntimeError, InternalServerError, SubtagStackOverflowError, TagCo
 import { Statement, SubtagCall } from './language';
 import { Subtag } from './Subtag';
 import { TagCooldownManager } from './TagCooldownManager';
+import templates from './text';
 import { AnalysisResults, BBTagContextOptions, BBTagRuntimeState, ExecutionResult } from './types';
 import { bbtag as bbtagUtil } from './utils';
 
@@ -29,19 +30,19 @@ export class BBTagEngine {
         const subtags = new Map<string, Subtag>();
         this.subtags = subtags;
         for (const subtag of dependencies.subtags) {
-            const current = subtags.get(subtag.name);
-            if (current?.name === subtag.name)
-                throw new Error(`Duplicate subtag with name ${JSON.stringify(subtag.name)} found`);
-            subtags.set(subtag.name, subtag);
-
-            for (const alias of subtag.aliases) {
-                const current = subtags.get(alias);
-                if (current === undefined)
-                    subtags.set(alias, subtag);
-                else if (current.name !== alias)
-                    throw new Error(`Duplicate subtag with alias ${JSON.stringify(alias)} found`);
+            for (const name of BBTagEngine.#subtagNames(subtag)) {
+                const current = subtags.get(name);
+                if (current !== undefined)
+                    throw new Error(`Duplicate subtag with name ${JSON.stringify(subtag.name)} found`);
+                subtags.set(name, subtag);
             }
         }
+    }
+
+    static * #subtagNames(subtag: Subtag): Generator<string> {
+        yield subtag.name.toLowerCase();
+        for (const alias of subtag.aliases)
+            yield alias.toLowerCase();
     }
 
     public async execute(source: string, options: BBTagContextOptions): Promise<ExecutionResult>
@@ -181,9 +182,9 @@ export class BBTagEngine {
 
         for (const call of getSubtagCalls(statement)) {
             if (call.name.values.length === 0)
-                result.warnings.push({ location: call.start, message: 'Unnamed subtag' });
+                result.warnings.push({ location: call.start, message: templates.analysis.unnamed });
             else if (call.name.values.some(p => typeof p !== 'string'))
-                result.warnings.push({ location: call.start, message: 'Dynamic subtag' });
+                result.warnings.push({ location: call.start, message: templates.analysis.dynamic });
             else {
                 const subtag = this.subtags.get(call.name.values.join(''));
                 // TODO Detect unknown subtags
@@ -193,7 +194,7 @@ export class BBTagEngine {
                             break;
                     // fallthrough
                     case 'string':
-                        result.warnings.push({ location: call.start, message: `{${subtag.name}} is deprecated. ${subtag.deprecated}` });
+                        result.warnings.push({ location: call.start, message: templates.analysis.deprecated(subtag) });
                 }
             }
         }

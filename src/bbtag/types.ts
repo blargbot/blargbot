@@ -1,5 +1,6 @@
 import { Emote } from '@blargbot/core/Emote';
 import { FlagDefinition, NamedGuildCommandTag, StoredTag } from '@blargbot/domain/models';
+import { IFormattable } from '@blargbot/formatting';
 import { Attachment, Embed, EmbedOptions, FileContent, KnownGuildTextableChannel, KnownMessage, Message, User } from 'eris';
 import ReadWriteLock from 'rwlock';
 
@@ -19,7 +20,7 @@ export interface AnalysisResults {
 
 export interface AnalysisResult {
     readonly location: SourceMarker;
-    readonly message: string;
+    readonly message: IFormattable<string>;
 }
 
 export type BBTagArray = { n?: string; v: JArray; };
@@ -59,7 +60,7 @@ export interface SerializedBBTagContext {
     isCC: boolean;
     scope: BBTagRuntimeScope;
     inputRaw: string;
-    flags: readonly FlagDefinition[];
+    flags: ReadonlyArray<FlagDefinition<string>>;
     data: Pick<BBTagContextState, 'query' | 'ownedMsgs' | 'stackSize' | 'allowedMentions'>;
     tagName: string;
     rootTagName: string;
@@ -137,7 +138,7 @@ export interface FindEntityOptions {
 export interface BBTagContextOptions {
     readonly message: BBTagContextMessage;
     readonly inputRaw: string;
-    readonly flags?: readonly FlagDefinition[];
+    readonly flags?: ReadonlyArray<FlagDefinition<string>>;
     readonly isCC: boolean;
     readonly tagVars?: boolean;
     readonly authorId?: string;
@@ -205,26 +206,26 @@ export interface SubtagSignatureParameterGroup {
     readonly nested: readonly RequiredSubtagSignatureParameter[];
 }
 
-export interface SubtagSignature {
+export interface SubtagSignature<TString> {
     readonly subtagName?: string;
     readonly parameters: readonly SubtagSignatureParameter[];
-    readonly description: string;
-    readonly exampleCode: string;
-    readonly exampleIn?: string;
-    readonly exampleOut: string;
+    readonly description: TString;
+    readonly exampleCode: TString;
+    readonly exampleIn?: TString;
+    readonly exampleOut: TString;
 }
 
 type AwaitableIterable<T> = (Iterable<T> | AsyncIterable<T>); // To exclude string
 
 type SubtagReturnTypeValueMap = {
-    'hex': number;
-    'number': number | bigint;
-    'boolean': boolean;
-    'string': string;
-    'id': string;
-    'json': JToken;
-    'embed': Embed;
-    'nothing': undefined;
+    hex: number;
+    number: number | bigint;
+    boolean: boolean;
+    string: string;
+    id: string;
+    json: JToken;
+    embed: Embed;
+    nothing: undefined;
 }
 
 type SubtagReturnTypeAtomicMap = SubtagReturnTypeValueMap & {
@@ -243,32 +244,33 @@ type SubtagReturnTypeMapHelper = Omit<SubtagReturnTypeAtomicMap, 'nothing'>
     & SubtagReturnTypeUnion<['json[]', 'nothing']>
     & SubtagReturnTypeUnion<['json', 'nothing']>
     & {
-        'unknown': AsyncIterable<string | undefined>;
-        'nothing': void;
-        'error': never;
-        'loop': AwaitableIterable<string>;
+        unknown: AsyncIterable<string | undefined>;
+        nothing: void;
+        error: never;
+        loop: AwaitableIterable<string>;
     }
 
 export type SubtagReturnTypeMap = {
     [P in keyof SubtagReturnTypeMapHelper]: SubtagReturnTypeMapHelper[P]
 }
 
-export interface SubtagOptions {
+export interface SubtagOptions<TString> {
     readonly name: string;
     readonly aliases?: readonly string[];
     readonly category: SubtagType;
-    readonly description?: string;
+    readonly description?: TString;
     readonly deprecated?: string | boolean;
     readonly staff?: boolean;
     readonly hidden?: boolean;
-    readonly signatures: readonly SubtagSignature[];
+    readonly signatures: ReadonlyArray<SubtagSignature<TString>>;
 }
 
-export type SubtagPropertiesSet = { [key in SubtagType]: SubtagProperties; }
+export type SubtagPropertiesSet = { [P in SubtagType]: SubtagProperties<P>; }
 
-export interface SubtagProperties {
-    readonly name: string;
-    readonly desc: string;
+export interface SubtagProperties<Id extends SubtagType = SubtagType> {
+    readonly id: Id;
+    readonly name: IFormattable<string>;
+    readonly desc: IFormattable<string>;
     readonly hidden?: boolean;
 }
 

@@ -1,5 +1,5 @@
 import { ApiConnection } from '@blargbot/api';
-import { ICommandDetails } from '@blargbot/cluster/types';
+import { CommandListResultItem } from '@blargbot/cluster/types';
 import { WorkerPoolEventService } from '@blargbot/core/serviceTypes';
 import { Master } from '@blargbot/master';
 
@@ -16,7 +16,7 @@ export class ApiGetCommandHandler extends WorkerPoolEventService<ApiConnection, 
         this.#master = master;
     }
 
-    protected async getCommand(commandName: string): Promise<ICommandDetails | undefined> {
+    protected async getCommand(commandName: string): Promise<CommandListResultItem | undefined> {
         const cluster = this.#master.clusters.tryGet(this.#nextCluster);
         if (cluster === undefined) {
             if (this.#nextCluster === 0)

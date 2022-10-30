@@ -1,6 +1,6 @@
 import { Cluster } from '@blargbot/cluster';
 import { CommandLoggerMiddleware, ErrorMiddleware, RollingRatelimitMiddleware } from '@blargbot/cluster/command';
-import { guard, humanize, runMiddleware, snowflake } from '@blargbot/cluster/utils';
+import { guard, runMiddleware, snowflake } from '@blargbot/cluster/utils';
 import { DiscordEventService } from '@blargbot/core/serviceTypes';
 import { IMiddleware } from '@blargbot/core/types';
 import { MessageFlags } from 'discord-api-types/v9';
@@ -62,6 +62,6 @@ export class DiscordMessageCreateHandler extends DiscordEventService<'messageCre
             start: performance.now()
         });
         const handled = await runMiddleware(this.#middleware, message, options, () => false);
-        this.cluster.logger.debug('Message by', humanize.fullName(message.author), handled ? 'handled' : 'ignored', 'in', performance.now() - options.start, 'ms');
+        this.cluster.logger.debug('Message by', `${message.author.username}#${message.author.discriminator}`, handled ? 'handled' : 'ignored', 'in', performance.now() - options.start, 'ms');
     }
 }

@@ -1,26 +1,93 @@
-import { AwaitReactionsResponse, BBTagContext, BBTagUtilities } from '@blargbot/bbtag';
-import { BaseUtilities } from '@blargbot/core/BaseUtilities';
-import { ChoiceQueryResult, EntityPickQueryOptions } from '@blargbot/core/types';
-import { Guild, KnownChannel, KnownMessage, Member, Role, User } from 'eris';
+import { AwaitReactionsResponse, BBTagContext, BBTagSendContent, BBTagUtilities } from '@blargbot/bbtag';
+import { Emote } from '@blargbot/core/Emote';
+import { ChoiceQueryResult, EntityPickQueryOptions, SendContent } from '@blargbot/core/types';
+import { IFormattable, util } from '@blargbot/formatting';
+import { AdvancedMessageContent, Guild, KnownChannel, KnownGuildChannel, KnownMessage, Member, Message, Role, TextableChannel, User } from 'eris';
 import moment, { Duration } from 'moment-timezone';
 
 import { Cluster } from './Cluster';
+import { guard } from './utils/index';
 
-export class ClusterBBTagUtilities extends BaseUtilities implements BBTagUtilities {
+export class ClusterBBTagUtilities implements BBTagUtilities {
+    public get defaultPrefix(): string {
+        return this.cluster.config.discord.defaultPrefix;
+    }
+
     public constructor(public readonly cluster: Cluster) {
-        super(cluster);
+    }
+
+    public async send<T extends TextableChannel>(channel: T, payload: BBTagSendContent, author?: User | undefined): Promise<Message<T> | undefined> {
+        return payload.nsfw !== undefined && guard.isGuildChannel(channel) && !channel.nsfw
+            ? await this.cluster.util.send(channel, util.literal({ content: payload.nsfw, allowedMentions: payload.allowedMentions }))
+            : await this.cluster.util.send(channel, util.literal(payload), author);
+    }
+
+    public async getChannel(channelId: string): Promise<KnownChannel | undefined>;
+    public async getChannel(guild: string | Guild, channelId: string): Promise<KnownGuildChannel | undefined>;
+    public async getChannel(...args: [string] | [string | Guild, string]): Promise<KnownChannel | undefined> {
+        return args.length === 1
+            ? await this.cluster.util.getChannel(...args)
+            : await this.cluster.util.getChannel(...args);
+    }
+
+    public async findChannels(guild: string | Guild, query?: string | undefined): Promise<KnownGuildChannel[]> {
+        return await this.cluster.util.findChannels(guild, query);
+    }
+
+    public async ensureMemberCache(guild: Guild): Promise<void> {
+        return await this.cluster.util.ensureMemberCache(guild);
+    }
+
+    public async getMember(guild: string | Guild, userId: string): Promise<Member | undefined> {
+        return await this.cluster.util.getMember(guild, userId);
+    }
+
+    public async findMembers(guild: string | Guild, query?: string | undefined): Promise<Member[]> {
+        return await this.cluster.util.findMembers(guild, query);
+    }
+
+    public async getUser(userId: string): Promise<User | undefined> {
+        return await this.cluster.util.getUser(userId);
+    }
+
+    public async getRole(guild: string | Guild, roleId: string): Promise<Role | undefined> {
+        return await this.cluster.util.getRole(guild, roleId);
+    }
+
+    public async findRoles(guild: string | Guild, query?: string | undefined): Promise<Role[]> {
+        return await this.cluster.util.findRoles(guild, query);
+    }
+
+    public async getMessage(channel: string, messageId: string, force?: boolean | undefined): Promise<KnownMessage | undefined>;
+    public async getMessage(channel: KnownChannel, messageId: string, force?: boolean | undefined): Promise<KnownMessage | undefined>;
+    public async getMessage(...args: [KnownChannel, string, boolean?] | [string, string, boolean?]): Promise<KnownMessage | undefined> {
+        return isIndex0String(args)
+            ? await this.cluster.util.getMessage(...args)
+            : await this.cluster.util.getMessage(...args);
+    }
+
+    public addReactions(context: Message<TextableChannel>, reactions: Iterable<Emote>): Promise<{ success: Emote[]; failed: Emote[]; }> {
+        return this.cluster.util.addReactions(context, reactions);
+    }
+
+    public async generateDumpPage(payload: AdvancedMessageContent, channel: KnownChannel): Promise<string> {
+        return (await this.cluster.util.generateDumpPage(payload, channel)).toString();
+    }
+
+    public websiteLink(path?: string | undefined): string {
+        return this.cluster.util.websiteLink(path);
     }
 
     public timeout(member: Member, moderator: User, authorizer: User, duration: Duration, reason?: string | undefined): Promise<'noPerms' | 'success' | 'alreadyTimedOut' | 'memberTooHigh' | 'moderatorNoPerms' | 'moderatorTooLow'> {
-        return this.cluster.moderation.timeouts.timeout(member, moderator, authorizer, duration, reason);
+        return this.cluster.moderation.timeouts.timeout(member, moderator, authorizer, duration, util.literal(reason));
     }
 
     public clearTimeout(member: Member, moderator: User, authorizer: User, reason?: string | undefined): Promise<'noPerms' | 'success' | 'moderatorNoPerms' | 'notTimedOut'> {
-        return this.cluster.moderation.timeouts.clearTimeout(member, moderator, authorizer, reason);
+        return this.cluster.moderation.timeouts.clearTimeout(member, moderator, authorizer, util.literal(reason));
     }
 
-    public addModlog(guild: Guild, action: string, user: User, moderator?: User, reason?: string, color?: number): Promise<void> {
-        return this.cluster.moderation.modLog.logCustom(guild, action, user, moderator, reason, color);
+    public addModLog(guild: Guild, action: string, user: User, moderator?: User, reason?: string, color?: number): Promise<void> {
+        return this.cluster.moderation.modLog.logCustom(guild, util.literal(action), user, moderator, util.literal(reason), color);
     }
 
     public canRequestDomain(domain: string): boolean {
@@ -31,38 +98,52 @@ export class ClusterBBTagUtilities extends BaseUtilities implements BBTagUtiliti
         return this.cluster.util.isUserStaff(member);
     }
 
-    public queryMember(options: EntityPickQueryOptions<Member>): Promise<ChoiceQueryResult<Member>> {
-        return this.cluster.util.queryMember(options);
+    public queryMember(options: EntityPickQueryOptions<string, Member>): Promise<ChoiceQueryResult<Member>> {
+        return this.cluster.util.queryMember({
+            ...options,
+            placeholder: util.literal(options.placeholder),
+            prompt: toPrompt(options.prompt)
+        });
     }
 
-    public queryRole(options: EntityPickQueryOptions<Role>): Promise<ChoiceQueryResult<Role>> {
-        return this.cluster.util.queryRole(options);
+    public queryRole(options: EntityPickQueryOptions<string, Role>): Promise<ChoiceQueryResult<Role>> {
+        return this.cluster.util.queryRole({
+            ...options,
+            placeholder: util.literal(options.placeholder),
+            prompt: toPrompt(options.prompt)
+        });
     }
 
-    public queryChannel<T extends KnownChannel>(options: EntityPickQueryOptions<T>): Promise<ChoiceQueryResult<T>> {
-        return this.cluster.util.queryChannel(options);
+    public queryChannel<T extends KnownChannel>(options: EntityPickQueryOptions<string, T>): Promise<ChoiceQueryResult<T>>
+    public queryChannel(options: EntityPickQueryOptions<string, KnownChannel>): Promise<ChoiceQueryResult<KnownChannel>>
+    public queryChannel(options: EntityPickQueryOptions<string, KnownChannel>): Promise<ChoiceQueryResult<KnownChannel>> {
+        return this.cluster.util.queryChannel({
+            ...options,
+            placeholder: util.literal(options.placeholder),
+            prompt: toPrompt(options.prompt)
+        });
     }
 
     public async warn(member: Member, moderator: User, count: number, reason?: string): Promise<number> {
-        const result = await this.cluster.moderation.warns.warn(member, moderator, this.cluster.discord.user, count, reason);
+        const result = await this.cluster.moderation.warns.warn(member, moderator, this.cluster.discord.user, count, util.literal(reason));
         return result.warnings;
     }
 
     public async pardon(member: Member, moderator: User, count: number, reason?: string): Promise<number> {
-        const result = await this.cluster.moderation.warns.pardon(member, moderator, count, reason);
+        const result = await this.cluster.moderation.warns.pardon(member, moderator, count, util.literal(reason));
         return result.warnings;
     }
 
     public ban(guild: Guild, user: User, moderator: User, authorizer: User, deleteDays: number, reason: string, duration: moment.Duration): Promise<'success' | 'alreadyBanned' | 'noPerms' | 'memberTooHigh' | 'moderatorNoPerms' | 'moderatorTooLow'> {
-        return this.cluster.moderation.bans.ban(guild, user, moderator, authorizer, deleteDays, reason, duration);
+        return this.cluster.moderation.bans.ban(guild, user, moderator, authorizer, deleteDays, util.literal(reason), duration);
     }
 
     public unban(guild: Guild, user: User, moderator: User, authorizer: User, reason?: string): Promise<'success' | 'noPerms' | 'moderatorNoPerms' | 'notBanned'> {
-        return this.cluster.moderation.bans.unban(guild, user, moderator, authorizer, reason);
+        return this.cluster.moderation.bans.unban(guild, user, moderator, authorizer, util.literal(reason));
     }
 
     public kick(member: Member, moderator: User, authorizer: User, reason?: string): Promise<'success' | 'noPerms' | 'memberTooHigh' | 'moderatorNoPerms' | 'moderatorTooLow'> {
-        return this.cluster.moderation.bans.kick(member, moderator, authorizer, reason);
+        return this.cluster.moderation.bans.kick(member, moderator, authorizer, util.literal(reason));
     }
 
     public awaitReaction(messages: string[], filter: (reaction: AwaitReactionsResponse) => Awaitable<boolean>, timeoutMs: number): Promise<AwaitReactionsResponse | undefined> {
@@ -84,4 +165,38 @@ export class ClusterBBTagUtilities extends BaseUtilities implements BBTagUtiliti
         });
     }
 
+}
+
+function isIndex0String<T extends unknown[]>(value: T): value is Extract<T, { ['0']: string; }> {
+    return typeof value[0] === 'string';
+}
+
+function toPrompt(value: string | Omit<SendContent<string>, 'components'> | undefined): IFormattable<string> | Omit<SendContent<IFormattable<string>>, 'components'> | undefined {
+    switch (typeof value) {
+        case 'string':
+        case 'undefined':
+            return util.literal(value);
+        default: return {
+            ...value,
+            content: util.literal(value.content),
+            embeds: value.embeds?.map(e => ({
+                ...e,
+                title: util.literal(e.title),
+                description: util.literal(e.description),
+                author: e.author === undefined ? undefined : {
+                    ...e.author,
+                    name: util.literal(e.author.name)
+                },
+                footer: e.footer === undefined ? undefined : {
+                    ...e.footer,
+                    text: util.literal(e.footer.text)
+                },
+                fields: e.fields?.map(f => ({
+                    ...f,
+                    name: util.literal(f.name),
+                    value: util.literal(f.value)
+                }))
+            }))
+        };
+    }
 }

@@ -1,7 +1,10 @@
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
 import { NotAnArrayError } from '../../errors';
+import templates from '../../text';
 import { bbtag, SubtagType } from '../../utils';
+
+const tag = templates.subtags.join;
 
 export class JoinSubtag extends CompiledSubtag {
     public constructor() {
@@ -11,9 +14,9 @@ export class JoinSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['array', 'text'],
-                    description: 'Joins the elements of `array` together with `text` as the separator.',
-                    exampleCode: '{join;["this", "is", "an", "array"];!}',
-                    exampleOut: 'this!is!an!array',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'string',
                     execute: (context, [array, join]) => this.join(context, array.value, join.value)
                 }

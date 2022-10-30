@@ -1,8 +1,13 @@
 import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
-import { codeBlock, CommandType, guard, humanize, pluralise as p } from '@blargbot/cluster/utils';
-import { SendPayload } from '@blargbot/core/types';
+import { CommandType, guard } from '@blargbot/cluster/utils';
+import { format, IFormattable, util } from '@blargbot/formatting';
 import { EmbedField, EmbedOptions } from 'eris';
 import moment from 'moment-timezone';
+
+import templates from '../../text';
+import { CommandResult } from '../../types';
+
+const cmd = templates.commands.timers;
 
 export class TimersCommand extends GlobalCommand {
     public constructor() {
@@ -13,87 +18,107 @@ export class TimersCommand extends GlobalCommand {
             definitions: [
                 {
                     parameters: '{page:integer=1}',
-                    description: 'Lists all the currently active timers here',
+                    description: cmd.list.description,
                     execute: (ctx, [page]) => this.listTimers(ctx, page.asInteger)
                 },
                 {
                     parameters: 'info {timerId}',
-                    description: 'Shows detailed information about a given timer',
+                    description: cmd.info.description,
                     execute: (ctx, [timerId]) => this.getTimer(ctx, timerId.asString)
                 },
                 {
                     parameters: 'cancel|delete {timerIds[]}',
-                    description: 'Cancels currently active timers',
+                    description: cmd.cancel.description,
                     execute: (ctx, [timerIds]) => this.cancelTimers(ctx, timerIds.asStrings)
                 },
                 {
                     parameters: 'clear',
-                    description: 'Clears all currently active timers',
+                    description: cmd.clear.description,
                     execute: (ctx) => this.clearAllTimers(ctx)
                 }
             ]
         });
     }
 
-    public async listTimers(context: CommandContext, page: number): Promise<string> {
+    public async listTimers(context: CommandContext, page: number): Promise<CommandResult> {
         const pageSize = 15;
         const source = guard.isGuildCommandContext(context) ? context.channel.guild.id : context.author.id;
         const eventsPage = await context.database.events.list(source, page - 1, pageSize);
         if (eventsPage.total === 0)
-            return this.success('There are no active timers!');
+            return cmd.list.none;
 
-        const header = ['Id', 'Elapsed', 'Remain', 'User', 'Type', 'Content'] as const;
-        const maxLength = header.map(s => s.length) as [number, number, number, number, number, number];
-        const grid: Array<readonly [string, string, string, string, string, string]> = [];
-        for (const event of eventsPage.events) {
-            const userId = 'user' in event ? event.user : undefined;
-            const userObj = userId !== undefined ? context.discord.users.get(userId) : undefined;
-            const user = userObj !== undefined ? humanize.fullName(userObj) : userId ?? '';
-            let content = 'content' in event ? event.content : '';
-            if (content.length > 40)
-                content = content.slice(0, 37) + '...';
+        const columns = [
+            cmd.list.table.id,
+            cmd.list.table.elapsed,
+            cmd.list.table.remain,
+            cmd.list.table.user,
+            cmd.list.table.type,
+            cmd.list.table.content
+        ] as const;
 
-            const row = [
-                simpleId(event.id),
-                moment(event.starttime).fromNow(true),
-                moment(event.endtime).fromNow(true),
-                user,
-                event.type,
-                content
-            ] as const;
+        const table: IFormattable<string> = {
+            [format](formatter) {
+                const headers = columns.map(c => c.header[format](formatter));
+                const maxLength = headers.map(s => s.length);
+                const grid: Array<readonly string[]> = [];
+                for (const event of eventsPage.events) {
+                    const userId = 'user' in event ? event.user : undefined;
+                    const user = userId !== undefined ? context.discord.users.get(userId) : undefined;
+                    let content = 'content' in event ? event.content : '';
+                    if (content.length > 40)
+                        content = `${content.slice(0, 37)}...`;
 
-            for (let i = 0; i < row.length; i++)
-                maxLength[i] = Math.max(maxLength[i], row[i].length);
-            grid.push(row);
-        }
-        const gridLines: string[] = [];
-        const pushRow = (row: typeof grid[number]): unknown => gridLines.push(row.map((s, i) => s.padEnd(maxLength[i], ' ')).join(' | '));
-        pushRow(header);
-        gridLines.push(''.padEnd(gridLines[0].length, '-'));
-        for (const row of grid)
-            pushRow(row);
+                    const row = columns.map(c => c.cell({
+                        id: event.id,
+                        startTime: moment(event.starttime),
+                        endTime: moment(event.endtime),
+                        user,
+                        type: event.type,
+                        content
+                    })[format](formatter));
+
+                    for (let i = 0; i < row.length; i++)
+                        maxLength[i] = Math.max(maxLength[i], row[i].length);
+                    grid.push(row);
+                }
+                const gridLines: string[] = [];
+                const pushRow = (row: typeof grid[number]): unknown => gridLines.push(row.map((s, i) => s.padEnd(maxLength[i], ' ')).join(' | '));
+                pushRow(headers);
+                gridLines.push(''.padEnd(gridLines[0].length, '-'));
+                for (const row of grid)
+                    pushRow(row);
+
+                return gridLines.join('\n');
+            }
+        };
 
         const paging = eventsPage.total > eventsPage.events.length
-            ? `Showing timers ${(page - 1) * pageSize + 1} - ${page * pageSize + 1} of ${eventsPage.total}. Page ${page}/${Math.ceil(eventsPage.total / pageSize)}`
-            : '';
+            ? cmd.list.paged({
+                start: (page - 1) * pageSize + 1,
+                end: page * pageSize + 1,
+                total: eventsPage.total,
+                page,
+                pageCount: Math.ceil(eventsPage.total / pageSize)
+            })
+            : undefined;
 
-        return this.info(`Here are the currently active timers:${codeBlock(gridLines.join('\n'), 'prolog')}${paging}`);
+        return cmd.list.success({ table, paging });
     }
 
-    public async getTimer(context: CommandContext, timerId: string): Promise<SendPayload> {
+    public async getTimer(context: CommandContext, timerId: string): Promise<CommandResult> {
         const source = guard.isGuildCommandContext(context) ? context.channel.guild.id : context.author.id;
         const allTimerIds = await context.database.events.getIds(source);
         const idMatch = allTimerIds.find(t => t.startsWith(timerId));
         const timer = idMatch === undefined ? undefined : await context.database.events.get(idMatch);
 
         if (timer === undefined)
-            return this.error('I couldn\'t find the timer you gave.');
+            return cmd.info.notFound;
 
         const embed: EmbedOptions = {};
         const fields = embed.fields = [] as EmbedField[];
 
         embed.title = `Timer #${simpleId(timer.id)}`;
-        embed.description = 'content' in timer ? timer.content.length > 2000 ? timer.content.slice(0, 1997) + '...' : timer.content : undefined;
+        embed.description = 'content' in timer ? timer.content.length > 2000 ? `${timer.content.slice(0, 1997)}...` : timer.content : undefined;
         fields.push({
             name: 'Type',
             value: timer.type,
@@ -114,10 +139,37 @@ export class TimersCommand extends GlobalCommand {
             inline: false
         });
 
-        return { embeds: [embed] };
+        return {
+            embeds: [
+                {
+                    title: cmd.info.embed.title({ id: simpleId(timer.id) }),
+                    description: util.literal('content' in timer ? timer.content.length > 2000 ? `${timer.content.slice(0, 1997)}...` : timer.content : undefined),
+                    fields: [
+                        {
+                            name: cmd.info.embed.field.type.name,
+                            value: util.literal(timer.type),
+                            inline: true
+                        },
+                        ... 'user' in timer
+                            ? [{
+                                name: cmd.info.embed.field.user.name,
+                                value: cmd.info.embed.field.user.value({ userId: timer.user }),
+                                inline: true
+                            }]
+                            : [],
+                        {
+                            name: cmd.info.embed.field.duration.name,
+                            value: cmd.info.embed.field.duration.value({ start: moment(timer.starttime), end: moment(timer.endtime) }),
+                            inline: false
+                        }
+                    ]
+
+                }
+            ]
+        };
     }
 
-    public async cancelTimers(context: CommandContext, timerIds: readonly string[]): Promise<string> {
+    public async cancelTimers(context: CommandContext, timerIds: readonly string[]): Promise<CommandResult> {
         const source = guard.isGuildCommandContext(context) ? context.channel.guild.id : context.author.id;
         const allTimerIds = await context.database.events.getIds(source);
         const matchIds = allTimerIds.filter(i => timerIds.some(j => i.startsWith(j)));
@@ -132,38 +184,27 @@ export class TimersCommand extends GlobalCommand {
         }
 
         if (successes.length === 0)
-            return this.error(`I couldnt find ${p(timerIds.length, 'the timer', 'any of the timers')} you specified!`);
+            return cmd.cancel.timersMissing({ count: timerIds.length });
 
-        const lines = [`Cancelled ${successes.length} ${p(successes.length, 'timer')}:`];
-        for (const id of successes)
-            lines.push(`\`${simpleId(id)}\``);
-        if (failures.length > 0) {
-            lines.push(`Could not find ${p(failures.length, 'id')}:`);
-            for (const id of failures)
-                lines.push(`\`${simpleId(id)}\``);
-        }
-
-        if (failures.length > 0)
-            return this.warning(lines.join('\n'));
-        return this.success(lines.join('\n'));
+        return failures.length === 0
+            ? cmd.cancel.success.default({ success: successes.map(simpleId) })
+            : cmd.cancel.success.partial({ success: successes.map(simpleId), fail: failures.map(simpleId) });
     }
 
-    public async clearAllTimers(context: CommandContext): Promise<string> {
+    public async clearAllTimers(context: CommandContext): Promise<CommandResult> {
         const source = guard.isGuildCommandContext(context) ? context.channel.guild.id : context.author.id;
-        const shouldClear = await context.util.queryConfirm({
-            context: context.channel,
-            actors: context.author,
-            prompt: this.warning('Are you sure you want to clear all timers?'),
-            confirm: 'Yes',
-            cancel: 'No',
+        const shouldClear = await context.queryConfirm({
+            prompt: cmd.clear.confirm.prompt,
+            continue: cmd.clear.confirm.continue,
+            cancel: cmd.clear.confirm.cancel,
             fallback: false
         });
 
         if (!shouldClear)
-            return this.info('Cancelled clearing of timers');
+            return cmd.clear.cancelled;
 
         await context.cluster.timeouts.deleteAll(source);
-        return this.success('All timers cleared');
+        return cmd.clear.success;
     }
 }
 

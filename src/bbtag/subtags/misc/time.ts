@@ -2,31 +2,23 @@ import { parse } from '@blargbot/core/utils';
 
 import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError } from '../../errors';
+import templates from '../../text';
 import { SubtagType } from '../../utils';
+
+const tag = templates.subtags.time;
 
 export class TimeSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'time',
             category: SubtagType.MISC,
-            description: 'If you provide `time`, you should also provide `parseFormat` to ensure it is being interpreted correctly.\n' +
-                'See the [moment documentation](http://momentjs.com/docs/#/displaying/format/) for more format information.\n' +
-                'See [here](http://momentjs.com/docs/#/parsing/) for parsing documentation. ' +
-                'See [here](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones) for a list of timezone codes.',
+            description: tag.description,
             definition: [
                 {
                     parameters: ['format?:YYYY-MM-DDTHH:mm:ssZ', 'time?:now', 'parseFormat?', 'fromTimezone?:Etc/UTC', 'toTimezone?:Etc/UTC'],
-                    description: '`time` is in `fromTimezone` and converted to `toTimezone` using `format`.',
-                    exampleCode: 'Berlin (as toTimezone): {time;HH:mm;;;;Europe/Berlin}\n' +
-                        'Berlin from UTC 12:00: {time;HH:mm;12:00;HH:mm;;Europe/Berlin}\n' +
-                        'Berlin (as fromTimezone): {time;HH:mm;;;Europe/Berlin}\n' +
-                        'Berlin (as fromTimezone and empty toTimezone): {time;HH:mm;;;Europe/Berlin;}\n' +
-                        'New York from Berlin (12:00 in Berlin): {time;HH:mm;12:00;HH:mm;Europe/Berlin;America/New_York}',
-                    exampleOut: 'Time Berlin (as toTimezone): 23:33\n' +
-                        'Berlin from UTC 12:00: 13:00\n' +
-                        'Berlin (as fromTimezone): 23:33\n' +
-                        'Berlin (as fromTimezone and empty toTimezone): 21:33\n' +
-                        'New York from Berlin (12:00 in Berlin): 06:00',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'string',
                     execute: (_, [format, time, parseFormat, fromTimezone, toTimezone]) => this.changeTimezone(time.value, parseFormat.value, fromTimezone.value, format.value, toTimezone.value)
                 }

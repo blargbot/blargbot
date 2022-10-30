@@ -1,8 +1,8 @@
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
 import { TimerSubtag } from '@blargbot/bbtag/subtags/bot/timer';
+import { argument } from '@blargbot/test-util/mock';
 import { duration } from 'moment-timezone';
 
-import { argument } from '../../mock';
 import { runSubtagTests } from '../SubtagTestSuite';
 
 runSubtagTests({

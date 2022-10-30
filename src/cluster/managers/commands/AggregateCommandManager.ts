@@ -1,10 +1,13 @@
 import { Cluster } from '@blargbot/cluster';
 import { Command } from '@blargbot/cluster/command';
 import { CommandGetResult, CommandManagers, ICommandManager } from '@blargbot/cluster/types';
+import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent';
 import { MessageIdQueue } from '@blargbot/core/MessageIdQueue';
-import { guard, humanize } from '@blargbot/core/utils';
+import { guard } from '@blargbot/core/utils';
 import { CommandPermissions, NamedGuildCommandTag } from '@blargbot/domain/models';
 import { Client as Discord, Guild, KnownTextableChannel, PossiblyUncachedMessage, User } from 'eris';
+
+import templates from '../../text';
 
 export class AggregateCommandManager implements ICommandManager, CommandManagers {
     public readonly messages: MessageIdQueue;
@@ -104,17 +107,19 @@ export class AggregateCommandManager implements ICommandManager, CommandManagers
             return;
         }
 
-        let author: string | undefined;
+        let author: { username: string; discriminator: string; } | undefined;
         if ('author' in message)
-            author = humanize.fullName(message.author);
+            author = message.author;
         else {
             const chatlog = await this.#cluster.database.chatlogs.getByMessageId(message.id);
             if (chatlog !== undefined) {
-                author = (await this.#cluster.util.getUser(chatlog.userid))?.username;
+                author = await this.#cluster.util.getUser(chatlog.userid);
             }
         }
 
         if (author !== undefined)
-            await this.#cluster.util.send(message.channel.id, `**${author}** deleted their command message.`);
+            await this.#cluster.util.send(message.channel.id, new FormattableMessageContent({
+                content: templates.commands.$errors.messageDeleted({ user: author })
+            }));
     }
 }

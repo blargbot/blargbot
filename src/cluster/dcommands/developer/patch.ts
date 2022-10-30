@@ -1,67 +1,73 @@
 import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType, guard } from '@blargbot/cluster/utils';
-import { Constants, EmbedField, EmbedOptions } from 'eris';
+import { util } from '@blargbot/formatting';
+import { Constants } from 'eris';
+
+import templates from '../../text';
+import { CommandResult } from '../../types';
+
+const cmd = templates.commands.patch;
 
 export class PatchCommand extends GlobalCommand {
     public constructor() {
         super({
             name: 'patch',
             category: CommandType.DEVELOPER,
+            flags: [
+                { flag: 'f', word: 'fixes', description: cmd.flags.fixes },
+                { flag: 'n', word: 'notes', description: cmd.flags.notes }
+            ],
             definitions: [
                 {
                     parameters: '{features+?}',
-                    description: 'Makes a patch note',
+                    description: cmd.default.description,
                     execute: (ctx, [features], flags) => this.patch(ctx, features.asOptionalString, flags.f?.merge().raw, flags.n?.merge().raw)
                 }
-            ],
-            flags: [
-                { flag: 'f', word: 'fixes', description: 'The bug fixes of the patch.' },
-                { flag: 'n', word: 'notes', description: 'Other notes.' }
             ]
         });
     }
 
-    public async patch(context: CommandContext, features: string | undefined, fixes: string | undefined, notes: string | undefined): Promise<string> {
+    public async patch(context: CommandContext, features: string | undefined, fixes: string | undefined, notes: string | undefined): Promise<CommandResult> {
         const channel = await context.util.getChannel(context.config.discord.channels.changelog);
         if (channel === undefined || !guard.isGuildChannel(channel) || !guard.isTextableChannel(channel))
-            return this.error('I cant find the changelog channel!');
+            return cmd.default.changelogMissing;
 
         if (features === undefined && fixes === undefined && notes === undefined)
-            return this.error('I cant send out an empty patch note!');
+            return cmd.default.messageEmpty;
 
         const role = await context.util.getRole(channel.guild, context.config.discord.roles.updates);
         const version = await context.cluster.version.getVersion();
-        const fields: EmbedField[] = [];
-        const embed: EmbedOptions = {
-            author: { name: `Version ${version}` },
-            fields: fields,
+        const embed = {
+            author: { name: cmd.default.embed.author.name({ version }) },
+            title: features === undefined ? undefined : cmd.default.embed.title,
+            description: util.literal(features),
+            fields: [
+                ...fixes === undefined ? [] : [{
+                    name: cmd.default.embed.field.bugFixes.name,
+                    value: util.literal(fixes)
+                }],
+                ...notes === undefined ? [] : [{
+                    name: cmd.default.embed.field.otherNotes.name,
+                    value: util.literal(notes)
+                }]
+            ],
             color: 0x2df952
         };
 
-        if (features !== undefined) {
-            embed.title = 'New Features and Changes';
-            embed.description = features;
-        }
-
-        if (fixes !== undefined)
-            fields.push({ name: 'Bug Fixes', value: fixes });
-
-        if (notes !== undefined)
-            fields.push({ name: 'Other Notes', value: notes });
-
-        const confirmed = await context.util.queryConfirm({
-            context: context.channel,
-            actors: context.author,
-            prompt: { content: 'This is a preview of what the patch will look like', embeds: [embed] },
-            confirm: 'Looks good, post it!',
-            cancel: 'Nah let me change something'
+        const confirmed = await context.queryConfirm({
+            prompt: {
+                content: cmd.default.confirm.prompt,
+                embeds: [embed]
+            },
+            continue: cmd.default.confirm.continue,
+            cancel: cmd.default.confirm.cancel
         });
 
         if (confirmed !== true)
-            return this.info('Patch cancelled');
+            return cmd.default.cancelled;
 
         const changelog = await context.send(channel, {
-            content: role?.mention,
+            content: util.literal(role?.mention),
             embeds: [embed],
             allowedMentions: {
                 roles: role === undefined ? undefined : [role.id]
@@ -69,11 +75,11 @@ export class PatchCommand extends GlobalCommand {
         });
 
         if (changelog === undefined)
-            return this.error('I wasnt able to send the patch notes!');
+            return cmd.default.failed;
 
         if (changelog.channel.type === Constants.ChannelTypes.GUILD_NEWS)
             await changelog.crosspost();
 
-        return this.success('Done!');
+        return cmd.default.success;
     }
 }

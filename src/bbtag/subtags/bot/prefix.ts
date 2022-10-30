@@ -1,6 +1,9 @@
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
+import templates from '../../text';
 import { SubtagType } from '../../utils';
+
+const tag = templates.subtags.prefix;
 
 export class PrefixSubtag extends CompiledSubtag {
     public constructor() {
@@ -10,9 +13,9 @@ export class PrefixSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: [],
-                    description: 'Gets the command prefix used to call this bbtag.',
-                    exampleCode: 'Your prefix is {prefix}',
-                    exampleOut: 'Your prefix is b!',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'string',
                     execute: ctx => this.getPrefix(ctx)
                 }
@@ -27,7 +30,7 @@ export class PrefixSubtag extends CompiledSubtag {
         const prefix = await context.database.guilds.getSetting(context.guild.id, 'prefix');
         switch (typeof prefix) {
             case 'string': return prefix;
-            case 'undefined': return context.util.config.discord.defaultPrefix;
+            case 'undefined': return context.util.defaultPrefix;
             default: return prefix[0];
         }
     }

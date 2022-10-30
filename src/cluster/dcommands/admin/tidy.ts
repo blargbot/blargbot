@@ -1,19 +1,34 @@
 import { GuildCommand, SingleThreadMiddleware } from '@blargbot/cluster/command';
-import { GuildCommandContext } from '@blargbot/cluster/types';
+import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType } from '@blargbot/cluster/utils';
-import { createSafeRegExp, guard, pluralise as p } from '@blargbot/core/utils';
+import { createSafeRegExp, guard } from '@blargbot/core/utils';
 import { ApiError, DiscordRESTError, KnownMessage, KnownTextableChannel, User } from 'eris';
 import moment, { Moment } from 'moment-timezone';
+
+import templates from '../../text';
+
+const cmd = templates.commands.tidy;
 
 export class TidyCommand extends GuildCommand {
     public constructor() {
         super({
             name: 'tidy',
             category: CommandType.ADMIN,
+            flags: [
+                { flag: 'b', word: 'bots', description: cmd.flags.bots },
+                { flag: 'i', word: 'invites', description: cmd.flags.invites },
+                { flag: 'l', word: 'links', description: cmd.flags.links },
+                { flag: 'e', word: 'embeds', description: cmd.flags.embeds },
+                { flag: 'a', word: 'attachments', description: cmd.flags.attachments },
+                { flag: 'u', word: 'user', description: cmd.flags.user },
+                { flag: 'q', word: 'query', description: cmd.flags.query },
+                { flag: 'I', word: 'invert', description: cmd.flags.invert },
+                { flag: 'y', word: 'yes', description: cmd.flags.yes }
+            ],
             definitions: [
                 {
                     parameters: '{count:integer=100}',
-                    description: 'Clears messages from chat',
+                    description: cmd.default.description,
                     execute: (ctx, [count], flags) => this.tidy(ctx, count.asInteger, {
                         botsOnly: flags.b !== undefined,
                         invites: flags.i !== undefined,
@@ -26,33 +41,22 @@ export class TidyCommand extends GuildCommand {
                         confirm: flags.y !== undefined
                     })
                 }
-            ],
-            flags: [
-                { flag: 'b', word: 'bots', description: 'Remove messages from bots.' },
-                { flag: 'i', word: 'invites', description: 'Remove messages containing invites.' },
-                { flag: 'l', word: 'links', description: 'Remove messages containing links.' },
-                { flag: 'e', word: 'embeds', description: 'Remove messages containing embeds.' },
-                { flag: 'a', word: 'attachments', description: 'Remove messages containing attachments.' },
-                { flag: 'u', word: 'user', description: 'Removes messages from the users specified. Separate users by commas' },
-                { flag: 'q', word: 'query', description: 'Removes messages that match the provided query as a regex.' },
-                { flag: 'I', word: 'invert', description: 'Reverses the effects of all the flag filters.' },
-                { flag: 'y', word: 'yes', description: 'Bypasses the confirmation' }
             ]
         });
 
         this.middleware.push(new SingleThreadMiddleware(ctx => ctx.channel.id));
     }
 
-    public async tidy(context: GuildCommandContext, count: number, options: TidyOptions): Promise<string | undefined> {
+    public async tidy(context: GuildCommandContext, count: number, options: TidyOptions): Promise<CommandResult> {
         if (count <= 0)
-            return this.error(`I cannot delete ${count} messages!`);
+            return cmd.default.notNegative({ count });
 
         count = Math.min(count, 500);
 
         const filter = await buildFilter(context, options);
         switch (filter) {
-            case 'INVALID_REGEX': return this.error('That regex is not safe!');
-            case 'INVALID_USER': return this.error('I couldnt find some of the users you gave!');
+            case 'INVALID_REGEX': return templates.regex.invalid;
+            case 'INVALID_USER': return cmd.default.invalidUsers;
         }
 
         const messages: KnownMessage[] = [];
@@ -69,21 +73,17 @@ export class TidyCommand extends GuildCommand {
             nextTyping = await checkTyping(context.channel, nextTyping);
         }
 
-        const queryText = messages.length < count
-            ? `${messages.length} ${p(messages.length, 'message')} after searching through ${searched} ${p(searched, 'message')}`
-            : `${messages.length} ${p(messages.length, 'message')}`;
-
-        const confirmed = options.confirm || await context.util.queryConfirm({
-            context: context.message,
-            actors: context.author,
-            prompt: this.info(`I am about to attempt to delete ${queryText}. Are you sure you wish to continue?\n${buildSummary(messages)}`),
-            cancel: 'Cancel',
-            confirm: 'Continue',
+        const confirmed = options.confirm || await context.queryConfirm({
+            prompt: messages.length < count
+                ? cmd.default.confirmQuery.prompt.foundSome({ total: messages.length, searched, breakdown: buildBreakdown(messages) })
+                : cmd.default.confirmQuery.prompt.foundAll({ total: messages.length, breakdown: buildBreakdown(messages) }),
+            cancel: cmd.default.confirmQuery.cancel,
+            continue: cmd.default.confirmQuery.continue,
             fallback: false
         });
 
         if (!confirmed)
-            return this.success('Tidy cancelled, No messages will be deleted');
+            return cmd.default.cancelled;
 
         messages.push(context.message);
 
@@ -93,14 +93,11 @@ export class TidyCommand extends GuildCommand {
         const commandDeleted = result.success.delete(context.message);
 
         if (result.success.size === 0)
-            return this.error('I wasnt able to delete any of the messages! Please make sure I have permission to manage messages');
+            return cmd.default.deleteFailed;
 
         const resultMessage = result.failed.size === 0
-            ? this.success(`Deleted ${result.success.size} ${p(result.success.size, 'message')}:\n${buildSummary(result.success)}`)
-            : this.warning(`I managed to delete ${result.success.size} of the messages I attempted to delete.\n` +
-                `${buildSummary(result.success)}\n\n` +
-                'Failed:\n' +
-                `${buildSummary(result.failed)}`);
+            ? cmd.default.success.default({ deleted: result.success.size, success: buildBreakdown(result.success) })
+            : cmd.default.success.partial({ deleted: result.success.size, success: buildBreakdown(result.success), failed: buildBreakdown(result.failed) });
 
         if (!commandDeleted)
             return resultMessage;
@@ -175,8 +172,7 @@ async function* fetchMessages(context: GuildCommandContext): AsyncGenerator<Know
         lastId = messages[messages.length - 1].id;
     } while (messages.length === 100);
 }
-
-function buildSummary(messages: Iterable<KnownMessage>): string {
+function buildBreakdown(messages: Iterable<KnownMessage>): Array<{ user: User; count: number; }> {
     const grouped = {} as Record<string, { user: User; count: number; }>;
     for (const message of messages) {
         grouped[message.author.id] ??= { user: message.author, count: 0 };
@@ -185,8 +181,7 @@ function buildSummary(messages: Iterable<KnownMessage>): string {
 
     return Object.values(grouped)
         .sort((a, b) => b.count - a.count)
-        .map(({ user, count }) => `${user.mention} - ${count} ${p(count, 'message')}`)
-        .join('\n');
+        .map(({ user, count }) => ({ user, count }));
 }
 
 async function checkTyping(channel: KnownTextableChannel, nextTyping: Moment): Promise<Moment> {

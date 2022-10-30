@@ -1,8 +1,13 @@
 import { CommandContext, GlobalCommand, SendTypingMiddleware } from '@blargbot/cluster/command';
 import { CommandType, guard } from '@blargbot/cluster/utils';
-import { humanize } from '@blargbot/core/utils';
 import { FlagResult } from '@blargbot/domain/models';
+import { IFormattable, util } from '@blargbot/formatting';
 import moment from 'moment-timezone';
+
+import templates from '../../text';
+import { CommandResult } from '../../types';
+
+const cmd = templates.commands.feedback;
 
 export class FeedbackCommand extends GlobalCommand {
 
@@ -10,40 +15,40 @@ export class FeedbackCommand extends GlobalCommand {
         super({
             name: 'feedback',
             category: CommandType.GENERAL,
+            flags: [
+                { flag: 'c', word: 'command', description: cmd.flags.command },
+                { flag: 'b', word: 'bbtag', description: cmd.flags.bbtag },
+                { flag: 'a', word: 'docs', description: cmd.flags.docs },
+                { flag: 'o', word: 'other', description: cmd.flags.other }
+            ],
             definitions: [
                 {
                     parameters: '{description+}',
-                    description: 'Give me general feedback about the bot',
+                    description: cmd.general.description,
                     execute: (ctx, [description], flags) => this.submitFeedback(ctx, description.asString, flags)
                 },
                 {
                     parameters: 'suggest|suggestion {description+}',
-                    description: 'Tell me something you want to be added or changed',
+                    description: cmd.suggest.description,
                     execute: (ctx, [description], flags) => this.submitSuggestion(ctx, description.asString, flags)
                 },
                 {
                     parameters: 'report|bug {description+}',
-                    description: 'Let me know about a bug you found',
+                    description: cmd.report.description,
                     execute: (ctx, [description], flags) => this.submitBugReport(ctx, description.asString, flags)
                 },
                 {
                     parameters: 'edit {caseNumber:integer} {description+}',
-                    description: 'Edit some feedback you have previously sent',
+                    description: cmd.edit.description,
                     execute: (ctx, [caseNumber, description], flags) => this.editFeedback(ctx, caseNumber.asInteger, description.asString, flags)
                 }
-            ],
-            flags: [
-                { flag: 'c', word: 'command', description: 'Signify your feedack is for a command' },
-                { flag: 'b', word: 'bbtag', description: 'Signify your feedack is for BBTag' },
-                { flag: 'a', word: 'docs', description: 'Signify your feedack is for documentation' },
-                { flag: 'o', word: 'other', description: 'Signify your feedack is for other functionality' }
             ]
         });
 
         this.middleware.push(new SendTypingMiddleware());
     }
 
-    public async submitFeedback(context: CommandContext, description: string, flags: FlagResult): Promise<string> {
+    public async submitFeedback(context: CommandContext, description: string, flags: FlagResult): Promise<CommandResult> {
         if (context.util.isBotStaff(context.author.id)) {
             const words = description.toLowerCase().split(' ');
             if (words.length >= 3) {
@@ -54,35 +59,34 @@ export class FeedbackCommand extends GlobalCommand {
             }
         }
 
-        return await this.#submit(context, 'Feedback', description, context.config.discord.channels.feedback, flags, false, 0xaaaf0c);
+        return await this.#submit(context, cmd.types.feedback, description, context.config.discord.channels.feedback, flags, false, 0xaaaf0c);
     }
 
-    public async submitBugReport(context: CommandContext, description: string, flags: FlagResult): Promise<string> {
-        return await this.#submit(context, 'Bug Report', description, context.config.discord.channels.bugreports, flags, true, 0xaf0c0c);
+    public async submitBugReport(context: CommandContext, description: string, flags: FlagResult): Promise<CommandResult> {
+        return await this.#submit(context, cmd.types.bugReport, description, context.config.discord.channels.bugreports, flags, true, 0xaf0c0c);
     }
 
-    public async submitSuggestion(context: CommandContext, description: string, flags: FlagResult): Promise<string> {
-        return await this.#submit(context, 'Suggestion', description, context.config.discord.channels.suggestions, flags, false, 0x1faf0c);
+    public async submitSuggestion(context: CommandContext, description: string, flags: FlagResult): Promise<CommandResult> {
+        return await this.#submit(context, cmd.types.suggestion, description, context.config.discord.channels.suggestions, flags, false, 0x1faf0c);
     }
 
-    public async editFeedback(context: CommandContext, caseNumber: number, description: string, flags: FlagResult): Promise<string> {
-        switch (await this.#checkBlacklist(context)) {
-            case 'GUILD': return this.#blacklistedError(context, 'GUILD');
-            case 'USER': return this.#blacklistedError(context, 'USER');
-        }
+    public async editFeedback(context: CommandContext, caseNumber: number, description: string, flags: FlagResult): Promise<CommandResult> {
+        const blacklisted = await this.#checkBlacklist(context);
+        if (blacklisted !== false)
+            return cmd.errors.blacklisted[blacklisted]({ prefix: context.prefix });
 
         const suggestion = await context.database.suggestions.get(caseNumber);
 
         if (suggestion === undefined)
-            return this.error(`I couldnt find any feedback with the case number ${caseNumber}!`);
+            return cmd.edit.unknownCase({ caseNumber });
 
-        const suggestor = await context.database.suggestors.upsert(context.author.id, humanize.fullName(context.author));
-        if (suggestor === undefined || !suggestion.Author.includes(suggestor))
-            return this.error('You cant edit someone elses suggestion.');
+        const suggester = await context.database.suggesters.upsert(context.author.id, `${context.author.username}#${context.author.discriminator}`);
+        if (suggester === undefined || !suggestion.Author.includes(suggester))
+            return cmd.edit.notOwner;
 
         const res = await this.#getSuggestionDetails(context, description, flags);
-        if (typeof res === 'string')
-            return res;
+        if ('result' in res)
+            return res.result;
 
         const { title, subTypes } = res;
         description = res.description;
@@ -99,93 +103,118 @@ export class FeedbackCommand extends GlobalCommand {
             /* eslint-enable @typescript-eslint/naming-convention */
         });
 
-        return this.success('Your case has been updated.');
+        return cmd.edit.success;
     }
 
     async #getSuggestionDetails(
         context: CommandContext,
         description: string,
         flags: FlagResult
-    ): Promise<string | { description: string; title: string; subTypes: string[]; }> {
+    ): Promise<{ result: CommandResult; } | { description: string; title: string; subTypes: string[]; }> {
         const sections = description.split('\n');
         const title = sections[0].trim();
         description = sections.slice(1).join('\n').trim();
 
         if (title.length > 64)
-            return this.error('The first line of your suggestion cannot be more than 64 characters!');
+            return { result: cmd.errors.titleTooLong({ max: 64 }) };
 
         const subTypes = await this.#getSubtypes(context, flags);
         if (subTypes.length === 0)
-            return this.error('You need to provide at least 1 feedback type.');
+            return { result: cmd.errors.noType };
 
         return { description, title, subTypes };
     }
 
     async #submit(
         context: CommandContext,
-        type: string,
+        type: IFormattable<string>,
         description: string,
         channelId: string,
         flags: FlagResult,
         isBug: boolean,
-        color: number
-    ): Promise<string> {
-        switch (await this.#checkBlacklist(context)) {
-            case 'GUILD': return this.#blacklistedError(context, 'GUILD');
-            case 'USER': return this.#blacklistedError(context, 'USER');
-        }
+        colour: number
+    ): Promise<CommandResult> {
+        const blacklisted = await this.#checkBlacklist(context);
+        if (blacklisted !== false)
+            return cmd.errors.blacklisted[blacklisted]({ prefix: context.prefix });
 
         await context.channel.sendTyping();
 
         const res = await this.#getSuggestionDetails(context, description, flags);
-        if (typeof res === 'string')
-            return res;
+        if ('result' in res)
+            return res.result;
 
         const { title, subTypes } = res;
         description = res.description;
 
-        const suggestor = await context.database.suggestors.upsert(context.author.id, humanize.fullName(context.author));
-        if (suggestor === undefined)
-            return this.error('Something went wrong while trying to submit that! Please try again');
+        const suggester = await context.database.suggesters.upsert(context.author.id, `${context.author.username}#${context.author.discriminator}`);
+        if (suggester === undefined)
+            return cmd.general.unexpectedError;
 
         const record = await context.database.suggestions.create({
             /* eslint-disable @typescript-eslint/naming-convention */
             AA: true,
             Bug: isBug,
             Title: title,
-            Description: description.length === 0 ? '' : description,
+            Description: description,
             Type: subTypes,
-            Author: [suggestor],
+            Author: [suggester],
             Channel: context.channel.id,
             Message: context.message.id
             /* eslint-enable @typescript-eslint/naming-convention */
         });
         if (record === undefined)
-            return this.error('Something went wrong while trying to submit that! Please try again');
+            return cmd.general.unexpectedError;
 
         const websiteLink = context.util.websiteLink(`feedback/${record}`);
         await context.send(channelId, {
-            title: type,
-            url: websiteLink,
-            description: `**${title}**\n\n${description}`,
-            color: color,
-            author: context.util.embedifyAuthor(context.author),
-            fields: [
-                { name: 'Types', value: subTypes.join('\n') },
-                guard.isGuildCommandContext(context)
-                    ? { name: context.channel.guild.name, value: context.channel.guild.id, inline: true }
-                    : { name: 'DM', value: 'DM', inline: true },
-                guard.isGuildCommandContext(context)
-                    ? { name: context.channel.name, value: context.channel.id, inline: true }
-                    : { name: 'DM', value: context.channel.id, inline: true }
-            ],
-            timestamp: new Date(),
-            footer: {
-                text: `Case ${record} | ${context.message.id}`
-            }
+            embeds: [
+                {
+                    title: type,
+                    url: websiteLink,
+                    description: cmd.general.embed.description({
+                        title,
+                        description
+                    }),
+                    color: colour,
+                    author: context.util.embedifyAuthor(context.author),
+                    fields: [
+                        {
+                            name: cmd.general.embed.field.types.name,
+                            value: cmd.general.embed.field.types.value({ types: subTypes })
+                        },
+                        guard.isGuildCommandContext(context)
+                            ? {
+                                name: util.literal(context.channel.guild.name),
+                                value: util.literal(context.channel.guild.id),
+                                inline: true
+                            }
+                            : {
+                                name: cmd.general.dm,
+                                value: cmd.general.dm,
+                                inline: true
+                            },
+                        guard.isGuildCommandContext(context)
+                            ? {
+                                name: util.literal(context.channel.name),
+                                value: util.literal(context.channel.id),
+                                inline: true
+                            }
+                            : {
+                                name: cmd.general.dm,
+                                value: util.literal(context.channel.id),
+                                inline: true
+                            }
+                    ],
+                    timestamp: new Date(),
+                    footer: {
+                        text: cmd.general.embed.footer.text({ caseId: record, messageId: context.message.id })
+                    }
+                }
+            ]
         });
 
-        return this.success(`${type} has been sent with the ID ${record}! 👌\n\nYou can view your ${type.toLowerCase()} here: <${websiteLink}>`);
+        return cmd.general.success({ type, caseId: record, link: websiteLink });
     }
 
     async #getSubtypes(context: CommandContext, flags: FlagResult): Promise<string[]> {
@@ -199,63 +228,49 @@ export class FeedbackCommand extends GlobalCommand {
         if (result.length > 0)
             return result;
 
-        const picked = await context.util.queryMultiple({
+        const picked = await context.queryMultiple({
             context: context.channel,
             actors: context.author,
-            prompt: this.info('Please select the types that apply to your suggestion'),
-            placeholder: 'Select your suggestion type',
+            prompt: cmd.general.queryType.prompt,
+            placeholder: cmd.general.queryType.placeholder,
             minCount: 1,
             choices: [
-                { label: 'Command', value: 'Command', emoji: { name: '🛠️' } },
-                { label: 'BBTag', value: 'BBTag', emoji: { name: '💻' } },
-                { label: 'Documentation', value: 'Documentation', emoji: { name: '📖' } },
-                { label: 'Other Functionality', value: 'Other Functionality', emoji: { name: '❓' } }
+                { label: cmd.general.types.command, value: 'Command', emoji: { name: '🛠️' } },
+                { label: cmd.general.types.bbtag, value: 'BBTag', emoji: { name: '💻' } },
+                { label: cmd.general.types.documentation, value: 'Documentation', emoji: { name: '📖' } },
+                { label: cmd.general.types.other, value: 'Other Functionality', emoji: { name: '❓' } }
             ]
         });
 
         return picked.state === 'SUCCESS' ? picked.value : [];
     }
 
-    async #blacklist(context: CommandContext, add: boolean, type: string, id: string): Promise<string> {
+    async #blacklist(context: CommandContext, add: boolean, type: string, id: string): Promise<CommandResult> {
+        if (!isBlacklistType(type))
+            return cmd.blacklist.unknownType({ type });
+
         const blacklist = await context.database.vars.get('blacklist') ?? { guilds: [], users: [] };
-        let ids: string[];
-        let guilds: string[];
-        let users: string[];
-        switch (type) {
-            case 'user':
-                users = ids = [...blacklist.users];
-                guilds = [...blacklist.guilds];
-                break;
-            case 'guild':
-                users = [...blacklist.users];
-                guilds = ids = [...blacklist.guilds];
-                break;
-            default:
-                return this.error(`I dont know how to blacklist a ${type}! only \`guild\` and \`user\``);
-        }
+        const users = [...blacklist.users];
+        const guilds = [...blacklist.guilds];
+        const ids = type === 'user' ? users : guilds;
 
         if (add) {
             if (ids.includes(id))
-                return this.error(`That ${type} id is already blacklisted!`);
+                return cmd.blacklist.alreadyBlacklisted[type];
             ids.push(id);
         } else {
             const index = ids.indexOf(id);
             if (index === -1)
-                return this.error(`That ${type} id is not blacklisted!`);
+                return cmd.blacklist.notBlacklisted[type];
             ids.splice(index, 1);
         }
 
         await context.database.vars.set('blacklist', { users, guilds });
 
-        return this.success(`The ${type} ${id} has been ${add ? 'blacklisted' : 'removed from the blacklist'}`);
+        return cmd.blacklist.success[type]({ id, added: add });
     }
 
-    #blacklistedError(context: CommandContext, type: 'GUILD' | 'USER'): string {
-        const who = type === 'GUILD' ? 'your guild has' : 'you have';
-        return this.error(`Sorry, ${who} been blacklisted from the use of the \`${context.prefix}feedback\` command. If you wish to appeal this, please join my support guild. You can find a link by doing \`${context.prefix}invite\`.`);
-    }
-
-    async #checkBlacklist(context: CommandContext): Promise<false | 'GUILD' | 'USER'> {
+    async #checkBlacklist(context: CommandContext): Promise<false | 'guild' | 'user'> {
         if (context.util.isBotStaff(context.author.id))
             return false;
 
@@ -264,11 +279,15 @@ export class FeedbackCommand extends GlobalCommand {
             return false;
 
         if (blacklist.users.includes(context.author.id))
-            return 'USER';
+            return 'user';
 
         if (guard.isGuildCommandContext(context) && blacklist.guilds.includes(context.channel.guild.id))
-            return 'GUILD';
+            return 'guild';
 
         return false;
     }
+}
+
+function isBlacklistType(value: string): value is 'user' | 'guild' {
+    return value === 'user' || value === 'guild';
 }

@@ -1,5 +1,11 @@
 import { GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType } from '@blargbot/cluster/utils';
+import { util } from '@blargbot/formatting';
+
+import templates from '../../text';
+import { CommandResult } from '../../types';
+
+const cmd = templates.commands.nato;
 
 export class NatoCommand extends GlobalCommand {
     public constructor() {
@@ -9,14 +15,14 @@ export class NatoCommand extends GlobalCommand {
             definitions: [
                 {
                     parameters: '{text+}',
-                    description: 'Translates the given text into the NATO phonetic alphabet.',
+                    description: cmd.default.description,
                     execute: (_, [text]) => this.natoify(text.asString)
                 }
             ]
         });
     }
 
-    public natoify(text: string): string {
+    public natoify(text: string): CommandResult {
         const result = [];
         let other = '';
         for (const char of text) {
@@ -34,7 +40,7 @@ export class NatoCommand extends GlobalCommand {
         if (other !== '')
             result.push(other);
 
-        return result.join(' ');
+        return util.literal(result.join(' '));
     }
 }
 

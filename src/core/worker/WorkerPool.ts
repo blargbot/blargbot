@@ -85,7 +85,7 @@ export abstract class WorkerPool<Worker extends WorkerConnection<IPCContracts>> 
 
     public async spawn(id: number, timeoutMs = this.defaultTimeout): Promise<Worker> {
         if (id >= this.workerCount)
-            throw new Error(`${this.type} ${id} doesnt exist`);
+            throw new Error(`${this.type} ${id} doesn't exist`);
         if (this.#inProgress.get(id) === true)
             throw new Error(`${this.type} ${id} is already spawning`);
 

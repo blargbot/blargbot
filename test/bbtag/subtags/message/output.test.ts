@@ -1,9 +1,10 @@
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
 import { OutputSubtag } from '@blargbot/bbtag/subtags/message/output';
 import { Emote } from '@blargbot/core/Emote';
+import { argument } from '@blargbot/test-util/mock';
 import { expect } from 'chai';
+import { KnownGuildTextableChannel } from 'eris';
 
-import { argument } from '../../mock';
 import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite';
 
 const emotes = [Emote.parse('<a:test:120272372032032937>'), Emote.parse('<:alsoatest:23094632472398746234>'), Emote.parse('🤔')];
@@ -25,7 +26,7 @@ runSubtagTests({
                 const files = [{ file: 'test content', name: 'test.txt' }];
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
-                const message = ctx.createMessage(SubtagTestContext.createApiMessage({
+                const message = ctx.createMessage<KnownGuildTextableChannel>(SubtagTestContext.createApiMessage({
                     id: '0987654331234567',
                     channel_id: bbctx.channel.id
                 }, ctx.users.command));
@@ -39,9 +40,8 @@ runSubtagTests({
                 bbctx.data.nsfw = 'This is the nsfw message';
 
                 ctx.util.setup(m => m.addReactions(message, argument.isDeepEqual(emotes))).thenResolve({ success: emotes, failed: [] });
-                ctx.util.setup(m => m.send(bbctx.message, argument.isDeepEqual({
+                ctx.util.setup(m => m.send(bbctx.message.channel, argument.isDeepEqual({
                     content: '',
-                    replyToExecuting: false,
                     embeds: embeds,
                     files: files,
                     nsfw: 'This is the nsfw message',
@@ -68,7 +68,7 @@ runSubtagTests({
                 const files = [{ file: 'test content', name: 'test.txt' }];
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
-                const message = ctx.createMessage(SubtagTestContext.createApiMessage({
+                const message = ctx.createMessage<KnownGuildTextableChannel>(SubtagTestContext.createApiMessage({
                     id: '0987654331234567',
                     channel_id: bbctx.channel.id
                 }, ctx.users.command));
@@ -82,9 +82,8 @@ runSubtagTests({
                 bbctx.data.nsfw = 'This is the nsfw message';
 
                 ctx.util.setup(m => m.addReactions(message, argument.isDeepEqual(emotes))).thenResolve({ success: emotes, failed: [] });
-                ctx.util.setup(m => m.send(bbctx.message, argument.isDeepEqual({
+                ctx.util.setup(m => m.send(bbctx.message.channel, argument.isDeepEqual({
                     content: '',
-                    replyToExecuting: false,
                     embeds: embeds,
                     files: files,
                     nsfw: 'This is the nsfw message',
@@ -110,7 +109,7 @@ runSubtagTests({
                 const files = [{ file: 'test content', name: 'test.txt' }];
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
-                const message = ctx.createMessage(SubtagTestContext.createApiMessage({
+                const message = ctx.createMessage<KnownGuildTextableChannel>(SubtagTestContext.createApiMessage({
                     id: '0987654331234567',
                     channel_id: bbctx.channel.id
                 }, ctx.users.command));
@@ -124,9 +123,8 @@ runSubtagTests({
                 bbctx.data.nsfw = 'This is the nsfw message';
 
                 ctx.util.setup(m => m.addReactions(message, argument.isDeepEqual(emotes))).thenResolve({ success: emotes, failed: [] });
-                ctx.util.setup(m => m.send(bbctx.message, argument.isDeepEqual({
+                ctx.util.setup(m => m.send(bbctx.message.channel, argument.isDeepEqual({
                     content: 'This is my message content',
-                    replyToExecuting: false,
                     embeds: embeds,
                     files: files,
                     nsfw: 'This is the nsfw message',
@@ -153,7 +151,7 @@ runSubtagTests({
                 const files = [{ file: 'test content', name: 'test.txt' }];
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
-                const message = ctx.createMessage(SubtagTestContext.createApiMessage({
+                const message = ctx.createMessage<KnownGuildTextableChannel>(SubtagTestContext.createApiMessage({
                     id: '0987654331234567',
                     channel_id: bbctx.channel.id
                 }, ctx.users.command));
@@ -167,9 +165,8 @@ runSubtagTests({
                 bbctx.data.nsfw = 'This is the nsfw message';
 
                 ctx.util.setup(m => m.addReactions(message, argument.isDeepEqual(emotes))).thenResolve({ success: emotes, failed: [] });
-                ctx.util.setup(m => m.send(bbctx.message, argument.isDeepEqual({
+                ctx.util.setup(m => m.send(bbctx.message.channel, argument.isDeepEqual({
                     content: 'This is my message content',
-                    replyToExecuting: false,
                     embeds: embeds,
                     files: files,
                     nsfw: 'This is the nsfw message',
@@ -190,7 +187,7 @@ runSubtagTests({
                 ctx.options.isCC = false;
             },
             postSetup(bbctx, ctx) {
-                const message = ctx.createMessage(SubtagTestContext.createApiMessage({
+                const message = ctx.createMessage<KnownGuildTextableChannel>(SubtagTestContext.createApiMessage({
                     id: '0987654331234567',
                     channel_id: bbctx.channel.id
                 }, ctx.users.command));
@@ -204,9 +201,8 @@ runSubtagTests({
                 bbctx.data.nsfw = undefined;
 
                 ctx.util.setup(m => m.addReactions(message, argument.isDeepEqual([]))).thenResolve({ success: [], failed: [] });
-                ctx.util.setup(m => m.send(bbctx.message, argument.isDeepEqual({
+                ctx.util.setup(m => m.send(bbctx.message.channel, argument.isDeepEqual({
                     content: 'This is my message content',
-                    replyToExecuting: false,
                     embeds: [],
                     files: undefined,
                     nsfw: undefined,

@@ -1,5 +1,4 @@
 import { PrefixSubtag } from '@blargbot/bbtag/subtags/bot/prefix';
-import { Configuration } from '@blargbot/config';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 
@@ -11,10 +10,7 @@ runSubtagTests({
             code: '{prefix}',
             expected: 'b!',
             setup(ctx) {
-                ctx.util.setup(m => m.config, false).thenReturn({
-                    discord: { defaultPrefix: 'b!' }
-                } as Partial<Configuration> as Configuration);
-
+                ctx.util.setup(m => m.defaultPrefix, false).thenReturn('b!');
                 ctx.guildTable.setup(m => m.getSetting(ctx.guild.id, 'prefix')).thenResolve(undefined);
             }
         },

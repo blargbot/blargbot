@@ -50,34 +50,38 @@ export class Cluster extends BaseClient {
         config: Configuration,
         options: ClusterOptions
     ) {
-        super(logger, config, {
-            autoreconnect: true,
-            allowedMentions: {
-                everyone: false,
-                roles: false,
-                users: false
-            },
-            getAllUsers: false,
-            disableEvents: {
-                ['TYPING_START']: true,
-                ['VOICE_STATE_UPDATE']: true
-            },
-            maxShards: options.shardCount,
-            firstShardID: options.firstShardId,
-            lastShardID: options.lastShardId,
-            restMode: true,
-            defaultImageFormat: 'png',
-            defaultImageSize: 512,
-            messageLimit: 5,
-            intents: GatewayIntentBits.Guilds
-                | GatewayIntentBits.GuildMembers
-                | GatewayIntentBits.GuildBans
-                | GatewayIntentBits.GuildPresences
-                | GatewayIntentBits.GuildMessages
-                | GatewayIntentBits.GuildMessageReactions
-                | GatewayIntentBits.GuildEmojisAndStickers
-                | GatewayIntentBits.DirectMessages
-                | GatewayIntentBits.DirectMessageReactions
+        super({
+            logger,
+            config,
+            discordConfig: {
+                autoreconnect: true,
+                allowedMentions: {
+                    everyone: false,
+                    roles: false,
+                    users: false
+                },
+                getAllUsers: false,
+                disableEvents: {
+                    ['TYPING_START']: true,
+                    ['VOICE_STATE_UPDATE']: true
+                },
+                maxShards: options.shardCount,
+                firstShardID: options.firstShardId,
+                lastShardID: options.lastShardId,
+                restMode: true,
+                defaultImageFormat: 'png',
+                defaultImageSize: 512,
+                messageLimit: 5,
+                intents: GatewayIntentBits.Guilds
+                    | GatewayIntentBits.GuildMembers
+                    | GatewayIntentBits.GuildBans
+                    | GatewayIntentBits.GuildPresences
+                    | GatewayIntentBits.GuildMessages
+                    | GatewayIntentBits.GuildMessageReactions
+                    | GatewayIntentBits.GuildEmojisAndStickers
+                    | GatewayIntentBits.DirectMessages
+                    | GatewayIntentBits.DirectMessageReactions
+            }
         });
 
         this.id = options.id;

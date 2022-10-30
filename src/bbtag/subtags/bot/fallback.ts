@@ -1,8 +1,11 @@
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
+import templates from '../../text';
 import { SubtagType } from '../../utils';
 
-export class FallBackSubtag extends CompiledSubtag {
+const tag = templates.subtags.fallback;
+
+export class FallbackSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'fallback',
@@ -10,17 +13,17 @@ export class FallBackSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['message'],
-                    description: 'Should any tag fail to parse, it will be replaced with `message` instead of an error.',
-                    exampleCode: '{fallback;This tag failed} {abc}',
-                    exampleOut: 'This tag failed',
+                    description: tag.clear.description,
+                    exampleCode: tag.clear.exampleCode,
+                    exampleOut: tag.clear.exampleOut,
                     returns: 'nothing',
                     execute: (ctx, [message]) => this.setFallback(ctx, message.value)
                 },
                 {
                     parameters: [],
-                    description: 'Clears the current fallback text.',
-                    exampleCode: '{fallback;This tag failed} {abc} {fallback} {xyz}',
-                    exampleOut: 'This tag failed  `Unknown subtag xyz`',
+                    description: tag.set.description,
+                    exampleCode: tag.set.exampleCode,
+                    exampleOut: tag.set.exampleOut,
                     returns: 'nothing',
                     execute: (ctx) => this.setFallback(ctx, undefined)
                 }

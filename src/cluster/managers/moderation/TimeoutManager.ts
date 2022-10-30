@@ -1,8 +1,10 @@
 import { TimeoutClearResult, TimeoutResult } from '@blargbot/cluster/types';
-import { clampBy, humanize } from '@blargbot/cluster/utils';
+import { clampBy } from '@blargbot/cluster/utils';
+import { format, IFormattable } from '@blargbot/formatting';
 import { Guild, Member, User } from 'eris';
 import moment, { Duration } from 'moment-timezone';
 
+import templates from '../../text';
 import { ModerationManager } from '../ModerationManager';
 import { ModerationManagerBase } from './ModerationManagerBase';
 
@@ -18,7 +20,7 @@ export class TimeoutManager extends ModerationManagerBase {
         this.#ignoreTimeoutClears = new Set();
     }
 
-    public async timeout(member: Member, moderator: User, authorizer: User, duration: Duration, reason?: string): Promise<TimeoutResult> {
+    public async timeout(member: Member, moderator: User, authorizer: User, duration: Duration, reason?: IFormattable<string>): Promise<TimeoutResult> {
         const guild = member.guild;
         const result = await this.#updateUserTimeoutDate(guild, member.id, moderator, authorizer, duration, reason);
         if (result !== 'success') {
@@ -32,7 +34,7 @@ export class TimeoutManager extends ModerationManagerBase {
         return 'success';
     }
 
-    public async clearTimeout(member: Member, moderator: User, authorizer: User, reason?: string): Promise<TimeoutClearResult> {
+    public async clearTimeout(member: Member, moderator: User, authorizer: User, reason?: IFormattable<string>): Promise<TimeoutClearResult> {
         if (member.communicationDisabledUntil === null)
             return 'notTimedOut';
 
@@ -47,13 +49,14 @@ export class TimeoutManager extends ModerationManagerBase {
             return permMessage;
 
         this.#ignoreTimeoutClears.add(`${guild.id}:${member.id}`);
-        await guild.editMember(member.id, { communicationDisabledUntil: null }, `[${humanize.fullName(moderator)}] ${reason ?? ''}`);
+        const formatter = await this.manager.cluster.util.getFormatter(guild);
+        await guild.editMember(member.id, { communicationDisabledUntil: null }, templates.moderation.auditLog({ moderator, reason })[format](formatter));
         await this.modLog.logTimeoutClear(guild, member.user, moderator, reason);
 
         return 'success';
     }
 
-    async #updateUserTimeoutDate(guild: Guild, userId: string, moderator: User, authorizer: User, duration: Duration, reason?: string): Promise<TimeoutResult | { error: unknown; }> {
+    async #updateUserTimeoutDate(guild: Guild, userId: string, moderator: User, authorizer: User, duration: Duration, reason?: IFormattable<string>): Promise<TimeoutResult | { error: unknown; }> {
         const self = guild.members.get(this.cluster.discord.user.id);
         if (self?.permissions.has('moderateMembers') !== true) {
             return 'noPerms';
@@ -73,7 +76,8 @@ export class TimeoutManager extends ModerationManagerBase {
         this.#ignoreTimeouts.add(`${guild.id}:${userId}`);
         try {
             const clampedDuration = clampBy(duration, moment.duration(0), maximumTimeoutDuration, d => d.asMilliseconds());
-            await guild.editMember(userId, { communicationDisabledUntil: moment().utc().add(clampedDuration).toDate() }, `[${humanize.fullName(moderator)}] ${reason ?? ''}`);
+            const formatter = await this.manager.cluster.util.getFormatter(guild);
+            await guild.editMember(userId, { communicationDisabledUntil: moment().utc().add(clampedDuration).toDate() }, templates.moderation.auditLog({ moderator, reason })[format](formatter));
         } catch (err: unknown) {
             this.#ignoreTimeouts.delete(`${guild.id}:${userId}`);
             return { error: err };

@@ -1,10 +1,13 @@
 import { bbtag } from '@blargbot/bbtag';
 import { Cluster } from '@blargbot/cluster';
 import { WhitelistResponse } from '@blargbot/cluster/types';
-import { codeBlock, guard, humanize } from '@blargbot/cluster/utils';
+import { guard, humanize } from '@blargbot/cluster/utils';
+import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent';
 import { GuildTriggerTag } from '@blargbot/domain/models';
 import { mapping } from '@blargbot/mapping';
 import { KnownGuildTextableChannel, KnownMessage, Message, PartialEmoji, User } from 'eris';
+
+import templates from '../text';
 
 export class AutoresponseManager {
     readonly #guilds: Set<string>;
@@ -41,25 +44,26 @@ export class AutoresponseManager {
             this.#guilds.add(guildId);
     }
 
-    public async whitelist(guildId: string, channelId: string, userId: string, reason: string, whitelisted = true): Promise<WhitelistResponse> {
+    public async whitelist(guildId: string, channelId: string, requester: User, reason: string, whitelisted = true): Promise<WhitelistResponse> {
         await this.refresh();
         const isChange = whitelisted !== this.#guilds.has(guildId);
         if (isChange) {
-            if (!this.#cluster.util.isBotStaff(userId)) {
-                const user = await this.#cluster.util.getUser(userId);
+            if (!this.#cluster.util.isBotStaff(requester.id)) {
                 const guild = this.#cluster.discord.guilds.get(guildId);
+                if (guild === undefined)
+                    throw new Error('Failed to find guild');
                 const code = Buffer.from(JSON.stringify(<ArData>{ channel: channelId, guild: guildId })).toString('base64');
                 const message = await this.#cluster.util.send(
                     this.#cluster.config.discord.channels.autoresponse,
-                    `
-New AR request from **${humanize.fullName(user)}** (${userId}):
-**Guild**: ${guild?.name ?? 'UNKNOWN'} (${guildId})
-**Channel**: ${channelId}
-**Members**: ${guild?.memberCount ?? '??'}
-
-${reason.length === 0 ? '*No reason given*' : reason}
-
-${codeBlock(code, 'js')}`
+                    new FormattableMessageContent({
+                        content: templates.autoresponse.prompt({
+                            user: requester,
+                            channelId,
+                            guild,
+                            reason,
+                            code
+                        })
+                    })
                 );
                 await Promise.all(Object.keys(emojiValues).map(emoji => message?.addReaction(emoji)));
                 return 'requested';
@@ -72,9 +76,11 @@ ${codeBlock(code, 'js')}`
         }
 
         if (isChange) {
-            await this.#cluster.util.send(channelId, whitelisted
-                ? '✅ Congratz, your guild has been whitelisted for autoresponses! 🎉\n*It may take up to 15 minutes for them to become available*'
-                : '❌ Sorry, your guild has been rejected for autoresponses. 😿'
+            await this.#cluster.util.send(channelId, new FormattableMessageContent({
+                content: whitelisted
+                    ? templates.autoresponse.whitelist.approved
+                    : templates.autoresponse.whitelist.rejected
+            })
             );
         }
         return whitelisted
@@ -120,7 +126,7 @@ ${codeBlock(code, 'js')}`
             return;
 
         delete this.#debugOutput[key];
-        await this.#cluster.util.sendDM(msg.author, bbtag.createDebugOutput(result));
+        await this.#cluster.util.send(msg.author, new FormattableMessageContent(bbtag.createDebugOutput(result)));
     }
 
     public async handleWhitelistApproval(message: KnownMessage, emoji: PartialEmoji, user: User): Promise<void> {
@@ -138,10 +144,10 @@ ${codeBlock(code, 'js')}`
             return;
 
         const whitelist = emojiValues[emoji.name];
-        const reason = `${whitelist ? 'Approved' : 'Rejected'} by ${humanize.fullName(user)}`;
+        const reason = `${whitelist ? 'Approved' : 'Rejected'} by ${user.username}#${user.discriminator}`;
 
         const promises: Array<Promise<unknown>> = [];
-        promises.push(this.whitelist(mapped.value.guild, mapped.value.channel, user.id, reason, whitelist));
+        promises.push(this.whitelist(mapped.value.guild, mapped.value.channel, user, reason, whitelist));
         for (const m of await message.channel.getMessages()) {
             if (m.author.id === this.#cluster.discord.user.id && m.content.includes(match[0])) {
                 promises.push(m.edit(`${emoji.name} ${m.content.replace(match[0], reason)}`));

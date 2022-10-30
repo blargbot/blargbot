@@ -17,7 +17,7 @@ void (async function () {
                 continue;
             files.push(ifsi.name.slice(0, -3));
         }
-        const content = files.map(f => `export * from './${f}';`).join('\n') + '\n';
+        const content = `${files.map(f => `export * from './${f}';`).join('\n')  }\n`;
         await fs.writeFile(path.join(__dirname, fsi.name, './index.ts'), content, {});
     }
 

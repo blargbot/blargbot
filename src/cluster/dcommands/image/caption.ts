@@ -1,39 +1,44 @@
 import { CommandContext, GlobalImageCommand } from '@blargbot/cluster/command';
-import { guard, humanize } from '@blargbot/core/utils';
+import { guard } from '@blargbot/core/utils';
 import { parse } from '@blargbot/core/utils/parse';
-import { ImageResult, ValidFont } from '@blargbot/image/types';
+import { ValidFont } from '@blargbot/image/types';
+
+import templates from '../../text';
+import { CommandResult } from '../../types';
+
+const cmd = templates.commands.caption;
 
 export class CaptionCommand extends GlobalImageCommand {
     public constructor() {
         super({
             name: 'caption',
+            flags: [
+                { flag: 't', word: 'top', description: cmd.flags.top },
+                { flag: 'b', word: 'bottom', description: cmd.flags.bottom },
+                { flag: 'f', word: 'font', description: cmd.flags.font }
+            ],
             definitions: [
                 {
                     parameters: 'fonts',
-                    description: 'Lists the fonts that are supported',
+                    description: cmd.fonts.description,
                     execute: () => this.listFonts()
                 },
                 {
                     parameters: '',
-                    description: 'Puts captions on an attached image.',
+                    description: cmd.attached.description,
                     execute: (ctx, _, flags) => this.render(ctx, ctx.message.attachments[0]?.url, flags.t?.merge().value, flags.b?.merge().value, flags.f?.merge().value)
                 },
                 {
                     parameters: '{url+}',
-                    description: 'Puts captions on the image in the URL.',
+                    description: cmd.linked.description,
                     execute: (ctx, [url], flags) => this.render(ctx, url.asString, flags.t?.merge().value, flags.b?.merge().value, flags.f?.merge().value)
                 }
-            ],
-            flags: [
-                { flag: 't', word: 'top', description: 'The top caption.' },
-                { flag: 'b', word: 'bottom', description: 'The bottom caption.' },
-                { flag: 'f', word: 'font', description: 'The font to use (case insensitive). Use the command with the -l flag to view the available fonts. Defaults to impact.' }
             ]
         });
     }
 
-    public listFonts(): string {
-        return this.info(`The supported fonts are:${humanize.smartJoin(Object.keys(fontLookup), ', ', ' and ')}`);
+    public listFonts(): CommandResult {
+        return cmd.fonts.success({ fonts: Object.keys(fontLookup) });
     }
 
     public async render(
@@ -42,20 +47,20 @@ export class CaptionCommand extends GlobalImageCommand {
         top: string | undefined,
         bottom: string | undefined,
         fontName = 'impact'
-    ): Promise<string | ImageResult> {
+    ): Promise<CommandResult> {
         if (url === undefined)
-            return this.error('You didnt tell me what image I should caption!');
+            return cmd.errors.imageMissing;
 
         if ((top === undefined || top.length === 0)
             && (bottom === undefined || bottom.length === 0))
-            return this.error('You must give atleast 1 caption!');
+            return cmd.errors.captionMissing;
 
         if (!Object.keys(fontLookup).includes(fontName))
-            return this.error(`${fontName} is not a supported font! Use \`${context.prefix}caption list\` to see all available fonts`);
+            return cmd.errors.fontInvalid({ font: fontName, prefix: context.prefix });
 
         url = parse.url(url);
         if (!guard.isUrl(url))
-            return this.error(`${url} is not a valid url!`);
+            return cmd.linked.invalidUrl({ url });
 
         if (top !== undefined)
             top = await context.util.resolveTags(context, top);

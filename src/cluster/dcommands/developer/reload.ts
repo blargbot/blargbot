@@ -1,7 +1,11 @@
 import { GlobalCommand } from '@blargbot/cluster/command';
-import { ICommandManager } from '@blargbot/cluster/types';
-import { CommandType, pluralise as p } from '@blargbot/cluster/utils';
+import { CommandResult, ICommandManager } from '@blargbot/cluster/types';
+import { CommandType } from '@blargbot/cluster/utils';
 import { ModuleLoader } from '@blargbot/core/modules';
+
+import templates from '../../text';
+
+const cmd = templates.commands.reload;
 
 export class ReloadCommand extends GlobalCommand {
     public constructor() {
@@ -11,24 +15,24 @@ export class ReloadCommand extends GlobalCommand {
             definitions: [
                 {
                     parameters: 'commands {commands[0]}',
-                    description: 'Reloads the given commands, or all commands if none were given',
-                    execute: (ctx, [commands]) => this.reloadModules(ctx.cluster.commands, commands.asStrings, 'command')
+                    description: cmd.commands.description,
+                    execute: (ctx, [commands]) => this.reloadModules(ctx.cluster.commands, commands.asStrings, 'commands')
                 },
                 {
                     parameters: 'events {events[0]}',
-                    description: 'Reloads the given events, or all events if none were given',
-                    execute: (ctx, [events]) => this.reloadModules(ctx.cluster.events, events.asStrings, 'event')
+                    description: cmd.events.description,
+                    execute: (ctx, [events]) => this.reloadModules(ctx.cluster.events, events.asStrings, 'events')
                 },
                 {
                     parameters: 'services {services[0]}',
-                    description: 'Reloads the given services, or all services if none were given',
-                    execute: (ctx, [services]) => this.reloadModules(ctx.cluster.services, services.asStrings, 'service')
+                    description: cmd.services.description,
+                    execute: (ctx, [services]) => this.reloadModules(ctx.cluster.services, services.asStrings, 'services')
                 }
             ]
         });
     }
 
-    public async reloadModules<T>(loader: ModuleLoader<T> | ICommandManager, members: readonly string[], type: string): Promise<string> {
+    public async reloadModules<T>(loader: ModuleLoader<T> | ICommandManager, members: readonly string[], type: keyof typeof cmd): Promise<CommandResult> {
         let count = members.length;
         if (members.length === 0) {
             await (loader instanceof ModuleLoader ? loader.reload(true) : loader.load());
@@ -37,7 +41,7 @@ export class ReloadCommand extends GlobalCommand {
             await (loader instanceof ModuleLoader ? loader.reload(loader.source(members)) : loader.load(members));
         }
 
-        return this.success(`Successfully reloaded ${count} ${p(count, type)}`);
+        return cmd[type].success({ count });
     }
 
 }

@@ -2,7 +2,10 @@ import { guard } from '@blargbot/core/utils';
 
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
+import templates from '../../text';
 import { SubtagType } from '../../utils';
+
+const tag = templates.subtags.flag;
 
 export class FlagSubtag extends CompiledSubtag {
     public constructor() {
@@ -12,10 +15,10 @@ export class FlagSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['flagName'],
-                    description: 'Returns the value of the specified case-sensitive flag code. Use `_` to get the values without a flag.',
-                    exampleCode: '{flag;a} {flag;_}',
-                    exampleIn: 'Hello, -a world!',
-                    exampleOut: 'world! Hello,',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleIn: tag.default.exampleIn,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'string|nothing',
                     execute: (ctx, [flagName]) => this.getFlag(ctx, flagName.value)
                 }

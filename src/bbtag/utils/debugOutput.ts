@@ -1,12 +1,12 @@
-import { codeBlock, humanize } from '@blargbot/core/utils';
+import { IFormattable } from '@blargbot/formatting';
 import { FileContent } from 'eris';
-import moment from 'moment-timezone';
 
 import { SubtagCall } from '../language';
+import templates from '../text';
 import { ExecutionResult } from '../types';
 import { stringify } from './stringify';
 
-export function createDebugOutput(result: ExecutionResult): { content: string; files: FileContent[]; } {
+export function createDebugOutput(result: ExecutionResult): { content: IFormattable<string>; files: FileContent[]; } {
     const performance: Record<string, unknown> = {};
     for (const [key, times] of Object.entries(result.duration.subtag)) {
         if (times !== undefined && times.length > 0) {
@@ -20,12 +20,12 @@ export function createDebugOutput(result: ExecutionResult): { content: string; f
     }
 
     return {
-        content: codeBlock(
-            `         Execution Time: ${humanize.duration(moment.duration(result.duration.active, 'ms'))}\n` +
-            `    Variables Committed: ${result.database.committed}\n` +
-            `Database Execution Time: ${humanize.duration(moment.duration(result.duration.database, 'ms'))}\n` +
-            `   Total Execution Time: ${humanize.duration(moment.duration(result.duration.total, 'ms'))}`,
-            'js'),
+        content: templates.debug.summary({
+            active: result.duration.active,
+            committed: result.database.committed,
+            database: result.duration.database,
+            total: result.duration.total
+        }),
         files: [
             {
                 name: 'bbtag.debug.json',

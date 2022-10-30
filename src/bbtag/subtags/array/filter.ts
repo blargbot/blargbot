@@ -3,8 +3,11 @@ import { parse } from '@blargbot/core/utils';
 import { SubtagArgument } from '../../arguments';
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
+import templates from '../../text';
 import { BBTagRuntimeState } from '../../types';
 import { bbtag, SubtagType } from '../../utils';
+
+const tag = templates.subtags.filter;
 
 export class FilterSubtag extends CompiledSubtag {
     public constructor() {
@@ -14,10 +17,9 @@ export class FilterSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['variable', 'array#10000000', '~code'],
-                    description: 'For every element in `array`, a variable called `variable` will be set and `code` will be executed. Returns a new array containing all the elements that returned the value `true`.' +
-                        '\n\n While inside the `code` parameter, none of the following subtags may be used: `' + bbtag.overrides.filter.join(', ') + '`',
-                    exampleCode: '{set;~array;apples;apple juice;grapefruit}\n{filter;~element;~array;{bool;{get;~element};startswith;apple}}',
-                    exampleOut: '["apples","apple juice"]',
+                    description: tag.default.description({ disabled: bbtag.overrides.filter }),
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'json[]',
                     execute: (ctx, [variable, array, code]) => this.filter(ctx, variable.value, array.value, code)
                 }

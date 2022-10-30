@@ -1,9 +1,9 @@
 import { SortSubtag } from '@blargbot/bbtag/subtags/array/sort';
 import { GetSubtag } from '@blargbot/bbtag/subtags/bot/get';
 import { TagVariableType } from '@blargbot/domain/models';
+import { argument } from '@blargbot/test-util/mock';
 import { expect } from 'chai';
 
-import { argument } from '../../mock';
 import { runSubtagTests } from '../SubtagTestSuite';
 
 runSubtagTests({

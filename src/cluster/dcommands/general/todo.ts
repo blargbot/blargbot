@@ -1,6 +1,10 @@
 import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType } from '@blargbot/cluster/utils';
-import { EmbedOptions } from 'eris';
+
+import templates from '../../text';
+import { CommandResult } from '../../types';
+
+const cmd = templates.commands.todo;
 
 export class ToDoCommand extends GlobalCommand {
     public constructor() {
@@ -10,42 +14,46 @@ export class ToDoCommand extends GlobalCommand {
             definitions: [
                 {
                     parameters: '',
-                    description: 'Shows you your todo list',
+                    description: cmd.list.description,
                     execute: ctx => this.viewTodo(ctx)
                 },
                 {
                     parameters: 'remove {itemId:integer}',
-                    description: 'Removes an item from your todo list by id',
+                    description: cmd.remove.description,
                     execute: (ctx, [itemId]) => this.removeItem(ctx, itemId.asInteger)
                 },
                 {
                     parameters: 'add {item+}',
-                    description: 'Adds an item to your todo list',
+                    description: cmd.add.description,
                     execute: (ctx, [item]) => this.addItem(ctx, item.asString)
                 }
             ]
         });
     }
 
-    public async viewTodo(context: CommandContext): Promise<EmbedOptions> {
-        const todolist = await context.database.users.getTodo(context.author.id);
+    public async viewTodo(context: CommandContext): Promise<CommandResult> {
+        const todoList = await context.database.users.getTodo(context.author.id) ?? [];
         return {
-            author: context.util.embedifyAuthor(context.author),
-            title: 'Todo list',
-            description: todolist === undefined || todolist.length === 0 ? 'You have nothing on your list!' : todolist
-                .map((e, i) => `**${i + 1}.** ${e}`)
-                .join('\n')
+            embeds: [
+                {
+                    author: context.util.embedifyAuthor(context.author),
+                    title: cmd.list.embed.title,
+                    description: cmd.list.embed.description({
+                        items: todoList.map((e, i) => ({ id: i, value: e }))
+                    })
+                }
+            ]
         };
     }
 
-    public async addItem(context: CommandContext, item: string): Promise<string> {
+    public async addItem(context: CommandContext, item: string): Promise<CommandResult> {
         await context.database.users.addTodo(context.author.id, item);
-        return this.success('Done!');
+        return cmd.add.success;
     }
 
-    public async removeItem(context: CommandContext, index: number): Promise<string> {
+    public async removeItem(context: CommandContext, index: number): Promise<CommandResult> {
         if (!await context.database.users.removeTodo(context.author.id, index - 1))
-            return this.error(`Your todo list doesnt have an item ${index}!`);
-        return this.success('Done!');
+            return cmd.remove.unknownId({ id: index });
+        return cmd.remove.success;
     }
 }

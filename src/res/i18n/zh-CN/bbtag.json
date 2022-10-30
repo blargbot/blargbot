@@ -1,0 +1,2460 @@
+{
+    "debug": {
+        "summary": ""
+    },
+    "limits": {
+        "rules": {
+            "useCount": {
+                "default": "",
+                "requests": "",
+                "loops": ""
+            },
+            "staffOnly": {
+                "default": ""
+            },
+            "disabled": {
+                "default": ""
+            },
+            "disabledIn": {
+                "default": ""
+            }
+        }
+    },
+    "analysis": {
+        "unnamed": "",
+        "dynamic": "",
+        "deprecated": ""
+    },
+    "subtag": {
+        "types": {
+            "simple": {
+                "name": "",
+                "description": ""
+            },
+            "misc": {
+                "name": "",
+                "description": ""
+            },
+            "array": {
+                "name": "",
+                "description": ""
+            },
+            "json": {
+                "name": "",
+                "description": ""
+            },
+            "math": {
+                "name": "",
+                "description": ""
+            },
+            "loops": {
+                "name": "",
+                "description": ""
+            },
+            "bot": {
+                "name": "",
+                "description": ""
+            },
+            "message": {
+                "name": "",
+                "description": ""
+            },
+            "channel": {
+                "name": "",
+                "description": ""
+            },
+            "thread": {
+                "name": "",
+                "description": ""
+            },
+            "user": {
+                "name": "",
+                "description": ""
+            },
+            "role": {
+                "name": "",
+                "description": ""
+            },
+            "guild": {
+                "name": "",
+                "description": ""
+            }
+        },
+        "variables": {
+            "server": {
+                "name": "",
+                "description": ""
+            },
+            "author": {
+                "name": "",
+                "description": ""
+            },
+            "global": {
+                "name": "",
+                "description": ""
+            },
+            "temporary": {
+                "name": "",
+                "description": ""
+            },
+            "local": {
+                "name": "",
+                "description": ""
+            }
+        }
+    },
+    "subtags": {
+        "concat": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "filter": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "isArray": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "join": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "map": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "pop": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "push": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "shift": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "shuffle": {
+            "args": {
+                "description": "",
+                "exampleIn": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "array": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "slice": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "sort": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "splice": {
+            "description": "",
+            "delete": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "replace": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "split": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "apply": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "args": {
+            "all": {
+                "description": "",
+                "exampleIn": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "indexed": {
+                "description": "",
+                "exampleIn": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "range": {
+                "description": "",
+                "exampleIn": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "commandName": {
+            "default": {
+                "description": "",
+                "exampleIn": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "commit": {
+            "description": "",
+            "all": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "variables": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "debug": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "dump": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "execTag": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "execCustomCommand": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "fallback": {
+            "clear": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "set": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "flag": {
+            "default": {
+                "description": "",
+                "exampleIn": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "flagsArray": {
+            "default": {
+                "description": "",
+                "exampleIn": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "flagSet": {
+            "default": {
+                "description": "",
+                "exampleIn": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "function": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "get": {
+            "value": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "index": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "inject": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "lock": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "modLog": {
+            "description": "",
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "nsfw": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "params": {
+            "all": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "indexed": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "range": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "paramsArray": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "paramsLength": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "prefix": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "quiet": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "reason": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "request": {
+            "description": "",
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "return": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "rollback": {
+            "description": "",
+            "all": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "variables": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "set": {
+            "clear": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "value": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "array": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "sleep": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "subtagExists": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "suppressLookup": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "throw": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "timer": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "channelCategories": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "channelCategory": {
+            "current": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "channel": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "channelCreate": {
+            "description": "",
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "channelDelete": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "channelEdit": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "channelId": {
+            "current": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "channel": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "channelIsCategory": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "channelIsNsfw": {
+            "current": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "channel": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "channelIsText": {
+            "current": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "channel": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "channelIsThread": {
+            "current": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "channel": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "channelIsVoice": {
+            "current": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "channel": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "channelName": {
+            "current": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "channel": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "channelPosition": {
+            "description": "",
+            "current": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "channel": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "channels": {
+            "current": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "channel": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "channelSetPermissions": {
+            "current": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "channel": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "channelSetPosition": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "channelType": {
+            "description": "",
+            "current": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "channel": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "lastMessageId": {
+            "description": "",
+            "current": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "channel": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "slowMode": {
+            "clearCurrent": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "clearChannel": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "setCurrent": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "setChannel": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "emojiCreate": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "emojiDelete": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "emojis": {
+            "description": "",
+            "all": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "forRole": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "guildBans": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "guildCreatedAt": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "guildFeatures": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "guildIcon": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "guildId": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "guildMembers": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "guildName": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "guildOwnerId": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "guildSetIcon": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "guildSize": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "json": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "jsonClean": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "jsonGet": {
+            "parse": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "path": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "jsonKeys": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "jsonSet": {
+            "delete": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "set": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "create": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "jsonSort": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "jsonStringify": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "jsonValues": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "for": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "forEach": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "repeat": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "while": {
+            "value": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "condition": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "absolute": {
+            "value": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "array": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "base": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "decrement": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "count": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "increment": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "count": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "math": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "max": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "min": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "numberFormat": {
+            "description": "",
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "separator": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "parseFloat": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "parseInt": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "randomInt": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "round": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "roundDown": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "roundUp": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "delete": {
+            "description": "",
+            "trigger": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "inCurrent": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "inOther": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "edit": {
+            "description": "",
+            "inCurrentText": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "inCurrentEmbed": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "inCurrentFull": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "inOtherText": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "inOtherEmbed": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "inOtherFull": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "embed": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "embedBuild": {
+            "description": "",
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "everyoneMention": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "file": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "hereMention": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "messageAttachments": {
+            "trigger": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "inCurrent": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "inOther": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "messageEditTime": {
+            "description": "",
+            "trigger": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "inCurrent": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "inOther": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "messageEmbeds": {
+            "trigger": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "inCurrent": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "inOther": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "messageId": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "messageReply": {
+            "trigger": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "inCurrent": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "inOther": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "messageSender": {
+            "trigger": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "inCurrent": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "inOther": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "messageText": {
+            "trigger": {
+                "description": "",
+                "exampleCode": "",
+                "exampleOut": ""
+            },
+            "inCurrent": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "inOther": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "messageTime": {
+            "trigger": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "inCurrent": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "inOther": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "messageType": {
+            "description": "",
+            "trigger": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "other": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "output": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "reactionAdd": {
+            "description": "",
+            "output": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "inCurrent": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "inOther": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "reaction": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "reactionUser": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "reactionList": {
+            "reactions": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "users": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "reactionRemove": {
+            "all": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "user": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "reactionRemoveAll": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "send": {
+            "description": "",
+            "full": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "textAndEmbed": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "textOrEmbed": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "waitMessage": {
+            "description": "",
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "filtered": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "waitReaction": {
+            "description": "",
+            "default": {
+                "description": "",
+                "exampleIn": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "filtered": {
+                "description": "",
+                "exampleIn": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "webhook": {
+            "description": "",
+            "empty": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "withUser": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "withFile": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "base64Decode": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "base64Encode": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "bool": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "brainfuck": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "capitalize": {
+            "ignoreRest": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "restLower": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "choose": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "clean": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "color": {
+            "description": "",
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "convert": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "comment": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "decancer": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "escapeBBTag": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "hash": {
+            "basic": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "secure": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "htmlDecode": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "htmlEncode": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "if": {
+            "description": "",
+            "value": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "valueElse": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "conditionThen": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "conditionElse": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "indexOf": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "lang": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "length": {
+            "default": {
+                "description": "",
+                "exampleIn": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "logic": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "lower": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "md5": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "newline": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "operator": {
+            "%": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "*": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "+": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "-": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "/": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "^": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "<": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "<=": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "!=": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "==": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            ">": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            ">=": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "!": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "&&": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "||": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "xor": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "contains": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "includes": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "endswith": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "startswith": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "pad": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "randomChoose": {
+            "array": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "args": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "randomString": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "realPad": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "withDirection": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "regexMatch": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "regexReplace": {
+            "description": "",
+            "output": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "text": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "regexSplit": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "regexTest": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "replace": {
+            "output": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "text": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "reverse": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "space": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "substring": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "switch": {
+            "default": {
+                "description": "",
+                "exampleIn": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "time": {
+            "description": "",
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "trim": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "unindent": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "upper": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "uriDecode": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "uriEncode": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "void": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "roleAdd": {
+            "description": "",
+            "target": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "other": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "roleColor": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "roleCreate": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "roleDelete": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "roleId": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "roleMembers": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "roleMention": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "roleName": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "rolePermissions": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "rolePosition": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "roleRemove": {
+            "description": "",
+            "target": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "other": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "roles": {
+            "guild": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "user": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "roleSetColor": {
+            "clear": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "set": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "roleSetMentionable": {
+            "enable": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "set": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "roleSetName": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "roleSetPermissions": {
+            "clear": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "set": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "roleSetPosition": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "roleSize": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "argsArray": {
+            "default": {
+                "description": "",
+                "exampleIn": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "argsLength": {
+            "default": {
+                "description": "",
+                "exampleIn": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "isCustomCommand": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "lb": {
+            "description": "",
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "rb": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "semi": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "tagAuthor": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "tagAuthorizer": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "zws": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "ban": {
+            "description": "",
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "withReason": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "noPerms": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "dm": {
+            "text": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "embed": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "full": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "isStaff": {
+            "target": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "user": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "isUserBoosting": {
+            "target": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "user": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "kick": {
+            "description": "",
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "withReason": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "pardon": {
+            "description": "",
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "withReason": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "randomUser": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "timeout": {
+            "description": "",
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "withReason": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "unban": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "withReason": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "userActivity": {
+            "description": "",
+            "target": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "user": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "userActivityType": {
+            "description": "",
+            "target": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "user": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "userAvatar": {
+            "description": "",
+            "target": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "user": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "userBoostDate": {
+            "description": "",
+            "target": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "user": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "userCreatedAt": {
+            "target": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "user": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "userDiscriminator": {
+            "description": "",
+            "target": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "user": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "userHasRole": {
+            "description": "",
+            "target": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "user": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "userHasRoles": {
+            "description": "",
+            "target": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "user": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "userId": {
+            "target": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "user": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "userIsBot": {
+            "target": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "user": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "userJoinedAt": {
+            "description": "",
+            "target": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "user": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "userMention": {
+            "target": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "user": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "userName": {
+            "target": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "user": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "userNickname": {
+            "target": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "user": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "userRoles": {
+            "target": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "user": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "userSetNickname": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "userSetRoles": {
+            "description": "",
+            "target": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "user": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "userStatus": {
+            "description": "",
+            "target": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "user": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "userTimeout": {
+            "description": "",
+            "target": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "user": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "userTimeZone": {
+            "target": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "user": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "warn": {
+            "description": "",
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            },
+            "withReason": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        },
+        "warnings": {
+            "default": {
+                "description": "",
+                "exampleOut": "",
+                "exampleCode": ""
+            }
+        }
+    }
+}

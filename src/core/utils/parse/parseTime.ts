@@ -24,7 +24,7 @@ export function parseTime(text: 'now' | 'today' | 'tomorrow' | 'yesterday' | str
         const magnitude = sign * parseFloat(match[1]);
         const key = match[2].toLowerCase();
         if (!guard.hasProperty(prettyTimeMagnitudes, key))
-            throw new Error('Invalid quantity ' + match[2]);
+            throw new Error(`Invalid quantity ${  match[2]}`);
         const quantity = prettyTimeMagnitudes[key];
         return now.add(magnitude, quantity);
     }

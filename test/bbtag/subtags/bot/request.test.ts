@@ -1,6 +1,6 @@
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
 import { RequestSubtag } from '@blargbot/bbtag/subtags/bot/request';
-import { EscapeBbtagSubtag } from '@blargbot/bbtag/subtags/misc/escapebbtag';
+import { EscapeBBTagSubtag } from '@blargbot/bbtag/subtags/misc/escapeBBTag';
 import { expect } from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite';
@@ -32,7 +32,7 @@ runSubtagTests({
         },
         {
             code: '{request;https://httpbin.org/post;{escapebbtag;{"method":"post"}}}',
-            subtags: [new EscapeBbtagSubtag()],
+            subtags: [new EscapeBBTagSubtag()],
             timeout: 10000,
             setup(ctx) {
                 ctx.util.setup(m => m.canRequestDomain('httpbin.org')).thenReturn(true);
@@ -69,7 +69,7 @@ runSubtagTests({
         },
         {
             code: '{request;https://httpbin.org/post;{escapebbtag;{"method":"post","headers":{"x-test":true}}};{escapebbtag;{"age":123}}}',
-            subtags: [new EscapeBbtagSubtag()],
+            subtags: [new EscapeBBTagSubtag()],
             timeout: 10000,
             setup(ctx) {
                 ctx.util.setup(m => m.canRequestDomain('httpbin.org')).thenReturn(true);
@@ -109,7 +109,7 @@ runSubtagTests({
         },
         {
             code: '{request;https://httpbin.org/post;{escapebbtag;{"method":"post","headers":{"x-test":true}}};{escapebbtag;This isnt json}}',
-            subtags: [new EscapeBbtagSubtag()],
+            subtags: [new EscapeBBTagSubtag()],
             timeout: 10000,
             setup(ctx) {
                 ctx.util.setup(m => m.canRequestDomain('httpbin.org')).thenReturn(true);
@@ -147,7 +147,7 @@ runSubtagTests({
         },
         {
             code: '{request;https://httpbin.org/post;{escapebbtag;{"method":"post","headers":{"x-test":true,"content-type":"text/plain"}}};{escapebbtag;{"age":123}}}',
-            subtags: [new EscapeBbtagSubtag()],
+            subtags: [new EscapeBBTagSubtag()],
             timeout: 10000,
             setup(ctx) {
                 ctx.util.setup(m => m.canRequestDomain('httpbin.org')).thenReturn(true);
@@ -187,7 +187,7 @@ runSubtagTests({
         },
         {
             code: '{request;https://httpbin.org/get;{escapebbtag;{"method":"get","headers":{"x-test":true}}};{escapebbtag;{"age":123}}}',
-            subtags: [new EscapeBbtagSubtag()],
+            subtags: [new EscapeBBTagSubtag()],
             timeout: 10000,
             setup(ctx) {
                 ctx.util.setup(m => m.canRequestDomain('httpbin.org')).thenReturn(true);

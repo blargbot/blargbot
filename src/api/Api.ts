@@ -20,9 +20,13 @@ export class Api extends BaseClient {
         config: Configuration,
         options: ApiOptions
     ) {
-        super(logger, config, {
-            restMode: true,
-            intents: []
+        super({
+            logger,
+            config,
+            discordConfig: {
+                restMode: true,
+                intents: []
+            }
         });
 
         this.worker = options.worker;

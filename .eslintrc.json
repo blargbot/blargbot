@@ -49,6 +49,8 @@
         ],
         "strict": "error",
         "semi": "error",
+        "prefer-template": "error",
+        "no-useless-concat": "error",
         "quotes": [
             "error",
             "single",

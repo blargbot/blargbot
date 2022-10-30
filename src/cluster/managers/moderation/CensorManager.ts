@@ -1,9 +1,12 @@
 import { bbtag } from '@blargbot/bbtag';
 import { guard, ModerationType } from '@blargbot/cluster/utils';
+import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent';
 import { GuildCensor, GuildCensorExceptions } from '@blargbot/domain/models';
+import { util } from '@blargbot/formatting';
 import { KnownGuildTextableChannel, Message, PossiblyUncachedTextableChannel } from 'eris';
 import moment from 'moment-timezone';
 
+import templates from '../../text';
 import { ModerationManager } from '../ModerationManager';
 import { ModerationManagerBase } from './ModerationManagerBase';
 
@@ -48,7 +51,13 @@ export class CensorManager extends ModerationManagerBase {
 
         const tags = [];
         for (const [id, censor] of matches) {
-            const result = await this.manager.warns.warn(message.member, this.cluster.discord.user, this.cluster.discord.user, censor.weight, censor.reason ?? 'Said a blacklisted phrase.');
+            const result = await this.manager.warns.warn(
+                message.member,
+                this.cluster.discord.user,
+                this.cluster.discord.user,
+                censor.weight,
+                util.literal(censor.reason) ?? templates.censor.warnReason
+            );
             const tag = censor[`${result.type}Message`] ?? censors.rule?.[`${result.type}Message`];
             if (tag !== undefined)
                 tags.push({ id: parseInt(id), tag, action: result.type });
@@ -70,7 +79,7 @@ export class CensorManager extends ModerationManagerBase {
             });
 
             if (debugCtx?.channelId === message.channel.id)
-                await this.cluster.util.sendDM(message.author, bbtag.createDebugOutput(result));
+                await this.cluster.util.send(message.author, new FormattableMessageContent(bbtag.createDebugOutput(result)));
         }));
 
         return true;
@@ -85,7 +94,15 @@ export class CensorManager extends ModerationManagerBase {
         if (parsedAntiMention === 0 || isNaN(parsedAntiMention) || message.mentions.length + message.roleMentions.length < parsedAntiMention)
             return false;
 
-        switch (await this.manager.bans.ban(message.channel.guild, message.author, this.cluster.discord.user, this.cluster.discord.user, 1, 'Mention spam', moment.duration(Infinity))) {
+        switch (await this.manager.bans.ban(
+            message.channel.guild,
+            message.author,
+            this.cluster.discord.user,
+            this.cluster.discord.user,
+            1,
+            templates.censor.mentionSpam.ban.reason,
+            moment.duration(Infinity)
+        )) {
             case 'success':
             case 'memberTooHigh':
             case 'alreadyBanned':
@@ -93,7 +110,9 @@ export class CensorManager extends ModerationManagerBase {
             case 'noPerms':
             case 'moderatorNoPerms':
             case 'moderatorTooLow':
-                await this.cluster.util.send(message, `${message.author.username} is mention spamming, but I lack the permissions to ban them!`);
+                await this.cluster.util.reply(message, new FormattableMessageContent({
+                    content: templates.censor.mentionSpam.ban.failed({ user: message.author })
+                }));
                 return true;
         }
     }

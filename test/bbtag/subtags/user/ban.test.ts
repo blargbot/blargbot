@@ -1,9 +1,9 @@
 import { BBTagRuntimeError, NotANumberError, UserNotFoundError } from '@blargbot/bbtag/errors';
 import { BanSubtag } from '@blargbot/bbtag/subtags/user/ban';
+import { argument } from '@blargbot/test-util/mock';
 import { Member, User } from 'eris';
 import moment, { Duration } from 'moment-timezone';
 
-import { argument } from '../../mock';
 import { runSubtagTests } from '../SubtagTestSuite';
 
 function isDuration(ms: number): Duration {

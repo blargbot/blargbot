@@ -1,8 +1,12 @@
 import { GuildCommand } from '@blargbot/cluster/command';
-import { GuildCommandContext } from '@blargbot/cluster/types';
-import { CommandType, humanize } from '@blargbot/cluster/utils';
-import { guard, pluralise as p } from '@blargbot/core/utils';
+import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
+import { CommandType } from '@blargbot/cluster/utils';
+import { guard } from '@blargbot/core/utils';
 import { ApiError, DiscordRESTError, KnownChannel } from 'eris';
+
+import templates from '../../text';
+
+const cmd = templates.commands.modLog;
 
 export class ModlogCommand extends GuildCommand {
     public constructor() {
@@ -12,41 +16,41 @@ export class ModlogCommand extends GuildCommand {
             definitions: [
                 {
                     parameters: '{channel:channel+?}',
-                    description: 'Sets the channel to use as the modlog channel',
+                    description: cmd.setChannel.description,
                     execute: (ctx, [channel]) => this.setChannel(ctx, channel.asOptionalChannel ?? ctx.channel)
                 },
                 {
                     parameters: 'disable',
-                    description: 'Disables the modlog',
+                    description: cmd.disable.description,
                     execute: ctx => this.setChannel(ctx, undefined)
                 },
                 {
                     parameters: 'clear|delete {ids:integer[0]}',
-                    description: 'Deletes specific modlog entries. If you dont provide any, all the entries will be removed',
+                    description: cmd.clear.description,
                     execute: (ctx, [ids]) => this.clearModlog(ctx, ids.asIntegers)
                 }
             ]
         });
     }
 
-    public async setChannel(context: GuildCommandContext, channel: KnownChannel | undefined): Promise<string> {
+    public async setChannel(context: GuildCommandContext, channel: KnownChannel | undefined): Promise<CommandResult> {
         if (channel !== undefined && (!guard.isGuildChannel(channel) || channel.guild !== context.channel.guild))
-            return this.error('The modlog channel must be on this server!');
+            return cmd.setChannel.notOnGuild;
         if (channel !== undefined && !guard.isTextableChannel(channel))
-            return this.error('The modlog channel must be a text channel!');
+            return cmd.setChannel.notTextChannel;
 
         await context.database.guilds.setSetting(context.channel.guild.id, 'modlog', channel?.id);
 
-        if (channel === undefined)
-            return this.success('The modlog is disabled');
-        return this.success(`Modlog entries will now be sent in ${channel.mention}`);
+        return channel === undefined
+            ? cmd.disable.success
+            : cmd.setChannel.success({ channel });
     }
 
-    public async clearModlog(context: GuildCommandContext, ids: readonly number[]): Promise<string> {
+    public async clearModlog(context: GuildCommandContext, ids: readonly number[]): Promise<CommandResult> {
         const modlogs = await context.database.guilds.removeModlogCases(context.channel.guild.id, ids.length === 0 ? undefined : ids);
 
         if (modlogs === undefined || modlogs.length === 0)
-            return this.error('No modlogs were found!');
+            return cmd.clear.notFound;
 
         const modlogChanel = await context.database.guilds.getSetting(context.channel.guild.id, 'modlog');
         const missingChannel: number[] = [];
@@ -85,15 +89,15 @@ export class ModlogCommand extends GuildCommand {
             }
         }
 
-        const errors = [
-            missingChannel.length > 0 ? `I couldnt find the modlog channel for cases ${humanize.smartJoin(missingChannel.map(c => `\`${c}\``), ', ', ' and ')}` : undefined,
-            missingMessage.length > 0 ? `I couldnt find the modlog message for cases ${humanize.smartJoin(missingMessage.map(c => `\`${c}\``), ', ', ' and ')}` : undefined,
-            noperms.length > 0 ? `I didnt have permission to delete the modlog for cases ${humanize.smartJoin(noperms.map(c => `\`${c}\``), ', ', ' and ')}` : undefined
-        ].filter(guard.hasValue);
+        const errors = [];
+        if (missingChannel.length > 0)
+            errors.push(cmd.clear.channelMissing({ modlogs: missingChannel }));
+        if (missingMessage.length > 0)
+            errors.push(cmd.clear.messageMissing({ modlogs: missingMessage }));
+        if (noperms.length > 0)
+            errors.push(cmd.clear.permissionMissing({ modlogs: noperms }));
 
-        if (errors.length > 0)
-            return this.warning(`I successfully deleted ${modlogs.length} ${p(modlogs.length, 'modlog')} from my database.`, ...errors);
-        return this.success(`I successfully deleted ${modlogs.length} ${p(modlogs.length, 'modlog')} from my database.`);
+        return cmd.clear.success({ count: modlogs.length, errors });
     }
 }
 

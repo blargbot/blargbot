@@ -1,3 +1,5 @@
+import { IFormattable } from '@blargbot/formatting';
+
 export interface StoredGuildSettings {
     readonly actonlimitsonly?: boolean;
     readonly adminrole?: string; // role tag or role name
@@ -23,6 +25,7 @@ export interface StoredGuildSettings {
     readonly tableflip?: boolean;
     readonly timeoutat?: number;
     readonly timeoutoverride?: string;
+    readonly language?: string;
 }
 
 export type GuildSettingDocs = {
@@ -32,13 +35,13 @@ export type GuildSettingDocs = {
 type GetConfigurableSettingKey<T extends keyof StoredGuildSettings> = GuildSettingTypeName<StoredGuildSettings[T]> extends never ? never : T;
 
 type GuildSettingTypeName<T> =
-    | (T extends string ? 'string' | 'channel' | 'role' | 'permission' : never)
+    | (T extends string ? 'string' | 'channel' | 'role' | 'permission' | 'locale' : never)
     | (T extends number ? 'float' | 'int' : never)
     | (T extends boolean ? 'bool' : never)
 
 type GuildSettingDescriptor<T extends keyof StoredGuildSettings = keyof StoredGuildSettings> = {
     readonly key: T;
-    readonly name: string;
-    readonly desc: string;
+    readonly name: IFormattable<string>;
+    readonly desc: IFormattable<string>;
     readonly type: GuildSettingTypeName<StoredGuildSettings[T]>;
 }

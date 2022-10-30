@@ -1,8 +1,13 @@
 import { GuildCommand } from '@blargbot/cluster/command';
-import { GuildCommandContext } from '@blargbot/cluster/types';
-import { CommandType, humanize } from '@blargbot/cluster/utils';
+import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
+import { CommandType } from '@blargbot/cluster/utils';
 import { FlagResult } from '@blargbot/domain/models';
+import { util } from '@blargbot/formatting';
 import { Member } from 'eris';
+
+import templates from '../../text';
+
+const cmd = templates.commands.unmute;
 
 export class UnmuteCommand extends GuildCommand {
     public constructor() {
@@ -10,29 +15,23 @@ export class UnmuteCommand extends GuildCommand {
             name: 'unmute',
             category: CommandType.ADMIN,
             flags: [
-                { flag: 'r', word: 'reason', description: 'The reason for the unmute.' }
+                { flag: 'r', word: 'reason', description: cmd.flags.reason }
             ],
             definitions: [
                 {
                     parameters: '{user:member+}',
-                    description: 'Removes the special muted role from the user. \n' +
-                        'If mod-logging is enabled, the mute will be logged.',
+                    description: cmd.default.description,
                     execute: (ctx, [user], flags) => this.unmute(ctx, user.asMember, flags)
                 }
             ]
         });
     }
 
-    public async unmute(context: GuildCommandContext, member: Member, flags: FlagResult): Promise<string> {
-        const reason = flags.r?.merge().value;
-
-        switch (await context.cluster.moderation.mutes.unmute(member, context.author, reason)) {
-            case 'notMuted': return this.error(`${humanize.fullName(member.user)} is not currently muted`);
-            case 'noPerms': return this.error('I don\'t have permission to unmute users! Make sure I have the `manage roles` permission and try again.');
-            case 'moderatorNoPerms': return this.error('You don\'t have permission to unmute users! Make sure you have the `manage roles` permission and try again.');
-            case 'roleTooHigh': return this.error('I can\'t revoke the muted role! (it\'s higher than or equal to my top role)');
-            case 'moderatorTooLow': return this.error('You can\'t revoke the muted role! (it\'s higher than or equal to your top role)');
-            case 'success': return this.success(`**${humanize.fullName(member.user)}** has been unmuted`);
-        }
+    public async unmute(context: GuildCommandContext, member: Member, flags: FlagResult): Promise<CommandResult> {
+        const state = await context.cluster.moderation.mutes.unmute(member, context.author, util.literal(flags.r?.merge().value));
+        const reason = cmd.default.state[state];
+        return typeof reason === 'function'
+            ? reason({ user: member.user })
+            : reason;
     }
 }

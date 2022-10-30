@@ -4,8 +4,11 @@ import { SubtagArgument } from '../../arguments';
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError, NotANumberError } from '../../errors';
+import templates from '../../text';
 import { BBTagRuntimeState } from '../../types';
 import { SubtagType } from '../../utils';
+
+const tag = templates.subtags.repeat;
 
 export class RepeatSubtag extends CompiledSubtag {
     public constructor() {
@@ -16,9 +19,9 @@ export class RepeatSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['~code', 'amount'],
-                    description: 'Repeatedly executes `code` `amount` times.',
-                    exampleCode: '{repeat;e;10}',
-                    exampleOut: 'eeeeeeeeee',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'loop',
                     execute: (ctx, [code, amount]) => this.repeat(ctx, amount.value, code)
                 }

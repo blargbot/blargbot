@@ -14,9 +14,7 @@ export class CassandraDbDumpStore implements DumpStore {
 
     public async add(dump: Dump): Promise<void> {
         await this.cassandra.execute(
-            'INSERT INTO message_outputs (id, content, embeds, channelid)\n' +
-            'VALUES (:id, :content, :embeds, :channelid)\n' +
-            `USING TTL ${dump.expiry}`,
+            `INSERT INTO message_outputs (id, content, embeds, channelid)\nVALUES (:id, :content, :embeds, :channelid)\nUSING TTL ${dump.expiry}`,
             {
                 id: dump.id,
                 channelid: dump.channelid,
@@ -35,12 +33,7 @@ export class CassandraDbDumpStore implements DumpStore {
     public async migrate(): Promise<void> {
         try {
             await this.cassandra.execute(
-                'CREATE TABLE IF NOT EXISTS message_outputs (\n' +
-                '    id BIGINT PRIMARY KEY,\n' +
-                '    content TEXT,\n' +
-                '    embeds TEXT,\n' +
-                '    channelid BIGINT,\n' +
-                ')');
+                'CREATE TABLE IF NOT EXISTS message_outputs (\n    id BIGINT PRIMARY KEY,\n    content TEXT,\n    embeds TEXT,\n    channelid BIGINT,\n)');
         } catch (err: unknown) {
             this.logger.error(err);
         }

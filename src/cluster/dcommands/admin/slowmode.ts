@@ -2,6 +2,12 @@ import { GuildCommand } from '@blargbot/cluster/command';
 import { CommandType } from '@blargbot/cluster/utils';
 import { guard } from '@blargbot/core/utils';
 import { ApiError, DiscordRESTError, KnownChannel } from 'eris';
+import moment from 'moment-timezone';
+
+import templates from '../../text';
+import { CommandResult } from '../../types';
+
+const cmd = templates.commands.slowMode;
 
 export class SlowmodeCommand extends GuildCommand {
     public constructor() {
@@ -11,58 +17,58 @@ export class SlowmodeCommand extends GuildCommand {
             definitions: [
                 {
                     parameters: '{time:integer} {channel:channel+?}',
-                    description: 'Sets the channel\'s slowmode to 1 message every `time` seconds, with a max of 6 hours',
+                    description: cmd.on.description,
                     execute: (ctx, [time, channel]) => this.setSlowmode(time.asInteger, channel.asOptionalChannel ?? ctx.channel)
                 },
                 {
                     parameters: 'off {channel:channel+?}',
-                    description: 'Turns off the channel\'s slowmode',
+                    description: cmd.off.description,
                     execute: (ctx, [channel]) => this.disableSlowmode(channel.asOptionalChannel ?? ctx.channel)
                 }
             ]
         });
     }
 
-    public async setSlowmode(time: number, channel: KnownChannel): Promise<string> {
-        if (!guard.isTextableChannel(channel))
-            return this.error('You can only set slowmode on text channels!');
+    public async setSlowmode(time: number, channel: KnownChannel): Promise<CommandResult> {
         if (!guard.isGuildChannel(channel))
-            return this.error('You cant set slowmode on channels outside of a server');
+            return cmd.errors.notInGuild;
+        if (!guard.isTextableChannel(channel))
+            return cmd.errors.notTextChannel;
 
         if (time > 120)
-            return this.error('`time` must be less than 6 hours');
+            return cmd.on.timeTooLong({ duration: moment.duration(120, 's') });
 
         if (time <= 0)
             return await this.disableSlowmode(channel);
 
         try {
             await channel.edit({ rateLimitPerUser: time });
-            return this.success(`Slowmode has been set to 1 message every ${time} seconds in ${channel.mention}`);
+            return cmd.on.success({ duration: moment.duration(time, 's'), channel });
         } catch (err: unknown) {
             if (err instanceof DiscordRESTError) {
                 switch (err.code) {
                     case ApiError.MISSING_PERMISSIONS:
-                        return this.error(`I dont have permission to set slowmode in ${channel.mention}!`);
+                        return cmd.errors.botNoPerms({ channel });
                 }
             }
             throw err;
         }
     }
 
-    public async disableSlowmode(channel: KnownChannel): Promise<string> {
-        if (!guard.isTextableChannel(channel))
-            return this.error('You can only set slowmode on text channels!');
+    public async disableSlowmode(channel: KnownChannel): Promise<CommandResult> {
         if (!guard.isGuildChannel(channel))
-            return this.error('You cant set slowmode on channels outside of a server');
+            return cmd.errors.notInGuild;
+        if (!guard.isTextableChannel(channel))
+            return cmd.errors.notTextChannel;
 
         try {
             await channel.edit({ rateLimitPerUser: 0 });
-            return this.success(`Slowmode has been disabled in ${channel.mention}`);
+            return cmd.off.success({ channel });
         } catch (err: unknown) {
             if (err instanceof DiscordRESTError) {
                 switch (err.code) {
                     case ApiError.MISSING_PERMISSIONS:
-                        return this.error(`I dont have permission to set slowmode in ${channel.mention}!`);
+                        return cmd.errors.botNoPerms({ channel });
                 }
             }
             throw err;

@@ -1,17 +1,22 @@
-import { codeBlock, discord, guard, pluralise } from '@blargbot/core/utils';
-import { AdvancedMessageContent, EmbedField, KnownChannel, KnownTextableChannel, User } from 'eris';
+import { FormatEmbedField, SendContent } from '@blargbot/core/types';
+import { discord, guard } from '@blargbot/core/utils';
+import { format, IFormattable, util } from '@blargbot/formatting';
+import { KnownChannel, KnownTextableChannel, User } from 'eris';
 
 import { Cluster } from '../../Cluster';
+import templates from '../../text';
 import { CommandGetResult, CommandParameter, ICommand } from '../../types';
 import { humanize } from '../../utils';
 import { Documentation, DocumentationGroup, DocumentationPage } from './DocumentationManager';
 import { DocumentationTreeManager } from './DocumentationTreeManager';
 
+const doc = templates.documentation.command;
+
 export class CommandDocumentationManager extends DocumentationTreeManager {
     readonly #cluster: Cluster;
 
     public constructor(cluster: Cluster) {
-        super(cluster, 'cmd', 'help');
+        super(cluster, 'cmd', doc.invalid, doc.prompt);
         this.#cluster = cluster;
     }
 
@@ -36,7 +41,7 @@ export class CommandDocumentationManager extends DocumentationTreeManager {
                         embed: {
                             color: commandDocumentation.embed.color
                         },
-                        selectText: 'Pick a command'
+                        selectText: doc.categories.prompt
                     });
                 }
 
@@ -56,7 +61,7 @@ export class CommandDocumentationManager extends DocumentationTreeManager {
                     ...g.embed,
                     fields: [
                         {
-                            name: `${g.name} commands`,
+                            name: g.name,
                             value: this.#listCommandNames(g.items.filter(i => i.hidden !== true).map(i => i.name))
                         }
                     ]
@@ -66,61 +71,68 @@ export class CommandDocumentationManager extends DocumentationTreeManager {
 
         return {
             id: 'index',
-            name: 'Help',
+            name: doc.index.name,
             tags: [''],
             type: 'group',
             embed: {
                 color: 0x7289da,
                 fields: [
                     ...sortedCategories.filter(g => g.hidden !== true).map(g => ({
-                        name: `${g.name} commands`,
+                        name: doc.categories.displayName({ category: g.name }),
                         value: this.#listCommandNames(g.items.filter(i => i.hidden !== true).map(i => i.name))
                     })),
                     {
-                        name: '\u200B',
-                        value: `For more information about commands, do \`b!help <commandname>\` or visit <${this.#cluster.util.websiteLink('/commands')}>.\n` +
-                            `Want to support the bot? Donation links are available at <${this.#cluster.util.websiteLink('/donate')}> - all donations go directly towards recouping hosting costs.`
+                        name: util.literal('\u200B'),
+                        value: doc.index.footer({
+                            commandsLink: this.#cluster.util.websiteLink('/commands'),
+                            donateLink: this.#cluster.util.websiteLink('/donate')
+                        })
                     }
                 ]
             },
-            selectText: 'Pick a command category',
+            selectText: doc.index.prompt,
             items: sortedCategories
         };
     }
 
-    #listCommandNames(names: readonly string[]): string {
+    #listCommandNames(names: ReadonlyArray<IFormattable<string>>): IFormattable<string> {
         if (names.length === 0)
-            return 'No commands';
+            return doc.list.none;
 
-        function* getPotentialResults(): Generator<string> {
+        function* getPotentialResults(): Generator<IFormattable<string>> {
             let removed = 0;
             const items = [...names];
-            const padding = '```';
-            yield `${padding}${items.join(', ')}${padding}`;
+            yield doc.list.default({ items });
             while (items.length > 0) {
                 items.pop();
                 removed++;
-                yield `${padding}${items.join(', ')}${padding}+ ${removed} more`;
+                yield doc.list.excess({ items, excess: removed });
             }
         }
 
         const charLimit = discord.getLimit('embed.field.value');
-        for (const result of getPotentialResults())
-            if (result.length <= charLimit)
-                return result;
+        return {
+            [format](formatter) {
+                for (const result of getPotentialResults()) {
+                    const str = result[format](formatter);
+                    if (str.length <= charLimit)
+                        return str;
+                }
 
-        return `${names.length} ${pluralise(names.length, 'command')}`;
+                return doc.list.count({ count: names.length })[format](formatter);
+            }
+        };
     }
 
-    protected noMatches(): Awaitable<Omit<AdvancedMessageContent, 'components'>> {
+    protected noMatches(): Omit<SendContent<IFormattable<string>>, 'components'> {
         return {
-            content: '❌ Oops, I couldnt find that command! Try using `b!help` for a list of all commands',
+            content: doc.unknown,
             embeds: []
         };
     }
 
     #getCommandDocs(result: Exclude<CommandGetResult, { state: 'NOT_FOUND'; }>): Documentation {
-        const description = [];
+        let description;
         switch (result.state) {
             case 'ALLOWED':
                 break;
@@ -129,19 +141,18 @@ export class CommandDocumentationManager extends DocumentationTreeManager {
             case 'NOT_IN_GUILD':
             case 'MISSING_PERMISSIONS':
             case 'MISSING_ROLE':
-                description.push(codeBlock(`❌ You cannot use b!${result.detail.command.name}`));
+                description = doc.command.noPerms({ name: result.detail.command.name, description: result.detail.command.description });
                 break;
         }
         const { detail: { command } } = result;
-        const fields: EmbedField[] = [];
-        if (command.description !== undefined && command.description.length > 0)
-            description.push(command.description);
+        const fields: Array<FormatEmbedField<IFormattable<string>>> = [];
+        description ??= command.description;
 
         if (command.aliases.length > 0)
-            fields.push({ name: '**Aliases**', value: command.aliases.join(', ') });
+            fields.push({ name: doc.command.aliases.name, value: doc.command.aliases.value({ aliases: command.aliases }) });
 
         if (command.flags.length > 0)
-            fields.push({ name: '**Flags**', value: humanize.flags(command.flags).join('\n') });
+            fields.push({ name: doc.command.flags.name, value: doc.command.flags.value({ flags: command.flags }) });
 
         const signatures = command.signatures
             .filter(c => !c.hidden)
@@ -155,13 +166,13 @@ export class CommandDocumentationManager extends DocumentationTreeManager {
         for (const signature of signatures) {
             const usage = `b!${command.name}${signature.usage !== '' ? ` ${signature.usage}` : ''}`;
             pages.push({
-                name: usage,
+                name: util.literal(usage),
                 embed: {
                     fields: [
                         ...fields,
                         {
-                            name: `ℹ️  ${usage}`,
-                            value: `${signature.notes.map(n => `> ${n}`).join('\n')}\n\n${signature.description}`.trim()
+                            name: doc.command.usage.name({ usage }),
+                            value: doc.command.usage.value({ notes: signature.notes, description: signature.description })
                         }
                     ]
                 }
@@ -170,71 +181,52 @@ export class CommandDocumentationManager extends DocumentationTreeManager {
 
         return {
             id: command.id,
-            name: command.name,
+            name: util.literal(command.name),
             type: 'paged',
             hidden: result.state !== 'ALLOWED',
             tags: [command.name, ...command.aliases],
             embed: {
                 url: command.isOnWebsite ? `/commands#${command.name}` : undefined,
-                description: description.join('\n'),
-                color: this.#getColor(command.category)
+                description: description,
+                color: command.category.color
             },
-            selectText: 'Pick a command signature',
+            selectText: doc.command.prompt,
             pages: pages.sort((a, b) => a.name < b.name ? -1 : 1)
         };
     }
 
-    #getColor(type: string): number {
-        switch (type.toLowerCase()) {
-            case 'custom': return 0x7289da;
-            case 'general': return 0xefff00;
-            case 'nsfw': return 0x010101;
-            case 'image': return 0xefff00;
-            case 'admin': return 0xff0000;
-            case 'social': return 0xefff00;
-            case 'owner': return 0xff0000;
-            case 'developer': return 0xff0000;
-            case 'staff': return 0xff0000;
-            case 'support': return 0xff0000;
-            default: return 0;
-        }
-    }
-
-    *#getParameterNotes(parameter: CommandParameter): Generator<string> {
+    *#getParameterNotes(parameter: CommandParameter): Generator<IFormattable<string>> {
         switch (parameter.kind) {
             case 'literal':
                 if (parameter.alias.length > 0)
-                    yield `\`${parameter.name}\` can be replaced with ${humanize.smartJoin(parameter.alias.map(a => `\`${a}\``), ', ', ' or ')}`;
+                    yield doc.command.notes.alias({ parameter: parameter.name, aliases: parameter.alias });
                 break;
             case 'concatVar':
             case 'singleVar': {
-                const result = [];
-                if (parameter.type.descriptionSingular !== undefined)
-                    result.push(` should be ${parameter.type.descriptionSingular}`);
-                if (parameter.fallback !== undefined && parameter.fallback.length > 0)
-                    result.push(`defaults to \`${parameter.fallback}\``);
-                if (result.length > 0)
-                    yield `\`${parameter.name}\` ${result.join(' and ')}`;
+                const fallback = parameter.fallback === undefined || parameter.fallback.length === 0 ? undefined : parameter.fallback;
+                const type = parameter.type.type;
+                if (typeof type !== 'string')
+                    yield doc.command.notes.type.literal.single({ name: parameter.name, choices: parameter.type.type, default: fallback });
+                else if (type !== 'string')
+                    yield doc.command.notes.type[type].single({ name: parameter.name, default: fallback });
+                else if (fallback !== undefined)
+                    yield doc.command.notes.type[type].single({ name: parameter.name, default: fallback });
                 break;
             }
             case 'greedyVar': {
-                const result = [];
-                if (parameter.minLength > 1)
-                    result.push(`${parameter.minLength} or more`);
-                if (parameter.type.descriptionPlural !== undefined)
-                    result.push(parameter.type.descriptionPlural);
-                if (result.length > 0)
-                    yield `\`${parameter.name}\` are ${result.join(' ')}`;
+                const type = parameter.type.type;
+                if (typeof type !== 'string')
+                    yield doc.command.notes.type.literal.greedy({ name: parameter.name, min: parameter.minLength, choices: parameter.type.type });
+                else if (type !== 'string')
+                    yield doc.command.notes.type[type].greedy({ name: parameter.name, min: parameter.minLength });
                 break;
-
             }
-
         }
     }
 
-    async *#getCategories(channel: KnownChannel, command: ICommand): AsyncGenerator<{ name: string; id: string; }> {
+    async *#getCategories(channel: KnownChannel, command: ICommand): AsyncGenerator<{ name: IFormattable<string>; id: string; }> {
         if (command.roles.length === 0)
-            yield { name: command.category, id: command.category };
+            yield { name: command.category.name, id: `_${command.category.id}` };
 
         if (guard.isGuildChannel(channel)) {
             for (const roleStr of command.roles) {
@@ -242,7 +234,7 @@ export class CommandDocumentationManager extends DocumentationTreeManager {
                     ?? channel.guild.roles.find(r => r.name.toLowerCase() === roleStr.toLowerCase());
 
                 if (role !== undefined)
-                    yield { name: role.name, id: role.id };
+                    yield { name: util.literal(role.name), id: role.id };
             }
         }
     }

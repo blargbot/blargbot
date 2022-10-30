@@ -4,7 +4,10 @@ import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError, UnknownSubtagError } from '../../errors';
 import { SubtagCall } from '../../language';
+import templates from '../../text';
 import { bbtag, SubtagType } from '../../utils';
+
+const tag = templates.subtags.apply;
 
 export class ApplySubtag extends CompiledSubtag {
     public constructor() {
@@ -14,11 +17,9 @@ export class ApplySubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['subtag', 'args*'],
-                    description:
-                        'Executes `subtag`, using the `args` as parameters. ' +
-                        'If `args` is an array, it will get deconstructed to it\'s individual elements.',
-                    exampleCode: '{apply;randint;[1,4]}',
-                    exampleOut: '3',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'string',
                     execute: (ctx, [subtagName, ...args], subtag) => this.defaultApply(ctx, subtagName.value, args.map(a => a.value), subtag)
                 }

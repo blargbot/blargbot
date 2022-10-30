@@ -1,6 +1,11 @@
 import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType, randChoose, randInt, repeat } from '@blargbot/cluster/utils';
 
+import templates from '../../text';
+import { CommandResult } from '../../types';
+
+const cmd = templates.commands.syntax;
+
 export class SyntaxCommand extends GlobalCommand {
     public constructor() {
         super({
@@ -9,17 +14,19 @@ export class SyntaxCommand extends GlobalCommand {
             definitions: [
                 {
                     parameters: '{commandName+=}',
-                    description: 'Gives you the \'syntax\' for a command 😉',
+                    description: cmd.default.description,
                     execute: (ctx, [commandName]) => this.getSyntax(ctx, commandName.asString)
                 }
             ]
         });
     }
 
-    public getSyntax(context: CommandContext, commandName: string): string {
-        const cleanName = commandName.replace(/[\s\n]+/g, ' ');
-        const correctTokens = repeat(randInt(1, 10), i => getToken(i));
-        return this.error(`Invalid usage!\nProper usage: \`${context.prefix}syntax ${cleanName} ${correctTokens.join(' ')}\``);
+    public getSyntax(context: CommandContext, commandName: string): CommandResult {
+        return cmd.default.success({
+            name: commandName.replace(/[\s\n]+/g, ' '),
+            prefix: context.prefix,
+            tokens: repeat(randInt(1, 10), i => getToken(i))
+        });
     }
 }
 

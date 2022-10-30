@@ -1,3 +1,5 @@
+import { IFormattable } from '@blargbot/formatting';
+
 import { BBTagContext } from '../BBTagContext';
 import { SerializedRuntimeLimit } from '../types';
 import { limits } from './index';
@@ -7,13 +9,12 @@ import { RuntimeLimitRule } from './RuntimeLimitRule';
 
 export abstract class BaseRuntimeLimit implements RuntimeLimit {
     readonly #rules: Record<string, RuntimeLimitRuleCollection | undefined>;
-    readonly #name: keyof typeof limits;
 
-    public abstract get scopeName(): string;
+    public readonly id: keyof typeof limits;
 
-    protected constructor(name: keyof typeof limits) {
+    protected constructor(id: keyof typeof limits) {
         this.#rules = {};
-        this.#name = name;
+        this.id = id;
     }
 
     #getKeys(key: string, useDefault?: true): [rootKey: string, subKey: string]
@@ -45,7 +46,7 @@ export abstract class BaseRuntimeLimit implements RuntimeLimit {
             await rule.check(context, rootKey);
     }
 
-    public rulesFor(rulekey: string): string[] {
+    public rulesFor(rulekey: string): Array<IFormattable<string>> {
         const [rootKey, subKey] = this.#getKeys(rulekey, false);
         const set = this.#rules[rootKey] ?? {};
         const rules = subKey !== undefined
@@ -53,12 +54,12 @@ export abstract class BaseRuntimeLimit implements RuntimeLimit {
             : Object.values(set).flatMap(v => v ?? []);
 
         if (rules.includes(disabledRule))
-            return [disabledRule.displayText(rootKey, this.scopeName)];
-        return rules.map(r => r.displayText(rootKey, this.scopeName));
+            return [disabledRule.displayText(rootKey)];
+        return rules.map(r => r.displayText(rootKey));
     }
 
     public serialize(): SerializedRuntimeLimit {
-        const result: SerializedRuntimeLimit = { rules: {}, type: this.#name };
+        const result: SerializedRuntimeLimit = { rules: {}, type: this.id };
 
         for (const [rootKey, ruleSet] of Object.entries(this.#rules)) {
             if (ruleSet === undefined)

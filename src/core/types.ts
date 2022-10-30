@@ -1,6 +1,6 @@
 import { Snowflake } from '@blargbot/domain/models';
 import { Logger } from '@blargbot/logger';
-import { AdvancedMessageContent, ChannelInteraction, EmbedField, EmbedOptions, FileContent, Guild, InteractionButton, KnownMessage, KnownTextableChannel, Member, SelectMenuOptions, User, UserChannelInteraction } from 'eris';
+import { ActionRow, AdvancedMessageContent, EmbedAuthor, EmbedField, EmbedFooter, EmbedOptions, FileContent, Guild, InteractionButton, KnownMessage, Member, Message, SelectMenu, SelectMenuOptions, TextableChannel, URLButton, User } from 'eris';
 
 import { Binder } from './Binder';
 import { WorkerConnection } from './worker';
@@ -8,16 +8,54 @@ import { WorkerConnection } from './worker';
 export type MalformedEmbed = { fields: [EmbedField]; malformed: true; };
 export type ModuleResult<TModule> = { names: Iterable<string>; module: TModule; };
 export type DMContext = string | KnownMessage | User | Member;
-export type SendContext = UserChannelInteraction | ChannelInteraction | KnownTextableChannel | string
-export type SendEmbed = EmbedOptions & { asString?: string; }
-export type SendFiles = FileContent | FileContent[]
-export interface SendContent extends AdvancedMessageContent {
-    nsfw?: string;
-    isHelp?: boolean;
-    replyToExecuting?: boolean;
+export type SendContext = TextableChannel | string | User;
+export interface SendContent<TString> extends FormatAdvancedMessageContent<TString> {
     files?: FileContent[];
 }
-export type SendPayload = SendContent | EmbedOptions | string | FileContent;
+
+type ReplaceProps<T, U extends { [P in keyof T]?: unknown }> = { [P in keyof T]: P extends keyof U ? U[P] : T[P] }
+export type FormatAdvancedMessageContent<TString> = ReplaceProps<AdvancedMessageContent, {
+    components: Array<FormatActionRow<TString>>;
+    content: TString;
+    embeds: Array<FormatEmbedOptions<TString>>;
+    embed: never;
+    messageReferenceID: never;
+}>;
+
+export type FormatActionRow<TString> = ReplaceProps<ActionRow, {
+    components: Array<FormatActionRowComponents<TString>>;
+}>;
+
+export type FormatActionRowComponents<TString> = FormatButton<TString> | FormatSelectMenu<TString>;
+export type FormatButton<TString> = FormatInteractionButton<TString> | FormatURLButton<TString>;
+export type FormatInteractionButton<TString> = ReplaceProps<InteractionButton, { label: TString; }>;
+export type FormatURLButton<TString> = ReplaceProps<URLButton, { label: TString; }>;
+export type FormatSelectMenu<TString> = ReplaceProps<SelectMenu, {
+    placeholder: TString;
+    options: Array<FormatSelectMenuOptions<TString>>;
+}>;
+export type FormatSelectMenuOptions<TString> = ReplaceProps<SelectMenuOptions, {
+    description: TString;
+    label: TString;
+}>;
+export type FormatEmbedOptions<TString> = ReplaceProps<EmbedOptions, {
+    author: FormatEmbedAuthor<TString>;
+    description: TString;
+    fields: Array<FormatEmbedField<TString>>;
+    footer: FormatEmbedFooter<TString>;
+    title: TString;
+}>;
+export type FormatEmbedAuthor<TString> = ReplaceProps<EmbedAuthor, {
+    name: TString;
+}>;
+export type FormatEmbedField<TString> = ReplaceProps<EmbedField, {
+    name: TString;
+    value: TString;
+}>;
+export type FormatEmbedFooter<TString> = ReplaceProps<EmbedFooter, {
+    text: TString;
+}>;
+
 export type LogEntry = { text: string; level: string; timestamp: string; }
 export type ProcessMessage = { type: string; id: Snowflake; data: unknown; };
 export type ProcessMessageContext<TData, TReply> = { data: TData; id: Snowflake; reply: (data: TReply) => void; };
@@ -52,14 +90,14 @@ export type WorkerIPCContractNames<Worker extends WorkerConnection<IPCContracts>
     : never;
 
 export type BaseIPCContract = {
-    'stop': { masterGets: undefined; workerGets: undefined; };
-    'ready': { masterGets: string; workerGets: never; };
-    'alive': { masterGets: Date; workerGets: never; };
-    'exit': { masterGets: { code: number | null; signal: NodeJS.Signals | null; }; workerGets: never; };
-    'close': { masterGets: { code: number | null; signal: NodeJS.Signals | null; }; workerGets: never; };
-    'disconnect': { masterGets: undefined; workerGets: never; };
-    'kill': { masterGets: unknown; workerGets: never; };
-    'error': { masterGets: Error; workerGets: never; };
+    stop: { masterGets: undefined; workerGets: undefined; };
+    ready: { masterGets: string; workerGets: never; };
+    alive: { masterGets: Date; workerGets: never; };
+    exit: { masterGets: { code: number | null; signal: NodeJS.Signals | null; }; workerGets: never; };
+    close: { masterGets: { code: number | null; signal: NodeJS.Signals | null; }; workerGets: never; };
+    disconnect: { masterGets: undefined; workerGets: never; };
+    kill: { masterGets: unknown; workerGets: never; };
+    error: { masterGets: Error; workerGets: never; };
 }
 
 export interface Binding<TState> {
@@ -84,10 +122,10 @@ type ConfirmQueryOptionsFallback<T extends boolean | undefined> = T extends unde
     ? { fallback?: undefined; }
     : { fallback: boolean; };
 
-export interface QueryOptionsBase {
-    context: KnownTextableChannel | KnownMessage;
+export interface QueryOptionsBase<TString> {
+    context: TextableChannel | Message;
     actors: Iterable<string | User> | string | User;
-    prompt?: string | Omit<SendContent, 'components'>;
+    prompt?: Omit<SendContent<TString>, 'components'> | TString;
     timeout?: number;
 }
 
@@ -106,97 +144,98 @@ export interface QuerySuccess<T> extends QueryBaseResult<'SUCCESS'> {
     readonly value: T;
 }
 
-export interface ConfirmQueryOptionsBase extends QueryOptionsBase {
-    confirm: QueryButton;
-    cancel: QueryButton;
+export interface ConfirmQueryOptionsBase<TString> extends QueryOptionsBase<TString> {
+    continue: QueryButton<TString>;
+    cancel: QueryButton<TString>;
 }
 
-export type ConfirmQueryOptions<T extends boolean | undefined = undefined> = ConfirmQueryOptionsBase & ConfirmQueryOptionsFallback<T>;
+export type SlimConfirmQueryOptions<TString, T extends boolean | undefined = undefined> = Omit<ConfirmQueryOptions<TString, T>, 'context' | 'actors'>;
+export type ConfirmQueryOptions<TString, T extends boolean | undefined = undefined> = ConfirmQueryOptionsBase<TString> & ConfirmQueryOptionsFallback<T>;
 
-export interface ChoiceQueryOptions<T> extends QueryOptionsBase {
-    placeholder: string;
-    choices: Iterable<Omit<SelectMenuOptions, 'value'> & { value: T; }>;
+export interface ChoiceQueryOptions<TString, T> extends QueryOptionsBase<TString> {
+    placeholder: TString;
+    choices: Iterable<Omit<FormatSelectMenuOptions<TString>, 'value'> & { value: T; }>;
 }
 
-export interface TextQueryOptionsBase<T> extends QueryOptionsBase {
-    cancel?: QueryButton;
-    parse?: TextQueryOptionsParser<T>;
+export interface TextQueryOptionsBase<TString, T> extends QueryOptionsBase<TString> {
+    cancel?: QueryButton<TString>;
+    parse?: TextQueryOptionsParser<TString, T>;
 }
 
-export interface TextQueryOptionsParsed<T> extends TextQueryOptionsBase<T> {
-    parse: TextQueryOptionsParser<T>;
+export interface TextQueryOptionsParsed<TString, T> extends TextQueryOptionsBase<TString, T> {
+    parse: TextQueryOptionsParser<TString, T>;
 }
 
-export type SlimTextQueryOptionsParsed<T> = Omit<TextQueryOptionsParsed<T>, 'context' | 'actors'>;
+export type SlimTextQueryOptionsParsed<TString, T> = Omit<TextQueryOptionsParsed<TString, T>, 'context' | 'actors'>;
 
-export interface TextQueryOptions extends TextQueryOptionsBase<string> {
+export interface TextQueryOptions<TString> extends TextQueryOptionsBase<TString, string> {
     parse?: undefined;
 }
 
-export type SlimTextQueryOptions = Omit<TextQueryOptions, 'context' | 'actors'>;
+export type SlimTextQueryOptions<TString> = Omit<TextQueryOptions<TString>, 'context' | 'actors'>;
 
-export interface TextQueryOptionsParser<T> {
-    (message: KnownMessage): Promise<TextQueryOptionsParseResult<T>> | TextQueryOptionsParseResult<T>;
+export interface TextQueryOptionsParser<TString, T> {
+    (message: Message): Promise<TextQueryOptionsParseResult<TString, T>> | TextQueryOptionsParseResult<TString, T>;
 }
 
-export type TextQueryOptionsParseResult<T> =
+export type TextQueryOptionsParseResult<TString, T> =
     | { readonly success: true; readonly value: T; }
-    | { readonly success: false; readonly error?: string | Omit<SendContent, 'components'>; }
+    | { readonly success: false; readonly error?: Omit<SendContent<TString>, 'components'>; }
 
-export interface MultipleQueryOptions<T> extends ChoiceQueryOptions<T> {
+export interface MultipleQueryOptions<TString, T> extends ChoiceQueryOptions<TString, T> {
     minCount?: number;
     maxCount?: number;
 }
 
 export interface ChoiceQuery<T> extends QueryBase<ChoiceQueryResult<T>> {
-    prompt: KnownMessage | undefined;
+    prompt: Message | undefined;
 }
 
-export interface MultipleQuery<T> extends QueryBase<MultipleResult<T>> {
-    prompt: KnownMessage | undefined;
+export interface MultipleQuery<T> extends QueryBase<MultipleQueryResult<T>> {
+    prompt: Message | undefined;
 }
 
 export interface ConfirmQuery<T extends boolean | undefined = undefined> extends QueryBase<T> {
-    prompt: KnownMessage | undefined;
+    prompt: Message | undefined;
 }
 
 export interface TextQuery<T> extends QueryBase<TextQueryResult<T>> {
-    messages: readonly KnownMessage[];
+    messages: readonly Message[];
 }
 
 export type ChoiceQueryResult<T> = QueryResult<'NO_OPTIONS' | 'TIMED_OUT' | 'CANCELLED' | 'FAILED', T>;
-export type MultipleResult<T> = QueryResult<'NO_OPTIONS' | 'EXCESS_OPTIONS' | 'TIMED_OUT' | 'CANCELLED' | 'FAILED', T[]>;
+export type MultipleQueryResult<T> = QueryResult<'NO_OPTIONS' | 'EXCESS_OPTIONS' | 'TIMED_OUT' | 'CANCELLED' | 'FAILED', T[]>;
 export type TextQueryResult<T> = QueryResult<'FAILED' | 'TIMED_OUT' | 'CANCELLED', T>;
 
-export type QueryButton =
-    | string
-    | Partial<Omit<InteractionButton, 'disabled' | 'type' | 'customId'>>
+export type QueryButton<TString> =
+    | TString
+    | Partial<Omit<FormatInteractionButton<TString>, 'disabled' | 'type' | 'customId'>>
 
-export type EntityQueryOptions<T> =
-    | EntityPickQueryOptions<T>
-    | EntityFindQueryOptions
+export type EntityQueryOptions<TString, T> =
+    | EntityPickQueryOptions<TString, T>
+    | EntityFindQueryOptions<TString>
 
-export type SlimEntityQueryOptions<T> =
-    | SlimEntityPickQueryOptions<T>
-    | SlimEntityFindQueryOptions
+export type SlimEntityQueryOptions<TString, T> =
+    | SlimEntityPickQueryOptions<TString, T>
+    | SlimEntityFindQueryOptions<TString>
 
-export interface BaseEntityQueryOptions extends QueryOptionsBase {
-    placeholder?: string;
+export interface BaseEntityQueryOptions<TString> extends QueryOptionsBase<TString> {
+    placeholder?: TString;
 }
 
-export interface EntityPickQueryOptions<T> extends BaseEntityQueryOptions {
+export interface EntityPickQueryOptions<TString, T> extends BaseEntityQueryOptions<TString> {
     choices: Iterable<T>;
     filter?: string;
 }
 
-export type SlimEntityPickQueryOptions<T> = Omit<EntityPickQueryOptions<T>, 'context' | 'actors'>;
+export type SlimEntityPickQueryOptions<TString, T> = Omit<EntityPickQueryOptions<TString, T>, 'context' | 'actors'>;
 
-export interface EntityFindQueryOptions extends BaseEntityQueryOptions {
+export interface EntityFindQueryOptions<TString> extends BaseEntityQueryOptions<TString> {
     guild: string | Guild;
     filter?: string;
 }
 
-export type SlimEntityFindQueryOptions = Omit<EntityFindQueryOptions, 'context' | 'actors'>;
+export type SlimEntityFindQueryOptions<TString> = Omit<EntityFindQueryOptions<TString>, 'context' | 'actors'>;
 
 export interface BindingSuccess<TState> {
     readonly success: true;

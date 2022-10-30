@@ -1,6 +1,12 @@
 import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
-import { codeBlock, CommandType } from '@blargbot/cluster/utils';
+import { CommandType } from '@blargbot/cluster/utils';
 import { EvalResult, GlobalEvalResult, MasterEvalRequest } from '@blargbot/core/types';
+import { inspect } from 'util';
+
+import templates from '../../text';
+import { CommandResult } from '../../types';
+
+const cmd = templates.commands.eval;
 
 export class EvalCommand extends GlobalCommand {
     public constructor() {
@@ -10,69 +16,69 @@ export class EvalCommand extends GlobalCommand {
             definitions: [
                 {
                     parameters: '{~code+}',
-                    execute: (ctx, [code]) => this.eval(ctx, ctx.author.id, code.asString),
-                    description: 'Runs the code you enter on the current cluster'
+                    description: cmd.here.description,
+                    execute: (ctx, [code]) => this.eval(ctx, ctx.author.id, code.asString)
                 },
                 {
                     parameters: 'master {~code+}',
-                    execute: (ctx, [code]) => this.mastereval(ctx, ctx.author.id, code.asString),
-                    description: 'Runs the code you enter on the master process'
+                    description: cmd.master.description,
+                    execute: (ctx, [code]) => this.mastereval(ctx, ctx.author.id, code.asString)
                 },
                 {
                     parameters: 'global {~code+}',
-                    execute: (ctx, [code]) => this.globaleval(ctx, ctx.author.id, code.asString),
-                    description: 'Runs the code you enter on all the clusters and aggregates the result'
+                    description: cmd.global.description,
+                    execute: (ctx, [code]) => this.globaleval(ctx, ctx.author.id, code.asString)
                 },
                 {
                     parameters: 'cluster {clusterId:number} {~code+}',
-                    execute: (ctx, [clusterId, code]) => this.clustereval(ctx, clusterId.asNumber, ctx.author.id, code.asString),
-                    description: 'Runs the code you enter on all the clusters and aggregates the result'
+                    description: cmd.cluster.description,
+                    execute: (ctx, [clusterId, code]) => this.clustereval(ctx, clusterId.asNumber, ctx.author.id, code.asString)
                 }
             ]
         });
     }
 
-    public async eval(context: CommandContext, userId: string, code: string): Promise<string> {
+    public async eval(context: CommandContext, userId: string, code: string): Promise<CommandResult> {
         [, code] = /^```(?:\w*?\s*\n|)(.*)\n```$/s.exec(code) ?? [undefined, code];
 
-        const result = await context.cluster.eval(userId, code);
-        return result.success
-            ? this.success(`Input:${codeBlock(code, 'js')}Output:${codeBlock(result.result)}`)
-            : this.error(`An error occured!${codeBlock(result.error)}`);
+        const response = await context.cluster.eval(userId, code);
+        return response.success
+            ? cmd.here.success({ code, result: inspect(response.result, { depth: 10 }) })
+            : cmd.errors.error({ result: response.error });
     }
 
-    public async mastereval(context: CommandContext, userId: string, code: string): Promise<string> {
+    public async mastereval(context: CommandContext, userId: string, code: string): Promise<CommandResult> {
         [, code] = /^```(?:\w*?\s*\n|)(.*)\n```$/s.exec(code) ?? [undefined, code];
 
         const response = await this.#requestEval(context, { type: 'master', userId, code });
         return response.success
-            ? this.success(`Master eval input:${codeBlock(code, 'js')}Output:${codeBlock(response.result)}`)
-            : this.error(`An error occured!${codeBlock(response.error)}`);
+            ? cmd.master.success({ code, result: inspect(response.result, { depth: 10 }) })
+            : cmd.errors.error({ result: response.error });
     }
 
-    public async globaleval(context: CommandContext, userId: string, code: string): Promise<string> {
+    public async globaleval(context: CommandContext, userId: string, code: string): Promise<CommandResult> {
         [, code] = /^```(?:\w*?\s*\n|)(.*)\n```$/s.exec(code) ?? [undefined, code];
 
         const response = await this.#requestEval(context, { type: 'global', userId, code });
         if (response.success === false)
-            return `An error occured!${codeBlock(response.error)}`;
+            return cmd.errors.error({ result: response.error as string });
 
-        const masterResponse = <GlobalEvalResult>response;
-
-        return `Global eval input:${codeBlock(code, 'js')}${Object.entries(masterResponse).map(([id, response]) => {
-            return response.success
-                ? this.success(`Cluster ${id} output:${codeBlock(response.result)}`)
-                : this.error(`Cluster ${id}: An error occured!${codeBlock(response.error)}`);
-        }).join('')}`;
+        return cmd.global.results.template({
+            code,
+            results: Object.entries(<GlobalEvalResult>response)
+                .map(([clusterId, response]) => response.success
+                    ? cmd.global.results.success({ clusterId: Number(clusterId), result: inspect(response.result, { depth: 10 }) })
+                    : cmd.global.results.failed({ clusterId: Number(clusterId), result: inspect(response.error, { depth: 10 }) }))
+        });
     }
 
-    public async clustereval(context: CommandContext, clusterId: number, userId: string, code: string): Promise<string> {
+    public async clustereval(context: CommandContext, clusterId: number, userId: string, code: string): Promise<CommandResult> {
         [, code] = /^```(?:\w*?\s*\n|)(.*)\n```$/s.exec(code) ?? [undefined, code];
 
         const response = await this.#requestEval(context, { type: `cluster${clusterId}`, userId, code });
         return response.success
-            ? this.success(`Cluster ${clusterId} eval input:${codeBlock(code, 'js')}Output:${codeBlock(response.result)}`)
-            : this.error(`An error occured!${codeBlock(response.error)}`);
+            ? cmd.cluster.success({ clusterId, code, result: inspect(response.result, { depth: 10 }) })
+            : cmd.errors.error({ result: response.error });
     }
 
     async #requestEval(context: CommandContext, data: MasterEvalRequest & { type: `cluster${number}` | 'master'; }): Promise<EvalResult>

@@ -11,5 +11,5 @@ export interface Suggestion {
     Author: string[];
     Edits?: number;
     Notes?: string;
-    'Last Edited'?: number;
+    ['Last Edited']?: number;
 }

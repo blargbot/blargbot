@@ -3,7 +3,10 @@ import { guard } from '@blargbot/core/utils';
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
 import { ChannelNotFoundError } from '../../errors';
+import templates from '../../text';
 import { SubtagType } from '../../utils';
+
+const tag = templates.subtags.channels;
 
 export class ChannelsSubtag extends CompiledSubtag {
     public constructor() {
@@ -13,17 +16,17 @@ export class ChannelsSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: [],
-                    description: 'Returns an array of channel IDs in the current guild',
-                    exampleCode: 'This guild has {length;{channels}} channels.',
-                    exampleOut: 'This guild has {length;{channels}} channels.',
+                    description: tag.current.description,
+                    exampleCode: tag.current.exampleCode,
+                    exampleOut: tag.current.exampleOut,
                     returns: 'id[]',
                     execute: (ctx) => this.getChannels(ctx)
                 },
                 {
                     parameters: ['category', 'quiet?'],
-                    description: 'Returns an array of channel IDs in within the given `category`. If `category` is not a category, returns an empty array. If `category` cannot be found returns `No channel found`, or nothing if `quiet` is `true`.',
-                    exampleCode: 'Category cat-channels has {length;{channels;cat-channels}} channels.',
-                    exampleOut: 'Category cat-channels has 6 channels.',
+                    description: tag.channel.description,
+                    exampleCode: tag.channel.exampleCode,
+                    exampleOut: tag.channel.exampleOut,
                     returns: 'id[]',
                     execute: (ctx, [category, quiet]) => this.getChannelsInCategory(ctx, category.value, quiet.value !== '')
                 }

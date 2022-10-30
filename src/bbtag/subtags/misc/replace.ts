@@ -1,6 +1,9 @@
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
+import templates from '../../text';
 import { SubtagType } from '../../utils';
+
+const tag = templates.subtags.replace;
 
 export class ReplaceSubtag extends CompiledSubtag {
     public constructor() {
@@ -10,17 +13,17 @@ export class ReplaceSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['phrase', 'replaceWith'],
-                    description: 'Replaces the first occurence of `phrase` with `replaceWith`. This is executed on the output from the containing tag.',
-                    exampleCode: 'Hello world! {replace;Hello;Bye}',
-                    exampleOut: 'Bye world!',
+                    description: tag.output.description,
+                    exampleCode: tag.output.exampleCode,
+                    exampleOut: tag.output.exampleOut,
                     returns: 'nothing',
                     execute: (ctx, [phrase, replacewith]) => this.setOutputReplacement(ctx, phrase.value, replacewith.value)
                 },
                 {
                     parameters: ['text', 'phrase', 'replaceWith'],
-                    description: 'Replaces the first occurence of `phrase` in `text` with `replaceWith`.',
-                    exampleCode: 'I like {replace;to eat;eat;nom} cheese. {replace;cheese;ham}',
-                    exampleOut: 'I like to nom ham. ham',
+                    description: tag.text.description,
+                    exampleCode: tag.text.exampleCode,
+                    exampleOut: tag.text.exampleOut,
                     returns: 'string',
                     execute: (_, [text, phrase, replacewith]) => this.replace(text.value, phrase.value, replacewith.value)
                 }

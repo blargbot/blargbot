@@ -1,0 +1,3463 @@
+{
+    "common": {
+        "query": {
+            "cancel": "",
+            "cantUse": "",
+            "choose": {
+                "paged": ""
+            },
+            "user": {
+                "prompt": {
+                    "default": "",
+                    "filtered": ""
+                },
+                "placeholder": "",
+                "choice": {
+                    "label": "",
+                    "description": ""
+                }
+            },
+            "member": {
+                "prompt": {
+                    "default": "",
+                    "filtered": ""
+                },
+                "placeholder": "",
+                "choice": {
+                    "label": "",
+                    "description": ""
+                }
+            },
+            "sender": {
+                "prompt": {
+                    "default": "",
+                    "filtered": ""
+                },
+                "placeholder": "",
+                "choice": {
+                    "label": {
+                        "user": "",
+                        "webhook": ""
+                    },
+                    "description": ""
+                }
+            },
+            "role": {
+                "prompt": {
+                    "default": "",
+                    "filtered": ""
+                },
+                "placeholder": "",
+                "choice": {
+                    "label": "",
+                    "description": ""
+                }
+            },
+            "channel": {
+                "prompt": {
+                    "default": "",
+                    "filtered": ""
+                },
+                "placeholder": "",
+                "choice": {
+                    "label": {
+                        "guild": "",
+                        "dm": ""
+                    },
+                    "description": ""
+                }
+            },
+            "paged": {
+                "prompt": ""
+            }
+        }
+    },
+    "regex": {
+        "tooLong": "",
+        "invalid": "",
+        "unsafe": "",
+        "matchesEverything": ""
+    },
+    "respawn": {
+        "success": ""
+    },
+    "roleme": {
+        "failed": ""
+    },
+    "poll": {
+        "embed": {
+            "footer": {
+                "text": ""
+            }
+        },
+        "success": {
+            "noVotes": "",
+            "tie": "",
+            "single": ""
+        }
+    },
+    "guild": {
+        "blacklisted": "",
+        "joined": ""
+    },
+    "autoresponse": {
+        "prompt": "",
+        "whitelist": {
+            "approved": "",
+            "rejected": ""
+        }
+    },
+    "announcements": {
+        "prompt": {
+            "channel": "",
+            "role": ""
+        }
+    },
+    "modlog": {
+        "defaultReason": "",
+        "types": {
+            "generic": "",
+            "pardon": "",
+            "timeout": "",
+            "timeoutClear": "",
+            "softBan": "",
+            "ban": "",
+            "massBan": "",
+            "unban": "",
+            "kick": "",
+            "unmute": "",
+            "mute": "",
+            "temporaryMute": "",
+            "warning": ""
+        },
+        "embed": {
+            "title": "",
+            "description": "",
+            "footer": {
+                "text": ""
+            },
+            "field": {
+                "type": {
+                    "name": ""
+                },
+                "reason": {
+                    "name": "",
+                    "value": ""
+                },
+                "pardons": {
+                    "name": "",
+                    "value": ""
+                },
+                "warnings": {
+                    "name": "",
+                    "value": ""
+                },
+                "duration": {
+                    "name": "",
+                    "value": ""
+                },
+                "user": {
+                    "name": "",
+                    "value": ""
+                }
+            }
+        }
+    },
+    "eventLog": {
+        "disabled": "",
+        "events": {
+            "timeoutAdded": "",
+            "timeoutRemoved": "",
+            "banned": "",
+            "unbanned": "",
+            "joined": "",
+            "left": "",
+            "messageDeleted": "",
+            "messageUpdated": "",
+            "roleRemoved": "",
+            "roleAdded": "",
+            "nicknameUpdated": "",
+            "usernameUpdated": "",
+            "avatarUpdated": ""
+        },
+        "embed": {
+            "description": {
+                "avatarUpdated": "",
+                "bulkDelete": "",
+                "userUpdated": {
+                    "username": "",
+                    "discriminator": "",
+                    "both": ""
+                }
+            },
+            "field": {
+                "reason": {
+                    "name": "",
+                    "value": ""
+                },
+                "message": {
+                    "name": "",
+                    "value": ""
+                },
+                "channel": {
+                    "name": "",
+                    "value": ""
+                },
+                "oldUsername": {
+                    "name": "",
+                    "value": ""
+                },
+                "newUsername": {
+                    "name": "",
+                    "value": ""
+                },
+                "oldNickname": {
+                    "name": "",
+                    "value": ""
+                },
+                "newNickname": {
+                    "name": "",
+                    "value": ""
+                },
+                "role": {
+                    "name": "",
+                    "value": ""
+                },
+                "updatedBy": {
+                    "name": "",
+                    "value": ""
+                },
+                "created": {
+                    "name": "",
+                    "value": ""
+                },
+                "until": {
+                    "name": "",
+                    "value": ""
+                },
+                "count": {
+                    "name": "",
+                    "value": ""
+                },
+                "content": {
+                    "name": {
+                        "old": {
+                            "unavailable": "",
+                            "empty": "",
+                            "default": ""
+                        },
+                        "new": {
+                            "unavailable": "",
+                            "empty": "",
+                            "default": ""
+                        },
+                        "current": {
+                            "unavailable": "",
+                            "empty": "",
+                            "default": ""
+                        }
+                    },
+                    "value": {
+                        "chatLogsOff": "",
+                        "unknown": "",
+                        "expired": "",
+                        "notLogged": "",
+                        "empty": "",
+                        "default": ""
+                    }
+                }
+            }
+        }
+    },
+    "warning": {
+        "autoBan": "",
+        "autoKick": "",
+        "autoTimeout": ""
+    },
+    "mute": {
+        "autoUnmute": "",
+        "createReason": ""
+    },
+    "moderation": {
+        "auditLog": ""
+    },
+    "censor": {
+        "warnReason": "",
+        "mentionSpam": {
+            "ban": {
+                "reason": "",
+                "failed": ""
+            }
+        }
+    },
+    "ban": {
+        "autoUnban": ""
+    },
+    "documentation": {
+        "loading": "",
+        "name": {
+            "flat": ""
+        },
+        "paging": {
+            "parent": "",
+            "select": {
+                "placeholder": ""
+            }
+        },
+        "command": {
+            "unknown": "",
+            "invalid": "",
+            "prompt": "",
+            "index": {
+                "name": "",
+                "footer": "",
+                "prompt": ""
+            },
+            "list": {
+                "none": "",
+                "excess": "",
+                "count": "",
+                "default": ""
+            },
+            "categories": {
+                "prompt": "",
+                "displayName": "",
+                "custom": {
+                    "noHelp": ""
+                }
+            },
+            "command": {
+                "prompt": "",
+                "noPerms": "",
+                "aliases": {
+                    "name": "",
+                    "value": ""
+                },
+                "flags": {
+                    "name": "",
+                    "value": ""
+                },
+                "usage": {
+                    "name": "",
+                    "value": ""
+                },
+                "notes": {
+                    "alias": "",
+                    "type": {
+                        "string": {
+                            "single": ""
+                        },
+                        "literal": {
+                            "single": "",
+                            "greedy": ""
+                        },
+                        "boolean": {
+                            "single": "",
+                            "greedy": ""
+                        },
+                        "channel": {
+                            "single": "",
+                            "greedy": ""
+                        },
+                        "duration": {
+                            "single": "",
+                            "greedy": ""
+                        },
+                        "bigint": {
+                            "single": "",
+                            "greedy": ""
+                        },
+                        "integer": {
+                            "single": "",
+                            "greedy": ""
+                        },
+                        "member": {
+                            "single": "",
+                            "greedy": ""
+                        },
+                        "number": {
+                            "single": "",
+                            "greedy": ""
+                        },
+                        "role": {
+                            "single": "",
+                            "greedy": ""
+                        },
+                        "sender": {
+                            "single": "",
+                            "greedy": ""
+                        },
+                        "user": {
+                            "single": "",
+                            "greedy": ""
+                        }
+                    }
+                }
+            }
+        },
+        "bbtag": {
+            "invalid": "",
+            "unknown": "",
+            "prompt": "",
+            "index": {
+                "name": "",
+                "description": "",
+                "prompt": "",
+                "topics": {
+                    "name": "",
+                    "value": ""
+                }
+            },
+            "subtags": {
+                "name": "",
+                "description": "",
+                "prompt": ""
+            },
+            "subtag": {
+                "name": "",
+                "prompt": "",
+                "description": {
+                    "deprecated": "",
+                    "aliases": "",
+                    "template": ""
+                },
+                "pages": {
+                    "signature": {
+                        "name": "",
+                        "usage": {
+                            "name": "",
+                            "value": {
+                                "parameters": "",
+                                "modifier": {
+                                    "maxLength": "",
+                                    "defaulted": "",
+                                    "defaultedMaxLength": ""
+                                },
+                                "template": ""
+                            }
+                        },
+                        "exampleCode": {
+                            "name": "",
+                            "value": ""
+                        },
+                        "exampleIn": {
+                            "name": "",
+                            "value": ""
+                        },
+                        "exampleOut": {
+                            "name": "",
+                            "value": ""
+                        },
+                        "limit": {
+                            "name": {
+                                "customCommandLimit": "",
+                                "everythingAutoResponseLimit": "",
+                                "generalAutoResponseLimit": "",
+                                "tagLimit": ""
+                            },
+                            "value": ""
+                        }
+                    }
+                }
+            },
+            "subtagCategory": {
+                "description": "",
+                "prompt": ""
+            },
+            "variables": {
+                "name": "",
+                "description": "",
+                "prompt": "",
+                "pages": {
+                    "variableType": {
+                        "name": ""
+                    },
+                    "commitRollback": {
+                        "name": "",
+                        "value": ""
+                    }
+                }
+            },
+            "arguments": {
+                "name": "",
+                "description": "",
+                "prompt": "",
+                "pages": {
+                    "required": {
+                        "name": "",
+                        "value": ""
+                    },
+                    "optional": {
+                        "name": "",
+                        "value": ""
+                    },
+                    "multiple": {
+                        "name": "",
+                        "value": ""
+                    },
+                    "nested": {
+                        "name": "",
+                        "value": ""
+                    }
+                }
+            },
+            "terminology": {
+                "name": "",
+                "description": "",
+                "prompt": "",
+                "pages": {
+                    "bbtag": {
+                        "name": "",
+                        "value": ""
+                    },
+                    "subtag": {
+                        "name": "",
+                        "value": ""
+                    },
+                    "tag": {
+                        "name": "",
+                        "value": ""
+                    },
+                    "argument": {
+                        "name": "",
+                        "value": ""
+                    },
+                    "variable": {
+                        "name": "",
+                        "value": ""
+                    },
+                    "array": {
+                        "name": "",
+                        "value": ""
+                    }
+                }
+            },
+            "dynamic": {
+                "name": "",
+                "description": ""
+            }
+        }
+    },
+    "tableflip": {
+        "flip": "",
+        "unflip": ""
+    },
+    "cleverbot": {
+        "unavailable": ""
+    },
+    "settings": {
+        "makelogs": {
+            "name": "",
+            "description": ""
+        },
+        "cahnsfw": {
+            "name": "",
+            "description": ""
+        },
+        "deletenotif": {
+            "name": "",
+            "description": ""
+        },
+        "modlog": {
+            "name": "",
+            "description": ""
+        },
+        "mutedrole": {
+            "name": "",
+            "description": ""
+        },
+        "tableflip": {
+            "name": "",
+            "description": ""
+        },
+        "antimention": {
+            "name": "",
+            "description": ""
+        },
+        "dmhelp": {
+            "name": "",
+            "description": ""
+        },
+        "staffperms": {
+            "name": "",
+            "description": ""
+        },
+        "timeoutoverride": {
+            "name": "",
+            "description": ""
+        },
+        "kickoverride": {
+            "name": "",
+            "description": ""
+        },
+        "banoverride": {
+            "name": "",
+            "description": ""
+        },
+        "banat": {
+            "name": "",
+            "description": ""
+        },
+        "kickat": {
+            "name": "",
+            "description": ""
+        },
+        "timeoutat": {
+            "name": "",
+            "description": ""
+        },
+        "actonlimitsonly": {
+            "name": "",
+            "description": ""
+        },
+        "adminrole": {
+            "name": "",
+            "description": ""
+        },
+        "nocleverbot": {
+            "name": "",
+            "description": ""
+        },
+        "disableeveryone": {
+            "name": "",
+            "description": ""
+        },
+        "disablenoperms": {
+            "name": "",
+            "description": ""
+        },
+        "social": {
+            "name": "",
+            "description": ""
+        },
+        "farewellchan": {
+            "name": "",
+            "description": ""
+        },
+        "greetchan": {
+            "name": "",
+            "description": ""
+        },
+        "language": {
+            "name": "",
+            "description": ""
+        }
+    },
+    "contributors": {
+        "notFound": ""
+    },
+    "commands": {
+        "$errors": {
+            "generic": "",
+            "alreadyRunning": "",
+            "guildOnly": "",
+            "privateOnly": "",
+            "rateLimited": {
+                "local": "",
+                "global": ""
+            },
+            "missingPermission": {
+                "generic": "",
+                "guild": ""
+            },
+            "arguments": {
+                "invalid": "",
+                "missing": "",
+                "unknown": "",
+                "noneNeeded": "",
+                "tooMany": ""
+            },
+            "renderFailed": "",
+            "messageDeleted": "",
+            "blacklisted": "",
+            "roleMissing": "",
+            "permMissing": ""
+        },
+        "categories": {
+            "custom": {
+                "name": "",
+                "description": ""
+            },
+            "general": {
+                "name": "",
+                "description": ""
+            },
+            "nsfw": {
+                "name": "",
+                "description": ""
+            },
+            "image": {
+                "name": "",
+                "description": ""
+            },
+            "admin": {
+                "name": "",
+                "description": ""
+            },
+            "social": {
+                "name": "",
+                "description": ""
+            },
+            "owner": {
+                "name": "",
+                "description": ""
+            },
+            "developer": {
+                "name": "",
+                "description": ""
+            },
+            "staff": {
+                "name": "",
+                "description": ""
+            },
+            "support": {
+                "name": "",
+                "description": ""
+            }
+        },
+        "i18n": {
+            "exports": {
+                "description": ""
+            }
+        },
+        "announce": {
+            "default": {
+                "description": "",
+                "embed": {
+                    "author": {
+                        "name": ""
+                    }
+                },
+                "failed": "",
+                "success": ""
+            },
+            "reset": {
+                "description": "",
+                "success": ""
+            },
+            "configure": {
+                "description": "",
+                "state": {
+                    "ChannelInvalid": "",
+                    "ChannelNotFound": "",
+                    "ChannelNotInGuild": "",
+                    "NotAllowed": "",
+                    "RoleNotFound": "",
+                    "TimedOut": "",
+                    "Success": ""
+                }
+            },
+            "info": {
+                "description": "",
+                "unconfigured": "",
+                "details": ""
+            }
+        },
+        "autoResponse": {
+            "notWhitelisted": "",
+            "notFoundId": "",
+            "notFoundEverything": "",
+            "flags": {
+                "regex": "",
+                "everything": ""
+            },
+            "whitelist": {
+                "description": "",
+                "alreadyApproved": "",
+                "requested": ""
+            },
+            "list": {
+                "description": "",
+                "noAutoresponses": "",
+                "embed": {
+                    "title": "",
+                    "field": {
+                        "name": "",
+                        "value": {
+                            "regex": "",
+                            "text": "",
+                            "any": ""
+                        }
+                    }
+                }
+            },
+            "info": {
+                "description": "",
+                "embed": {
+                    "title": {
+                        "id": "",
+                        "everything": ""
+                    },
+                    "field": {
+                        "trigger": {
+                            "name": {
+                                "regex": "",
+                                "text": ""
+                            }
+                        },
+                        "author": {
+                            "name": "",
+                            "value": ""
+                        },
+                        "authorizer": {
+                            "name": "",
+                            "value": ""
+                        }
+                    }
+                }
+            },
+            "create": {
+                "description": "",
+                "everythingAlreadyExists": "",
+                "everythingCannotHavePattern": "",
+                "tooMany": "",
+                "missingEFlag": "",
+                "success": ""
+            },
+            "delete": {
+                "description": "",
+                "success": {
+                    "regex": "",
+                    "text": "",
+                    "everything": ""
+                }
+            },
+            "setPattern": {
+                "description": "",
+                "notEmpty": "",
+                "notEverything": "",
+                "success": {
+                    "regex": "",
+                    "text": ""
+                }
+            },
+            "set": {
+                "description": "",
+                "success": {
+                    "id": "",
+                    "everything": ""
+                }
+            },
+            "raw": {
+                "description": "",
+                "inline": {
+                    "id": "",
+                    "everything": ""
+                },
+                "attached": {
+                    "id": "",
+                    "everything": ""
+                }
+            },
+            "setAuthorizer": {
+                "description": "",
+                "success": {
+                    "id": "",
+                    "everything": ""
+                }
+            },
+            "debug": {
+                "description": "",
+                "success": {
+                    "id": "",
+                    "everything": ""
+                }
+            }
+        },
+        "ban": {
+            "flags": {
+                "reason": "",
+                "time": ""
+            },
+            "default": {
+                "description": "",
+                "state": {
+                    "alreadyBanned": "",
+                    "memberTooHigh": "",
+                    "moderatorTooLow": "",
+                    "noPerms": "",
+                    "moderatorNoPerms": "",
+                    "success": ""
+                },
+                "unbanSchedule": {
+                    "success": "",
+                    "invalid": ""
+                }
+            },
+            "clear": {
+                "description": "",
+                "userNotFound": "",
+                "state": {
+                    "notBanned": "",
+                    "noPerms": "",
+                    "moderatorNoPerms": "",
+                    "success": ""
+                }
+            }
+        },
+        "blacklist": {
+            "default": {
+                "description": "",
+                "notInServer": "",
+                "success": {
+                    "added": "",
+                    "removed": ""
+                }
+            }
+        },
+        "bot": {
+            "reset": {
+                "description": "",
+                "cancelled": "",
+                "success": "",
+                "confirm": {
+                    "prompt": "",
+                    "cancel": "",
+                    "continue": ""
+                }
+            }
+        },
+        "ccommand": {
+            "description": "",
+            "request": {
+                "name": "",
+                "content": ""
+            },
+            "errors": {
+                "isAlias": "",
+                "alreadyExists": "",
+                "doesNotExist": "",
+                "isHidden": "",
+                "invalidBBTag": "",
+                "bbtagError": "",
+                "bbtagWarning": "",
+                "nameReserved": "",
+                "tooLong": "",
+                "importDeleted": "",
+                "importChanged": ""
+            },
+            "test": {
+                "default": {
+                    "description": ""
+                },
+                "debug": {
+                    "description": ""
+                }
+            },
+            "docs": {
+                "description": ""
+            },
+            "debug": {
+                "description": "",
+                "notOwner": "",
+                "success": ""
+            },
+            "create": {
+                "description": "",
+                "success": ""
+            },
+            "edit": {
+                "description": "",
+                "success": ""
+            },
+            "set": {
+                "description": "",
+                "success": ""
+            },
+            "delete": {
+                "description": "",
+                "success": ""
+            },
+            "rename": {
+                "description": "",
+                "enterOldName": "",
+                "enterNewName": "",
+                "success": ""
+            },
+            "raw": {
+                "description": "",
+                "inline": "",
+                "attached": ""
+            },
+            "list": {
+                "description": "",
+                "embed": {
+                    "title": "",
+                    "field": {
+                        "anyRole": {
+                            "name": ""
+                        }
+                    }
+                }
+            },
+            "cooldown": {
+                "description": "",
+                "mustBePositive": "",
+                "success": ""
+            },
+            "author": {
+                "description": "",
+                "noAuthorizer": "",
+                "withAuthorizer": ""
+            },
+            "flag": {
+                "updated": "",
+                "get": {
+                    "description": "",
+                    "none": "",
+                    "success": ""
+                },
+                "create": {
+                    "description": "",
+                    "wordMissing": "",
+                    "flagExists": "",
+                    "wordExists": ""
+                },
+                "delete": {
+                    "description": ""
+                }
+            },
+            "setHelp": {
+                "description": "",
+                "success": ""
+            },
+            "hide": {
+                "description": "",
+                "success": ""
+            },
+            "setRole": {
+                "description": "",
+                "success": ""
+            },
+            "shrinkwrap": {
+                "description": "",
+                "confirm": {
+                    "prompt": "",
+                    "export": "",
+                    "continue": "",
+                    "cancel": ""
+                },
+                "cancelled": "",
+                "success": ""
+            },
+            "install": {
+                "description": "",
+                "fileMissing": "",
+                "malformed": "",
+                "confirm": {
+                    "unsigned": "",
+                    "tampered": "",
+                    "prompt": "",
+                    "import": "",
+                    "skip": "",
+                    "continue": "",
+                    "cancel": ""
+                },
+                "cancelled": "",
+                "success": ""
+            },
+            "import": {
+                "description": "",
+                "tagMissing": "",
+                "success": ""
+            }
+        },
+        "censor": {
+            "flags": {
+                "regex": "",
+                "decancer": "",
+                "weight": "",
+                "reason": ""
+            },
+            "errors": {
+                "doesNotExist": "",
+                "weightNotNumber": "",
+                "invalidType": "",
+                "messageNotSet": {
+                    "default": "",
+                    "id": ""
+                }
+            },
+            "add": {
+                "description": "",
+                "success": ""
+            },
+            "edit": {
+                "description": "",
+                "success": ""
+            },
+            "delete": {
+                "description": "",
+                "success": ""
+            },
+            "exception": {
+                "user": {
+                    "description": "",
+                    "success": ""
+                },
+                "role": {
+                    "description": "",
+                    "success": ""
+                },
+                "channel": {
+                    "description": "",
+                    "notOnServer": "",
+                    "success": ""
+                }
+            },
+            "setMessage": {
+                "description": "",
+                "success": {
+                    "default": "",
+                    "id": ""
+                }
+            },
+            "setAuthorizer": {
+                "description": "",
+                "success": {
+                    "default": "",
+                    "id": ""
+                }
+            },
+            "rawMessage": {
+                "description": "",
+                "inline": {
+                    "default": "",
+                    "id": ""
+                },
+                "attached": {
+                    "default": "",
+                    "id": ""
+                }
+            },
+            "debug": {
+                "description": "",
+                "success": ""
+            },
+            "list": {
+                "description": "",
+                "embed": {
+                    "title": "",
+                    "description": {
+                        "value": "",
+                        "censor": {
+                            "regex": "",
+                            "text": ""
+                        },
+                        "none": ""
+                    },
+                    "field": {
+                        "users": {
+                            "name": "",
+                            "value": ""
+                        },
+                        "roles": {
+                            "name": "",
+                            "value": ""
+                        },
+                        "channels": {
+                            "name": "",
+                            "value": ""
+                        }
+                    }
+                }
+            },
+            "info": {
+                "description": "",
+                "messageFieldValue": {
+                    "notSet": "",
+                    "set": ""
+                },
+                "embed": {
+                    "title": "",
+                    "field": {
+                        "trigger": {
+                            "name": {
+                                "regex": "",
+                                "text": ""
+                            }
+                        },
+                        "weight": {
+                            "name": "",
+                            "value": ""
+                        },
+                        "reason": {
+                            "name": "",
+                            "value": ""
+                        },
+                        "deleteMessage": {
+                            "name": ""
+                        },
+                        "timeoutMessage": {
+                            "name": ""
+                        },
+                        "kickMessage": {
+                            "name": ""
+                        },
+                        "banMessage": {
+                            "name": ""
+                        }
+                    }
+                }
+            }
+        },
+        "changeLog": {
+            "errors": {
+                "missingPermissions": ""
+            },
+            "subscribe": {
+                "description": "",
+                "alreadySubscribed": "",
+                "success": ""
+            },
+            "unsubscribe": {
+                "description": "",
+                "notSubscribed": "",
+                "success": ""
+            }
+        },
+        "editCommand": {
+            "list": {
+                "description": "",
+                "none": "",
+                "embed": {
+                    "title": "",
+                    "description": {
+                        "name": "",
+                        "roles": "",
+                        "permissions": "",
+                        "disabled": "",
+                        "hidden": "",
+                        "template": ""
+                    }
+                }
+            },
+            "setRole": {
+                "description": "",
+                "removed": "",
+                "set": ""
+            },
+            "setPermissions": {
+                "description": "",
+                "removed": "",
+                "set": ""
+            },
+            "disable": {
+                "description": "",
+                "success": ""
+            },
+            "enable": {
+                "description": "",
+                "success": ""
+            },
+            "hide": {
+                "description": "",
+                "success": ""
+            },
+            "show": {
+                "description": "",
+                "success": ""
+            }
+        },
+        "farewell": {
+            "errors": {
+                "notSet": ""
+            },
+            "set": {
+                "description": "",
+                "success": ""
+            },
+            "raw": {
+                "description": "",
+                "inline": "",
+                "attached": ""
+            },
+            "setAuthorizer": {
+                "description": "",
+                "success": ""
+            },
+            "setChannel": {
+                "description": "",
+                "notOnGuild": "",
+                "notTextChannel": "",
+                "success": ""
+            },
+            "debug": {
+                "description": "",
+                "channelMissing": "",
+                "success": ""
+            },
+            "delete": {
+                "description": "",
+                "success": ""
+            },
+            "info": {
+                "description": "",
+                "success": ""
+            }
+        },
+        "greeting": {
+            "errors": {
+                "notSet": ""
+            },
+            "set": {
+                "description": "",
+                "success": ""
+            },
+            "raw": {
+                "description": "",
+                "inline": "",
+                "attached": ""
+            },
+            "setAuthorizer": {
+                "description": "",
+                "success": ""
+            },
+            "setChannel": {
+                "description": "",
+                "notOnGuild": "",
+                "notTextChannel": "",
+                "success": ""
+            },
+            "debug": {
+                "description": "",
+                "channelMissing": "",
+                "success": ""
+            },
+            "delete": {
+                "description": "",
+                "success": ""
+            },
+            "info": {
+                "description": "",
+                "success": ""
+            }
+        },
+        "interval": {
+            "errors": {
+                "notSet": ""
+            },
+            "set": {
+                "description": "",
+                "success": ""
+            },
+            "raw": {
+                "description": "",
+                "inline": "",
+                "attached": ""
+            },
+            "delete": {
+                "description": "",
+                "success": ""
+            },
+            "setAuthorizer": {
+                "description": "",
+                "success": ""
+            },
+            "debug": {
+                "description": "",
+                "failed": "",
+                "authorizerMissing": "",
+                "channelMissing": "",
+                "timedOut": "",
+                "success": ""
+            },
+            "info": {
+                "description": "",
+                "success": ""
+            }
+        },
+        "kick": {
+            "flags": {
+                "reason": ""
+            },
+            "default": {
+                "description": "",
+                "state": {
+                    "memberTooHigh": "",
+                    "moderatorTooLow": "",
+                    "noPerms": "",
+                    "moderatorNoPerms": "",
+                    "success": ""
+                }
+            }
+        },
+        "log": {
+            "common": {
+                "events": {
+                    "avatarupdate": "",
+                    "kick": "",
+                    "memberban": "",
+                    "memberjoin": "",
+                    "memberleave": "",
+                    "membertimeout": "",
+                    "membertimeoutclear": "",
+                    "memberunban": "",
+                    "messagedelete": "",
+                    "messageupdate": "",
+                    "nameupdate": "",
+                    "nickupdate": ""
+                }
+            },
+            "list": {
+                "description": "",
+                "embed": {
+                    "field": {
+                        "ignore": {
+                            "name": "",
+                            "value": ""
+                        },
+                        "current": {
+                            "name": "",
+                            "value": {
+                                "event": "",
+                                "role": "",
+                                "template": ""
+                            }
+                        }
+                    }
+                }
+            },
+            "enable": {
+                "description": {
+                    "default": "",
+                    "all": "",
+                    "role": ""
+                },
+                "notOnGuild": "",
+                "notTextChannel": "",
+                "eventInvalid": "",
+                "success": ""
+            },
+            "disable": {
+                "description": {
+                    "default": "",
+                    "all": "",
+                    "role": ""
+                },
+                "success": ""
+            },
+            "ignore": {
+                "description": "",
+                "success": ""
+            },
+            "track": {
+                "description": "",
+                "success": ""
+            }
+        },
+        "logs": {
+            "flags": {
+                "type": "",
+                "channel": "",
+                "user": "",
+                "create": "",
+                "update": "",
+                "delete": "",
+                "json": ""
+            },
+            "default": {
+                "description": "",
+                "chatlogsDisabled": "",
+                "tooManyLogs": "",
+                "notEnoughLogs": "",
+                "channelMissing": "",
+                "notOnGuild": "",
+                "noPermissions": "",
+                "userMissing": "",
+                "generating": "",
+                "sendFailed": "",
+                "pleaseWait": "",
+                "generated": {
+                    "link": {
+                        "quick": "",
+                        "slow": ""
+                    },
+                    "json": {
+                        "quick": "",
+                        "slow": ""
+                    }
+                }
+            }
+        },
+        "massBan": {
+            "flags": {
+                "reason": ""
+            },
+            "default": {
+                "description": "",
+                "state": {
+                    "alreadyBanned": "",
+                    "memberTooHigh": "",
+                    "moderatorTooLow": "",
+                    "noPerms": "",
+                    "moderatorNoPerms": "",
+                    "noUsers": ""
+                },
+                "success": ""
+            }
+        },
+        "modLog": {
+            "setChannel": {
+                "description": "",
+                "notOnGuild": "",
+                "notTextChannel": "",
+                "success": ""
+            },
+            "disable": {
+                "description": "",
+                "success": ""
+            },
+            "clear": {
+                "description": "",
+                "notFound": "",
+                "channelMissing": "",
+                "messageMissing": "",
+                "permissionMissing": "",
+                "success": ""
+            }
+        },
+        "mute": {
+            "flags": {
+                "reason": "",
+                "time": ""
+            },
+            "default": {
+                "description": "",
+                "createPermsMissing": "",
+                "configurePermsMissing": "",
+                "state": {
+                    "alreadyMuted": "",
+                    "noPerms": "",
+                    "moderatorNoPerms": "",
+                    "roleMissing": "",
+                    "roleTooHigh": "",
+                    "moderatorTooLow": ""
+                },
+                "success": {
+                    "default": "",
+                    "durationInvalid": "",
+                    "temporary": ""
+                }
+            },
+            "clear": {
+                "description": "",
+                "state": {
+                    "notMuted": "",
+                    "noPerms": "",
+                    "moderatorNoPerms": "",
+                    "roleTooHigh": "",
+                    "moderatorTooLow": "",
+                    "success": ""
+                }
+            }
+        },
+        "pardon": {
+            "flags": {
+                "reason": "",
+                "count": ""
+            },
+            "default": {
+                "description": "",
+                "state": {
+                    "countNaN": "",
+                    "countNegative": "",
+                    "countZero": "",
+                    "success": ""
+                }
+            }
+        },
+        "prefix": {
+            "list": {
+                "description": "",
+                "success": ""
+            },
+            "add": {
+                "description": "",
+                "success": ""
+            },
+            "remove": {
+                "description": "",
+                "success": ""
+            }
+        },
+        "reason": {
+            "default": {
+                "description": "",
+                "none": "",
+                "unknownCase": "",
+                "success": {
+                    "messageMissing": "",
+                    "default": ""
+                }
+            }
+        },
+        "roleMe": {
+            "errors": {
+                "missing": "",
+                "noMessage": "",
+                "missingChannels": "",
+                "missingRoles": "",
+                "noRoles": "",
+                "noTrigger": ""
+            },
+            "common": {
+                "triggerQuery": "",
+                "caseSensitiveQuery": {
+                    "prompt": "",
+                    "continue": "",
+                    "cancel": ""
+                },
+                "channelsQuery": {
+                    "prompt": "",
+                    "cancel": ""
+                },
+                "rolesQuery": {
+                    "prompt": {
+                        "add": "",
+                        "remove": ""
+                    },
+                    "fail": "",
+                    "cancel": ""
+                }
+            },
+            "flags": {
+                "add": "",
+                "remove": "",
+                "case": "",
+                "channels": ""
+            },
+            "add": {
+                "description": "",
+                "unexpectedError": "",
+                "success": ""
+            },
+            "remove": {
+                "description": "",
+                "success": ""
+            },
+            "edit": {
+                "description": "",
+                "unexpectedError": "",
+                "success": ""
+            },
+            "setMessage": {
+                "description": "",
+                "success": ""
+            },
+            "rawMessage": {
+                "description": "",
+                "inline": "",
+                "attached": ""
+            },
+            "debugMessage": {
+                "description": "",
+                "success": ""
+            },
+            "setAuthorizer": {
+                "description": "",
+                "success": ""
+            },
+            "info": {
+                "description": "",
+                "embed": {
+                    "title": "",
+                    "field": {
+                        "phrase": {
+                            "name": ""
+                        },
+                        "rolesAdded": {
+                            "name": "",
+                            "value": ""
+                        },
+                        "rolesRemoved": {
+                            "name": "",
+                            "value": ""
+                        },
+                        "channels": {
+                            "name": "",
+                            "value": ""
+                        },
+                        "message": {
+                            "name": "",
+                            "value": ""
+                        }
+                    }
+                }
+            },
+            "list": {
+                "description": "",
+                "none": "",
+                "embed": {
+                    "title": "",
+                    "description": {
+                        "channel": "",
+                        "roleme": "",
+                        "layout": ""
+                    }
+                }
+            }
+        },
+        "removeVoteBan": {
+            "user": {
+                "description": "",
+                "success": ""
+            },
+            "all": {
+                "description": "",
+                "success": ""
+            }
+        },
+        "settings": {
+            "description": "",
+            "types": {
+                "string": "",
+                "channel": "",
+                "bool": "",
+                "role": "",
+                "int": "",
+                "float": "",
+                "permission": "",
+                "locale": ""
+            },
+            "list": {
+                "description": "",
+                "notConfigured": "",
+                "channelValue": {
+                    "default": "",
+                    "unknown": "",
+                    "none": ""
+                },
+                "roleValue": {
+                    "default": "",
+                    "unknown": ""
+                },
+                "localeValue": "",
+                "notSet": "",
+                "groups": {
+                    "general": "",
+                    "messages": "",
+                    "channels": "",
+                    "permission": "",
+                    "warnings": "",
+                    "moderation": ""
+                }
+            },
+            "keys": {
+                "description": "",
+                "success": ""
+            },
+            "languages": {
+                "description": "",
+                "success": ""
+            },
+            "set": {
+                "description": "",
+                "keyInvalid": "",
+                "valueInvalid": "",
+                "alreadySet": "",
+                "success": ""
+            }
+        },
+        "slowMode": {
+            "errors": {
+                "notTextChannel": "",
+                "notInGuild": "",
+                "botNoPerms": ""
+            },
+            "on": {
+                "description": "",
+                "timeTooLong": "",
+                "success": ""
+            },
+            "off": {
+                "description": "",
+                "success": ""
+            }
+        },
+        "tidy": {
+            "flags": {
+                "bots": "",
+                "invites": "",
+                "links": "",
+                "embeds": "",
+                "attachments": "",
+                "user": "",
+                "query": "",
+                "invert": "",
+                "yes": ""
+            },
+            "default": {
+                "description": "",
+                "notNegative": "",
+                "unsafeRegex": "",
+                "invalidUsers": "",
+                "noMessages": "",
+                "confirmQuery": {
+                    "prompt": {
+                        "foundAll": "",
+                        "foundSome": ""
+                    },
+                    "cancel": "",
+                    "continue": ""
+                },
+                "cancelled": "",
+                "deleteFailed": "",
+                "success": {
+                    "default": "",
+                    "partial": ""
+                }
+            }
+        },
+        "timeout": {
+            "flags": {
+                "reason": "",
+                "time": ""
+            },
+            "user": {
+                "description": "",
+                "state": {
+                    "memberTooHigh": "",
+                    "moderatorTooLow": "",
+                    "noPerms": "",
+                    "moderatorNoPerms": "",
+                    "alreadyTimedOut": "",
+                    "success": ""
+                }
+            },
+            "clear": {
+                "description": "",
+                "state": {
+                    "notTimedOut": "",
+                    "noPerms": "",
+                    "moderatorNoPerms": "",
+                    "success": ""
+                }
+            }
+        },
+        "timers": {
+            "list": {
+                "description": "",
+                "none": "",
+                "paged": "",
+                "success": "",
+                "table": {
+                    "id": {
+                        "header": "",
+                        "cell": ""
+                    },
+                    "elapsed": {
+                        "header": "",
+                        "cell": ""
+                    },
+                    "remain": {
+                        "header": "",
+                        "cell": ""
+                    },
+                    "user": {
+                        "header": "",
+                        "cell": ""
+                    },
+                    "type": {
+                        "header": "",
+                        "cell": ""
+                    },
+                    "content": {
+                        "header": "",
+                        "cell": ""
+                    }
+                }
+            },
+            "info": {
+                "description": "",
+                "notFound": "",
+                "embed": {
+                    "title": "",
+                    "field": {
+                        "type": {
+                            "name": ""
+                        },
+                        "user": {
+                            "name": "",
+                            "value": ""
+                        },
+                        "duration": {
+                            "name": "",
+                            "value": ""
+                        }
+                    }
+                }
+            },
+            "cancel": {
+                "description": "",
+                "timersMissing": "",
+                "success": {
+                    "default": "",
+                    "partial": ""
+                }
+            },
+            "clear": {
+                "description": "",
+                "confirm": {
+                    "prompt": "",
+                    "continue": "",
+                    "cancel": ""
+                },
+                "cancelled": "",
+                "success": ""
+            }
+        },
+        "unban": {
+            "flags": {
+                "reason": ""
+            },
+            "default": {
+                "description": "",
+                "userNotFound": "",
+                "state": {
+                    "notBanned": "",
+                    "noPerms": "",
+                    "moderatorNoPerms": "",
+                    "success": ""
+                }
+            }
+        },
+        "unmute": {
+            "flags": {
+                "reason": ""
+            },
+            "default": {
+                "description": "",
+                "state": {
+                    "notMuted": "",
+                    "noPerms": "",
+                    "moderatorNoPerms": "",
+                    "roleTooHigh": "",
+                    "moderatorTooLow": "",
+                    "success": ""
+                }
+            }
+        },
+        "warn": {
+            "actions": {
+                "ban": "",
+                "kick": "",
+                "timeout": "",
+                "delete": ""
+            },
+            "flags": {
+                "reason": "",
+                "count": ""
+            },
+            "default": {
+                "description": "",
+                "state": {
+                    "countNaN": "",
+                    "countNegative": "",
+                    "countZero": "",
+                    "memberTooHigh": "",
+                    "moderatorTooLow": "",
+                    "noPerms": "",
+                    "moderatorNoPerms": "",
+                    "alreadyBanned": "",
+                    "alreadyTimedOut": "",
+                    "success": {
+                        "delete": "",
+                        "timeout": "",
+                        "ban": "",
+                        "kick": ""
+                    }
+                }
+            }
+        },
+        "addDomain": {
+            "default": {
+                "description": "",
+                "success": ""
+            }
+        },
+        "patch": {
+            "flags": {
+                "fixes": "",
+                "notes": ""
+            },
+            "default": {
+                "description": "",
+                "changelogMissing": "",
+                "messageEmpty": "",
+                "embed": {
+                    "author": {
+                        "name": ""
+                    },
+                    "title": "",
+                    "field": {
+                        "bugFixes": {
+                            "name": ""
+                        },
+                        "otherNotes": {
+                            "name": ""
+                        }
+                    }
+                },
+                "confirm": {
+                    "prompt": "",
+                    "continue": "",
+                    "cancel": ""
+                },
+                "cancelled": "",
+                "failed": "",
+                "success": ""
+            }
+        },
+        "reload": {
+            "commands": {
+                "description": "",
+                "success": ""
+            },
+            "events": {
+                "description": "",
+                "success": ""
+            },
+            "services": {
+                "description": "",
+                "success": ""
+            }
+        },
+        "restart": {
+            "description": "",
+            "default": {
+                "description": "",
+                "success": ""
+            },
+            "kill": {
+                "description": "",
+                "success": ""
+            },
+            "api": {
+                "description": "",
+                "success": ""
+            }
+        },
+        "update": {
+            "default": {
+                "description": "",
+                "noUpdate": "",
+                "command": {
+                    "pending": "",
+                    "success": "",
+                    "error": ""
+                },
+                "packageIssue": "",
+                "buildIssue": "",
+                "rollbackIssue": "",
+                "success": ""
+            }
+        },
+        "avatar": {
+            "common": {
+                "formatInvalid": "",
+                "sizeInvalid": "",
+                "success": ""
+            },
+            "flags": {
+                "format": "",
+                "size": ""
+            },
+            "self": {
+                "description": ""
+            },
+            "user": {
+                "description": ""
+            }
+        },
+        "beeMovie": {
+            "flags": {
+                "name": "",
+                "characters": ""
+            },
+            "default": {
+                "description": ""
+            }
+        },
+        "brainfuck": {
+            "common": {
+                "queryInput": {
+                    "prompt": ""
+                },
+                "noInput": "",
+                "unexpectedError": "",
+                "success": {
+                    "empty": "",
+                    "default": ""
+                }
+            },
+            "default": {
+                "description": ""
+            },
+            "debug": {
+                "description": ""
+            }
+        },
+        "commit": {
+            "default": {
+                "description": "",
+                "noCommits": "",
+                "unknownCommit": "",
+                "embed": {
+                    "title": ""
+                }
+            }
+        },
+        "decancer": {
+            "user": {
+                "description": "",
+                "success": ""
+            },
+            "text": {
+                "description": "",
+                "success": ""
+            }
+        },
+        "define": {
+            "default": {
+                "description": "",
+                "unavailable": "",
+                "embed": {
+                    "title": "",
+                    "description": "",
+                    "field": {
+                        "name": "",
+                        "value": {
+                            "synonyms": "",
+                            "pronunciation": "",
+                            "default": ""
+                        }
+                    }
+                }
+            }
+        },
+        "dmErrors": {
+            "default": {
+                "description": "",
+                "enabled": "",
+                "disabled": ""
+            }
+        },
+        "donate": {
+            "default": {
+                "description": "",
+                "success": "",
+                "embed": {
+                    "description": "",
+                    "field": {
+                        "paypal": {
+                            "name": ""
+                        },
+                        "patreon": {
+                            "name": ""
+                        }
+                    }
+                }
+            }
+        },
+        "feedback": {
+            "errors": {
+                "titleTooLong": "",
+                "noType": "",
+                "blacklisted": {
+                    "guild": "",
+                    "user": ""
+                }
+            },
+            "types": {
+                "feedback": "",
+                "bugReport": "",
+                "suggestion": ""
+            },
+            "blacklist": {
+                "unknownType": "",
+                "alreadyBlacklisted": {
+                    "guild": "",
+                    "user": ""
+                },
+                "notBlacklisted": {
+                    "guild": "",
+                    "user": ""
+                },
+                "success": {
+                    "guild": "",
+                    "user": ""
+                }
+            },
+            "flags": {
+                "command": "",
+                "bbtag": "",
+                "docs": "",
+                "other": ""
+            },
+            "general": {
+                "description": "",
+                "unexpectedError": "",
+                "success": "",
+                "queryType": {
+                    "prompt": "",
+                    "placeholder": ""
+                },
+                "types": {
+                    "command": "",
+                    "bbtag": "",
+                    "documentation": "",
+                    "other": ""
+                },
+                "dm": "",
+                "embed": {
+                    "description": "",
+                    "field": {
+                        "types": {
+                            "name": "",
+                            "value": ""
+                        }
+                    },
+                    "footer": {
+                        "text": ""
+                    }
+                }
+            },
+            "suggest": {
+                "description": ""
+            },
+            "report": {
+                "description": ""
+            },
+            "edit": {
+                "description": "",
+                "unknownCase": "",
+                "notOwner": "",
+                "success": ""
+            }
+        },
+        "help": {
+            "self": {
+                "description": ""
+            },
+            "list": {
+                "description": ""
+            },
+            "command": {
+                "description": ""
+            }
+        },
+        "info": {
+            "default": {
+                "description": "",
+                "notReady": "",
+                "embed": {
+                    "title": "",
+                    "description": "",
+                    "field": {
+                        "patron": {
+                            "name": "",
+                            "value": ""
+                        },
+                        "donator": {
+                            "name": "",
+                            "value": ""
+                        },
+                        "other": {
+                            "name": "",
+                            "value": {
+                                "decorators": {
+                                    "awesome": "",
+                                    "incredible": "",
+                                    "amazing": "",
+                                    "inspirational": ""
+                                },
+                                "reasons": {
+                                    "rewrite": "",
+                                    "donations1k": "",
+                                    "unknown": ""
+                                },
+                                "layout": ""
+                            }
+                        },
+                        "details": {
+                            "value": ""
+                        }
+                    }
+                }
+            }
+        },
+        "insult": {
+            "someone": {
+                "description": "",
+                "success": ""
+            },
+            "default": {
+                "description": "",
+                "success": ""
+            }
+        },
+        "invite": {
+            "default": {
+                "description": "",
+                "success": ""
+            }
+        },
+        "mods": {
+            "common": {
+                "embed": {
+                    "title": "",
+                    "description": {
+                        "none": ""
+                    },
+                    "field": {
+                        "online": {
+                            "name": "",
+                            "value": ""
+                        },
+                        "away": {
+                            "name": "",
+                            "value": ""
+                        },
+                        "busy": {
+                            "name": "",
+                            "value": ""
+                        },
+                        "offline": {
+                            "name": "",
+                            "value": ""
+                        }
+                    }
+                }
+            },
+            "all": {
+                "description": ""
+            },
+            "online": {
+                "description": ""
+            },
+            "away": {
+                "description": ""
+            },
+            "busy": {
+                "description": ""
+            },
+            "offline": {
+                "description": ""
+            }
+        },
+        "names": {
+            "flags": {
+                "all": "",
+                "verbose": ""
+            },
+            "list": {
+                "description": "",
+                "none": {
+                    "ever": "",
+                    "since": ""
+                },
+                "embed": {
+                    "title": "",
+                    "description": {
+                        "since": {
+                            "detailed": "",
+                            "simple": ""
+                        },
+                        "ever": {
+                            "detailed": "",
+                            "simple": ""
+                        }
+                    }
+                }
+            },
+            "remove": {
+                "description": "",
+                "none": "",
+                "notFound": "",
+                "confirm": {
+                    "prompt": {
+                        "some": "",
+                        "all": ""
+                    },
+                    "continue": "",
+                    "cancel": ""
+                },
+                "cancelled": "",
+                "success": {
+                    "some": "",
+                    "all": ""
+                }
+            }
+        },
+        "nato": {
+            "default": {
+                "description": ""
+            }
+        },
+        "personalPrefix": {
+            "add": {
+                "description": "",
+                "alreadyAdded": "",
+                "success": ""
+            },
+            "remove": {
+                "description": "",
+                "notAdded": "",
+                "success": ""
+            },
+            "list": {
+                "description": "",
+                "none": "",
+                "embed": {
+                    "title": "",
+                    "description": ""
+                }
+            }
+        },
+        "ping": {
+            "description": "",
+            "default": {
+                "description": "",
+                "pending": "",
+                "success": ""
+            }
+        },
+        "poll": {
+            "flags": {
+                "time": "",
+                "emojis": "",
+                "description": "",
+                "colour": "",
+                "announce": ""
+            },
+            "default": {
+                "description": "",
+                "invalidDuration": "",
+                "invalidColor": "",
+                "sendFailed": "",
+                "noAnnouncePerms": "",
+                "announceNotSetUp": "",
+                "emojisMissing": "",
+                "emojisInaccessible": "",
+                "tooShort": "",
+                "someEmojisMissing": ""
+            }
+        },
+        "remind": {
+            "flags": {
+                "channel": "",
+                "time": ""
+            },
+            "default": {
+                "description": "",
+                "durationRequired": "",
+                "durationZero": "",
+                "reminderMissing": "",
+                "event": "",
+                "success": {
+                    "here": "",
+                    "dm": ""
+                }
+            }
+        },
+        "roles": {
+            "default": {
+                "description": "",
+                "embed": {
+                    "title": "",
+                    "description": ""
+                }
+            }
+        },
+        "roll": {
+            "default": {
+                "description": "",
+                "diceInvalid": "",
+                "tooBig": "",
+                "character": {
+                    "embed": {
+                        "description": ""
+                    }
+                },
+                "embed": {
+                    "title": "",
+                    "description": {
+                        "modifier": "",
+                        "natural1": "",
+                        "natural20": "",
+                        "layout": ""
+                    }
+                }
+            }
+        },
+        "rr": {
+            "default": {
+                "description": "",
+                "notEnoughBullets": "",
+                "guaranteedDeath": "",
+                "tooManyBullets": "",
+                "jammed": "",
+                "confirm": {
+                    "prompt": "",
+                    "continue": "",
+                    "cancel": ""
+                },
+                "chicken": "",
+                "died": "",
+                "lived": ""
+            }
+        },
+        "shard": {
+            "common": {
+                "embed": {
+                    "title": "",
+                    "field": {
+                        "shard": {
+                            "name": "",
+                            "value": ""
+                        },
+                        "cluster": {
+                            "name": "",
+                            "value": ""
+                        },
+                        "shards": {
+                            "name": "",
+                            "value": ""
+                        }
+                    }
+                }
+            },
+            "current": {
+                "description": "",
+                "dm": {
+                    "embed": {
+                        "description": ""
+                    }
+                }
+            },
+            "guild": {
+                "description": "",
+                "invalidGuild": "",
+                "embed": {
+                    "description": {
+                        "here": "",
+                        "other": ""
+                    }
+                }
+            }
+        },
+        "shards": {
+            "common": {
+                "invalidCluster": "",
+                "noStats": "",
+                "embed": {
+                    "field": {
+                        "shard": {
+                            "name": "",
+                            "value": ""
+                        },
+                        "cluster": {
+                            "name": "",
+                            "value": ""
+                        },
+                        "shards": {
+                            "name": "",
+                            "value": ""
+                        }
+                    }
+                }
+            },
+            "flags": {
+                "down": ""
+            },
+            "all": {
+                "description": "",
+                "noneDown": "",
+                "noStats": "",
+                "embed": {
+                    "title": "",
+                    "description": "",
+                    "field": {
+                        "name": "",
+                        "value": ""
+                    }
+                }
+            },
+            "guild": {
+                "description": "",
+                "invalidGuild": "",
+                "embed": {
+                    "description": {
+                        "here": "",
+                        "other": ""
+                    }
+                }
+            },
+            "cluster": {
+                "description": ""
+            }
+        },
+        "ship": {
+            "default": {
+                "description": "",
+                "success": ""
+            }
+        },
+        "spell": {
+            "default": {
+                "description": "",
+                "notFound": "",
+                "components": {
+                    "v": "",
+                    "s": "",
+                    "m": "",
+                    "f": "",
+                    "df": "",
+                    "xp": ""
+                },
+                "query": {
+                    "prompt": "",
+                    "placeholder": "",
+                    "choice": {
+                        "description": ""
+                    }
+                },
+                "embed": {
+                    "description": "",
+                    "field": {
+                        "duration": {
+                            "name": ""
+                        },
+                        "range": {
+                            "name": ""
+                        },
+                        "castingTime": {
+                            "name": ""
+                        },
+                        "components": {
+                            "name": ""
+                        }
+                    }
+                }
+            }
+        },
+        "stats": {
+            "default": {
+                "description": "",
+                "embed": {
+                    "title": "",
+                    "footer": {
+                        "text": ""
+                    },
+                    "field": {
+                        "guilds": {
+                            "name": "",
+                            "value": ""
+                        },
+                        "users": {
+                            "name": "",
+                            "value": ""
+                        },
+                        "channels": {
+                            "name": "",
+                            "value": ""
+                        },
+                        "shards": {
+                            "name": "",
+                            "value": ""
+                        },
+                        "clusters": {
+                            "name": "",
+                            "value": ""
+                        },
+                        "ram": {
+                            "name": "",
+                            "value": ""
+                        },
+                        "version": {
+                            "name": ""
+                        },
+                        "uptime": {
+                            "name": "",
+                            "value": ""
+                        },
+                        "eris": {
+                            "name": ""
+                        },
+                        "nodeJS": {
+                            "name": ""
+                        }
+                    }
+                }
+            }
+        },
+        "status": {
+            "default": {
+                "description": "",
+                "notFound": ""
+            }
+        },
+        "syntax": {
+            "default": {
+                "description": "",
+                "success": ""
+            }
+        },
+        "tag": {
+            "description": "",
+            "request": {
+                "name": "",
+                "content": ""
+            },
+            "common": {
+                "debugInDm": "",
+                "done": ""
+            },
+            "errors": {
+                "noneFound": "",
+                "tagMissing": "",
+                "invalidBBTag": "",
+                "bbtagError": "",
+                "bbtagWarning": "",
+                "notOwner": "",
+                "alreadyExists": "",
+                "deleted": ""
+            },
+            "run": {
+                "description": ""
+            },
+            "test": {
+                "default": {
+                    "description": ""
+                },
+                "debug": {
+                    "description": "",
+                    "tagNotOwned": ""
+                }
+            },
+            "docs": {
+                "description": ""
+            },
+            "debug": {
+                "description": ""
+            },
+            "create": {
+                "description": "",
+                "success": ""
+            },
+            "edit": {
+                "description": "",
+                "success": ""
+            },
+            "set": {
+                "description": "",
+                "success": ""
+            },
+            "delete": {
+                "description": "",
+                "success": ""
+            },
+            "rename": {
+                "description": "",
+                "success": ""
+            },
+            "raw": {
+                "description": "",
+                "inline": "",
+                "attached": ""
+            },
+            "list": {
+                "description": "",
+                "page": {
+                    "content": "",
+                    "header": {
+                        "all": "",
+                        "byUser": ""
+                    }
+                }
+            },
+            "search": {
+                "description": "",
+                "query": {
+                    "prompt": ""
+                },
+                "page": {
+                    "content": "",
+                    "header": ""
+                }
+            },
+            "permDelete": {
+                "description": "",
+                "notStaff": "",
+                "success": "",
+                "confirm": {
+                    "prompt": "",
+                    "continue": "",
+                    "cancel": ""
+                }
+            },
+            "cooldown": {
+                "description": "",
+                "cooldownZero": "",
+                "success": ""
+            },
+            "author": {
+                "description": "",
+                "success": ""
+            },
+            "info": {
+                "description": "",
+                "embed": {
+                    "title": "",
+                    "footer": {
+                        "text": ""
+                    },
+                    "field": {
+                        "author": {
+                            "name": "",
+                            "value": ""
+                        },
+                        "cooldown": {
+                            "name": "",
+                            "value": ""
+                        },
+                        "lastModified": {
+                            "name": "",
+                            "value": ""
+                        },
+                        "usage": {
+                            "name": "",
+                            "value": ""
+                        },
+                        "favourited": {
+                            "name": "",
+                            "value": ""
+                        },
+                        "reported": {
+                            "name": "",
+                            "value": ""
+                        },
+                        "flags": {
+                            "name": "",
+                            "value": ""
+                        }
+                    }
+                }
+            },
+            "top": {
+                "description": "",
+                "success": ""
+            },
+            "report": {
+                "description": "",
+                "blocked": "",
+                "unavailable": "",
+                "deleted": "",
+                "added": "",
+                "notification": "",
+                "query": {
+                    "prompt": ""
+                }
+            },
+            "setLang": {
+                "description": "",
+                "success": ""
+            },
+            "favourite": {
+                "list": {
+                    "description": "",
+                    "success": ""
+                },
+                "toggle": {
+                    "description": "",
+                    "added": "",
+                    "removed": ""
+                }
+            },
+            "flag": {
+                "updated": "",
+                "list": {
+                    "description": "",
+                    "none": "",
+                    "success": ""
+                },
+                "create": {
+                    "description": "",
+                    "wordMissing": "",
+                    "flagExists": "",
+                    "wordExists": ""
+                },
+                "delete": {
+                    "description": ""
+                }
+            }
+        },
+        "time": {
+            "errors": {
+                "timezoneInvalid": ""
+            },
+            "self": {
+                "description": ""
+            },
+            "user": {
+                "description": "",
+                "timezoneNotSet": "",
+                "timezoneInvalid": "",
+                "success": ""
+            },
+            "timezone": {
+                "description": "",
+                "success": ""
+            },
+            "convert": {
+                "description": "",
+                "invalidTime": "",
+                "success": ""
+            }
+        },
+        "timer": {
+            "flags": {
+                "channel": ""
+            },
+            "default": {
+                "description": "",
+                "durationZero": "",
+                "event": "",
+                "success": {
+                    "here": "",
+                    "dm": ""
+                }
+            }
+        },
+        "timeZone": {
+            "get": {
+                "description": "",
+                "notSet": "",
+                "timezoneInvalid": "",
+                "success": ""
+            },
+            "set": {
+                "description": "",
+                "timezoneInvalid": "",
+                "success": ""
+            }
+        },
+        "todo": {
+            "list": {
+                "description": "",
+                "embed": {
+                    "title": "",
+                    "description": ""
+                }
+            },
+            "remove": {
+                "description": "",
+                "unknownId": "",
+                "success": ""
+            },
+            "add": {
+                "description": "",
+                "success": ""
+            }
+        },
+        "tokenify": {
+            "default": {
+                "description": ""
+            }
+        },
+        "uptime": {
+            "default": {
+                "description": "",
+                "success": ""
+            }
+        },
+        "user": {
+            "default": {
+                "description": "",
+                "activity": {
+                    "0": "",
+                    "1": "",
+                    "2": "",
+                    "3": "",
+                    "4": "",
+                    "5": "",
+                    "default": ""
+                },
+                "embed": {
+                    "author": {
+                        "name": {
+                            "user": "",
+                            "member": ""
+                        }
+                    },
+                    "description": {
+                        "user": "",
+                        "member": ""
+                    },
+                    "field": {
+                        "roles": {
+                            "name": "",
+                            "value": ""
+                        }
+                    }
+                }
+            }
+        },
+        "version": {
+            "default": {
+                "description": "",
+                "success": ""
+            }
+        },
+        "voteBan": {
+            "description": "",
+            "errors": {
+                "failed": ""
+            },
+            "list": {
+                "description": "",
+                "embed": {
+                    "title": "",
+                    "description": ""
+                }
+            },
+            "info": {
+                "description": "",
+                "embed": {
+                    "title": "",
+                    "description": ""
+                }
+            },
+            "sign": {
+                "description": "",
+                "alreadySigned": "",
+                "success": ""
+            },
+            "forgive": {
+                "description": "",
+                "notSigned": "",
+                "success": ""
+            }
+        },
+        "warnings": {
+            "common": {
+                "count": "",
+                "untilTimeout": "",
+                "untilKick": "",
+                "untilBan": "",
+                "success": ""
+            },
+            "self": {
+                "description": ""
+            },
+            "user": {
+                "description": ""
+            }
+        },
+        "xkcd": {
+            "default": {
+                "description": "",
+                "down": "",
+                "embed": {
+                    "title": "",
+                    "footer": {
+                        "text": ""
+                    }
+                }
+            }
+        },
+        "art": {
+            "flags": {
+                "image": ""
+            },
+            "user": {
+                "description": ""
+            },
+            "default": {
+                "description": "",
+                "invalidUrl": ""
+            }
+        },
+        "cah": {
+            "flags": {
+                "unofficial": ""
+            },
+            "default": {
+                "description": ""
+            },
+            "packs": {
+                "description": "",
+                "success": ""
+            }
+        },
+        "caption": {
+            "errors": {
+                "imageMissing": "",
+                "captionMissing": "",
+                "fontInvalid": ""
+            },
+            "flags": {
+                "top": "",
+                "bottom": "",
+                "font": ""
+            },
+            "fonts": {
+                "description": "",
+                "success": ""
+            },
+            "attached": {
+                "description": ""
+            },
+            "linked": {
+                "description": "",
+                "invalidUrl": ""
+            }
+        },
+        "cat": {
+            "default": {
+                "description": ""
+            }
+        },
+        "clint": {
+            "flags": {
+                "image": ""
+            },
+            "user": {
+                "description": ""
+            },
+            "default": {
+                "description": "",
+                "invalidUrl": ""
+            }
+        },
+        "clippy": {
+            "default": {
+                "description": ""
+            }
+        },
+        "clyde": {
+            "default": {
+                "description": ""
+            }
+        },
+        "color": {
+            "default": {
+                "description": ""
+            }
+        },
+        "delete": {
+            "default": {
+                "description": ""
+            }
+        },
+        "distort": {
+            "flags": {
+                "image": ""
+            },
+            "user": {
+                "description": ""
+            },
+            "default": {
+                "description": "",
+                "invalidUrl": ""
+            }
+        },
+        "emoji": {
+            "description": "",
+            "flags": {
+                "svg": ""
+            },
+            "default": {
+                "description": "",
+                "invalidEmoji": ""
+            }
+        },
+        "free": {
+            "flags": {
+                "bottom": ""
+            },
+            "default": {
+                "description": ""
+            }
+        },
+        "linus": {
+            "flags": {
+                "image": ""
+            },
+            "user": {
+                "description": ""
+            },
+            "default": {
+                "description": "",
+                "invalidUrl": ""
+            }
+        },
+        "pcCheck": {
+            "default": {
+                "description": ""
+            }
+        },
+        "pixelate": {
+            "flags": {
+                "image": "",
+                "scale": ""
+            },
+            "user": {
+                "description": ""
+            },
+            "default": {
+                "description": "",
+                "invalidUrl": ""
+            }
+        },
+        "shit": {
+            "flags": {
+                "plural": ""
+            },
+            "default": {
+                "description": ""
+            }
+        },
+        "sonicSays": {
+            "default": {
+                "description": ""
+            }
+        },
+        "starVsTheForcesOf": {
+            "flags": {
+                "image": ""
+            },
+            "user": {
+                "description": ""
+            },
+            "default": {
+                "description": "",
+                "invalidUrl": ""
+            }
+        },
+        "stupid": {
+            "flags": {
+                "user": "",
+                "image": ""
+            },
+            "default": {
+                "description": "",
+                "invalidUser": ""
+            }
+        },
+        "theSearch": {
+            "default": {
+                "description": ""
+            }
+        },
+        "truth": {
+            "default": {
+                "description": ""
+            }
+        },
+        "danbooru": {
+            "default": {
+                "description": "",
+                "noTags": "",
+                "unsafeTags": "",
+                "noResults": "",
+                "success": "",
+                "embed": {
+                    "author": {
+                        "name": ""
+                    }
+                }
+            }
+        },
+        "rule34": {
+            "default": {
+                "description": "",
+                "noTags": "",
+                "unsafeTags": "",
+                "noResults": "",
+                "success": "",
+                "embed": {
+                    "author": {
+                        "name": ""
+                    }
+                }
+            }
+        },
+        "eval": {
+            "errors": {
+                "error": ""
+            },
+            "here": {
+                "description": "",
+                "success": ""
+            },
+            "master": {
+                "description": "",
+                "success": ""
+            },
+            "global": {
+                "description": "",
+                "results": {
+                    "template": "",
+                    "success": "",
+                    "failed": ""
+                }
+            },
+            "cluster": {
+                "description": "",
+                "success": ""
+            }
+        },
+        "exec": {
+            "default": {
+                "description": "",
+                "pm2Bad": "",
+                "confirm": {
+                    "prompt": "",
+                    "continue": "",
+                    "cancel": ""
+                },
+                "cancelled": "",
+                "command": {
+                    "pending": "",
+                    "success": "",
+                    "error": ""
+                }
+            }
+        },
+        "logLevel": {
+            "default": {
+                "description": "",
+                "success": ""
+            }
+        },
+        "awoo": {
+            "description": "",
+            "action": ""
+        },
+        "bang": {
+            "description": "",
+            "action": ""
+        },
+        "bite": {
+            "description": "",
+            "action": ""
+        },
+        "blush": {
+            "description": "",
+            "action": ""
+        },
+        "cry": {
+            "description": "",
+            "action": ""
+        },
+        "cuddles": {
+            "description": "",
+            "action": ""
+        },
+        "dance": {
+            "description": "",
+            "action": ""
+        },
+        "hug": {
+            "description": "",
+            "action": ""
+        },
+        "jojo": {
+            "description": ""
+        },
+        "kiss": {
+            "description": "",
+            "action": ""
+        },
+        "lewd": {
+            "description": "",
+            "action": ""
+        },
+        "lick": {
+            "description": "",
+            "action": ""
+        },
+        "megumin": {
+            "description": ""
+        },
+        "nom": {
+            "description": "",
+            "action": ""
+        },
+        "owo": {
+            "description": "",
+            "action": ""
+        },
+        "pat": {
+            "description": "",
+            "action": ""
+        },
+        "poke": {
+            "description": "",
+            "action": ""
+        },
+        "pout": {
+            "description": "",
+            "action": ""
+        },
+        "punch": {
+            "description": "",
+            "action": ""
+        },
+        "rem": {
+            "description": ""
+        },
+        "shrug": {
+            "description": "",
+            "action": ""
+        },
+        "slap": {
+            "description": "",
+            "action": ""
+        },
+        "sleepy": {
+            "description": "",
+            "action": ""
+        },
+        "smile": {
+            "description": "",
+            "action": ""
+        },
+        "smug": {
+            "description": "",
+            "action": ""
+        },
+        "stare": {
+            "description": "",
+            "action": ""
+        },
+        "thumbsUp": {
+            "description": "",
+            "action": ""
+        },
+        "wag": {
+            "description": "",
+            "action": ""
+        },
+        "respawn": {
+            "description": "",
+            "default": {
+                "description": "",
+                "requested": "",
+                "success": ""
+            }
+        },
+        "respond": {
+            "default": {
+                "description": "",
+                "notFound": "",
+                "userNotFound": "",
+                "alertFailed": "",
+                "success": "",
+                "alert": ""
+            }
+        }
+    }
+}

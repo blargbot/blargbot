@@ -30,11 +30,15 @@ export class Master extends BaseClient {
         config: Configuration,
         options: MasterOptions
     ) {
-        super(logger, config, {
-            restMode: true,
-            intents: [],
-            defaultImageFormat: 'png',
-            defaultImageSize: 512
+        super({
+            logger,
+            config,
+            discordConfig: {
+                restMode: true,
+                intents: [],
+                defaultImageFormat: 'png',
+                defaultImageSize: 512
+            }
         });
 
         this.worker = options.worker;

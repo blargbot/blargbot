@@ -1,13 +1,14 @@
 import { Cluster } from '@blargbot/cluster';
 import { WolkenCommand } from '@blargbot/cluster/command';
 
+import templates from '../../text';
+
 export class CuddleCommand extends WolkenCommand {
     public constructor(cluster: Cluster) {
         super('cuddle', {
             search: 'cuddle',
-            action: 'cuddles with',
             user: true,
-            description: 'Cuddle with someone.',
+            ...templates.commands.cuddles,
             wolkeKey: cluster.config.general.wolke
         });
     }

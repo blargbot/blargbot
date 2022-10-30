@@ -1,6 +1,11 @@
 import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType } from '@blargbot/cluster/utils';
 
+import templates from '../../text';
+import { CommandResult } from '../../types';
+
+const cmd = templates.commands.logLevel;
+
 export class LoglevelCommand extends GlobalCommand {
     public constructor() {
         super({
@@ -9,15 +14,15 @@ export class LoglevelCommand extends GlobalCommand {
             definitions: [
                 {
                     parameters: '{loglevel}',
-                    description: 'Sets the current log level',
+                    description: cmd.default.description,
                     execute: (ctx, [logLevel]) => this.setLogLevel(ctx, logLevel.asString)
                 }
             ]
         });
     }
 
-    public setLogLevel(context: CommandContext, logLevel: string): string {
+    public setLogLevel(context: CommandContext, logLevel: string): CommandResult {
         context.logger.setLevel(logLevel);
-        return this.success(`Log level set to \`${logLevel}\``);
+        return cmd.default.success({ logLevel });
     }
 }

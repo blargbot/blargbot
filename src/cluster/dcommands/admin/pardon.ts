@@ -1,8 +1,13 @@
 import { GuildCommand } from '@blargbot/cluster/command';
-import { GuildCommandContext } from '@blargbot/cluster/types';
-import { CommandType, humanize, parse, pluralise as p } from '@blargbot/cluster/utils';
+import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
+import { CommandType, parse } from '@blargbot/cluster/utils';
 import { FlagResult } from '@blargbot/domain/models';
+import { util } from '@blargbot/formatting';
 import { Member } from 'eris';
+
+import templates from '../../text';
+
+const cmd = templates.commands.pardon;
 
 export class PardonCommand extends GuildCommand {
     public constructor() {
@@ -10,35 +15,27 @@ export class PardonCommand extends GuildCommand {
             name: 'pardon',
             category: CommandType.ADMIN,
             flags: [
-                { flag: 'r', word: 'reason', description: 'The reason for the pardon.' },
-                {
-                    flag: 'c',
-                    word: 'count',
-                    description: 'The number of warnings that will be removed.'
-                }
+                { flag: 'r', word: 'reason', description: cmd.flags.reason },
+                { flag: 'c', word: 'count', description: cmd.flags.count }
             ],
             definitions: [
                 {
                     parameters: '{user:member+}',
-                    description: 'Pardons a user.\n' +
-                        'If mod-logging is enabled, the pardon will be logged.\n' +
-                        'This will not unban users.',
+                    description: cmd.default.description,
                     execute: (ctx, [user], flags) => this.pardon(ctx, user.asMember, flags)
                 }
             ]
         });
     }
 
-    public async pardon(context: GuildCommandContext, member: Member, flags: FlagResult): Promise<string> {
+    public async pardon(context: GuildCommandContext, member: Member, flags: FlagResult): Promise<CommandResult> {
         const reason = flags.r?.merge().value;
         const count = parse.int(flags.c?.merge().value ?? 1, { strict: true }) ?? NaN;
 
-        const result = await context.cluster.moderation.warns.pardon(member, context.author, count, reason);
-        switch (result.state) {
-            case 'countNaN': return this.error(`${flags.c?.merge().value ?? ''} isnt a number!`);
-            case 'countNegative': return this.error('I cant give a negative amount of pardons!');
-            case 'countZero': return this.error('I cant give zero pardons!');
-            case 'success': return this.success(`**${humanize.fullName(member.user)}** has been given ${p(count, 'a pardon', `${count} pardons`)}. They now have ${result.warnings} warnings.`);
-        }
+        const { state, warnings } = await context.cluster.moderation.warns.pardon(member, context.author, count, util.literal(reason));
+        const result = cmd.default.state[state];
+        return typeof result === 'function'
+            ? result({ text: flags.c?.merge().value ?? '', user: member.user, count, warnings })
+            : result;
     }
 }

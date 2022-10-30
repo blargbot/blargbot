@@ -1,7 +1,12 @@
 import { GuildCommand } from '@blargbot/cluster/command';
-import { GuildCommandContext } from '@blargbot/cluster/types';
-import { CommandType, humanize, pluralise as p } from '@blargbot/cluster/utils';
+import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
+import { CommandType } from '@blargbot/cluster/utils';
+import { IFormattable } from '@blargbot/formatting';
 import { Member } from 'eris';
+
+import templates from '../../text';
+
+const cmd = templates.commands.warnings;
 
 export class WarningsCommand extends GuildCommand {
     public constructor() {
@@ -11,35 +16,33 @@ export class WarningsCommand extends GuildCommand {
             definitions: [
                 {
                     parameters: '',
-                    description: 'Gets how many warnings you have',
+                    description: cmd.self.description,
                     execute: (ctx) => this.warnings(ctx, ctx.message.member)
                 },
                 {
                     parameters: '{user:member+}',
-                    description: 'Gets how many warnings the user has',
+                    description: cmd.user.description,
                     execute: (ctx, [user]) => this.warnings(ctx, user.asMember)
                 }
             ]
         });
     }
 
-    public async warnings(context: GuildCommandContext, member: Member): Promise<string> {
+    public async warnings(context: GuildCommandContext, member: Member): Promise<CommandResult> {
         const { count, banAt, kickAt, timeoutAt } = await context.cluster.moderation.warns.details(member);
-        const result: string[] = [
-            count > 0
-                ? this.warning(`**${humanize.fullName(member.user)}** has accumulated ${count} ${p(count, 'warning')}.`)
-                : this.congrats(`**${humanize.fullName(member.user)}** doesn't have any warnings!`)
+        const result: Array<IFormattable<string>> = [
+            cmd.common.count({ user: member.user, count })
         ];
 
-        if (timeoutAt !== undefined)
-            result.push(`- ${timeoutAt - count} more warnings before being timed out.`);
+        if (timeoutAt !== undefined && timeoutAt > count)
+            result.push(cmd.common.untilTimeout({ remaining: timeoutAt - count }));
 
-        if (kickAt !== undefined)
-            result.push(`- ${kickAt - count} more warnings before being kicked.`);
+        if (kickAt !== undefined && kickAt > count)
+            result.push(cmd.common.untilKick({ remaining: kickAt - count }));
 
-        if (banAt !== undefined)
-            result.push(`- ${banAt - count} more warnings before being banned.`);
+        if (banAt !== undefined && banAt > count)
+            result.push(cmd.common.untilBan({ remaining: banAt - count }));
 
-        return result.join('\n');
+        return cmd.common.success({ parts: result });
     }
 }

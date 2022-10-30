@@ -1,6 +1,12 @@
 import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType, randChoose } from '@blargbot/cluster/utils';
+import { util } from '@blargbot/formatting';
 import script from '@blargbot/res/beemovie.json';
+
+import templates from '../../text';
+import { CommandResult } from '../../types';
+
+const cmd = templates.commands.beeMovie;
 
 const scriptMap = script.reduce<{ characterLines: typeof script; allLines: typeof script; }>((a, l) => {
     if (l.type !== 2)
@@ -15,26 +21,26 @@ export class BeemovieCommand extends GlobalCommand {
         super({
             name: 'beemovie',
             category: CommandType.GENERAL,
+            flags: [
+                { flag: 'n', word: 'name', description: cmd.flags.name },
+                { flag: 'c', word: 'characters', description: cmd.flags.characters }
+            ],
             definitions: [
                 {
                     parameters: '',
-                    description: 'Gives a quote from the Bee Movie.',
+                    description: cmd.default.description,
                     execute: (ctx, _, flags) => this.getQuote(ctx, flags.n !== undefined, flags.c !== undefined)
                 }
-            ],
-            flags: [
-                { flag: 'n', word: 'name', description: 'Shows the name of the character the quote is from, if applicable.' },
-                { flag: 'c', word: 'only-characters', description: 'Only give quotes from actual characters (no stage directions).' }
             ]
         });
     }
 
-    public getQuote(context: CommandContext, showName: boolean, charactersOnly: boolean): string {
+    public getQuote(context: CommandContext, showName: boolean, charactersOnly: boolean): CommandResult {
         const lines = scriptMap[charactersOnly ? 'characterLines' : 'allLines'];
         const line = randChoose(lines);
 
         if (showName && line.actor !== undefined)
-            return `${context.config.discord.emotes.beemovie} **${line.actor}**\n${line.content}`;
-        return `${context.config.discord.emotes.beemovie} ${line.content}`;
+            return util.literal(`${context.config.discord.emotes.beemovie} **${line.actor}**\n${line.content}`);
+        return util.literal(`${context.config.discord.emotes.beemovie} ${line.content}`);
     }
 }

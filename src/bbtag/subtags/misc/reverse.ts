@@ -1,6 +1,9 @@
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
+import templates from '../../text';
 import { bbtag, SubtagType } from '../../utils';
+
+const tag = templates.subtags.reverse;
 
 export class ReverseSubtag extends CompiledSubtag {
     public constructor() {
@@ -10,9 +13,9 @@ export class ReverseSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['text'],
-                    description: 'Reverses the order of `text`. If `text` is an array, the array will be reversed. If `{get}` is used with an array, this will modify the original array.',
-                    exampleCode: '{reverse;palindrome}',
-                    exampleOut: 'emordnilap',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'string',
                     execute: (ctx, [text]) => this.reverse(ctx, text.value)
                 }

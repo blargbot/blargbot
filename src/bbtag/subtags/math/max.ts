@@ -1,7 +1,10 @@
 import { guard, parse } from '@blargbot/core/utils';
 
 import { CompiledSubtag } from '../../compilation';
+import templates from '../../text';
 import { bbtag, SubtagType } from '../../utils';
+
+const tag = templates.subtags.max;
 
 export class MaxSubtag extends CompiledSubtag {
     public constructor() {
@@ -11,9 +14,9 @@ export class MaxSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['numbers+'],
-                    description: 'Returns the largest entry out of `numbers`. If an array is provided, it will be expanded to its individual values.',
-                    exampleCode: '{max;50;2;65}',
-                    exampleOut: '65',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'number',
                     execute: (_, values) => this.max(values.map(arg => arg.value))
                 }

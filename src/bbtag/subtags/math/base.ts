@@ -4,7 +4,10 @@ import { between, parse } from '@blargbot/core/utils';
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError, NotANumberError } from '../../errors';
+import templates from '../../text';
 import { SubtagType } from '../../utils';
+
+const tag = templates.subtags.base;
 
 export class BaseNumberSubtag extends CompiledSubtag {
     public constructor() {
@@ -15,9 +18,9 @@ export class BaseNumberSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['integer', 'origin?:10', 'radix'],
-                    description: 'Converts `integer` from a base `origin` number into a base `radix` number. `radix` and `origin` must be between 2 and 36.',
-                    exampleCode: '{base;FF;16;10}',
-                    exampleOut: '255',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'string',
                     execute: (ctx, [integer, origin, radix]) => this.toBase(ctx, integer.value, origin.value, radix.value)
                 }

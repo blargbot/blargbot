@@ -1,29 +1,32 @@
 import { ClusterUtilities } from '@blargbot/cluster';
 import { CommandContext, GlobalImageCommand } from '@blargbot/cluster/command';
 import { CommandType, commandTypeDetails, guard, randChoose } from '@blargbot/cluster/utils';
-import { SendContent } from '@blargbot/core/types';
-import { ImageResult } from '@blargbot/image/types';
 import cahData from '@blargbot/res/cah.json';
 import { Guild, KnownTextableChannel, User } from 'eris';
+
+import templates from '../../text';
+import { CommandResult } from '../../types';
+
+const cmd = templates.commands.cah;
 
 export class CAHCommand extends GlobalImageCommand {
     public constructor() {
         super({
             name: 'cah',
+            flags: [
+                { flag: 'u', word: 'unofficial', description: cmd.flags.unofficial }
+            ],
             definitions: [
                 {
                     parameters: '',
-                    description: 'Generates a set of Cards Against Humanity cards.',
+                    description: cmd.default.description,
                     execute: (ctx, _, flags) => this.render(ctx, flags.u !== undefined)
                 },
                 {
                     parameters: 'packs',
-                    description: 'Lists all the Cards against packs I know about',
+                    description: cmd.packs.description,
                     execute: (_, __, flags) => this.listPacks(flags.u !== undefined)
                 }
-            ],
-            flags: [
-                { flag: 'u', word: 'unofficial', description: 'Also show unofficial cards.' }
             ]
         });
     }
@@ -42,7 +45,7 @@ export class CAHCommand extends GlobalImageCommand {
         return await commandTypeDetails[CommandType.NSFW].isVisible(util, location, user);
     }
 
-    public async render(context: CommandContext, unofficial: boolean): Promise<string | ImageResult> {
+    public async render(context: CommandContext, unofficial: boolean): Promise<CommandResult> {
         const cardIds = unofficial ? packLookup.all : packLookup.official;
         const black = cahData.black[randChoose(cardIds.black)];
 
@@ -55,10 +58,10 @@ export class CAHCommand extends GlobalImageCommand {
         return await this.renderImage(context, 'cah', { black: black.text.replaceAll('_', '______'), white: white });
     }
 
-    public listPacks(unofficial: boolean): SendContent {
+    public listPacks(unofficial: boolean): CommandResult {
         const packNames = unofficial ? packs.all : packs.official;
         return {
-            content: this.info('These are the packs I know about:'),
+            content: cmd.packs.success,
             files: [
                 {
                     file: packNames.join('\n'),

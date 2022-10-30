@@ -1,5 +1,8 @@
 import { CompiledSubtag } from '../../compilation';
+import templates from '../../text';
 import { SubtagType } from '../../utils';
+
+const tag = templates.subtags.clean;
 
 export class CleanSubtag extends CompiledSubtag {
     public constructor() {
@@ -9,9 +12,9 @@ export class CleanSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['text'],
-                    description: 'Removes all duplicated whitespace from `text`, meaning a cleaner output.',
-                    exampleCode: '{clean;Hello!  \n\n  Im     here    to help}',
-                    exampleOut: 'Hello!\nIm here to help',
+                    description: tag.default.description,
+                    exampleCode: tag.default.exampleCode,
+                    exampleOut: tag.default.exampleOut,
                     returns: 'string',
                     execute: (_, [text]) => this.clean(text.value)
                 }

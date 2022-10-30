@@ -1,11 +1,14 @@
-import { codeBlock, defaultStaff, discord, guard, humanize, parse, snowflake } from '@blargbot/cluster/utils';
+import { defaultStaff, discord, guard, parse, snowflake } from '@blargbot/cluster/utils';
 import { BaseUtilities } from '@blargbot/core/BaseUtilities';
-import { ChoiceQuery, ChoiceQueryOptions, ChoiceQueryResult as ChoiceResult, ConfirmQuery, ConfirmQueryOptions, EntityFindQueryOptions, EntityPickQueryOptions, EntityQueryOptions, MultipleQuery, MultipleQueryOptions, MultipleResult, QueryButton, TextQuery, TextQueryOptions, TextQueryOptionsParsed, TextQueryResult } from '@blargbot/core/types';
-import { ActionRow, AdvancedMessageContent, Button, ComponentInteraction, Constants, Guild, InteractionButton, KnownCategoryChannel, KnownChannel, KnownGuildChannel, KnownMessage, KnownPrivateChannel, KnownTextableChannel, Member, Message, Role, SelectMenu, SelectMenuOptions, User, Webhook } from 'eris';
+import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent';
+import { ChoiceQuery, ChoiceQueryOptions, ChoiceQueryResult, ConfirmQuery, ConfirmQueryOptions, EntityFindQueryOptions, EntityPickQueryOptions, EntityQueryOptions, FormatSelectMenuOptions, MultipleQuery, MultipleQueryOptions, MultipleQueryResult, QueryButton, SendContent, TextQuery, TextQueryOptions, TextQueryOptionsParsed, TextQueryResult } from '@blargbot/core/types';
+import { format, IFormattable, util } from '@blargbot/formatting';
+import { ActionRow, AdvancedMessageContent, Button, ComponentInteraction, Constants, Guild, KnownCategoryChannel, KnownChannel, KnownGuildChannel, KnownPrivateChannel, KnownTextableChannel, Member, Message, Role, SelectMenu, TextableChannel, User, Webhook } from 'eris';
 import fetch from 'node-fetch';
 
 import { Cluster } from './Cluster';
 import { Awaiter } from './managers';
+import templates from './text';
 
 export class ClusterUtilities extends BaseUtilities {
     public constructor(
@@ -14,7 +17,7 @@ export class ClusterUtilities extends BaseUtilities {
         super(cluster);
     }
 
-    public async queryChoice<T>(options: ChoiceQueryOptions<T>): Promise<ChoiceResult<T>> {
+    public async queryChoice<T>(options: ChoiceQueryOptions<IFormattable<string>, T>): Promise<ChoiceQueryResult<T>> {
         const query = await this.createChoiceQuery(options);
         const result = await query.getResult();
         try {
@@ -23,9 +26,9 @@ export class ClusterUtilities extends BaseUtilities {
         return result;
     }
 
-    public async createChoiceQuery<T>(options: ChoiceQueryOptions<T>): Promise<ChoiceQuery<T>> {
+    public async createChoiceQuery<T>(options: ChoiceQueryOptions<IFormattable<string>, T>): Promise<ChoiceQuery<T>> {
         const valueMap: Record<string, T> = {};
-        const selectData: SelectMenuOptions[] = [];
+        const selectData: Array<FormatSelectMenuOptions<IFormattable<string>>> = [];
         const pageSize = 25;
 
         for (const option of options.choices) {
@@ -53,9 +56,12 @@ export class ClusterUtilities extends BaseUtilities {
         if (typeof options.prompt === 'string')
             options.prompt = { content: options.prompt };
 
-        const component: ChoiceComponentOptions = {
-            content: options.prompt?.content ?? '',
-            get select(): SelectMenuOptions[] {
+        const content = options.prompt === undefined ? undefined
+            : util.isFormattable(options.prompt) ? options.prompt : options.prompt.content;
+
+        const component: ChoiceComponentOptions<IFormattable<string>> = {
+            content,
+            get select(): Array<FormatSelectMenuOptions<IFormattable<string>>> {
                 return selectData.slice(this.page * pageSize, (this.page + 1) * pageSize);
             },
             page: 0,
@@ -67,22 +73,30 @@ export class ClusterUtilities extends BaseUtilities {
             selectId: snowflake.create().toString()
         };
 
-        const awaiter = this.createComponentAwaiter(options.actors, '❌ This isnt for you to use!', options.timeout, {
+        const channel = options.context instanceof Message ? options.context.channel : options.context;
+        const formatter = await this.getFormatter(channel);
+        const awaiter = this.createComponentAwaiter(options.actors, templates.common.query.cantUse, options.timeout, {
             [component.cancelId]: () => true,
             [component.selectId]: () => true,
             [component.prevId]: async i => {
                 component.page--;
-                await i.editParent(createChoiceBody(component));
+                await i.editParent(createChoiceBody(component)[format](formatter));
                 return false;
             },
             [component.nextId]: async i => {
                 component.page++;
-                await i.editParent(createChoiceBody(component));
+                await i.editParent(createChoiceBody(component)[format](formatter));
                 return false;
             }
         });
 
-        const prompt = await this.send(options.context, { ...options.prompt, ...createChoiceBody(component) });
+        const choice = createChoiceBody(component);
+        const promptContent = options.prompt === undefined ? undefined
+            : new FormattableMessageContent(util.isFormattable(options.prompt) ? { content: options.prompt } : options.prompt);
+        const prompt = await this.#sendOrReply(options.context, util.literal({
+            ...promptContent?.[format](formatter),
+            ...choice[format](formatter)
+        }));
         if (prompt === undefined)
             return { prompt: undefined, getResult: () => Promise.resolve({ state: 'FAILED' }), cancel() { /* NOOP */ } };
 
@@ -109,7 +123,7 @@ export class ClusterUtilities extends BaseUtilities {
         };
     }
 
-    public async queryMultiple<T>(options: MultipleQueryOptions<T>): Promise<MultipleResult<T>> {
+    public async queryMultiple<T>(options: MultipleQueryOptions<IFormattable<string>, T>): Promise<MultipleQueryResult<T>> {
         const query = await this.createMultipleQuery(options);
         const result = await query.getResult();
         try {
@@ -118,9 +132,9 @@ export class ClusterUtilities extends BaseUtilities {
         return result;
     }
 
-    public async createMultipleQuery<T>(options: MultipleQueryOptions<T>): Promise<MultipleQuery<T>> {
+    public async createMultipleQuery<T>(options: MultipleQueryOptions<IFormattable<string>, T>): Promise<MultipleQuery<T>> {
         const valueMap: Record<string, T> = {};
-        const selectData: SelectMenuOptions[] = [];
+        const selectData: Array<FormatSelectMenuOptions<IFormattable<string>>> = [];
 
         for (const option of options.choices) {
             const id = snowflake.create().toString();
@@ -147,7 +161,7 @@ export class ClusterUtilities extends BaseUtilities {
         if (typeof options.prompt === 'string')
             options.prompt = { content: options.prompt };
 
-        const component: MultipleComponentOptions = {
+        const component: MultipleComponentOptions<IFormattable<string>> = {
             select: selectData,
             placeholder: options.placeholder,
             cancelId: snowflake.create().toString(),
@@ -156,12 +170,12 @@ export class ClusterUtilities extends BaseUtilities {
             minCount: options.minCount
         };
 
-        const awaiter = this.createComponentAwaiter(options.actors, '❌ This isnt for you to use!', options.timeout, {
+        const awaiter = this.createComponentAwaiter(options.actors, templates.common.query.cantUse, options.timeout, {
             [component.cancelId]: () => true,
             [component.selectId]: () => true
         });
 
-        const prompt = await this.send(options.context, { ...options.prompt, ...createMultipleBody(component) });
+        const prompt = await this.#sendOrReply(options.context, { ...options.prompt, ...createMultipleBody(component) });
         if (prompt === undefined)
             return { prompt: undefined, getResult: () => Promise.resolve({ state: 'FAILED' }), cancel() { /* NOOP */ } };
 
@@ -188,10 +202,10 @@ export class ClusterUtilities extends BaseUtilities {
         };
     }
 
-    public async queryConfirm(options: ConfirmQueryOptions): Promise<boolean | undefined>
-    public async queryConfirm(options: ConfirmQueryOptions<boolean>): Promise<boolean>
-    public async queryConfirm(options: ConfirmQueryOptions<boolean | undefined>): Promise<boolean | undefined>
-    public async queryConfirm(options: ConfirmQueryOptions<boolean | undefined>): Promise<boolean | undefined> {
+    public async queryConfirm(options: ConfirmQueryOptions<IFormattable<string>>): Promise<boolean | undefined>
+    public async queryConfirm(options: ConfirmQueryOptions<IFormattable<string>, boolean>): Promise<boolean>
+    public async queryConfirm(options: ConfirmQueryOptions<IFormattable<string>, boolean | undefined>): Promise<boolean | undefined>
+    public async queryConfirm(options: ConfirmQueryOptions<IFormattable<string>, boolean | undefined>): Promise<boolean | undefined> {
         const query = await this.createConfirmQuery(options);
         const result = await query.getResult();
         try {
@@ -200,25 +214,25 @@ export class ClusterUtilities extends BaseUtilities {
         return result;
     }
 
-    public async createConfirmQuery(options: ConfirmQueryOptions): Promise<ConfirmQuery>;
-    public async createConfirmQuery(options: ConfirmQueryOptions<boolean>): Promise<ConfirmQuery<boolean>>
-    public async createConfirmQuery(options: ConfirmQueryOptions<boolean | undefined>): Promise<ConfirmQuery<boolean | undefined>>
-    public async createConfirmQuery(options: ConfirmQueryOptions<boolean | undefined>): Promise<ConfirmQuery<boolean | undefined>> {
+    public async createConfirmQuery(options: ConfirmQueryOptions<IFormattable<string>>): Promise<ConfirmQuery>;
+    public async createConfirmQuery(options: ConfirmQueryOptions<IFormattable<string>, boolean>): Promise<ConfirmQuery<boolean>>
+    public async createConfirmQuery(options: ConfirmQueryOptions<IFormattable<string>, boolean | undefined>): Promise<ConfirmQuery<boolean | undefined>>
+    public async createConfirmQuery(options: ConfirmQueryOptions<IFormattable<string>, boolean | undefined>): Promise<ConfirmQuery<boolean | undefined>> {
         const payload = typeof options.prompt === 'string' ? { content: options.prompt } : options.prompt;
 
-        const component: ConfirmComponentOptions = {
+        const component: ConfirmComponentOptions<IFormattable<string>> = {
             cancelId: snowflake.create().toString(),
             confirmId: snowflake.create().toString(),
             cancelButton: options.cancel,
-            confirmButton: options.confirm
+            confirmButton: options.continue
         };
 
-        const awaiter = this.createComponentAwaiter(options.actors, '❌ This isnt for you to use!', options.timeout, {
+        const awaiter = this.createComponentAwaiter(options.actors, templates.common.query.cantUse, options.timeout, {
             [component.confirmId]: () => true,
             [component.cancelId]: () => true
         });
 
-        const prompt = await this.send(options.context, { ...payload, ...createConfirmBody(component) });
+        const prompt = await this.#sendOrReply(options.context, { ...payload, ...createConfirmBody(component) });
         if (prompt === undefined) {
             awaiter.cancel();
             return { prompt, getResult: () => Promise.resolve(options.fallback), cancel() { /* NOOP */ } };
@@ -242,34 +256,34 @@ export class ClusterUtilities extends BaseUtilities {
         };
     }
 
-    public async queryText<T>(options: TextQueryOptionsParsed<T>): Promise<TextQueryResult<T>>
-    public async queryText(options: TextQueryOptions): Promise<TextQueryResult<string>>
-    public async queryText<T>(options: TextQueryOptionsParsed<T> | TextQueryOptions): Promise<TextQueryResult<T | string>>
-    public async queryText<T>(options: TextQueryOptionsParsed<T> | TextQueryOptions): Promise<TextQueryResult<T | string>> {
+    public async queryText<T>(options: TextQueryOptionsParsed<IFormattable<string>, T>): Promise<TextQueryResult<T>>
+    public async queryText(options: TextQueryOptions<IFormattable<string>>): Promise<TextQueryResult<string>>
+    public async queryText<T>(options: TextQueryOptionsParsed<IFormattable<string>, T> | TextQueryOptions<IFormattable<string>>): Promise<TextQueryResult<T | string>>
+    public async queryText<T>(options: TextQueryOptionsParsed<IFormattable<string>, T> | TextQueryOptions<IFormattable<string>>): Promise<TextQueryResult<T | string>> {
         const query = await this.createTextQuery(options);
         return await query.getResult();
     }
 
-    public async createTextQuery<T>(options: TextQueryOptionsParsed<T>): Promise<TextQuery<T>>
-    public async createTextQuery(options: TextQueryOptions): Promise<TextQuery<string>>
-    public async createTextQuery<T>(options: TextQueryOptionsParsed<T> | TextQueryOptions): Promise<TextQuery<T | string>>
-    public async createTextQuery<T>(options: TextQueryOptionsParsed<T> | TextQueryOptions): Promise<TextQuery<T | string>> {
+    public async createTextQuery<T>(options: TextQueryOptionsParsed<IFormattable<string>, T>): Promise<TextQuery<T>>
+    public async createTextQuery(options: TextQueryOptions<IFormattable<string>>): Promise<TextQuery<string>>
+    public async createTextQuery<T>(options: TextQueryOptionsParsed<IFormattable<string>, T> | TextQueryOptions<IFormattable<string>>): Promise<TextQuery<T | string>>
+    public async createTextQuery<T>(options: TextQueryOptionsParsed<IFormattable<string>, T> | TextQueryOptions<IFormattable<string>>): Promise<TextQuery<T | string>> {
         const payload = typeof options.prompt === 'string' ? { content: options.prompt } : options.prompt;
-        const component: TextComponentOptions = {
+        const component: TextComponentOptions<IFormattable<string>> = {
             cancelId: snowflake.create().toString(),
-            cancelButton: options.cancel ?? 'Cancel'
+            cancelButton: options.cancel ?? templates.common.query.cancel
         };
 
         let parsed: { success: true; value: T | string; } | { success: false; } | undefined;
-        const messages: KnownMessage[] = [];
+        const messages: Message[] = [];
         const parse = options.parse ?? (m => ({ success: true, value: m.content }));
         const channel = options.context instanceof Message ? options.context.channel : options.context;
-        const componentAwaiter = this.createComponentAwaiter(options.actors, '❌ This isnt for you to use!', options.timeout, { [component.cancelId]: () => true });
+        const componentAwaiter = this.createComponentAwaiter(options.actors, templates.common.query.cantUse, options.timeout, { [component.cancelId]: () => true });
         const messageAwaiter = this.createMessageAwaiter(channel, options.actors, options.timeout, async message => {
             const parseResult = await parse(message);
             if (!parseResult.success && parseResult.error !== undefined) {
                 messages.push(message);
-                const prompt = await this.send(message, parseResult.error);
+                const prompt = await this.reply(message, new FormattableMessageContent(parseResult.error));
                 if (prompt !== undefined)
                     messages.push(prompt);
             }
@@ -280,7 +294,7 @@ export class ClusterUtilities extends BaseUtilities {
             return parseResult.success;
         });
 
-        const prompt = await this.send(options.context, { ...payload, ...createTextBody(component) });
+        const prompt = await this.#sendOrReply(options.context, { ...payload, ...createTextBody(component) });
         if (prompt === undefined) {
             return {
                 messages: messages,
@@ -317,17 +331,25 @@ export class ClusterUtilities extends BaseUtilities {
         };
     }
 
+    async #sendOrReply<T extends TextableChannel>(context: T | Message<T>, content: IFormattable<SendContent<string>>, author?: User): Promise<Message<T> | undefined> {
+        return context instanceof Message
+            ? await this.reply(context, content, author)
+            : await this.send(context, content, author);
+    }
+
     public createComponentAwaiter(
         actors: Iterable<string | User> | string | User,
-        rejectMessage: string,
+        rejectMessage: IFormattable<string>,
         timeout: number | undefined,
         options: Record<string, (interaction: ComponentInteraction) => boolean | Promise<boolean>>
     ): Awaiter<ComponentInteraction> {
         const actorFilter = createActorFilter(actors);
         const validIds = new Set(Object.keys(options));
+        const reject = new FormattableMessageContent({ content: rejectMessage, flags: Constants.MessageFlags.EPHEMERAL });
         return this.cluster.awaiter.components.getAwaiter(validIds, async (interaction) => {
             if (!actorFilter(interaction.member?.user ?? interaction.user)) {
-                await interaction.createMessage({ content: rejectMessage, flags: Constants.MessageFlags.EPHEMERAL });
+                const formatter = await this.getFormatter(interaction.channel);
+                await interaction.createMessage(reject[format](formatter));
                 return false;
             }
 
@@ -335,7 +357,7 @@ export class ClusterUtilities extends BaseUtilities {
         }, timeout ?? 60000);
     }
 
-    public createMessageAwaiter<T extends KnownTextableChannel = KnownTextableChannel>(
+    public createMessageAwaiter<T extends TextableChannel>(
         channel: T,
         actors: Iterable<string | User> | string | User,
         timeout: number | undefined,
@@ -346,104 +368,125 @@ export class ClusterUtilities extends BaseUtilities {
             return actorFilter(message.author) && await filter(message);
         }, timeout ?? 60000);
     }
-    public async queryUser(options: EntityFindQueryOptions): Promise<ChoiceResult<User>>
-    public async queryUser(options: EntityPickQueryOptions<User>): Promise<ChoiceResult<User>>
-    public async queryUser(options: EntityQueryOptions<User>): Promise<ChoiceResult<User>> {
+
+    public async queryUser(options: EntityFindQueryOptions<IFormattable<string>>): Promise<ChoiceQueryResult<User>>
+    public async queryUser(options: EntityPickQueryOptions<IFormattable<string>, User>): Promise<ChoiceQueryResult<User>>
+    public async queryUser(options: EntityQueryOptions<IFormattable<string>, User>): Promise<ChoiceQueryResult<User>> {
         const matches = 'guild' in options ? await this.findUsers(options.guild, options.filter) : [...options.choices];
 
         return await this.queryChoice({
             ...options,
             prompt: options.prompt ?? (options.filter === undefined
-                ? 'ℹ️ Please select a user from the drop down'
-                : `ℹ️ Multiple users matching \`${options.filter}\` found! Please select one from the drop down.`),
-            placeholder: options.placeholder ?? 'Select a user',
-            choices: matches.map(u => ({
-                label: humanize.fullName(u),
-                emoji: { name: u.bot ? '🤖' : '👤' },
-                value: u,
-                description: `Id: ${u.id}`
-            })).sort((a, b) => a.label > b.label ? 1 : -1)
+                ? templates.common.query.user.prompt.default
+                : templates.common.query.user.prompt.filtered({ filter: options.filter })),
+            placeholder: options.placeholder ?? templates.common.query.user.placeholder,
+            choices: matches
+                .map(u => ({ u, sortKey: `${u.username}#${u.discriminator}` }))
+                .sort((a, b) => a.sortKey > b.sortKey ? 1 : -1)
+                .map(({ u }) => ({
+                    label: templates.common.query.user.choice.label({ user: u }),
+                    emoji: { name: u.bot ? '🤖' : '👤' },
+                    value: u,
+                    description: templates.common.query.user.choice.description({ user: u })
+                }))
         });
     }
 
-    public async querySender(options: EntityPickQueryOptions<User | Webhook>): Promise<ChoiceResult<User | Webhook>> {
+    public async querySender(options: EntityPickQueryOptions<IFormattable<string>, User | Webhook>): Promise<ChoiceQueryResult<User | Webhook>> {
         return await this.queryChoice({
             ...options,
             prompt: options.prompt ?? (options.filter === undefined
-                ? 'ℹ️ Please select a user or webhook from the drop down'
-                : `ℹ️ Multiple users matching \`${options.filter}\` found! Please select one from the drop down.`),
-            placeholder: options.placeholder ?? 'Select a user',
-            choices: [...options.choices].map(u => ({
-                label: u instanceof User ? humanize.fullName(u) : u.name,
-                emoji: { name: u instanceof User ? u.bot ? '🤖' : '👤' : '🪝' },
-                value: u,
-                description: `Id: ${u.id}`
-            })).sort((a, b) => a.label > b.label ? 1 : -1)
+                ? templates.common.query.sender.prompt.default
+                : templates.common.query.sender.prompt.filtered({ filter: options.filter })),
+            placeholder: options.placeholder ?? templates.common.query.sender.placeholder,
+            choices: [...options.choices]
+                .map(u => ({ u, sortKey: u instanceof User ? `${u.username}#${u.discriminator}` : u.name }))
+                .sort((a, b) => a.sortKey > b.sortKey ? 1 : -1)
+                .map(({ u }) => ({
+                    label: u instanceof User
+                        ? templates.common.query.sender.choice.label.user({ user: u })
+                        : templates.common.query.sender.choice.label.webhook({ webhook: u }),
+                    emoji: { name: u instanceof User ? u.bot ? '🤖' : '👤' : '🪝' },
+                    value: u,
+                    description: templates.common.query.sender.choice.description({ sender: u })
+                }))
         });
     }
 
-    public async queryMember(options: EntityFindQueryOptions): Promise<ChoiceResult<Member>>
-    public async queryMember(options: EntityPickQueryOptions<Member>): Promise<ChoiceResult<Member>>
-    public async queryMember(options: EntityQueryOptions<Member>): Promise<ChoiceResult<Member>> {
+    public async queryMember(options: EntityFindQueryOptions<IFormattable<string>>): Promise<ChoiceQueryResult<Member>>
+    public async queryMember(options: EntityPickQueryOptions<IFormattable<string>, Member>): Promise<ChoiceQueryResult<Member>>
+    public async queryMember(options: EntityQueryOptions<IFormattable<string>, Member>): Promise<ChoiceQueryResult<Member>> {
         const matches = 'guild' in options ? await this.findMembers(options.guild, options.filter) : [...options.choices];
 
         return await this.queryChoice({
             ...options,
             prompt: options.prompt ?? (options.filter === undefined
-                ? 'ℹ️ Please select a user from the drop down'
-                : `ℹ️ Multiple users matching \`${options.filter}\` found! Please select one from the drop down.`),
-            placeholder: options.placeholder ?? 'Select a user',
-            choices: matches.map(m => ({
-                label: `${m.nick ?? m.username} (${humanize.fullName(m.user)})`,
-                emoji: { name: m.user.bot ? '🤖' : '👤' },
-                value: m,
-                description: `Id: ${m.id}`
-            })).sort((a, b) => a.label > b.label ? 1 : -1)
+                ? templates.common.query.member.prompt.default
+                : templates.common.query.member.prompt.filtered({ filter: options.filter })),
+            placeholder: options.placeholder ?? templates.common.query.member.placeholder,
+            choices: matches
+                .map(m => ({ m, sortKey: `${m.nick ?? m.username} (${m.username}#${m.discriminator})` }))
+                .sort((a, b) => a.sortKey > b.sortKey ? 1 : -1)
+                .map(({ m }) => ({
+                    label: templates.common.query.member.choice.label({ member: m }),
+                    emoji: { name: m.user.bot ? '🤖' : '👤' },
+                    value: m,
+                    description: templates.common.query.member.choice.description({ member: m })
+                }))
         });
     }
 
-    public async queryRole(options: EntityFindQueryOptions): Promise<ChoiceResult<Role>>
-    public async queryRole(options: EntityPickQueryOptions<Role>): Promise<ChoiceResult<Role>>
-    public async queryRole(options: EntityQueryOptions<Role>): Promise<ChoiceResult<Role>> {
+    public async queryRole(options: EntityFindQueryOptions<IFormattable<string>>): Promise<ChoiceQueryResult<Role>>
+    public async queryRole(options: EntityPickQueryOptions<IFormattable<string>, Role>): Promise<ChoiceQueryResult<Role>>
+    public async queryRole(options: EntityQueryOptions<IFormattable<string>, Role>): Promise<ChoiceQueryResult<Role>> {
         const matches = 'guild' in options ? await this.findRoles(options.guild, options.filter) : [...options.choices];
 
         return await this.queryChoice({
             ...options,
             prompt: options.prompt ?? (options.filter === undefined
-                ? 'ℹ️ Please select a role from the drop down'
-                : `ℹ️ Multiple roles matching \`${options.filter}\` found! Please select one from the drop down.`),
-            placeholder: options.placeholder ?? 'Select a role',
+                ? templates.common.query.role.prompt.default
+                : templates.common.query.role.prompt.filtered({ filter: options.filter })),
+            placeholder: options.placeholder ?? templates.common.query.role.placeholder,
             choices: matches
-                .map(r => ({
-                    label: r.name,
+                .map(r => ({ r, sortKey: r.name }))
+                .sort((a, b) => a.sortKey > b.sortKey ? 1 : -1)
+                .map(({ r }) => ({
+                    label: templates.common.query.role.choice.label({ role: r }),
                     value: r,
-                    description: `Id: ${r.id} Color: #${r.color.toString(16).padStart(6, '0')}`
-                })).sort((a, b) => a.label > b.label ? 1 : -1)
+                    description: templates.common.query.role.choice.description({ role: r })
+                }))
         });
     }
 
-    public async queryChannel(options: EntityFindQueryOptions): Promise<ChoiceResult<KnownGuildChannel>>;
-    public async queryChannel<T extends KnownChannel>(options: EntityPickQueryOptions<T>): Promise<ChoiceResult<T>>;
-    public async queryChannel(options: EntityQueryOptions<KnownChannel>): Promise<ChoiceResult<KnownChannel>> {
+    public async queryChannel(options: EntityFindQueryOptions<IFormattable<string>>): Promise<ChoiceQueryResult<KnownGuildChannel>>;
+    public async queryChannel<T extends KnownChannel>(options: EntityPickQueryOptions<IFormattable<string>, T>): Promise<ChoiceQueryResult<T>>;
+    public async queryChannel(options: EntityQueryOptions<IFormattable<string>, KnownChannel>): Promise<ChoiceQueryResult<KnownChannel>> {
         const matches = 'guild' in options ? await this.findChannels(options.guild, options.filter) : [...options.choices];
 
         return await this.queryChoice({
             ...options,
             prompt: options.prompt ?? (options.filter === undefined
-                ? 'ℹ️ Please select a channel from the drop down'
-                : `ℹ️ Multiple channels matching \`${options.filter}\` found! Please select one from the drop down.`),
-            placeholder: options.placeholder ?? 'Select a channel',
+                ? templates.common.query.channel.prompt.default
+                : templates.common.query.channel.prompt.filtered({ filter: options.filter })),
+            placeholder: options.placeholder ?? templates.common.query.channel.placeholder,
             choices: sortChannels(matches)
                 .map(c => ({
-                    id: c.id,
-                    value: c,
-                    details: getChannelLookupSelect(c),
-                    parent: guard.isGuildChannel(c) && c.parentID !== null ? c.guild.channels.get(c.parentID) : undefined
+                    x: {
+                        id: c.id,
+                        value: c,
+                        details: getChannelLookupSelect(c),
+                        parent: guard.isGuildChannel(c) && c.parentID !== null ? c.guild.channels.get(c.parentID) : undefined
+                    },
+                    sortKey: 'name' in c ? c.name : c.id
                 }))
-                .map(x => ({
+                .sort((a, b) => a.sortKey > b.sortKey ? 1 : -1)
+                .map(({ x }) => ({
                     ...x.details,
                     emoji: { name: x.details.emoji },
-                    description: `Id: ${x.id}${x.parent !== undefined ? ` Parent: ${getChannelLookupName(x.parent)}` : ''}`,
+                    description: templates.common.query.channel.choice.description({
+                        channel: x.value,
+                        parent: x.parent === undefined ? undefined : getChannelLookupSelect(x.parent)
+                    }),
                     value: x.value
                 }))
         });
@@ -452,26 +495,21 @@ export class ClusterUtilities extends BaseUtilities {
     public async displayPaged(
         channel: KnownTextableChannel,
         user: User,
-        filterText: string,
-        getItems: (skip: number, take: number) => Promise<readonly string[]>,
-        itemCount: () => Promise<number>,
-        pageSize = 20,
-        separator = '\n'
+        getPage: (page: number) => Promise<{
+            content: IFormattable<string>;
+            pageCount: number;
+            header: IFormattable<string>;
+        } | undefined>
     ): Promise<boolean | undefined> {
         let page = 0;
         while (!isNaN(page)) {
-            const items = await getItems(page * pageSize, pageSize);
-            if (items.length === 0)
+            const content = await getPage(page);
+            if (content === undefined)
                 return false;
-            const total = await itemCount();
-            const pageCount = Math.ceil(total / pageSize);
             const pageQuery = await this.createTextQuery<number>({
                 context: channel,
                 actors: user,
-                prompt: `Found ${items.length}/${total}${filterText}.\n` +
-                    `Page **#${page + 1}/${pageCount}**\n` +
-                    `${codeBlock(items.join(separator), 'fix')}\n` +
-                    `Type a number between **1 and ${pageCount}** to view that page.`,
+                prompt: templates.common.query.paged.prompt({ ...content, page }),
                 parse: message => {
                     const pageNumber = parse.int(message.content, { strict: true });
                     if (pageNumber === undefined)
@@ -623,37 +661,37 @@ export class ClusterUtilities extends BaseUtilities {
     }
 }
 
-interface ChoiceComponentOptions {
-    readonly content: string;
+interface ChoiceComponentOptions<TString> {
+    readonly content: TString | undefined;
     readonly selectId: string;
     readonly cancelId: string;
     readonly prevId: string;
     readonly nextId: string;
     readonly lastPage: number;
-    readonly placeholder: string | undefined;
-    readonly select: SelectMenuOptions[];
+    readonly placeholder: TString | undefined;
+    readonly select: ReadonlyArray<FormatSelectMenuOptions<TString>>;
     page: number;
 }
 
-interface MultipleComponentOptions {
+interface MultipleComponentOptions<TString> {
     readonly selectId: string;
     readonly cancelId: string;
-    readonly placeholder: string | undefined;
-    readonly select: SelectMenuOptions[];
+    readonly placeholder: TString | undefined;
+    readonly select: ReadonlyArray<FormatSelectMenuOptions<TString>>;
     readonly maxCount?: number;
     readonly minCount?: number;
 }
 
-interface ConfirmComponentOptions {
+interface ConfirmComponentOptions<TString> {
     readonly confirmId: string;
     readonly cancelId: string;
-    readonly confirmButton: QueryButton;
-    readonly cancelButton: QueryButton;
+    readonly confirmButton: QueryButton<TString>;
+    readonly cancelButton: QueryButton<TString>;
 }
 
-interface TextComponentOptions {
+interface TextComponentOptions<TString> {
     readonly cancelId: string;
-    readonly cancelButton: QueryButton;
+    readonly cancelButton: QueryButton<TString>;
 }
 
 function createActorFilter(actors: Iterable<string | User | Member> | string | User | Member): (user?: User) => boolean {
@@ -678,63 +716,63 @@ function createActorFilter(actors: Iterable<string | User | Member> | string | U
     }
 }
 
-function createConfirmBody(options: ConfirmComponentOptions): Pick<AdvancedMessageContent, 'components'> {
-    const confirm: InteractionButton = {
+function createConfirmBody(options: ConfirmComponentOptions<IFormattable<string>>): IFormattable<Pick<AdvancedMessageContent, 'components'>> {
+    const confirm = {
         style: Constants.ButtonStyles.SUCCESS,
         ...typeof options.confirmButton === 'string' ? { label: options.confirmButton } : options.confirmButton,
         type: Constants.ComponentTypes.BUTTON,
         custom_id: options.confirmId
     };
 
-    const cancel: InteractionButton = {
+    const cancel = {
         style: Constants.ButtonStyles.DANGER,
         ...typeof options.cancelButton === 'string' ? { label: options.cancelButton } : options.cancelButton,
         type: Constants.ComponentTypes.BUTTON,
         custom_id: options.cancelId
     };
 
-    return {
+    return new FormattableMessageContent({
         components: [
             {
                 type: Constants.ComponentTypes.ACTION_ROW,
                 components: [confirm, cancel]
             }
         ]
-    };
+    });
 }
 
-function createMultipleBody(options: MultipleComponentOptions): Pick<AdvancedMessageContent, 'components'> {
-    const select: SelectMenu = {
+function createMultipleBody(options: MultipleComponentOptions<IFormattable<string>>): IFormattable<Pick<AdvancedMessageContent, 'components'>> {
+    const select = {
         type: Constants.ComponentTypes.SELECT_MENU,
         custom_id: options.selectId,
-        options: options.select,
+        options: [...options.select],
         placeholder: options.placeholder,
         max_values: options.maxCount ?? options.select.length,
         min_values: options.minCount ?? 0
     };
-    const cancel: InteractionButton = {
+    const cancel = {
         type: Constants.ComponentTypes.BUTTON,
         custom_id: options.cancelId,
         emoji: { name: '✖️' },
         style: Constants.ButtonStyles.DANGER
     };
 
-    return {
+    return new FormattableMessageContent({
         components: [
             { type: Constants.ComponentTypes.ACTION_ROW, components: [select] },
             { type: Constants.ComponentTypes.ACTION_ROW, components: [cancel] }
         ]
-    };
+    });
 }
 
-function createChoiceBody(options: ChoiceComponentOptions): Pick<AdvancedMessageContent, 'components' | 'content'> {
-    const select: SelectMenu = {
+function createChoiceBody(options: ChoiceComponentOptions<IFormattable<string>>): IFormattable<Pick<AdvancedMessageContent, 'components' | 'content'>> {
+    const select = {
         type: Constants.ComponentTypes.SELECT_MENU,
         custom_id: options.selectId,
-        options: options.select,
+        options: [...options.select],
         placeholder: options.placeholder
     };
-    const cancel: InteractionButton = {
+    const cancel = {
         type: Constants.ComponentTypes.BUTTON,
         custom_id: options.cancelId,
         emoji: { name: '✖️' },
@@ -742,16 +780,16 @@ function createChoiceBody(options: ChoiceComponentOptions): Pick<AdvancedMessage
     };
 
     if (options.lastPage === 0) {
-        return {
+        return new FormattableMessageContent({
             content: options.content,
             components: [
                 { type: Constants.ComponentTypes.ACTION_ROW, components: [select] },
                 { type: Constants.ComponentTypes.ACTION_ROW, components: [cancel] }
             ]
-        };
+        });
     }
 
-    const prev: InteractionButton = {
+    const prev = {
         type: Constants.ComponentTypes.BUTTON,
         custom_id: options.prevId,
         emoji: { name: '⬅' },
@@ -759,7 +797,7 @@ function createChoiceBody(options: ChoiceComponentOptions): Pick<AdvancedMessage
         disabled: options.page === 0
     };
 
-    const next: InteractionButton = {
+    const next = {
         type: Constants.ComponentTypes.BUTTON,
         custom_id: options.nextId,
         emoji: { name: '➡' },
@@ -767,18 +805,17 @@ function createChoiceBody(options: ChoiceComponentOptions): Pick<AdvancedMessage
         disabled: options.page === options.lastPage
     };
 
-    return {
-        content: `${options.content}\nPage ${options.page + 1}/${options.lastPage + 1}`.trim(),
+    return new FormattableMessageContent({
+        content: templates.common.query.choose.paged({ content: options.content, page: options.page, pageCount: options.lastPage }),
         components: [
             { type: Constants.ComponentTypes.ACTION_ROW, components: [select] },
             { type: Constants.ComponentTypes.ACTION_ROW, components: [prev, cancel, next] }
         ]
-    };
+    });
 }
 
-function createTextBody(options: TextComponentOptions, disabled = false): Pick<AdvancedMessageContent, 'components'> {
-
-    return {
+function createTextBody(options: TextComponentOptions<IFormattable<string>>, disabled = false): IFormattable<Pick<AdvancedMessageContent, 'components'>> {
+    return new FormattableMessageContent({
         components: [
             {
                 type: Constants.ComponentTypes.ACTION_ROW,
@@ -791,31 +828,26 @@ function createTextBody(options: TextComponentOptions, disabled = false): Pick<A
                 }]
             }
         ]
-    };
+    });
 }
 
-function getChannelLookupName(channel: KnownChannel): string {
-    const opt = getChannelLookupSelect(channel);
-    return `${opt.emoji} ${opt.label}`;
-}
-
-function getChannelLookupSelect(channel: KnownChannel): { label: string; emoji: string; } {
+function getChannelLookupSelect(channel: KnownChannel): { label: IFormattable<string>; emoji: string; } {
     switch (channel.type) {
-        case Constants.ChannelTypes.DM: return { emoji: '🕵️', label: 'DM' };
-        case Constants.ChannelTypes.GROUP_DM: return { emoji: '👥', label: 'Group DM' };
-        case Constants.ChannelTypes.GUILD_CATEGORY: return { emoji: '📁', label: channel.name };
-        case Constants.ChannelTypes.GUILD_NEWS: return { emoji: '📰', label: channel.name };
-        case Constants.ChannelTypes.GUILD_NEWS_THREAD: return { emoji: '✏️', label: channel.name };
-        case Constants.ChannelTypes.GUILD_PRIVATE_THREAD: return { emoji: '✏️', label: channel.name };
-        case Constants.ChannelTypes.GUILD_PUBLIC_THREAD: return { emoji: '✏️', label: channel.name };
-        case Constants.ChannelTypes.GUILD_STAGE_VOICE: return { emoji: '🔈', label: channel.name };
-        case Constants.ChannelTypes.GUILD_STORE: return { emoji: '🛒', label: channel.name };
-        case Constants.ChannelTypes.GUILD_TEXT: return { emoji: '✏️', label: channel.name };
-        case Constants.ChannelTypes.GUILD_VOICE: return { emoji: '🔈', label: channel.name };
+        case Constants.ChannelTypes.DM: return { emoji: '🕵️', label: templates.common.query.channel.choice.label.dm };
+        case Constants.ChannelTypes.GROUP_DM: return { emoji: '👥', label: templates.common.query.channel.choice.label.dm };
+        case Constants.ChannelTypes.GUILD_CATEGORY: return { emoji: '📁', label: templates.common.query.channel.choice.label.guild({ channel }) };
+        case Constants.ChannelTypes.GUILD_NEWS: return { emoji: '📰', label: templates.common.query.channel.choice.label.guild({ channel }) };
+        case Constants.ChannelTypes.GUILD_NEWS_THREAD: return { emoji: '✏️', label: templates.common.query.channel.choice.label.guild({ channel }) };
+        case Constants.ChannelTypes.GUILD_PRIVATE_THREAD: return { emoji: '✏️', label: templates.common.query.channel.choice.label.guild({ channel }) };
+        case Constants.ChannelTypes.GUILD_PUBLIC_THREAD: return { emoji: '✏️', label: templates.common.query.channel.choice.label.guild({ channel }) };
+        case Constants.ChannelTypes.GUILD_STAGE_VOICE: return { emoji: '🔈', label: templates.common.query.channel.choice.label.guild({ channel }) };
+        case Constants.ChannelTypes.GUILD_STORE: return { emoji: '🛒', label: templates.common.query.channel.choice.label.guild({ channel }) };
+        case Constants.ChannelTypes.GUILD_TEXT: return { emoji: '✏️', label: templates.common.query.channel.choice.label.guild({ channel }) };
+        case Constants.ChannelTypes.GUILD_VOICE: return { emoji: '🔈', label: templates.common.query.channel.choice.label.guild({ channel }) };
     }
 }
 
-async function cleanupQuery(...items: Array<KnownMessage | ComponentInteraction | undefined>): Promise<void> {
+async function cleanupQuery(...items: Array<Message | ComponentInteraction | undefined>): Promise<void> {
     const promises = [];
     for (const item of items) {
         if (item instanceof ComponentInteraction)
