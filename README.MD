@@ -1,3 +1,5 @@
+[![Crowdin](https://badges.crowdin.net/blargbot/localized.svg)](https://crowdin.com/project/blargbot)
+
 # blargbot
 
 blargbot is multipurpose discord bot. Coded in node.js using [Eris](https://github.com/abalabahaha/eris), blargbot hopes to bring commands and services to your discord.
