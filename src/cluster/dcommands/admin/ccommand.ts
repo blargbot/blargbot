@@ -298,7 +298,7 @@ export class CustomCommandCommand extends GuildCommand {
             if (command.state === 'ALLOWED') {
                 for await (const role of this.#getRoles(context, command.detail.command)) {
                     if (role === undefined)
-                        any.push(role);
+                        any.push(command.detail.command.name);
                     else
                         (grouped[role] ??= []).push(command.detail.command.name);
                 }
