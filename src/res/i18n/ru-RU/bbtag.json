@@ -68,11 +68,11 @@
                 "description": ""
             },
             "user": {
-                "name": "",
+                "name": "Пользователь",
                 "description": ""
             },
             "role": {
-                "name": "",
+                "name": "Роль",
                 "description": ""
             },
             "guild": {
@@ -82,7 +82,7 @@
         },
         "variables": {
             "server": {
-                "name": "",
+                "name": "Сервер",
                 "description": ""
             },
             "author": {
