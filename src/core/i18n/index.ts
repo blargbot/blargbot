@@ -16,6 +16,8 @@ export class FileSystemTranslationSource implements ITranslationSource {
                     FileSystemTranslationSource.#getTranslationKeys(path.join(directory, e.name))
                 ] as const)
                 .filter(x => {
+                    if (Object.keys(x[1]).length === 0)
+                        return false;
                     try {
                         new Intl.Locale(x[0]);
                         return true;
