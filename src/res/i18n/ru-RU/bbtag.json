@@ -36,7 +36,7 @@
                 "description": ""
             },
             "array": {
-                "name": "",
+                "name": "Массив",
                 "description": ""
             },
             "json": {
@@ -48,7 +48,7 @@
                 "description": ""
             },
             "loops": {
-                "name": "",
+                "name": "Циклы",
                 "description": ""
             },
             "bot": {
@@ -56,11 +56,11 @@
                 "description": ""
             },
             "message": {
-                "name": "",
+                "name": "Сообщение",
                 "description": ""
             },
             "channel": {
-                "name": "",
+                "name": "Канал",
                 "description": ""
             },
             "thread": {
@@ -76,7 +76,7 @@
                 "description": ""
             },
             "guild": {
-                "name": "",
+                "name": "Сервер",
                 "description": ""
             }
         },
