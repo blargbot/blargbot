@@ -28,7 +28,7 @@
     "subtag": {
         "types": {
             "simple": {
-                "name": "",
+                "name": "Simple",
                 "description": ""
             },
             "misc": {
