@@ -144,7 +144,8 @@ export class SettingsCommand extends GuildCommand {
             for (const key of defined)
                 if (keys.has(key))
                     total++;
-            locales.push({ locale, completion: total / defined.length });
+            if (total > 0)
+                locales.push({ locale, completion: total / defined.length });
         }
         return cmd.languages.success({ locales: locales.sort((a, b) => b.completion - a.completion) });
     }
