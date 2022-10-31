@@ -2,7 +2,7 @@ name: main
 
 on:
   push:
-    branches: ["**"]
+    branches: ["**", "!crowdin"]
   pull_request:
     branches: [master]
   workflow_dispatch: ~
