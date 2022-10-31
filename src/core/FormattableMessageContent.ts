@@ -10,7 +10,7 @@ export class FormattableMessageContent implements IFormattable<SendContent<strin
     }
 
     public [format](formatter: IFormatter): SendContent<string> {
-        return {
+        const result = {
             ...this.#content,
             content: this.#getString(this.#content.content, formatter),
             embeds: this.#content.embeds?.map(e => this.#getEmbed(e, formatter)),
@@ -19,6 +19,10 @@ export class FormattableMessageContent implements IFormattable<SendContent<strin
                 components: x.components.map(c => this.#getComponent(c, formatter))
             }))
         };
+        for (const key of Object.keys(result) as Array<keyof typeof result>)
+            if (result[key] === undefined)
+                delete result[key];
+        return result;
     }
 
     #getString(value: string | IFormattable<string>, formatter: IFormatter): string;

@@ -53,9 +53,6 @@ export class ClusterUtilities extends BaseUtilities {
             };
         }
 
-        if (typeof options.prompt === 'string')
-            options.prompt = { content: options.prompt };
-
         const content = options.prompt === undefined ? undefined
             : util.isFormattable(options.prompt) ? options.prompt : options.prompt.content;
 
@@ -91,10 +88,9 @@ export class ClusterUtilities extends BaseUtilities {
         });
 
         const choice = createChoiceBody(component);
-        const promptContent = options.prompt === undefined ? undefined
-            : new FormattableMessageContent(util.isFormattable(options.prompt) ? { content: options.prompt } : options.prompt);
+        const payload = new FormattableMessageContent(util.isFormattable(options.prompt) ? { content: options.prompt } : options.prompt ?? {});
         const prompt = await this.#sendOrReply(options.context, util.literal({
-            ...promptContent?.[format](formatter),
+            ...payload[format](formatter),
             ...choice[format](formatter)
         }));
         if (prompt === undefined)
@@ -158,9 +154,6 @@ export class ClusterUtilities extends BaseUtilities {
             };
         }
 
-        if (typeof options.prompt === 'string')
-            options.prompt = { content: options.prompt };
-
         const component: MultipleComponentOptions<IFormattable<string>> = {
             select: selectData,
             placeholder: options.placeholder,
@@ -175,7 +168,15 @@ export class ClusterUtilities extends BaseUtilities {
             [component.selectId]: () => true
         });
 
-        const prompt = await this.#sendOrReply(options.context, { ...options.prompt, ...createMultipleBody(component) });
+        const payload = new FormattableMessageContent(util.isFormattable(options.prompt) ? { content: options.prompt } : options.prompt ?? {});
+        const prompt = await this.#sendOrReply(options.context, {
+            [format](formatter) {
+                return {
+                    ...payload[format](formatter),
+                    ...createMultipleBody(component)[format](formatter)
+                };
+            }
+        });
         if (prompt === undefined)
             return { prompt: undefined, getResult: () => Promise.resolve({ state: 'FAILED' }), cancel() { /* NOOP */ } };
 
@@ -218,8 +219,6 @@ export class ClusterUtilities extends BaseUtilities {
     public async createConfirmQuery(options: ConfirmQueryOptions<IFormattable<string>, boolean>): Promise<ConfirmQuery<boolean>>
     public async createConfirmQuery(options: ConfirmQueryOptions<IFormattable<string>, boolean | undefined>): Promise<ConfirmQuery<boolean | undefined>>
     public async createConfirmQuery(options: ConfirmQueryOptions<IFormattable<string>, boolean | undefined>): Promise<ConfirmQuery<boolean | undefined>> {
-        const payload = typeof options.prompt === 'string' ? { content: options.prompt } : options.prompt;
-
         const component: ConfirmComponentOptions<IFormattable<string>> = {
             cancelId: snowflake.create().toString(),
             confirmId: snowflake.create().toString(),
@@ -232,7 +231,15 @@ export class ClusterUtilities extends BaseUtilities {
             [component.cancelId]: () => true
         });
 
-        const prompt = await this.#sendOrReply(options.context, { ...payload, ...createConfirmBody(component) });
+        const payload = new FormattableMessageContent(util.isFormattable(options.prompt) ? { content: options.prompt } : options.prompt ?? {});
+        const prompt = await this.#sendOrReply(options.context, {
+            [format](formatter) {
+                return {
+                    ...payload[format](formatter),
+                    ...createConfirmBody(component)[format](formatter)
+                };
+            }
+        });
         if (prompt === undefined) {
             awaiter.cancel();
             return { prompt, getResult: () => Promise.resolve(options.fallback), cancel() { /* NOOP */ } };
@@ -268,7 +275,6 @@ export class ClusterUtilities extends BaseUtilities {
     public async createTextQuery(options: TextQueryOptions<IFormattable<string>>): Promise<TextQuery<string>>
     public async createTextQuery<T>(options: TextQueryOptionsParsed<IFormattable<string>, T> | TextQueryOptions<IFormattable<string>>): Promise<TextQuery<T | string>>
     public async createTextQuery<T>(options: TextQueryOptionsParsed<IFormattable<string>, T> | TextQueryOptions<IFormattable<string>>): Promise<TextQuery<T | string>> {
-        const payload = typeof options.prompt === 'string' ? { content: options.prompt } : options.prompt;
         const component: TextComponentOptions<IFormattable<string>> = {
             cancelId: snowflake.create().toString(),
             cancelButton: options.cancel ?? templates.common.query.cancel
@@ -294,7 +300,15 @@ export class ClusterUtilities extends BaseUtilities {
             return parseResult.success;
         });
 
-        const prompt = await this.#sendOrReply(options.context, { ...payload, ...createTextBody(component) });
+        const payload = new FormattableMessageContent(util.isFormattable(options.prompt) ? { content: options.prompt } : options.prompt ?? {});
+        const prompt = await this.#sendOrReply(options.context, {
+            [format](formatter) {
+                return {
+                    ...payload[format](formatter),
+                    ...createTextBody(component)[format](formatter)
+                };
+            }
+        });
         if (prompt === undefined) {
             return {
                 messages: messages,
@@ -719,14 +733,14 @@ function createActorFilter(actors: Iterable<string | User | Member> | string | U
 function createConfirmBody(options: ConfirmComponentOptions<IFormattable<string>>): IFormattable<Pick<AdvancedMessageContent, 'components'>> {
     const confirm = {
         style: Constants.ButtonStyles.SUCCESS,
-        ...typeof options.confirmButton === 'string' ? { label: options.confirmButton } : options.confirmButton,
+        ...util.isFormattable(options.confirmButton) ? { label: options.confirmButton } : options.confirmButton,
         type: Constants.ComponentTypes.BUTTON,
         custom_id: options.confirmId
     };
 
     const cancel = {
         style: Constants.ButtonStyles.DANGER,
-        ...typeof options.cancelButton === 'string' ? { label: options.cancelButton } : options.cancelButton,
+        ...util.isFormattable(options.cancelButton) ? { label: options.cancelButton } : options.cancelButton,
         type: Constants.ComponentTypes.BUTTON,
         custom_id: options.cancelId
     };
@@ -821,7 +835,7 @@ function createTextBody(options: TextComponentOptions<IFormattable<string>>, dis
                 type: Constants.ComponentTypes.ACTION_ROW,
                 components: [{
                     style: Constants.ButtonStyles.SECONDARY,
-                    ...typeof options.cancelButton === 'string' ? { label: options.cancelButton } : options.cancelButton,
+                    ...util.isFormattable(options.cancelButton) ? { label: options.cancelButton } : options.cancelButton,
                     type: Constants.ComponentTypes.BUTTON,
                     custom_id: options.cancelId,
                     disabled: disabled
