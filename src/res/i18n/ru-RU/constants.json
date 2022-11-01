@@ -9,7 +9,7 @@
             "voiceConnect": "подключаться",
             "createInstantInvite": "создание приглашения",
             "voiceDeafenMembers": "отключать участникам звук",
-            "embedLinks": "",
+            "embedLinks": "отправлять эмбеды",
             "kickMembers": "выгонять участников",
             "manageChannels": "управлять каналами",
             "manageEmojisAndStickers": "управлять эмодзи и стикерами",
@@ -41,11 +41,11 @@
             "sendMessagesInThreads": "отправлять сообщения в ветках и публикациях",
             "startEmbeddedActivities": "",
             "externalEmojis": "использовать внешние эмодзи",
-            "manageEmojis": "",
-            "manageEvents": "",
+            "manageEmojis": "управлять эмодзи",
+            "manageEvents": "управлять событиями",
             "moderateMembers": "",
             "readMessages": "читать историю сообщений",
-            "useSlashCommands": "",
+            "useSlashCommands": "использовать слэш-команды",
             "viewAuditLogs": "просматривать журнал аудита",
             "voiceStream": ""
         }
