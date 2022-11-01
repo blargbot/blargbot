@@ -470,7 +470,7 @@
                 "prompt": "Pick a variable scope",
                 "pages": {
                     "variableType": {
-                        "name": "{name} variables (prefix: {prefix})"
+                        "name": "{name} (prefix: {prefix})"
                     },
                     "commitRollback": {
                         "name": "\\{commit\\} and \\{rollback\\}",
