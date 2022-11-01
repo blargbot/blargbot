@@ -3,6 +3,7 @@ import { BaseRoute } from '@blargbot/api/BaseRoute';
 import { ApiResponse } from '@blargbot/api/types';
 import { tagTypeDetails } from '@blargbot/bbtag/utils';
 import { SubtagListResult } from '@blargbot/cluster/types';
+import { format } from '@blargbot/formatting';
 
 export class SubtagsRoute extends BaseRoute {
     readonly #api: Api;
@@ -33,7 +34,15 @@ export class SubtagsRoute extends BaseRoute {
         return this.ok(subtag);
     }
 
-    public getCategories(): ApiResponse {
-        return this.ok(tagTypeDetails);
+    public async getCategories(): Promise<ApiResponse> {
+        const formatter = await this.#api.util.getFormatter();
+        return this.ok(Object.fromEntries(
+            Object.entries(tagTypeDetails)
+                .map(([key, value]) => [key, {
+                    ...value,
+                    name: value.name[format](formatter),
+                    desc: value.desc[format](formatter)
+                }] as const)
+        ));
     }
 }

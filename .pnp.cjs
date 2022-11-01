@@ -459,6 +459,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/config", "workspace:src/config"],\
             ["@blargbot/core", "workspace:src/core"],\
             ["@blargbot/domain", "workspace:src/domain"],\
+            ["@blargbot/formatting", "workspace:src/formatting"],\
             ["@blargbot/logger", "workspace:src/logger"],\
             ["@blargbot/mapping", "workspace:src/mapping"],\
             ["@types/express", "npm:4.17.14"],\
