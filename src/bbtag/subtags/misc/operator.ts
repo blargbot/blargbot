@@ -24,7 +24,14 @@ export class OperatorSubtag extends CompiledSubtag {
                     ...tag[op],
                     subtagName: op,
                     parameters: ['values+']
-                } as const))
+                } as const)),
+                {
+                    subtagName: '??',
+                    parameters: ['values+'],
+                    ...tag['??'],
+                    returns: 'string',
+                    execute: (_, values) => this.coalesce(values)
+                }
             ]
         });
     }
@@ -43,6 +50,13 @@ export class OperatorSubtag extends CompiledSubtag {
         }
 
         throw new InvalidOperatorError(operator);
+    }
+
+    public coalesce(values: SubtagArgumentArray): string {
+        for (const value of values)
+            if (value.value.length > 0)
+                return value.value;
+        return '';
     }
 
     public applyOrdinalOperation(operator: OrdinalOperator, values: string[]): boolean {
