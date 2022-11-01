@@ -2453,7 +2453,7 @@
             "default": {
                 "description": "",
                 "exampleOut": "Nie posiadasz żadnych ostrzeżeń!",
-                "exampleCode": ""
+                "exampleCode": "Masz następującą liczbę ostrzeżeń: \\{warnings\\}"
             }
         }
     }
