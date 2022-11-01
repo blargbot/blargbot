@@ -121,9 +121,9 @@
             "timeout": "",
             "timeoutClear": "",
             "softBan": "",
-            "ban": "",
+            "ban": "Бан",
             "massBan": "",
-            "unban": "",
+            "unban": "Разбан",
             "kick": "",
             "unmute": "",
             "mute": "",
@@ -141,7 +141,7 @@
                     "name": ""
                 },
                 "reason": {
-                    "name": "",
+                    "name": "Причина",
                     "value": ""
                 },
                 "pardons": {
@@ -153,7 +153,7 @@
                     "value": ""
                 },
                 "duration": {
-                    "name": "",
+                    "name": "Длительность",
                     "value": ""
                 },
                 "user": {
