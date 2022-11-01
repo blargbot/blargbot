@@ -2,7 +2,7 @@
     "common": {
         "query": {
             "cancel": "Отмена",
-            "cantUse": "",
+            "cantUse": "❌ Это не для вас!",
             "choose": {
                 "paged": "{content#bool({}\n|)}Страница {page}/{pageCount}"
             },
@@ -101,10 +101,10 @@
         "joined": "☑️ Сервер: `{guild.name}` (`{guild.id}`)! {botGuild#bool(- ***BOT GUILD***|)}\n    Всего: **{size}** | Люди: **{userCount}** | Боты: **{botCount}** | Процент: **{botFraction#percent}**"
     },
     "autoresponse": {
-        "prompt": "",
+        "prompt": "Новый запрос на автореспонс от **{user.username}#{user.discriminator}** ({user#tag}):\n**Guild**: {guild.name} ({guild.id})\n**Channel**: {channelId}\n**Members**: {guild.members.size}\n\n{reason}\n\n```js\n{code}\n```",
         "whitelist": {
-            "approved": "",
-            "rejected": ""
+            "approved": "✅ Поздравляем, ваш сервер был добавлен в белый список автореспонсов! 🎉\n*Они станут доступны в течение 15 минут*",
+            "rejected": "❌ К сожалению, запрос вашего сервера на использование автореспонсов отклонен. 😿"
         }
     },
     "announcements": {
@@ -116,74 +116,74 @@
     "modlog": {
         "defaultReason": "Ответственный модератор, пожалуйста, используйте `{prefix}reason {caseId}`, чтобы указать причину.",
         "types": {
-            "generic": "",
-            "pardon": "",
-            "timeout": "",
-            "timeoutClear": "",
-            "softBan": "",
+            "generic": "Общие",
+            "pardon": "Помилование",
+            "timeout": "Тайм-аут",
+            "timeoutClear": "Отменить тайм-аут",
+            "softBan": "Временный бан",
             "ban": "Бан",
-            "massBan": "",
+            "massBan": "Массовый бан",
             "unban": "Разбан",
-            "kick": "",
-            "unmute": "",
-            "mute": "",
-            "temporaryMute": "",
-            "warning": ""
+            "kick": "Выгнать",
+            "unmute": "Анмут",
+            "mute": "Мут",
+            "temporaryMute": "Временный мут",
+            "warning": "Предостережение"
         },
         "embed": {
-            "title": "",
-            "description": "",
+            "title": "Прецедент {caseId}",
+            "description": "{users#map({username}#{discriminator} \\({id}\\))#join(\n)}",
             "footer": {
-                "text": ""
+                "text": "{user.username}#{user.discriminator} ({user.id})"
             },
             "field": {
                 "type": {
-                    "name": ""
+                    "name": "Тип"
                 },
                 "reason": {
                     "name": "Причина",
-                    "value": ""
+                    "value": "{reason}"
                 },
                 "pardons": {
-                    "name": "",
-                    "value": ""
+                    "name": "Помилования",
+                    "value": "Выдано: {count}\nВсего: {warnings}"
                 },
                 "warnings": {
-                    "name": "",
-                    "value": ""
+                    "name": "Предупреждения",
+                    "value": "Выдано: {count}\nВсего: {warnings}"
                 },
                 "duration": {
                     "name": "Длительность",
-                    "value": ""
+                    "value": "{продолжительность#продолжительность(F)}"
                 },
                 "user": {
-                    "name": "",
-                    "value": ""
+                    "name": "Пользователь",
+                    "value": "{user.username}#{user.discriminator} ({user.id})"
                 }
             }
         }
     },
     "eventLog": {
-        "disabled": "",
+        "disabled": "❌ Отключено логирование события `{event}`, потому что канал {channel#tag} не существует или у меня нет разрешения на отправку сообщений в нем!",
         "events": {
-            "timeoutAdded": "",
-            "timeoutRemoved": "",
-            "banned": "",
-            "unbanned": "",
-            "joined": "",
-            "left": "",
-            "messageDeleted": "",
-            "messageUpdated": "",
+            "timeoutAdded": "ℹ️ К пользователю был применён тайм-аут",
+            "timeoutRemoved": "ℹ️ С пользователя был снят тайм-аут",
+            "banned": "ℹ️ Пользователь был забанен",
+            "unbanned": "ℹ️ Пользователь был разбанен",
+            "joined": "ℹ️ Пользователь присоединился к серверу",
+            "left": "ℹ️ Пользователь покинул сервер",
+            "messageDeleted": "ℹ️ Сообщение удалено",
+            "messageUpdated": "ℹ️ Сообщение изменено",
             "roleRemoved": "",
             "roleAdded": "",
-            "nicknameUpdated": "",
-            "usernameUpdated": "",
+            "nicknameUpdated": "ℹ️ Никнейм пользователя обновлён",
+            "usernameUpdated": "ℹ️ Имя пользователя изменено",
             "avatarUpdated": ""
         },
         "embed": {
             "description": {
-                "avatarUpdated": "",
-                "bulkDelete": "",
+                "avatarUpdated": "➡️ Старый аватар\n⬇️ Новый аватар",
+                "bulkDelete": "Массовая очистка сообщений",
                 "userUpdated": {
                     "username": "",
                     "discriminator": "",
@@ -192,23 +192,23 @@
             },
             "field": {
                 "reason": {
-                    "name": "",
+                    "name": "Причина",
                     "value": ""
                 },
                 "message": {
-                    "name": "",
+                    "name": "ID сообщения",
                     "value": ""
                 },
                 "channel": {
-                    "name": "",
+                    "name": "Канал",
                     "value": ""
                 },
                 "oldUsername": {
-                    "name": "",
+                    "name": "Старое имя",
                     "value": ""
                 },
                 "newUsername": {
-                    "name": "",
+                    "name": "Новое имя",
                     "value": ""
                 },
                 "oldNickname": {
@@ -220,8 +220,8 @@
                     "value": ""
                 },
                 "role": {
-                    "name": "",
-                    "value": ""
+                    "name": "Роль",
+                    "value": "<@&{roleId}> ({roleId})"
                 },
                 "updatedBy": {
                     "name": "",
@@ -232,7 +232,7 @@
                     "value": ""
                 },
                 "until": {
-                    "name": "",
+                    "name": "До",
                     "value": ""
                 },
                 "count": {
@@ -409,7 +409,7 @@
                 }
             },
             "subtags": {
-                "name": "",
+                "name": "Функции",
                 "description": "",
                 "prompt": ""
             },
@@ -1512,8 +1512,8 @@
                 "description": "",
                 "notFound": "",
                 "channelMissing": "",
-                "messageMissing": "",
-                "permissionMissing": "",
+                "messageMissing": "⛔ Не могу найти сообщение для прецедентов {modlogs#map(`{}`)#join(, | и )} в журнале модерации",
+                "permissionMissing": "⛔ У меня нет прав, чтобы удалить журнал модерации для прецедентов {modlogs#map(`{}`)#join(, | и )}",
                 "success": ""
             }
         },
@@ -1585,7 +1585,7 @@
             "default": {
                 "description": "",
                 "none": "",
-                "unknownCase": "",
+                "unknownCase": "❌ Не могу найти в журнале модерации прецедент с номером {caseId}",
                 "success": {
                     "messageMissing": "",
                     "default": ""
@@ -1624,7 +1624,7 @@
             "flags": {
                 "add": "",
                 "remove": "",
-                "case": "",
+                "case": "Определяет, является ли <фраза> регистрозависимой",
                 "channels": ""
             },
             "add": {
@@ -1664,7 +1664,7 @@
                     "title": "",
                     "field": {
                         "phrase": {
-                            "name": ""
+                            "name": "Фраза (case {caseSensitive#bool(регистразависима|нерегистрозависима)})"
                         },
                         "rolesAdded": {
                             "name": "",
@@ -2198,7 +2198,7 @@
             "general": {
                 "description": "",
                 "unexpectedError": "",
-                "success": "",
+                "success": "✅ {type} был отправлен, его ID {caseId}! 👌\n\nВы можете просмотреть свой {type#lower} здесь: <{link}>",
                 "queryType": {
                     "prompt": "",
                     "placeholder": ""
@@ -2219,7 +2219,7 @@
                         }
                     },
                     "footer": {
-                        "text": ""
+                        "text": "Отзыв {caseId} | {messageId}"
                     }
                 }
             },
@@ -2231,7 +2231,7 @@
             },
             "edit": {
                 "description": "",
-                "unknownCase": "",
+                "unknownCase": "Не могу найти отзыв с номером {caseNumber}!",
                 "notOwner": "",
                 "success": ""
             }
@@ -3100,7 +3100,7 @@
             "flags": {
                 "top": "",
                 "bottom": "",
-                "font": ""
+                "font": "Используемый шрифт (регистр неважен). Используйте команду с флагом -l, чтобы просмотреть доступные шрифты. По умолчанию используется Impact."
             },
             "fonts": {
                 "description": "",
