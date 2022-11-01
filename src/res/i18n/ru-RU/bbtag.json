@@ -1,6 +1,6 @@
 {
     "debug": {
-        "summary": ""
+        "summary": "```js\n         Время выполнения: {active#duration(MS)}ms\n    Переменных присвоено: {committed}\nВремя выполнения базы данных: {database#duration(MS)}ms\n   Общее время выполнения: {total#duration(MS)}ms\n```"
     },
     "limits": {
         "rules": {
@@ -23,16 +23,16 @@
     "analysis": {
         "unnamed": "",
         "dynamic": "",
-        "deprecated": ""
+        "deprecated": "\\{{name}\\} устарел. Вместо этого используйте `\\{{deprecated}\\}`"
     },
     "subtag": {
         "types": {
             "simple": {
-                "name": "",
+                "name": "Простые",
                 "description": ""
             },
             "misc": {
-                "name": "",
+                "name": "Прочие",
                 "description": ""
             },
             "array": {
@@ -44,7 +44,7 @@
                 "description": ""
             },
             "math": {
-                "name": "",
+                "name": "Математика",
                 "description": ""
             },
             "loops": {
@@ -52,7 +52,7 @@
                 "description": ""
             },
             "bot": {
-                "name": "",
+                "name": "Blargbot",
                 "description": ""
             },
             "message": {
@@ -64,7 +64,7 @@
                 "description": ""
             },
             "thread": {
-                "name": "",
+                "name": "Ветки",
                 "description": ""
             },
             "user": {
@@ -86,7 +86,7 @@
                 "description": ""
             },
             "author": {
-                "name": "",
+                "name": "Авторские переменные",
                 "description": ""
             },
             "global": {
