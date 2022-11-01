@@ -43,7 +43,7 @@
             "externalEmojis": "использовать внешние эмодзи",
             "manageEmojis": "управлять эмодзи",
             "manageEvents": "управлять событиями",
-            "moderateMembers": "",
+            "moderateMembers": "управлять участниками",
             "readMessages": "читать историю сообщений",
             "useSlashCommands": "использовать слэш-команды",
             "viewAuditLogs": "просматривать журнал аудита",
