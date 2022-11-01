@@ -47,7 +47,7 @@
             "readMessages": "читать историю сообщений",
             "useSlashCommands": "использовать слэш-команды",
             "viewAuditLogs": "просматривать журнал аудита",
-            "voiceStream": ""
+            "voiceStream": "видео"
         }
     }
 }
