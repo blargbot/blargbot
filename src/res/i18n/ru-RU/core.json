@@ -4,31 +4,31 @@
             "full": {
                 "template": "",
                 "year": {
-                    "order": "",
+                    "order": "0",
                     "display": ""
                 },
                 "month": {
-                    "order": "",
+                    "order": "1",
                     "display": ""
                 },
                 "day": {
-                    "order": "",
+                    "order": "2",
                     "display": ""
                 },
                 "hour": {
-                    "order": "",
+                    "order": "3",
                     "display": ""
                 },
                 "minute": {
-                    "order": "",
+                    "order": "4",
                     "display": ""
                 },
                 "second": {
-                    "order": "",
+                    "order": "5",
                     "display": ""
                 },
                 "millisecond": {
-                    "order": "",
+                    "order": "6",
                     "display": ""
                 }
             }
