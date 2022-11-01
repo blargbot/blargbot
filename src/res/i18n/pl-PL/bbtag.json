@@ -1,89 +1,89 @@
 {
     "debug": {
-        "summary": ""
+        "summary": "```js\n             Czas wykonania: {active#duration(MS)}ms\n           Zmienne zapisane: {committed}\nCzas po stronie bazy danych: {database#duration(MS)}ms\n   Całkowity czas wykonania: {total#duration(MS)}ms\n```"
     },
     "limits": {
         "rules": {
             "useCount": {
-                "default": "",
-                "requests": "",
-                "loops": ""
+                "default": "Maksymalnie {count} użyć",
+                "requests": "Maksymalnie {count} żądań",
+                "loops": "Maksymalnie {count} pętli"
             },
             "staffOnly": {
-                "default": ""
+                "default": "Osoba autoryzująca musi mieć uprawnienia administracyjne"
             },
             "disabled": {
-                "default": ""
+                "default": "\\{{subtagName}\\} jest wyłączony"
             },
             "disabledIn": {
-                "default": ""
+                "default": "Nie można wykorzystać w argumentach do {subtagNames#map(\\{{}\\})#join(, | lub )}"
             }
         }
     },
     "analysis": {
-        "unnamed": "",
-        "dynamic": "",
-        "deprecated": ""
+        "unnamed": "Subtag bez nazwy",
+        "dynamic": "Zmienny subtag",
+        "deprecated": "\\{{name}\\} jest zdeprecjonowane. Zamiast tego użyj `\\{{deprecated}\\}`"
     },
     "subtag": {
         "types": {
             "simple": {
-                "name": "",
-                "description": ""
+                "name": "Proste",
+                "description": "Subtagi niewymagające argumentów."
             },
             "misc": {
-                "name": "",
-                "description": ""
+                "name": "Różne",
+                "description": "Różne subtagi dla ogólnych zastosowań."
             },
             "array": {
-                "name": "",
-                "description": ""
+                "name": "Tablicowe",
+                "description": "Subtagi stworzone specjalnie dla tablic."
             },
             "json": {
-                "name": "",
-                "description": ""
+                "name": "JSONowe",
+                "description": "Subtagi stworzone dla obiektów JSON."
             },
             "math": {
-                "name": "",
-                "description": ""
+                "name": "Matematyczne",
+                "description": "Subtagi stworzone dla celów matematycznych."
             },
             "loops": {
-                "name": "",
-                "description": ""
+                "name": "Pętlowe",
+                "description": "Subtagi, które powtarzają się względem tablic/tekstów."
             },
             "bot": {
-                "name": "",
-                "description": ""
+                "name": "Blargbotowe",
+                "description": "Subtagi, które integrują się ze specyficznymi funkcjami blargbota."
             },
             "message": {
-                "name": "",
-                "description": ""
+                "name": "Wiadomościowe",
+                "description": "Subtagi, które wchodzą w interakcje z wiadomościami."
             },
             "channel": {
-                "name": "",
-                "description": ""
+                "name": "Kanałowe",
+                "description": "Subtagi, które wchodzą w interakcje z kanałami."
             },
             "thread": {
-                "name": "",
-                "description": ""
+                "name": "Wątkowe",
+                "description": "Subtagi, które wchodzą w interakcje z wątkami."
             },
             "user": {
-                "name": "",
-                "description": ""
+                "name": "Użytkownikowe",
+                "description": "Subtagi, które wchodzą w interakcje z użytkownikami."
             },
             "role": {
-                "name": "",
-                "description": ""
+                "name": "Rolowe",
+                "description": "Subtagi, które wchodzą w interakcje z rolami."
             },
             "guild": {
-                "name": "",
-                "description": ""
+                "name": "Serwerowe",
+                "description": "Subtagi, które wchodzą w interakcje z serwerami."
             }
         },
         "variables": {
             "server": {
-                "name": "",
-                "description": ""
+                "name": "Serwerowe",
+                "description": "Zmienne serwerowe zwykle są używane do przechowywania danych na poziomie serwera. Są one podzielone na dwie osobne \"pule\" - jedną dla tagów i drugą dla własnych komend. Oznacza to, że nie mogą one być wykorzystywane do komunikacji między jednymi a drugimi. Czyni je to użytecznymi do przekazywania danych między tagami, które przeznaczone są do użycia na jednym serwerze na raz."
             },
             "author": {
                 "name": "",
