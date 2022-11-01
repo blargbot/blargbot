@@ -223,15 +223,15 @@
             },
             "indexed": {
                 "description": "",
-                "exampleIn": "",
+                "exampleIn": "Hello world! BBtag is so cool",
                 "exampleOut": "world!",
-                "exampleCode": ""
+                "exampleCode": "\\{args;1\\}"
             },
             "range": {
                 "description": "",
                 "exampleIn": "",
                 "exampleOut": "",
-                "exampleCode": ""
+                "exampleCode": "\\{args;2;4\\}"
             }
         },
         "commandName": {
@@ -286,63 +286,63 @@
         "fallback": {
             "clear": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "This tag failed",
+                "exampleCode": "\\{fallback;This tag failed\\} \\{abc\\}"
             },
             "set": {
                 "description": "",
                 "exampleOut": "This tag failed  `Unknown subtag xyz`",
-                "exampleCode": ""
+                "exampleCode": "\\{fallback;This tag failed\\} \\{abc\\} \\{fallback\\} \\{xyz\\}"
             }
         },
         "flag": {
             "default": {
                 "description": "",
-                "exampleIn": "",
-                "exampleOut": "",
+                "exampleIn": "Hello, -a world!",
+                "exampleOut": "world! Hello,",
                 "exampleCode": "\\{flag;a\\} \\{flag;_\\}"
             }
         },
         "flagsArray": {
             "default": {
                 "description": "",
-                "exampleIn": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleIn": "Hello -dc world",
+                "exampleOut": "[\"_\",\"d\",\"c\"]",
+                "exampleCode": "\\{flagsArray\\}"
             }
         },
         "flagSet": {
             "default": {
                 "description": "",
-                "exampleIn": "",
+                "exampleIn": "Hello, -a world!",
                 "exampleOut": "true false",
-                "exampleCode": ""
+                "exampleCode": "\\{flagSet;a\\} \\{flagSet;_\\}"
             }
         },
         "function": {
             "default": {
                 "description": "",
                 "exampleOut": "[\"1\",\"2\",\"3\",\"4\"]",
-                "exampleCode": ""
+                "exampleCode": "\\{function;test;\\{paramsArray\\}\\} \\{func.test;1;2;3;4\\}"
             }
         },
         "get": {
             "value": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "This is local var1\nThis is temporary var2",
+                "exampleCode": "\\{set;var1;This is local var1\\}\n\\{set;~var2;This is temporary var2\\}\n\\{get;var1\\}\n\\{get;~var2\\}"
             },
             "index": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "def",
+                "exampleCode": "\\{set;myArray;[\"abc\",\"def\",\"ghi\"]\\}\\{get;myArray;1\\}"
             }
         },
         "inject": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "Random Number: 3",
+                "exampleCode": "Random Number: \\{inject;\\{lb\\}randomInt\\{semi\\}1\\{semi\\}4\\{rb\\}\\}"
             }
         },
         "lock": {
@@ -363,8 +363,8 @@
         "nsfw": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "This command is not safe!",
+                "exampleCode": "This command is not safe! \\{nsfw\\}"
             }
         },
         "params": {
@@ -375,34 +375,34 @@
             },
             "indexed": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "The first parameter is `Hello world!`",
+                "exampleCode": "\\{func;test;The first parameter is `\\{params;0\\}`\\}\n\\{func.test;Hello world!;BBtag is so cool\\}"
             },
             "range": {
                 "description": "",
                 "exampleOut": "",
-                "exampleCode": ""
+                "exampleCode": "\\{func;test;The first parameter is `\\{params;2;4\\}`\\}\n\\{func.test;A;B;C;D;E;F\\}"
             }
         },
         "paramsArray": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "[\"a\",\"b\",\"c\",\"d\"]",
+                "exampleCode": "\\{func.test;\\{paramsArray\\}\\}\n\\{func.test;a;b;c;d\\}"
             }
         },
         "paramsLength": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "[\"a\",\"b\",\"c\",\"d\"]",
+                "exampleCode": "\\{func.test;\\{paramsLength\\}\\}\n\\{func.test;a;b;c;d\\}"
             }
         },
         "prefix": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "Your prefix is b!",
+                "exampleCode": "Your prefix is \\{prefix\\}"
             }
         },
         "quiet": {
@@ -474,29 +474,29 @@
         "subtagExists": {
             "default": {
                 "description": "",
-                "exampleOut": "",
+                "exampleOut": "true false",
                 "exampleCode": ""
             }
         },
         "suppressLookup": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "{}",
+                "exampleCode": "\\{suppressLookup\\}"
             }
         },
         "throw": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "Custom Error",
+                "exampleCode": "\\{throw;Custom Error\\}"
             }
         },
         "timer": {
             "default": {
                 "description": "",
                 "exampleOut": "",
-                "exampleCode": ""
+                "exampleCode": "\\{timer;Hello!;20s\\}"
             }
         },
         "channelCategories": {
@@ -529,22 +529,22 @@
         "channelDelete": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "{}",
+                "exampleCode": "\\{channelDelete;11111111111111111\\}"
             }
         },
         "channelEdit": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "11111111111111111",
+                "exampleCode": "\\{channelEdit;11111111111111111;\\{j;\\{\"name\": \"super-cool-channel\"\\}\\}\\}"
             }
         },
         "channelId": {
             "current": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "111111111111111",
+                "exampleCode": "\\{channelId\\}"
             },
             "channel": {
                 "description": "",
