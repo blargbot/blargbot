@@ -486,7 +486,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
                 prompt: 'Pick a variable scope',
                 pages: {
                     variableType: {
-                        name: t<{ name: IFormattable<string>; prefix: string; }>('{name} variables (prefix: {prefix})')
+                        name: t<{ name: IFormattable<string>; prefix: string; }>('{name} (prefix: {prefix})')
                     },
                     commitRollback: {
                         name: '\\{commit\\} and \\{rollback\\}',
