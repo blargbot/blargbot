@@ -57,49 +57,49 @@
             },
             "message": {
                 "name": "Сообщение",
-                "description": ""
+                "description": "Функции, которые связаны с сообщениями."
             },
             "channel": {
                 "name": "Канал",
-                "description": ""
+                "description": "Функции, которые связаны с каналами."
             },
             "thread": {
                 "name": "Ветки",
-                "description": ""
+                "description": "Функции, которые связаны с ветками."
             },
             "user": {
                 "name": "Пользователь",
-                "description": ""
+                "description": "Функции, которые связаны с пользователями."
             },
             "role": {
                 "name": "Роль",
-                "description": ""
+                "description": "Функции, которые связаны с ролями."
             },
             "guild": {
                 "name": "Сервер",
-                "description": ""
+                "description": "Функции, которые связаны с серверами."
             }
         },
         "variables": {
             "server": {
                 "name": "Серверные переменные",
-                "description": ""
+                "description": "Серверные переменные обычно используются, если вы хотите хранить данные на уровне сервера. Однако они хранятся в 2 отдельных «пулах»: один для публичных команд и один для серверных, это означает, что они не могут использоваться для передачи данных между ними.\nПеременные этого типа очень полезны для передачи данных между командами, предназначенными для использования вместе в пределах 1 сервера."
             },
             "author": {
                 "name": "Авторские переменные",
-                "description": ""
+                "description": "Авторские переменные привязаны только к автору команды, это значит что они будут доступны только в командах, созданных вами. Это очень полезно, когда у вас есть набор команд, предназначенных для использования людьми между серверами, это позволяет серверам взаимодействовать друг с другом."
             },
             "global": {
                 "name": "Глобальные переменные",
-                "description": ""
+                "description": "Глобальные переменные являются полностью публичными, каждый может прочитать **ИЛИ ОТРЕДАКТИРОВАТЬ** ваши глобальные переменные.\nЭто очень полезно, если вам нравится боль."
             },
             "temporary": {
                 "name": "Временные переменные",
-                "description": ""
+                "description": "Временные переменные никогда не сохраняются в базу данных, это означает, что переменные этого типа являются самыми быстрыми.\nЕсли вы работаете с данными, которые вам нужно хранить только для последующего использования в рамках одного вызова команды, то вы должны использовать временные переменные, предпочитая их любому другому типу"
             },
             "local": {
                 "name": "Локальные переменные",
-                "description": ""
+                "description": "Локальные переменные — это тип переменных, используемый по умолчанию, тогда, когда имя переменной не начинается с одного из других префиксов. Эти переменные доступны только в команде, в которой они были созданы, что означает, что нет никакой возможности поделиться их значениями с любой другой командой.\nЭто полезно, если вы намереваетесь создать одну команду, которую можно использовать везде, так как переменные не ограничиваются одним сервером, только одной командой"
             }
         }
     },
@@ -113,113 +113,113 @@
         },
         "filter": {
             "default": {
-                "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "description": "Каждый элемент массива `array` будет последовательно записан в переменную `variable`, и к ней будет применён `code`. Возвращает новый массив, содержащий все элементы, которые вернули значение true.\n\n Внутри `code` нельзя использовать следующие функции: {disabled#map(`\\{{}\\}`)#join(, )}",
+                "exampleOut": "[\"apples\",\"apple juice\"]",
+                "exampleCode": "\\{set;~array;Apples — яблок;яблочный сок;грейп\\}\n\\{filter;~element;~array;\\{bool;\\{get;~element\\};startswith;apple\\}\\}"
             }
         },
         "isArray": {
             "default": {
-                "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "description": "Определяет, является ли `text` допустимым массивом.",
+                "exampleOut": "true false",
+                "exampleCode": "\\{isarray;[\"array?\"]\\} \\{isarray;array?\\}"
             }
         },
         "join": {
             "default": {
-                "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "description": "Объединяет элементы массива `array` вместе с `text` в качестве разделителя.",
+                "exampleOut": "this!is!an!array",
+                "exampleCode": "\\{join;[\"this\", \"is\", \"an\", \"array\"];!\\}"
             }
         },
         "map": {
             "default": {
-                "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "description": "Предоставляет способ заполнить массив путем выполнения функции над каждым из его элементов, более подробная информация [здесь](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map)\nКаждый элемент в массиве `array` будет последовательно записан в переменную `variable`. Результат функции `function`, применной к старому значению элемента, будет новым значением элемента. Возвращает новый массив и не изменяет оригинал.",
+                "exampleOut": "[\"APPLES\",\"ORANGES\",\"PEARS\"]",
+                "exampleCode": "\\{map;~item;[\"apples\",\"oranges\",\"pears\"];\\{upper;\\{get;~item\\}\\}\\}"
             }
         },
         "pop": {
             "default": {
-                "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "description": "Возвращает последний элемент массива `array`. Если указана переменная, то он также удалит из массива последний элемент.",
+                "exampleOut": "array",
+                "exampleCode": "\\{pop;[\"this\", \"is\", \"an\", \"array\"]\\}"
             }
         },
         "push": {
             "default": {
-                "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "description": "Добавляет `values` в конец массива `array`. Если указана переменная, её значение будет обновлено. В противном случае будет просто выведен новый массив.",
+                "exampleOut": "[\"this\",\"is\",\"an\",\"array\"]",
+                "exampleCode": "\\{push;[\"this\", \"is\", \"an\"];array\\}"
             }
         },
         "shift": {
             "default": {
-                "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "description": "Возвращает первый элемент массива `array`. Если указана переменная, то он также удалит из массива первый элемент.",
+                "exampleOut": "this",
+                "exampleCode": "\\{shift;[\"this\", \"is\", \"an\", \"array\"]\\}"
             }
         },
         "shuffle": {
             "args": {
-                "description": "",
-                "exampleIn": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "description": "Смешивает `\\{args\\}`, указанные пользователем.",
+                "exampleIn": "one two three",
+                "exampleOut": "three one two",
+                "exampleCode": "\\{shuffle\\} \\{args;0\\} \\{args;1\\} \\{args;2\\}"
             },
             "array": {
-                "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "description": "Перемешивает `\\{args\\}` предоставленный пользователем или элементы массива `array`. Если используется с переменной, то будет изменен исходный массив",
+                "exampleOut": "[5,3,2,6,1,4]",
+                "exampleCode": "\\{shuffle;[1,2,3,4,5,6]\\}"
             }
         },
         "slice": {
             "default": {
-                "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "description": "Берет элементы между `start` и `end` (включительно) из массива `array`. Индексы в массиве начинаются с 0.",
+                "exampleOut": "[\"is\",\"an\",\"array\"]",
+                "exampleCode": "\\{slice;[\"this\", \"is\", \"an\", \"array\"];1\\}"
             }
         },
         "sort": {
             "default": {
-                "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "description": "Сортирует массив в порядке возрастания. Если 'descending' указан, то сортирует в порядке убывания. Если указана переменная, изменит исходный массив.",
+                "exampleOut": "[1,2,3,4,5]",
+                "exampleCode": "\\{sort;[3, 2, 5, 1, 4]\\}"
             }
         },
         "splice": {
             "description": "Если используется с переменной, то модифицирует изначальный массив.\nВозвращает массив удаленных элементов.",
             "delete": {
-                "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "description": "Удаляет указанное в аргументе `deleteCount` количество элементов из массива `array`, начиная со `start`.",
+                "exampleOut": "[\"is\"]",
+                "exampleCode": "\\{splice;[\"this\", \"is\", \"an\", \"array\"];1;1\\}"
             },
             "replace": {
-                "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "description": "Удаляет указанное в аргументе `deleteCount` количество элементов из массива `array`, начиная со `start`. Затем добавляет каждый элемент `item` на эту позицию в `array`. Возвращает удалённые элементы.",
+                "exampleOut": "[\"is\"] \\{\"v\":[\"это\",\"был\",\"в\",\"array\"],\"n\":\"~array\"\\}",
+                "exampleCode": "\\{set;~array;[\"this\", \"is\", \"an\", \"array\"]\\} \\{splice;\\{get;~array\\};1;was\\} \\{get;~array\\}"
             }
         },
         "split": {
             "default": {
-                "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "description": "Разделяет текст `text`, используя `splitter`, и возвращает массив.",
+                "exampleOut": "[\"Hello!\",\"This\",\"is\",\"a\",\"sentence.\"]",
+                "exampleCode": "\\{split;Hello! This is a sentence.;\\{space\\}\\}"
             }
         },
         "apply": {
             "default": {
-                "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "description": "Выполняет функцию `subtag`, используя `args` в качестве аргументов. Если `args` является массивом, он будет разобран до его отдельных элементов.",
+                "exampleOut": "3",
+                "exampleCode": "\\{apply;randomInt;[1,4]\\}"
             }
         },
         "args": {
             "all": {
-                "description": "",
-                "exampleIn": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "description": "Возвращает всё то, что ввёл пользователь",
+                "exampleIn": "Hello world! BBtag is so cool",
+                "exampleOut": "You said Hello world! BBtag is so cool",
+                "exampleCode": "You said \\{args\\}"
             },
             "indexed": {
                 "description": "",
@@ -291,7 +291,7 @@
             },
             "set": {
                 "description": "",
-                "exampleOut": "",
+                "exampleOut": "This tag failed  `Unknown subtag xyz`",
                 "exampleCode": ""
             }
         },
@@ -300,7 +300,7 @@
                 "description": "",
                 "exampleIn": "",
                 "exampleOut": "",
-                "exampleCode": ""
+                "exampleCode": "\\{flag;a\\} \\{flag;_\\}"
             }
         },
         "flagsArray": {
@@ -315,14 +315,14 @@
             "default": {
                 "description": "",
                 "exampleIn": "",
-                "exampleOut": "",
+                "exampleOut": "true false",
                 "exampleCode": ""
             }
         },
         "function": {
             "default": {
                 "description": "",
-                "exampleOut": "",
+                "exampleOut": "[\"1\",\"2\",\"3\",\"4\"]",
                 "exampleCode": ""
             }
         },
@@ -424,7 +424,7 @@
             "default": {
                 "description": "",
                 "exampleOut": "",
-                "exampleCode": ""
+                "exampleCode": "\\{jGet;\\{request;https://example.com/update/user;\\{jset;;method;POST\\};\\{jset;;user;Stupid cat\\}\\};body\\}"
             }
         },
         "return": {
@@ -1035,12 +1035,12 @@
             "description": "",
             "trigger": {
                 "description": "",
-                "exampleOut": "",
+                "exampleOut": "(сообщение удалится; я не знаю, как показать это в примере)",
                 "exampleCode": ""
             },
             "inCurrent": {
                 "description": "",
-                "exampleOut": "",
+                "exampleOut": "(сообщение `111111111111111111` удалится; я не знаю, как показать это в примере)",
                 "exampleCode": ""
             },
             "inOther": {
@@ -1093,8 +1093,8 @@
             "description": "",
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "\\{\"title\":\"hello!\",\"description\":\"I am an example embed\",\"fields\":[\\{\"name\":\"Field 1\",\"value\":\"This is the first field!\"\\},\\{\"name\":\"Field 2\",\"value\":\"This is the next field and is inline!\",\"inline\":true\\}]\\}",
+                "exampleCode": "\\{embedBuild;\n  title:hello!;\n  description:I am an example embed;\n  fields.name:Field 1;\n  fields.value:This is the first field!;\n  fields.name:Field 2;\n  fields.value:This is the next field and is inline!;\n  fields.inline:true\n\\}"
             }
         },
         "everyoneMention": {
