@@ -2,9 +2,11 @@ name: main
 
 on:
   push:
-    branches: ["**", "!crowdin"]
+    branches: ["**"]
+    paths: ["**.ts", "tsconfig.json"]
   pull_request:
     branches: [master]
+    paths: ["**.ts", "tsconfig.json"]
   workflow_dispatch: ~
 
 jobs:

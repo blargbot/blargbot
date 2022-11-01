@@ -1512,7 +1512,7 @@ describe('Cluster format strings', () => {
                             name: [
                                 {
                                     name: 'default',
-                                    input: [{ name: util.literal('cool'), prefix: '!!' }],
+                                    input: [{ name: util.literal('cool variables'), prefix: '!!' }],
                                     expected: 'cool variables (prefix: !!)'
                                 }
                             ]

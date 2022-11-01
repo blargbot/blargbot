@@ -164,23 +164,23 @@ Database Execution Time: 678ms
             },
             variables: {
                 server: {
-                    name: 'Server',
+                    name: 'Server variables',
                     description: 'Server variables (also referred to as Guild variables) are commonly used if you wish to store data on a per server level. They are however stored in 2 separate \'pools\', one for tags and one for custom commands, meaning they cannot be used to pass data between the two\nThis makes then very useful for communicating data between tags that are intended to be used within 1 server at a time.'
                 },
                 author: {
-                    name: 'Author',
+                    name: 'Author variables',
                     description: 'Author variables are stored against the author of the tag, meaning that only tags made by you can access or edit your author variables.\nThese are very useful when you have a set of tags that are designed to be used by people between servers, effectively allowing servers to communicate with each other.'
                 },
                 global: {
-                    name: 'Global',
+                    name: 'Global variables',
                     description: 'Global variables are completely public, anyone can read **OR EDIT** your global variables.\nThese are very useful if you like pain.'
                 },
                 temporary: {
-                    name: 'Temporary',
+                    name: 'Temporary variables',
                     description: 'Temporary variables are never stored to the database, meaning they are by far the fastest variable type.\nIf you are working with data which you only need to store for later use within the same tag call, then you should use temporary variables over any other type'
                 },
                 local: {
-                    name: 'Local',
+                    name: 'Local variables',
                     description: 'Local variables are the default variable type, only usable if your variable name doesn\'t start with one of the other prefixes. These variables are only accessible by the tag that created them, meaning there is no possibility to share the values with any other tag.\nThese are useful if you are intending to create a single tag which is usable anywhere, as the variables are not confined to a single server, just a single tag'
                 }
             }
