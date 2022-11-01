@@ -5,9 +5,9 @@
     "limits": {
         "rules": {
             "useCount": {
-                "default": "Максимум {count} использований",
-                "requests": "Максимум {count} запросов",
-                "loops": "Максимум {count} циклов"
+                "default": "Максимум использований: {count}",
+                "requests": "Максимум запросов: {count}",
+                "loops": "Максимум циклов: {count}"
             },
             "staffOnly": {
                 "default": ""
@@ -16,40 +16,40 @@
                 "default": "\\{{subtagName}\\} отключен"
             },
             "disabledIn": {
-                "default": ""
+                "default": "Нельзя использовать в аргументах {subtagNames#map(\\{{}\\})#join(, | или )}"
             }
         }
     },
     "analysis": {
-        "unnamed": "",
-        "dynamic": "",
+        "unnamed": "Неназванная функция",
+        "dynamic": "Динамически вызываемая функция",
         "deprecated": "\\{{name}\\} устарел. Вместо этого используйте `\\{{deprecated}\\}`"
     },
     "subtag": {
         "types": {
             "simple": {
                 "name": "Простые",
-                "description": ""
+                "description": "Функции, не требующие аргументов."
             },
             "misc": {
                 "name": "Прочие",
-                "description": ""
+                "description": "Прочие функции для общих вещей."
             },
             "array": {
                 "name": "Массив",
-                "description": ""
+                "description": "Функции, предназначенные для работы с массивами."
             },
             "json": {
                 "name": "JSON",
-                "description": ""
+                "description": "Функции, предназначенные для работы с JSON-объектами."
             },
             "math": {
                 "name": "Математика",
-                "description": ""
+                "description": "Функции, предназначенные для математических вычислений."
             },
             "loops": {
                 "name": "Циклы",
-                "description": ""
+                "description": "Функции, перебирающие массивы и/или строки."
             },
             "bot": {
                 "name": "Blargbot",
@@ -224,7 +224,7 @@
             "indexed": {
                 "description": "",
                 "exampleIn": "",
-                "exampleOut": "",
+                "exampleOut": "world!",
                 "exampleCode": ""
             },
             "range": {
@@ -237,7 +237,7 @@
         "commandName": {
             "default": {
                 "description": "",
-                "exampleIn": "",
+                "exampleIn": "b!cc test",
                 "exampleOut": "",
                 "exampleCode": ""
             }
@@ -246,12 +246,12 @@
             "description": "",
             "all": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "Hello!",
+                "exampleCode": "\\{set;var;Hello!\\}\n\\{commit\\}\n\\{set;var;GoodBye!\\}\n\\{rollback\\}\n\\{get;var\\}"
             },
             "variables": {
                 "description": "",
-                "exampleOut": "",
+                "exampleOut": "Hello!",
                 "exampleCode": ""
             }
         },
@@ -266,7 +266,7 @@
             "default": {
                 "description": "",
                 "exampleOut": "",
-                "exampleCode": ""
+                "exampleCode": "\\{dump;Hello, world!\\}"
             }
         },
         "execTag": {
