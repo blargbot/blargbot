@@ -86,7 +86,7 @@
                 "description": "Zmienne serwerowe zwykle są używane do przechowywania danych na poziomie serwera. Są one podzielone na dwie osobne \"pule\" - jedną dla tagów i drugą dla własnych komend. Oznacza to, że nie mogą one być wykorzystywane do komunikacji między jednymi a drugimi. Czyni je to użytecznymi do przekazywania danych między tagami, które przeznaczone są do użycia na jednym serwerze na raz."
             },
             "author": {
-                "name": "",
+                "name": "Zmienne autora",
                 "description": ""
             },
             "global": {
