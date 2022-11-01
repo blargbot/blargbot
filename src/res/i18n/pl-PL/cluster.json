@@ -4,17 +4,17 @@
             "cancel": "Anuluj",
             "cantUse": "❌️ Nie możesz tego użyć!",
             "choose": {
-                "paged": ""
+                "paged": "{content#bool({}\n|)}Strona {page}/{pageCount}"
             },
             "user": {
                 "prompt": {
-                    "default": "",
-                    "filtered": ""
+                    "default": "ℹ️ Proszę wybrać użytkownika z listy",
+                    "filtered": "ℹ️ Znaleziono wielu użytkowników pasujących do: `{filter}`! Proszę wybrać jednego z listy."
                 },
-                "placeholder": "",
+                "placeholder": "Wybierz użytkownika",
                 "choice": {
-                    "label": "",
-                    "description": ""
+                    "label": "{user.username}#{user.discriminator}",
+                    "description": "ID: {user.id}"
                 }
             },
             "member": {
@@ -24,7 +24,7 @@
                 },
                 "placeholder": "",
                 "choice": {
-                    "label": "",
+                    "label": "{member.nick#bool({}|{~member.username})} ({member.username}#{member.discriminator})",
                     "description": ""
                 }
             },
