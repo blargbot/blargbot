@@ -120,8 +120,8 @@
         },
         "isArray": {
             "default": {
-                "description": "",
-                "exampleOut": "",
+                "description": "Określa, czy `text` jest prawidłową tablicą.",
+                "exampleOut": "true false",
                 "exampleCode": ""
             }
         },
@@ -134,15 +134,15 @@
         },
         "map": {
             "default": {
-                "description": "",
-                "exampleOut": "",
+                "description": "Zapewnia sposób wypełnienia tablicy poprzez wykonanie funkcji na każdym z jej elementów, więcej informacji [tutaj](https://developer.mozilla. rg/pl/docs/Web/JavaScript/Reference/Global_Objects/Array/map).\nDla każdego elementu w `array`, zmienna o nazwie `variable` zostanie ustawiona na bieżący element. Wyjście `function` będzie nową wartością elementu. To zwróci nową tablicę i nie zmodyfikuje oryginału.",
+                "exampleOut": "[\"APPLES\", \"ORANGES\",\"PEARS\"]",
                 "exampleCode": ""
             }
         },
         "pop": {
             "default": {
                 "description": "",
-                "exampleOut": "",
+                "exampleOut": "tablica",
                 "exampleCode": ""
             }
         },
@@ -156,7 +156,7 @@
         "shift": {
             "default": {
                 "description": "",
-                "exampleOut": "",
+                "exampleOut": "to",
                 "exampleCode": ""
             }
         },
@@ -183,7 +183,7 @@
         "sort": {
             "default": {
                 "description": "",
-                "exampleOut": "",
+                "exampleOut": "[1,2,3,4,5]",
                 "exampleCode": ""
             }
         },
@@ -230,16 +230,16 @@
             "range": {
                 "description": "",
                 "exampleIn": "",
-                "exampleOut": "",
+                "exampleOut": "BBtag jest",
                 "exampleCode": ""
             }
         },
         "commandName": {
             "default": {
                 "description": "",
-                "exampleIn": "",
+                "exampleIn": "b!cc test",
                 "exampleOut": "To jest komenda testowa",
-                "exampleCode": ""
+                "exampleCode": "Ta komenda to \\{commandName\\}"
             }
         },
         "commit": {
@@ -247,12 +247,12 @@
             "all": {
                 "description": "Zatwierdź wszystkie zmienne",
                 "exampleOut": "Witaj!",
-                "exampleCode": ""
+                "exampleCode": "\\{set;var;Witaj!\\}\n\\{commit\\}\n\\{set;var;Żegnaj!\\}\n\\{rollback\\}\n\\{get;var\\}"
             },
             "variables": {
-                "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "description": "Zatwierdź podane zmienne",
+                "exampleOut": "Witaj!",
+                "exampleCode": "\\{set;var;Witaj!\\}\n\\{commit\\}\n\\{set;var;Żegnaj!\\}\n\\{rollback\\}\n\\{get;var\\}"
             }
         },
         "debug": {
