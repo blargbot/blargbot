@@ -2,33 +2,33 @@
     "common": {
         "duration": {
             "full": {
-                "template": "",
+                "template": "{parts#plural(0:0 sekund|{#join(, | i )})}",
                 "year": {
-                    "order": "",
+                    "order": "0",
                     "display": "{value#plural(0:|1:1 rok|{} lat)}"
                 },
                 "month": {
-                    "order": "",
+                    "order": "1",
                     "display": "{value#plural(0:|1:1 miesiąc|{} miesięcy)}"
                 },
                 "day": {
-                    "order": "",
+                    "order": "2",
                     "display": "{value#plural(0:|1:1 dzień|{} dni)}"
                 },
                 "hour": {
-                    "order": "",
+                    "order": "3",
                     "display": "{value#plural(0:|1:1 godzina|{} godzin)}"
                 },
                 "minute": {
-                    "order": "",
+                    "order": "4",
                     "display": "{value#plural(0:|1:1 minuta|{} minut)}"
                 },
                 "second": {
-                    "order": "",
+                    "order": "5",
                     "display": "{value#plural(0:|1:1 sekunda|{} sekund)}"
                 },
                 "millisecond": {
-                    "order": "",
+                    "order": "6",
                     "display": "{value#plural(0:|1:1 milisekunda|{} milisekund)}"
                 }
             }
@@ -41,7 +41,7 @@
                 "channelNoPerms": "Próbowałem wysłać wiadomość w odpowiedzi na twoją komendę, ale nie posiadam uprawnień, by widzieć kanał, z którego została ona wysłana. Jeśli uważasz, że to błąd, skontaktuj się z administratorem serwera, aby przekazał mi uprawnienia do czytania wiadomości.",
                 "embedNoPerms": "Nie mam uprawnień do osadzania linków! Zepsuje to kilka moich komend. Proszę o dodanie mi uprawnień do osadzania odnośników. Dzięki!",
                 "guild": "{message}\nSerwer: {channel.guild.name} ({channel.guild.id})\nKanał: {channel.name} ({channel.id})\n\nJeśli nie chcesz widzieć tych wiadomości, użyj komendy `dmerrors`.",
-                "dm": ""
+                "dm": "{message}\nKanał: PRYWATNY KANAŁ ({channel.id})\n\nJeśli nie chcesz widzieć tych wiadomości, użyj polecenia `dmerrors`."
             }
         }
     }
