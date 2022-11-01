@@ -174,127 +174,127 @@
             "left": "ℹ️ Пользователь покинул сервер",
             "messageDeleted": "ℹ️ Сообщение удалено",
             "messageUpdated": "ℹ️ Сообщение изменено",
-            "roleRemoved": "",
-            "roleAdded": "",
+            "roleRemoved": "ℹ️ Спец. роль удалена",
+            "roleAdded": "ℹ️ Спец. роль добавлена",
             "nicknameUpdated": "ℹ️ Никнейм пользователя обновлён",
             "usernameUpdated": "ℹ️ Имя пользователя изменено",
-            "avatarUpdated": ""
+            "avatarUpdated": "ℹ️ Аватар обновлён"
         },
         "embed": {
             "description": {
                 "avatarUpdated": "➡️ Старый аватар\n⬇️ Новый аватар",
                 "bulkDelete": "Массовая очистка сообщений",
                 "userUpdated": {
-                    "username": "",
-                    "discriminator": "",
-                    "both": ""
+                    "username": "Имя пользователя изменено.",
+                    "discriminator": "Тег Discord (четырёхзначный номер) изменён.",
+                    "both": "Имя пользователя изменено.\nТег Discord (четырёхзначный номер) изменён."
                 }
             },
             "field": {
                 "reason": {
                     "name": "Причина",
-                    "value": ""
+                    "value": "{reason}"
                 },
                 "message": {
                     "name": "ID сообщения",
-                    "value": ""
+                    "value": "{messageId}"
                 },
                 "channel": {
                     "name": "Канал",
-                    "value": ""
+                    "value": "{channelIds#map(<#{}>)#join(\n)}"
                 },
                 "oldUsername": {
                     "name": "Старое имя",
-                    "value": ""
+                    "value": "{user.username}#{user.discriminator}"
                 },
                 "newUsername": {
                     "name": "Новое имя",
-                    "value": ""
+                    "value": "{user.username}#{user.discriminator}"
                 },
                 "oldNickname": {
-                    "name": "",
-                    "value": ""
+                    "name": "Прошлый никнейм",
+                    "value": "{nickname}"
                 },
                 "newNickname": {
-                    "name": "",
-                    "value": ""
+                    "name": "Новый никнейм",
+                    "value": "{nickname}"
                 },
                 "role": {
                     "name": "Роль",
                     "value": "<@&{roleId}> ({roleId})"
                 },
                 "updatedBy": {
-                    "name": "",
-                    "value": ""
+                    "name": "Обновлено пользователем",
+                    "value": "<@{userId}> ({userId})"
                 },
                 "created": {
-                    "name": "",
-                    "value": ""
+                    "name": "Создано",
+                    "value": "{time#tag}"
                 },
                 "until": {
                     "name": "До",
-                    "value": ""
+                    "value": "{time#tag}"
                 },
                 "count": {
-                    "name": "",
-                    "value": ""
+                    "name": "Количество",
+                    "value": "{count}"
                 },
                 "content": {
                     "name": {
                         "old": {
-                            "unavailable": "",
-                            "empty": "",
-                            "default": ""
+                            "unavailable": "Старое сообщение (Недоступно)",
+                            "empty": "Старое сообщение (Пустое)",
+                            "default": "Старое сообщение"
                         },
                         "new": {
-                            "unavailable": "",
-                            "empty": "",
-                            "default": ""
+                            "unavailable": "Новое сообщение (Недоступно)",
+                            "empty": "Новое сообщение (Пустое)",
+                            "default": "Новое сообщение"
                         },
                         "current": {
-                            "unavailable": "",
-                            "empty": "",
-                            "default": ""
+                            "unavailable": "Содержимое (Недоступно)",
+                            "empty": "Содержимое (Пусто)",
+                            "default": "Содержимое"
                         }
                     },
                     "value": {
-                        "chatLogsOff": "",
-                        "unknown": "",
-                        "expired": "",
-                        "notLogged": "",
-                        "empty": "",
-                        "default": ""
+                        "chatLogsOff": "Это сообщение не было записано в лог. Настройка ChatLogging отключена",
+                        "unknown": "Это сообщение не было записано в лог. Оно было отправлено когда настройка ChatLogging была отключена, либо оно старше двух недель",
+                        "expired": "Это сообщение не записано в логе, так как оно старше двух недель",
+                        "notLogged": "Это сообщение не было записано в лог. Оно было отправлено когда настройка ChatLogging была отключена.",
+                        "empty": "У этого сообщения нет содержимого. Скорее всего там было вложение или embed",
+                        "default": "{content#overflow(1024|... (слишком длинное))}"
                     }
                 }
             }
         }
     },
     "warning": {
-        "autoBan": "",
-        "autoKick": "",
-        "autoTimeout": ""
+        "autoBan": "[ Автобан ] Превышен лимит банов ({warnings}/{limit})",
+        "autoKick": "[ Автобан ] Превышен лимит банов ({warnings}/{limit})",
+        "autoTimeout": "[ Автобан ] Превышен лимит банов ({warnings}/{limit})"
     },
     "mute": {
-        "autoUnmute": "",
-        "createReason": ""
+        "autoUnmute": "Mute автоматически снят после {duration#duration(F)=какого-то времени}.",
+        "createReason": "Настройки роли для Авто-mute"
     },
     "moderation": {
-        "auditLog": ""
+        "auditLog": "[{moderator.username}#{moderator.discriminator}]{reason#bool( {}|)}"
     },
     "censor": {
-        "warnReason": "",
+        "warnReason": "Использовал фразу из черного списка.",
         "mentionSpam": {
             "ban": {
-                "reason": "",
-                "failed": ""
+                "reason": "Спам упоминаниями",
+                "failed": "{user#tag} спамит упоминаниями, но мне не хватает прав чтобы его забанить!"
             }
         }
     },
     "ban": {
-        "autoUnban": ""
+        "autoUnban": "Автоматически разбанен после {duration#duration(F)=некоторого времени}."
     },
     "documentation": {
-        "loading": "",
+        "loading": "Загрузка…",
         "name": {
             "flat": ""
         },
@@ -396,57 +396,57 @@
             }
         },
         "bbtag": {
-            "invalid": "",
+            "invalid": "❌ Страница документации этого bbtag больше не доступна!",
             "unknown": "",
-            "prompt": "",
+            "prompt": "Сразу несколько страниц с документаций bbtag доступны для `{term}`",
             "index": {
-                "name": "",
-                "description": "",
-                "prompt": "",
+                "name": "BBTag",
+                "description": "Blargbot снаряжён системой команд BBTag, спроектированной чтобы имитировать язык программирования, оставаясь легко осваиваемой. Вы можете использовать эту систему как кирпичи, чтобы создавать свою особенную систему команд, будь то общедоступные команды или ваши личные серверные команды.\n\nРедактирование непосредственно через Discord может быть не самым удобным способом, к счастью существует онлайн редактор [BBTag IDE]({editorLink}), который делает разработку существенно проще.",
+                "prompt": "Выберите тему",
                 "topics": {
-                    "name": "",
-                    "value": ""
+                    "name": "Темы",
+                    "value": "Для более детальной информации по темам, используйте `b!{commandName} docs <тема>` (например `b!{commandName} docs subtags`\n- `terminology`, для информации по терминам, таким как \"функции\", 'команды', и т.д.  \n- `variables`, для информации о переменных и их областях видимости.\n- `argTypes`, для информации о синтаксисе аргументов.\n- `dynamic`, для информации о динамических функциях.\n- `subtags`, пожалуй, самая важная тема в списке. `b!{commandName} docs subtags` покажет список категорий функций."
                 }
             },
             "subtags": {
                 "name": "Функции",
-                "description": "",
-                "prompt": ""
+                "description": "Функции это кирпичи, на которых строится BBTag, и они делятся на {categories#count} категорий:\n\n{categories#map(**{name}** - {description})#join(\n)}",
+                "prompt": "Выберите категорию"
             },
             "subtag": {
-                "name": "",
+                "name": "\\{{name}\\}",
                 "prompt": "",
                 "description": {
-                    "deprecated": "",
-                    "aliases": "",
-                    "template": ""
+                    "deprecated": "**Эта функция устарела{replacement#bool( и была заменена функцией \\{{}\\}|)}**",
+                    "aliases": "{aliases#plural(0:|**Алиасы:** ```\n{#join(, )}\n```)}",
+                    "template": "{parts#join(\n)}"
                 },
                 "pages": {
                     "signature": {
-                        "name": "",
+                        "name": "Использование: {parameters}",
                         "usage": {
-                            "name": "",
+                            "name": "**Использование**",
                             "value": {
-                                "parameters": "",
+                                "parameters": "```\n{parameters}\n```",
                                 "modifier": {
-                                    "maxLength": "",
-                                    "defaulted": "",
-                                    "defaultedMaxLength": ""
+                                    "maxLength": "`{name}` может быть не длиннее {maxLength} символов",
+                                    "defaulted": "`{name}` по умолчанию равняется `{defaultValue}`, если{required#bool(| опущено или)} оставлено пустым.",
+                                    "defaultedMaxLength": "`{name}` может быть не длиннее {maxLength} символов и по умолчанию равняется `{defaultValue}` если{required#bool(| опущено или)} оставлено пустым."
                                 },
-                                "template": ""
+                                "template": "{parts#join(\n)}"
                             }
                         },
                         "exampleCode": {
-                            "name": "",
-                            "value": ""
+                            "name": "**Пример кода**",
+                            "value": "```\n{code}\n```"
                         },
                         "exampleIn": {
-                            "name": "",
-                            "value": ""
+                            "name": "**Пример пользовательского ввода**",
+                            "value": "{text#bool(\n{#split(\n)#map(> {})#join(\n)}|_no input_)}\n"
                         },
                         "exampleOut": {
-                            "name": "",
-                            "value": ""
+                            "name": "**Пример вывода**",
+                            "value": "{text#bool(\n{#split(\n)#map(> {})#join(\n)}|_no output_)}\n"
                         },
                         "limit": {
                             "name": {
@@ -1605,8 +1605,8 @@
                 "triggerQuery": "",
                 "caseSensitiveQuery": {
                     "prompt": "",
-                    "continue": "",
-                    "cancel": ""
+                    "continue": "Да",
+                    "cancel": "Нет"
                 },
                 "channelsQuery": {
                     "prompt": "",
@@ -2233,7 +2233,7 @@
                 "description": "",
                 "unknownCase": "Не могу найти отзыв с номером {caseNumber}!",
                 "notOwner": "",
-                "success": ""
+                "success": "✅ Ваш отзыв был обновлён."
             }
         },
         "help": {
