@@ -4,7 +4,7 @@ on:
   push:
     branches: ["**", "!crowdin"]
   pull_request:
-    branches: [master]
+    branches: [master, "!crowdin"]
   workflow_dispatch: ~
 
 jobs:
