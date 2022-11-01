@@ -5,15 +5,15 @@
     "limits": {
         "rules": {
             "useCount": {
-                "default": "",
-                "requests": "",
-                "loops": ""
+                "default": "Максимум {count} использований",
+                "requests": "Максимум {count} запросов",
+                "loops": "Максимум {count} циклов"
             },
             "staffOnly": {
                 "default": ""
             },
             "disabled": {
-                "default": ""
+                "default": "\\{{subtagName}\\} отключен"
             },
             "disabledIn": {
                 "default": ""
@@ -40,7 +40,7 @@
                 "description": ""
             },
             "json": {
-                "name": "",
+                "name": "JSON",
                 "description": ""
             },
             "math": {
