@@ -1,6 +1,6 @@
 {
     "debug": {
-        "summary": "```js\n            Время выполнения: {active#duration(MS)}ms\n        Переменных присвоено: {committed}\nВремя выполнения базы данных: {database#duration(MS)}ms\n      Общее время выполнения: {total#duration(MS)}ms\n```"
+        "summary": "```js\n           Время выполнения: {active#duration(MS)}ms\n       Переменных присвоено: {committed}\nВремя запроса в базу данных: {database#duration(MS)}ms\n     Общее время выполнения: {total#duration(MS)}ms\n```"
     },
     "limits": {
         "rules": {
@@ -82,7 +82,7 @@
         },
         "variables": {
             "server": {
-                "name": "Сервер",
+                "name": "Серверные переменные",
                 "description": ""
             },
             "author": {
@@ -106,9 +106,9 @@
     "subtags": {
         "concat": {
             "default": {
-                "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "description": "Берёт `values` и объединяет их вместе, чтобы сформировать один массив. Если `values` само является массивом, то в конечный массив добавляются его элементы.",
+                "exampleOut": "Два массива: [\"this\",\"is\",\"an\",\"array\"]\nСтроки и массив: [\"a\",\"b\",\"c\", 1, 2, 3]",
+                "exampleCode": "Два массива: \\{concat;[\"this\", \"is\"];[\"an\", \"array\"]\\}\nСтроки и массив: \\{concat;a;b;c;[1, 2, 3]\\}"
             }
         },
         "filter": {
