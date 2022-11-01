@@ -1,6 +1,6 @@
 {
     "debug": {
-        "summary": "```js\n         Время выполнения: {active#duration(MS)}ms\n    Переменных присвоено: {committed}\nВремя выполнения базы данных: {database#duration(MS)}ms\n   Общее время выполнения: {total#duration(MS)}ms\n```"
+        "summary": "```js\n            Время выполнения: {active#duration(MS)}ms\n        Переменных присвоено: {committed}\nВремя выполнения базы данных: {database#duration(MS)}ms\n      Общее время выполнения: {total#duration(MS)}ms\n```"
     },
     "limits": {
         "rules": {
@@ -90,15 +90,15 @@
                 "description": ""
             },
             "global": {
-                "name": "",
+                "name": "Глобальные переменные",
                 "description": ""
             },
             "temporary": {
-                "name": "",
+                "name": "Временные переменные",
                 "description": ""
             },
             "local": {
-                "name": "",
+                "name": "Локальные переменные",
                 "description": ""
             }
         }
