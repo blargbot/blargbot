@@ -107,7 +107,7 @@
         "concat": {
             "default": {
                 "description": "",
-                "exampleOut": "",
+                "exampleOut": "Dwie tablice: [\"this\",\"is\",\"an\",\"array\"]\nCiągi znaków i tablica: [\"a\",\"b\",\"c\", 1, 2, 3]",
                 "exampleCode": ""
             }
         },
@@ -216,7 +216,7 @@
         },
         "args": {
             "all": {
-                "description": "",
+                "description": "Pobiera cały tekst wprowadzony przez użytkownika",
                 "exampleIn": "",
                 "exampleOut": "",
                 "exampleCode": ""
@@ -238,15 +238,15 @@
             "default": {
                 "description": "",
                 "exampleIn": "",
-                "exampleOut": "",
+                "exampleOut": "To jest komenda testowa",
                 "exampleCode": ""
             }
         },
         "commit": {
-            "description": "",
+            "description": "Ze względu na optymalizację zmienne nie są przechowywane w bazie danych natychmiast po użyciu `\\{set\\}`. Zamiast tego są przechowywane w pamięci podręcznej i zostaną zapisane w bazie danych po zakończeniu tagu. Jeśli masz jakieś zmienne, które należy natychmiast zapisać w bazie danych, użyj tego, aby wymusić aktualizację teraz.\nWynosi to niewielki koszt wydajności, więc używaj tylko wtedy, gdy jest to konieczne.\n`variables` domyślnie jest dla wszystkich wartości do tego punktu.\n`\\{rollback\\}` jest jego odpowiednikiem.",
             "all": {
-                "description": "",
-                "exampleOut": "",
+                "description": "Zatwierdź wszystkie zmienne",
+                "exampleOut": "Witaj!",
                 "exampleCode": ""
             },
             "variables": {
@@ -353,7 +353,7 @@
             }
         },
         "modLog": {
-            "description": "",
+            "description": "Jeśli `moderator` nie zostanie wskazany lub pozostanie pusty, będzie domyślnie ustawiony jako blargbot.",
             "default": {
                 "description": "",
                 "exampleOut": "",
@@ -2452,7 +2452,7 @@
         "warnings": {
             "default": {
                 "description": "",
-                "exampleOut": "",
+                "exampleOut": "Nie posiadasz żadnych ostrzeżeń!",
                 "exampleCode": ""
             }
         }
