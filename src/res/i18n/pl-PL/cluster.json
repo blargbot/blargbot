@@ -1,8 +1,8 @@
 {
     "common": {
         "query": {
-            "cancel": "",
-            "cantUse": "",
+            "cancel": "Anuluj",
+            "cantUse": "❌️ Nie możesz tego użyć!",
             "choose": {
                 "paged": ""
             },
