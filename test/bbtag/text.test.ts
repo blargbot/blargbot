@@ -1870,7 +1870,7 @@ Database Execution Time: 678ms
                 ['??']: {
                     description: 'Returns the first non-empty value given.',
                     exampleOut: 'abc def',
-                    exampleCode: '\\{??;abc;;123\\} \\{??;;;;\n;def;aaaa\\}'
+                    exampleCode: '{??;abc;;123} {??;;;;\n;def;aaaa}'
                 }
             },
             pad: {
