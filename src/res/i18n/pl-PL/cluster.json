@@ -19,67 +19,67 @@
             },
             "member": {
                 "prompt": {
-                    "default": "",
-                    "filtered": ""
+                    "default": "ℹ️ Proszę wybrać użytkownika z listy",
+                    "filtered": "ℹ️ Znaleziono wielu użytkowników pasujących do: `{filter}`! Proszę wybrać jednego z listy."
                 },
-                "placeholder": "",
+                "placeholder": "Wybierz użytkownika",
                 "choice": {
                     "label": "{member.nick#bool({}|{~member.username})} ({member.username}#{member.discriminator})",
-                    "description": ""
+                    "description": "ID: {member.id}"
                 }
             },
             "sender": {
                 "prompt": {
-                    "default": "",
-                    "filtered": ""
+                    "default": "ℹ️ Proszę wybrać użytkownika lub webhook z listy",
+                    "filtered": "ℹ️ Znaleziono wielu użytkowników pasujących do: `{filter}`! Proszę wybrać jednego z listy."
                 },
-                "placeholder": "",
+                "placeholder": "Wybierz użytkownika lub webhook",
                 "choice": {
                     "label": {
-                        "user": "",
-                        "webhook": ""
+                        "user": "{user.username}#{user.discriminator}",
+                        "webhook": "{webhook.name}"
                     },
-                    "description": ""
+                    "description": "ID: {sender.id}"
                 }
             },
             "role": {
                 "prompt": {
-                    "default": "",
-                    "filtered": ""
+                    "default": "ℹ️ Proszę wybrać rolę z listy",
+                    "filtered": "ℹ️ Znaleziono wiele ról pasujących do: `{filter}`! Proszę wybrać jedną z listy."
                 },
-                "placeholder": "",
+                "placeholder": "Wybierz rolę",
                 "choice": {
-                    "label": "",
-                    "description": ""
+                    "label": "{role.name}",
+                    "description": "ID: {role.id} Kolor: {role.color#color}"
                 }
             },
             "channel": {
                 "prompt": {
-                    "default": "",
-                    "filtered": ""
+                    "default": "ℹ️ Proszę wybrać kanał z listy",
+                    "filtered": "ℹ️ Znaleziono wiele kanałów pasujących do: `{filter}`! Proszę wybrać jeden z listy."
                 },
-                "placeholder": "",
+                "placeholder": "Wybierz kanał",
                 "choice": {
                     "label": {
-                        "guild": "",
-                        "dm": ""
+                        "guild": "{channel.name}",
+                        "dm": "PW"
                     },
-                    "description": ""
+                    "description": "ID: {channel.id}{parent#bool({emoji} {label}|)}"
                 }
             },
             "paged": {
-                "prompt": ""
+                "prompt": "{header#bool({}\n|)}Strona **#{page}/{pageCount}**\n{content}\nWpisz liczbę pomiędzy **1 a {pageCount}**, aby wyświetlić tę stronę."
             }
         }
     },
     "regex": {
-        "tooLong": "",
-        "invalid": "",
-        "unsafe": "",
-        "matchesEverything": ""
+        "tooLong": "❌ Regex jest za długi!",
+        "invalid": "❌ Regex jest nieprawidłowy!",
+        "unsafe": "❌ Regex jest niebezpieczny!\nJeśli jesteś w 100% pewien, że Twój regex jest prawidłowy, prawdopodobnie został zablokowany ze względu na wykrycie katastrofalnego backtrackingu\nWięcej informacji na temat katastrofalnego backtrackingu znajdziesz tutaj: <https://www.regular-expressions.info/catastrophic.html>",
+        "matchesEverything": "❌ Twój regex nie może pasować do wszystkiego!"
     },
     "respawn": {
-        "success": ""
+        "success": "Ok, wróciłem. To zadanie zajęło mi {duration#duration(F)}"
     },
     "roleme": {
         "failed": ""
@@ -87,17 +87,17 @@
     "poll": {
         "embed": {
             "footer": {
-                "text": ""
+                "text": "Ankieta zakończy się"
             }
         },
         "success": {
-            "noVotes": "",
-            "tie": "",
-            "single": ""
+            "noVotes": "Są już wyniki głosowania! W sumie zebrano **0** głosów!\n\n Nikt nie głosował, jak smutno 😦",
+            "tie": "Są już wyniki głosowania! W sumie **{total}** {total#plural(1:głos |głosy)} został(y) zebrane!\n\nNastąpił remis między tymi wyborami po **{count}** {count#plural(1:głos|głosy)} każdy:\n\n{winners#join(, | i )}",
+            "single": "Są już wyniki głosowania! W sumie **{total}** {total#plural(1:głos został |głosy zostały)} zebrany(e)!\n\n Na **{count}** {count#plural(1:głos|głosy)}, zwycięzcą jest:\n\n{winner}"
         }
     },
     "guild": {
-        "blacklisted": "",
+        "blacklisted": "Witamy! Z przykrością informuję Cię, że Twój serwer, **{guild.name}** ({guild.id}), znajduje się na mojej czarnej liście. Przykro mi z tego powodu! Opuszczę teraz Twój serwer i życzę miłego dnia.",
         "joined": ""
     },
     "autoresponse": {
