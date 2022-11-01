@@ -1,14 +1,14 @@
 {
     "common": {
         "query": {
-            "cancel": "",
+            "cancel": "Отмена",
             "cantUse": "",
             "choose": {
-                "paged": ""
+                "paged": "{content#bool({}\n|)}Страница {page}/{pageCount}"
             },
             "user": {
                 "prompt": {
-                    "default": "",
+                    "default": "ℹ️ Пожалуйста, выберите пользователя из выпадающего списка",
                     "filtered": ""
                 },
                 "placeholder": "",
