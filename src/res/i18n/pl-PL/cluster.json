@@ -446,7 +446,7 @@
                         },
                         "exampleOut": {
                             "name": "",
-                            "value": ""
+                            "value": "{text#bool(\n{#split(\n)#map(> {})#join(\n)}|_no output_)}\n"
                         },
                         "limit": {
                             "name": {
