@@ -229,21 +229,21 @@
             },
             "range": {
                 "description": "",
-                "exampleIn": "",
-                "exampleOut": "",
+                "exampleIn": "Hello world! BBtag is so cool",
+                "exampleOut": "BBtag is",
                 "exampleCode": "\\{args;2;4\\}"
             }
         },
         "commandName": {
             "default": {
-                "description": "",
+                "description": "Получает имя текущей команды.",
                 "exampleIn": "b!cc test",
                 "exampleOut": "This command is test",
                 "exampleCode": "This command is \\{commandName\\}"
             }
         },
         "commit": {
-            "description": "",
+            "description": "По соображениям оптимизации переменные не сохраняются в базу данных сразу при использовании `\\{set\\}`. Вместо этого они кэшируются и сохраняются в базу данных после завершения команды. Если у вас есть переменные `variables`, которые необходимо немедленно сохранить в базу данных, используйте эту функцию для принудительного сохранения прямо во время исполнения команды.\nЭто ухудшает производительность, поэтому используйте только когда это необходимо.\n`variables` по умолчанию это все значения, установленные до этого момента.\n`\\{rollback\\}` — противоположность этой функции.",
             "all": {
                 "description": "",
                 "exampleOut": "Hello!",
