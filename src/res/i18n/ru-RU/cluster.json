@@ -154,7 +154,7 @@
                 },
                 "duration": {
                     "name": "Длительность",
-                    "value": "{продолжительность#продолжительность(F)}"
+                    "value": "{duration#duration(F)}"
                 },
                 "user": {
                     "name": "Пользователь",
@@ -212,7 +212,7 @@
                     "value": "{user.username}#{user.discriminator}"
                 },
                 "oldNickname": {
-                    "name": "Прошлый никнейм",
+                    "name": "Старый никнейм",
                     "value": "{nickname}"
                 },
                 "newNickname": {
@@ -275,14 +275,14 @@
         "autoTimeout": "[ Автобан ] Превышен лимит банов ({warnings}/{limit})"
     },
     "mute": {
-        "autoUnmute": "Mute автоматически снят после {duration#duration(F)=какого-то времени}.",
+        "autoUnmute": "Мут автоматически снят после {duration#duration(F)=какого-то времени}.",
         "createReason": "Настройки роли для Авто-mute"
     },
     "moderation": {
         "auditLog": "[{moderator.username}#{moderator.discriminator}]{reason#bool( {}|)}"
     },
     "censor": {
-        "warnReason": "Использовал фразу из черного списка.",
+        "warnReason": "Была использована фразу из черного списка.",
         "mentionSpam": {
             "ban": {
                 "reason": "Спам упоминаниями",
@@ -296,7 +296,7 @@
     "documentation": {
         "loading": "Загрузка…",
         "name": {
-            "flat": "{parent} - {child}"
+            "flat": "{parent} — {child}"
         },
         "paging": {
             "parent": "Вернуться к {parent}",
@@ -489,7 +489,7 @@
                     },
                     "optional": {
                         "name": "Необязательные аргументы []",
-                        "value": ""
+                        "value": "Пример:```\n[arg]```Необязательные аргументы можно указывать, а можно не указывать. При указании необязательные аргументы могут либо изменить то, что делает функция (напр., `b!{commandName} docs shuffle`) или просто изменить значение по умолчанию (например, `b!{commandName} docs username`)."
                     },
                     "multiple": {
                         "name": "",
@@ -504,7 +504,7 @@
             "terminology": {
                 "name": "Терминология",
                 "description": "В BBTag используются различные термины, которые могут быть не очень интуитивными, так что здесь приводится перечень определений для некоторых наиболее важных из них:",
-                "prompt": "Выберите определение",
+                "prompt": "Выберите термин",
                 "pages": {
                     "bbtag": {
                         "name": "BBTag",
