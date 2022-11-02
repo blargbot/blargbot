@@ -414,13 +414,13 @@
         },
         "reason": {
             "default": {
-                "description": "",
+                "description": "Устанавливает причину для следующего вызова API (напр. roleAdd, roleRemove, ban и т. д.). Если `reason` пуст причина будет пустой",
                 "exampleOut": "",
                 "exampleCode": ""
             }
         },
         "request": {
-            "description": "",
+            "description": "Только некоторые разрешенные домены могут быть использованы для `url`. Смотрите [здесь](https://blargbot.xyz/domains), чтобы увидеть список. Он выводит JSON-объект со следующей структурой. Рекомендуется использовать \\{jsonGet\\}, чтобы перемещаться по нему.\n```json\n\\{\n  \"body\": \\{\\}, // тело запроса\n  \"status\": 200, // HTTP-код статуса\n  \"statusText\": \"OK\", // человекочитаемый перевод кода статуса\n  \"date\": \"Thu, 1 Янв 1970 00:00:00 GMT\", // дата, отправленная в заголовки\n  \"contentType\": \"application/json\", // тип содержимого ответа\n  \"url\": \"https://fancy.url/here\" // запрошенный url\n\\}\n```",
             "default": {
                 "description": "",
                 "exampleOut": "",
