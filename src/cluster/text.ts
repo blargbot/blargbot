@@ -1749,7 +1749,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
                     default: t<{ role: Eris.Role; }>('{role.name} ({role.id})'),
                     unknown: t<{ roleId: string; }>('Unknown role ({roleId})')
                 },
-                localeValue: t<{ locale: string; completion: number; }>('{locale}{completion#plural(1:| - {#percent} complete)}'),
+                localeValue: t<{ name: string; completion: number; }>('{name}{completion#plural(1:| - {#percent} complete)}'),
                 notSet: 'Not set',
                 groups: {
                     general: 'General',
@@ -1766,7 +1766,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
             },
             languages: {
                 description: 'Lists all the languages supported and their completion',
-                success: t<{ locales: Iterable<{ locale: string; completion: number; }>; }>('✅ The following locales are supported:\n{locales#plural(0:- None yet 😦|{#map(- `{locale}` - {completion#percent} complete)#join(\n)})}\n\n> If you want to help contribute a new langauge, or improve an existing one, you can contribute here: <https://translate.blargbot.xyz/>')
+                success: t<{ locales: Iterable<{ name: string; key: string; completion: number; }>; }>('✅ The following locales are supported:\n{locales#plural(0:- None yet 😦|{#map(`{key}`: {name} - {completion#percent} complete)#join(\n)})}\n\nTo set a language, use `b!settings set language <languageId>`\n> If you want to help contribute a new langauge, or improve an existing one, you can contribute here: <https://translate.blargbot.xyz/>')
             },
             set: {
                 description: 'Sets the given setting key to have a certain value. If `value` is omitted, the setting is reverted to its default value',

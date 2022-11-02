@@ -5,7 +5,7 @@ import path from 'path';
 export class FileSystemTranslationSource implements ITranslationSource {
     readonly #translationData: { readonly [P in string]?: { readonly [P in string]?: string } };
 
-    public locales: ReadonlyMap<string, ReadonlySet<string>>;
+    public locales: ReadonlyMap<string, { name: string; keys: ReadonlySet<string>; }>;
 
     public constructor(directory: string) {
         this.#translationData = Object.fromEntries(
@@ -28,7 +28,10 @@ export class FileSystemTranslationSource implements ITranslationSource {
         );
         this.locales = Object.freeze(new Map(
             Object.entries(this.#translationData)
-                .map(([locale, data]) => [locale, Object.freeze(new Set(Object.keys(data ?? {})))])
+                .map(([locale, data]) => [locale, {
+                    name: data?.['constants.localeName'] ?? locale,
+                    keys: Object.freeze(new Set(Object.keys(data ?? {})))
+                }])
         ));
     }
 

@@ -78,14 +78,14 @@ export async function guildSetting<T extends Exclude<keyof StoredGuildSettings, 
             };
         }
         case 'locale': {
-            const keys = util.translator.locales.get(raw);
-            if (keys === undefined)
+            const details = util.translator.locales.get(raw);
+            if (details === undefined)
                 return { success: false };
 
             return {
                 success: true,
                 value: raw as StoredGuildSettings[T],
-                display: raw
+                display: details.name
             };
         }
         default:

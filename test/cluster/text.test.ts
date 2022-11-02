@@ -4272,13 +4272,13 @@ describe('Cluster format strings', () => {
                     localeValue: [
                         {
                             name: 'partial',
-                            input: [{ locale: 'en-GB', completion: 0.8765543 }],
-                            expected: 'en-GB - 87.66% complete'
+                            input: [{ name: 'English (UK)', completion: 0.8765543 }],
+                            expected: 'English (UK) - 87.66% complete'
                         },
                         {
                             name: 'complete',
-                            input: [{ locale: 'en-GB', completion: 1 }],
-                            expected: 'en-GB'
+                            input: [{ name: 'English (UK)', completion: 1 }],
+                            expected: 'English (UK)'
                         }
                     ],
                     notSet: 'Not set',
@@ -4315,18 +4315,18 @@ describe('Cluster format strings', () => {
                             input: [{
                                 locales: []
                             }],
-                            expected: '✅ The following locales are supported:\n- None yet 😦\n\n> If you want to help contribute a new langauge, or improve an existing one, you can contribute here: <https://translate.blargbot.xyz/>'
+                            expected: '✅ The following locales are supported:\n- None yet 😦\n\nTo set a language, use `b!settings set language <languageId>`\n> If you want to help contribute a new langauge, or improve an existing one, you can contribute here: <https://translate.blargbot.xyz/>'
                         },
                         {
                             name: 'some',
                             input: [{
                                 locales: [
-                                    { locale: 'en-GB', completion: 1 },
-                                    { locale: 'fr', completion: 0 },
-                                    { locale: 'es-SP', completion: 0.5 }
+                                    { name: 'English (UK)', key: 'en-GB', completion: 1 },
+                                    { name: 'French (France)', key: 'fr', completion: 0 },
+                                    { name: 'Spanish (Spain)', key: 'es-SP', completion: 0.5 }
                                 ]
                             }],
-                            expected: '✅ The following locales are supported:\n- `en-GB` - 100% complete\n- `fr` - 0% complete\n- `es-SP` - 50% complete\n\n> If you want to help contribute a new langauge, or improve an existing one, you can contribute here: <https://translate.blargbot.xyz/>'
+                            expected: '✅ The following locales are supported:\n`en-GB`: English (UK) - 100% complete\n`fr`: French (France) - 0% complete\n`es-SP`: Spanish (Spain) - 50% complete\n\nTo set a language, use `b!settings set language <languageId>`\n> If you want to help contribute a new langauge, or improve an existing one, you can contribute here: <https://translate.blargbot.xyz/>'
                         }
                     ]
                 },

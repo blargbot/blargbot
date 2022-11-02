@@ -1732,7 +1732,7 @@
                     "default": "{role.name} ({role.id})",
                     "unknown": "Unknown role ({roleId})"
                 },
-                "localeValue": "{locale}{completion#plural(1:| - {#percent} complete)}",
+                "localeValue": "{name}{completion#plural(1:| - {#percent} complete)}",
                 "notSet": "Not set",
                 "groups": {
                     "general": "General",
@@ -1749,7 +1749,7 @@
             },
             "languages": {
                 "description": "Lists all the languages supported and their completion",
-                "success": "✅ The following locales are supported:\n{locales#plural(0:- None yet 😦|{#map(- `{locale}` - {completion#percent} complete)#join(\n)})}\n\n> If you want to help contribute a new langauge, or improve an existing one, you can contribute here: <https://translate.blargbot.xyz/>"
+                "success": "✅ The following locales are supported:\n{locales#plural(0:- None yet 😦|{#map(`{key}`: {name} - {completion#percent} complete)#join(\n)})}\n\nTo set a language, use `b!settings set language <languageId>`\n> If you want to help contribute a new langauge, or improve an existing one, you can contribute here: <https://translate.blargbot.xyz/>"
             },
             "set": {
                 "description": "Sets the given setting key to have a certain value. If `value` is omitted, the setting is reverted to its default value",

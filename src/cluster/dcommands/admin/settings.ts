@@ -139,12 +139,12 @@ export class SettingsCommand extends GuildCommand {
     public languages(context: GuildCommandContext): CommandResult {
         const defined = [...FormatString.list()].map(s => s.id);
         const locales = [];
-        for (const [locale, keys] of context.util.translator.locales) {
+        for (const [locale, details] of context.util.translator.locales) {
             let total = 0;
             for (const key of defined)
-                if (keys.has(key))
+                if (details.keys.has(key))
                     total++;
-            locales.push({ locale, completion: total / defined.length });
+            locales.push({ name: details.name, key: locale, completion: total / defined.length });
         }
         return cmd.languages.success({ locales: locales.sort((a, b) => b.completion - a.completion) });
     }
@@ -192,18 +192,18 @@ function resolveLanguage(language: string | undefined, translator: FileSystemTra
     if (language === undefined)
         return undefined;
 
-    const keys = translator.locales.get(language)
+    const details = translator.locales.get(language)
         ?? translator.locales.get(language = 'en');
-    if (keys === undefined)
+    if (details === undefined)
         return undefined;
 
     let count = 0;
     let provided = 0;
     for (const key of FormatString.list()) {
         count++;
-        if (keys.has(key.id))
+        if (details.keys.has(key.id))
             provided++;
     }
 
-    return cmd.list.localeValue({ locale: language, completion: provided / count });
+    return cmd.list.localeValue({ name: details.name, completion: provided / count });
 }
