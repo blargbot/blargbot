@@ -167,7 +167,7 @@
         "disabled": "❌ Wyłączono logowanie zdarzenia `{event}`, ponieważ kanał {channel#tag} nie istnieje lub nie mam uprawnień do wysyłania w nim wiadomości!",
         "events": {
             "timeoutAdded": "ℹ️ Użytkownik został wysłany na przerwę",
-            "timeoutRemoved": "",
+            "timeoutRemoved": "Przerwa użytkownika została usunięta",
             "banned": "ℹ️ Użytkownik został zbanowany",
             "unbanned": "ℹ️ Użytkownik został odbanowany",
             "joined": "ℹ️ Użytkownik dołączył",
@@ -249,106 +249,106 @@
                         "new": {
                             "unavailable": "Nowa wiadomość (Niedostępna)",
                             "empty": "Nowa wiadomość (Pusta)",
-                            "default": ""
+                            "default": "Nowa wiadomość"
                         },
                         "current": {
-                            "unavailable": "",
-                            "empty": "",
-                            "default": ""
+                            "unavailable": "Zawartość (Niedostępna)",
+                            "empty": "Zawartość (Pusta)",
+                            "default": "Zawartość"
                         }
                     },
                     "value": {
-                        "chatLogsOff": "",
-                        "unknown": "",
-                        "expired": "",
-                        "notLogged": "",
-                        "empty": "",
-                        "default": ""
+                        "chatLogsOff": "Ta wiadomość nie została zapisana. ChatLogging jest wyłączony",
+                        "unknown": "Ta wiadomość nie została zalogowana. ChatLogging był wyłączony, gdy została wysłana lub jest starsza niż 2 tygodnie",
+                        "expired": "Ta wiadomość nie jest już zalogowana, ponieważ jest starsza niż 2 tygodnie",
+                        "notLogged": "Ta wiadomość nie została zalogowana. ChatLogging był wyłączony, gdy została wysłana.",
+                        "empty": "Ta wiadomość nie ma treści. Ma albo załącznik, albo embed",
+                        "default": "{content#overflow(1024|... (zbyt długi, aby wyświetlić))}"
                     }
                 }
             }
         }
     },
     "warning": {
-        "autoBan": "",
-        "autoKick": "",
-        "autoTimeout": ""
+        "autoBan": "[ Auto-Ban ] Przekroczono limit ostrzeżeń dla bana ({warnings}/{limit})",
+        "autoKick": "[ Auto-Ban ] Przekroczono limit dla wyrzucenia ({warnings}/{limit})",
+        "autoTimeout": "[ Auto-Ban ] Przekroczono limit dla przerwy ({warnings}/{limit})"
     },
     "mute": {
-        "autoUnmute": "",
-        "createReason": ""
+        "autoUnmute": "Automatycznie odmute-owano po {duration#duration(F)=jakimś czasie}.",
+        "createReason": "Automatyczna konfiguracja roli Muted"
     },
     "moderation": {
-        "auditLog": ""
+        "auditLog": "[{moderator.username}#{moderator.discriminator}]{reason#bool( {}|)}"
     },
     "censor": {
-        "warnReason": "",
+        "warnReason": "Wiadomość zawiera niedozwoloną frazę.",
         "mentionSpam": {
             "ban": {
-                "reason": "",
-                "failed": ""
+                "reason": "Spam wzmiankami",
+                "failed": "{user#tag} spamuje wzmiankami, ale nie mam permisji, by go zbanować!"
             }
         }
     },
     "ban": {
-        "autoUnban": ""
+        "autoUnban": "Automatycznie odbanowano po {duration#duration(F)=jakimś czasie}."
     },
     "documentation": {
-        "loading": "",
+        "loading": "Ładowanie...",
         "name": {
-            "flat": ""
+            "flat": "{parent} - {child}"
         },
         "paging": {
-            "parent": "",
+            "parent": "Wróć do {parent}",
             "select": {
-                "placeholder": ""
+                "placeholder": "{text} - Strona {page}/{pageCount}"
             }
         },
         "command": {
-            "unknown": "",
-            "invalid": "",
-            "prompt": "",
+            "unknown": "❌ Ups, nie mogłem znaleźć takiej komendy! Spróbuj użyć `b!help`, by otrzymać pełną listę komend",
+            "invalid": "❌ Ta strona pomocy jest już nieprawidłowa!",
+            "prompt": "Wiele stron pomocy pasuje do `{term}`",
             "index": {
-                "name": "",
-                "footer": "",
-                "prompt": ""
+                "name": "Pomoc",
+                "footer": "Aby uzyskać więcej informacji na temat poleceń, użyj `b!help <nazwaKomendy>` lub odwiedź <{commandsLink}>.\nChcesz przekazać darowiznę na rzecz bota? Linki darowizn są dostępne na <{donateLink}> - wszystkie darowizny są bezpośrednio przeznaczone na zwrot kosztów hostingu.",
+                "prompt": "Wybierz kategorię komend"
             },
             "list": {
-                "none": "",
-                "excess": "",
-                "count": "",
-                "default": ""
+                "none": "Brak komend",
+                "excess": "```\n{items#join(, )}\n``` i jeszcze {excess} elementów",
+                "count": "{count} {count#plural(1:komenda|2:komendy|3:komendy|4:komendy|komend)}",
+                "default": "```\n{items#join(, )}\n```"
             },
             "categories": {
-                "prompt": "",
-                "displayName": "",
+                "prompt": "Wybierz komendę",
+                "displayName": "Komendy z kategorii: {category}",
                 "custom": {
-                    "noHelp": ""
+                    "noHelp": "_Pomoc nie jest ustawiona_"
                 }
             },
             "command": {
-                "prompt": "",
-                "noPerms": "",
+                "prompt": "Wybierz sygnaturę komendy",
+                "noPerms": "```\n❌ Nie możesz użyć b!{name}\n```{description}",
                 "aliases": {
-                    "name": "",
-                    "value": ""
+                    "name": "**Aliasy**",
+                    "value": "{aliases#join(, )}"
                 },
                 "flags": {
-                    "name": "",
-                    "value": ""
+                    "name": "**Flagi**",
+                    "value": "{flags#map(`-{flag}`/`--{word}`: {description})#join(\n)}"
                 },
                 "usage": {
-                    "name": "",
-                    "value": ""
+                    "name": "ℹ️  {usage}",
+                    "value": "{notes#plural(0:|{#map(> {})#join(\n)}\n\n)}{description}"
                 },
                 "notes": {
-                    "alias": "",
+                    "alias": "`{parameter}` może zostać zamieniony z {aliases#map(`{}`)#join(, | lub )}",
                     "type": {
                         "string": {
-                            "single": ""
+                            "single": "`{name}` domyślnie jest ustawione na `{default}`"
                         },
                         "literal": {
-                            "single": "",
+                            "single": "`{name}` powinno być {choices#map(`{}`)#join(, | lub )}{default#bool( i domyślnie jest `{}`|)}",
                             "greedy": "`{name}` są {min#plural(0:|1:|{} lub więcej )}{choices#map(`{}`)#join(, | lub )}"
                         },
                         "boolean": {
@@ -466,14 +466,14 @@
             },
             "variables": {
                 "name": "",
-                "description": "",
-                "prompt": "",
+                "description": "W BBTag istnieje {scopeCount} różnych zakresów, które mogą być użyte do przechowywania danych. Te zakresy są określone przez pierwszy znak Twojej zmiennej, więc wybierz ostrożnie!",
+                "prompt": "Wybierz zakres zmiennej",
                 "pages": {
                     "variableType": {
-                        "name": ""
+                        "name": "{name} (prefiks: {prefix})"
                     },
                     "commitRollback": {
-                        "name": "",
+                        "name": "\\{commit\\} i \\{rollback\\}",
                         "value": ""
                     }
                 }
