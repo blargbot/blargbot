@@ -110,6 +110,7 @@ function getExecute(definition: AnySubtagSignatureOptions, parameters: readonly 
         return undefined;
     const wrapper = logicWrappers[definition.returns];
     return {
+        subtagName: definition.subtagName,
         parameters: parameters,
         implementation: new wrapper(definition as SubtagLogic<unknown> as SubtagLogic<never>)
     };

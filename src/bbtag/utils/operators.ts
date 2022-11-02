@@ -7,6 +7,7 @@ export type StringOperator = 'startswith' | 'endswith' | 'includes' | 'contains'
 export type ComparisonOperator = OrdinalOperator | StringOperator;
 export type NumericOperator = '+' | '-' | '*' | '/' | '%' | '^';
 export type LogicOperator = '||' | '&&' | '!' | 'xor';
+export type AggregationOperator = '??';
 
 export function isOrdinalOperator(operator: string): operator is OrdinalOperator {
     return guard.hasProperty(ordinalOperators, operator);
@@ -80,6 +81,15 @@ export const logicOperators: Readonly<Record<LogicOperator, (vals: boolean[]) =>
     '!': (vals) => !vals[0]
 };
 
+export const aggregationOperators: Readonly<Record<AggregationOperator, (values: string[]) => string>> = {
+    '??': values => {
+        for (const value of values)
+            if (value.length > 0)
+                return value;
+        return '';
+    }
+};
+
 export const comparisonOperators: Readonly<Record<ComparisonOperator, (a: string, b: string) => boolean>> = {
     ...ordinalOperators,
     ...stringOperators
@@ -89,7 +99,8 @@ export const operators = {
     ...ordinalOperators,
     ...stringOperators,
     ...logicOperators,
-    ...numericOperators
+    ...numericOperators,
+    ...aggregationOperators
 } as const;
 //TODO bitwise
 

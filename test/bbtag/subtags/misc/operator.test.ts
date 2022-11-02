@@ -94,7 +94,6 @@ runSubtagTests({
         ...createStringTestCases(['[1,2,3]', '2'], contains),
         ...createStringTestCases(['[1,2,3]', ','], doesntContain),
         ...createStringTestCases(['How are you', 'y'], contains),
-        { code: '{??}', expected: '' },
         { code: '{??;}', expected: '' },
         { code: '{??;;;;}', expected: '' },
         { code: '{??;abc}', expected: 'abc' },

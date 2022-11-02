@@ -19,7 +19,11 @@ export abstract class Subtag implements SubtagOptions<IFormattable<string>> {
 
     public constructor(options: SubtagOptions<IFormattable<string>>) {
         this.name = options.name;
-        this.aliases = options.aliases ?? [];
+        this.aliases = [
+            ...options.aliases ?? [],
+            ...options.signatures.map(s => s.subtagName)
+                .filter((v): v is Exclude<typeof v, undefined> => v !== undefined)
+        ];
         this.category = options.category;
         this.description = options.description;
         this.deprecated = options.deprecated ?? false;
