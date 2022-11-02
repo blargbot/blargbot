@@ -264,40 +264,40 @@
         },
         "dump": {
             "default": {
-                "description": "",
-                "exampleOut": "",
+                "description": "Отправляет предоставленный текст на специально сгенерированную страницу на сайте blargbot. Страница будет удалена через 7 дней.",
+                "exampleOut": "https://blargbot.xyz/output/111111111111111111",
                 "exampleCode": "\\{dump;Hello, world!\\}"
             }
         },
         "execTag": {
             "default": {
-                "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "description": "Выполняет общедоступную команду `name`, передавая ей `args` в качестве аргументов. Полезно для модулей.\n`\\{execTag\\}` выполняет команду так, как если бы ее код был просто скопирован в корневую команду.",
+                "exampleOut": "Let me do a tag for you. User#1111 has paid their respects. Total respects given: 5",
+                "exampleCode": "Let me do a tag for you. \\{execTag;f\\}"
             }
         },
         "execCustomCommand": {
             "default": {
-                "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "description": "Выполняет серверную команду `name`, передавая ей `args` в качестве аргументов. Полезно для модулей.\n`\\{execCustomCommand\\}` выполняет команду так, как если бы ее код был просто скопирован в корневую команду.",
+                "exampleOut": "Let me do a command for you. User#1111 has paid their respects. Total respects given: 5",
+                "exampleCode": "Let me do a command for you. \\{execCustomCommand;f\\}"
             }
         },
         "fallback": {
             "clear": {
-                "description": "",
+                "description": "Если функцию не удалось исполнить, сообщение об ошибке будет заменено на текст `message`.",
                 "exampleOut": "This tag failed",
                 "exampleCode": "\\{fallback;This tag failed\\} \\{abc\\}"
             },
             "set": {
-                "description": "",
+                "description": "Сбрасывает установленное пользовательское сообщение об ошибке на стандартное.",
                 "exampleOut": "This tag failed  `Unknown subtag xyz`",
                 "exampleCode": "\\{fallback;This tag failed\\} \\{abc\\} \\{fallback\\} \\{xyz\\}"
             }
         },
         "flag": {
             "default": {
-                "description": "",
+                "description": "Возвращает содержимое указанного пользователем флага (флаги зависимы от регистра, -a и -A — это разные флаги). Используйте `_`, чтобы получить часть пользовательского ввода, не относящуюся ни к одному из флагов.",
                 "exampleIn": "Hello, -a world!",
                 "exampleOut": "world! Hello,",
                 "exampleCode": "\\{flag;a\\} \\{flag;_\\}"
@@ -305,7 +305,7 @@
         },
         "flagsArray": {
             "default": {
-                "description": "",
+                "description": "Возвращает массив всех указанных флагов.",
                 "exampleIn": "Hello -dc world",
                 "exampleOut": "[\"_\",\"d\",\"c\"]",
                 "exampleCode": "\\{flagsArray\\}"
@@ -313,7 +313,7 @@
         },
         "flagSet": {
             "default": {
-                "description": "",
+                "description": "Возвращает `true` или `false` в зависимости от того, указал ли пользователь флаг (флаги зависимы от регистра, -a и -A — это разные флаги).",
                 "exampleIn": "Hello, -a world!",
                 "exampleOut": "true false",
                 "exampleCode": "\\{flagSet;a\\} \\{flagSet;_\\}"
@@ -328,41 +328,41 @@
         },
         "get": {
             "value": {
-                "description": "",
+                "description": "Возвращает сохраненную переменную `varName`.\nВам необходимо использовать префикс для указания области вашей переменной.\nДопустимые области видимости: {scopes#map({prefix#bool(`{}`|без префикса)} ({name}))#join(, | и )}. Для получения дополнительной информации используйте `b!t docs variable` или `b!cc docs variable`",
                 "exampleOut": "This is local var1\nThis is temporary var2",
                 "exampleCode": "\\{set;var1;This is local var1\\}\n\\{set;~var2;This is temporary var2\\}\n\\{get;var1\\}\n\\{get;~var2\\}"
             },
             "index": {
-                "description": "",
+                "description": "Когда переменная `name` является массивом, она возвращает элемент с индексом `index`. Если `index` не указан, будет возвращен весь массив. Когда переменная не является массивом, возвращается вся переменная.",
                 "exampleOut": "def",
                 "exampleCode": "\\{set;myArray;[\"abc\",\"def\",\"ghi\"]\\}\\{get;myArray;1\\}"
             }
         },
         "inject": {
             "default": {
-                "description": "",
+                "description": "Выполняет произвольный код BBTag, который находится внутри `code` и возвращает результат. Полезно для создания динамического кода или в качестве инструмента тестирования (`\\{inject;\\{args\\}\\}`)",
                 "exampleOut": "Random Number: 3",
                 "exampleCode": "Random Number: \\{inject;\\{lb\\}randomInt\\{semi\\}1\\{semi\\}4\\{rb\\}\\}"
             }
         },
         "lock": {
             "default": {
-                "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "description": "Предоставляет функцию чтения и записи bbtag. Это очень продвинутая функция, поэтому рекомендуется сначала [прочитать о понятии блокировки](https://en.wikipedia.org/wiki/Lock_(computer_science)).\n\nЕсли говорить просто, блокировка позволяет командам, работающим одновременно, сотрудничать и дожидаться завершения действий друг друга, прежде чем «освободиться от блокировки» и позволить другим командам использовать эту блокировку. Блокировки могут быть использованы для защиты данных от редактирования двумя командами одновременно и несоответствий, к которым подобное редактирование может привести.\n\nОдновременно может использоваться несколько блокировок `read` или одна блокировка `write`. Это означает, что если ваша команда читает некоторые данные, то пока она не меняет их значения, это будет разрешено, в противном случае команда будет ждать до тех пор, пока она не получит доступ к блокировке.\n\n`mode` должен быть `read` или `write`.\n`key` может быть любой текстовой строкой. К ней может быть добавлен префикс по тем же правилам области видимости, что и для переменных.\n`code` будет запущен после получения блокировки",
+                "exampleOut": "\nStart\nMiddle\nEnd\nStart\nMiddle\nEnd\nThis order is guaranteed always. Without a lock it isn't",
+                "exampleCode": "\n\\{//;в двух быстро запускаемых подряд командах\\}\n\\{lock;write;key;\n  \\{void;\n    \\{send;\\{channelId\\};Start\\}\n    \\{send;\\{channelId\\};Middle\\}\n    \\{send;\\{channelId\\};End\\}\n  \\}\n\\}\nThis order is guaranteed always. Without a lock it isn't"
             }
         },
         "modLog": {
-            "description": "",
+            "description": "Если `moderator` не указан, по умолчанию будет использоваться blargbot.",
             "default": {
-                "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "description": "Создает пользовательскую запись в журнале модерации с указанным действием `action`, пользователем `user` и причиной `reason`. Цвет `color` может быть [HTML color](https://www. 3schools.com/colors/colors_names.asp), hex, (r,g,b) или допустимым номером цвета.",
+                "exampleOut": "You did a bad! (в журнале модерации сделана запись с белым цветом эмбеда и причиной 'They did a bad!')",
+                "exampleCode": "You did a bad! \\{modLog;Bad;\\{userId\\};;They did a bad;#ffffff\\}"
             }
         },
         "nsfw": {
             "default": {
-                "description": "",
+                "description": "Отмечает вывод как NSFW и разрешает использование команды только в NSFW-каналах. Функция обязательна для использования в командах, имеющих NSFW-содержимое. `message` — это текст ошибки, выдаваемой при использовании команды вне NSFW-канала",
                 "exampleOut": "This command is not safe!",
                 "exampleCode": "This command is not safe! \\{nsfw\\}"
             }
@@ -380,7 +380,7 @@
             },
             "range": {
                 "description": "",
-                "exampleOut": "",
+                "exampleOut": "C D",
                 "exampleCode": "\\{func;test;The first parameter is `\\{params;2;4\\}`\\}\n\\{func.test;A;B;C;D;E;F\\}"
             }
         },
@@ -400,7 +400,7 @@
         },
         "prefix": {
             "default": {
-                "description": "",
+                "description": "Получает префикс команды, используемой для вызова кода bbtag, содержащего эту функцию.",
                 "exampleOut": "Your prefix is b!",
                 "exampleCode": "Your prefix is \\{prefix\\}"
             }
