@@ -352,15 +352,15 @@
                             "greedy": "`{name}` są {min#plural(0:|1:|{} lub więcej )}{choices#map(`{}`)#join(, | lub )}"
                         },
                         "boolean": {
-                            "single": "",
-                            "greedy": ""
+                            "single": "`{name}` powinno być prawdą lub fałszem{default#bool( i domyślnie jest `{}`|)}",
+                            "greedy": "`{name}` są {min#plural(0:|1:|{} lub więcej )}prawdą lub fałszem"
                         },
                         "channel": {
-                            "single": "",
-                            "greedy": ""
+                            "single": "`{name}` powinien być ID kanału, wzmianką lub nazwą{default#bool( i domyślnie jest `{}`|)}",
+                            "greedy": "`{name}` są {min#plural(0:|1:|{} lub więcej )}ID kanałów, wzmianki lub nazwy"
                         },
                         "duration": {
-                            "single": "",
+                            "single": "`{name}` powinien mieć czas trwania{default#bool( i domyślnie jest `{}`|)}",
                             "greedy": ""
                         },
                         "bigint": {
@@ -438,7 +438,7 @@
                         },
                         "exampleCode": {
                             "name": "",
-                            "value": ""
+                            "value": "```\n{code}\n```"
                         },
                         "exampleIn": {
                             "name": "",
