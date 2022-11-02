@@ -782,26 +782,26 @@
                 }
             },
             "info": {
-                "description": "",
+                "description": "Отображает информацию об автореспонсе",
                 "embed": {
                     "title": {
-                        "id": "",
-                        "everything": ""
+                        "id": "Автореспонс #{id}",
+                        "everything": "Автореспонс на всё"
                     },
                     "field": {
                         "trigger": {
                             "name": {
-                                "regex": "",
-                                "text": ""
+                                "regex": "Регулярное выражение-триггер",
+                                "text": "Текст-триггер"
                             }
                         },
                         "author": {
-                            "name": "",
-                            "value": ""
+                            "name": "Автор",
+                            "value": "<@{authorId}> ({authorId})"
                         },
                         "authorizer": {
-                            "name": "",
-                            "value": ""
+                            "name": "Предоставляющий права",
+                            "value": "<@{authorizerId}> ({authorizerId})"
                         }
                     }
                 }
@@ -907,58 +907,58 @@
         },
         "bot": {
             "reset": {
-                "description": "",
-                "cancelled": "",
-                "success": "",
+                "description": "Сбрасывает бот к состоянию, в котором он был, когда впервые присоединился к серверу.",
+                "cancelled": "❌ Сброс отменён",
+                "success": "✅ Я был сброшен до заводских настроек",
                 "confirm": {
-                    "prompt": "",
-                    "cancel": "",
-                    "continue": ""
+                    "prompt": "⚠️ Вы уверены, что хотите сбросить бота до заводских настроек?\nЭто включает:\n- Выключение всех настроек на умолчательные\n- Удаление всех серверных команд, автореспонсов, roleme, цензоров, и т.д.\n- Удаление всех переменных с серверной областью видимости",
+                    "cancel": "Нет",
+                    "continue": "Да"
                 }
             }
         },
         "ccommand": {
-            "description": "",
+            "description": "Создаёт серверную команду, используя язык BBTag.\n\nСерверные команды имеют приоритет над всеми остальными командами. Таким образом, вы можете использовать их чтобы изменить поведение основных команд, или даже полностью отключить их. Если содержимое команды равно \"null\" (без кавычек), blargbot не будет ничего выводить, позволяя вам отключить любые из встроенных команд. Вы не можете отключить команду 'ccommand'. Для более детального погружения в изменение команд, используйте команду `editcommand`.\nДля большей информации по BBTag, посетите <{subtags}>.\nСоздавая серверную команду, вы подтверждаете согласие с Условиями Использования (<{tos}>)",
             "request": {
-                "name": "",
-                "content": ""
+                "name": "Введите имя серверной команды:",
+                "content": "Введите содержимое серверной команды:"
             },
             "errors": {
-                "isAlias": "",
-                "alreadyExists": "",
-                "doesNotExist": "",
-                "isHidden": "",
-                "invalidBBTag": "",
-                "bbtagError": "",
-                "bbtagWarning": "",
-                "nameReserved": "",
-                "tooLong": "",
-                "importDeleted": "",
+                "isAlias": "❌ Команда `{commandName}` является алиасом для `{tagName}`",
+                "alreadyExists": "❌ Серверная команда `{name}` уже существует!",
+                "doesNotExist": "❌ Серверной команды `{name}` не существует!",
+                "isHidden": "❌ Серверная команда `{name}` является скрытой!",
+                "invalidBBTag": "❌ В вашем BBTag были ошибки!\n{errors#join(\n)}",
+                "bbtagError": "❌ [{location.line},{location.column}]: {message}",
+                "bbtagWarning": "⚠️ [{location.line},{location.column}]: {message}",
+                "nameReserved": "❌ Команда с именем `{name}` зарезервирована и не может быть переопределена",
+                "tooLong": "❌ Имена команд не могут быть длиннее {max} символов",
+                "importDeleted": "❌ Когда команда `{commandName}` была создана, автором общедоступной команды `{tagName}` был **{author.username=UNKNOWN}#{author.discriminator=????}** ({authorId}), но сейчас её больше не существует. Чтобы продолжить использовать эту команду, пожалуйста, пересоздайте общедоступную команду и снова импортируйте её.",
                 "importChanged": ""
             },
             "test": {
                 "default": {
-                    "description": ""
+                    "description": "Использует движок BBTag чтобы выполнить содержимое, как если бы оно было серверной командой"
                 },
                 "debug": {
-                    "description": ""
+                    "description": "Использует движок BBTag чтобы выполнить содержимое, как если бы оно было серверной командой, а затем возвращает дебажный вывод"
                 }
             },
             "docs": {
-                "description": ""
+                "description": "Возвращает полезную информацию об обозначенной теме."
             },
             "debug": {
-                "description": "",
-                "notOwner": "",
-                "success": ""
+                "description": "Запускает серверную команду с заданными аргументами. Файл с дебагом будет отправлен в ЛС по окончанию работы команды.",
+                "notOwner": "❌ Вы не можете запустить дебаг чужой серверной команды.",
+                "success": "ℹ️ Я отправил вывод с дебагом в ЛС"
             },
             "create": {
                 "description": "",
-                "success": ""
+                "success": "✅ Серверная команда `{name}` успешно создана.\n{errors#join(\n)}"
             },
             "edit": {
-                "description": "",
-                "success": ""
+                "description": "Заменяет существующую заданную серверную команду на переданное содержимое",
+                "success": "✅ Серверная команда `{name}` отредактирована.\n{errors#join(\n)}"
             },
             "set": {
                 "description": "",
@@ -982,17 +982,17 @@
             "list": {
                 "description": "",
                 "embed": {
-                    "title": "",
+                    "title": "Список серверных команд",
                     "field": {
                         "anyRole": {
-                            "name": ""
+                            "name": "Любая роль"
                         }
                     }
                 }
             },
             "cooldown": {
-                "description": "",
-                "mustBePositive": "",
+                "description": "Устанавливает кулдаун для серверной команды, в миллисекундах",
+                "mustBePositive": "Кулдаун должен быть больше 0мс",
                 "success": ""
             },
             "author": {
@@ -1165,7 +1165,7 @@
             "info": {
                 "description": "",
                 "messageFieldValue": {
-                    "notSet": "",
+                    "notSet": "Не установлено",
                     "set": ""
                 },
                 "embed": {
@@ -1900,8 +1900,8 @@
                 "description": "",
                 "confirm": {
                     "prompt": "",
-                    "continue": "",
-                    "cancel": ""
+                    "continue": "Да",
+                    "cancel": "Нет"
                 },
                 "cancelled": "",
                 "success": ""
@@ -2380,7 +2380,7 @@
                         "some": "",
                         "all": ""
                     },
-                    "continue": "",
+                    "continue": "Да",
                     "cancel": ""
                 },
                 "cancelled": "",
@@ -2793,7 +2793,7 @@
                 "success": "",
                 "confirm": {
                     "prompt": "",
-                    "continue": "",
+                    "continue": "Да",
                     "cancel": ""
                 }
             },
