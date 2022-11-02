@@ -474,12 +474,12 @@
                     },
                     "commitRollback": {
                         "name": "\\{commit\\} i \\{rollback\\}",
-                        "value": ""
+                        "value": "Z powodów związanych z wydajnością, kiedy wartość jest `\\{set\\}`, nie będzie ona natychmiast wprowadzona do bazy danych. `\\{commit\\}` i `\\{rollback\\}` mogą posłużyć do manipulowania gdy zmienne zostaną wysłane do bazy danych, jeśli tak się stanie. `\\{commit\\}` zmusi dane zmienne do zostania wysłanymi do bazy danych natychmiast. `\\{rollback\\}` przywróci dane zmienne do ich początkowej wartości (początek tagu lub ostatni `\\{commit\\}`).\nIstnieje też dodatkowy prefiks dla \\{set\\} i \\{get\\}, czyli `!`. Ten prefiks może być połączony z innymi prefiksami i będzie zachowywał się tak samo jak gdybyś użył `\\{set\\}`, po czym natychmiast `\\{commit\\}`, np. ```\\{set;!@varname;value\\}``` to to samo co ```\\{set;@varname;value\\}\\{commit;@varname\\}```"
                     }
                 }
             },
             "arguments": {
-                "name": "",
+                "name": "Argumenty",
                 "description": "",
                 "prompt": "",
                 "pages": {
