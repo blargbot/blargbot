@@ -39,7 +39,7 @@ export class RestartCommand extends GlobalCommand {
     }
 
     public async restart(context: CommandContext): Promise<CommandResult> {
-        await context.reply(cmd.default.success);
+        await context.reply(cmd.kill.success);
         await context.database.vars.set('restart', {
             varvalue: {
                 channel: context.channel.id,
@@ -52,6 +52,6 @@ export class RestartCommand extends GlobalCommand {
 
     public respawnClusters(context: CommandContext): CommandResult {
         context.cluster.worker.send('respawnAll', { channelId: context.channel.id });
-        return cmd.kill.success;
+        return cmd.default.success;
     }
 }
