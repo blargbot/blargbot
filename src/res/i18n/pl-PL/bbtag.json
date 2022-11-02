@@ -86,7 +86,7 @@
                 "description": "Zmienne serwerowe zwykle są używane do przechowywania danych na poziomie serwera. Są one podzielone na dwie osobne \"pule\" - jedną dla tagów i drugą dla własnych komend. Oznacza to, że nie mogą one być wykorzystywane do komunikacji między jednymi a drugimi. Czyni je to użytecznymi do przekazywania danych między tagami, które przeznaczone są do użycia na jednym serwerze na raz."
             },
             "author": {
-                "name": "",
+                "name": "Zmienne autora",
                 "description": ""
             },
             "global": {
@@ -107,7 +107,7 @@
         "concat": {
             "default": {
                 "description": "",
-                "exampleOut": "",
+                "exampleOut": "Dwie tablice: [\"this\",\"is\",\"an\",\"array\"]\nCiągi znaków i tablica: [\"a\",\"b\",\"c\", 1, 2, 3]",
                 "exampleCode": ""
             }
         },
@@ -120,8 +120,8 @@
         },
         "isArray": {
             "default": {
-                "description": "",
-                "exampleOut": "",
+                "description": "Określa, czy `text` jest prawidłową tablicą.",
+                "exampleOut": "true false",
                 "exampleCode": ""
             }
         },
@@ -134,15 +134,15 @@
         },
         "map": {
             "default": {
-                "description": "",
-                "exampleOut": "",
+                "description": "Zapewnia sposób wypełnienia tablicy poprzez wykonanie funkcji na każdym z jej elementów, więcej informacji [tutaj](https://developer.mozilla. rg/pl/docs/Web/JavaScript/Reference/Global_Objects/Array/map).\nDla każdego elementu w `array`, zmienna o nazwie `variable` zostanie ustawiona na bieżący element. Wyjście `function` będzie nową wartością elementu. To zwróci nową tablicę i nie zmodyfikuje oryginału.",
+                "exampleOut": "[\"APPLES\", \"ORANGES\",\"PEARS\"]",
                 "exampleCode": ""
             }
         },
         "pop": {
             "default": {
                 "description": "",
-                "exampleOut": "",
+                "exampleOut": "tablica",
                 "exampleCode": ""
             }
         },
@@ -156,7 +156,7 @@
         "shift": {
             "default": {
                 "description": "",
-                "exampleOut": "",
+                "exampleOut": "to",
                 "exampleCode": ""
             }
         },
@@ -183,7 +183,7 @@
         "sort": {
             "default": {
                 "description": "",
-                "exampleOut": "",
+                "exampleOut": "[1,2,3,4,5]",
                 "exampleCode": ""
             }
         },
@@ -192,7 +192,7 @@
             "delete": {
                 "description": "",
                 "exampleOut": "",
-                "exampleCode": ""
+                "exampleCode": "\\{splice;[\"to\", \"jest\", \"jakaś\", \"tablica\"];1;1\\}"
             },
             "replace": {
                 "description": "",
@@ -216,7 +216,7 @@
         },
         "args": {
             "all": {
-                "description": "",
+                "description": "Pobiera cały tekst wprowadzony przez użytkownika",
                 "exampleIn": "",
                 "exampleOut": "",
                 "exampleCode": ""
@@ -230,29 +230,29 @@
             "range": {
                 "description": "",
                 "exampleIn": "",
-                "exampleOut": "",
+                "exampleOut": "BBtag jest",
                 "exampleCode": ""
             }
         },
         "commandName": {
             "default": {
                 "description": "",
-                "exampleIn": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleIn": "b!cc test",
+                "exampleOut": "To jest komenda testowa",
+                "exampleCode": "Ta komenda to \\{commandName\\}"
             }
         },
         "commit": {
-            "description": "",
+            "description": "Ze względu na optymalizację zmienne nie są przechowywane w bazie danych natychmiast po użyciu `\\{set\\}`. Zamiast tego są przechowywane w pamięci podręcznej i zostaną zapisane w bazie danych po zakończeniu tagu. Jeśli masz jakieś zmienne, które należy natychmiast zapisać w bazie danych, użyj tego, aby wymusić aktualizację teraz.\nWynosi to niewielki koszt wydajności, więc używaj tylko wtedy, gdy jest to konieczne.\n`variables` domyślnie jest dla wszystkich wartości do tego punktu.\n`\\{rollback\\}` jest jego odpowiednikiem.",
             "all": {
-                "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "description": "Zatwierdź wszystkie zmienne",
+                "exampleOut": "Witaj!",
+                "exampleCode": "\\{set;var;Witaj!\\}\n\\{commit\\}\n\\{set;var;Żegnaj!\\}\n\\{rollback\\}\n\\{get;var\\}"
             },
             "variables": {
-                "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "description": "Zatwierdź podane zmienne",
+                "exampleOut": "Witaj!",
+                "exampleCode": "\\{set;var;Witaj!\\}\n\\{commit\\}\n\\{set;var;Żegnaj!\\}\n\\{rollback\\}\n\\{get;var\\}"
             }
         },
         "debug": {
@@ -353,7 +353,7 @@
             }
         },
         "modLog": {
-            "description": "",
+            "description": "Jeśli `moderator` nie zostanie wskazany lub pozostanie pusty, będzie domyślnie ustawiony jako blargbot.",
             "default": {
                 "description": "",
                 "exampleOut": "",
@@ -2452,8 +2452,8 @@
         "warnings": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "Nie posiadasz żadnych ostrzeżeń!",
+                "exampleCode": "Masz następującą liczbę ostrzeżeń: \\{warnings\\}"
             }
         }
     }

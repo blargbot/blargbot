@@ -9,7 +9,7 @@
             "voiceConnect": "подключаться",
             "createInstantInvite": "создание приглашения",
             "voiceDeafenMembers": "отключать участникам звук",
-            "embedLinks": "",
+            "embedLinks": "отправлять эмбеды",
             "kickMembers": "выгонять участников",
             "manageChannels": "управлять каналами",
             "manageEmojisAndStickers": "управлять эмодзи и стикерами",
@@ -35,19 +35,19 @@
             "voiceUseVAD": "использовать активности",
             "viewAuditLog": "просматривать журнал аудита",
             "viewChannel": "просмотр канала",
-            "viewGuildInsights": "",
+            "viewGuildInsights": "просмотр аналитики",
             "createPrivateThreads": "создание приватных веток",
             "createPublicThreads": "создать публичные ветки",
             "sendMessagesInThreads": "отправлять сообщения в ветках и публикациях",
-            "startEmbeddedActivities": "",
+            "startEmbeddedActivities": "использовать активности",
             "externalEmojis": "использовать внешние эмодзи",
-            "manageEmojis": "",
-            "manageEvents": "",
-            "moderateMembers": "",
+            "manageEmojis": "управлять эмодзи",
+            "manageEvents": "управлять событиями",
+            "moderateMembers": "управлять участниками",
             "readMessages": "читать историю сообщений",
-            "useSlashCommands": "",
+            "useSlashCommands": "использовать слэш-команды",
             "viewAuditLogs": "просматривать журнал аудита",
-            "voiceStream": ""
+            "voiceStream": "видео"
         }
     }
 }
