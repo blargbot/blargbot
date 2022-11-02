@@ -12,7 +12,7 @@ export class OperatorSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'operator',
-            aliases: Object.keys(bbtag.operators),
+            aliases: [...Object.keys(bbtag.operators), '??'],
             category: SubtagType.MISC,
             definition: [
                 {
@@ -24,11 +24,11 @@ export class OperatorSubtag extends CompiledSubtag {
                     ...tag[op],
                     subtagName: op,
                     parameters: ['values+']
-                } as const)),
+                })),
                 {
+                    ...tag['??'],
                     subtagName: '??',
                     parameters: ['values+'],
-                    ...tag['??'],
                     returns: 'string',
                     execute: (_, values) => this.coalesce(values)
                 }
