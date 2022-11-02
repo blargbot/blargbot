@@ -219,24 +219,24 @@
                 "description": "Pobiera cały tekst wprowadzony przez użytkownika",
                 "exampleIn": "Hello world! BBtag is so cool",
                 "exampleOut": "You said Hello world! BBtag is so cool",
-                "exampleCode": ""
+                "exampleCode": "Powiedziałeś \\{args\\}"
             },
             "indexed": {
                 "description": "Pobiera słowo z danych wejściowych użytkownika w pozycji `index`",
-                "exampleIn": "",
+                "exampleIn": "Hello world! BBtag is so cool",
                 "exampleOut": "world!",
                 "exampleCode": "\\{args;1\\}"
             },
             "range": {
-                "description": "",
-                "exampleIn": "",
+                "description": "Pobiera wszystkie słowa w danych wejściowych użytkownika od `start` do `end`. Jeśli `end` jest `n` wtedy wszystkie słowa po `start` zostaną zwrócone",
+                "exampleIn": "Hello world! BBtag is so cool",
                 "exampleOut": "BBtag jest",
                 "exampleCode": "\\{args;2;4\\}"
             }
         },
         "commandName": {
             "default": {
-                "description": "",
+                "description": "Pobiera nazwę bieżącego tagu lub niestandardowego polecenia.",
                 "exampleIn": "b!cc test",
                 "exampleOut": "To jest komenda testowa",
                 "exampleCode": "Ta komenda to \\{commandName\\}"
@@ -257,41 +257,41 @@
         },
         "debug": {
             "default": {
-                "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "description": "Dodaje określony tekst do wyjścia debugowania. To wyjście jest wyświetlane tylko przez `tag debug`, `ccommand debug`, `tag test debug` i `ccommand test debug`. jego numer wiersza jest również zawarty we wpisie debugowania",
+                "exampleOut": "(W konsoli debugowania)[10]current value 1",
+                "exampleCode": "\\{debug;current value;\\{get;~i\\}\\}"
             }
         },
         "dump": {
             "default": {
-                "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "description": "Zrzuca dostarczony tekst na stronę wyjściową blargbota. Wygasają one po 7 dniach.",
+                "exampleOut": "https://blargbot.xyz/output/1111111111111111",
+                "exampleCode": "\\{dump;Hello, world!\\}"
             }
         },
         "execTag": {
             "default": {
-                "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "description": "Wykonuje tag `name`, nadając mu `args` jako dane. Przydatne dla modułów.\n`\\{execTag\\}` wykonuje tag tak, jakby jego kod był w głównej komendzie.",
+                "exampleOut": "Pozwól, że zrobię dla ciebie tag. Użytkownik #1111 zapłacił swoje szacunki. Całkowity szacunek: 5",
+                "exampleCode": "Pozwól mi zrobić dla ciebie tag. \\{execTag;f\\}"
             }
         },
         "execCustomCommand": {
             "default": {
-                "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "description": "Wykonuje tag `name`, nadając mu `args` jako dane. Przydatne dla modułów.\n`\\{execCustomCommand\\}` wykonuje tag tak, jakby jego kod był w głównej komendzie.",
+                "exampleOut": "Pozwól, że wykonam komendę za Ciebie. Użytkownik #1111 zapłacił swoje szacunki. Całkowity szacunek: 5",
+                "exampleCode": "Pozwól mi zrobić polecenie dla Ciebie. \\{execCustomCommand;f\\}"
             }
         },
         "fallback": {
             "clear": {
-                "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "description": "Jeśli którykolwiek tag nie zostanie przetworzony, zostanie zastąpiony `message` zamiast błędu.",
+                "exampleOut": "Ten tag nie powiódł się",
+                "exampleCode": "\\{fallback;Ten tag nie powiódł się\\} \\{abc\\}"
             },
             "set": {
-                "description": "",
-                "exampleOut": "",
+                "description": "Czyści bieżący tekst awaryjny.",
+                "exampleOut": "Ten tag nie powiódł się z `Unknown subtag xyz`",
                 "exampleCode": ""
             }
         },
