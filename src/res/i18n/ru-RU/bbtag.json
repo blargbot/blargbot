@@ -238,8 +238,8 @@
             "default": {
                 "description": "",
                 "exampleIn": "b!cc test",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "This command is test",
+                "exampleCode": "This command is \\{commandName\\}"
             }
         },
         "commit": {
@@ -370,8 +370,8 @@
         "params": {
             "all": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "You gave the parameters `Hello world! BBtag is so cool`",
+                "exampleCode": "\\{func;test;You gave the parameters `\\{params\\}`\\}\n\\{func.test;Hello world!;BBtag is so cool\\}"
             },
             "indexed": {
                 "description": "",
@@ -408,8 +408,8 @@
         "quiet": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "cat",
+                "exampleCode": "\\{quiet\\} \\{userMention;cat\\}"
             }
         },
         "reason": {
@@ -707,22 +707,22 @@
             },
             "setChannel": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "(медленный режим активирован в канале testing-grounds, с интервалом 10 секунд)\n(медленный режим активирован в текущем канале, с интервалом 50 секунд)",
+                "exampleCode": "\\{slowMode;testing-grounds;10\\}\n\\{slowMode;50;не имеет значения\\}"
             }
         },
         "emojiCreate": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "11111111111111111",
+                "exampleCode": "\\{emojiCreate;fancy_emote;https://some.cool/image.png;[\"Cool gang\"]\\}"
             }
         },
         "emojiDelete": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "{}",
+                "exampleCode": "\\{emojiDelete;11111111111111111\\}"
             }
         },
         "emojis": {
@@ -916,26 +916,26 @@
             "value": {
                 "description": "",
                 "exampleOut": "535",
-                "exampleCode": ""
+                "exampleCode": "\\{absolute;-535\\}"
             },
             "array": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "[535, 123, 42]",
+                "exampleCode": "\\{absolute;-535;123;-42\\}"
             }
         },
         "base": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "255",
+                "exampleCode": "\\{base;FF;16;10\\}"
             }
         },
         "decrement": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "-1,-2,-3,-4,-5,-6,-7,-8,-9,-10",
+                "exampleCode": "\\{set;~counter;0\\} \\{repeat;\\{decrement;~counter\\},;10\\}"
             },
             "count": {
                 "description": "",
@@ -1202,20 +1202,20 @@
             },
             "inCurrent": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "Message 1111111111111 was sent by 2222222222222",
+                "exampleCode": "Message 1111111111111 was sent by \\{messageSender;1111111111111\\}"
             },
             "inOther": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "Message 1111111111111 in #support was sent by 2222222222222",
+                "exampleCode": "Message 1111111111111 in #support was sent by \\{messageSender;support;1111111111111\\}"
             }
         },
         "messageText": {
             "trigger": {
                 "description": "",
-                "exampleCode": "",
-                "exampleOut": ""
+                "exampleCode": "You sent \"b!t test You sent \"\\{messageText\\}\"\"`",
+                "exampleOut": "You sent \"text\""
             },
             "inCurrent": {
                 "description": "",
@@ -1393,102 +1393,102 @@
             },
             "withFile": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "(в канале вебхука отправляется файл с именем readme.txt, содержащий \"Hello, world!\")",
+                "exampleCode": "\\{webhook;1111111111111111;t.OK-en;;;;;Hello, world!;readme.txt\\}"
             }
         },
         "base64Decode": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "Fancy!",
+                "exampleCode": "\\{base64decode;RmFuY3kh\\}"
             }
         },
         "base64Encode": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "RmFuY3kh!",
+                "exampleCode": "\\{base64decode;Fancy!\\}"
             }
         },
         "bool": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "true",
+                "exampleCode": "\\{bool;5;<=;10\\}"
             }
         },
         "brainfuck": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "Hello World!",
+                "exampleCode": "\\{brainfuck;-[------->+<]>-.-[->+++++<]>++.+++++++..+++.[--->+<]>-----.---[->+++<]>.-[--->+<]>---.+++.------.--------.-[--->+<]>.\\}"
             }
         },
         "capitalize": {
             "ignoreRest": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "Hello world!\nHELLO world",
+                "exampleCode": "\\{capitalize;hello world!\\}\n\\{capitalize;hELLO world\\}"
             },
             "restLower": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "Hello world\nHello world\nFoo bar",
+                "exampleCode": "\\{capitalize;hELLO WORLD;true\\}\n\\{capitalize;hello WORLD;anything goes here\\}\n\\{capitalize;foo BAR;\\}"
             }
         },
         "choose": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "I feel like eating pie today.",
+                "exampleCode": "I feel like eating \\{choose;1;cake;pie;pudding\\} today."
             }
         },
         "clean": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "Hello!\nIm here to help",
+                "exampleCode": "\\{clean;Hello!  \n\n  Im     here    to help\\}"
             }
         },
         "color": {
             "description": "",
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "[66,134,244]",
+                "exampleCode": "\\{color;#4286f4;RGB\\}"
             },
             "convert": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "#4286f4",
+                "exampleCode": "\\{color;[66,134,244];hex;RGB\\}"
             }
         },
         "comment": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "This is a sentence.",
+                "exampleCode": "This is a sentence. \\{//;This is a comment.\\}"
             }
         },
         "decancer": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "haha im so edgy",
+                "exampleCode": "\\{decancer;ḩ̸̪̓̍a̶̗̤̎́h̵͉͓͗̀ā̷̜̼̄ ̷̧̓í̴̯̎m̵͚̜̽ ̸̛̝ͅs̴͚̜̈o̴̦̗̊ ̷͎͋ȩ̵͐d̶͎̂̇g̴̲͓̀͝y̶̠̓̿\\}"
             }
         },
         "escapeBBTag": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "\\{set;~index;1\\}",
+                "exampleCode": "\\{escapeBBTag;\\{set;~index;1\\}\\}"
             }
         },
         "hash": {
             "basic": {
                 "description": "",
-                "exampleOut": "",
+                "exampleOut": "The hash of brown is 94011702.",
                 "exampleCode": "The hash of brown is \\{hash;brown\\}."
             },
             "secure": {
@@ -1637,59 +1637,59 @@
             },
             ">": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "false false false true",
+                "exampleCode": "\\{>;a\\} \\{>;c;c;b;a\\} \\{>;2;4;3;2;1\\} \\{>;d;c;b;a\\}"
             },
             ">=": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "false true false true",
+                "exampleCode": "\\{>=;a\\} \\{>=;c;c;b;a\\} \\{>=;2;4;3;2;1\\} \\{>=;d;c;b;a\\}"
             },
             "!": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "false true",
+                "exampleCode": "\\{!;true\\} \\{!;false\\}"
             },
             "&&": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "true false",
+                "exampleCode": "\\{&&;true;true\\} \\{&&;true;false;true\\}"
             },
             "||": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "false true",
+                "exampleCode": "\\{||;false;false\\} \\{||;true;false;true\\}"
             },
             "xor": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "false false true",
+                "exampleCode": "\\{^;false;false\\} \\{^;true;false;true\\} \\{^;false;true;false\\}"
             },
             "contains": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "true false",
+                "exampleCode": "\\{contains;abcdefghi;abc\\} \\{contains;[\"abc\",\"def\",\"ghi\"];\",\"\\}"
             },
             "includes": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "true false",
+                "exampleCode": "\\{includes;abcdefghi;abc\\} \\{includes;[\"abc\",\"def\",\"ghi\"];\",\"\\}"
             },
             "endswith": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "true false",
+                "exampleCode": "\\{endswith;abcdefghi;ghi;hi\\} \\{endswith;[\"abc\",\"def\",\"ghi\"];\"]\\}"
             },
             "startswith": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "true false",
+                "exampleCode": "\\{startswith;abcdefghi;a;abcd;abc\\} \\{startswith;[\"abc\",\"def\",\"ghi\"];[\"\\}"
             }
         },
         "pad": {
             "default": {
                 "description": "",
-                "exampleOut": "",
+                "exampleOut": "000ABC",
                 "exampleCode": ""
             }
         },
@@ -1709,79 +1709,79 @@
             "default": {
                 "description": "",
                 "exampleOut": "",
-                "exampleCode": ""
+                "exampleCode": "\\{randomString;abcdefghijklmnopqrstuvwxyz;9\\}"
             }
         },
         "realPad": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "Hello      world!",
+                "exampleCode": "\\{realPad;Hello;10\\} world!"
             },
             "withDirection": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "000ABC",
+                "exampleCode": "\\{realPad;ABC;6;0;left\\}"
             }
         },
         "regexMatch": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "[\"1\", \"25\"]",
+                "exampleCode": "\\{regexMatch;I have $1 and 25 cents;/\\d+/g\\}"
             }
         },
         "regexReplace": {
             "description": "",
             "output": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "I like to eat pie.",
+                "exampleCode": "I like to eat cheese. \\{regexReplace;/cheese/;pie\\}"
             },
             "text": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "I likn ta cansumn chnnsn.",
+                "exampleCode": "I like \\{regexReplace;to consume;/o/gi;a\\} cheese. \\{regexReplace;/e/gi;n\\}"
             }
         },
         "regexSplit": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "[\"Hello\",\"there\",\"I\",\"am\",\"hungry\"]",
+                "exampleCode": "\\{regexSplit;Hello      there, I       am hungry;/[\\s,]+/\\}"
             }
         },
         "regexTest": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "true false",
+                "exampleCode": "\\{regexTest;apple;/p+/i\\} \\{regexTest;banana;/p+/i\\}"
             }
         },
         "replace": {
             "output": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "Bye world!",
+                "exampleCode": "Hello world! \\{replace;Hello;Bye\\}"
             },
             "text": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "I like to nom ham. ham",
+                "exampleCode": "I like \\{replace;to eat;eat;nom\\} cheese. \\{replace;cheese;ham\\}"
             }
         },
         "reverse": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "emordnilap",
+                "exampleCode": "\\{reverse;palindrome\\}"
             }
         },
         "space": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "Hello,    world!",
+                "exampleCode": "Hello,\\{space;4\\}world!"
             }
         },
         "substring": {
@@ -1984,8 +1984,8 @@
         "roleSetPermissions": {
             "clear": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "(права были изменены)",
+                "exampleCode": "\\{roleSetPermissions;Support\\}"
             },
             "set": {
                 "description": "",
@@ -2011,84 +2011,84 @@
             "default": {
                 "description": "",
                 "exampleIn": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "Your input was [\"Hello\",\"world!\"]",
+                "exampleCode": "Your input was \\{argsArray\\}"
             }
         },
         "argsLength": {
             "default": {
                 "description": "",
-                "exampleIn": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleIn": "I am saying things.",
+                "exampleOut": "You said 4 words.",
+                "exampleCode": "You said \\{argsLength\\} words."
             }
         },
         "isCustomCommand": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "Boo, this only works in cc's",
+                "exampleCode": "\\{if;\\{isCustomCommand\\};\\{dm;\\{userId\\};You have mail!\\};Boo, this only works in cc's\\}"
             }
         },
         "lb": {
             "description": "",
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "This is a bracket! \\{",
+                "exampleCode": "This is a bracket! \\{lb\\}"
             }
         },
         "rb": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "This is a bracket! \\}",
+                "exampleCode": "This is a bracket! \\{rb\\}"
             }
         },
         "semi": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "This is a semicolon! ;",
+                "exampleCode": "This is a semicolon! \\{semi\\}"
             }
         },
         "tagAuthor": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "This tag was created by stupid cat",
+                "exampleCode": "This tag was created by \\{username;\\{tagAuthor\\}\\}"
             }
         },
         "tagAuthorizer": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "stupid cat authorized this tag!",
+                "exampleCode": "\\{username;\\{tagAuthorizer\\}\\} authorized this tag!"
             }
         },
         "zws": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "​",
+                "exampleCode": "\\{zws\\}"
             }
         },
         "ban": {
             "description": "",
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "true",
+                "exampleCode": "\\{ban;Stupid cat;4\\}"
             },
             "withReason": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "true (stupid cat будет разбанен через 30 дней)",
+                "exampleCode": "\\{ban;Stupid cat;;Not clicking enough kittens;30d\\}"
             },
             "noPerms": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "true (кто угодно может вызвать эту команду, вне зависимости от имеющихся прав)",
+                "exampleCode": "\\{ban;Stupid cat;;For being stupid;;сюдаможновставитьчёугодно\\}"
             }
         },
         "dm": {
@@ -2194,25 +2194,25 @@
             "description": "",
             "target": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "You are listening to bad music",
+                "exampleCode": "You are listening to \\{userActivity\\}"
             },
             "user": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "Stupid cat is playing nothing",
+                "exampleCode": "Stupid cat is playing \\{userActivity;Stupid cat\\}"
             }
         },
         "userActivityType": {
             "description": "",
             "target": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "You are streaming right now!",
+                "exampleCode": "You are \\{userActivityType\\} right now!"
             },
             "user": {
                 "description": "",
-                "exampleOut": "",
+                "exampleOut": "Stupid cat is streaming cats",
                 "exampleCode": ""
             }
         },
@@ -2238,33 +2238,33 @@
             },
             "user": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "Stupid cat started boosting this guild on 2020/02/27 00:00:00",
+                "exampleCode": "Stupid cat started boosting this guild on \\{userBoostDate;YYYY/MM/DD HH:mm:ss;stupid cat\\}"
             }
         },
         "userCreatedAt": {
             "target": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "Your account was created on 2017-02-06T18:58:10+00:00",
+                "exampleCode": "Your account was created on \\{userCreatedAt\\}"
             },
             "user": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "Stupid cat's account was created on 2015-10-13T04:27:26Z",
+                "exampleCode": "Stupid cat's account was created on \\{userCreatedAt;;Stupid cat\\}"
             }
         },
         "userDiscriminator": {
             "description": "",
             "target": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "Your discriminator is 1234",
+                "exampleCode": "Your discriminator is \\{userDiscriminator\\}"
             },
             "user": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "Stupid cat's discriminator is 8160",
+                "exampleCode": "Stupid cat's discriminator is \\{userDiscriminator;Stupid cat\\}"
             }
         },
         "userHasRole": {
@@ -2358,102 +2358,102 @@
             "target": {
                 "description": "",
                 "exampleOut": "",
-                "exampleCode": ""
+                "exampleCode": "Your nick is \\{userNickname\\}!"
             },
             "user": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "Stupid cat's nickname is Secretly Awoken",
+                "exampleCode": "Stupid cat's nickname is \\{userNickname;Stupid cat\\}!"
             }
         },
         "userRoles": {
             "target": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "Your roles are [\"1111111111111111\",\"2222222222222222\"]!",
+                "exampleCode": "Your roles are \\{userRoles\\}!"
             },
             "user": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "Stupid cat's roles are [\"1111111111111111\",\"2222222222222222\", \"3333333333333333\"]",
+                "exampleCode": "Stupid cat's roles are \\{userRoles;stupid cat\\}"
             }
         },
         "userSetNickname": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "{}",
+                "exampleCode": "\\{userSetNickname;super cool nickname\\}\n\\{//;Reset the the nickname\\}\n\\{userSetNickname;\\}"
             }
         },
         "userSetRoles": {
             "description": "",
             "target": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "true",
+                "exampleCode": "\\{userSetRoles;[\"1111111111111\"]\\}"
             },
             "user": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "true",
+                "exampleCode": "\\{userSetRoles;[\"1111111111111\"];stupid cat\\}"
             }
         },
         "userStatus": {
             "description": "",
             "target": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "You are currently online",
+                "exampleCode": "You are currently \\{userStatus\\}"
             },
             "user": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "Stupid cat is currently online",
+                "exampleCode": "Stupid cat is currently \\{userStatus;stupid cat\\}"
             }
         },
         "userTimeout": {
             "description": "",
             "target": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "You have been timed out until 2021/01/01 00:00:00",
+                "exampleCode": "You have been timed out until \\{userTimeout;YYYY/MM/DD HH:mm:ss\\}"
             },
             "user": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "stupid cat is timed out until 2021/01/01 00:00:00",
+                "exampleCode": "stupid cat is timed out until \\{userTimeout;YYYY/MM/DD HH:mm:ss;stupid cat\\}"
             }
         },
         "userTimeZone": {
             "target": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "UTC",
+                "exampleCode": "\\{userTimeZone\\}"
             },
             "user": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "Discord official's timezone is Europe/Berlin",
+                "exampleCode": "Discord official's timezone is \\{userTimeZone;Discord official\\}"
             }
         },
         "warn": {
             "description": "",
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "Be warned! 1",
+                "exampleCode": "Be warned! \\{warn\\}"
             },
             "withReason": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "Be warned Stupid cat! 9001",
+                "exampleCode": "Be warned Stupid cat! \\{warn;Stupid cat;9001;For being too cool\\}"
             }
         },
         "warnings": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "You have 0 warning(s)!",
+                "exampleCode": "You have \\{warnings\\} warning(s)!"
             }
         }
     }
