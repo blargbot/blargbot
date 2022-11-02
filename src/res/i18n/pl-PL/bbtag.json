@@ -87,151 +87,151 @@
             },
             "author": {
                 "name": "Zmienne autora",
-                "description": ""
+                "description": "Zmienne autora są przechowywane przeciwko autorowi tagu, co oznacza, że tylko tagi utworzone przez Ciebie mogą mieć dostęp do zmiennych autora lub je edytować.\nSą one bardzo przydatne, gdy masz zestaw tagów zaprojektowanych do używania przez ludzi pomiędzy serwerami, skutecznie umożliwiając serwerom komunikowanie się ze sobą."
             },
             "global": {
-                "name": "",
-                "description": ""
+                "name": "Zmienne globalne",
+                "description": "Zmienne globalne są całkowicie publiczne, każdy może je czytać **LUB EDYTOWAĆ**.\nSą one bardzo przydatne, jeśli lubisz ból."
             },
             "temporary": {
-                "name": "",
-                "description": ""
+                "name": "Zmienne tymczasowe",
+                "description": "Zmienne tymczasowe nigdy nie są przechowywane w bazie danych, co oznacza, że są najszybszym typem zmiennej.\nJeśli pracujesz z danymi, które musisz przechowywać tylko do późniejszego użycia w ramach tego samego połączenia tagów, wtedy powinieneś używać zmiennych tymczasowych na dowolnym innym typie"
             },
             "local": {
-                "name": "",
-                "description": ""
+                "name": "Zmienne lokalne",
+                "description": "Zmienne lokalne są domyślnym typem zmiennej, można używać tylko wtedy, gdy nazwa zmiennej nie zaczyna się od jednego z pozostałych prefiksów. Te zmienne są dostępne tylko przez tag, który je utworzył, co oznacza, że nie ma możliwości dzielenia się wartościami z jakimkolwiek innym tagiem.\nSą one przydatne, jeśli zamierzasz utworzyć pojedynczy znacznik, który można wykorzystać gdziekolwiek, ponieważ zmienne nie są ograniczone do pojedynczego serwera, tylko jeden tag"
             }
         }
     },
     "subtags": {
         "concat": {
             "default": {
-                "description": "",
+                "description": "Zajmuje `values` i łączy je, aby utworzyć pojedynczą tablicę. Jeśli `values` jest tablicą, zostanie on spłaszczony do powstałej tablicy.",
                 "exampleOut": "Dwie tablice: [\"this\",\"is\",\"an\",\"array\"]\nCiągi znaków i tablica: [\"a\",\"b\",\"c\", 1, 2, 3]",
-                "exampleCode": ""
+                "exampleCode": "Dwie tablice: \\{concat;[\"this\", \"is\"];[\"an\", \"array\"]\\}\nCiągi znaków i tablica: \\{concat;a;b;c;[1, 2, 3]\\}"
             }
         },
         "filter": {
             "default": {
-                "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "description": "Dla każdego elementu w `array`, zostanie ustawiona zmienna o nazwie `variable` i zostanie wykonany `code`. Zwraca nową tablicę zawierającą wszystkie elementy, które zwróciły wartość `true`.\n\n W parametrze `code` żaden z następujących podtagów nie może być użyty: {disabled#map(`\\{{}\\}`)#join(, )}",
+                "exampleOut": "[\"apples\",\"apple juice\"]",
+                "exampleCode": "\\{set;~array;apples;apple juice;grapefruit\\}\n\\{filter;~element;~array;\\{bool;\\{get;~element\\};startswith;apple\\}\\}"
             }
         },
         "isArray": {
             "default": {
                 "description": "Określa, czy `text` jest prawidłową tablicą.",
                 "exampleOut": "true false",
-                "exampleCode": ""
+                "exampleCode": "\\{isarray;[\"array?\"]\\} \\{isarray;array?\\}"
             }
         },
         "join": {
             "default": {
-                "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "description": "Dołącza elementy `array` do `text` jako separator.",
+                "exampleOut": "this!is!an!array",
+                "exampleCode": "\\{join;[\"this\", \"is\", \"an\", \"array\"];!\\}"
             }
         },
         "map": {
             "default": {
                 "description": "Zapewnia sposób wypełnienia tablicy poprzez wykonanie funkcji na każdym z jej elementów, więcej informacji [tutaj](https://developer.mozilla. rg/pl/docs/Web/JavaScript/Reference/Global_Objects/Array/map).\nDla każdego elementu w `array`, zmienna o nazwie `variable` zostanie ustawiona na bieżący element. Wyjście `function` będzie nową wartością elementu. To zwróci nową tablicę i nie zmodyfikuje oryginału.",
                 "exampleOut": "[\"APPLES\", \"ORANGES\",\"PEARS\"]",
-                "exampleCode": ""
+                "exampleCode": "\\{map;~item;[\"apples\",\"oranges\",\"pears\"];\\{upper;\\{get;~item\\}\\}\\}"
             }
         },
         "pop": {
             "default": {
-                "description": "",
+                "description": "Zwraca ostatni element w `array`. Jeśli zostanie dostarczona zmienna, usunie to również ostatni element z `array`.",
                 "exampleOut": "tablica",
-                "exampleCode": ""
+                "exampleCode": "\\{pop;[\"this\", \"is\", \"an\", \"array\"]\\}"
             }
         },
         "push": {
             "default": {
-                "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "description": "Nakłada `values` na koniec `array`. Jeśli zostanie dostarczona zmienna, to zaktualizuje oryginalną zmienną. W przeciwnym razie po prostu wygeneruje nową tablicę.",
+                "exampleOut": "[\"this\",\"is\",\"an\",\"array\"]",
+                "exampleCode": "\\{push;[\"this\", \"is\", \"an\"];array\\}"
             }
         },
         "shift": {
             "default": {
-                "description": "",
+                "description": "Zwraca pierwszy element w `array`. Jeśli użyty ze zmienną usunie to również pierwszy element z `array`.",
                 "exampleOut": "to",
-                "exampleCode": ""
+                "exampleCode": "\\{shift;[\"this\", \"is\", \"an\", \"array\"]\\}"
             }
         },
         "shuffle": {
             "args": {
-                "description": "",
-                "exampleIn": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "description": "Losowo zamienia miejscami `\\{args\\}` podanego użytkownika.",
+                "exampleIn": "one two three",
+                "exampleOut": "three one two",
+                "exampleCode": "\\{shuffle\\} \\{args;0\\} \\{args;1\\} \\{args;2\\}"
             },
             "array": {
-                "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "description": "Losowo zamień miejscami `\\{args\\}` użytkownika lub elementy `array`. Używane ze zmienną, zmodyfikuje oryginalną tablicę",
+                "exampleOut": "[5,3,2,6,1,4]",
+                "exampleCode": "\\{shuffle;[1,2,3,4,5,6]\\}"
             }
         },
         "slice": {
             "default": {
-                "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "description": "Pobiera elementy pomiędzy punktami `start` i `end` (włącznie) indeksowanymi jako zero, z `array`.",
+                "exampleOut": "[\"is\",\"an\",\"array\"]",
+                "exampleCode": "\\{slice;[\"this\", \"is\", \"an\", \"array\"];1\\}"
             }
         },
         "sort": {
             "default": {
-                "description": "",
+                "description": "Sortuje `array` w porządku rosnącym. Jeśli podano `descending`, sortuje w porządku malejącym. Jeśli podano zmienną, zmodyfikuje oryginalny `array`.",
                 "exampleOut": "[1,2,3,4,5]",
-                "exampleCode": ""
+                "exampleCode": "\\{sort;[3, 2, 5, 1, 4]\\}"
             }
         },
         "splice": {
-            "description": "",
+            "description": "Używana ze zmienną zmodyfikuje oryginalną tablicę.\nZwraca tablicę usuniętych elementów.",
             "delete": {
-                "description": "",
-                "exampleOut": "",
+                "description": "Usuwa elementy `deleteCount` z `array` począwszy od `start`.",
+                "exampleOut": "[\"is\"]",
                 "exampleCode": "\\{splice;[\"to\", \"jest\", \"jakaś\", \"tablica\"];1;1\\}"
             },
             "replace": {
-                "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "description": "Usuwa elementy `deleteCount` z `array` począwszy od `start`. Następnie dodaje każdy `item` na tej pozycji w `array`. Zwraca usunięte elementy.",
+                "exampleOut": "[\"is\"] \\{\"v\":[\"this\",\"was\",\"an\",\"array\"],\"n\":\"~array\"\\}",
+                "exampleCode": "\\{set;~array;[\"this\", \"is\", \"an\", \"array\"]\\} \\{splice;\\{get;~array\\};1;1;was\\} \\{get;~array\\}"
             }
         },
         "split": {
             "default": {
-                "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "description": "Dzieli `text` używając `splitter`, a zwraca tablicę.",
+                "exampleOut": "[\"Hello!\",\"This\",\"is\",\"a\",\"sentence.\"]",
+                "exampleCode": "\\{split;Hello! This is a sentence.;\\{space\\}\\}"
             }
         },
         "apply": {
             "default": {
-                "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "description": "Wykonuje `subtag`, używając `args` jako parametrów. Jeśli `args` jest tablicą, zostanie zdekonstruowany dla poszczególnych elementów.",
+                "exampleOut": "3",
+                "exampleCode": "\\{apply;randomInt;[1,4]\\}"
             }
         },
         "args": {
             "all": {
                 "description": "Pobiera cały tekst wprowadzony przez użytkownika",
-                "exampleIn": "",
-                "exampleOut": "",
+                "exampleIn": "Hello world! BBtag is so cool",
+                "exampleOut": "You said Hello world! BBtag is so cool",
                 "exampleCode": ""
             },
             "indexed": {
-                "description": "",
+                "description": "Pobiera słowo z danych wejściowych użytkownika w pozycji `index`",
                 "exampleIn": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "world!",
+                "exampleCode": "\\{args;1\\}"
             },
             "range": {
                 "description": "",
                 "exampleIn": "",
                 "exampleOut": "BBtag jest",
-                "exampleCode": ""
+                "exampleCode": "\\{args;2;4\\}"
             }
         },
         "commandName": {
