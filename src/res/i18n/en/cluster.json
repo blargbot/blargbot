@@ -451,9 +451,9 @@
                         "limit": {
                             "name": {
                                 "customCommandLimit": "**Limits for custom commands:**",
-                                "everythingAutoResponseLimit": "**Limits for custom commands:**",
-                                "generalAutoResponseLimit": "**Limits for custom commands:**",
-                                "tagLimit": "**Limits for custom commands:**"
+                                "everythingAutoResponseLimit": "**Limits for everything autoresponses:**",
+                                "generalAutoResponseLimit": "**Limits for general autoresponses:**",
+                                "tagLimit": "**Limits for tags:**"
                             },
                             "value": "```\n{rules#join(\n)}\n```"
                         }
