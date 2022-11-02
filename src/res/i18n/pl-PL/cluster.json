@@ -82,7 +82,7 @@
         "success": "Ok, wróciłem. To zadanie zajęło mi {duration#duration(F)}"
     },
     "roleme": {
-        "failed": ""
+        "failed": "Komenda `roleme` została aktywowana, ale nie mam uprawnień, by dać Tobie tą rolę!"
     },
     "poll": {
         "embed": {
@@ -98,157 +98,157 @@
     },
     "guild": {
         "blacklisted": "Witamy! Z przykrością informuję Cię, że Twój serwer, **{guild.name}** ({guild.id}), znajduje się na mojej czarnej liście. Przykro mi z tego powodu! Opuszczę teraz Twój serwer i życzę miłego dnia.",
-        "joined": ""
+        "joined": "☑️ Serwer: `{guild.name}` (`{guild.id}`)! {botGuild#bool(- ***SERWER BOTÓW***|)}\n    Razem: **{size}** | Użytkownicy: **{userCount}** | Boty: **{botCount}** | Procent botów: **{botFraction#percent}**"
     },
     "autoresponse": {
-        "prompt": "",
+        "prompt": "Nowe żądanie AR od **{user.username}#{user.discriminator}** ({user#tag}):\n**Serwer**: {guild.name} ({guild.id})\n**Kanał**: {channelId}\n**Członkowie**: {guild.members.size}\n\n{reason}\n\n```js\n{code}\n```",
         "whitelist": {
-            "approved": "",
-            "rejected": ""
+            "approved": "✅ Gratuluję, twoja gildia została umieszczona na białej liście dla autoresponcji! 🎉\n*Czas oczekiwania może sięgnąć 15 minut*",
+            "rejected": "❌ Przepraszamy, twoja gildia została odrzucona dla auto-odpowiedzi. 😿"
         }
     },
     "announcements": {
         "prompt": {
-            "channel": "",
-            "role": ""
+            "channel": "ℹ️ Proszę wybrać kanał, w którym powinny pojawiać się ogłoszenia.",
+            "role": "ℹ️ Proszę wybrać rolę do wzmianki podczas ogłaszania."
         }
     },
     "modlog": {
-        "defaultReason": "",
+        "defaultReason": "Odpowiedzialny moderatorze, proszę użyć komendy `{prefix}reason {caseId}` aby ustawić powód.",
         "types": {
-            "generic": "",
-            "pardon": "",
-            "timeout": "",
-            "timeoutClear": "",
-            "softBan": "",
-            "ban": "",
+            "generic": "Ogólne",
+            "pardon": "Pardon",
+            "timeout": "Przerwa",
+            "timeoutClear": "Wyczyść przerwę",
+            "softBan": "Soft-ban",
+            "ban": "Ban",
             "massBan": "Masowy Ban",
-            "unban": "",
-            "kick": "",
+            "unban": "Odbanuj",
+            "kick": "Wyrzuć",
             "unmute": "",
-            "mute": "",
-            "temporaryMute": "",
-            "warning": ""
+            "mute": "Wycisz",
+            "temporaryMute": "Tymczasowo wycisz",
+            "warning": "Ostrzeżenie"
         },
         "embed": {
-            "title": "",
-            "description": "",
+            "title": "Przypadek {caseId}",
+            "description": "{users#map({username}#{discriminator} \\({id}\\))#join(\n)}",
             "footer": {
-                "text": ""
+                "text": "{user.username}#{user.discriminator} ({user.id})"
             },
             "field": {
                 "type": {
-                    "name": ""
+                    "name": "Typ"
                 },
                 "reason": {
-                    "name": "",
-                    "value": ""
+                    "name": "Powód",
+                    "value": "{reason}"
                 },
                 "pardons": {
-                    "name": "",
-                    "value": ""
+                    "name": "Odbanowania",
+                    "value": "Przypisano: {count}\nŁącznie: {warnings}"
                 },
                 "warnings": {
-                    "name": "",
-                    "value": ""
+                    "name": "Ostrzeżenia",
+                    "value": "Przypisano: {count}\nŁącznie: {warnings}"
                 },
                 "duration": {
-                    "name": "",
-                    "value": ""
+                    "name": "Czas trwania",
+                    "value": "{duration#duration(F)}"
                 },
                 "user": {
-                    "name": "",
-                    "value": ""
+                    "name": "Użytkownik",
+                    "value": "{user.username}#{user.discriminator} ({user.id})"
                 }
             }
         }
     },
     "eventLog": {
-        "disabled": "",
+        "disabled": "❌ Wyłączono logowanie zdarzenia `{event}`, ponieważ kanał {channel#tag} nie istnieje lub nie mam uprawnień do wysyłania w nim wiadomości!",
         "events": {
-            "timeoutAdded": "",
+            "timeoutAdded": "ℹ️ Użytkownik został wysłany na przerwę",
             "timeoutRemoved": "",
-            "banned": "",
-            "unbanned": "",
-            "joined": "",
-            "left": "",
-            "messageDeleted": "",
-            "messageUpdated": "",
-            "roleRemoved": "",
-            "roleAdded": "",
-            "nicknameUpdated": "",
-            "usernameUpdated": "",
-            "avatarUpdated": ""
+            "banned": "ℹ️ Użytkownik został zbanowany",
+            "unbanned": "ℹ️ Użytkownik został odbanowany",
+            "joined": "ℹ️ Użytkownik dołączył",
+            "left": "ℹ️ Użytkownik opuścił serwer",
+            "messageDeleted": "ℹ️ Wiadomość usunięta",
+            "messageUpdated": "ℹ️ Wiadomość zaktualizowana",
+            "roleRemoved": "ℹ️ Specjalna rola usunięta",
+            "roleAdded": "ℹ️ Specjalna rola dodana",
+            "nicknameUpdated": "ℹ️ Zaktualizowano pseudonim",
+            "usernameUpdated": "ℹ️ Zaktualizowano nazwę użytkownika",
+            "avatarUpdated": "ℹ️ Awatar zaktualizowany"
         },
         "embed": {
             "description": {
-                "avatarUpdated": "",
-                "bulkDelete": "",
+                "avatarUpdated": "➡️ Stary awatar\n⬇️ Nowy awatar",
+                "bulkDelete": "Masowe usunięcie wiadomości",
                 "userUpdated": {
-                    "username": "",
-                    "discriminator": "",
-                    "both": ""
+                    "username": "Zmieniono nazwę użytkownika.",
+                    "discriminator": "Tag użytkownika został zmieniony.",
+                    "both": "Zmieniono nazwę użytkownika.\nZmieniono tag."
                 }
             },
             "field": {
                 "reason": {
-                    "name": "",
-                    "value": ""
+                    "name": "Powód",
+                    "value": "{reason}"
                 },
                 "message": {
-                    "name": "",
-                    "value": ""
+                    "name": "ID wiadomości",
+                    "value": "{messageId}"
                 },
                 "channel": {
-                    "name": "",
-                    "value": ""
+                    "name": "Kanał",
+                    "value": "{channelIds#map(<#{}>)#join(\n)}"
                 },
                 "oldUsername": {
-                    "name": "",
-                    "value": ""
+                    "name": "Stara nazwa",
+                    "value": "{user.username}#{user.discriminator}"
                 },
                 "newUsername": {
-                    "name": "",
-                    "value": ""
+                    "name": "Nowa nazwa",
+                    "value": "{user.username}#{user.discriminator}"
                 },
                 "oldNickname": {
-                    "name": "",
-                    "value": ""
+                    "name": "Stary pseudonim",
+                    "value": "{nickname}"
                 },
                 "newNickname": {
-                    "name": "",
-                    "value": ""
+                    "name": "Nowy pseudonim",
+                    "value": "{nickname}"
                 },
                 "role": {
-                    "name": "",
-                    "value": ""
+                    "name": "Rola",
+                    "value": "<@&{roleId}> ({roleId})"
                 },
                 "updatedBy": {
-                    "name": "",
-                    "value": ""
+                    "name": "Zaktualizowany przez",
+                    "value": "<@{userId}> ({userId})"
                 },
                 "created": {
-                    "name": "",
-                    "value": ""
+                    "name": "Stworzony",
+                    "value": "{time#tag}"
                 },
                 "until": {
-                    "name": "",
-                    "value": ""
+                    "name": "Przed",
+                    "value": "{time#tag}"
                 },
                 "count": {
-                    "name": "",
-                    "value": ""
+                    "name": "Ilość",
+                    "value": "{count}"
                 },
                 "content": {
                     "name": {
                         "old": {
-                            "unavailable": "",
-                            "empty": "",
-                            "default": ""
+                            "unavailable": "Stara wiadomość (Niedostępna)",
+                            "empty": "Stara wiadomość (Pusta)",
+                            "default": "Stara wiadomość"
                         },
                         "new": {
-                            "unavailable": "",
-                            "empty": "",
+                            "unavailable": "Nowa wiadomość (Niedostępna)",
+                            "empty": "Nowa wiadomość (Pusta)",
                             "default": ""
                         },
                         "current": {
@@ -349,7 +349,7 @@
                         },
                         "literal": {
                             "single": "",
-                            "greedy": ""
+                            "greedy": "`{name}` są {min#plural(0:|1:|{} lub więcej )}{choices#map(`{}`)#join(, | lub )}"
                         },
                         "boolean": {
                             "single": "",
