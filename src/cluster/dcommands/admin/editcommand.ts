@@ -51,7 +51,7 @@ export class EditCommandCommand extends GuildCommand {
                     execute: (ctx, [commands]) => this.setHidden(ctx, commands.asStrings, false)
                 }
             ]
-        });
+        }, true);
     }
 
     public async list(context: GuildCommandContext): Promise<CommandResult> {
