@@ -252,7 +252,7 @@
             "variables": {
                 "description": "",
                 "exampleOut": "Hello!",
-                "exampleCode": ""
+                "exampleCode": "\\{set;var;Hello!\\}\n\\{commit;var\\}\n\\{set;var;GoodBye!\\}\n\\{rollback;var\\}\n\\{get;var\\}"
             }
         },
         "debug": {
@@ -439,43 +439,43 @@
             "all": {
                 "description": "",
                 "exampleOut": "",
-                "exampleCode": ""
+                "exampleCode": "\\{set;var;Hello!\\}\n\\{commit\\}\n\\{set;var;GoodBye!\\}\n\\{rollback\\}\n\\{get;var\\}"
             },
             "variables": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "Hello!",
+                "exampleCode": "\\{set;var;Hello!\\}\n\\{commit;var\\}\n\\{set;var;GoodBye!\\}\n\\{rollback;var\\}\n\\{get;var\\}"
             }
         },
         "set": {
             "clear": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "(ничего не выведется)",
+                "exampleCode": "\\{set;~var;something\\}\n\\{set;~var\\}\n\\{get;~var\\}"
             },
             "value": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "This is local var1\nThis is temporary var2",
+                "exampleCode": "\\{set;var1;This is local var1\\}\n\\{set;~var2;This is temporary var2\\}\n\\{get;var1\\}\n\\{get;~var2\\}"
             },
             "array": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "\\{\"v\":[\"this\",\"is\",\"an\",\"array\"],\"n\":\"var3\"\\}",
+                "exampleCode": "\\{set;var3;this;is;an;array\\}\n\\{get;var3\\}"
             }
         },
         "sleep": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "(Через 10 секунд) Hi!",
+                "exampleCode": "\\{sleep;10s\\}\\{send;\\{channelId\\};Hi!\\}"
             }
         },
         "subtagExists": {
             "default": {
                 "description": "",
                 "exampleOut": "true false",
-                "exampleCode": ""
+                "exampleCode": "\\{subtagExists;ban\\} \\{subtagExists;AllenKey\\}"
             }
         },
         "suppressLookup": {
@@ -495,35 +495,35 @@
         "timer": {
             "default": {
                 "description": "",
-                "exampleOut": "",
+                "exampleOut": "(Через 20 секунд) Hello!",
                 "exampleCode": "\\{timer;Hello!;20s\\}"
             }
         },
         "channelCategories": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "This guild has 7 categories.",
+                "exampleCode": "This guild has \\{length;\\{categories\\}\\} categories."
             }
         },
         "channelCategory": {
             "current": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "111111111111111",
+                "exampleCode": "\\{channelCategory\\}"
             },
             "channel": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "111111111111111\n(nothing is returned here)",
+                "exampleCode": "\\{channelCategory;cool channel\\}\n\\{channelCategory;cool category\\}"
             }
         },
         "channelCreate": {
             "description": "",
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "22222222222222222",
+                "exampleCode": "\\{channelCreate;super-channel;;\\{json;\\{\"parentId\":\"11111111111111111\"\\}\\}\\}"
             }
         },
         "channelDelete": {
@@ -548,162 +548,162 @@
             },
             "channel": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "111111111111111\n(в этой строке ничего не выведется)",
+                "exampleCode": "\\{channelId;cool channel\\}\n\\{channelId;some channel that doesn't exist;true\\}"
             }
         },
         "channelIsCategory": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "true\n(в этой строке ничего не выведется)",
+                "exampleCode": "\\{channelIsCategory;cool category\\}\n\\{channelIsCategory;category that doesn't exist\\}"
             }
         },
         "channelIsNsfw": {
             "current": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "fluffy bunnies",
+                "exampleCode": "\\{if;\\{channelIsNsfw\\};Spooky nsfw stuff;fluffy bunnies\\}"
             },
             "channel": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "true",
+                "exampleCode": "\\{channelIsNsfw;SFW Cat pics\\}"
             }
         },
         "channelIsText": {
             "current": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "Yeah you can write stuff here",
+                "exampleCode": "\\{if;\\{channelIsText\\};Yeah you can write stuff here;How did you even call the command?\\}"
             },
             "channel": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "true",
+                "exampleCode": "\\{channelIsText;feature discussions\\}"
             }
         },
         "channelIsThread": {
             "current": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "Cool, this is a thread channel!",
+                "exampleCode": "\\{if;\\{channelIsThread\\};Cool, this is a thread channel!;Boo, this is a regular text channel\\}"
             },
             "channel": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "true",
+                "exampleCode": "\\{channelIsThread;blargbot podcast\\}"
             }
         },
         "channelIsVoice": {
             "current": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "Yeah you can write stuff here",
+                "exampleCode": "\\{if;\\{channelIsVoice\\};How did you even call the command?;Yeah you can write stuff here\\}"
             },
             "channel": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "true",
+                "exampleCode": "\\{channelIsVoice;blargbot podcast\\}"
             }
         },
         "channelName": {
             "current": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "This channel's name is test-channel",
+                "exampleCode": "This channel's name is \\{channelName\\}"
             },
             "channel": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "cooler-test-channel",
+                "exampleCode": "\\{channelName;111111111111111\\}"
             }
         },
         "channelPosition": {
             "description": "",
             "current": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "This channel is in position 1",
+                "exampleCode": "This channel is in position \\{channelPosition\\}"
             },
             "channel": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "The position of test-channel is 0",
+                "exampleCode": "The position of test-channel is \\{channelPosition;test-channel\\}"
             }
         },
         "channels": {
             "current": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "This guild has \\{length;\\{channels\\}\\} channels.",
+                "exampleCode": "This guild has \\{length;\\{channels\\}\\} channels."
             },
             "channel": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "Category cat-channels has 6 channels.",
+                "exampleCode": "Category cat-channels has \\{length;\\{channels;cat-channels\\}\\} channels."
             }
         },
         "channelSetPermissions": {
             "current": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "11111111111111111",
+                "exampleCode": "\\{channelSetPermissions;11111111111111111;member;222222222222222222\\}"
             },
             "channel": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "11111111111111111",
+                "exampleCode": "\\{channelSetPermissions;11111111111111111;member;222222222222222222;1024;2048\\}"
             }
         },
         "channelSetPosition": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "{}",
+                "exampleCode": "\\{channelSetPosition;11111111111111111;5\\}"
             }
         },
         "channelType": {
             "description": "",
             "current": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "text",
+                "exampleCode": "\\{channelType\\}"
             },
             "channel": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "voice\n(в этой строке ничего не выведется)",
+                "exampleCode": "\\{channelType;cool channel\\}\n\\{channelType;some channel that doesn't exist;true\\}"
             }
         },
         "lastMessageId": {
             "description": "",
             "current": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "1111111111111111",
+                "exampleCode": "\\{lastMessageId\\}"
             },
             "channel": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "2222222222222222",
+                "exampleCode": "\\{lastMessageId;1111111111111111\\}"
             }
         },
         "slowMode": {
             "clearCurrent": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "(медленный режим теперь отключен)",
+                "exampleCode": "\\{slowMode\\}"
             },
             "clearChannel": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "(медленный режим отключен в канале testing-grounds)",
+                "exampleCode": "\\{slowMode;testing-grounds\\}"
             },
             "setCurrent": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "(медленный режим активирован, с интервалом 10 секунд)",
+                "exampleCode": "\\{slowMode;10\\}"
             },
             "setChannel": {
                 "description": "",
@@ -729,193 +729,193 @@
             "description": "",
             "all": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "This guild has 23 emojis.",
+                "exampleCode": "This guild has \\{length;\\{emojis\\}\\} emojis."
             },
             "forRole": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "Cool gang has 6 emojis.",
+                "exampleCode": "Cool gang has \\{length;\\{emojis;Cool gang\\}\\} emojis."
             }
         },
         "guildBans": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "This guild has 123 banned users.",
+                "exampleCode": "This guild has \\{length;\\{guildBans\\}\\} banned users."
             }
         },
         "guildCreatedAt": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "This guild was created on 2016/01/01 01:00:00",
+                "exampleCode": "This guild was created on \\{guildCreatedAt;YYYY/MM/DD HH:mm:ss\\}"
             }
         },
         "guildFeatures": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "[\"COMMUNITY\",\"COMMERCE\",\"NEWS\",\"PREVIEW_ENABLED\",\"WELCOME_SCREEN_ENABLED\",\"MEMBER_VERIFICATION_GATE_ENABLED\",\"THREADS_ENABLED\"]",
+                "exampleCode": "\\{guildFeatures\\}"
             }
         },
         "guildIcon": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "The guild's icon is (icon url)",
+                "exampleCode": "The guild's icon is \\{guildIcon\\}"
             }
         },
         "guildId": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "The guild's id is 1234567890123456",
+                "exampleCode": "The guild's id is \\{guildId\\}"
             }
         },
         "guildMembers": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "This guild has 123 members.",
+                "exampleCode": "This guild has \\{length;\\{guildMembers\\}\\} members."
             }
         },
         "guildName": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "This guild's name is TestGuild.",
+                "exampleCode": "This guild's name is \\{guildName\\}."
             }
         },
         "guildOwnerId": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "The owner's id is 1234567890123456.",
+                "exampleCode": "The owner's id is \\{guildOwnerId\\}."
             }
         },
         "guildSetIcon": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "{}",
+                "exampleCode": "\\{guildSetIcon;https://some.cool/image.png\\}"
             }
         },
         "guildSize": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "This guild has 123 members.",
+                "exampleCode": "This guild has \\{guildSize\\} members."
             }
         },
         "json": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "\\{\n  \"key\": \"value\"\n\\}",
+                "exampleCode": "\\{json;\\{\n  \"key\": \"value\"\n\\}\\}"
             }
         },
         "jsonClean": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "\\{\"test\":[]\\}",
+                "exampleCode": "\\{jsonClean;\\{j;\\{\"test\":\"[]\"\\}\\}\\}"
             }
         },
         "jsonGet": {
             "parse": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "one",
+                "exampleCode": "\\{jsonGet;\\{j;\\{\n  \"array\": [\n    \"zero\",\n    \\{ \"value\": \"one\" \\},\n    \"two\"\n  ]\n\\}\\};array.1.value\\}"
             },
             "path": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "one",
+                "exampleCode": "\\{jsonGet;\\{j;\\{\n  \"array\": [\n    \"zero\",\n    \\{ \"value\": \"one\" \\},\n    \"two\"\n  ]\n\\}\\};array.1.value\\}"
             }
         },
         "jsonKeys": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "[\"key\",\"key2\"]",
+                "exampleCode": "\\{set;~json;\\{json;\\{\"key\": \"value\", \"key2\" : \"value2\"\\}\\}\n\\{jsonKeys;~json\\}"
             }
         },
         "jsonSet": {
             "delete": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "\\{\\}",
+                "exampleCode": "\\{set;~json;\\{json;\\{\"key\" : \"value\"\\}\\}\\}\n\\{jsonSet;~json;key\\}\n\\{get;~json\\}"
             },
             "set": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "\\{\"path\":\\{\"to\":\\{\"key\":\"value\"\\}\\}\\}",
+                "exampleCode": "\\{jsonSet;;path.to.key;value;create\\}"
             },
             "create": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "\\{\"path\":\\{\"to\":\\{\"key\":\"value\"\\}\\}\\}",
+                "exampleCode": "\\{jsonSet;;path.to.key;value;create\\}"
             }
         },
         "jsonSort": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "[\n  \"\\{\\\"points\\\":3,\\\"name\\\":\\\"UNO\\\"\\}\",\n  \"\\{\\\"points\\\":6,\\\"name\\\":\\\"Stupid cat\\\"\\}\",\n  \"\\{\\\"points\\\":10,\\\"name\\\":\\\"Blargbot\\\"\\}\",\n  \"\\{\\\"points\\\":12,\\\"name\\\":\\\"Winner\\\"\\}\"\n]",
+                "exampleCode": "\\{set;~array;\\{json;[\n  \\{\"points\" : 10, \"name\" : \"Blargbot\"\\},\n  \\{\"points\" : 3, \"name\" : \"UNO\"\\},\n  \\{\"points\" : 6, \"name\" : \"Stupid cat\"\\},\n  \\{\"points\" : 12, \"name\" : \"Winner\"\\}\n]\\}\\}\n\\{jsonStringify;\\{jsonSort;\\{slice;\\{get;~array\\};0\\};points\\};2\\}"
             }
         },
         "jsonStringify": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "[\n    \"one\",\n    \"two\",\n    \"three\"\n]",
+                "exampleCode": "\\{jsonStringify;[\"one\",\"two\",\"three\"]\\}"
             }
         },
         "jsonValues": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "[\"value\",\"value2\"]",
+                "exampleCode": "\\{set;~json;\\{json;\\{\"key\": \"value\", \"key2\" : \"value2\"\\}\\}\n\\{jsonValues;~json\\}"
             }
         },
         "for": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "0,1,2,3,4,5,6,7,8,9,",
+                "exampleCode": "\\{for;~index;0;<;10;\\{get;~index\\},\\}"
             }
         },
         "forEach": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "I like apples\nI like oranges\nI like c#",
+                "exampleCode": "\\{set;~array;apples;oranges;c#\\}\n\\{forEach;~element;~array;I like \\{get;~element\\}\\{newline\\}\\}"
             }
         },
         "repeat": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "eeeeeeeeee",
+                "exampleCode": "\\{repeat;e;10\\}"
             }
         },
         "while": {
             "value": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "10",
+                "exampleCode": "\\{set;~x;0\\}\n\\{set;~end;false\\}\n\\{while;\\{get;~end\\};\n\t\\{if;\\{increment;~x\\};==;10;\n\t\t\\{set;~end;true\\}\n\t\\}\n\\}\n\\{get;~end\\}"
             },
             "condition": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "1,2,3,4,5,6,7,8,9,10,11,",
+                "exampleCode": "\\{set;~x;0\\}\n\\{while;\\{get;~x\\};<=;10;\\{increment;~x\\},\\}"
             }
         },
         "absolute": {
             "value": {
                 "description": "",
-                "exampleOut": "",
+                "exampleOut": "535",
                 "exampleCode": ""
             },
             "array": {
@@ -939,96 +939,96 @@
             },
             "count": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "-2,-4,-6,-8,-10,-12,-14,-16,-18,-20",
+                "exampleCode": "\\{set;~counter;0\\} \\{repeat;\\{decrement;~counter;-2\\},;10\\}"
             }
         },
         "increment": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "1,2,3,4,5,6,7,8,9,10",
+                "exampleCode": "\\{set;~counter;0\\} \\{repeat;\\{increment;~counter\\},;10\\}"
             },
             "count": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "2,4,6,8,10,12,14,16,18,20",
+                "exampleCode": "\\{set;~counter;0\\} \\{repeat;\\{increment;~counter;-2\\},;10\\}"
             }
         },
         "math": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "2 + 3 + 6 - 2 = 9",
+                "exampleCode": "2 + 3 + 6 - 2 = \\{math;-;\\{math;+;2;3;6\\};2\\}"
             }
         },
         "max": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "65",
+                "exampleCode": "\\{max;50;2;65\\}"
             }
         },
         "min": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "2",
+                "exampleCode": "\\{min;50;2;65\\}"
             }
         },
         "numberFormat": {
             "description": "",
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "123456.79\n123000\n100.1",
+                "exampleCode": "\\{numberFormat;123456.789;2\\}\n\\{numberFormat;123456.789;-3\\}\n\\{numberFormat;100.10000;\\}"
             },
             "separator": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "3,1415\n100.000",
+                "exampleCode": "\\{numberFormat;3.1415;4;,\\}\n\\{numberFormat;100000;;;.\\}"
             }
         },
         "parseFloat": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "NaN 12.34 1.2",
+                "exampleCode": "\\{parseFloat;abcd\\} \\{parseFloat;12.34\\} \\{parseFloat;1.2cd\\}"
             }
         },
         "parseInt": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "NaN 1234 12",
+                "exampleCode": "\\{parseInt;abcd\\} \\{parseInt;1234\\} \\{parseInt;12cd\\}"
             }
         },
         "randomInt": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "You rolled a 5.",
+                "exampleCode": "You rolled a \\{randomInt;1;6\\}."
             }
         },
         "round": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "1",
+                "exampleCode": "\\{round;1.23\\}"
             }
         },
         "roundDown": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "1",
+                "exampleCode": "\\{roundDown;1.23\\}"
             }
         },
         "roundUp": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "2",
+                "exampleCode": "\\{roundUp;1.23\\}"
             }
         },
         "delete": {
@@ -1036,57 +1036,57 @@
             "trigger": {
                 "description": "",
                 "exampleOut": "(сообщение удалится; я не знаю, как показать это в примере)",
-                "exampleCode": ""
+                "exampleCode": "\\{//;The message that triggered this will be deleted\\} \\{delete\\}"
             },
             "inCurrent": {
                 "description": "",
                 "exampleOut": "(сообщение `111111111111111111` удалится; я не знаю, как показать это в примере)",
-                "exampleCode": ""
+                "exampleCode": "\\{//;The message with id `111111111111111111` will be deleted\\}\n\\{delete;111111111111111111\\}"
             },
             "inOther": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "(the message `2222222222222222` from channel `1111111111111111` got deleted)",
+                "exampleCode": "\\{//;The message with id `2222222222222222` from channel `1111111111111111` will be deleted\\}\n\\{delete;111111111111111111;2222222222222222\\}"
             }
         },
         "edit": {
             "description": "",
             "inCurrentText": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "{}",
+                "exampleCode": "\\{edit;111111111111111111;\\{embedBuild;title:Hello world\\}\\}"
             },
             "inCurrentEmbed": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "{}",
+                "exampleCode": "\\{edit;111111111111111111;\\{embedBuild;title:Hello world\\}\\}"
             },
             "inCurrentFull": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "{}",
+                "exampleCode": "\\{edit;111111111111111111;Hello world;\\{embedBuild;title:Foo bar\\}\\}"
             },
             "inOtherText": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "{}",
+                "exampleCode": "\\{edit;111111111111111111;222222222222222222;Hello world\\}"
             },
             "inOtherEmbed": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "{}",
+                "exampleCode": "\\{edit;111111111111111111;222222222222222222;Hello world\\}"
             },
             "inOtherFull": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "{}",
+                "exampleCode": "\\{edit;111111111111111111;222222222222222222;Hello world;\\{embedBuild;title:Foo bar\\}\\}"
             }
         },
         "embed": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "(эмбед с \"Hello!\" в заголовке)",
+                "exampleCode": "\\{embed;\\{lb\\}\"title\":\"Hello!\"\\{rb\\}\\}"
             }
         },
         "embedBuild": {
@@ -1100,63 +1100,63 @@
         "everyoneMention": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "@everyone",
+                "exampleCode": "\\{everyoneMention\\}"
             }
         },
         "file": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "(файл, названный readme.txt, содержащий \"Hello, world!\")",
+                "exampleCode": "\\{file;Hello, world!;readme.txt\\}"
             }
         },
         "hereMention": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "@here",
+                "exampleCode": "\\{hereMention\\}"
             }
         },
         "messageAttachments": {
             "trigger": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "You sent the attachments \"[\"https://cdn.discordapp.com/attachments/1111111111111/111111111111111/thisisntreal.png\"]\"",
+                "exampleCode": "You sent the attachments \"\\{messageAttachments\\}\""
             },
             "inCurrent": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "Someone sent a message with attachments: \"[\"https://cdn.discordapp.com/attachments/1111111111111/111111111111111/thisisntreal.png\"]\"",
+                "exampleCode": "Someone sent a message with attachments: \"\\{messageAttachments;1111111111111\\}\""
             },
             "inOther": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "Someone sent a message in #support with attachments: \"[\"https://cdn.discordapp.com/attachments/1111111111111/111111111111111/thisisntreal.png\"]\"",
+                "exampleCode": "Someone sent a message in #support with attachments: \"\\{messageAttachments;support;1111111111111\\}\""
             }
         },
         "messageEditTime": {
             "description": "",
             "trigger": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "The edit timestamp of your message is \"1628782144703\"",
+                "exampleCode": "The edit timestamp of your message is \"\\{messageEditTime\\}\""
             },
             "inCurrent": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "The edit timestamp of message 11111111111111 is \"1628782144703\"",
+                "exampleCode": "The edit timestamp of message 11111111111111 is \"\\{messageEditTime;11111111111111\\}"
             },
             "inOther": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "Message 11111111111111 in #support was edited at 18:09",
+                "exampleCode": "Message 11111111111111 in #support was edited at \\{messageEditTime;support;11111111111111;HH:mm\\}"
             }
         },
         "messageEmbeds": {
             "trigger": {
                 "description": "",
-                "exampleOut": "",
+                "exampleOut": "You sent an embed: \"[\\{\"title\":\"Hello!\"\\}]\"",
                 "exampleCode": ""
             },
             "inCurrent": {
@@ -1219,177 +1219,177 @@
             },
             "inCurrent": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "Message 1111111111111 contained: \"Hello world!\"",
+                "exampleCode": "Message 1111111111111 contained: \"\\{messageText;1111111111111\\}\""
             },
             "inOther": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "Message 1111111111111 in #support contained: \"Spooky Stuff\"",
+                "exampleCode": "Message 1111111111111 in #support contained: \"\\{messageText;support;1111111111111\\}\""
             }
         },
         "messageTime": {
             "trigger": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "The send timestamp of your message is \"1628782144703\"",
+                "exampleCode": "The send timestamp of your message is \"\\{messageTime\\}\""
             },
             "inCurrent": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "The send timestamp of message 11111111111111 is \"1628782144703\"",
+                "exampleCode": "The send timestamp of message 11111111111111 is \"\\{messageTime;11111111111111\\}"
             },
             "inOther": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "Message 11111111111111 in #support was sent at 18:09",
+                "exampleCode": "Message 11111111111111 in #support was sent at \\{messageTime;support;11111111111111;HH:mm\\}"
             }
         },
         "messageType": {
             "description": "",
             "trigger": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "0",
+                "exampleCode": "\\{messageType\\}"
             },
             "other": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "19\n0",
+                "exampleCode": "\\{messageType;12345678912345;123465145791\\}\n\\{messageType;1234567891234\\}"
             }
         },
         "output": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "Hello!",
+                "exampleCode": "\\{output;Hello!\\}"
             }
         },
         "reactionAdd": {
             "description": "",
             "output": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "This will have reactions! (ставятся реакции 🤔 и 👀)",
+                "exampleCode": "This will have reactions! \\{reactionAdd;🤔;👀\\}"
             },
             "inCurrent": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "(на сообщение 11111111111111111 добавлены реакции 🤔 и👀)",
+                "exampleCode": "\\{reactionAdd;11111111111111111;🤔;👀\\}"
             },
             "inOther": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "(на сообщение 22222222222222222 в канале 11111111111111111 добавлены реакции 🤔 и 👀)",
+                "exampleCode": "\\{reactionAdd;11111111111111111;22222222222222222;🤔;👀\\}"
             }
         },
         "reaction": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "[\"111111111111111\",\"12345678912345\",\"3333333333333\",\"✅\"]",
+                "exampleCode": "\\{waitReaction;11111111111111111;\\{bool;\\{reaction\\};==;✅\\}\\}"
             }
         },
         "reactionUser": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "[\"111111111111111\",\"12345678912345\",\"3333333333333\",\"✅\"]",
+                "exampleCode": "\\{waitReaction;11111111111111111;\\{bool;\\{reactionUser\\};==;3333333333333\\}\\}"
             }
         },
         "reactionList": {
             "reactions": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "[\"🤔\", \"👀\"]",
+                "exampleCode": "\\{reactionList;111111111111111111\\}"
             },
             "users": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "[\"278237925009784832\", \"134133271750639616\"]\n[\"134133271750639616\"]",
+                "exampleCode": "\\{reactionList;111111111111111111;🤔;👀\\}\n\\{reactionList;222222222222222222;111111111111111111;👀\\}"
             }
         },
         "reactionRemove": {
             "all": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "(removed all reactions on 12345678901234)",
+                "exampleCode": "\\{reactionRemove;12345678901234\\}"
             },
             "user": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "(удаляются все реакции 🤔 от пользователя 111111111111111111 с сообщения с ID 12345678901234)",
+                "exampleCode": "\\{reactionRemove;12345678901234;111111111111111111;🤔\\}"
             }
         },
         "reactionRemoveAll": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "(удаляются все реакции :thinking: с сообщения с ID 12345678901234)",
+                "exampleCode": "\\{reactionRemoveAll;12345678901234;:thinking:\\}"
             }
         },
         "send": {
             "description": "",
             "full": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "23946728937462847243",
+                "exampleCode": "\\{send;\\{channelId\\};Hello there!;\\{embedBuild;title:This is a cool embed\\};Wow, look at this text file!;test.txt\\}"
             },
             "textAndEmbed": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "349587638464585678545",
+                "exampleCode": "\\{send;\\{channelId\\};Hello there!;\\{embedBuild;title:This is a cool embed\\}\\}"
             },
             "textOrEmbed": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "9458678957457694324",
+                "exampleCode": "\\{send;\\{channelId\\};\\{embedBuild;title:This is a cool embed\\}"
             }
         },
         "waitMessage": {
             "description": "",
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "[\"111111111111111\",\"2222222222222\"]",
+                "exampleCode": "\\{waitMessage\\}"
             },
             "filtered": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "[\"111111111111111\", \"103347843934212096\"]",
+                "exampleCode": "\\{waitMessage;111111111111111;\\{userId;stupid cat\\};\\{bool;\\{username\\};startswith;stupid\\};50\\}"
             }
         },
         "waitReaction": {
             "description": "",
             "default": {
                 "description": "",
-                "exampleIn": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleIn": "(реакция добавляется)",
+                "exampleOut": "[\"111111111111111\",\"12345678912345\",\"3333333333333\",\"🤔\"]",
+                "exampleCode": "\\{waitReaction;12345678912345;stupid cat\\}"
             },
             "filtered": {
                 "description": "",
-                "exampleIn": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleIn": "(какой-нибудь пользователь ставит реакцию 🤔)\n(Blargbot ставит реакцию 🤔)",
+                "exampleOut": "[\"111111111111111\",\"12345678912345\",\"134133271750639616\",\"🤔\"]",
+                "exampleCode": "\\{waitReaction;12345678912345;[\"\\{userId;stupid cat\\}\",\"\\{userId;blargbot\\}\"];[\"🤔\", \"👀\"];;120\\}"
             }
         },
         "webhook": {
             "description": "",
             "empty": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "Error executing webhook: Cannot send an empty message",
+                "exampleCode": "\\{webhook;1111111111111111;t.OK-en\\}"
             },
             "default": {
                 "description": "",
                 "exampleOut": "",
-                "exampleCode": ""
+                "exampleCode": "\\{webhook;1111111111111111;t.OK-en;This is the webhook content!;\\{json;\\{\"title\":\"This is the embed title!\"\\}\\}\\}"
             },
             "withUser": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "(в канале вебхука) Some content! (отправлено \"не Blargbot'ом\" с аватаркой Blargbot'а)",
+                "exampleCode": "\\{webhook;1111111111111111;t.OK-en;Some content!;;Not blargbot;\\{userAvatar;blargbot\\}\\}"
             },
             "withFile": {
                 "description": "",
@@ -1489,151 +1489,151 @@
             "basic": {
                 "description": "",
                 "exampleOut": "",
-                "exampleCode": ""
+                "exampleCode": "The hash of brown is \\{hash;brown\\}."
             },
             "secure": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "The hash of brown is 5eb67f9f8409b9c3f739735633cbdf92121393d0e13bd0f464b1b2a6a15ad2dc",
+                "exampleCode": "\\{hash;sha256;brown\\}"
             }
         },
         "htmlDecode": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "<hello, world>",
+                "exampleCode": "\\{htmlDecode;&lt;hello, world&gt;\\}"
             }
         },
         "htmlEncode": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "&lt;hello, world&gt;",
+                "exampleCode": "\\{htmlEncode;<hello, world>\\}"
             }
         },
         "if": {
             "description": "",
             "value": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "This is a custom command!",
+                "exampleCode": "\\{if;\\{isCustomCommand\\};This is a custom command!\\}"
             },
             "valueElse": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "This isn't a custom command!",
+                "exampleCode": "\\{if;\\{isCustomCommand\\};This is a custom command!;This isn't a custom command!\\}"
             },
             "conditionThen": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "Hi stupid cat!",
+                "exampleCode": "\\{if;\\{userId\\};==;103347843934212096;Hi stupid cat!\\}"
             },
             "conditionElse": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "Who are you stranger?",
+                "exampleCode": "\\{if;\\{userId\\};==;103347843934212096;Hi stupid cat!;Who are you stranger?\\}"
             }
         },
         "indexOf": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "The index of \"o\" in \"hello world\" is 4",
+                "exampleCode": "The index of \"o\" in \"hello world\" is \\{indexof;hello world;o\\}"
             }
         },
         "lang": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "This will be displayed with js!.",
+                "exampleCode": "This will be displayed with js! \\{lang;js\\}."
             }
         },
         "length": {
             "default": {
                 "description": "",
-                "exampleIn": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleIn": "Hello",
+                "exampleOut": "What you said is 5 chars long.",
+                "exampleCode": "What you said is \\{length;\\{args\\}\\} chars long."
             }
         },
         "logic": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "false",
+                "exampleCode": "\\{logic;&&;true;false\\}"
             }
         },
         "lower": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "this will become lowercase",
+                "exampleCode": "\\{lower;THIS WILL BECOME LOWERCASE\\}"
             }
         },
         "md5": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "71d97a11f770a34d7f8cf1f1d8749d85",
+                "exampleCode": "\\{md5;Woosh whap phew!\\}"
             }
         },
         "newline": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "Hello,\nworld!",
+                "exampleCode": "Hello,\\{newline\\}world!"
             }
         },
         "operator": {
             "%": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "4 1 0",
+                "exampleCode": "\\{%;24;5\\} \\{%;24;5;3\\} \\{%;19;5;4\\}"
             },
             "*": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "24",
+                "exampleCode": "\\{*;1;2;3;4\\}"
             },
             "+": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "10",
+                "exampleCode": "\\{+;1;2;3;4\\}"
             },
             "-": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "-2",
+                "exampleCode": "\\{-;4;3;2;1\\}"
             },
             "/": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "5 2",
+                "exampleCode": "\\{/;5\\} \\{/;120;5;4;3\\}"
             },
             "^": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "8 256",
+                "exampleCode": "\\{^;2;3\\} \\{^;2;2;2;2\\}"
             },
             "<": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "false false false true",
+                "exampleCode": "\\{<;a\\} \\{<;a;b;c;c\\} \\{<;1;2;3;4;2\\} \\{<;a;b;c;d\\}"
             },
             "<=": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "false true false true",
+                "exampleCode": "\\{<=;a\\} \\{<=;a;b;c;c\\} \\{<;1;2;3;4;2\\} \\{<=;a;b;c;d\\}"
             },
             "!=": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "true true false",
+                "exampleCode": "\\{!=;a;b;c\\} \\{!=;a;b;a\\} \\{!=;a;a;b\\}"
             },
             "==": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "false false false true",
+                "exampleCode": "\\{==;a;b;c\\} \\{==;a;b;a\\} \\{==;a;a;b\\} \\{==;a;a;a;a;a\\}"
             },
             ">": {
                 "description": "",
@@ -1787,167 +1787,167 @@
         "substring": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "Hello r!",
+                "exampleCode": "Hello \\{substring;world;2;3\\}!"
             }
         },
         "switch": {
             "default": {
                 "description": "",
-                "exampleIn": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleIn": "hit Danny",
+                "exampleOut": "Got it, i'll hit Danny for you!",
+                "exampleCode": "\\{switch;\\{args;0\\};\n  hi;Hello!;\n  [\"punch\",\"bop\",\"hit\"];Got it, i'll hit \\{args;1\\} for you!;\n  I don't know how to do that!\n\\}"
             }
         },
         "time": {
             "description": "",
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "Time Berlin (as toTimezone): 23:33\nBerlin from UTC 12:00: 13:00\nBerlin (as fromTimezone): 23:33\nBerlin (as fromTimezone and empty toTimezone): 21:33\nNew York from Berlin (12:00 in Berlin): 06:00",
+                "exampleCode": "Berlin (as toTimezone): \\{time;HH:mm;;;;Europe/Berlin\\}\nBerlin from UTC 12:00: \\{time;HH:mm;12:00;HH:mm;;Europe/Berlin\\}\nBerlin (as fromTimezone): \\{time;HH:mm;;;Europe/Berlin\\}\nBerlin (as fromTimezone and empty toTimezone): \\{time;HH:mm;;;Europe/Berlin;\\}\nNew York from Berlin (12:00 in Berlin): \\{time;HH:mm;12:00;HH:mm;Europe/Berlin;America/New_York\\}"
             }
         },
         "trim": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "Hello beautiful World",
+                "exampleCode": "Hello \\{trim;\\{space;10\\}beautiful\\{space;10\\}\\} World"
             }
         },
         "unindent": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "```\nhello\nworld\n```",
+                "exampleCode": "```\n\\{unindent;\n  hello\n  world\n\\}\n```"
             }
         },
         "upper": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "THIS WILL BECOME UPPERCASE",
+                "exampleCode": "\\{upper;this will become uppercase\\}"
             }
         },
         "uriDecode": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "Hello world!",
+                "exampleCode": "\\{uriDecode;Hello%20world\\}"
             }
         },
         "uriEncode": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "Hello%20world!",
+                "exampleCode": "\\{uriEncode;Hello world!\\}"
             }
         },
         "void": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "{}",
+                "exampleCode": "\\{void;This won't be output!\\}"
             }
         },
         "roleAdd": {
             "description": "",
             "target": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "Have a role! true",
+                "exampleCode": "Have a role! \\{roleAdd;11111111111111111\\}"
             },
             "other": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "Stupid cat have a role! true",
+                "exampleCode": "Stupid cat have a role! \\{roleAdd;Bot;Stupid cat\\}"
             }
         },
         "roleColor": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "The admin role id is: #1b1b1b.",
+                "exampleCode": "The admin role color is: #\\{roleColor;admin\\}."
             }
         },
         "roleCreate": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "1298731238361728931",
+                "exampleCode": "\\{roleCreate;myNewRole;red\\}"
             }
         },
         "roleDelete": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "(земля тебе пухом, Супер клёвая роль для всех.)",
+                "exampleCode": "\\{roleDelete;Супер клёвая роль для всех\\}"
             }
         },
         "roleId": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "The admin role id is: 123456789123456.",
+                "exampleCode": "The admin role id is: \\{roleId;admin\\}."
             }
         },
         "roleMembers": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "The admins are: [\"11111111111111111\",\"22222222222222222\"].",
+                "exampleCode": "The admins are: \\{roleMembers;Admin\\}."
             }
         },
         "roleMention": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "The admin role will be mentioned: @Administrator",
+                "exampleCode": "The admin role will be mentioned: \\{roleMention;Admin\\}"
             }
         },
         "roleName": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "The admin role name is: Administrator.",
+                "exampleCode": "The admin role name is: \\{roleName;admin\\}."
             }
         },
         "rolePermissions": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "The admin role's permissions are: 8.",
+                "exampleCode": "The admin role's permissions are: \\{rolePermissions;admin\\}."
             }
         },
         "rolePosition": {
             "default": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "The position of Mayor is 10",
+                "exampleCode": "The position of Mayor is \\{rolePosition;Mayor\\}"
             }
         },
         "roleRemove": {
             "description": "",
             "target": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "No more role! true",
+                "exampleCode": "No more role! \\{roleRemove;11111111111111111\\}"
             },
             "other": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "Stupid cat no more role! true",
+                "exampleCode": "Stupid cat no more role! \\{roleRemove;Bot;Stupid cat\\}"
             }
         },
         "roles": {
             "guild": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "The roles on this guild are: [\"11111111111111111\",\"22222222222222222\"].",
+                "exampleCode": "The roles on this guild are: \\{roles\\}."
             },
             "user": {
                 "description": "",
-                "exampleOut": "",
-                "exampleCode": ""
+                "exampleOut": "Stupid cat has the roles: [\"11111111111111111\",\"22222222222222222\"]",
+                "exampleCode": "Stupid cat has the roles: \\{roles;Stupid cat\\}"
             }
         },
         "roleSetColor": {
