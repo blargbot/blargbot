@@ -1693,6 +1693,11 @@ Database Execution Time: {database#duration(MS)}ms
                 description: 'Returns `true` if the first `value` starts with all the rest. If the first `value` is an array then the first element must equal all the remaining values.',
                 exampleOut: 'true false',
                 exampleCode: '\\{startswith;abcdefghi;a;abcd;abc\\} \\{startswith;["abc","def","ghi"];["\\}'
+            },
+            ['??']: {
+                description: 'Returns the first non-empty value given.',
+                exampleOut: 'abc def',
+                exampleCode: '\\{??;abc;;123\\} \\{??;;;;\n;def;aaaa\\}'
             }
         },
         pad: {

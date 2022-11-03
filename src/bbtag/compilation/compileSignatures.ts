@@ -12,7 +12,10 @@ export function compileSignatures(signatures: readonly SubtagSignatureCallable[]
     let min = initialResolver;
     let max = initialResolver;
 
-    for (const signature of signatures) {
+    // Named signatures first as they are more restrictive
+    const orderedSignatures = [...signatures].sort((a, b) => a.subtagName === b.subtagName ? 0 : a.subtagName === undefined ? 1 : -1);
+
+    for (const signature of orderedSignatures) {
         if (!('implementation' in signature))
             continue;
         for (const resolver of createArgumentResolvers(signature)) {
@@ -28,7 +31,7 @@ export function compileSignatures(signatures: readonly SubtagSignatureCallable[]
     return {
         handlers,
         execute(context, subtagName, call) {
-            const handler = handlers.find(handler => handler.canHandle(call));
+            const handler = handlers.find(handler => handler.canHandle(call, subtagName));
 
             if (handler !== undefined)
                 return handler.execute(context, subtagName, call);
@@ -43,10 +46,12 @@ export function compileSignatures(signatures: readonly SubtagSignatureCallable[]
 }
 
 function createConditionalHandler(signature: SubtagSignatureCallable, resolver: ArgumentResolver): ConditionalSubtagHandler {
+    const name = signature.subtagName?.toLowerCase();
+
     return {
-        canHandle(subtag) {
-            return resolver.isExactMatch(subtag);
-        },
+        canHandle: name === undefined
+            ? subtag => resolver.isExactMatch(subtag)
+            : (subtag, subtagName) => subtagName.toLowerCase() === name && resolver.isExactMatch(subtag),
         async * execute(context, subtagName, call) {
             const args = [];
             for (const arg of resolver.resolve(context, call)) {

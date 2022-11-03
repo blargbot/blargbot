@@ -1,10 +1,11 @@
 import { parse } from '@blargbot/core/utils';
 
-import { SubtagArgumentArray } from '../../arguments';
 import { CompiledSubtag } from '../../compilation';
+import { SubtagSignatureCallableOptions as Options } from '../../compilation/SubtagSignatureCallableOptions';
 import { InvalidOperatorError, NotABooleanError, NotANumberError } from '../../errors';
 import templates from '../../text';
 import { bbtag, LogicOperator, NumericOperator, OrdinalOperator, StringOperator, SubtagType } from '../../utils';
+import { AggregationOperator, aggregationOperators, logicOperators, numericOperators, ordinalOperators, stringOperators } from '../../utils/operators';
 
 const tag = templates.subtags.operator;
 
@@ -12,42 +13,60 @@ export class OperatorSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'operator',
-            aliases: Object.keys(bbtag.operators),
             category: SubtagType.MISC,
             definition: [
-                {
-                    parameters: ['values+'],
-                    returns: 'boolean|number',
-                    execute: (_, values) => this.applyOperation(values)
-                },
-                ...Object.keys(bbtag.operators).map(op => ({
+                ...Object.keys(ordinalOperators).map<Options<'boolean'>>(op => ({
                     ...tag[op],
                     subtagName: op,
-                    parameters: ['values+']
-                } as const))
+                    parameters: ['values+'],
+                    returns: 'boolean',
+                    execute: (_, values) => this.applyOrdinalOperation(op, values.map(v => v.value))
+                })),
+                ...Object.keys(stringOperators).map<Options<'boolean'>>(op => ({
+                    ...tag[op],
+                    subtagName: op,
+                    parameters: ['values+'],
+                    returns: 'boolean',
+                    execute: (_, values) => this.applyStringOperation(op, values.map(v => v.value))
+                })),
+                ...Object.keys(logicOperators).map<Options<'boolean'>>(op => ({
+                    ...tag[op],
+                    subtagName: op,
+                    parameters: ['values+'],
+                    returns: 'boolean',
+                    execute: (_, values) => this.applyLogicOperation(op, values.map(v => v.value))
+                })),
+                ...Object.keys(numericOperators).map<Options<'number'>>(op => ({
+                    ...tag[op],
+                    subtagName: op,
+                    parameters: ['values+'],
+                    returns: 'number',
+                    execute: (_, values) => this.applyNumericOperation(op, values.map(v => v.value))
+                })),
+                ...Object.keys(aggregationOperators).map<Options<'string'>>(op => ({
+                    ...tag[op],
+                    subtagName: op,
+                    parameters: ['values+'],
+                    returns: 'string',
+                    execute: (_, values) => this.applyAggregationOperation(op, values.map(v => v.value))
+                })),
+                {
+                    parameters: ['values+'],
+                    returns: 'error',
+                    execute: (_, values) => { throw new InvalidOperatorError(values.subtagName); }
+                }
             ]
         });
-    }
-
-    public applyOperation(args: SubtagArgumentArray): number | boolean {
-        const operator = args.subtagName;
-        const values = args.map((arg) => arg.value);
-        if (bbtag.isOrdinalOperator(operator)) {
-            return this.applyOrdinalOperation(operator, values);
-        } else if (bbtag.isStringOperator(operator)) {
-            return this.applyStringOperation(operator, values);
-        } else if (bbtag.isNumericOperator(operator)) {
-            return this.applyNumericOperation(operator, values);
-        } else if (bbtag.isLogicOperator(operator)) {
-            return this.applyLogicOperation(operator, values);
-        }
-
-        throw new InvalidOperatorError(operator);
     }
 
     public applyOrdinalOperation(operator: OrdinalOperator, values: string[]): boolean {
         const flattenedValues = bbtag.tagArray.flattenArray(values).map(v => parse.string(v));
         return bbtag.operate('&&', generatePairs(flattenedValues).map(args => bbtag.operate(operator, ...args)));
+    }
+
+    public applyAggregationOperation(operator: AggregationOperator, values: string[]): string {
+        const flattenedValues = bbtag.tagArray.flattenArray(values).map(v => parse.string(v));
+        return bbtag.operate(operator, flattenedValues);
     }
 
     public applyStringOperation(operator: StringOperator, values: string[]): boolean {

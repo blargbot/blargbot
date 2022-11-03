@@ -1,5 +1,6 @@
 import { metrics } from '@blargbot/core/Metrics';
 import { Timer } from '@blargbot/core/Timer';
+import { guard } from '@blargbot/core/utils/index';
 import { IFormattable } from '@blargbot/formatting';
 
 import { BBTagContext } from './BBTagContext';
@@ -19,7 +20,11 @@ export abstract class Subtag implements SubtagOptions<IFormattable<string>> {
 
     public constructor(options: SubtagOptions<IFormattable<string>>) {
         this.name = options.name;
-        this.aliases = options.aliases ?? [];
+        this.aliases = [
+            ...options.aliases ?? [],
+            ...options.signatures.map(s => s.subtagName)
+                .filter(guard.hasValue)
+        ];
         this.category = options.category;
         this.description = options.description;
         this.deprecated = options.deprecated ?? false;
