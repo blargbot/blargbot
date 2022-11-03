@@ -1908,7 +1908,7 @@ describe('Cluster format strings', () => {
                 },
                 reload: {
                     description: 'Loads the latest translations from crowdin',
-                    success: '✅ Translations update requested!'
+                    success: '✅ Translation update requested!'
                 }
             },
             announce: {
