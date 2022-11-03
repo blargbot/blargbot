@@ -4,31 +4,31 @@
             "full": {
                 "template": "{parts#plural(0:0 секунд|{#join(, | и )})}",
                 "year": {
-                    "order": "0",
+                    "order": "",
                     "display": "{value#plural(0:|1:{} год|<:{} года|{} лет)}"
                 },
                 "month": {
-                    "order": "1",
+                    "order": "",
                     "display": "{value#plural(0:|1:{} месяц|<:{} месяца|{} месяцев)}"
                 },
                 "day": {
-                    "order": "2",
+                    "order": "",
                     "display": "{value#plural(0:|1:{} день|<:{} дня|{} дней)}"
                 },
                 "hour": {
-                    "order": "3",
+                    "order": "",
                     "display": "{value#plural(0:|1:{} час|<:{} часа|{} часов)}"
                 },
                 "minute": {
-                    "order": "4",
+                    "order": "",
                     "display": "{value#plural(0:|1:{} минута|<:{} минуты|{} минут)}"
                 },
                 "second": {
-                    "order": "5",
+                    "order": "",
                     "display": "{value#plural(0:|1:{} секунда|<:{} секунды|{} секунд)}"
                 },
                 "millisecond": {
-                    "order": "6",
+                    "order": "",
                     "display": "{value#plural(0:|1:{} миллисекунда|<:{} миллисекунды|{} миллисекунд)}"
                 }
             }
