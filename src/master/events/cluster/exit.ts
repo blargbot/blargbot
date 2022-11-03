@@ -21,7 +21,7 @@ export class ClusterExitHandler extends WorkerPoolEventService<ClusterConnection
             this.master.config.discord.channels.shardlog,
             new FormattableMessageContent({
                 content: util.literal(`Cluster ${worker.id} has died.`),
-                files: [{
+                file: [{
                     file: worker.logs.join('\n'),
                     name: `cluster ${worker.id}.log`
                 }]

@@ -115,7 +115,7 @@ export class BaseUtilities {
 
         const channel = await this.#getSendChannel(context);
         const formatter = await this.getFormatter(channel);
-        const { files = [], ...content } = payload[format](formatter);
+        const { file: files = [], ...content } = payload[format](formatter);
 
         // Stringifies embeds if we lack permissions to send embeds
         if (content.embeds !== undefined && guard.isGuildChannel(channel)) {

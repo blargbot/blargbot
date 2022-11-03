@@ -38,7 +38,7 @@ export class StatusCommand extends GlobalCommand {
         }
 
         return {
-            files: [
+            file: [
                 {
                     name: `${status}.jpg`,
                     file: content

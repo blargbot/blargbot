@@ -62,7 +62,7 @@ export class CAHCommand extends GlobalImageCommand {
         const packNames = unofficial ? packs.all : packs.official;
         return {
             content: cmd.packs.success,
-            files: [
+            file: [
                 {
                     file: packNames.join('\n'),
                     name: 'cah-packs.txt'

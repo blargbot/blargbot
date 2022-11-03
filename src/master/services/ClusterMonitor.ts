@@ -53,7 +53,7 @@ export class ClusterMonitor extends IntervalService {
                 this.master.config.discord.channels.shardlog,
                 new FormattableMessageContent({
                     content: util.literal(`Respawning unresponsive cluster ${cluster.id}...\n${issues.join('\n')}`),
-                    files: [{
+                    file: [{
                         file: cluster.logs.join('\n'),
                         name: `cluster ${cluster.id}.log`
                     }]

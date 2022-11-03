@@ -30,7 +30,7 @@ export class RawBBTagCommandResult implements IFormattable<string | SendContent<
     #attach(formatter: IFormatter): SendContent<string> {
         return {
             content: this.#attached[format](formatter),
-            files: [
+            file: [
                 {
                     name: this.#fileName,
                     file: this.#content
