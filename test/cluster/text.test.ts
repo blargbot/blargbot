@@ -7458,20 +7458,20 @@ describe('Cluster format strings', () => {
                             user: [
                                 {
                                     name: 'default',
-                                    input: [{ user: quickMock(user, { id: 'userId', createdAt: 123456789 }) }],
-                                    expected: '**User Id**: userId\n**Created**: <t:123456789:f>'
+                                    input: [{ user: quickMock(user, { id: 'userId', createdAt: 123456789123 }) }],
+                                    expected: '**User Id**: userId\n**Created**: <t:123456789>'
                                 }
                             ],
                             member: [
                                 {
                                     name: 'with joinedAt',
-                                    input: [{ user: quickMock(member, { id: 'userId', createdAt: 123456789, joinedAt: 987654321 }) }],
-                                    expected: '**User Id**: userId\n**Created**: <t:123456789:f>\n**Joined** <t:987654321:f>'
+                                    input: [{ user: quickMock(member, { id: 'userId', createdAt: 123456789123, joinedAt: 987654321123 }) }],
+                                    expected: '**User Id**: userId\n**Created**: <t:123456789>\n**Joined** <t:987654321>'
                                 },
                                 {
                                     name: 'without joinedAt',
-                                    input: [{ user: quickMock(member, { id: 'userId', createdAt: 123456789, joinedAt: null }) }],
-                                    expected: '**User Id**: userId\n**Created**: <t:123456789:f>\n**Joined** -'
+                                    input: [{ user: quickMock(member, { id: 'userId', createdAt: 123456789123, joinedAt: null }) }],
+                                    expected: '**User Id**: userId\n**Created**: <t:123456789>\n**Joined** -'
                                 }
                             ]
                         },
