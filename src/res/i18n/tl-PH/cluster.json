@@ -2,16 +2,16 @@
     "common": {
         "query": {
             "cancel": "Kanselahin",
-            "cantUse": "",
+            "cantUse": "❌ Ito ay hindi sayo upang gamitin!",
             "choose": {
-                "paged": ""
+                "paged": "{content#bool({}\n|)}Pahina {page}/{pageCount}"
             },
             "user": {
                 "prompt": {
-                    "default": "",
-                    "filtered": ""
+                    "default": "ℹ️ Maaaring pumili ng user galing sa drop down",
+                    "filtered": "ℹ️ Maraming user ang nag match sa `{filter}`! Maaaring pumili ng isa galing sa drop down."
                 },
-                "placeholder": "",
+                "placeholder": "Pumili ng user",
                 "choice": {
                     "label": "{user.username}#{user.discriminator}",
                     "description": "Id: {user.id}"
@@ -19,8 +19,8 @@
             },
             "member": {
                 "prompt": {
-                    "default": "",
-                    "filtered": ""
+                    "default": "ℹ️ Maaaring pumili ng user galing sa drop down",
+                    "filtered": "ℹ️ Maraming user ang nag match sa `{filter}`! Maaaring pumili ng isa galing sa drop down."
                 },
                 "placeholder": "Pumili ng user",
                 "choice": {
@@ -30,8 +30,8 @@
             },
             "sender": {
                 "prompt": {
-                    "default": "",
-                    "filtered": ""
+                    "default": "ℹ️ Maaaring pumili ng user o webhook galing sa drop down",
+                    "filtered": "ℹ️ Maraming user o webhook ang nag match sa `{filter}`! Maaaring pumili ng isa galing sa drop down."
                 },
                 "placeholder": "Pumili ng user o webhook",
                 "choice": {
@@ -82,16 +82,16 @@
         "success": "Ok, andito na ulit ako. Umabot ako ng {duration#duration(F)}"
     },
     "roleme": {
-        "failed": ""
+        "failed": "May na-trigger na roleme, pero wala akong permiso para mabigyan kita ng role!"
     },
     "poll": {
         "embed": {
             "footer": {
-                "text": ""
+                "text": "Matatapos na ang botohan"
             }
         },
         "success": {
-            "noVotes": "",
+            "noVotes": "Ang mga boto ay nandito na! **0** na boto ang nakuha!\n\nWalang bumoto, nakakalungkot 😦",
             "tie": "",
             "single": ""
         }
