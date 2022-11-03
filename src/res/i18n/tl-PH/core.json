@@ -2,34 +2,34 @@
     "common": {
         "duration": {
             "full": {
-                "template": "",
+                "template": "{parts#plural(0:0 segundo|{#join(, | and )})}",
                 "year": {
                     "order": "",
-                    "display": ""
+                    "display": "{value#plural(0:|1:1 taon|{} mga taon)}"
                 },
                 "month": {
                     "order": "",
-                    "display": ""
+                    "display": "{value#plural(0:|1:1 buwan|{} mga buwan)}"
                 },
                 "day": {
                     "order": "",
-                    "display": ""
+                    "display": "{value#plural(0:|1:1 araw|{} mga araw)}"
                 },
                 "hour": {
                     "order": "",
-                    "display": ""
+                    "display": "{value#plural(0:|1:1 oras|{} mga oras)}"
                 },
                 "minute": {
                     "order": "",
-                    "display": ""
+                    "display": "{value#plural(0:|1:1 minuto|{} mga minuto)}"
                 },
                 "second": {
                     "order": "",
-                    "display": ""
+                    "display": "{value#plural(0:|1:1 segundo|{} mga segundo)}"
                 },
                 "millisecond": {
                     "order": "",
-                    "display": ""
+                    "display": "{value#plural(0:|1:1 millisecond|{} milliseconds)}"
                 }
             }
         }
@@ -37,11 +37,11 @@
     "utils": {
         "send": {
             "errors": {
-                "messageNoPerms": "",
-                "channelNoPerms": "",
-                "embedNoPerms": "",
-                "guild": "",
-                "dm": ""
+                "messageNoPerms": "Sinubukan kong mag message upang mag reply sa iyong command, pero wala akong permiso magsalita. Kung sa tingin mo ito ay isang pagkakamali, maaaring i-contact ang staff sa iyong guild para bigay saakin ang `Send Messages` na permiso.",
+                "channelNoPerms": "Sinubukan kong mag message upang mag reply sa iyong command, pero wala akong permiso makita ang channel. Kung sa tingin mo ito ay isang pagkakamali, maaaring i-contact ang staff sa iyong guild para bigay saakin ang `Read Messages` na permiso.",
+                "embedNoPerms": "Wala akong permiso para mag-embed ng links! Masisira nito ang karamihan ng aking mga command. Maaaring ibigay sa akin ang `Embed Links` permission. Salamat!",
+                "guild": "{message}\nGuild: {channel.guild.name} ({channel.guild.id})\nChannel: {channel.name} ({channel.id})\n\nKung gusto mong hindi makita ang mga mensahe na ito, gawin ang command na `dmerrors`.",
+                "dm": "{message}\nChannel: PRIBADONG CHANNEL ({channel.id})\n\nKung gusto mong hindi makita ang mga mensahe na ito, gawin ang command na `dmerrors`."
             }
         }
     }
