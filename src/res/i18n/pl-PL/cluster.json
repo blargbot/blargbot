@@ -82,7 +82,7 @@
         "success": "Ok, wróciłem. To zadanie zajęło mi {duration#duration(F)}"
     },
     "roleme": {
-        "failed": ""
+        "failed": "Komenda `roleme` została aktywowana, ale nie mam uprawnień, by dać Tobie tą rolę!"
     },
     "poll": {
         "embed": {
@@ -98,269 +98,269 @@
     },
     "guild": {
         "blacklisted": "Witamy! Z przykrością informuję Cię, że Twój serwer, **{guild.name}** ({guild.id}), znajduje się na mojej czarnej liście. Przykro mi z tego powodu! Opuszczę teraz Twój serwer i życzę miłego dnia.",
-        "joined": ""
+        "joined": "☑️ Serwer: `{guild.name}` (`{guild.id}`)! {botGuild#bool(- ***SERWER BOTÓW***|)}\n    Razem: **{size}** | Użytkownicy: **{userCount}** | Boty: **{botCount}** | Procent botów: **{botFraction#percent}**"
     },
     "autoresponse": {
-        "prompt": "",
+        "prompt": "Nowe żądanie AR od **{user.username}#{user.discriminator}** ({user#tag}):\n**Serwer**: {guild.name} ({guild.id})\n**Kanał**: {channelId}\n**Członkowie**: {guild.members.size}\n\n{reason}\n\n```js\n{code}\n```",
         "whitelist": {
-            "approved": "",
-            "rejected": ""
+            "approved": "✅ Gratuluję, twoja gildia została umieszczona na białej liście dla autoresponcji! 🎉\n*Czas oczekiwania może sięgnąć 15 minut*",
+            "rejected": "❌ Przepraszamy, twoja gildia została odrzucona dla auto-odpowiedzi. 😿"
         }
     },
     "announcements": {
         "prompt": {
-            "channel": "",
-            "role": ""
+            "channel": "ℹ️ Proszę wybrać kanał, w którym powinny pojawiać się ogłoszenia.",
+            "role": "ℹ️ Proszę wybrać rolę do wzmianki podczas ogłaszania."
         }
     },
     "modlog": {
-        "defaultReason": "",
+        "defaultReason": "Odpowiedzialny moderatorze, proszę użyć komendy `{prefix}reason {caseId}` aby ustawić powód.",
         "types": {
-            "generic": "",
-            "pardon": "",
-            "timeout": "",
-            "timeoutClear": "",
-            "softBan": "",
-            "ban": "",
+            "generic": "Ogólne",
+            "pardon": "Pardon",
+            "timeout": "Przerwa",
+            "timeoutClear": "Wyczyść przerwę",
+            "softBan": "Soft-ban",
+            "ban": "Ban",
             "massBan": "Masowy Ban",
-            "unban": "",
-            "kick": "",
-            "unmute": "",
-            "mute": "",
-            "temporaryMute": "",
-            "warning": ""
+            "unban": "Odbanuj",
+            "kick": "Wyrzuć",
+            "unmute": "Odciszenie",
+            "mute": "Wycisz",
+            "temporaryMute": "Tymczasowo wycisz",
+            "warning": "Ostrzeżenie"
         },
         "embed": {
-            "title": "",
-            "description": "",
+            "title": "Przypadek {caseId}",
+            "description": "{users#map({username}#{discriminator} \\({id}\\))#join(\n)}",
             "footer": {
-                "text": ""
+                "text": "{user.username}#{user.discriminator} ({user.id})"
             },
             "field": {
                 "type": {
-                    "name": ""
+                    "name": "Typ"
                 },
                 "reason": {
-                    "name": "",
-                    "value": ""
+                    "name": "Powód",
+                    "value": "{reason}"
                 },
                 "pardons": {
-                    "name": "",
-                    "value": ""
+                    "name": "Odbanowania",
+                    "value": "Przypisano: {count}\nŁącznie: {warnings}"
                 },
                 "warnings": {
-                    "name": "",
-                    "value": ""
+                    "name": "Ostrzeżenia",
+                    "value": "Przypisano: {count}\nŁącznie: {warnings}"
                 },
                 "duration": {
-                    "name": "",
-                    "value": ""
+                    "name": "Czas trwania",
+                    "value": "{duration#duration(F)}"
                 },
                 "user": {
-                    "name": "",
-                    "value": ""
+                    "name": "Użytkownik",
+                    "value": "{user.username}#{user.discriminator} ({user.id})"
                 }
             }
         }
     },
     "eventLog": {
-        "disabled": "",
+        "disabled": "❌ Wyłączono logowanie zdarzenia `{event}`, ponieważ kanał {channel#tag} nie istnieje lub nie mam uprawnień do wysyłania w nim wiadomości!",
         "events": {
-            "timeoutAdded": "",
-            "timeoutRemoved": "",
-            "banned": "",
-            "unbanned": "",
-            "joined": "",
-            "left": "",
-            "messageDeleted": "",
-            "messageUpdated": "",
-            "roleRemoved": "",
-            "roleAdded": "",
-            "nicknameUpdated": "",
-            "usernameUpdated": "",
-            "avatarUpdated": ""
+            "timeoutAdded": "ℹ️ Użytkownik został wysłany na przerwę",
+            "timeoutRemoved": "Przerwa użytkownika została usunięta",
+            "banned": "ℹ️ Użytkownik został zbanowany",
+            "unbanned": "ℹ️ Użytkownik został odbanowany",
+            "joined": "ℹ️ Użytkownik dołączył",
+            "left": "ℹ️ Użytkownik opuścił serwer",
+            "messageDeleted": "ℹ️ Wiadomość usunięta",
+            "messageUpdated": "ℹ️ Wiadomość zaktualizowana",
+            "roleRemoved": "ℹ️ Specjalna rola usunięta",
+            "roleAdded": "ℹ️ Specjalna rola dodana",
+            "nicknameUpdated": "ℹ️ Zaktualizowano pseudonim",
+            "usernameUpdated": "ℹ️ Zaktualizowano nazwę użytkownika",
+            "avatarUpdated": "ℹ️ Awatar zaktualizowany"
         },
         "embed": {
             "description": {
-                "avatarUpdated": "",
-                "bulkDelete": "",
+                "avatarUpdated": "➡️ Stary awatar\n⬇️ Nowy awatar",
+                "bulkDelete": "Masowe usunięcie wiadomości",
                 "userUpdated": {
-                    "username": "",
-                    "discriminator": "",
-                    "both": ""
+                    "username": "Zmieniono nazwę użytkownika.",
+                    "discriminator": "Tag użytkownika został zmieniony.",
+                    "both": "Zmieniono nazwę użytkownika.\nZmieniono tag."
                 }
             },
             "field": {
                 "reason": {
-                    "name": "",
-                    "value": ""
+                    "name": "Powód",
+                    "value": "{reason}"
                 },
                 "message": {
-                    "name": "",
-                    "value": ""
+                    "name": "ID wiadomości",
+                    "value": "{messageId}"
                 },
                 "channel": {
-                    "name": "",
-                    "value": ""
+                    "name": "Kanał",
+                    "value": "{channelIds#map(<#{}>)#join(\n)}"
                 },
                 "oldUsername": {
-                    "name": "",
-                    "value": ""
+                    "name": "Stara nazwa",
+                    "value": "{user.username}#{user.discriminator}"
                 },
                 "newUsername": {
-                    "name": "",
-                    "value": ""
+                    "name": "Nowa nazwa",
+                    "value": "{user.username}#{user.discriminator}"
                 },
                 "oldNickname": {
-                    "name": "",
-                    "value": ""
+                    "name": "Stary pseudonim",
+                    "value": "{nickname}"
                 },
                 "newNickname": {
-                    "name": "",
-                    "value": ""
+                    "name": "Nowy pseudonim",
+                    "value": "{nickname}"
                 },
                 "role": {
-                    "name": "",
-                    "value": ""
+                    "name": "Rola",
+                    "value": "<@&{roleId}> ({roleId})"
                 },
                 "updatedBy": {
-                    "name": "",
-                    "value": ""
+                    "name": "Zaktualizowany przez",
+                    "value": "<@{userId}> ({userId})"
                 },
                 "created": {
-                    "name": "",
-                    "value": ""
+                    "name": "Stworzony",
+                    "value": "{time#tag}"
                 },
                 "until": {
-                    "name": "",
-                    "value": ""
+                    "name": "Przed",
+                    "value": "{time#tag}"
                 },
                 "count": {
-                    "name": "",
-                    "value": ""
+                    "name": "Ilość",
+                    "value": "{count}"
                 },
                 "content": {
                     "name": {
                         "old": {
-                            "unavailable": "",
-                            "empty": "",
-                            "default": ""
+                            "unavailable": "Stara wiadomość (Niedostępna)",
+                            "empty": "Stara wiadomość (Pusta)",
+                            "default": "Stara wiadomość"
                         },
                         "new": {
-                            "unavailable": "",
-                            "empty": "",
-                            "default": ""
+                            "unavailable": "Nowa wiadomość (Niedostępna)",
+                            "empty": "Nowa wiadomość (Pusta)",
+                            "default": "Nowa wiadomość"
                         },
                         "current": {
-                            "unavailable": "",
-                            "empty": "",
-                            "default": ""
+                            "unavailable": "Zawartość (Niedostępna)",
+                            "empty": "Zawartość (Pusta)",
+                            "default": "Zawartość"
                         }
                     },
                     "value": {
-                        "chatLogsOff": "",
-                        "unknown": "",
-                        "expired": "",
-                        "notLogged": "",
-                        "empty": "",
-                        "default": ""
+                        "chatLogsOff": "Ta wiadomość nie została zapisana. ChatLogging jest wyłączony",
+                        "unknown": "Ta wiadomość nie została zalogowana. ChatLogging był wyłączony, gdy została wysłana lub jest starsza niż 2 tygodnie",
+                        "expired": "Ta wiadomość nie jest już zalogowana, ponieważ jest starsza niż 2 tygodnie",
+                        "notLogged": "Ta wiadomość nie została zalogowana. ChatLogging był wyłączony, gdy została wysłana.",
+                        "empty": "Ta wiadomość nie ma treści. Ma albo załącznik, albo embed",
+                        "default": "{content#overflow(1024|... (zbyt długi, aby wyświetlić))}"
                     }
                 }
             }
         }
     },
     "warning": {
-        "autoBan": "",
-        "autoKick": "",
-        "autoTimeout": ""
+        "autoBan": "[ Auto-Ban ] Przekroczono limit ostrzeżeń dla bana ({warnings}/{limit})",
+        "autoKick": "[ Auto-Ban ] Przekroczono limit dla wyrzucenia ({warnings}/{limit})",
+        "autoTimeout": "[ Auto-Ban ] Przekroczono limit dla przerwy ({warnings}/{limit})"
     },
     "mute": {
-        "autoUnmute": "",
-        "createReason": ""
+        "autoUnmute": "Automatycznie odmute-owano po {duration#duration(F)=jakimś czasie}.",
+        "createReason": "Automatyczna konfiguracja roli Muted"
     },
     "moderation": {
-        "auditLog": ""
+        "auditLog": "[{moderator.username}#{moderator.discriminator}]{reason#bool( {}|)}"
     },
     "censor": {
-        "warnReason": "",
+        "warnReason": "Wiadomość zawiera niedozwoloną frazę.",
         "mentionSpam": {
             "ban": {
-                "reason": "",
-                "failed": ""
+                "reason": "Spam wzmiankami",
+                "failed": "{user#tag} spamuje wzmiankami, ale nie mam permisji, by go zbanować!"
             }
         }
     },
     "ban": {
-        "autoUnban": ""
+        "autoUnban": "Automatycznie odbanowano po {duration#duration(F)=jakimś czasie}."
     },
     "documentation": {
-        "loading": "",
+        "loading": "Ładowanie...",
         "name": {
-            "flat": ""
+            "flat": "{parent} - {child}"
         },
         "paging": {
-            "parent": "",
+            "parent": "Wróć do {parent}",
             "select": {
-                "placeholder": ""
+                "placeholder": "{text} - Strona {page}/{pageCount}"
             }
         },
         "command": {
-            "unknown": "",
-            "invalid": "",
-            "prompt": "",
+            "unknown": "❌ Ups, nie mogłem znaleźć takiej komendy! Spróbuj użyć `b!help`, by otrzymać pełną listę komend",
+            "invalid": "❌ Ta strona pomocy jest już nieprawidłowa!",
+            "prompt": "Wiele stron pomocy pasuje do `{term}`",
             "index": {
-                "name": "",
-                "footer": "",
-                "prompt": ""
+                "name": "Pomoc",
+                "footer": "Aby uzyskać więcej informacji na temat poleceń, użyj `b!help <nazwaKomendy>` lub odwiedź <{commandsLink}>.\nChcesz przekazać darowiznę na rzecz bota? Linki darowizn są dostępne na <{donateLink}> - wszystkie darowizny są bezpośrednio przeznaczone na zwrot kosztów hostingu.",
+                "prompt": "Wybierz kategorię komend"
             },
             "list": {
-                "none": "",
-                "excess": "",
-                "count": "",
-                "default": ""
+                "none": "Brak komend",
+                "excess": "```\n{items#join(, )}\n``` i jeszcze {excess} elementów",
+                "count": "{count} {count#plural(1:komenda|2:komendy|3:komendy|4:komendy|komend)}",
+                "default": "```\n{items#join(, )}\n```"
             },
             "categories": {
-                "prompt": "",
-                "displayName": "",
+                "prompt": "Wybierz komendę",
+                "displayName": "Komendy z kategorii: {category}",
                 "custom": {
-                    "noHelp": ""
+                    "noHelp": "_Pomoc nie jest ustawiona_"
                 }
             },
             "command": {
-                "prompt": "",
-                "noPerms": "",
+                "prompt": "Wybierz sygnaturę komendy",
+                "noPerms": "```\n❌ Nie możesz użyć b!{name}\n```{description}",
                 "aliases": {
-                    "name": "",
-                    "value": ""
+                    "name": "**Aliasy**",
+                    "value": "{aliases#join(, )}"
                 },
                 "flags": {
-                    "name": "",
-                    "value": ""
+                    "name": "**Flagi**",
+                    "value": "{flags#map(`-{flag}`/`--{word}`: {description})#join(\n)}"
                 },
                 "usage": {
-                    "name": "",
-                    "value": ""
+                    "name": "ℹ️  {usage}",
+                    "value": "{notes#plural(0:|{#map(> {})#join(\n)}\n\n)}{description}"
                 },
                 "notes": {
-                    "alias": "",
+                    "alias": "`{parameter}` może zostać zamieniony z {aliases#map(`{}`)#join(, | lub )}",
                     "type": {
                         "string": {
-                            "single": ""
+                            "single": "`{name}` domyślnie jest ustawione na `{default}`"
                         },
                         "literal": {
-                            "single": "",
-                            "greedy": ""
+                            "single": "`{name}` powinno być {choices#map(`{}`)#join(, | lub )}{default#bool( i domyślnie jest `{}`|)}",
+                            "greedy": "`{name}` są {min#plural(0:|1:|{} lub więcej )}{choices#map(`{}`)#join(, | lub )}"
                         },
                         "boolean": {
-                            "single": "",
-                            "greedy": ""
+                            "single": "`{name}` powinno być prawdą lub fałszem{default#bool( i domyślnie jest `{}`|)}",
+                            "greedy": "`{name}` są {min#plural(0:|1:|{} lub więcej )}prawdą lub fałszem"
                         },
                         "channel": {
-                            "single": "",
-                            "greedy": ""
+                            "single": "`{name}` powinien być ID kanału, wzmianką lub nazwą{default#bool( i domyślnie jest `{}`|)}",
+                            "greedy": "`{name}` są {min#plural(0:|1:|{} lub więcej )}ID kanałów, wzmianki lub nazwy"
                         },
                         "duration": {
-                            "single": "",
+                            "single": "`{name}` powinien mieć czas trwania{default#bool( i domyślnie jest `{}`|)}",
                             "greedy": ""
                         },
                         "bigint": {
@@ -438,7 +438,7 @@
                         },
                         "exampleCode": {
                             "name": "",
-                            "value": ""
+                            "value": "```\n{code}\n```"
                         },
                         "exampleIn": {
                             "name": "",
@@ -446,7 +446,7 @@
                         },
                         "exampleOut": {
                             "name": "",
-                            "value": ""
+                            "value": "{text#bool(\n{#split(\n)#map(> {})#join(\n)}|_no output_)}\n"
                         },
                         "limit": {
                             "name": {
@@ -466,20 +466,20 @@
             },
             "variables": {
                 "name": "",
-                "description": "",
-                "prompt": "",
+                "description": "W BBTag istnieje {scopeCount} różnych zakresów, które mogą być użyte do przechowywania danych. Te zakresy są określone przez pierwszy znak Twojej zmiennej, więc wybierz ostrożnie!",
+                "prompt": "Wybierz zakres zmiennej",
                 "pages": {
                     "variableType": {
-                        "name": ""
+                        "name": "{name} (prefiks: {prefix})"
                     },
                     "commitRollback": {
-                        "name": "",
-                        "value": ""
+                        "name": "\\{commit\\} i \\{rollback\\}",
+                        "value": "Z powodów związanych z wydajnością, kiedy wartość jest `\\{set\\}`, nie będzie ona natychmiast wprowadzona do bazy danych. `\\{commit\\}` i `\\{rollback\\}` mogą posłużyć do manipulowania gdy zmienne zostaną wysłane do bazy danych, jeśli tak się stanie. `\\{commit\\}` zmusi dane zmienne do zostania wysłanymi do bazy danych natychmiast. `\\{rollback\\}` przywróci dane zmienne do ich początkowej wartości (początek tagu lub ostatni `\\{commit\\}`).\nIstnieje też dodatkowy prefiks dla \\{set\\} i \\{get\\}, czyli `!`. Ten prefiks może być połączony z innymi prefiksami i będzie zachowywał się tak samo jak gdybyś użył `\\{set\\}`, po czym natychmiast `\\{commit\\}`, np. ```\\{set;!@varname;value\\}``` to to samo co ```\\{set;@varname;value\\}\\{commit;@varname\\}```"
                     }
                 }
             },
             "arguments": {
-                "name": "",
+                "name": "Argumenty",
                 "description": "",
                 "prompt": "",
                 "pages": {

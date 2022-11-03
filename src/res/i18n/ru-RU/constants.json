@@ -1,4 +1,5 @@
 {
+    "localeName": "Русский",
     "discord": {
         "permission": {
             "addReactions": "добавлять реакции",

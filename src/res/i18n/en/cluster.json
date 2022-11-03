@@ -451,9 +451,9 @@
                         "limit": {
                             "name": {
                                 "customCommandLimit": "**Limits for custom commands:**",
-                                "everythingAutoResponseLimit": "**Limits for custom commands:**",
-                                "generalAutoResponseLimit": "**Limits for custom commands:**",
-                                "tagLimit": "**Limits for custom commands:**"
+                                "everythingAutoResponseLimit": "**Limits for everything autoresponses:**",
+                                "generalAutoResponseLimit": "**Limits for general autoresponses:**",
+                                "tagLimit": "**Limits for tags:**"
                             },
                             "value": "```\n{rules#join(\n)}\n```"
                         }
@@ -3043,9 +3043,9 @@
         "warnings": {
             "common": {
                 "count": "{count#plural(0:🎉|⚠️)} **{user#tag}** {count#plural(0:doesn't have any warnings!|1:has accumulated 1 warning.|has accumulated {} warnings.)}",
-                "untilTimeout": "- {remaining} more warnings before being timed out.",
-                "untilKick": "- {remaining} more warnings before being kicked.",
-                "untilBan": "- {remaining} more warnings before being banned.",
+                "untilTimeout": "- {remaining} more {remaining#plural(1:warning|warnings)} before being timed out.",
+                "untilKick": "- {remaining} more {remaining#plural(1:warning|warnings)} before being kicked.",
+                "untilBan": "- {remaining} more {remaining#plural(1:warning|warnings)} before being banned.",
                 "success": "{parts#join(\n)}"
             },
             "self": {
