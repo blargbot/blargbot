@@ -4,31 +4,31 @@
             "full": {
                 "template": "{parts#plural(0:0 sekund|{#join(, | i )})}",
                 "year": {
-                    "order": "0",
+                    "order": "",
                     "display": "{value#plural(0:|1:1 rok|{} lat)}"
                 },
                 "month": {
-                    "order": "1",
+                    "order": "",
                     "display": "{value#plural(0:|1:1 miesiąc|{} miesięcy)}"
                 },
                 "day": {
-                    "order": "2",
+                    "order": "",
                     "display": "{value#plural(0:|1:1 dzień|{} dni)}"
                 },
                 "hour": {
-                    "order": "3",
+                    "order": "",
                     "display": "{value#plural(0:|1:1 godzina|{} godzin)}"
                 },
                 "minute": {
-                    "order": "4",
+                    "order": "",
                     "display": "{value#plural(0:|1:1 minuta|{} minut)}"
                 },
                 "second": {
-                    "order": "5",
+                    "order": "",
                     "display": "{value#plural(0:|1:1 sekunda|{} sekund)}"
                 },
                 "millisecond": {
-                    "order": "6",
+                    "order": "",
                     "display": "{value#plural(0:|1:1 milisekunda|{} milisekund)}"
                 }
             }
