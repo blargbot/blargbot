@@ -467,9 +467,9 @@ export const templates = FormatString.defineTree('cluster', t => ({
                         limit: {
                             name: {
                                 customCommandLimit: '**Limits for custom commands:**',
-                                everythingAutoResponseLimit: '**Limits for custom commands:**',
-                                generalAutoResponseLimit: '**Limits for custom commands:**',
-                                tagLimit: '**Limits for custom commands:**'
+                                everythingAutoResponseLimit: '**Limits for everything autoresponses:**',
+                                generalAutoResponseLimit: '**Limits for general autoresponses:**',
+                                tagLimit: '**Limits for tags:**'
                             },
                             value: t<{ rules: Iterable<IFormattable<string>>; }>('```\n{rules#join(\n)}\n```')
                         }
@@ -3068,9 +3068,9 @@ export const templates = FormatString.defineTree('cluster', t => ({
         warnings: {
             common: {
                 count: t<{ user: Eris.User; count: number; }>('{count#plural(0:🎉|⚠️)} **{user#tag}** {count#plural(0:doesn\'t have any warnings!|1:has accumulated 1 warning.|has accumulated {} warnings.)}'),
-                untilTimeout: t<{ remaining: number; }>('- {remaining} more warnings before being timed out.'),
-                untilKick: t<{ remaining: number; }>('- {remaining} more warnings before being kicked.'),
-                untilBan: t<{ remaining: number; }>('- {remaining} more warnings before being banned.'),
+                untilTimeout: t<{ remaining: number; }>('- {remaining} more {remaining#plural(1:warning|warnings)} before being timed out.'),
+                untilKick: t<{ remaining: number; }>('- {remaining} more {remaining#plural(1:warning|warnings)} before being being kicked.'),
+                untilBan: t<{ remaining: number; }>('- {remaining} more {remaining#plural(1:warning|warnings)} before being being banned.'),
                 success: t<{ parts: Iterable<IFormattable<string>>; }>('{parts#join(\n)}')
             },
             self: {

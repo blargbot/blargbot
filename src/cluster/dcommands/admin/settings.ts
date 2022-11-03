@@ -137,7 +137,7 @@ export class SettingsCommand extends GuildCommand {
 
     public languages(context: GuildCommandContext): CommandResult {
         const defined = [...FormatString.list()].map(s => s.id);
-        const locales = [];
+        const locales = [{ name: 'English', key: 'en', completion: 1 }];
         for (const [locale, details] of context.util.translator.languages) {
             let total = 0;
             for (const key of defined)
@@ -194,7 +194,7 @@ function resolveLanguage(language: string | undefined, translator: ITranslationS
     const details = translator.languages.get(language)
         ?? translator.languages.get(language = 'en');
     if (details === undefined)
-        return undefined;
+        return cmd.list.localeValue({ name: 'English', completion: 1 });
 
     let count = 0;
     let provided = 0;

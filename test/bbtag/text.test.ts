@@ -466,7 +466,7 @@ Database Execution Time: 678ms
                 description: 'If `moderator` is not provided or left empty, it will default to blargbot.',
                 default: {
                     description: 'Creates a custom modLog entry with the given `action` and `user` with `reason`. `color` can be a [HTML color](https://www.w3schools.com/colors/colors_names.asp), hex, (r,g,b) or a valid color number. .',
-                    exampleOut: 'You did a bad! (modLog entry with white embed colour and reason \'They did a bad!\'',
+                    exampleOut: 'You did a bad! (modLog entry with white embed colour and reason \'They did a bad!\')',
                     exampleCode: 'You did a bad! {modLog;Bad;{userId};;They did a bad;#ffffff}'
                 }
             },
