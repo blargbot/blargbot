@@ -2,8 +2,7 @@ import { Cluster } from '@blargbot/cluster';
 import { GuildCommand } from '@blargbot/cluster/command';
 import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { codeBlock, CommandType, defaultStaff, guard, guildSettings, parse } from '@blargbot/cluster/utils';
-import { FileSystemTranslationSource } from '@blargbot/core/i18n/index';
-import { format, FormatString, IFormattable } from '@blargbot/formatting';
+import { format, FormatString, IFormattable, ITranslationSource } from '@blargbot/formatting';
 import { Guild } from 'eris';
 
 import templates from '../../text';
@@ -139,7 +138,7 @@ export class SettingsCommand extends GuildCommand {
     public languages(context: GuildCommandContext): CommandResult {
         const defined = [...FormatString.list()].map(s => s.id);
         const locales = [];
-        for (const [locale, details] of context.util.translator.locales) {
+        for (const [locale, details] of context.util.translator.languages) {
             let total = 0;
             for (const key of defined)
                 if (details.keys.has(key))
@@ -188,12 +187,12 @@ function settingGroup(values: Array<[key: string & keyof typeof guildSettings, v
     };
 }
 
-function resolveLanguage(language: string | undefined, translator: FileSystemTranslationSource): IFormattable<string> | undefined {
+function resolveLanguage(language: string | undefined, translator: ITranslationSource): IFormattable<string> | undefined {
     if (language === undefined)
         return undefined;
 
-    const details = translator.locales.get(language)
-        ?? translator.locales.get(language = 'en');
+    const details = translator.languages.get(language)
+        ?? translator.languages.get(language = 'en');
     if (details === undefined)
         return undefined;
 

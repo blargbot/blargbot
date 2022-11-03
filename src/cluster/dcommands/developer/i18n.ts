@@ -1,5 +1,6 @@
 import { FormatString } from '@blargbot/formatting';
 
+import { CommandContext } from '../../command/CommandContext';
 import { GlobalCommand } from '../../command/GlobalCommand';
 import templates from '../../text';
 import { CommandResult } from '../../types';
@@ -15,11 +16,21 @@ export class I18nCommand extends GlobalCommand {
             definitions: [
                 {
                     parameters: 'export {withValue:literal(keys|values)=values}',
-                    description: cmd.exports.description,
+                    description: cmd.export.description,
                     execute: (_, [full]) => this.export(full.asString === 'values')
+                },
+                {
+                    parameters: 'reload',
+                    description: cmd.reload.description,
+                    execute: (ctx) => this.reload(ctx)
                 }
             ]
         });
+    }
+
+    public async reload(context: CommandContext): Promise<CommandResult> {
+        await context.util.translator.load();
+        return cmd.reload.success;
     }
 
     public export(includeValues: boolean): CommandResult {

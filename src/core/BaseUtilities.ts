@@ -1,5 +1,6 @@
 import { Configuration } from '@blargbot/config/Configuration';
 import { FormatEmbedAuthor, SendContent, SendContext } from '@blargbot/core/types';
+import { CrowdinTranslationSource } from '@blargbot/crowdin';
 import { Database } from '@blargbot/database';
 import { DiscordChannelTag, DiscordRoleTag, DiscordTagSet, DiscordUserTag, StoredUser } from '@blargbot/domain/models';
 import { format, Formatter, IFormattable, IFormatter, TranslationMiddleware, util } from '@blargbot/formatting';
@@ -7,11 +8,9 @@ import { Logger } from '@blargbot/logger';
 import { Snowflake } from 'catflake';
 import { AdvancedMessageContent, AnyGuildChannel, ApiError, Channel, ChannelInteraction, Client as Discord, Collection, DiscordRESTError, ExtendedUser, Guild, GuildChannel, KnownChannel, KnownGuildChannel, KnownMessage, Member, Message, RequestHandler, Role, TextableChannel, User, UserChannelInteraction, Webhook } from 'eris';
 import moment from 'moment-timezone';
-import path from 'path';
 
 import { BaseClient } from './BaseClient';
 import { Emote } from './Emote';
-import { FileSystemTranslationSource } from './i18n/index';
 import { metrics } from './Metrics';
 import templates from './text';
 import { guard, humanize, parse, snowflake } from './utils';
@@ -23,17 +22,12 @@ export class BaseUtilities {
     public get database(): Database { return this.client.database; }
     public get logger(): Logger { return this.client.logger; }
     public get config(): Configuration { return this.client.config; }
-    public readonly translator: FileSystemTranslationSource;
+    public readonly translator: CrowdinTranslationSource;
 
     public constructor(
         public readonly client: BaseClient
     ) {
-        this.translator = new FileSystemTranslationSource(
-            path.join(
-                path.dirname(require.resolve('@blargbot/res/package')),
-                'i18n'
-            )
-        );
+        this.translator = new CrowdinTranslationSource('a713aad8fe135bf923f9587yoka');
         this.#translator = new TranslationMiddleware(this.translator, client.logger.error.bind(client.logger));
     }
 

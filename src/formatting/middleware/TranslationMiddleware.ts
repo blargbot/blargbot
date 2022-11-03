@@ -2,7 +2,13 @@ import { IFormatterMiddleware } from '../Formatter';
 import { IFormatString, IFormatter } from '../types';
 
 export interface ITranslationSource {
+    readonly languages: ReadonlyMap<string, LanguageDetails>;
     getTranslation(id: string, locale: Intl.Locale): string | undefined;
+}
+
+export interface LanguageDetails {
+    readonly name: string;
+    readonly keys: ReadonlySet<string>;
 }
 
 export class TranslationMiddleware implements IFormatterMiddleware {
