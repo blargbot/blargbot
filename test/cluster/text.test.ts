@@ -1903,8 +1903,12 @@ describe('Cluster format strings', () => {
                 }
             },
             i18n: {
-                exports: {
+                export: {
                     description: 'Generates a JSON file containing all the keys blargbot currently uses for translation'
+                },
+                reload: {
+                    description: 'Loads the latest translations from crowdin',
+                    success: '✅ Translation update requested!'
                 }
             },
             announce: {

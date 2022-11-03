@@ -64,6 +64,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:src/core"\
       },\
       {\
+        "name": "@blargbot/crowdin",\
+        "reference": "workspace:src/crowdin"\
+      },\
+      {\
         "name": "@blargbot/database",\
         "reference": "workspace:src/database"\
       },\
@@ -123,6 +127,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@blargbot/config", ["workspace:src/config"]],\
       ["@blargbot/core", ["workspace:src/core"]],\
       ["@blargbot/core-tests", ["workspace:test/core"]],\
+      ["@blargbot/crowdin", ["workspace:src/crowdin"]],\
       ["@blargbot/database", ["workspace:src/database"]],\
       ["@blargbot/domain", ["workspace:src/domain"]],\
       ["@blargbot/formatting", ["workspace:src/formatting"]],\
@@ -471,7 +476,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["express", "npm:4.18.1"],\
             ["express-promise-router", "virtual:095fcb10883c40f470ac6e6afe01baaad608ecd7018d2aa01600e1b94a63e74e03d9c60d9c4b5eae313115c2ddfa875282bf27ef0d1c898d09652020afc63115#npm:4.1.1"],\
             ["jsonwebtoken", "npm:8.5.1"],\
-            ["node-fetch", "virtual:6856bb430e08360692d328390123b73ceffeaa762cfb620311d78e2963669a6317776ff34dabc7dea4e16844fce94c423a6ef09eb218b6492b32a11450760fb3#npm:2.6.7"],\
+            ["node-fetch", "virtual:eda6ccf92313b7dd52fb064974443bec78771455025cd09c544f7b4fc1acae66de48a245206c42e729961b69da9e3d6918150665525080cd30c2ab1b99b5cf41#npm:2.6.7"],\
             ["prom-client", "npm:14.1.0"],\
             ["ws", "virtual:095fcb10883c40f470ac6e6afe01baaad608ecd7018d2aa01600e1b94a63e74e03d9c60d9c4b5eae313115c2ddfa875282bf27ef0d1c898d09652020afc63115#npm:8.9.0"]\
           ],\
@@ -501,7 +506,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["eris", "npm:0.17.1"],\
             ["html-entities", "npm:2.3.3"],\
             ["moment-timezone", "npm:0.5.37"],\
-            ["node-fetch", "virtual:6856bb430e08360692d328390123b73ceffeaa762cfb620311d78e2963669a6317776ff34dabc7dea4e16844fce94c423a6ef09eb218b6492b32a11450760fb3#npm:2.6.7"],\
+            ["node-fetch", "virtual:eda6ccf92313b7dd52fb064974443bec78771455025cd09c544f7b4fc1acae66de48a245206c42e729961b69da9e3d6918150665525080cd30c2ab1b99b5cf41#npm:2.6.7"],\
             ["rwlock", "npm:5.0.0"]\
           ],\
           "linkType": "SOFT"\
@@ -566,7 +571,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["eris", "npm:0.17.1"],\
             ["eventemitter3", "npm:4.0.7"],\
             ["moment-timezone", "npm:0.5.37"],\
-            ["node-fetch", "virtual:6856bb430e08360692d328390123b73ceffeaa762cfb620311d78e2963669a6317776ff34dabc7dea4e16844fce94c423a6ef09eb218b6492b32a11450760fb3#npm:2.6.7"],\
+            ["node-fetch", "virtual:eda6ccf92313b7dd52fb064974443bec78771455025cd09c544f7b4fc1acae66de48a245206c42e729961b69da9e3d6918150665525080cd30c2ab1b99b5cf41#npm:2.6.7"],\
             ["prom-client", "npm:14.1.0"],\
             ["require-reload", "npm:0.2.2"],\
             ["wolken", "npm:0.2.1"],\
@@ -613,6 +618,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/core", "workspace:src/core"],\
             ["@blargbot/bbtag", "workspace:src/bbtag"],\
             ["@blargbot/config", "workspace:src/config"],\
+            ["@blargbot/crowdin", "workspace:src/crowdin"],\
             ["@blargbot/database", "workspace:src/database"],\
             ["@blargbot/domain", "workspace:src/domain"],\
             ["@blargbot/formatting", "workspace:src/formatting"],\
@@ -659,6 +665,18 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["eris", "npm:0.17.1"],\
             ["mocha", "npm:10.0.0"],\
             ["ts-mockito", "npm:2.6.1"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
+      ["@blargbot/crowdin", [\
+        ["workspace:src/crowdin", {\
+          "packageLocation": "./src/crowdin/",\
+          "packageDependencies": [\
+            ["@blargbot/crowdin", "workspace:src/crowdin"],\
+            ["@blargbot/formatting", "workspace:src/formatting"],\
+            ["@types/node-fetch", "npm:2.6.2"],\
+            ["node-fetch", "virtual:eda6ccf92313b7dd52fb064974443bec78771455025cd09c544f7b4fc1acae66de48a245206c42e729961b69da9e3d6918150665525080cd30c2ab1b99b5cf41#npm:2.6.7"]\
           ],\
           "linkType": "SOFT"\
         }]\
@@ -726,7 +744,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["canvas", "npm:2.10.1"],\
             ["gifencoder", "npm:2.0.1"],\
             ["gm", "npm:1.25.0"],\
-            ["node-fetch", "virtual:6856bb430e08360692d328390123b73ceffeaa762cfb620311d78e2963669a6317776ff34dabc7dea4e16844fce94c423a6ef09eb218b6492b32a11450760fb3#npm:2.6.7"],\
+            ["node-fetch", "virtual:eda6ccf92313b7dd52fb064974443bec78771455025cd09c544f7b4fc1acae66de48a245206c42e729961b69da9e3d6918150665525080cd30c2ab1b99b5cf41#npm:2.6.7"],\
             ["sharp", "npm:0.31.1"],\
             ["twemoji", "npm:14.0.2"]\
           ],\
@@ -773,7 +791,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/node-fetch", "npm:2.6.2"],\
             ["eris", "npm:0.17.1"],\
             ["moment-timezone", "npm:0.5.37"],\
-            ["node-fetch", "virtual:6856bb430e08360692d328390123b73ceffeaa762cfb620311d78e2963669a6317776ff34dabc7dea4e16844fce94c423a6ef09eb218b6492b32a11450760fb3#npm:2.6.7"],\
+            ["node-fetch", "virtual:eda6ccf92313b7dd52fb064974443bec78771455025cd09c544f7b4fc1acae66de48a245206c42e729961b69da9e3d6918150665525080cd30c2ab1b99b5cf41#npm:2.6.7"],\
             ["prom-client", "npm:14.1.0"],\
             ["strip-ansi", "npm:6.0.1"]\
           ],\
@@ -990,7 +1008,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["detect-libc", "npm:2.0.1"],\
             ["https-proxy-agent", "npm:5.0.1"],\
             ["make-dir", "npm:3.1.0"],\
-            ["node-fetch", "virtual:6856bb430e08360692d328390123b73ceffeaa762cfb620311d78e2963669a6317776ff34dabc7dea4e16844fce94c423a6ef09eb218b6492b32a11450760fb3#npm:2.6.7"],\
+            ["node-fetch", "virtual:eda6ccf92313b7dd52fb064974443bec78771455025cd09c544f7b4fc1acae66de48a245206c42e729961b69da9e3d6918150665525080cd30c2ab1b99b5cf41#npm:2.6.7"],\
             ["nopt", "npm:5.0.0"],\
             ["npmlog", "npm:5.0.1"],\
             ["rimraf", "npm:3.0.2"],\
@@ -2359,7 +2377,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["abort-controller", "npm:3.0.0"],\
             ["abortcontroller-polyfill", "npm:1.7.3"],\
             ["lodash", "npm:4.17.21"],\
-            ["node-fetch", "virtual:6856bb430e08360692d328390123b73ceffeaa762cfb620311d78e2963669a6317776ff34dabc7dea4e16844fce94c423a6ef09eb218b6492b32a11450760fb3#npm:2.6.7"]\
+            ["node-fetch", "virtual:eda6ccf92313b7dd52fb064974443bec78771455025cd09c544f7b4fc1acae66de48a245206c42e729961b69da9e3d6918150665525080cd30c2ab1b99b5cf41#npm:2.6.7"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -6551,10 +6569,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],\
           "linkType": "SOFT"\
         }],\
-        ["virtual:6856bb430e08360692d328390123b73ceffeaa762cfb620311d78e2963669a6317776ff34dabc7dea4e16844fce94c423a6ef09eb218b6492b32a11450760fb3#npm:2.6.7", {\
-          "packageLocation": "./.yarn/__virtual__/node-fetch-virtual-e640b4159d/0/cache/node-fetch-npm-2.6.7-777aa2a6df-8d816ffd1e.zip/node_modules/node-fetch/",\
+        ["virtual:eda6ccf92313b7dd52fb064974443bec78771455025cd09c544f7b4fc1acae66de48a245206c42e729961b69da9e3d6918150665525080cd30c2ab1b99b5cf41#npm:2.6.7", {\
+          "packageLocation": "./.yarn/__virtual__/node-fetch-virtual-363b95e335/0/cache/node-fetch-npm-2.6.7-777aa2a6df-8d816ffd1e.zip/node_modules/node-fetch/",\
           "packageDependencies": [\
-            ["node-fetch", "virtual:6856bb430e08360692d328390123b73ceffeaa762cfb620311d78e2963669a6317776ff34dabc7dea4e16844fce94c423a6ef09eb218b6492b32a11450760fb3#npm:2.6.7"],\
+            ["node-fetch", "virtual:eda6ccf92313b7dd52fb064974443bec78771455025cd09c544f7b4fc1acae66de48a245206c42e729961b69da9e3d6918150665525080cd30c2ab1b99b5cf41#npm:2.6.7"],\
             ["@types/encoding", null],\
             ["encoding", null],\
             ["whatwg-url", "npm:5.0.0"]\

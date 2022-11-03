@@ -5,6 +5,7 @@
     "dependencies": {
         "@blargbot/bbtag": "workspace:^",
         "@blargbot/config": "workspace:^",
+        "@blargbot/crowdin": "workspace:^",
         "@blargbot/database": "workspace:^",
         "@blargbot/domain": "workspace:^",
         "@blargbot/formatting": "workspace:^",

@@ -78,7 +78,7 @@ export async function guildSetting<T extends Exclude<keyof StoredGuildSettings, 
             };
         }
         case 'locale': {
-            const details = util.translator.locales.get(raw);
+            const details = util.translator.languages.get(raw);
             if (details === undefined)
                 return { success: false };
 

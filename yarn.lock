@@ -417,6 +417,7 @@ __metadata:
   dependencies:
     "@blargbot/bbtag": "workspace:^"
     "@blargbot/config": "workspace:^"
+    "@blargbot/crowdin": "workspace:^"
     "@blargbot/database": "workspace:^"
     "@blargbot/domain": "workspace:^"
     "@blargbot/formatting": "workspace:^"
@@ -443,6 +444,16 @@ __metadata:
     safe-regex: ^2.1.1
     twemoji: ^14.0.2
     unorm: ^1.6.0
+  languageName: unknown
+  linkType: soft
+
+"@blargbot/crowdin@workspace:^, @blargbot/crowdin@workspace:src/crowdin":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/crowdin@workspace:src/crowdin"
+  dependencies:
+    "@blargbot/formatting": "workspace:^"
+    "@types/node-fetch": ^2.6.2
+    node-fetch: ^2.6.7
   languageName: unknown
   linkType: soft
 
