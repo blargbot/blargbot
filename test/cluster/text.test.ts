@@ -1472,9 +1472,9 @@ describe('Cluster format strings', () => {
                             limit: {
                                 name: {
                                     customCommandLimit: '**Limits for custom commands:**',
-                                    everythingAutoResponseLimit: '**Limits for custom commands:**',
-                                    generalAutoResponseLimit: '**Limits for custom commands:**',
-                                    tagLimit: '**Limits for custom commands:**'
+                                    everythingAutoResponseLimit: '**Limits for everything autoresponses:**',
+                                    generalAutoResponseLimit: '**Limits for general autoresponses:**',
+                                    tagLimit: '**Limits for tags:**'
                                 },
                                 value: [
                                     {
@@ -7651,21 +7651,36 @@ describe('Cluster format strings', () => {
                     ],
                     untilTimeout: [
                         {
-                            name: 'default',
+                            name: 'single',
+                            input: [{ remaining: 1 }],
+                            expected: '- 1 more warning before being timed out.'
+                        },
+                        {
+                            name: 'multiple',
                             input: [{ remaining: 123 }],
                             expected: '- 123 more warnings before being timed out.'
                         }
                     ],
                     untilKick: [
                         {
-                            name: 'default',
+                            name: 'single',
+                            input: [{ remaining: 1 }],
+                            expected: '- 1 more warning before being kicked.'
+                        },
+                        {
+                            name: 'multiple',
                             input: [{ remaining: 123 }],
                             expected: '- 123 more warnings before being kicked.'
                         }
                     ],
                     untilBan: [
                         {
-                            name: 'default',
+                            name: 'single',
+                            input: [{ remaining: 1 }],
+                            expected: '- 1 more warning before being banned.'
+                        },
+                        {
+                            name: 'multiple',
                             input: [{ remaining: 123 }],
                             expected: '- 123 more warnings before being banned.'
                         }

@@ -63,8 +63,13 @@ export class CrowdinTranslationSource implements ITranslationSource {
         }
 
         const lookup = new Map(strings);
-        this.#languageKeys.set(language.locale, { name: language.name, keys: new Set(lookup.keys()) });
-        this.#languageData.set(language.locale, lookup);
+        if (lookup.size === 0) {
+            this.#languageKeys.delete(language.locale);
+            this.#languageData.delete(language.locale);
+        } else {
+            this.#languageKeys.set(language.locale, { name: language.name, keys: new Set(lookup.keys()) });
+            this.#languageData.set(language.locale, lookup);
+        }
     }
 
     * #flattenJson(keys: string[], tree: CrowdinLanguageTree): Generator<[string, string]> {
