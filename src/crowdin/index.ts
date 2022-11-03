@@ -35,19 +35,16 @@ export class CrowdinTranslationSource implements ITranslationSource {
             ]);
 
             const languageMap = new Map(languages.map(x => [x.id, x]));
-            const promises = [];
             for (const id of manifest.languages) {
                 const language = languageMap.get(id);
                 if (language === undefined)
                     continue;
 
-                for (const file of manifest.files) {
-                    const fileUrl = this.#contentUrl(file.replaceAll('%locale%', language.locale), manifest.timestamp);
-                    promises.push(this.#loadLanguageFile(new URL(fileUrl), language));
-                }
+                const fileUrls = manifest.files.map(file => this.#contentUrl(file.replaceAll('%locale%', language.locale), manifest.timestamp)).map(f => new URL(f));
+                try {
+                    await this.#loadLanguageFiles(fileUrls, language);
+                } catch { /* NO-OP */ }
             }
-
-            await Promise.all(promises);
         } finally {
             this.#loadPromise = undefined;
         }
@@ -57,10 +54,15 @@ export class CrowdinTranslationSource implements ITranslationSource {
         return this.#languageData.get(locale.baseName)?.get(id);
     }
 
-    async #loadLanguageFile(fileUrl: URL, language: CrowdinLanguage): Promise<void> {
-        const response = await fetch(fileUrl, { headers: { ['Accept']: 'application/json' } });
-        const data = await response.json() as CrowdinLanguageTree;
-        const lookup = new Map(this.#flattenJson([path.basename(fileUrl.pathname, '.json')], data));
+    async #loadLanguageFiles(fileUrls: URL[], language: CrowdinLanguage): Promise<void> {
+        const strings: Array<[string, string]> = [];
+        for (const fileUrl of fileUrls) {
+            const response = await fetch(fileUrl, { headers: { ['Accept']: 'application/json' } });
+            const data = await response.json() as CrowdinLanguageTree;
+            strings.push(...this.#flattenJson([path.basename(fileUrl.pathname, '.json')], data));
+        }
+
+        const lookup = new Map(strings);
         this.#languageKeys.set(language.locale, { name: language.name, keys: new Set(lookup.keys()) });
         this.#languageData.set(language.locale, lookup);
     }

@@ -29,6 +29,7 @@ export type ClusterIPCContract = {
     getGuildSettings: { masterGets: GuildSettingDocs; workerGets: undefined; };
     getCommand: { masterGets: CommandListResultItem | undefined; workerGets: string; };
     metrics: { masterGets: metric[]; workerGets: undefined; };
+    reloadTranslations: { masterGets: undefined; workerGets: undefined; };
 }
 
 export interface ICommandManager<T = unknown> {

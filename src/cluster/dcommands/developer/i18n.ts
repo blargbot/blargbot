@@ -28,8 +28,8 @@ export class I18nCommand extends GlobalCommand {
         });
     }
 
-    public async reload(context: CommandContext): Promise<CommandResult> {
-        await context.util.translator.load();
+    public reload(context: CommandContext): CommandResult {
+        context.cluster.worker.send('reloadTranslations', undefined);
         return cmd.reload.success;
     }
 

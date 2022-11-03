@@ -737,7 +737,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
             },
             reload: {
                 description: 'Loads the latest translations from crowdin',
-                success: '✅ Translations updated!'
+                success: '✅ Translation update requested!'
             }
         },
         announce: {
