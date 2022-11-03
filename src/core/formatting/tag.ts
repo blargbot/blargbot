@@ -19,6 +19,25 @@ export const tag: IValueResolverTransform = {
             const value = source(ctx);
             if (value === undefined)
                 return undefined;
+            if (typeof value === 'number' || typeof value === 'string') {
+                switch (format) {
+                    case '@':
+                    case '@&':
+                    case '#':
+                        return `<${format}${value}>`;
+                    case 't':
+                    case 't:t':
+                    case 't:T':
+                    case 't:d':
+                    case 't:D':
+                    case 't:f':
+                    case 't:F':
+                    case 't:R': {
+                        const v = typeof value === 'string' ? parseFloat(value) : value;
+                        return `<t:${moment(v).unix()}${format.slice(1)}>`;
+                    }
+                }
+            }
             if (typeof value !== 'object' || value === null)
                 throw new Error('Value must be an object');
             if (value instanceof Eris.Base && (value instanceof Eris.User || value instanceof Eris.Role || value instanceof Eris.Channel))

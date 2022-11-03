@@ -3017,8 +3017,8 @@ export const templates = FormatString.defineTree('cluster', t => ({
                         }
                     },
                     description: {
-                        user: t<{ user: Eris.User; }>('**User Id**: {user.id}\n**Created**: {user.createdAt#bool(<t:{}:f>|-)}'),
-                        member: t<{ user: Eris.Member; }>('**User Id**: {user.id}\n**Created**: {user.createdAt#bool(<t:{}:f>|-)}\n**Joined** {user.joinedAt#bool(<t:{}:f>|-)}')
+                        user: t<{ user: Eris.User; }>('**User Id**: {user.id}\n**Created**: {user.createdAt#bool({#tag(t)}|-)}'),
+                        member: t<{ user: Eris.Member; }>('**User Id**: {user.id}\n**Created**: {user.createdAt#bool({#tag(t)}|-)}\n**Joined** {user.joinedAt#bool({#tag(t)}|-)}')
                     },
                     field: {
                         roles: {
