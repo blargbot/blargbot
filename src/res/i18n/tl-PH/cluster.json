@@ -1,7 +1,7 @@
 {
     "common": {
         "query": {
-            "cancel": "",
+            "cancel": "Kanselahin",
             "cantUse": "",
             "choose": {
                 "paged": ""
@@ -13,8 +13,8 @@
                 },
                 "placeholder": "",
                 "choice": {
-                    "label": "",
-                    "description": ""
+                    "label": "{user.username}#{user.discriminator}",
+                    "description": "Id: {user.id}"
                 }
             },
             "member": {
@@ -22,10 +22,10 @@
                     "default": "",
                     "filtered": ""
                 },
-                "placeholder": "",
+                "placeholder": "Pumili ng user",
                 "choice": {
                     "label": "",
-                    "description": ""
+                    "description": "Id: {member.id}"
                 }
             },
             "sender": {
@@ -33,53 +33,53 @@
                     "default": "",
                     "filtered": ""
                 },
-                "placeholder": "",
+                "placeholder": "Pumili ng user o webhook",
                 "choice": {
                     "label": {
-                        "user": "",
-                        "webhook": ""
+                        "user": "{user.username}#{user.discriminator}",
+                        "webhook": "{webhook.name}"
                     },
-                    "description": ""
+                    "description": "Id: {sender.id}"
                 }
             },
             "role": {
                 "prompt": {
-                    "default": "",
-                    "filtered": ""
+                    "default": "ℹ️ Maaaring pumili ng role galing sa drop down",
+                    "filtered": "ℹ️ Maraming roles ang nag match sa `{filter}`! Maaaring pumili ng isa galing sa drop down."
                 },
-                "placeholder": "",
+                "placeholder": "Pumili ng role",
                 "choice": {
-                    "label": "",
-                    "description": ""
+                    "label": "{role.name}",
+                    "description": "Id: {role.id} Kulay: {role.color#color}"
                 }
             },
             "channel": {
                 "prompt": {
-                    "default": "",
-                    "filtered": ""
+                    "default": "ℹ️ Maaaring pumili ng channel galing sa drop down",
+                    "filtered": "ℹ️ Maraming channel ang nag match sa `{filter}`! Maaaring pumili ng isa galing sa drop down."
                 },
-                "placeholder": "",
+                "placeholder": "Pumili ng channel",
                 "choice": {
                     "label": {
-                        "guild": "",
-                        "dm": ""
+                        "guild": "{channel.name}",
+                        "dm": "DM"
                     },
-                    "description": ""
+                    "description": "Id: {channel.id}{parent#bool({emoji} {label}|)}"
                 }
             },
             "paged": {
-                "prompt": ""
+                "prompt": "{header#bool({}\n|)}Page **#{page}/{pageCount}**\n{content}\nPumili ng numero sa gitna ng **1 at {pageCount}** para makita ang iyang page."
             }
         }
     },
     "regex": {
-        "tooLong": "",
-        "invalid": "",
-        "unsafe": "",
-        "matchesEverything": ""
+        "tooLong": "❌ Masyado mahaba ang regex!",
+        "invalid": "❌ Ang regex ay walang kabuluhan!",
+        "unsafe": "❌ Ang regex ay hindi safe!\nKung ikaw ay 100% sure na ang iyong regex ay valid, ito ay malamang na na-block dahil sa aking paraaan ng pagtuklas ng catastrophic backtracking. Makakahanap ka ng higit pang impormasyon tungkol sa catastrophic backtracking dito: <https://www.regular-expressions.info/catastrophic.html>",
+        "matchesEverything": "❌ Ang iyong regex ay hindi makakatugma ng kahit ano!"
     },
     "respawn": {
-        "success": ""
+        "success": "Ok, andito na ulit ako. Umabot ako ng {duration#duration(F)}"
     },
     "roleme": {
         "failed": ""
