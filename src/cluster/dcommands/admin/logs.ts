@@ -106,7 +106,7 @@ export class LogsCommand extends GuildCommand {
                 ? cmd.default.generated.json.slow({ user: context.author })
                 : cmd.default.generated.json.quick,
             allowedMentions: { users: [context.author.id] },
-            files: [
+            file: [
                 {
                     file: JSON.stringify(logs.map(l => ({ ...l, id: undefined })), null, 2),
                     name: `${channel.value.id}-logs.json`

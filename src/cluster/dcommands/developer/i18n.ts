@@ -53,7 +53,7 @@ export class I18nCommand extends GlobalCommand {
         }
 
         return {
-            files: Object.entries(result)
+            file: Object.entries(result)
                 .map(([key, data]) => ({
                     file: JSON.stringify(data),
                     name: `${key}.json`

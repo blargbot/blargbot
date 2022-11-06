@@ -780,7 +780,7 @@ export class TagCommand extends GuildCommand {
                     }
                 }
             ],
-            files: [
+            file: [
                 ...'tag' in details && 'content' in details ? [{
                     name: `${details.tag}.bbtag`,
                     file: details.content

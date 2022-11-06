@@ -72,8 +72,8 @@ export class UpdateCommand extends GlobalCommand {
                 name: 'output.txt'
             };
             message === undefined
-                ? await context.reply({ content, files: [file] })
-                : await context.edit(message, { content, files: [file] });
+                ? await context.reply({ content, file: [file] })
+                : await context.edit(message, { content, file: [file] });
             return result;
         } catch (err: unknown) {
             const content = cmd.default.command.error({ command });
@@ -83,8 +83,8 @@ export class UpdateCommand extends GlobalCommand {
                 name: 'output.txt'
             };
             message === undefined
-                ? await context.reply({ content, files: [file] })
-                : await context.edit(message, { content, files: [file] });
+                ? await context.reply({ content, file: [file] })
+                : await context.edit(message, { content, file: [file] });
             throw err;
         }
     }

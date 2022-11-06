@@ -10,7 +10,7 @@ export type ModuleResult<TModule> = { names: Iterable<string>; module: TModule; 
 export type DMContext = string | KnownMessage | User | Member;
 export type SendContext = TextableChannel | string | User;
 export interface SendContent<TString> extends FormatAdvancedMessageContent<TString> {
-    files?: FileContent[];
+    file?: FileContent[];
 }
 
 type ReplaceProps<T, U extends { [P in keyof T]?: unknown }> = { [P in keyof T]: P extends keyof U ? U[P] : T[P] }

@@ -32,7 +32,7 @@ export abstract class GlobalImageCommand extends GlobalCommand {
             return templates.commands.$errors.renderFailed;
 
         return {
-            files: [
+            file: [
                 {
                     file: result.data,
                     name: result.fileName

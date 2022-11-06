@@ -43,8 +43,8 @@ export class ExecCommand extends GlobalCommand {
                 name: 'output.txt'
             };
             message === undefined
-                ? await context.reply({ content, files: [file] })
-                : await context.edit(message, { content, files: [file] });
+                ? await context.reply({ content, file: [file] })
+                : await context.edit(message, { content, file: [file] });
         } catch (err: unknown) {
             const content = cmd.default.command.error({ command });
             const file = {
@@ -52,8 +52,8 @@ export class ExecCommand extends GlobalCommand {
                 name: 'output.txt'
             };
             message === undefined
-                ? await context.reply({ content, files: [file] })
-                : await context.edit(message, { content, files: [file] });
+                ? await context.reply({ content, file: [file] })
+                : await context.edit(message, { content, file: [file] });
         }
         return undefined;
     }

@@ -37,7 +37,7 @@ export class AvatarCommand extends GlobalCommand {
 
     public async getAvatar(user: User, format: string | undefined, size = '512'): Promise<CommandResult> {
         if (format !== undefined && !allowedFormats.includes(format))
-            return cmd.common.formatInvalid({format, allowedFormats});
+            return cmd.common.formatInvalid({ format, allowedFormats });
 
         const parsedSize = parse.int(size, { strict: true });
 
@@ -50,7 +50,7 @@ export class AvatarCommand extends GlobalCommand {
 
         return {
             content: cmd.common.success({ user }),
-            files: [{ file: await avatar.buffer(), name: new URL(avatarUrl).pathname.split('/').pop() ?? `${user.id}.${format ?? 'png'}` }]
+            file: [{ file: await avatar.buffer(), name: new URL(avatarUrl).pathname.split('/').pop() ?? `${user.id}.${format ?? 'png'}` }]
         };
     }
 }
