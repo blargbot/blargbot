@@ -67,7 +67,11 @@ export class CrowdinTranslationSource implements ITranslationSource {
             this.#languageKeys.delete(language.locale);
             this.#languageData.delete(language.locale);
         } else {
-            this.#languageKeys.set(language.locale, { name: language.name, keys: new Set(lookup.keys()) });
+            this.#languageKeys.set(language.locale, {
+                name: lookup.get('config.localeName') ?? language.name,
+                keys: new Set(lookup.keys())
+            });
+            lookup.delete('config.localeName');
             this.#languageData.set(language.locale, lookup);
         }
     }
