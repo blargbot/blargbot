@@ -46,7 +46,7 @@ runSubtagTests({
                 ctx.util.setup(m => m.send(general as KnownGuildTextableChannel, argument.isDeepEqual({
                     content: 'abc',
                     embeds: undefined,
-                    files: undefined,
+                    file: undefined,
                     nsfw: 'This is a nsfw message',
                     allowedMentions: {
                         everyone: false
@@ -82,7 +82,7 @@ runSubtagTests({
                 ctx.util.setup(m => m.send(general as KnownGuildTextableChannel, argument.isDeepEqual({
                     content: 'abc',
                     embeds: undefined,
-                    files: undefined,
+                    file: undefined,
                     nsfw: 'This is a nsfw message',
                     allowedMentions: {
                         everyone: false
@@ -121,7 +121,7 @@ runSubtagTests({
                 ctx.util.setup(m => m.send(general as KnownGuildTextableChannel, argument.isDeepEqual({
                     content: 'abc',
                     embeds: undefined,
-                    files: undefined,
+                    file: undefined,
                     nsfw: 'This is a nsfw message',
                     allowedMentions: {
                         everyone: false
@@ -161,7 +161,7 @@ runSubtagTests({
                 ctx.util.setup(m => m.send(general as KnownGuildTextableChannel, argument.isDeepEqual({
                     content: 'abc',
                     embeds: undefined,
-                    files: undefined,
+                    file: undefined,
                     nsfw: 'This is a nsfw message',
                     allowedMentions: {
                         everyone: true,
@@ -204,7 +204,7 @@ runSubtagTests({
                 ctx.util.setup(m => m.send(general as KnownGuildTextableChannel, argument.isDeepEqual({
                     content: undefined,
                     embeds: [{ title: 'New embed!' }],
-                    files: undefined,
+                    file: undefined,
                     nsfw: 'This is a nsfw message',
                     allowedMentions: {
                         everyone: true,
@@ -245,7 +245,7 @@ runSubtagTests({
                 ctx.util.setup(m => m.send(general as KnownGuildTextableChannel, argument.isDeepEqual({
                     content: 'abc',
                     embeds: undefined,
-                    files: undefined,
+                    file: undefined,
                     nsfw: 'This is a nsfw message',
                     allowedMentions: {
                         everyone: false
@@ -285,7 +285,7 @@ runSubtagTests({
                 ctx.util.setup(m => m.send(general as KnownGuildTextableChannel, argument.isDeepEqual({
                     content: undefined,
                     embeds: [{ title: 'New embed!' }],
-                    files: undefined,
+                    file: undefined,
                     nsfw: 'This is a nsfw message',
                     allowedMentions: {
                         everyone: false
@@ -326,7 +326,7 @@ runSubtagTests({
                 ctx.util.setup(m => m.send(general as KnownGuildTextableChannel, argument.isDeepEqual({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
-                    files: undefined,
+                    file: undefined,
                     nsfw: 'This is a nsfw message',
                     allowedMentions: {
                         everyone: true,
@@ -368,7 +368,7 @@ runSubtagTests({
                 ctx.util.setup(m => m.send(general as KnownGuildTextableChannel, argument.isDeepEqual({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
-                    files: undefined,
+                    file: undefined,
                     nsfw: 'This is a nsfw message',
                     allowedMentions: {
                         everyone: false
@@ -409,7 +409,7 @@ runSubtagTests({
                 ctx.util.setup(m => m.send(general as KnownGuildTextableChannel, argument.isDeepEqual({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
-                    files: [{ file: 'my file content', name: 'file.txt' }],
+                    file: [{ file: 'my file content', name: 'file.txt' }],
                     nsfw: 'This is a nsfw message',
                     allowedMentions: {
                         everyone: true,
@@ -451,7 +451,7 @@ runSubtagTests({
                 ctx.util.setup(m => m.send(general as KnownGuildTextableChannel, argument.isDeepEqual({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
-                    files: [{ file: 'my file content', name: 'file.txt' }],
+                    file: [{ file: 'my file content', name: 'file.txt' }],
                     nsfw: 'This is a nsfw message',
                     allowedMentions: {
                         everyone: false
@@ -492,7 +492,7 @@ runSubtagTests({
                 ctx.util.setup(m => m.send(general as KnownGuildTextableChannel, argument.isDeepEqual({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
-                    files: [{
+                    file: [{
                         file: argument.assert<Buffer>(value => {
                             expect(value).to.be.instanceOf(Buffer)
                                 .and.to.equalBytes([0x69, 0xb7, 0x1d, 0x79]);
@@ -540,7 +540,7 @@ runSubtagTests({
                 ctx.util.setup(m => m.send(general as KnownGuildTextableChannel, argument.isDeepEqual({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
-                    files: [{
+                    file: [{
                         file: argument.assert<Buffer>(value => {
                             expect(value).to.be.instanceOf(Buffer)
                                 .and.to.equalBytes([0x69, 0xb7, 0x1d, 0x79]);
@@ -587,7 +587,7 @@ runSubtagTests({
                 ctx.util.setup(m => m.send(general as KnownGuildTextableChannel, argument.isDeepEqual({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
-                    files: [{ file: 'my file content', name: 'test.zip' }],
+                    file: [{ file: 'my file content', name: 'test.zip' }],
                     nsfw: 'This is a nsfw message',
                     allowedMentions: {
                         everyone: true,
@@ -629,7 +629,7 @@ runSubtagTests({
                 ctx.util.setup(m => m.send(general as KnownGuildTextableChannel, argument.isDeepEqual({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
-                    files: [{ file: 'my file content', name: 'test.zip' }],
+                    file: [{ file: 'my file content', name: 'test.zip' }],
                     nsfw: 'This is a nsfw message',
                     allowedMentions: {
                         everyone: false
@@ -670,7 +670,7 @@ runSubtagTests({
                 ctx.util.setup(m => m.send(general as KnownGuildTextableChannel, argument.isDeepEqual({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
-                    files: [{
+                    file: [{
                         file: argument.assert<Buffer>(value => {
                             expect(value).to.be.instanceOf(Buffer)
                                 .and.to.equalBytes([0x69, 0xb7, 0x1d, 0x79]);
@@ -718,7 +718,7 @@ runSubtagTests({
                 ctx.util.setup(m => m.send(general as KnownGuildTextableChannel, argument.isDeepEqual({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
-                    files: [{
+                    file: [{
                         file: argument.assert<Buffer>(value => {
                             expect(value).to.be.instanceOf(Buffer)
                                 .and.to.equalBytes([0x69, 0xb7, 0x1d, 0x79]);

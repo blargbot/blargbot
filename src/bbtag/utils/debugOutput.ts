@@ -6,7 +6,7 @@ import templates from '../text';
 import { ExecutionResult } from '../types';
 import { stringify } from './stringify';
 
-export function createDebugOutput(result: ExecutionResult): { content: IFormattable<string>; files: FileContent[]; } {
+export function createDebugOutput(result: ExecutionResult): { content: IFormattable<string>; file: FileContent[]; } {
     const performance: Record<string, unknown> = {};
     for (const [key, times] of Object.entries(result.duration.subtag)) {
         if (times !== undefined && times.length > 0) {
@@ -26,7 +26,7 @@ export function createDebugOutput(result: ExecutionResult): { content: IFormatta
             database: result.duration.database,
             total: result.duration.total
         }),
-        files: [
+        file: [
             {
                 name: 'bbtag.debug.json',
                 file: JSON.stringify({
