@@ -20,7 +20,7 @@ export interface InjectionContext {
 }
 
 export interface BBTagSendContent extends Omit<AdvancedMessageContent, 'embed' | 'messageReferenceID'> {
-    files?: FileContent[];
+    file?: FileContent[];
     nsfw?: string;
 }
 

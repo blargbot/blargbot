@@ -67,7 +67,7 @@ export class SendSubtag extends CompiledSubtag {
                     roles: context.isCC ? context.data.allowedMentions.roles : undefined,
                     users: context.isCC ? context.data.allowedMentions.users : undefined
                 },
-                files: file !== undefined ? [file] : undefined
+                file: file !== undefined ? [file] : undefined
             });
 
             if (sent === undefined)

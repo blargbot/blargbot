@@ -43,7 +43,7 @@ runSubtagTests({
                 ctx.util.setup(m => m.send(bbctx.message.channel, argument.isDeepEqual({
                     content: '',
                     embeds: embeds,
-                    files: files,
+                    file: files,
                     nsfw: 'This is the nsfw message',
                     allowedMentions: {
                         everyone: true,
@@ -85,7 +85,7 @@ runSubtagTests({
                 ctx.util.setup(m => m.send(bbctx.message.channel, argument.isDeepEqual({
                     content: '',
                     embeds: embeds,
-                    files: files,
+                    file: files,
                     nsfw: 'This is the nsfw message',
                     allowedMentions: {
                         everyone: false
@@ -126,7 +126,7 @@ runSubtagTests({
                 ctx.util.setup(m => m.send(bbctx.message.channel, argument.isDeepEqual({
                     content: 'This is my message content',
                     embeds: embeds,
-                    files: files,
+                    file: files,
                     nsfw: 'This is the nsfw message',
                     allowedMentions: {
                         everyone: true,
@@ -168,7 +168,7 @@ runSubtagTests({
                 ctx.util.setup(m => m.send(bbctx.message.channel, argument.isDeepEqual({
                     content: 'This is my message content',
                     embeds: embeds,
-                    files: files,
+                    file: files,
                     nsfw: 'This is the nsfw message',
                     allowedMentions: {
                         everyone: false
@@ -204,7 +204,7 @@ runSubtagTests({
                 ctx.util.setup(m => m.send(bbctx.message.channel, argument.isDeepEqual({
                     content: 'This is my message content',
                     embeds: [],
-                    files: undefined,
+                    file: undefined,
                     nsfw: undefined,
                     allowedMentions: {
                         everyone: false

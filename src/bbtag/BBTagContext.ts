@@ -401,7 +401,7 @@ export class BBTagContext implements BBTagContextOptions {
                     roles: this.isCC ? this.data.allowedMentions.roles : undefined,
                     users: this.isCC ? this.data.allowedMentions.users : undefined
                 },
-                files: this.data.file !== undefined ? [this.data.file] : undefined
+                file: this.data.file !== undefined ? [this.data.file] : undefined
             });
 
             if (response !== undefined) {
