@@ -52,7 +52,7 @@ export abstract class CommandManager<T> implements ICommandManager<T> {
         if (this.cluster.util.isBotOwner(user.id))
             return { state: 'ALLOWED' };
 
-        const blacklistReason = await this.cluster.database.users.getSetting(user.id, 'blacklisted');
+        const blacklistReason = await this.cluster.database.users.getProp(user.id, 'blacklisted');
         if (blacklistReason !== undefined)
             return { state: 'BLACKLISTED', detail: blacklistReason };
 

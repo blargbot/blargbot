@@ -33,7 +33,7 @@ runSubtagTests({
             expected: '[{"x":{}}]',
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
-                ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.arr1`] = ['{"x":"{}"}'];
+                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, ['{"x":"{}"}']);
             }
         },
         {
@@ -41,7 +41,7 @@ runSubtagTests({
             expected: '{"a":{"x":{}}}',
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
-                ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.obj1`] = { a: '{"x":"{}"}' };
+                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'obj1' }, { a: '{"x":"{}"}' });
             }
         },
         {
@@ -49,7 +49,7 @@ runSubtagTests({
             expected: '{"a":{"x":{}}}',
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
-                ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.var1`] = '{"a":"{\\"x\\":\\"{}\\"}"}';
+                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'var1' }, '{"a":"{\\"x\\":\\"{}\\"}"}');
             }
         },
         {

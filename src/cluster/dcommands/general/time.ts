@@ -39,7 +39,7 @@ export class TimeCommand extends GlobalCommand {
     }
 
     public async getUserTime(context: CommandContext, user: User): Promise<CommandResult> {
-        const timezone = await context.database.users.getSetting(user.id, 'timezone');
+        const timezone = await context.database.users.getProp(user.id, 'timezone');
         if (timezone === undefined)
             return cmd.user.timezoneNotSet({ prefix: context.prefix, user });
 

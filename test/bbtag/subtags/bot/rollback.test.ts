@@ -1,5 +1,6 @@
 import { BBTagContext } from '@blargbot/bbtag';
 import { RollbackSubtag } from '@blargbot/bbtag/subtags/bot/rollback';
+import { TagVariableType } from '@blargbot/domain/models/index';
 import { expect } from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite';
@@ -9,14 +10,14 @@ runSubtagTests({
     argCountBounds: { min: 0, max: Infinity },
     setup(ctx) {
         ctx.options.tagName = 'testTag';
-        ctx.tagVariables['LOCAL_TAG.testTag.var1'] = 22;
-        ctx.tagVariables['LOCAL_TAG.testTag.var2'] = 'def';
-        ctx.tagVariables['GLOBAL..var5'] = 22;
-        ctx.tagVariables['GLOBAL..var6'] = 'def';
-        ctx.tagVariables[`AUTHOR.${ctx.users.command.id}.var7`] = 22;
-        ctx.tagVariables[`AUTHOR.${ctx.users.command.id}.var8`] = 'def';
-        ctx.tagVariables[`GUILD_TAG.${ctx.guild.id}.var9`] = 22;
-        ctx.tagVariables[`GUILD_TAG.${ctx.guild.id}.var10`] = 'def';
+        ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'var1' }, 22);
+        ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'var2' }, 'def');
+        ctx.tagVariables.set({ scope: { type: TagVariableType.GLOBAL }, name: 'var5' }, 22);
+        ctx.tagVariables.set({ scope: { type: TagVariableType.GLOBAL }, name: 'var6' }, 'def');
+        ctx.tagVariables.set({ scope: { type: TagVariableType.AUTHOR, authorId: ctx.users.command.id }, name: 'var7' }, 22);
+        ctx.tagVariables.set({ scope: { type: TagVariableType.AUTHOR, authorId: ctx.users.command.id }, name: 'var8' }, 'def');
+        ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'var9' }, 22);
+        ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'var10' }, 'def');
     },
     async postSetup(bbctx) {
         await bbctx.variables.set('var1', 5);

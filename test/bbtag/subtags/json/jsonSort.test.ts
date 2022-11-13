@@ -26,12 +26,12 @@ runSubtagTests({
             setupSaveVariables: false,
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
-                ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.arrayVar`] = [
+                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arrayVar' }, [
                     { points: 10, name: 'Blargbot' },
                     { points: 3, name: 'UNO' },
                     { points: 6, name: 'Stupid cat' },
                     { points: 12, name: 'Winner' }
-                ];
+                ]);
             },
             async assert(bbctx) {
                 expect((await bbctx.variables.get('arrayVar')).value).to.deep.equal([
@@ -48,12 +48,12 @@ runSubtagTests({
             setupSaveVariables: false,
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
-                ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.arrayVar`] = [
+                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arrayVar' }, [
                     { points: 10, name: 'Blargbot' },
                     { points: 3, name: 'UNO' },
                     { points: 6, name: 'Stupid cat' },
                     { points: 12, name: 'Winner' }
-                ];
+                ]);
             },
             async assert(bbctx) {
                 expect((await bbctx.variables.get('arrayVar')).value).to.deep.equal([
@@ -73,12 +73,12 @@ runSubtagTests({
             setupSaveVariables: false,
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
-                ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.arrayVar`] = [
+                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arrayVar' }, [
                     { points: 10, name: 'Blargbot' },
                     { test: 3, name: 'UNO' },
                     { points: 6, name: 'Stupid cat' },
                     { points: 12, name: 'Winner' }
-                ];
+                ]);
             }
         },
         {
@@ -90,12 +90,12 @@ runSubtagTests({
             setupSaveVariables: false,
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
-                ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.arrayVar`] = [
+                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arrayVar' }, [
                     { points: 10, name: 'Blargbot' },
                     { points: 3, name: 'UNO' },
                     { points: 6, name: 'Stupid cat' },
                     { points: 12, name: 'Winner' }
-                ];
+                ]);
             }
         },
         {
@@ -107,7 +107,7 @@ runSubtagTests({
             setupSaveVariables: false,
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
-                ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.testVar`] = 'xyz';
+                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'testVar' }, 'xyz');
             }
         }
     ]

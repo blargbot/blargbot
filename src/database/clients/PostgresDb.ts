@@ -1,9 +1,10 @@
 import { PostgresConfiguration } from '@blargbot/config';
 import { Logger } from '@blargbot/logger';
-import { Model, ModelAttributes, ModelStatic, Sequelize, Transaction } from 'sequelize';
+import { Model, ModelAttributes, ModelStatic, QueryInterface, Sequelize, Transaction } from 'sequelize';
 
 export class PostgresDb {
     readonly #sequelize: Sequelize;
+    readonly #escape: QueryInterface['escape'];
 
     public constructor(
         public readonly logger: Logger,
@@ -19,6 +20,8 @@ export class PostgresDb {
                 logging: this.logger.database
             }
         );
+        const qi = this.#sequelize.getQueryInterface().queryGenerator as QueryInterface;
+        this.#escape = qi.escape.bind(qi);
     }
 
     public defineModel<T extends object>(name: string, attributes: ModelAttributes<Model<T>>): ModelStatic<Model<T>> {
@@ -33,6 +36,10 @@ export class PostgresDb {
         await this.#sequelize.authenticate();
         this.logger.init('Connected to postgres. Loading models...');
         await this.#loadModels();
+    }
+
+    public escape(value: string): string {
+        return this.#escape(value).slice(1, -1);
     }
 
     async #loadModels(): Promise<void> {

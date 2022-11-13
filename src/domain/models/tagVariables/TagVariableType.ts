@@ -1,8 +1,8 @@
 export enum TagVariableType {
-    LOCAL = 'LOCAL_TAG',
     AUTHOR = 'AUTHOR',
-    GUILD = 'GUILD_CC',
     GLOBAL = 'GLOBAL',
-    TAGGUILD = 'GUILD_TAG',
-    GUILDLOCAL = 'LOCAL_CC'
+    GUILD_CC = 'GUILD_CC',
+    GUILD_TAG = 'GUILD_TAG',
+    LOCAL_TAG = 'LOCAL_TAG',
+    LOCAL_CC = 'LOCAL_CC'
 }

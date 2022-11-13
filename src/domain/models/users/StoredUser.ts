@@ -1,18 +1,13 @@
+import { ResettableStoredUserData } from './ResettableStoredUserData';
 import { StoredUsername } from './StoredUsername';
-import { StoredUserSettings } from './StoredUserSettings';
-import { UserTodo } from './UserTodo';
 
-export interface StoredUser extends StoredUserSettings {
+export interface StoredUser extends ResettableStoredUserData {
     readonly userid: string;
+    readonly reportblock?: string;
+    readonly blacklisted?: string;
+    readonly reports?: { readonly [key: string]: string | undefined; };
     readonly username?: string;
     readonly usernames: readonly StoredUsername[];
     readonly discriminator?: string;
     readonly avatarURL?: string;
-    readonly isbot: boolean;
-    readonly lastspoke: Date;
-    readonly lastcommand?: string;
-    readonly lastcommanddate?: Date;
-    readonly todo: readonly UserTodo[];
-    readonly reportblock?: string;
-    readonly reports?: { readonly [key: string]: string | undefined; };
 }

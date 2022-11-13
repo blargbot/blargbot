@@ -1,7 +1,7 @@
-import { guard } from '@blargbot/core/utils';
-import { StoredUser, StoredUsername, StoredUserSettings, UserDetails, UserTodo } from '@blargbot/domain/models';
+import { ResettableStoredUserData, StoredUser, StoredUsername, UserDetails, UserTodo } from '@blargbot/domain/models';
 import { UserStore } from '@blargbot/domain/stores';
 import { Logger } from '@blargbot/logger';
+import { UpdateData } from 'rethinkdb';
 
 import { RethinkDb } from '../clients';
 import { RethinkDbCachedTable } from '../tables/RethinkDbCachedTable';
@@ -18,12 +18,12 @@ export class RethinkDbUserStore implements UserStore {
         this.#table.watchChanges(shouldCache);
     }
 
-    public async getSetting<K extends keyof StoredUserSettings>(userId: string, key: K, skipCache?: boolean): Promise<StoredUserSettings[K] | undefined> {
+    public async getProp<K extends keyof StoredUser>(userId: string, key: K, skipCache?: boolean): Promise<StoredUser[K] | undefined> {
         const user = await this.#table.get(userId, skipCache);
         return user?.[key];
     }
 
-    public async setSetting<K extends keyof StoredUserSettings>(userId: string, key: K, value: StoredUserSettings[K]): Promise<boolean> {
+    public async setProp<K extends keyof StoredUser>(userId: string, key: K, value: StoredUser[K]): Promise<boolean> {
         const user = await this.#table.get(userId);
         if (user === undefined)
             return false;
@@ -31,7 +31,7 @@ export class RethinkDbUserStore implements UserStore {
         if (!await this.#table.update(userId, { [key]: this.#table.setExpr(value) }))
             return false;
 
-        setProp(user, key, value as StoredUser[K]);
+        setProp(user, key, value);
         return true;
     }
 
@@ -69,27 +69,41 @@ export class RethinkDbUserStore implements UserStore {
         return user.usernames;
     }
 
+    public async reset(user: UserDetails): Promise<'inserted' | 'updated' | false> {
+        return await this.#upsert(user, v => {
+            v.usernames = [{ name: user.username, date: new Date() }];
+            Object.assign(v, userDefaults);
+            for (const entry of Object.entries(v))
+                v[entry[0]] = this.#table.setExpr(entry[1]) as never;
+        });
+    }
+
     public async upsert(user: UserDetails): Promise<'inserted' | 'updated' | false> {
+        return await this.#upsert(user);
+    }
+
+    async #upsert(user: UserDetails, transform?: (value: UpdateData<Mutable<StoredUser>>) => void): Promise<'inserted' | 'updated' | false> {
         if (user.discriminator === '0000')
             return false;
         const currentUser = await this.#table.get(user.id, true);
         if (currentUser === undefined) {
-            if (await this.#table.insert({
+            const insert: StoredUser = {
                 userid: user.id,
                 username: user.username,
                 usernames: [{
                     name: user.username,
                     date: new Date()
                 }],
-                isbot: user.bot,
-                lastspoke: new Date(),
                 discriminator: user.discriminator,
                 todo: []
-            })) {
+            };
+
+            transform?.(insert);
+
+            if (await this.#table.insert(insert))
                 return 'inserted';
-            }
         } else {
-            const update: Partial<Mutable<StoredUser>> = {};
+            const update: UpdateData<Mutable<StoredUser>> = {};
             if (currentUser.username !== user.username) {
                 setProp(currentUser, 'username', update.username = user.username);
                 update.usernames = currentUser.usernames;
@@ -104,7 +118,9 @@ export class RethinkDbUserStore implements UserStore {
             if (currentUser.avatarURL !== user.avatarURL)
                 setProp(currentUser, 'avatarURL', update.avatarURL = user.avatarURL);
 
-            if (Object.values(update).some(guard.hasValue) && await this.#table.update(user.id, update))
+            transform?.(update);
+
+            if (Object.keys(update).length > 0 && await this.#table.update(user.id, update))
                 return 'updated';
         }
 
@@ -214,3 +230,10 @@ function push<T>(target: readonly T[], ...values: readonly T[]): void {
 function removeAt<T>(target: readonly T[], index: number): readonly T[] {
     return (target as T[]).splice(index, 1);
 }
+
+const userDefaults: { [P in keyof Required<ResettableStoredUserData>]: ResettableStoredUserData[P] } = {
+    dontdmerrors: undefined,
+    prefixes: undefined,
+    timezone: undefined,
+    todo: []
+};

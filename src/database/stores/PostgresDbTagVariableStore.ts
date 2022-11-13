@@ -1,8 +1,8 @@
 import { guard } from '@blargbot/core/utils';
-import { BBTagVariable, TagVariableScope, TagVariableType } from '@blargbot/domain/models';
+import { BBTagVariable, TagVariableScope, TagVariableScopeFilter, TagVariableType } from '@blargbot/domain/models';
 import { TagVariableStore } from '@blargbot/domain/stores';
 import { Logger } from '@blargbot/logger';
-import { ENUM, Op, STRING, TEXT, WhereOptions } from 'sequelize';
+import { ENUM, FindOptions, Op, STRING, TEXT, WhereAttributeHashValue } from 'sequelize';
 
 import { PostgresDb } from '../clients';
 import { PostgresDbTable } from '../tables/PostgresDbTable';
@@ -21,7 +21,7 @@ export class PostgresDbTagVariableStore implements TagVariableStore {
                 allowNull: false
             },
             type: {
-                type: ENUM(...Object.values(TagVariableType)),
+                type: ENUM(...variableTypes),
                 primaryKey: true,
                 allowNull: false
             },
@@ -37,28 +37,26 @@ export class PostgresDbTagVariableStore implements TagVariableStore {
         });
     }
 
-    public async clearScope(scope: TagVariableScope): Promise<void> {
-        let where: WhereOptions<BBTagVariable>;
-        if (scope.entityId === undefined) {
-            where = {
-                type: scope.type
-            };
-        } else if (scope.name !== undefined) {
-            where = {
+    public async getScope(scope: TagVariableScopeFilter): Promise<Array<{ scope: TagVariableScope; name: string; value: JToken; }>> {
+        const values = await this.#table.getAll(this.#buildScopeQuery(scope));
+        return values.map(v => ({
+            scope: idToVariableScope(v.scope, v.type),
+            name: v.name,
+            value: deserialize(v.content)
+        }));
+    }
+
+    public async clearScope(scope: TagVariableScopeFilter): Promise<void> {
+        await this.#table.destroy(this.#buildScopeQuery(scope));
+    }
+
+    #buildScopeQuery(scope: TagVariableScopeFilter): FindOptions<BBTagVariable> {
+        return {
+            where: {
                 type: scope.type,
-                scope: `${scope.entityId}_${scope.name}`
-            };
-        } else {
-            where = {
-                type: scope.type,
-                scope: {
-                    [Op.like]: {
-                        [Op.any]: [scope.entityId, `${scope.entityId}\\_%`]
-                    }
-                }
-            };
-        }
-        await this.#table.destroy({ where });
+                scope: variableScopeToFilter(scope)
+            }
+        };
     }
 
     public async upsert(values: Record<string, JToken | undefined>, scope: TagVariableScope): Promise<void> {
@@ -66,7 +64,7 @@ export class PostgresDbTagVariableStore implements TagVariableStore {
         for (const [key, value] of Object.entries(values)) {
             const query = {
                 name: key.substring(0, 255),
-                scope: [scope.entityId, scope.name].filter(guard.hasValue).join('_'),
+                scope: variableScopeToId(scope),
                 type: scope.type
             };
             try {
@@ -85,17 +83,92 @@ export class PostgresDbTagVariableStore implements TagVariableStore {
         const record = await this.#table.get({
             where: {
                 name: name.substring(0, 255),
-                scope: [scope.entityId, scope.name].filter(guard.hasValue).join('_'),
+                scope: variableScopeToId(scope),
                 type: scope.type
             }
         });
 
-        if (!guard.hasValue(record))
-            return undefined;
-        try {
-            return JSON.parse(record.content);
-        } catch {
-            return record.content;
+        return guard.hasValue(record)
+            ? deserialize(record.content)
+            : undefined;
+    }
+}
+
+function deserialize(value: string): JToken {
+    try {
+        return JSON.parse(value);
+    } catch {
+        return value;
+    }
+}
+
+const variableTypes = Object.keys<TagVariableType>({
+    AUTHOR: null,
+    GLOBAL: null,
+    GUILD_CC: null,
+    GUILD_TAG: null,
+    LOCAL_CC: null,
+    LOCAL_TAG: null
+});
+
+function variableScopeToId(scope: TagVariableScope): string {
+    switch (scope.type) {
+        case TagVariableType.AUTHOR: return scope.authorId;
+        case TagVariableType.GLOBAL: return '';
+        case TagVariableType.GUILD_CC: return scope.guildId;
+        case TagVariableType.GUILD_TAG: return scope.guildId;
+        case TagVariableType.LOCAL_CC: return `${scope.guildId}_${scope.name}`;
+        case TagVariableType.LOCAL_TAG: return scope.name;
+    }
+}
+
+function idToVariableScope(id: string, type: TagVariableScope['type']): TagVariableScope {
+    switch (type) {
+        case TagVariableType.AUTHOR: return { type, authorId: id };
+        case TagVariableType.GLOBAL: return { type };
+        case TagVariableType.GUILD_CC: return { type, guildId: id };
+        case TagVariableType.GUILD_TAG: return { type, guildId: id };
+        case TagVariableType.LOCAL_CC: {
+            const splitAt = id.indexOf('_');
+            if (splitAt === -1)
+                throw new Error('Invalid id, missing an _');
+            return { type, guildId: id.slice(0, splitAt), name: id.slice(splitAt + 1) };
+        }
+        case TagVariableType.LOCAL_TAG: return { type, name: id };
+    }
+}
+
+function variableScopeToFilter(scope: TagVariableScopeFilter): WhereAttributeHashValue<string> | undefined {
+    switch (scope.type) {
+        case TagVariableType.AUTHOR: return scope.authorId;
+        case TagVariableType.GLOBAL: return scope.type;
+        case TagVariableType.GUILD_TAG: return scope.guildId;
+        case TagVariableType.GUILD_CC: return scope.guildId;
+        case TagVariableType.LOCAL_TAG: return scope.name;
+        case TagVariableType.LOCAL_CC: {
+            const { guildId, name } = scope;
+            const guildIds = typeof guildId === 'string' ? [guildId] : guildId ?? [];
+            const names = typeof name === 'string' ? [name] : name ?? [];
+
+            if (guildIds.length === 0) {
+                const conditions = names.map(name => ({
+                    [Op.regexp]: `^[0-9]+\\_${name.replaceAll(/['|*+?{},()[\]\\_%]/g, x => `\\${x}$`)}`
+                }));
+                return conditions.length > 1
+                    ? { [Op.or]: conditions }
+                    : conditions[0];
+            }
+
+            if (names.length === 0) {
+                const conditions = guildIds.map(guildId => ({
+                    [Op.like]: `${guildId}\\_%`
+                }));
+                return conditions.length > 1
+                    ? { [Op.or]: conditions }
+                    : conditions[0];
+            }
+
+            return guildIds.flatMap(g => names.map(n => `${g}_${n}`));
         }
     }
 }

@@ -37,7 +37,7 @@ runSubtagTests({
             ],
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
-                ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.var1`] = 'this is var1';
+                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'var1' }, 'this is var1');
             }
         },
         {
@@ -57,10 +57,10 @@ runSubtagTests({
             setupSaveVariables: false,
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
-                ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.arr1`] = [1, 2, 3, 4, 5, 6];
+                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, [1, 2, 3, 4, 5, 6]);
             },
             async assert(bbctx, _, ctx) {
-                expect(ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.arr1`]).to.deep.equal([1, 2, 3, 4, 5, 6]);
+                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' })).to.deep.equal([1, 2, 3, 4, 5, 6]);
                 const result = (await bbctx.variables.get('arr1')).value;
                 expect(result).to.not.deep.equal([1, 2, 3, 4, 5, 6]);
                 expect(result).to.have.members([1, 2, 3, 4, 5, 6]);

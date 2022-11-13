@@ -1,5 +1,5 @@
 import { SetSubtag } from '@blargbot/bbtag/subtags/bot/set';
-import { guard, snowflake } from '@blargbot/core/utils';
+import { snowflake } from '@blargbot/core/utils';
 import { TagVariableScope, TagVariableType } from '@blargbot/domain/models';
 import { argument } from '@blargbot/test-util/mock';
 import { expect } from 'chai';
@@ -11,13 +11,13 @@ runSubtagTests({
     argCountBounds: { min: 1, max: Infinity },
     cases: [
         ...createTestCases([
-            {
-                prefix: '~',
-                varName: 'varName'
-            },
+            // {
+            //     prefix: '~',
+            //     varName: 'varName'
+            // },
             {
                 prefix: '',
-                db: { name: 'testTag', type: TagVariableType.LOCAL },
+                db: { name: 'testTag', type: TagVariableType.LOCAL_TAG },
                 varName: 'varName',
                 setup(ctx) {
                     ctx.options.tagName = 'testTag';
@@ -25,7 +25,7 @@ runSubtagTests({
             },
             {
                 prefix: '',
-                db: { entityId: '234983689742643223984', name: 'testTag', type: TagVariableType.GUILDLOCAL },
+                db: { guildId: '234983689742643223984', name: 'testTag', type: TagVariableType.LOCAL_CC },
                 varName: 'varName',
                 setup(ctx) {
                     ctx.options.tagName = 'testTag';
@@ -35,7 +35,7 @@ runSubtagTests({
             },
             {
                 prefix: '@',
-                db: { entityId: '23987462839463642947', type: TagVariableType.AUTHOR },
+                db: { authorId: '23987462839463642947', type: TagVariableType.AUTHOR },
                 varName: 'varName',
                 setup(ctx) {
                     ctx.users.command.id = '23987462839463642947';
@@ -48,7 +48,7 @@ runSubtagTests({
             },
             {
                 prefix: '_',
-                db: { entityId: '234983689742643223984', type: TagVariableType.GUILD },
+                db: { guildId: '234983689742643223984', type: TagVariableType.GUILD_CC },
                 varName: 'varName',
                 setup(ctx) {
                     ctx.guild.id = ctx.roles.everyone.id = '234983689742643223984';
@@ -57,7 +57,7 @@ runSubtagTests({
             },
             {
                 prefix: '_',
-                db: { entityId: '234983689742643223984', type: TagVariableType.TAGGUILD },
+                db: { guildId: '234983689742643223984', type: TagVariableType.GUILD_TAG },
                 varName: 'varName',
                 setup(ctx) {
                     ctx.guild.id = ctx.roles.everyone.id = '234983689742643223984';
@@ -97,7 +97,7 @@ function* createTestCases(setups: Array<{ varName: string; prefix: string; db?: 
                     if (db !== undefined) {
                         ctx.tagVariablesTable.setup(m => m.upsert(argument.isDeepEqual({ [varName]: value }), argument.isDeepEqual(db)))
                             .thenResolve(undefined);
-                        ctx.tagVariables[`${db.type}.${[db.entityId, db.name].filter(guard.hasValue).join('_')}.${varName}`] = snowflake.create().toString();
+                        ctx.tagVariables.set({ scope: db, name: varName }, snowflake.create().toString());
                     }
                     await setup?.call(this, ctx, ...args);
                 },
@@ -112,7 +112,10 @@ function* createTestCases(setups: Array<{ varName: string; prefix: string; db?: 
                 setupSaveVariables: false,
                 async setup(ctx, ...args) {
                     if (db !== undefined) {
-                        ctx.tagVariables[`${db.type}.${[db.entityId, db.name].filter(guard.hasValue).join('_')}.${varName}`] = value === undefined ? undefined : JSON.parse(JSON.stringify(value));
+                        if (value === undefined)
+                            ctx.tagVariables.delete({ scope: db, name: varName });
+                        else
+                            ctx.tagVariables.set({ scope: db, name: varName }, JSON.parse(JSON.stringify(value)));
                     }
                     await setup?.call(this, ctx, ...args);
                 },

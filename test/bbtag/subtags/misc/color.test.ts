@@ -1,5 +1,6 @@
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
 import { ColorFormat, ColorSubtag } from '@blargbot/bbtag/subtags/misc/color';
+import { TagVariableType } from '@blargbot/domain/models/index';
 
 import { MarkerError, runSubtagTests, SubtagTestCase } from '../SubtagTestSuite';
 
@@ -24,7 +25,7 @@ runSubtagTests({
         {
             code: '{color;_myVariable}',
             expected: '`Invalid color`',
-            setup(ctx) { ctx.tagVariables[`GUILD_TAG.${ctx.guild.id}.myVariable`] = 'abc'; },
+            setup(ctx) { ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }, 'abc'); },
             errors: [
                 { start: 0, end: 19, error: new BBTagRuntimeError('Invalid color', '"_myVariable" is not a valid color') }
             ]
@@ -33,7 +34,7 @@ runSubtagTests({
             code: '{color;_myVariable}',
             expected: '204080',
             setup(ctx) {
-                ctx.tagVariables[`GUILD_TAG.${ctx.guild.id}.myVariable`] = [32, 64, 128];
+                ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }, [32, 64, 128]);
             }
         },
         ...generateTestCases('FFFFFF', '', { hex: 'FFFFFF', ansi16: '[97]', ansi256: '[231]', apple: '[65535,65535,65535]', cmyk: '[0,0,0,0]', gray: '100', hcg: '[0,0,100]', hsl: '[0,0,100]', hsv: '[0,0,100]', hwb: '[0,100,0]', keyword: 'white', lab: '[100,0.01,-0.01]', lch: '[100,0.01,296.81]', rgb: '[255,255,255]', xyz: '[95.047,100,108.83]' }),

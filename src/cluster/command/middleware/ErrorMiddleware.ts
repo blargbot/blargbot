@@ -16,7 +16,7 @@ export class ErrorMiddleware<TContext extends CommandContext> implements IMiddle
 
             if (err instanceof DiscordRESTError
                 && err.code === ApiError.MISSING_ACCESS
-                && await context.database.users.getSetting(context.author.id, 'dontdmerrors') !== true) {
+                && await context.database.users.getProp(context.author.id, 'dontdmerrors') !== true) {
                 const message = !guard.isGuildCommandContext(context)
                     ? templates.commands.$errors.missingPermission.generic
                     : templates.commands.$errors.missingPermission.guild(context);

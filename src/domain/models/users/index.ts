@@ -1,5 +1,5 @@
 export * from './StoredUser';
 export * from './StoredUsername';
-export * from './StoredUserSettings';
+export * from './ResettableStoredUserData';
 export * from './UserDetails';
 export * from './UserTodo';
