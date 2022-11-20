@@ -42,6 +42,7 @@ export interface BBTagUtilities {
     queryMember(options: EntityPickQueryOptions<string, Member>): Promise<ChoiceQueryResult<Member>>;
 
     getUser(userId: string): Promise<User | undefined>;
+    getBannedUsers(guild: Guild): Promise<string[]>;
 
     getRole(guild: string | Guild, roleId: string): Promise<Role | undefined>;
     findRoles(guild: string | Guild, query?: string): Promise<Role[]>;
