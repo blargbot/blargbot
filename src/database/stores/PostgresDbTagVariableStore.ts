@@ -21,7 +21,7 @@ export class PostgresDbTagVariableStore implements TagVariableStore {
                 allowNull: false
             },
             type: {
-                type: ENUM(...variableTypes),
+                type: ENUM(...Object.values(TagVariableType)),
                 primaryKey: true,
                 allowNull: false
             },
@@ -101,15 +101,6 @@ function deserialize(value: string): JToken {
         return value;
     }
 }
-
-const variableTypes = Object.keys<TagVariableType>({
-    AUTHOR: null,
-    GLOBAL: null,
-    GUILD_CC: null,
-    GUILD_TAG: null,
-    LOCAL_CC: null,
-    LOCAL_TAG: null
-});
 
 function variableScopeToId(scope: TagVariableScope): string {
     switch (scope.type) {
