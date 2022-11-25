@@ -27,14 +27,14 @@ runSubtagTests({
             subtags: [new IncrementSubtag()],
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
-                ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.index`] = '0';
+                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, '0');
             },
             postSetup(bbctx, ctx) {
                 ctx.limit.setup(m => m.check(bbctx, 'repeat:loops')).verifiable(8).thenResolve(undefined);
             },
             async assert(bbctx, _, ctx) {
                 expect((await bbctx.variables.get('index')).value).to.equal(8);
-                expect(ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.index`]).to.equal(8);
+                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' })).to.equal(8);
             }
         },
         {
@@ -57,14 +57,14 @@ runSubtagTests({
             subtags: [new GetSubtag(), new IfSubtag(), new ReturnSubtag(), new IncrementSubtag()],
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
-                ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.index`] = '0';
+                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, '0');
             },
             postSetup(bbctx, ctx) {
                 ctx.limit.setup(m => m.check(bbctx, 'repeat:loops')).verifiable(6).thenResolve(undefined);
             },
             async assert(bbctx, _, ctx) {
                 expect((await bbctx.variables.get('index')).value).to.equal(6);
-                expect(ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.index`]).to.equal(6);
+                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' })).to.equal(6);
                 expect(bbctx.data.state).to.equal(BBTagRuntimeState.ABORT);
             }
         },
@@ -77,7 +77,7 @@ runSubtagTests({
             subtags: [new IncrementSubtag()],
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
-                ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.index`] = '0';
+                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, '0');
             },
             postSetup(bbctx, ctx) {
                 let i = 0;
@@ -89,7 +89,7 @@ runSubtagTests({
             },
             async assert(bbctx, _, ctx) {
                 expect((await bbctx.variables.get('index')).value).to.equal(4);
-                expect(ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.index`]).to.equal(4);
+                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' })).to.equal(4);
             }
         }
     ]

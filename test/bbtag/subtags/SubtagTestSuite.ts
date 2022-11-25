@@ -4,9 +4,9 @@ import { BBTagRuntimeError, NotEnoughArgumentsError, TooManyArgumentsError } fro
 import { BaseRuntimeLimit } from '@blargbot/bbtag/limits/BaseRuntimeLimit';
 import { bbtag, SubtagType } from '@blargbot/bbtag/utils';
 import { Timer } from '@blargbot/core/Timer';
-import { guard, pluralise as p, repeat, snowflake } from '@blargbot/core/utils';
+import { pluralise as p, repeat, snowflake } from '@blargbot/core/utils';
 import { Database } from '@blargbot/database';
-import { GuildCommandTag, StoredTag, TagVariableType } from '@blargbot/domain/models';
+import { GuildCommandTag, StoredTag, TagVariableScope } from '@blargbot/domain/models';
 import { GuildStore, TagStore, TagVariableStore, UserStore } from '@blargbot/domain/stores';
 import { Logger } from '@blargbot/logger';
 import { argument, Mock } from '@blargbot/test-util/mock';
@@ -105,7 +105,7 @@ export class SubtagTestContext {
 
     public readonly ccommands: Record<string, GuildCommandTag>;
     public readonly tags: Record<string, StoredTag>;
-    public readonly tagVariables: Record<`${TagVariableType}.${string}.${string}`, JToken | undefined>;
+    public readonly tagVariables: MapByValue<{ scope: TagVariableScope; name: string; }, JToken>;
     public readonly rootScope: BBTagRuntimeScope = { functions: {}, inLock: false, isTag: true };
 
     public readonly options: Mutable<Partial<BBTagContextOptions>>;
@@ -164,7 +164,7 @@ export class SubtagTestContext {
 
     public constructor(public readonly testCase: SubtagTestCase, subtags: Iterable<Subtag>) {
         this.discordOptions = { intents: [] };
-        this.tagVariables = {};
+        this.tagVariables = new MapByValue();
         this.tags = {};
         this.ccommands = {};
         this.options = { tagName: `testTag_${snowflake.create()}` };
@@ -187,12 +187,16 @@ export class SubtagTestContext {
         this.database.setup(m => m.tags, false).thenReturn(this.tagsTable.instance);
 
         this.tagVariablesTable.setup(m => m.get(argument.isTypeof('string').value, anything() as never), false)
-            .thenCall((...args: Parameters<TagVariableStore['get']>) => this.tagVariables[`${args[1].type}.${[args[1].entityId, args[1].name].filter(guard.hasValue).join('_')}.${args[0]}`]);
+            .thenCall((...[name, scope]: Parameters<TagVariableStore['get']>) => this.tagVariables.get({ scope, name }));
         if (this.testCase.setupSaveVariables !== false) {
             this.tagVariablesTable.setup(m => m.upsert(anything() as never, anything() as never), false)
-                .thenCall((...args: Parameters<TagVariableStore['upsert']>) => {
-                    for (const [name, value] of Object.entries(args[0]))
-                        this.tagVariables[`${args[1].type}.${[args[1].entityId, args[1].name].filter(guard.hasValue).join('_')}.${name}`] = value;
+                .thenCall((...[values, scope]: Parameters<TagVariableStore['upsert']>) => {
+                    for (const [name, value] of Object.entries(values)) {
+                        if (value !== undefined)
+                            this.tagVariables.set({ scope, name }, value);
+                        else
+                            this.tagVariables.delete({ scope, name });
+                    }
                 });
         }
 
@@ -848,4 +852,75 @@ export function* tooManyArgumentsTestCases(subtagName: string, maxArgCount: numb
             { start: 0, end: 9 + subtagName.length + 7 * maxArgCount, error: new TooManyArgumentsError(maxArgCount, maxArgCount + 1) }
         ]
     };
+}
+
+class MapByValue<Key, Value> implements Map<Key, Value> {
+    #inner: Map<unknown, Value>;
+
+    public readonly [Symbol.toStringTag] = '';
+    public get size(): number {
+        return this.#inner.size;
+    }
+
+    public constructor(args?: Iterable<[Key, Value]>) {
+        this.#inner = new Map();
+        if (args !== undefined)
+            for (const entry of args)
+                this.set(...entry);
+    }
+
+    #fromKey(key: Key): unknown {
+        switch (typeof key) {
+            case 'object': return key === null
+                ? null
+                : JSON.stringify(Object.entries(key).sort((a, b) => a[0] < b[0] ? 1 : -1).map(x => [x[0], this.#fromKey(x[1])]));
+            case 'string':
+                return JSON.stringify(key);
+            default:
+                return key;
+        }
+    }
+
+    #toKey(key: unknown): Key {
+        return typeof key === 'string'
+            ? JSON.parse(key) as Key
+            : key as Key;
+    }
+
+    public clear(): void {
+        this.#inner.clear();
+    }
+    public delete(key: Key): boolean {
+        return this.#inner.delete(this.#fromKey(key));
+    }
+    public forEach(callbackfn: (value: Value, key: Key, map: Map<Key, Value>) => void, thisArg?: unknown): void {
+        for (const entry of this)
+            callbackfn.call(thisArg, entry[1], entry[0], this);
+    }
+    public get(key: Key): Value | undefined {
+        return this.#inner.get(this.#fromKey(key));
+    }
+    public has(key: Key): boolean {
+        return this.#inner.has(this.#fromKey(key));
+    }
+    public set(key: Key, value: Value): this {
+        this.#inner.set(this.#fromKey(key), value);
+        return this;
+    }
+    public * entries(): IterableIterator<[Key, Value]> {
+        for (const entry of this.#inner)
+            yield [this.#toKey(entry[0]), entry[1]];
+    }
+    public * keys(): IterableIterator<Key> {
+        for (const key of this.#inner.keys())
+            yield this.#toKey(key);
+    }
+    public * values(): IterableIterator<Value> {
+        for (const value of this.#inner.values())
+            yield value;
+    }
+    public [Symbol.iterator](): IterableIterator<[Key, Value]> {
+        return this.entries();
+    }
+
 }

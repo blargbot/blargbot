@@ -1,5 +1,6 @@
 import { NotABooleanError, NotANumberError } from '@blargbot/bbtag/errors';
 import { IncrementSubtag } from '@blargbot/bbtag/subtags/math/increment';
+import { TagVariableType } from '@blargbot/domain/models/index';
 import { expect } from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite';
@@ -12,47 +13,47 @@ runSubtagTests({
             code: '{increment;_myVariable}',
             expected: '19',
             setup(ctx) {
-                ctx.tagVariables[`GUILD_TAG.${ctx.guild.id}.myVariable`] = 18;
+                ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }, 18);
             },
             assert(_, __, ctx) {
-                expect(ctx.tagVariables[`GUILD_TAG.${ctx.guild.id}.myVariable`]).to.equal(19);
+                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' })).to.equal(19);
             }
         },
         {
             code: '{increment;_myVariable}',
             expected: '19',
             setup(ctx) {
-                ctx.tagVariables[`GUILD_TAG.${ctx.guild.id}.myVariable`] = 18.1;
+                ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }, 18.1);
             },
             assert(_, __, ctx) {
-                expect(ctx.tagVariables[`GUILD_TAG.${ctx.guild.id}.myVariable`]).to.equal(19);
+                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' })).to.equal(19);
             }
         },
         {
             code: '{increment;_myVariable}',
             expected: '19',
             setup(ctx) {
-                ctx.tagVariables[`GUILD_TAG.${ctx.guild.id}.myVariable`] = 18.9999;
+                ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }, 18.9999);
             },
             assert(_, __, ctx) {
-                expect(ctx.tagVariables[`GUILD_TAG.${ctx.guild.id}.myVariable`]).to.equal(19);
+                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' })).to.equal(19);
             }
         },
         {
             code: '{increment;_myVariable}',
             expected: '19',
             setup(ctx) {
-                ctx.tagVariables[`GUILD_TAG.${ctx.guild.id}.myVariable`] = '18';
+                ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }, '18');
             },
             assert(_, __, ctx) {
-                expect(ctx.tagVariables[`GUILD_TAG.${ctx.guild.id}.myVariable`]).to.equal(19);
+                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' })).to.equal(19);
             }
         },
         {
             code: '{increment;_myVariable}',
             expected: '`Not a number`',
             setup(ctx) {
-                ctx.tagVariables[`GUILD_TAG.${ctx.guild.id}.myVariable`] = 'abc';
+                ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }, 'abc');
                 Object.freeze(ctx.tagVariables);
             },
             errors: [
@@ -63,37 +64,37 @@ runSubtagTests({
             code: '{increment;_myVariable;3}',
             expected: '25',
             setup(ctx) {
-                ctx.tagVariables[`GUILD_TAG.${ctx.guild.id}.myVariable`] = 22;
+                ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }, 22);
             },
             assert(_, __, ctx) {
-                expect(ctx.tagVariables[`GUILD_TAG.${ctx.guild.id}.myVariable`]).to.equal(25);
+                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' })).to.equal(25);
             }
         },
         {
             code: '{increment;_myVariable;3}',
             expected: '25',
             setup(ctx) {
-                ctx.tagVariables[`GUILD_TAG.${ctx.guild.id}.myVariable`] = 22.1;
+                ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }, 22.1);
             },
             assert(_, __, ctx) {
-                expect(ctx.tagVariables[`GUILD_TAG.${ctx.guild.id}.myVariable`]).to.equal(25);
+                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' })).to.equal(25);
             }
         },
         {
             code: '{increment;_myVariable;3.6}',
             expected: '25',
             setup(ctx) {
-                ctx.tagVariables[`GUILD_TAG.${ctx.guild.id}.myVariable`] = 22;
+                ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }, 22);
             },
             assert(_, __, ctx) {
-                expect(ctx.tagVariables[`GUILD_TAG.${ctx.guild.id}.myVariable`]).to.equal(25);
+                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' })).to.equal(25);
             }
         },
         {
             code: '{increment;_myVariable;xyz}',
             expected: '`Not a number`',
             setup(ctx) {
-                ctx.tagVariables[`GUILD_TAG.${ctx.guild.id}.myVariable`] = 22;
+                ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }, 22);
                 Object.freeze(ctx.tagVariables);
             },
             errors: [
@@ -104,67 +105,67 @@ runSubtagTests({
             code: '{increment;_myVariable;9;true}',
             expected: '25',
             setup(ctx) {
-                ctx.tagVariables[`GUILD_TAG.${ctx.guild.id}.myVariable`] = 16;
+                ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }, 16);
             },
             assert(_, __, ctx) {
-                expect(ctx.tagVariables[`GUILD_TAG.${ctx.guild.id}.myVariable`]).to.equal(25);
+                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' })).to.equal(25);
             }
         },
         {
             code: '{increment;_myVariable;9;true}',
             expected: '25',
             setup(ctx) {
-                ctx.tagVariables[`GUILD_TAG.${ctx.guild.id}.myVariable`] = 16.1;
+                ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }, 16.1);
             },
             assert(_, __, ctx) {
-                expect(ctx.tagVariables[`GUILD_TAG.${ctx.guild.id}.myVariable`]).to.equal(25);
+                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' })).to.equal(25);
             }
         },
         {
             code: '{increment;_myVariable;9.6;true}',
             expected: '25',
             setup(ctx) {
-                ctx.tagVariables[`GUILD_TAG.${ctx.guild.id}.myVariable`] = 16;
+                ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }, 16);
             },
             assert(_, __, ctx) {
-                expect(ctx.tagVariables[`GUILD_TAG.${ctx.guild.id}.myVariable`]).to.equal(25);
+                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' })).to.equal(25);
             }
         },
         {
             code: '{increment;_myVariable;9;false}',
             expected: '25',
             setup(ctx) {
-                ctx.tagVariables[`GUILD_TAG.${ctx.guild.id}.myVariable`] = 16;
+                ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }, 16);
             },
             assert(_, __, ctx) {
-                expect(ctx.tagVariables[`GUILD_TAG.${ctx.guild.id}.myVariable`]).to.equal(25);
+                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' })).to.equal(25);
             }
         },
         {
             code: '{increment;_myVariable;9;false}',
             expected: '25.1',
             setup(ctx) {
-                ctx.tagVariables[`GUILD_TAG.${ctx.guild.id}.myVariable`] = 16.1;
+                ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }, 16.1);
             },
             assert(_, __, ctx) {
-                expect(ctx.tagVariables[`GUILD_TAG.${ctx.guild.id}.myVariable`]).to.equal(25.1);
+                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' })).to.equal(25.1);
             }
         },
         {
             code: '{increment;_myVariable;9.6;false}',
             expected: '25.6',
             setup(ctx) {
-                ctx.tagVariables[`GUILD_TAG.${ctx.guild.id}.myVariable`] = 16;
+                ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }, 16);
             },
             assert(_, __, ctx) {
-                expect(ctx.tagVariables[`GUILD_TAG.${ctx.guild.id}.myVariable`]).to.equal(25.6);
+                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' })).to.equal(25.6);
             }
         },
         {
             code: '{increment;_myVariable;;abc}',
             expected: '`Not a boolean`',
             setup(ctx) {
-                ctx.tagVariables[`GUILD_TAG.${ctx.guild.id}.myVariable`] = 22;
+                ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }, 22);
                 Object.freeze(ctx.tagVariables);
             },
             errors: [

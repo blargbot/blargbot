@@ -14,6 +14,11 @@ export class PostgresDbTable<T extends object> {
         return model?.get();
     }
 
+    public async getAll(filter: FindOptions<T>): Promise<T[]> {
+        const models = await this.#model.findAll(filter);
+        return models.map(m => m.get());
+    }
+
     public async destroy(filter: FindOptions<T>): Promise<void> {
         await this.#model.destroy(filter);
     }

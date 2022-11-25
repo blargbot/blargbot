@@ -33,7 +33,7 @@ export class PersonalPrefixCommand extends GlobalCommand {
     }
 
     public async listPrefixes(context: CommandContext): Promise<CommandResult> {
-        const prefixes = await context.database.users.getSetting(context.author.id, 'prefixes');
+        const prefixes = await context.database.users.getProp(context.author.id, 'prefixes');
         if (prefixes === undefined || prefixes.length === 0)
             return cmd.list.none;
 

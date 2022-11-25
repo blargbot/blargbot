@@ -15,10 +15,10 @@ runSubtagTests({
             setup(ctx) {
                 ctx.options.rootTagName = 'commitTest';
 
-                ctx.tagVariablesTable.setup(m => m.upsert(argument.isDeepEqual({ var1: 5, var2: 'abc' }), argument.isDeepEqual({ type: TagVariableType.LOCAL, name: 'commitTest' }))).thenResolve(undefined);
+                ctx.tagVariablesTable.setup(m => m.upsert(argument.isDeepEqual({ var1: 5, var2: 'abc' }), argument.isDeepEqual({ type: TagVariableType.LOCAL_TAG, name: 'commitTest' }))).thenResolve(undefined);
                 ctx.tagVariablesTable.setup(m => m.upsert(argument.isDeepEqual({ var5: 5, var6: 'abc' }), argument.isDeepEqual({ type: TagVariableType.GLOBAL }))).thenResolve(undefined);
-                ctx.tagVariablesTable.setup(m => m.upsert(argument.isDeepEqual({ var7: 5, var8: 'abc' }), argument.isDeepEqual({ type: TagVariableType.AUTHOR, entityId: ctx.users.command.id }))).thenResolve(undefined);
-                ctx.tagVariablesTable.setup(m => m.upsert(argument.isDeepEqual({ var9: 5, var10: 'abc' }), argument.isDeepEqual({ type: TagVariableType.TAGGUILD, entityId: ctx.guild.id }))).thenResolve(undefined);
+                ctx.tagVariablesTable.setup(m => m.upsert(argument.isDeepEqual({ var7: 5, var8: 'abc' }), argument.isDeepEqual({ type: TagVariableType.AUTHOR, authorId: ctx.users.command.id }))).thenResolve(undefined);
+                ctx.tagVariablesTable.setup(m => m.upsert(argument.isDeepEqual({ var9: 5, var10: 'abc' }), argument.isDeepEqual({ type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }))).thenResolve(undefined);
             },
             async postSetup(bbctx) {
                 await bbctx.variables.set('var1', 5);
@@ -41,10 +41,10 @@ runSubtagTests({
                 ctx.options.rootTagName = 'commitTest';
                 ctx.options.isCC = true;
 
-                ctx.tagVariablesTable.setup(m => m.upsert(argument.isDeepEqual({ var1: 5, var2: 'abc' }), argument.isDeepEqual({ type: TagVariableType.GUILDLOCAL, entityId: ctx.guild.id, name: 'commitTest' }))).thenResolve(undefined);
+                ctx.tagVariablesTable.setup(m => m.upsert(argument.isDeepEqual({ var1: 5, var2: 'abc' }), argument.isDeepEqual({ type: TagVariableType.LOCAL_CC, guildId: ctx.guild.id, name: 'commitTest' }))).thenResolve(undefined);
                 ctx.tagVariablesTable.setup(m => m.upsert(argument.isDeepEqual({ var5: 5, var6: 'abc' }), argument.isDeepEqual({ type: TagVariableType.GLOBAL }))).thenResolve(undefined);
-                ctx.tagVariablesTable.setup(m => m.upsert(argument.isDeepEqual({ var7: 5, var8: 'abc' }), argument.isDeepEqual({ type: TagVariableType.AUTHOR, entityId: ctx.users.command.id }))).thenResolve(undefined);
-                ctx.tagVariablesTable.setup(m => m.upsert(argument.isDeepEqual({ var9: 5, var10: 'abc' }), argument.isDeepEqual({ type: TagVariableType.GUILD, entityId: ctx.guild.id }))).thenResolve(undefined);
+                ctx.tagVariablesTable.setup(m => m.upsert(argument.isDeepEqual({ var7: 5, var8: 'abc' }), argument.isDeepEqual({ type: TagVariableType.AUTHOR, authorId: ctx.users.command.id }))).thenResolve(undefined);
+                ctx.tagVariablesTable.setup(m => m.upsert(argument.isDeepEqual({ var9: 5, var10: 'abc' }), argument.isDeepEqual({ type: TagVariableType.GUILD_CC, guildId: ctx.guild.id }))).thenResolve(undefined);
             },
             async postSetup(bbctx) {
                 await bbctx.variables.set('var1', 5);
@@ -66,10 +66,10 @@ runSubtagTests({
             setup(ctx) {
                 ctx.options.rootTagName = 'commitTest';
 
-                ctx.tagVariablesTable.setup(m => m.upsert(argument.isDeepEqual({ var1: 5 }), argument.isDeepEqual({ type: TagVariableType.LOCAL, name: 'commitTest' }))).thenResolve(undefined);
+                ctx.tagVariablesTable.setup(m => m.upsert(argument.isDeepEqual({ var1: 5 }), argument.isDeepEqual({ type: TagVariableType.LOCAL_TAG, name: 'commitTest' }))).thenResolve(undefined);
                 ctx.tagVariablesTable.setup(m => m.upsert(argument.isDeepEqual({ var5: 5 }), argument.isDeepEqual({ type: TagVariableType.GLOBAL }))).thenResolve(undefined);
-                ctx.tagVariablesTable.setup(m => m.upsert(argument.isDeepEqual({ var7: 5 }), argument.isDeepEqual({ type: TagVariableType.AUTHOR, entityId: ctx.users.command.id }))).thenResolve(undefined);
-                ctx.tagVariablesTable.setup(m => m.upsert(argument.isDeepEqual({ var9: 5 }), argument.isDeepEqual({ type: TagVariableType.TAGGUILD, entityId: ctx.guild.id }))).thenResolve(undefined);
+                ctx.tagVariablesTable.setup(m => m.upsert(argument.isDeepEqual({ var7: 5 }), argument.isDeepEqual({ type: TagVariableType.AUTHOR, authorId: ctx.users.command.id }))).thenResolve(undefined);
+                ctx.tagVariablesTable.setup(m => m.upsert(argument.isDeepEqual({ var9: 5 }), argument.isDeepEqual({ type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }))).thenResolve(undefined);
             },
             async postSetup(bbctx) {
                 await bbctx.variables.set('var1', 5);
@@ -92,10 +92,10 @@ runSubtagTests({
                 ctx.options.rootTagName = 'commitTest';
                 ctx.options.isCC = true;
 
-                ctx.tagVariablesTable.setup(m => m.upsert(argument.isDeepEqual({ var2: 'abc' }), argument.isDeepEqual({ type: TagVariableType.GUILDLOCAL, entityId: ctx.guild.id, name: 'commitTest' }))).thenResolve(undefined);
+                ctx.tagVariablesTable.setup(m => m.upsert(argument.isDeepEqual({ var2: 'abc' }), argument.isDeepEqual({ type: TagVariableType.LOCAL_CC, guildId: ctx.guild.id, name: 'commitTest' }))).thenResolve(undefined);
                 ctx.tagVariablesTable.setup(m => m.upsert(argument.isDeepEqual({ var6: 'abc' }), argument.isDeepEqual({ type: TagVariableType.GLOBAL }))).thenResolve(undefined);
-                ctx.tagVariablesTable.setup(m => m.upsert(argument.isDeepEqual({ var8: 'abc' }), argument.isDeepEqual({ type: TagVariableType.AUTHOR, entityId: ctx.users.command.id }))).thenResolve(undefined);
-                ctx.tagVariablesTable.setup(m => m.upsert(argument.isDeepEqual({ var10: 'abc' }), argument.isDeepEqual({ type: TagVariableType.GUILD, entityId: ctx.guild.id }))).thenResolve(undefined);
+                ctx.tagVariablesTable.setup(m => m.upsert(argument.isDeepEqual({ var8: 'abc' }), argument.isDeepEqual({ type: TagVariableType.AUTHOR, authorId: ctx.users.command.id }))).thenResolve(undefined);
+                ctx.tagVariablesTable.setup(m => m.upsert(argument.isDeepEqual({ var10: 'abc' }), argument.isDeepEqual({ type: TagVariableType.GUILD_CC, guildId: ctx.guild.id }))).thenResolve(undefined);
             },
             async postSetup(bbctx) {
                 await bbctx.variables.set('var1', 5);

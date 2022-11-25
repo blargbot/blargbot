@@ -2334,13 +2334,36 @@ describe('Cluster format strings', () => {
             },
             bot: {
                 reset: {
-                    description: 'Resets the bot to the state it is in when joining a guild for the first time.',
-                    cancelled: '❌ Reset cancelled',
-                    success: '✅ I have been reset back to my initial configuration',
+                    description: 'Deletes all persistent information that the bot holds. If used in a guild, this includes settings, custom commands and guild variables. If used in a DM this includes user settings, tags and author variables. You can preview exactly what will be deleted by doing `bot dump` first!',
+                    unavailable: 'The bot cannot be reset here',
+                    guild: {
+                        cancelled: '❌ Reset cancelled',
+                        success: '✅ I have been reset back to my initial configuration',
+                        confirm: {
+                            prompt: '⚠️ Are you sure you want to reset the bot to its initial state?\nThis will:\n- Reset all settings back to their defaults\n- Delete all custom commands, autoresponses, rolemes, censors, etc\n- Delete all tag guild variables',
+                            cancel: 'No',
+                            continue: 'Yes'
+                        }
+                    },
+                    user: {
+                        cancelled: '❌ Reset cancelled',
+                        success: '✅ I have been reset back to my initial configuration',
+                        confirm: {
+                            prompt: '⚠️ Are you sure you want to reset the bot to its initial state?\nThis will:\n- Reset all your user settings back to their defaults\n- Delete all tags you have made\n- Delete all author variables',
+                            cancel: 'No',
+                            continue: 'Yes'
+                        }
+                    }
+                },
+                dump: {
+                    description: 'Dumps all persistent information that the bot holds. If used',
+                    unavailable: 'The bot cannot be reset here',
+                    success: '✅ I have attached the data you requested!',
+                    cancelled: '❌ Dump cancelled',
                     confirm: {
-                        prompt: '⚠️ Are you sure you want to reset the bot to its initial state?\nThis will:\n- Reset all settings back to their defaults\n- Delete all custom commands, autoresponses, rolemes, censors, etc\n- Delete all tag guild variables',
-                        cancel: 'No',
-                        continue: 'Yes'
+                        prompt: '⚠️ Are you sure you want to dump all the information blargbot is holding? This could include some sensitive information, so ensure that it is ok for everyone here to see it.',
+                        cancel: 'Cancel',
+                        continue: 'Show me that data'
                     }
                 }
             },

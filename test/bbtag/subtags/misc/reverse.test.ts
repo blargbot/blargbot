@@ -1,5 +1,6 @@
 import { GetSubtag } from '@blargbot/bbtag/subtags/bot/get';
 import { ReverseSubtag } from '@blargbot/bbtag/subtags/misc/reverse';
+import { TagVariableType } from '@blargbot/domain/models/index';
 import { expect } from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite';
@@ -14,10 +15,10 @@ runSubtagTests({
             code: '{reverse;_myArray}',
             expected: 'yarrAym_',
             setup(ctx) {
-                ctx.tagVariables[`GUILD_TAG.${ctx.guild.id}.myArray`] = ['abc', 'def', 'ghi'];
+                ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myArray' }, ['abc', 'def', 'ghi']);
             },
             assert(_, __, ctx) {
-                expect(ctx.tagVariables[`GUILD_TAG.${ctx.guild.id}.myArray`]).to.deep.equal(['abc', 'def', 'ghi']);
+                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myArray' })).to.deep.equal(['abc', 'def', 'ghi']);
             }
         },
         {
@@ -25,10 +26,10 @@ runSubtagTests({
             expected: '',
             subtags: [new GetSubtag()],
             setup(ctx) {
-                ctx.tagVariables[`GUILD_TAG.${ctx.guild.id}.myArray`] = ['abc', 'def', 'ghi'];
+                ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myArray' }, ['abc', 'def', 'ghi']);
             },
             assert(_, __, ctx) {
-                expect(ctx.tagVariables[`GUILD_TAG.${ctx.guild.id}.myArray`]).to.deep.equal(['ghi', 'def', 'abc']);
+                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myArray' })).to.deep.equal(['ghi', 'def', 'abc']);
             }
         }
     ]

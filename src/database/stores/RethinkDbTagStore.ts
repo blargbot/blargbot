@@ -27,13 +27,17 @@ export class RethinkDbTagStore implements TagStore {
         return await this.#table.query(t => t.count());
     }
 
-    public async byAuthor(userId: string, skip: number, take: number): Promise<readonly string[]> {
-        return await this.#table.queryAll(t =>
-            t.getAll(userId, { index: 'author' })
+    public async byAuthor(userId: string): Promise<readonly string[]>
+    public async byAuthor(userId: string, skip: number, take: number): Promise<readonly string[]>
+    public async byAuthor(userId: string, ...offset: [skip: number, take: number] | []): Promise<readonly string[]> {
+        return await this.#table.queryAll(t => {
+            const q = t.getAll(userId, { index: 'author' })
                 .orderBy('name')
-                .getField('name')
-                .skip(skip)
-                .limit(take));
+                .getField('name');
+            return offset.length === 0 ? q : q
+                .skip(offset[0])
+                .limit(offset[1]);
+        });
     }
 
     public async byAuthorCount(userId: string): Promise<number> {
@@ -68,6 +72,9 @@ export class RethinkDbTagStore implements TagStore {
     public async get(tagName: string): Promise<StoredTag | undefined> {
         return await this.#table.get(tagName);
     }
+    public async getAllByAuthor(authorId: string): Promise<readonly StoredTag[]> {
+        return await this.#table.queryAll(t => t.filter(r => r('author').eq(authorId)));
+    }
 
     public async set(tag: StoredTag): Promise<boolean> {
         return await this.#table.set(tag.name, { ...tag, lastmodified: new Date() });
@@ -83,6 +90,10 @@ export class RethinkDbTagStore implements TagStore {
 
     public async delete(tagName: string): Promise<boolean> {
         return await this.#table.delete(tagName);
+    }
+
+    public async deleteByAuthor(userId: string): Promise<boolean> {
+        return await this.#table.delete({ author: userId });
     }
 
     public async disable(tagName: string, userId: string, reason: string): Promise<boolean> {

@@ -51,10 +51,10 @@ runSubtagTests({
             expected: '[2,3,4]',
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
-                ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.arr1`] = [1, 2, 3, 4];
+                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, [1, 2, 3, 4]);
             },
             async assert(bbctx, _, ctx) {
-                expect(ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.arr1`]).to.deep.equal([1, 2, 3, 4]);
+                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' })).to.deep.equal([1, 2, 3, 4]);
                 expect((await bbctx.variables.get('arr1')).value).to.deep.equal([1, 2, 3, 4]);
             }
         },
@@ -63,10 +63,10 @@ runSubtagTests({
             expected: '[2,3]',
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
-                ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.arr1`] = [1, 2, 3, 4];
+                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, [1, 2, 3, 4]);
             },
             async assert(bbctx, _, ctx) {
-                expect(ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.arr1`]).to.deep.equal([1, 2, 3, 4]);
+                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' })).to.deep.equal([1, 2, 3, 4]);
                 expect((await bbctx.variables.get('arr1')).value).to.deep.equal([1, 2, 3, 4]);
             }
         }

@@ -81,7 +81,7 @@ runSubtagTests({
 }`,
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
-                ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.myVar`] = { abc: 123, def: { ghi: [1, 2, 3] } };
+                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'myVar' }, { abc: 123, def: { ghi: [1, 2, 3] } });
             }
         },
         {

@@ -22,8 +22,8 @@ export class DMErrorsCommand extends GlobalCommand {
     }
 
     public async toggleDMErrors(context: CommandContext): Promise<CommandResult> {
-        const dmErrors = !(await context.database.users.getSetting(context.author.id, 'dontdmerrors') ?? false);
-        await context.database.users.setSetting(context.author.id, 'dontdmerrors', dmErrors);
+        const dmErrors = !(await context.database.users.getProp(context.author.id, 'dontdmerrors') ?? false);
+        await context.database.users.setProp(context.author.id, 'dontdmerrors', dmErrors);
 
         return dmErrors
             ? cmd.default.enabled

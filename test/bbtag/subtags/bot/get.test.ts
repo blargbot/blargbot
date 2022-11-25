@@ -9,31 +9,31 @@ runSubtagTests({
     argCountBounds: { min: 1, max: 2 },
     cases: [
         ...generateTestCases(false, 'testTag', [
-            { args: ['myVariableName'], key: `${TagVariableType.LOCAL}.testTag.myVariableName`, value: 'LOCAL_TAG value', expected: 'LOCAL_TAG value' },
+            { args: ['myVariableName'], key: { scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'myVariableName' }, value: 'LOCAL_TAG value', expected: 'LOCAL_TAG value' },
             { args: ['~myVariableName'], key: undefined, value: undefined, expected: '' },
-            { args: ['*myVariableName'], key: `${TagVariableType.GLOBAL}..myVariableName`, value: 'GLOBAL value', expected: 'GLOBAL value' },
-            { args: ['@myVariableName'], key: `${TagVariableType.AUTHOR}.823764823946284623234.myVariableName`, value: 'AUTHOR value', expected: 'AUTHOR value' },
-            { args: ['_myVariableName'], key: `${TagVariableType.TAGGUILD}.23904768237436873424.myVariableName`, value: 'GUILD_TAG value', expected: 'GUILD_TAG value' },
-            { args: ['myVariableName'], key: `${TagVariableType.LOCAL}.testTag.myVariableName`, value: 'LOCAL_TAG value', expected: 'LOCAL_TAG value' },
-            { args: ['*myVariableName'], key: `${TagVariableType.GLOBAL}..myVariableName`, value: ['a', 'b', 'c'], expected: '{"v":["a","b","c"],"n":"*myVariableName"}' },
-            { args: ['*myVariableName', '0'], key: `${TagVariableType.GLOBAL}..myVariableName`, value: ['a', 'b', 'c'], expected: 'a' },
-            { args: ['*myVariableName', '1'], key: `${TagVariableType.GLOBAL}..myVariableName`, value: ['a', 'b', 'c'], expected: 'b' },
-            { args: ['*myVariableName', '2'], key: `${TagVariableType.GLOBAL}..myVariableName`, value: ['a', 'b', 'c'], expected: 'c' },
-            { args: ['*myVariableName', '2'], key: `${TagVariableType.GLOBAL}..myVariableName`, value: 'This isnt an array', expected: 'This isnt an array' },
-            { args: ['*myVariableName', 'abc'], key: `${TagVariableType.GLOBAL}..myVariableName`, value: 'This isnt an array', expected: 'This isnt an array' }
+            { args: ['*myVariableName'], key: { scope: { type: TagVariableType.GLOBAL }, name: 'myVariableName' }, value: 'GLOBAL value', expected: 'GLOBAL value' },
+            { args: ['@myVariableName'], key: { scope: { type: TagVariableType.AUTHOR, authorId: '823764823946284623234' }, name: 'myVariableName' }, value: 'AUTHOR value', expected: 'AUTHOR value' },
+            { args: ['_myVariableName'], key: { scope: { type: TagVariableType.GUILD_TAG, guildId: '23904768237436873424' }, name: 'myVariableName' }, value: 'GUILD_TAG value', expected: 'GUILD_TAG value' },
+            { args: ['myVariableName'], key: { scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'myVariableName' }, value: 'LOCAL_TAG value', expected: 'LOCAL_TAG value' },
+            { args: ['*myVariableName'], key: { scope: { type: TagVariableType.GLOBAL }, name: 'myVariableName' }, value: ['a', 'b', 'c'], expected: '{"v":["a","b","c"],"n":"*myVariableName"}' },
+            { args: ['*myVariableName', '0'], key: { scope: { type: TagVariableType.GLOBAL }, name: 'myVariableName' }, value: ['a', 'b', 'c'], expected: 'a' },
+            { args: ['*myVariableName', '1'], key: { scope: { type: TagVariableType.GLOBAL }, name: 'myVariableName' }, value: ['a', 'b', 'c'], expected: 'b' },
+            { args: ['*myVariableName', '2'], key: { scope: { type: TagVariableType.GLOBAL }, name: 'myVariableName' }, value: ['a', 'b', 'c'], expected: 'c' },
+            { args: ['*myVariableName', '2'], key: { scope: { type: TagVariableType.GLOBAL }, name: 'myVariableName' }, value: 'This isnt an array', expected: 'This isnt an array' },
+            { args: ['*myVariableName', 'abc'], key: { scope: { type: TagVariableType.GLOBAL }, name: 'myVariableName' }, value: 'This isnt an array', expected: 'This isnt an array' }
         ]),
         ...generateTestCases(true, 'testTag', [
-            { args: ['myVariableName'], key: `${TagVariableType.GUILDLOCAL}.23904768237436873424_testTag.myVariableName`, value: 'LOCAL_CC value', expected: 'LOCAL_CC value' },
+            { args: ['myVariableName'], key: { scope: { type: TagVariableType.LOCAL_CC, guildId: '23904768237436873424', name: 'testTag' }, name: 'myVariableName' }, value: 'LOCAL_CC value', expected: 'LOCAL_CC value' },
             { args: ['~myVariableName'], key: undefined, value: undefined, expected: '' },
-            { args: ['*myVariableName'], key: `${TagVariableType.GLOBAL}..myVariableName`, value: 'GLOBAL value', expected: 'GLOBAL value' },
-            { args: ['@myVariableName'], key: `${TagVariableType.AUTHOR}.823764823946284623234.myVariableName`, value: 'AUTHOR value', expected: 'AUTHOR value' },
-            { args: ['_myVariableName'], key: `${TagVariableType.GUILD}.23904768237436873424.myVariableName`, value: 'GUILD_CC value', expected: 'GUILD_CC value' },
-            { args: ['*myVariableName'], key: `${TagVariableType.GLOBAL}..myVariableName`, value: ['a', 'b', 'c'], expected: '{"v":["a","b","c"],"n":"*myVariableName"}' },
-            { args: ['*myVariableName', '0'], key: `${TagVariableType.GLOBAL}..myVariableName`, value: ['a', 'b', 'c'], expected: 'a' },
-            { args: ['*myVariableName', '1'], key: `${TagVariableType.GLOBAL}..myVariableName`, value: ['a', 'b', 'c'], expected: 'b' },
-            { args: ['*myVariableName', '2'], key: `${TagVariableType.GLOBAL}..myVariableName`, value: ['a', 'b', 'c'], expected: 'c' },
-            { args: ['*myVariableName', '2'], key: `${TagVariableType.GLOBAL}..myVariableName`, value: 'This isnt an array', expected: 'This isnt an array' },
-            { args: ['*myVariableName', 'abc'], key: `${TagVariableType.GLOBAL}..myVariableName`, value: 'This isnt an array', expected: 'This isnt an array' }
+            { args: ['*myVariableName'], key: { scope: { type: TagVariableType.GLOBAL }, name: 'myVariableName' }, value: 'GLOBAL value', expected: 'GLOBAL value' },
+            { args: ['@myVariableName'], key: { scope: { type: TagVariableType.AUTHOR, authorId: '823764823946284623234' }, name: 'myVariableName' }, value: 'AUTHOR value', expected: 'AUTHOR value' },
+            { args: ['_myVariableName'], key: { scope: { type: TagVariableType.GUILD_CC, guildId: '23904768237436873424' }, name: 'myVariableName' }, value: 'GUILD_CC value', expected: 'GUILD_CC value' },
+            { args: ['*myVariableName'], key: { scope: { type: TagVariableType.GLOBAL }, name: 'myVariableName' }, value: ['a', 'b', 'c'], expected: '{"v":["a","b","c"],"n":"*myVariableName"}' },
+            { args: ['*myVariableName', '0'], key: { scope: { type: TagVariableType.GLOBAL }, name: 'myVariableName' }, value: ['a', 'b', 'c'], expected: 'a' },
+            { args: ['*myVariableName', '1'], key: { scope: { type: TagVariableType.GLOBAL }, name: 'myVariableName' }, value: ['a', 'b', 'c'], expected: 'b' },
+            { args: ['*myVariableName', '2'], key: { scope: { type: TagVariableType.GLOBAL }, name: 'myVariableName' }, value: ['a', 'b', 'c'], expected: 'c' },
+            { args: ['*myVariableName', '2'], key: { scope: { type: TagVariableType.GLOBAL }, name: 'myVariableName' }, value: 'This isnt an array', expected: 'This isnt an array' },
+            { args: ['*myVariableName', 'abc'], key: { scope: { type: TagVariableType.GLOBAL }, name: 'myVariableName' }, value: 'This isnt an array', expected: 'This isnt an array' }
         ]),
         {
             code: '{get;*myVariableName;abc}',
@@ -68,7 +68,7 @@ runSubtagTests({
     ]
 });
 
-function* generateTestCases(isCC: boolean, tagName: string, cases: Array<{ args: string[]; key: keyof SubtagTestContext['tagVariables'] | undefined; value: JToken | undefined; expected: string; }>): Generator<SubtagTestCase> {
+function* generateTestCases(isCC: boolean, tagName: string, cases: Array<{ args: string[]; key: Parameters<SubtagTestContext['tagVariables']['get']>[0] | undefined; value: JToken | undefined; expected: string; }>): Generator<SubtagTestCase> {
     for (const { args, key, value, expected } of cases) {
         const title = isCC ? 'Custom command' : 'Tag';
         const code = `{${['get', ...args].join(';')}}`;
@@ -82,8 +82,12 @@ function* generateTestCases(isCC: boolean, tagName: string, cases: Array<{ args:
                 ctx.users.command.id = '823764823946284623234';
                 ctx.options.isCC = isCC;
                 ctx.options.tagName = tagName;
-                if (key !== undefined)
-                    ctx.tagVariables[key] = value;
+                if (key !== undefined) {
+                    if (value === undefined)
+                        ctx.tagVariables.delete(key);
+                    else
+                        ctx.tagVariables.set(key, value);
+                }
             }
         };
         yield {
@@ -111,8 +115,12 @@ function* generateTestCases(isCC: boolean, tagName: string, cases: Array<{ args:
                 ctx.users.command.id = '823764823946284623234';
                 ctx.options.isCC = isCC;
                 ctx.options.tagName = tagName;
-                if (key !== undefined)
-                    ctx.tagVariables[key] = value;
+                if (key !== undefined) {
+                    if (value === undefined)
+                        ctx.tagVariables.delete(key);
+                    else
+                        ctx.tagVariables.set(key, value);
+                }
             },
             async postSetup(bbctx) {
                 await bbctx.variables.set(args[0], 'FAIL');

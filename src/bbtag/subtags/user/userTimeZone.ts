@@ -45,7 +45,7 @@ export class UserTimezoneSubtag extends CompiledSubtag {
                 .withDisplay(quiet ? '' : undefined);
         }
 
-        const userTimezone = await context.database.users.getSetting(user.id, 'timezone');
+        const userTimezone = await context.database.users.getProp(user.id, 'timezone');
         return userTimezone ?? 'UTC';
     }
 }

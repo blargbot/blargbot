@@ -78,7 +78,7 @@ runSubtagTests({
             setupSaveVariables: false,
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
-                ctx.tagVariables[`${TagVariableType.LOCAL}.testTag.jsonVar`] = { test: 123, other: JSON.stringify({ myProp: 123 }) };
+                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'jsonVar' }, { test: 123, other: JSON.stringify({ myProp: 123 }) });
             },
             async assert(bbctx) {
                 expect((await bbctx.variables.get('jsonVar')).value).to.deep.equal({ test: 123, other: { myProp: '10' } });
