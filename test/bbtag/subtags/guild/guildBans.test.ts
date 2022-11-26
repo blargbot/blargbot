@@ -1,6 +1,6 @@
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
 import { GuildBansSubtag } from '@blargbot/bbtag/subtags/guild/guildBans';
-import { ApiError, User } from 'eris';
+import { ApiError } from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 
@@ -11,17 +11,11 @@ runSubtagTests({
         {
             code: '{guildbans}',
             expected: '["23946327849364832","32967423897649864"]',
-            setup(ctx) {
-                const user1 = ctx.createMock(User);
-                const user2 = ctx.createMock(User);
-
-                user1.setup(m => m.id).thenReturn('23946327849364832');
-                user2.setup(m => m.id).thenReturn('32967423897649864');
-
-                ctx.discord.setup(m => m.getGuildBans(ctx.guild.id, undefined))
+            postSetup(bbctx, ctx) {
+                ctx.util.setup(m => m.getBannedUsers(bbctx.guild))
                     .thenResolve([
-                        { user: user1.instance },
-                        { user: user2.instance }
+                        '23946327849364832',
+                        '32967423897649864'
                     ]);
             }
         },
@@ -31,9 +25,9 @@ runSubtagTests({
             errors: [
                 { start: 0, end: 11, error: new BBTagRuntimeError('Missing required permissions', 'Test REST error') }
             ],
-            setup(ctx) {
+            postSetup(bbctx, ctx) {
                 const error = ctx.createRESTError(ApiError.MISSING_PERMISSIONS);
-                ctx.discord.setup(m => m.getGuildBans(ctx.guild.id, undefined))
+                ctx.util.setup(m => m.getBannedUsers(bbctx.guild))
                     .thenReject(error);
             }
         }

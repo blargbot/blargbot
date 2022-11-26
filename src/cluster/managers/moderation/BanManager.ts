@@ -1,5 +1,5 @@
 import { BanResult, KickResult, MassBanResult, UnbanResult } from '@blargbot/cluster/types';
-import { sleep } from '@blargbot/cluster/utils';
+import { guard, sleep } from '@blargbot/cluster/utils';
 import { UnbanEventOptions } from '@blargbot/domain/models';
 import { format, IFormattable, util } from '@blargbot/formatting';
 import { mapping } from '@blargbot/mapping';
@@ -23,7 +23,7 @@ export class BanManager extends ModerationManagerBase {
     }
 
     public async ban(guild: Guild, user: User, moderator: User, authorizer: User, deleteDays: number, reason: IFormattable<string>, duration: Duration): Promise<BanResult> {
-        const result = await this.#tryBanUser(guild, user.id, moderator, authorizer, undefined, deleteDays, reason);
+        const result = await this.#tryBanUser(guild, user.id, moderator, authorizer, deleteDays, reason);
         if (result !== 'success') {
             if (typeof result === 'string')
                 return result;
@@ -58,10 +58,9 @@ export class BanManager extends ModerationManagerBase {
         if (permMessage !== undefined)
             return permMessage;
 
-        const guildBans = new Set((await guild.getBans()).map(b => b.user.id));
         const banResults = await Promise.all(userIds.map(async userId => ({
             userId,
-            result: await this.#tryBanUser(guild, userId, moderator, authorizer, guildBans, deleteDays, reason)
+            result: await this.#tryBanUser(guild, userId, moderator, authorizer, deleteDays, reason)
         })));
 
         const bannedIds = new Set(banResults.filter(r => r.result === 'success').map(r => r.userId));
@@ -71,16 +70,18 @@ export class BanManager extends ModerationManagerBase {
                 throw new Error('Filter failed to find a successful ban, yet here we are. Curious.');
             if (typeof result === 'string')
                 return result;
-            throw result;
+            throw result.error;
         }
-        const newBans = await guild.getBans();
-        const banned = newBans.filter(b => !guildBans.has(b.user.id) && bannedIds.has(b.user.id)).map(b => b.user);
+
+        const allBans = await this.cluster.util.requestAllBans(guild);
+        const banLookup = new Map(allBans.map(b => [b.user.id, b.user] as const));
+        const banned = [...bannedIds].map(id => banLookup.get(id)).filter(guard.hasValue);
 
         await this.modLog.logMassBan(guild, banned, moderator);
         return banned;
     }
 
-    async #tryBanUser(guild: Guild, userId: string, moderator: User, authorizer: User, alreadyBanned: Set<string> | undefined, deleteDays: number, reason: IFormattable<string>): Promise<BanResult | { error: unknown; }> {
+    async #tryBanUser(guild: Guild, userId: string, moderator: User, authorizer: User, deleteDays: number, reason: IFormattable<string>): Promise<BanResult | { error: unknown; }> {
         const self = guild.members.get(this.cluster.discord.user.id);
         if (self?.permissions.has('banMembers') !== true)
             return 'noPerms';
@@ -93,7 +94,8 @@ export class BanManager extends ModerationManagerBase {
         if (member !== undefined && !this.cluster.util.isBotHigher(member))
             return 'memberTooHigh';
 
-        alreadyBanned ??= new Set((await guild.getBans()).map(b => b.user.id));
+        await this.cluster.util.ensureGuildBans(guild);
+        const alreadyBanned = this.cluster.util.getGuildBans(guild);
         if (alreadyBanned.has(userId))
             return 'alreadyBanned';
 

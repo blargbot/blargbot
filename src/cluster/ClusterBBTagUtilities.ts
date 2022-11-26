@@ -70,6 +70,12 @@ export class ClusterBBTagUtilities implements BBTagUtilities {
         return this.cluster.util.addReactions(context, reactions);
     }
 
+    public async getBannedUsers(guild: Guild): Promise<string[]> {
+        await this.cluster.util.ensureGuildBans(guild);
+        const bans = this.cluster.util.getGuildBans(guild);
+        return [...bans];
+    }
+
     public async generateDumpPage(payload: AdvancedMessageContent, channel: KnownChannel): Promise<string> {
         return (await this.cluster.util.generateDumpPage(payload, channel)).toString();
     }

@@ -6,7 +6,7 @@ import { DiscordChannelTag, DiscordRoleTag, DiscordTagSet, DiscordUserTag, Store
 import { format, Formatter, IFormattable, IFormatter, TranslationMiddleware, util } from '@blargbot/formatting';
 import { Logger } from '@blargbot/logger';
 import { Snowflake } from 'catflake';
-import { AdvancedMessageContent, AnyGuildChannel, ApiError, Channel, ChannelInteraction, Client as Discord, Collection, DiscordRESTError, ExtendedUser, Guild, GuildChannel, KnownChannel, KnownGuildChannel, KnownMessage, Member, Message, RequestHandler, Role, TextableChannel, User, UserChannelInteraction, Webhook } from 'eris';
+import { AdvancedMessageContent, AnyGuildChannel, ApiError, Channel, ChannelInteraction, Client as Discord, Collection, DiscordRESTError, ExtendedUser, Guild, GuildBan, GuildChannel, KnownChannel, KnownGuildChannel, KnownMessage, Member, Message, RequestHandler, Role, TextableChannel, User, UserChannelInteraction, Webhook } from 'eris';
 import moment from 'moment-timezone';
 
 import { BaseClient } from './BaseClient';
@@ -29,6 +29,15 @@ export class BaseUtilities {
     ) {
         this.translator = new CrowdinTranslationSource('a713aad8fe135bf923f9587yoka');
         this.#translator = new TranslationMiddleware(this.translator, client.logger.error.bind(client.logger));
+
+        client.discord.on('guildBanAdd', (guild, user) => {
+            const bans = this.getGuildBans(guild);
+            bans.add(user.id);
+        });
+        client.discord.on('guildBanRemove', (guild, user) => {
+            const bans = this.getGuildBans(guild);
+            bans.delete(user.id);
+        });
     }
 
     async #getSendChannel(context: SendContext): Promise<TextableChannel> {
@@ -568,15 +577,73 @@ export class BaseUtilities {
         }
     }
 
-    readonly #ensuredGuilds = new WeakSet<Guild>();
-    public async ensureMemberCache(guild: Guild): Promise<void> {
-        if (this.#ensuredGuilds.has(guild))
-            return;
+    readonly #guildsWithResolvedMembers = new WeakMap<Guild, Promise<void>>();
+    public ensureMemberCache(guild: Guild): Promise<void> {
+        let resolve = this.#guildsWithResolvedMembers.get(guild);
+        if (resolve === undefined) {
+            this.#guildsWithResolvedMembers.set(guild, resolve = this.#ensureMemberCache(guild).catch(err => {
+                if (err instanceof DiscordRESTError)
+                    this.#guildsWithResolvedMembers.delete(guild);
+                throw err;
+            }));
+        }
+        return resolve;
+    }
 
-        this.#ensuredGuilds.add(guild);
+    async #ensureMemberCache(guild: Guild): Promise<void> {
         const initialSize = guild.members.size;
         await guild.fetchAllMembers();
         this.logger.info('Cached', guild.members.size - initialSize, 'members in guild', guild.id, '. Member cache now has', guild.members.size, 'entries');
+    }
+
+    public async * streamAllBans(guild: Guild): AsyncGenerator<GuildBan, void, undefined> {
+        let batch = [];
+        let after;
+        const bans = this.getGuildBans(guild);
+        do {
+            batch = await guild.getBans({ after });
+            for (const ban of batch)
+                bans.add(ban.user.id);
+            yield* batch;
+            after = batch.pop()?.user.id;
+        } while (after !== undefined);
+    }
+
+    public async requestAllBans(guild: Guild): Promise<GuildBan[]> {
+        const result = [];
+        for await (const ban of this.streamAllBans(guild))
+            result.push(ban);
+        return result;
+    }
+
+    readonly #guildsWithResolvedBans = new Map<string, Promise<void>>();
+    public ensureGuildBans(guild: Guild): Promise<void> {
+        const hasPerms = guild.members.get(this.user.id)?.permissions.has('banMembers') ?? false;
+        if (!hasPerms)
+            this.#guildsWithResolvedBans.delete(guild.id);
+        let resolve = this.#guildsWithResolvedBans.get(guild.id);
+        if (resolve === undefined) {
+            this.#guildsWithResolvedBans.set(guild.id, resolve = this.#ensureGuildBans(guild).catch(err => {
+                if (err instanceof DiscordRESTError)
+                    this.#guildsWithResolvedBans.delete(guild.id);
+                throw err;
+            }));
+        }
+        return resolve;
+    }
+
+    async #ensureGuildBans(guild: Guild): Promise<void> {
+        for await (const _ of this.streamAllBans(guild)) {
+            // NO-OP - streamAllBans caches each record as it encounters them, which is all we need to do here.
+        }
+    }
+
+    readonly #guildBanCache = new Map<string, Set<string>>();
+    public getGuildBans(guild: Guild): Set<string> {
+        let cache = this.#guildBanCache.get(guild.id);
+        if (cache === undefined)
+            this.#guildBanCache.set(guild.id, cache = new Set<string>());
+        return cache;
     }
 
     public async findMembers(guild: string | Guild, query?: string): Promise<Member[]> {
