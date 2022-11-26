@@ -633,8 +633,9 @@ export class BaseUtilities {
     }
 
     async #ensureGuildBans(guild: Guild): Promise<void> {
-        for await (const _ of this.streamAllBans(guild))
-            ;
+        for await (const _ of this.streamAllBans(guild)) {
+            // NO-OP - streamAllBans caches each record as it encounters them, which is all we need to do here.
+        }
     }
 
     readonly #guildBanCache = new Map<string, Set<string>>();
