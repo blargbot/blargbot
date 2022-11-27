@@ -38,4 +38,8 @@ If you want to contribute to blargbot, it's very easy using a tool like [VSCode]
 
 Once everything is set up by the dev containers, you will need to follow the instructions in [config.example.jsonc](./config.example.jsonc) to set up the config to run the bot.
 
-Now you will be able to run and debug the bot at any time by running the `node: master` or `node: cluster` launch profiles. `node: cluster` is generally better, as the master worker will kill clusters that dont respond for a certain period of time, which can make breakpoints harder to use. `node: master` is closest to how the deployed bot actually runs however, so if youre working on the wider architecture of the bot then that is what you should run.
+Now you will be able to run and debug the bot at any time by running the `node: master` or `node: cluster` launch profiles:
+
+- `node: cluster` is generally better, as the master worker will kill clusters that dont respond for a certain period of time, which can make breakpoints harder to use. 
+
+- `node: master` is closest to how the deployed bot actually runs however, so if you are working on the wider architecture of the bot then that is what you should run.
