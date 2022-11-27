@@ -34,7 +34,7 @@ If you're planning on hosting it yourself, I can't say that I'll approve, but I 
 
 ## Contributing
 
-If you want to contribute to blargbot, its very easy using a tool like [VSCode](https://code.visualstudio.com/). To get started all you need to do is ensure you have followed the [setup steps for VSCode dev containers](https://code.visualstudio.com/docs/devcontainers/containers#_getting-started). Once that is all set up, within VSCode open the [command pallet](https://code.visualstudio.com/docs/getstarted/userinterface#_command-palette) and search for the `Clone Repository in Container Volume` option. Enter the github repository url into the input box (https://github.com/blargbot/blargbot.git) and it will do everything you need!
+If you want to contribute to blargbot, it's very easy using a tool like [VSCode](https://code.visualstudio.com/). To get started, all you need to do is ensure you have followed the [setup steps for VSCode dev containers](https://code.visualstudio.com/docs/devcontainers/containers#_getting-started). Once that is all set up, within VSCode, open the [command pallet](https://code.visualstudio.com/docs/getstarted/userinterface#_command-palette) and search for the `Clone Repository in Container Volume` option. Enter the github repository url into the input box (https://github.com/blargbot/blargbot.git) and it will do everything you need!
 
 Once everything is set up by the dev containers, you will need to follow the instructions in [config.example.jsonc](./config.example.jsonc) to set up the config to run the bot.
 
