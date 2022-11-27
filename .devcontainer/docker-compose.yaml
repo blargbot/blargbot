@@ -4,10 +4,6 @@ services:
   editor:
     build: editor
     init: true
-    volumes:
-      - type: bind
-        source: /var/run/docker.sock
-        target: /var/run/docker.sock
         
   postgres:
     build: postgres
