@@ -1,0 +1,17 @@
+{
+	"name": "Blargbot",
+	"dockerComposeFile": "docker-compose.yaml",
+	"service": "editor",
+	"postStartCommand": "yarn",
+	"workspaceFolder": "/workspaces/blargbot",
+	"customizations": {
+		"vscode": {
+			"settings": {},
+			"extensions": [
+				"dbaeumer.vscode-eslint",
+				"gamunu.vscode-yarn",
+				"arcanis.vscode-zipfs"
+			]
+		}
+	}
+}

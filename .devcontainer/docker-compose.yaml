@@ -1,0 +1,50 @@
+version: '3.5'
+
+services:
+  editor:
+    build: editor
+    init: true
+        
+  postgres:
+    build: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: blargbot
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres:/var/lib/postgresql/data
+
+  cassandra:
+    build: cassandra
+    environment:
+      CASSANDRA_KEYSPACE: blargbot
+      CASSANDRA_USER: blargbot
+      CASSANDRA_PASSWORD: BlargPass123
+    ports:
+      - 7000:7000
+      - 7001:7001
+      - 9042:9042
+      - 7199:7199
+      - 9160:9160
+    volumes:
+      - cassandra:/var/lib/cassandra
+
+  rethinkdb:
+    build: rethinkdb
+    environment:
+      RETHINKDB_DATABASE: blargbot
+      RETHINKDB_USERNAME: blargbot
+      RETHINKDB_PASSWORD: BlargPass123
+    ports:
+      - 29015:29015
+      - 28015:28015
+      - 29016:8080
+    volumes:
+      - rethink:/data
+
+volumes:
+  rethink:
+  cassandra:
+  postgres:

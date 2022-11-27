@@ -28,6 +28,18 @@ Have a suggestion for the bot? I would be glad to hear it! Found a bug? I'd like
 
 ## Note
 
-Open-source does not mean portable. blargbot was not built with portability in mind, and a lot of it is dependant on configs, files, and data structures that aren't available on github. The reason it's open-source is so people can look at it's internals and learn how it works; for educational purposes. Hosting it yourself is not supported.
+Open-source does not mean portable or self-hostable. The reason it's open-source is so people can look at it's internals and learn how it works; for educational purposes. Hosting it yourself is not supported.
 
-If you're planning on reverse-engineering the bot to host it yourself, I can't say that I'll approve, but I won't stop you either. My requirements include for this include giving me the heads-up and crediting me as the original author. See the license for more details
+If you're planning on hosting it yourself, I can't say that I'll approve, but I won't stop you either. My requirements for this include giving me the heads-up and crediting [@stupid cat](https://github.com/Ratismal) as the original author. See the license for more details.
+
+## Contributing
+
+If you want to contribute to blargbot, it's very easy using a tool like [VSCode](https://code.visualstudio.com/). To get started, all you need to do is ensure you have followed the [setup steps for VSCode dev containers](https://code.visualstudio.com/docs/devcontainers/containers#_getting-started). Once that is all set up, within VSCode, open the [command pallet](https://code.visualstudio.com/docs/getstarted/userinterface#_command-palette) and search for the `Clone Repository in Container Volume` option. Enter the github repository url into the input box (https://github.com/blargbot/blargbot.git) and it will do everything you need!
+
+Once everything is set up by the dev containers, you will need to follow the instructions in [config.example.jsonc](./config.example.jsonc) to set up the config to run the bot.
+
+Now you will be able to run and debug the bot at any time by running the `node: master` or `node: cluster` launch profiles:
+
+- `node: cluster` is generally better, as the master worker will kill clusters that dont respond for a certain period of time, which can make breakpoints harder to use. 
+
+- `node: master` is closest to how the deployed bot actually runs however, so if you are working on the wider architecture of the bot then that is what you should run.
