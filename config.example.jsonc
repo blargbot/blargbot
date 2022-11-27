@@ -1,0 +1,124 @@
+// DEV-SETUP: Make a copy of this file, and call it 'config.json'. Then remove all the comments below while following what they say to do!
+// - OPTIONAL settings can be left with their current values and the majority of the bot will work just fine
+// - REQUIRED settings must be set to a valid value for large parts of the bot to work, or start up in the first place.
+// All configs that already have values are designed to work with the container layout that results from using vscode dev containers. If youre developing by a different means then they will likely have to be different.
+{
+    "version": "4.5.1",
+    "cassandra": {
+        "contactPoints": [
+            "cassandra"
+        ],
+        "keyspace": "blargbot",
+        "username": "blargbot",
+        "password": "BlargPass123"
+    },
+    "rethink": {
+        "host": "rethinkdb",
+        "user": "blargbot",
+        "password": "BlargPass123",
+        "db": "blargbot",
+        "port": 28015
+    },
+    "postgres": {
+        "user": "postgres",
+        "pass": "password",
+        "database": "blargbot",
+        "sequelize": {
+            "host": "postgres",
+            "pool": {
+                "max": 15,
+                "min": 3,
+                "acquire": 60000,
+                "idle": 10000
+            }
+        }
+    },
+    "general": {
+        "carbontoken": "", // OPTIONAL: This is used for sending stats to a bot list site
+        "botlisttoken": "", // OPTIONAL: This is used for sending stats to a bot list site
+        "botlistorgtoken": "", // OPTIONAL: This is used for sending stats to a bot list site
+        "cleverbotApi": "", // OPTIONAL: This is used for sending stats to a bot list site
+        "shrinkwrapKey": "", // OPTIONAL: This is only needed if you are working with the shrinkwrap ccommand feature
+        "wolke": "", // OPTIONAL: Used by the social category of commands
+        "mashape": "", // OPTIONAL: Used by the define command
+        "isProd": false,
+        "loglevel": "debug"
+    },
+    "blargbotApi": {
+        "base": "", // OPTIONAL: Used by some image commands
+        "token": "" // OPTIONAL: Used by some image commands
+    },
+    "sentry": {
+        "base": "", // OPTIONAL: Only needed if youre running sentry (https://github.com/getsentry/self-hosted)
+        "sampleRate": 1
+    },
+    "airtable": {
+        "base": "", // OPTIONAL: Used by the feedback commands. e.g. 'appKTYe5luRw2aoas'
+        "key": "", // OPTIONAL: Used by the feedback commands. Secret value from airtable
+        "suggestions": "" // OPTIONAL: Used by the feedback commands. e.g. 'tblyFuWE6fEAbaOfo/viwDg5WovcwMA9NIL'
+    },
+    "website": {
+        "host": "", // OPTIONAL: Only needed when running the website (https://github.com/blargbot/website)
+        "secure": false,
+        "port": 8085,
+        "sessionExpiry": 3600,
+        "sessionSecret": "", // OPTIONAL: Only needed when running the website (https://github.com/blargbot/website). Can be any random string
+        "clientId": "", // OPTIONAL: Only needed when running the website (https://github.com/blargbot/website). Id of your bot (https://discord.com/developers/applications)
+        "secret": "", // OPTIONAL: Only needed when running the website (https://github.com/blargbot/website). OAuth2 client secret (https://discord.com/developers/applications)
+        "callback": "" // OPTIONAL: Only needed when running the website (https://github.com/blargbot/website). Must be one of the redirects added in discord (https://discord.com/developers/applications). e.g. 'http://localhost:8085/login'
+    },
+    "api": {
+        "host": "localhost",
+        "port": 8088
+    },
+    "discord": {
+        "defaultPrefix": "", // REQUIRED: Set to any prefix you want.
+        "token": "", // REQUIRED: The token of your bot (https://discord.com/developers/applications). Ensure it is prefixed with 'Bot ' (Space included)
+        "shards": {
+            "max": 1,
+            "perCluster": 4,
+            "spawnTime": 60000,
+            "concurrency": 1,
+            "maxMemory": 2048
+        },
+        "images": {
+            "perCluster": 1,
+            "spawnTime": 20000
+        },
+        "guilds": {
+            "home": "" // REQUIRED: The id of your development guild
+        },
+        "channels": {
+            "botlog": "", // REQUIRED: The id of any text channel on your development guild
+            "taglog": "", // REQUIRED: The id of any text channel on your development guild
+            "shardlog": "", // REQUIRED: The id of any text channel on your development guild
+            "changelog": "", // REQUIRED: The id of any text channel on your development guild
+            "commandlog": "", // REQUIRED: The id of any text channel on your development guild
+            "joinlog": "", // REQUIRED: The id of any text channel on your development guild
+            "loglog": "", // REQUIRED: The id of any text channel on your development guild
+            "autoresponse": "", // REQUIRED: The id of any text channel on your development guild
+            "feedback": "", // REQUIRED: The id of any text channel on your development guild
+            "suggestions": "", // REQUIRED: The id of any text channel on your development guild
+            "bugreports": "", // REQUIRED: The id of any text channel on your development guild
+            "tagreports": "", // REQUIRED: The id of any text channel on your development guild
+            "snippetqueue": "", // REQUIRED: The id of any text channel on your development guild
+            "snippets": "", // REQUIRED: The id of any text channel on your development guild
+            "commands": "" // REQUIRED: The id of any text channel on your development guild
+        },
+        "users": {
+            "developers": [] // OPTIONAL: The ids of anyone other than yourself that you wish to have access to developer commands.
+        },
+        "roles": {
+            "updates": "", // REQUIRED: The id of a role on your development guild
+            "staff": "", // REQUIRED: The id of a role on your development guild
+            "support": "" // REQUIRED: The id of a role on your development guild
+        },
+        "emotes": {
+            "beemovie": "🐝",
+            "online": "", // OPTIONAL: Used by the user command. This should be the emote details of an emote your bot has access to. e.g. ':online:806205417130426369'
+            "away": "", // OPTIONAL: Used by the user command. This should be the emote details of an emote your bot has access to. e.g. ':away:806205309689397249'
+            "busy": "", // OPTIONAL: Used by the user command. This should be the emote details of an emote your bot has access to. e.g. ':busy:806205507895296035'
+            "offline": "" // OPTIONAL: Used by the user command. This should be the emote details of an emote your bot has access to. e.g. ':offline:806205040049520700'
+        }
+    }
+}

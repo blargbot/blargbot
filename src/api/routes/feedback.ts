@@ -16,6 +16,6 @@ export class FeedbackRoute extends BaseRoute {
     }
 
     public getFeedbackUrl(id: string): ApiResponse {
-        return this.ok(`https://airtable.com/${this.#api.config.airtable.public}/${this.#api.config.airtable.suggestions}/${id}`);
+        return this.ok(`https://airtable.com/${this.#api.config.airtable.base}/${this.#api.config.airtable.suggestions}/${id}`);
     }
 }

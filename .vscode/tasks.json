@@ -15,7 +15,10 @@
 			},
 			"problemMatcher": [
 				"$tsc-watch"
-			]
+			],
+			"runOptions": {
+				"runOn": "folderOpen"
+			}
 		}
 	]
 }

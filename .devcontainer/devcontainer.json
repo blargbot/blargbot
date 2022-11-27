@@ -1,0 +1,19 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/typescript-node
+{
+	"name": "Blargbot",
+	"dockerComposeFile": "docker-compose.yaml",
+	"service": "editor",
+	"postStartCommand": "yarn",
+	"workspaceFolder": "/workspaces/blargbot",
+	"customizations": {
+		"vscode": {
+			"settings": {},
+			"extensions": [
+				"dbaeumer.vscode-eslint",
+				"gamunu.vscode-yarn",
+				"arcanis.vscode-zipfs"
+			]
+		}
+	}
+}
