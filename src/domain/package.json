@@ -4,6 +4,6 @@
     "private": true,
     "dependencies": {
         "@blargbot/formatting": "workspace:^",
-        "moment-timezone": "^0.5.37"
+        "moment-timezone": "^0.5.39"
     }
 }

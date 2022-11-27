@@ -16,7 +16,10 @@ type WithMiddleware<Target, Method extends keyof Target> =
     & { [P in Method]: MiddlewareFunc<Target, Method> };
 
 function isMethodMiddleware<Target, Method extends keyof Target>(target: Target, method: Method): target is WithMiddleware<Target, Method> {
-    return typeof target[method] === 'function' && mw in target[method];
+    const v = target[method];
+    if (typeof v !== 'function')
+        return false;
+    return mw in v;
 }
 
 export function addMiddleware<Target, Method extends keyof Target>(

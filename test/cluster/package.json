@@ -9,13 +9,13 @@
         "@blargbot/domain": "workspace:^",
         "@blargbot/formatting": "workspace:^",
         "@blargbot/test-util": "workspace:^",
-        "chai": "^4.3.6",
+        "chai": "^4.3.7",
         "eris": "^0.17.1",
-        "mocha": "^10.0.0",
-        "moment-timezone": "^0.5.37"
+        "mocha": "^10.1.0",
+        "moment-timezone": "^0.5.39"
     },
     "devDependencies": {
-        "@types/chai": "^4.3.3",
+        "@types/chai": "^4.3.4",
         "@types/eris": "workspace:^",
         "@types/mocha": "^10.0.0"
     }
