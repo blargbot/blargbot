@@ -45,7 +45,7 @@ export class BaseRoute {
 
     #bindRoute<Route extends `/${string}`>(api: Api, router: IRoute<Route>, method: RequestMethods, middleware: Array<AsyncRequestMiddleware<this, Route>>, handler: AsyncRequestHandler<this, Route>): void {
         const getResult = createMiddlewareCaller<this, Route>(this, () => [...this.middleware, ...middleware], handler);
-        router[method](async (request, response) => {
+        router[method](voidResult(async (request, response) => {
             try {
                 const result = await getResult({ request, response, api });
                 await result.execute(response);
@@ -57,7 +57,7 @@ export class BaseRoute {
                 api.logger.error('Error while handling', request.originalUrl, err);
                 await this.internalServerError(err).execute(response);
             }
-        });
+        }));
     }
 
     protected addRoute<Route extends `/${string}`>(route: Route, handlers: RequestHandlers<this, Route>, ...middleware: Array<AsyncRequestMiddleware<this, Route>>): this {
@@ -155,4 +155,8 @@ function createMiddlewareCaller<This, Route extends string>(
         return middleware[index].call(thisArg, context.request, context.response, () => callMiddleware(context, index + 1, middleware));
     };
     return (context) => callMiddleware(context, 0, getMiddleware());
+}
+
+function voidResult<Args extends readonly unknown[]>(func: (...args: Args) => unknown): (...args: Args) => void {
+    return (...args) => void func(...args);
 }

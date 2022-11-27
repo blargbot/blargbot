@@ -28,7 +28,8 @@ const messageTypes: { [P in string & keyof typeof MessageType]: typeof MessageTy
     ['GuildBoost']: MessageType.GuildBoost,
     ['GuildBoostTier1']: MessageType.GuildBoostTier1,
     ['GuildBoostTier2']: MessageType.GuildBoostTier2,
-    ['GuildBoostTier3']: MessageType.GuildBoostTier3
+    ['GuildBoostTier3']: MessageType.GuildBoostTier3,
+    ['AutoModerationAction']: MessageType.AutoModerationAction
 };
 
 runSubtagTests({

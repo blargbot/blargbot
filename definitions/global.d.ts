@@ -107,8 +107,8 @@ declare global {
     }
 
     interface String {
-        toLowerCase<T extends string>(this: T): Lowercase<T>;
-        toUpperCase<T extends string>(this: T): Uppercase<T>;
+        toLowerCase<T extends string>(this: T): string extends T ? string : Lowercase<T>;
+        toUpperCase<T extends string>(this: T): string extends T ? string : Uppercase<T>;
         split<T extends string, Splitter extends string>(this: T, splitter: Splitter): SplitString<T, Splitter>;
         toString<T extends string>(this: T): T;
     }

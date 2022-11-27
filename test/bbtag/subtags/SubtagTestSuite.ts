@@ -181,6 +181,8 @@ export class SubtagTestContext {
         this.dependencies.setup(m => m.logger, false).thenReturn(this.logger.instance);
         this.dependencies.setup(m => m.util, false).thenReturn(this.util.instance);
 
+        this.discord.setup(m => m.emit('warn', anything()), false).thenReturn(false);
+
         this.database.setup(m => m.tagVariables, false).thenReturn(this.tagVariablesTable.instance);
         this.database.setup(m => m.guilds, false).thenReturn(this.guildTable.instance);
         this.database.setup(m => m.users, false).thenReturn(this.userTable.instance);
@@ -392,7 +394,7 @@ export class SubtagTestContext {
     public static createApiGuild(settings: RequireIds<APIGuild>): RequiredProps<APIGuild, 'roles'> {
         return {
             afk_channel_id: null,
-            afk_timeout: 0,
+            afk_timeout: 60,
             application_id: null,
             banner: null,
             default_message_notifications: GuildDefaultMessageNotifications.AllMessages,
@@ -426,7 +428,7 @@ export class SubtagTestContext {
     }
 
     public createChannel<T extends keyof KnownChannelMap>(settings: RequireIds<APIChannel> & { type: T; }): KnownChannelMap[T]
-    public createChannel(settings: RequireIds<APITextChannel>): APITextChannel
+    public createChannel(settings: RequireIds<APITextChannel>): KnownTextableChannel
     public createChannel(settings: RequireIds<APIChannel>): KnownChannel
     public createChannel(settings: RequireIds<APIChannel>): KnownChannel {
         const data = SubtagTestContext.createApiChannel(settings);
