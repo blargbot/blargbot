@@ -7,12 +7,12 @@
     ".mts"
   ],
   "include": [
-    "src/**/*.{js,ts,mjs,mts,cjs,cts}"
+    "*/*/src/**/*.{js,ts,mjs,mts,cjs,cts}"
   ],
   "exclude": [
     "coverage/**",
     "node_modules/**",
-    "test/**",
+    "*/*/test/**",
     "**/*.d.{ts,mts,cts}",
     "**/*.test.{ts,mts,cts}",
     "*.{ts,mts,cts}"

@@ -32,7 +32,7 @@
     "scripts": {
         "filecount": "cloc ./ --exclude-dir=node_modules --exclude-ext=js,msj,cjs",
         "start": "node index.js",
-        "test": "cross-env TZ=utc mocha --config mocharc.json --recursive --parallel --reporter dot",
+        "test": "cross-env TZ=utc mocha --config mocharc.json --recursive --parallel --reporter dot \"*/*/test/**/*.test.js\"",
         "check": "yarn rebuild && yarn run rebuild && yarn run lint && yarn run test",
         "ci": "yarn rebuild && yarn run rebuild && yarn run lint && yarn run coverage",
         "coverage": "nyc yarn test",
