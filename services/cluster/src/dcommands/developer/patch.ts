@@ -1,7 +1,7 @@
 import { CommandContext, GlobalCommand } from '../../command/index';
 import { CommandType, guard } from '@blargbot/cluster/utils';
 import { util } from '@blargbot/formatting';
-import { Constants } from 'eris';
+import Eris from 'eris';
 
 import templates from '../../text';
 import { CommandResult } from '../../types';
@@ -77,7 +77,7 @@ export class PatchCommand extends GlobalCommand {
         if (changelog === undefined)
             return cmd.default.failed;
 
-        if (changelog.channel.type === Constants.ChannelTypes.GUILD_NEWS)
+        if (changelog.channel.type === Eris.Constants.ChannelTypes.GUILD_NEWS)
             await changelog.crosspost();
 
         return cmd.default.success;

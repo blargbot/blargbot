@@ -1,5 +1,5 @@
 import { guard, parse } from '@blargbot/core/utils';
-import { EmbedOptions } from 'eris';
+import Eris from 'eris';
 
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
@@ -89,7 +89,7 @@ export class EditSubtag extends CompiledSubtag {
             throw new ChannelNotFoundError(channelStr);
 
         let content: string | undefined;
-        let embeds: EmbedOptions[] | undefined;
+        let embeds: Eris.EmbedOptions[] | undefined;
         if (embedStr !== undefined) {
             embeds = parse.embed(embedStr);
             content = contentStr;

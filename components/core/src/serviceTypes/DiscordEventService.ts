@@ -1,17 +1,17 @@
 import { Logger } from '@blargbot/logger';
-import { Client as Discord, ClientEvents } from 'eris';
+import Eris from 'eris';
 
 import { BaseService } from './BaseService';
 
-export abstract class DiscordEventService<T extends keyof ClientEvents> extends BaseService {
-    readonly #execute: (...args: ClientEvents[T]) => void;
+export abstract class DiscordEventService<T extends keyof Eris.ClientEvents> extends BaseService {
+    readonly #execute: (...args: Eris.ClientEvents[T]) => void;
     public readonly type: string;
 
     protected constructor(
-        public readonly discord: Discord,
+        public readonly discord: Eris.Client,
         public readonly event: T,
         public readonly logger: Logger,
-        handler: (...args: ClientEvents[T]) => Awaitable<void>
+        handler: (...args: Eris.ClientEvents[T]) => Awaitable<void>
     ) {
         super();
         this.type = `DiscordEvent:${this.event}`;

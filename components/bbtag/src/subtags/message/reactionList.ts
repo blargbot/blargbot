@@ -1,6 +1,6 @@
 import { Emote } from '@blargbot/core/Emote';
 import { snowflake } from '@blargbot/core/utils';
-import { ApiError, DiscordRESTError } from 'eris';
+import Eris from 'eris';
 
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation/index';
@@ -76,7 +76,7 @@ export class ReactionListSubtag extends CompiledSubtag {
                 const reactionUsers = await message.getReaction(emote.toApi());
                 users.push(...reactionUsers.map(u => u.id));
             } catch (err: unknown) {
-                if (!(err instanceof DiscordRESTError) || err.code !== ApiError.UNKNOWN_EMOJI)
+                if (!(err instanceof Eris.DiscordRESTError) || err.code !== Eris.ApiError.UNKNOWN_EMOJI)
                     throw err;
                 errors.push(emote);
             }

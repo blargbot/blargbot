@@ -1,6 +1,6 @@
 import { CommandContext, GlobalCommand } from '../../command/index';
 import { CommandType, discord, guard, parse } from '@blargbot/cluster/utils';
-import { Member, User } from 'eris';
+import Eris from 'eris';
 
 import templates from '../../text';
 import { CommandResult } from '../../types';
@@ -22,7 +22,7 @@ export class UserCommand extends GlobalCommand {
         });
     }
 
-    public async getUser(context: CommandContext, user: User): Promise<CommandResult> {
+    public async getUser(context: CommandContext, user: Eris.User): Promise<CommandResult> {
         const member = guard.isGuildCommandContext(context) ? await context.util.getMember(context.channel.guild, user.id) : undefined;
         if (member === undefined) {
             return {
@@ -76,12 +76,12 @@ export class UserCommand extends GlobalCommand {
     }
 }
 
-function getStatusEmoteId(context: CommandContext, member: Member): string {
+function getStatusEmoteId(context: CommandContext, member: Eris.Member): string {
     const emote = getStatusEmote(context, member);
     return parse.entityId(emote) ?? '';
 }
 
-function getStatusEmote(context: CommandContext, member: Member): string {
+function getStatusEmote(context: CommandContext, member: Eris.Member): string {
     switch (member.status) {
         case 'dnd': return context.config.discord.emotes.busy;
         case 'idle': return context.config.discord.emotes.away;

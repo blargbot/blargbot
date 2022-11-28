@@ -1,8 +1,8 @@
-import moment, { Moment } from 'moment-timezone';
+import moment from 'moment-timezone';
 
 import { guard } from '../guard';
 
-export function parseTime(text: 'now' | 'today' | 'tomorrow' | 'yesterday' | string, format?: string, timezone = 'Etc/UTC'): Moment {
+export function parseTime(text: 'now' | 'today' | 'tomorrow' | 'yesterday' | string, format?: string, timezone = 'Etc/UTC'): moment.Moment {
     const now = moment.tz(timezone);
     if (text === '')
         return now;
@@ -24,7 +24,7 @@ export function parseTime(text: 'now' | 'today' | 'tomorrow' | 'yesterday' | str
         const magnitude = sign * parseFloat(match[1]);
         const key = match[2].toLowerCase();
         if (!guard.hasProperty(prettyTimeMagnitudes, key))
-            throw new Error(`Invalid quantity ${  match[2]}`);
+            throw new Error(`Invalid quantity ${match[2]}`);
         const quantity = prettyTimeMagnitudes[key];
         return now.add(magnitude, quantity);
     }

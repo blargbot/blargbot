@@ -2,7 +2,7 @@ import { CommandContext, GlobalCommand } from '../../command/index';
 import { CommandType } from '@blargbot/cluster/utils';
 import { guard } from '@blargbot/core/utils';
 import { IFormattable, util } from '@blargbot/formatting';
-import { User } from 'eris';
+import Eris from 'eris';
 import moment from 'moment-timezone';
 
 import templates from '../../text';
@@ -76,8 +76,8 @@ export class InfoCommand extends GlobalCommand {
     }
 }
 
-function template(value: User | IFormattable<string>): IFormattable<string> {
-    return value instanceof User
+function template(value: Eris.User | IFormattable<string>): IFormattable<string> {
+    return value instanceof Eris.User
         ? util.literal(value.mention)
         : value;
 }

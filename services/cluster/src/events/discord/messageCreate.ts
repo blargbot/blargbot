@@ -4,14 +4,14 @@ import { guard, runMiddleware, snowflake } from '@blargbot/cluster/utils';
 import { DiscordEventService } from '@blargbot/core/serviceTypes';
 import { IMiddleware } from '@blargbot/core/types';
 import { MessageFlags } from 'discord-api-types/v9';
-import { KnownMessage, Message, PossiblyUncachedTextableChannel } from 'eris';
+import Eris from 'eris';
 import moment from 'moment-timezone';
 import { performance } from 'perf_hooks';
 
 import { AutoresponseMiddleware, CensorMiddleware, ChannelBlacklistMiddleware, ChatLogMiddleware, CleverbotMiddleware, CommandMiddleware, IgnoreBotsMiddleware, IgnoreSelfMiddleware, MessageAwaiterMiddleware, RolemesMiddleware, TableflipMiddleware, UpsertUserMiddleware } from './middleware';
 
 export class DiscordMessageCreateHandler extends DiscordEventService<'messageCreate'> {
-    readonly #middleware: Array<IMiddleware<KnownMessage, boolean>>;
+    readonly #middleware: Array<IMiddleware<Eris.KnownMessage, boolean>>;
 
     public constructor(
         public readonly cluster: Cluster
@@ -43,7 +43,7 @@ export class DiscordMessageCreateHandler extends DiscordEventService<'messageCre
         ];
     }
 
-    public async execute(message: Message<PossiblyUncachedTextableChannel>): Promise<void> {
+    public async execute(message: Eris.Message<Eris.PossiblyUncachedTextableChannel>): Promise<void> {
         if ((message.flags & MessageFlags.Loading) !== 0) {
             // Message is a loading message. Ignore this event, it will be re-raised by the update handler later once the message is no longer loading
             return;

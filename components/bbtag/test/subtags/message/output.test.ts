@@ -3,7 +3,7 @@ import { OutputSubtag } from '@blargbot/bbtag/subtags/message/output';
 import { Emote } from '@blargbot/core/Emote';
 import { argument } from '@blargbot/test-util/mock';
 import { expect } from 'chai';
-import { KnownGuildTextableChannel } from 'eris';
+import Eris from 'eris';
 
 import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite';
 
@@ -26,7 +26,7 @@ runSubtagTests({
                 const files = [{ file: 'test content', name: 'test.txt' }];
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
-                const message = ctx.createMessage<KnownGuildTextableChannel>(SubtagTestContext.createApiMessage({
+                const message = ctx.createMessage<Eris.KnownGuildTextableChannel>(SubtagTestContext.createApiMessage({
                     id: '0987654331234567',
                     channel_id: bbctx.channel.id
                 }, ctx.users.command));
@@ -68,7 +68,7 @@ runSubtagTests({
                 const files = [{ file: 'test content', name: 'test.txt' }];
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
-                const message = ctx.createMessage<KnownGuildTextableChannel>(SubtagTestContext.createApiMessage({
+                const message = ctx.createMessage<Eris.KnownGuildTextableChannel>(SubtagTestContext.createApiMessage({
                     id: '0987654331234567',
                     channel_id: bbctx.channel.id
                 }, ctx.users.command));
@@ -109,7 +109,7 @@ runSubtagTests({
                 const files = [{ file: 'test content', name: 'test.txt' }];
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
-                const message = ctx.createMessage<KnownGuildTextableChannel>(SubtagTestContext.createApiMessage({
+                const message = ctx.createMessage<Eris.KnownGuildTextableChannel>(SubtagTestContext.createApiMessage({
                     id: '0987654331234567',
                     channel_id: bbctx.channel.id
                 }, ctx.users.command));
@@ -151,7 +151,7 @@ runSubtagTests({
                 const files = [{ file: 'test content', name: 'test.txt' }];
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
-                const message = ctx.createMessage<KnownGuildTextableChannel>(SubtagTestContext.createApiMessage({
+                const message = ctx.createMessage<Eris.KnownGuildTextableChannel>(SubtagTestContext.createApiMessage({
                     id: '0987654331234567',
                     channel_id: bbctx.channel.id
                 }, ctx.users.command));
@@ -187,7 +187,7 @@ runSubtagTests({
                 ctx.options.isCC = false;
             },
             postSetup(bbctx, ctx) {
-                const message = ctx.createMessage<KnownGuildTextableChannel>(SubtagTestContext.createApiMessage({
+                const message = ctx.createMessage<Eris.KnownGuildTextableChannel>(SubtagTestContext.createApiMessage({
                     id: '0987654331234567',
                     channel_id: bbctx.channel.id
                 }, ctx.users.command));

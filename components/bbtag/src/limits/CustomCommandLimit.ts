@@ -1,4 +1,4 @@
-import { Guild } from 'eris';
+import Eris from 'eris';
 
 import { BBTagRuntimeError, TooManyLoopsError } from '../errors';
 import templates from '../text';
@@ -6,7 +6,7 @@ import { GlobalLimit } from './GlobalLimit';
 import { staffOnlyRule, UseCountRule } from './rules';
 
 export class CustomCommandLimit extends GlobalLimit {
-    public constructor(guild?: Guild) {
+    public constructor(guild?: Eris.Guild) {
         super('customCommandLimit');
 
         this.addRules('ban', staffOnlyRule)

@@ -2,7 +2,7 @@ import { GuildCommand } from '../../command/index';
 import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType, discord } from '@blargbot/cluster/utils';
 import { util } from '@blargbot/formatting';
-import { AllowedMentions, Constants, KnownChannel, Role } from 'eris';
+import Eris from 'eris';
 import moment from 'moment-timezone';
 
 import templates from '../../text';
@@ -44,7 +44,7 @@ export class AnnounceCommand extends GuildCommand {
         return cmd.reset.success(context);
     }
 
-    public async configure(context: GuildCommandContext, channel: KnownChannel | undefined, role: Role | undefined): Promise<CommandResult> {
+    public async configure(context: GuildCommandContext, channel: Eris.KnownChannel | undefined, role: Eris.Role | undefined): Promise<CommandResult> {
         const result = await context.cluster.announcements.loadConfig(context.channel.guild, context.author, context.channel, { channel, role });
         return cmd.configure.state[result.state];
     }
@@ -56,7 +56,7 @@ export class AnnounceCommand extends GuildCommand {
 
         const config = configResult.detail;
         const colour = discord.getMemberColour(context.message.member);
-        const mentions: AllowedMentions = config.role.id === config.role.guild.id
+        const mentions: Eris.AllowedMentions = config.role.id === config.role.guild.id
             ? { everyone: true }
             : { roles: [config.role.id] };
 
@@ -84,7 +84,7 @@ export class AnnounceCommand extends GuildCommand {
         if (announcement === undefined)
             return cmd.default.failed;
 
-        if (announcement.channel.type === Constants.ChannelTypes.GUILD_NEWS)
+        if (announcement.channel.type === Eris.Constants.ChannelTypes.GUILD_NEWS)
             await announcement.crosspost();
 
         return cmd.default.success;

@@ -2,7 +2,7 @@ import { Timer } from '@blargbot/core/Timer';
 import { sleep } from '@blargbot/core/utils';
 import { Database } from '@blargbot/database';
 import { Logger } from '@blargbot/logger';
-import { Client as Discord } from 'eris';
+import Eris from 'eris';
 import moment from 'moment-timezone';
 
 import { BBTagContext } from './BBTagContext';
@@ -17,7 +17,7 @@ import { bbtag as bbtagUtil } from './utils';
 
 export class BBTagEngine {
     readonly #cooldowns: TagCooldownManager;
-    public get discord(): Discord { return this.dependencies.discord; }
+    public get discord(): Eris.Client { return this.dependencies.discord; }
     public get logger(): Logger { return this.dependencies.logger; }
     public get database(): Database { return this.dependencies.database; }
     public get util(): BBTagUtilities { return this.dependencies.util; }

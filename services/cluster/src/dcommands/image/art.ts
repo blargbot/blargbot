@@ -1,7 +1,7 @@
 import { CommandContext, GlobalImageCommand } from '../../command/index';
 import { guard } from '@blargbot/cluster/utils';
 import { parse } from '@blargbot/core/utils/parse';
-import { User } from 'eris';
+import Eris from 'eris';
 
 import templates from '../../text';
 import { CommandResult } from '../../types';
@@ -36,7 +36,7 @@ export class ArtCommand extends GlobalImageCommand {
         });
     }
 
-    public async renderUser(context: CommandContext, user: User): Promise<CommandResult> {
+    public async renderUser(context: CommandContext, user: Eris.User): Promise<CommandResult> {
         return await this.render(context, user.avatarURL);
     }
 

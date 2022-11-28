@@ -1,6 +1,6 @@
 import { guard } from '@blargbot/core/utils';
 import { parse } from '@blargbot/core/utils/parse';
-import { DiscordRESTError } from 'eris';
+import Eris from 'eris';
 import fetch from 'node-fetch';
 
 import { BBTagContext } from '../../BBTagContext';
@@ -77,7 +77,7 @@ export class EmojiCreateSubtag extends CompiledSubtag {
             const emoji = await context.guild.createEmoji({ image: options.image, name: options.name, roles: options.roles }, context.auditReason());
             return emoji.id;
         } catch (err: unknown) {
-            if (!(err instanceof DiscordRESTError))
+            if (!(err instanceof Eris.DiscordRESTError))
                 throw err;
 
             const parts = err.message.split('\n').map(m => m.trim());

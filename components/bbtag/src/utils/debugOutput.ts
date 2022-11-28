@@ -1,12 +1,12 @@
 import { IFormattable } from '@blargbot/formatting';
-import { FileContent } from 'eris';
+import Eris from 'eris';
 
 import { SubtagCall } from '../language';
 import templates from '../text';
 import { ExecutionResult } from '../types';
 import { stringify } from './stringify';
 
-export function createDebugOutput(result: ExecutionResult): { content: IFormattable<string>; file: FileContent[]; } {
+export function createDebugOutput(result: ExecutionResult): { content: IFormattable<string>; file: Eris.FileContent[]; } {
     const performance: Record<string, unknown> = {};
     for (const [key, times] of Object.entries(result.duration.subtag)) {
         if (times !== undefined && times.length > 0) {

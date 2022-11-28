@@ -1,6 +1,6 @@
 import { BBTagRuntimeError, MessageNotFoundError } from '@blargbot/bbtag/errors';
 import { ReactionListSubtag } from '@blargbot/bbtag/subtags/message/reactionList';
-import { ApiError } from 'eris';
+import Eris from 'eris';
 
 import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite';
 import { createGetMessagePropTestCases } from './_getMessagePropTest';
@@ -170,7 +170,7 @@ runSubtagTests({
 
                 ctx.util.setup(m => m.getMessage(bbctx.channel, '92384982642323432343', true)).thenResolve(message);
                 ctx.discord.setup(m => m.getMessageReaction(ctx.channels.command.id, message.id, 'fakeemote:192612896213677963', undefined, undefined, undefined))
-                    .thenReject(ctx.createRESTError(ApiError.UNKNOWN_EMOJI));
+                    .thenReject(ctx.createRESTError(Eris.ApiError.UNKNOWN_EMOJI));
             }
         }
     ]

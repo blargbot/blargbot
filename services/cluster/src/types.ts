@@ -4,8 +4,8 @@ import { CommandType, ModerationType } from '@blargbot/cluster/utils';
 import { EvalRequest, EvalResult, GlobalEvalResult, IMiddleware, MasterEvalRequest, SendContent } from '@blargbot/core/types';
 import { CommandPermissions, FlagDefinition, FlagResult, GuildSettingDocs, GuildSourceCommandTag, NamedGuildCommandTag } from '@blargbot/domain/models';
 import { IFormattable } from '@blargbot/formatting';
-import { Guild, KnownChannel, KnownGuildTextableChannel, KnownMessage, KnownPrivateChannel, KnownTextableChannel, Member, Role, Shard, User, Webhook } from 'eris';
-import { Duration } from 'moment-timezone';
+import Eris from 'eris';
+import moment from 'moment-timezone';
 import { metric } from 'prom-client';
 
 import { ClusterUtilities } from './ClusterUtilities';
@@ -34,9 +34,9 @@ export type ClusterIPCContract = {
 
 export interface ICommandManager<T = unknown> {
     readonly size: number;
-    get(name: string, location?: Guild | KnownTextableChannel, user?: User): Promise<CommandGetResult<T>>;
-    list(location?: Guild | KnownTextableChannel, user?: User): AsyncIterable<CommandGetResult<T>>;
-    configure(user: User, names: readonly string[], guild: Guild, permissions: Partial<CommandPermissions>): Promise<readonly string[]>;
+    get(name: string, location?: Eris.Guild | Eris.KnownTextableChannel, user?: Eris.User): Promise<CommandGetResult<T>>;
+    list(location?: Eris.Guild | Eris.KnownTextableChannel, user?: Eris.User): AsyncIterable<CommandGetResult<T>>;
+    configure(user: Eris.User, names: readonly string[], guild: Eris.Guild, permissions: Partial<CommandPermissions>): Promise<readonly string[]>;
     load(commands?: Iterable<string> | boolean): Promise<void>;
 }
 
@@ -153,12 +153,12 @@ export type CommandVariableTypeMap = {
     bigint: bigint;
     integer: number;
     number: number;
-    role: Role;
-    channel: KnownChannel;
-    user: User;
-    sender: User | Webhook;
-    member: Member;
-    duration: Duration;
+    role: Eris.Role;
+    channel: Eris.KnownChannel;
+    user: Eris.User;
+    sender: Eris.User | Eris.Webhook;
+    member: Eris.Member;
+    duration: moment.Duration;
     boolean: boolean;
     string: string;
 }
@@ -302,7 +302,7 @@ export interface ClusterStats {
 
 export interface ShardStats {
     readonly id: number;
-    readonly status: Shard['status'];
+    readonly status: Eris.Shard['status'];
     readonly latency: number;
     readonly guilds: number;
     readonly cluster: number;
@@ -321,20 +321,20 @@ export interface ClusterPoolOptions {
 }
 
 export interface BanDetails {
-    mod: User;
+    mod: Eris.User;
     reason: string;
 }
 
 export interface MassBanDetails {
-    mod: User;
+    mod: Eris.User;
     type: string;
-    users: User[];
-    newUsers: User[];
+    users: Eris.User[];
+    newUsers: Eris.User[];
     reason: string;
 }
 
-export type GuildCommandContext<TChannel extends KnownGuildTextableChannel = KnownGuildTextableChannel> = CommandContext<TChannel>;
-export type PrivateCommandContext<TChannel extends KnownPrivateChannel = KnownPrivateChannel> = CommandContext<TChannel>;
+export type GuildCommandContext<TChannel extends Eris.KnownGuildTextableChannel = Eris.KnownGuildTextableChannel> = CommandContext<TChannel>;
+export type PrivateCommandContext<TChannel extends Eris.KnownPrivateChannel = Eris.KnownPrivateChannel> = CommandContext<TChannel>;
 
 export type CommandPropertiesSet = { [P in CommandType]: CommandProperties; }
 export interface CommandProperties {
@@ -342,7 +342,7 @@ export interface CommandProperties {
     readonly name: IFormattable<string>;
     readonly description: IFormattable<string>;
     readonly defaultPerms: bigint;
-    readonly isVisible: (util: ClusterUtilities, location?: Guild | KnownTextableChannel, user?: User) => boolean | Promise<boolean>;
+    readonly isVisible: (util: ClusterUtilities, location?: Eris.Guild | Eris.KnownTextableChannel, user?: Eris.User) => boolean | Promise<boolean>;
     readonly color: number;
 }
 
@@ -363,14 +363,14 @@ export interface PollInvalidOption<T extends string = 'OPTIONS_INVALID'> extends
 }
 
 export interface PollSuccess extends PollInvalidOption<'SUCCESS'> {
-    readonly message: KnownMessage;
+    readonly message: Eris.KnownMessage;
 }
 
 export type EnsureMutedRoleResult = 'success' | 'unconfigured' | 'noPerms';
 export type MuteResult = 'success' | 'alreadyMuted' | 'noPerms' | 'roleMissing' | 'roleTooHigh' | 'moderatorNoPerms' | 'moderatorTooLow';
 export type UnmuteResult = 'success' | 'notMuted' | 'noPerms' | 'roleTooHigh' | 'moderatorNoPerms' | 'moderatorTooLow';
 export type BanResult = 'success' | 'alreadyBanned' | 'noPerms' | 'memberTooHigh' | 'moderatorNoPerms' | 'moderatorTooLow';
-export type MassBanResult = User[] | Exclude<BanResult, 'success'> | 'noUsers';
+export type MassBanResult = Eris.User[] | Exclude<BanResult, 'success'> | 'noUsers';
 export type KickResult = 'success' | 'noPerms' | 'memberTooHigh' | 'moderatorNoPerms' | 'moderatorTooLow';
 export type UnbanResult = 'success' | 'notBanned' | 'noPerms' | 'moderatorNoPerms';
 export type TimeoutResult = 'success' | 'alreadyTimedOut' | 'noPerms' | 'moderatorNoPerms' | 'memberTooHigh' | 'moderatorTooLow';

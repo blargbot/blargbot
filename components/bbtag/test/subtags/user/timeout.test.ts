@@ -1,12 +1,12 @@
 import { BBTagRuntimeError, UserNotFoundError } from '@blargbot/bbtag/errors';
 import { TimeoutSubtag } from '@blargbot/bbtag/subtags/user/timeout';
 import { argument } from '@blargbot/test-util/mock';
-import { Member, User } from 'eris';
-import moment, { Duration } from 'moment-timezone';
+import Eris from 'eris';
+import moment from 'moment-timezone';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 
-function isDuration(ms: number): Duration {
+function isDuration(ms: number): moment.Duration {
     return argument.is(moment.isDuration).and(x =>
         x.asMilliseconds() === ms).value;
 }
@@ -38,7 +38,7 @@ runSubtagTests({
             code: '{timeout;other user;1s}',
             expected: 'Success',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Member);
+                const member = ctx.createMock(Eris.Member);
 
                 ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
                     .verifiable(1)
@@ -53,7 +53,7 @@ runSubtagTests({
             code: '{timeout;other user;29d}',
             expected: 'Success',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Member);
+                const member = ctx.createMock(Eris.Member);
 
                 ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
                     .verifiable(1)
@@ -78,8 +78,8 @@ runSubtagTests({
                 { start: 0, end: 23, error: new BBTagRuntimeError('User is not timed out', 'other user is not timed out!') }
             ],
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
+                const member = ctx.createMock(Eris.Member);
+                const user = ctx.createMock(Eris.User);
                 user.setup(u => u.username).thenReturn('other user');
                 member.setup(m => m.user).thenReturn(user.instance);
 
@@ -99,8 +99,8 @@ runSubtagTests({
                 { start: 0, end: 23, error: new BBTagRuntimeError('User is already timed out', 'other user is already timed out!') }
             ],
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
+                const member = ctx.createMock(Eris.Member);
+                const user = ctx.createMock(Eris.User);
                 user.setup(u => u.username).thenReturn('other user');
                 member.setup(m => m.user).thenReturn(user.instance);
 
@@ -120,7 +120,7 @@ runSubtagTests({
                 { start: 0, end: 23, error: new BBTagRuntimeError('Bot has no permissions', 'I don\'t have permission to (remove) time out (from) users!') }
             ],
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Member);
+                const member = ctx.createMock(Eris.Member);
 
                 ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
                     .verifiable(1)
@@ -138,8 +138,8 @@ runSubtagTests({
                 { start: 0, end: 23, error: new BBTagRuntimeError('Bot has no permissions', 'I don\'t have permission to (remove) time out (from) other user!') }
             ],
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
+                const member = ctx.createMock(Eris.Member);
+                const user = ctx.createMock(Eris.User);
                 user.setup(u => u.username).thenReturn('other user');
                 member.setup(m => m.user).thenReturn(user.instance);
 
@@ -159,7 +159,7 @@ runSubtagTests({
                 { start: 0, end: 23, error: new BBTagRuntimeError('User has no permissions', 'You don\'t have permission to (remove) time out (from) users!') }
             ],
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Member);
+                const member = ctx.createMock(Eris.Member);
 
                 ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
                     .verifiable(1)
@@ -177,8 +177,8 @@ runSubtagTests({
                 { start: 0, end: 23, error: new BBTagRuntimeError('User has no permissions', 'You don\'t have permission to (remove) time out (from) other user!') }
             ],
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
+                const member = ctx.createMock(Eris.Member);
+                const user = ctx.createMock(Eris.User);
                 user.setup(u => u.username).thenReturn('other user');
                 member.setup(m => m.user).thenReturn(user.instance);
 

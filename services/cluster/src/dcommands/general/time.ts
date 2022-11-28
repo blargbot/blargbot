@@ -1,6 +1,6 @@
 import { CommandContext, GlobalCommand } from '../../command/index';
 import { CommandType } from '@blargbot/cluster/utils';
-import { User } from 'eris';
+import Eris from 'eris';
 import moment from 'moment-timezone';
 
 import templates from '../../text';
@@ -38,7 +38,7 @@ export class TimeCommand extends GlobalCommand {
         });
     }
 
-    public async getUserTime(context: CommandContext, user: User): Promise<CommandResult> {
+    public async getUserTime(context: CommandContext, user: Eris.User): Promise<CommandResult> {
         const timezone = await context.database.users.getProp(user.id, 'timezone');
         if (timezone === undefined)
             return cmd.user.timezoneNotSet({ prefix: context.prefix, user });

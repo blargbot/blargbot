@@ -1,5 +1,5 @@
 import { guard } from '@blargbot/core/utils';
-import { GuildChannel } from 'eris';
+import Eris from 'eris';
 
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation/index';
@@ -52,7 +52,7 @@ export class ChannelPositionSubtag extends CompiledSubtag {
         return this.#getChanelPosition(channel);
     }
 
-    #getChanelPosition(channel: GuildChannel): number {
+    #getChanelPosition(channel: Eris.GuildChannel): number {
         if (guard.isThreadChannel(channel))
             throw new BBTagRuntimeError('Threads dont have a position', `${channel.mention} is a thread and doesnt have a position`);
 

@@ -2,7 +2,7 @@ import { bbtag } from '@blargbot/bbtag';
 import { GuildCommand } from '../../command/index';
 import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType, guard } from '@blargbot/cluster/utils';
-import { KnownChannel } from 'eris';
+import Eris from 'eris';
 
 import { RawBBTagCommandResult } from '../../command/RawBBTagCommandResult';
 import templates from '../../text';
@@ -104,7 +104,7 @@ export class GreetingCommand extends GuildCommand {
         return cmd.setAuthorizer.success;
     }
 
-    public async setChannel(context: GuildCommandContext, channel: KnownChannel): Promise<CommandResult> {
+    public async setChannel(context: GuildCommandContext, channel: Eris.KnownChannel): Promise<CommandResult> {
         if (!guard.isGuildChannel(channel) || channel.guild !== context.channel.guild)
             return cmd.setChannel.notOnGuild;
         if (!guard.isTextableChannel(channel))

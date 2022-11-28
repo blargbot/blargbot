@@ -5,7 +5,7 @@ import { WaitMessageSubtag } from '@blargbot/bbtag/subtags/message/waitMessage';
 import { OperatorSubtag } from '@blargbot/bbtag/subtags/misc/operator';
 import { argument, Mock } from '@blargbot/test-util/mock';
 import { expect } from 'chai';
-import { Guild, KnownMessage, Member, Message, TextChannel, User } from 'eris';
+import Eris from 'eris';
 
 import { MarkerError, runSubtagTests, SubtagTestContext } from '../SubtagTestSuite';
 
@@ -55,7 +55,7 @@ runSubtagTests({
                 ctx.util.setup(m => m.awaitMessage(argument.isDeepEqual(['21938762934928374']), anyCondition.value, 60000))
                     .thenCall(createFakeAwaiterFactory(acceptedMessage.instance, [rejectedMessage.instance]));
 
-                const channel = ctx.createMock(TextChannel);
+                const channel = ctx.createMock(Eris.TextChannel);
                 channel.setup(m => m.id).thenReturn('21938762934928374');
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '21938762934928374')).thenResolve([channel.instance]);
             }
@@ -73,7 +73,7 @@ runSubtagTests({
                 ctx.util.setup(m => m.awaitMessage(argument.isDeepEqual(['21938762934928374']), anyCondition.value, 60000))
                     .thenCall(createFakeAwaiterFactory(acceptedMessage.instance, [rejectedMessage.instance]));
 
-                const channel = ctx.createMock(TextChannel);
+                const channel = ctx.createMock(Eris.TextChannel);
                 channel.setup(m => m.id).thenReturn('21938762934928374');
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '21938762934928374')).thenResolve([channel.instance]);
             }
@@ -91,15 +91,15 @@ runSubtagTests({
                 ctx.util.setup(m => m.awaitMessage(argument.isDeepEqual(['21938762934928374', '987234657348965', '39457643897564358']), anyCondition.value, 60000))
                     .thenCall(createFakeAwaiterFactory(acceptedMessage.instance, [rejectedMessage.instance]));
 
-                const channel1 = ctx.createMock(TextChannel);
+                const channel1 = ctx.createMock(Eris.TextChannel);
                 channel1.setup(m => m.id).thenReturn('21938762934928374');
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '21938762934928374')).thenResolve([channel1.instance]);
 
-                const channel2 = ctx.createMock(TextChannel);
+                const channel2 = ctx.createMock(Eris.TextChannel);
                 channel2.setup(m => m.id).thenReturn('987234657348965');
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '987234657348965')).thenResolve([channel2.instance]);
 
-                const channel3 = ctx.createMock(TextChannel);
+                const channel3 = ctx.createMock(Eris.TextChannel);
                 channel3.setup(m => m.id).thenReturn('39457643897564358');
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '39457643897564358')).thenResolve([channel3.instance]);
             }
@@ -117,12 +117,12 @@ runSubtagTests({
                 ctx.util.setup(m => m.awaitMessage(argument.isDeepEqual(['21938762934928374']), anyCondition.value, 60000))
                     .thenCall(createFakeAwaiterFactory(acceptedMessage.instance, [rejectedMessage.instance]));
 
-                const channel = ctx.createMock(TextChannel);
+                const channel = ctx.createMock(Eris.TextChannel);
                 channel.setup(m => m.id).thenReturn('21938762934928374');
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '21938762934928374')).thenResolve([channel.instance]);
 
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
+                const member = ctx.createMock(Eris.Member);
+                const user = ctx.createMock(Eris.User);
                 member.setup(m => m.user).thenReturn(user.instance);
                 user.setup(m => m.id).thenReturn('289374634729826479828');
                 ctx.util.setup(m => m.getUser('289374634729826479828')).thenResolve(undefined);
@@ -142,12 +142,12 @@ runSubtagTests({
                 ctx.util.setup(m => m.awaitMessage(argument.isDeepEqual(['21938762934928374']), anyCondition.value, 60000))
                     .thenCall(createFakeAwaiterFactory(acceptedMessage.instance, [rejectedMessage.instance]));
 
-                const channel = ctx.createMock(TextChannel);
+                const channel = ctx.createMock(Eris.TextChannel);
                 channel.setup(m => m.id).thenReturn('21938762934928374');
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '21938762934928374')).thenResolve([channel.instance]);
 
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
+                const member = ctx.createMock(Eris.Member);
+                const user = ctx.createMock(Eris.User);
                 member.setup(m => m.user).thenReturn(user.instance);
                 user.setup(m => m.id).thenReturn('289374634729826479828');
                 ctx.util.setup(m => m.getUser('289374634729826479828')).thenResolve(undefined);
@@ -167,26 +167,26 @@ runSubtagTests({
                 ctx.util.setup(m => m.awaitMessage(argument.isDeepEqual(['21938762934928374']), anyCondition.value, 60000))
                     .thenCall(createFakeAwaiterFactory(acceptedMessage.instance, [rejectedMessage.instance]));
 
-                const channel = ctx.createMock(TextChannel);
+                const channel = ctx.createMock(Eris.TextChannel);
                 channel.setup(m => m.id).thenReturn('21938762934928374');
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '21938762934928374')).thenResolve([channel.instance]);
 
-                const member1 = ctx.createMock(Member);
-                const user1 = ctx.createMock(User);
+                const member1 = ctx.createMock(Eris.Member);
+                const user1 = ctx.createMock(Eris.User);
                 member1.setup(m => m.user).thenReturn(user1.instance);
                 user1.setup(m => m.id).thenReturn('289374634729826479828');
                 ctx.util.setup(m => m.getUser('289374634729826479828')).thenResolve(undefined);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, '289374634729826479828')).thenResolve([member1.instance]);
 
-                const member2 = ctx.createMock(Member);
-                const user2 = ctx.createMock(User);
+                const member2 = ctx.createMock(Eris.Member);
+                const user2 = ctx.createMock(Eris.User);
                 member2.setup(m => m.user).thenReturn(user2.instance);
                 user2.setup(m => m.id).thenReturn('328762389764234374');
                 ctx.util.setup(m => m.getUser('328762389764234374')).thenResolve(undefined);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, '328762389764234374')).thenResolve([member2.instance]);
 
-                const member3 = ctx.createMock(Member);
-                const user3 = ctx.createMock(User);
+                const member3 = ctx.createMock(Eris.Member);
+                const user3 = ctx.createMock(Eris.User);
                 member3.setup(m => m.user).thenReturn(user3.instance);
                 user3.setup(m => m.id).thenReturn('23894767278934620893');
                 ctx.util.setup(m => m.getUser('23894767278934620893')).thenResolve(undefined);
@@ -212,12 +212,12 @@ runSubtagTests({
                 ctx.util.setup(m => m.awaitMessage(argument.isDeepEqual(['21938762934928374']), anyCondition.value, 60000))
                     .thenCall(createFakeAwaiterFactory(acceptedMessage.instance, [filterableMessage.instance, rejectedMessage.instance]));
 
-                const channel = ctx.createMock(TextChannel);
+                const channel = ctx.createMock(Eris.TextChannel);
                 channel.setup(m => m.id).thenReturn('21938762934928374');
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '21938762934928374')).thenResolve([channel.instance]);
 
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
+                const member = ctx.createMock(Eris.Member);
+                const user = ctx.createMock(Eris.User);
                 member.setup(m => m.user).thenReturn(user.instance);
                 user.setup(m => m.id).thenReturn('289374634729826479828');
                 ctx.util.setup(m => m.getUser('289374634729826479828')).thenResolve(undefined);
@@ -243,12 +243,12 @@ runSubtagTests({
                 ctx.util.setup(m => m.awaitMessage(argument.isDeepEqual(['21938762934928374']), anyCondition.value, 10000))
                     .thenCall(createFakeAwaiterFactory(acceptedMessage.instance, [filterableMessage.instance, rejectedMessage.instance]));
 
-                const channel = ctx.createMock(TextChannel);
+                const channel = ctx.createMock(Eris.TextChannel);
                 channel.setup(m => m.id).thenReturn('21938762934928374');
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '21938762934928374')).thenResolve([channel.instance]);
 
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
+                const member = ctx.createMock(Eris.Member);
+                const user = ctx.createMock(Eris.User);
                 member.setup(m => m.user).thenReturn(user.instance);
                 user.setup(m => m.id).thenReturn('289374634729826479828');
                 ctx.util.setup(m => m.getUser('289374634729826479828')).thenResolve(undefined);
@@ -274,12 +274,12 @@ runSubtagTests({
                 ctx.util.setup(m => m.awaitMessage(argument.isDeepEqual(['21938762934928374']), anyCondition.value, 0))
                     .thenCall(createFakeAwaiterFactory(acceptedMessage.instance, [filterableMessage.instance, rejectedMessage.instance]));
 
-                const channel = ctx.createMock(TextChannel);
+                const channel = ctx.createMock(Eris.TextChannel);
                 channel.setup(m => m.id).thenReturn('21938762934928374');
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '21938762934928374')).thenResolve([channel.instance]);
 
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
+                const member = ctx.createMock(Eris.Member);
+                const user = ctx.createMock(Eris.User);
                 member.setup(m => m.user).thenReturn(user.instance);
                 user.setup(m => m.id).thenReturn('289374634729826479828');
                 ctx.util.setup(m => m.getUser('289374634729826479828')).thenResolve(undefined);
@@ -305,12 +305,12 @@ runSubtagTests({
                 ctx.util.setup(m => m.awaitMessage(argument.isDeepEqual(['21938762934928374']), anyCondition.value, 300000))
                     .thenCall(createFakeAwaiterFactory(acceptedMessage.instance, [filterableMessage.instance, rejectedMessage.instance]));
 
-                const channel = ctx.createMock(TextChannel);
+                const channel = ctx.createMock(Eris.TextChannel);
                 channel.setup(m => m.id).thenReturn('21938762934928374');
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '21938762934928374')).thenResolve([channel.instance]);
 
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
+                const member = ctx.createMock(Eris.Member);
+                const user = ctx.createMock(Eris.User);
                 member.setup(m => m.user).thenReturn(user.instance);
                 user.setup(m => m.id).thenReturn('289374634729826479828');
                 ctx.util.setup(m => m.getUser('289374634729826479828')).thenResolve(undefined);
@@ -336,12 +336,12 @@ runSubtagTests({
                 ctx.util.setup(m => m.awaitMessage(argument.isDeepEqual(['21938762934928374']), anyCondition.value, 300000))
                     .thenCall(createFakeAwaiterFactory(acceptedMessage.instance, [filterableMessage.instance, rejectedMessage.instance]));
 
-                const channel = ctx.createMock(TextChannel);
+                const channel = ctx.createMock(Eris.TextChannel);
                 channel.setup(m => m.id).thenReturn('21938762934928374');
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '21938762934928374')).thenResolve([channel.instance]);
 
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
+                const member = ctx.createMock(Eris.Member);
+                const user = ctx.createMock(Eris.User);
                 member.setup(m => m.user).thenReturn(user.instance);
                 user.setup(m => m.id).thenReturn('289374634729826479828');
                 ctx.util.setup(m => m.getUser('289374634729826479828')).thenResolve(undefined);
@@ -364,12 +364,12 @@ runSubtagTests({
                 ctx.util.setup(m => m.awaitMessage(argument.isDeepEqual(['21938762934928374']), anyCondition.value, 300000))
                     .thenCall(createFakeAwaiterFactory(undefined, [rejectedMessage.instance]));
 
-                const channel = ctx.createMock(TextChannel);
+                const channel = ctx.createMock(Eris.TextChannel);
                 channel.setup(m => m.id).thenReturn('21938762934928374');
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '21938762934928374')).thenResolve([channel.instance]);
 
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
+                const member = ctx.createMock(Eris.Member);
+                const user = ctx.createMock(Eris.User);
                 member.setup(m => m.user).thenReturn(user.instance);
                 user.setup(m => m.id).thenReturn('289374634729826479828');
                 ctx.util.setup(m => m.getUser('289374634729826479828')).thenResolve(undefined);
@@ -387,11 +387,11 @@ runSubtagTests({
                 ctx.message.channel_id = ctx.channels.command.id;
             },
             postSetup(bbctx, ctx) {
-                const channel = ctx.createMock(TextChannel);
+                const channel = ctx.createMock(Eris.TextChannel);
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '21938762934928374')).thenResolve([channel.instance]);
 
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
+                const member = ctx.createMock(Eris.Member);
+                const user = ctx.createMock(Eris.User);
                 member.setup(m => m.user).thenReturn(user.instance);
                 ctx.util.setup(m => m.getUser('289374634729826479828')).thenResolve(undefined);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, '289374634729826479828')).thenResolve([member.instance]);
@@ -400,7 +400,7 @@ runSubtagTests({
     ]
 });
 
-function createFakeAwaiterFactory(result: KnownMessage | undefined, expectedFails: KnownMessage[] = []): BBTagUtilities['awaitMessage'] {
+function createFakeAwaiterFactory(result: Eris.KnownMessage | undefined, expectedFails: Eris.KnownMessage[] = []): BBTagUtilities['awaitMessage'] {
     return async (_: unknown, condition: AwaitCondition) => {
         for (const value of expectedFails)
             expect(await condition(value)).to.be.false;
@@ -414,14 +414,14 @@ function createFakeAwaiterFactory(result: KnownMessage | undefined, expectedFail
 
 function createFilterableMessage(
     ctx: SubtagTestContext,
-    guild: Guild,
+    guild: Eris.Guild,
     messageId: string,
     channelId = ctx.channels.command.id,
     userId = ctx.users.command.id
-): Mock<KnownMessage> {
-    const message = ctx.createMock<KnownMessage>(Message);
-    const channel = ctx.createMock(TextChannel);
-    const author = ctx.createMock(User);
+): Mock<Eris.KnownMessage> {
+    const message = ctx.createMock<Eris.KnownMessage>(Eris.Message);
+    const channel = ctx.createMock(Eris.TextChannel);
+    const author = ctx.createMock(Eris.User);
     message.setup(m => m.channel).thenReturn(channel.instance);
     message.setup(m => m.author).thenReturn(author.instance);
     message.setup(m => m.id, false).thenReturn(messageId);
@@ -435,9 +435,9 @@ function createFilterableMessage(
 function createRejectedMessage(
     ctx: SubtagTestContext,
     userId = ctx.users.command.id
-): Mock<KnownMessage> {
-    const message = ctx.createMock<KnownMessage>(Message);
-    const author = ctx.createMock(User);
+): Mock<Eris.KnownMessage> {
+    const message = ctx.createMock<Eris.KnownMessage>(Eris.Message);
+    const author = ctx.createMock(Eris.User);
     message.setup(m => m.author).thenReturn(author.instance);
     author.setup(m => m.id).thenReturn(userId);
 

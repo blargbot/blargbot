@@ -1,6 +1,6 @@
 import { FormatActionRowComponents, FormatButton, FormatEmbedAuthor, FormatEmbedFooter, FormatEmbedOptions, FormatSelectMenu, SendContent } from '@blargbot/core/types';
 import { format, IFormattable, IFormatter } from '@blargbot/formatting';
-import { ActionRowComponents, Button, EmbedAuthor, EmbedFooter, EmbedOptions, SelectMenu } from 'eris';
+import Eris from 'eris';
 
 export class FormattableMessageContent implements IFormattable<SendContent<string>> {
     readonly #content: SendContent<IFormattable<string>>;
@@ -35,9 +35,9 @@ export class FormattableMessageContent implements IFormattable<SendContent<strin
         }
     }
 
-    #getEmbed(value: FormatEmbedOptions<string | IFormattable<string>>, formatter: IFormatter): EmbedOptions;
-    #getEmbed(value: FormatEmbedOptions<string | IFormattable<string>> | undefined, formatter: IFormatter): EmbedOptions | undefined;
-    #getEmbed(value: FormatEmbedOptions<string | IFormattable<string>> | undefined, formatter: IFormatter): EmbedOptions | undefined {
+    #getEmbed(value: FormatEmbedOptions<string | IFormattable<string>>, formatter: IFormatter): Eris.EmbedOptions;
+    #getEmbed(value: FormatEmbedOptions<string | IFormattable<string>> | undefined, formatter: IFormatter): Eris.EmbedOptions | undefined;
+    #getEmbed(value: FormatEmbedOptions<string | IFormattable<string>> | undefined, formatter: IFormatter): Eris.EmbedOptions | undefined {
         if (value === undefined)
             return undefined;
 
@@ -55,7 +55,7 @@ export class FormattableMessageContent implements IFormattable<SendContent<strin
         };
     }
 
-    #getEmbedAuthor(value: FormatEmbedAuthor<string | IFormattable<string>> | undefined, formatter: IFormatter): EmbedAuthor | undefined {
+    #getEmbedAuthor(value: FormatEmbedAuthor<string | IFormattable<string>> | undefined, formatter: IFormatter): Eris.EmbedAuthor | undefined {
         if (value === undefined)
             return undefined;
 
@@ -64,7 +64,7 @@ export class FormattableMessageContent implements IFormattable<SendContent<strin
             name: this.#getString(value.name, formatter)
         };
     }
-    #getEmbedFooter(value: FormatEmbedFooter<string | IFormattable<string>> | undefined, formatter: IFormatter): EmbedFooter | undefined {
+    #getEmbedFooter(value: FormatEmbedFooter<string | IFormattable<string>> | undefined, formatter: IFormatter): Eris.EmbedFooter | undefined {
         if (value === undefined)
             return undefined;
 
@@ -74,21 +74,21 @@ export class FormattableMessageContent implements IFormattable<SendContent<strin
         };
     }
 
-    #getComponent(value: FormatActionRowComponents<string | IFormattable<string>>, formatter: IFormatter): ActionRowComponents {
+    #getComponent(value: FormatActionRowComponents<string | IFormattable<string>>, formatter: IFormatter): Eris.ActionRowComponents {
         switch (value.type) {
             case 2: return this.#getButton(value, formatter);
             case 3: return this.#getSelectMenu(value, formatter);
         }
     }
 
-    #getButton(value: FormatButton<string | IFormattable<string>>, formatter: IFormatter): Button {
+    #getButton(value: FormatButton<string | IFormattable<string>>, formatter: IFormatter): Eris.Button {
         return {
             ...value,
             label: this.#getString(value.label, formatter)
         };
     }
 
-    #getSelectMenu(value: FormatSelectMenu<string | IFormattable<string>>, formatter: IFormatter): SelectMenu {
+    #getSelectMenu(value: FormatSelectMenu<string | IFormattable<string>>, formatter: IFormatter): Eris.SelectMenu {
         return {
             ...value,
             placeholder: this.#getString(value.placeholder, formatter),

@@ -3,7 +3,7 @@ import { Cluster } from '@blargbot/cluster';
 import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent';
 import { guard } from '@blargbot/core/utils';
 import { GuildRolemeEntry } from '@blargbot/domain/models';
-import { KnownGuildTextableChannel, KnownMessage, Message } from 'eris';
+import Eris from 'eris';
 
 import templates from '../text';
 
@@ -16,7 +16,7 @@ export class RolemeManager {
         this.#cluster = cluster;
     }
 
-    public async execute(message: KnownMessage): Promise<void> {
+    public async execute(message: Eris.KnownMessage): Promise<void> {
         if (!guard.isGuildMessage(message) || !guard.hasValue(message.member))
             return;
 
@@ -45,7 +45,7 @@ export class RolemeManager {
         }
     }
 
-    public async invokeMessage(trigger: Message<KnownGuildTextableChannel>, roleme: GuildRolemeEntry): Promise<ExecutionResult> {
+    public async invokeMessage(trigger: Eris.Message<Eris.KnownGuildTextableChannel>, roleme: GuildRolemeEntry): Promise<ExecutionResult> {
         const tag = roleme.output ?? {
             content: 'Your roles have been edited!',
             author: ''

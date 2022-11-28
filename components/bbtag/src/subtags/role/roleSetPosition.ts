@@ -1,5 +1,5 @@
 import { parse } from '@blargbot/core/utils';
-import { DiscordRESTError } from 'eris';
+import Eris from 'eris';
 
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation/index';
@@ -50,7 +50,7 @@ export class RoleSetPositionSubtag extends CompiledSubtag {
             await role.editPosition(pos);
             return true;
         } catch (err: unknown) {
-            if (!(err instanceof DiscordRESTError))
+            if (!(err instanceof Eris.DiscordRESTError))
                 throw err;
 
             if (quiet)

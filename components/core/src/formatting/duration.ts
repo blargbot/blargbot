@@ -1,9 +1,9 @@
 import { format, IFormatter, IValueResolverTransform } from '@blargbot/formatting';
-import moment, { Duration } from 'moment-timezone';
+import moment from 'moment-timezone';
 
 import templates from '../text';
 
-const formats: { [P in string]?: (duration: Duration, formatter: IFormatter) => string } = {
+const formats: { [P in string]?: (duration: moment.Duration, formatter: IFormatter) => string } = {
     ['']: d => d.humanize(),
     ['H']: d => d.humanize(),
     ['S']: (d, f) => d.asSeconds().toLocaleString(f.locale),

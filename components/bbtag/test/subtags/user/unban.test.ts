@@ -1,6 +1,6 @@
 import { BBTagRuntimeError, UserNotFoundError } from '@blargbot/bbtag/errors';
 import { UnbanSubtag } from '@blargbot/bbtag/subtags/user/unban';
-import { Member, User } from 'eris';
+import Eris from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 
@@ -27,8 +27,8 @@ runSubtagTests({
             code: '{unban;other user}',
             expected: 'true',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
+                const member = ctx.createMock(Eris.Member);
+                const user = ctx.createMock(Eris.User);
                 member.setup(m => m.user).thenReturn(user.instance);
                 ctx.util.setup(m => m.getUser('other user'))
                     .verifiable(1)
@@ -49,8 +49,8 @@ runSubtagTests({
                 { start: 0, end: 18, error: new BBTagRuntimeError('Bot has no permissions') }
             ],
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
+                const member = ctx.createMock(Eris.Member);
+                const user = ctx.createMock(Eris.User);
                 member.setup(m => m.user).thenReturn(user.instance);
                 ctx.util.setup(m => m.getUser('other user'))
                     .verifiable(1)
@@ -68,8 +68,8 @@ runSubtagTests({
             code: '{unban;other user}',
             expected: 'false',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
+                const member = ctx.createMock(Eris.Member);
+                const user = ctx.createMock(Eris.User);
                 member.setup(m => m.user).thenReturn(user.instance);
                 ctx.util.setup(m => m.getUser('other user'))
                     .verifiable(1)
@@ -90,8 +90,8 @@ runSubtagTests({
                 { start: 0, end: 18, error: new BBTagRuntimeError('User has no permissions') }
             ],
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
+                const member = ctx.createMock(Eris.Member);
+                const user = ctx.createMock(Eris.User);
                 member.setup(m => m.user).thenReturn(user.instance);
                 ctx.util.setup(m => m.getUser('other user'))
                     .verifiable(1)
@@ -109,8 +109,8 @@ runSubtagTests({
             code: '{unban;other user;My reason here}',
             expected: 'true',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
+                const member = ctx.createMock(Eris.Member);
+                const user = ctx.createMock(Eris.User);
                 member.setup(m => m.user).thenReturn(user.instance);
                 ctx.util.setup(m => m.getUser('other user'))
                     .verifiable(1)
@@ -128,8 +128,8 @@ runSubtagTests({
             code: '{unban;other user;My reason here;x}',
             expected: 'true',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
+                const member = ctx.createMock(Eris.Member);
+                const user = ctx.createMock(Eris.User);
                 member.setup(m => m.user).thenReturn(user.instance);
                 const authorizer = bbctx.guild.members.get(ctx.users.authorizer.id)?.user;
                 if (authorizer === undefined)
@@ -150,8 +150,8 @@ runSubtagTests({
             code: '{unban;other user;My reason here;}',
             expected: 'true',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
+                const member = ctx.createMock(Eris.Member);
+                const user = ctx.createMock(Eris.User);
                 member.setup(m => m.user).thenReturn(user.instance);
                 ctx.util.setup(m => m.getUser('other user'))
                     .verifiable(1)

@@ -6,8 +6,8 @@ import { CommandType, discord, parse } from '@blargbot/cluster/utils';
 import { SendContent } from '@blargbot/core/types';
 import { StoredTag } from '@blargbot/domain/models';
 import { IFormattable, util } from '@blargbot/formatting';
-import { User } from 'eris';
-import moment, { Duration } from 'moment-timezone';
+import Eris from 'eris';
+import moment from 'moment-timezone';
 import fetch from 'node-fetch';
 
 import { RawBBTagCommandResult } from '../../command/RawBBTagCommandResult';
@@ -401,7 +401,7 @@ export class TagCommand extends GuildCommand {
         return cmd.permDelete.success({ name: tagName });
     }
 
-    public async setTagCooldown(context: GuildCommandContext, tagName: string, cooldown?: Duration): Promise<CommandResult> {
+    public async setTagCooldown(context: GuildCommandContext, tagName: string, cooldown?: moment.Duration): Promise<CommandResult> {
         if (cooldown !== undefined && cooldown.asMilliseconds() < 0)
             return cmd.cooldown.cooldownZero;
 
@@ -756,7 +756,7 @@ export class TagCommand extends GuildCommand {
     async #logChange(
         context: CommandContext,
         action: TagChangeAction,
-        user: User,
+        user: Eris.User,
         messageId: string,
         details: Record<string, string>): Promise<void> {
         await context.send(context.config.discord.channels.taglog, {

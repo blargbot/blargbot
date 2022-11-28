@@ -1,8 +1,8 @@
-import { Constants } from 'eris';
+import Eris from 'eris';
 
-export const defaultStaff = Constants.Permissions.kickMembers
-    | Constants.Permissions.banMembers
-    | Constants.Permissions.administrator
-    | Constants.Permissions.manageChannels
-    | Constants.Permissions.manageGuild
-    | Constants.Permissions.manageMessages;
+export const defaultStaff = Eris.Constants.Permissions.kickMembers
+    | Eris.Constants.Permissions.banMembers
+    | Eris.Constants.Permissions.administrator
+    | Eris.Constants.Permissions.manageChannels
+    | Eris.Constants.Permissions.manageGuild
+    | Eris.Constants.Permissions.manageMessages;

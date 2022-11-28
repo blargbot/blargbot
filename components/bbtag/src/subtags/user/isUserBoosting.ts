@@ -1,4 +1,4 @@
-import { Member } from 'eris';
+import Eris from 'eris';
 
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation/index';
@@ -47,7 +47,7 @@ export class IsUserBoostingSubtag extends CompiledSubtag {
         return this.isUserBoosting(member);
     }
 
-    public isUserBoosting(member: Member): boolean {
+    public isUserBoosting(member: Eris.Member): boolean {
         return typeof member.premiumSince === 'number';
     }
 }

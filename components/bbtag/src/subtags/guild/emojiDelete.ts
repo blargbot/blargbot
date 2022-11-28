@@ -1,4 +1,4 @@
-import { DiscordRESTError } from 'eris';
+import Eris from 'eris';
 
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation/index';
@@ -33,7 +33,7 @@ export class EmojiDeleteSubtag extends CompiledSubtag {
         try {
             await context.guild.deleteEmoji(emojiId, context.auditReason());
         } catch (err: unknown) {
-            if (!(err instanceof DiscordRESTError))
+            if (!(err instanceof Eris.DiscordRESTError))
                 throw err;
 
             const parts = err.message.split('\n').map(m => m.trim());

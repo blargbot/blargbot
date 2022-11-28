@@ -2,7 +2,7 @@ import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
 import { GuildSetIconSubtag } from '@blargbot/bbtag/subtags/guild/guildSetIcon';
 import { SemiSubtag } from '@blargbot/bbtag/subtags/simple/semi';
 import { argument } from '@blargbot/test-util/mock';
-import { Constants } from 'eris';
+import Eris from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 
@@ -10,7 +10,7 @@ runSubtagTests({
     subtag: new GuildSetIconSubtag(),
     argCountBounds: { min: 1, max: 1 },
     setup(ctx) {
-        ctx.roles.authorizer.permissions = Constants.Permissions.manageGuild.toString();
+        ctx.roles.authorizer.permissions = Eris.Constants.Permissions.manageGuild.toString();
     },
     cases: [
         {

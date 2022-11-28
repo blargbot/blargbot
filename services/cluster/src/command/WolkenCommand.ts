@@ -1,6 +1,6 @@
 import { CommandType } from '@blargbot/cluster/utils';
 import { IFormatStringDefinition, IFormattable, util } from '@blargbot/formatting';
-import { User } from 'eris';
+import Eris from 'eris';
 import Wolken from 'wolken';
 
 import { CommandResult } from '../types';
@@ -16,11 +16,11 @@ export interface WolkeOptionsBase {
 }
 
 export interface WolkeSelfOptions extends WolkeOptionsBase {
-    action?: IFormatStringDefinition<{ self: User; }>;
+    action?: IFormatStringDefinition<{ self: Eris.User; }>;
     user?: false;
 }
 export interface WolkeUserOptions extends WolkeOptionsBase {
-    action: IFormatStringDefinition<{ self: User; target?: User; }>;
+    action: IFormatStringDefinition<{ self: Eris.User; target?: Eris.User; }>;
     user: true;
 }
 
@@ -50,7 +50,7 @@ export abstract class WolkenCommand extends GlobalCommand {
         this.#client = new Wolken(options.wolkeKey, 'Wolke', 'blargbot/6.0.0');
     }
 
-    public async render(context: CommandContext, type: string, action: WolkeOptions['action'], target: User | undefined): Promise<CommandResult> {
+    public async render(context: CommandContext, type: string, action: WolkeOptions['action'], target: Eris.User | undefined): Promise<CommandResult> {
         const image = await this.#client.getRandom({ type, allowNSFW: false, filetype: 'gif' });
         const self = context.author;
         return {

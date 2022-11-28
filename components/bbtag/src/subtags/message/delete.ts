@@ -1,5 +1,5 @@
 import { guard } from '@blargbot/core/utils';
-import { ApiError, DiscordRESTError } from 'eris';
+import Eris from 'eris';
 
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
@@ -66,7 +66,7 @@ export class DeleteSubtag extends CompiledSubtag {
         try {
             await msg.delete();
         } catch (e: unknown) {
-            if (e instanceof DiscordRESTError && e.code === ApiError.UNKNOWN_MESSAGE)
+            if (e instanceof Eris.DiscordRESTError && e.code === Eris.ApiError.UNKNOWN_MESSAGE)
                 return;
             context.logger.warn('Failed to delete message', e);
             // NOOP

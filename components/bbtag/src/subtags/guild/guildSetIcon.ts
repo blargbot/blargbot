@@ -1,6 +1,6 @@
 import { guard } from '@blargbot/core/utils';
 import { parse } from '@blargbot/core/utils/parse';
-import { DiscordRESTError } from 'eris';
+import Eris from 'eris';
 import fetch from 'node-fetch';
 
 import { BBTagContext } from '../../BBTagContext';
@@ -46,7 +46,7 @@ export class GuildSetIconSubtag extends CompiledSubtag {
         try {
             await context.guild.edit({ icon: image }, context.auditReason());
         } catch (err: unknown) {
-            if (!(err instanceof DiscordRESTError))
+            if (!(err instanceof Eris.DiscordRESTError))
                 throw err;
 
             const parts = err.message.split('\n').map(m => m.trim());

@@ -1,6 +1,6 @@
 import discordEmoteData from '@blargbot/res/discordEmoteData.json';
 import { Snowflake } from 'catflake';
-import { PartialEmoji } from 'eris';
+import Eris from 'eris';
 import twemoji from 'twemoji';
 
 import { snowflake } from './utils';
@@ -18,7 +18,7 @@ export class Emote {
         return result[0];
     }
 
-    public static create(this: void, data: PartialEmoji): Emote {
+    public static create(this: void, data: Eris.PartialEmoji): Emote {
         if (data.id === null)
             return Emote.parse(data.name);
         return Emote.parse(`<${data.animated === true ? 'a' : ''}:${data.name}:${data.id}>`);

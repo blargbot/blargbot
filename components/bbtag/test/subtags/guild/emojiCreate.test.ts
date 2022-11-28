@@ -2,7 +2,7 @@ import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
 import { EmojiCreateSubtag } from '@blargbot/bbtag/subtags/guild/emojiCreate';
 import { SemiSubtag } from '@blargbot/bbtag/subtags/simple/semi';
 import { argument } from '@blargbot/test-util/mock';
-import { Constants } from 'eris';
+import Eris from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 
@@ -10,7 +10,7 @@ runSubtagTests({
     subtag: new EmojiCreateSubtag(),
     argCountBounds: { min: 2, max: 3 },
     setup(ctx) {
-        ctx.roles.authorizer.permissions = Constants.Permissions.manageEmojisAndStickers.toString();
+        ctx.roles.authorizer.permissions = Eris.Constants.Permissions.manageEmojisAndStickers.toString();
     },
     cases: [
         {

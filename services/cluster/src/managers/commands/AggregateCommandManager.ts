@@ -5,7 +5,7 @@ import { FormattableMessageContent } from '@blargbot/core/FormattableMessageCont
 import { MessageIdQueue } from '@blargbot/core/MessageIdQueue';
 import { guard } from '@blargbot/core/utils';
 import { CommandPermissions, NamedGuildCommandTag } from '@blargbot/domain/models';
-import { Client as Discord, Guild, KnownTextableChannel, PossiblyUncachedMessage, User } from 'eris';
+import Eris from 'eris';
 
 import templates from '../../text';
 
@@ -25,12 +25,12 @@ export class AggregateCommandManager implements ICommandManager, CommandManagers
         this.#cluster = cluster;
         cluster.discord.deleteMessage = (...args) => {
             this.messages.remove(args[0], args[1]);
-            return Discord.prototype.deleteMessage.call(cluster.discord, ...args);
+            return Eris.Client.prototype.deleteMessage.call(cluster.discord, ...args);
         };
         cluster.discord.deleteMessages = (...args) => {
             for (const messageId of args[1])
                 this.messages.remove(args[0], messageId);
-            return Discord.prototype.deleteMessages.call(cluster.discord, ...args);
+            return Eris.Client.prototype.deleteMessages.call(cluster.discord, ...args);
         };
 
         this.messages = new MessageIdQueue(100);
@@ -44,7 +44,7 @@ export class AggregateCommandManager implements ICommandManager, CommandManagers
         await Promise.all(this.#managersArr.map(m => m.load(commands)));
     }
 
-    public async get(name: string, location?: Guild | KnownTextableChannel, user?: User): Promise<CommandGetResult> {
+    public async get(name: string, location?: Eris.Guild | Eris.KnownTextableChannel, user?: Eris.User): Promise<CommandGetResult> {
         let result: CommandGetResult;
         for (const manager of this.#managersArr) {
             result = await manager.get(name, location, user);
@@ -54,7 +54,7 @@ export class AggregateCommandManager implements ICommandManager, CommandManagers
         return { state: 'NOT_FOUND' };
     }
 
-    public async *list(location?: Guild | KnownTextableChannel, user?: User): AsyncGenerator<CommandGetResult> {
+    public async *list(location?: Eris.Guild | Eris.KnownTextableChannel, user?: Eris.User): AsyncGenerator<CommandGetResult> {
         const results = new Map<string, CommandGetResult[]>();
 
         for (const manager of this.#managersArr) {
@@ -88,7 +88,7 @@ export class AggregateCommandManager implements ICommandManager, CommandManagers
         }
     }
 
-    public async configure(user: User, names: readonly string[], guild: Guild, permissions: Partial<CommandPermissions>): Promise<readonly string[]> {
+    public async configure(user: Eris.User, names: readonly string[], guild: Eris.Guild, permissions: Partial<CommandPermissions>): Promise<readonly string[]> {
         let remaining = [...names];
         const result = [];
         for (const manager of this.#managersArr) {
@@ -99,7 +99,7 @@ export class AggregateCommandManager implements ICommandManager, CommandManagers
         return result;
     }
 
-    public async messageDeleted(message: PossiblyUncachedMessage): Promise<void> {
+    public async messageDeleted(message: Eris.PossiblyUncachedMessage): Promise<void> {
         if (!guard.isGuildMessage(message))
             return;
         if (!this.messages.has(message.channel.guild.id, message.id)

@@ -3,7 +3,7 @@ import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType, guard } from '@blargbot/cluster/utils';
 import { StoredGuildEventLogType } from '@blargbot/domain/models';
 import { IFormattable } from '@blargbot/formatting';
-import { KnownChannel, Role, User, Webhook } from 'eris';
+import Eris from 'eris';
 
 import templates from '../../text';
 
@@ -33,7 +33,7 @@ export class LogCommand extends GuildCommand {
                 {
                     parameters: 'enable {channel:channel} roles|role {roles:role[]}',
                     description: cmd.enable.description.role,
-                    execute: (ctx, [channel, roles]) => this.setEventChannel(ctx, roles.asRoles.map((r: Role) => `role:${r.id}`), channel.asChannel)
+                    execute: (ctx, [channel, roles]) => this.setEventChannel(ctx, roles.asRoles.map((r: Eris.Role) => `role:${r.id}`), channel.asChannel)
                 },
                 {
                     parameters: 'disable {eventNames[]}',
@@ -48,7 +48,7 @@ export class LogCommand extends GuildCommand {
                 {
                     parameters: 'disable roles|role {roles:role[]}',
                     description: cmd.disable.description.role,
-                    execute: (ctx, [roles]) => this.setEventChannel(ctx, roles.asRoles.map((r: Role) => `role:${r.id}`), undefined)
+                    execute: (ctx, [roles]) => this.setEventChannel(ctx, roles.asRoles.map((r: Eris.Role) => `role:${r.id}`), undefined)
                 },
                 {
                     parameters: 'ignore {users:sender[]}',
@@ -64,7 +64,7 @@ export class LogCommand extends GuildCommand {
         });
     }
 
-    public async setEventChannel(context: GuildCommandContext, eventnames: readonly string[], channel: KnownChannel | undefined): Promise<CommandResult> {
+    public async setEventChannel(context: GuildCommandContext, eventnames: readonly string[], channel: Eris.KnownChannel | undefined): Promise<CommandResult> {
         if (channel !== undefined && (!guard.isGuildChannel(channel) || channel.guild !== context.channel.guild))
             return cmd.enable.notOnGuild;
 
@@ -129,7 +129,7 @@ export class LogCommand extends GuildCommand {
         };
     }
 
-    public async ignoreUsers(context: GuildCommandContext, senders: ReadonlyArray<User | Webhook>, ignore: boolean): Promise<CommandResult> {
+    public async ignoreUsers(context: GuildCommandContext, senders: ReadonlyArray<Eris.User | Eris.Webhook>, ignore: boolean): Promise<CommandResult> {
         await context.database.guilds.setLogIgnores(context.channel.guild.id, senders.map(u => u.id), ignore);
         return ignore
             ? cmd.ignore.success({ senderIds: senders.map(s => s.id) })

@@ -1,5 +1,5 @@
 import { parse } from '@blargbot/core/utils';
-import { DiscordRESTError } from 'eris';
+import Eris from 'eris';
 
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation/index';
@@ -46,7 +46,7 @@ export class ChannelSetPositionSubtag extends CompiledSubtag {
         try {
             await channel.editPosition(pos);
         } catch (err: unknown) {
-            if (!(err instanceof DiscordRESTError))
+            if (!(err instanceof Eris.DiscordRESTError))
                 throw err;
 
             throw new BBTagRuntimeError('Failed to move channel: no perms', err.message);

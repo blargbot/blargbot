@@ -1,6 +1,6 @@
 import { UserNotFoundError } from '@blargbot/bbtag/errors';
 import { IsStaffSubtag } from '@blargbot/bbtag/subtags/user/isStaff';
-import { Member } from 'eris';
+import Eris from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 
@@ -26,7 +26,7 @@ runSubtagTests({
             code: '{isstaff;other user}',
             expected: 'true',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Member);
+                const member = ctx.createMock(Eris.Member);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
                     .verifiable(1)
                     .thenResolve([member.instance]);
@@ -39,7 +39,7 @@ runSubtagTests({
             code: '{isstaff;other user}',
             expected: 'false',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Member);
+                const member = ctx.createMock(Eris.Member);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
                     .verifiable(1)
                     .thenResolve([member.instance]);

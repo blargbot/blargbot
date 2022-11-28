@@ -2,7 +2,7 @@ import { UserNotFoundError } from '@blargbot/bbtag/errors';
 import { EscapeBBTagSubtag } from '@blargbot/bbtag/subtags/misc/escapeBBTag';
 import { DMSubtag } from '@blargbot/bbtag/subtags/user/dm';
 import { argument } from '@blargbot/test-util/mock';
-import { Guild, Member, PrivateChannel, User } from 'eris';
+import Eris from 'eris';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
 
@@ -19,7 +19,7 @@ runSubtagTests({
             ],
             setup(ctx) {
                 ctx.options.rootTagName = 'mySuperCoolTestingTag';
-                ctx.util.setup(m => m.findMembers(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id).value, 'aaaa'))
+                ctx.util.setup(m => m.findMembers(argument.isInstanceof(Eris.Guild).and(g => g.id === ctx.guild.id).value, 'aaaa'))
                     .verifiable(1)
                     .thenResolve([]);
             }
@@ -28,14 +28,14 @@ runSubtagTests({
             code: '{dm;other user;Hello!}',
             expected: '',
             setup(ctx) {
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
-                const channel = ctx.createMock(PrivateChannel);
+                const member = ctx.createMock(Eris.Member);
+                const user = ctx.createMock(Eris.User);
+                const channel = ctx.createMock(Eris.PrivateChannel);
                 member.setup(x => x.id).thenReturn(ctx.users.other.id);
                 member.setup(x => x.user).thenReturn(user.instance);
                 user.setup(m => m.getDMChannel()).thenResolve(channel.instance);
 
-                ctx.util.setup(m => m.findMembers(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id).value, 'other user'))
+                ctx.util.setup(m => m.findMembers(argument.isInstanceof(Eris.Guild).and(g => g.id === ctx.guild.id).value, 'other user'))
                     .verifiable(1)
                     .thenResolve([member.instance]);
                 ctx.util.setup(m => m.send(channel.instance, argument.isDeepEqual({ content: `The following message was sent from **__Test Guild__** (${ctx.guild.id}), and was sent by **__Command User#0000__** (${ctx.users.command.id}):` })))
@@ -51,14 +51,14 @@ runSubtagTests({
             subtags: [new EscapeBBTagSubtag()],
             expected: '',
             setup(ctx) {
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
-                const channel = ctx.createMock(PrivateChannel);
+                const member = ctx.createMock(Eris.Member);
+                const user = ctx.createMock(Eris.User);
+                const channel = ctx.createMock(Eris.PrivateChannel);
                 member.setup(x => x.id).thenReturn(ctx.users.other.id);
                 member.setup(x => x.user).thenReturn(user.instance);
                 user.setup(m => m.getDMChannel()).thenResolve(channel.instance);
 
-                ctx.util.setup(m => m.findMembers(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id).value, 'other user'))
+                ctx.util.setup(m => m.findMembers(argument.isInstanceof(Eris.Guild).and(g => g.id === ctx.guild.id).value, 'other user'))
                     .verifiable(1)
                     .thenResolve([member.instance]);
                 ctx.util.setup(m => m.send(channel.instance, argument.isDeepEqual({ content: `The following message was sent from **__Test Guild__** (${ctx.guild.id}), and was sent by **__Command User#0000__** (${ctx.users.command.id}):` })))
@@ -74,14 +74,14 @@ runSubtagTests({
             subtags: [new EscapeBBTagSubtag()],
             expected: '',
             setup(ctx) {
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
-                const channel = ctx.createMock(PrivateChannel);
+                const member = ctx.createMock(Eris.Member);
+                const user = ctx.createMock(Eris.User);
+                const channel = ctx.createMock(Eris.PrivateChannel);
                 member.setup(x => x.id).thenReturn(ctx.users.other.id);
                 member.setup(x => x.user).thenReturn(user.instance);
                 user.setup(m => m.getDMChannel()).thenResolve(channel.instance);
 
-                ctx.util.setup(m => m.findMembers(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id).value, 'other user'))
+                ctx.util.setup(m => m.findMembers(argument.isInstanceof(Eris.Guild).and(g => g.id === ctx.guild.id).value, 'other user'))
                     .verifiable(1)
                     .thenResolve([member.instance]);
                 ctx.util.setup(m => m.send(channel.instance, argument.isDeepEqual({ content: `The following message was sent from **__Test Guild__** (${ctx.guild.id}), and was sent by **__Command User#0000__** (${ctx.users.command.id}):` })))
@@ -97,14 +97,14 @@ runSubtagTests({
             subtags: [new EscapeBBTagSubtag()],
             expected: '',
             setup(ctx) {
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
-                const channel = ctx.createMock(PrivateChannel);
+                const member = ctx.createMock(Eris.Member);
+                const user = ctx.createMock(Eris.User);
+                const channel = ctx.createMock(Eris.PrivateChannel);
                 member.setup(x => x.id).thenReturn(ctx.users.other.id);
                 member.setup(x => x.user).thenReturn(user.instance);
                 user.setup(m => m.getDMChannel()).thenResolve(channel.instance);
 
-                ctx.util.setup(m => m.findMembers(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id).value, 'other user'))
+                ctx.util.setup(m => m.findMembers(argument.isInstanceof(Eris.Guild).and(g => g.id === ctx.guild.id).value, 'other user'))
                     .verifiable(1)
                     .thenResolve([member.instance]);
                 ctx.util.setup(m => m.send(channel.instance, argument.isDeepEqual({ content: `The following message was sent from **__Test Guild__** (${ctx.guild.id}), and was sent by **__Command User#0000__** (${ctx.users.command.id}):` })))
@@ -119,14 +119,14 @@ runSubtagTests({
             code: '{dm;other user;Hi!}{dm;other user;Hi!}{dm;other user;Hi!}{dm;other user;Hi!}{dm;other user;Hi!}',
             expected: '',
             setup(ctx) {
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
-                const channel = ctx.createMock(PrivateChannel);
+                const member = ctx.createMock(Eris.Member);
+                const user = ctx.createMock(Eris.User);
+                const channel = ctx.createMock(Eris.PrivateChannel);
                 member.setup(x => x.id).thenReturn(ctx.users.other.id);
                 member.setup(x => x.user).thenReturn(user.instance);
                 user.setup(m => m.getDMChannel()).thenResolve(channel.instance);
 
-                ctx.util.setup(m => m.findMembers(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id).value, 'other user'))
+                ctx.util.setup(m => m.findMembers(argument.isInstanceof(Eris.Guild).and(g => g.id === ctx.guild.id).value, 'other user'))
                     .verifiable(x => x.times(5))
                     .thenResolve([member.instance]);
                 ctx.util.setup(m => m.send(channel.instance, argument.isDeepEqual({ content: `The following message was sent from **__Test Guild__** (${ctx.guild.id}), and was sent by **__Command User#0000__** (${ctx.users.command.id}):` })))
@@ -141,14 +141,14 @@ runSubtagTests({
             code: '{dm;other user;Hi!}{dm;other user;Hi!}{dm;other user;Hi!}{dm;other user;Hi!}{dm;other user;Hi!}{dm;other user;Hi!}',
             expected: '',
             setup(ctx) {
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
-                const channel = ctx.createMock(PrivateChannel);
+                const member = ctx.createMock(Eris.Member);
+                const user = ctx.createMock(Eris.User);
+                const channel = ctx.createMock(Eris.PrivateChannel);
                 member.setup(x => x.id).thenReturn(ctx.users.other.id);
                 member.setup(x => x.user).thenReturn(user.instance);
                 user.setup(m => m.getDMChannel()).thenResolve(channel.instance);
 
-                ctx.util.setup(m => m.findMembers(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id).value, 'other user'))
+                ctx.util.setup(m => m.findMembers(argument.isInstanceof(Eris.Guild).and(g => g.id === ctx.guild.id).value, 'other user'))
                     .verifiable(x => x.times(6))
                     .thenResolve([member.instance]);
                 ctx.util.setup(m => m.send(channel.instance, argument.isDeepEqual({ content: `The following message was sent from **__Test Guild__** (${ctx.guild.id}), and was sent by **__Command User#0000__** (${ctx.users.command.id}):` })))

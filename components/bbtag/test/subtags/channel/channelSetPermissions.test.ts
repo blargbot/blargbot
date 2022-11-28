@@ -1,7 +1,7 @@
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
 import { ChannelSetPermissionsSubtag } from '@blargbot/bbtag/subtags/channel/channelSetPermissions';
 import { OverwriteType } from 'discord-api-types/v9';
-import { ApiError, Constants, PublicThreadChannel } from 'eris';
+import Eris from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 
@@ -9,7 +9,7 @@ runSubtagTests({
     subtag: new ChannelSetPermissionsSubtag(),
     argCountBounds: { min: 3, max: 5 },
     setup(ctx) {
-        ctx.roles.authorizer.permissions = (Constants.Permissions.manageChannels | Constants.Permissions.administrator).toString();
+        ctx.roles.authorizer.permissions = (Eris.Constants.Permissions.manageChannels | Eris.Constants.Permissions.administrator).toString();
     },
     cases: [
         {
@@ -157,8 +157,8 @@ runSubtagTests({
                 { start: 0, end: 72, error: new BBTagRuntimeError('Cannot set permissions for a thread channel') }
             ],
             postSetup(bbctx, ctx) {
-                const channel = ctx.createMock(PublicThreadChannel);
-                channel.setup(m => m.type).thenReturn(Constants.ChannelTypes.GUILD_PUBLIC_THREAD);
+                const channel = ctx.createMock(Eris.PublicThreadChannel);
+                channel.setup(m => m.type).thenReturn(Eris.Constants.ChannelTypes.GUILD_PUBLIC_THREAD);
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '12835768123756132')).thenResolve([channel.instance]);
             }
@@ -203,7 +203,7 @@ runSubtagTests({
                 { start: 0, end: 74, error: new BBTagRuntimeError('Author missing requested permissions') }
             ],
             setup(ctx) {
-                ctx.roles.authorizer.permissions = Constants.Permissions.manageChannels.toString();
+                ctx.roles.authorizer.permissions = Eris.Constants.Permissions.manageChannels.toString();
             },
             postSetup(bbctx, ctx) {
                 const channel = bbctx.guild.channels.get(ctx.channels.general.id);
@@ -221,7 +221,7 @@ runSubtagTests({
                 { start: 0, end: 72, error: new BBTagRuntimeError('Author missing requested permissions') }
             ],
             setup(ctx) {
-                ctx.roles.authorizer.permissions = Constants.Permissions.manageChannels.toString();
+                ctx.roles.authorizer.permissions = Eris.Constants.Permissions.manageChannels.toString();
             },
             postSetup(bbctx, ctx) {
                 const channel = bbctx.guild.channels.get(ctx.channels.general.id);
@@ -245,7 +245,7 @@ runSubtagTests({
                     throw new Error('Unable to get channel under test');
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '12835768123756132')).thenResolve([channel]);
-                const err = ctx.createRESTError(ApiError.MISSING_PERMISSIONS);
+                const err = ctx.createRESTError(Eris.ApiError.MISSING_PERMISSIONS);
                 ctx.discord.setup(m => m.editChannelPermission(channel.id, '12876318236836323', 129837n, 832764n, OverwriteType.Role, 'Command User#0000')).thenReject(err);
             }
         },
@@ -262,7 +262,7 @@ runSubtagTests({
                     throw new Error('Unable to get channel under test');
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '12835768123756132')).thenResolve([channel]);
-                const err = ctx.createRESTError(ApiError.NOT_AUTHORIZED, 'Some other error message');
+                const err = ctx.createRESTError(Eris.ApiError.NOT_AUTHORIZED, 'Some other error message');
                 ctx.discord.setup(m => m.editChannelPermission(channel.id, '12876318236836323', 129837n, 832764n, OverwriteType.Role, 'Command User#0000')).thenReject(err);
             }
         }

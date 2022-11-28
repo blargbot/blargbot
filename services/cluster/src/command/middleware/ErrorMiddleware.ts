@@ -1,7 +1,7 @@
 import { CommandResult } from '@blargbot/cluster/types';
 import { guard, snowflake } from '@blargbot/cluster/utils';
 import { IMiddleware, NextMiddleware } from '@blargbot/core/types';
-import { ApiError, DiscordRESTError } from 'eris';
+import Eris from 'eris';
 
 import templates from '../../text';
 import { CommandContext } from '../CommandContext';
@@ -14,8 +14,8 @@ export class ErrorMiddleware<TContext extends CommandContext> implements IMiddle
             const token = snowflake.create().toString();
             context.logger.error(`[Command error ${token}]`, context.command.name, err);
 
-            if (err instanceof DiscordRESTError
-                && err.code === ApiError.MISSING_ACCESS
+            if (err instanceof Eris.DiscordRESTError
+                && err.code === Eris.ApiError.MISSING_ACCESS
                 && await context.database.users.getProp(context.author.id, 'dontdmerrors') !== true) {
                 const message = !guard.isGuildCommandContext(context)
                     ? templates.commands.$errors.missingPermission.generic

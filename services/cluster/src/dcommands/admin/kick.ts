@@ -2,7 +2,7 @@ import { GuildCommand } from '../../command/index';
 import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType } from '@blargbot/cluster/utils';
 import { util } from '@blargbot/formatting';
-import { Member } from 'eris';
+import Eris from 'eris';
 
 import templates from '../../text';
 
@@ -26,7 +26,7 @@ export class KickCommand extends GuildCommand {
         });
     }
 
-    public async kick(context: GuildCommandContext, member: Member, reason: string | undefined): Promise<CommandResult> {
+    public async kick(context: GuildCommandContext, member: Eris.Member, reason: string | undefined): Promise<CommandResult> {
         const state = await context.cluster.moderation.bans.kick(member, context.author, context.author, util.literal(reason));
         return cmd.default.state[state]({ user: member.user });
     }

@@ -2,7 +2,7 @@ import { BBTagContext } from '@blargbot/bbtag';
 import { BBTagRuntimeError, RoleNotFoundError } from '@blargbot/bbtag/errors';
 import { argument } from '@blargbot/test-util/mock';
 import { APIRole } from 'discord-api-types/v9';
-import { Guild, Role } from 'eris';
+import Eris from 'eris';
 
 import { SubtagTestCase, SubtagTestContext } from '../SubtagTestSuite';
 
@@ -33,7 +33,7 @@ function* createGetRolePropTestCasesIter(options: GetRolePropTestData): Generato
             { start: 0, end: options.generateCode('unknown role').length, error: notFound('unknown role') }
         ],
         setup(ctx) {
-            ctx.util.setup(m => m.findRoles(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id).value, 'unknown role'))
+            ctx.util.setup(m => m.findRoles(argument.isInstanceof(Eris.Guild).and(g => g.id === ctx.guild.id).value, 'unknown role'))
                 .verifiable(1)
                 .thenResolve([]);
         }
@@ -47,7 +47,7 @@ function* createGetRolePropTestCasesIter(options: GetRolePropTestData): Generato
                 { start: 0, end: options.generateCode('unknown role', '').length, error: notFound('unknown role') }
             ],
             setup(ctx) {
-                ctx.util.setup(m => m.findRoles(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id).value, 'unknown role'))
+                ctx.util.setup(m => m.findRoles(argument.isInstanceof(Eris.Guild).and(g => g.id === ctx.guild.id).value, 'unknown role'))
                     .verifiable(1)
                     .thenResolve([]);
             }
@@ -59,7 +59,7 @@ function* createGetRolePropTestCasesIter(options: GetRolePropTestData): Generato
                 { start: 0, end: options.generateCode('unknown role', 'q').length, error: notFound('unknown role').withDisplay(options.quiet) }
             ],
             setup(ctx) {
-                ctx.util.setup(m => m.findRoles(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id).value, 'unknown role'))
+                ctx.util.setup(m => m.findRoles(argument.isInstanceof(Eris.Guild).and(g => g.id === ctx.guild.id).value, 'unknown role'))
                     .verifiable(1)
                     .thenResolve([]);
             }
@@ -81,8 +81,8 @@ interface GetRolePropTestCase {
     queryString?: string;
     generateCode?: (...args: [roleStr?: string, quietStr?: string]) => string;
     setup?: (role: APIRole, context: SubtagTestContext) => void;
-    postSetup?: (role: Role, context: BBTagContext, test: SubtagTestContext) => void;
-    assert?: (result: string, role: Role, context: BBTagContext, test: SubtagTestContext) => void;
+    postSetup?: (role: Eris.Role, context: BBTagContext, test: SubtagTestContext) => void;
+    assert?: (result: string, role: Eris.Role, context: BBTagContext, test: SubtagTestContext) => void;
 }
 
 function createTestCase(data: GetRolePropTestData, testCase: GetRolePropTestCase, roleKey: keyof SubtagTestContext['roles'], args: Parameters<GetRolePropTestData['generateCode']>): SubtagTestCase {

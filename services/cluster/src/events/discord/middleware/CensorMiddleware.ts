@@ -1,15 +1,15 @@
 import { CensorManager } from '@blargbot/cluster/managers/moderation';
 import { IMiddleware, NextMiddleware } from '@blargbot/core/types';
-import { KnownMessage } from 'eris';
+import Eris from 'eris';
 
-export class CensorMiddleware implements IMiddleware<KnownMessage, boolean> {
+export class CensorMiddleware implements IMiddleware<Eris.KnownMessage, boolean> {
     readonly #censors: CensorManager;
 
     public constructor(censors: CensorManager) {
         this.#censors = censors;
     }
 
-    public async execute(context: KnownMessage, next: NextMiddleware<boolean>): Promise<boolean> {
+    public async execute(context: Eris.KnownMessage, next: NextMiddleware<boolean>): Promise<boolean> {
         if (await this.#censors.censor(context))
             return true;
 

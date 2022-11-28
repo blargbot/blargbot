@@ -1,20 +1,20 @@
 import { FormatString, IFormattable } from '@blargbot/formatting';
-import { Constants, Permission } from 'eris';
+import Eris from 'eris';
 
-export function permissions(permissions: bigint | ReadonlyArray<keyof Constants['Permissions']> | Permission, hideAdminUnlessAlone = false): Array<IFormattable<string>> {
+export function permissions(permissions: bigint | ReadonlyArray<keyof Eris.Constants['Permissions']> | Eris.Permission, hideAdminUnlessAlone = false): Array<IFormattable<string>> {
     let flags = typeof permissions === 'bigint' ? permissions
-        : Array.isArray(permissions) ? permissions.reduce((p, c) => p | Constants.Permissions[c], 0n)
+        : Array.isArray(permissions) ? permissions.reduce((p, c) => p | Eris.Constants.Permissions[c], 0n)
             : permissions.allow;
 
-    if (hideAdminUnlessAlone && flags !== Constants.Permissions.administrator)
-        flags &= ~Constants.Permissions.administrator; // remove admin flag
+    if (hideAdminUnlessAlone && flags !== Eris.Constants.Permissions.administrator)
+        flags &= ~Eris.Constants.Permissions.administrator; // remove admin flag
 
     return permDisplay
         .filter(x => (flags & x.value) === x.value)
         .map(x => x.display);
 }
 
-const displayMap: { [P in keyof typeof Constants['Permissions']]: string } = {
+const displayMap: { [P in keyof typeof Eris.Constants['Permissions']]: string } = {
     addReactions: 'add reactions',
     administrator: 'administrator',
     attachFiles: 'attach files',
@@ -76,7 +76,7 @@ const permDisplay = Object.entries(displayMap)
     .map(x => ({
         id: x[0],
         display: x[1],
-        value: Constants.Permissions[x[0]]
+        value: Eris.Constants.Permissions[x[0]]
     }))
     .filter(x => isPowerOf2(x.value)) // Remove any aggregate permissions eris provides, like "all"
     .map(x => ({

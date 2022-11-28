@@ -2,7 +2,7 @@ import { GuildCommand } from '../../command/index';
 import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType } from '@blargbot/cluster/utils';
 import { IFormattable, util } from '@blargbot/formatting';
-import { Webhook } from 'eris';
+import Eris from 'eris';
 
 import templates from '../../text';
 
@@ -50,7 +50,7 @@ export class ChangelogCommand extends GuildCommand {
         return cmd.unsubscribe.success;
     }
 
-    async #getCurrentSubscription(context: GuildCommandContext): Promise<Webhook | IFormattable<string> | undefined> {
+    async #getCurrentSubscription(context: GuildCommandContext): Promise<Eris.Webhook | IFormattable<string> | undefined> {
         const self = context.channel.guild.members.get(context.discord.user.id);
         if (self?.permissions.has('manageWebhooks') !== true)
             return cmd.errors.missingPermissions;

@@ -1,4 +1,4 @@
-import { Constants } from 'eris';
+import Eris from 'eris';
 
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
@@ -48,15 +48,15 @@ export class ChannelTypeSubtag extends CompiledSubtag {
 }
 
 const channelTypes = {
-    [Constants.ChannelTypes.GUILD_TEXT]: 'text',
-    [Constants.ChannelTypes.DM]: 'dm',
-    [Constants.ChannelTypes.GUILD_VOICE]: 'voice',
-    [Constants.ChannelTypes.GROUP_DM]: 'group-dm',
-    [Constants.ChannelTypes.GUILD_CATEGORY]: 'category',
-    [Constants.ChannelTypes.GUILD_NEWS]: 'news',
-    [Constants.ChannelTypes.GUILD_STORE]: 'store',
-    [Constants.ChannelTypes.GUILD_NEWS_THREAD]: 'news-thread',
-    [Constants.ChannelTypes.GUILD_PRIVATE_THREAD]: 'private-thread',
-    [Constants.ChannelTypes.GUILD_PUBLIC_THREAD]: 'public-thread',
-    [Constants.ChannelTypes.GUILD_STAGE_VOICE]: 'stage-voice'
+    [Eris.Constants.ChannelTypes.GUILD_TEXT]: 'text',
+    [Eris.Constants.ChannelTypes.DM]: 'dm',
+    [Eris.Constants.ChannelTypes.GUILD_VOICE]: 'voice',
+    [Eris.Constants.ChannelTypes.GROUP_DM]: 'group-dm',
+    [Eris.Constants.ChannelTypes.GUILD_CATEGORY]: 'category',
+    [Eris.Constants.ChannelTypes.GUILD_NEWS]: 'news',
+    [Eris.Constants.ChannelTypes.GUILD_STORE]: 'store',
+    [Eris.Constants.ChannelTypes.GUILD_NEWS_THREAD]: 'news-thread',
+    [Eris.Constants.ChannelTypes.GUILD_PRIVATE_THREAD]: 'private-thread',
+    [Eris.Constants.ChannelTypes.GUILD_PUBLIC_THREAD]: 'public-thread',
+    [Eris.Constants.ChannelTypes.GUILD_STAGE_VOICE]: 'stage-voice'
 } as const;

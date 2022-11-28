@@ -3,7 +3,7 @@ import { ChannelEditSubtag } from '@blargbot/bbtag/subtags/channel/channelEdit';
 import { EscapeBBTagSubtag } from '@blargbot/bbtag/subtags/misc/escapeBBTag';
 import { argument } from '@blargbot/test-util/mock';
 import { ChannelType } from 'discord-api-types/v9';
-import { ApiError, Constants } from 'eris';
+import Eris from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 
@@ -11,7 +11,7 @@ runSubtagTests({
     subtag: new ChannelEditSubtag(),
     argCountBounds: { min: 1, max: 2 },
     setup(ctx) {
-        ctx.roles.authorizer.permissions = Constants.Permissions.manageChannels.toString();
+        ctx.roles.authorizer.permissions = Eris.Constants.Permissions.manageChannels.toString();
     },
     cases: [
         {
@@ -340,7 +340,7 @@ runSubtagTests({
                 { start: 0, end: 30, error: new BBTagRuntimeError('Failed to edit channel: no perms', 'Test REST error') }
             ],
             setup(ctx) {
-                const err = ctx.createRESTError(ApiError.MISSING_PERMISSIONS);
+                const err = ctx.createRESTError(Eris.ApiError.MISSING_PERMISSIONS);
                 ctx.channels.command.id = '2384762844234324';
                 ctx.message.channel_id = ctx.channels.command.id;
                 ctx.discord.setup(m => m.editChannel('2384762844234324', argument.isDeepEqual({
@@ -370,7 +370,7 @@ runSubtagTests({
                 { start: 0, end: 30, error: new BBTagRuntimeError('Failed to edit channel: no perms', 'Some other error message') }
             ],
             setup(ctx) {
-                const err = ctx.createRESTError(ApiError.NOT_AUTHORIZED, 'Some other error message');
+                const err = ctx.createRESTError(Eris.ApiError.NOT_AUTHORIZED, 'Some other error message');
                 ctx.channels.command.id = '2384762844234324';
                 ctx.message.channel_id = ctx.channels.command.id;
                 ctx.discord.setup(m => m.editChannel('2384762844234324', argument.isDeepEqual({

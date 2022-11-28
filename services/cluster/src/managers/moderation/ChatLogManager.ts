@@ -1,7 +1,7 @@
 import { Cluster } from '@blargbot/cluster';
 import { guard, snowflake } from '@blargbot/cluster/utils';
 import { ChatLog, ChatLogIndex, ChatLogSearchOptions, ChatLogType } from '@blargbot/domain/models';
-import { KnownMessage, Message, PossiblyUncachedMessage, PossiblyUncachedTextableChannel } from 'eris';
+import Eris from 'eris';
 
 export class ChatLogManager {
     public constructor(
@@ -10,7 +10,7 @@ export class ChatLogManager {
 
     }
 
-    public async messageCreated(message: KnownMessage): Promise<void> {
+    public async messageCreated(message: Eris.KnownMessage): Promise<void> {
         if (!guard.isGuildMessage(message) || await this.cluster.database.guilds.getSetting(message.channel.guild.id, 'makelogs') !== true)
             return;
 
@@ -25,11 +25,11 @@ export class ChatLogManager {
         }, ChatLogType.CREATE);
     }
 
-    public async messageDeleted(message: PossiblyUncachedMessage): Promise<void> {
+    public async messageDeleted(message: Eris.PossiblyUncachedMessage): Promise<void> {
         if (!guard.isGuildMessage(message) || await this.cluster.database.guilds.getSetting(message.channel.guild.id, 'makelogs') !== true)
             return;
 
-        const chatlog = message instanceof Message
+        const chatlog = message instanceof Eris.Message
             ? {
                 content: message.content,
                 embeds: message.embeds,
@@ -51,7 +51,7 @@ export class ChatLogManager {
         }, ChatLogType.DELETE);
     }
 
-    public async messageUpdated(message: Message<PossiblyUncachedTextableChannel>): Promise<void> {
+    public async messageUpdated(message: Eris.Message<Eris.PossiblyUncachedTextableChannel>): Promise<void> {
         if (!guard.isGuildMessage(message) || await this.cluster.database.guilds.getSetting(message.channel.guild.id, 'makelogs') !== true || !guard.hasValue(message.author))
             return;
 

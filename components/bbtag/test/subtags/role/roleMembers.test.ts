@@ -1,5 +1,5 @@
 import { RoleMembersSubtag } from '@blargbot/bbtag/subtags/role/roleMembers';
-import { RequestGuildMembersReturn } from 'eris';
+import Eris from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 import { createGetRolePropTestCases } from './_getRolePropTest';
@@ -19,7 +19,7 @@ runSubtagTests({
                     setup(role, ctx) {
                         role.id = '92348672342308424';
                         ctx.shard.setup(m => m.requestGuildMembers(ctx.guild.id, undefined))
-                            .thenResolve(Object.values(ctx.members).map(m => ctx.createGuildMember(undefined, m, m.user)) as unknown as RequestGuildMembersReturn);
+                            .thenResolve(Object.values(ctx.members).map(m => ctx.createGuildMember(undefined, m, m.user)) as unknown as Eris.RequestGuildMembersReturn);
                     }
                 },
                 {
@@ -30,7 +30,7 @@ runSubtagTests({
                         ctx.members.other.roles.push(role.id);
 
                         ctx.shard.setup(m => m.requestGuildMembers(ctx.guild.id, undefined))
-                            .thenResolve(Object.values(ctx.members).map(m => ctx.createGuildMember(undefined, m, m.user)) as unknown as RequestGuildMembersReturn);
+                            .thenResolve(Object.values(ctx.members).map(m => ctx.createGuildMember(undefined, m, m.user)) as unknown as Eris.RequestGuildMembersReturn);
                     }
                 },
                 {
@@ -43,7 +43,7 @@ runSubtagTests({
                         ctx.members.bot.roles.push(role.id);
 
                         ctx.shard.setup(m => m.requestGuildMembers(ctx.guild.id, undefined))
-                            .thenResolve(Object.values(ctx.members).map(m => ctx.createGuildMember(undefined, m, m.user)) as unknown as RequestGuildMembersReturn);
+                            .thenResolve(Object.values(ctx.members).map(m => ctx.createGuildMember(undefined, m, m.user)) as unknown as Eris.RequestGuildMembersReturn);
                     }
                 }
             ]

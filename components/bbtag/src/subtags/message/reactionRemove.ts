@@ -1,5 +1,5 @@
 import { Emote } from '@blargbot/core/Emote';
-import { ApiError, DiscordRESTError } from 'eris';
+import Eris from 'eris';
 
 import { SubtagArgumentArray } from '../../arguments/index';
 import { BBTagContext } from '../../BBTagContext';
@@ -74,14 +74,14 @@ export class ReactionRemoveSubtag extends CompiledSubtag {
                 await context.limit.check(context, 'reactremove:requests');
                 await message.removeReaction(reaction.toApi(), user.id);
             } catch (err: unknown) {
-                if (!(err instanceof DiscordRESTError))
+                if (!(err instanceof Eris.DiscordRESTError))
                     throw err;
 
                 switch (err.code) {
-                    case ApiError.UNKNOWN_EMOJI:
+                    case Eris.ApiError.UNKNOWN_EMOJI:
                         errored.push(reaction);
                         break;
-                    case ApiError.MISSING_PERMISSIONS:
+                    case Eris.ApiError.MISSING_PERMISSIONS:
                         throw new BBTagRuntimeError('I need to be able to Manage Messages to remove reactions');
                     default:
                         throw err;

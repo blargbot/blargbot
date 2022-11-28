@@ -1,8 +1,8 @@
 import { AnalysisResult } from '@blargbot/bbtag';
 import { FlagDefinition } from '@blargbot/domain/models/index';
 import { FormatString, IFormattable } from '@blargbot/formatting';
-import * as Eris from 'eris';
-import { Duration, Moment } from 'moment-timezone';
+import Eris from 'eris';
+import moment from 'moment-timezone';
 
 import { Command } from './command/Command';
 
@@ -92,7 +92,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
         matchesEverything: '❌ Your regex cannot match everything!'
     },
     respawn: {
-        success: t<{ duration: Duration; }>('Ok I\'m back. It took me {duration#duration(F)}')
+        success: t<{ duration: moment.Duration; }>('Ok I\'m back. It took me {duration#duration(F)}')
     },
     roleme: {
         failed: 'A roleme was triggered, but I don\'t have the permissions required to give you your role!'
@@ -167,7 +167,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
                 },
                 duration: {
                     name: 'Duration',
-                    value: t<{ duration: Duration; }>('{duration#duration(F)}')
+                    value: t<{ duration: moment.Duration; }>('{duration#duration(F)}')
                 },
                 user: {
                     name: 'User',
@@ -242,11 +242,11 @@ export const templates = FormatString.defineTree('cluster', t => ({
                 },
                 created: {
                     name: 'Created',
-                    value: t<{ time: Moment; }>('{time#tag}')
+                    value: t<{ time: moment.Moment; }>('{time#tag}')
                 },
                 until: {
                     name: 'Until',
-                    value: t<{ time: Moment; }>('{time#tag}')
+                    value: t<{ time: moment.Moment; }>('{time#tag}')
                 },
                 count: {
                     name: 'Count',
@@ -289,7 +289,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
         autoTimeout: t<{ warnings: number; limit: number; }>('[ Auto-Ban ] Exceeded ban limit ({warnings}/{limit})')
     },
     mute: {
-        autoUnmute: t<{ duration?: Duration; }>('Automatically unmuted after {duration#duration(F)=some time}.'),
+        autoUnmute: t<{ duration?: moment.Duration; }>('Automatically unmuted after {duration#duration(F)=some time}.'),
         createReason: 'Automatic muted role configuration'
     },
     moderation: {
@@ -305,7 +305,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
         }
     },
     ban: {
-        autoUnban: t<{ duration?: Duration; }>('Automatically unbanned after {duration#duration(F)=some time}.')
+        autoUnban: t<{ duration?: moment.Duration; }>('Automatically unbanned after {duration#duration(F)=some time}.')
     },
     documentation: {
         loading: 'Loading...',
@@ -669,8 +669,8 @@ export const templates = FormatString.defineTree('cluster', t => ({
             guildOnly: t<{ prefix: string; commandName: string; }>('❌ `{prefix}{commandName}` can only be used on guilds.'),
             privateOnly: t<{ prefix: string; commandName: string; }>('❌ `{prefix}{commandName}` can only be used in private messages.'),
             rateLimited: {
-                local: t<{ duration: Duration; }>('❌ Sorry, you ran this command too recently! Please try again in {duration#duration(S)} seconds.'),
-                global: t<{ duration: Duration; penalty: Duration; }>('❌ Sorry, you\'ve been running too many commands. To prevent abuse, I\'m going to have to time you out for `{duration#duration(S)}s`.\n\nContinuing to spam commands will lengthen your timeout by `{penalty#duration(S)}s`!')
+                local: t<{ duration: moment.Duration; }>('❌ Sorry, you ran this command too recently! Please try again in {duration#duration(S)} seconds.'),
+                global: t<{ duration: moment.Duration; penalty: moment.Duration; }>('❌ Sorry, you\'ve been running too many commands. To prevent abuse, I\'m going to have to time you out for `{duration#duration(S)}s`.\n\nContinuing to spam commands will lengthen your timeout by `{penalty#duration(S)}s`!')
             },
             missingPermission: {
                 generic: '❌ Oops, I don\'t seem to have permission to do that!',
@@ -900,7 +900,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
                     success: t<{ user: Eris.User; }>('✅ **{user#tag}** has been banned.')
                 },
                 unbanSchedule: {
-                    success: t<{ user: Eris.User; unban: Duration; }>('✅ **{user#tag}** has been banned and will be unbanned **{unban#tag}**'),
+                    success: t<{ user: Eris.User; unban: moment.Duration; }>('✅ **{user#tag}** has been banned and will be unbanned **{unban#tag}**'),
                     invalid: t<{ user: Eris.User; }>('⚠️ **{user#tag}** has been banned, but the duration was either 0 seconds or improperly formatted so they won\'t automatically be unbanned.')
                 }
             },
@@ -1036,7 +1036,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
             cooldown: {
                 description: 'Sets the cooldown of a custom command, in milliseconds',
                 mustBePositive: '❌ The cooldown must be greater than 0ms',
-                success: t<{ name: string; cooldown: Duration; }>('✅ The custom command `{name}` now has a cooldown of `{cooldown#duration(MS)}ms`.')
+                success: t<{ name: string; cooldown: moment.Duration; }>('✅ The custom command `{name}` now has a cooldown of `{cooldown#duration(MS)}ms`.')
             },
             author: {
                 description: 'Displays the name of the custom command\'s author',
@@ -1402,7 +1402,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
                 failed: '❌ There was an error while running the interval!',
                 authorizerMissing: '❌ I couldn\'t find the user who authorizes the interval!',
                 channelMissing: '❌ I wasn\'t able to figure out which channel to run the interval in!',
-                timedOut: t<{ max: Duration; }>('❌ The interval took longer than the max allowed time ({max#duration(S)}s)'),
+                timedOut: t<{ max: moment.Duration; }>('❌ The interval took longer than the max allowed time ({max#duration(S)}s)'),
                 success: 'ℹ️ Ive sent the debug output in a DM'
             },
             info: {
@@ -1581,7 +1581,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
                 success: {
                     default: t<{ user: Eris.User; }>('✅ **{user#tag}** has been muted'),
                     durationInvalid: t<{ user: Eris.User; }>('⚠️ **{user#tag}** has been muted, but the duration was either 0 seconds or improperly formatted so they won\'t automatically be unmuted.'),
-                    temporary: t<{ user: Eris.User; unmute: Duration; }>('✅ **{user#tag}** has been muted and will be unmuted **{unmute#tag}**')
+                    temporary: t<{ user: Eris.User; unmute: moment.Duration; }>('✅ **{user#tag}** has been muted and will be unmuted **{unmute#tag}**')
                 }
             },
             clear: {
@@ -1811,8 +1811,8 @@ export const templates = FormatString.defineTree('cluster', t => ({
             },
             on: {
                 description: 'Sets the channel\'s slowmode to 1 message every `time` seconds, with a max of 6 hours',
-                timeTooLong: t<{ duration: Duration; }>('❌ `time` must be less than {duration#duration(S)}s'),
-                success: t<{ duration: Duration; channel: Eris.Channel; }>('✅ Slowmode has been set to 1 message every {duration#duration(S)}s in {channel#tag}')
+                timeTooLong: t<{ duration: moment.Duration; }>('❌ `time` must be less than {duration#duration(S)}s'),
+                success: t<{ duration: moment.Duration; channel: Eris.Channel; }>('✅ Slowmode has been set to 1 message every {duration#duration(S)}s in {channel#tag}')
             },
             off: {
                 description: 'Turns off the channel\'s slowmode',
@@ -1892,11 +1892,11 @@ export const templates = FormatString.defineTree('cluster', t => ({
                     },
                     elapsed: {
                         header: 'Elapsed',
-                        cell: t<{ startTime: Moment; }>('{startTime#duration(H)}')
+                        cell: t<{ startTime: moment.Moment; }>('{startTime#duration(H)}')
                     },
                     remain: {
                         header: 'Remain',
-                        cell: t<{ endTime: Moment; }>('{endTime#duration(H)}')
+                        cell: t<{ endTime: moment.Moment; }>('{endTime#duration(H)}')
                     },
                     user: {
                         header: 'User',
@@ -1927,7 +1927,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
                         },
                         duration: {
                             name: 'Duration',
-                            value: t<{ start: Moment; end: Moment; }>('Started {start#tag}\nEnds {end#tag}')
+                            value: t<{ start: moment.Moment; end: moment.Moment; }>('Started {start#tag}\nEnds {end#tag}')
                         }
                     }
                 }
@@ -2298,7 +2298,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
                 notReady: '⚠️ Im still waking up! Try again in a minute or two',
                 embed: {
                     title: 'About me!',
-                    description: t<{ age: Duration; }>('I am a multi-purpose bot with new features implemented regularly, written in typescript using [Eris](https://abal.moe/Eris/).\n\n🎂 I am currently {age#duration(F)} old!'),
+                    description: t<{ age: moment.Duration; }>('I am a multi-purpose bot with new features implemented regularly, written in typescript using [Eris](https://abal.moe/Eris/).\n\n🎂 I am currently {age#duration(F)} old!'),
                     field: {
                         patron: {
                             name: '️️️️️️️️❤️ Special thanks to my patrons! ❤️',
@@ -2401,17 +2401,17 @@ export const templates = FormatString.defineTree('cluster', t => ({
                 description: 'Returns the names that I\'ve seen the specified user have in the past 30 days.',
                 none: {
                     ever: t<{ user: Eris.User; }>('ℹ️ I haven\'t seen any usernames for {user#tag} yet!'),
-                    since: t<{ user: Eris.User; from: Moment; }>('ℹ️ I haven\'t seen {user#tag} change their username since {from#tag}!')
+                    since: t<{ user: Eris.User; from: moment.Moment; }>('ℹ️ I haven\'t seen {user#tag} change their username since {from#tag}!')
                 },
                 embed: {
                     title: 'Historical usernames',
                     description: {
                         since: {
-                            detailed: t<{ from: Moment; usernames: Iterable<{ name: string; time: Moment; }>; }>('Since {from#tag}\n{usernames#map({name} - {time#tag(R)})#join(\n)}'),
-                            simple: t<{ from: Moment; usernames: Iterable<{ name: string; }>; }>('Since {from#tag}\n{usernames#map({name})#join(\n)}')
+                            detailed: t<{ from: moment.Moment; usernames: Iterable<{ name: string; time: moment.Moment; }>; }>('Since {from#tag}\n{usernames#map({name} - {time#tag(R)})#join(\n)}'),
+                            simple: t<{ from: moment.Moment; usernames: Iterable<{ name: string; }>; }>('Since {from#tag}\n{usernames#map({name})#join(\n)}')
                         },
                         ever: {
-                            detailed: t<{ usernames: Iterable<{ name: string; time: Moment; }>; }>('{usernames#map({name} - {time#tag(R)})#join(\n)}'),
+                            detailed: t<{ usernames: Iterable<{ name: string; time: moment.Moment; }>; }>('{usernames#map({name} - {time#tag(R)})#join(\n)}'),
                             simple: t<{ usernames: Iterable<{ name: string; }>; }>('{usernames#map({name})#join(\n)}')
                         }
                     }
@@ -2466,7 +2466,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
             default: {
                 description: 'Gets the current latency.',
                 pending: 'ℹ️ {#rand(Existence is a lie.|You\'re going to die some day, perhaps soon.|Nothing matters.|Where do you get off?|There is nothing out there.|You are all alone in an infinite void.|Truth is false.|Forsake everything.|Your existence is pitiful.|We are all already dead.)}',
-                success: t<{ ping: Duration; }>('✅ Pong! ({ping#duration(MS)}ms)')
+                success: t<{ ping: moment.Duration; }>('✅ Pong! ({ping#duration(MS)}ms)')
             }
         },
         poll: {
@@ -2486,7 +2486,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
                 announceNotSetUp: '❌ Announcements on this server aren\'t set up correctly. Please fix them before trying again.',
                 emojisMissing: '❌ You must provide some emojis to use in the poll.',
                 emojisInaccessible: '❌ I don\'t have access to some of the emojis you used! Please use different emojis or add me to the server that the emojis are from.',
-                tooShort: t<{ duration: Duration; }>('❌ {duration#duration(S)}s is too short for a poll! Use a longer time'),
+                tooShort: t<{ duration: moment.Duration; }>('❌ {duration#duration(S)}s is too short for a poll! Use a longer time'),
                 someEmojisMissing: '⚠️ I managed to create the poll, but wasn\'t able to add some of the emojis to it. Please add them manually (they will still be counted in the results)'
             }
         },
@@ -2500,10 +2500,10 @@ export const templates = FormatString.defineTree('cluster', t => ({
                 durationRequired: '❌ The `-t` flag is required to set the duration of the reminder!',
                 durationZero: '❌ I cant set a timer for 0 seconds!',
                 reminderMissing: '❌ You need to say what you need reminding of!',
-                event: t<{ userId: string; start: Moment; content: string; }>('⏰ Hi, <@{userId}>! You asked me to remind you about this {start#tag(R)}:\n{content}'),
+                event: t<{ userId: string; start: moment.Moment; content: string; }>('⏰ Hi, <@{userId}>! You asked me to remind you about this {start#tag(R)}:\n{content}'),
                 success: {
-                    here: t<{ duration: Duration; }>('✅ Ok, ill ping you here {duration#tag}'),
-                    dm: t<{ duration: Duration; }>('✅ Ok, ill ping you in a DM {duration#tag}')
+                    here: t<{ duration: moment.Duration; }>('✅ Ok, ill ping you here {duration#tag}'),
+                    dm: t<{ duration: moment.Duration; }>('✅ Ok, ill ping you in a DM {duration#tag}')
                 }
             }
         },
@@ -2562,11 +2562,11 @@ export const templates = FormatString.defineTree('cluster', t => ({
                     field: {
                         shard: {
                             name: t<{ shardId: number; }>('Shard {shardId}'),
-                            value: t<{ statusEmote: string; latency: number; guildCount: number; clusterId: number; lastUpdate: Moment; }>('```\nStatus: {statusEmote}\nLatency: {latency}ms\nGuilds: {guildCount}\nCluster: {clusterId}\nLast update: {lastUpdate#time(LT)}\n```')
+                            value: t<{ statusEmote: string; latency: number; guildCount: number; clusterId: number; lastUpdate: moment.Moment; }>('```\nStatus: {statusEmote}\nLatency: {latency}ms\nGuilds: {guildCount}\nCluster: {clusterId}\nLast update: {lastUpdate#time(LT)}\n```')
                         },
                         cluster: {
                             name: t<{ clusterId: number; }>('Cluster {clusterId}'),
-                            value: t<{ cpu: number; guildCount: number; ram: number; startTime: Moment; }>('CPU usage: {cpu#percent(1)}\nGuilds: {guildCount}\nRam used: {ram#bytes}\nStarted {startTime#tag(R)}')
+                            value: t<{ cpu: number; guildCount: number; ram: number; startTime: moment.Moment; }>('CPU usage: {cpu#percent(1)}\nGuilds: {guildCount}\nRam used: {ram#bytes}\nStarted {startTime#tag(R)}')
                         },
                         shards: {
                             name: 'Shards',
@@ -2602,11 +2602,11 @@ export const templates = FormatString.defineTree('cluster', t => ({
                     field: {
                         shard: {
                             name: t<{ shardId: number; }>('Shard {shardId}'),
-                            value: t<{ statusEmote: string; latency: number; guildCount: number; clusterId: number; lastUpdate: Moment; }>('```\nStatus: {statusEmote}\nLatency: {latency}ms\nGuilds: {guildCount}\nCluster: {clusterId}\nLast update: {lastUpdate#time(LT)}\n```')
+                            value: t<{ statusEmote: string; latency: number; guildCount: number; clusterId: number; lastUpdate: moment.Moment; }>('```\nStatus: {statusEmote}\nLatency: {latency}ms\nGuilds: {guildCount}\nCluster: {clusterId}\nLast update: {lastUpdate#time(LT)}\n```')
                         },
                         cluster: {
                             name: t<{ clusterId: number; }>('Cluster {clusterId}'),
-                            value: t<{ cpu: number; guildCount: number; ram: number; startTime: Moment; }>('CPU usage: {cpu#percent(1)}\nGuilds: {guildCount}\nRam used: {ram#bytes}\nStarted {startTime#tag(R)}')
+                            value: t<{ cpu: number; guildCount: number; ram: number; startTime: moment.Moment; }>('CPU usage: {cpu#percent(1)}\nGuilds: {guildCount}\nRam used: {ram#bytes}\nStarted {startTime#tag(R)}')
                         },
                         shards: {
                             name: 'Shards',
@@ -2627,7 +2627,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
                     description: t<{ clusterCount: number; shardCount: number; }>('I\'m running on `{clusterCount}` {clusterCount#plural(1:cluster|clusters)} and `{shardCount}` {shardCount#plural(1:shard|shards)}\n'),
                     field: {
                         name: t<{ clusterId: number; }>('Cluster {clusterId}'),
-                        value: t<{ startTime: Moment; ram: number; shards: Iterable<{ id: number; statusEmote: string; latency: number; }>; }>('Ready since: {startTime#tag(R)}\nRam: {ram#bytes}\n**Shards**:\n```\n{shards#map({id} {statusEmote} {latency}ms)#join(\n)}\n```')
+                        value: t<{ startTime: moment.Moment; ram: number; shards: Iterable<{ id: number; statusEmote: string; latency: number; }>; }>('Ready since: {startTime#tag(R)}\nRam: {ram#bytes}\n**Shards**:\n```\n{shards#map({id} {statusEmote} {latency}ms)#join(\n)}\n```')
                     }
                 }
             },
@@ -2727,7 +2727,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
                         },
                         uptime: {
                             name: 'Uptime',
-                            value: t<{ startTime: Moment; }>('{startTime#tag(R)}')
+                            value: t<{ startTime: moment.Moment; }>('{startTime#tag(R)}')
                         },
                         eris: {
                             name: 'Eris'
@@ -2848,7 +2848,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
             cooldown: {
                 description: 'Sets the cooldown of a tag, in milliseconds',
                 cooldownZero: '❌ The cooldown must be greater than 0ms',
-                success: t<{ name: string; cooldown: Duration; }>('✅ The tag `{name}` now has a cooldown of `{cooldown#duration(MS)}ms`.')
+                success: t<{ name: string; cooldown: moment.Duration; }>('✅ The tag `{name}` now has a cooldown of `{cooldown#duration(MS)}ms`.')
             },
             author: {
                 description: 'Displays the name of the tag\'s author',
@@ -2868,11 +2868,11 @@ export const templates = FormatString.defineTree('cluster', t => ({
                         },
                         cooldown: {
                             name: 'Cooldown',
-                            value: t<{ cooldown: Duration; }>('{cooldown#duration(F)}')
+                            value: t<{ cooldown: moment.Duration; }>('{cooldown#duration(F)}')
                         },
                         lastModified: {
                             name: 'Last Modified',
-                            value: t<{ lastModified: Moment; }>('{lastModified#tag}')
+                            value: t<{ lastModified: moment.Moment; }>('{lastModified#tag}')
                         },
                         usage: {
                             name: 'Used',
@@ -2952,16 +2952,16 @@ export const templates = FormatString.defineTree('cluster', t => ({
                 description: 'Gets the current time for the user',
                 timezoneNotSet: t<{ user: Eris.User; prefix: string; }>('❌ {user#tag} has not set their timezone with the `{prefix}timezone` command yet.'),
                 timezoneInvalid: t<{ user: Eris.User; prefix: string; }>('❌ {user#tag} doesn\'t have a valid timezone set. They need to update it with the `{prefix}timezone` command'),
-                success: t<{ now: Moment; user: Eris.User; }>('ℹ️ It is currently **{now#time(LT)}** for **{user#tag}**.')
+                success: t<{ now: moment.Moment; user: Eris.User; }>('ℹ️ It is currently **{now#time(LT)}** for **{user#tag}**.')
             },
             timezone: {
                 description: 'Gets the current time in the timezone',
-                success: t<{ now: Moment; timezone: string; }>('ℹ️ In **{timezone}**, it is currently **{now#time(LT)}**')
+                success: t<{ now: moment.Moment; timezone: string; }>('ℹ️ In **{timezone}**, it is currently **{now#time(LT)}**')
             },
             convert: {
                 description: 'Converts a `time` from `timezone1` to `timezone2`',
                 invalidTime: t<{ time: string; }>('❌ `{time}` is not a valid time! Please use the 12 or 24 hour format, e.g. 1:32pm or 13:32'),
-                success: t<{ source: Moment; dest: Moment; sourceTimezone: string; destTimezone: string; }>('ℹ️ When it\'s **{source#time(LT)}** in **{sourceTimezone}**, it\'s **{dest#time(LT)}** in **{destTimezone}**.')
+                success: t<{ source: moment.Moment; dest: moment.Moment; sourceTimezone: string; destTimezone: string; }>('ℹ️ When it\'s **{source#time(LT)}** in **{sourceTimezone}**, it\'s **{dest#time(LT)}** in **{destTimezone}**.')
             }
         },
         timer: {
@@ -2971,10 +2971,10 @@ export const templates = FormatString.defineTree('cluster', t => ({
             default: {
                 description: 'Sets a timer for the provided duration, formatted as \'1 day 2 hours 3 minutes and 4 seconds\', \'1d2h3m4s\', or some other combination.',
                 durationZero: '❌ I cant set a timer for 0 seconds!',
-                event: t<{ userId: string; start: Moment; }>('⏰ *Bzzt!* <@{userId}>, the timer you set {start#tag(R)} has gone off! *Bzzt!* ⏰'),
+                event: t<{ userId: string; start: moment.Moment; }>('⏰ *Bzzt!* <@{userId}>, the timer you set {start#tag(R)} has gone off! *Bzzt!* ⏰'),
                 success: {
-                    here: t<{ duration: Duration; }>('✅ Ok, ill ping you here {duration#tag}'),
-                    dm: t<{ duration: Duration; }>('✅ Ok, ill ping you in a DM {duration#tag}')
+                    here: t<{ duration: moment.Duration; }>('✅ Ok, ill ping you here {duration#tag}'),
+                    dm: t<{ duration: moment.Duration; }>('✅ Ok, ill ping you in a DM {duration#tag}')
                 }
             }
         },
@@ -2983,12 +2983,12 @@ export const templates = FormatString.defineTree('cluster', t => ({
                 description: 'Gets your current timezone',
                 notSet: 'ℹ️ You haven\'t set a timezone yet.',
                 timezoneInvalid: t<{ timezone: string; }>('⚠️ Your stored timezone code is `{timezone}`, which isn\'t valid! Please update it when possible.'),
-                success: t<{ timezone: string; now: Moment; }>('ℹ️ Your stored timezone code is `{timezone}`, which is equivalent to {now#time(z \\(Z\\))}.')
+                success: t<{ timezone: string; now: moment.Moment; }>('ℹ️ Your stored timezone code is `{timezone}`, which is equivalent to {now#time(z \\(Z\\))}.')
             },
             set: {
                 description: 'Sets your current timezone. A list of [allowed time zones can be found on wikipedia](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones#List) under the `TZ database name` column',
                 timezoneInvalid: t<{ timezone: string; }>('❌ `{timezone}` is not a valid timezone! See <https://en.wikipedia.org/wiki/List_of_tz_database_time_zones> for timezone codes that I understand.'),
-                success: t<{ timezone: string; now: Moment; }>('✅ Ok, your timezone code is now set to `{timezone}`, which is equivalent to {now#time(z \\(Z\\))}.')
+                success: t<{ timezone: string; now: moment.Moment; }>('✅ Ok, your timezone code is now set to `{timezone}`, which is equivalent to {now#time(z \\(Z\\))}.')
             }
         },
         todo: {
@@ -3017,7 +3017,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
         uptime: {
             default: {
                 description: 'Gets how long ive been online for',
-                success: t<{ startTime: Moment; }>('ℹ️ I came online {startTime#tag(R)} at {startTime#tag}')
+                success: t<{ startTime: moment.Moment; }>('ℹ️ I came online {startTime#tag(R)} at {startTime#tag}')
             }
         },
         user: {

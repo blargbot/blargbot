@@ -2,7 +2,7 @@ import { Timer } from '@blargbot/core/Timer';
 import { GetMasterProcessMessageHandler, IPCContractMasterGets, IPCContractNames, IPCContracts, IPCContractWorkerGets } from '@blargbot/core/types';
 import { Logger } from '@blargbot/logger';
 import child_process from 'child_process';
-import moment, { Moment } from 'moment-timezone';
+import moment from 'moment-timezone';
 import { createInterface } from 'readline';
 import streams from 'stream';
 
@@ -35,7 +35,7 @@ export abstract class WorkerConnection<Contracts extends IPCContracts> {
 
     public readonly args: string[];
     public readonly env: NodeJS.ProcessEnv;
-    public readonly created: Moment;
+    public readonly created: moment.Moment;
     public get logs(): readonly string[] { return [...this.#logs].reverse(); }
     public get stdout(): streams.Readable { return this.#stdout; }
     public get stderr(): streams.Readable { return this.#stderr; }

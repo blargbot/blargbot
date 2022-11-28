@@ -1,7 +1,7 @@
 import { Emote } from '@blargbot/core/Emote';
 import { FlagDefinition, NamedGuildCommandTag, StoredTag } from '@blargbot/domain/models';
 import { IFormattable } from '@blargbot/formatting';
-import { Attachment, Embed, EmbedOptions, FileContent, KnownGuildTextableChannel, KnownMessage, Message, User } from 'eris';
+import Eris from 'eris';
 import ReadWriteLock from 'rwlock';
 
 import { VariableCache } from './Caching';
@@ -54,8 +54,8 @@ export interface SerializedBBTagContext {
         content: string;
         channel: { id: string; serialized: string; };
         member?: { id: string; serialized: string; };
-        attachments: Attachment[];
-        embeds: Embed[];
+        attachments: Eris.Attachment[];
+        embeds: Eris.Embed[];
     };
     isCC: boolean;
     scope: BBTagRuntimeScope;
@@ -72,7 +72,7 @@ export interface SerializedBBTagContext {
     limit: SerializedRuntimeLimit;
 }
 
-export type BBTagContextMessage = Pick<Message<KnownGuildTextableChannel>,
+export type BBTagContextMessage = Pick<Eris.Message<Eris.KnownGuildTextableChannel>,
     | 'id'
     | 'createdAt'
     | 'content'
@@ -93,8 +93,8 @@ export interface BBTagContextState {
     ownedMsgs: string[];
     state: BBTagRuntimeState;
     stackSize: number;
-    embeds: undefined | EmbedOptions[];
-    file: undefined | FileContent;
+    embeds: undefined | Eris.EmbedOptions[];
+    file: undefined | Eris.FileContent;
     reactions: string[];
     nsfw: undefined | string;
     replace: undefined | { regex: RegExp | string; with: string; };
@@ -224,7 +224,7 @@ type SubtagReturnTypeValueMap = {
     string: string;
     id: string;
     json: JToken;
-    embed: Embed;
+    embed: Eris.Embed;
     nothing: undefined;
 }
 
@@ -275,7 +275,7 @@ export interface SubtagProperties<Id extends SubtagType = SubtagType> {
 }
 
 export interface AwaitReactionsResponse {
-    readonly message: KnownMessage;
+    readonly message: Eris.KnownMessage;
     readonly reaction: Emote;
-    readonly user: User;
+    readonly user: Eris.User;
 }

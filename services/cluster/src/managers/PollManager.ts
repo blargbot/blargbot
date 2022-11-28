@@ -4,8 +4,8 @@ import { Emote } from '@blargbot/core/Emote';
 import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent';
 import { PollEventOptions } from '@blargbot/domain/models';
 import { util } from '@blargbot/formatting';
-import { AllowedMentions, KnownGuildTextableChannel, User } from 'eris';
-import moment, { Duration } from 'moment-timezone';
+import Eris from 'eris';
+import moment from 'moment-timezone';
 
 import templates from '../text';
 
@@ -19,13 +19,13 @@ export class PollManager {
     }
 
     public async createPoll(
-        channel: KnownGuildTextableChannel,
-        author: User,
+        channel: Eris.KnownGuildTextableChannel,
+        author: Eris.User,
         emojis: Emote[],
         title: string,
         description: string | undefined,
         colour: number,
-        duration: Duration,
+        duration: moment.Duration,
         announce: boolean
     ): Promise<PollResponse> {
         if (duration.asMilliseconds() === 0)
@@ -36,7 +36,7 @@ export class PollManager {
 
         const endTime = moment().add(duration);
         let content: string | undefined = undefined;
-        const allowedMentions: AllowedMentions = {};
+        const allowedMentions: Eris.AllowedMentions = {};
 
         if (announce) {
             const result = await this.#cluster.announcements.loadConfig(channel.guild, author, channel);

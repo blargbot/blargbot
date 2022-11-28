@@ -1,14 +1,14 @@
 import { Logger } from '@blargbot/logger';
-import { ComponentInteraction } from 'eris';
+import Eris from 'eris';
 
 import { AwaiterFactoryBase } from './AwaiterFactoryBase';
 
-export class ComponentAwaiterFactory extends AwaiterFactoryBase<ComponentInteraction> {
+export class ComponentAwaiterFactory extends AwaiterFactoryBase<Eris.ComponentInteraction> {
     public constructor(logger: Logger) {
         super(logger);
     }
 
-    protected getPoolId(interaction: ComponentInteraction): string {
+    protected getPoolId(interaction: Eris.ComponentInteraction): string {
         return interaction.data.custom_id;
     }
 }

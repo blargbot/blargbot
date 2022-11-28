@@ -3,7 +3,7 @@ import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType, parse } from '@blargbot/cluster/utils';
 import { FlagResult } from '@blargbot/domain/models';
 import { util } from '@blargbot/formatting';
-import { User } from 'eris';
+import Eris from 'eris';
 import moment from 'moment-timezone';
 
 import templates from '../../text';
@@ -44,7 +44,7 @@ export class BanCommand extends GuildCommand {
         return cmd.clear.state[result]({ user });
     }
 
-    public async ban(context: GuildCommandContext, user: User, days: number, flags: FlagResult): Promise<CommandResult> {
+    public async ban(context: GuildCommandContext, user: Eris.User, days: number, flags: FlagResult): Promise<CommandResult> {
         const reason = flags.r?.merge().value ?? '';
         const duration = (flags.t !== undefined ? parse.duration(flags.t.merge().value) : undefined) ?? moment.duration(Infinity);
 

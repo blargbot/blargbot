@@ -1,4 +1,4 @@
-import { DiscordRESTError } from 'eris';
+import Eris from 'eris';
 
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation/index';
@@ -30,7 +30,7 @@ export class GuildBansSubtag extends CompiledSubtag {
         try {
             return await context.util.getBannedUsers(context.guild);
         } catch (err: unknown) {
-            if (!(err instanceof DiscordRESTError))
+            if (!(err instanceof Eris.DiscordRESTError))
                 throw err;
 
             throw new BBTagRuntimeError('Missing required permissions', err.message);

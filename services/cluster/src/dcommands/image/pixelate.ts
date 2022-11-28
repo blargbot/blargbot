@@ -1,7 +1,7 @@
 import { CommandContext, GlobalImageCommand } from '../../command/index';
 import { guard } from '@blargbot/core/utils';
 import { parse } from '@blargbot/core/utils/parse';
-import { User } from 'eris';
+import Eris from 'eris';
 
 import templates from '../../text';
 import { CommandResult } from '../../types';
@@ -38,7 +38,7 @@ export class PixelateCommand extends GlobalImageCommand {
         });
     }
 
-    public async renderUser(context: CommandContext, user: User, scale: number): Promise<CommandResult> {
+    public async renderUser(context: CommandContext, user: Eris.User, scale: number): Promise<CommandResult> {
         return await this.render(context, user.avatarURL, scale);
     }
 

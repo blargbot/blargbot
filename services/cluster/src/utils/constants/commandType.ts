@@ -1,6 +1,6 @@
 import { CommandPropertiesSet } from '@blargbot/cluster/types';
 import { guard } from '@blargbot/cluster/utils';
-import { Guild } from 'eris';
+import Eris from 'eris';
 
 import templates from '../../text';
 import { defaultStaff } from './defaultStaff';
@@ -39,7 +39,7 @@ export const commandTypeDetails: CommandPropertiesSet = {
         id: 'NSFW',
         name: templates.commands.categories.nsfw.name,
         isVisible(...[, location]) {
-            if (location instanceof Guild || location === undefined || guard.isPrivateChannel(location))
+            if (location instanceof Eris.Guild || location === undefined || guard.isPrivateChannel(location))
                 return true;
 
             if ('nsfw' in location)
@@ -71,7 +71,7 @@ export const commandTypeDetails: CommandPropertiesSet = {
         id: 'Social',
         name: templates.commands.categories.social.name,
         async isVisible(util, location) {
-            if (location instanceof Guild)
+            if (location instanceof Eris.Guild)
                 return await util.database.guilds.getSetting(location.id, 'social') ?? false;
 
             if (location === undefined || !guard.isGuildChannel(location))

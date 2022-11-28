@@ -1,5 +1,5 @@
 import { discord, guard, MessageComponent, parse } from '@blargbot/core/utils';
-import { EmbedAuthor, EmbedField, EmbedFooter, EmbedOptions } from 'eris';
+import Eris from 'eris';
 
 import { CompiledSubtag } from '../../compilation/index';
 import { InvalidEmbedError } from '../../errors/index';
@@ -53,7 +53,7 @@ export class EmbedBuildSubtag extends CompiledSubtag {
                     throw new InvalidEmbedError('Field missing name', `Field at index ${i}`);
             }
         }
-        if (!guard.checkEmbedSize([<EmbedOptions>embed]))
+        if (!guard.checkEmbedSize([<Eris.EmbedOptions>embed]))
             throw new InvalidEmbedError('Embed too long', JSON.stringify(embed));
         return embed as JObject;
     }
@@ -68,10 +68,10 @@ export class EmbedBuildSubtag extends CompiledSubtag {
 
 type Overwrite<T, U> = Pick<T, Exclude<keyof T, keyof U>> & U;
 // custom message for fields missing values/names
-type EmbedBuildOptions = Overwrite<EmbedOptions, {
-    fields?: Array<Partial<EmbedField>>;
-    author?: Partial<EmbedAuthor>;
-    footer?: Partial<EmbedFooter>;
+type EmbedBuildOptions = Overwrite<Eris.EmbedOptions, {
+    fields?: Array<Partial<Eris.EmbedField>>;
+    author?: Partial<Eris.EmbedAuthor>;
+    footer?: Partial<Eris.EmbedFooter>;
 }>
 interface EmbedFieldDetails {
     readonly description?: string;
@@ -95,7 +95,7 @@ function parseOrError<T>(value: string, parse: (value: string) => T | undefined,
     return result;
 }
 
-function getCurrentField(embed: EmbedBuildOptions, errorText: string): Partial<EmbedField> {
+function getCurrentField(embed: EmbedBuildOptions, errorText: string): Partial<Eris.EmbedField> {
     if (embed.fields === undefined || embed.fields.length === 0)
         throw new InvalidEmbedError(errorText);
     return embed.fields[embed.fields.length - 1];

@@ -1,7 +1,7 @@
 import { GuildCommand } from '../../command/index';
 import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType } from '@blargbot/cluster/utils';
-import { User, UserStatus } from 'eris';
+import Eris from 'eris';
 
 import templates from '../../text';
 
@@ -42,12 +42,12 @@ export class ModsCommand extends GuildCommand {
         });
     }
 
-    public async listMods(context: GuildCommandContext, filter: (status: UserStatus) => boolean): Promise<CommandResult> {
+    public async listMods(context: GuildCommandContext, filter: (status: Eris.UserStatus) => boolean): Promise<CommandResult> {
         const byStatus = {
-            online: { key: 'online', users: [] as User[] },
-            idle: { key: 'away', users: [] as User[] },
-            dnd: { key: 'busy', users: [] as User[] },
-            offline: { key: 'offline', users: [] as User[] }
+            online: { key: 'online', users: [] as Eris.User[] },
+            idle: { key: 'away', users: [] as Eris.User[] },
+            dnd: { key: 'busy', users: [] as Eris.User[] },
+            offline: { key: 'offline', users: [] as Eris.User[] }
         } as const;
 
         const isUserStaff = await context.util.isUserStaff(context.channel.guild);

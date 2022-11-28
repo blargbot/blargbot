@@ -1,5 +1,5 @@
 import { GuildStore } from '@blargbot/domain/stores';
-import { Guild, KnownChannel, KnownGuildTextableChannel, KnownTextableChannel, Role, User } from 'eris';
+import Eris from 'eris';
 
 import { ClusterUtilities } from '..';
 import { Command } from '../command';
@@ -18,11 +18,11 @@ export class AnnouncementManager {
         this.#commands = commands;
     }
 
-    public async clearConfig(guild: Guild): Promise<void> {
+    public async clearConfig(guild: Eris.Guild): Promise<void> {
         await this.#database.setAnnouncements(guild.id, undefined);
     }
 
-    public async getCurrentConfig(guild: Guild): Promise<Partial<AnnouncementConfigOptions>> {
+    public async getCurrentConfig(guild: Eris.Guild): Promise<Partial<AnnouncementConfigOptions>> {
         const config = await this.#database.getAnnouncements(guild.id);
         if (config === undefined)
             return {};
@@ -36,7 +36,7 @@ export class AnnouncementManager {
         return { channel, role };
     }
 
-    public async loadConfig(guild: Guild, user: User, queryChannel: KnownTextableChannel, options?: Partial<AnnouncementConfigOptions>): Promise<AnnounceResult> {
+    public async loadConfig(guild: Eris.Guild, user: Eris.User, queryChannel: Eris.KnownTextableChannel, options?: Partial<AnnouncementConfigOptions>): Promise<AnnounceResult> {
         const command = await this.#commands.get('announce', guild, user);
         if (command.state !== 'ALLOWED')
             return { state: 'NotAllowed' };
@@ -90,13 +90,13 @@ export class AnnouncementManager {
 }
 
 interface AnnouncementConfig {
-    readonly channel: KnownGuildTextableChannel;
-    readonly role: Role;
+    readonly channel: Eris.KnownGuildTextableChannel;
+    readonly role: Eris.Role;
 }
 
 interface AnnouncementConfigOptions {
-    readonly channel?: KnownChannel;
-    readonly role?: Role;
+    readonly channel?: Eris.KnownChannel;
+    readonly role?: Eris.Role;
 }
 
 type AnnounceResult =

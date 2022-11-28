@@ -1,7 +1,7 @@
 import { Cluster } from '@blargbot/cluster';
 import { Emote } from '@blargbot/core/Emote';
 import { DiscordEventService } from '@blargbot/core/serviceTypes';
-import { KnownMessage, Member, PossiblyUncachedMessage, Uncached, User } from 'eris';
+import Eris from 'eris';
 
 export class DiscordMessageReactionAddHandler extends DiscordEventService<'messageReactionAdd'> {
     public constructor(public readonly cluster: Cluster) {
@@ -19,11 +19,11 @@ export class DiscordMessageReactionAddHandler extends DiscordEventService<'messa
         });
     }
 
-    protected async resolveMessage(message: PossiblyUncachedMessage): Promise<KnownMessage | undefined> {
+    protected async resolveMessage(message: Eris.PossiblyUncachedMessage): Promise<Eris.KnownMessage | undefined> {
         return await this.cluster.util.getMessage(message.channel.id, message.id);
     }
 
-    protected async resolveUser(maybeUser: Member | Uncached): Promise<User | undefined> {
-        return maybeUser instanceof Member ? maybeUser.user : await this.cluster.util.getUser(maybeUser.id);
+    protected async resolveUser(maybeUser: Eris.Member | Eris.Uncached): Promise<Eris.User | undefined> {
+        return maybeUser instanceof Eris.Member ? maybeUser.user : await this.cluster.util.getUser(maybeUser.id);
     }
 }

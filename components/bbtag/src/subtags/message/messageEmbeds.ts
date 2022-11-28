@@ -1,4 +1,4 @@
-import { Embed } from 'eris';
+import Eris from 'eris';
 
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation/index';
@@ -47,7 +47,7 @@ export class MessageEmbedsSubtag extends CompiledSubtag {
         channelStr: string,
         messageStr: string,
         quiet: boolean
-    ): Promise<Embed[]> {
+    ): Promise<Eris.Embed[]> {
         quiet ||= context.scopes.local.quiet ?? false;
         const channel = await context.queryChannel(channelStr, { noLookup: quiet });
         if (channel === undefined) {

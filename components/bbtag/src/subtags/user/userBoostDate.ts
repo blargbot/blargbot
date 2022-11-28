@@ -1,4 +1,4 @@
-import { Member } from 'eris';
+import Eris from 'eris';
 import moment from 'moment-timezone';
 
 import { BBTagContext } from '../../BBTagContext';
@@ -49,7 +49,7 @@ export class UserBoostDateSubtag extends CompiledSubtag {
         return this.getUserBoostDate(member, format);
     }
 
-    public getUserBoostDate(user: Member, format: string): string {
+    public getUserBoostDate(user: Eris.Member, format: string): string {
         if (typeof user.premiumSince !== 'number')
             throw new BBTagRuntimeError('User not boosting');
 

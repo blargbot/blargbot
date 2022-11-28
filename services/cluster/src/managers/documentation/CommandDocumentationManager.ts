@@ -1,7 +1,7 @@
 import { FormatEmbedField, SendContent } from '@blargbot/core/types';
 import { discord, guard } from '@blargbot/core/utils';
 import { format, IFormattable, util } from '@blargbot/formatting';
-import { KnownChannel, KnownTextableChannel, User } from 'eris';
+import Eris from 'eris';
 
 import { Cluster } from '../../Cluster';
 import templates from '../../text';
@@ -20,7 +20,7 @@ export class CommandDocumentationManager extends DocumentationTreeManager {
         this.#cluster = cluster;
     }
 
-    protected async getTree(user: User, channel: KnownTextableChannel): Promise<Documentation> {
+    protected async getTree(user: Eris.User, channel: Eris.KnownTextableChannel): Promise<Documentation> {
         const guild = guard.isGuildChannel(channel) ? channel.guild : undefined;
         const categories = new Map<string, DocumentationGroup & { items: Mutable<DocumentationGroup['items']>; }>();
         for await (const item of this.#cluster.commands.list(guild, user)) {
@@ -224,7 +224,7 @@ export class CommandDocumentationManager extends DocumentationTreeManager {
         }
     }
 
-    async *#getCategories(channel: KnownChannel, command: ICommand): AsyncGenerator<{ name: IFormattable<string>; id: string; }> {
+    async *#getCategories(channel: Eris.KnownChannel, command: ICommand): AsyncGenerator<{ name: IFormattable<string>; id: string; }> {
         if (command.roles.length === 0)
             yield { name: command.category.name, id: `_${command.category.id}` };
 

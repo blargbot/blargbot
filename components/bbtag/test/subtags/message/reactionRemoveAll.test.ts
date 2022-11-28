@@ -1,6 +1,6 @@
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
 import { ReactionRemoveAllSubtag } from '@blargbot/bbtag/subtags/message/reactionRemoveAll';
-import { Constants } from 'eris';
+import Eris from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 import { createGetMessagePropTestCases } from './_getMessagePropTest';
@@ -29,7 +29,7 @@ runSubtagTests({
                     expected: '',
                     setup(channel, message, ctx) {
                         ctx.isStaff = true;
-                        ctx.roles.bot.permissions = Constants.Permissions.manageMessages.toString();
+                        ctx.roles.bot.permissions = Eris.Constants.Permissions.manageMessages.toString();
                         ctx.discord.setup(m => m.removeMessageReactions(channel.id, message.id)).thenResolve(undefined);
                     }
                 },
@@ -38,7 +38,7 @@ runSubtagTests({
                     expected: '',
                     setup(channel, message, ctx) {
                         ctx.isStaff = false;
-                        ctx.roles.bot.permissions = Constants.Permissions.manageMessages.toString();
+                        ctx.roles.bot.permissions = Eris.Constants.Permissions.manageMessages.toString();
                         ctx.discord.setup(m => m.removeMessageReactions(channel.id, message.id)).thenResolve(undefined);
                     },
                     postSetup(_, message, bbctx) {
@@ -51,7 +51,7 @@ runSubtagTests({
                     error: new BBTagRuntimeError('Author must be staff to modify unrelated messages'),
                     setup(_, __, ctx) {
                         ctx.isStaff = false;
-                        ctx.roles.bot.permissions = Constants.Permissions.manageMessages.toString();
+                        ctx.roles.bot.permissions = Eris.Constants.Permissions.manageMessages.toString();
                     }
                 }
             ]

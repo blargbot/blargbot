@@ -2,7 +2,7 @@ import { GuildCommand } from '../../command/index';
 import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType, parse, randInt } from '@blargbot/cluster/utils';
 import { Emote } from '@blargbot/core/Emote';
-import { Duration, duration } from 'moment-timezone';
+import moment from 'moment-timezone';
 
 import templates from '../../text';
 
@@ -41,7 +41,7 @@ export class PollCommand extends GuildCommand {
         const emojis = options.emojis === undefined ? defaultEmotes : Emote.findAll(options.emojis);
         const time = typeof options.time === 'string'
             ? parse.duration(options.time) ?? options.time
-            : options.time ?? duration(1, 'minute');
+            : options.time ?? moment.duration(1, 'minute');
 
         if (typeof time === 'string')
             return cmd.default.invalidDuration({ duration: time });
@@ -89,7 +89,7 @@ export class PollCommand extends GuildCommand {
 }
 
 interface PollOptions {
-    time?: string | Duration;
+    time?: string | moment.Duration;
     emojis?: string;
     title: string;
     description?: string;

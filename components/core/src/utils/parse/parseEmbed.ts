@@ -2,15 +2,15 @@ import { MalformedEmbed } from '@blargbot/core/types';
 import { discord } from '@blargbot/core/utils';
 import { mapping, TypeMappingImpl } from '@blargbot/mapping';
 import Color from 'color';
-import { EmbedOptions } from 'eris';
+import Eris from 'eris';
 
 import { parseColor } from './parseColor';
 import { parseInt } from './parseInt';
 
 export function parseEmbed(embedText: undefined, allowMalformed?: true): undefined;
-export function parseEmbed(embedText: string | undefined, allowMalformed?: true): Array<EmbedOptions | MalformedEmbed> | undefined;
-export function parseEmbed(embedText: string | undefined, allowMalformed: false): EmbedOptions[] | undefined;
-export function parseEmbed(embedText: string | undefined, allowMalformed = true): Array<EmbedOptions | MalformedEmbed> | undefined {
+export function parseEmbed(embedText: string | undefined, allowMalformed?: true): Array<Eris.EmbedOptions | MalformedEmbed> | undefined;
+export function parseEmbed(embedText: string | undefined, allowMalformed: false): Eris.EmbedOptions[] | undefined;
+export function parseEmbed(embedText: string | undefined, allowMalformed = true): Array<Eris.EmbedOptions | MalformedEmbed> | undefined {
     if (embedText === undefined || embedText.trim().length === 0)
         return undefined;
 
@@ -26,8 +26,8 @@ export function parseEmbed(embedText: string | undefined, allowMalformed = true)
 
 }
 
-const mapEmbedCore = mapping.object<EmbedOptions>({
-    author: mapping.object<Exclude<EmbedOptions['author'], undefined>>({
+const mapEmbedCore = mapping.object<Eris.EmbedOptions>({
+    author: mapping.object<Exclude<Eris.EmbedOptions['author'], undefined>>({
         icon_url: mapping.string.optional,
         name: mapping.string.optional.map(v => v ?? ''),
         url: mapping.string.optional
@@ -50,22 +50,22 @@ const mapEmbedCore = mapping.object<EmbedOptions>({
         mapping.regex<`#${number}`>(/^#\d+$/).map(v => parseInt(v.slice(1), { radix: 16 }) ?? NaN)
     ).optional,
     description: mapping.string.optional,
-    fields: mapping.array(mapping.object<Exclude<EmbedOptions['fields'], undefined>[number]>({
+    fields: mapping.array(mapping.object<Exclude<Eris.EmbedOptions['fields'], undefined>[number]>({
         inline: mapping.boolean.optional,
         name: mapping.string,
         value: mapping.string
     }, { strict: false })).optional,
-    footer: mapping.object<Exclude<EmbedOptions['footer'], undefined>>({
+    footer: mapping.object<Exclude<Eris.EmbedOptions['footer'], undefined>>({
         icon_url: mapping.string.optional,
         text: mapping.string.optional.map(v => v ?? '')
     }, { strict: false }).optional,
-    image: mapping.object<Exclude<EmbedOptions['image'], undefined>>({
+    image: mapping.object<Exclude<Eris.EmbedOptions['image'], undefined>>({
         url: mapping.string.optional
     }, { strict: false }).optional,
-    thumbnail: mapping.object<Exclude<EmbedOptions['thumbnail'], undefined>>({
+    thumbnail: mapping.object<Exclude<Eris.EmbedOptions['thumbnail'], undefined>>({
         url: mapping.string.optional
     }, { strict: false }).optional,
-    timestamp: mapping.choice<Array<Exclude<EmbedOptions['timestamp'], undefined>>>(
+    timestamp: mapping.choice<Array<Exclude<Eris.EmbedOptions['timestamp'], undefined>>>(
         mapping.string,
         mapping.date
     ).optional,

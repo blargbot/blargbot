@@ -1,14 +1,14 @@
 import { CommandResult } from '@blargbot/cluster/types';
 import { IMiddleware, NextMiddleware } from '@blargbot/core/types';
-import moment, { Duration, Moment } from 'moment-timezone';
+import moment from 'moment-timezone';
 
 import templates from '../../text';
 import { CommandContext } from '../CommandContext';
 
 export class RatelimitMiddleware<TContext extends CommandContext> implements IMiddleware<TContext, CommandResult> {
-    readonly #cooldowns: Record<string, { timestamp: Moment; warned: boolean; } | undefined>;
+    readonly #cooldowns: Record<string, { timestamp: moment.Moment; warned: boolean; } | undefined>;
     public constructor(
-        protected readonly cooldown: Duration,
+        protected readonly cooldown: moment.Duration,
         protected readonly keySelector: (context: TContext) => string
     ) {
         this.#cooldowns = {};

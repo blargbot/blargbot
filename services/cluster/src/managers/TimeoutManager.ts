@@ -1,21 +1,21 @@
 import { parse } from '@blargbot/core/utils';
 import { EventType, EventTypeMap, StoredEvent, StoredEventOptions } from '@blargbot/domain/models';
 import EventEmitter from 'eventemitter3';
-import moment, { Duration, duration } from 'moment-timezone';
+import moment from 'moment-timezone';
 
 import { Cluster } from '../Cluster';
 
 export class TimeoutManager {
     #events: Map<string, StoredEvent>;
     readonly #emitter: EventEmitter;
-    #lastDuration: Duration;
+    #lastDuration: moment.Duration;
 
     public constructor(
         public readonly cluster: Cluster
     ) {
         this.#events = new Map();
         this.#emitter = new EventEmitter();
-        this.#lastDuration = duration(5, 'minutes');
+        this.#lastDuration = moment.duration(5, 'minutes');
     }
 
     public on<E extends EventType>(event: E, handler: (event: EventTypeMap[E]) => void): this {
@@ -81,7 +81,7 @@ export class TimeoutManager {
             this.#events.delete(id);
     }
 
-    public async obtain(duration: Duration): Promise<void> {
+    public async obtain(duration: moment.Duration): Promise<void> {
         this.#lastDuration = duration;
         const events = await this.cluster.database.events.between(0, moment().add(duration));
         this.#events = new Map(events.filter(e => this.#shouldHandle(e)).map(e => [e.id, e]));

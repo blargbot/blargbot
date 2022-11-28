@@ -1,6 +1,6 @@
 import { CommandContext, GlobalCommand } from '../../command/index';
 import { CommandType, guard } from '@blargbot/cluster/utils';
-import moment, { Duration } from 'moment-timezone';
+import moment from 'moment-timezone';
 
 import templates from '../../text';
 import { CommandResult } from '../../types';
@@ -26,7 +26,7 @@ export class TimerCommand extends GlobalCommand {
         });
     }
 
-    public async addTimer(context: CommandContext, duration: Duration, inChannel: boolean): Promise<CommandResult> {
+    public async addTimer(context: CommandContext, duration: moment.Duration, inChannel: boolean): Promise<CommandResult> {
         if (duration.asMilliseconds() <= 0)
             return cmd.default.durationZero;
 

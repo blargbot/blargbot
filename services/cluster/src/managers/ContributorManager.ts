@@ -1,6 +1,6 @@
 import { Cluster } from '@blargbot/cluster/Cluster';
 import { IFormattable, util } from '@blargbot/formatting';
-import { User } from 'eris';
+import Eris from 'eris';
 import reloadFactory from 'require-reload';
 
 import templates from '../text';
@@ -8,9 +8,9 @@ import templates from '../text';
 const reload = reloadFactory(require);
 
 export class ContributorManager {
-    public patrons: Array<User | IFormattable<string>>;
-    public donators: Array<User | IFormattable<string>>;
-    public others: Array<{ user: User | IFormattable<string>; reason: string; decorator: string; }>;
+    public patrons: Array<Eris.User | IFormattable<string>>;
+    public donators: Array<Eris.User | IFormattable<string>>;
+    public others: Array<{ user: Eris.User | IFormattable<string>; reason: string; decorator: string; }>;
     readonly #cluster: Cluster;
 
     public constructor(
@@ -30,7 +30,7 @@ export class ContributorManager {
         this.others = await Promise.all(config.other.map(async o => ({ ...o, user: await this.#resolveUser(o.user) })));
     }
 
-    async #resolveUser(user: string): Promise<IFormattable<string> | User> {
+    async #resolveUser(user: string): Promise<IFormattable<string> | Eris.User> {
         if (!/\d+/.test(user))
             return util.literal(user);
         return await this.#cluster.util.getUser(user) ?? templates.contributors.notFound({ userId: user });

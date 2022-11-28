@@ -3,7 +3,7 @@ import { guard, ModerationType } from '@blargbot/cluster/utils';
 import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent';
 import { GuildCensor, GuildCensorExceptions } from '@blargbot/domain/models';
 import { util } from '@blargbot/formatting';
-import { KnownGuildTextableChannel, Message, PossiblyUncachedTextableChannel } from 'eris';
+import Eris from 'eris';
 import moment from 'moment-timezone';
 
 import templates from '../../text';
@@ -22,7 +22,7 @@ export class CensorManager extends ModerationManagerBase {
         this.#debugOutput[this.#getDebugKey(guildId, id, userId, type)] = { channelId, messageId };
     }
 
-    public async censor(message: Message<PossiblyUncachedTextableChannel>): Promise<boolean> {
+    public async censor(message: Eris.Message<Eris.PossiblyUncachedTextableChannel>): Promise<boolean> {
         if (!guard.isGuildMessage(message) || !guard.isWellKnownMessage(message))
             return false;
 
@@ -85,7 +85,7 @@ export class CensorManager extends ModerationManagerBase {
         return true;
     }
 
-    async #censorMentions(message: Message<KnownGuildTextableChannel>): Promise<boolean> {
+    async #censorMentions(message: Eris.Message<Eris.KnownGuildTextableChannel>): Promise<boolean> {
         const antimention = await this.cluster.database.guilds.getSetting(message.channel.guild.id, 'antimention');
         if (antimention === undefined)
             return false;
@@ -117,7 +117,7 @@ export class CensorManager extends ModerationManagerBase {
         }
     }
 
-    #isCensorExempt(message: Message<KnownGuildTextableChannel>, exemptions?: GuildCensorExceptions): boolean {
+    #isCensorExempt(message: Eris.Message<Eris.KnownGuildTextableChannel>, exemptions?: GuildCensorExceptions): boolean {
         if (exemptions === undefined)
             return false;
 

@@ -2,7 +2,7 @@ import { GuildCommand } from '../../command/index';
 import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType } from '@blargbot/cluster/utils';
 import { guard } from '@blargbot/core/utils';
-import { KnownChannel } from 'eris';
+import Eris from 'eris';
 
 import templates from '../../text';
 
@@ -23,7 +23,7 @@ export class BlacklistCommandBase extends GuildCommand {
         });
     }
 
-    public async blacklist(context: GuildCommandContext, channel: KnownChannel): Promise<CommandResult> {
+    public async blacklist(context: GuildCommandContext, channel: Eris.KnownChannel): Promise<CommandResult> {
         if (!guard.isGuildChannel(channel) || channel.guild !== context.channel.guild)
             return cmd.default.notInServer;
 

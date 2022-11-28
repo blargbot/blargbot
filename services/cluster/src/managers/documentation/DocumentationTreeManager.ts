@@ -1,13 +1,13 @@
 import { format, IFormatter } from '@blargbot/formatting';
-import { KnownTextableChannel, User } from 'eris';
+import Eris from 'eris';
 
 import templates from '../../text';
 import { Documentation, DocumentationManager } from './DocumentationManager';
 
 export abstract class DocumentationTreeManager extends DocumentationManager {
-    protected abstract getTree(user: User, channel: KnownTextableChannel): Awaitable<Documentation>;
+    protected abstract getTree(user: Eris.User, channel: Eris.KnownTextableChannel): Awaitable<Documentation>;
 
-    async * #getFlatTree(user: User, channel: KnownTextableChannel): AsyncGenerator<Documentation> {
+    async * #getFlatTree(user: Eris.User, channel: Eris.KnownTextableChannel): AsyncGenerator<Documentation> {
         const tree = await this.getTree(user, channel);
         yield* expandAsync([tree], d => {
             if (d.type !== 'group')
@@ -44,7 +44,7 @@ export abstract class DocumentationTreeManager extends DocumentationManager {
             .reduce((p, c) => p < c ? c : p);
     }
 
-    protected async findDocumentation(term: string, user: User, channel: KnownTextableChannel, formatter: IFormatter): Promise<readonly Documentation[]> {
+    protected async findDocumentation(term: string, user: Eris.User, channel: Eris.KnownTextableChannel, formatter: IFormatter): Promise<readonly Documentation[]> {
         const matches: Array<{ item: Documentation; score: number; }> = [];
         for await (const item of this.#getFlatTree(user, channel)) {
             const score = await this.#matchScore(item, term, formatter);
@@ -59,14 +59,14 @@ export abstract class DocumentationTreeManager extends DocumentationManager {
         return matches.sort((a, b) => b.score - a.score).map(x => x.item);
     }
 
-    protected async getDocumentation(documentationId: string, user: User, channel: KnownTextableChannel): Promise<Documentation | undefined> {
+    protected async getDocumentation(documentationId: string, user: Eris.User, channel: Eris.KnownTextableChannel): Promise<Documentation | undefined> {
         for await (const item of this.#getFlatTree(user, channel))
             if (item.id === documentationId)
                 return item;
         return undefined;
     }
 
-    protected async getParent(documentationId: string, user: User, channel: KnownTextableChannel): Promise<Documentation | undefined> {
+    protected async getParent(documentationId: string, user: Eris.User, channel: Eris.KnownTextableChannel): Promise<Documentation | undefined> {
         for await (const item of this.#getFlatTree(user, channel))
             if (item.type === 'group' && item.items.some(i => i.id === documentationId))
                 return item;

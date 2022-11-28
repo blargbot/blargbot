@@ -1,15 +1,15 @@
-import moment, { Moment } from 'moment-timezone';
+import moment from 'moment-timezone';
 
 import { BBTagContext } from './BBTagContext';
 
 export class TagCooldownManager {
-    readonly #cooldowns: Record<string, Moment | undefined>;
+    readonly #cooldowns: Record<string, moment.Moment | undefined>;
 
     public constructor() {
         this.#cooldowns = {};
     }
 
-    public get(context: BBTagContext): Moment {
+    public get(context: BBTagContext): moment.Moment {
         const key = this.#getKey(context);
         const value = this.#cooldowns[key];
         if (value !== undefined)
@@ -17,7 +17,7 @@ export class TagCooldownManager {
         return this.#cooldowns[key] = moment();
     }
 
-    public set(context: BBTagContext): Moment {
+    public set(context: BBTagContext): moment.Moment {
         return this.#cooldowns[this.#getKey(context)] = moment();
     }
 

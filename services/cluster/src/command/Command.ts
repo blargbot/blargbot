@@ -4,7 +4,7 @@ import { CommandType } from '@blargbot/cluster/utils';
 import { IMiddleware, NextMiddleware } from '@blargbot/core/types';
 import { FlagDefinition } from '@blargbot/domain/models';
 import { IFormattable } from '@blargbot/formatting';
-import { Guild, KnownTextableChannel, User } from 'eris';
+import Eris from 'eris';
 
 import { CommandContext } from './CommandContext';
 
@@ -33,6 +33,6 @@ export abstract class Command implements CommandBaseOptions, IMiddleware<Command
         this.hidden = options.hidden ?? false;
     }
 
-    public abstract isVisible(util: ClusterUtilities, location?: Guild | KnownTextableChannel, user?: User): Promise<boolean> | boolean;
+    public abstract isVisible(util: ClusterUtilities, location?: Eris.Guild | Eris.KnownTextableChannel, user?: Eris.User): Promise<boolean> | boolean;
     public abstract execute(context: CommandContext, next: NextMiddleware<CommandResult>): Awaitable<CommandResult>;
 }

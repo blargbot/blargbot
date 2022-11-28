@@ -3,8 +3,8 @@ import { guard, ModlogColour } from '@blargbot/cluster/utils';
 import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent';
 import { FormatEmbedField, FormatEmbedOptions } from '@blargbot/core/types';
 import { format, IFormattable, util } from '@blargbot/formatting';
-import { Guild, User } from 'eris';
-import { Duration } from 'moment-timezone';
+import Eris from 'eris';
+import moment from 'moment-timezone';
 
 import templates from '../../text';
 
@@ -13,7 +13,7 @@ export class ModLogManager {
 
     }
 
-    public async logTimeout(guild: Guild, user: User, duration: Duration, moderator?: User, reason?: IFormattable<string>): Promise<void> {
+    public async logTimeout(guild: Eris.Guild, user: Eris.User, duration: moment.Duration, moderator?: Eris.User, reason?: IFormattable<string>): Promise<void> {
         await this.#logAction({
             type: templates.modlog.types.timeout,
             guildId: guild.id,
@@ -36,7 +36,7 @@ export class ModLogManager {
         });
     }
 
-    public async logTimeoutClear(guild: Guild, user: User, moderator?: User, reason?: IFormattable<string>): Promise<void> {
+    public async logTimeoutClear(guild: Eris.Guild, user: Eris.User, moderator?: Eris.User, reason?: IFormattable<string>): Promise<void> {
         await this.#logAction({
             type: templates.modlog.types.timeoutClear,
             guildId: guild.id,
@@ -54,7 +54,7 @@ export class ModLogManager {
         });
     }
 
-    public async logSoftban(guild: Guild, user: User, duration: Duration, moderator?: User, reason?: IFormattable<string>): Promise<void> {
+    public async logSoftban(guild: Eris.Guild, user: Eris.User, duration: moment.Duration, moderator?: Eris.User, reason?: IFormattable<string>): Promise<void> {
         await this.#logAction({
             type: templates.modlog.types.softBan,
             guildId: guild.id,
@@ -77,7 +77,7 @@ export class ModLogManager {
         });
     }
 
-    public async logBan(guild: Guild, user: User, moderator?: User, reason?: IFormattable<string>): Promise<void> {
+    public async logBan(guild: Eris.Guild, user: Eris.User, moderator?: Eris.User, reason?: IFormattable<string>): Promise<void> {
         if (moderator === undefined && reason === undefined) {
             try {
                 const banObject = await guild.getBan(user.id);
@@ -104,7 +104,7 @@ export class ModLogManager {
         });
     }
 
-    public async logMassBan(guild: Guild, users: User[], moderator?: User, reason?: IFormattable<string>): Promise<void> {
+    public async logMassBan(guild: Eris.Guild, users: Eris.User[], moderator?: Eris.User, reason?: IFormattable<string>): Promise<void> {
         switch (users.length) {
             case 0: return;
             case 1: return await this.logBan(guild, users[0], moderator, reason);
@@ -120,7 +120,7 @@ export class ModLogManager {
 
     }
 
-    public async logUnban(guild: Guild, user: User, moderator?: User, reason?: IFormattable<string>): Promise<void> {
+    public async logUnban(guild: Eris.Guild, user: Eris.User, moderator?: Eris.User, reason?: IFormattable<string>): Promise<void> {
         await this.#logAction({
             type: templates.modlog.types.unban,
             guildId: guild.id,
@@ -131,7 +131,7 @@ export class ModLogManager {
         });
     }
 
-    public async logKick(guild: Guild, user: User, moderator?: User, reason?: IFormattable<string>): Promise<void> {
+    public async logKick(guild: Eris.Guild, user: Eris.User, moderator?: Eris.User, reason?: IFormattable<string>): Promise<void> {
         await this.#logAction({
             type: templates.modlog.types.kick,
             guildId: guild.id,
@@ -142,7 +142,7 @@ export class ModLogManager {
         });
     }
 
-    public async logUnmute(guild: Guild, user: User, moderator?: User, reason?: IFormattable<string>): Promise<void> {
+    public async logUnmute(guild: Eris.Guild, user: Eris.User, moderator?: Eris.User, reason?: IFormattable<string>): Promise<void> {
         await this.#logAction({
             type: templates.modlog.types.unmute,
             guildId: guild.id,
@@ -153,7 +153,7 @@ export class ModLogManager {
         });
     }
 
-    public async logMute(guild: Guild, user: User, moderator?: User, reason?: IFormattable<string>): Promise<void> {
+    public async logMute(guild: Eris.Guild, user: Eris.User, moderator?: Eris.User, reason?: IFormattable<string>): Promise<void> {
         await this.#logAction({
             type: templates.modlog.types.mute,
             guildId: guild.id,
@@ -164,7 +164,7 @@ export class ModLogManager {
         });
     }
 
-    public async logTempMute(guild: Guild, user: User, duration: Duration, moderator?: User, reason?: IFormattable<string>): Promise<void> {
+    public async logTempMute(guild: Eris.Guild, user: Eris.User, duration: moment.Duration, moderator?: Eris.User, reason?: IFormattable<string>): Promise<void> {
         await this.#logAction({
             type: templates.modlog.types.temporaryMute,
             guildId: guild.id,
@@ -182,7 +182,7 @@ export class ModLogManager {
         });
     }
 
-    public async logWarn(guild: Guild, user: User, count: number, newTotal: number, moderator?: User, reason?: IFormattable<string>): Promise<void> {
+    public async logWarn(guild: Eris.Guild, user: Eris.User, count: number, newTotal: number, moderator?: Eris.User, reason?: IFormattable<string>): Promise<void> {
         await this.#logAction({
             type: templates.modlog.types.warning,
             guildId: guild.id,
@@ -200,7 +200,7 @@ export class ModLogManager {
         });
     }
 
-    public async logPardon(guild: Guild, user: User, count: number, newTotal: number, moderator?: User, reason?: IFormattable<string>): Promise<void> {
+    public async logPardon(guild: Eris.Guild, user: Eris.User, count: number, newTotal: number, moderator?: Eris.User, reason?: IFormattable<string>): Promise<void> {
         await this.#logAction({
             type: templates.modlog.types.pardon,
             guildId: guild.id,
@@ -218,7 +218,7 @@ export class ModLogManager {
         });
     }
 
-    public async logCustom(guild: Guild, action: IFormattable<string>, user: User, moderator?: User, reason?: IFormattable<string>, color?: number): Promise<void> {
+    public async logCustom(guild: Eris.Guild, action: IFormattable<string>, user: Eris.User, moderator?: Eris.User, reason?: IFormattable<string>, color?: number): Promise<void> {
         await this.#logAction({
             type: action,
             guildId: guild.id,
@@ -229,7 +229,7 @@ export class ModLogManager {
         });
     }
 
-    public async updateReason(guild: Guild, caseId: number | undefined, moderator: User, reason: string): Promise<'SUCCESS' | 'MISSING_CASE' | 'SUCCESS_NO_MESSAGE'> {
+    public async updateReason(guild: Eris.Guild, caseId: number | undefined, moderator: Eris.User, reason: string): Promise<'SUCCESS' | 'MISSING_CASE' | 'SUCCESS_NO_MESSAGE'> {
         const modlog = await this.cluster.database.guilds.getModlogCase(guild.id, caseId);
         if (modlog === undefined)
             return 'MISSING_CASE';
@@ -340,8 +340,8 @@ export class ModLogManager {
 
 interface ModerationLogOptions {
     readonly guildId: string;
-    readonly user: User | readonly User[];
-    readonly moderator?: User;
+    readonly user: Eris.User | readonly Eris.User[];
+    readonly moderator?: Eris.User;
     readonly type?: IFormattable<string>;
     readonly reason?: IFormattable<string>;
     readonly color?: number;

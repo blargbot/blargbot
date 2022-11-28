@@ -11,6 +11,7 @@
 /test.bbtag
 /.nyc_output
 /coverage
+**/node_modules/**
 
 /.yarn/*
 !/.yarn/cache

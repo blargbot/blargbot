@@ -4,20 +4,20 @@ import { FormattableMessageContent } from '@blargbot/core/FormattableMessageCont
 import { metrics } from '@blargbot/core/Metrics';
 import { IMiddleware, NextMiddleware } from '@blargbot/core/types';
 import { util } from '@blargbot/formatting';
-import { KnownMessage } from 'eris';
+import Eris from 'eris';
 import fetch from 'node-fetch';
 import { URLSearchParams } from 'url';
 
 import templates from '../../../text';
 
-export class CleverbotMiddleware implements IMiddleware<KnownMessage, boolean> {
+export class CleverbotMiddleware implements IMiddleware<Eris.KnownMessage, boolean> {
     readonly #util: ClusterUtilities;
 
     public constructor(util: ClusterUtilities) {
         this.#util = util;
     }
 
-    public async execute(context: KnownMessage, next: NextMiddleware<boolean>): Promise<boolean> {
+    public async execute(context: Eris.KnownMessage, next: NextMiddleware<boolean>): Promise<boolean> {
         if (await next())
             return true;
 
@@ -34,7 +34,7 @@ export class CleverbotMiddleware implements IMiddleware<KnownMessage, boolean> {
         return true;
     }
 
-    async #reply(context: KnownMessage): Promise<void> {
+    async #reply(context: Eris.KnownMessage): Promise<void> {
         metrics.cleverbotStats.inc();
         await context.channel.sendTyping();
         const query = await this.#util.resolveTags(context, context.content);

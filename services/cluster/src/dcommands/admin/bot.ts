@@ -1,5 +1,5 @@
 import { StoredGuild, StoredUser, TagVariableType } from '@blargbot/domain/models';
-import { Constants } from 'eris';
+import Eris from 'eris';
 
 import { CommandContext, GlobalCommand } from '../../command';
 import templates from '../../text';
@@ -49,11 +49,11 @@ export class ServerCommand extends GlobalCommand {
         if (await context.queryConfirm({
             prompt: text.confirm.prompt,
             cancel: {
-                style: Constants.ButtonStyles.SECONDARY,
+                style: Eris.Constants.ButtonStyles.SECONDARY,
                 label: text.confirm.cancel
             },
             continue: {
-                style: Constants.ButtonStyles.DANGER,
+                style: Eris.Constants.ButtonStyles.DANGER,
                 label: text.confirm.continue
             }
         }) !== true) {
@@ -73,11 +73,11 @@ export class ServerCommand extends GlobalCommand {
         if (await context.queryConfirm({
             prompt: text.confirm.prompt,
             cancel: {
-                style: Constants.ButtonStyles.SECONDARY,
+                style: Eris.Constants.ButtonStyles.SECONDARY,
                 label: text.confirm.cancel
             },
             continue: {
-                style: Constants.ButtonStyles.DANGER,
+                style: Eris.Constants.ButtonStyles.DANGER,
                 label: text.confirm.continue
             }
         }) !== true) {
@@ -96,11 +96,11 @@ export class ServerCommand extends GlobalCommand {
         if (await context.queryConfirm({
             prompt: cmd.dump.confirm.prompt,
             cancel: {
-                style: Constants.ButtonStyles.SECONDARY,
+                style: Eris.Constants.ButtonStyles.SECONDARY,
                 label: cmd.dump.confirm.cancel
             },
             continue: {
-                style: Constants.ButtonStyles.DANGER,
+                style: Eris.Constants.ButtonStyles.DANGER,
                 label: cmd.dump.confirm.continue
             }
         }) !== true) {

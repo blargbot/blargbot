@@ -1,4 +1,4 @@
-import moment, { Duration } from 'moment-timezone';
+import moment from 'moment-timezone';
 import { performance } from 'perf_hooks';
 
 export class Timer {
@@ -17,7 +17,7 @@ export class Timer {
         return this.#elapsed + (performance.now() - this.#start);
     }
 
-    public get duration(): Duration {
+    public get duration(): moment.Duration {
         return moment.duration(this.elapsed, 'milliseconds');
     }
 

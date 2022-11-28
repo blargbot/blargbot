@@ -1,7 +1,7 @@
 import { Cluster } from '@blargbot/cluster';
 import { guard } from '@blargbot/cluster/utils';
 import { DiscordEventService } from '@blargbot/core/serviceTypes';
-import { Member, OldMember } from 'eris';
+import Eris from 'eris';
 import moment from 'moment-timezone';
 
 export class DiscordMemberUpdateHandler extends DiscordEventService<'guildMemberUpdate'> {
@@ -9,7 +9,7 @@ export class DiscordMemberUpdateHandler extends DiscordEventService<'guildMember
         super(cluster.discord, 'guildMemberUpdate', cluster.logger, (_, member, oldMember) => this.execute(member, oldMember));
     }
 
-    public async execute(member: Member, oldMember: OldMember | null): Promise<void> {
+    public async execute(member: Eris.Member, oldMember: Eris.OldMember | null): Promise<void> {
         if (member.id === this.cluster.discord.user.id)
             return;
 

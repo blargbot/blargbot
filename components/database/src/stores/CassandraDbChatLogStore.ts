@@ -5,7 +5,7 @@ import { ChatLogStore } from '@blargbot/domain/stores';
 import { Logger } from '@blargbot/logger';
 import { mapping } from '@blargbot/mapping';
 import { Client as Cassandra, types } from 'cassandra-driver';
-import { Duration } from 'moment-timezone';
+import moment from 'moment-timezone';
 
 export class CassandraDbChatLogStore implements ChatLogStore {
     readonly #db: Cassandra;
@@ -83,7 +83,7 @@ export class CassandraDbChatLogStore implements ChatLogStore {
         return mapped.valid ? mapped.value : undefined;
     }
 
-    public async add(message: ChatLogMessage, type: ChatLogType, lifespanS: number | Duration = 604800): Promise<void> {
+    public async add(message: ChatLogMessage, type: ChatLogType, lifespanS: number | moment.Duration = 604800): Promise<void> {
         metrics.chatlogCounter.labels(stringifyType(type)).inc();
         const lifespan = typeof lifespanS === 'number' ? lifespanS : lifespanS.asSeconds();
         const chatlog = {

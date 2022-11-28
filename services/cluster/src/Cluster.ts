@@ -8,7 +8,7 @@ import { EvalResult } from '@blargbot/core/types';
 import { ImagePool } from '@blargbot/image';
 import { Logger } from '@blargbot/logger';
 import { GatewayIntentBits } from 'discord-api-types/v9';
-import moment, { duration, Moment } from 'moment-timezone';
+import moment from 'moment-timezone';
 import { inspect } from 'util';
 
 import { ClusterBBTagUtilities } from './ClusterBBTagUtilities';
@@ -19,7 +19,7 @@ import { CommandDocumentationManager } from './managers/documentation/CommandDoc
 
 export class Cluster extends BaseClient {
     public readonly id: number;
-    public readonly createdAt: Moment;
+    public readonly createdAt: moment.Moment;
     public readonly worker: ClusterWorker;
     public readonly services: ModuleLoader<BaseService>;
     public readonly util: ClusterUtilities;
@@ -114,7 +114,7 @@ export class Cluster extends BaseClient {
             subtags: Object.values(subtags.all)
                 .map(subtag => new subtag())
         });
-        this.intervals = new IntervalManager(this, duration(10, 's'));
+        this.intervals = new IntervalManager(this, moment.duration(10, 's'));
         this.rolemes = new RolemeManager(this);
         this.help = new CommandDocumentationManager(this);
         this.awaiter = new AwaiterManager(this.logger);

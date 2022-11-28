@@ -3,7 +3,7 @@ import { GuildCommand } from '../../command/index';
 import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { codeBlock, CommandType, defaultStaff, guard, guildSettings, parse } from '@blargbot/cluster/utils';
 import { format, FormatString, IFormattable, ITranslationSource } from '@blargbot/formatting';
-import { Guild } from 'eris';
+import Eris from 'eris';
 
 import templates from '../../text';
 
@@ -149,7 +149,7 @@ export class SettingsCommand extends GuildCommand {
     }
 }
 
-function resolveChannel(guild: Guild, channelId: string | undefined): IFormattable<string> | undefined {
+function resolveChannel(guild: Eris.Guild, channelId: string | undefined): IFormattable<string> | undefined {
     // TODO channelId can be channel name, id or tag
     if (channelId === undefined)
         return undefined;
@@ -160,7 +160,7 @@ function resolveChannel(guild: Guild, channelId: string | undefined): IFormattab
         : cmd.list.channelValue.default({ channel });
 }
 
-function resolveRole(guild: Guild, roleId: string | undefined): IFormattable<string> | undefined {
+function resolveRole(guild: Eris.Guild, roleId: string | undefined): IFormattable<string> | undefined {
     // TODO roleId can be role name, id or tag
     if (roleId === undefined)
         return undefined;

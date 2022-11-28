@@ -1,6 +1,6 @@
 import { guard } from '@blargbot/core/utils';
 import { mapping } from '@blargbot/mapping';
-import { DiscordRESTError, EditChannelOptions } from 'eris';
+import Eris from 'eris';
 
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation/index';
@@ -51,7 +51,7 @@ export class ChannelEditSubtag extends CompiledSubtag {
             await channel.edit(options, context.auditReason());
             return channel.id;
         } catch (err: unknown) {
-            if (!(err instanceof DiscordRESTError))
+            if (!(err instanceof Eris.DiscordRESTError))
                 throw err;
 
             throw new BBTagRuntimeError('Failed to edit channel: no perms', err.message);
@@ -62,7 +62,7 @@ export class ChannelEditSubtag extends CompiledSubtag {
 const defaultAutoArchiveDurationMapping = mapping.in(...[60, 1440, 4320, 10080, undefined] as const);
 
 const mapChannelOptions = mapping.json(
-    mapping.object<EditChannelOptions>({
+    mapping.object<Eris.EditChannelOptions>({
         bitrate: mapping.number.optional,
         name: mapping.string.optional,
         nsfw: mapping.boolean.optional,
@@ -85,7 +85,7 @@ const mapChannelOptions = mapping.json(
 );
 
 const mapThreadOptions = mapping.json(
-    mapping.object<EditChannelOptions>({
+    mapping.object<Eris.EditChannelOptions>({
         archived: mapping.boolean.optional,
         autoArchiveDuration: mapping.number.chain(defaultAutoArchiveDurationMapping).optional,
         locked: mapping.boolean.optional,

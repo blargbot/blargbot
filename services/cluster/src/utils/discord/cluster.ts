@@ -1,12 +1,12 @@
 import { Cluster } from '@blargbot/cluster';
 import { ClusterStats, ShardStats } from '@blargbot/cluster/types';
 import { cpuLoad } from '@blargbot/cluster/utils';
-import { Shard } from 'eris';
-import moment, { Moment } from 'moment-timezone';
+import Eris from 'eris';
+import moment from 'moment-timezone';
 
-const lastReady: Map<number, Moment> = new Map();
+const lastReady: Map<number, moment.Moment> = new Map();
 
-function getLastReady(cluster: Cluster, shard: Shard): Moment {
+function getLastReady(cluster: Cluster, shard: Eris.Shard): moment.Moment {
     if (shard.status === 'ready')
         lastReady.set(shard.id, moment());
 
@@ -14,7 +14,7 @@ function getLastReady(cluster: Cluster, shard: Shard): Moment {
         ?? cluster.createdAt;
 }
 
-export const statusEmojiMap: { [P in Shard['status']]: string } = {
+export const statusEmojiMap: { [P in Eris.Shard['status']]: string } = {
     'ready': '✅',
     'connecting': '♻️',
     'resuming': '♻️',

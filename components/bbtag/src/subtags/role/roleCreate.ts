@@ -1,5 +1,5 @@
 import { parse } from '@blargbot/core/utils';
-import { DiscordRESTError, RoleOptions } from 'eris';
+import Eris from 'eris';
 
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
@@ -43,7 +43,7 @@ export class RoleCreateSubtag extends CompiledSubtag {
         if (rolePerms === undefined)
             throw new BBTagRuntimeError('Permission not a number', `${JSON.stringify(permStr)} is not a number`);
 
-        const options: RoleOptions = {
+        const options: Eris.RoleOptions = {
             name,
             color: parse.color(colorStr),
             permissions: rolePerms,
@@ -60,7 +60,7 @@ export class RoleCreateSubtag extends CompiledSubtag {
                 context.guild.roles.set(role.id, role);
             return role.id;
         } catch (err: unknown) {
-            if (!(err instanceof DiscordRESTError))
+            if (!(err instanceof Eris.DiscordRESTError))
                 throw err;
 
             throw new BBTagRuntimeError('Failed to create role: no perms', err.message);

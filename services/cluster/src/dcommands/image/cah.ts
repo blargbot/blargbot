@@ -2,7 +2,7 @@ import { ClusterUtilities } from '@blargbot/cluster';
 import { CommandContext, GlobalImageCommand } from '../../command/index';
 import { CommandType, commandTypeDetails, guard, randChoose } from '@blargbot/cluster/utils';
 import cahData from '@blargbot/res/cah.json';
-import { Guild, KnownTextableChannel, User } from 'eris';
+import Eris from 'eris';
 
 import templates from '../../text';
 import { CommandResult } from '../../types';
@@ -31,14 +31,14 @@ export class CAHCommand extends GlobalImageCommand {
         });
     }
 
-    public async isVisible(util: ClusterUtilities, location?: Guild | KnownTextableChannel, user?: User): Promise<boolean> {
+    public async isVisible(util: ClusterUtilities, location?: Eris.Guild | Eris.KnownTextableChannel, user?: Eris.User): Promise<boolean> {
         if (!await super.isVisible(util, location, user))
             return false;
 
         if (location === undefined)
             return true;
 
-        const guild = location instanceof Guild ? location : guard.isGuildChannel(location) ? location.guild : undefined;
+        const guild = location instanceof Eris.Guild ? location : guard.isGuildChannel(location) ? location.guild : undefined;
         if (guild === undefined || await util.database.guilds.getSetting(guild.id, 'cahnsfw') !== true)
             return true;
 

@@ -8,7 +8,7 @@ import { Timer } from '@blargbot/core/Timer';
 import { NextMiddleware } from '@blargbot/core/types';
 import { CommandPermissions, FlagDefinition } from '@blargbot/domain/models';
 import { IFormattable } from '@blargbot/formatting';
-import { Guild, KnownTextableChannel, User } from 'eris';
+import Eris from 'eris';
 
 import { CommandManager } from './CommandManager';
 
@@ -29,7 +29,7 @@ export class DefaultCommandManager extends CommandManager<Command> {
             this.modules.reload(this.modules.source(commands));
     }
 
-    protected async getCore(name: string, location?: Guild | KnownTextableChannel, user?: User): Promise<CommandGetCoreResult<Command>> {
+    protected async getCore(name: string, location?: Eris.Guild | Eris.KnownTextableChannel, user?: Eris.User): Promise<CommandGetCoreResult<Command>> {
         const command = this.modules.get(name);
         if (command === undefined)
             return { state: 'NOT_FOUND' };
@@ -41,7 +41,7 @@ export class DefaultCommandManager extends CommandManager<Command> {
         if (location === undefined)
             return { state: 'FOUND', detail: new NormalizedCommand(command, { permission: defaultPermission }) };
 
-        const guild = location instanceof Guild ? location
+        const guild = location instanceof Eris.Guild ? location
             : guard.isGuildChannel(location) ? location.guild
                 : undefined;
 
@@ -59,7 +59,7 @@ export class DefaultCommandManager extends CommandManager<Command> {
             yield command.name;
     }
 
-    public async configure(user: User, names: string[], guild: Guild, permissions: Partial<CommandPermissions>): Promise<readonly string[]> {
+    public async configure(user: Eris.User, names: string[], guild: Eris.Guild, permissions: Partial<CommandPermissions>): Promise<readonly string[]> {
         if (names.length === 0)
             return [];
 

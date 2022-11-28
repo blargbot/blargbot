@@ -1,6 +1,6 @@
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
 import { GuildBansSubtag } from '@blargbot/bbtag/subtags/guild/guildBans';
-import { ApiError } from 'eris';
+import Eris from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 
@@ -26,7 +26,7 @@ runSubtagTests({
                 { start: 0, end: 11, error: new BBTagRuntimeError('Missing required permissions', 'Test REST error') }
             ],
             postSetup(bbctx, ctx) {
-                const error = ctx.createRESTError(ApiError.MISSING_PERMISSIONS);
+                const error = ctx.createRESTError(Eris.ApiError.MISSING_PERMISSIONS);
                 ctx.util.setup(m => m.getBannedUsers(bbctx.guild))
                     .thenReject(error);
             }

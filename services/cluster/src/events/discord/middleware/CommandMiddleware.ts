@@ -4,11 +4,11 @@ import { CommandResult } from '@blargbot/cluster/types';
 import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent';
 import { IMiddleware, NextMiddleware } from '@blargbot/core/types';
 import { humanize, runMiddleware } from '@blargbot/core/utils';
-import { KnownMessage } from 'eris';
+import Eris from 'eris';
 
 import templates from '../../../text';
 
-export class CommandMiddleware implements IMiddleware<KnownMessage, boolean> {
+export class CommandMiddleware implements IMiddleware<Eris.KnownMessage, boolean> {
     readonly #cluster: Cluster;
     readonly #middleware: ReadonlyArray<IMiddleware<CommandContext, CommandResult>>;
 
@@ -20,7 +20,7 @@ export class CommandMiddleware implements IMiddleware<KnownMessage, boolean> {
         this.#middleware = middleware;
     }
 
-    public async execute(message: KnownMessage, next: NextMiddleware<boolean>): Promise<boolean> {
+    public async execute(message: Eris.KnownMessage, next: NextMiddleware<boolean>): Promise<boolean> {
         const prefix = await this.#cluster.prefixes.findPrefix(message);
         if (prefix === undefined)
             return await next();

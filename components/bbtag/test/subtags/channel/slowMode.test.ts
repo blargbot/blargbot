@@ -1,7 +1,7 @@
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
 import { SlowModeSubtag } from '@blargbot/bbtag/subtags/channel/slowMode';
 import { argument } from '@blargbot/test-util/mock';
-import { ApiError, Constants, TextChannel } from 'eris';
+import Eris from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 
@@ -9,7 +9,7 @@ runSubtagTests({
     subtag: new SlowModeSubtag(),
     argCountBounds: { min: 0, max: 2 },
     setup(ctx) {
-        ctx.roles.authorizer.permissions = Constants.Permissions.manageChannels.toString();
+        ctx.roles.authorizer.permissions = Eris.Constants.Permissions.manageChannels.toString();
     },
     cases: [
         {
@@ -17,7 +17,7 @@ runSubtagTests({
             expected: '',
             setup(ctx) {
                 ctx.discord.setup(m => m.editChannel(ctx.channels.command.id, argument.isDeepEqual({ rateLimitPerUser: 0 }), 'Command User#0000'))
-                    .thenResolve(ctx.createMock(TextChannel).instance);
+                    .thenResolve(ctx.createMock(Eris.TextChannel).instance);
             }
         },
         {
@@ -26,7 +26,7 @@ runSubtagTests({
             postSetup(bbctx, ctx) {
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '1234')).thenResolve([]);
                 ctx.discord.setup(m => m.editChannel(ctx.channels.command.id, argument.isDeepEqual({ rateLimitPerUser: 1234 }), 'Command User#0000'))
-                    .thenResolve(ctx.createMock(TextChannel).instance);
+                    .thenResolve(ctx.createMock(Eris.TextChannel).instance);
             }
         },
         {
@@ -75,7 +75,7 @@ runSubtagTests({
                 { start: 0, end: 30, error: new BBTagRuntimeError('Missing required permissions', 'Test REST error') }
             ],
             postSetup(bbctx, ctx) {
-                const err = ctx.createRESTError(ApiError.MISSING_PERMISSIONS);
+                const err = ctx.createRESTError(Eris.ApiError.MISSING_PERMISSIONS);
                 const channel = bbctx.guild.channels.random();
                 if (channel === undefined)
                     throw new Error('Failed to locate channel under test');
@@ -91,7 +91,7 @@ runSubtagTests({
                 { start: 0, end: 30, error: new BBTagRuntimeError('Missing required permissions', 'Some other error message') }
             ],
             postSetup(bbctx, ctx) {
-                const err = ctx.createRESTError(ApiError.NOT_AUTHORIZED, 'Some other error message');
+                const err = ctx.createRESTError(Eris.ApiError.NOT_AUTHORIZED, 'Some other error message');
                 const channel = bbctx.guild.channels.random();
                 if (channel === undefined)
                     throw new Error('Failed to locate channel under test');

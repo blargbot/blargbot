@@ -3,7 +3,7 @@ import { ReactionAddSubtag } from '@blargbot/bbtag/subtags/message/reactionAdd';
 import { Emote } from '@blargbot/core/Emote';
 import { argument } from '@blargbot/test-util/mock';
 import { expect } from 'chai';
-import { Constants } from 'eris';
+import Eris from 'eris';
 
 import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite';
 import { createGetMessagePropTestCases } from './_getMessagePropTest';
@@ -15,7 +15,7 @@ runSubtagTests({
     subtag: new ReactionAddSubtag(),
     argCountBounds: { min: 1, max: Infinity },
     setup(ctx) {
-        ctx.roles.bot.permissions = Constants.Permissions.addReactions.toString();
+        ctx.roles.bot.permissions = Eris.Constants.Permissions.addReactions.toString();
     },
     cases: [
         {
@@ -51,7 +51,7 @@ runSubtagTests({
             code: '{reactadd;🤔<:notlikecat:280110565161041921>}',
             expected: '',
             setup(ctx) {
-                ctx.roles.bot.permissions = Constants.Permissions.addReactions.toString();
+                ctx.roles.bot.permissions = Eris.Constants.Permissions.addReactions.toString();
             },
             assert(bbctx) {
                 expect(bbctx.data.reactions).to.deep.equal([unicodeEmote.toString(), guildEmote.toString()]);
@@ -76,7 +76,7 @@ runSubtagTests({
             code: '{reactadd;🤔;<:notlikecat:280110565161041921>}',
             expected: '',
             setup(ctx) {
-                ctx.roles.bot.permissions = Constants.Permissions.addReactions.toString();
+                ctx.roles.bot.permissions = Eris.Constants.Permissions.addReactions.toString();
             },
             assert(bbctx) {
                 expect(bbctx.data.reactions).to.deep.equal([unicodeEmote.toString(), guildEmote.toString()]);

@@ -5,8 +5,8 @@ import { FormattableMessageContent } from '@blargbot/core/FormattableMessageCont
 import { FormatEmbedAuthor, FormatEmbedField, FormatEmbedOptions } from '@blargbot/core/types';
 import { StoredGuildEventLogType } from '@blargbot/domain/models';
 import { IFormattable } from '@blargbot/formatting';
-import { ApiError, AuditLogActionType, DiscordRESTError, Guild, GuildAuditLog, KnownGuildTextableChannel, KnownMessage, Member, Message, OldMessage, PossiblyUncachedMessage, PossiblyUncachedTextableChannel, User } from 'eris';
-import moment, { Moment } from 'moment-timezone';
+import Eris from 'eris';
+import moment from 'moment-timezone';
 
 import templates from '../../text';
 
@@ -17,7 +17,7 @@ export class EventLogManager {
         this.#cluster = cluster;
     }
 
-    public async userTimedOut(member: Member): Promise<void> {
+    public async userTimedOut(member: Eris.Member): Promise<void> {
         const channel = await this.#getLogChannel('membertimeout', member.guild.id);
         if (channel !== undefined && !await this.#isExempt(member.guild.id, member.user.id) && member.communicationDisabledUntil !== null) {
             await this.#logEvent('membertimeout', channel, this.#eventLogEmbed(templates.eventLog.events.timeoutAdded, member.user, ModlogColour.TIMEOUT, {
@@ -32,13 +32,13 @@ export class EventLogManager {
         }
     }
 
-    public async userTimeoutCleared(member: Member): Promise<void> {
+    public async userTimeoutCleared(member: Eris.Member): Promise<void> {
         const channel = await this.#getLogChannel('membertimeoutclear', member.guild.id);
         if (channel === undefined || await this.#isExempt(member.guild.id, member.id))
             return;
 
         const now = moment();
-        const auditEvents = await tryGetAuditLogs(member.guild, 50, undefined, AuditLogActionType.MEMBER_UPDATE);
+        const auditEvents = await tryGetAuditLogs(member.guild, 50, undefined, Eris.AuditLogActionType.MEMBER_UPDATE);
         const audit = auditEvents?.entries.find(e => e.targetID === member.id
             && moment(e.createdAt).isAfter(now.add(-1, 'second'))
             && (e.after?.communicationDisabledUntil === null || (e.after?.communicationDisabledUntil as number) < (e.before?.communicationDisabledUntil as number)));
@@ -59,19 +59,19 @@ export class EventLogManager {
         }));
     }
 
-    public async userBanned(guild: Guild, user: User): Promise<void> {
+    public async userBanned(guild: Eris.Guild, user: Eris.User): Promise<void> {
         const channel = await this.#getLogChannel('memberban', guild.id);
         if (channel !== undefined && !await this.#isExempt(guild.id, user.id))
             await this.#logEvent('memberban', channel, this.#eventLogEmbed(templates.eventLog.events.banned, user, ModlogColour.BAN));
     }
 
-    public async userUnbanned(guild: Guild, user: User): Promise<void> {
+    public async userUnbanned(guild: Eris.Guild, user: Eris.User): Promise<void> {
         const channel = await this.#getLogChannel('memberunban', guild.id);
         if (channel !== undefined && !await this.#isExempt(guild.id, user.id))
             await this.#logEvent('memberunban', channel, this.#eventLogEmbed(templates.eventLog.events.unbanned, user, ModlogColour.UNBAN));
     }
 
-    public async userJoined(member: Member): Promise<void> {
+    public async userJoined(member: Eris.Member): Promise<void> {
         const channel = await this.#getLogChannel('memberjoin', member.guild.id);
         if (channel !== undefined && !await this.#isExempt(member.guild.id, member.user.id)) {
             await this.#logEvent('memberjoin', channel, this.#eventLogEmbed(templates.eventLog.events.joined, member.user, 0x1ad8bc, {
@@ -86,13 +86,13 @@ export class EventLogManager {
         }
     }
 
-    public async userLeft(member: Member): Promise<void> {
+    public async userLeft(member: Eris.Member): Promise<void> {
         const channel = await this.#getLogChannel('memberleave', member.guild.id);
         if (channel !== undefined && !await this.#isExempt(member.guild.id, member.user.id))
             await this.#logEvent('memberleave', channel, this.#eventLogEmbed(templates.eventLog.events.left, member.user, 0xd8761a));
     }
 
-    public async messagesDeleted(messages: readonly PossiblyUncachedMessage[]): Promise<void> {
+    public async messagesDeleted(messages: readonly Eris.PossiblyUncachedMessage[]): Promise<void> {
         if (messages.length === 0)
             return;
 
@@ -127,7 +127,7 @@ export class EventLogManager {
         }));
     }
 
-    public async messageDeleted(message: PossiblyUncachedMessage): Promise<void> {
+    public async messageDeleted(message: Eris.PossiblyUncachedMessage): Promise<void> {
         const guildId = 'guild' in message.channel ? message.channel.guild?.id : undefined;
         if (guildId === undefined)
             return;
@@ -143,7 +143,7 @@ export class EventLogManager {
         await this.#logMessageDeleted(guildId, details, logChannel);
     }
 
-    public async messageUpdated(message: Message<PossiblyUncachedTextableChannel>, oldMessage: OldMessage | null): Promise<void> {
+    public async messageUpdated(message: Eris.Message<Eris.PossiblyUncachedTextableChannel>, oldMessage: Eris.OldMessage | null): Promise<void> {
         const guildId = guard.isGuildMessage(message) ? message.channel.guild.id : undefined;
         if (guildId === undefined)
             return;
@@ -177,13 +177,13 @@ export class EventLogManager {
         await this.#logEvent('messageupdate', logChannel, embed);
     }
 
-    public async roleRemoved(member: Member, roleId: string): Promise<void> {
+    public async roleRemoved(member: Eris.Member, roleId: string): Promise<void> {
         const channel = await this.#getLogChannel(`role:${roleId}`, member.guild.id);
         if (channel === undefined || await this.#isExempt(member.guild.id, member.user.id))
             return;
 
         const now = moment();
-        const auditEvents = await tryGetAuditLogs(member.guild, 50, undefined, AuditLogActionType.MEMBER_ROLE_UPDATE);
+        const auditEvents = await tryGetAuditLogs(member.guild, 50, undefined, Eris.AuditLogActionType.MEMBER_ROLE_UPDATE);
         const audit = auditEvents?.entries.find(e => e.targetID === member.id && moment(e.createdAt).isAfter(now.add(-1, 'second')));
         const reason = audit?.reason ?? undefined;
         const moderator = audit?.user ?? undefined;
@@ -205,13 +205,13 @@ export class EventLogManager {
         }));
     }
 
-    public async roleAdded(member: Member, roleId: string): Promise<void> {
+    public async roleAdded(member: Eris.Member, roleId: string): Promise<void> {
         const channel = await this.#getLogChannel(`role:${roleId}`, member.guild.id);
         if (channel === undefined || await this.#isExempt(member.guild.id, member.user.id))
             return;
 
         const now = moment();
-        const auditEvents = await tryGetAuditLogs(member.guild, 50, undefined, AuditLogActionType.MEMBER_ROLE_UPDATE);
+        const auditEvents = await tryGetAuditLogs(member.guild, 50, undefined, Eris.AuditLogActionType.MEMBER_ROLE_UPDATE);
         const audit = auditEvents?.entries.find(e => e.targetID === member.id && moment(e.createdAt).isAfter(now.add(-1, 'second')));
         const reason = audit?.reason ?? undefined;
         const moderator = audit?.user ?? undefined;
@@ -233,7 +233,7 @@ export class EventLogManager {
         }));
     }
 
-    public async nicknameUpdated(member: Member, oldNickname: string | undefined): Promise<void> {
+    public async nicknameUpdated(member: Eris.Member, oldNickname: string | undefined): Promise<void> {
         const channel = await this.#getLogChannel('nickupdate', member.guild.id);
         if (channel !== undefined && !await this.#isExempt(member.guild.id, member.user.id)) {
             await this.#logEvent('nickupdate', channel, this.#eventLogEmbed(templates.eventLog.events.nicknameUpdated, member.user, 0xd8af1a, {
@@ -253,7 +253,7 @@ export class EventLogManager {
         }
     }
 
-    public async userTagUpdated(user: User, oldUser: User): Promise<void> {
+    public async userTagUpdated(user: Eris.User, oldUser: Eris.User): Promise<void> {
         const embed = this.#eventLogEmbed(templates.eventLog.events.usernameUpdated, user, 0xd8af1a, {
             description: oldUser.username !== user.username
                 ? oldUser.discriminator !== user.discriminator
@@ -287,7 +287,7 @@ export class EventLogManager {
         );
     }
 
-    public async userAvatarUpdated(user: User, oldUser: User): Promise<void> {
+    public async userAvatarUpdated(user: Eris.User, oldUser: Eris.User): Promise<void> {
         const embed = this.#eventLogEmbed(templates.eventLog.events.avatarUpdated, user, 0xd8af1a, {
             image: { url: user.avatarURL },
             thumbnail: { url: oldUser.avatarURL },
@@ -305,7 +305,7 @@ export class EventLogManager {
         );
     }
 
-    async #getContentEmbedField(guildId: string, name: 'old' | 'new' | 'current', content: string | undefined, timestamp: Moment | undefined): Promise<FormatEmbedField<IFormattable<string>>> {
+    async #getContentEmbedField(guildId: string, name: 'old' | 'new' | 'current', content: string | undefined, timestamp: moment.Moment | undefined): Promise<FormatEmbedField<IFormattable<string>>> {
         const names = templates.eventLog.embed.field.content.name[name];
         const values = templates.eventLog.embed.field.content.value;
 
@@ -326,7 +326,7 @@ export class EventLogManager {
         }
     }
 
-    async #logMessageDeleted(guildId: string, message: MessageDetails, logChannel: KnownGuildTextableChannel): Promise<void> {
+    async #logMessageDeleted(guildId: string, message: MessageDetails, logChannel: Eris.KnownGuildTextableChannel): Promise<void> {
         const embed = this.#eventLogEmbed(templates.eventLog.events.messageDeleted, message.author, 0xaf1d1d, {
             fields: [
                 {
@@ -346,7 +346,7 @@ export class EventLogManager {
         await this.#logEvent('messagedelete', logChannel, embed);
     }
 
-    async #getMessageDetails(message: KnownMessage | { id: string; channel: { id: string; }; }): Promise<MessageDetails> {
+    async #getMessageDetails(message: Eris.KnownMessage | { id: string; channel: { id: string; }; }): Promise<MessageDetails> {
         if ('content' in message)
             return { ...message, authorId: message.author.id, channelId: message.channel.id };
 
@@ -371,7 +371,7 @@ export class EventLogManager {
         };
     }
 
-    #eventLogEmbed(title: IFormattable<string>, user: User | undefined, colour: number, partial: Partial<FormatEmbedOptions<IFormattable<string>>> = {}): FormatEmbedOptions<IFormattable<string>> {
+    #eventLogEmbed(title: IFormattable<string>, user: Eris.User | undefined, colour: number, partial: Partial<FormatEmbedOptions<IFormattable<string>>> = {}): FormatEmbedOptions<IFormattable<string>> {
         return {
             ...partial,
             title,
@@ -381,7 +381,7 @@ export class EventLogManager {
         };
     }
 
-    async #getLogChannel(type: StoredGuildEventLogType, guildId: string): Promise<KnownGuildTextableChannel | undefined> {
+    async #getLogChannel(type: StoredGuildEventLogType, guildId: string): Promise<Eris.KnownGuildTextableChannel | undefined> {
         const channelId = await this.#cluster.database.guilds.getLogChannel(guildId, type);
         if (channelId === undefined)
             return undefined;
@@ -398,7 +398,7 @@ export class EventLogManager {
         return userIds.every(id => ignoreUsers.has(id));
     }
 
-    async #logEvent(type: StoredGuildEventLogType, channel: KnownGuildTextableChannel, embed: FormatEmbedOptions<IFormattable<string>>): Promise<void> {
+    async #logEvent(type: StoredGuildEventLogType, channel: Eris.KnownGuildTextableChannel, embed: FormatEmbedOptions<IFormattable<string>>): Promise<void> {
         const result = await this.#cluster.util.send(channel, new FormattableMessageContent({ embeds: [embed] }));
         if (result !== undefined)
             return;
@@ -415,18 +415,18 @@ export class EventLogManager {
     }
 }
 
-function toEmbedAuthor(util: BaseUtilities, user: User | undefined): FormatEmbedAuthor<IFormattable<string>> | undefined {
+function toEmbedAuthor(util: BaseUtilities, user: Eris.User | undefined): FormatEmbedAuthor<IFormattable<string>> | undefined {
     switch (typeof user) {
         case 'undefined': return undefined;
         case 'object': return util.embedifyAuthor(user, true);
     }
 }
 
-async function tryGetAuditLogs(guild: Guild, limit?: number, before?: string, type?: AuditLogActionType): Promise<GuildAuditLog | undefined> {
+async function tryGetAuditLogs(guild: Eris.Guild, limit?: number, before?: string, type?: Eris.AuditLogActionType): Promise<Eris.GuildAuditLog | undefined> {
     try {
         return await guild.getAuditLog({ limit, before, actionType: type });
     } catch (err: unknown) {
-        if (err instanceof DiscordRESTError && err.code === ApiError.MISSING_PERMISSIONS)
+        if (err instanceof Eris.DiscordRESTError && err.code === Eris.ApiError.MISSING_PERMISSIONS)
             return undefined;
         throw err;
     }
@@ -434,7 +434,7 @@ async function tryGetAuditLogs(guild: Guild, limit?: number, before?: string, ty
 
 interface MessageDetails {
     id: string;
-    author: User | undefined;
+    author: Eris.User | undefined;
     authorId: string | undefined;
     content: string | undefined;
     channelId: string;

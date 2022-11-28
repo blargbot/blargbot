@@ -1,18 +1,18 @@
 import { guard } from '@blargbot/cluster/utils';
 import { GuildStore, UserStore } from '@blargbot/domain/stores';
-import { Client as Discord, KnownMessage } from 'eris';
+import Eris from 'eris';
 
 export class PrefixManager {
     readonly #defaultPrefix: string;
     readonly #guilds: GuildStore;
     readonly #users: UserStore;
-    readonly #discord: Discord;
+    readonly #discord: Eris.Client;
 
     public constructor(
         defaultPrefix: string,
         guilds: GuildStore,
         users: UserStore,
-        discord: Discord
+        discord: Eris.Client
     ) {
         this.#defaultPrefix = defaultPrefix;
         this.#guilds = guilds;
@@ -60,7 +60,7 @@ export class PrefixManager {
         return await this.#users.setProp(userId, 'prefixes', [...prefixes]);
     }
 
-    public async findPrefix(message: KnownMessage): Promise<string | undefined> {
+    public async findPrefix(message: Eris.KnownMessage): Promise<string | undefined> {
         const prefixes = [
             this.#defaultPrefix,
             ...await this.getUserPrefixes(message.author.id)

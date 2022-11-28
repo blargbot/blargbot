@@ -1,5 +1,5 @@
 import { parse } from '@blargbot/core/utils';
-import { DiscordRESTError } from 'eris';
+import Eris from 'eris';
 
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation/index';
@@ -61,7 +61,7 @@ export class RoleSetPermissionsSubtag extends CompiledSubtag {
         try {
             await role.edit({ permissions: mappedPerms }, context.auditReason());
         } catch (err: unknown) {
-            if (!(err instanceof DiscordRESTError))
+            if (!(err instanceof Eris.DiscordRESTError))
                 throw err;
 
             if (quiet)

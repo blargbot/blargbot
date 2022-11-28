@@ -1,4 +1,4 @@
-import { DiscordRESTError } from 'eris';
+import Eris from 'eris';
 
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation/index';
@@ -48,7 +48,7 @@ export class RoleDeleteSubtag extends CompiledSubtag {
         try {
             await role.delete(context.auditReason());
         } catch (err: unknown) {
-            if (!(err instanceof DiscordRESTError))
+            if (!(err instanceof Eris.DiscordRESTError))
                 throw err;
 
             if (quiet)

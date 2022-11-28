@@ -1,21 +1,21 @@
 import { CommandResult } from '@blargbot/cluster/types';
 import { IMiddleware, NextMiddleware } from '@blargbot/core/types';
-import moment, { Duration, Moment } from 'moment-timezone';
+import moment from 'moment-timezone';
 
 import templates from '../../text';
 import { CommandContext } from '../CommandContext';
 
 interface RollingRatelimitMiddlewareOptions {
-    readonly period: Duration;
+    readonly period: moment.Duration;
     readonly maxCommands: number;
-    readonly cooldown: Duration;
-    readonly penalty: Duration;
+    readonly cooldown: moment.Duration;
+    readonly penalty: moment.Duration;
     readonly key: (context: CommandContext) => string;
 }
 
 export class RollingRatelimitMiddleware implements IMiddleware<CommandContext, CommandResult> {
-    readonly #timeouts: Record<string, Moment | undefined>;
-    readonly #timestamps: Record<string, Moment[] | undefined>;
+    readonly #timeouts: Record<string, moment.Moment | undefined>;
+    readonly #timestamps: Record<string, moment.Moment[] | undefined>;
     readonly #options: RollingRatelimitMiddlewareOptions;
 
     public constructor(options: RollingRatelimitMiddlewareOptions) {

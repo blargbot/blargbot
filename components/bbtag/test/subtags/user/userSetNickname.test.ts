@@ -1,7 +1,7 @@
 import { UserNotFoundError } from '@blargbot/bbtag/errors';
 import { UserSetNickSubtag } from '@blargbot/bbtag/subtags/user/userSetNickname';
 import { argument } from '@blargbot/test-util/mock';
-import { Member } from 'eris';
+import Eris from 'eris';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
 
@@ -22,7 +22,7 @@ runSubtagTests({
             code: '{usersetnick;abc;other user}',
             expected: '',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Member);
+                const member = ctx.createMock(Eris.Member);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
                     .verifiable(1)
                     .thenResolve([member.instance]);
@@ -35,7 +35,7 @@ runSubtagTests({
             code: '{usersetnick;abc;blargbot}',
             expected: '',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Member);
+                const member = ctx.createMock(Eris.Member);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, 'blargbot'))
                     .verifiable(1)
                     .thenResolve([member.instance]);

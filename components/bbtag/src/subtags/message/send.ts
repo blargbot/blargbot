@@ -1,6 +1,6 @@
 import { MalformedEmbed } from '@blargbot/core/types';
 import { guard, parse } from '@blargbot/core/utils';
-import { DiscordRESTError, EmbedOptions, FileContent } from 'eris';
+import Eris from 'eris';
 
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
@@ -45,7 +45,7 @@ export class SendSubtag extends CompiledSubtag {
         });
     }
 
-    public async send(context: BBTagContext, channelId: string, message?: string, embed?: EmbedOptions[] | MalformedEmbed[], file?: FileContent): Promise<string> {
+    public async send(context: BBTagContext, channelId: string, message?: string, embed?: Eris.EmbedOptions[] | MalformedEmbed[], file?: Eris.FileContent): Promise<string> {
         const channel = await context.queryChannel(channelId, { noLookup: true });
         if (channel === undefined || !guard.isTextableChannel(channel))
             throw new ChannelNotFoundError(channelId);
@@ -78,7 +78,7 @@ export class SendSubtag extends CompiledSubtag {
         } catch (err: unknown) {
             if (err instanceof BBTagRuntimeError)
                 throw err;
-            if (err instanceof DiscordRESTError)
+            if (err instanceof Eris.DiscordRESTError)
                 throw new BBTagRuntimeError(`Failed to send: ${err.message}`);
             if (!(err instanceof Error && err.message === 'No content'))
                 context.logger.error('Failed to send!', err);
@@ -88,7 +88,7 @@ export class SendSubtag extends CompiledSubtag {
     }
 }
 
-function resolveContent(content: string): [string | undefined, EmbedOptions[] | undefined] {
+function resolveContent(content: string): [string | undefined, Eris.EmbedOptions[] | undefined] {
     const embeds = parse.embed(content);
     if (embeds === undefined || 'malformed' in embeds[0])
         return [content, undefined];

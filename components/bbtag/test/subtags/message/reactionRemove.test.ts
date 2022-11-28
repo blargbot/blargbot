@@ -1,6 +1,6 @@
 import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError, UserNotFoundError } from '@blargbot/bbtag/errors';
 import { ReactionRemoveSubtag } from '@blargbot/bbtag/subtags/message/reactionRemove';
-import { ApiError, Constants } from 'eris';
+import Eris from 'eris';
 
 import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite';
 
@@ -8,7 +8,7 @@ runSubtagTests({
     subtag: new ReactionRemoveSubtag(),
     argCountBounds: { min: 1, max: Infinity },
     setup(ctx) {
-        ctx.roles.bot.permissions = Constants.Permissions.manageMessages.toString();
+        ctx.roles.bot.permissions = Eris.Constants.Permissions.manageMessages.toString();
         ctx.isStaff = true;
     },
     cases: [
@@ -533,7 +533,7 @@ runSubtagTests({
                 ctx.util.setup(m => m.findMembers(bbctx.guild, otherUser.id)).thenResolve([otherUser]);
                 ctx.util.setup(m => m.getMessage(general, message.id, true)).thenResolve(message);
                 ctx.discord.setup(m => m.removeMessageReaction(general.id, message.id, 'fakeemote:192612896213677963', otherUser.id)).verifiable(1)
-                    .thenReject(ctx.createRESTError(ApiError.UNKNOWN_EMOJI));
+                    .thenReject(ctx.createRESTError(Eris.ApiError.UNKNOWN_EMOJI));
 
             }
         },
@@ -577,7 +577,7 @@ runSubtagTests({
                 ctx.util.setup(m => m.findMembers(bbctx.guild, otherUser.id)).thenResolve([otherUser]);
                 ctx.util.setup(m => m.getMessage(general, message.id, true)).thenResolve(message);
                 ctx.discord.setup(m => m.removeMessageReaction(general.id, message.id, '🤔', otherUser.id)).verifiable(1)
-                    .thenReject(ctx.createRESTError(ApiError.MISSING_PERMISSIONS));
+                    .thenReject(ctx.createRESTError(Eris.ApiError.MISSING_PERMISSIONS));
 
             }
         }

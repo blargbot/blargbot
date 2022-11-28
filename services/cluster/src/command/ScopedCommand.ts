@@ -2,7 +2,7 @@ import { ClusterUtilities } from '@blargbot/cluster/ClusterUtilities';
 import { CommandDefinition, CommandOptions, CommandResult } from '@blargbot/cluster/types';
 import { commandTypeDetails, runMiddleware } from '@blargbot/cluster/utils';
 import { IMiddleware, NextMiddleware } from '@blargbot/core/types';
-import { Guild, KnownTextableChannel, User } from 'eris';
+import Eris from 'eris';
 
 import templates from '../text';
 import { Command } from './Command';
@@ -35,7 +35,7 @@ export abstract class ScopedCommand<TContext extends CommandContext> extends Com
         this.#handler = new InvokeCommandHandlerMiddleware(signatures, this);
     }
 
-    public async isVisible(util: ClusterUtilities, location?: Guild | KnownTextableChannel, user?: User): Promise<boolean> {
+    public async isVisible(util: ClusterUtilities, location?: Eris.Guild | Eris.KnownTextableChannel, user?: Eris.User): Promise<boolean> {
         return await commandTypeDetails[this.category].isVisible(util, location, user);
     }
 

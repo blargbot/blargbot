@@ -1,20 +1,20 @@
 import { Snowflake } from '@blargbot/domain/models';
 import { Logger } from '@blargbot/logger';
-import { ActionRow, AdvancedMessageContent, EmbedAuthor, EmbedField, EmbedFooter, EmbedOptions, FileContent, Guild, InteractionButton, KnownMessage, Member, Message, SelectMenu, SelectMenuOptions, TextableChannel, URLButton, User } from 'eris';
+import Eris from 'eris';
 
 import { Binder } from './Binder';
 import { WorkerConnection } from './worker';
 
-export type MalformedEmbed = { fields: [EmbedField]; malformed: true; };
+export type MalformedEmbed = { fields: [Eris.EmbedField]; malformed: true; };
 export type ModuleResult<TModule> = { names: Iterable<string>; module: TModule; };
-export type DMContext = string | KnownMessage | User | Member;
-export type SendContext = TextableChannel | string | User;
+export type DMContext = string | Eris.KnownMessage | Eris.User | Eris.Member;
+export type SendContext = Eris.TextableChannel | string | Eris.User;
 export interface SendContent<TString> extends FormatAdvancedMessageContent<TString> {
-    file?: FileContent[];
+    file?: Eris.FileContent[];
 }
 
 type ReplaceProps<T, U extends { [P in keyof T]?: unknown }> = { [P in keyof T]: P extends keyof U ? U[P] : T[P] }
-export type FormatAdvancedMessageContent<TString> = ReplaceProps<AdvancedMessageContent, {
+export type FormatAdvancedMessageContent<TString> = ReplaceProps<Eris.AdvancedMessageContent, {
     components: Array<FormatActionRow<TString>>;
     content: TString;
     embeds: Array<FormatEmbedOptions<TString>>;
@@ -22,37 +22,37 @@ export type FormatAdvancedMessageContent<TString> = ReplaceProps<AdvancedMessage
     messageReferenceID: never;
 }>;
 
-export type FormatActionRow<TString> = ReplaceProps<ActionRow, {
+export type FormatActionRow<TString> = ReplaceProps<Eris.ActionRow, {
     components: Array<FormatActionRowComponents<TString>>;
 }>;
 
 export type FormatActionRowComponents<TString> = FormatButton<TString> | FormatSelectMenu<TString>;
 export type FormatButton<TString> = FormatInteractionButton<TString> | FormatURLButton<TString>;
-export type FormatInteractionButton<TString> = ReplaceProps<InteractionButton, { label: TString; }>;
-export type FormatURLButton<TString> = ReplaceProps<URLButton, { label: TString; }>;
-export type FormatSelectMenu<TString> = ReplaceProps<SelectMenu, {
+export type FormatInteractionButton<TString> = ReplaceProps<Eris.InteractionButton, { label: TString; }>;
+export type FormatURLButton<TString> = ReplaceProps<Eris.URLButton, { label: TString; }>;
+export type FormatSelectMenu<TString> = ReplaceProps<Eris.SelectMenu, {
     placeholder: TString;
     options: Array<FormatSelectMenuOptions<TString>>;
 }>;
-export type FormatSelectMenuOptions<TString> = ReplaceProps<SelectMenuOptions, {
+export type FormatSelectMenuOptions<TString> = ReplaceProps<Eris.SelectMenuOptions, {
     description: TString;
     label: TString;
 }>;
-export type FormatEmbedOptions<TString> = ReplaceProps<EmbedOptions, {
+export type FormatEmbedOptions<TString> = ReplaceProps<Eris.EmbedOptions, {
     author: FormatEmbedAuthor<TString>;
     description: TString;
     fields: Array<FormatEmbedField<TString>>;
     footer: FormatEmbedFooter<TString>;
     title: TString;
 }>;
-export type FormatEmbedAuthor<TString> = ReplaceProps<EmbedAuthor, {
+export type FormatEmbedAuthor<TString> = ReplaceProps<Eris.EmbedAuthor, {
     name: TString;
 }>;
-export type FormatEmbedField<TString> = ReplaceProps<EmbedField, {
+export type FormatEmbedField<TString> = ReplaceProps<Eris.EmbedField, {
     name: TString;
     value: TString;
 }>;
-export type FormatEmbedFooter<TString> = ReplaceProps<EmbedFooter, {
+export type FormatEmbedFooter<TString> = ReplaceProps<Eris.EmbedFooter, {
     text: TString;
 }>;
 
@@ -123,8 +123,8 @@ type ConfirmQueryOptionsFallback<T extends boolean | undefined> = T extends unde
     : { fallback: boolean; };
 
 export interface QueryOptionsBase<TString> {
-    context: TextableChannel | Message;
-    actors: Iterable<string | User> | string | User;
+    context: Eris.TextableChannel | Eris.Message;
+    actors: Iterable<string | Eris.User> | string | Eris.User;
     prompt?: Omit<SendContent<TString>, 'components'> | TString;
     timeout?: number;
 }
@@ -175,7 +175,7 @@ export interface TextQueryOptions<TString> extends TextQueryOptionsBase<TString,
 export type SlimTextQueryOptions<TString> = Omit<TextQueryOptions<TString>, 'context' | 'actors'>;
 
 export interface TextQueryOptionsParser<TString, T> {
-    (message: Message): Promise<TextQueryOptionsParseResult<TString, T>> | TextQueryOptionsParseResult<TString, T>;
+    (message: Eris.Message): Promise<TextQueryOptionsParseResult<TString, T>> | TextQueryOptionsParseResult<TString, T>;
 }
 
 export type TextQueryOptionsParseResult<TString, T> =
@@ -188,19 +188,19 @@ export interface MultipleQueryOptions<TString, T> extends ChoiceQueryOptions<TSt
 }
 
 export interface ChoiceQuery<T> extends QueryBase<ChoiceQueryResult<T>> {
-    prompt: Message | undefined;
+    prompt: Eris.Message | undefined;
 }
 
 export interface MultipleQuery<T> extends QueryBase<MultipleQueryResult<T>> {
-    prompt: Message | undefined;
+    prompt: Eris.Message | undefined;
 }
 
 export interface ConfirmQuery<T extends boolean | undefined = undefined> extends QueryBase<T> {
-    prompt: Message | undefined;
+    prompt: Eris.Message | undefined;
 }
 
 export interface TextQuery<T> extends QueryBase<TextQueryResult<T>> {
-    messages: readonly Message[];
+    messages: readonly Eris.Message[];
 }
 
 export type ChoiceQueryResult<T> = QueryResult<'NO_OPTIONS' | 'TIMED_OUT' | 'CANCELLED' | 'FAILED', T>;
@@ -231,7 +231,7 @@ export interface EntityPickQueryOptions<TString, T> extends BaseEntityQueryOptio
 export type SlimEntityPickQueryOptions<TString, T> = Omit<EntityPickQueryOptions<TString, T>, 'context' | 'actors'>;
 
 export interface EntityFindQueryOptions<TString> extends BaseEntityQueryOptions<TString> {
-    guild: string | Guild;
+    guild: string | Eris.Guild;
     filter?: string;
 }
 

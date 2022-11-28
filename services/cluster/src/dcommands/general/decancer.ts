@@ -1,6 +1,6 @@
 import { CommandContext, GlobalCommand } from '../../command/index';
 import { CommandType, guard, humanize } from '@blargbot/cluster/utils';
-import { User } from 'eris';
+import Eris from 'eris';
 
 import templates from '../../text';
 import { CommandResult } from '../../types';
@@ -27,7 +27,7 @@ export class DecancerCommand extends GlobalCommand {
         });
     }
 
-    public async decancerUser(context: CommandContext, user: User): Promise<CommandResult> {
+    public async decancerUser(context: CommandContext, user: Eris.User): Promise<CommandResult> {
         if (!guard.isGuildCommandContext(context))
             return this.decancerText(user.username);
 

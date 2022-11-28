@@ -1,7 +1,7 @@
-import { KnownChannel, KnownGuildChannel } from 'eris';
+import Eris from 'eris';
 
 import { isGuildChannel } from './isGuildChannel';
 
-export function isGuildRelated<T extends { channel: C; }, C extends KnownChannel>(obj: T): obj is T & { channel: C & KnownGuildChannel; } {
+export function isGuildRelated<T extends { channel: C; }, C extends Eris.KnownChannel>(obj: T): obj is T & { channel: C & Eris.KnownGuildChannel; } {
     return isGuildChannel(obj.channel);
 }

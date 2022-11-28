@@ -1,7 +1,7 @@
 import { GlobalCommand, SendTypingMiddleware } from '../../command/index';
 import { CommandType } from '@blargbot/cluster/utils';
 import { parse } from '@blargbot/core/utils';
-import { ImageFormat, User } from 'eris';
+import Eris from 'eris';
 import fetch from 'node-fetch';
 
 import templates from '../../text';
@@ -35,7 +35,7 @@ export class AvatarCommand extends GlobalCommand {
         this.middleware.push(new SendTypingMiddleware());
     }
 
-    public async getAvatar(user: User, format: string | undefined, size = '512'): Promise<CommandResult> {
+    public async getAvatar(user: Eris.User, format: string | undefined, size = '512'): Promise<CommandResult> {
         if (format !== undefined && !allowedFormats.includes(format))
             return cmd.common.formatInvalid({ format, allowedFormats });
 
@@ -55,7 +55,7 @@ export class AvatarCommand extends GlobalCommand {
     }
 }
 
-const allowedFormats = Object.keys<ImageFormat>({
+const allowedFormats = Object.keys<Eris.ImageFormat>({
     jpeg: 0,
     jpg: 0,
     png: 0,

@@ -2,7 +2,7 @@ import { GuildCommand } from '../../command/index';
 import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType } from '@blargbot/cluster/utils';
 import { IFormattable } from '@blargbot/formatting';
-import { Member } from 'eris';
+import Eris from 'eris';
 
 import templates from '../../text';
 
@@ -28,7 +28,7 @@ export class WarningsCommand extends GuildCommand {
         });
     }
 
-    public async warnings(context: GuildCommandContext, member: Member): Promise<CommandResult> {
+    public async warnings(context: GuildCommandContext, member: Eris.Member): Promise<CommandResult> {
         const { count, banAt, kickAt, timeoutAt } = await context.cluster.moderation.warns.details(member);
         const result: Array<IFormattable<string>> = [
             cmd.common.count({ user: member.user, count })

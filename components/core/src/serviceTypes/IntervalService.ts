@@ -1,5 +1,5 @@
 import { Logger } from '@blargbot/logger';
-import { Duration, duration, DurationInputArg1, DurationInputArg2 } from 'moment-timezone';
+import moment from 'moment-timezone';
 
 import { BaseService } from './BaseService';
 
@@ -7,23 +7,23 @@ export abstract class IntervalService extends BaseService {
     #interval?: NodeJS.Timeout;
     readonly #execute: () => void;
 
-    public readonly period: Duration;
+    public readonly period: moment.Duration;
     public readonly logger: Logger;
     readonly #immediate: boolean;
 
-    protected constructor(period: DurationInputArg1, logger: Logger);
-    protected constructor(period: DurationInputArg1, logger: Logger, immediate: boolean);
-    protected constructor(period: DurationInputArg1, unit: DurationInputArg2, logger: Logger);
-    protected constructor(period: DurationInputArg1, unit: DurationInputArg2, logger: Logger, immediate: boolean);
+    protected constructor(period: moment.DurationInputArg1, logger: Logger);
+    protected constructor(period: moment.DurationInputArg1, logger: Logger, immediate: boolean);
+    protected constructor(period: moment.DurationInputArg1, unit: moment.DurationInputArg2, logger: Logger);
+    protected constructor(period: moment.DurationInputArg1, unit: moment.DurationInputArg2, logger: Logger, immediate: boolean);
     protected constructor(...args:
-        | [period: DurationInputArg1, logger: Logger]
-        | [period: DurationInputArg1, logger: Logger, immediate: boolean]
-        | [period: DurationInputArg1, unit: DurationInputArg2, logger: Logger]
-        | [period: DurationInputArg1, unit: DurationInputArg2, logger: Logger, immediate: boolean]) {
+        | [period: moment.DurationInputArg1, logger: Logger]
+        | [period: moment.DurationInputArg1, logger: Logger, immediate: boolean]
+        | [period: moment.DurationInputArg1, unit: moment.DurationInputArg2, logger: Logger]
+        | [period: moment.DurationInputArg1, unit: moment.DurationInputArg2, logger: Logger, immediate: boolean]) {
         super();
 
         const [period, unit, logger, immediate] = mapArgs(args);
-        this.period = duration(period, unit);
+        this.period = moment.duration(period, unit);
         this.logger = logger;
         this.#immediate = immediate ?? false;
         this.#execute = this.makeSafeCaller(this.execute.bind(this), this.logger, 'Interval');
@@ -50,11 +50,11 @@ export abstract class IntervalService extends BaseService {
 }
 
 function mapArgs(args:
-    | [period: DurationInputArg1, logger: Logger]
-    | [period: DurationInputArg1, logger: Logger, immediate: boolean]
-    | [period: DurationInputArg1, unit: DurationInputArg2, logger: Logger]
-    | [period: DurationInputArg1, unit: DurationInputArg2, logger: Logger, immediate: boolean]
-): [duration: DurationInputArg1, unit: DurationInputArg2 | undefined, logger: Logger, immediate: boolean | undefined] {
+    | [period: moment.DurationInputArg1, logger: Logger]
+    | [period: moment.DurationInputArg1, logger: Logger, immediate: boolean]
+    | [period: moment.DurationInputArg1, unit: moment.DurationInputArg2, logger: Logger]
+    | [period: moment.DurationInputArg1, unit: moment.DurationInputArg2, logger: Logger, immediate: boolean]
+): [duration: moment.DurationInputArg1, unit: moment.DurationInputArg2 | undefined, logger: Logger, immediate: boolean | undefined] {
 
     switch (args.length) {
         case 2:
@@ -69,8 +69,8 @@ function mapArgs(args:
 }
 
 function check3Args(args:
-    | [period: DurationInputArg1, logger: Logger, immediate: boolean]
-    | [period: DurationInputArg1, unit: DurationInputArg2, logger: Logger]
-): args is [duration: DurationInputArg1, logger: Logger, immediate: boolean] {
+    | [period: moment.DurationInputArg1, logger: Logger, immediate: boolean]
+    | [period: moment.DurationInputArg1, unit: moment.DurationInputArg2, logger: Logger]
+): args is [duration: moment.DurationInputArg1, logger: Logger, immediate: boolean] {
     return typeof args[2] === 'boolean';
 }

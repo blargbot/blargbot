@@ -2,8 +2,8 @@ import { GuildCommand, SingleThreadMiddleware } from '../../command/index';
 import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType } from '@blargbot/cluster/utils';
 import { createSafeRegExp, guard } from '@blargbot/core/utils';
-import { ApiError, DiscordRESTError, KnownMessage, KnownTextableChannel, User } from 'eris';
-import moment, { Moment } from 'moment-timezone';
+import Eris from 'eris';
+import moment from 'moment-timezone';
 
 import templates from '../../text';
 
@@ -59,7 +59,7 @@ export class TidyCommand extends GuildCommand {
             case 'INVALID_USER': return cmd.default.invalidUsers;
         }
 
-        const messages: KnownMessage[] = [];
+        const messages: Eris.KnownMessage[] = [];
         let searched = 0;
         let nextTyping = await checkTyping(context.channel, moment());
         for await (const message of fetchMessages(context)) {
@@ -122,13 +122,13 @@ interface TidyOptions {
 }
 
 interface DeleteResult {
-    success: Set<KnownMessage>;
-    failed: Set<KnownMessage>;
-    nextTyping: Moment;
+    success: Set<Eris.KnownMessage>;
+    failed: Set<Eris.KnownMessage>;
+    nextTyping: moment.Moment;
 }
 
-async function buildFilter(context: GuildCommandContext, options: TidyOptions): Promise<'INVALID_REGEX' | 'INVALID_USER' | ((message: KnownMessage) => boolean)> {
-    const conditions: Array<(message: KnownMessage) => boolean> = [];
+async function buildFilter(context: GuildCommandContext, options: TidyOptions): Promise<'INVALID_REGEX' | 'INVALID_USER' | ((message: Eris.KnownMessage) => boolean)> {
+    const conditions: Array<(message: Eris.KnownMessage) => boolean> = [];
 
     if (options.attachments)
         conditions.push(m => m.attachments.length > 0);
@@ -161,9 +161,9 @@ async function buildFilter(context: GuildCommandContext, options: TidyOptions): 
 
 }
 
-async function* fetchMessages(context: GuildCommandContext): AsyncGenerator<KnownMessage> {
+async function* fetchMessages(context: GuildCommandContext): AsyncGenerator<Eris.KnownMessage> {
     let lastId: string | undefined = context.message.id;
-    let messages: KnownMessage[];
+    let messages: Eris.KnownMessage[];
     do {
         await context.channel.sendTyping();
         messages = await context.channel.getMessages({ before: lastId, limit: 100 });
@@ -172,8 +172,8 @@ async function* fetchMessages(context: GuildCommandContext): AsyncGenerator<Know
         lastId = messages[messages.length - 1].id;
     } while (messages.length === 100);
 }
-function buildBreakdown(messages: Iterable<KnownMessage>): Array<{ user: User; count: number; }> {
-    const grouped = {} as Record<string, { user: User; count: number; }>;
+function buildBreakdown(messages: Iterable<Eris.KnownMessage>): Array<{ user: Eris.User; count: number; }> {
+    const grouped = {} as Record<string, { user: Eris.User; count: number; }>;
     for (const message of messages) {
         grouped[message.author.id] ??= { user: message.author, count: 0 };
         grouped[message.author.id].count++;
@@ -184,7 +184,7 @@ function buildBreakdown(messages: Iterable<KnownMessage>): Array<{ user: User; c
         .map(({ user, count }) => ({ user, count }));
 }
 
-async function checkTyping(channel: KnownTextableChannel, nextTyping: Moment): Promise<Moment> {
+async function checkTyping(channel: Eris.KnownTextableChannel, nextTyping: moment.Moment): Promise<moment.Moment> {
     if (!nextTyping.isSameOrBefore(moment()))
         return nextTyping;
 
@@ -192,7 +192,7 @@ async function checkTyping(channel: KnownTextableChannel, nextTyping: Moment): P
     return moment().add(5, 's');
 }
 
-async function deleteMessages(context: GuildCommandContext, nextTyping: Moment, messages: KnownMessage[]): Promise<DeleteResult> {
+async function deleteMessages(context: GuildCommandContext, nextTyping: moment.Moment, messages: Eris.KnownMessage[]): Promise<DeleteResult> {
     const remaining = new Set(messages);
     const result: DeleteResult = { success: new Set(), failed: new Set(), nextTyping };
 
@@ -202,7 +202,7 @@ async function deleteMessages(context: GuildCommandContext, nextTyping: Moment, 
     return result;
 }
 
-async function bulkDelete(context: GuildCommandContext, messages: Set<KnownMessage>, result: DeleteResult): Promise<void> {
+async function bulkDelete(context: GuildCommandContext, messages: Set<Eris.KnownMessage>, result: DeleteResult): Promise<void> {
     const cutoff = moment().add(-2, 'weeks').add(10, 'minutes');
     const within2Weeks = [...messages].filter(m => cutoff.isBefore(m.createdAt));
     while (within2Weeks.length > 0) {
@@ -215,14 +215,14 @@ async function bulkDelete(context: GuildCommandContext, messages: Set<KnownMessa
                 messages.delete(message);
             });
         } catch (err: unknown) {
-            if (err instanceof DiscordRESTError && err.code === ApiError.MISSING_PERMISSIONS)
+            if (err instanceof Eris.DiscordRESTError && err.code === Eris.ApiError.MISSING_PERMISSIONS)
                 return;
             throw err;
         }
     }
 }
 
-async function deleteIndividual(context: GuildCommandContext, messages: Set<KnownMessage>, result: DeleteResult): Promise<void> {
+async function deleteIndividual(context: GuildCommandContext, messages: Set<Eris.KnownMessage>, result: DeleteResult): Promise<void> {
     const promises = [];
     let state: 'discover' | 'noperms' | 'deleteall' = 'discover';
     for (const message of messages) {
@@ -250,18 +250,18 @@ async function deleteIndividual(context: GuildCommandContext, messages: Set<Know
     await Promise.all(promises);
 }
 
-async function deleteIndividualSafe(context: GuildCommandContext, message: KnownMessage, result: DeleteResult): Promise<'SUCCESS' | 'NO_PERMS' | 'FAILED'> {
+async function deleteIndividualSafe(context: GuildCommandContext, message: Eris.KnownMessage, result: DeleteResult): Promise<'SUCCESS' | 'NO_PERMS' | 'FAILED'> {
     try {
         await message.delete();
         result.success.add(message);
         return 'SUCCESS';
     } catch (err: unknown) {
-        if (err instanceof DiscordRESTError) {
+        if (err instanceof Eris.DiscordRESTError) {
             switch (err.code) {
-                case ApiError.UNKNOWN_MESSAGE:
+                case Eris.ApiError.UNKNOWN_MESSAGE:
                     result.success.add(message);
                     return 'FAILED';
-                case ApiError.MISSING_PERMISSIONS:
+                case Eris.ApiError.MISSING_PERMISSIONS:
                     result.failed.add(message);
                     return 'NO_PERMS';
                 default:

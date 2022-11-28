@@ -2,7 +2,7 @@ import { GuildCommand } from '../../command/index';
 import { CommandResult, GuildCommandContext, ICommand } from '@blargbot/cluster/types';
 import { CommandType } from '@blargbot/cluster/utils';
 import { CommandPermissions } from '@blargbot/domain/models';
-import { Role } from 'eris';
+import Eris from 'eris';
 
 import templates from '../../text';
 
@@ -114,7 +114,7 @@ export class EditCommandCommand extends GuildCommand {
         };
     }
 
-    public async setRole(context: GuildCommandContext, commands: readonly string[], roles: readonly Role[] | undefined): Promise<CommandResult> {
+    public async setRole(context: GuildCommandContext, commands: readonly string[], roles: readonly Eris.Role[] | undefined): Promise<CommandResult> {
         if (roles?.length === 0)
             roles = undefined;
 

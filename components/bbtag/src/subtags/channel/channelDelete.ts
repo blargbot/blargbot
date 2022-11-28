@@ -1,4 +1,4 @@
-import { DiscordRESTError } from 'eris';
+import Eris from 'eris';
 
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
@@ -42,7 +42,7 @@ export class ChannelDeleteSubtag extends CompiledSubtag {
         try {
             await channel.delete(context.auditReason());
         } catch (err: unknown) {
-            if (!(err instanceof DiscordRESTError))
+            if (!(err instanceof Eris.DiscordRESTError))
                 throw err;
 
             throw new BBTagRuntimeError('Failed to edit channel: no perms', err.message);

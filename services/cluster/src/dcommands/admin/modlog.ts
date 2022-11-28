@@ -2,7 +2,7 @@ import { GuildCommand } from '../../command/index';
 import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType } from '@blargbot/cluster/utils';
 import { guard } from '@blargbot/core/utils';
-import { ApiError, DiscordRESTError, KnownChannel } from 'eris';
+import Eris from 'eris';
 
 import templates from '../../text';
 
@@ -33,7 +33,7 @@ export class ModlogCommand extends GuildCommand {
         });
     }
 
-    public async setChannel(context: GuildCommandContext, channel: KnownChannel | undefined): Promise<CommandResult> {
+    public async setChannel(context: GuildCommandContext, channel: Eris.KnownChannel | undefined): Promise<CommandResult> {
         if (channel !== undefined && (!guard.isGuildChannel(channel) || channel.guild !== context.channel.guild))
             return cmd.setChannel.notOnGuild;
         if (channel !== undefined && !guard.isTextableChannel(channel))
@@ -81,7 +81,7 @@ export class ModlogCommand extends GuildCommand {
             try {
                 await channel.deleteMessages(cases.map(c => c.msgid));
             } catch (err: unknown) {
-                if (err instanceof DiscordRESTError && err.code === ApiError.MISSING_PERMISSIONS) {
+                if (err instanceof Eris.DiscordRESTError && err.code === Eris.ApiError.MISSING_PERMISSIONS) {
                     noperms.push(...cases.map(c => c.caseid));
                     continue;
                 }

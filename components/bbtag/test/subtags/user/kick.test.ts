@@ -1,6 +1,6 @@
 import { BBTagRuntimeError, UserNotFoundError } from '@blargbot/bbtag/errors';
 import { KickSubtag } from '@blargbot/bbtag/subtags/user/kick';
-import { Member, User } from 'eris';
+import Eris from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 
@@ -24,7 +24,7 @@ runSubtagTests({
             code: '{kick;other user}',
             expected: 'Success',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Member);
+                const member = ctx.createMock(Eris.Member);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
                     .verifiable(1)
                     .thenResolve([member.instance]);
@@ -41,7 +41,7 @@ runSubtagTests({
                 { start: 0, end: 17, error: new BBTagRuntimeError('Bot has no permissions', 'I don\'t have permission to kick users!') }
             ],
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Member);
+                const member = ctx.createMock(Eris.Member);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
                     .verifiable(1)
                     .thenResolve([member.instance]);
@@ -58,8 +58,8 @@ runSubtagTests({
                 { start: 0, end: 17, error: new BBTagRuntimeError('Bot has no permissions', 'I don\'t have permission to kick other user!') }
             ],
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
+                const member = ctx.createMock(Eris.Member);
+                const user = ctx.createMock(Eris.User);
                 member.setup(m => m.user).thenReturn(user.instance);
                 user.setup(m => m.username).thenReturn('other user');
                 ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
@@ -78,7 +78,7 @@ runSubtagTests({
                 { start: 0, end: 17, error: new BBTagRuntimeError('User has no permissions', 'You don\'t have permission to kick users!') }
             ],
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Member);
+                const member = ctx.createMock(Eris.Member);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
                     .verifiable(1)
                     .thenResolve([member.instance]);
@@ -95,8 +95,8 @@ runSubtagTests({
                 { start: 0, end: 17, error: new BBTagRuntimeError('User has no permissions', 'You don\'t have permission to kick other user!') }
             ],
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
+                const member = ctx.createMock(Eris.Member);
+                const user = ctx.createMock(Eris.User);
                 member.setup(m => m.user).thenReturn(user.instance);
                 user.setup(m => m.username).thenReturn('other user');
                 ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
@@ -112,7 +112,7 @@ runSubtagTests({
             code: '{kick;other user;My reason here}',
             expected: 'Success',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Member);
+                const member = ctx.createMock(Eris.Member);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
                     .verifiable(1)
                     .thenResolve([member.instance]);
@@ -126,7 +126,7 @@ runSubtagTests({
             code: '{kick;other user;My reason here;x}',
             expected: 'Success',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Member);
+                const member = ctx.createMock(Eris.Member);
                 const authorizer = bbctx.guild.members.get(ctx.users.authorizer.id)?.user;
                 if (authorizer === undefined)
                     throw new Error('Authorizer missing');
@@ -143,7 +143,7 @@ runSubtagTests({
             code: '{kick;other user;My reason here;}',
             expected: 'Success',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Member);
+                const member = ctx.createMock(Eris.Member);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
                     .verifiable(1)
                     .thenResolve([member.instance]);

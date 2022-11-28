@@ -16,12 +16,12 @@ import chaiBytes from 'chai-bytes';
 import chaiDateTime from 'chai-datetime';
 import chaiExclude from 'chai-exclude';
 import { APIChannel, APIGuild, APIGuildMember, APIMessage, APIRole, APITextChannel, APIThreadChannel, APIUser, ChannelType, GuildDefaultMessageNotifications, GuildExplicitContentFilter, GuildMFALevel, GuildNSFWLevel, GuildPremiumTier, GuildVerificationLevel, Snowflake } from 'discord-api-types/v9';
-import { BaseData, Channel, Client as Discord, ClientOptions as DiscordOptions, Collection, Constants, DiscordHTTPError, DiscordRESTError, ExtendedUser, Guild, KnownChannel, KnownChannelMap, KnownGuildTextableChannel, KnownTextableChannel, Member, Message, Role, Shard, ShardManager, User } from 'eris';
+import Eris from 'eris';
 import * as fs from 'fs';
 import { ClientRequest, IncomingMessage } from 'http';
 import * as inspector from 'inspector';
 import { Context, describe, it } from 'mocha';
-import moment, { Moment } from 'moment-timezone';
+import moment from 'moment-timezone';
 import path from 'path';
 import { anything } from 'ts-mockito';
 import { inspect } from 'util';
@@ -35,7 +35,7 @@ type IdPropertiesOf<T> = { [P in keyof T]-?: [P, T[P]] extends [`${string}_id` |
 type RequireIds<T, OtherProps extends keyof T = never> = RequiredProps<Partial<T>, IdPropertiesOf<T> | OtherProps>;
 
 type RuntimeSubtagTestCase<T> = Readonly<T> & {
-    readonly timestamp: Moment;
+    readonly timestamp: moment.Moment;
 }
 
 export interface SubtagTestCase {
@@ -89,9 +89,9 @@ export class SubtagTestContext {
     public readonly timer = new Timer();
     public readonly dependencies = this.createMock<InjectionContext>();
     public readonly util = this.createMock<BBTagUtilities>();
-    public readonly shard = this.createMock(Shard);
-    public readonly shards = this.createMock(ShardManager);
-    public readonly discord = this.createMock(Discord);
+    public readonly shard = this.createMock(Eris.Shard);
+    public readonly shards = this.createMock(Eris.ShardManager);
+    public readonly discord = this.createMock(Eris.Client);
     public readonly logger = this.createMock<Logger>(undefined, false);
     public readonly database = this.createMock(Database);
     public readonly tagVariablesTable = this.createMock<TagVariableStore>();
@@ -99,7 +99,7 @@ export class SubtagTestContext {
     public readonly guildTable = this.createMock<GuildStore>();
     public readonly userTable = this.createMock<UserStore>();
     public readonly limit = this.createMock(BaseRuntimeLimit);
-    public readonly discordOptions: DiscordOptions;
+    public readonly discordOptions: Eris.ClientOptions;
     public isStaff = false;
     public readonly ownedMessages: string[] = [];
 
@@ -211,14 +211,14 @@ export class SubtagTestContext {
         this.discord.setup(m => m.guildShardMap, false).thenReturn({});
         this.discord.setup(m => m.channelGuildMap, false).thenReturn({});
         this.discord.setup(m => m.options, false).thenReturn(this.discordOptions);
-        this.discord.setup(m => m._formatImage(anything() as never), false).thenCall((str: never) => Discord.prototype._formatImage.call(this.discord.instance, str));
-        this.discord.setup(m => m._formatAllowedMentions(anything() as never), false).thenCall((str: never) => Discord.prototype._formatImage.call(this.discord.instance, str));
+        this.discord.setup(m => m._formatImage(anything() as never), false).thenCall((str: never) => Eris.Client.prototype._formatImage.call(this.discord.instance, str));
+        this.discord.setup(m => m._formatAllowedMentions(anything() as never), false).thenCall((str: never) => Eris.Client.prototype._formatImage.call(this.discord.instance, str));
 
         this.shards.setup(m => m.get(0), false).thenReturn(this.shard.instance);
         this.shard.setup(m => m.client, false).thenReturn(this.discord.instance);
 
-        this.discord.setup(m => m.guilds, false).thenReturn(new Collection(Guild));
-        this.discord.setup(m => m.users, false).thenReturn(new Collection(User));
+        this.discord.setup(m => m.guilds, false).thenReturn(new Eris.Collection(Eris.Guild));
+        this.discord.setup(m => m.users, false).thenReturn(new Eris.Collection(Eris.User));
 
         this.dependencies.setup(c => c.subtags, false).thenReturn(subtags);
     }
@@ -253,14 +253,14 @@ export class SubtagTestContext {
 
         const engine = new BBTagEngine(this.dependencies.instance);
 
-        const bot = new ExtendedUser(<BaseData><unknown>this.users.bot, this.discord.instance);
+        const bot = new Eris.ExtendedUser(<Eris.BaseData><unknown>this.users.bot, this.discord.instance);
         this.discord.setup(m => m.user, false).thenReturn(bot);
 
         const guild = this.createGuild(this.guild, Object.values(this.channels), Object.values(this.members));
         this.discord.instance.guilds.add(guild);
 
         const authorizerId = this.options.authorizerId ?? this.options.authorId ?? this.users.authorizer.id;
-        this.util.setup(m => m.isUserStaff(argument.isInstanceof(Member).and(m => m.id === authorizerId && m.guild === guild).value), false).thenResolve(this.isStaff);
+        this.util.setup(m => m.isUserStaff(argument.isInstanceof(Eris.Member).and(m => m.id === authorizerId && m.guild === guild).value), false).thenResolve(this.isStaff);
 
         for (const channel of guild.channels.values())
             this.discord.setup(m => m.getChannel(channel.id), false).thenReturn(channel);
@@ -270,7 +270,7 @@ export class SubtagTestContext {
         if (channel === undefined)
             throw new Error('No text channels were added');
 
-        const message = this.createMessage<KnownGuildTextableChannel>(this.message);
+        const message = this.createMessage<Eris.KnownGuildTextableChannel>(this.message);
         this.util.setup(m => m.getMessage(channel, message.id), false).thenResolve(message);
 
         const context = new BBTagContext(engine, {
@@ -289,16 +289,16 @@ export class SubtagTestContext {
         return context;
     }
 
-    public createRESTError(code: number, message = 'Test REST error'): DiscordRESTError {
+    public createRESTError(code: number, message = 'Test REST error'): Eris.DiscordRESTError {
         const request = this.createMock(ClientRequest);
         const apiMessage = this.createMock(IncomingMessage);
 
         const x = { stack: '' };
         Error.captureStackTrace(x);
-        return new DiscordRESTError(request.instance, apiMessage.instance, { code, message }, x.stack);
+        return new Eris.DiscordRESTError(request.instance, apiMessage.instance, { code, message }, x.stack);
     }
 
-    public createHTTPError(code: number, message: string, method: string, path: string): DiscordHTTPError {
+    public createHTTPError(code: number, message: string, method: string, path: string): Eris.DiscordHTTPError {
         const request = this.createMock(ClientRequest);
         const apiMessage = this.createMock(IncomingMessage);
 
@@ -309,14 +309,14 @@ export class SubtagTestContext {
 
         const x = { stack: '' };
         Error.captureStackTrace(x);
-        return new DiscordHTTPError(request.instance, apiMessage.instance, { code, message }, x.stack);
+        return new Eris.DiscordHTTPError(request.instance, apiMessage.instance, { code, message }, x.stack);
     }
 
-    public createMessage<TChannel extends KnownTextableChannel>(settings: APIMessage): Message<TChannel>
-    public createMessage<TChannel extends KnownTextableChannel>(settings: RequireIds<APIMessage>, author: APIUser): Message<TChannel>
-    public createMessage<TChannel extends KnownTextableChannel>(...args: [APIMessage] | [RequireIds<APIMessage>, APIUser]): Message<TChannel> {
+    public createMessage<TChannel extends Eris.KnownTextableChannel>(settings: APIMessage): Eris.Message<TChannel>
+    public createMessage<TChannel extends Eris.KnownTextableChannel>(settings: RequireIds<APIMessage>, author: APIUser): Eris.Message<TChannel>
+    public createMessage<TChannel extends Eris.KnownTextableChannel>(...args: [APIMessage] | [RequireIds<APIMessage>, APIUser]): Eris.Message<TChannel> {
         const data = args.length === 1 ? args[0] : SubtagTestContext.createApiMessage(...args);
-        return new Message<TChannel>(<BaseData><unknown>data, this.discord.instance);
+        return new Eris.Message<TChannel>(<Eris.BaseData><unknown>data, this.discord.instance);
     }
 
     public static createApiMessage(settings: RequireIds<APIMessage>, author: APIUser): APIMessage {
@@ -332,14 +332,14 @@ export class SubtagTestContext {
             pinned: false,
             timestamp: '1970-01-01T00:00:00Z',
             tts: false,
-            type: Constants.MessageTypes.DEFAULT,
+            type: Eris.Constants.MessageTypes.DEFAULT,
             ...settings
         };
     }
 
-    public createUser(settings: RequireIds<APIUser>): User {
+    public createUser(settings: RequireIds<APIUser>): Eris.User {
         const data = SubtagTestContext.createApiUser(settings);
-        return new User(<BaseData><unknown>data, this.discord.instance);
+        return new Eris.User(<Eris.BaseData><unknown>data, this.discord.instance);
     }
 
     public static createApiUser(settings: RequireIds<APIUser>): APIUser {
@@ -351,9 +351,9 @@ export class SubtagTestContext {
         };
     }
 
-    public createGuildMember(guild: Guild | undefined, settings: RequireIds<APIGuildMember>, user: APIUser): Member {
+    public createGuildMember(guild: Eris.Guild | undefined, settings: RequireIds<APIGuildMember>, user: APIUser): Eris.Member {
         const data = SubtagTestContext.createApiGuildMember(settings, user);
-        return new Member(<BaseData><unknown>data, guild, this.discord.instance);
+        return new Eris.Member(<Eris.BaseData><unknown>data, guild, this.discord.instance);
     }
 
     public static createApiGuildMember(settings: RequireIds<APIGuildMember>, user: APIUser): RequiredProps<APIGuildMember, 'user'> {
@@ -367,9 +367,9 @@ export class SubtagTestContext {
         };
     }
 
-    public createRole(guild: Guild, settings: RequireIds<APIRole>): Role {
+    public createRole(guild: Eris.Guild, settings: RequireIds<APIRole>): Eris.Role {
         const data = SubtagTestContext.createApiRole(settings);
-        return new Role(<BaseData><unknown>data, guild);
+        return new Eris.Role(<Eris.BaseData><unknown>data, guild);
     }
 
     public static createApiRole(settings: RequireIds<APIRole>): APIRole {
@@ -385,9 +385,9 @@ export class SubtagTestContext {
         };
     }
 
-    public createGuild(settings: APIGuild | RequireIds<APIGuild>, channels: APIChannel[], members: APIGuildMember[]): Guild {
+    public createGuild(settings: APIGuild | RequireIds<APIGuild>, channels: APIChannel[], members: APIGuildMember[]): Eris.Guild {
         const data = 'hub_type' in settings ? settings : SubtagTestContext.createApiGuild(settings);
-        const guild = new Guild(<BaseData><unknown>{ ...data, members: members, channels: channels }, this.discord.instance);
+        const guild = new Eris.Guild(<Eris.BaseData><unknown>{ ...data, members: members, channels: channels }, this.discord.instance);
         return guild;
     }
 
@@ -427,12 +427,12 @@ export class SubtagTestContext {
         };
     }
 
-    public createChannel<T extends keyof KnownChannelMap>(settings: RequireIds<APIChannel> & { type: T; }): KnownChannelMap[T]
-    public createChannel(settings: RequireIds<APITextChannel>): KnownTextableChannel
-    public createChannel(settings: RequireIds<APIChannel>): KnownChannel
-    public createChannel(settings: RequireIds<APIChannel>): KnownChannel {
+    public createChannel<T extends keyof Eris.KnownChannelMap>(settings: RequireIds<APIChannel> & { type: T; }): Eris.KnownChannelMap[T]
+    public createChannel(settings: RequireIds<APITextChannel>): Eris.KnownTextableChannel
+    public createChannel(settings: RequireIds<APIChannel>): Eris.KnownChannel
+    public createChannel(settings: RequireIds<APIChannel>): Eris.KnownChannel {
         const data = SubtagTestContext.createApiChannel(settings);
-        return Channel.from(<BaseData><unknown>data, this.discord.instance);
+        return Eris.Channel.from(<Eris.BaseData><unknown>data, this.discord.instance);
     }
 
     public static createApiChannel<T extends ChannelType>(settings: RequireIds<Extract<APIChannel, { type: T; }>> & { type: T; }): Extract<APIChannel, { type: T; }>;

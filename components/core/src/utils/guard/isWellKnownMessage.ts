@@ -1,7 +1,7 @@
-import { KnownTextableChannel, Message, PossiblyUncachedTextableChannel } from 'eris';
+import Eris from 'eris';
 
 import { isWellKnownChannel } from './isWellKnownChannel';
 
-export function isWellKnownMessage<C extends PossiblyUncachedTextableChannel>(message: Message<C>): message is Message<C & KnownTextableChannel> {
+export function isWellKnownMessage<C extends Eris.PossiblyUncachedTextableChannel>(message: Eris.Message<C>): message is Eris.Message<C & Eris.KnownTextableChannel> {
     return isWellKnownChannel(message.channel);
 }

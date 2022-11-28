@@ -1,4 +1,4 @@
-import { Member } from 'eris';
+import Eris from 'eris';
 import moment from 'moment-timezone';
 
 import { BBTagContext } from '../../BBTagContext';
@@ -54,7 +54,7 @@ export class UserTimeoutSubtag extends CompiledSubtag {
         return this.#getUserCommunicationDisabledUntil(member, format);
     }
 
-    #getUserCommunicationDisabledUntil(member: Member, format: string): string {
+    #getUserCommunicationDisabledUntil(member: Eris.Member, format: string): string {
         if (typeof member.communicationDisabledUntil !== 'number')
             throw new BBTagRuntimeError('User not timed out');
         return moment(member.communicationDisabledUntil).utcOffset(0).format(format);

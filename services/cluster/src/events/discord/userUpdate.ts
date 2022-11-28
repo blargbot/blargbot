@@ -2,14 +2,14 @@ import { Cluster } from '@blargbot/cluster';
 import { guard } from '@blargbot/cluster/utils';
 import { Lazy } from '@blargbot/core/Lazy';
 import { DiscordEventService } from '@blargbot/core/serviceTypes';
-import { PartialUser, User } from 'eris';
+import Eris from 'eris';
 
 export class DiscordUserUpdateHandler extends DiscordEventService<'userUpdate'> {
     public constructor(protected readonly cluster: Cluster) {
         super(cluster.discord, 'userUpdate', cluster.logger, (user, oldUser) => this.execute(user, oldUser));
     }
 
-    public async execute(user: User | undefined | null, oldUser: PartialUser | null | undefined): Promise<void> {
+    public async execute(user: Eris.User | undefined | null, oldUser: Eris.PartialUser | null | undefined): Promise<void> {
         if (!guard.hasValue(user) || user.id === this.cluster.discord.user.id)
             return;
 
@@ -19,7 +19,7 @@ export class DiscordUserUpdateHandler extends DiscordEventService<'userUpdate'> 
             return;
         }
 
-        const fullOldUser = new Lazy(() => new User({ ...oldUser }, this.cluster.discord));
+        const fullOldUser = new Lazy(() => new Eris.User({ ...oldUser }, this.cluster.discord));
         if (oldUser.username !== user.username || oldUser.discriminator !== user.discriminator)
             promises.push(this.#modlogTagUpdate(user, fullOldUser.value));
 
@@ -29,7 +29,7 @@ export class DiscordUserUpdateHandler extends DiscordEventService<'userUpdate'> 
         await Promise.all(promises);
     }
 
-    async #updateDb(user: User): Promise<void> {
+    async #updateDb(user: Eris.User): Promise<void> {
         try {
             await this.cluster.database.users.upsert(user);
         } catch (ex: unknown) {
@@ -37,7 +37,7 @@ export class DiscordUserUpdateHandler extends DiscordEventService<'userUpdate'> 
         }
     }
 
-    async #modlogTagUpdate(user: User, oldUser: User): Promise<void> {
+    async #modlogTagUpdate(user: Eris.User, oldUser: Eris.User): Promise<void> {
         try {
             await this.cluster.moderation.eventLog.userTagUpdated(user, oldUser);
         } catch (ex: unknown) {
@@ -45,7 +45,7 @@ export class DiscordUserUpdateHandler extends DiscordEventService<'userUpdate'> 
         }
     }
 
-    async #modlogAvatarUpdate(user: User, oldUser: User): Promise<void> {
+    async #modlogAvatarUpdate(user: Eris.User, oldUser: Eris.User): Promise<void> {
         try {
             await this.cluster.moderation.eventLog.userAvatarUpdated(user, oldUser);
         } catch (ex: unknown) {

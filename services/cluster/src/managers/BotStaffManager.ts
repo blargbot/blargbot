@@ -1,5 +1,5 @@
 import { Cluster } from '@blargbot/cluster';
-import { Guild } from 'eris';
+import Eris from 'eris';
 
 export class BotStaffManager {
     readonly #staff: Set<string>;
@@ -46,7 +46,7 @@ export class BotStaffManager {
 
         return { staff, support };
     }
-    async #userIdsWithRole(guild: Guild, roleId: string): Promise<string[]> {
+    async #userIdsWithRole(guild: Eris.Guild, roleId: string): Promise<string[]> {
         await this.#cluster.util.ensureMemberCache(guild);
         return guild.members.filter(m => m.roles.includes(roleId)).map(m => m.id);
     }

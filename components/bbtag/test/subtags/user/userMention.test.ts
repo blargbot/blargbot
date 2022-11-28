@@ -1,6 +1,6 @@
 import { UserMentionSubtag } from '@blargbot/bbtag/subtags/user/userMention';
 import { expect } from 'chai';
-import { Member, User } from 'eris';
+import Eris from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 import { createGetUserPropTestCases } from './_getUserPropTest';
@@ -82,8 +82,8 @@ runSubtagTests({
                 ctx.users.other.id = '098765434512212678';
             },
             postSetup(bbctx, ctx) {
-                const otherMember = ctx.createMock(Member);
-                const otherUser = ctx.createMock(User);
+                const otherMember = ctx.createMock(Eris.Member);
+                const otherUser = ctx.createMock(Eris.User);
                 otherMember.setup(m => m.user, false).thenReturn(otherUser.instance);
                 otherUser.setup(m => m.id).thenReturn('098765434512212678');
                 otherUser.setup(m => m.mention).thenReturn('<@098765434512212678>');

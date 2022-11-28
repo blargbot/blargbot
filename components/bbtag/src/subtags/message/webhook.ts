@@ -1,5 +1,5 @@
 import { parse } from '@blargbot/core/utils';
-import { DiscordHTTPError, DiscordRESTError } from 'eris';
+import Eris from 'eris';
 
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
@@ -71,7 +71,7 @@ export class WebhookSubtag extends CompiledSubtag {
                 ]
             });
         } catch (err: unknown) {
-            if (err instanceof DiscordHTTPError || err instanceof DiscordRESTError)
+            if (err instanceof Eris.DiscordHTTPError || err instanceof Eris.DiscordRESTError)
                 throw new BBTagRuntimeError(`Error executing webhook: ${err.message}`);
             context.logger.error('Error executing webhook', err);
             throw new BBTagRuntimeError('Error executing webhook: UNKNOWN');

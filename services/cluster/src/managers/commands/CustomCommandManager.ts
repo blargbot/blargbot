@@ -5,7 +5,7 @@ import { CommandType, commandTypeDetails, guard } from '@blargbot/cluster/utils'
 import { metrics } from '@blargbot/core/Metrics';
 import { CommandPermissions, FlagDefinition, NamedGuildCommandTag, StoredTag } from '@blargbot/domain/models';
 import { IFormattable, util } from '@blargbot/formatting';
-import { Guild, KnownTextableChannel, User } from 'eris';
+import Eris from 'eris';
 
 import templates from '../../text';
 import { CommandManager } from './CommandManager';
@@ -17,11 +17,11 @@ export class CustomCommandManager extends CommandManager<NamedGuildCommandTag> {
         super(cluster);
     }
 
-    protected async getCore(name: string, location?: Guild | KnownTextableChannel): Promise<CommandGetCoreResult<NamedGuildCommandTag>> {
+    protected async getCore(name: string, location?: Eris.Guild | Eris.KnownTextableChannel): Promise<CommandGetCoreResult<NamedGuildCommandTag>> {
         if (location === undefined)
             return { state: 'NOT_FOUND' };
 
-        const guild = location instanceof Guild ? location
+        const guild = location instanceof Eris.Guild ? location
             : guard.isGuildChannel(location) ? location.guild
                 : undefined;
 
@@ -43,18 +43,18 @@ export class CustomCommandManager extends CommandManager<NamedGuildCommandTag> {
         return Promise.resolve();
     }
 
-    protected async allCommandNames(location?: Guild | KnownTextableChannel): Promise<Iterable<string>> {
+    protected async allCommandNames(location?: Eris.Guild | Eris.KnownTextableChannel): Promise<Iterable<string>> {
         if (location === undefined)
             return [];
 
-        const guild = location instanceof Guild ? location : guard.isGuildChannel(location) ? location.guild : undefined;
+        const guild = location instanceof Eris.Guild ? location : guard.isGuildChannel(location) ? location.guild : undefined;
         if (guild === undefined)
             return [];
 
         return await this.cluster.database.guilds.getCustomCommandNames(guild.id);
     }
 
-    public async configure(_user: User, names: string[], guild: Guild, permissions: Partial<CommandPermissions>): Promise<readonly string[]> {
+    public async configure(_user: Eris.User, names: string[], guild: Eris.Guild, permissions: Partial<CommandPermissions>): Promise<readonly string[]> {
         if (names.length === 0)
             return [];
 

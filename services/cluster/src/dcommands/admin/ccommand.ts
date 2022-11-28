@@ -8,8 +8,8 @@ import { FlagDefinition, NamedGuildCommandTag, NamedGuildSourceCommandTag } from
 import { IFormattable, util } from '@blargbot/formatting';
 import { mapping } from '@blargbot/mapping';
 import { createHmac } from 'crypto';
-import { Role } from 'eris';
-import moment, { Duration } from 'moment-timezone';
+import Eris from 'eris';
+import moment from 'moment-timezone';
 import fetch from 'node-fetch';
 
 import { RawBBTagCommandResult } from '../../command/RawBBTagCommandResult';
@@ -342,7 +342,7 @@ export class CustomCommandCommand extends GuildCommand {
         }
     }
 
-    public async setCommandCooldown(context: GuildCommandContext, commandName: string, cooldown?: Duration): Promise<CommandResult> {
+    public async setCommandCooldown(context: GuildCommandContext, commandName: string, cooldown?: moment.Duration): Promise<CommandResult> {
         if (cooldown !== undefined && cooldown.asMilliseconds() < 0)
             return cmd.cooldown.mustBePositive;
 
@@ -446,7 +446,7 @@ export class CustomCommandCommand extends GuildCommand {
         return cmd.hide.success({ name: match.name, hidden: isNowHidden });
     }
 
-    public async setCommandRoles(context: GuildCommandContext, commandName: string, roles: readonly Role[]): Promise<CommandResult> {
+    public async setCommandRoles(context: GuildCommandContext, commandName: string, roles: readonly Eris.Role[]): Promise<CommandResult> {
         const match = await this.#requestEditableCommand(context, commandName);
         if ('response' in match)
             return match.response;

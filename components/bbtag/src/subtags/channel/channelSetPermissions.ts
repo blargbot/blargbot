@@ -1,5 +1,5 @@
 import { guard, parse } from '@blargbot/core/utils';
-import { Constants, DiscordRESTError } from 'eris';
+import Eris from 'eris';
 
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation/index';
@@ -67,18 +67,18 @@ export class ChannelSetPermissionsSubtag extends CompiledSubtag {
 
             return channel.id;
         } catch (err: unknown) {
-            if (!(err instanceof DiscordRESTError))
+            if (!(err instanceof Eris.DiscordRESTError))
                 throw err;
 
             throw new BBTagRuntimeError('Failed to edit channel: no perms', err.message);
         }
     }
 
-    #getOverwriteType(typeStr: string): Constants['PermissionOverwriteTypes'][keyof Constants['PermissionOverwriteTypes']] {
+    #getOverwriteType(typeStr: string): Eris.Constants['PermissionOverwriteTypes'][keyof Eris.Constants['PermissionOverwriteTypes']] {
 
         switch (typeStr) {
-            case 'member': return Constants.PermissionOverwriteTypes.USER;
-            case 'role': return Constants.PermissionOverwriteTypes.ROLE;
+            case 'member': return Eris.Constants.PermissionOverwriteTypes.USER;
+            case 'role': return Eris.Constants.PermissionOverwriteTypes.ROLE;
             default: throw new BBTagRuntimeError('Type must be member or role');
         }
     }

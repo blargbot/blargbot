@@ -1,6 +1,6 @@
 import { CommandContext, GlobalCommand } from '../../command/index';
 import { CommandType } from '@blargbot/cluster/utils';
-import { User } from 'eris';
+import Eris from 'eris';
 import moment from 'moment-timezone';
 
 import templates from '../../text';
@@ -32,7 +32,7 @@ export class NamesCommand extends GlobalCommand {
         });
     }
 
-    public async listNames(context: CommandContext, user: User, all: boolean, detailed: boolean): Promise<CommandResult> {
+    public async listNames(context: CommandContext, user: Eris.User, all: boolean, detailed: boolean): Promise<CommandResult> {
         let usernames = await context.database.users.getUsernames(user.id);
         if (usernames === undefined || usernames.length === 0)
             return cmd.list.none.ever({ user });

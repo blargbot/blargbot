@@ -1,12 +1,12 @@
 import { BBTagRuntimeError, NotANumberError, UserNotFoundError } from '@blargbot/bbtag/errors';
 import { BanSubtag } from '@blargbot/bbtag/subtags/user/ban';
 import { argument } from '@blargbot/test-util/mock';
-import { Member, User } from 'eris';
-import moment, { Duration } from 'moment-timezone';
+import Eris from 'eris';
+import moment from 'moment-timezone';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 
-function isDuration(ms: number): Duration {
+function isDuration(ms: number): moment.Duration {
     return argument.is(moment.isDuration).and(x =>
         x.asMilliseconds() === ms).value;
 }
@@ -34,8 +34,8 @@ runSubtagTests({
             code: '{ban;other user}',
             expected: 'true',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
+                const member = ctx.createMock(Eris.Member);
+                const user = ctx.createMock(Eris.User);
                 member.setup(m => m.user).thenReturn(user.instance);
                 ctx.util.setup(m => m.getUser('other user'))
                     .verifiable(1)
@@ -53,8 +53,8 @@ runSubtagTests({
             code: '{ban;other user}',
             expected: 'true',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
+                const member = ctx.createMock(Eris.Member);
+                const user = ctx.createMock(Eris.User);
                 member.setup(m => m.user).thenReturn(user.instance);
                 ctx.util.setup(m => m.getUser('other user'))
                     .verifiable(1)
@@ -75,8 +75,8 @@ runSubtagTests({
                 { start: 0, end: 16, error: new BBTagRuntimeError('Bot has no permissions') }
             ],
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
+                const member = ctx.createMock(Eris.Member);
+                const user = ctx.createMock(Eris.User);
                 member.setup(m => m.user).thenReturn(user.instance);
                 ctx.util.setup(m => m.getUser('other user'))
                     .verifiable(1)
@@ -97,8 +97,8 @@ runSubtagTests({
                 { start: 0, end: 16, error: new BBTagRuntimeError('User has no permissions') }
             ],
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
+                const member = ctx.createMock(Eris.Member);
+                const user = ctx.createMock(Eris.User);
                 member.setup(m => m.user).thenReturn(user.instance);
                 ctx.util.setup(m => m.getUser('other user'))
                     .verifiable(1)
@@ -119,8 +119,8 @@ runSubtagTests({
                 { start: 0, end: 16, error: new BBTagRuntimeError('User has no permissions') }
             ],
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
+                const member = ctx.createMock(Eris.Member);
+                const user = ctx.createMock(Eris.User);
                 member.setup(m => m.user).thenReturn(user.instance);
                 ctx.util.setup(m => m.getUser('other user'))
                     .verifiable(1)
@@ -141,8 +141,8 @@ runSubtagTests({
                 { start: 0, end: 16, error: new BBTagRuntimeError('Bot has no permissions') }
             ],
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
+                const member = ctx.createMock(Eris.Member);
+                const user = ctx.createMock(Eris.User);
                 member.setup(m => m.user).thenReturn(user.instance);
                 ctx.util.setup(m => m.getUser('other user'))
                     .verifiable(1)
@@ -160,8 +160,8 @@ runSubtagTests({
             code: '{ban;other user;5}',
             expected: 'true',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
+                const member = ctx.createMock(Eris.Member);
+                const user = ctx.createMock(Eris.User);
                 member.setup(m => m.user).thenReturn(user.instance);
                 ctx.util.setup(m => m.getUser('other user'))
                     .verifiable(1)
@@ -179,8 +179,8 @@ runSubtagTests({
             code: '{ban;other user;-1}',
             expected: 'true',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
+                const member = ctx.createMock(Eris.Member);
+                const user = ctx.createMock(Eris.User);
                 member.setup(m => m.user).thenReturn(user.instance);
                 ctx.util.setup(m => m.getUser('other user'))
                     .verifiable(1)
@@ -201,8 +201,8 @@ runSubtagTests({
                 { start: 0, end: 20, error: new NotANumberError('abc').withDisplay('false') }
             ],
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
+                const member = ctx.createMock(Eris.Member);
+                const user = ctx.createMock(Eris.User);
                 member.setup(m => m.user).thenReturn(user.instance);
                 ctx.util.setup(m => m.getUser('other user'))
                     .verifiable(1)
@@ -217,8 +217,8 @@ runSubtagTests({
             code: '{ban;other user;;My custom reason}',
             expected: 'true',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
+                const member = ctx.createMock(Eris.Member);
+                const user = ctx.createMock(Eris.User);
                 member.setup(m => m.user).thenReturn(user.instance);
                 ctx.util.setup(m => m.getUser('other user'))
                     .verifiable(1)
@@ -236,8 +236,8 @@ runSubtagTests({
             code: '{ban;other user;7;My custom reason}',
             expected: 'true',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
+                const member = ctx.createMock(Eris.Member);
+                const user = ctx.createMock(Eris.User);
                 member.setup(m => m.user).thenReturn(user.instance);
                 ctx.util.setup(m => m.getUser('other user'))
                     .verifiable(1)
@@ -255,8 +255,8 @@ runSubtagTests({
             code: '{ban;other user;;;5 days}',
             expected: '432000000',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
+                const member = ctx.createMock(Eris.Member);
+                const user = ctx.createMock(Eris.User);
                 member.setup(m => m.user).thenReturn(user.instance);
                 ctx.util.setup(m => m.getUser('other user'))
                     .verifiable(1)
@@ -274,8 +274,8 @@ runSubtagTests({
             code: '{ban;other user;7;My custom reason;2 hours}',
             expected: '7200000',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
+                const member = ctx.createMock(Eris.Member);
+                const user = ctx.createMock(Eris.User);
                 member.setup(m => m.user).thenReturn(user.instance);
                 ctx.util.setup(m => m.getUser('other user'))
                     .verifiable(1)
@@ -293,8 +293,8 @@ runSubtagTests({
             code: '{ban;other user;;;;x}',
             expected: 'true',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
+                const member = ctx.createMock(Eris.Member);
+                const user = ctx.createMock(Eris.User);
                 member.setup(m => m.user).thenReturn(user.instance);
                 const authorizer = bbctx.guild.members.get(ctx.users.authorizer.id)?.user;
                 if (authorizer === undefined)
@@ -315,8 +315,8 @@ runSubtagTests({
             code: '{ban;other user;;;;false}',
             expected: 'true',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
+                const member = ctx.createMock(Eris.Member);
+                const user = ctx.createMock(Eris.User);
                 member.setup(m => m.user).thenReturn(user.instance);
                 const authorizer = bbctx.guild.members.get(ctx.users.authorizer.id)?.user;
                 if (authorizer === undefined)
@@ -337,8 +337,8 @@ runSubtagTests({
             code: '{ban;other user;;;;true}',
             expected: 'true',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
+                const member = ctx.createMock(Eris.Member);
+                const user = ctx.createMock(Eris.User);
                 member.setup(m => m.user).thenReturn(user.instance);
                 const authorizer = bbctx.guild.members.get(ctx.users.authorizer.id)?.user;
                 if (authorizer === undefined)
@@ -359,8 +359,8 @@ runSubtagTests({
             code: '{ban;other user;4;My custom reason;2 hours 30s;abc}',
             expected: '7230000',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
+                const member = ctx.createMock(Eris.Member);
+                const user = ctx.createMock(Eris.User);
                 member.setup(m => m.user).thenReturn(user.instance);
                 const authorizer = bbctx.guild.members.get(ctx.users.authorizer.id)?.user;
                 if (authorizer === undefined)
