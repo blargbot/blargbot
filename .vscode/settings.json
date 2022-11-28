@@ -41,5 +41,6 @@
     "subtag",
     "subtags",
     "timedout"
-  ]
+  ],
+  "task.allowAutomaticTasks": "on"
 }

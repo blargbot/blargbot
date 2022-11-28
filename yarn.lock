@@ -249,9 +249,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@blargbot/api@workspace:^, @blargbot/api@workspace:src/api":
+"@blargbot/api@workspace:^, @blargbot/api@workspace:services/api/src":
   version: 0.0.0-use.local
-  resolution: "@blargbot/api@workspace:src/api"
+  resolution: "@blargbot/api@workspace:services/api/src"
   dependencies:
     "@blargbot/bbtag": "workspace:^"
     "@blargbot/cluster": "workspace:^"
@@ -276,9 +276,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@blargbot/bbtag-tests@workspace:test/bbtag":
+"@blargbot/bbtag-tests@workspace:components/bbtag/test":
   version: 0.0.0-use.local
-  resolution: "@blargbot/bbtag-tests@workspace:test/bbtag"
+  resolution: "@blargbot/bbtag-tests@workspace:components/bbtag/test"
   dependencies:
     "@blargbot/bbtag": "workspace:^"
     "@blargbot/config": "workspace:^"
@@ -304,9 +304,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@blargbot/bbtag@workspace:^, @blargbot/bbtag@workspace:src/bbtag":
+"@blargbot/bbtag@workspace:^, @blargbot/bbtag@workspace:components/bbtag/src":
   version: 0.0.0-use.local
-  resolution: "@blargbot/bbtag@workspace:src/bbtag"
+  resolution: "@blargbot/bbtag@workspace:components/bbtag/src"
   dependencies:
     "@blargbot/config": "workspace:^"
     "@blargbot/core": "workspace:^"
@@ -331,9 +331,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@blargbot/cluster-tests@workspace:test/cluster":
+"@blargbot/cluster-tests@workspace:services/cluster/test":
   version: 0.0.0-use.local
-  resolution: "@blargbot/cluster-tests@workspace:test/cluster"
+  resolution: "@blargbot/cluster-tests@workspace:services/cluster/test"
   dependencies:
     "@blargbot/bbtag": "workspace:^"
     "@blargbot/cluster": "workspace:^"
@@ -351,9 +351,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@blargbot/cluster@workspace:^, @blargbot/cluster@workspace:src/cluster":
+"@blargbot/cluster@workspace:^, @blargbot/cluster@workspace:services/cluster/src":
   version: 0.0.0-use.local
-  resolution: "@blargbot/cluster@workspace:src/cluster"
+  resolution: "@blargbot/cluster@workspace:services/cluster/src"
   dependencies:
     "@blargbot/bbtag": "workspace:^"
     "@blargbot/config": "workspace:^"
@@ -387,15 +387,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@blargbot/config@workspace:^, @blargbot/config@workspace:src/config":
+"@blargbot/config@workspace:^, @blargbot/config@workspace:components/config/src":
   version: 0.0.0-use.local
-  resolution: "@blargbot/config@workspace:src/config"
+  resolution: "@blargbot/config@workspace:components/config/src"
   languageName: unknown
   linkType: soft
 
-"@blargbot/core-tests@workspace:test/core":
+"@blargbot/core-tests@workspace:components/core/test":
   version: 0.0.0-use.local
-  resolution: "@blargbot/core-tests@workspace:test/core"
+  resolution: "@blargbot/core-tests@workspace:components/core/test"
   dependencies:
     "@blargbot/core": "workspace:^"
     "@blargbot/domain": "workspace:^"
@@ -411,9 +411,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@blargbot/core@workspace:^, @blargbot/core@workspace:src/core":
+"@blargbot/core@workspace:^, @blargbot/core@workspace:components/core/src":
   version: 0.0.0-use.local
-  resolution: "@blargbot/core@workspace:src/core"
+  resolution: "@blargbot/core@workspace:components/core/src"
   dependencies:
     "@blargbot/bbtag": "workspace:^"
     "@blargbot/config": "workspace:^"
@@ -447,9 +447,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@blargbot/crowdin@workspace:^, @blargbot/crowdin@workspace:src/crowdin":
+"@blargbot/crowdin@workspace:^, @blargbot/crowdin@workspace:components/crowdin/src":
   version: 0.0.0-use.local
-  resolution: "@blargbot/crowdin@workspace:src/crowdin"
+  resolution: "@blargbot/crowdin@workspace:components/crowdin/src"
   dependencies:
     "@blargbot/formatting": "workspace:^"
     "@types/node-fetch": ^2.6.2
@@ -457,9 +457,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@blargbot/database@workspace:^, @blargbot/database@workspace:src/database":
+"@blargbot/database@workspace:^, @blargbot/database@workspace:components/database/src":
   version: 0.0.0-use.local
-  resolution: "@blargbot/database@workspace:src/database"
+  resolution: "@blargbot/database@workspace:components/database/src"
   dependencies:
     "@blargbot/config": "workspace:^"
     "@blargbot/core": "workspace:^"
@@ -481,24 +481,24 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@blargbot/domain@workspace:^, @blargbot/domain@workspace:src/domain":
+"@blargbot/domain@workspace:^, @blargbot/domain@workspace:components/domain/src":
   version: 0.0.0-use.local
-  resolution: "@blargbot/domain@workspace:src/domain"
+  resolution: "@blargbot/domain@workspace:components/domain/src"
   dependencies:
     "@blargbot/formatting": "workspace:^"
     moment-timezone: ^0.5.39
   languageName: unknown
   linkType: soft
 
-"@blargbot/formatting@workspace:^, @blargbot/formatting@workspace:src/formatting":
+"@blargbot/formatting@workspace:^, @blargbot/formatting@workspace:components/formatting/src":
   version: 0.0.0-use.local
-  resolution: "@blargbot/formatting@workspace:src/formatting"
+  resolution: "@blargbot/formatting@workspace:components/formatting/src"
   languageName: unknown
   linkType: soft
 
-"@blargbot/image@workspace:^, @blargbot/image@workspace:src/image":
+"@blargbot/image@workspace:^, @blargbot/image@workspace:components/image/src":
   version: 0.0.0-use.local
-  resolution: "@blargbot/image@workspace:src/image"
+  resolution: "@blargbot/image@workspace:components/image/src"
   dependencies:
     "@blargbot/config": "workspace:^"
     "@blargbot/core": "workspace:^"
@@ -518,9 +518,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@blargbot/logger@workspace:^, @blargbot/logger@workspace:src/logger":
+"@blargbot/logger@workspace:^, @blargbot/logger@workspace:components/logger/src":
   version: 0.0.0-use.local
-  resolution: "@blargbot/logger@workspace:src/logger"
+  resolution: "@blargbot/logger@workspace:components/logger/src"
   dependencies:
     "@blargbot/config": "workspace:^"
     "@sentry/node": ^7.21.1
@@ -529,17 +529,17 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@blargbot/mapping@workspace:^, @blargbot/mapping@workspace:src/mapping":
+"@blargbot/mapping@workspace:^, @blargbot/mapping@workspace:components/mapping/src":
   version: 0.0.0-use.local
-  resolution: "@blargbot/mapping@workspace:src/mapping"
+  resolution: "@blargbot/mapping@workspace:components/mapping/src"
   dependencies:
     moment-timezone: ^0.5.39
   languageName: unknown
   linkType: soft
 
-"@blargbot/master@workspace:src/master":
+"@blargbot/master@workspace:services/master/src":
   version: 0.0.0-use.local
-  resolution: "@blargbot/master@workspace:src/master"
+  resolution: "@blargbot/master@workspace:services/master/src"
   dependencies:
     "@blargbot/api": "workspace:^"
     "@blargbot/cluster": "workspace:^"
@@ -559,15 +559,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@blargbot/res@workspace:^, @blargbot/res@workspace:src/res":
+"@blargbot/res@workspace:^, @blargbot/res@workspace:components/res/src":
   version: 0.0.0-use.local
-  resolution: "@blargbot/res@workspace:src/res"
+  resolution: "@blargbot/res@workspace:components/res/src"
   languageName: unknown
   linkType: soft
 
-"@blargbot/test-util@workspace:^, @blargbot/test-util@workspace:test/testUtil":
+"@blargbot/test-util@workspace:^, @blargbot/test-util@workspace:components/test-util/src":
   version: 0.0.0-use.local
-  resolution: "@blargbot/test-util@workspace:test/testUtil"
+  resolution: "@blargbot/test-util@workspace:components/test-util/src"
   dependencies:
     "@blargbot/core": "workspace:^"
     "@blargbot/domain": "workspace:^"
@@ -1102,14 +1102,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/chai@npm:*":
-  version: 4.3.3
-  resolution: "@types/chai@npm:4.3.3"
-  checksum: 20cd094753e137cfc35939cae7f0ed78ecda7861e5c94704efab6979b9121a63807e9b631bdcf3a2792d6c6dba44050b13387262f9e63ebb040741c01c345f0a
-  languageName: node
-  linkType: hard
-
-"@types/chai@npm:^4.3.4":
+"@types/chai@npm:*, @types/chai@npm:^4.3.4":
   version: 4.3.4
   resolution: "@types/chai@npm:4.3.4"
   checksum: 571184967beb03bf64c4392a13a7d44e72da9af5a1e83077ff81c39cf59c0fda2a5c78d2005084601cf8f3d11726608574d8b5b4a0e3e9736792807afd926cd0
@@ -2444,22 +2437,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chai@npm:>1.9.0":
-  version: 4.3.6
-  resolution: "chai@npm:4.3.6"
-  dependencies:
-    assertion-error: ^1.1.0
-    check-error: ^1.0.2
-    deep-eql: ^3.0.1
-    get-func-name: ^2.0.0
-    loupe: ^2.3.1
-    pathval: ^1.1.1
-    type-detect: ^4.0.5
-  checksum: acff93fd537f96d4a4d62dd83810285dffcfccb5089e1bf2a1205b28ec82d93dff551368722893cf85004282df10ee68802737c33c90c5493957ed449ed7ce71
-  languageName: node
-  linkType: hard
-
-"chai@npm:^4.3.7":
+"chai@npm:>1.9.0, chai@npm:^4.3.7":
   version: 4.3.7
   resolution: "chai@npm:4.3.7"
   dependencies:
@@ -2905,15 +2883,6 @@ __metadata:
   dependencies:
     mimic-response: ^3.1.0
   checksum: d377cf47e02d805e283866c3f50d3d21578b779731e8c5072d6ce8c13cc31493db1c2f6784da9d1d5250822120cefa44f1deab112d5981015f2e17444b763812
-  languageName: node
-  linkType: hard
-
-"deep-eql@npm:^3.0.1":
-  version: 3.0.1
-  resolution: "deep-eql@npm:3.0.1"
-  dependencies:
-    type-detect: ^4.0.0
-  checksum: 4f4c9fb79eb994fb6e81d4aa8b063adc40c00f831588aa65e20857d5d52f15fb23034a6576ecf886f7ff6222d5ae42e71e9b7d57113e0715b1df7ea1e812b125
   languageName: node
   linkType: hard
 
@@ -5042,11 +5011,11 @@ __metadata:
   linkType: hard
 
 "loupe@npm:^2.3.1":
-  version: 2.3.4
-  resolution: "loupe@npm:2.3.4"
+  version: 2.3.6
+  resolution: "loupe@npm:2.3.6"
   dependencies:
     get-func-name: ^2.0.0
-  checksum: 5af91db61aa18530f1749a64735ee194ac263e65e9f4d1562bf3036c591f1baa948289c193e0e34c7b5e2c1b75d3c1dc4fce87f5edb3cee10b0c0df46bc9ffb3
+  checksum: cc83f1b124a1df7384601d72d8d1f5fe95fd7a8185469fec48bb2e4027e45243949e7a013e8d91051a138451ff0552310c32aa9786e60b6a30d1e801bdc2163f
   languageName: node
   linkType: hard
 

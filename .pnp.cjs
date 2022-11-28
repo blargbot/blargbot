@@ -16,6 +16,62 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:."\
       },\
       {\
+        "name": "@blargbot/bbtag",\
+        "reference": "workspace:components/bbtag/src"\
+      },\
+      {\
+        "name": "@blargbot/bbtag-tests",\
+        "reference": "workspace:components/bbtag/test"\
+      },\
+      {\
+        "name": "@blargbot/config",\
+        "reference": "workspace:components/config/src"\
+      },\
+      {\
+        "name": "@blargbot/core",\
+        "reference": "workspace:components/core/src"\
+      },\
+      {\
+        "name": "@blargbot/core-tests",\
+        "reference": "workspace:components/core/test"\
+      },\
+      {\
+        "name": "@blargbot/crowdin",\
+        "reference": "workspace:components/crowdin/src"\
+      },\
+      {\
+        "name": "@blargbot/database",\
+        "reference": "workspace:components/database/src"\
+      },\
+      {\
+        "name": "@blargbot/domain",\
+        "reference": "workspace:components/domain/src"\
+      },\
+      {\
+        "name": "@blargbot/formatting",\
+        "reference": "workspace:components/formatting/src"\
+      },\
+      {\
+        "name": "@blargbot/image",\
+        "reference": "workspace:components/image/src"\
+      },\
+      {\
+        "name": "@blargbot/logger",\
+        "reference": "workspace:components/logger/src"\
+      },\
+      {\
+        "name": "@blargbot/mapping",\
+        "reference": "workspace:components/mapping/src"\
+      },\
+      {\
+        "name": "@blargbot/res",\
+        "reference": "workspace:components/res/src"\
+      },\
+      {\
+        "name": "@blargbot/test-util",\
+        "reference": "workspace:components/test-util/src"\
+      },\
+      {\
         "name": "@types/blargbot-image-api",\
         "reference": "workspace:definitions/blargbot-image-api"\
       },\
@@ -45,98 +101,42 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       },\
       {\
         "name": "@blargbot/api",\
-        "reference": "workspace:src/api"\
-      },\
-      {\
-        "name": "@blargbot/bbtag",\
-        "reference": "workspace:src/bbtag"\
+        "reference": "workspace:services/api/src"\
       },\
       {\
         "name": "@blargbot/cluster",\
-        "reference": "workspace:src/cluster"\
-      },\
-      {\
-        "name": "@blargbot/config",\
-        "reference": "workspace:src/config"\
-      },\
-      {\
-        "name": "@blargbot/core",\
-        "reference": "workspace:src/core"\
-      },\
-      {\
-        "name": "@blargbot/crowdin",\
-        "reference": "workspace:src/crowdin"\
-      },\
-      {\
-        "name": "@blargbot/database",\
-        "reference": "workspace:src/database"\
-      },\
-      {\
-        "name": "@blargbot/domain",\
-        "reference": "workspace:src/domain"\
-      },\
-      {\
-        "name": "@blargbot/formatting",\
-        "reference": "workspace:src/formatting"\
-      },\
-      {\
-        "name": "@blargbot/image",\
-        "reference": "workspace:src/image"\
-      },\
-      {\
-        "name": "@blargbot/logger",\
-        "reference": "workspace:src/logger"\
-      },\
-      {\
-        "name": "@blargbot/mapping",\
-        "reference": "workspace:src/mapping"\
-      },\
-      {\
-        "name": "@blargbot/master",\
-        "reference": "workspace:src/master"\
-      },\
-      {\
-        "name": "@blargbot/res",\
-        "reference": "workspace:src/res"\
-      },\
-      {\
-        "name": "@blargbot/bbtag-tests",\
-        "reference": "workspace:test/bbtag"\
+        "reference": "workspace:services/cluster/src"\
       },\
       {\
         "name": "@blargbot/cluster-tests",\
-        "reference": "workspace:test/cluster"\
+        "reference": "workspace:services/cluster/test"\
       },\
       {\
-        "name": "@blargbot/core-tests",\
-        "reference": "workspace:test/core"\
-      },\
-      {\
-        "name": "@blargbot/test-util",\
-        "reference": "workspace:test/testUtil"\
+        "name": "@blargbot/master",\
+        "reference": "workspace:services/master/src"\
       }\
     ],\
     "enableTopLevelFallback": true,\
     "ignorePatternData": "(^(?:\\\\.yarn\\\\/sdks(?:\\\\/(?!\\\\.{1,2}(?:\\\\/|$))(?:(?:(?!(?:^|\\\\/)\\\\.{1,2}(?:\\\\/|$)).)*?)|$))$)",\
     "fallbackExclusionList": [\
-      ["@blargbot/api", ["workspace:src/api"]],\
-      ["@blargbot/bbtag", ["workspace:src/bbtag"]],\
-      ["@blargbot/bbtag-tests", ["workspace:test/bbtag"]],\
-      ["@blargbot/cluster", ["workspace:src/cluster"]],\
-      ["@blargbot/cluster-tests", ["workspace:test/cluster"]],\
-      ["@blargbot/config", ["workspace:src/config"]],\
-      ["@blargbot/core", ["workspace:src/core"]],\
-      ["@blargbot/core-tests", ["workspace:test/core"]],\
-      ["@blargbot/crowdin", ["workspace:src/crowdin"]],\
-      ["@blargbot/database", ["workspace:src/database"]],\
-      ["@blargbot/domain", ["workspace:src/domain"]],\
-      ["@blargbot/formatting", ["workspace:src/formatting"]],\
-      ["@blargbot/image", ["workspace:src/image"]],\
-      ["@blargbot/logger", ["workspace:src/logger"]],\
-      ["@blargbot/mapping", ["workspace:src/mapping"]],\
-      ["@blargbot/master", ["workspace:src/master"]],\
-      ["@blargbot/res", ["workspace:src/res"]],\
-      ["@blargbot/test-util", ["workspace:test/testUtil"]],\
+      ["@blargbot/api", ["workspace:services/api/src"]],\
+      ["@blargbot/bbtag", ["workspace:components/bbtag/src"]],\
+      ["@blargbot/bbtag-tests", ["workspace:components/bbtag/test"]],\
+      ["@blargbot/cluster", ["workspace:services/cluster/src"]],\
+      ["@blargbot/cluster-tests", ["workspace:services/cluster/test"]],\
+      ["@blargbot/config", ["workspace:components/config/src"]],\
+      ["@blargbot/core", ["workspace:components/core/src"]],\
+      ["@blargbot/core-tests", ["workspace:components/core/test"]],\
+      ["@blargbot/crowdin", ["workspace:components/crowdin/src"]],\
+      ["@blargbot/database", ["workspace:components/database/src"]],\
+      ["@blargbot/domain", ["workspace:components/domain/src"]],\
+      ["@blargbot/formatting", ["workspace:components/formatting/src"]],\
+      ["@blargbot/image", ["workspace:components/image/src"]],\
+      ["@blargbot/logger", ["workspace:components/logger/src"]],\
+      ["@blargbot/mapping", ["workspace:components/mapping/src"]],\
+      ["@blargbot/master", ["workspace:services/master/src"]],\
+      ["@blargbot/res", ["workspace:components/res/src"]],\
+      ["@blargbot/test-util", ["workspace:components/test-util/src"]],\
       ["@types/blargbot-image-api", ["workspace:definitions/blargbot-image-api"]],\
       ["@types/brainfuck-node", ["workspace:definitions/brainfuck-node"]],\
       ["@types/catflake", ["workspace:definitions/catflake"]],\
@@ -455,18 +455,18 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["@blargbot/api", [\
-        ["workspace:src/api", {\
-          "packageLocation": "./src/api/",\
+        ["workspace:services/api/src", {\
+          "packageLocation": "./services/api/src/",\
           "packageDependencies": [\
-            ["@blargbot/api", "workspace:src/api"],\
-            ["@blargbot/bbtag", "workspace:src/bbtag"],\
-            ["@blargbot/cluster", "workspace:src/cluster"],\
-            ["@blargbot/config", "workspace:src/config"],\
-            ["@blargbot/core", "workspace:src/core"],\
-            ["@blargbot/domain", "workspace:src/domain"],\
-            ["@blargbot/formatting", "workspace:src/formatting"],\
-            ["@blargbot/logger", "workspace:src/logger"],\
-            ["@blargbot/mapping", "workspace:src/mapping"],\
+            ["@blargbot/api", "workspace:services/api/src"],\
+            ["@blargbot/bbtag", "workspace:components/bbtag/src"],\
+            ["@blargbot/cluster", "workspace:services/cluster/src"],\
+            ["@blargbot/config", "workspace:components/config/src"],\
+            ["@blargbot/core", "workspace:components/core/src"],\
+            ["@blargbot/domain", "workspace:components/domain/src"],\
+            ["@blargbot/formatting", "workspace:components/formatting/src"],\
+            ["@blargbot/logger", "workspace:components/logger/src"],\
+            ["@blargbot/mapping", "workspace:components/mapping/src"],\
             ["@types/express", "npm:4.17.14"],\
             ["@types/express-serve-static-core", "npm:4.17.31"],\
             ["@types/jsonwebtoken", "npm:8.5.9"],\
@@ -474,27 +474,27 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/ws", "npm:8.5.3"],\
             ["discord-api-types", "npm:0.37.20"],\
             ["express", "npm:4.18.2"],\
-            ["express-promise-router", "virtual:095fcb10883c40f470ac6e6afe01baaad608ecd7018d2aa01600e1b94a63e74e03d9c60d9c4b5eae313115c2ddfa875282bf27ef0d1c898d09652020afc63115#npm:4.1.1"],\
+            ["express-promise-router", "virtual:0926ebb4e831a070deb72c46365480e8bf00bb1d23db2eaad4f5e1bcd6b12efc0d87e78420817b9e25c8277b307def176634647b2da47b163cfcdc8d2c56d3d1#npm:4.1.1"],\
             ["jsonwebtoken", "npm:8.5.1"],\
-            ["node-fetch", "virtual:eda6ccf92313b7dd52fb064974443bec78771455025cd09c544f7b4fc1acae66de48a245206c42e729961b69da9e3d6918150665525080cd30c2ab1b99b5cf41#npm:2.6.7"],\
+            ["node-fetch", "virtual:82c2c90859c4c41e2638d1ffc73acc98a7404255fb254c4920c611c4ce228d8316da6a4c54ba89e10efbd73382a358dbee9717da644ebaf1e8a31dd892de1687#npm:2.6.7"],\
             ["prom-client", "npm:14.1.0"],\
-            ["ws", "virtual:095fcb10883c40f470ac6e6afe01baaad608ecd7018d2aa01600e1b94a63e74e03d9c60d9c4b5eae313115c2ddfa875282bf27ef0d1c898d09652020afc63115#npm:8.11.0"]\
+            ["ws", "virtual:0926ebb4e831a070deb72c46365480e8bf00bb1d23db2eaad4f5e1bcd6b12efc0d87e78420817b9e25c8277b307def176634647b2da47b163cfcdc8d2c56d3d1#npm:8.11.0"]\
           ],\
           "linkType": "SOFT"\
         }]\
       ]],\
       ["@blargbot/bbtag", [\
-        ["workspace:src/bbtag", {\
-          "packageLocation": "./src/bbtag/",\
+        ["workspace:components/bbtag/src", {\
+          "packageLocation": "./components/bbtag/src/",\
           "packageDependencies": [\
-            ["@blargbot/bbtag", "workspace:src/bbtag"],\
-            ["@blargbot/config", "workspace:src/config"],\
-            ["@blargbot/core", "workspace:src/core"],\
-            ["@blargbot/database", "workspace:src/database"],\
-            ["@blargbot/domain", "workspace:src/domain"],\
-            ["@blargbot/formatting", "workspace:src/formatting"],\
-            ["@blargbot/logger", "workspace:src/logger"],\
-            ["@blargbot/mapping", "workspace:src/mapping"],\
+            ["@blargbot/bbtag", "workspace:components/bbtag/src"],\
+            ["@blargbot/config", "workspace:components/config/src"],\
+            ["@blargbot/core", "workspace:components/core/src"],\
+            ["@blargbot/database", "workspace:components/database/src"],\
+            ["@blargbot/domain", "workspace:components/domain/src"],\
+            ["@blargbot/formatting", "workspace:components/formatting/src"],\
+            ["@blargbot/logger", "workspace:components/logger/src"],\
+            ["@blargbot/mapping", "workspace:components/mapping/src"],\
             ["@types/brainfuck-node", "workspace:definitions/brainfuck-node"],\
             ["@types/color", "npm:3.0.3"],\
             ["@types/eris", "workspace:definitions/eris"],\
@@ -506,33 +506,33 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["eris", "npm:0.17.1"],\
             ["html-entities", "npm:2.3.3"],\
             ["moment-timezone", "npm:0.5.39"],\
-            ["node-fetch", "virtual:eda6ccf92313b7dd52fb064974443bec78771455025cd09c544f7b4fc1acae66de48a245206c42e729961b69da9e3d6918150665525080cd30c2ab1b99b5cf41#npm:2.6.7"],\
+            ["node-fetch", "virtual:82c2c90859c4c41e2638d1ffc73acc98a7404255fb254c4920c611c4ce228d8316da6a4c54ba89e10efbd73382a358dbee9717da644ebaf1e8a31dd892de1687#npm:2.6.7"],\
             ["rwlock", "npm:5.0.0"]\
           ],\
           "linkType": "SOFT"\
         }]\
       ]],\
       ["@blargbot/bbtag-tests", [\
-        ["workspace:test/bbtag", {\
-          "packageLocation": "./test/bbtag/",\
+        ["workspace:components/bbtag/test", {\
+          "packageLocation": "./components/bbtag/test/",\
           "packageDependencies": [\
-            ["@blargbot/bbtag-tests", "workspace:test/bbtag"],\
-            ["@blargbot/bbtag", "workspace:src/bbtag"],\
-            ["@blargbot/config", "workspace:src/config"],\
-            ["@blargbot/core", "workspace:src/core"],\
-            ["@blargbot/database", "workspace:src/database"],\
-            ["@blargbot/domain", "workspace:src/domain"],\
-            ["@blargbot/formatting", "workspace:src/formatting"],\
-            ["@blargbot/logger", "workspace:src/logger"],\
-            ["@blargbot/test-util", "workspace:test/testUtil"],\
+            ["@blargbot/bbtag-tests", "workspace:components/bbtag/test"],\
+            ["@blargbot/bbtag", "workspace:components/bbtag/src"],\
+            ["@blargbot/config", "workspace:components/config/src"],\
+            ["@blargbot/core", "workspace:components/core/src"],\
+            ["@blargbot/database", "workspace:components/database/src"],\
+            ["@blargbot/domain", "workspace:components/domain/src"],\
+            ["@blargbot/formatting", "workspace:components/formatting/src"],\
+            ["@blargbot/logger", "workspace:components/logger/src"],\
+            ["@blargbot/test-util", "workspace:components/test-util/src"],\
             ["@types/chai", "npm:4.3.4"],\
             ["@types/chai-datetime", "npm:0.0.37"],\
             ["@types/eris", "workspace:definitions/eris"],\
             ["@types/mocha", "patch:@types/mocha@npm%3A10.0.0#./.yarn/patches/@types-mocha-npm-10.0.0-a2509f7d26.patch::version=10.0.0&hash=d08660&locator=blargbot%40workspace%3A."],\
             ["chai", "npm:4.3.7"],\
-            ["chai-bytes", "virtual:94580678571635b8fa683d1ccf0d1493f27441684157cd3c71327884aaa620119eb99f1b6fb9168cfe69174ff44ca73b71d597b5e675b7d6ecf9ae214b4d650b#npm:0.1.2"],\
+            ["chai-bytes", "virtual:a5d8bf7a2ae8421255e486c145d47ec921f9386c1e92984955811d72f1f9d40aa20fe49fb743ba13dfbf35140c84a591e0cb4c0f5392aa8a19884114e49a1580#npm:0.1.2"],\
             ["chai-datetime", "npm:1.8.0"],\
-            ["chai-exclude", "virtual:94580678571635b8fa683d1ccf0d1493f27441684157cd3c71327884aaa620119eb99f1b6fb9168cfe69174ff44ca73b71d597b5e675b7d6ecf9ae214b4d650b#npm:2.1.0"],\
+            ["chai-exclude", "virtual:a5d8bf7a2ae8421255e486c145d47ec921f9386c1e92984955811d72f1f9d40aa20fe49fb743ba13dfbf35140c84a591e0cb4c0f5392aa8a19884114e49a1580#npm:2.1.0"],\
             ["discord-api-types", "npm:0.37.20"],\
             ["eris", "npm:0.17.1"],\
             ["mocha", "npm:10.1.0"],\
@@ -543,20 +543,20 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["@blargbot/cluster", [\
-        ["workspace:src/cluster", {\
-          "packageLocation": "./src/cluster/",\
+        ["workspace:services/cluster/src", {\
+          "packageLocation": "./services/cluster/src/",\
           "packageDependencies": [\
-            ["@blargbot/cluster", "workspace:src/cluster"],\
-            ["@blargbot/bbtag", "workspace:src/bbtag"],\
-            ["@blargbot/config", "workspace:src/config"],\
-            ["@blargbot/core", "workspace:src/core"],\
-            ["@blargbot/database", "workspace:src/database"],\
-            ["@blargbot/domain", "workspace:src/domain"],\
-            ["@blargbot/formatting", "workspace:src/formatting"],\
-            ["@blargbot/image", "workspace:src/image"],\
-            ["@blargbot/logger", "workspace:src/logger"],\
-            ["@blargbot/mapping", "workspace:src/mapping"],\
-            ["@blargbot/res", "workspace:src/res"],\
+            ["@blargbot/cluster", "workspace:services/cluster/src"],\
+            ["@blargbot/bbtag", "workspace:components/bbtag/src"],\
+            ["@blargbot/config", "workspace:components/config/src"],\
+            ["@blargbot/core", "workspace:components/core/src"],\
+            ["@blargbot/database", "workspace:components/database/src"],\
+            ["@blargbot/domain", "workspace:components/domain/src"],\
+            ["@blargbot/formatting", "workspace:components/formatting/src"],\
+            ["@blargbot/image", "workspace:components/image/src"],\
+            ["@blargbot/logger", "workspace:components/logger/src"],\
+            ["@blargbot/mapping", "workspace:components/mapping/src"],\
+            ["@blargbot/res", "workspace:components/res/src"],\
             ["@hunteroi/versioning", "npm:1.3.2"],\
             ["@types/brainfuck-node", "workspace:definitions/brainfuck-node"],\
             ["@types/eris", "workspace:definitions/eris"],\
@@ -571,7 +571,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["eris", "npm:0.17.1"],\
             ["eventemitter3", "npm:4.0.7"],\
             ["moment-timezone", "npm:0.5.39"],\
-            ["node-fetch", "virtual:eda6ccf92313b7dd52fb064974443bec78771455025cd09c544f7b4fc1acae66de48a245206c42e729961b69da9e3d6918150665525080cd30c2ab1b99b5cf41#npm:2.6.7"],\
+            ["node-fetch", "virtual:82c2c90859c4c41e2638d1ffc73acc98a7404255fb254c4920c611c4ce228d8316da6a4c54ba89e10efbd73382a358dbee9717da644ebaf1e8a31dd892de1687#npm:2.6.7"],\
             ["prom-client", "npm:14.1.0"],\
             ["require-reload", "npm:0.2.2"],\
             ["wolken", "npm:0.2.1"],\
@@ -581,16 +581,16 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["@blargbot/cluster-tests", [\
-        ["workspace:test/cluster", {\
-          "packageLocation": "./test/cluster/",\
+        ["workspace:services/cluster/test", {\
+          "packageLocation": "./services/cluster/test/",\
           "packageDependencies": [\
-            ["@blargbot/cluster-tests", "workspace:test/cluster"],\
-            ["@blargbot/bbtag", "workspace:src/bbtag"],\
-            ["@blargbot/cluster", "workspace:src/cluster"],\
-            ["@blargbot/core", "workspace:src/core"],\
-            ["@blargbot/domain", "workspace:src/domain"],\
-            ["@blargbot/formatting", "workspace:src/formatting"],\
-            ["@blargbot/test-util", "workspace:test/testUtil"],\
+            ["@blargbot/cluster-tests", "workspace:services/cluster/test"],\
+            ["@blargbot/bbtag", "workspace:components/bbtag/src"],\
+            ["@blargbot/cluster", "workspace:services/cluster/src"],\
+            ["@blargbot/core", "workspace:components/core/src"],\
+            ["@blargbot/domain", "workspace:components/domain/src"],\
+            ["@blargbot/formatting", "workspace:components/formatting/src"],\
+            ["@blargbot/test-util", "workspace:components/test-util/src"],\
             ["@types/chai", "npm:4.3.4"],\
             ["@types/eris", "workspace:definitions/eris"],\
             ["@types/mocha", "patch:@types/mocha@npm%3A10.0.0#./.yarn/patches/@types-mocha-npm-10.0.0-a2509f7d26.patch::version=10.0.0&hash=d08660&locator=blargbot%40workspace%3A."],\
@@ -603,28 +603,28 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["@blargbot/config", [\
-        ["workspace:src/config", {\
-          "packageLocation": "./src/config/",\
+        ["workspace:components/config/src", {\
+          "packageLocation": "./components/config/src/",\
           "packageDependencies": [\
-            ["@blargbot/config", "workspace:src/config"]\
+            ["@blargbot/config", "workspace:components/config/src"]\
           ],\
           "linkType": "SOFT"\
         }]\
       ]],\
       ["@blargbot/core", [\
-        ["workspace:src/core", {\
-          "packageLocation": "./src/core/",\
+        ["workspace:components/core/src", {\
+          "packageLocation": "./components/core/src/",\
           "packageDependencies": [\
-            ["@blargbot/core", "workspace:src/core"],\
-            ["@blargbot/bbtag", "workspace:src/bbtag"],\
-            ["@blargbot/config", "workspace:src/config"],\
-            ["@blargbot/crowdin", "workspace:src/crowdin"],\
-            ["@blargbot/database", "workspace:src/database"],\
-            ["@blargbot/domain", "workspace:src/domain"],\
-            ["@blargbot/formatting", "workspace:src/formatting"],\
-            ["@blargbot/logger", "workspace:src/logger"],\
-            ["@blargbot/mapping", "workspace:src/mapping"],\
-            ["@blargbot/res", "workspace:src/res"],\
+            ["@blargbot/core", "workspace:components/core/src"],\
+            ["@blargbot/bbtag", "workspace:components/bbtag/src"],\
+            ["@blargbot/config", "workspace:components/config/src"],\
+            ["@blargbot/crowdin", "workspace:components/crowdin/src"],\
+            ["@blargbot/database", "workspace:components/database/src"],\
+            ["@blargbot/domain", "workspace:components/domain/src"],\
+            ["@blargbot/formatting", "workspace:components/formatting/src"],\
+            ["@blargbot/logger", "workspace:components/logger/src"],\
+            ["@blargbot/mapping", "workspace:components/mapping/src"],\
+            ["@blargbot/res", "workspace:components/res/src"],\
             ["@types/catflake", "workspace:definitions/catflake"],\
             ["@types/color", "npm:3.0.3"],\
             ["@types/cron", "npm:2.0.0"],\
@@ -650,14 +650,14 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["@blargbot/core-tests", [\
-        ["workspace:test/core", {\
-          "packageLocation": "./test/core/",\
+        ["workspace:components/core/test", {\
+          "packageLocation": "./components/core/test/",\
           "packageDependencies": [\
-            ["@blargbot/core-tests", "workspace:test/core"],\
-            ["@blargbot/core", "workspace:src/core"],\
-            ["@blargbot/domain", "workspace:src/domain"],\
-            ["@blargbot/formatting", "workspace:src/formatting"],\
-            ["@blargbot/test-util", "workspace:test/testUtil"],\
+            ["@blargbot/core-tests", "workspace:components/core/test"],\
+            ["@blargbot/core", "workspace:components/core/src"],\
+            ["@blargbot/domain", "workspace:components/domain/src"],\
+            ["@blargbot/formatting", "workspace:components/formatting/src"],\
+            ["@blargbot/test-util", "workspace:components/test-util/src"],\
             ["@types/chai", "npm:4.3.4"],\
             ["@types/eris", "workspace:definitions/eris"],\
             ["@types/mocha", "patch:@types/mocha@npm%3A10.0.0#./.yarn/patches/@types-mocha-npm-10.0.0-a2509f7d26.patch::version=10.0.0&hash=d08660&locator=blargbot%40workspace%3A."],\
@@ -670,27 +670,27 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["@blargbot/crowdin", [\
-        ["workspace:src/crowdin", {\
-          "packageLocation": "./src/crowdin/",\
+        ["workspace:components/crowdin/src", {\
+          "packageLocation": "./components/crowdin/src/",\
           "packageDependencies": [\
-            ["@blargbot/crowdin", "workspace:src/crowdin"],\
-            ["@blargbot/formatting", "workspace:src/formatting"],\
+            ["@blargbot/crowdin", "workspace:components/crowdin/src"],\
+            ["@blargbot/formatting", "workspace:components/formatting/src"],\
             ["@types/node-fetch", "npm:2.6.2"],\
-            ["node-fetch", "virtual:eda6ccf92313b7dd52fb064974443bec78771455025cd09c544f7b4fc1acae66de48a245206c42e729961b69da9e3d6918150665525080cd30c2ab1b99b5cf41#npm:2.6.7"]\
+            ["node-fetch", "virtual:82c2c90859c4c41e2638d1ffc73acc98a7404255fb254c4920c611c4ce228d8316da6a4c54ba89e10efbd73382a358dbee9717da644ebaf1e8a31dd892de1687#npm:2.6.7"]\
           ],\
           "linkType": "SOFT"\
         }]\
       ]],\
       ["@blargbot/database", [\
-        ["workspace:src/database", {\
-          "packageLocation": "./src/database/",\
+        ["workspace:components/database/src", {\
+          "packageLocation": "./components/database/src/",\
           "packageDependencies": [\
-            ["@blargbot/database", "workspace:src/database"],\
-            ["@blargbot/config", "workspace:src/config"],\
-            ["@blargbot/core", "workspace:src/core"],\
-            ["@blargbot/domain", "workspace:src/domain"],\
-            ["@blargbot/logger", "workspace:src/logger"],\
-            ["@blargbot/mapping", "workspace:src/mapping"],\
+            ["@blargbot/database", "workspace:components/database/src"],\
+            ["@blargbot/config", "workspace:components/config/src"],\
+            ["@blargbot/core", "workspace:components/core/src"],\
+            ["@blargbot/domain", "workspace:components/domain/src"],\
+            ["@blargbot/logger", "workspace:components/logger/src"],\
+            ["@blargbot/mapping", "workspace:components/mapping/src"],\
             ["@types/catflake", "workspace:definitions/catflake"],\
             ["@types/pg", "npm:8.6.5"],\
             ["@types/rethinkdb", "workspace:definitions/rethinkdb"],\
@@ -699,43 +699,43 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["cassandra-driver", "npm:4.6.4"],\
             ["catflake", "npm:1.0.0"],\
             ["moment-timezone", "npm:0.5.39"],\
-            ["pg", "virtual:856d594ef58e3ff5ddd3d480c84f517a2b37719cc82ea2e4c1df0be5f76a9b525389c170d2c5e2be74c4b863231c45eb9094936473db96bd4b8e5e940ae574b6#npm:8.8.0"],\
+            ["pg", "virtual:02bcd2255a4ed3c91749c2713581f42b29344dad65a4d3d9c455b9d9d7be86b1ca4557c27bb5dd87951b31e8aae22c2579c9e66e3ab4e86e9533c52d1adbbdd4#npm:8.8.0"],\
             ["pg-hstore", "npm:2.3.4"],\
             ["rethinkdb", "npm:2.4.2"],\
-            ["sequelize", "virtual:856d594ef58e3ff5ddd3d480c84f517a2b37719cc82ea2e4c1df0be5f76a9b525389c170d2c5e2be74c4b863231c45eb9094936473db96bd4b8e5e940ae574b6#npm:6.25.8"]\
+            ["sequelize", "virtual:02bcd2255a4ed3c91749c2713581f42b29344dad65a4d3d9c455b9d9d7be86b1ca4557c27bb5dd87951b31e8aae22c2579c9e66e3ab4e86e9533c52d1adbbdd4#npm:6.25.8"]\
           ],\
           "linkType": "SOFT"\
         }]\
       ]],\
       ["@blargbot/domain", [\
-        ["workspace:src/domain", {\
-          "packageLocation": "./src/domain/",\
+        ["workspace:components/domain/src", {\
+          "packageLocation": "./components/domain/src/",\
           "packageDependencies": [\
-            ["@blargbot/domain", "workspace:src/domain"],\
-            ["@blargbot/formatting", "workspace:src/formatting"],\
+            ["@blargbot/domain", "workspace:components/domain/src"],\
+            ["@blargbot/formatting", "workspace:components/formatting/src"],\
             ["moment-timezone", "npm:0.5.39"]\
           ],\
           "linkType": "SOFT"\
         }]\
       ]],\
       ["@blargbot/formatting", [\
-        ["workspace:src/formatting", {\
-          "packageLocation": "./src/formatting/",\
+        ["workspace:components/formatting/src", {\
+          "packageLocation": "./components/formatting/src/",\
           "packageDependencies": [\
-            ["@blargbot/formatting", "workspace:src/formatting"]\
+            ["@blargbot/formatting", "workspace:components/formatting/src"]\
           ],\
           "linkType": "SOFT"\
         }]\
       ]],\
       ["@blargbot/image", [\
-        ["workspace:src/image", {\
-          "packageLocation": "./src/image/",\
+        ["workspace:components/image/src", {\
+          "packageLocation": "./components/image/src/",\
           "packageDependencies": [\
-            ["@blargbot/image", "workspace:src/image"],\
-            ["@blargbot/config", "workspace:src/config"],\
-            ["@blargbot/core", "workspace:src/core"],\
-            ["@blargbot/logger", "workspace:src/logger"],\
-            ["@blargbot/res", "workspace:src/res"],\
+            ["@blargbot/image", "workspace:components/image/src"],\
+            ["@blargbot/config", "workspace:components/config/src"],\
+            ["@blargbot/core", "workspace:components/core/src"],\
+            ["@blargbot/logger", "workspace:components/logger/src"],\
+            ["@blargbot/res", "workspace:components/res/src"],\
             ["@types/blargbot-image-api", "workspace:definitions/blargbot-image-api"],\
             ["@types/gifencoder", "npm:2.0.1"],\
             ["@types/gm", "npm:1.25.0"],\
@@ -744,7 +744,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["canvas", "npm:2.10.2"],\
             ["gifencoder", "npm:2.0.1"],\
             ["gm", "npm:1.25.0"],\
-            ["node-fetch", "virtual:eda6ccf92313b7dd52fb064974443bec78771455025cd09c544f7b4fc1acae66de48a245206c42e729961b69da9e3d6918150665525080cd30c2ab1b99b5cf41#npm:2.6.7"],\
+            ["node-fetch", "virtual:82c2c90859c4c41e2638d1ffc73acc98a7404255fb254c4920c611c4ce228d8316da6a4c54ba89e10efbd73382a358dbee9717da644ebaf1e8a31dd892de1687#npm:2.6.7"],\
             ["sharp", "npm:0.31.2"],\
             ["twemoji", "npm:14.0.2"]\
           ],\
@@ -752,11 +752,11 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["@blargbot/logger", [\
-        ["workspace:src/logger", {\
-          "packageLocation": "./src/logger/",\
+        ["workspace:components/logger/src", {\
+          "packageLocation": "./components/logger/src/",\
           "packageDependencies": [\
-            ["@blargbot/logger", "workspace:src/logger"],\
-            ["@blargbot/config", "workspace:src/config"],\
+            ["@blargbot/logger", "workspace:components/logger/src"],\
+            ["@blargbot/config", "workspace:components/config/src"],\
             ["@sentry/node", "npm:7.21.1"],\
             ["@sentry/tracing", "npm:7.21.1"],\
             ["cat-loggr", "npm:1.2.2"]\
@@ -765,33 +765,33 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["@blargbot/mapping", [\
-        ["workspace:src/mapping", {\
-          "packageLocation": "./src/mapping/",\
+        ["workspace:components/mapping/src", {\
+          "packageLocation": "./components/mapping/src/",\
           "packageDependencies": [\
-            ["@blargbot/mapping", "workspace:src/mapping"],\
+            ["@blargbot/mapping", "workspace:components/mapping/src"],\
             ["moment-timezone", "npm:0.5.39"]\
           ],\
           "linkType": "SOFT"\
         }]\
       ]],\
       ["@blargbot/master", [\
-        ["workspace:src/master", {\
-          "packageLocation": "./src/master/",\
+        ["workspace:services/master/src", {\
+          "packageLocation": "./services/master/src/",\
           "packageDependencies": [\
-            ["@blargbot/master", "workspace:src/master"],\
-            ["@blargbot/api", "workspace:src/api"],\
-            ["@blargbot/cluster", "workspace:src/cluster"],\
-            ["@blargbot/config", "workspace:src/config"],\
-            ["@blargbot/core", "workspace:src/core"],\
-            ["@blargbot/domain", "workspace:src/domain"],\
-            ["@blargbot/formatting", "workspace:src/formatting"],\
-            ["@blargbot/logger", "workspace:src/logger"],\
-            ["@blargbot/res", "workspace:src/res"],\
+            ["@blargbot/master", "workspace:services/master/src"],\
+            ["@blargbot/api", "workspace:services/api/src"],\
+            ["@blargbot/cluster", "workspace:services/cluster/src"],\
+            ["@blargbot/config", "workspace:components/config/src"],\
+            ["@blargbot/core", "workspace:components/core/src"],\
+            ["@blargbot/domain", "workspace:components/domain/src"],\
+            ["@blargbot/formatting", "workspace:components/formatting/src"],\
+            ["@blargbot/logger", "workspace:components/logger/src"],\
+            ["@blargbot/res", "workspace:components/res/src"],\
             ["@types/eris", "workspace:definitions/eris"],\
             ["@types/node-fetch", "npm:2.6.2"],\
             ["eris", "npm:0.17.1"],\
             ["moment-timezone", "npm:0.5.39"],\
-            ["node-fetch", "virtual:eda6ccf92313b7dd52fb064974443bec78771455025cd09c544f7b4fc1acae66de48a245206c42e729961b69da9e3d6918150665525080cd30c2ab1b99b5cf41#npm:2.6.7"],\
+            ["node-fetch", "virtual:82c2c90859c4c41e2638d1ffc73acc98a7404255fb254c4920c611c4ce228d8316da6a4c54ba89e10efbd73382a358dbee9717da644ebaf1e8a31dd892de1687#npm:2.6.7"],\
             ["prom-client", "npm:14.1.0"],\
             ["strip-ansi", "npm:6.0.1"]\
           ],\
@@ -799,22 +799,22 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["@blargbot/res", [\
-        ["workspace:src/res", {\
-          "packageLocation": "./src/res/",\
+        ["workspace:components/res/src", {\
+          "packageLocation": "./components/res/src/",\
           "packageDependencies": [\
-            ["@blargbot/res", "workspace:src/res"]\
+            ["@blargbot/res", "workspace:components/res/src"]\
           ],\
           "linkType": "SOFT"\
         }]\
       ]],\
       ["@blargbot/test-util", [\
-        ["workspace:test/testUtil", {\
-          "packageLocation": "./test/testUtil/",\
+        ["workspace:components/test-util/src", {\
+          "packageLocation": "./components/test-util/src/",\
           "packageDependencies": [\
-            ["@blargbot/test-util", "workspace:test/testUtil"],\
-            ["@blargbot/core", "workspace:src/core"],\
-            ["@blargbot/domain", "workspace:src/domain"],\
-            ["@blargbot/formatting", "workspace:src/formatting"],\
+            ["@blargbot/test-util", "workspace:components/test-util/src"],\
+            ["@blargbot/core", "workspace:components/core/src"],\
+            ["@blargbot/domain", "workspace:components/domain/src"],\
+            ["@blargbot/formatting", "workspace:components/formatting/src"],\
             ["@types/chai", "npm:4.3.4"],\
             ["@types/mocha", "patch:@types/mocha@npm%3A10.0.0#./.yarn/patches/@types-mocha-npm-10.0.0-a2509f7d26.patch::version=10.0.0&hash=d08660&locator=blargbot%40workspace%3A."],\
             ["chai", "npm:4.3.7"],\
@@ -999,7 +999,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["detect-libc", "npm:2.0.1"],\
             ["https-proxy-agent", "npm:5.0.1"],\
             ["make-dir", "npm:3.1.0"],\
-            ["node-fetch", "virtual:eda6ccf92313b7dd52fb064974443bec78771455025cd09c544f7b4fc1acae66de48a245206c42e729961b69da9e3d6918150665525080cd30c2ab1b99b5cf41#npm:2.6.7"],\
+            ["node-fetch", "virtual:82c2c90859c4c41e2638d1ffc73acc98a7404255fb254c4920c611c4ce228d8316da6a4c54ba89e10efbd73382a358dbee9717da644ebaf1e8a31dd892de1687#npm:2.6.7"],\
             ["nopt", "npm:5.0.0"],\
             ["npmlog", "npm:5.0.1"],\
             ["rimraf", "npm:3.0.2"],\
@@ -1397,13 +1397,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["@types/chai", [\
-        ["npm:4.3.3", {\
-          "packageLocation": "./.yarn/cache/@types-chai-npm-4.3.3-b99652dfb5-20cd094753.zip/node_modules/@types/chai/",\
-          "packageDependencies": [\
-            ["@types/chai", "npm:4.3.3"]\
-          ],\
-          "linkType": "HARD"\
-        }],\
         ["npm:4.3.4", {\
           "packageLocation": "./.yarn/cache/@types-chai-npm-4.3.4-fc230290e8-571184967b.zip/node_modules/@types/chai/",\
           "packageDependencies": [\
@@ -1417,7 +1410,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/@types-chai-datetime-npm-0.0.37-87d73089aa-c55cb13f73.zip/node_modules/@types/chai-datetime/",\
           "packageDependencies": [\
             ["@types/chai-datetime", "npm:0.0.37"],\
-            ["@types/chai", "npm:4.3.3"]\
+            ["@types/chai", "npm:4.3.4"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -2362,7 +2355,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["abort-controller", "npm:3.0.0"],\
             ["abortcontroller-polyfill", "npm:1.7.3"],\
             ["lodash", "npm:4.17.21"],\
-            ["node-fetch", "virtual:eda6ccf92313b7dd52fb064974443bec78771455025cd09c544f7b4fc1acae66de48a245206c42e729961b69da9e3d6918150665525080cd30c2ab1b99b5cf41#npm:2.6.7"]\
+            ["node-fetch", "virtual:82c2c90859c4c41e2638d1ffc73acc98a7404255fb254c4920c611c4ce228d8316da6a4c54ba89e10efbd73382a358dbee9717da644ebaf1e8a31dd892de1687#npm:2.6.7"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -2990,20 +2983,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["chai", [\
-        ["npm:4.3.6", {\
-          "packageLocation": "./.yarn/cache/chai-npm-4.3.6-dba90e4b0b-acff93fd53.zip/node_modules/chai/",\
-          "packageDependencies": [\
-            ["chai", "npm:4.3.6"],\
-            ["assertion-error", "npm:1.1.0"],\
-            ["check-error", "npm:1.0.2"],\
-            ["deep-eql", "npm:3.0.1"],\
-            ["get-func-name", "npm:2.0.0"],\
-            ["loupe", "npm:2.3.4"],\
-            ["pathval", "npm:1.1.1"],\
-            ["type-detect", "npm:4.0.8"]\
-          ],\
-          "linkType": "HARD"\
-        }],\
         ["npm:4.3.7", {\
           "packageLocation": "./.yarn/cache/chai-npm-4.3.7-48fdcf2584-0bba7d2678.zip/node_modules/chai/",\
           "packageDependencies": [\
@@ -3012,7 +2991,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["check-error", "npm:1.0.2"],\
             ["deep-eql", "npm:4.1.2"],\
             ["get-func-name", "npm:2.0.0"],\
-            ["loupe", "npm:2.3.4"],\
+            ["loupe", "npm:2.3.6"],\
             ["pathval", "npm:1.1.1"],\
             ["type-detect", "npm:4.0.8"]\
           ],\
@@ -3027,10 +3006,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],\
           "linkType": "SOFT"\
         }],\
-        ["virtual:94580678571635b8fa683d1ccf0d1493f27441684157cd3c71327884aaa620119eb99f1b6fb9168cfe69174ff44ca73b71d597b5e675b7d6ecf9ae214b4d650b#npm:0.1.2", {\
-          "packageLocation": "./.yarn/__virtual__/chai-bytes-virtual-1cb388634c/0/cache/chai-bytes-npm-0.1.2-0756b83d81-6fedd3a508.zip/node_modules/chai-bytes/",\
+        ["virtual:a5d8bf7a2ae8421255e486c145d47ec921f9386c1e92984955811d72f1f9d40aa20fe49fb743ba13dfbf35140c84a591e0cb4c0f5392aa8a19884114e49a1580#npm:0.1.2", {\
+          "packageLocation": "./.yarn/__virtual__/chai-bytes-virtual-53d82f6b0b/0/cache/chai-bytes-npm-0.1.2-0756b83d81-6fedd3a508.zip/node_modules/chai-bytes/",\
           "packageDependencies": [\
-            ["chai-bytes", "virtual:94580678571635b8fa683d1ccf0d1493f27441684157cd3c71327884aaa620119eb99f1b6fb9168cfe69174ff44ca73b71d597b5e675b7d6ecf9ae214b4d650b#npm:0.1.2"],\
+            ["chai-bytes", "virtual:a5d8bf7a2ae8421255e486c145d47ec921f9386c1e92984955811d72f1f9d40aa20fe49fb743ba13dfbf35140c84a591e0cb4c0f5392aa8a19884114e49a1580#npm:0.1.2"],\
             ["@types/chai", "npm:4.3.4"],\
             ["chai", "npm:4.3.7"]\
           ],\
@@ -3046,7 +3025,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/chai-datetime-npm-1.8.0-f527583d07-37752addc6.zip/node_modules/chai-datetime/",\
           "packageDependencies": [\
             ["chai-datetime", "npm:1.8.0"],\
-            ["chai", "npm:4.3.6"]\
+            ["chai", "npm:4.3.7"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -3059,10 +3038,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],\
           "linkType": "SOFT"\
         }],\
-        ["virtual:94580678571635b8fa683d1ccf0d1493f27441684157cd3c71327884aaa620119eb99f1b6fb9168cfe69174ff44ca73b71d597b5e675b7d6ecf9ae214b4d650b#npm:2.1.0", {\
-          "packageLocation": "./.yarn/__virtual__/chai-exclude-virtual-66c5f67460/0/cache/chai-exclude-npm-2.1.0-47ff9dee55-29d964d9f6.zip/node_modules/chai-exclude/",\
+        ["virtual:a5d8bf7a2ae8421255e486c145d47ec921f9386c1e92984955811d72f1f9d40aa20fe49fb743ba13dfbf35140c84a591e0cb4c0f5392aa8a19884114e49a1580#npm:2.1.0", {\
+          "packageLocation": "./.yarn/__virtual__/chai-exclude-virtual-0c0d7efa76/0/cache/chai-exclude-npm-2.1.0-47ff9dee55-29d964d9f6.zip/node_modules/chai-exclude/",\
           "packageDependencies": [\
-            ["chai-exclude", "virtual:94580678571635b8fa683d1ccf0d1493f27441684157cd3c71327884aaa620119eb99f1b6fb9168cfe69174ff44ca73b71d597b5e675b7d6ecf9ae214b4d650b#npm:2.1.0"],\
+            ["chai-exclude", "virtual:a5d8bf7a2ae8421255e486c145d47ec921f9386c1e92984955811d72f1f9d40aa20fe49fb743ba13dfbf35140c84a591e0cb4c0f5392aa8a19884114e49a1580#npm:2.1.0"],\
             ["@types/chai", "npm:4.3.4"],\
             ["chai", "npm:4.3.7"],\
             ["fclone", "npm:1.0.11"]\
@@ -3603,14 +3582,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["deep-eql", [\
-        ["npm:3.0.1", {\
-          "packageLocation": "./.yarn/cache/deep-eql-npm-3.0.1-9a66c09c65-4f4c9fb79e.zip/node_modules/deep-eql/",\
-          "packageDependencies": [\
-            ["deep-eql", "npm:3.0.1"],\
-            ["type-detect", "npm:4.0.8"]\
-          ],\
-          "linkType": "HARD"\
-        }],\
         ["npm:4.1.2", {\
           "packageLocation": "./.yarn/cache/deep-eql-npm-4.1.2-7017c4a2dc-1832456c5f.zip/node_modules/deep-eql/",\
           "packageDependencies": [\
@@ -4395,10 +4366,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],\
           "linkType": "SOFT"\
         }],\
-        ["virtual:095fcb10883c40f470ac6e6afe01baaad608ecd7018d2aa01600e1b94a63e74e03d9c60d9c4b5eae313115c2ddfa875282bf27ef0d1c898d09652020afc63115#npm:4.1.1", {\
-          "packageLocation": "./.yarn/__virtual__/express-promise-router-virtual-b7a6896763/0/cache/express-promise-router-npm-4.1.1-3b36cf67e3-e69ee7eb2c.zip/node_modules/express-promise-router/",\
+        ["virtual:0926ebb4e831a070deb72c46365480e8bf00bb1d23db2eaad4f5e1bcd6b12efc0d87e78420817b9e25c8277b307def176634647b2da47b163cfcdc8d2c56d3d1#npm:4.1.1", {\
+          "packageLocation": "./.yarn/__virtual__/express-promise-router-virtual-560dc6e828/0/cache/express-promise-router-npm-4.1.1-3b36cf67e3-e69ee7eb2c.zip/node_modules/express-promise-router/",\
           "packageDependencies": [\
-            ["express-promise-router", "virtual:095fcb10883c40f470ac6e6afe01baaad608ecd7018d2aa01600e1b94a63e74e03d9c60d9c4b5eae313115c2ddfa875282bf27ef0d1c898d09652020afc63115#npm:4.1.1"],\
+            ["express-promise-router", "virtual:0926ebb4e831a070deb72c46365480e8bf00bb1d23db2eaad4f5e1bcd6b12efc0d87e78420817b9e25c8277b307def176634647b2da47b163cfcdc8d2c56d3d1#npm:4.1.1"],\
             ["@types/express", "npm:4.17.14"],\
             ["express", "npm:4.18.2"],\
             ["is-promise", "npm:4.0.0"],\
@@ -6058,10 +6029,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["loupe", [\
-        ["npm:2.3.4", {\
-          "packageLocation": "./.yarn/cache/loupe-npm-2.3.4-2067703c8d-5af91db61a.zip/node_modules/loupe/",\
+        ["npm:2.3.6", {\
+          "packageLocation": "./.yarn/cache/loupe-npm-2.3.6-b8b37d55e7-cc83f1b124.zip/node_modules/loupe/",\
           "packageDependencies": [\
-            ["loupe", "npm:2.3.4"],\
+            ["loupe", "npm:2.3.6"],\
             ["get-func-name", "npm:2.0.0"]\
           ],\
           "linkType": "HARD"\
@@ -6618,10 +6589,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],\
           "linkType": "SOFT"\
         }],\
-        ["virtual:eda6ccf92313b7dd52fb064974443bec78771455025cd09c544f7b4fc1acae66de48a245206c42e729961b69da9e3d6918150665525080cd30c2ab1b99b5cf41#npm:2.6.7", {\
-          "packageLocation": "./.yarn/__virtual__/node-fetch-virtual-363b95e335/0/cache/node-fetch-npm-2.6.7-777aa2a6df-8d816ffd1e.zip/node_modules/node-fetch/",\
+        ["virtual:82c2c90859c4c41e2638d1ffc73acc98a7404255fb254c4920c611c4ce228d8316da6a4c54ba89e10efbd73382a358dbee9717da644ebaf1e8a31dd892de1687#npm:2.6.7", {\
+          "packageLocation": "./.yarn/__virtual__/node-fetch-virtual-0d54348e2c/0/cache/node-fetch-npm-2.6.7-777aa2a6df-8d816ffd1e.zip/node_modules/node-fetch/",\
           "packageDependencies": [\
-            ["node-fetch", "virtual:eda6ccf92313b7dd52fb064974443bec78771455025cd09c544f7b4fc1acae66de48a245206c42e729961b69da9e3d6918150665525080cd30c2ab1b99b5cf41#npm:2.6.7"],\
+            ["node-fetch", "virtual:82c2c90859c4c41e2638d1ffc73acc98a7404255fb254c4920c611c4ce228d8316da6a4c54ba89e10efbd73382a358dbee9717da644ebaf1e8a31dd892de1687#npm:2.6.7"],\
             ["@types/encoding", null],\
             ["encoding", null],\
             ["whatwg-url", "npm:5.0.0"]\
@@ -7073,16 +7044,16 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],\
           "linkType": "SOFT"\
         }],\
-        ["virtual:856d594ef58e3ff5ddd3d480c84f517a2b37719cc82ea2e4c1df0be5f76a9b525389c170d2c5e2be74c4b863231c45eb9094936473db96bd4b8e5e940ae574b6#npm:8.8.0", {\
-          "packageLocation": "./.yarn/__virtual__/pg-virtual-08c023e4ba/0/cache/pg-npm-8.8.0-69c9e9f8ac-fa30a85814.zip/node_modules/pg/",\
+        ["virtual:02bcd2255a4ed3c91749c2713581f42b29344dad65a4d3d9c455b9d9d7be86b1ca4557c27bb5dd87951b31e8aae22c2579c9e66e3ab4e86e9533c52d1adbbdd4#npm:8.8.0", {\
+          "packageLocation": "./.yarn/__virtual__/pg-virtual-720ceb59d6/0/cache/pg-npm-8.8.0-69c9e9f8ac-fa30a85814.zip/node_modules/pg/",\
           "packageDependencies": [\
-            ["pg", "virtual:856d594ef58e3ff5ddd3d480c84f517a2b37719cc82ea2e4c1df0be5f76a9b525389c170d2c5e2be74c4b863231c45eb9094936473db96bd4b8e5e940ae574b6#npm:8.8.0"],\
+            ["pg", "virtual:02bcd2255a4ed3c91749c2713581f42b29344dad65a4d3d9c455b9d9d7be86b1ca4557c27bb5dd87951b31e8aae22c2579c9e66e3ab4e86e9533c52d1adbbdd4#npm:8.8.0"],\
             ["@types/pg-native", null],\
             ["buffer-writer", "npm:2.0.0"],\
             ["packet-reader", "npm:1.0.0"],\
             ["pg-connection-string", "npm:2.5.0"],\
             ["pg-native", null],\
-            ["pg-pool", "virtual:08c023e4ba2b1eebffcbca5b8e3c7812e5811a4423a526fef1607d3f93d4620fe933d883603ebf80fd2c29eef7c13c2a06b1d8e9df8167baca3e45ce7da6db2c#npm:3.5.2"],\
+            ["pg-pool", "virtual:720ceb59d60bac032b4f88628b33237d66e8f185e65450ec7cd33965a953b518b3dccdc7bc42d1bd84c54af3354ef84558ca0fdc29fe9f956c543f3daad46b20#npm:3.5.2"],\
             ["pg-protocol", "npm:1.5.0"],\
             ["pg-types", "npm:2.2.0"],\
             ["pgpass", "npm:1.0.5"]\
@@ -7130,12 +7101,12 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],\
           "linkType": "SOFT"\
         }],\
-        ["virtual:08c023e4ba2b1eebffcbca5b8e3c7812e5811a4423a526fef1607d3f93d4620fe933d883603ebf80fd2c29eef7c13c2a06b1d8e9df8167baca3e45ce7da6db2c#npm:3.5.2", {\
-          "packageLocation": "./.yarn/__virtual__/pg-pool-virtual-5551741a0d/0/cache/pg-pool-npm-3.5.2-d467bbecca-a5d0292002.zip/node_modules/pg-pool/",\
+        ["virtual:720ceb59d60bac032b4f88628b33237d66e8f185e65450ec7cd33965a953b518b3dccdc7bc42d1bd84c54af3354ef84558ca0fdc29fe9f956c543f3daad46b20#npm:3.5.2", {\
+          "packageLocation": "./.yarn/__virtual__/pg-pool-virtual-39e2fd5a46/0/cache/pg-pool-npm-3.5.2-d467bbecca-a5d0292002.zip/node_modules/pg-pool/",\
           "packageDependencies": [\
-            ["pg-pool", "virtual:08c023e4ba2b1eebffcbca5b8e3c7812e5811a4423a526fef1607d3f93d4620fe933d883603ebf80fd2c29eef7c13c2a06b1d8e9df8167baca3e45ce7da6db2c#npm:3.5.2"],\
+            ["pg-pool", "virtual:720ceb59d60bac032b4f88628b33237d66e8f185e65450ec7cd33965a953b518b3dccdc7bc42d1bd84c54af3354ef84558ca0fdc29fe9f956c543f3daad46b20#npm:3.5.2"],\
             ["@types/pg", null],\
-            ["pg", "virtual:856d594ef58e3ff5ddd3d480c84f517a2b37719cc82ea2e4c1df0be5f76a9b525389c170d2c5e2be74c4b863231c45eb9094936473db96bd4b8e5e940ae574b6#npm:8.8.0"]\
+            ["pg", "virtual:02bcd2255a4ed3c91749c2713581f42b29344dad65a4d3d9c455b9d9d7be86b1ca4557c27bb5dd87951b31e8aae22c2579c9e66e3ab4e86e9533c52d1adbbdd4#npm:8.8.0"]\
           ],\
           "packagePeers": [\
             "@types/pg",\
@@ -7791,10 +7762,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],\
           "linkType": "SOFT"\
         }],\
-        ["virtual:856d594ef58e3ff5ddd3d480c84f517a2b37719cc82ea2e4c1df0be5f76a9b525389c170d2c5e2be74c4b863231c45eb9094936473db96bd4b8e5e940ae574b6#npm:6.25.8", {\
-          "packageLocation": "./.yarn/__virtual__/sequelize-virtual-fec2b4f04f/0/cache/sequelize-npm-6.25.8-73ac6c564d-d76111e634.zip/node_modules/sequelize/",\
+        ["virtual:02bcd2255a4ed3c91749c2713581f42b29344dad65a4d3d9c455b9d9d7be86b1ca4557c27bb5dd87951b31e8aae22c2579c9e66e3ab4e86e9533c52d1adbbdd4#npm:6.25.8", {\
+          "packageLocation": "./.yarn/__virtual__/sequelize-virtual-9b5f0341c4/0/cache/sequelize-npm-6.25.8-73ac6c564d-d76111e634.zip/node_modules/sequelize/",\
           "packageDependencies": [\
-            ["sequelize", "virtual:856d594ef58e3ff5ddd3d480c84f517a2b37719cc82ea2e4c1df0be5f76a9b525389c170d2c5e2be74c4b863231c45eb9094936473db96bd4b8e5e940ae574b6#npm:6.25.8"],\
+            ["sequelize", "virtual:02bcd2255a4ed3c91749c2713581f42b29344dad65a4d3d9c455b9d9d7be86b1ca4557c27bb5dd87951b31e8aae22c2579c9e66e3ab4e86e9533c52d1adbbdd4#npm:6.25.8"],\
             ["@types/debug", "npm:4.1.7"],\
             ["@types/ibm_db", null],\
             ["@types/mariadb", null],\
@@ -7816,7 +7787,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["moment-timezone", "npm:0.5.37"],\
             ["mysql2", null],\
             ["oracledb", null],\
-            ["pg", "virtual:856d594ef58e3ff5ddd3d480c84f517a2b37719cc82ea2e4c1df0be5f76a9b525389c170d2c5e2be74c4b863231c45eb9094936473db96bd4b8e5e940ae574b6#npm:8.8.0"],\
+            ["pg", "virtual:02bcd2255a4ed3c91749c2713581f42b29344dad65a4d3d9c455b9d9d7be86b1ca4557c27bb5dd87951b31e8aae22c2579c9e66e3ab4e86e9533c52d1adbbdd4#npm:8.8.0"],\
             ["pg-connection-string", "npm:2.5.0"],\
             ["pg-hstore", "npm:2.3.4"],\
             ["retry-as-promised", "npm:6.1.0"],\
@@ -9027,10 +8998,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],\
           "linkType": "SOFT"\
         }],\
-        ["virtual:095fcb10883c40f470ac6e6afe01baaad608ecd7018d2aa01600e1b94a63e74e03d9c60d9c4b5eae313115c2ddfa875282bf27ef0d1c898d09652020afc63115#npm:8.11.0", {\
-          "packageLocation": "./.yarn/__virtual__/ws-virtual-6547f85bba/0/cache/ws-npm-8.11.0-ab72116a01-316b33aba3.zip/node_modules/ws/",\
+        ["virtual:0926ebb4e831a070deb72c46365480e8bf00bb1d23db2eaad4f5e1bcd6b12efc0d87e78420817b9e25c8277b307def176634647b2da47b163cfcdc8d2c56d3d1#npm:8.11.0", {\
+          "packageLocation": "./.yarn/__virtual__/ws-virtual-c003e9123b/0/cache/ws-npm-8.11.0-ab72116a01-316b33aba3.zip/node_modules/ws/",\
           "packageDependencies": [\
-            ["ws", "virtual:095fcb10883c40f470ac6e6afe01baaad608ecd7018d2aa01600e1b94a63e74e03d9c60d9c4b5eae313115c2ddfa875282bf27ef0d1c898d09652020afc63115#npm:8.11.0"],\
+            ["ws", "virtual:0926ebb4e831a070deb72c46365480e8bf00bb1d23db2eaad4f5e1bcd6b12efc0d87e78420817b9e25c8277b307def176634647b2da47b163cfcdc8d2c56d3d1#npm:8.11.0"],\
             ["@types/bufferutil", null],\
             ["@types/utf-8-validate", null],\
             ["bufferutil", null],\
