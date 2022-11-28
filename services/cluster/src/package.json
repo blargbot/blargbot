@@ -17,7 +17,7 @@
         "brainfuck-node": "^1.0.2",
         "crypto": "^1.0.1",
         "eris": "^0.17.1",
-        "eventemitter3": "^4.0.7",
+        "eventemitter3": "^5.0.0",
         "moment-timezone": "^0.5.39",
         "node-fetch": "^2.6.7",
         "prom-client": "^14.1.0",

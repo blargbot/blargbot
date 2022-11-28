@@ -16,7 +16,7 @@
             ],
             "autoAttachChildProcesses": true,
             "console": "integratedTerminal",
-            "program": "${workspaceFolder}/src/master/start.ts",
+            "program": "${workspaceFolder}/services/master/src/start.ts",
             "env": {
                 "NODE_OPTIONS": "--require ${workspaceFolder}/.pnp.cjs"
             },
@@ -37,7 +37,7 @@
             ],
             "autoAttachChildProcesses": true,
             "console": "integratedTerminal",
-            "program": "${workspaceFolder}/src/cluster/start.ts",
+            "program": "${workspaceFolder}/services/cluster/src/start.ts",
             "args": [
                 "--max-old-space-size=4096"
             ],
@@ -65,7 +65,7 @@
             ],
             "autoAttachChildProcesses": true,
             "console": "integratedTerminal",
-            "program": "${workspaceFolder}/src/api/start.ts",
+            "program": "${workspaceFolder}/services/api/src/start.ts",
             "env": {
                 "NODE_OPTIONS": "--require ${workspaceFolder}/.pnp.cjs"
             },

@@ -2,7 +2,7 @@
     "compilerOptions": {
         "noImplicitAny": true,
         "strict": true,
-        "module": "Node16",
+        "module": "NodeNext",
         "resolveJsonModule": true,
         "esModuleInterop": true,
         "target": "ESNext",
@@ -19,7 +19,7 @@
         "noUnusedParameters": true,
         "allowUnreachableCode": false,
         "allowUnusedLabels": false,
-        "moduleResolution": "Node16",
+        "moduleResolution": "NodeNext",
         "skipLibCheck": true,
         "lib": [
             "ES2021"
