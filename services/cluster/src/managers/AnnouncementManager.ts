@@ -1,8 +1,8 @@
 import { GuildStore } from '@blargbot/domain/stores/index.js';
-import Eris from 'eris';
+import * as Eris from 'eris';
 
 import { ClusterUtilities } from '../ClusterUtilities.js';
-import { Command } from '../command/index.js'
+import { Command } from '../command/index.js';
 import templates from '../text.js';
 import { ICommandManager, Result } from '../types.js';
 import { guard } from '../utils/index.js';

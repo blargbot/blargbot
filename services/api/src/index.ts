@@ -1,8 +1,9 @@
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
 import { ApiWorker } from '@blargbot/api/ApiWorker.js';
 import { config } from '@blargbot/config';
 import { createLogger } from '@blargbot/logger';
-import path from 'path';
-import { fileURLToPath } from 'url';
 
 export * from './ApiPool.js';
 export * from './ApiConnection.js';

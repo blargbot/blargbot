@@ -1,9 +1,9 @@
-import { GuildCommand } from '../../command/index.js';
 import { CommandResult, GuildCommandContext, ICommand } from '@blargbot/cluster/types.js';
 import { CommandType } from '@blargbot/cluster/utils/index.js';
 import { CommandPermissions } from '@blargbot/domain/models/index.js';
-import Eris from 'eris';
+import * as Eris from 'eris';
 
+import { GuildCommand } from '../../command/index.js';
 import templates from '../../text.js';
 
 const cmd = templates.commands.editCommand;

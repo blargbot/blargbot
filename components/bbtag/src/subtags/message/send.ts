@@ -1,6 +1,6 @@
 import { MalformedEmbed } from '@blargbot/core/types.js';
 import { guard, parse } from '@blargbot/core/utils/index.js';
-import Eris from 'eris';
+import * as Eris from 'eris';
 
 import { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';

@@ -1,7 +1,8 @@
-import { CommandContext, GlobalCommand } from '../../command/index.js';
-import { CommandType } from '@blargbot/cluster/utils/index.js';
-import { exec } from 'child_process';
+import { exec } from 'node:child_process';
 
+import { CommandType } from '@blargbot/cluster/utils/index.js';
+
+import { CommandContext, GlobalCommand } from '../../command/index.js';
 import templates from '../../text.js';
 import { CommandResult } from '../../types.js';
 

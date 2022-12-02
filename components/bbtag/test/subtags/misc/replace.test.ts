@@ -1,5 +1,5 @@
 import { ReplaceSubtag } from '@blargbot/bbtag/subtags/misc/replace.js';
-import { expect } from 'chai';
+import chai from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
@@ -11,7 +11,7 @@ runSubtagTests({
             code: '{replace;abc;123}',
             expected: '',
             assert(ctx) {
-                expect(ctx.data.replace).to.deep.equal({ regex: 'abc', with: '123' });
+                chai.expect(ctx.data.replace).to.deep.equal({ regex: 'abc', with: '123' });
             }
         },
         { code: '{replace;This is a test;is;aaaa}', expected: 'Thaaaa is a test' }

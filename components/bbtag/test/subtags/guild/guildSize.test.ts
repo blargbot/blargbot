@@ -1,6 +1,6 @@
 import { GuildSizeSubtag } from '@blargbot/bbtag/subtags/guild/guildSize.js';
 import { snowflake } from '@blargbot/core/utils/index.js';
-import Eris from 'eris';
+import * as Eris from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

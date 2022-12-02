@@ -3,7 +3,7 @@ import { guard, sleep } from '@blargbot/cluster/utils/index.js';
 import { UnbanEventOptions } from '@blargbot/domain/models/index.js';
 import { format, IFormattable, util } from '@blargbot/formatting';
 import { mapping } from '@blargbot/mapping';
-import Eris from 'eris';
+import * as Eris from 'eris';
 import moment from 'moment-timezone';
 
 import templates from '../../text.js';

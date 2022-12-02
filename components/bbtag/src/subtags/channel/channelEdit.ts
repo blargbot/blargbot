@@ -1,6 +1,6 @@
 import { guard } from '@blargbot/core/utils/index.js';
 import { mapping } from '@blargbot/mapping';
-import Eris from 'eris';
+import * as Eris from 'eris';
 
 import { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';

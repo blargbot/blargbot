@@ -1,3 +1,5 @@
+import { isProxy } from 'node:util/types';
+
 import { instance, verify, when } from 'ts-mockito';
 import { Matcher } from 'ts-mockito/lib/matcher/type/Matcher.js';
 import { StrictEqualMatcher } from 'ts-mockito/lib/matcher/type/StrictEqualMatcher.js';
@@ -6,7 +8,6 @@ import { MethodStubVerificator } from 'ts-mockito/lib/MethodStubVerificator.js';
 import { Mocker } from 'ts-mockito/lib/Mock.js';
 import { AbstractMethodStub } from 'ts-mockito/lib/stub/AbstractMethodStub.js';
 import { MethodStub } from 'ts-mockito/lib/stub/MethodStub.js';
-import { isProxy } from 'util/types';
 
 export class Mock<T> {
     readonly #expressionProvider: T;

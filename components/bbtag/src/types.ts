@@ -1,7 +1,7 @@
 import { Emote } from '@blargbot/core/Emote.js';
 import { FlagDefinition, NamedGuildCommandTag, StoredTag } from '@blargbot/domain/models/index.js';
 import { IFormattable } from '@blargbot/formatting';
-import Eris from 'eris';
+import * as Eris from 'eris';
 import ReadWriteLock from 'rwlock';
 
 import { VariableCache } from './Caching.js';

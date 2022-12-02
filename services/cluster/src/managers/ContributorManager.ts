@@ -1,7 +1,7 @@
 import { Cluster } from '@blargbot/cluster/Cluster.js';
 import { IFormattable, util } from '@blargbot/formatting';
 import res from '@blargbot/res';
-import Eris from 'eris';
+import * as Eris from 'eris';
 
 import templates from '../text.js';
 

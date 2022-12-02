@@ -1,6 +1,6 @@
 import { CommandType } from '@blargbot/cluster/utils/index.js';
 import { IFormatStringDefinition, IFormattable, util } from '@blargbot/formatting';
-import Eris from 'eris';
+import * as Eris from 'eris';
 import Wolken from 'wolken';
 
 import { CommandResult } from '../types.js';

@@ -1,6 +1,6 @@
 import { format, FormatString, FormatStringCompiler, FormatStringCompilerOptions, Formatter, IFormattable, util } from '@blargbot/formatting';
-import { expect } from 'chai';
-import { describe, it } from 'mocha';
+import chai from 'chai';
+import mocha from 'mocha';
 
 export function runFormatTreeTests<T extends object>(source: T, options: FormatStringCompilerOptions, cases: TestCasesHelper<T>): void {
     runFormatTreeTestsCore([], source, options, cases);
@@ -13,9 +13,9 @@ function runFormatTreeTestsCore<T extends object>(prefix: string[], source: T, o
             const factory = v as (...args: unknown[]) => IFormattable<string>;
             const c = cases[key] as Array<{ name: string; input: unknown[]; expected: string | (() => string) | ((value: string) => void); }>;
             const name = path.join('.');
-            describe(name, () => {
+            mocha.describe(name, () => {
                 for (const scenario of c) {
-                    it(`should handle the "${scenario.name}" case`, () => {
+                    mocha.it(`should handle the "${scenario.name}" case`, () => {
                         name;
                         //arrange
                         const compiler = new FormatStringCompiler(options);
@@ -29,17 +29,17 @@ function runFormatTreeTestsCore<T extends object>(prefix: string[], source: T, o
                         // assert
                         const expected = check(result) as string | void;
                         if (typeof expected === 'string') {
-                            expect(result).to.eq(expected);
+                            chai.expect(result).to.eq(expected);
                             if (formattable instanceof FormatString)
-                                expect(formattable.template).not.to.eq(expected);
+                                chai.expect(formattable.template).not.to.eq(expected);
                         }
                     });
                 }
             });
         } else if (util.isFormattable(v)) {
             const c = cases[key] as string | (() => string) | ((value: string) => void);
-            describe(path.join('.'), () => {
-                it('should display correctly', () => {
+            mocha.describe(path.join('.'), () => {
+                mocha.it('should display correctly', () => {
                     //arrange
                     const compiler = new FormatStringCompiler(options);
                     const formatter = new Formatter(new Intl.Locale('en'), [], compiler);
@@ -51,7 +51,7 @@ function runFormatTreeTestsCore<T extends object>(prefix: string[], source: T, o
                     // assert
                     const expected = check(result) as string | void;
                     if (typeof expected === 'string')
-                        expect(result).to.eq(expected);
+                        chai.expect(result).to.eq(expected);
 
                 });
             });

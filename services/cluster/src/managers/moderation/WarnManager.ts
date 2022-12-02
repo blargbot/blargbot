@@ -1,7 +1,7 @@
 import { PardonResult, WarnDetails, WarnResult } from '@blargbot/cluster/types.js';
 import { ModerationType } from '@blargbot/cluster/utils/index.js';
 import { IFormattable } from '@blargbot/formatting';
-import Eris from 'eris';
+import * as Eris from 'eris';
 import moment from 'moment-timezone';
 
 import templates from '../../text.js';

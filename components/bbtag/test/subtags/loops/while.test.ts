@@ -9,7 +9,7 @@ import { IfSubtag } from '@blargbot/bbtag/subtags/misc/if.js';
 import { OperatorSubtag } from '@blargbot/bbtag/subtags/misc/operator.js';
 import { BBTagRuntimeState } from '@blargbot/bbtag/types.js';
 import { TagVariableType } from '@blargbot/domain/models/index.js';
-import { expect } from 'chai';
+import chai from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
@@ -29,8 +29,8 @@ runSubtagTests({
                 ctx.limit.setup(m => m.check(bbctx, 'while:loops')).verifiable(10).thenResolve(undefined);
             },
             async assert(bbctx, _, ctx) {
-                expect((await bbctx.variables.get('index')).value).to.equal(10);
-                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' })).to.equal(10);
+                chai.expect((await bbctx.variables.get('index')).value).to.equal(10);
+                chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' })).to.equal(10);
             }
         },
         {
@@ -45,8 +45,8 @@ runSubtagTests({
                 ctx.limit.setup(m => m.check(bbctx, 'while:loops')).verifiable(10).thenResolve(undefined);
             },
             async assert(bbctx, _, ctx) {
-                expect((await bbctx.variables.get('index')).value).to.equal(10);
-                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' })).to.equal(10);
+                chai.expect((await bbctx.variables.get('index')).value).to.equal(10);
+                chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' })).to.equal(10);
             }
         },
         {
@@ -61,8 +61,8 @@ runSubtagTests({
                 ctx.limit.setup(m => m.check(bbctx, 'while:loops')).verifiable(10).thenResolve(undefined);
             },
             async assert(bbctx, _, ctx) {
-                expect((await bbctx.variables.get('index')).value).to.equal(10);
-                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' })).to.equal(10);
+                chai.expect((await bbctx.variables.get('index')).value).to.equal(10);
+                chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' })).to.equal(10);
             }
         },
         {
@@ -77,8 +77,8 @@ runSubtagTests({
                 ctx.limit.setup(m => m.check(bbctx, 'while:loops')).verifiable(10).thenResolve(undefined);
             },
             async assert(bbctx, _, ctx) {
-                expect((await bbctx.variables.get('index')).value).to.equal(10);
-                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' })).to.equal(10);
+                chai.expect((await bbctx.variables.get('index')).value).to.equal(10);
+                chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' })).to.equal(10);
             }
         },
         {
@@ -93,8 +93,8 @@ runSubtagTests({
                 ctx.limit.setup(m => m.check(bbctx, 'while:loops')).verifiable(5).thenResolve(undefined);
             },
             async assert(bbctx, _, ctx) {
-                expect((await bbctx.variables.get('index')).value).to.equal(10);
-                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' })).to.equal(10);
+                chai.expect((await bbctx.variables.get('index')).value).to.equal(10);
+                chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' })).to.equal(10);
             }
         },
         {
@@ -109,8 +109,8 @@ runSubtagTests({
                 ctx.limit.setup(m => m.check(bbctx, 'while:loops')).verifiable(10).thenResolve(undefined);
             },
             async assert(bbctx, _, ctx) {
-                expect((await bbctx.variables.get('index')).value).to.equal(0);
-                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' })).to.equal(0);
+                chai.expect((await bbctx.variables.get('index')).value).to.equal(0);
+                chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' })).to.equal(0);
             }
         },
         {
@@ -125,8 +125,8 @@ runSubtagTests({
                 ctx.limit.setup(m => m.check(bbctx, 'while:loops')).verifiable(10).thenResolve(undefined);
             },
             async assert(bbctx, _, ctx) {
-                expect((await bbctx.variables.get('index')).value).to.equal('1024');
-                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' })).to.equal('1024');
+                chai.expect((await bbctx.variables.get('index')).value).to.equal('1024');
+                chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' })).to.equal('1024');
             }
         },
         {
@@ -149,8 +149,8 @@ runSubtagTests({
                 });
             },
             async assert(bbctx, _, ctx) {
-                expect((await bbctx.variables.get('index')).value).to.equal(4);
-                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' })).to.equal(4);
+                chai.expect((await bbctx.variables.get('index')).value).to.equal(4);
+                chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' })).to.equal(4);
             }
         },
         {
@@ -173,8 +173,8 @@ runSubtagTests({
                 });
             },
             async assert(bbctx, _, ctx) {
-                expect((await bbctx.variables.get('index')).value).to.equal(4);
-                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' })).to.equal(4);
+                chai.expect((await bbctx.variables.get('index')).value).to.equal(4);
+                chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' })).to.equal(4);
             }
         },
         {
@@ -197,8 +197,8 @@ runSubtagTests({
                 });
             },
             async assert(bbctx, _, ctx) {
-                expect((await bbctx.variables.get('index')).value).to.equal(4);
-                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' })).to.equal(4);
+                chai.expect((await bbctx.variables.get('index')).value).to.equal(4);
+                chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' })).to.equal(4);
             }
         },
         {
@@ -213,9 +213,9 @@ runSubtagTests({
                 ctx.limit.setup(m => m.check(bbctx, 'while:loops')).verifiable(6).thenResolve(undefined);
             },
             async assert(bbctx, _, ctx) {
-                expect((await bbctx.variables.get('index')).value).to.equal(6);
-                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' })).to.equal(6);
-                expect(bbctx.data.state).to.equal(BBTagRuntimeState.ABORT);
+                chai.expect((await bbctx.variables.get('index')).value).to.equal(6);
+                chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' })).to.equal(6);
+                chai.expect(bbctx.data.state).to.equal(BBTagRuntimeState.ABORT);
             }
         }
     ]

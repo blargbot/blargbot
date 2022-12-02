@@ -1,5 +1,5 @@
 import { RoleMembersSubtag } from '@blargbot/bbtag/subtags/role/roleMembers.js';
-import Eris from 'eris';
+import * as Eris from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetRolePropTestCases } from './_getRolePropTest.js';

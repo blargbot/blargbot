@@ -3,15 +3,15 @@ import templates from '@blargbot/core/text.js';
 import { transformers, util } from '@blargbot/formatting';
 import { quickMock } from '@blargbot/test-util/quickMock.js';
 import { runFormatTreeTests } from '@blargbot/test-util/runFormatTreeTests.js';
-import Eris from 'eris';
-import { describe } from 'mocha';
+import * as Eris from 'eris';
+import mocha from 'mocha';
 
 const client = (): Eris.Client => new Eris.Client('');
 const guild = (): Eris.Guild => new Eris.Guild({ id: '' }, client());
 const channel = (): Eris.Channel => new Eris.Channel({ id: '' }, client());
 const guildChannel = (): Eris.GuildChannel => new Eris.GuildChannel({ id: '' }, client());
 
-describe('Core format strings', () => {
+mocha.describe('Core format strings', () => {
     runFormatTreeTests(templates, {
         transformers: {
             ...transformers,

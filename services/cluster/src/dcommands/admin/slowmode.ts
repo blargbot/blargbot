@@ -1,9 +1,9 @@
-import { GuildCommand } from '../../command/index.js';
 import { CommandType } from '@blargbot/cluster/utils/index.js';
 import { guard } from '@blargbot/core/utils/index.js';
-import Eris from 'eris';
+import * as Eris from 'eris';
 import moment from 'moment-timezone';
 
+import { GuildCommand } from '../../command/index.js';
 import templates from '../../text.js';
 import { CommandResult } from '../../types.js';
 

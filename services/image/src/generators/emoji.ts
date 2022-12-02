@@ -1,8 +1,9 @@
+import path from 'node:path';
+
 import { BaseImageGenerator } from '@blargbot/image/BaseImageGenerator.js';
 import { ImageWorker } from '@blargbot/image/ImageWorker.js';
 import { EmojiOptions, ImageResult } from '@blargbot/image/types.js';
 import fetch from 'node-fetch';
-import path from 'path';
 import sharp from 'sharp';
 import twemoji from 'twemoji';
 
@@ -25,7 +26,7 @@ export class EmojiGenerator extends BaseImageGenerator<'emoji'> {
         if (!file.status.toString().startsWith('2'))
             return undefined;
 
-        const body = await file.buffer();
+        const body = Buffer.from(await file.arrayBuffer());
         if (svg)
             return { fileName: 'emoji.svg', data: body };
 

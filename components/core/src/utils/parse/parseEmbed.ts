@@ -2,7 +2,7 @@ import { MalformedEmbed } from '@blargbot/core/types.js';
 import { discord } from '@blargbot/core/utils/index.js';
 import { mapping, TypeMappingImpl } from '@blargbot/mapping';
 import Color from 'color';
-import Eris from 'eris';
+import * as Eris from 'eris';
 
 import { parseColor } from './parseColor.js';
 import { parseInt } from './parseInt.js';

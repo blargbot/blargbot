@@ -1,3 +1,5 @@
+import { inspect } from 'node:util';
+
 import { BBTagEngine, subtags } from '@blargbot/bbtag';
 import { ClusterOptions } from '@blargbot/cluster/types.js';
 import { Configuration } from '@blargbot/config';
@@ -9,13 +11,12 @@ import { ImagePool } from '@blargbot/image';
 import { Logger } from '@blargbot/logger';
 import { GatewayIntentBits } from 'discord-api-types/v9';
 import moment from 'moment-timezone';
-import { inspect } from 'util';
 
 import { ClusterBBTagUtilities } from './ClusterBBTagUtilities.js';
 import { ClusterUtilities } from './ClusterUtilities.js';
 import { ClusterWorker } from './ClusterWorker.js';
-import { AggregateCommandManager, AnnouncementManager, AutoresponseManager, AwaiterManager, BotStaffManager, ContributorManager, CustomCommandManager, DefaultCommandManager, DomainManager, GreetingManager, GuildManager, IntervalManager, ModerationManager, PollManager, PrefixManager, RolemeManager, TimeoutManager, VersionStateManager } from './managers/index.js';
 import { CommandDocumentationManager } from './managers/documentation/CommandDocumentationManager.js';
+import { AggregateCommandManager, AnnouncementManager, AutoresponseManager, AwaiterManager, BotStaffManager, ContributorManager, CustomCommandManager, DefaultCommandManager, DomainManager, GreetingManager, GuildManager, IntervalManager, ModerationManager, PollManager, PrefixManager, RolemeManager, TimeoutManager, VersionStateManager } from './managers/index.js';
 
 export class Cluster extends BaseClient {
     public readonly id: number;

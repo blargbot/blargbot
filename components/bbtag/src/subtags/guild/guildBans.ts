@@ -1,4 +1,4 @@
-import Eris from 'eris';
+import * as Eris from 'eris';
 
 import { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';

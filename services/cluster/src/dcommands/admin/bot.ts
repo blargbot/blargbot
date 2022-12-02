@@ -1,5 +1,5 @@
 import { StoredGuild, StoredUser, TagVariableType } from '@blargbot/domain/models/index.js';
-import Eris from 'eris';
+import * as Eris from 'eris';
 
 import { CommandContext, GlobalCommand } from '../../command/index.js';
 import templates from '../../text.js';

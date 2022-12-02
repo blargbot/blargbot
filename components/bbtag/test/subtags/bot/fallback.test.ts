@@ -1,6 +1,6 @@
 import { UnknownSubtagError } from '@blargbot/bbtag/errors/index.js';
 import { FallbackSubtag } from '@blargbot/bbtag/subtags/bot/fallback.js';
-import { expect } from 'chai';
+import chai from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
@@ -15,7 +15,7 @@ runSubtagTests({
                 { start: 10, end: 15, error: new UnknownSubtagError('xyz') }
             ],
             assert(ctx) {
-                expect(ctx.scopes.local.fallback).to.be.undefined;
+                chai.expect(ctx.scopes.local.fallback).to.be.undefined;
             }
         },
         {
@@ -25,7 +25,7 @@ runSubtagTests({
                 { start: 14, end: 19, error: new UnknownSubtagError('xyz') }
             ],
             assert(ctx) {
-                expect(ctx.scopes.local.fallback).to.equal('abc');
+                chai.expect(ctx.scopes.local.fallback).to.equal('abc');
             }
         },
         {
@@ -36,7 +36,7 @@ runSubtagTests({
                 { start: 44, end: 49, error: new UnknownSubtagError('xyz') }
             ],
             assert(ctx) {
-                expect(ctx.scopes.local.fallback).to.be.undefined;
+                chai.expect(ctx.scopes.local.fallback).to.be.undefined;
             }
         }
     ]

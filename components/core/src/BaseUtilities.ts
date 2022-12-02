@@ -6,7 +6,7 @@ import { DiscordChannelTag, DiscordRoleTag, DiscordTagSet, DiscordUserTag, Store
 import { format, Formatter, IFormattable, IFormatter, TranslationMiddleware, util } from '@blargbot/formatting';
 import { Logger } from '@blargbot/logger';
 import { Snowflake } from 'catflake';
-import Eris from 'eris';
+import * as Eris from 'eris';
 import moment from 'moment-timezone';
 
 import { BaseClient } from './BaseClient.js';

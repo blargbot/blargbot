@@ -1,4 +1,4 @@
-import { encode } from 'html-entities';
+import htmlEntities from 'html-entities';
 
 import { CompiledSubtag } from '../../compilation/index.js';
 import templates from '../../text.js';
@@ -25,6 +25,6 @@ export class HtmlEncodeSubtag extends CompiledSubtag {
     }
 
     public htmlEncode(html: string): string {
-        return encode(html);
+        return htmlEntities.encode(html);
     }
 }

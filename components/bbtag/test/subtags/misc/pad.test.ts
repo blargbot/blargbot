@@ -1,7 +1,7 @@
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
 import { PadSubtag } from '@blargbot/bbtag/subtags/misc/pad.js';
-import { expect } from 'chai';
-import { it } from 'mocha';
+import chai from 'chai';
+import mocha from 'mocha';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
@@ -53,8 +53,8 @@ runSubtagTests({
         }
     ],
     runOtherTests(s) {
-        it('Should be deprecated', () => {
-            expect(s.deprecated).to.equal('realpad');
+        mocha.it('Should be deprecated', () => {
+            chai.expect(s.deprecated).to.equal('realpad');
         });
     }
 });

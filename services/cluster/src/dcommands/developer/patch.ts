@@ -1,8 +1,8 @@
-import { CommandContext, GlobalCommand } from '../../command/index.js';
 import { CommandType, guard } from '@blargbot/cluster/utils/index.js';
 import { util } from '@blargbot/formatting';
-import Eris from 'eris';
+import * as Eris from 'eris';
 
+import { CommandContext, GlobalCommand } from '../../command/index.js';
 import templates from '../../text.js';
 import { CommandResult } from '../../types.js';
 

@@ -1,6 +1,6 @@
 import { CommandBinderParseResult, CommandBinderStateLookupCache, CommandVariableTypeMap, GuildCommandContext, PrivateCommandContext } from '@blargbot/cluster/types.js';
 import { guard } from '@blargbot/cluster/utils/index.js';
-import Eris from 'eris';
+import * as Eris from 'eris';
 
 import { CommandContext } from '../CommandContext.js';
 import { createCommandArgument } from './commandArgument.js';

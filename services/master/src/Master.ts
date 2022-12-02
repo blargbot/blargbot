@@ -1,3 +1,5 @@
+import { inspect } from 'node:util';
+
 import { ApiPool } from '@blargbot/api';
 import { ClusterPool } from '@blargbot/cluster';
 import { Configuration } from '@blargbot/config';
@@ -10,7 +12,6 @@ import { MasterOptions } from '@blargbot/master/types.js';
 import moment from 'moment-timezone';
 import fetch from 'node-fetch';
 import { metric } from 'prom-client';
-import { inspect } from 'util';
 
 import { ClusterStatsManager } from './managers/index.js';
 import { MasterWorker } from './MasterWorker.js';

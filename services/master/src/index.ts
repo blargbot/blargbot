@@ -1,9 +1,10 @@
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
 import { config } from '@blargbot/config';
 import { createLogger } from '@blargbot/logger';
 import { MasterWorker } from '@blargbot/master';
 import res from '@blargbot/res';
-import path from 'path';
-import { fileURLToPath } from 'url';
 
 export * from './Master.js';
 export * from './MasterWorker.js';

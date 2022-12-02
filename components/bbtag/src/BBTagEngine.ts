@@ -2,7 +2,7 @@ import { Timer } from '@blargbot/core/Timer.js';
 import { sleep } from '@blargbot/core/utils/index.js';
 import { Database } from '@blargbot/database';
 import { Logger } from '@blargbot/logger';
-import Eris from 'eris';
+import * as Eris from 'eris';
 import moment from 'moment-timezone';
 
 import { BBTagContext } from './BBTagContext.js';

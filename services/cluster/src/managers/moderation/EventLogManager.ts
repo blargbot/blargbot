@@ -5,7 +5,7 @@ import { FormattableMessageContent } from '@blargbot/core/FormattableMessageCont
 import { FormatEmbedAuthor, FormatEmbedField, FormatEmbedOptions } from '@blargbot/core/types.js';
 import { StoredGuildEventLogType } from '@blargbot/domain/models/index.js';
 import { IFormattable } from '@blargbot/formatting';
-import Eris from 'eris';
+import * as Eris from 'eris';
 import moment from 'moment-timezone';
 
 import templates from '../../text.js';

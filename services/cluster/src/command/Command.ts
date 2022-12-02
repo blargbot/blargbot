@@ -4,7 +4,7 @@ import { CommandType } from '@blargbot/cluster/utils/index.js';
 import { IMiddleware, NextMiddleware } from '@blargbot/core/types.js';
 import { FlagDefinition } from '@blargbot/domain/models/index.js';
 import { IFormattable } from '@blargbot/formatting';
-import Eris from 'eris';
+import * as Eris from 'eris';
 
 import { CommandContext } from './CommandContext.js';
 

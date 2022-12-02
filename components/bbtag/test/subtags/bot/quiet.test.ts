@@ -1,5 +1,5 @@
 import { QuietSubtag } from '@blargbot/bbtag/subtags/bot/quiet.js';
-import { expect } from 'chai';
+import chai from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
@@ -11,35 +11,35 @@ runSubtagTests({
             code: '{quiet}',
             expected: '',
             assert(ctx) {
-                expect(ctx.scopes.local.quiet).to.be.true;
+                chai.expect(ctx.scopes.local.quiet).to.be.true;
             }
         },
         {
             code: '{quiet;}',
             expected: '',
             assert(ctx) {
-                expect(ctx.scopes.local.quiet).to.be.true;
+                chai.expect(ctx.scopes.local.quiet).to.be.true;
             }
         },
         {
             code: '{quiet;true}',
             expected: '',
             assert(ctx) {
-                expect(ctx.scopes.local.quiet).to.be.true;
+                chai.expect(ctx.scopes.local.quiet).to.be.true;
             }
         },
         {
             code: '{quiet;false}',
             expected: '',
             assert(ctx) {
-                expect(ctx.scopes.local.quiet).to.be.false;
+                chai.expect(ctx.scopes.local.quiet).to.be.false;
             }
         },
         {
             code: '{quiet;abc}',
             expected: '',
             assert(ctx) {
-                expect(ctx.scopes.local.quiet).to.be.undefined;
+                chai.expect(ctx.scopes.local.quiet).to.be.undefined;
             }
         }
     ]

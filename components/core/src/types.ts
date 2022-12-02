@@ -1,6 +1,6 @@
 import { Snowflake } from '@blargbot/domain/models/index.js';
 import { Logger } from '@blargbot/logger';
-import Eris from 'eris';
+import * as Eris from 'eris';
 
 import { Binder } from './Binder.js';
 import { WorkerConnection } from './worker/index.js';

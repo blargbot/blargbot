@@ -1,6 +1,6 @@
 import { IMiddleware, NextMiddleware } from '@blargbot/core/types.js';
 import { guard } from '@blargbot/core/utils/index.js';
-import Eris from 'eris';
+import * as Eris from 'eris';
 
 export class IgnoreBotsMiddleware implements IMiddleware<Eris.KnownMessage, boolean> {
     public async execute(context: Eris.KnownMessage, next: NextMiddleware<boolean>): Promise<boolean> {

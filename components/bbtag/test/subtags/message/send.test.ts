@@ -2,8 +2,8 @@ import { BBTagRuntimeError, ChannelNotFoundError } from '@blargbot/bbtag/errors/
 import { SendSubtag } from '@blargbot/bbtag/subtags/message/send.js';
 import { EscapeBBTagSubtag } from '@blargbot/bbtag/subtags/misc/escapeBBTag.js';
 import { argument } from '@blargbot/test-util/mock.js';
-import { expect } from 'chai';
-import Eris from 'eris';
+import chai from 'chai';
+import * as Eris from 'eris';
 
 import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';
 
@@ -54,7 +54,7 @@ runSubtagTests({
                 }))).thenReject(new BBTagRuntimeError('Test error'));
             },
             assert(bbctx) {
-                expect(bbctx.data.ownedMsgs).to.be.empty;
+                chai.expect(bbctx.data.ownedMsgs).to.be.empty;
             }
         },
         {
@@ -90,7 +90,7 @@ runSubtagTests({
                 }))).thenReject(ctx.createRESTError(0, 'Test error'));
             },
             assert(bbctx) {
-                expect(bbctx.data.ownedMsgs).to.be.empty;
+                chai.expect(bbctx.data.ownedMsgs).to.be.empty;
             }
         },
         {
@@ -129,7 +129,7 @@ runSubtagTests({
                 }))).thenReject(error);
             },
             assert(bbctx) {
-                expect(bbctx.data.ownedMsgs).to.be.empty;
+                chai.expect(bbctx.data.ownedMsgs).to.be.empty;
             }
         },
         {
@@ -171,7 +171,7 @@ runSubtagTests({
                 }))).thenResolve(message);
             },
             assert(bbctx) {
-                expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
+                chai.expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
             }
         },
         {
@@ -214,7 +214,7 @@ runSubtagTests({
                 }))).thenResolve(message);
             },
             assert(bbctx) {
-                expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
+                chai.expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
             }
         },
         {
@@ -253,7 +253,7 @@ runSubtagTests({
                 }))).thenResolve(message);
             },
             assert(bbctx) {
-                expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
+                chai.expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
             }
         },
         {
@@ -293,7 +293,7 @@ runSubtagTests({
                 }))).thenResolve(message);
             },
             assert(bbctx) {
-                expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
+                chai.expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
             }
         },
         {
@@ -336,7 +336,7 @@ runSubtagTests({
                 }))).thenResolve(message);
             },
             assert(bbctx) {
-                expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
+                chai.expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
             }
         },
         {
@@ -376,7 +376,7 @@ runSubtagTests({
                 }))).thenResolve(message);
             },
             assert(bbctx) {
-                expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
+                chai.expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
             }
         },
         {
@@ -419,7 +419,7 @@ runSubtagTests({
                 }))).thenResolve(message);
             },
             assert(bbctx) {
-                expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
+                chai.expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
             }
         },
         {
@@ -459,7 +459,7 @@ runSubtagTests({
                 }))).thenResolve(message);
             },
             assert(bbctx) {
-                expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
+                chai.expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
             }
         },
         {
@@ -494,7 +494,7 @@ runSubtagTests({
                     embeds: [{ title: 'New embed!' }],
                     file: [{
                         file: argument.assert<Buffer>(value => {
-                            expect(value).to.be.instanceOf(Buffer)
+                            chai.expect(value).to.be.instanceOf(Buffer)
                                 .and.to.equalBytes([0x69, 0xb7, 0x1d, 0x79]);
                         }).value,
                         name: 'file.txt'
@@ -508,7 +508,7 @@ runSubtagTests({
                 }))).thenResolve(message);
             },
             assert(bbctx) {
-                expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
+                chai.expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
             }
         },
         {
@@ -542,7 +542,7 @@ runSubtagTests({
                     embeds: [{ title: 'New embed!' }],
                     file: [{
                         file: argument.assert<Buffer>(value => {
-                            expect(value).to.be.instanceOf(Buffer)
+                            chai.expect(value).to.be.instanceOf(Buffer)
                                 .and.to.equalBytes([0x69, 0xb7, 0x1d, 0x79]);
                         }).value,
                         name: 'file.txt'
@@ -554,7 +554,7 @@ runSubtagTests({
                 }))).thenResolve(message);
             },
             assert(bbctx) {
-                expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
+                chai.expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
             }
         },
         {
@@ -597,7 +597,7 @@ runSubtagTests({
                 }))).thenResolve(message);
             },
             assert(bbctx) {
-                expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
+                chai.expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
             }
         },
         {
@@ -637,7 +637,7 @@ runSubtagTests({
                 }))).thenResolve(message);
             },
             assert(bbctx) {
-                expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
+                chai.expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
             }
         },
         {
@@ -672,7 +672,7 @@ runSubtagTests({
                     embeds: [{ title: 'New embed!' }],
                     file: [{
                         file: argument.assert<Buffer>(value => {
-                            expect(value).to.be.instanceOf(Buffer)
+                            chai.expect(value).to.be.instanceOf(Buffer)
                                 .and.to.equalBytes([0x69, 0xb7, 0x1d, 0x79]);
                         }).value,
                         name: 'test.zip'
@@ -686,7 +686,7 @@ runSubtagTests({
                 }))).thenResolve(message);
             },
             assert(bbctx) {
-                expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
+                chai.expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
             }
         },
         {
@@ -720,7 +720,7 @@ runSubtagTests({
                     embeds: [{ title: 'New embed!' }],
                     file: [{
                         file: argument.assert<Buffer>(value => {
-                            expect(value).to.be.instanceOf(Buffer)
+                            chai.expect(value).to.be.instanceOf(Buffer)
                                 .and.to.equalBytes([0x69, 0xb7, 0x1d, 0x79]);
                         }).value,
                         name: 'test.zip'
@@ -732,7 +732,7 @@ runSubtagTests({
                 }))).thenResolve(message);
             },
             assert(bbctx) {
-                expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
+                chai.expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
             }
         }
     ]

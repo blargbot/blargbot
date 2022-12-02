@@ -5,7 +5,7 @@ import { ForEachSubtag } from '@blargbot/bbtag/subtags/loops/forEach.js';
 import { IfSubtag } from '@blargbot/bbtag/subtags/misc/if.js';
 import { BBTagRuntimeState } from '@blargbot/bbtag/types.js';
 import { TagVariableType } from '@blargbot/domain/models/index.js';
-import { expect } from 'chai';
+import chai from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
@@ -30,8 +30,8 @@ runSubtagTests({
                 ctx.limit.setup(m => m.check(bbctx, 'foreach:loops')).verifiable(3).thenResolve(undefined);
             },
             async assert(bbctx, _, ctx) {
-                expect((await bbctx.variables.get('a')).value).to.equal('initial');
-                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'a' })).to.equal('initial');
+                chai.expect((await bbctx.variables.get('a')).value).to.equal('initial');
+                chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'a' })).to.equal('initial');
             }
         },
         {
@@ -47,8 +47,8 @@ runSubtagTests({
                 ctx.limit.setup(m => m.check(bbctx, 'foreach:loops')).verifiable(3).thenResolve(undefined);
             },
             async assert(bbctx, _, ctx) {
-                expect((await bbctx.variables.get('a')).value).to.equal('initial');
-                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'a' })).to.equal('initial');
+                chai.expect((await bbctx.variables.get('a')).value).to.equal('initial');
+                chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'a' })).to.equal('initial');
             }
         },
         {
@@ -64,8 +64,8 @@ runSubtagTests({
                 ctx.limit.setup(m => m.check(bbctx, 'foreach:loops')).verifiable(12).thenResolve(undefined);
             },
             async assert(bbctx, _, ctx) {
-                expect((await bbctx.variables.get('a')).value).to.equal('initial');
-                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'a' })).to.equal('initial');
+                chai.expect((await bbctx.variables.get('a')).value).to.equal('initial');
+                chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'a' })).to.equal('initial');
             }
         },
         {
@@ -81,9 +81,9 @@ runSubtagTests({
                 ctx.limit.setup(m => m.check(bbctx, 'foreach:loops')).verifiable(4).thenResolve(undefined);
             },
             async assert(bbctx, _, ctx) {
-                expect((await bbctx.variables.get('a')).value).to.equal('initial');
-                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'a' })).to.equal('initial');
-                expect(bbctx.data.state).to.equal(BBTagRuntimeState.ABORT);
+                chai.expect((await bbctx.variables.get('a')).value).to.equal('initial');
+                chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'a' })).to.equal('initial');
+                chai.expect(bbctx.data.state).to.equal(BBTagRuntimeState.ABORT);
             }
         },
         {
@@ -107,8 +107,8 @@ runSubtagTests({
                 });
             },
             async assert(bbctx, _, ctx) {
-                expect((await bbctx.variables.get('a')).value).to.equal('initial');
-                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'a' })).to.equal('initial');
+                chai.expect((await bbctx.variables.get('a')).value).to.equal('initial');
+                chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'a' })).to.equal('initial');
             }
         }
     ]

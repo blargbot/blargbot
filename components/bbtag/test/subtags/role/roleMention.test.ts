@@ -1,5 +1,5 @@
 import { RoleMentionSubtag } from '@blargbot/bbtag/subtags/role/roleMention.js';
-import { expect } from 'chai';
+import chai from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetRolePropTestCases } from './_getRolePropTest.js';
@@ -20,7 +20,7 @@ runSubtagTests({
                         role.id = '89176598273912362713';
                     },
                     assert(_, __, ctx) {
-                        expect(ctx.data.allowedMentions.roles).to.include('89176598273912362713');
+                        chai.expect(ctx.data.allowedMentions.roles).to.include('89176598273912362713');
                     }
                 }
             ]
@@ -39,7 +39,7 @@ runSubtagTests({
                     .thenResolve([role]);
             },
             assert(bbctx) {
-                expect(bbctx.data.allowedMentions.roles).to.deep.equal(['347865137576334534']);
+                chai.expect(bbctx.data.allowedMentions.roles).to.deep.equal(['347865137576334534']);
             }
         },
         {
@@ -56,7 +56,7 @@ runSubtagTests({
                     .thenResolve([role]);
             },
             assert(bbctx) {
-                expect(bbctx.data.allowedMentions.roles).to.deep.equal([]);
+                chai.expect(bbctx.data.allowedMentions.roles).to.deep.equal([]);
             }
         },
         {
@@ -73,7 +73,7 @@ runSubtagTests({
                     .thenResolve([role]);
             },
             assert(bbctx) {
-                expect(bbctx.data.allowedMentions.roles).to.deep.equal(['347865137576334534']);
+                chai.expect(bbctx.data.allowedMentions.roles).to.deep.equal(['347865137576334534']);
             }
         }
     ]

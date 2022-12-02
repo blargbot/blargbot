@@ -1,5 +1,5 @@
 import { FormatString, IFormattable } from '@blargbot/formatting';
-import Eris from 'eris';
+import * as Eris from 'eris';
 
 export const templates = FormatString.defineTree('core', t => ({
     common: {

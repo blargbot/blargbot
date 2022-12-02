@@ -1,6 +1,6 @@
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
 import { RoleDeleteSubtag } from '@blargbot/bbtag/subtags/role/roleDelete.js';
-import Eris from 'eris';
+import * as Eris from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetRolePropTestCases } from './_getRolePropTest.js';
@@ -8,7 +8,7 @@ import { createGetRolePropTestCases } from './_getRolePropTest.js';
 runSubtagTests({
     subtag: new RoleDeleteSubtag(),
     argCountBounds: { min: 1, max: 2 },
-    setup(ctx) {
+    setupEach(ctx) {
         ctx.roles.authorizer.permissions = Eris.Constants.Permissions.manageRoles.toString();
         ctx.members.authorizer.roles.push(ctx.roles.top.id);
     },

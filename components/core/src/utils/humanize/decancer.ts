@@ -1,6 +1,6 @@
 import { snowflake } from '@blargbot/core/utils/index.js';
 import limax from 'limax';
-import { nfkd } from 'unorm';
+import unorm from 'unorm';
 
 const limaxOpt = {
     tone: false,
@@ -15,7 +15,7 @@ export function decancer(text: string): string {
         ...limaxOpt,
         replacement: snowflake.create().toString()
     };
-    return nfkd(text)
+    return unorm.nfkd(text)
         .replace(/[^ ]+/g, text => limax(text, opt))
         .replaceAll(opt.replacement, '');
 }

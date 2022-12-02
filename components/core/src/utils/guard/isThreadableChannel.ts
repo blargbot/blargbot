@@ -1,4 +1,4 @@
-import Eris from 'eris';
+import * as Eris from 'eris';
 
 type ChannelType = typeof Eris.Constants['ChannelTypes'];
 const isThreadableMap: Record<ChannelType[keyof ChannelType], boolean> = {

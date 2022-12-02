@@ -1,6 +1,6 @@
 import { CommandPropertiesSet } from '@blargbot/cluster/types.js';
 import { guard } from '@blargbot/cluster/utils/index.js';
-import Eris from 'eris';
+import * as Eris from 'eris';
 
 import templates from '../../text.js';
 import { defaultStaff } from './defaultStaff.js';

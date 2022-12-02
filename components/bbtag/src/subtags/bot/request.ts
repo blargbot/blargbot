@@ -1,6 +1,6 @@
 import { parse } from '@blargbot/core/utils/index.js';
 import { mapping } from '@blargbot/mapping';
-import fetch, { BodyInit } from 'node-fetch';
+import fetch from 'node-fetch';
 
 import { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
@@ -49,7 +49,7 @@ export class RequestSubtag extends CompiledSubtag {
             method: 'GET',
             headers: {} as Record<string, string>,
             size: 8000000,
-            body: undefined as BodyInit | undefined
+            body: undefined as string | undefined
         };
 
         if (optionsStr !== '') {
@@ -102,8 +102,8 @@ export class RequestSubtag extends CompiledSubtag {
         if (result.contentType.includes('application/json'))
             return { body: await response.json() as JToken, ...result };
 
-        const body = await response.buffer();
-        return { body: body.toString('base64'), ...result };
+        const body = await response.arrayBuffer();
+        return { body: Buffer.from(body).toString('base64'), ...result };
     }
 }
 

@@ -1,6 +1,6 @@
 import { Cluster } from '@blargbot/cluster';
 import { DiscordEventService } from '@blargbot/core/serviceTypes/index.js';
-import Eris from 'eris';
+import * as Eris from 'eris';
 
 export class DiscordGuildBanAddEventService extends DiscordEventService<'guildBanAdd'> {
     public constructor(protected readonly cluster: Cluster) {

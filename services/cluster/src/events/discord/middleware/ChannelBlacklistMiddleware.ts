@@ -1,7 +1,7 @@
 import { ClusterUtilities } from '@blargbot/cluster/ClusterUtilities.js';
 import { guard } from '@blargbot/cluster/utils/index.js';
 import { IMiddleware, NextMiddleware } from '@blargbot/core/types.js';
-import Eris from 'eris';
+import * as Eris from 'eris';
 
 export class ChannelBlacklistMiddleware implements IMiddleware<Eris.KnownMessage, boolean> {
     readonly #util: ClusterUtilities;

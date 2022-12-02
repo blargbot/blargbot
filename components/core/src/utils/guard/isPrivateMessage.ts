@@ -1,4 +1,4 @@
-import Eris from 'eris';
+import * as Eris from 'eris';
 
 import { isPrivateChannel } from './isPrivateChannel.js';
 

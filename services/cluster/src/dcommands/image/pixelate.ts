@@ -1,8 +1,8 @@
-import { CommandContext, GlobalImageCommand } from '../../command/index.js';
 import { guard } from '@blargbot/core/utils/index.js';
 import { parse } from '@blargbot/core/utils/parse/index.js';
-import Eris from 'eris';
+import * as Eris from 'eris';
 
+import { CommandContext, GlobalImageCommand } from '../../command/index.js';
 import templates from '../../text.js';
 import { CommandResult } from '../../types.js';
 

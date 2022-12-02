@@ -1,8 +1,9 @@
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
 import { ClusterWorker } from '@blargbot/cluster';
 import { config } from '@blargbot/config';
 import { createLogger } from '@blargbot/logger';
-import path from 'path';
-import { fileURLToPath } from 'url';
 
 export * from './Cluster.js';
 export * from './ClusterConnection.js';

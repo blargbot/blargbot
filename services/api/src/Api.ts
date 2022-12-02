@@ -1,10 +1,11 @@
+import { createServer, Server } from 'node:http';
+import { performance } from 'node:perf_hooks';
+
 import { Configuration } from '@blargbot/config';
 import { BaseClient } from '@blargbot/core/BaseClient.js';
 import { ModuleLoader } from '@blargbot/core/modules/index.js';
 import { Logger } from '@blargbot/logger';
 import express, { Express } from 'express';
-import { createServer, Server } from 'http';
-import { performance } from 'perf_hooks';
 
 import { ApiWorker } from './ApiWorker.js';
 import { BaseRoute } from './BaseRoute.js';

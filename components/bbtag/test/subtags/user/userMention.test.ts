@@ -1,6 +1,6 @@
 import { UserMentionSubtag } from '@blargbot/bbtag/subtags/user/userMention.js';
-import { expect } from 'chai';
-import Eris from 'eris';
+import chai from 'chai';
+import * as Eris from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetUserPropTestCases } from './_getUserPropTest.js';
@@ -21,7 +21,7 @@ runSubtagTests({
                         member.user.id = '12345678900987236';
                     },
                     assert(_, __, ctx) {
-                        expect(ctx.data.allowedMentions.users).to.deep.equal(['12345678900987236']);
+                        chai.expect(ctx.data.allowedMentions.users).to.deep.equal(['12345678900987236']);
                     }
                 },
                 {
@@ -30,7 +30,7 @@ runSubtagTests({
                         member.user.id = '098765434512212678';
                     },
                     assert(_, __, ctx) {
-                        expect(ctx.data.allowedMentions.users).to.deep.equal(['098765434512212678']);
+                        chai.expect(ctx.data.allowedMentions.users).to.deep.equal(['098765434512212678']);
                     }
                 },
                 {
@@ -39,7 +39,7 @@ runSubtagTests({
                         member.user.id = '876543456782978367654';
                     },
                     assert(_, __, ctx) {
-                        expect(ctx.data.allowedMentions.users).to.deep.equal(['876543456782978367654']);
+                        chai.expect(ctx.data.allowedMentions.users).to.deep.equal(['876543456782978367654']);
                     }
                 }
             ]
@@ -51,7 +51,7 @@ runSubtagTests({
                 ctx.users.command.id = '12345678900987236';
             },
             assert(ctx) {
-                expect(ctx.data.allowedMentions.users).to.deep.equal(['12345678900987236']);
+                chai.expect(ctx.data.allowedMentions.users).to.deep.equal(['12345678900987236']);
             }
         },
         {
@@ -61,7 +61,7 @@ runSubtagTests({
                 ctx.users.command.id = '12345678900987236';
             },
             assert(ctx) {
-                expect(ctx.data.allowedMentions.users).to.deep.equal([]);
+                chai.expect(ctx.data.allowedMentions.users).to.deep.equal([]);
             }
         },
         {
@@ -71,7 +71,7 @@ runSubtagTests({
                 ctx.users.command.id = '12345678900987236';
             },
             assert(ctx) {
-                expect(ctx.data.allowedMentions.users).to.deep.equal(['12345678900987236']);
+                chai.expect(ctx.data.allowedMentions.users).to.deep.equal(['12345678900987236']);
             }
         },
         {
@@ -92,7 +92,7 @@ runSubtagTests({
                 ctx.util.setup(m => m.findMembers(bbctx.guild, '098765434512212678')).verifiable(1).thenResolve([otherMember.instance]);
             },
             assert(ctx) {
-                expect(ctx.data.allowedMentions.users).to.deep.equal(['12345678900987236', '098765434512212678']);
+                chai.expect(ctx.data.allowedMentions.users).to.deep.equal(['12345678900987236', '098765434512212678']);
             }
         }
     ]

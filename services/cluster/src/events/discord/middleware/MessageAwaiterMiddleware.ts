@@ -1,6 +1,6 @@
 import { AwaiterFactoryBase } from '@blargbot/cluster/managers/awaiters/AwaiterFactoryBase.js';
 import { IMiddleware, NextMiddleware } from '@blargbot/core/types.js';
-import Eris from 'eris';
+import * as Eris from 'eris';
 
 export class MessageAwaiterMiddleware implements IMiddleware<Eris.KnownMessage, boolean> {
     readonly #awaiter: AwaiterFactoryBase<Eris.KnownMessage>;

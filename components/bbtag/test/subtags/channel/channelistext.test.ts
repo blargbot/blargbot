@@ -1,5 +1,5 @@
 import { ChannelIsTextSubtag } from '@blargbot/bbtag/subtags/channel/channelIsText.js';
-import Eris from 'eris';
+import * as Eris from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetChannelPropTestCases } from './_getChannelPropTest.js';

@@ -6,7 +6,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 runSubtagTests({
     subtag: new ParamsSubtag(),
     argCountBounds: { min: 0, max: 2 },
-    setup(ctx) {
+    setupEach(ctx) {
         ctx.rootScope.paramsarray = ['arg1', 'arg2', 'arg3 arg3', 'arg4', 'arg5'];
     },
     cases: [

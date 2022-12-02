@@ -22,9 +22,7 @@
         "eslint-plugin-simple-import-sort": "^8.0.0",
         "mocha": "^10.1.0",
         "nyc": "^15.1.0",
-        "ts-node": "^10.9.1",
-        "typescript": "^4.9.3",
-        "yarn": "^1.22.19"
+        "typescript": "^4.9.3"
     },
     "scripts": {
         "filecount": "cloc ./ --exclude-dir=node_modules --exclude-ext=js,msj,cjs",
@@ -49,12 +47,7 @@
         "url": "https://github.com/blargbot/blargbot/issues"
     },
     "homepage": "https://github.com/blargbot/blargbot#readme",
-    "dependenciesMeta": {
-        "mocha": {
-            "unplugged": true
-        }
-    },
     "resolutions": {
-        "@types/mocha@^10.0.0": "patch:@types/mocha@npm:10.0.0#./.yarn/patches/@types-mocha-npm-10.0.0-a2509f7d26.patch"
+        "@types/mocha@^10.0.1": "patch:@types/mocha@npm%3A10.0.1#./.yarn/patches/@types-mocha-npm-10.0.1-7c94e9e170.patch"
     }
 }

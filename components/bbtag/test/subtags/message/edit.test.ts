@@ -2,8 +2,8 @@ import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '@
 import { EditSubtag } from '@blargbot/bbtag/subtags/message/edit.js';
 import { EscapeBBTagSubtag } from '@blargbot/bbtag/subtags/misc/escapeBBTag.js';
 import { argument } from '@blargbot/test-util/mock.js';
-import { expect } from 'chai';
-import Eris from 'eris';
+import chai from 'chai';
+import * as Eris from 'eris';
 
 import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';
 
@@ -201,7 +201,7 @@ runSubtagTests({
             },
             postSetup(bbctx, ctx) {
                 const channel = bbctx.guild.channels.get('9876543212345678') as Eris.KnownGuildTextableChannel;
-                expect(channel).to.not.be.undefined.and.not.be.null;
+                chai.expect(channel).to.not.be.undefined.and.not.be.null;
                 const message = ctx.createMessage(SubtagTestContext.createApiMessage({
                     channel_id: channel.id,
                     id: '12345678901234567',
@@ -226,7 +226,7 @@ runSubtagTests({
             },
             postSetup(bbctx, ctx) {
                 const channel = bbctx.guild.channels.get('9876543212345678') as Eris.KnownGuildTextableChannel;
-                expect(channel).to.not.be.undefined.and.not.be.null;
+                chai.expect(channel).to.not.be.undefined.and.not.be.null;
                 const message = ctx.createMessage(SubtagTestContext.createApiMessage({
                     channel_id: channel.id,
                     id: '12345678901234567',
@@ -251,7 +251,7 @@ runSubtagTests({
             },
             postSetup(bbctx, ctx) {
                 const channel = bbctx.guild.channels.get('9876543212345678') as Eris.KnownGuildTextableChannel;
-                expect(channel).to.not.be.undefined.and.not.be.null;
+                chai.expect(channel).to.not.be.undefined.and.not.be.null;
                 const message = ctx.createMessage(SubtagTestContext.createApiMessage({
                     channel_id: channel.id,
                     id: '12345678901234567',
@@ -275,7 +275,7 @@ runSubtagTests({
             },
             postSetup(bbctx, ctx) {
                 const channel = bbctx.guild.channels.get('9876543212345678') as Eris.KnownGuildTextableChannel;
-                expect(channel).to.not.be.undefined.and.not.be.null;
+                chai.expect(channel).to.not.be.undefined.and.not.be.null;
                 const message = ctx.createMessage(SubtagTestContext.createApiMessage({
                     channel_id: channel.id,
                     id: '12345678901234567',
@@ -300,7 +300,7 @@ runSubtagTests({
             },
             postSetup(bbctx, ctx) {
                 const channel = bbctx.guild.channels.get('9876543212345678') as Eris.KnownGuildTextableChannel;
-                expect(channel).to.not.be.undefined.and.not.be.null;
+                chai.expect(channel).to.not.be.undefined.and.not.be.null;
                 const message = ctx.createMessage(SubtagTestContext.createApiMessage({
                     channel_id: channel.id,
                     id: '12345678901234567',

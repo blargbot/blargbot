@@ -1,7 +1,7 @@
 import { FormatEmbedField, SendContent } from '@blargbot/core/types.js';
 import { discord, guard } from '@blargbot/core/utils/index.js';
 import { format, IFormattable, util } from '@blargbot/formatting';
-import Eris from 'eris';
+import * as Eris from 'eris';
 
 import { Cluster } from '../../Cluster.js';
 import templates from '../../text.js';

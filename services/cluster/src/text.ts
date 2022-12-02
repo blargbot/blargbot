@@ -1,7 +1,7 @@
 import { AnalysisResult } from '@blargbot/bbtag';
 import { FlagDefinition } from '@blargbot/domain/models/index.js';
 import { FormatString, IFormattable } from '@blargbot/formatting';
-import Eris from 'eris';
+import * as Eris from 'eris';
 import moment from 'moment-timezone';
 
 import { Command } from './command/Command.js';

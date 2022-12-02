@@ -1,5 +1,5 @@
 import { IValueResolverTransform } from '@blargbot/formatting';
-import Eris from 'eris';
+import * as Eris from 'eris';
 import moment from 'moment-timezone';
 
 import { Emote } from '../Emote.js';

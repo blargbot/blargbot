@@ -1,5 +1,5 @@
 import { discord, guard, MessageComponent, parse } from '@blargbot/core/utils/index.js';
-import Eris from 'eris';
+import * as Eris from 'eris';
 
 import { CompiledSubtag } from '../../compilation/index.js';
 import { InvalidEmbedError } from '../../errors/index.js';

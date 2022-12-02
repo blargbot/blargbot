@@ -1,17 +1,17 @@
 import { Logger } from '@blargbot/logger';
-import { CronJob, CronJobParameters } from 'cron';
+import cron from 'cron';
 
 import { BaseService } from './BaseService.js';
 
 export abstract class CronService extends BaseService {
-    readonly #cronJob: CronJob;
+    readonly #cronJob: cron.CronJob;
 
     protected constructor(
-        options: Omit<CronJobParameters, 'onTick' | 'onComplete'>,
+        options: Omit<cron.CronJobParameters, 'onTick' | 'onComplete'>,
         public readonly logger: Logger
     ) {
         super();
-        this.#cronJob = new CronJob({
+        this.#cronJob = new cron.CronJob({
             ...options,
             onTick: this.makeSafeCaller(() => this.execute(), this.logger, 'CronJob')
         });

@@ -1,7 +1,7 @@
 import { Statement } from '@blargbot/bbtag';
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
 import { FunctionSubtag } from '@blargbot/bbtag/subtags/bot/function.js';
-import { expect } from 'chai';
+import chai from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
@@ -13,7 +13,7 @@ runSubtagTests({
             code: '{function;test;{fail}}',
             expected: '',
             assert(ctx) {
-                expect(ctx.scopes.root.functions['test']).to.deep.equal(<Statement>{
+                chai.expect(ctx.scopes.root.functions['test']).to.deep.equal(<Statement>{
                     values: [
                         {
                             name: {
@@ -38,7 +38,7 @@ runSubtagTests({
             code: '{function;func.test;{fail}}',
             expected: '',
             assert(ctx) {
-                expect(ctx.scopes.root.functions['test']).to.deep.equal(<Statement>{
+                chai.expect(ctx.scopes.root.functions['test']).to.deep.equal(<Statement>{
                     values: [
                         {
                             name: {
@@ -66,7 +66,7 @@ runSubtagTests({
                 { start: 0, end: 23, error: new BBTagRuntimeError('Must provide a name') }
             ],
             assert(ctx) {
-                expect(ctx.scopes.root.functions['']).to.be.undefined;
+                chai.expect(ctx.scopes.root.functions['']).to.be.undefined;
             }
         }
     ]

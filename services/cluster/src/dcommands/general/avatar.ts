@@ -1,9 +1,9 @@
-import { GlobalCommand, SendTypingMiddleware } from '../../command/index.js';
 import { CommandType } from '@blargbot/cluster/utils/index.js';
 import { parse } from '@blargbot/core/utils/index.js';
-import Eris from 'eris';
+import * as Eris from 'eris';
 import fetch from 'node-fetch';
 
+import { GlobalCommand, SendTypingMiddleware } from '../../command/index.js';
 import templates from '../../text.js';
 import { CommandResult } from '../../types.js';
 
@@ -50,7 +50,10 @@ export class AvatarCommand extends GlobalCommand {
 
         return {
             content: cmd.common.success({ user }),
-            file: [{ file: await avatar.buffer(), name: new URL(avatarUrl).pathname.split('/').pop() ?? `${user.id}.${format ?? 'png'}` }]
+            file: [{
+                file: Buffer.from(await avatar.arrayBuffer()),
+                name: new URL(avatarUrl).pathname.split('/').pop() ?? `${user.id}.${format ?? 'png'}`
+            }]
         };
     }
 }

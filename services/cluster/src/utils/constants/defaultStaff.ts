@@ -1,4 +1,4 @@
-import Eris from 'eris';
+import * as Eris from 'eris';
 
 export const defaultStaff = Eris.Constants.Permissions.kickMembers
     | Eris.Constants.Permissions.banMembers

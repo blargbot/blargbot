@@ -1,11 +1,11 @@
 import { Cluster } from '@blargbot/cluster';
-import { CommandContext } from '../../../command/index.js';
 import { CommandResult } from '@blargbot/cluster/types.js';
 import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent.js';
 import { IMiddleware, NextMiddleware } from '@blargbot/core/types.js';
 import { humanize, runMiddleware } from '@blargbot/core/utils/index.js';
-import Eris from 'eris';
+import * as Eris from 'eris';
 
+import { CommandContext } from '../../../command/index.js';
 import templates from '../../../text.js';
 
 export class CommandMiddleware implements IMiddleware<Eris.KnownMessage, boolean> {

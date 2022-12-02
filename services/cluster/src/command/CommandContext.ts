@@ -8,7 +8,7 @@ import { guard } from '@blargbot/core/utils/index.js';
 import { Database } from '@blargbot/database';
 import { format, IFormattable, util } from '@blargbot/formatting';
 import { Logger } from '@blargbot/logger';
-import Eris from 'eris';
+import * as Eris from 'eris';
 
 export class CommandContext<TChannel extends Eris.KnownTextableChannel = Eris.KnownTextableChannel> {
     public get logger(): Logger { return this.cluster.logger; }

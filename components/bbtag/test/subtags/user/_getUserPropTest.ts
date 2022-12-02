@@ -2,7 +2,7 @@ import { BBTagContext } from '@blargbot/bbtag';
 import { BBTagRuntimeError, UserNotFoundError } from '@blargbot/bbtag/errors/index.js';
 import { argument } from '@blargbot/test-util/mock.js';
 import { APIGuildMember } from 'discord-api-types/v9';
-import Eris from 'eris';
+import * as Eris from 'eris';
 
 import { SubtagTestCase, SubtagTestContext } from '../SubtagTestSuite.js';
 

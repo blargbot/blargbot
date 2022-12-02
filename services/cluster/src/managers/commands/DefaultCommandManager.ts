@@ -1,5 +1,4 @@
 import { Cluster } from '@blargbot/cluster';
-import { Command, CommandContext } from '../../command/index.js';
 import { CommandGetCoreResult, CommandParameter, CommandProperties, CommandResult, CommandSignature, ICommand } from '@blargbot/cluster/types.js';
 import { commandTypeDetails, guard } from '@blargbot/cluster/utils/index.js';
 import { metrics } from '@blargbot/core/Metrics.js';
@@ -8,8 +7,9 @@ import { Timer } from '@blargbot/core/Timer.js';
 import { NextMiddleware } from '@blargbot/core/types.js';
 import { CommandPermissions, FlagDefinition } from '@blargbot/domain/models/index.js';
 import { IFormattable } from '@blargbot/formatting';
-import Eris from 'eris';
+import * as Eris from 'eris';
 
+import { Command, CommandContext } from '../../command/index.js';
 import { CommandManager } from './CommandManager.js';
 
 export class DefaultCommandManager extends CommandManager<Command> {

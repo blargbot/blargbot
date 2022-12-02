@@ -1,7 +1,7 @@
 import { CommandResult } from '@blargbot/cluster/types.js';
 import { guard, snowflake } from '@blargbot/cluster/utils/index.js';
 import { IMiddleware, NextMiddleware } from '@blargbot/core/types.js';
-import Eris from 'eris';
+import * as Eris from 'eris';
 
 import templates from '../../text.js';
 import { CommandContext } from '../CommandContext.js';

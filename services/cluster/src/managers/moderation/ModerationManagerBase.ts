@@ -1,7 +1,7 @@
 import { Cluster } from '@blargbot/cluster';
 import { defaultStaff, discord, parse } from '@blargbot/cluster/utils/index.js';
 import { StoredGuildSettings } from '@blargbot/domain/models/index.js';
-import Eris from 'eris';
+import * as Eris from 'eris';
 
 import { ModerationManager } from '../ModerationManager.js';
 import { ModLogManager } from './ModLogManager.js';

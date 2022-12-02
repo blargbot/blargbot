@@ -1,10 +1,11 @@
+import child_process from 'node:child_process';
+import { createInterface } from 'node:readline';
+import streams from 'node:stream';
+
 import { Timer } from '@blargbot/core/Timer.js';
 import { GetMasterProcessMessageHandler, IPCContractMasterGets, IPCContractNames, IPCContracts, IPCContractWorkerGets } from '@blargbot/core/types.js';
 import { Logger } from '@blargbot/logger';
-import child_process from 'child_process';
 import moment from 'moment-timezone';
-import { createInterface } from 'readline';
-import streams from 'stream';
 
 import { IPCMessageEmitter } from './IPCMessageEmitter.js';
 

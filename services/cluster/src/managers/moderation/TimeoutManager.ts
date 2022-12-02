@@ -1,7 +1,7 @@
 import { TimeoutClearResult, TimeoutResult } from '@blargbot/cluster/types.js';
 import { clampBy } from '@blargbot/cluster/utils/index.js';
 import { format, IFormattable } from '@blargbot/formatting';
-import Eris from 'eris';
+import * as Eris from 'eris';
 import moment from 'moment-timezone';
 
 import templates from '../../text.js';

@@ -1,6 +1,6 @@
 import { Md5Subtag } from '@blargbot/bbtag/subtags/misc/md5.js';
-import { expect } from 'chai';
-import { it } from 'mocha';
+import chai from 'chai';
+import mocha from 'mocha';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
@@ -11,8 +11,8 @@ runSubtagTests({
         { code: '{md5;some cool text here}', expected: 'dc15a13d3e070e8151301f4430d214e7' }
     ],
     runOtherTests(md5) {
-        it('Should be deprecated', () => {
-            expect(md5.deprecated).to.equal('hash');
+        mocha.it('Should be deprecated', () => {
+            chai.expect(md5.deprecated).to.equal('hash');
         });
     }
 });

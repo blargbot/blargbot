@@ -6,7 +6,7 @@ import { discord } from '@blargbot/core/utils/discord/index.js';
 import { Database } from '@blargbot/database';
 import { FlagDefinition, FlagResult, NamedGuildCommandTag, StoredTag } from '@blargbot/domain/models/index.js';
 import { Logger } from '@blargbot/logger';
-import Eris from 'eris';
+import * as Eris from 'eris';
 import moment from 'moment-timezone';
 import ReadWriteLock from 'rwlock';
 

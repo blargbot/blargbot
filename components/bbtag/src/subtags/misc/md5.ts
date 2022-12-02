@@ -1,4 +1,4 @@
-import { createHash } from 'crypto';
+import { createHash } from 'node:crypto';
 
 import { CompiledSubtag } from '../../compilation/index.js';
 import templates from '../../text.js';

@@ -5,7 +5,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 runSubtagTests({
     subtag: new FlagSubtag(),
     argCountBounds: { min: 1, max: 1 },
-    setup(ctx) {
+    setupEach(ctx) {
         ctx.options.inputRaw = 'This is some text -a flag a content -bc flag c content -- some more text --extra flag extra content --else flag else content';
         ctx.options.flags = [
             {

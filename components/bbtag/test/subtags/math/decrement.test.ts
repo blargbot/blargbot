@@ -1,7 +1,7 @@
 import { NotABooleanError, NotANumberError } from '@blargbot/bbtag/errors/index.js';
 import { DecrementSubtag } from '@blargbot/bbtag/subtags/math/decrement.js';
 import { TagVariableType } from '@blargbot/domain/models/index.js';
-import { expect } from 'chai';
+import chai from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
@@ -16,7 +16,7 @@ runSubtagTests({
                 ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }, 18);
             },
             assert(_, __, ctx) {
-                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' })).to.equal(17);
+                chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' })).to.equal(17);
             }
         },
         {
@@ -26,7 +26,7 @@ runSubtagTests({
                 ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }, 18.1);
             },
             assert(_, __, ctx) {
-                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' })).to.equal(17);
+                chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' })).to.equal(17);
             }
         },
         {
@@ -36,7 +36,7 @@ runSubtagTests({
                 ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }, 18.9999);
             },
             assert(_, __, ctx) {
-                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' })).to.equal(17);
+                chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' })).to.equal(17);
             }
         },
         {
@@ -46,7 +46,7 @@ runSubtagTests({
                 ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }, '18');
             },
             assert(_, __, ctx) {
-                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' })).to.equal(17);
+                chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' })).to.equal(17);
             }
         },
         {
@@ -67,7 +67,7 @@ runSubtagTests({
                 ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }, 22);
             },
             assert(_, __, ctx) {
-                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' })).to.equal(19);
+                chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' })).to.equal(19);
             }
         },
         {
@@ -77,7 +77,7 @@ runSubtagTests({
                 ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }, 22.1);
             },
             assert(_, __, ctx) {
-                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' })).to.equal(19);
+                chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' })).to.equal(19);
             }
         },
         {
@@ -87,7 +87,7 @@ runSubtagTests({
                 ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }, 22);
             },
             assert(_, __, ctx) {
-                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' })).to.equal(19);
+                chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' })).to.equal(19);
             }
         },
         {
@@ -108,7 +108,7 @@ runSubtagTests({
                 ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }, 16);
             },
             assert(_, __, ctx) {
-                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' })).to.equal(7);
+                chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' })).to.equal(7);
             }
         },
         {
@@ -118,7 +118,7 @@ runSubtagTests({
                 ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }, 16.1);
             },
             assert(_, __, ctx) {
-                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' })).to.equal(7);
+                chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' })).to.equal(7);
             }
         },
         {
@@ -128,7 +128,7 @@ runSubtagTests({
                 ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }, 16);
             },
             assert(_, __, ctx) {
-                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' })).to.equal(7);
+                chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' })).to.equal(7);
             }
         },
         {
@@ -138,7 +138,7 @@ runSubtagTests({
                 ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }, 16);
             },
             assert(_, __, ctx) {
-                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' })).to.equal(7);
+                chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' })).to.equal(7);
             }
         },
         {
@@ -148,7 +148,7 @@ runSubtagTests({
                 ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }, 16.1);
             },
             assert(_, __, ctx) {
-                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' })).to.equal(7.100000000000001);
+                chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' })).to.equal(7.100000000000001);
             }
         },
         {
@@ -158,7 +158,7 @@ runSubtagTests({
                 ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }, 16);
             },
             assert(_, __, ctx) {
-                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' })).to.equal(6.4);
+                chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' })).to.equal(6.4);
             }
         },
         {

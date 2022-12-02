@@ -1,4 +1,4 @@
-import Eris from 'eris';
+import * as Eris from 'eris';
 
 export function getMemberColour(member: Eris.Member): number {
     let result = 0;

@@ -1,6 +1,7 @@
+import path from 'node:path';
+
 import { ITranslationSource, LanguageDetails } from '@blargbot/formatting';
 import fetch from 'node-fetch';
-import path from 'path';
 
 export class CrowdinTranslationSource implements ITranslationSource {
     readonly #manifestUrl: string;

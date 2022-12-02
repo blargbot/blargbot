@@ -1,8 +1,9 @@
-import { CommandContext, GlobalCommand } from '../../command/index.js';
+import { inspect } from 'node:util';
+
 import { CommandType } from '@blargbot/cluster/utils/index.js';
 import { EvalResult, GlobalEvalResult, MasterEvalRequest } from '@blargbot/core/types.js';
-import { inspect } from 'util';
 
+import { CommandContext, GlobalCommand } from '../../command/index.js';
 import templates from '../../text.js';
 import { CommandResult } from '../../types.js';
 

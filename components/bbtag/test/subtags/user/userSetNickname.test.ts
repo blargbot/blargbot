@@ -1,7 +1,7 @@
 import { UserNotFoundError } from '@blargbot/bbtag/errors/index.js';
 import { UserSetNickSubtag } from '@blargbot/bbtag/subtags/user/userSetNickname.js';
 import { argument } from '@blargbot/test-util/mock.js';
-import Eris from 'eris';
+import * as Eris from 'eris';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 

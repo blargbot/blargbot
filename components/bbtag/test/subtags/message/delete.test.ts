@@ -1,7 +1,7 @@
 import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '@blargbot/bbtag/errors/index.js';
 import { DeleteSubtag } from '@blargbot/bbtag/subtags/message/delete.js';
-import { expect } from 'chai';
-import Eris from 'eris';
+import chai from 'chai';
+import * as Eris from 'eris';
 
 import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';
 
@@ -148,7 +148,7 @@ runSubtagTests({
             },
             postSetup(bbctx, ctx) {
                 const channel = bbctx.guild.channels.get('987654322123456142') as Eris.KnownGuildChannel;
-                expect(channel).to.not.be.undefined;
+                chai.expect(channel).to.not.be.undefined;
 
                 const message = ctx.createMessage(SubtagTestContext.createApiMessage({
                     channel_id: '987654322123456142',

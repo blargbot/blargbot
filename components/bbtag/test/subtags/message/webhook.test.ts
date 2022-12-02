@@ -2,7 +2,7 @@ import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
 import { WebhookSubtag } from '@blargbot/bbtag/subtags/message/webhook.js';
 import { EscapeBBTagSubtag } from '@blargbot/bbtag/subtags/misc/escapeBBTag.js';
 import { argument } from '@blargbot/test-util/mock.js';
-import { expect } from 'chai';
+import chai from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
@@ -158,7 +158,7 @@ runSubtagTests({
                     avatarURL: 'mno',
                     content: 'ghi',
                     embeds: [{ title: 'My cool embed' }],
-                    file: [{ file: argument.assert<Buffer>(value => expect(value).to.be.instanceOf(Buffer).and.to.equalBytes([0x70, 0x71, 0x72, 0x73])).value, name: 'file.txt' }]
+                    file: [{ file: argument.assert<Buffer>(value => chai.expect(value).to.be.instanceOf(Buffer).and.to.equalBytes([0x70, 0x71, 0x72, 0x73])).value, name: 'file.txt' }]
                 }))).thenResolve(undefined);
             }
         },
@@ -172,7 +172,7 @@ runSubtagTests({
                     avatarURL: 'mno',
                     content: 'ghi',
                     embeds: [{ title: 'My cool embed' }],
-                    file: [{ file: argument.assert<Buffer>(value => expect(value).to.be.instanceOf(Buffer).and.to.equalBytes([0xa6, 0xaa, 0xec])).value, name: 'file.txt' }]
+                    file: [{ file: argument.assert<Buffer>(value => chai.expect(value).to.be.instanceOf(Buffer).and.to.equalBytes([0xa6, 0xaa, 0xec])).value, name: 'file.txt' }]
                 }))).thenResolve(undefined);
             }
         },
@@ -186,7 +186,7 @@ runSubtagTests({
                     avatarURL: 'mno',
                     content: 'ghi',
                     embeds: [{ title: 'My cool embed' }],
-                    file: [{ file: argument.assert<Buffer>(value => expect(value).to.be.instanceOf(Buffer).and.to.equalBytes([0x70, 0x71, 0x72, 0x73])).value, name: 'tuv' }]
+                    file: [{ file: argument.assert<Buffer>(value => chai.expect(value).to.be.instanceOf(Buffer).and.to.equalBytes([0x70, 0x71, 0x72, 0x73])).value, name: 'tuv' }]
                 }))).thenResolve(undefined);
             }
         },
@@ -200,7 +200,7 @@ runSubtagTests({
                     avatarURL: 'mno',
                     content: 'ghi',
                     embeds: [{ title: 'My cool embed' }],
-                    file: [{ file: argument.assert<Buffer>(value => expect(value).to.be.instanceOf(Buffer).and.to.equalBytes([0xa6, 0xaa, 0xec])).value, name: 'tuv' }]
+                    file: [{ file: argument.assert<Buffer>(value => chai.expect(value).to.be.instanceOf(Buffer).and.to.equalBytes([0xa6, 0xaa, 0xec])).value, name: 'tuv' }]
                 }))).thenResolve(undefined);
             }
         }

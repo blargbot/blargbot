@@ -1,11 +1,11 @@
-import { GuildCommand } from '../../command/index.js';
 import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types.js';
 import { CommandType, parse } from '@blargbot/cluster/utils/index.js';
 import { FlagResult } from '@blargbot/domain/models/index.js';
 import { util } from '@blargbot/formatting';
-import Eris from 'eris';
+import * as Eris from 'eris';
 import moment from 'moment-timezone';
 
+import { GuildCommand } from '../../command/index.js';
 import templates from '../../text.js';
 
 const cmd = templates.commands.timeout;

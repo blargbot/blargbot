@@ -8,8 +8,8 @@ import { OperatorSubtag } from '@blargbot/bbtag/subtags/misc/operator.js';
 import { AwaitReactionsResponse } from '@blargbot/bbtag/types.js';
 import { Emote } from '@blargbot/core/Emote.js';
 import { argument } from '@blargbot/test-util/mock.js';
-import { expect } from 'chai';
-import Eris from 'eris';
+import chai from 'chai';
+import * as Eris from 'eris';
 
 import { MarkerError, runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';
 
@@ -546,7 +546,7 @@ runSubtagTests({
 function createFakeAwaiterFactory(result: AwaitReactionsResponse | undefined, expectedFails: AwaitReactionsResponse[] = []): BBTagUtilities['awaitReaction'] {
     return async (_: unknown, condition: AwaitCondition) => {
         for (const value of expectedFails)
-            expect(await condition(value)).to.be.false;
+            chai.expect(await condition(value)).to.be.false;
         if (result === undefined)
             return undefined;
         if (await condition(result))

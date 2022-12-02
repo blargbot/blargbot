@@ -3,7 +3,7 @@ import { BaseUtilities } from '@blargbot/core/BaseUtilities.js';
 import { Database } from '@blargbot/database';
 import * as Formatting from '@blargbot/formatting';
 import { Logger } from '@blargbot/logger';
-import Eris from 'eris';
+import * as Eris from 'eris';
 
 import * as transformers from './formatting/index.js';
 import { getRange } from './utils/index.js';

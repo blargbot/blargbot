@@ -1,8 +1,8 @@
 import { between } from '@blargbot/core/utils/index.js';
-import { expect } from 'chai';
-import { describe, it } from 'mocha';
+import chai from 'chai';
+import mocha from 'mocha';
 
-describe('between', () => {
+mocha.describe('between', () => {
     const data: Array<[value: number, lower: number, upper: number, inclusive: boolean, expected: boolean]> = [
         [5, 0, 10, true, true],
         [5, 0, 10, false, true],
@@ -15,8 +15,8 @@ describe('between', () => {
     ];
 
     for (const [value, lower, upper, inclusive, expected] of data) {
-        it(`should identify ${value} as${expected ? '' : ' not'} being between ${lower} and ${upper} (${inclusive ? 'inclusive' : 'exclusive'})`, () => {
-            expect(between(value, lower, upper, inclusive)).to.eq(expected);
+        mocha.it(`should identify ${value} as${expected ? '' : ' not'} being between ${lower} and ${upper} (${inclusive ? 'inclusive' : 'exclusive'})`, () => {
+            chai.expect(between(value, lower, upper, inclusive)).to.eq(expected);
         });
     }
 });

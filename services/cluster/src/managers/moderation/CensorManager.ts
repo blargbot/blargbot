@@ -3,7 +3,7 @@ import { guard, ModerationType } from '@blargbot/cluster/utils/index.js';
 import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent.js';
 import { GuildCensor, GuildCensorExceptions } from '@blargbot/domain/models/index.js';
 import { util } from '@blargbot/formatting';
-import Eris from 'eris';
+import * as Eris from 'eris';
 import moment from 'moment-timezone';
 
 import templates from '../../text.js';

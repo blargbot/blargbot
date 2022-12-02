@@ -2,7 +2,7 @@ import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
 import { JsonSubtag } from '@blargbot/bbtag/subtags/json/json.js';
 import { JsonSetSubtag } from '@blargbot/bbtag/subtags/json/jsonSet.js';
 import { TagVariableType } from '@blargbot/domain/models/index.js';
-import { expect } from 'chai';
+import chai from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
@@ -24,28 +24,28 @@ runSubtagTests({
             code: '{jsonset;null;myProp;123}',
             expected: '',
             async assert(bbctx) {
-                expect((await bbctx.variables.get('null')).value).to.deep.equal({ myProp: '123' });
+                chai.expect((await bbctx.variables.get('null')).value).to.deep.equal({ myProp: '123' });
             }
         },
         {
             code: '{jsonset;"abc";myProp;123}',
             expected: '',
             async assert(bbctx) {
-                expect((await bbctx.variables.get('"abc"')).value).to.deep.equal({ myProp: '123' });
+                chai.expect((await bbctx.variables.get('"abc"')).value).to.deep.equal({ myProp: '123' });
             }
         },
         {
             code: '{jsonset;true;myProp;123}',
             expected: '',
             async assert(bbctx) {
-                expect((await bbctx.variables.get('true')).value).to.deep.equal({ myProp: '123' });
+                chai.expect((await bbctx.variables.get('true')).value).to.deep.equal({ myProp: '123' });
             }
         },
         {
             code: '{jsonset;123;myProp;123}',
             expected: '',
             async assert(bbctx) {
-                expect((await bbctx.variables.get('123')).value).to.deep.equal({ myProp: '123' });
+                chai.expect((await bbctx.variables.get('123')).value).to.deep.equal({ myProp: '123' });
             }
         },
         {
@@ -81,7 +81,7 @@ runSubtagTests({
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'jsonVar' }, { test: 123, other: JSON.stringify({ myProp: 123 }) });
             },
             async assert(bbctx) {
-                expect((await bbctx.variables.get('jsonVar')).value).to.deep.equal({ test: 123, other: { myProp: '10' } });
+                chai.expect((await bbctx.variables.get('jsonVar')).value).to.deep.equal({ test: 123, other: { myProp: '10' } });
             }
         }
     ]

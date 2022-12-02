@@ -1,4 +1,4 @@
-import Eris from 'eris';
+import * as Eris from 'eris';
 import moment from 'moment-timezone';
 
 import { BBTagContext } from '../../BBTagContext.js';

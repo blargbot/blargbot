@@ -1,5 +1,5 @@
 import { IFormattable } from '@blargbot/formatting';
-import Eris from 'eris';
+import * as Eris from 'eris';
 
 import { SubtagCall } from '../language/index.js';
 import templates from '../text.js';

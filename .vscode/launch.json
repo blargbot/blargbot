@@ -81,7 +81,8 @@
             "request": "launch",
             "name": "mocha: all",
             "console": "integratedTerminal",
-            "program": "${workspaceFolder}/.yarn/unplugged/mocha-npm-10.1.0-206792a93c/node_modules/mocha/bin/_mocha",
+            "runtimeExecutable": "yarn",
+            "program": "mocha",
             "args": [
                 "--no-timeouts",
                 "--config",
@@ -103,12 +104,13 @@
             "request": "launch",
             "name": "mocha: current",
             "console": "integratedTerminal",
-            "program": "${workspaceFolder}/.yarn/unplugged/mocha-npm-10.1.0-206792a93c/node_modules/mocha/bin/_mocha",
+            "runtimeExecutable": "yarn",
+            "program": "mocha",
             "args": [
                 "--no-timeouts",
                 "--config",
                 "${workspaceFolder}/mocharc.json",
-                "${file}"
+                "${fileDirname}/${fileBasenameNoExtension}.js"
             ],
             "skipFiles": [
                 "<node_internals>/**",

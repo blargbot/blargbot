@@ -3,7 +3,7 @@ import { CommandGetCoreResult, CommandGetResult, ICommandManager, PermissionChec
 import { defaultStaff, guard } from '@blargbot/cluster/utils/index.js';
 import { parse } from '@blargbot/core/utils/index.js';
 import { CommandPermissions } from '@blargbot/domain/models/index.js';
-import Eris from 'eris';
+import * as Eris from 'eris';
 
 export abstract class CommandManager<T> implements ICommandManager<T> {
     public abstract readonly size: number;

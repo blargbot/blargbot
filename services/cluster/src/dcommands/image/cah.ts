@@ -1,9 +1,9 @@
 import { ClusterUtilities } from '@blargbot/cluster';
-import { CommandContext, GlobalImageCommand } from '../../command/index.js';
 import { CommandType, commandTypeDetails, guard, randChoose } from '@blargbot/cluster/utils/index.js';
 import res from '@blargbot/res';
-import Eris from 'eris';
+import * as Eris from 'eris';
 
+import { CommandContext, GlobalImageCommand } from '../../command/index.js';
 import templates from '../../text.js';
 import { CommandResult } from '../../types.js';
 

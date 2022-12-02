@@ -2,7 +2,7 @@ import { AwaitReactionsResponse, BBTagContext, BBTagSendContent, BBTagUtilities 
 import { Emote } from '@blargbot/core/Emote.js';
 import { ChoiceQueryResult, EntityPickQueryOptions, SendContent } from '@blargbot/core/types.js';
 import { IFormattable, util } from '@blargbot/formatting';
-import Eris from 'eris';
+import * as Eris from 'eris';
 import moment from 'moment-timezone';
 
 import { Cluster } from './Cluster.js';

@@ -1,7 +1,7 @@
 import { BBTagRuntimeError, NotANumberError, UserNotFoundError } from '@blargbot/bbtag/errors/index.js';
 import { BanSubtag } from '@blargbot/bbtag/subtags/user/ban.js';
 import { argument } from '@blargbot/test-util/mock.js';
-import Eris from 'eris';
+import * as Eris from 'eris';
 import moment from 'moment-timezone';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

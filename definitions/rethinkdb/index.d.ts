@@ -1,6 +1,5 @@
-import EventEmitter from 'events';
-
-import { ConnectionOptions as TLSConnectionOptions } from 'tls';
+import EventEmitter from 'node:events';
+import { ConnectionOptions as TLSConnectionOptions } from 'node:tls';
 
 export function connect(opts: ConnectionOptions, cb: (err: ReqlDriverError, conn: Connection) => void): void;
 export function connect(host: string, cb: (err: ReqlDriverError, conn: Connection) => void): void;

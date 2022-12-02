@@ -3,7 +3,7 @@ import { Cluster } from '@blargbot/cluster';
 import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent.js';
 import { guard } from '@blargbot/core/utils/index.js';
 import { GuildRolemeEntry } from '@blargbot/domain/models/index.js';
-import Eris from 'eris';
+import * as Eris from 'eris';
 
 import templates from '../text.js';
 

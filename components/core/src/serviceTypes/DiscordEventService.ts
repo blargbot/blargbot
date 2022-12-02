@@ -1,5 +1,5 @@
 import { Logger } from '@blargbot/logger';
-import Eris from 'eris';
+import * as Eris from 'eris';
 
 import { BaseService } from './BaseService.js';
 

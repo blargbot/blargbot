@@ -1,7 +1,7 @@
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
 import { RoleSetColorSubtag } from '@blargbot/bbtag/subtags/role/roleSetColor.js';
 import { argument } from '@blargbot/test-util/mock.js';
-import Eris from 'eris';
+import * as Eris from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetRolePropTestCases } from './_getRolePropTest.js';
@@ -9,7 +9,7 @@ import { createGetRolePropTestCases } from './_getRolePropTest.js';
 runSubtagTests({
     subtag: new RoleSetColorSubtag(),
     argCountBounds: { min: 1, max: 3 },
-    setup(ctx) {
+    setupEach(ctx) {
         ctx.roles.authorizer.permissions = Eris.Constants.Permissions.manageRoles.toString();
         ctx.members.authorizer.roles.push(ctx.roles.top.id);
     },

@@ -1,8 +1,9 @@
+import { IncomingMessage } from 'node:http';
+
 import { Api } from '@blargbot/api/Api.js';
 import { Lazy } from '@blargbot/core/Lazy.js';
 import asyncRouter from 'express-promise-router';
 import { IRoute } from 'express-serve-static-core';
-import { IncomingMessage } from 'http';
 import { WebSocketServer } from 'ws';
 
 import Security from './Security.js';

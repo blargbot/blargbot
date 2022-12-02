@@ -4,7 +4,7 @@ import * as coreTransformers from '@blargbot/core/formatting/index.js';
 import { transformers, util } from '@blargbot/formatting';
 import { quickMock } from '@blargbot/test-util/quickMock.js';
 import { runFormatTreeTests } from '@blargbot/test-util/runFormatTreeTests.js';
-import { describe } from 'mocha';
+import mocha from 'mocha';
 
 class TestSubtag extends Subtag {
     protected executeCore: Subtag['executeCore'] = () => {
@@ -17,7 +17,7 @@ const subtag = (): Subtag => new TestSubtag({
     signatures: []
 });
 
-describe('BBTag format strings', () => {
+mocha.describe('BBTag format strings', () => {
     runFormatTreeTests(templates, {
         transformers: {
             ...transformers,

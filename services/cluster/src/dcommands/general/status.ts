@@ -1,7 +1,7 @@
-import { GlobalCommand } from '../../command/index.js';
 import { CommandType, randChoose } from '@blargbot/cluster/utils/index.js';
 import fetch from 'node-fetch';
 
+import { GlobalCommand } from '../../command/index.js';
 import templates from '../../text.js';
 import { CommandResult } from '../../types.js';
 
@@ -28,20 +28,20 @@ export class StatusCommand extends GlobalCommand {
         const response = await fetch(`${service}${status}.jpg`);
         let content;
         if (response.ok && response.headers.get('content-type') === 'image/jpeg') {
-            content = await response.buffer();
+            content = await response.arrayBuffer();
         } else {
             status = 404;
             const response = await fetch(`${service}404.jpg`);
             if (!response.ok || response.headers.get('content-type') !== 'image/jpeg')
                 return cmd.default.notFound;
-            content = await response.buffer();
+            content = await response.arrayBuffer();
         }
 
         return {
             file: [
                 {
                     name: `${status}.jpg`,
-                    file: content
+                    file: Buffer.from(content)
                 }
             ]
         };

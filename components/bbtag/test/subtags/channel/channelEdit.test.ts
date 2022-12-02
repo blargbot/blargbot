@@ -3,14 +3,14 @@ import { ChannelEditSubtag } from '@blargbot/bbtag/subtags/channel/channelEdit.j
 import { EscapeBBTagSubtag } from '@blargbot/bbtag/subtags/misc/escapeBBTag.js';
 import { argument } from '@blargbot/test-util/mock.js';
 import { ChannelType } from 'discord-api-types/v9';
-import Eris from 'eris';
+import * as Eris from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new ChannelEditSubtag(),
     argCountBounds: { min: 1, max: 2 },
-    setup(ctx) {
+    setupEach(ctx) {
         ctx.roles.authorizer.permissions = Eris.Constants.Permissions.manageChannels.toString();
     },
     cases: [

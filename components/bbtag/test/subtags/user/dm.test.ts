@@ -2,7 +2,7 @@ import { UserNotFoundError } from '@blargbot/bbtag/errors/index.js';
 import { EscapeBBTagSubtag } from '@blargbot/bbtag/subtags/misc/escapeBBTag.js';
 import { DMSubtag } from '@blargbot/bbtag/subtags/user/dm.js';
 import { argument } from '@blargbot/test-util/mock.js';
-import Eris from 'eris';
+import * as Eris from 'eris';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 

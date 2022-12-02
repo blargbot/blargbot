@@ -1,7 +1,7 @@
 import { Cluster } from '@blargbot/cluster';
 import { Emote } from '@blargbot/core/Emote.js';
 import { DiscordEventService } from '@blargbot/core/serviceTypes/index.js';
-import Eris from 'eris';
+import * as Eris from 'eris';
 
 export class DiscordMessageReactionAddHandler extends DiscordEventService<'messageReactionAdd'> {
     public constructor(public readonly cluster: Cluster) {

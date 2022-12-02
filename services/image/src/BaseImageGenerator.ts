@@ -1,10 +1,11 @@
+import path from 'node:path';
+import { Readable } from 'node:stream';
+import { promisify } from 'node:util';
+
 import { getFileResource } from '@blargbot/res';
 import GIFEncoder from 'gifencoder';
 import gm from 'gm';
 import fetch from 'node-fetch';
-import path from 'path';
-import { Readable } from 'stream';
-import { promisify } from 'util';
 
 import { ImageWorker } from './ImageWorker.js';
 import { ImageGeneratorMap, ImageResult, TextOptions } from './types.js';
@@ -57,7 +58,7 @@ export abstract class BaseImageGenerator<T extends keyof ImageGeneratorMap> {
             case 'image/png':
             case 'image/jpeg':
             case 'image/bmp':
-                return await response.buffer();
+                return Buffer.from(await response.arrayBuffer());
             default:
                 throw new Error('Wrong file type!');
         }

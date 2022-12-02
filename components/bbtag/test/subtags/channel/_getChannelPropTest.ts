@@ -1,7 +1,7 @@
 import { BBTagContext } from '@blargbot/bbtag';
 import { BBTagRuntimeError, ChannelNotFoundError } from '@blargbot/bbtag/errors/index.js';
 import { APIChannel } from 'discord-api-types/v9';
-import Eris from 'eris';
+import * as Eris from 'eris';
 
 import { SubtagTestCase, SubtagTestContext } from '../SubtagTestSuite.js';
 

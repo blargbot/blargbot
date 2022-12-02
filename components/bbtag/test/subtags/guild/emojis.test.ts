@@ -5,7 +5,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 runSubtagTests({
     subtag: new EmojisSubtag(),
     argCountBounds: { min: 0, max: 1 },
-    setup(ctx) {
+    setupEach(ctx) {
         ctx.roles.other.id = '329476274682462386432';
         ctx.guild.emojis.push(
             {

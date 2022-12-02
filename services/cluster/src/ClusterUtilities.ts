@@ -3,7 +3,7 @@ import { BaseUtilities } from '@blargbot/core/BaseUtilities.js';
 import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent.js';
 import { ChoiceQuery, ChoiceQueryOptions, ChoiceQueryResult, ConfirmQuery, ConfirmQueryOptions, EntityFindQueryOptions, EntityPickQueryOptions, EntityQueryOptions, FormatSelectMenuOptions, MultipleQuery, MultipleQueryOptions, MultipleQueryResult, QueryButton, SendContent, TextQuery, TextQueryOptions, TextQueryOptionsParsed, TextQueryResult } from '@blargbot/core/types.js';
 import { format, IFormattable, util } from '@blargbot/formatting';
-import Eris from 'eris';
+import * as Eris from 'eris';
 import fetch from 'node-fetch';
 
 import { Cluster } from './Cluster.js';

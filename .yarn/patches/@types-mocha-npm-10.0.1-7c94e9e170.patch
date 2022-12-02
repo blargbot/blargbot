@@ -1,0 +1,312 @@
+diff --git a/index.d.ts b/index.d.ts
+index 8e5122397bd0b9418decc4db6c508e6a018abd33..2cfa5b2909d86abcc2bf4edf9f3396073767c3fb 100755
+--- a/index.d.ts
++++ b/index.d.ts
+@@ -15,7 +15,7 @@
+  *
+  * @see https://mochajs.org/api/mocha
+  */
+-declare class Mocha {
++export class Mocha {
+     private _growl;
+     private _reporter;
+     private _ui;
+@@ -306,7 +306,7 @@ declare class Mocha {
+     enableGlobalTeardown(enabled: boolean): this;
+ }
+ 
+-declare namespace Mocha {
++export namespace Mocha {
+     namespace utils {
+         /**
+          * Compute a slug from the given `str`.
+@@ -926,28 +926,28 @@ declare namespace Mocha {
+          *
+          * @see https://mochajs.org/api/Mocha.reporters.Dot.html
+          */
+-        class Dot extends Base {}
++        class Dot extends Base { }
+ 
+         /**
+          * Initialize a new `Doc` reporter.
+          *
+          * @see https://mochajs.org/api/Mocha.reporters.Doc.html
+          */
+-        class Doc extends Base {}
++        class Doc extends Base { }
+ 
+         /**
+          * Initialize a new `TAP` test reporter.
+          *
+          * @see https://mochajs.org/api/Mocha.reporters.TAP.html
+          */
+-        class TAP extends Base {}
++        class TAP extends Base { }
+ 
+         /**
+          * Initialize a new `JSON` reporter
+          *
+          * @see https://mochajs.org/api/Mocha.reporters.JSON.html
+          */
+-        class JSON extends Base {}
++        class JSON extends Base { }
+ 
+         /**
+          * Initialize a new `HTML` reporter.
+@@ -984,21 +984,21 @@ declare namespace Mocha {
+          *
+          * @see https://mochajs.org/api/Mocha.reporters.List.html
+          */
+-        class List extends Base {}
++        class List extends Base { }
+ 
+         /**
+          * Initialize a new `Min` minimal test reporter (best used with --watch).
+          *
+          * @see https://mochajs.org/api/Mocha.reporters.Min.html
+          */
+-        class Min extends Base {}
++        class Min extends Base { }
+ 
+         /**
+          * Initialize a new `Spec` test reporter.
+          *
+          * @see https://mochajs.org/api/Mocha.reporters.Spec.html
+          */
+-        class Spec extends Base {}
++        class Spec extends Base { }
+ 
+         /**
+          * Initialize a new `NyanCat` test reporter.
+@@ -1071,7 +1071,7 @@ declare namespace Mocha {
+          *
+          * @see https://mochajs.org/api/Mocha.reporters.Markdown.html
+          */
+-        class Markdown extends Base {}
++        class Markdown extends Base { }
+ 
+         /**
+          * Initialize a new `Progress` bar test reporter.
+@@ -1101,14 +1101,14 @@ declare namespace Mocha {
+          *
+          * @see https://mochajs.org/api/Mocha.reporters.Landing.html
+          */
+-        class Landing extends Base {}
++        class Landing extends Base { }
+ 
+         /**
+          * Initialize a new `JSONStream` test reporter.
+          *
+          * @see https://mochajs.org/api/Mocha.reporters.JSONStream.html
+          */
+-        class JSONStream extends Base {}
++        class JSONStream extends Base { }
+ 
+         // value-only aliases
+         const base: typeof Base;
+@@ -2281,7 +2281,7 @@ declare namespace Mocha {
+     type TestInterface = (suite: Suite) => void;
+ 
+     interface ReporterConstructor {
+-        new (runner: Runner, options: MochaOptions): reporters.Base;
++        new(runner: Runner, options: MochaOptions): reporters.Base;
+     }
+ 
+     type Done = (err?: any) => void;
+@@ -2602,7 +2602,7 @@ declare namespace Mocha {
+  *
+  * @see https://mochajs.org/api/global.html#runWithSuite
+  */
+-declare function run(): void;
++export function run(): void;
+ 
+ /**
+  * Execute before running tests.
+@@ -2611,7 +2611,7 @@ declare function run(): void;
+  *
+  * @see https://mochajs.org/api/global.html#before
+  */
+-declare var before: Mocha.HookFunction;
++export var before: Mocha.HookFunction;
+ 
+ /**
+  * Execute before running tests.
+@@ -2620,7 +2620,7 @@ declare var before: Mocha.HookFunction;
+  *
+  * @see https://mochajs.org/api/global.html#before
+  */
+-declare var suiteSetup: Mocha.HookFunction;
++export var suiteSetup: Mocha.HookFunction;
+ 
+ /**
+  * Execute after running tests.
+@@ -2629,7 +2629,7 @@ declare var suiteSetup: Mocha.HookFunction;
+  *
+  * @see https://mochajs.org/api/global.html#after
+  */
+-declare var after: Mocha.HookFunction;
++export var after: Mocha.HookFunction;
+ 
+ /**
+  * Execute after running tests.
+@@ -2638,7 +2638,7 @@ declare var after: Mocha.HookFunction;
+  *
+  * @see https://mochajs.org/api/global.html#after
+  */
+-declare var suiteTeardown: Mocha.HookFunction;
++export var suiteTeardown: Mocha.HookFunction;
+ 
+ /**
+  * Execute before each test case.
+@@ -2647,7 +2647,7 @@ declare var suiteTeardown: Mocha.HookFunction;
+  *
+  * @see https://mochajs.org/api/global.html#beforeEach
+  */
+-declare var beforeEach: Mocha.HookFunction;
++export var beforeEach: Mocha.HookFunction;
+ 
+ /**
+  * Execute before each test case.
+@@ -2656,7 +2656,7 @@ declare var beforeEach: Mocha.HookFunction;
+  *
+  * @see https://mochajs.org/api/global.html#beforeEach
+  */
+-declare var setup: Mocha.HookFunction;
++export var setup: Mocha.HookFunction;
+ 
+ /**
+  * Execute after each test case.
+@@ -2665,7 +2665,7 @@ declare var setup: Mocha.HookFunction;
+  *
+  * @see https://mochajs.org/api/global.html#afterEach
+  */
+-declare var afterEach: Mocha.HookFunction;
++export var afterEach: Mocha.HookFunction;
+ 
+ /**
+  * Execute after each test case.
+@@ -2674,77 +2674,77 @@ declare var afterEach: Mocha.HookFunction;
+  *
+  * @see https://mochajs.org/api/global.html#afterEach
+  */
+-declare var teardown: Mocha.HookFunction;
++export var teardown: Mocha.HookFunction;
+ 
+ /**
+  * Describe a "suite" containing nested suites and tests.
+  *
+  * - _Only available when invoked via the mocha CLI._
+  */
+-declare var describe: Mocha.SuiteFunction;
++export var describe: Mocha.SuiteFunction;
+ 
+ /**
+  * Describe a "suite" containing nested suites and tests.
+  *
+  * - _Only available when invoked via the mocha CLI._
+  */
+-declare var context: Mocha.SuiteFunction;
++export var context: Mocha.SuiteFunction;
+ 
+ /**
+  * Describe a "suite" containing nested suites and tests.
+  *
+  * - _Only available when invoked via the mocha CLI._
+  */
+-declare var suite: Mocha.SuiteFunction;
++export var suite: Mocha.SuiteFunction;
+ 
+ /**
+  * Pending suite.
+  *
+  * - _Only available when invoked via the mocha CLI._
+  */
+-declare var xdescribe: Mocha.PendingSuiteFunction;
++export var xdescribe: Mocha.PendingSuiteFunction;
+ 
+ /**
+  * Pending suite.
+  *
+  * - _Only available when invoked via the mocha CLI._
+  */
+-declare var xcontext: Mocha.PendingSuiteFunction;
++export var xcontext: Mocha.PendingSuiteFunction;
+ 
+ /**
+  * Describes a test case.
+  *
+  * - _Only available when invoked via the mocha CLI._
+  */
+-declare var it: Mocha.TestFunction;
++export var it: Mocha.TestFunction;
+ 
+ /**
+  * Describes a test case.
+  *
+  * - _Only available when invoked via the mocha CLI._
+  */
+-declare var specify: Mocha.TestFunction;
++export var specify: Mocha.TestFunction;
+ 
+ /**
+  * Describes a test case.
+  *
+  * - _Only available when invoked via the mocha CLI._
+  */
+-declare var test: Mocha.TestFunction;
++export var test: Mocha.TestFunction;
+ 
+ /**
+  * Describes a pending test case.
+  *
+  * - _Only available when invoked via the mocha CLI._
+  */
+-declare var xit: Mocha.PendingTestFunction;
++export var xit: Mocha.PendingTestFunction;
+ 
+ /**
+  * Describes a pending test case.
+  *
+  * - _Only available when invoked via the mocha CLI._
+  */
+-declare var xspecify: Mocha.PendingTestFunction;
++export var xspecify: Mocha.PendingTestFunction;
+ 
+ // #endregion Test interface augmentations
+ 
+@@ -2754,22 +2754,22 @@ declare var xspecify: Mocha.PendingTestFunction;
+ // Required by Mocha.reporters.HTML.
+ // NOTE: Mocha *must not* have a direct dependency on DOM types.
+ // tslint:disable-next-line no-empty-interface
+-interface HTMLLIElement {}
++interface HTMLLIElement { }
+ 
+ // Augments the DOM `Window` object when lib.dom.d.ts is loaded.
+ // tslint:disable-next-line no-empty-interface
+-interface Window extends Mocha.MochaGlobals {}
++interface Window extends Mocha.MochaGlobals { }
+ 
+ declare namespace NodeJS {
+     // Forward declaration for `NodeJS.EventEmitter` from node.d.ts.
+     // Required by Mocha.Runnable, Mocha.Runner, and Mocha.Suite.
+     // NOTE: Mocha *must not* have a direct dependency on @types/node.
+     // tslint:disable-next-line no-empty-interface
+-    interface EventEmitter {}
++    interface EventEmitter { }
+ 
+     // Augments NodeJS's `global` object when node.d.ts is loaded
+     // tslint:disable-next-line no-empty-interface
+-    interface Global extends Mocha.MochaGlobals {}
++    interface Global extends Mocha.MochaGlobals { }
+ }
+ 
+ // #endregion Reporter augmentations
+@@ -2781,7 +2781,7 @@ declare namespace NodeJS {
+  *
+  * - _Only supported in the browser._
+  */
+-declare const mocha: BrowserMocha;
++export const mocha: BrowserMocha;
+ 
+ interface BrowserMocha extends Mocha {
+     /**

@@ -1,5 +1,5 @@
 import { guard } from '@blargbot/core/utils/index.js';
-import Eris from 'eris';
+import * as Eris from 'eris';
 import moment from 'moment-timezone';
 
 export function embed(embeds: ReadonlyArray<(Eris.EmbedOptions | Eris.Embed) & { asString?: string; }>): string {

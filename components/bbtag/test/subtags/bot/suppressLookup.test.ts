@@ -1,6 +1,6 @@
 import { NotABooleanError } from '@blargbot/bbtag/errors/index.js';
 import { SuppressLookupSubtag } from '@blargbot/bbtag/subtags/bot/suppressLookup.js';
-import { expect } from 'chai';
+import chai from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
@@ -12,21 +12,21 @@ runSubtagTests({
             code: '{suppresslookup}',
             expected: '',
             assert(bbctx) {
-                expect(bbctx.scopes.root.noLookupErrors).to.be.true;
+                chai.expect(bbctx.scopes.root.noLookupErrors).to.be.true;
             }
         },
         {
             code: '{suppresslookup;true}',
             expected: '',
             assert(bbctx) {
-                expect(bbctx.scopes.root.noLookupErrors).to.be.true;
+                chai.expect(bbctx.scopes.root.noLookupErrors).to.be.true;
             }
         },
         {
             code: '{suppresslookup;false}',
             expected: '',
             assert(bbctx) {
-                expect(bbctx.scopes.root.noLookupErrors).to.be.false;
+                chai.expect(bbctx.scopes.root.noLookupErrors).to.be.false;
             }
         },
         {
@@ -36,7 +36,7 @@ runSubtagTests({
                 { start: 0, end: 20, error: new NotABooleanError('abc') }
             ],
             assert(bbctx) {
-                expect(bbctx.scopes.root.noLookupErrors).to.be.undefined;
+                chai.expect(bbctx.scopes.root.noLookupErrors).to.be.undefined;
             }
         }
     ]

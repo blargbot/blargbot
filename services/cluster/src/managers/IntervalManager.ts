@@ -2,7 +2,7 @@ import { ExecutionResult } from '@blargbot/bbtag';
 import { Cluster } from '@blargbot/cluster';
 import { guard, sleep, snowflake } from '@blargbot/cluster/utils/index.js';
 import { GuildTriggerTag } from '@blargbot/domain/models/index.js';
-import Eris from 'eris';
+import * as Eris from 'eris';
 import moment from 'moment-timezone';
 
 export class IntervalManager {

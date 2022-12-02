@@ -4,8 +4,8 @@ import { MessageIdSubtag } from '@blargbot/bbtag/subtags/message/messageId.js';
 import { WaitMessageSubtag } from '@blargbot/bbtag/subtags/message/waitMessage.js';
 import { OperatorSubtag } from '@blargbot/bbtag/subtags/misc/operator.js';
 import { argument, Mock } from '@blargbot/test-util/mock.js';
-import { expect } from 'chai';
-import Eris from 'eris';
+import chai from 'chai';
+import * as Eris from 'eris';
 
 import { MarkerError, runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';
 
@@ -403,7 +403,7 @@ runSubtagTests({
 function createFakeAwaiterFactory(result: Eris.KnownMessage | undefined, expectedFails: Eris.KnownMessage[] = []): BBTagUtilities['awaitMessage'] {
     return async (_: unknown, condition: AwaitCondition) => {
         for (const value of expectedFails)
-            expect(await condition(value)).to.be.false;
+            chai.expect(await condition(value)).to.be.false;
         if (result === undefined)
             return undefined;
         if (await condition(result))

@@ -1,6 +1,6 @@
 import { guard } from '@blargbot/core/utils/index.js';
 import { parse } from '@blargbot/core/utils/parse/index.js';
-import Eris from 'eris';
+import * as Eris from 'eris';
 import fetch from 'node-fetch';
 
 import { BBTagContext } from '../../BBTagContext.js';
@@ -57,7 +57,7 @@ export class EmojiCreateSubtag extends CompiledSubtag {
         if (guard.isUrl(image)) {
             const res = await fetch(image);
             const contentType = res.headers.get('content-type');
-            options.image = `data:${contentType ?? ''};base64,${(await res.buffer()).toString('base64')}`;
+            options.image = `data:${contentType ?? ''};base64,${Buffer.from(await res.arrayBuffer()).toString('base64')}`;
         } else if (!image.startsWith('data:')) {
             throw new BBTagRuntimeError('Image was not a buffer or a URL');
         }

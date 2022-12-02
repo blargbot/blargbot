@@ -2,7 +2,7 @@ import { BBTagRuntimeError, NotAnArrayError } from '@blargbot/bbtag/errors/index
 import { JsonSubtag } from '@blargbot/bbtag/subtags/json/json.js';
 import { JsonSortSubtag } from '@blargbot/bbtag/subtags/json/jsonSort.js';
 import { TagVariableType } from '@blargbot/domain/models/index.js';
-import { expect } from 'chai';
+import chai from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
@@ -34,7 +34,7 @@ runSubtagTests({
                 ]);
             },
             async assert(bbctx) {
-                expect((await bbctx.variables.get('arrayVar')).value).to.deep.equal([
+                chai.expect((await bbctx.variables.get('arrayVar')).value).to.deep.equal([
                     { points: 3, name: 'UNO' },
                     { points: 6, name: 'Stupid cat' },
                     { points: 10, name: 'Blargbot' },
@@ -56,7 +56,7 @@ runSubtagTests({
                 ]);
             },
             async assert(bbctx) {
-                expect((await bbctx.variables.get('arrayVar')).value).to.deep.equal([
+                chai.expect((await bbctx.variables.get('arrayVar')).value).to.deep.equal([
                     { points: 12, name: 'Winner' },
                     { points: 10, name: 'Blargbot' },
                     { points: 6, name: 'Stupid cat' },

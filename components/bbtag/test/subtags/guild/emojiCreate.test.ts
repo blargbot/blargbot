@@ -2,14 +2,14 @@ import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
 import { EmojiCreateSubtag } from '@blargbot/bbtag/subtags/guild/emojiCreate.js';
 import { SemiSubtag } from '@blargbot/bbtag/subtags/simple/semi.js';
 import { argument } from '@blargbot/test-util/mock.js';
-import Eris from 'eris';
+import * as Eris from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new EmojiCreateSubtag(),
     argCountBounds: { min: 2, max: 3 },
-    setup(ctx) {
+    setupEach(ctx) {
         ctx.roles.authorizer.permissions = Eris.Constants.Permissions.manageEmojisAndStickers.toString();
     },
     cases: [

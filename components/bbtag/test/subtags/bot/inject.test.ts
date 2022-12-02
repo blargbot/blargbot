@@ -2,7 +2,7 @@ import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
 import { InjectSubtag } from '@blargbot/bbtag/subtags/bot/inject.js';
 import { LbSubtag } from '@blargbot/bbtag/subtags/simple/lb.js';
 import { RbSubtag } from '@blargbot/bbtag/subtags/simple/rb.js';
-import { expect } from 'chai';
+import chai from 'chai';
 
 import { AssertSubtag, runSubtagTests } from '../SubtagTestSuite.js';
 
@@ -13,8 +13,8 @@ runSubtagTests({
         {
             code: '{inject;{lb}assert{rb}}',
             subtags: [new LbSubtag(), new RbSubtag(), new AssertSubtag(ctx => {
-                expect(ctx.parent).to.be.undefined;
-                expect(ctx.data.stackSize).to.equal(123);
+                chai.expect(ctx.parent).to.be.undefined;
+                chai.expect(ctx.data.stackSize).to.equal(123);
                 return 'Inject successful';
             })],
             expected: 'Inject successful',

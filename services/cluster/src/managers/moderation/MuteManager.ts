@@ -3,7 +3,7 @@ import { discord, guard } from '@blargbot/cluster/utils/index.js';
 import { UnmuteEventOptions } from '@blargbot/domain/models/index.js';
 import { format, IFormattable } from '@blargbot/formatting';
 import { mapping } from '@blargbot/mapping';
-import Eris from 'eris';
+import * as Eris from 'eris';
 import moment from 'moment-timezone';
 
 import templates from '../../text.js';

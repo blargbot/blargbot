@@ -1,6 +1,6 @@
 {
   "files.exclude": {
-    "**/node_modules": true
+    "**/node_modules": false
   },
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": true
@@ -28,7 +28,8 @@
   "search.exclude": {
     "**/.yarn": true,
     "**/*.js": true,
-    "**/*.js.map": true
+    "**/*.js.map": true,
+    "**/.pnp.*": true
   },
   "eslint.nodePath": ".yarn/sdks",
   "typescript.enablePromptUseWorkspaceTsdk": true,

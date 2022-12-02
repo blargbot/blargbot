@@ -1,4 +1,4 @@
-import { default as Brainfuck } from 'brainfuck-node';
+import Brainfuck from 'brainfuck-node';
 
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';

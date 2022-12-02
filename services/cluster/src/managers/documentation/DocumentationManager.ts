@@ -1,7 +1,7 @@
 import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent.js';
 import { FormatActionRow, FormatButton, FormatEmbedField, FormatEmbedOptions, FormatSelectMenu, FormatSelectMenuOptions, SendContent } from '@blargbot/core/types.js';
 import { format, IFormattable, IFormatter } from '@blargbot/formatting';
-import Eris from 'eris';
+import * as Eris from 'eris';
 import moment from 'moment-timezone';
 
 import { Cluster } from '../../Cluster.js';

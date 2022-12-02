@@ -1,6 +1,4 @@
-import * as fs from 'node:fs';
 import { ClientRequest, IncomingMessage } from 'node:http';
-import path from 'node:path';
 import { inspect } from 'node:util';
 
 import { BBTagContext, BBTagContextOptions, BBTagEngine, BBTagRuntimeScope, LocatedRuntimeError, SourceMarker, Subtag, SubtagCall } from '@blargbot/bbtag';
@@ -15,17 +13,15 @@ import { GuildCommandTag, StoredTag, TagVariableScope } from '@blargbot/domain/m
 import { GuildStore, TagStore, TagVariableStore, UserStore } from '@blargbot/domain/stores/index.js';
 import { Logger } from '@blargbot/logger';
 import { argument, Mock } from '@blargbot/test-util/mock.js';
-import { expect } from 'chai';
-import * as chai from 'chai';
+import chai from 'chai';
 import chaiBytes from 'chai-bytes';
 import chaiDateTime from 'chai-datetime';
 import chaiExclude from 'chai-exclude';
 import { APIChannel, APIGuild, APIGuildMember, APIMessage, APIRole, APITextChannel, APIThreadChannel, APIUser, ChannelType, GuildDefaultMessageNotifications, GuildExplicitContentFilter, GuildMFALevel, GuildNSFWLevel, GuildPremiumTier, GuildVerificationLevel, Snowflake } from 'discord-api-types/v9';
-import Eris from 'eris';
-import * as inspector from 'inspector';
-import { Context, describe, it } from 'mocha';
+import * as Eris from 'eris';
+import mocha from 'mocha';
 import moment from 'moment-timezone';
-import { anything } from 'ts-mockito';
+import tsMockito from 'ts-mockito';
 
 chai.use(chaiExclude);
 chai.use(chaiBytes);
@@ -61,10 +57,12 @@ export interface SubtagTestCase {
 }
 
 interface TestSuiteConfig<T extends SubtagTestCase> {
-    readonly setup: Array<(this: RuntimeSubtagTestCase<T>, context: SubtagTestContext) => Awaitable<void>>;
-    readonly assert: Array<(this: RuntimeSubtagTestCase<T>, context: BBTagContext, result: string, test: SubtagTestContext) => Awaitable<void>>;
-    readonly teardown: Array<(this: RuntimeSubtagTestCase<T>, context: SubtagTestContext) => Awaitable<void>>;
-    readonly postSetup: Array<(this: RuntimeSubtagTestCase<T>, context: BBTagContext, mocks: SubtagTestContext) => Awaitable<void>>;
+    readonly setup: Array<() => Awaitable<void>>;
+    readonly teardown: Array<() => Awaitable<void>>;
+    readonly setupEach: Array<(this: RuntimeSubtagTestCase<T>, context: SubtagTestContext) => Awaitable<void>>;
+    readonly assertEach: Array<(this: RuntimeSubtagTestCase<T>, context: BBTagContext, result: string, test: SubtagTestContext) => Awaitable<void>>;
+    readonly teardownEach: Array<(this: RuntimeSubtagTestCase<T>, context: SubtagTestContext) => Awaitable<void>>;
+    readonly postSetupEach: Array<(this: RuntimeSubtagTestCase<T>, context: BBTagContext, mocks: SubtagTestContext) => Awaitable<void>>;
 }
 
 export class MarkerError extends BBTagRuntimeError {
@@ -74,11 +72,17 @@ export class MarkerError extends BBTagRuntimeError {
     }
 }
 
-export interface SubtagTestSuiteData<T extends Subtag = Subtag, TestCase extends SubtagTestCase = SubtagTestCase> extends Pick<TestCase, 'setup' | 'postSetup' | 'assert' | 'teardown'> {
+type SuiteEachSetup<T extends SubtagTestCase> = {
+    readonly [P in 'setup' | 'teardown' | 'postSetup' | 'assert' as `${P}Each`]?: T[P]
+}
+
+export interface SubtagTestSuiteData<T extends Subtag = Subtag, TestCase extends SubtagTestCase = SubtagTestCase> extends SuiteEachSetup<TestCase> {
     readonly cases: TestCase[];
     readonly subtag: T;
     readonly runOtherTests?: (subtag: T) => void;
     readonly argCountBounds: { min: ArgCountBound; max: ArgCountBound; };
+    readonly setup?: (this: void) => Awaitable<void>;
+    readonly teardown?: (this: void) => Awaitable<void>;
 }
 
 type ArgCountBound = number | { count: number; noEval: number[]; };
@@ -182,17 +186,17 @@ export class SubtagTestContext {
         this.dependencies.setup(m => m.logger, false).thenReturn(this.logger.instance);
         this.dependencies.setup(m => m.util, false).thenReturn(this.util.instance);
 
-        this.discord.setup(m => m.emit('warn', anything()), false).thenReturn(false);
+        this.discord.setup(m => m.emit('warn', tsMockito.anything()), false).thenReturn(false);
 
         this.database.setup(m => m.tagVariables, false).thenReturn(this.tagVariablesTable.instance);
         this.database.setup(m => m.guilds, false).thenReturn(this.guildTable.instance);
         this.database.setup(m => m.users, false).thenReturn(this.userTable.instance);
         this.database.setup(m => m.tags, false).thenReturn(this.tagsTable.instance);
 
-        this.tagVariablesTable.setup(m => m.get(argument.isTypeof('string').value, anything() as never), false)
+        this.tagVariablesTable.setup(m => m.get(argument.isTypeof('string').value, tsMockito.anything() as never), false)
             .thenCall((...[name, scope]: Parameters<TagVariableStore['get']>) => this.tagVariables.get({ scope, name }));
         if (this.testCase.setupSaveVariables !== false) {
-            this.tagVariablesTable.setup(m => m.upsert(anything() as never, anything() as never), false)
+            this.tagVariablesTable.setup(m => m.upsert(tsMockito.anything() as never, tsMockito.anything() as never), false)
                 .thenCall((...[values, scope]: Parameters<TagVariableStore['upsert']>) => {
                     for (const [name, value] of Object.entries(values)) {
                         if (value !== undefined)
@@ -212,8 +216,8 @@ export class SubtagTestContext {
         this.discord.setup(m => m.guildShardMap, false).thenReturn({});
         this.discord.setup(m => m.channelGuildMap, false).thenReturn({});
         this.discord.setup(m => m.options, false).thenReturn(this.discordOptions);
-        this.discord.setup(m => m._formatImage(anything() as never), false).thenCall((str: never) => Eris.Client.prototype._formatImage.call(this.discord.instance, str));
-        this.discord.setup(m => m._formatAllowedMentions(anything() as never), false).thenCall((str: never) => Eris.Client.prototype._formatImage.call(this.discord.instance, str));
+        this.discord.setup(m => m._formatImage(tsMockito.anything() as never), false).thenCall((str: never) => Eris.Client.prototype._formatImage.call(this.discord.instance, str));
+        this.discord.setup(m => m._formatAllowedMentions(tsMockito.anything() as never), false).thenCall((str: never) => Eris.Client.prototype._formatImage.call(this.discord.instance, str));
 
         this.shards.setup(m => m.get(0), false).thenReturn(this.shard.instance);
         this.shard.setup(m => m.client, false).thenReturn(this.discord.instance);
@@ -459,12 +463,16 @@ export function runSubtagTests<T extends Subtag, TestCase extends SubtagTestCase
     const suite = new SubtagTestSuite(data.subtag);
     if (data.setup !== undefined)
         suite.setup(data.setup);
-    if (data.postSetup !== undefined)
-        suite.postSetup(data.postSetup);
-    if (data.assert !== undefined)
-        suite.assert(data.assert);
     if (data.teardown !== undefined)
         suite.teardown(data.teardown);
+    if (data.setupEach !== undefined)
+        suite.setupEach(data.setupEach);
+    if (data.teardownEach !== undefined)
+        suite.teardownEach(data.teardownEach);
+    if (data.assertEach !== undefined)
+        suite.assertEach(data.assertEach);
+    if (data.postSetupEach !== undefined)
+        suite.postSetupEach(data.postSetupEach);
 
     const min = typeof data.argCountBounds.min === 'number' ? { count: data.argCountBounds.min, noEval: [] } : data.argCountBounds.min;
     const max = typeof data.argCountBounds.max === 'number' ? { count: data.argCountBounds.max, noEval: [] } : data.argCountBounds.max;
@@ -475,22 +483,6 @@ export function runSubtagTests<T extends Subtag, TestCase extends SubtagTestCase
         suite.addTestCases(tooManyArgumentsTestCases(data.subtag.name, max.count, max.noEval));
 
     suite.run(() => data.runOtherTests?.(data.subtag));
-
-    // Output a bbtag file that can be run on the live blargbot instance to find any errors
-    if (inspector.url() !== undefined) {
-        const blargTestSuite = `Errors:{clean;${data.cases.map(c => ({
-            code: c.code,
-            expected: getExpectation(c)
-        })).map(c => `{if;==;|${c.code}|;|${c.expected?.toString() ?? ''}|;;
-> {escapebbtag;${c.code}} failed -
-Expected:
-|${c.expected?.toString() ?? ''}|
-Actual:
-|${c.code}|}`).join('\n')}}
----------------
-Finished!`;
-        fs.writeFileSync(path.join(__dirname, '../../../test.bbtag'), blargTestSuite);
-    }
 }
 
 export function sourceMarker(location: SourceMarkerResolvable): SourceMarker
@@ -628,7 +620,7 @@ export class EchoArgsSubtag extends Subtag {
 }
 
 export class SubtagTestSuite<TestCase extends SubtagTestCase> {
-    readonly #config: TestSuiteConfig<TestCase> = { setup: [], assert: [], teardown: [], postSetup: [] };
+    readonly #config: TestSuiteConfig<TestCase> = { setup: [], teardown: [], setupEach: [], assertEach: [], postSetupEach: [], teardownEach: [] };
     readonly #testCases: TestCase[] = [];
     readonly #subtag: Subtag;
 
@@ -641,19 +633,26 @@ export class SubtagTestSuite<TestCase extends SubtagTestCase> {
         return this;
     }
 
-    public postSetup(setup: TestSuiteConfig<TestCase>['postSetup'][number]): this {
-        this.#config.postSetup.push(setup);
-        return this;
-    }
-
-    public assert(assert: TestSuiteConfig<TestCase>['assert'][number]): this {
-        this.#config.assert.push(assert);
-        return this;
-
-    }
-
     public teardown(teardown: TestSuiteConfig<TestCase>['teardown'][number]): this {
         this.#config.teardown.push(teardown);
+        return this;
+    }
+    public setupEach(setupEach: TestSuiteConfig<TestCase>['setupEach'][number]): this {
+        this.#config.setupEach.push(setupEach);
+        return this;
+    }
+
+    public teardownEach(teardownEach: TestSuiteConfig<TestCase>['teardownEach'][number]): this {
+        this.#config.teardownEach.push(teardownEach);
+        return this;
+    }
+    public assertEach(assertEach: TestSuiteConfig<TestCase>['assertEach'][number]): this {
+        this.#config.assertEach.push(assertEach);
+        return this;
+    }
+
+    public postSetupEach(postSetupEach: TestSuiteConfig<TestCase>['postSetupEach'][number]): this {
+        this.#config.postSetupEach.push(postSetupEach);
         return this;
     }
 
@@ -668,11 +667,11 @@ export class SubtagTestSuite<TestCase extends SubtagTestCase> {
     }
 
     public run(otherTests?: () => void): void {
-        describe(`{${this.#subtag.name}}`, () => {
+        const suite = mocha.describe(`{${this.#subtag.name}}`, () => {
             const subtag = this.#subtag;
             const config = this.#config;
             for (const testCase of this.#testCases) {
-                const test = it(getTestName(testCase), function () {
+                const test = mocha.it(getTestName(testCase), function () {
                     return runTestCase(this, subtag, testCase, config);
                 });
                 if (testCase.retries !== undefined)
@@ -682,6 +681,14 @@ export class SubtagTestSuite<TestCase extends SubtagTestCase> {
             }
 
             otherTests?.();
+        });
+        suite.beforeAll(async () => {
+            for (const setup of this.#config.setup)
+                await setup();
+        });
+        suite.afterAll(async () => {
+            for (const teardown of this.#config.teardown)
+                await teardown();
         });
     }
 }
@@ -714,7 +721,7 @@ function getTestName(testCase: SubtagTestCase): string {
     return result;
 }
 
-async function runTestCase<TestCase extends SubtagTestCase>(context: Context, subtag: Subtag, testCase: TestCase, config: TestSuiteConfig<TestCase>): Promise<void> {
+async function runTestCase<TestCase extends SubtagTestCase>(context: mocha.Context, subtag: Subtag, testCase: TestCase, config: TestSuiteConfig<TestCase>): Promise<void> {
     if (typeof testCase.skip === 'boolean' ? testCase.skip : await testCase.skip?.() ?? false)
         context.skip();
 
@@ -726,12 +733,12 @@ async function runTestCase<TestCase extends SubtagTestCase>(context: Context, su
         // arrange
         for (const s of subtags)
             test.limit.setup(m => m.check(argument.isInstanceof(BBTagContext).value, s.name), s === subtag).thenResolve(undefined);
-        for (const setup of config.setup)
+        for (const setup of config.setupEach)
             await setup.call(actualTestCase, test);
         await actualTestCase.setup?.(test);
         const code = bbtag.parse(testCase.code);
         const context = test.createContext();
-        for (const postSetup of config.postSetup)
+        for (const postSetup of config.postSetupEach)
             await postSetup.call(actualTestCase, context, test);
         await actualTestCase.postSetup?.(context, test);
 
@@ -756,28 +763,28 @@ async function runTestCase<TestCase extends SubtagTestCase>(context: Context, su
         // assert
         switch (typeof expected) {
             case 'string':
-                expect(result.value).to.equal(expected);
+                chai.expect(result.value).to.equal(expected);
                 break;
             case 'object':
-                expect(result.value).to.match(expected);
+                chai.expect(result.value).to.match(expected);
                 break;
         }
 
         await actualTestCase.assert?.(context, result.value, test);
-        for (const assert of config.assert)
+        for (const assert of config.assertEach)
             await assert.call(actualTestCase, context, result.value, test);
 
         if (typeof testCase.errors === 'function') {
             testCase.errors(context.errors);
         } else {
-            expect(context.errors.map(err => ({ error: err.error, start: err.subtag?.start, end: err.subtag?.end })))
+            chai.expect(context.errors.map(err => ({ error: err.error, start: err.subtag?.start, end: err.subtag?.end })))
                 .excludingEvery('stack')
                 .to.deep.equal(testCase.errors?.map(err => ({ error: err.error, start: sourceMarker(err.start), end: sourceMarker(err.end) })) ?? [],
                     'Error details didnt match the expectation');
         }
         test.verifyAll();
     } finally {
-        for (const teardown of config.teardown)
+        for (const teardown of config.teardownEach)
             await teardown.call(actualTestCase, test);
     }
 }
@@ -822,7 +829,7 @@ export function* notEnoughArgumentsTestCases(subtagName: string, minArgCount: nu
         code: `{${[subtagName, ...codeParts.map(p => p[0] ? '{fail}' : '{eval}')].join(';')}}`,
         expected: /^(?!`Not enough arguments`|`Too many arguments`).*$/gis,
         errors(err) {
-            expect(err.map(x => x.error.constructor)).to.not.have.members([NotEnoughArgumentsError, TooManyArgumentsError]);
+            chai.expect(err.map(x => x.error.constructor)).to.not.have.members([NotEnoughArgumentsError, TooManyArgumentsError]);
         },
         expectError: {
             handle() { /* NOOP */ }
@@ -841,7 +848,7 @@ export function* tooManyArgumentsTestCases(subtagName: string, maxArgCount: numb
         code: `{${[subtagName, ...codeParts.slice(0, maxArgCount).map(p => p[0] ? '{fail}' : '{eval}')].join(';')}}`,
         expected: /^(?!`Not enough arguments`|`Too many arguments`).*$/gis,
         errors(err) {
-            expect(err.map(x => x.error.constructor)).to.not.have.members([NotEnoughArgumentsError, TooManyArgumentsError]);
+            chai.expect(err.map(x => x.error.constructor)).to.not.have.members([NotEnoughArgumentsError, TooManyArgumentsError]);
         },
         expectError: {
             handle() { /* NOOP */ }

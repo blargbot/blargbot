@@ -1,5 +1,5 @@
 import { Emote } from '@blargbot/core/Emote.js';
-import Eris from 'eris';
+import * as Eris from 'eris';
 
 import { SubtagArgumentArray } from '../../arguments/index.js';
 import { BBTagContext } from '../../BBTagContext.js';

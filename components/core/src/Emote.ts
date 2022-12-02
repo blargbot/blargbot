@@ -1,6 +1,6 @@
 import res from '@blargbot/res';
 import { Snowflake } from 'catflake';
-import Eris from 'eris';
+import * as Eris from 'eris';
 import twemoji from 'twemoji';
 
 import { snowflake } from './utils/index.js';

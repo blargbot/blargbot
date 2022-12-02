@@ -1,4 +1,4 @@
-import { createHash, getHashes } from 'crypto';
+import { createHash, getHashes } from 'node:crypto';
 
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';

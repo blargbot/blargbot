@@ -1,5 +1,5 @@
 import { EveryoneMentionSubtag } from '@blargbot/bbtag/subtags/message/everyoneMention.js';
-import { expect } from 'chai';
+import chai from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
@@ -11,21 +11,21 @@ runSubtagTests({
             code: '{everyonemention}',
             expected: '@everyone',
             assert(ctx) {
-                expect(ctx.data.allowedMentions.everybody).to.be.true;
+                chai.expect(ctx.data.allowedMentions.everybody).to.be.true;
             }
         },
         {
             code: '{everyonemention;true}',
             expected: '@everyone',
             assert(ctx) {
-                expect(ctx.data.allowedMentions.everybody).to.be.true;
+                chai.expect(ctx.data.allowedMentions.everybody).to.be.true;
             }
         },
         {
             code: '{everyonemention;false}',
             expected: '@everyone',
             assert(ctx) {
-                expect(ctx.data.allowedMentions.everybody).to.be.false;
+                chai.expect(ctx.data.allowedMentions.everybody).to.be.false;
             }
         }
     ]

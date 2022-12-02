@@ -1,5 +1,5 @@
 import { discord } from '@blargbot/core/utils/discord/index.js';
-import Eris from 'eris';
+import * as Eris from 'eris';
 
 import { hasValue } from './hasValue.js';
 

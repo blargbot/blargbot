@@ -1,5 +1,5 @@
 import { format, IFormatter } from '@blargbot/formatting';
-import Eris from 'eris';
+import * as Eris from 'eris';
 
 import templates from '../../text.js';
 import { Documentation, DocumentationManager } from './DocumentationManager.js';

@@ -1,5 +1,5 @@
 import { ReasonSubtag } from '@blargbot/bbtag/subtags/bot/reason.js';
-import { expect } from 'chai';
+import chai from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
@@ -11,21 +11,21 @@ runSubtagTests({
             code: '{reason}',
             expected: '',
             assert(ctx) {
-                expect(ctx.scopes.local.reason).to.equal('');
+                chai.expect(ctx.scopes.local.reason).to.equal('');
             }
         },
         {
             code: '{reason;}',
             expected: '',
             assert(ctx) {
-                expect(ctx.scopes.local.reason).to.equal('');
+                chai.expect(ctx.scopes.local.reason).to.equal('');
             }
         },
         {
             code: '{reason;Because i can}',
             expected: '',
             assert(ctx) {
-                expect(ctx.scopes.local.reason).to.equal('Because i can');
+                chai.expect(ctx.scopes.local.reason).to.equal('Because i can');
             }
         }
     ]

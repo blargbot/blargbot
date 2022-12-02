@@ -1,6 +1,6 @@
 import { EmbedSubtag } from '@blargbot/bbtag/subtags/message/embed.js';
 import { EscapeBBTagSubtag } from '@blargbot/bbtag/subtags/misc/escapeBBTag.js';
-import { expect } from 'chai';
+import chai from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
@@ -13,7 +13,7 @@ runSubtagTests({
             subtags: [new EscapeBBTagSubtag()],
             expected: '',
             assert(ctx) {
-                expect(ctx.data.embeds).to.deep.equal([
+                chai.expect(ctx.data.embeds).to.deep.equal([
                     { title: 'Hello!' }
                 ]);
             }
@@ -23,7 +23,7 @@ runSubtagTests({
             subtags: [new EscapeBBTagSubtag()],
             expected: '',
             assert(ctx) {
-                expect(ctx.data.embeds).to.deep.equal([
+                chai.expect(ctx.data.embeds).to.deep.equal([
                     { title: 'Hello!' },
                     { author: { name: 'abc' } }
                 ]);
@@ -34,7 +34,7 @@ runSubtagTests({
             subtags: [new EscapeBBTagSubtag()],
             expected: '',
             assert(ctx) {
-                expect(ctx.data.embeds).to.deep.equal([
+                chai.expect(ctx.data.embeds).to.deep.equal([
                     { title: 'Hello!' },
                     { fields: [{ name: 'Malformed JSON', value: '{"title":false}' }], malformed: true }
                 ]);
@@ -45,7 +45,7 @@ runSubtagTests({
             subtags: [new EscapeBBTagSubtag()],
             expected: '',
             assert(ctx) {
-                expect(ctx.data.embeds).to.deep.equal([
+                chai.expect(ctx.data.embeds).to.deep.equal([
                     { title: 'Hello!' },
                     { author: { name: 'abc' } },
                     { title: 'embed array 1' },

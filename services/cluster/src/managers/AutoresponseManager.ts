@@ -5,7 +5,7 @@ import { guard, humanize } from '@blargbot/cluster/utils/index.js';
 import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent.js';
 import { GuildTriggerTag } from '@blargbot/domain/models/index.js';
 import { mapping } from '@blargbot/mapping';
-import Eris from 'eris';
+import * as Eris from 'eris';
 
 import templates from '../text.js';
 

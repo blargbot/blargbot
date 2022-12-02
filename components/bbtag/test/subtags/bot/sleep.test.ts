@@ -1,6 +1,6 @@
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
 import { SleepSubtag } from '@blargbot/bbtag/subtags/bot/sleep.js';
-import { expect } from 'chai';
+import chai from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
@@ -13,7 +13,7 @@ runSubtagTests({
             expected: '',
             retries: 5,
             assert(_, __, ctx) {
-                expect(ctx.timer.elapsed).to.be.closeTo(100, 10);
+                chai.expect(ctx.timer.elapsed).to.be.closeTo(100, 10);
             }
         },
         {
@@ -21,7 +21,7 @@ runSubtagTests({
             expected: '',
             retries: 5,
             assert(_, __, ctx) {
-                expect(ctx.timer.elapsed).to.be.closeTo(50, 2);
+                chai.expect(ctx.timer.elapsed).to.be.closeTo(50, 2);
             }
         },
         {

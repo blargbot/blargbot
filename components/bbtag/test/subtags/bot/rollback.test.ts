@@ -1,14 +1,14 @@
 import { BBTagContext } from '@blargbot/bbtag';
 import { RollbackSubtag } from '@blargbot/bbtag/subtags/bot/rollback.js';
 import { TagVariableType } from '@blargbot/domain/models/index.js';
-import { expect } from 'chai';
+import chai from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new RollbackSubtag(),
     argCountBounds: { min: 0, max: Infinity },
-    setup(ctx) {
+    setupEach(ctx) {
         ctx.options.tagName = 'testTag';
         ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'var1' }, 22);
         ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'var2' }, 'def');
@@ -19,7 +19,7 @@ runSubtagTests({
         ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'var9' }, 22);
         ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'var10' }, 'def');
     },
-    async postSetup(bbctx) {
+    async postSetupEach(bbctx) {
         await bbctx.variables.set('var1', 5);
         await bbctx.variables.set('var2', 'abc');
         await bbctx.variables.set('~var3', 5);
@@ -73,5 +73,5 @@ runSubtagTests({
 
 async function assertCacheState(bbctx: BBTagContext, expected: Record<string, JToken | undefined>): Promise<void> {
     const values = await Promise.all(Object.keys(expected).map(async k => [k, (await bbctx.variables.get(k)).value] as const));
-    expect(Object.fromEntries(values)).to.deep.equal(expected);
+    chai.expect(Object.fromEntries(values)).to.deep.equal(expected);
 }

@@ -1,4 +1,4 @@
-import Eris from 'eris';
+import * as Eris from 'eris';
 
 type ChannelType = typeof Eris.Constants['ChannelTypes'];
 const isCategoryType: Record<ChannelType[keyof ChannelType], boolean> = {

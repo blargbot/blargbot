@@ -2,7 +2,7 @@ import { ClusterUtilities } from '@blargbot/cluster/ClusterUtilities.js';
 import { CommandDefinition, CommandOptions, CommandResult } from '@blargbot/cluster/types.js';
 import { commandTypeDetails, runMiddleware } from '@blargbot/cluster/utils/index.js';
 import { IMiddleware, NextMiddleware } from '@blargbot/core/types.js';
-import Eris from 'eris';
+import * as Eris from 'eris';
 
 import templates from '../text.js';
 import { Command } from './Command.js';

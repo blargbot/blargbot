@@ -1,14 +1,14 @@
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
 import { SlowModeSubtag } from '@blargbot/bbtag/subtags/channel/slowMode.js';
 import { argument } from '@blargbot/test-util/mock.js';
-import Eris from 'eris';
+import * as Eris from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new SlowModeSubtag(),
     argCountBounds: { min: 0, max: 2 },
-    setup(ctx) {
+    setupEach(ctx) {
         ctx.roles.authorizer.permissions = Eris.Constants.Permissions.manageChannels.toString();
     },
     cases: [
