@@ -1,13 +1,13 @@
-import { CommandBinderState, CommandBinderStateFailureReason, CommandGreedyParameter, CommandHandler, CommandLiteralParameter, CommandParameter, CommandResult, CommandSignatureHandler, CommandSingleParameter, CommandVariableTypeName } from '@blargbot/cluster/types';
-import { parse } from '@blargbot/cluster/utils';
-import { Binder } from '@blargbot/core/Binder';
-import { Binding } from '@blargbot/core/types';
+import { CommandBinderState, CommandBinderStateFailureReason, CommandGreedyParameter, CommandHandler, CommandLiteralParameter, CommandParameter, CommandResult, CommandSignatureHandler, CommandSingleParameter, CommandVariableTypeName } from '@blargbot/cluster/types.js';
+import { parse } from '@blargbot/cluster/utils/index.js';
+import { Binder } from '@blargbot/core/Binder.js';
+import { Binding } from '@blargbot/core/types.js';
 
-import templates from '../../text';
-import { CommandContext } from '../CommandContext';
-import { ScopedCommand } from '../ScopedCommand';
-import * as bindings from './binding/index';
-import { getLookupCache } from './lookupCache';
+import templates from '../../text.js';
+import { CommandContext } from '../CommandContext.js';
+import { ScopedCommand } from '../ScopedCommand.js';
+import * as bindings from './binding/index.js';
+import { getLookupCache } from './lookupCache.js';
 
 export function compileHandler<TContext extends CommandContext>(
     signatures: ReadonlyArray<CommandSignatureHandler<TContext>>,

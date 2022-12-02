@@ -1,7 +1,7 @@
-import { MessageSenderSubtag } from '@blargbot/bbtag/subtags/message/messageSender';
+import { MessageSenderSubtag } from '@blargbot/bbtag/subtags/message/messageSender.js';
 
-import { runSubtagTests } from '../SubtagTestSuite';
-import { createGetMessagePropTestCases } from './_getMessagePropTest';
+import { runSubtagTests } from '../SubtagTestSuite.js';
+import { createGetMessagePropTestCases } from './_getMessagePropTest.js';
 
 runSubtagTests({
     subtag: new MessageSenderSubtag(),

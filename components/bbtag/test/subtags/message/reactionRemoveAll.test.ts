@@ -1,9 +1,9 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { ReactionRemoveAllSubtag } from '@blargbot/bbtag/subtags/message/reactionRemoveAll';
+import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
+import { ReactionRemoveAllSubtag } from '@blargbot/bbtag/subtags/message/reactionRemoveAll.js';
 import Eris from 'eris';
 
-import { runSubtagTests } from '../SubtagTestSuite';
-import { createGetMessagePropTestCases } from './_getMessagePropTest';
+import { runSubtagTests } from '../SubtagTestSuite.js';
+import { createGetMessagePropTestCases } from './_getMessagePropTest.js';
 
 runSubtagTests({
     subtag: new ReactionRemoveAllSubtag(),

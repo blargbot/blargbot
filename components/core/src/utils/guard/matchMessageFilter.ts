@@ -1,8 +1,8 @@
-import { MessageFilter } from '@blargbot/domain/models';
+import { MessageFilter } from '@blargbot/domain/models/index.js';
 import Eris from 'eris';
 
-import { matchRegexSafe } from '../createRegExp';
-import { humanize } from '../humanize';
+import { matchRegexSafe } from '../createRegExp.js';
+import { humanize } from '../humanize/index.js';
 
 export function matchMessageFilter(filter: MessageFilter, message: Eris.KnownMessage): string[] | undefined {
     let content = message.content;

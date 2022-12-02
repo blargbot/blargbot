@@ -1,8 +1,8 @@
-import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError, UserNotFoundError } from '@blargbot/bbtag/errors';
-import { ReactionRemoveSubtag } from '@blargbot/bbtag/subtags/message/reactionRemove';
+import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError, UserNotFoundError } from '@blargbot/bbtag/errors/index.js';
+import { ReactionRemoveSubtag } from '@blargbot/bbtag/subtags/message/reactionRemove.js';
 import Eris from 'eris';
 
-import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite';
+import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new ReactionRemoveSubtag(),

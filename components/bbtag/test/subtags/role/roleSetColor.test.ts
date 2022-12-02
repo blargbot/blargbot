@@ -1,10 +1,10 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { RoleSetColorSubtag } from '@blargbot/bbtag/subtags/role/roleSetColor';
-import { argument } from '@blargbot/test-util/mock';
+import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
+import { RoleSetColorSubtag } from '@blargbot/bbtag/subtags/role/roleSetColor.js';
+import { argument } from '@blargbot/test-util/mock.js';
 import Eris from 'eris';
 
-import { runSubtagTests } from '../SubtagTestSuite';
-import { createGetRolePropTestCases } from './_getRolePropTest';
+import { runSubtagTests } from '../SubtagTestSuite.js';
+import { createGetRolePropTestCases } from './_getRolePropTest.js';
 
 runSubtagTests({
     subtag: new RoleSetColorSubtag(),

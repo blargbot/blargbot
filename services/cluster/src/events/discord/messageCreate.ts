@@ -1,14 +1,14 @@
 import { Cluster } from '@blargbot/cluster';
-import { CommandLoggerMiddleware, ErrorMiddleware, RollingRatelimitMiddleware } from '../../command/index';
-import { guard, runMiddleware, snowflake } from '@blargbot/cluster/utils';
-import { DiscordEventService } from '@blargbot/core/serviceTypes';
-import { IMiddleware } from '@blargbot/core/types';
+import { CommandLoggerMiddleware, ErrorMiddleware, RollingRatelimitMiddleware } from '../../command/index.js';
+import { guard, runMiddleware, snowflake } from '@blargbot/cluster/utils/index.js';
+import { DiscordEventService } from '@blargbot/core/serviceTypes/index.js';
+import { IMiddleware } from '@blargbot/core/types.js';
 import { MessageFlags } from 'discord-api-types/v9';
 import Eris from 'eris';
 import moment from 'moment-timezone';
 import { performance } from 'perf_hooks';
 
-import { AutoresponseMiddleware, CensorMiddleware, ChannelBlacklistMiddleware, ChatLogMiddleware, CleverbotMiddleware, CommandMiddleware, IgnoreBotsMiddleware, IgnoreSelfMiddleware, MessageAwaiterMiddleware, RolemesMiddleware, TableflipMiddleware, UpsertUserMiddleware } from './middleware';
+import { AutoresponseMiddleware, CensorMiddleware, ChannelBlacklistMiddleware, ChatLogMiddleware, CleverbotMiddleware, CommandMiddleware, IgnoreBotsMiddleware, IgnoreSelfMiddleware, MessageAwaiterMiddleware, RolemesMiddleware, TableflipMiddleware, UpsertUserMiddleware } from './middleware/index.js';
 
 export class DiscordMessageCreateHandler extends DiscordEventService<'messageCreate'> {
     readonly #middleware: Array<IMiddleware<Eris.KnownMessage, boolean>>;

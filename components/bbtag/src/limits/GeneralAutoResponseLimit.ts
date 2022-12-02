@@ -1,7 +1,7 @@
-import { BBTagRuntimeError, TooManyLoopsError } from '../errors';
-import templates from '../text';
-import { GlobalLimit } from './GlobalLimit';
-import { disabledRule, staffOnlyRule, UseCountRule } from './rules';
+import { BBTagRuntimeError, TooManyLoopsError } from '../errors/index.js';
+import templates from '../text.js';
+import { GlobalLimit } from './GlobalLimit.js';
+import { disabledRule, staffOnlyRule, UseCountRule } from './rules/index.js';
 
 export class GeneralAutoResponseLimit extends GlobalLimit {
     public constructor() {

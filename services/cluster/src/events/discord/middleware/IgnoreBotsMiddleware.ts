@@ -1,5 +1,5 @@
-import { IMiddleware, NextMiddleware } from '@blargbot/core/types';
-import { guard } from '@blargbot/core/utils';
+import { IMiddleware, NextMiddleware } from '@blargbot/core/types.js';
+import { guard } from '@blargbot/core/utils/index.js';
 import Eris from 'eris';
 
 export class IgnoreBotsMiddleware implements IMiddleware<Eris.KnownMessage, boolean> {

@@ -1,10 +1,10 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { ChannelPositionSubtag } from '@blargbot/bbtag/subtags/channel/channelPosition';
+import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
+import { ChannelPositionSubtag } from '@blargbot/bbtag/subtags/channel/channelPosition.js';
 import { APITextChannel } from 'discord-api-types/v9';
 import Eris from 'eris';
 
-import { runSubtagTests } from '../SubtagTestSuite';
-import { createGetChannelPropTestCases } from './_getChannelPropTest';
+import { runSubtagTests } from '../SubtagTestSuite.js';
+import { createGetChannelPropTestCases } from './_getChannelPropTest.js';
 
 runSubtagTests({
     subtag: new ChannelPositionSubtag(),

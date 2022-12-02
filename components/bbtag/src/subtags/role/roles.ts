@@ -1,10 +1,10 @@
-import { guard } from '@blargbot/core/utils';
+import { guard } from '@blargbot/core/utils/index.js';
 
-import { BBTagContext } from '../../BBTagContext';
-import { CompiledSubtag } from '../../compilation';
-import { UserNotFoundError } from '../../errors';
-import templates from '../../text';
-import { SubtagType } from '../../utils';
+import { BBTagContext } from '../../BBTagContext.js';
+import { CompiledSubtag } from '../../compilation/index.js';
+import { UserNotFoundError } from '../../errors/index.js';
+import templates from '../../text.js';
+import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.roles;
 

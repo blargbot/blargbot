@@ -1,7 +1,7 @@
-import { SpaceSubtag } from '@blargbot/bbtag/subtags/misc/space';
-import { TrimSubtag } from '@blargbot/bbtag/subtags/misc/trim';
+import { SpaceSubtag } from '@blargbot/bbtag/subtags/misc/space.js';
+import { TrimSubtag } from '@blargbot/bbtag/subtags/misc/trim.js';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new TrimSubtag(),

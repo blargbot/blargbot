@@ -1,10 +1,10 @@
-import { Cache } from '@blargbot/core/Cache';
-import { guard, sleep } from '@blargbot/core/utils';
+import { Cache } from '@blargbot/core/Cache.js';
+import { guard, sleep } from '@blargbot/core/utils/index.js';
 import { Logger } from '@blargbot/logger';
 import { UpdateRequest } from 'rethinkdb';
 
-import { RethinkDb } from '../clients';
-import { RethinkDbTable } from './RethinkDbTable';
+import { RethinkDb } from '../clients/index.js';
+import { RethinkDbTable } from './RethinkDbTable.js';
 
 export class RethinkDbCachedTable<Table extends { [P in KeyName]: string }, KeyName extends string> extends RethinkDbTable<Table> {
     public readonly cache: Cache<string, Table>;

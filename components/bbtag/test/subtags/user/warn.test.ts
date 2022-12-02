@@ -1,7 +1,7 @@
-import { WarnSubtag } from '@blargbot/bbtag/subtags/user/warn';
+import { WarnSubtag } from '@blargbot/bbtag/subtags/user/warn.js';
 import Eris from 'eris';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new WarnSubtag(),

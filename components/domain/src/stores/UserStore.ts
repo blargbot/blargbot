@@ -1,4 +1,4 @@
-import { StoredUser, StoredUsername, UserDetails } from '../models';
+import { StoredUser, StoredUsername, UserDetails } from '../models/index.js';
 
 export interface UserStore {
     getTodo(userId: string, skipCache?: boolean): Promise<readonly string[] | undefined>;

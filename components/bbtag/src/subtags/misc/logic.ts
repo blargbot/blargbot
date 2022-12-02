@@ -1,9 +1,9 @@
-import { parse } from '@blargbot/core/utils';
+import { parse } from '@blargbot/core/utils/index.js';
 
-import { CompiledSubtag } from '../../compilation';
-import { InvalidOperatorError, NotABooleanError } from '../../errors';
-import templates from '../../text';
-import { bbtag, LogicOperator, SubtagType } from '../../utils';
+import { CompiledSubtag } from '../../compilation/index.js';
+import { InvalidOperatorError, NotABooleanError } from '../../errors/index.js';
+import templates from '../../text.js';
+import { bbtag, LogicOperator, SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.logic;
 

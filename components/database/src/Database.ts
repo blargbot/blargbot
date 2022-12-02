@@ -1,23 +1,23 @@
-import { sleep } from '@blargbot/core/utils';
-import { BotVariableStore, ChatLogIndexStore, ChatLogStore, DumpStore, EventStore, GuildStore, SuggesterStore, SuggestionStore, TagStore, TagVariableStore, UserStore } from '@blargbot/domain/stores';
+import { sleep } from '@blargbot/core/utils/index.js';
+import { BotVariableStore, ChatLogIndexStore, ChatLogStore, DumpStore, EventStore, GuildStore, SuggesterStore, SuggestionStore, TagStore, TagVariableStore, UserStore } from '@blargbot/domain/stores/index.js';
 import { Logger } from '@blargbot/logger';
 import Airtable from 'airtable';
-import { AirtableBase } from 'airtable/lib/airtable_base';
+import { AirtableBase } from 'airtable/lib/airtable_base.js';
 import { auth as CassandraAuth, Client as Cassandra } from 'cassandra-driver';
 
-import { PostgresDb, RethinkDb } from './clients';
-import { DatabaseOptions } from './DatabaseOptions';
-import { AirtableSuggesterStore } from './stores/AirtableSuggesterStore';
-import { AirtableSuggestionStore } from './stores/AirtableSuggestionStore';
-import { CassandraDbChatLogStore } from './stores/CassandraDbChatLogStore';
-import { CassandraDbDumpStore } from './stores/CassandraDbDumpStore';
-import { PostgresDbTagVariableStore } from './stores/PostgresDbTagVariableStore';
-import { RethinkDbBotVariableStore } from './stores/RethinkDbBotVariableStore';
-import { RethinkDbChatLogIndexStore } from './stores/RethinkDbChatLogIndexStore';
-import { RethinkDbEventStore } from './stores/RethinkDbEventStore';
-import { RethinkDbGuildStore } from './stores/RethinkDbGuildStore';
-import { RethinkDbTagStore } from './stores/RethinkDbTagStore';
-import { RethinkDbUserStore } from './stores/RethinkDbUserStore';
+import { PostgresDb, RethinkDb } from './clients/index.js';
+import { DatabaseOptions } from './DatabaseOptions.js';
+import { AirtableSuggesterStore } from './stores/AirtableSuggesterStore.js';
+import { AirtableSuggestionStore } from './stores/AirtableSuggestionStore.js';
+import { CassandraDbChatLogStore } from './stores/CassandraDbChatLogStore.js';
+import { CassandraDbDumpStore } from './stores/CassandraDbDumpStore.js';
+import { PostgresDbTagVariableStore } from './stores/PostgresDbTagVariableStore.js';
+import { RethinkDbBotVariableStore } from './stores/RethinkDbBotVariableStore.js';
+import { RethinkDbChatLogIndexStore } from './stores/RethinkDbChatLogIndexStore.js';
+import { RethinkDbEventStore } from './stores/RethinkDbEventStore.js';
+import { RethinkDbGuildStore } from './stores/RethinkDbGuildStore.js';
+import { RethinkDbTagStore } from './stores/RethinkDbTagStore.js';
+import { RethinkDbUserStore } from './stores/RethinkDbUserStore.js';
 
 export class Database {
     readonly #rethink: RethinkDb;

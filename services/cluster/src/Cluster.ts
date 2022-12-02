@@ -1,21 +1,21 @@
 import { BBTagEngine, subtags } from '@blargbot/bbtag';
-import { ClusterOptions } from '@blargbot/cluster/types';
+import { ClusterOptions } from '@blargbot/cluster/types.js';
 import { Configuration } from '@blargbot/config';
-import { BaseClient } from '@blargbot/core/BaseClient';
-import { ModuleLoader } from '@blargbot/core/modules';
-import { BaseService } from '@blargbot/core/serviceTypes';
-import { EvalResult } from '@blargbot/core/types';
+import { BaseClient } from '@blargbot/core/BaseClient.js';
+import { ModuleLoader } from '@blargbot/core/modules/index.js';
+import { BaseService } from '@blargbot/core/serviceTypes/index.js';
+import { EvalResult } from '@blargbot/core/types.js';
 import { ImagePool } from '@blargbot/image';
 import { Logger } from '@blargbot/logger';
 import { GatewayIntentBits } from 'discord-api-types/v9';
 import moment from 'moment-timezone';
 import { inspect } from 'util';
 
-import { ClusterBBTagUtilities } from './ClusterBBTagUtilities';
-import { ClusterUtilities } from './ClusterUtilities';
-import { ClusterWorker } from './ClusterWorker';
-import { AggregateCommandManager, AnnouncementManager, AutoresponseManager, AwaiterManager, BotStaffManager, ContributorManager, CustomCommandManager, DefaultCommandManager, DomainManager, GreetingManager, GuildManager, IntervalManager, ModerationManager, PollManager, PrefixManager, RolemeManager, TimeoutManager, VersionStateManager } from './managers';
-import { CommandDocumentationManager } from './managers/documentation/CommandDocumentationManager';
+import { ClusterBBTagUtilities } from './ClusterBBTagUtilities.js';
+import { ClusterUtilities } from './ClusterUtilities.js';
+import { ClusterWorker } from './ClusterWorker.js';
+import { AggregateCommandManager, AnnouncementManager, AutoresponseManager, AwaiterManager, BotStaffManager, ContributorManager, CustomCommandManager, DefaultCommandManager, DomainManager, GreetingManager, GuildManager, IntervalManager, ModerationManager, PollManager, PrefixManager, RolemeManager, TimeoutManager, VersionStateManager } from './managers/index.js';
+import { CommandDocumentationManager } from './managers/documentation/CommandDocumentationManager.js';
 
 export class Cluster extends BaseClient {
     public readonly id: number;

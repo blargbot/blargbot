@@ -1,8 +1,8 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { RegexReplaceSubtag } from '@blargbot/bbtag/subtags/misc/regexReplace';
+import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
+import { RegexReplaceSubtag } from '@blargbot/bbtag/subtags/misc/regexReplace.js';
 import { expect } from 'chai';
 
-import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
+import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new RegexReplaceSubtag(),

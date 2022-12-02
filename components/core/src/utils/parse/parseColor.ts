@@ -1,8 +1,9 @@
-import colors from '@blargbot/res/colors.json';
+import res from '@blargbot/res';
 
-import { randInt } from '../random';
-import { parseHex } from './parseHex';
+import { randInt } from '../random/index.js';
+import { parseHex } from './parseHex.js';
 
+const colors = await res.colors.load();
 const colorKeys = Object.keys(colors);
 
 export function parseColor(text: number | 'random' | string): number | undefined {

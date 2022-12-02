@@ -1,7 +1,7 @@
 import { Cluster } from '@blargbot/cluster';
-import { ClusterEventService } from '@blargbot/cluster/serviceTypes';
+import { ClusterEventService } from '@blargbot/cluster/serviceTypes/index.js';
 
-import { guildSettings } from '../../utils';
+import { guildSettings } from '../../utils/index.js';
 
 export class ClusterGetGuildSettingsHandler extends ClusterEventService<'getGuildSettings'> {
     public constructor(

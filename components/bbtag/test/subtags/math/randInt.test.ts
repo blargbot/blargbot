@@ -1,7 +1,7 @@
-import { NotANumberError } from '@blargbot/bbtag/errors';
-import { RandomIntSubtag } from '@blargbot/bbtag/subtags/math/randomInt';
+import { NotANumberError } from '@blargbot/bbtag/errors/index.js';
+import { RandomIntSubtag } from '@blargbot/bbtag/subtags/math/randomInt.js';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new RandomIntSubtag(),

@@ -1,4 +1,4 @@
-import { format, IFormatString, IFormatStringDefinition, IFormatter } from './types';
+import { format, IFormatString, IFormatStringDefinition, IFormatter } from './types.js';
 
 export class FormatString<T> implements IFormatString {
     static readonly #defined = new Set<IFormatStringDefinition<never>>();

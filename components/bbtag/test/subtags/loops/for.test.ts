@@ -1,15 +1,15 @@
-import { AggregateBBTagError, BBTagRuntimeError, InvalidOperatorError, NotANumberError } from '@blargbot/bbtag/errors';
-import { GetSubtag } from '@blargbot/bbtag/subtags/bot/get';
-import { ReturnSubtag } from '@blargbot/bbtag/subtags/bot/return';
-import { SetSubtag } from '@blargbot/bbtag/subtags/bot/set';
-import { ForSubtag } from '@blargbot/bbtag/subtags/loops/for';
-import { IfSubtag } from '@blargbot/bbtag/subtags/misc/if';
-import { OperatorSubtag } from '@blargbot/bbtag/subtags/misc/operator';
-import { BBTagRuntimeState } from '@blargbot/bbtag/types';
-import { TagVariableType } from '@blargbot/domain/models';
+import { AggregateBBTagError, BBTagRuntimeError, InvalidOperatorError, NotANumberError } from '@blargbot/bbtag/errors/index.js';
+import { GetSubtag } from '@blargbot/bbtag/subtags/bot/get.js';
+import { ReturnSubtag } from '@blargbot/bbtag/subtags/bot/return.js';
+import { SetSubtag } from '@blargbot/bbtag/subtags/bot/set.js';
+import { ForSubtag } from '@blargbot/bbtag/subtags/loops/for.js';
+import { IfSubtag } from '@blargbot/bbtag/subtags/misc/if.js';
+import { OperatorSubtag } from '@blargbot/bbtag/subtags/misc/operator.js';
+import { BBTagRuntimeState } from '@blargbot/bbtag/types.js';
+import { TagVariableType } from '@blargbot/domain/models/index.js';
 import { expect } from 'chai';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new ForSubtag(),

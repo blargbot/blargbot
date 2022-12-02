@@ -1,4 +1,4 @@
-import { MasterWorker } from './MasterWorker';
+import { MasterWorker } from './MasterWorker.js';
 
 export interface MasterOptions {
     readonly avatars: readonly string[];

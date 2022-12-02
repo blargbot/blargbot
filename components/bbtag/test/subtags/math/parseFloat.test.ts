@@ -1,6 +1,6 @@
-import { ParseFloatSubtag } from '@blargbot/bbtag/subtags/math/parseFloat';
+import { ParseFloatSubtag } from '@blargbot/bbtag/subtags/math/parseFloat.js';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new ParseFloatSubtag(),

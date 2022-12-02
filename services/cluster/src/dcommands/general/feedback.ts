@@ -1,11 +1,11 @@
-import { CommandContext, GlobalCommand, SendTypingMiddleware } from '../../command/index';
-import { CommandType, guard } from '@blargbot/cluster/utils';
-import { FlagResult } from '@blargbot/domain/models';
+import { CommandContext, GlobalCommand, SendTypingMiddleware } from '../../command/index.js';
+import { CommandType, guard } from '@blargbot/cluster/utils/index.js';
+import { FlagResult } from '@blargbot/domain/models/index.js';
 import { IFormattable, util } from '@blargbot/formatting';
 import moment from 'moment-timezone';
 
-import templates from '../../text';
-import { CommandResult } from '../../types';
+import templates from '../../text.js';
+import { CommandResult } from '../../types.js';
 
 const cmd = templates.commands.feedback;
 

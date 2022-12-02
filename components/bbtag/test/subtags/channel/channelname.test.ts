@@ -1,7 +1,7 @@
-import { ChannelNameSubtag } from '@blargbot/bbtag/subtags/channel/channelName';
+import { ChannelNameSubtag } from '@blargbot/bbtag/subtags/channel/channelName.js';
 
-import { runSubtagTests } from '../SubtagTestSuite';
-import { createGetChannelPropTestCases } from './_getChannelPropTest';
+import { runSubtagTests } from '../SubtagTestSuite.js';
+import { createGetChannelPropTestCases } from './_getChannelPropTest.js';
 
 runSubtagTests({
     subtag: new ChannelNameSubtag(),

@@ -1,5 +1,5 @@
-import { ChatLogManager } from '@blargbot/cluster/managers/moderation';
-import { IMiddleware, NextMiddleware } from '@blargbot/core/types';
+import { ChatLogManager } from '@blargbot/cluster/managers/moderation/index.js';
+import { IMiddleware, NextMiddleware } from '@blargbot/core/types.js';
 import Eris from 'eris';
 
 export class ChatLogMiddleware implements IMiddleware<Eris.KnownMessage, boolean> {

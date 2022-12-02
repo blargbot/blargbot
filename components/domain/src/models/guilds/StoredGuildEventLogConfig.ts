@@ -1,4 +1,4 @@
-import { StoredGuildEventLogType } from './StoredGuildEventLogType';
+import { StoredGuildEventLogType } from './StoredGuildEventLogType.js';
 
 export interface StoredGuildEventLogConfig {
     readonly events: { readonly [P in StoredGuildEventLogType]?: string | undefined; };

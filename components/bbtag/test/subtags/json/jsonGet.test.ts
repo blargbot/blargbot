@@ -1,9 +1,9 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { JsonSubtag } from '@blargbot/bbtag/subtags/json/json';
-import { JsonGetSubtag } from '@blargbot/bbtag/subtags/json/jsonGet';
-import { TagVariableType } from '@blargbot/domain/models';
+import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
+import { JsonSubtag } from '@blargbot/bbtag/subtags/json/json.js';
+import { JsonGetSubtag } from '@blargbot/bbtag/subtags/json/jsonGet.js';
+import { TagVariableType } from '@blargbot/domain/models/index.js';
 
-import { runSubtagTests, SubtagTestCase } from '../SubtagTestSuite';
+import { runSubtagTests, SubtagTestCase } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new JsonGetSubtag(),

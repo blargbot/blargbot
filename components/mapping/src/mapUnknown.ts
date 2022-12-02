@@ -1,5 +1,5 @@
-import { createMapping } from './createMapping';
-import { result } from './result';
-import { TypeMapping } from './types';
+import { createMapping } from './createMapping.js';
+import { result } from './result.js';
+import { TypeMapping } from './types.js';
 
 export const mapUnknown: TypeMapping<unknown> = createMapping(value => result.success(value));

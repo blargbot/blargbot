@@ -1,6 +1,6 @@
-import { MessageFilter } from '../MessageFilter';
-import { GuildCensorExceptions } from './GuildCensorExceptions';
-import { GuildCensorRule } from './GuildCensorRule';
+import { MessageFilter } from '../MessageFilter.js';
+import { GuildCensorExceptions } from './GuildCensorExceptions.js';
+import { GuildCensorRule } from './GuildCensorRule.js';
 
 export interface GuildCensors {
     readonly list?: { readonly [censorId: string]: GuildCensor | undefined; };

@@ -1,17 +1,17 @@
-import { BBTagUtilities } from '@blargbot/bbtag/BBTagUtilities';
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { MessageIdSubtag } from '@blargbot/bbtag/subtags/message/messageId';
-import { ReactionSubtag } from '@blargbot/bbtag/subtags/message/reaction';
-import { ReactionUserSubtag } from '@blargbot/bbtag/subtags/message/reactionUser';
-import { WaitReactionSubtag } from '@blargbot/bbtag/subtags/message/waitReaction';
-import { OperatorSubtag } from '@blargbot/bbtag/subtags/misc/operator';
-import { AwaitReactionsResponse } from '@blargbot/bbtag/types';
-import { Emote } from '@blargbot/core/Emote';
-import { argument } from '@blargbot/test-util/mock';
+import { BBTagUtilities } from '@blargbot/bbtag/BBTagUtilities.js';
+import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
+import { MessageIdSubtag } from '@blargbot/bbtag/subtags/message/messageId.js';
+import { ReactionSubtag } from '@blargbot/bbtag/subtags/message/reaction.js';
+import { ReactionUserSubtag } from '@blargbot/bbtag/subtags/message/reactionUser.js';
+import { WaitReactionSubtag } from '@blargbot/bbtag/subtags/message/waitReaction.js';
+import { OperatorSubtag } from '@blargbot/bbtag/subtags/misc/operator.js';
+import { AwaitReactionsResponse } from '@blargbot/bbtag/types.js';
+import { Emote } from '@blargbot/core/Emote.js';
+import { argument } from '@blargbot/test-util/mock.js';
 import { expect } from 'chai';
 import Eris from 'eris';
 
-import { MarkerError, runSubtagTests, SubtagTestContext } from '../SubtagTestSuite';
+import { MarkerError, runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';
 
 type AwaitCondition = Exclude<Parameters<BBTagUtilities['awaitReaction']>[1], undefined>;
 const anyCondition = argument.is((v): v is AwaitCondition => typeof v === 'function');

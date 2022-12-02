@@ -1,8 +1,8 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { SleepSubtag } from '@blargbot/bbtag/subtags/bot/sleep';
+import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
+import { SleepSubtag } from '@blargbot/bbtag/subtags/bot/sleep.js';
 import { expect } from 'chai';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new SleepSubtag(),

@@ -1,9 +1,9 @@
-import { NotAnArrayError, NotANumberError } from '@blargbot/bbtag/errors';
-import { SliceSubtag } from '@blargbot/bbtag/subtags/array/slice';
-import { TagVariableType } from '@blargbot/domain/models';
+import { NotAnArrayError, NotANumberError } from '@blargbot/bbtag/errors/index.js';
+import { SliceSubtag } from '@blargbot/bbtag/subtags/array/slice.js';
+import { TagVariableType } from '@blargbot/domain/models/index.js';
 import { expect } from 'chai';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new SliceSubtag(),

@@ -1,13 +1,19 @@
 {
     "name": "@blargbot/database",
     "version": "1.0.0",
+    "private": true,
+    "type": "module",
+    "exports": {
+        ".": "./index.js",
+        "./*": "./*"
+    },
     "dependencies": {
         "@blargbot/config": "workspace:^",
         "@blargbot/core": "workspace:^",
         "@blargbot/domain": "workspace:^",
         "@blargbot/logger": "workspace:^",
         "@blargbot/mapping": "workspace:^",
-        "airtable": "^0.11.5",
+        "airtable": "^0.11.6",
         "cassandra-driver": "^4.6.4",
         "catflake": "^1.0.0",
         "moment-timezone": "^0.5.39",

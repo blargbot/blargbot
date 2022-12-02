@@ -1,10 +1,10 @@
-import { CommandContext, GlobalCommand } from '../../command/index';
-import { CommandType, guard, randChoose } from '@blargbot/cluster/utils';
+import { CommandContext, GlobalCommand } from '../../command/index.js';
+import { CommandType, guard, randChoose } from '@blargbot/cluster/utils/index.js';
 import { util } from '@blargbot/formatting';
-import spellsJson from '@blargbot/res/spells.json';
+import res from '@blargbot/res';
 
-import templates from '../../text';
-import { CommandResult } from '../../types';
+import templates from '../../text.js';
+import { CommandResult } from '../../types.js';
 
 const cmd = templates.commands.spell;
 
@@ -99,6 +99,7 @@ export class SpellCommand extends GlobalCommand {
     }
 }
 
+const spellsJson = await res.spells.load();
 const spells: Record<string, typeof spellsJson[number] | undefined> = {};
 for (const spell of spellsJson) {
     spells[spell.name.toLowerCase()] = {

@@ -2,6 +2,11 @@
     "name": "@blargbot/bbtag-tests",
     "version": "1.0.0",
     "private": true,
+    "type": "module",
+    "exports": {
+        ".": "./index.js",
+        "./*": "./*"
+    },
     "dependencies": {
         "@blargbot/bbtag": "workspace:^",
         "@blargbot/config": "workspace:^",

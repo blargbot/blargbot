@@ -1,7 +1,7 @@
-import * as transformers from './transformers';
+import * as transformers from './transformers/index.js';
 
-export * from './types';
-export * from './FormatStringCompiler';
-export * from './ReplacementContext';
+export * from './types.js';
+export * from './FormatStringCompiler.js';
+export * from './ReplacementContext.js';
 
 export { transformers };

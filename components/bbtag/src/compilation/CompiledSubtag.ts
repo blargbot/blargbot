@@ -1,16 +1,16 @@
-import { guard, parse } from '@blargbot/core/utils';
+import { guard, parse } from '@blargbot/core/utils/index.js';
 import { IFormattable } from '@blargbot/formatting';
 
-import { BBTagContext } from '../BBTagContext';
-import { BBTagRuntimeError } from '../errors';
-import { SubtagCall } from '../language';
-import { Subtag } from '../Subtag';
-import { SubtagOptions } from '../types';
-import { bbtag } from '../utils';
-import { AnySubtagSignatureOptions } from './AnySubtagSignatureOptions';
-import { compileSignatures } from './compileSignatures';
-import { CompositeSubtagHandler } from './CompositeSubtagHandler';
-import { parseDefinitions } from './parseDefinitions';
+import { BBTagContext } from '../BBTagContext.js';
+import { BBTagRuntimeError } from '../errors/index.js';
+import { SubtagCall } from '../language/index.js';
+import { Subtag } from '../Subtag.js';
+import { SubtagOptions } from '../types.js';
+import { bbtag } from '../utils/index.js';
+import { AnySubtagSignatureOptions } from './AnySubtagSignatureOptions.js';
+import { compileSignatures } from './compileSignatures.js';
+import { CompositeSubtagHandler } from './CompositeSubtagHandler.js';
+import { parseDefinitions } from './parseDefinitions.js';
 
 export interface DefinedSubtagOptions extends Omit<SubtagOptions<IFormattable<string>>, 'signatures'> {
     readonly definition: readonly AnySubtagSignatureOptions[];

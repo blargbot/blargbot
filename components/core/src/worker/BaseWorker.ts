@@ -1,7 +1,7 @@
-import { GetWorkerProcessMessageHandler, IPCContractMasterGets, IPCContractNames, IPCContracts, IPCContractWorkerGets } from '@blargbot/core/types';
+import { GetWorkerProcessMessageHandler, IPCContractMasterGets, IPCContractNames, IPCContracts, IPCContractWorkerGets } from '@blargbot/core/types.js';
 import { Logger } from '@blargbot/logger';
 
-import { IPCMessageEmitter } from './IPCMessageEmitter';
+import { IPCMessageEmitter } from './IPCMessageEmitter.js';
 
 export abstract class BaseWorker<Contracts extends IPCContracts> {
     protected readonly ipc: IPCMessageEmitter;

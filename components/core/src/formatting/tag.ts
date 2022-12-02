@@ -2,7 +2,7 @@ import { IValueResolverTransform } from '@blargbot/formatting';
 import Eris from 'eris';
 import moment from 'moment-timezone';
 
-import { Emote } from '../Emote';
+import { Emote } from '../Emote.js';
 
 export const tag: IValueResolverTransform = {
     transform(_compiler, source, ...args) {

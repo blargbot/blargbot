@@ -1,10 +1,10 @@
 import { IFormattable } from '@blargbot/formatting';
 import Eris from 'eris';
 
-import { SubtagCall } from '../language';
-import templates from '../text';
-import { ExecutionResult } from '../types';
-import { stringify } from './stringify';
+import { SubtagCall } from '../language/index.js';
+import templates from '../text.js';
+import { ExecutionResult } from '../types.js';
+import { stringify } from './stringify.js';
 
 export function createDebugOutput(result: ExecutionResult): { content: IFormattable<string>; file: Eris.FileContent[]; } {
     const performance: Record<string, unknown> = {};

@@ -1,8 +1,8 @@
-import { BBTagRuntimeError, NotANumberError } from '@blargbot/bbtag/errors';
-import { ChannelSetPositionSubtag } from '@blargbot/bbtag/subtags/channel/channelSetPosition';
+import { BBTagRuntimeError, NotANumberError } from '@blargbot/bbtag/errors/index.js';
+import { ChannelSetPositionSubtag } from '@blargbot/bbtag/subtags/channel/channelSetPosition.js';
 import Eris from 'eris';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new ChannelSetPositionSubtag(),

@@ -1,8 +1,8 @@
-import { ProcessMessage, ProcessMessageContext, ProcessMessageHandler } from '@blargbot/core/types';
-import { snowflake } from '@blargbot/core/utils';
+import { ProcessMessage, ProcessMessageContext, ProcessMessageHandler } from '@blargbot/core/types.js';
+import { snowflake } from '@blargbot/core/utils/index.js';
 import { Snowflake } from 'catflake';
 import { ChildProcess } from 'child_process';
-import EventEmitter from 'eventemitter3';
+import { EventEmitter } from 'eventemitter3';
 
 export class IPCMessageEmitter {
     readonly #events: EventEmitter;

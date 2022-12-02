@@ -1,12 +1,12 @@
 import { bbtag, limits, Subtag, SubtagSignature, SubtagSignatureValueParameter, SubtagType, tagTypeDetails, tagVariableScopeProviders } from '@blargbot/bbtag';
-import { SendContent } from '@blargbot/core/types';
-import { guard } from '@blargbot/core/utils';
+import { SendContent } from '@blargbot/core/types.js';
+import { guard } from '@blargbot/core/utils/index.js';
 import { IFormattable } from '@blargbot/formatting';
 
-import { Cluster } from '../../Cluster';
-import templates from '../../text';
-import { Documentation, DocumentationPage, DocumentationPaged } from './DocumentationManager';
-import { DocumentationTreeManager } from './DocumentationTreeManager';
+import { Cluster } from '../../Cluster.js';
+import templates from '../../text.js';
+import { Documentation, DocumentationPage, DocumentationPaged } from './DocumentationManager.js';
+import { DocumentationTreeManager } from './DocumentationTreeManager.js';
 
 const doc = templates.documentation.bbtag;
 

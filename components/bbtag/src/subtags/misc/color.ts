@@ -1,11 +1,11 @@
-import { guard } from '@blargbot/core/utils';
+import { guard } from '@blargbot/core/utils/index.js';
 import Color from 'color';
 
-import { BBTagContext } from '../../BBTagContext';
-import { CompiledSubtag } from '../../compilation';
-import { BBTagRuntimeError } from '../../errors';
-import templates from '../../text';
-import { bbtag, SubtagType } from '../../utils';
+import { BBTagContext } from '../../BBTagContext.js';
+import { CompiledSubtag } from '../../compilation/index.js';
+import { BBTagRuntimeError } from '../../errors/index.js';
+import templates from '../../text.js';
+import { bbtag, SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.color;
 

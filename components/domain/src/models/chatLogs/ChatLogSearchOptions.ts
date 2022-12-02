@@ -1,4 +1,4 @@
-import { ChatLogType } from './ChatLogType';
+import { ChatLogType } from './ChatLogType.js';
 
 export interface ChatLogSearchOptions {
     readonly channelId: string;

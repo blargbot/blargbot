@@ -1,7 +1,7 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { UriDecodeSubtag } from '@blargbot/bbtag/subtags/misc/uriDecode';
+import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
+import { UriDecodeSubtag } from '@blargbot/bbtag/subtags/misc/uriDecode.js';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new UriDecodeSubtag(),

@@ -1,10 +1,10 @@
 import { Cluster } from '@blargbot/cluster';
-import { TimeoutEventService } from '@blargbot/cluster/serviceTypes';
-import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent';
-import { StoredEvent } from '@blargbot/domain/models';
+import { TimeoutEventService } from '@blargbot/cluster/serviceTypes/index.js';
+import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent.js';
+import { StoredEvent } from '@blargbot/domain/models/index.js';
 import moment from 'moment-timezone';
 
-import templates from '../../text';
+import templates from '../../text.js';
 
 export class TimeoutRemindEventService extends TimeoutEventService<'remind'> {
     public constructor(protected readonly cluster: Cluster) {

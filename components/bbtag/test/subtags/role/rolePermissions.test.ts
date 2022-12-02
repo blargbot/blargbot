@@ -1,7 +1,7 @@
-import { RolePermissionsSubtag } from '@blargbot/bbtag/subtags/role/rolePermissions';
+import { RolePermissionsSubtag } from '@blargbot/bbtag/subtags/role/rolePermissions.js';
 
-import { runSubtagTests } from '../SubtagTestSuite';
-import { createGetRolePropTestCases } from './_getRolePropTest';
+import { runSubtagTests } from '../SubtagTestSuite.js';
+import { createGetRolePropTestCases } from './_getRolePropTest.js';
 
 runSubtagTests({
     subtag: new RolePermissionsSubtag(),

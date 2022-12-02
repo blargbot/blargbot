@@ -1,12 +1,12 @@
-import { Timer } from '@blargbot/core/Timer';
-import { GetMasterProcessMessageHandler, IPCContractMasterGets, IPCContractNames, IPCContracts, IPCContractWorkerGets } from '@blargbot/core/types';
+import { Timer } from '@blargbot/core/Timer.js';
+import { GetMasterProcessMessageHandler, IPCContractMasterGets, IPCContractNames, IPCContracts, IPCContractWorkerGets } from '@blargbot/core/types.js';
 import { Logger } from '@blargbot/logger';
 import child_process from 'child_process';
 import moment from 'moment-timezone';
 import { createInterface } from 'readline';
 import streams from 'stream';
 
-import { IPCMessageEmitter } from './IPCMessageEmitter';
+import { IPCMessageEmitter } from './IPCMessageEmitter.js';
 
 export const enum WorkerState {
     READY,

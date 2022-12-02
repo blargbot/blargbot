@@ -1,4 +1,4 @@
-import os from 'os';
+import os from 'node:os';
 
 function getTotalCpuTime(): number {
     const cpus = os.cpus();

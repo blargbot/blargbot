@@ -1,2 +1,23 @@
-export * from './Master';
-export * from './MasterWorker';
+import { config } from '@blargbot/config';
+import { createLogger } from '@blargbot/logger';
+import { MasterWorker } from '@blargbot/master';
+import res from '@blargbot/res';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+export * from './Master.js';
+export * from './MasterWorker.js';
+export const entrypoint = path.join(fileURLToPath(import.meta.url), '../start.js');
+
+export async function start(): Promise<void> {
+    const logger = createLogger(config, 'MS');
+    logger.setGlobal();
+
+    const avatars = config.general.isProd !== true
+        ? await res.avatars.dev.load()
+        : await res.avatars.prd.load();
+
+    Error.stackTraceLimit = 100;
+    await new MasterWorker(logger, config, { avatars })
+        .start();
+}

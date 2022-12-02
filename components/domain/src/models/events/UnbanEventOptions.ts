@@ -1,4 +1,4 @@
-import { StoredEventOptionsBase } from './StoredEventOptionsBase';
+import { StoredEventOptionsBase } from './StoredEventOptionsBase.js';
 
 export interface UnbanEventOptions extends StoredEventOptionsBase {
     readonly guild: string;

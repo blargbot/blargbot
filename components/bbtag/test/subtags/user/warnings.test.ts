@@ -1,7 +1,7 @@
-import { WarningsSubtag } from '@blargbot/bbtag/subtags/user/warnings';
+import { WarningsSubtag } from '@blargbot/bbtag/subtags/user/warnings.js';
 
-import { runSubtagTests } from '../SubtagTestSuite';
-import { createGetUserPropTestCases } from './_getUserPropTest';
+import { runSubtagTests } from '../SubtagTestSuite.js';
+import { createGetUserPropTestCases } from './_getUserPropTest.js';
 
 runSubtagTests({
     subtag: new WarningsSubtag(),

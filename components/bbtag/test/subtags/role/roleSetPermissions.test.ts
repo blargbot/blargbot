@@ -1,10 +1,10 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { RoleSetPermissionsSubtag } from '@blargbot/bbtag/subtags/role/roleSetPermissions';
-import { argument } from '@blargbot/test-util/mock';
+import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
+import { RoleSetPermissionsSubtag } from '@blargbot/bbtag/subtags/role/roleSetPermissions.js';
+import { argument } from '@blargbot/test-util/mock.js';
 import Eris from 'eris';
 
-import { runSubtagTests } from '../SubtagTestSuite';
-import { createGetRolePropTestCases } from './_getRolePropTest';
+import { runSubtagTests } from '../SubtagTestSuite.js';
+import { createGetRolePropTestCases } from './_getRolePropTest.js';
 
 runSubtagTests({
     subtag: new RoleSetPermissionsSubtag(),

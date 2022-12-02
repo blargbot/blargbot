@@ -1,5 +1,5 @@
-import { Statement } from '../language';
-import { SubtagSignatureValueParameter } from '../types';
+import { Statement } from '../language/index.js';
+import { SubtagSignatureValueParameter } from '../types.js';
 
 export interface SubtagArgument {
     readonly parameter: SubtagSignatureValueParameter;

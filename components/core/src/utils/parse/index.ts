@@ -1,15 +1,15 @@
-import { parseFlags } from './flags';
-import { parseBigInt } from './parseBigInt';
-import { parseBoolean } from './parseBoolean';
-import { parseColor } from './parseColor';
-import { parseDuration } from './parseDuration';
-import { parseEmbed } from './parseEmbed';
-import { parseEntityId } from './parseEntityId';
-import { parseFloat } from './parseFloat';
-import { parseInt } from './parseInt';
-import { parseString } from './parseString';
-import { parseTime } from './parseTime';
-import { parseUrl } from './parseUrl';
+import { parseFlags } from './flags.js';
+import { parseBigInt } from './parseBigInt.js';
+import { parseBoolean } from './parseBoolean.js';
+import { parseColor } from './parseColor.js';
+import { parseDuration } from './parseDuration.js';
+import { parseEmbed } from './parseEmbed.js';
+import { parseEntityId } from './parseEntityId.js';
+import { parseFloat } from './parseFloat.js';
+import { parseInt } from './parseInt.js';
+import { parseString } from './parseString.js';
+import { parseTime } from './parseTime.js';
+import { parseUrl } from './parseUrl.js';
 
 export const parse = {
     flags: parseFlags,

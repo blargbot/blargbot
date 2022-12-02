@@ -1,4 +1,4 @@
-import { IValueResolverTransform } from '../types';
+import { IValueResolverTransform } from '../types.js';
 
 export const split: IValueResolverTransform = {
     transform(_compiler, source, ...separators) {

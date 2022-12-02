@@ -1,11 +1,11 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { ChannelEditSubtag } from '@blargbot/bbtag/subtags/channel/channelEdit';
-import { EscapeBBTagSubtag } from '@blargbot/bbtag/subtags/misc/escapeBBTag';
-import { argument } from '@blargbot/test-util/mock';
+import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
+import { ChannelEditSubtag } from '@blargbot/bbtag/subtags/channel/channelEdit.js';
+import { EscapeBBTagSubtag } from '@blargbot/bbtag/subtags/misc/escapeBBTag.js';
+import { argument } from '@blargbot/test-util/mock.js';
 import { ChannelType } from 'discord-api-types/v9';
 import Eris from 'eris';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new ChannelEditSubtag(),

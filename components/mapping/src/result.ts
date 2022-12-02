@@ -1,4 +1,4 @@
-import { TypeMappingResult } from './types';
+import { TypeMappingResult } from './types.js';
 
 export const result = {
     failed: { valid: false } as TypeMappingResult<never>,

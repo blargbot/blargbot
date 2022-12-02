@@ -1,7 +1,7 @@
-import { RespawnStrategy, WorkerPool } from '@blargbot/core/worker';
+import { RespawnStrategy, WorkerPool } from '@blargbot/core/worker/index.js';
 import { Logger } from '@blargbot/logger';
 
-import { ApiConnection } from './ApiConnection';
+import { ApiConnection } from './ApiConnection.js';
 
 export class ApiPool extends WorkerPool<ApiConnection> {
     public constructor(logger: Logger) {

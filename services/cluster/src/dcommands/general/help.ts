@@ -1,7 +1,7 @@
-import { GlobalCommand } from '../../command/index';
-import { CommandType } from '@blargbot/cluster/utils';
+import { GlobalCommand } from '../../command/index.js';
+import { CommandType } from '@blargbot/cluster/utils/index.js';
 
-import templates from '../../text';
+import templates from '../../text.js';
 
 const cmd = templates.commands.help;
 

@@ -1,11 +1,11 @@
-export * from '@blargbot/core/utils';
-export * from './constants';
-export * from './guard';
-export * from './humanize';
-export * from './discord';
-export * from './parse';
+export * from '@blargbot/core/utils/index.js';
+export * from './constants/index.js';
+export * from './guard/index.js';
+export * from './humanize/index.js';
+export * from './discord/index.js';
+export * from './parse/index.js';
 
-export { guard } from './guard';
-export { humanize } from './humanize';
-export { discord } from './discord';
-export { parse } from './parse';
+export { guard } from './guard/index.js';
+export { humanize } from './humanize/index.js';
+export { discord } from './discord/index.js';
+export { parse } from './parse/index.js';

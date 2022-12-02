@@ -1,5 +1,5 @@
 import { Cluster } from '@blargbot/cluster';
-import { DiscordEventService } from '@blargbot/core/serviceTypes';
+import { DiscordEventService } from '@blargbot/core/serviceTypes/index.js';
 import { MessageFlags, MessageType } from 'discord-api-types/v9';
 import Eris from 'eris';
 

@@ -1,4 +1,4 @@
-import { Emote } from '@blargbot/core/Emote';
+import { Emote } from '@blargbot/core/Emote.js';
 import Eris from 'eris';
 
 export function emojiString(emoji: Eris.PartialEmoji | Emote): string {

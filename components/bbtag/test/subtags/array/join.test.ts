@@ -1,9 +1,9 @@
-import { NotAnArrayError } from '@blargbot/bbtag/errors';
-import { JoinSubtag } from '@blargbot/bbtag/subtags/array/join';
-import { GetSubtag } from '@blargbot/bbtag/subtags/bot/get';
-import { TagVariableType } from '@blargbot/domain/models';
+import { NotAnArrayError } from '@blargbot/bbtag/errors/index.js';
+import { JoinSubtag } from '@blargbot/bbtag/subtags/array/join.js';
+import { GetSubtag } from '@blargbot/bbtag/subtags/bot/get.js';
+import { TagVariableType } from '@blargbot/domain/models/index.js';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new JoinSubtag(),

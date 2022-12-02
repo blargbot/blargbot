@@ -1,13 +1,13 @@
-import { GuildCommand } from '../../command/index';
-import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
-import { CommandType, ModerationType } from '@blargbot/cluster/utils';
-import { guard } from '@blargbot/core/utils';
-import { GuildCensor, GuildTriggerTag } from '@blargbot/domain/models';
+import { GuildCommand } from '../../command/index.js';
+import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types.js';
+import { CommandType, ModerationType } from '@blargbot/cluster/utils/index.js';
+import { guard } from '@blargbot/core/utils/index.js';
+import { GuildCensor, GuildTriggerTag } from '@blargbot/domain/models/index.js';
 import { IFormattable, util } from '@blargbot/formatting';
 import Eris from 'eris';
 
-import { RawBBTagCommandResult } from '../../command/RawBBTagCommandResult';
-import templates from '../../text';
+import { RawBBTagCommandResult } from '../../command/RawBBTagCommandResult.js';
+import templates from '../../text.js';
 
 const cmd = templates.commands.censor;
 

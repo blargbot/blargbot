@@ -1,6 +1,6 @@
-import { LbSubtag } from '@blargbot/bbtag/subtags/simple/lb';
+import { LbSubtag } from '@blargbot/bbtag/subtags/simple/lb.js';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new LbSubtag(),

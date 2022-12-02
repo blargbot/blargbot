@@ -1,14 +1,14 @@
-import { ClusterUtilities } from '@blargbot/cluster/ClusterUtilities';
-import { CommandDefinition, CommandOptions, CommandResult } from '@blargbot/cluster/types';
-import { commandTypeDetails, runMiddleware } from '@blargbot/cluster/utils';
-import { IMiddleware, NextMiddleware } from '@blargbot/core/types';
+import { ClusterUtilities } from '@blargbot/cluster/ClusterUtilities.js';
+import { CommandDefinition, CommandOptions, CommandResult } from '@blargbot/cluster/types.js';
+import { commandTypeDetails, runMiddleware } from '@blargbot/cluster/utils/index.js';
+import { IMiddleware, NextMiddleware } from '@blargbot/core/types.js';
 import Eris from 'eris';
 
-import templates from '../text';
-import { Command } from './Command';
-import { CommandContext } from './CommandContext';
-import { compileSignatures } from './compilation/index';
-import { InvokeCommandHandlerMiddleware } from './middleware/index';
+import templates from '../text.js';
+import { Command } from './Command.js';
+import { CommandContext } from './CommandContext.js';
+import { compileSignatures } from './compilation/index.js';
+import { InvokeCommandHandlerMiddleware } from './middleware/index.js';
 
 export abstract class ScopedCommand<TContext extends CommandContext> extends Command {
     readonly #handler: InvokeCommandHandlerMiddleware<TContext>;

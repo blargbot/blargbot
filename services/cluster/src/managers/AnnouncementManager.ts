@@ -1,11 +1,11 @@
-import { GuildStore } from '@blargbot/domain/stores';
+import { GuildStore } from '@blargbot/domain/stores/index.js';
 import Eris from 'eris';
 
-import { ClusterUtilities } from '..';
-import { Command } from '../command';
-import templates from '../text';
-import { ICommandManager, Result } from '../types';
-import { guard } from '../utils';
+import { ClusterUtilities } from '../ClusterUtilities.js';
+import { Command } from '../command/index.js'
+import templates from '../text.js';
+import { ICommandManager, Result } from '../types.js';
+import { guard } from '../utils/index.js';
 
 export class AnnouncementManager {
     readonly #database: GuildStore;

@@ -1,8 +1,8 @@
-import { InvalidOperatorError } from '@blargbot/bbtag/errors';
-import { OperatorSubtag } from '@blargbot/bbtag/subtags/misc/operator';
-import { bbtag, LogicOperator, NumericOperator, OrdinalOperator, StringOperator } from '@blargbot/bbtag/utils';
+import { InvalidOperatorError } from '@blargbot/bbtag/errors/index.js';
+import { OperatorSubtag } from '@blargbot/bbtag/subtags/misc/operator.js';
+import { bbtag, LogicOperator, NumericOperator, OrdinalOperator, StringOperator } from '@blargbot/bbtag/utils/index.js';
 
-import { MarkerError, runSubtagTests, SubtagTestCase } from '../SubtagTestSuite';
+import { MarkerError, runSubtagTests, SubtagTestCase } from '../SubtagTestSuite.js';
 
 const exp = Math.pow;
 const isEqualTo = { '!=': false, '<': false, '<=': true, '==': true, '>': false, '>=': true, 'startswith': true, 'endswith': true, 'includes': true, 'contains': true } as const;

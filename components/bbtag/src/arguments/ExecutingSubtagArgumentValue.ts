@@ -1,8 +1,8 @@
-import { BBTagContext } from '../BBTagContext';
-import { ArgumentLengthError } from '../errors';
-import { Statement, SubtagCall } from '../language';
-import { BBTagRuntimeState, SubtagSignatureValueParameter } from '../types';
-import { SubtagArgument } from './SubtagArgument';
+import { BBTagContext } from '../BBTagContext.js';
+import { ArgumentLengthError } from '../errors/index.js';
+import { Statement, SubtagCall } from '../language/index.js';
+import { BBTagRuntimeState, SubtagSignatureValueParameter } from '../types.js';
+import { SubtagArgument } from './SubtagArgument.js';
 
 export class ExecutingSubtagArgumentValue implements SubtagArgument {
     #promise?: Promise<string>;

@@ -1,8 +1,8 @@
-import { SubtagArgumentArray } from '../arguments';
-import { BBTagContext } from '../BBTagContext';
-import { SubtagCall } from '../language';
-import { SubtagReturnTypeMap } from '../types';
-import { SubtagSignatureParameterOptions } from './SubtagSignatureParameterOptions';
+import { SubtagArgumentArray } from '../arguments/index.js';
+import { BBTagContext } from '../BBTagContext.js';
+import { SubtagCall } from '../language/index.js';
+import { SubtagReturnTypeMap } from '../types.js';
+import { SubtagSignatureParameterOptions } from './SubtagSignatureParameterOptions.js';
 
 export interface SubtagSignatureCallableOptions<Type extends keyof SubtagReturnTypeMap> {
     readonly subtagName?: string;

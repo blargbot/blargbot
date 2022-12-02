@@ -1,12 +1,12 @@
-import { ClusterUtilities } from '@blargbot/cluster/ClusterUtilities';
-import { CommandBaseOptions, CommandResult, CommandSignature } from '@blargbot/cluster/types';
-import { CommandType } from '@blargbot/cluster/utils';
-import { IMiddleware, NextMiddleware } from '@blargbot/core/types';
-import { FlagDefinition } from '@blargbot/domain/models';
+import { ClusterUtilities } from '@blargbot/cluster/ClusterUtilities.js';
+import { CommandBaseOptions, CommandResult, CommandSignature } from '@blargbot/cluster/types.js';
+import { CommandType } from '@blargbot/cluster/utils/index.js';
+import { IMiddleware, NextMiddleware } from '@blargbot/core/types.js';
+import { FlagDefinition } from '@blargbot/domain/models/index.js';
 import { IFormattable } from '@blargbot/formatting';
 import Eris from 'eris';
 
-import { CommandContext } from './CommandContext';
+import { CommandContext } from './CommandContext.js';
 
 export abstract class Command implements CommandBaseOptions, IMiddleware<CommandContext, CommandResult> {
     public readonly name: string;

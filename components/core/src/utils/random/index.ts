@@ -1,2 +1,2 @@
-export * from './randChoose';
-export * from './randInt';
+export * from './randChoose.js';
+export * from './randInt.js';

@@ -1,10 +1,10 @@
 import { BBTagContext } from '@blargbot/bbtag';
-import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '@blargbot/bbtag/errors';
-import { snowflake } from '@blargbot/core/utils';
+import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '@blargbot/bbtag/errors/index.js';
+import { snowflake } from '@blargbot/core/utils/index.js';
 import { APIChannel, APIMessage } from 'discord-api-types/v9';
 import Eris from 'eris';
 
-import { SubtagTestCase, SubtagTestContext } from '../SubtagTestSuite';
+import { SubtagTestCase, SubtagTestContext } from '../SubtagTestSuite.js';
 
 export function createGetMessagePropTestCases(options: GetMessagePropTestData): SubtagTestCase[] {
     return [...createGetMessagePropTestCasesIter(options)];

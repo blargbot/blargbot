@@ -1,10 +1,10 @@
 import { FormatString } from '@blargbot/formatting';
 
-import { CommandContext } from '../../command/CommandContext';
-import { GlobalCommand } from '../../command/GlobalCommand';
-import templates from '../../text';
-import { CommandResult } from '../../types';
-import { CommandType } from '../../utils/index';
+import { CommandContext } from '../../command/CommandContext.js';
+import { GlobalCommand } from '../../command/GlobalCommand.js';
+import templates from '../../text.js';
+import { CommandResult } from '../../types.js';
+import { CommandType } from '../../utils/index.js';
 
 const cmd = templates.commands.i18n;
 

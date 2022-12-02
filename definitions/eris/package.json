@@ -1,6 +1,12 @@
 {
     "name": "@types/eris",
     "version": "0.17.0",
+    "type": "commonjs",
+    "exports": {
+        ".": {
+            "types": "./index.d.ts"
+        }
+    },
     "dependencies": {
         "eris": "^0.17.1"
     }

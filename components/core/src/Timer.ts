@@ -1,5 +1,6 @@
+import { performance } from 'node:perf_hooks';
+
 import moment from 'moment-timezone';
-import { performance } from 'perf_hooks';
 
 export class Timer {
     #elapsed: number;

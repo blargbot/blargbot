@@ -1,4 +1,4 @@
-import { BBTagTypeError } from './BBTagTypeError';
+import { BBTagTypeError } from './BBTagTypeError.js';
 
 export class NotAnArrayError extends BBTagTypeError {
     public constructor(value: JToken | undefined) {

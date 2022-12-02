@@ -1,9 +1,9 @@
-import { BBTagRuntimeError, NotANumberError } from '@blargbot/bbtag/errors';
-import { RoleSetPositionSubtag } from '@blargbot/bbtag/subtags/role/roleSetPosition';
+import { BBTagRuntimeError, NotANumberError } from '@blargbot/bbtag/errors/index.js';
+import { RoleSetPositionSubtag } from '@blargbot/bbtag/subtags/role/roleSetPosition.js';
 import Eris from 'eris';
 
-import { runSubtagTests } from '../SubtagTestSuite';
-import { createGetRolePropTestCases } from './_getRolePropTest';
+import { runSubtagTests } from '../SubtagTestSuite.js';
+import { createGetRolePropTestCases } from './_getRolePropTest.js';
 
 runSubtagTests({
     subtag: new RoleSetPositionSubtag(),

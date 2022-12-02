@@ -1,11 +1,11 @@
 import { Cluster } from '@blargbot/cluster';
-import { GuildCommand } from '../../command/index';
-import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
-import { codeBlock, CommandType, defaultStaff, guard, guildSettings, parse } from '@blargbot/cluster/utils';
+import { GuildCommand } from '../../command/index.js';
+import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types.js';
+import { codeBlock, CommandType, defaultStaff, guard, guildSettings, parse } from '@blargbot/cluster/utils/index.js';
 import { format, FormatString, IFormattable, ITranslationSource } from '@blargbot/formatting';
 import Eris from 'eris';
 
-import templates from '../../text';
+import templates from '../../text.js';
 
 const cmd = templates.commands.settings;
 

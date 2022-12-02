@@ -1,6 +1,6 @@
-import { MinSubtag } from '@blargbot/bbtag/subtags/math/min';
+import { MinSubtag } from '@blargbot/bbtag/subtags/math/min.js';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new MinSubtag(),

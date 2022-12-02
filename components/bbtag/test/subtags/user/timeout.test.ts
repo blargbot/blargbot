@@ -1,10 +1,10 @@
-import { BBTagRuntimeError, UserNotFoundError } from '@blargbot/bbtag/errors';
-import { TimeoutSubtag } from '@blargbot/bbtag/subtags/user/timeout';
-import { argument } from '@blargbot/test-util/mock';
+import { BBTagRuntimeError, UserNotFoundError } from '@blargbot/bbtag/errors/index.js';
+import { TimeoutSubtag } from '@blargbot/bbtag/subtags/user/timeout.js';
+import { argument } from '@blargbot/test-util/mock.js';
 import Eris from 'eris';
 import moment from 'moment-timezone';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 function isDuration(ms: number): moment.Duration {
     return argument.is(moment.isDuration).and(x =>

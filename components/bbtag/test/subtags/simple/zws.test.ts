@@ -1,6 +1,6 @@
-import { ZwsSubtag } from '@blargbot/bbtag/subtags/simple/zws';
+import { ZwsSubtag } from '@blargbot/bbtag/subtags/simple/zws.js';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new ZwsSubtag(),

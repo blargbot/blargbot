@@ -1,9 +1,9 @@
-import { NotANumberError } from '@blargbot/bbtag/errors';
-import { JsonSubtag } from '@blargbot/bbtag/subtags/json/json';
-import { JsonStringifySubtag } from '@blargbot/bbtag/subtags/json/jsonStringify';
-import { TagVariableType } from '@blargbot/domain/models';
+import { NotANumberError } from '@blargbot/bbtag/errors/index.js';
+import { JsonSubtag } from '@blargbot/bbtag/subtags/json/json.js';
+import { JsonStringifySubtag } from '@blargbot/bbtag/subtags/json/jsonStringify.js';
+import { TagVariableType } from '@blargbot/domain/models/index.js';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new JsonStringifySubtag(),

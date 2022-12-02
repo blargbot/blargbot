@@ -1,9 +1,9 @@
-import { CommandBinderParseResult, CommandBinderStateLookupCache, CommandVariableTypeMap, GuildCommandContext, PrivateCommandContext } from '@blargbot/cluster/types';
-import { guard } from '@blargbot/cluster/utils';
+import { CommandBinderParseResult, CommandBinderStateLookupCache, CommandVariableTypeMap, GuildCommandContext, PrivateCommandContext } from '@blargbot/cluster/types.js';
+import { guard } from '@blargbot/cluster/utils/index.js';
 import Eris from 'eris';
 
-import { CommandContext } from '../CommandContext';
-import { createCommandArgument } from './commandArgument';
+import { CommandContext } from '../CommandContext.js';
+import { createCommandArgument } from './commandArgument.js';
 
 export function getLookupCache<TContext extends CommandContext>(context: TContext): CommandBinderStateLookupCache {
     if (guard.isGuildCommandContext(context))

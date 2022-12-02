@@ -1,11 +1,11 @@
-import { parse } from '@blargbot/core/utils';
+import { parse } from '@blargbot/core/utils/index.js';
 
-import { BBTagContext } from '../../BBTagContext';
-import { CompiledSubtag } from '../../compilation';
-import { BBTagRuntimeError, NotANumberError } from '../../errors';
-import { tagVariableScopeProviders } from '../../tagVariableScopeProviders';
-import templates from '../../text';
-import { SubtagType } from '../../utils';
+import { BBTagContext } from '../../BBTagContext.js';
+import { CompiledSubtag } from '../../compilation/index.js';
+import { BBTagRuntimeError, NotANumberError } from '../../errors/index.js';
+import { tagVariableScopeProviders } from '../../tagVariableScopeProviders.js';
+import templates from '../../text.js';
+import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.get;
 

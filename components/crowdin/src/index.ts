@@ -57,7 +57,7 @@ export class CrowdinTranslationSource implements ITranslationSource {
     async #loadLanguageFiles(fileUrls: URL[], language: CrowdinLanguage): Promise<void> {
         const strings: Array<[string, string]> = [];
         for (const fileUrl of fileUrls) {
-            const response = await fetch(fileUrl, { headers: { ['Accept']: 'application/json' } });
+            const response = await fetch(fileUrl.toString(), { headers: { ['Accept']: 'application/json' } });
             const data = await response.json() as CrowdinLanguageTree;
             strings.push(...this.#flattenJson([path.basename(fileUrl.pathname, '.json')], data));
         }

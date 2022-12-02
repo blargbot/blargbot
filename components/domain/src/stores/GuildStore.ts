@@ -1,4 +1,4 @@
-import { ChannelSettings, CommandPermissions, GuildAnnounceOptions, GuildAutoresponses, GuildCensor, GuildCensors, GuildCommandTag, GuildDetails, GuildFilteredAutoresponse, GuildImportedCommandTag, GuildModlogEntry, GuildRolemeEntry, GuildSourceCommandTag, GuildTriggerTag, GuildVoteban, GuildVotebans, NamedGuildCommandTag, StoredGuild, StoredGuildEventLogConfig, StoredGuildEventLogType, StoredGuildSettings } from '../models';
+import { ChannelSettings, CommandPermissions, GuildAnnounceOptions, GuildAutoresponses, GuildCensor, GuildCensors, GuildCommandTag, GuildDetails, GuildFilteredAutoresponse, GuildImportedCommandTag, GuildModlogEntry, GuildRolemeEntry, GuildSourceCommandTag, GuildTriggerTag, GuildVoteban, GuildVotebans, NamedGuildCommandTag, StoredGuild, StoredGuildEventLogConfig, StoredGuildEventLogType, StoredGuildSettings } from '../models/index.js';
 
 export interface GuildStore {
     reset(guild: GuildDetails): Promise<void>;

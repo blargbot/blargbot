@@ -1,6 +1,6 @@
-import { SubtagArgument } from '../arguments';
-import { BBTagContext } from '../BBTagContext';
-import { SubtagCall } from '../language';
+import { SubtagArgument } from '../arguments/index.js';
+import { BBTagContext } from '../BBTagContext.js';
+import { SubtagCall } from '../language/index.js';
 
 export interface ArgumentResolver {
     readonly minArgs: number;

@@ -1,7 +1,7 @@
 import { format, IFormatter, IValueResolverTransform } from '@blargbot/formatting';
 import moment from 'moment-timezone';
 
-import templates from '../text';
+import templates from '../text.js';
 
 const formats: { [P in string]?: (duration: moment.Duration, formatter: IFormatter) => string } = {
     ['']: d => d.humanize(),

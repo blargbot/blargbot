@@ -1,8 +1,8 @@
-import { BBTagContext } from '../../BBTagContext';
-import { CompiledSubtag } from '../../compilation/index';
-import { RoleNotFoundError } from '../../errors/index';
-import templates from '../../text';
-import { /*parse,*/ SubtagType } from '../../utils/index';
+import { BBTagContext } from '../../BBTagContext.js';
+import { CompiledSubtag } from '../../compilation/index.js';
+import { RoleNotFoundError } from '../../errors/index.js';
+import templates from '../../text.js';
+import { /*parse,*/ SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.roleSize;
 

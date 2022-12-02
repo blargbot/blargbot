@@ -1,6 +1,6 @@
-import { createMapping } from './createMapping';
-import { result } from './result';
-import { TypeMapping } from './types';
+import { createMapping } from './createMapping.js';
+import { result } from './result.js';
+import { TypeMapping } from './types.js';
 
 export const mapJObject: TypeMapping<JObject> = createMapping(value => {
     switch (typeof value) {

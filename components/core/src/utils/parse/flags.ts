@@ -1,6 +1,6 @@
-import { FlagDefinition, FlagResult, FlagResultValueSet } from '@blargbot/domain/models';
+import { FlagDefinition, FlagResult, FlagResultValueSet } from '@blargbot/domain/models/index.js';
 
-import { guard, humanize } from '../../utils';
+import { guard, humanize } from '../../utils/index.js';
 
 export function parseFlags(definitions: Iterable<FlagDefinition<unknown>>, text: string, strict = false): FlagResult {
     let currentFlag: keyof FlagResult = '_';

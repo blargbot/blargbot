@@ -1,14 +1,14 @@
-import { ClusterUtilities } from '@blargbot/cluster/ClusterUtilities';
-import { guard } from '@blargbot/cluster/utils';
-import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent';
-import { metrics } from '@blargbot/core/Metrics';
-import { IMiddleware, NextMiddleware } from '@blargbot/core/types';
+import { ClusterUtilities } from '@blargbot/cluster/ClusterUtilities.js';
+import { guard } from '@blargbot/cluster/utils/index.js';
+import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent.js';
+import { metrics } from '@blargbot/core/Metrics.js';
+import { IMiddleware, NextMiddleware } from '@blargbot/core/types.js';
 import { util } from '@blargbot/formatting';
 import Eris from 'eris';
 import fetch from 'node-fetch';
 import { URLSearchParams } from 'url';
 
-import templates from '../../../text';
+import templates from '../../../text.js';
 
 export class CleverbotMiddleware implements IMiddleware<Eris.KnownMessage, boolean> {
     readonly #util: ClusterUtilities;

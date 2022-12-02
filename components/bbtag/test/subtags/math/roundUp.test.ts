@@ -1,7 +1,7 @@
-import { NotANumberError } from '@blargbot/bbtag/errors';
-import { RoundUpSubtag } from '@blargbot/bbtag/subtags/math/roundUp';
+import { NotANumberError } from '@blargbot/bbtag/errors/index.js';
+import { RoundUpSubtag } from '@blargbot/bbtag/subtags/math/roundUp.js';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new RoundUpSubtag(),

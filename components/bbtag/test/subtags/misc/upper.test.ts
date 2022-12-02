@@ -1,6 +1,6 @@
-import { UpperSubtag } from '@blargbot/bbtag/subtags/misc/upper';
+import { UpperSubtag } from '@blargbot/bbtag/subtags/misc/upper.js';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new UpperSubtag(),

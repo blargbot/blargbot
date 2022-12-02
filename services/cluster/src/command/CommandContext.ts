@@ -1,10 +1,10 @@
 import { BBTagEngine } from '@blargbot/bbtag';
 import { Cluster, ClusterUtilities } from '@blargbot/cluster';
-import { CommandResult, GuildCommandContext, ICommand } from '@blargbot/cluster/types';
+import { CommandResult, GuildCommandContext, ICommand } from '@blargbot/cluster/types.js';
 import { Configuration } from '@blargbot/config';
-import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent';
-import { ChoiceQueryOptions, ChoiceQueryResult, ConfirmQuery, MultipleQueryOptions, MultipleQueryResult, SendContent, SendContext, SlimConfirmQueryOptions, SlimEntityFindQueryOptions, SlimEntityPickQueryOptions, SlimEntityQueryOptions, SlimTextQueryOptions, SlimTextQueryOptionsParsed, TextQueryResult } from '@blargbot/core/types';
-import { guard } from '@blargbot/core/utils';
+import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent.js';
+import { ChoiceQueryOptions, ChoiceQueryResult, ConfirmQuery, MultipleQueryOptions, MultipleQueryResult, SendContent, SendContext, SlimConfirmQueryOptions, SlimEntityFindQueryOptions, SlimEntityPickQueryOptions, SlimEntityQueryOptions, SlimTextQueryOptions, SlimTextQueryOptionsParsed, TextQueryResult } from '@blargbot/core/types.js';
+import { guard } from '@blargbot/core/utils/index.js';
 import { Database } from '@blargbot/database';
 import { format, IFormattable, util } from '@blargbot/formatting';
 import { Logger } from '@blargbot/logger';

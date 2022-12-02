@@ -1,7 +1,7 @@
-import { Api } from '@blargbot/api/Api';
-import { BaseRoute } from '@blargbot/api/BaseRoute';
-import { ApiResponse } from '@blargbot/api/types';
-import { ClusterStats } from '@blargbot/cluster/types';
+import { Api } from '@blargbot/api/Api.js';
+import { BaseRoute } from '@blargbot/api/BaseRoute.js';
+import { ApiResponse } from '@blargbot/api/types.js';
+import { ClusterStats } from '@blargbot/cluster/types.js';
 import { WebSocket } from 'ws';
 
 export class ClustersRoute extends BaseRoute {

@@ -1,6 +1,6 @@
 import configJson from '../../../config.json';
-import { Configuration } from './Configuration';
+import { Configuration } from './Configuration.js';
 
-export * from './Configuration';
+export * from './Configuration.js';
 
 export const config: Configuration = configJson;

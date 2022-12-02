@@ -1,5 +1,5 @@
-import { IFormatterMiddleware } from '../Formatter';
-import { IFormatString, IFormatter } from '../types';
+import { IFormatterMiddleware } from '../Formatter.js';
+import { IFormatString, IFormatter } from '../types.js';
 
 export interface ITranslationSource {
     readonly languages: ReadonlyMap<string, LanguageDetails>;

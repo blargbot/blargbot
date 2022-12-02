@@ -1,10 +1,10 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { WebhookSubtag } from '@blargbot/bbtag/subtags/message/webhook';
-import { EscapeBBTagSubtag } from '@blargbot/bbtag/subtags/misc/escapeBBTag';
-import { argument } from '@blargbot/test-util/mock';
+import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
+import { WebhookSubtag } from '@blargbot/bbtag/subtags/message/webhook.js';
+import { EscapeBBTagSubtag } from '@blargbot/bbtag/subtags/misc/escapeBBTag.js';
+import { argument } from '@blargbot/test-util/mock.js';
 import { expect } from 'chai';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new WebhookSubtag(),

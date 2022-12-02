@@ -1,6 +1,6 @@
 import { Cluster } from '@blargbot/cluster';
-import { ClusterEventService } from '@blargbot/cluster/serviceTypes';
-import { CommandListResult } from '@blargbot/cluster/types';
+import { ClusterEventService } from '@blargbot/cluster/serviceTypes/index.js';
+import { CommandListResult } from '@blargbot/cluster/types.js';
 import { format } from '@blargbot/formatting';
 
 export class ClusterGetCommandListHandler extends ClusterEventService<'getCommandList'> {

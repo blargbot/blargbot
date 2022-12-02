@@ -1,4 +1,4 @@
-import { BotVariableStore } from '@blargbot/domain/stores';
+import { BotVariableStore } from '@blargbot/domain/stores/index.js';
 
 export class DomainManager {
     #whitelist: Record<string, boolean>;

@@ -1,6 +1,6 @@
-import { GuildCreatedAtSubtag } from '@blargbot/bbtag/subtags/guild/guildCreatedAt';
+import { GuildCreatedAtSubtag } from '@blargbot/bbtag/subtags/guild/guildCreatedAt.js';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new GuildCreatedAtSubtag(),

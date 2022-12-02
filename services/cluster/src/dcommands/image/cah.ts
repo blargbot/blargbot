@@ -1,13 +1,14 @@
 import { ClusterUtilities } from '@blargbot/cluster';
-import { CommandContext, GlobalImageCommand } from '../../command/index';
-import { CommandType, commandTypeDetails, guard, randChoose } from '@blargbot/cluster/utils';
-import cahData from '@blargbot/res/cah.json';
+import { CommandContext, GlobalImageCommand } from '../../command/index.js';
+import { CommandType, commandTypeDetails, guard, randChoose } from '@blargbot/cluster/utils/index.js';
+import res from '@blargbot/res';
 import Eris from 'eris';
 
-import templates from '../../text';
-import { CommandResult } from '../../types';
+import templates from '../../text.js';
+import { CommandResult } from '../../types.js';
 
 const cmd = templates.commands.cah;
+const cahData = await res.cardsAgainstHumanity.load();
 
 export class CAHCommand extends GlobalImageCommand {
     public constructor() {

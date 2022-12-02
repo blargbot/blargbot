@@ -1,8 +1,8 @@
-import { DefaultSubtagArgumentValue, ExecutingSubtagArgumentValue, SubtagArgument } from '../arguments';
-import { Statement } from '../language';
-import { SubtagSignatureParameter, SubtagSignatureValueParameter } from '../types';
-import { ArgumentResolver } from './ArgumentResolver';
-import { SubtagSignatureCallable } from './SubtagSignatureCallable';
+import { DefaultSubtagArgumentValue, ExecutingSubtagArgumentValue, SubtagArgument } from '../arguments/index.js';
+import { Statement } from '../language/index.js';
+import { SubtagSignatureParameter, SubtagSignatureValueParameter } from '../types.js';
+import { ArgumentResolver } from './ArgumentResolver.js';
+import { SubtagSignatureCallable } from './SubtagSignatureCallable.js';
 
 export function* createArgumentResolvers(signature: SubtagSignatureCallable): Iterable<ArgumentResolver> {
     const flatParams = [...flatParameters(signature.parameters)];

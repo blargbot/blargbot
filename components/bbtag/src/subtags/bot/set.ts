@@ -1,8 +1,8 @@
-import { BBTagContext } from '../../BBTagContext';
-import { CompiledSubtag } from '../../compilation';
-import { tagVariableScopeProviders } from '../../tagVariableScopeProviders';
-import templates from '../../text';
-import { bbtag, SubtagType } from '../../utils';
+import { BBTagContext } from '../../BBTagContext.js';
+import { CompiledSubtag } from '../../compilation/index.js';
+import { tagVariableScopeProviders } from '../../tagVariableScopeProviders.js';
+import templates from '../../text.js';
+import { bbtag, SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.set;
 

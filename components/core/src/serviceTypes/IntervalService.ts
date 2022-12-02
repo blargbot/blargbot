@@ -1,7 +1,7 @@
 import { Logger } from '@blargbot/logger';
 import moment from 'moment-timezone';
 
-import { BaseService } from './BaseService';
+import { BaseService } from './BaseService.js';
 
 export abstract class IntervalService extends BaseService {
     #interval?: NodeJS.Timeout;

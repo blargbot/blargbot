@@ -1,7 +1,7 @@
-import { metrics } from '@blargbot/core/Metrics';
-import { snowflake } from '@blargbot/core/utils';
-import { ChatLog, ChatLogMessage, ChatLogSearchOptions, ChatLogType } from '@blargbot/domain/models';
-import { ChatLogStore } from '@blargbot/domain/stores';
+import { metrics } from '@blargbot/core/Metrics.js';
+import { snowflake } from '@blargbot/core/utils/index.js';
+import { ChatLog, ChatLogMessage, ChatLogSearchOptions, ChatLogType } from '@blargbot/domain/models/index.js';
+import { ChatLogStore } from '@blargbot/domain/stores/index.js';
 import { Logger } from '@blargbot/logger';
 import { mapping } from '@blargbot/mapping';
 import { Client as Cassandra, types } from 'cassandra-driver';

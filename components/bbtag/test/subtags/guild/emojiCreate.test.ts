@@ -1,10 +1,10 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { EmojiCreateSubtag } from '@blargbot/bbtag/subtags/guild/emojiCreate';
-import { SemiSubtag } from '@blargbot/bbtag/subtags/simple/semi';
-import { argument } from '@blargbot/test-util/mock';
+import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
+import { EmojiCreateSubtag } from '@blargbot/bbtag/subtags/guild/emojiCreate.js';
+import { SemiSubtag } from '@blargbot/bbtag/subtags/simple/semi.js';
+import { argument } from '@blargbot/test-util/mock.js';
 import Eris from 'eris';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new EmojiCreateSubtag(),

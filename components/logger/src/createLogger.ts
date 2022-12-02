@@ -1,11 +1,11 @@
-import { Configuration } from '@blargbot/config/Configuration';
+import { Configuration } from '@blargbot/config/Configuration.js';
 import * as Sentry from '@sentry/node';
-import CatLoggr, { ArgHookCallback, Color, LogLevel as CatLogLevel, PreHookCallback } from 'cat-loggr/ts';
+import CatLoggr, { ArgHookCallback, Color, LogLevel as CatLogLevel, PreHookCallback } from 'cat-loggr/ts.js';
 
-import { Logger, LogLevel } from './Logger';
+import { Logger, LogLevel } from './Logger.js';
 
 export function createLogger(config: Configuration, workerId: string): Logger {
-    const logger = new CatLoggr({
+    const logger = new CatLoggr.default({
         shardId: workerId,
         level: config.general.loglevel,
         shardLength: 6,
@@ -34,29 +34,30 @@ export function createLogger(config: Configuration, workerId: string): Logger {
     return _logger;
 }
 
-const logLevels: Record<LogLevel, { color: typeof CatLoggr['_chalk']; isError?: boolean; isTrace?: boolean; sentryLevel?: Sentry.SeverityLevel; }> = {
-    fatal: { color: CatLoggr._chalk.red.bgBlack, isError: true, sentryLevel: 'fatal' },
-    error: { color: CatLoggr._chalk.black.bgRed, isError: true, sentryLevel: 'error' },
-    warn: { color: CatLoggr._chalk.black.bgYellow, isError: true, sentryLevel: 'warning' },
-    website: { color: CatLoggr._chalk.black.bgCyan },
-    ws: { color: CatLoggr._chalk.yellow.bgBlack },
-    cluster: { color: CatLoggr._chalk.black.bgMagenta },
-    worker: { color: CatLoggr._chalk.black.bgMagenta },
-    command: { color: CatLoggr._chalk.black.bgBlue },
-    shardi: { color: CatLoggr._chalk.blue.bgYellow },
-    init: { color: CatLoggr._chalk.black.bgBlue },
-    info: { color: CatLoggr._chalk.black.bgGreen },
-    trace: { color: CatLoggr._chalk.green.bgBlack, isTrace: true },
-    output: { color: CatLoggr._chalk.black.bgMagenta },
-    bbtag: { color: CatLoggr._chalk.black.bgGreen },
-    adebug: { color: CatLoggr._chalk.cyan.bgBlack },
-    debug: { color: CatLoggr._chalk.magenta.bgBlack },
-    middleware: { color: CatLoggr._chalk.magenta.bgBlack },
-    log: { color: CatLoggr._chalk.magenta.bgBlack },
-    dir: { color: CatLoggr._chalk.magenta.bgBlack },
-    verbose: { color: CatLoggr._chalk.black.bgCyan },
-    database: { color: CatLoggr._chalk.black.bgBlue },
-    module: { color: CatLoggr._chalk.black.bgBlue }
+const chalk = CatLoggr.default._chalk;
+const logLevels: Record<LogLevel, { color: typeof chalk; isError?: boolean; isTrace?: boolean; sentryLevel?: Sentry.SeverityLevel; }> = {
+    fatal: { color: chalk.red.bgBlack, isError: true, sentryLevel: 'fatal' },
+    error: { color: chalk.black.bgRed, isError: true, sentryLevel: 'error' },
+    warn: { color: chalk.black.bgYellow, isError: true, sentryLevel: 'warning' },
+    website: { color: chalk.black.bgCyan },
+    ws: { color: chalk.yellow.bgBlack },
+    cluster: { color: chalk.black.bgMagenta },
+    worker: { color: chalk.black.bgMagenta },
+    command: { color: chalk.black.bgBlue },
+    shardi: { color: chalk.blue.bgYellow },
+    init: { color: chalk.black.bgBlue },
+    info: { color: chalk.black.bgGreen },
+    trace: { color: chalk.green.bgBlack, isTrace: true },
+    output: { color: chalk.black.bgMagenta },
+    bbtag: { color: chalk.black.bgGreen },
+    adebug: { color: chalk.cyan.bgBlack },
+    debug: { color: chalk.magenta.bgBlack },
+    middleware: { color: chalk.magenta.bgBlack },
+    log: { color: chalk.magenta.bgBlack },
+    dir: { color: chalk.magenta.bgBlack },
+    verbose: { color: chalk.black.bgCyan },
+    database: { color: chalk.black.bgBlue },
+    module: { color: chalk.black.bgBlue }
 };
 
 function createSentryPreHook(config: Configuration, workerId: string): PreHookCallback {
@@ -83,7 +84,7 @@ function sentryPreHook(...[{ args, level, context, shard }]: Parameters<PreHookC
     if (error === undefined) {
         error = new Error(args.splice(0, args.length).join(' '));
         // eslint-disable-next-line @typescript-eslint/unbound-method
-        Error.captureStackTrace(error, CatLoggr.prototype._format);
+        Error.captureStackTrace(error, CatLoggr.default.prototype._format);
         const stack = error.stack?.split('\n');
         stack?.splice(1, 1);
         error.stack = stack?.join('\n');

@@ -1,10 +1,10 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { ChannelDeleteSubtag } from '@blargbot/bbtag/subtags/channel/channelDelete';
+import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
+import { ChannelDeleteSubtag } from '@blargbot/bbtag/subtags/channel/channelDelete.js';
 import { OverwriteType } from 'discord-api-types/v9';
 import Eris from 'eris';
 
-import { runSubtagTests } from '../SubtagTestSuite';
-import { createGetChannelPropTestCases } from './_getChannelPropTest';
+import { runSubtagTests } from '../SubtagTestSuite.js';
+import { createGetChannelPropTestCases } from './_getChannelPropTest.js';
 
 runSubtagTests({
     subtag: new ChannelDeleteSubtag(),

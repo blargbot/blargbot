@@ -1,10 +1,10 @@
-import { randChoose } from '@blargbot/core/utils';
+import { randChoose } from '@blargbot/core/utils/index.js';
 
-import { SubtagArgument } from '../../arguments/index';
-import { BBTagContext } from '../../BBTagContext';
-import { CompiledSubtag } from '../../compilation/index';
-import templates from '../../text';
-import { bbtag, SubtagType } from '../../utils/index';
+import { SubtagArgument } from '../../arguments/index.js';
+import { BBTagContext } from '../../BBTagContext.js';
+import { CompiledSubtag } from '../../compilation/index.js';
+import templates from '../../text.js';
+import { bbtag, SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.randomChoose;
 

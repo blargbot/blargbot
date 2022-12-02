@@ -1,4 +1,4 @@
-import { BotVariableStore } from '@blargbot/domain/stores';
+import { BotVariableStore } from '@blargbot/domain/stores/index.js';
 import { mapping } from '@blargbot/mapping';
 import { UpdateType, Version } from '@hunteroi/versioning';
 

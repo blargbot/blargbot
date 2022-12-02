@@ -1,9 +1,9 @@
-import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '@blargbot/bbtag/errors';
-import { DeleteSubtag } from '@blargbot/bbtag/subtags/message/delete';
+import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '@blargbot/bbtag/errors/index.js';
+import { DeleteSubtag } from '@blargbot/bbtag/subtags/message/delete.js';
 import { expect } from 'chai';
 import Eris from 'eris';
 
-import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite';
+import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new DeleteSubtag(),

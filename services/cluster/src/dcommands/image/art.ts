@@ -1,10 +1,10 @@
-import { CommandContext, GlobalImageCommand } from '../../command/index';
-import { guard } from '@blargbot/cluster/utils';
-import { parse } from '@blargbot/core/utils/parse';
+import { CommandContext, GlobalImageCommand } from '../../command/index.js';
+import { guard } from '@blargbot/cluster/utils/index.js';
+import { parse } from '@blargbot/core/utils/parse/index.js';
 import Eris from 'eris';
 
-import templates from '../../text';
-import { CommandResult } from '../../types';
+import templates from '../../text.js';
+import { CommandResult } from '../../types.js';
 
 const cmd = templates.commands.art;
 

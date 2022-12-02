@@ -2,6 +2,11 @@
     "name": "@blargbot/domain",
     "version": "1.0.0",
     "private": true,
+    "type": "module",
+    "exports": {
+        ".": "./index.js",
+        "./*": "./*"
+    },
     "dependencies": {
         "@blargbot/formatting": "workspace:^",
         "moment-timezone": "^0.5.39"

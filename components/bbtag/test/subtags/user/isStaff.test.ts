@@ -1,8 +1,8 @@
-import { UserNotFoundError } from '@blargbot/bbtag/errors';
-import { IsStaffSubtag } from '@blargbot/bbtag/subtags/user/isStaff';
+import { UserNotFoundError } from '@blargbot/bbtag/errors/index.js';
+import { IsStaffSubtag } from '@blargbot/bbtag/subtags/user/isStaff.js';
 import Eris from 'eris';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new IsStaffSubtag(),

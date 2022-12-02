@@ -1,8 +1,8 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { GuildBansSubtag } from '@blargbot/bbtag/subtags/guild/guildBans';
+import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
+import { GuildBansSubtag } from '@blargbot/bbtag/subtags/guild/guildBans.js';
 import Eris from 'eris';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new GuildBansSubtag(),

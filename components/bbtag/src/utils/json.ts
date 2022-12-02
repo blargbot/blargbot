@@ -1,8 +1,8 @@
-import { parse } from '@blargbot/core/utils';
+import { parse } from '@blargbot/core/utils/index.js';
 
-import { BBTagContext } from '../BBTagContext';
-import { BBTagRuntimeError } from '../errors';
-import { tagArray } from './tagArray';
+import { BBTagContext } from '../BBTagContext.js';
+import { BBTagRuntimeError } from '../errors/index.js';
+import { tagArray } from './tagArray.js';
 
 export interface JsonResolveResult {
     variable?: string;

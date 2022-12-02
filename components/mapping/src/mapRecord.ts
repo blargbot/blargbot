@@ -1,6 +1,6 @@
-import { createMapping } from './createMapping';
-import { result } from './result';
-import { TypeMapping, TypeMappingImpl } from './types';
+import { createMapping } from './createMapping.js';
+import { result } from './result.js';
+import { TypeMapping, TypeMappingImpl } from './types.js';
 
 export function mapRecord<T>(mapping: TypeMappingImpl<T, [key: string]>, initial?: () => Record<string, T>): TypeMapping<Record<string, T>> {
     return createMapping(value => {

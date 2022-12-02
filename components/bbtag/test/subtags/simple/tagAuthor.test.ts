@@ -1,6 +1,6 @@
-import { TagAuthorSubtag } from '@blargbot/bbtag/subtags/simple/tagAuthor';
+import { TagAuthorSubtag } from '@blargbot/bbtag/subtags/simple/tagAuthor.js';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new TagAuthorSubtag(),

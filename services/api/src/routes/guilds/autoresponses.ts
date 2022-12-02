@@ -1,8 +1,8 @@
-import { Api } from '@blargbot/api/Api';
-import { BaseRoute } from '@blargbot/api/BaseRoute';
-import { ApiResponse } from '@blargbot/api/types';
-import { parse } from '@blargbot/core/utils';
-import { GuildTriggerTag } from '@blargbot/domain/models';
+import { Api } from '@blargbot/api/Api.js';
+import { BaseRoute } from '@blargbot/api/BaseRoute.js';
+import { ApiResponse } from '@blargbot/api/types.js';
+import { parse } from '@blargbot/core/utils/index.js';
+import { GuildTriggerTag } from '@blargbot/domain/models/index.js';
 import { mapping } from '@blargbot/mapping';
 
 export class AutoresponsesRoute extends BaseRoute {

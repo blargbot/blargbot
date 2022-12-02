@@ -1,8 +1,8 @@
-import { InvalidOperatorError, NotANumberError } from '@blargbot/bbtag/errors';
-import { MathSubtag } from '@blargbot/bbtag/subtags/math/math';
-import { NumericOperator } from '@blargbot/bbtag/utils';
+import { InvalidOperatorError, NotANumberError } from '@blargbot/bbtag/errors/index.js';
+import { MathSubtag } from '@blargbot/bbtag/subtags/math/math.js';
+import { NumericOperator } from '@blargbot/bbtag/utils/index.js';
 
-import { runSubtagTests, SubtagTestCase } from '../SubtagTestSuite';
+import { runSubtagTests, SubtagTestCase } from '../SubtagTestSuite.js';
 
 const exp = Math.pow;
 

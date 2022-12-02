@@ -1,9 +1,9 @@
-import { BBTagRuntimeError, MessageNotFoundError } from '@blargbot/bbtag/errors';
-import { ReactionListSubtag } from '@blargbot/bbtag/subtags/message/reactionList';
+import { BBTagRuntimeError, MessageNotFoundError } from '@blargbot/bbtag/errors/index.js';
+import { ReactionListSubtag } from '@blargbot/bbtag/subtags/message/reactionList.js';
 import Eris from 'eris';
 
-import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite';
-import { createGetMessagePropTestCases } from './_getMessagePropTest';
+import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';
+import { createGetMessagePropTestCases } from './_getMessagePropTest.js';
 
 runSubtagTests({
     subtag: new ReactionListSubtag(),

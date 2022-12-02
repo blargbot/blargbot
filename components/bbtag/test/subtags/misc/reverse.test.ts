@@ -1,9 +1,9 @@
-import { GetSubtag } from '@blargbot/bbtag/subtags/bot/get';
-import { ReverseSubtag } from '@blargbot/bbtag/subtags/misc/reverse';
-import { TagVariableType } from '@blargbot/domain/models/index';
+import { GetSubtag } from '@blargbot/bbtag/subtags/bot/get.js';
+import { ReverseSubtag } from '@blargbot/bbtag/subtags/misc/reverse.js';
+import { TagVariableType } from '@blargbot/domain/models/index.js';
 import { expect } from 'chai';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new ReverseSubtag(),

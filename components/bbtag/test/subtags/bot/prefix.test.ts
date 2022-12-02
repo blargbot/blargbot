@@ -1,6 +1,6 @@
-import { PrefixSubtag } from '@blargbot/bbtag/subtags/bot/prefix';
+import { PrefixSubtag } from '@blargbot/bbtag/subtags/bot/prefix.js';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new PrefixSubtag(),

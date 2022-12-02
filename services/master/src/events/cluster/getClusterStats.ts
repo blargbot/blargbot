@@ -1,6 +1,6 @@
 import { ClusterConnection } from '@blargbot/cluster';
-import { ClusterStats } from '@blargbot/cluster/types';
-import { WorkerPoolEventService } from '@blargbot/core/serviceTypes';
+import { ClusterStats } from '@blargbot/cluster/types.js';
+import { WorkerPoolEventService } from '@blargbot/core/serviceTypes/index.js';
 import { Master } from '@blargbot/master';
 
 export class ClusterGetClusterStatsHandler extends WorkerPoolEventService<ClusterConnection, 'getClusterStats'> {

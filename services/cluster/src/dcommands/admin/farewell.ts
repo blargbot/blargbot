@@ -1,11 +1,11 @@
 import { bbtag } from '@blargbot/bbtag';
-import { GuildCommand } from '../../command/index';
-import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
-import { CommandType, guard } from '@blargbot/cluster/utils';
+import { GuildCommand } from '../../command/index.js';
+import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types.js';
+import { CommandType, guard } from '@blargbot/cluster/utils/index.js';
 import Eris from 'eris';
 
-import { RawBBTagCommandResult } from '../../command/RawBBTagCommandResult';
-import templates from '../../text';
+import { RawBBTagCommandResult } from '../../command/RawBBTagCommandResult.js';
+import templates from '../../text.js';
 
 const cmd = templates.commands.farewell;
 

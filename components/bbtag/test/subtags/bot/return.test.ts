@@ -1,8 +1,8 @@
-import { ReturnSubtag } from '@blargbot/bbtag/subtags/bot/return';
-import { BBTagRuntimeState } from '@blargbot/bbtag/types';
+import { ReturnSubtag } from '@blargbot/bbtag/subtags/bot/return.js';
+import { BBTagRuntimeState } from '@blargbot/bbtag/types.js';
 import { expect } from 'chai';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new ReturnSubtag(),

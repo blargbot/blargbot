@@ -1,10 +1,10 @@
-import { BBTagRuntimeError, NotAnArrayError } from '@blargbot/bbtag/errors';
-import { JsonSubtag } from '@blargbot/bbtag/subtags/json/json';
-import { JsonSortSubtag } from '@blargbot/bbtag/subtags/json/jsonSort';
-import { TagVariableType } from '@blargbot/domain/models';
+import { BBTagRuntimeError, NotAnArrayError } from '@blargbot/bbtag/errors/index.js';
+import { JsonSubtag } from '@blargbot/bbtag/subtags/json/json.js';
+import { JsonSortSubtag } from '@blargbot/bbtag/subtags/json/jsonSort.js';
+import { TagVariableType } from '@blargbot/domain/models/index.js';
 import { expect } from 'chai';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new JsonSortSubtag(),

@@ -1,4 +1,10 @@
 {
     "name": "@types/catflake",
-    "version": "1.0.0"
+    "version": "1.0.0",
+    "type": "commonjs",
+    "exports": {
+        ".": {
+            "types": "./index.d.ts"
+        }
+    }
 }

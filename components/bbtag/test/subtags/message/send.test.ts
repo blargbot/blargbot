@@ -1,11 +1,11 @@
-import { BBTagRuntimeError, ChannelNotFoundError } from '@blargbot/bbtag/errors';
-import { SendSubtag } from '@blargbot/bbtag/subtags/message/send';
-import { EscapeBBTagSubtag } from '@blargbot/bbtag/subtags/misc/escapeBBTag';
-import { argument } from '@blargbot/test-util/mock';
+import { BBTagRuntimeError, ChannelNotFoundError } from '@blargbot/bbtag/errors/index.js';
+import { SendSubtag } from '@blargbot/bbtag/subtags/message/send.js';
+import { EscapeBBTagSubtag } from '@blargbot/bbtag/subtags/misc/escapeBBTag.js';
+import { argument } from '@blargbot/test-util/mock.js';
 import { expect } from 'chai';
 import Eris from 'eris';
 
-import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite';
+import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new SendSubtag(),

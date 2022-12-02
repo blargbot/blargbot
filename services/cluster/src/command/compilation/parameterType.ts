@@ -1,7 +1,7 @@
-import { CommandVariableParser, CommandVariableType, CommandVariableTypeBase, CommandVariableTypeName, CommandVariableTypes } from '@blargbot/cluster/types';
-import { parse } from '@blargbot/cluster/utils';
+import { CommandVariableParser, CommandVariableType, CommandVariableTypeBase, CommandVariableTypeName, CommandVariableTypes } from '@blargbot/cluster/types.js';
+import { parse } from '@blargbot/cluster/utils/index.js';
 
-import { createCommandArgument } from './commandArgument';
+import { createCommandArgument } from './commandArgument.js';
 
 export function parseParameterType(type: string): CommandVariableTypes {
     const [typeName, details] = getTypeName(type);

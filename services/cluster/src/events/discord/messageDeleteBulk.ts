@@ -1,5 +1,5 @@
 import { Cluster } from '@blargbot/cluster';
-import { DiscordEventService } from '@blargbot/core/serviceTypes';
+import { DiscordEventService } from '@blargbot/core/serviceTypes/index.js';
 
 export class DiscordMessageDeleteBulkHandler extends DiscordEventService<'messageDeleteBulk'> {
     public constructor(

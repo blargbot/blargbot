@@ -1,9 +1,9 @@
 import 'chai-exclude';
 
-import { RandomChooseSubtag } from '@blargbot/bbtag/subtags/misc/randomChoose';
+import { RandomChooseSubtag } from '@blargbot/bbtag/subtags/misc/randomChoose.js';
 import { expect } from 'chai';
 
-import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
+import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new RandomChooseSubtag(),

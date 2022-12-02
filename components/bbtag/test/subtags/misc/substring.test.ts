@@ -1,7 +1,7 @@
-import { NotANumberError } from '@blargbot/bbtag/errors';
-import { SubstringSubtag } from '@blargbot/bbtag/subtags/misc/substring';
+import { NotANumberError } from '@blargbot/bbtag/errors/index.js';
+import { SubstringSubtag } from '@blargbot/bbtag/subtags/misc/substring.js';
 
-import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
+import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new SubstringSubtag(),

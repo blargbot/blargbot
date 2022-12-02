@@ -1,7 +1,7 @@
-import { QuietSubtag } from '@blargbot/bbtag/subtags/bot/quiet';
+import { QuietSubtag } from '@blargbot/bbtag/subtags/bot/quiet.js';
 import { expect } from 'chai';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new QuietSubtag(),

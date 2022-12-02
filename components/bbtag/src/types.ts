@@ -1,17 +1,17 @@
-import { Emote } from '@blargbot/core/Emote';
-import { FlagDefinition, NamedGuildCommandTag, StoredTag } from '@blargbot/domain/models';
+import { Emote } from '@blargbot/core/Emote.js';
+import { FlagDefinition, NamedGuildCommandTag, StoredTag } from '@blargbot/domain/models/index.js';
 import { IFormattable } from '@blargbot/formatting';
 import Eris from 'eris';
 import ReadWriteLock from 'rwlock';
 
-import { VariableCache } from './Caching';
-import { BBTagRuntimeError } from './errors';
-import { SourceMarker, Statement, SubtagCall } from './language';
-import type { limits, RuntimeLimit } from './limits';
-import { ScopeManager } from './ScopeManager';
-import { SubtagCallStack } from './SubtagCallStack';
-import { TagCooldownManager } from './TagCooldownManager';
-import { SubtagType } from './utils';
+import { VariableCache } from './Caching.js';
+import { BBTagRuntimeError } from './errors/index.js';
+import { SourceMarker, Statement, SubtagCall } from './language/index.js';
+import type { limits, RuntimeLimit } from './limits/index.js';
+import { ScopeManager } from './ScopeManager.js';
+import { SubtagCallStack } from './SubtagCallStack.js';
+import { TagCooldownManager } from './TagCooldownManager.js';
+import { SubtagType } from './utils/index.js';
 
 export interface AnalysisResults {
     readonly errors: AnalysisResult[];

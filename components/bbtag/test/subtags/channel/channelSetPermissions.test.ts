@@ -1,9 +1,9 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { ChannelSetPermissionsSubtag } from '@blargbot/bbtag/subtags/channel/channelSetPermissions';
+import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
+import { ChannelSetPermissionsSubtag } from '@blargbot/bbtag/subtags/channel/channelSetPermissions.js';
 import { OverwriteType } from 'discord-api-types/v9';
 import Eris from 'eris';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new ChannelSetPermissionsSubtag(),

@@ -1,13 +1,13 @@
 import { Cluster } from '@blargbot/cluster';
-import { Command } from '../../command/index';
-import { CommandGetResult, CommandManagers, ICommandManager } from '@blargbot/cluster/types';
-import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent';
-import { MessageIdQueue } from '@blargbot/core/MessageIdQueue';
-import { guard } from '@blargbot/core/utils';
-import { CommandPermissions, NamedGuildCommandTag } from '@blargbot/domain/models';
+import { Command } from '../../command/index.js';
+import { CommandGetResult, CommandManagers, ICommandManager } from '@blargbot/cluster/types.js';
+import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent.js';
+import { MessageIdQueue } from '@blargbot/core/MessageIdQueue.js';
+import { guard } from '@blargbot/core/utils/index.js';
+import { CommandPermissions, NamedGuildCommandTag } from '@blargbot/domain/models/index.js';
 import Eris from 'eris';
 
-import templates from '../../text';
+import templates from '../../text.js';
 
 export class AggregateCommandManager implements ICommandManager, CommandManagers {
     public readonly messages: MessageIdQueue;

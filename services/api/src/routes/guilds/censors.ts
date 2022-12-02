@@ -1,9 +1,9 @@
-import { Api } from '@blargbot/api/Api';
-import { parse } from '@blargbot/core/utils';
+import { Api } from '@blargbot/api/Api.js';
+import { parse } from '@blargbot/core/utils/index.js';
 import { mapping } from '@blargbot/mapping';
 
-import { BaseRoute } from '../../BaseRoute';
-import { ApiResponse } from '../../types';
+import { BaseRoute } from '../../BaseRoute.js';
+import { ApiResponse } from '../../types.js';
 
 type CensorRuleType = 'timeout' | 'kick' | 'ban' | 'delete';
 

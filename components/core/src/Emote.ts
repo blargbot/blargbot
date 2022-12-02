@@ -1,9 +1,9 @@
-import discordEmoteData from '@blargbot/res/discordEmoteData.json';
+import res from '@blargbot/res';
 import { Snowflake } from 'catflake';
 import Eris from 'eris';
 import twemoji from 'twemoji';
 
-import { snowflake } from './utils';
+import { snowflake } from './utils/index.js';
 
 export class Emote {
     public static findAll(this: void, text: string): Emote[] {
@@ -87,6 +87,7 @@ const guildEmoteRegex = /<(?<animated>a?):(?<name>[\w_]{1,32}):(?<id>\d{17,23})>
 const guildApiEmoteRegex = /(?<name>[\w_]{1,32}):(?<id>\d{17,23})/g;
 const keycapEmote = /[#*0-9]\uFE0F?\u20E3/g;
 const otherEmotes = /©️/g;
+const discordEmoteData = await res.discordEmoteData.load();
 const discordEmotes = Object.values(discordEmoteData)
     .flat()
     .flatMap(entry => 'diversityChildren' in entry ? [entry, ...entry.diversityChildren ?? []] : [entry])

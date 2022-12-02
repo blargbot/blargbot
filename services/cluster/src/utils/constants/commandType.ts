@@ -1,9 +1,9 @@
-import { CommandPropertiesSet } from '@blargbot/cluster/types';
-import { guard } from '@blargbot/cluster/utils';
+import { CommandPropertiesSet } from '@blargbot/cluster/types.js';
+import { guard } from '@blargbot/cluster/utils/index.js';
 import Eris from 'eris';
 
-import templates from '../../text';
-import { defaultStaff } from './defaultStaff';
+import templates from '../../text.js';
+import { defaultStaff } from './defaultStaff.js';
 
 export enum CommandType {
     CUSTOM,

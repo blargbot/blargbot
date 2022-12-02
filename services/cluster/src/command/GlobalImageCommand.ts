@@ -1,12 +1,12 @@
-import { CommandOptions, CommandResult } from '@blargbot/cluster/types';
-import { CommandType } from '@blargbot/cluster/utils';
-import { ImageGeneratorMap } from '@blargbot/image/types';
+import { CommandOptions, CommandResult } from '@blargbot/cluster/types.js';
+import { CommandType } from '@blargbot/cluster/utils/index.js';
+import { ImageGeneratorMap } from '@blargbot/image/types.js';
 import moment from 'moment-timezone';
 
-import templates from '../text';
-import { CommandContext } from './CommandContext';
-import { GlobalCommand } from './GlobalCommand';
-import { RatelimitMiddleware, SendTypingMiddleware, SingleThreadMiddleware } from './middleware/index';
+import templates from '../text.js';
+import { CommandContext } from './CommandContext.js';
+import { GlobalCommand } from './GlobalCommand.js';
+import { RatelimitMiddleware, SendTypingMiddleware, SingleThreadMiddleware } from './middleware/index.js';
 
 export interface GlobalImageCommandOptions extends Omit<CommandOptions<CommandContext>, 'category'> {
     dontLimitChannel?: boolean;

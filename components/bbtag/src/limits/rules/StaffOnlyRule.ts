@@ -1,6 +1,6 @@
-import { StaffOnlyError } from '../../errors';
-import templates from '../../text';
-import { RuntimeLimitRule } from '../RuntimeLimitRule';
+import { StaffOnlyError } from '../../errors/index.js';
+import templates from '../../text.js';
+import { RuntimeLimitRule } from '../RuntimeLimitRule.js';
 
 export const staffOnlyRule: RuntimeLimitRule = Object.seal({
     async check(context) {

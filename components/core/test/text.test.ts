@@ -1,8 +1,8 @@
-import * as coreTransformers from '@blargbot/core/formatting';
-import templates from '@blargbot/core/text';
+import * as coreTransformers from '@blargbot/core/formatting/index.js';
+import templates from '@blargbot/core/text.js';
 import { transformers, util } from '@blargbot/formatting';
-import { quickMock } from '@blargbot/test-util/quickMock';
-import { runFormatTreeTests } from '@blargbot/test-util/runFormatTreeTests';
+import { quickMock } from '@blargbot/test-util/quickMock.js';
+import { runFormatTreeTests } from '@blargbot/test-util/runFormatTreeTests.js';
 import Eris from 'eris';
 import { describe } from 'mocha';
 

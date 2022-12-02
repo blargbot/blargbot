@@ -1,6 +1,6 @@
-import { BaseRuntimeLimit } from './BaseRuntimeLimit';
-import { limits } from './index';
-import { DisabledInRule } from './rules';
+import { BaseRuntimeLimit } from './BaseRuntimeLimit.js';
+import { limits } from './index.js';
+import { DisabledInRule } from './rules/index.js';
 
 export abstract class GlobalLimit extends BaseRuntimeLimit {
     public constructor(name: keyof typeof limits) {

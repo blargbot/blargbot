@@ -1,7 +1,7 @@
 import { ClusterConnection } from '@blargbot/cluster';
-import { parse } from '@blargbot/cluster/utils';
-import { WorkerPoolEventService } from '@blargbot/core/serviceTypes';
-import { EvalRequest, EvalResult, EvalType, GlobalEvalResult } from '@blargbot/core/types';
+import { parse } from '@blargbot/cluster/utils/index.js';
+import { WorkerPoolEventService } from '@blargbot/core/serviceTypes/index.js';
+import { EvalRequest, EvalResult, EvalType, GlobalEvalResult } from '@blargbot/core/types.js';
 import { Master } from '@blargbot/master';
 import { inspect } from 'util';
 

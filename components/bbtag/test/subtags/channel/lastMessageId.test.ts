@@ -1,10 +1,10 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { LastMessageIdSubtag } from '@blargbot/bbtag/subtags/channel/lastMessageId';
+import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
+import { LastMessageIdSubtag } from '@blargbot/bbtag/subtags/channel/lastMessageId.js';
 import { APITextChannel } from 'discord-api-types/v9';
 import Eris from 'eris';
 
-import { runSubtagTests } from '../SubtagTestSuite';
-import { createGetChannelPropTestCases } from './_getChannelPropTest';
+import { runSubtagTests } from '../SubtagTestSuite.js';
+import { createGetChannelPropTestCases } from './_getChannelPropTest.js';
 
 runSubtagTests({
     subtag: new LastMessageIdSubtag(),

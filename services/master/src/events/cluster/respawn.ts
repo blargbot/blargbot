@@ -1,7 +1,7 @@
 import { ClusterConnection } from '@blargbot/cluster';
-import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent';
-import { WorkerPoolEventService } from '@blargbot/core/serviceTypes';
-import { Timer } from '@blargbot/core/Timer';
+import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent.js';
+import { WorkerPoolEventService } from '@blargbot/core/serviceTypes/index.js';
+import { Timer } from '@blargbot/core/Timer.js';
 import { util } from '@blargbot/formatting';
 import { Master } from '@blargbot/master';
 

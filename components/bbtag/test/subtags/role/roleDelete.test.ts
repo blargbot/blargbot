@@ -1,9 +1,9 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { RoleDeleteSubtag } from '@blargbot/bbtag/subtags/role/roleDelete';
+import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
+import { RoleDeleteSubtag } from '@blargbot/bbtag/subtags/role/roleDelete.js';
 import Eris from 'eris';
 
-import { runSubtagTests } from '../SubtagTestSuite';
-import { createGetRolePropTestCases } from './_getRolePropTest';
+import { runSubtagTests } from '../SubtagTestSuite.js';
+import { createGetRolePropTestCases } from './_getRolePropTest.js';
 
 runSubtagTests({
     subtag: new RoleDeleteSubtag(),

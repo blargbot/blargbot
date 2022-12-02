@@ -1,16 +1,16 @@
 import { Cluster } from '@blargbot/cluster';
-import { Command, CommandContext } from '../../command/index';
-import { CommandGetCoreResult, CommandParameter, CommandProperties, CommandResult, CommandSignature, ICommand } from '@blargbot/cluster/types';
-import { commandTypeDetails, guard } from '@blargbot/cluster/utils';
-import { metrics } from '@blargbot/core/Metrics';
-import { ModuleLoader } from '@blargbot/core/modules';
-import { Timer } from '@blargbot/core/Timer';
-import { NextMiddleware } from '@blargbot/core/types';
-import { CommandPermissions, FlagDefinition } from '@blargbot/domain/models';
+import { Command, CommandContext } from '../../command/index.js';
+import { CommandGetCoreResult, CommandParameter, CommandProperties, CommandResult, CommandSignature, ICommand } from '@blargbot/cluster/types.js';
+import { commandTypeDetails, guard } from '@blargbot/cluster/utils/index.js';
+import { metrics } from '@blargbot/core/Metrics.js';
+import { ModuleLoader } from '@blargbot/core/modules/index.js';
+import { Timer } from '@blargbot/core/Timer.js';
+import { NextMiddleware } from '@blargbot/core/types.js';
+import { CommandPermissions, FlagDefinition } from '@blargbot/domain/models/index.js';
 import { IFormattable } from '@blargbot/formatting';
 import Eris from 'eris';
 
-import { CommandManager } from './CommandManager';
+import { CommandManager } from './CommandManager.js';
 
 export class DefaultCommandManager extends CommandManager<Command> {
     public readonly modules: ModuleLoader<Command>;
@@ -22,11 +22,8 @@ export class DefaultCommandManager extends CommandManager<Command> {
         this.modules = new ModuleLoader(source, Command, [cluster], cluster.logger, command => [command.name, ...command.aliases]);
     }
 
-    public async load(commands?: Iterable<string> | boolean): Promise<void> {
-        if (commands === undefined || typeof commands === 'boolean')
-            await this.modules.reload(commands ?? true);
-        else
-            this.modules.reload(this.modules.source(commands));
+    public async load(commands = true): Promise<void> {
+        await this.modules.reload(commands ?? true);
     }
 
     protected async getCore(name: string, location?: Eris.Guild | Eris.KnownTextableChannel, user?: Eris.User): Promise<CommandGetCoreResult<Command>> {

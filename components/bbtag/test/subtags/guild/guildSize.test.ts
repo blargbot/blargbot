@@ -1,8 +1,8 @@
-import { GuildSizeSubtag } from '@blargbot/bbtag/subtags/guild/guildSize';
-import { snowflake } from '@blargbot/core/utils';
+import { GuildSizeSubtag } from '@blargbot/bbtag/subtags/guild/guildSize.js';
+import { snowflake } from '@blargbot/core/utils/index.js';
 import Eris from 'eris';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new GuildSizeSubtag(),

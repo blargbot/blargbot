@@ -1,10 +1,10 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { RoleSetMentionableSubtag } from '@blargbot/bbtag/subtags/role/roleSetMentionable';
-import { argument } from '@blargbot/test-util/mock';
+import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
+import { RoleSetMentionableSubtag } from '@blargbot/bbtag/subtags/role/roleSetMentionable.js';
+import { argument } from '@blargbot/test-util/mock.js';
 import Eris from 'eris';
 
-import { runSubtagTests } from '../SubtagTestSuite';
-import { createGetRolePropTestCases } from './_getRolePropTest';
+import { runSubtagTests } from '../SubtagTestSuite.js';
+import { createGetRolePropTestCases } from './_getRolePropTest.js';
 
 runSubtagTests({
     subtag: new RoleSetMentionableSubtag(),

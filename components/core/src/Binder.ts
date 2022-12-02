@@ -1,4 +1,4 @@
-import { BinderResult, Binding, BindingResultAsyncIterator, BindingResultIterator, BindingResultValue } from '@blargbot/core/types';
+import { BinderResult, Binding, BindingResultAsyncIterator, BindingResultIterator, BindingResultValue } from '@blargbot/core/types.js';
 
 export class Binder<TState> {
     public static readonly binder = Symbol('binder');

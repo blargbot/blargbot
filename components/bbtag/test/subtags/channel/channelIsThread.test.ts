@@ -1,8 +1,8 @@
-import { ChannelIsThreadSubtag } from '@blargbot/bbtag/subtags/channel/channelIsThread';
+import { ChannelIsThreadSubtag } from '@blargbot/bbtag/subtags/channel/channelIsThread.js';
 import Eris from 'eris';
 
-import { runSubtagTests } from '../SubtagTestSuite';
-import { createGetChannelPropTestCases } from './_getChannelPropTest';
+import { runSubtagTests } from '../SubtagTestSuite.js';
+import { createGetChannelPropTestCases } from './_getChannelPropTest.js';
 
 runSubtagTests({
     subtag: new ChannelIsThreadSubtag(),

@@ -1,13 +1,11 @@
-import { MultiKeyMap } from '@blargbot/core/MultiKeyMap';
-import { ModuleResult } from '@blargbot/core/types';
-import { guard, pluralise as p } from '@blargbot/core/utils';
+import { promises as fs } from 'node:fs';
+import path from 'node:path';
+
+import { MultiKeyMap } from '@blargbot/core/MultiKeyMap.js';
+import { ModuleResult } from '@blargbot/core/types.js';
+import { guard, pluralise as p } from '@blargbot/core/utils/index.js';
 import { Logger } from '@blargbot/logger';
 import { EventEmitter } from 'eventemitter3';
-import { promises as fs } from 'fs';
-import path from 'path';
-import reloadFactory from 'require-reload';
-
-const reload = reloadFactory(require);
 
 interface ModuleLoaderEvents<TModule> {
     add: [module: TModule];
@@ -52,17 +50,17 @@ export abstract class BaseModuleLoader<TModule> extends EventEmitter<ModuleLoade
     }
 
     public async init(): Promise<void> {
-        this.#load(await toArray(this.#findFiles()));
+        await this.#load(await toArray(this.#findFiles()));
     }
 
-    #load(fileNames: Iterable<string>, loader = require): void {
+    async #load(fileNames: Iterable<string>): Promise<void> {
         const loaded = new Set<TModule>();
         if (typeof fileNames === 'string')
             fileNames = [fileNames];
 
         for (const fileName of fileNames) {
             try {
-                const rawModule = loader(path.join(this.#root, fileName)) as unknown;
+                const rawModule = await import(path.join(this.#root, fileName)) as unknown;
                 const modules = this.activate(fileName, rawModule);
                 for (const { names, module } of modules) {
                     const entry = { module, location: fileName };
@@ -94,20 +92,9 @@ export abstract class BaseModuleLoader<TModule> extends EventEmitter<ModuleLoade
             return Promise.all(results).then(x => void x);
     }
 
-    public reload(rediscover?: false): void
-    public reload(rediscover: true): Promise<void>
-    public reload(fileNames: Iterable<string>): void
-    public reload(fileNames?: Iterable<string> | boolean): void | Promise<void>
-    public reload(fileNames?: Iterable<string> | boolean): void | Promise<void> {
-        switch (fileNames) {
-            case true:
-                return toArray(this.#findFiles()).then(files => this.#load(files));
-            case undefined:
-            case false:
-                return this.#load(this.sources());
-            default:
-                return this.#load(fileNames, reload);
-        }
+    public async reload(rediscover = false): Promise<void> {
+        const sources = rediscover ? toArray(this.#findFiles()) : this.sources();
+        await this.#load(await sources);
     }
 
     public source(module: string): string | undefined;

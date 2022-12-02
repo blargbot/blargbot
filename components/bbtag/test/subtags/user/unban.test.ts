@@ -1,8 +1,8 @@
-import { BBTagRuntimeError, UserNotFoundError } from '@blargbot/bbtag/errors';
-import { UnbanSubtag } from '@blargbot/bbtag/subtags/user/unban';
+import { BBTagRuntimeError, UserNotFoundError } from '@blargbot/bbtag/errors/index.js';
+import { UnbanSubtag } from '@blargbot/bbtag/subtags/user/unban.js';
 import Eris from 'eris';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new UnbanSubtag(),

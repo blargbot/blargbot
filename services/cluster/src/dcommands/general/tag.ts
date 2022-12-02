@@ -1,18 +1,18 @@
 import { bbtag } from '@blargbot/bbtag';
 import { Cluster, ClusterUtilities } from '@blargbot/cluster';
-import { CommandContext, GuildCommand } from '../../command/index';
-import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
-import { CommandType, discord, parse } from '@blargbot/cluster/utils';
-import { SendContent } from '@blargbot/core/types';
-import { StoredTag } from '@blargbot/domain/models';
+import { CommandContext, GuildCommand } from '../../command/index.js';
+import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types.js';
+import { CommandType, discord, parse } from '@blargbot/cluster/utils/index.js';
+import { SendContent } from '@blargbot/core/types.js';
+import { StoredTag } from '@blargbot/domain/models/index.js';
 import { IFormattable, util } from '@blargbot/formatting';
 import Eris from 'eris';
 import moment from 'moment-timezone';
 import fetch from 'node-fetch';
 
-import { RawBBTagCommandResult } from '../../command/RawBBTagCommandResult';
-import { BBTagDocumentationManager } from '../../managers/documentation/BBTagDocumentationManager';
-import templates from '../../text';
+import { RawBBTagCommandResult } from '../../command/RawBBTagCommandResult.js';
+import { BBTagDocumentationManager } from '../../managers/documentation/BBTagDocumentationManager.js';
+import templates from '../../text.js';
 
 const cmd = templates.commands.tag;
 

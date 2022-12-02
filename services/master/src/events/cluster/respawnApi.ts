@@ -1,5 +1,5 @@
 import { ClusterConnection } from '@blargbot/cluster';
-import { WorkerPoolEventService } from '@blargbot/core/serviceTypes';
+import { WorkerPoolEventService } from '@blargbot/core/serviceTypes/index.js';
 import { Master } from '@blargbot/master';
 
 export class RespawnApiHandler extends WorkerPoolEventService<ClusterConnection, 'respawnApi'> {

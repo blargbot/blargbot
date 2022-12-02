@@ -1,4 +1,4 @@
-import { BBTagRuntimeScope } from './types';
+import { BBTagRuntimeScope } from './types.js';
 
 export class ScopeManager {
     readonly #scopes: BBTagRuntimeScope[];

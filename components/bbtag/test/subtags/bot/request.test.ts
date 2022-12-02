@@ -1,9 +1,9 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { RequestSubtag } from '@blargbot/bbtag/subtags/bot/request';
-import { EscapeBBTagSubtag } from '@blargbot/bbtag/subtags/misc/escapeBBTag';
+import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
+import { RequestSubtag } from '@blargbot/bbtag/subtags/bot/request.js';
+import { EscapeBBTagSubtag } from '@blargbot/bbtag/subtags/misc/escapeBBTag.js';
 import { expect } from 'chai';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new RequestSubtag(),

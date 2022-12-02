@@ -1,10 +1,10 @@
-import { ClusterUtilities } from '@blargbot/cluster/ClusterUtilities';
-import { guard } from '@blargbot/cluster/utils';
-import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent';
-import { IMiddleware, NextMiddleware } from '@blargbot/core/types';
+import { ClusterUtilities } from '@blargbot/cluster/ClusterUtilities.js';
+import { guard } from '@blargbot/cluster/utils/index.js';
+import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent.js';
+import { IMiddleware, NextMiddleware } from '@blargbot/core/types.js';
 import Eris from 'eris';
 
-import templates from '../../../text';
+import templates from '../../../text.js';
 
 export class TableflipMiddleware implements IMiddleware<Eris.KnownMessage, boolean> {
     readonly #util: ClusterUtilities;

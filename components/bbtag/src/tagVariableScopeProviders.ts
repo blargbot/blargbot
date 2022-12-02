@@ -1,8 +1,8 @@
-import { TagVariableScope, TagVariableType } from '@blargbot/domain/models';
+import { TagVariableScope, TagVariableType } from '@blargbot/domain/models/index.js';
 import { IFormattable } from '@blargbot/formatting';
 
-import { BBTagContext } from './BBTagContext';
-import templates from './text';
+import { BBTagContext } from './BBTagContext.js';
+import templates from './text.js';
 
 export const tagVariableScopeProviders: readonly TagVariableScopeProvider[] = [
     {

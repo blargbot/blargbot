@@ -1,4 +1,4 @@
-import { format, IFormattable } from '../types';
+import { format, IFormattable } from '../types.js';
 
 export function isFormattable(value: unknown): value is IFormattable<unknown> {
     return typeof value === 'object'

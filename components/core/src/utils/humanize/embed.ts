@@ -1,4 +1,4 @@
-import { guard } from '@blargbot/core/utils';
+import { guard } from '@blargbot/core/utils/index.js';
 import Eris from 'eris';
 import moment from 'moment-timezone';
 

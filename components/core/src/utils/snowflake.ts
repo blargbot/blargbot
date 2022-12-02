@@ -1,4 +1,4 @@
-import { Snowflake } from '@blargbot/domain/models';
+import { Snowflake } from '@blargbot/domain/models/index.js';
 import Catflake from 'catflake';
 
 const workerId = process.env.CLUSTER_ID !== undefined

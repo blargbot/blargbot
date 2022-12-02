@@ -1,14 +1,14 @@
 import { bbtag } from '@blargbot/bbtag';
-import { guard, ModerationType } from '@blargbot/cluster/utils';
-import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent';
-import { GuildCensor, GuildCensorExceptions } from '@blargbot/domain/models';
+import { guard, ModerationType } from '@blargbot/cluster/utils/index.js';
+import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent.js';
+import { GuildCensor, GuildCensorExceptions } from '@blargbot/domain/models/index.js';
 import { util } from '@blargbot/formatting';
 import Eris from 'eris';
 import moment from 'moment-timezone';
 
-import templates from '../../text';
-import { ModerationManager } from '../ModerationManager';
-import { ModerationManagerBase } from './ModerationManagerBase';
+import templates from '../../text.js';
+import { ModerationManager } from '../ModerationManager.js';
+import { ModerationManagerBase } from './ModerationManagerBase.js';
 
 export class CensorManager extends ModerationManagerBase {
     readonly #debugOutput: Record<string, { channelId: string; messageId: string; } | undefined>;

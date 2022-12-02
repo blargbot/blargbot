@@ -1,9 +1,9 @@
-import { ChatLogIndex } from '@blargbot/domain/models';
-import { ChatLogIndexStore } from '@blargbot/domain/stores';
+import { ChatLogIndex } from '@blargbot/domain/models/index.js';
+import { ChatLogIndexStore } from '@blargbot/domain/stores/index.js';
 import { Logger } from '@blargbot/logger';
 
-import { RethinkDb } from '../clients';
-import { RethinkDbTable } from '../tables/RethinkDbTable';
+import { RethinkDb } from '../clients/index.js';
+import { RethinkDbTable } from '../tables/RethinkDbTable.js';
 
 export class RethinkDbChatLogIndexStore implements ChatLogIndexStore {
     readonly #table: RethinkDbTable<ChatLogIndex>;

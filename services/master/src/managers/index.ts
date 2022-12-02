@@ -1,1 +1,1 @@
-export * from './ClusterStatsManager';
+export * from './ClusterStatsManager.js';

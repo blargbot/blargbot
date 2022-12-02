@@ -1,12 +1,12 @@
-import { Emote } from '@blargbot/core/Emote';
+import { Emote } from '@blargbot/core/Emote.js';
 import Eris from 'eris';
 
-import { SubtagArgumentArray } from '../../arguments/index';
-import { BBTagContext } from '../../BBTagContext';
-import { CompiledSubtag } from '../../compilation/index';
-import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError, UserNotFoundError } from '../../errors/index';
-import templates from '../../text';
-import { SubtagType } from '../../utils/index';
+import { SubtagArgumentArray } from '../../arguments/index.js';
+import { BBTagContext } from '../../BBTagContext.js';
+import { CompiledSubtag } from '../../compilation/index.js';
+import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError, UserNotFoundError } from '../../errors/index.js';
+import templates from '../../text.js';
+import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.reactionRemove;
 

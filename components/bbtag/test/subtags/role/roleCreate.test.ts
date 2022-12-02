@@ -1,9 +1,9 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { RoleCreateSubtag } from '@blargbot/bbtag/subtags/role/roleCreate';
-import { argument } from '@blargbot/test-util/mock';
+import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
+import { RoleCreateSubtag } from '@blargbot/bbtag/subtags/role/roleCreate.js';
+import { argument } from '@blargbot/test-util/mock.js';
 import Eris from 'eris';
 
-import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite';
+import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new RoleCreateSubtag(),

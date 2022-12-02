@@ -1,7 +1,7 @@
-import { UserJoinedAtSubtag } from '@blargbot/bbtag/subtags/user/userJoinedAt';
+import { UserJoinedAtSubtag } from '@blargbot/bbtag/subtags/user/userJoinedAt.js';
 
-import { runSubtagTests } from '../SubtagTestSuite';
-import { createGetUserPropTestCases } from './_getUserPropTest';
+import { runSubtagTests } from '../SubtagTestSuite.js';
+import { createGetUserPropTestCases } from './_getUserPropTest.js';
 
 runSubtagTests({
     subtag: new UserJoinedAtSubtag(),

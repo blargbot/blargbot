@@ -1,16 +1,16 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { FilterSubtag } from '@blargbot/bbtag/subtags/array/filter';
-import { GetSubtag } from '@blargbot/bbtag/subtags/bot/get';
-import { ReturnSubtag } from '@blargbot/bbtag/subtags/bot/return';
-import { CommentSubtag } from '@blargbot/bbtag/subtags/misc';
-import { IfSubtag } from '@blargbot/bbtag/subtags/misc/if';
-import { LengthSubtag } from '@blargbot/bbtag/subtags/misc/length';
-import { OperatorSubtag } from '@blargbot/bbtag/subtags/misc/operator';
-import { BBTagRuntimeState } from '@blargbot/bbtag/types';
-import { TagVariableType } from '@blargbot/domain/models';
+import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
+import { FilterSubtag } from '@blargbot/bbtag/subtags/array/filter.js';
+import { GetSubtag } from '@blargbot/bbtag/subtags/bot/get.js';
+import { ReturnSubtag } from '@blargbot/bbtag/subtags/bot/return.js';
+import { CommentSubtag } from '@blargbot/bbtag/subtags/misc/index.js';
+import { IfSubtag } from '@blargbot/bbtag/subtags/misc/if.js';
+import { LengthSubtag } from '@blargbot/bbtag/subtags/misc/length.js';
+import { OperatorSubtag } from '@blargbot/bbtag/subtags/misc/operator.js';
+import { BBTagRuntimeState } from '@blargbot/bbtag/types.js';
+import { TagVariableType } from '@blargbot/domain/models/index.js';
 import { expect } from 'chai';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new FilterSubtag(),

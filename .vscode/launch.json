@@ -11,15 +11,10 @@
             "skipFiles": [
                 "<node_internals>/**",
                 "**/node_modules/**",
-                "**/.pnp.cjs",
-                "**/.pnp.loader.mjs"
             ],
             "autoAttachChildProcesses": true,
             "console": "integratedTerminal",
             "program": "${workspaceFolder}/services/master/src/start.ts",
-            "env": {
-                "NODE_OPTIONS": "--require ${workspaceFolder}/.pnp.cjs"
-            },
             "preLaunchTask": {
                 "type": "npm",
                 "script": "watch"
@@ -32,8 +27,6 @@
             "skipFiles": [
                 "<node_internals>/**",
                 "**/node_modules/**",
-                "**/.pnp.cjs",
-                "**/.pnp.loader.mjs"
             ],
             "autoAttachChildProcesses": true,
             "console": "integratedTerminal",
@@ -42,7 +35,6 @@
                 "--max-old-space-size=4096"
             ],
             "env": {
-                "NODE_OPTIONS": "--require ${workspaceFolder}/.pnp.cjs",
                 "CLUSTER_ID": "0",
                 "SHARDS_MAX": "1",
                 "SHARDS_FIRST": "0",
@@ -60,15 +52,10 @@
             "skipFiles": [
                 "<node_internals>/**",
                 "**/node_modules/**",
-                "**/.pnp.cjs",
-                "**/.pnp.loader.mjs"
             ],
             "autoAttachChildProcesses": true,
             "console": "integratedTerminal",
             "program": "${workspaceFolder}/services/api/src/start.ts",
-            "env": {
-                "NODE_OPTIONS": "--require ${workspaceFolder}/.pnp.cjs"
-            },
             "preLaunchTask": {
                 "type": "npm",
                 "script": "watch"
@@ -82,13 +69,8 @@
             "request": "launch",
             "skipFiles": [
                 "!.yarn/**",
-                "**/.pnp.cjs",
-                "**/.pnp.loader.mjs"
             ],
             "autoAttachChildProcesses": true,
-            "env": {
-                "NODE_OPTIONS": "--require ${workspaceFolder}/.pnp.cjs"
-            },
             "preLaunchTask": {
                 "type": "npm",
                 "script": "watch"
@@ -109,13 +91,8 @@
             "skipFiles": [
                 "<node_internals>/**",
                 "**/node_modules/**",
-                "**/.pnp.cjs",
-                "**/.pnp.loader.mjs"
             ],
             "autoAttachChildProcesses": true,
-            "env": {
-                "NODE_OPTIONS": "--require ${workspaceFolder}/.pnp.cjs"
-            },
             "preLaunchTask": {
                 "type": "npm",
                 "script": "watch"
@@ -136,11 +113,8 @@
             "skipFiles": [
                 "<node_internals>/**",
                 "**/node_modules/**",
-                "**/.pnp.cjs",
-                "**/.pnp.loader.mjs"
             ],
             "env": {
-                "NODE_OPTIONS": "--require ${workspaceFolder}/.pnp.cjs",
                 "TS_NODE_FILES": "true"
             },
             "autoAttachChildProcesses": true,

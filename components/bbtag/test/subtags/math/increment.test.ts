@@ -1,9 +1,9 @@
-import { NotABooleanError, NotANumberError } from '@blargbot/bbtag/errors';
-import { IncrementSubtag } from '@blargbot/bbtag/subtags/math/increment';
-import { TagVariableType } from '@blargbot/domain/models/index';
+import { NotABooleanError, NotANumberError } from '@blargbot/bbtag/errors/index.js';
+import { IncrementSubtag } from '@blargbot/bbtag/subtags/math/increment.js';
+import { TagVariableType } from '@blargbot/domain/models/index.js';
 import { expect } from 'chai';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new IncrementSubtag(),

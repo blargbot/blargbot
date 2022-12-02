@@ -1,4 +1,4 @@
-import { StoredTag } from '../models';
+import { StoredTag } from '../models/index.js';
 
 export interface TagStore {
     list(skip: number, take: number): Promise<readonly string[]>;

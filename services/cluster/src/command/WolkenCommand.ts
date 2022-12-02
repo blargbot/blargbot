@@ -1,11 +1,11 @@
-import { CommandType } from '@blargbot/cluster/utils';
+import { CommandType } from '@blargbot/cluster/utils/index.js';
 import { IFormatStringDefinition, IFormattable, util } from '@blargbot/formatting';
 import Eris from 'eris';
 import Wolken from 'wolken';
 
-import { CommandResult } from '../types';
-import { CommandContext } from './CommandContext';
-import { GlobalCommand } from './GlobalCommand';
+import { CommandResult } from '../types.js';
+import { CommandContext } from './CommandContext.js';
+import { GlobalCommand } from './GlobalCommand.js';
 
 export type WolkeOptions = WolkeSelfOptions | WolkeUserOptions;
 

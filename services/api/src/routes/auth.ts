@@ -1,11 +1,11 @@
-import { BaseRoute } from '@blargbot/api/BaseRoute';
-import { ApiResponse } from '@blargbot/api/types';
+import { BaseRoute } from '@blargbot/api/BaseRoute.js';
+import { ApiResponse } from '@blargbot/api/types.js';
 import { config } from '@blargbot/config';
 import { mapping } from '@blargbot/mapping';
 import { Request } from 'express-serve-static-core';
 import fetch from 'node-fetch';
 
-import Security from '../Security';
+import Security from '../Security.js';
 
 const baseEndpoint = 'https://discordapp.com/api/v9/';
 const tokenEndpoint = 'https://discordapp.com/api/oauth2/token';

@@ -1,7 +1,7 @@
 import { Logger } from '@blargbot/logger';
 import Eris from 'eris';
 
-import { BaseService } from './BaseService';
+import { BaseService } from './BaseService.js';
 
 export abstract class DiscordEventService<T extends keyof Eris.ClientEvents> extends BaseService {
     readonly #execute: (...args: Eris.ClientEvents[T]) => void;

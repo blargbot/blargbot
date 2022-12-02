@@ -1,6 +1,6 @@
-import { createMapping } from './createMapping';
-import { result } from './result';
-import { TypeMapping, TypeMappingImpl, TypeMappings } from './types';
+import { createMapping } from './createMapping.js';
+import { result } from './result.js';
+import { TypeMapping, TypeMappingImpl, TypeMappings } from './types.js';
 
 export function mapObject<T>(mappings: TypeMappings<T>, options?: { initial?: () => Partial<T>; strict: boolean; }): TypeMapping<T> {
     return createMapping(value => {

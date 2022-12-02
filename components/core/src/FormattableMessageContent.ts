@@ -1,4 +1,4 @@
-import { FormatActionRowComponents, FormatButton, FormatEmbedAuthor, FormatEmbedFooter, FormatEmbedOptions, FormatSelectMenu, SendContent } from '@blargbot/core/types';
+import { FormatActionRowComponents, FormatButton, FormatEmbedAuthor, FormatEmbedFooter, FormatEmbedOptions, FormatSelectMenu, SendContent } from '@blargbot/core/types.js';
 import { format, IFormattable, IFormatter } from '@blargbot/formatting';
 import Eris from 'eris';
 

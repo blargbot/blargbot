@@ -1,4 +1,4 @@
-import { SubtagSignatureParameter } from '../types';
+import { SubtagSignatureParameter } from '../types.js';
 
 export function stringifyParameters(subtagName: string, parameters: readonly SubtagSignatureParameter[]): string {
     return `{${[subtagName, ...parameters.map(stringifyParameter)].join(';')}}`;
@@ -7,7 +7,7 @@ export function stringifyParameters(subtagName: string, parameters: readonly Sub
 function stringifyParameter(parameter: SubtagSignatureParameter): string {
     if ('nested' in parameter) {
         if (parameter.nested.length === 1)
-            return `${stringifyParameter(parameter.nested[0])  }...`;
+            return `${stringifyParameter(parameter.nested[0])}...`;
         return `(${parameter.nested.map(stringifyParameter).join(';')})...`;
     }
     return parameter.required

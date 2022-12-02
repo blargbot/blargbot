@@ -1,10 +1,10 @@
-import { BBTagRuntimeError, NotAnArrayError, RoleNotFoundError } from '@blargbot/bbtag/errors';
-import { UserSetRolesSubtag } from '@blargbot/bbtag/subtags/user/userSetRoles';
-import { argument } from '@blargbot/test-util/mock';
+import { BBTagRuntimeError, NotAnArrayError, RoleNotFoundError } from '@blargbot/bbtag/errors/index.js';
+import { UserSetRolesSubtag } from '@blargbot/bbtag/subtags/user/userSetRoles.js';
+import { argument } from '@blargbot/test-util/mock.js';
 import Eris from 'eris';
 
-import { runSubtagTests } from '../SubtagTestSuite';
-import { createGetUserPropTestCases } from './_getUserPropTest';
+import { runSubtagTests } from '../SubtagTestSuite.js';
+import { createGetUserPropTestCases } from './_getUserPropTest.js';
 
 runSubtagTests({
     subtag: new UserSetRolesSubtag(),

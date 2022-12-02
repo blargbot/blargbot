@@ -1,4 +1,4 @@
-import { snowflake } from '@blargbot/core/utils';
+import { snowflake } from '@blargbot/core/utils/index.js';
 import limax from 'limax';
 import { nfkd } from 'unorm';
 

@@ -1,12 +1,12 @@
 import { Configuration } from '@blargbot/config';
-import { BaseUtilities } from '@blargbot/core/BaseUtilities';
+import { BaseUtilities } from '@blargbot/core/BaseUtilities.js';
 import { Database } from '@blargbot/database';
 import * as Formatting from '@blargbot/formatting';
 import { Logger } from '@blargbot/logger';
 import Eris from 'eris';
 
-import * as transformers from './formatting';
-import { getRange } from './utils';
+import * as transformers from './formatting/index.js';
+import { getRange } from './utils/index.js';
 
 export interface BaseClientOptions {
     readonly logger: Logger;

@@ -1,7 +1,7 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { ThrowSubtag } from '@blargbot/bbtag/subtags/bot/throw';
+import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
+import { ThrowSubtag } from '@blargbot/bbtag/subtags/bot/throw.js';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new ThrowSubtag(),

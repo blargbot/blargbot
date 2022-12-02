@@ -1,6 +1,6 @@
-import { createMapping } from './createMapping';
-import { result } from './result';
-import { TypeMapping, TypeMappingImpl } from './types';
+import { createMapping } from './createMapping.js';
+import { result } from './result.js';
+import { TypeMapping, TypeMappingImpl } from './types.js';
 
 type TupleTypeMapping<T extends unknown[]> = { [P in keyof T]: TypeMappingImpl<T[P]> } & { length: T['length']; };
 export function mapTuple<T extends unknown[]>(mappings: TupleTypeMapping<T>): TypeMapping<T> {

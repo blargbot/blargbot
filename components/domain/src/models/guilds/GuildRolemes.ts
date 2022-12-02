@@ -1,4 +1,4 @@
-import { GuildTriggerTag } from './GuildTriggerTag';
+import { GuildTriggerTag } from './GuildTriggerTag.js';
 
 export interface GuildRolemes {
     readonly [id: string]: GuildRolemeEntry | undefined;

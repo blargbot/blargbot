@@ -1,9 +1,9 @@
 import { ClusterUtilities } from '@blargbot/cluster';
-import { guard, parse } from '@blargbot/core/utils';
-import { StoredGuildSettings } from '@blargbot/domain/models';
+import { guard, parse } from '@blargbot/core/utils/index.js';
+import { StoredGuildSettings } from '@blargbot/domain/models/index.js';
 import Eris from 'eris';
 
-import { guildSettings } from '../constants';
+import { guildSettings } from '../constants/index.js';
 
 export async function guildSetting<T extends Exclude<keyof StoredGuildSettings, 'prefix' | 'farewell' | 'greeting'>>(
     msg: Eris.UserChannelInteraction,

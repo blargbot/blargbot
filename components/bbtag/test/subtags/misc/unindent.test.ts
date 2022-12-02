@@ -1,6 +1,6 @@
-import { UnindentSubtag } from '@blargbot/bbtag/subtags/misc/unindent';
+import { UnindentSubtag } from '@blargbot/bbtag/subtags/misc/unindent.js';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new UnindentSubtag(),

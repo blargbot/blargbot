@@ -1,5 +1,5 @@
-import { SourceMarker } from './SourceMarker';
-import { SubtagCall } from './SubtagCall';
+import { SourceMarker } from './SourceMarker.js';
+import { SubtagCall } from './SubtagCall.js';
 
 export interface Statement {
     readonly values: ReadonlyArray<string | SubtagCall>;

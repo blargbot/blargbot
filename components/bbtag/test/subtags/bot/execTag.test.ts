@@ -1,10 +1,10 @@
-import { BBTagRuntimeError, SubtagStackOverflowError } from '@blargbot/bbtag/errors';
-import { ExecTagSubtag } from '@blargbot/bbtag/subtags/bot/execTag';
-import { JsonSubtag } from '@blargbot/bbtag/subtags/json';
-import { BBTagRuntimeState } from '@blargbot/bbtag/types';
+import { BBTagRuntimeError, SubtagStackOverflowError } from '@blargbot/bbtag/errors/index.js';
+import { ExecTagSubtag } from '@blargbot/bbtag/subtags/bot/execTag.js';
+import { JsonSubtag } from '@blargbot/bbtag/subtags/json/index.js';
+import { BBTagRuntimeState } from '@blargbot/bbtag/types.js';
 import { expect } from 'chai';
 
-import { AssertSubtag, MarkerError, runSubtagTests } from '../SubtagTestSuite';
+import { AssertSubtag, MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new ExecTagSubtag(),

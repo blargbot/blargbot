@@ -1,11 +1,11 @@
-import { MalformedEmbed } from '@blargbot/core/types';
-import { discord } from '@blargbot/core/utils';
+import { MalformedEmbed } from '@blargbot/core/types.js';
+import { discord } from '@blargbot/core/utils/index.js';
 import { mapping, TypeMappingImpl } from '@blargbot/mapping';
 import Color from 'color';
 import Eris from 'eris';
 
-import { parseColor } from './parseColor';
-import { parseInt } from './parseInt';
+import { parseColor } from './parseColor.js';
+import { parseInt } from './parseInt.js';
 
 export function parseEmbed(embedText: undefined, allowMalformed?: true): undefined;
 export function parseEmbed(embedText: string | undefined, allowMalformed?: true): Array<Eris.EmbedOptions | MalformedEmbed> | undefined;

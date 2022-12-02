@@ -1,6 +1,6 @@
-import { createMapping } from './createMapping';
-import { result } from './result';
-import { TypeMapping, TypeMappingImpl } from './types';
+import { createMapping } from './createMapping.js';
+import { result } from './result.js';
+import { TypeMapping, TypeMappingImpl } from './types.js';
 
 export function mapJson<T>(mapping: TypeMappingImpl<T>): TypeMapping<T> {
     return createMapping(value => {

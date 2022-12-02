@@ -1,8 +1,8 @@
-import { BBTagRuntimeError, UserNotFoundError } from '@blargbot/bbtag/errors';
-import { KickSubtag } from '@blargbot/bbtag/subtags/user/kick';
+import { BBTagRuntimeError, UserNotFoundError } from '@blargbot/bbtag/errors/index.js';
+import { KickSubtag } from '@blargbot/bbtag/subtags/user/kick.js';
 import Eris from 'eris';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new KickSubtag(),

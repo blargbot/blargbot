@@ -1,14 +1,14 @@
-import { BanResult, KickResult, MassBanResult, UnbanResult } from '@blargbot/cluster/types';
-import { guard, sleep } from '@blargbot/cluster/utils';
-import { UnbanEventOptions } from '@blargbot/domain/models';
+import { BanResult, KickResult, MassBanResult, UnbanResult } from '@blargbot/cluster/types.js';
+import { guard, sleep } from '@blargbot/cluster/utils/index.js';
+import { UnbanEventOptions } from '@blargbot/domain/models/index.js';
 import { format, IFormattable, util } from '@blargbot/formatting';
 import { mapping } from '@blargbot/mapping';
 import Eris from 'eris';
 import moment from 'moment-timezone';
 
-import templates from '../../text';
-import { ModerationManager } from '../ModerationManager';
-import { ModerationManagerBase } from './ModerationManagerBase';
+import templates from '../../text.js';
+import { ModerationManager } from '../ModerationManager.js';
+import { ModerationManagerBase } from './ModerationManagerBase.js';
 
 export class BanManager extends ModerationManagerBase {
     readonly #ignoreBans: Set<`${string}:${string}`>;

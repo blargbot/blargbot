@@ -1,6 +1,6 @@
 {
   "files.exclude": {
-    "node_modules": true
+    "**/node_modules": true
   },
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": true
@@ -27,7 +27,6 @@
   "typescript.tsdk": ".yarn/sdks/typescript/lib",
   "search.exclude": {
     "**/.yarn": true,
-    "**/.pnp.*": true,
     "**/*.js": true,
     "**/*.js.map": true
   },

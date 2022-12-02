@@ -1,11 +1,11 @@
 import { ExecutionResult } from '@blargbot/bbtag';
 import { Cluster } from '@blargbot/cluster';
-import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent';
-import { guard } from '@blargbot/core/utils';
-import { GuildRolemeEntry } from '@blargbot/domain/models';
+import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent.js';
+import { guard } from '@blargbot/core/utils/index.js';
+import { GuildRolemeEntry } from '@blargbot/domain/models/index.js';
 import Eris from 'eris';
 
-import templates from '../text';
+import templates from '../text.js';
 
 export class RolemeManager {
     readonly #cluster: Cluster;

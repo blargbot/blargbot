@@ -1,8 +1,8 @@
-import { ChannelIsCategorySubtag } from '@blargbot/bbtag/subtags/channel/channelIsCategory';
+import { ChannelIsCategorySubtag } from '@blargbot/bbtag/subtags/channel/channelIsCategory.js';
 import Eris from 'eris';
 
-import { runSubtagTests } from '../SubtagTestSuite';
-import { createGetChannelPropTestCases } from './_getChannelPropTest';
+import { runSubtagTests } from '../SubtagTestSuite.js';
+import { createGetChannelPropTestCases } from './_getChannelPropTest.js';
 
 runSubtagTests({
     subtag: new ChannelIsCategorySubtag(),

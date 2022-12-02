@@ -1,4 +1,4 @@
-import { format, IFormattable } from '../types';
+import { format, IFormattable } from '../types.js';
 
 export function literal<T>(value: Exclude<T, undefined>): IFormattable<T>;
 export function literal<T>(value: T | undefined): IFormattable<T> | undefined;

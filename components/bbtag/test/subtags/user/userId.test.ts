@@ -1,7 +1,7 @@
-import { UserIdSubtag } from '@blargbot/bbtag/subtags/user/userId';
+import { UserIdSubtag } from '@blargbot/bbtag/subtags/user/userId.js';
 
-import { runSubtagTests } from '../SubtagTestSuite';
-import { createGetUserPropTestCases } from './_getUserPropTest';
+import { runSubtagTests } from '../SubtagTestSuite.js';
+import { createGetUserPropTestCases } from './_getUserPropTest.js';
 
 runSubtagTests({
     subtag: new UserIdSubtag(),

@@ -1,7 +1,7 @@
-import { DebugSubtag } from '@blargbot/bbtag/subtags/bot/debug';
+import { DebugSubtag } from '@blargbot/bbtag/subtags/bot/debug.js';
 import { expect } from 'chai';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new DebugSubtag(),

@@ -1,7 +1,7 @@
-import { NotANumberError } from '@blargbot/bbtag/errors';
-import { AbsoluteSubtag } from '@blargbot/bbtag/subtags/math/absolute';
+import { NotANumberError } from '@blargbot/bbtag/errors/index.js';
+import { AbsoluteSubtag } from '@blargbot/bbtag/subtags/math/absolute.js';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new AbsoluteSubtag(),

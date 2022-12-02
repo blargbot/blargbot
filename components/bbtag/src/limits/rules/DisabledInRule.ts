@@ -1,10 +1,10 @@
 import { IFormattable } from '@blargbot/formatting';
 
-import { BBTagContext } from '../../BBTagContext';
-import { BBTagRuntimeError } from '../../errors';
-import { SubtagCall } from '../../language';
-import templates from '../../text';
-import { RuntimeLimitRule } from '../RuntimeLimitRule';
+import { BBTagContext } from '../../BBTagContext.js';
+import { BBTagRuntimeError } from '../../errors/index.js';
+import { SubtagCall } from '../../language/index.js';
+import templates from '../../text.js';
+import { RuntimeLimitRule } from '../RuntimeLimitRule.js';
 
 export class DisabledInRule implements RuntimeLimitRule {
     readonly #subtags: readonly string[];

@@ -1,6 +1,6 @@
-import { CommentSubtag } from '@blargbot/bbtag/subtags/misc/comment';
+import { CommentSubtag } from '@blargbot/bbtag/subtags/misc/comment.js';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new CommentSubtag(),

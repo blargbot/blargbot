@@ -1,6 +1,6 @@
-import { VoidSubtag } from '@blargbot/bbtag/subtags/misc/void';
+import { VoidSubtag } from '@blargbot/bbtag/subtags/misc/void.js';
 
-import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
+import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new VoidSubtag(),

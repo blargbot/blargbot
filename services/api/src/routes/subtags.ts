@@ -1,8 +1,8 @@
-import { Api } from '@blargbot/api/Api';
-import { BaseRoute } from '@blargbot/api/BaseRoute';
-import { ApiResponse } from '@blargbot/api/types';
-import { tagTypeDetails } from '@blargbot/bbtag/utils';
-import { SubtagListResult } from '@blargbot/cluster/types';
+import { Api } from '@blargbot/api/Api.js';
+import { BaseRoute } from '@blargbot/api/BaseRoute.js';
+import { ApiResponse } from '@blargbot/api/types.js';
+import { tagTypeDetails } from '@blargbot/bbtag/utils/index.js';
+import { SubtagListResult } from '@blargbot/cluster/types.js';
 import { format } from '@blargbot/formatting';
 
 export class SubtagsRoute extends BaseRoute {

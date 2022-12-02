@@ -1,10 +1,10 @@
-import { CronService } from '@blargbot/core/serviceTypes';
+import { CronService } from '@blargbot/core/serviceTypes/index.js';
 import { createHash } from 'crypto';
 import Eris from 'eris';
 import moment from 'moment-timezone';
 
-import { Cluster } from '../Cluster';
-import { ClusterOptions } from '../types';
+import { Cluster } from '../Cluster.js';
+import { ClusterOptions } from '../types.js';
 
 export class StatusInterval extends CronService {
     public readonly holidays: Record<string, string | undefined>;

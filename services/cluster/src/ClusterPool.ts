@@ -1,9 +1,9 @@
 import { ClusterWorkerConfiguration } from '@blargbot/config';
-import { ProcessMessageHandler } from '@blargbot/core/types';
-import { WorkerPool } from '@blargbot/core/worker';
+import { ProcessMessageHandler } from '@blargbot/core/types.js';
+import { WorkerPool } from '@blargbot/core/worker/index.js';
 import { Logger } from '@blargbot/logger';
 
-import { ClusterConnection } from './ClusterConnection';
+import { ClusterConnection } from './ClusterConnection.js';
 
 export class ClusterPool extends WorkerPool<ClusterConnection> {
     public constructor(

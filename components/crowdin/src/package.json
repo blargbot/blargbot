@@ -2,9 +2,14 @@
     "name": "@blargbot/crowdin",
     "version": "1.0.0",
     "private": true,
+    "type": "module",
+    "exports": {
+        ".": "./index.js",
+        "./*": "./*"
+    },
     "dependencies": {
         "@blargbot/formatting": "workspace:^",
-        "node-fetch": "^2.6.7"
+        "node-fetch": "^3.3.0"
     },
     "devDependencies": {
         "@types/node-fetch": "^2.6.2"

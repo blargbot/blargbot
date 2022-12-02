@@ -1,10 +1,10 @@
 import { Logger } from '@blargbot/logger';
 
-import { ComponentAwaiterFactory } from './ComponentAwaiterFactory';
-import { MessageAwaiterFactory } from './MessageAwaiterFactory';
-import { ReactionAwaiterFactory } from './ReactionAwaiterFactory';
+import { ComponentAwaiterFactory } from './ComponentAwaiterFactory.js';
+import { MessageAwaiterFactory } from './MessageAwaiterFactory.js';
+import { ReactionAwaiterFactory } from './ReactionAwaiterFactory.js';
 
-export { Awaiter } from './Awaiter';
+export { Awaiter } from './Awaiter.js';
 
 export class AwaiterManager {
     public readonly messages: MessageAwaiterFactory;

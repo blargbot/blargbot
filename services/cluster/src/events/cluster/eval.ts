@@ -1,6 +1,6 @@
 import { Cluster } from '@blargbot/cluster';
-import { ClusterEventService } from '@blargbot/cluster/serviceTypes';
-import { EvalResult } from '@blargbot/core/types';
+import { ClusterEventService } from '@blargbot/cluster/serviceTypes/index.js';
+import { EvalResult } from '@blargbot/core/types.js';
 
 export class ClusterEvalHandler extends ClusterEventService<'ceval'> {
     public constructor(

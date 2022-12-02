@@ -1,8 +1,8 @@
-import { ModuleResult } from '@blargbot/core/types';
-import { guard } from '@blargbot/core/utils';
+import { ModuleResult } from '@blargbot/core/types.js';
+import { guard } from '@blargbot/core/utils/index.js';
 import { Logger } from '@blargbot/logger';
 
-import { BaseModuleLoader } from './BaseModuleLoader';
+import { BaseModuleLoader } from './BaseModuleLoader.js';
 
 export class ModuleLoader<TModule> extends BaseModuleLoader<TModule> {
     readonly #getNames: (module: TModule, fileName: string) => Iterable<string>;

@@ -1,6 +1,6 @@
-import { EmojisSubtag } from '@blargbot/bbtag/subtags/guild/emojis';
+import { EmojisSubtag } from '@blargbot/bbtag/subtags/guild/emojis.js';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new EmojisSubtag(),

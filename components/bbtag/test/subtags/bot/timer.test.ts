@@ -1,9 +1,9 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { TimerSubtag } from '@blargbot/bbtag/subtags/bot/timer';
-import { argument } from '@blargbot/test-util/mock';
+import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
+import { TimerSubtag } from '@blargbot/bbtag/subtags/bot/timer.js';
+import { argument } from '@blargbot/test-util/mock.js';
 import moment from 'moment-timezone';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new TimerSubtag(),

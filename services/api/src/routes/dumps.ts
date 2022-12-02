@@ -1,11 +1,11 @@
-import { Api } from '@blargbot/api/Api';
-import { guard } from '@blargbot/core/utils/index';
-import { Dump } from '@blargbot/domain/models/Dump';
-import { DiscordTagSet } from '@blargbot/domain/models/index';
+import { Api } from '@blargbot/api/Api.js';
+import { guard } from '@blargbot/core/utils/index.js';
+import { Dump } from '@blargbot/domain/models/Dump.js';
+import { DiscordTagSet } from '@blargbot/domain/models/index.js';
 import { APIEmbed } from 'discord-api-types/v9';
 
-import { BaseRoute } from '../BaseRoute';
-import { ApiResponse } from '../types';
+import { BaseRoute } from '../BaseRoute.js';
+import { ApiResponse } from '../types.js';
 
 export class DumpsRoute extends BaseRoute {
     readonly #api: Api;

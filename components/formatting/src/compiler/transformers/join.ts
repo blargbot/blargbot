@@ -1,6 +1,6 @@
-import { format } from '../../types';
-import { isFormattable, toArray } from '../../util';
-import { IValueResolverTransform } from '../types';
+import { format } from '../../types.js';
+import { isFormattable, toArray } from '../../util/index.js';
+import { IValueResolverTransform } from '../types.js';
 
 export const join: IValueResolverTransform = {
     transform(_compiler, source, ...separators) {

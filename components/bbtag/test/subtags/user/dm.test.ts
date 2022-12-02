@@ -1,10 +1,10 @@
-import { UserNotFoundError } from '@blargbot/bbtag/errors';
-import { EscapeBBTagSubtag } from '@blargbot/bbtag/subtags/misc/escapeBBTag';
-import { DMSubtag } from '@blargbot/bbtag/subtags/user/dm';
-import { argument } from '@blargbot/test-util/mock';
+import { UserNotFoundError } from '@blargbot/bbtag/errors/index.js';
+import { EscapeBBTagSubtag } from '@blargbot/bbtag/subtags/misc/escapeBBTag.js';
+import { DMSubtag } from '@blargbot/bbtag/subtags/user/dm.js';
+import { argument } from '@blargbot/test-util/mock.js';
 import Eris from 'eris';
 
-import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
+import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new DMSubtag(),

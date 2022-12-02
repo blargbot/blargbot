@@ -1,10 +1,10 @@
-import { CommandBinderState } from '@blargbot/cluster/types';
-import { guard } from '@blargbot/cluster/utils';
-import { Binder } from '@blargbot/core/Binder';
-import { Binding, BindingResult } from '@blargbot/core/types';
+import { CommandBinderState } from '@blargbot/cluster/types.js';
+import { guard } from '@blargbot/cluster/utils/index.js';
+import { Binder } from '@blargbot/core/Binder.js';
+import { Binding, BindingResult } from '@blargbot/core/types.js';
 
-import { CommandContext } from '../../CommandContext';
-import { CommandBindingBase } from './CommandBindingBase';
+import { CommandContext } from '../../CommandContext.js';
+import { CommandBindingBase } from './CommandBindingBase.js';
 
 interface SwitchOptions<TContext extends CommandContext> {
     readonly [key: string]: {

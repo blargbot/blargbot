@@ -1,4 +1,4 @@
-import { IValueResolverTransform } from '../types';
+import { IValueResolverTransform } from '../types.js';
 
 export const lower: IValueResolverTransform = {
     transform(_compiler, source, ...args) {

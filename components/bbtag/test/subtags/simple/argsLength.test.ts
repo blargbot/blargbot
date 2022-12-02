@@ -1,6 +1,6 @@
-import { ArgsLengthSubtag } from '@blargbot/bbtag/subtags/simple/argsLength';
+import { ArgsLengthSubtag } from '@blargbot/bbtag/subtags/simple/argsLength.js';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new ArgsLengthSubtag(),

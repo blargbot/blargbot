@@ -1,10 +1,10 @@
-import { NotAnArrayError, NotANumberError } from '@blargbot/bbtag/errors';
-import { SpliceSubtag } from '@blargbot/bbtag/subtags/array/splice';
-import { GetSubtag } from '@blargbot/bbtag/subtags/bot/get';
-import { TagVariableType } from '@blargbot/domain/models';
+import { NotAnArrayError, NotANumberError } from '@blargbot/bbtag/errors/index.js';
+import { SpliceSubtag } from '@blargbot/bbtag/subtags/array/splice.js';
+import { GetSubtag } from '@blargbot/bbtag/subtags/bot/get.js';
+import { TagVariableType } from '@blargbot/domain/models/index.js';
 import { expect } from 'chai';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new SpliceSubtag(),

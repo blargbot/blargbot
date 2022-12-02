@@ -1,19 +1,19 @@
-import { Configuration } from '@blargbot/config/Configuration';
-import { FormatEmbedAuthor, SendContent, SendContext } from '@blargbot/core/types';
+import { Configuration } from '@blargbot/config/Configuration.js';
+import { FormatEmbedAuthor, SendContent, SendContext } from '@blargbot/core/types.js';
 import { CrowdinTranslationSource } from '@blargbot/crowdin';
 import { Database } from '@blargbot/database';
-import { DiscordChannelTag, DiscordRoleTag, DiscordTagSet, DiscordUserTag, StoredUser } from '@blargbot/domain/models';
+import { DiscordChannelTag, DiscordRoleTag, DiscordTagSet, DiscordUserTag, StoredUser } from '@blargbot/domain/models/index.js';
 import { format, Formatter, IFormattable, IFormatter, TranslationMiddleware, util } from '@blargbot/formatting';
 import { Logger } from '@blargbot/logger';
 import { Snowflake } from 'catflake';
 import Eris from 'eris';
 import moment from 'moment-timezone';
 
-import { BaseClient } from './BaseClient';
-import { Emote } from './Emote';
-import { metrics } from './Metrics';
-import templates from './text';
-import { guard, humanize, parse, snowflake } from './utils';
+import { BaseClient } from './BaseClient.js';
+import { Emote } from './Emote.js';
+import { metrics } from './Metrics.js';
+import templates from './text.js';
+import { guard, humanize, parse, snowflake } from './utils/index.js';
 
 export class BaseUtilities {
     readonly #translator: TranslationMiddleware;

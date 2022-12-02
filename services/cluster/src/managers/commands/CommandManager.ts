@@ -1,8 +1,8 @@
 import { Cluster } from '@blargbot/cluster';
-import { CommandGetCoreResult, CommandGetResult, ICommandManager, PermissionCheckResult } from '@blargbot/cluster/types';
-import { defaultStaff, guard } from '@blargbot/cluster/utils';
-import { parse } from '@blargbot/core/utils';
-import { CommandPermissions } from '@blargbot/domain/models';
+import { CommandGetCoreResult, CommandGetResult, ICommandManager, PermissionCheckResult } from '@blargbot/cluster/types.js';
+import { defaultStaff, guard } from '@blargbot/cluster/utils/index.js';
+import { parse } from '@blargbot/core/utils/index.js';
+import { CommandPermissions } from '@blargbot/domain/models/index.js';
 import Eris from 'eris';
 
 export abstract class CommandManager<T> implements ICommandManager<T> {
@@ -13,7 +13,7 @@ export abstract class CommandManager<T> implements ICommandManager<T> {
     ) {
     }
 
-    public abstract load(commands?: Iterable<string> | boolean): Promise<void>;
+    public abstract load(commands?: boolean): Promise<void>;
     protected abstract getCore(name: string, location?: Eris.Guild | Eris.KnownGuildTextableChannel, user?: Eris.User): Promise<CommandGetCoreResult<T>>;
     protected abstract allCommandNames(location?: Eris.Guild | Eris.KnownGuildTextableChannel): AsyncIterable<string> | Iterable<string> | Promise<Iterable<string>>;
     public abstract configure(user: Eris.User, names: string[], guild: Eris.Guild, permissions: Partial<CommandPermissions>): Promise<readonly string[]>;

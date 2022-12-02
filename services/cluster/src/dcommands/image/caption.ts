@@ -1,10 +1,10 @@
-import { CommandContext, GlobalImageCommand } from '../../command/index';
-import { guard } from '@blargbot/core/utils';
-import { parse } from '@blargbot/core/utils/parse';
-import { ValidFont } from '@blargbot/image/types';
+import { CommandContext, GlobalImageCommand } from '../../command/index.js';
+import { guard } from '@blargbot/core/utils/index.js';
+import { parse } from '@blargbot/core/utils/parse/index.js';
+import { ValidFont } from '@blargbot/image/types.js';
 
-import templates from '../../text';
-import { CommandResult } from '../../types';
+import templates from '../../text.js';
+import { CommandResult } from '../../types.js';
 
 const cmd = templates.commands.caption;
 

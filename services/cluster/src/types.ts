@@ -1,14 +1,14 @@
 import { SubtagOptions } from '@blargbot/bbtag';
-import { Command, CommandContext, ScopedCommand } from './command/index';
-import { CommandType, ModerationType } from '@blargbot/cluster/utils';
-import { EvalRequest, EvalResult, GlobalEvalResult, IMiddleware, MasterEvalRequest, SendContent } from '@blargbot/core/types';
-import { CommandPermissions, FlagDefinition, FlagResult, GuildSettingDocs, GuildSourceCommandTag, NamedGuildCommandTag } from '@blargbot/domain/models';
+import { Command, CommandContext, ScopedCommand } from './command/index.js';
+import { CommandType, ModerationType } from '@blargbot/cluster/utils/index.js';
+import { EvalRequest, EvalResult, GlobalEvalResult, IMiddleware, MasterEvalRequest, SendContent } from '@blargbot/core/types.js';
+import { CommandPermissions, FlagDefinition, FlagResult, GuildSettingDocs, GuildSourceCommandTag, NamedGuildCommandTag } from '@blargbot/domain/models/index.js';
 import { IFormattable } from '@blargbot/formatting';
 import Eris from 'eris';
 import moment from 'moment-timezone';
 import { metric } from 'prom-client';
 
-import { ClusterUtilities } from './ClusterUtilities';
+import { ClusterUtilities } from './ClusterUtilities.js';
 
 export type ClusterIPCContract = {
     shardReady: { masterGets: number; workerGets: never; };

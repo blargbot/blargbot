@@ -1,9 +1,9 @@
 import { Statement } from '@blargbot/bbtag';
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { FunctionSubtag } from '@blargbot/bbtag/subtags/bot/function';
+import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
+import { FunctionSubtag } from '@blargbot/bbtag/subtags/bot/function.js';
 import { expect } from 'chai';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new FunctionSubtag(),

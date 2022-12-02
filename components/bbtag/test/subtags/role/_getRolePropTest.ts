@@ -1,10 +1,10 @@
 import { BBTagContext } from '@blargbot/bbtag';
-import { BBTagRuntimeError, RoleNotFoundError } from '@blargbot/bbtag/errors';
-import { argument } from '@blargbot/test-util/mock';
+import { BBTagRuntimeError, RoleNotFoundError } from '@blargbot/bbtag/errors/index.js';
+import { argument } from '@blargbot/test-util/mock.js';
 import { APIRole } from 'discord-api-types/v9';
 import Eris from 'eris';
 
-import { SubtagTestCase, SubtagTestContext } from '../SubtagTestSuite';
+import { SubtagTestCase, SubtagTestContext } from '../SubtagTestSuite.js';
 
 export function createGetRolePropTestCases(options: GetRolePropTestData): SubtagTestCase[] {
     return [...createGetRolePropTestCasesIter(options)];

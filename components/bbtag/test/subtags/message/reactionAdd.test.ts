@@ -1,12 +1,12 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { ReactionAddSubtag } from '@blargbot/bbtag/subtags/message/reactionAdd';
-import { Emote } from '@blargbot/core/Emote';
-import { argument } from '@blargbot/test-util/mock';
+import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
+import { ReactionAddSubtag } from '@blargbot/bbtag/subtags/message/reactionAdd.js';
+import { Emote } from '@blargbot/core/Emote.js';
+import { argument } from '@blargbot/test-util/mock.js';
 import { expect } from 'chai';
 import Eris from 'eris';
 
-import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite';
-import { createGetMessagePropTestCases } from './_getMessagePropTest';
+import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';
+import { createGetMessagePropTestCases } from './_getMessagePropTest.js';
 
 const unicodeEmote = Emote.parse('🤔');
 const guildEmote = Emote.parse('<:notlikecat:280110565161041921>');

@@ -1,11 +1,11 @@
-import { CommandContext, GlobalCommand } from '../../command/index';
-import { CommandType, guard } from '@blargbot/cluster/utils';
+import { CommandContext, GlobalCommand } from '../../command/index.js';
+import { CommandType, guard } from '@blargbot/cluster/utils/index.js';
 import { format, IFormattable, util } from '@blargbot/formatting';
 import Eris from 'eris';
 import moment from 'moment-timezone';
 
-import templates from '../../text';
-import { CommandResult } from '../../types';
+import templates from '../../text.js';
+import { CommandResult } from '../../types.js';
 
 const cmd = templates.commands.timers;
 

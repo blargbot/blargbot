@@ -1,6 +1,6 @@
 import { ApiConnection } from '@blargbot/api';
-import { CommandListResultItem } from '@blargbot/cluster/types';
-import { WorkerPoolEventService } from '@blargbot/core/serviceTypes';
+import { CommandListResultItem } from '@blargbot/cluster/types.js';
+import { WorkerPoolEventService } from '@blargbot/core/serviceTypes/index.js';
 import { Master } from '@blargbot/master';
 
 export class ApiGetCommandHandler extends WorkerPoolEventService<ApiConnection, 'getCommand'> {

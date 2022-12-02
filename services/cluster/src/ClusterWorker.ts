@@ -1,10 +1,12 @@
 import { Configuration } from '@blargbot/config';
-import { BaseWorker } from '@blargbot/core/worker';
+import { BaseWorker } from '@blargbot/core/worker/index.js';
 import { Logger } from '@blargbot/logger';
-import holidays from '@blargbot/res/holidays.json';
+import res from '@blargbot/res';
 
-import { Cluster } from './Cluster';
-import { ClusterIPCContract } from './types';
+import { Cluster } from './Cluster.js';
+import { ClusterIPCContract } from './types.js';
+
+const holidays = await res.holidays.load()
 
 export class ClusterWorker extends BaseWorker<ClusterIPCContract> {
     public readonly cluster: Cluster;

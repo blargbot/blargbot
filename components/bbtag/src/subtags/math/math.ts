@@ -1,9 +1,9 @@
-import { parse } from '@blargbot/core/utils';
+import { parse } from '@blargbot/core/utils/index.js';
 
-import { CompiledSubtag } from '../../compilation';
-import { InvalidOperatorError, NotANumberError } from '../../errors';
-import templates from '../../text';
-import { bbtag, SubtagType } from '../../utils';
+import { CompiledSubtag } from '../../compilation/index.js';
+import { InvalidOperatorError, NotANumberError } from '../../errors/index.js';
+import templates from '../../text.js';
+import { bbtag, SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.math;
 

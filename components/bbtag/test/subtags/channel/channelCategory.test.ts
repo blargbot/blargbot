@@ -1,9 +1,9 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { ChannelCategorySubtag } from '@blargbot/bbtag/subtags/channel/channelCategory';
+import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
+import { ChannelCategorySubtag } from '@blargbot/bbtag/subtags/channel/channelCategory.js';
 import { APITextChannel } from 'discord-api-types/v9';
 
-import { runSubtagTests } from '../SubtagTestSuite';
-import { createGetChannelPropTestCases } from './_getChannelPropTest';
+import { runSubtagTests } from '../SubtagTestSuite.js';
+import { createGetChannelPropTestCases } from './_getChannelPropTest.js';
 
 runSubtagTests({
     subtag: new ChannelCategorySubtag(),

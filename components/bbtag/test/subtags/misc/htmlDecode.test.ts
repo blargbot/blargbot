@@ -1,7 +1,7 @@
-import { EscapeBBTagSubtag } from '@blargbot/bbtag/subtags/misc/escapeBBTag';
-import { HtmlDecodeSubtag } from '@blargbot/bbtag/subtags/misc/htmlDecode';
+import { EscapeBBTagSubtag } from '@blargbot/bbtag/subtags/misc/escapeBBTag.js';
+import { HtmlDecodeSubtag } from '@blargbot/bbtag/subtags/misc/htmlDecode.js';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new HtmlDecodeSubtag(),

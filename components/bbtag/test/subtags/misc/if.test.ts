@@ -1,7 +1,7 @@
-import { InvalidOperatorError, NotABooleanError } from '@blargbot/bbtag/errors';
-import { IfSubtag } from '@blargbot/bbtag/subtags/misc/if';
+import { InvalidOperatorError, NotABooleanError } from '@blargbot/bbtag/errors/index.js';
+import { IfSubtag } from '@blargbot/bbtag/subtags/misc/if.js';
 
-import { MarkerError, runSubtagTests, SubtagTestCase } from '../SubtagTestSuite';
+import { MarkerError, runSubtagTests, SubtagTestCase } from '../SubtagTestSuite.js';
 
 const isEqualTo = { '!=': false, '<': false, '<=': true, '==': true, '>': false, '>=': true } as const;
 const isGreaterThan = { '!=': true, '<': false, '<=': false, '==': false, '>': true, '>=': true } as const;

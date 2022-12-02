@@ -1,9 +1,9 @@
-import { CommandResult, PrivateCommandContext } from '@blargbot/cluster/types';
-import { guard } from '@blargbot/cluster/utils';
+import { CommandResult, PrivateCommandContext } from '@blargbot/cluster/types.js';
+import { guard } from '@blargbot/cluster/utils/index.js';
 
-import templates from '../text';
-import { CommandContext } from './CommandContext';
-import { ScopedCommand } from './ScopedCommand';
+import templates from '../text.js';
+import { CommandContext } from './CommandContext.js';
+import { ScopedCommand } from './ScopedCommand.js';
 
 export abstract class PrivateCommand extends ScopedCommand<PrivateCommandContext> {
     public guardContext(context: CommandContext): context is PrivateCommandContext {

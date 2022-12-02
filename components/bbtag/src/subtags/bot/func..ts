@@ -1,7 +1,7 @@
-import { BBTagContext } from '../../BBTagContext';
-import { CompiledSubtag } from '../../compilation';
-import { UnknownSubtagError } from '../../errors';
-import { SubtagType } from '../../utils';
+import { BBTagContext } from '../../BBTagContext.js';
+import { CompiledSubtag } from '../../compilation/index.js';
+import { UnknownSubtagError } from '../../errors/index.js';
+import { SubtagType } from '../../utils/index.js';
 
 export class FunctionInvokeSubtag extends CompiledSubtag {
     public constructor() {

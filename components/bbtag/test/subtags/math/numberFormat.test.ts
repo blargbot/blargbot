@@ -1,6 +1,6 @@
-import { NumberFormatSubtag } from '@blargbot/bbtag/subtags/math/numberFormat';
+import { NumberFormatSubtag } from '@blargbot/bbtag/subtags/math/numberFormat.js';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new NumberFormatSubtag(),

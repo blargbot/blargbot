@@ -1,8 +1,8 @@
-import { RoleMembersSubtag } from '@blargbot/bbtag/subtags/role/roleMembers';
+import { RoleMembersSubtag } from '@blargbot/bbtag/subtags/role/roleMembers.js';
 import Eris from 'eris';
 
-import { runSubtagTests } from '../SubtagTestSuite';
-import { createGetRolePropTestCases } from './_getRolePropTest';
+import { runSubtagTests } from '../SubtagTestSuite.js';
+import { createGetRolePropTestCases } from './_getRolePropTest.js';
 
 runSubtagTests({
     subtag: new RoleMembersSubtag(),

@@ -1,10 +1,10 @@
-import { GuildCommand } from '../../command/index';
-import { CommandResult, GuildCommandContext, ICommand } from '@blargbot/cluster/types';
-import { CommandType } from '@blargbot/cluster/utils';
-import { CommandPermissions } from '@blargbot/domain/models';
+import { GuildCommand } from '../../command/index.js';
+import { CommandResult, GuildCommandContext, ICommand } from '@blargbot/cluster/types.js';
+import { CommandType } from '@blargbot/cluster/utils/index.js';
+import { CommandPermissions } from '@blargbot/domain/models/index.js';
 import Eris from 'eris';
 
-import templates from '../../text';
+import templates from '../../text.js';
 
 const cmd = templates.commands.editCommand;
 

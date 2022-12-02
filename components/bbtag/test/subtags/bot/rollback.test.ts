@@ -1,9 +1,9 @@
 import { BBTagContext } from '@blargbot/bbtag';
-import { RollbackSubtag } from '@blargbot/bbtag/subtags/bot/rollback';
-import { TagVariableType } from '@blargbot/domain/models/index';
+import { RollbackSubtag } from '@blargbot/bbtag/subtags/bot/rollback.js';
+import { TagVariableType } from '@blargbot/domain/models/index.js';
 import { expect } from 'chai';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new RollbackSubtag(),

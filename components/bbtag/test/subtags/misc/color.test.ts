@@ -1,8 +1,8 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { ColorFormat, ColorSubtag } from '@blargbot/bbtag/subtags/misc/color';
-import { TagVariableType } from '@blargbot/domain/models/index';
+import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
+import { ColorFormat, ColorSubtag } from '@blargbot/bbtag/subtags/misc/color.js';
+import { TagVariableType } from '@blargbot/domain/models/index.js';
 
-import { MarkerError, runSubtagTests, SubtagTestCase } from '../SubtagTestSuite';
+import { MarkerError, runSubtagTests, SubtagTestCase } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new ColorSubtag(),

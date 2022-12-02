@@ -1,11 +1,9 @@
-import { Cluster } from '@blargbot/cluster/Cluster';
+import { Cluster } from '@blargbot/cluster/Cluster.js';
 import { IFormattable, util } from '@blargbot/formatting';
+import res from '@blargbot/res';
 import Eris from 'eris';
-import reloadFactory from 'require-reload';
 
-import templates from '../text';
-
-const reload = reloadFactory(require);
+import templates from '../text.js';
 
 export class ContributorManager {
     public patrons: Array<Eris.User | IFormattable<string>>;
@@ -23,8 +21,7 @@ export class ContributorManager {
     }
 
     public async refresh(): Promise<void> {
-        // eslint-disable-next-line quotes
-        const config = reload(`@blargbot/res/contributors.json`) as typeof import('@blargbot/res/contributors.json');
+        const config = await res.contributors.reload();
         this.patrons = await Promise.all(config.patrons.map(p => this.#resolveUser(p)));
         this.donators = await Promise.all(config.donators.map(d => this.#resolveUser(d)));
         this.others = await Promise.all(config.other.map(async o => ({ ...o, user: await this.#resolveUser(o.user) })));

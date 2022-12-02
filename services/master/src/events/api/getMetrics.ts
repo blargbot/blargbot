@@ -1,5 +1,5 @@
 import { ApiConnection } from '@blargbot/api';
-import { WorkerPoolEventService } from '@blargbot/core/serviceTypes';
+import { WorkerPoolEventService } from '@blargbot/core/serviceTypes/index.js';
 import { Master } from '@blargbot/master';
 import Prometheus, { metric } from 'prom-client';
 

@@ -1,6 +1,6 @@
-import { CompiledSubtag } from '../../compilation/index';
-import templates from '../../text';
-import { bbtag, SubtagType } from '../../utils/index';
+import { CompiledSubtag } from '../../compilation/index.js';
+import templates from '../../text.js';
+import { bbtag, SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.isArray;
 

@@ -1,5 +1,5 @@
 import { Cluster } from '@blargbot/cluster';
-import { BaseService } from '@blargbot/core/serviceTypes';
+import { BaseService } from '@blargbot/core/serviceTypes/index.js';
 
 export class ImageSpawner extends BaseService {
     public readonly type = 'image';

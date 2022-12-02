@@ -1,4 +1,4 @@
-import { Snowflake } from './Snowflake';
+import { Snowflake } from './Snowflake.js';
 
 export interface Dump {
     readonly id: Snowflake;

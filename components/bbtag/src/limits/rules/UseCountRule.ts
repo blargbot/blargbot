@@ -1,10 +1,10 @@
 import { IFormattable } from '@blargbot/formatting';
 import { mapping } from '@blargbot/mapping';
 
-import { BBTagContext } from '../../BBTagContext';
-import { BBTagRuntimeError } from '../../errors';
-import templates from '../../text';
-import { RuntimeLimitRule } from '../RuntimeLimitRule';
+import { BBTagContext } from '../../BBTagContext.js';
+import { BBTagRuntimeError } from '../../errors/index.js';
+import templates from '../../text.js';
+import { RuntimeLimitRule } from '../RuntimeLimitRule.js';
 
 export class UseCountRule implements RuntimeLimitRule {
     readonly #errorMessage: IFormattable<string>;

@@ -1,12 +1,12 @@
 import { Cluster } from '@blargbot/cluster';
-import { guard, ModlogColour } from '@blargbot/cluster/utils';
-import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent';
-import { FormatEmbedField, FormatEmbedOptions } from '@blargbot/core/types';
+import { guard, ModlogColour } from '@blargbot/cluster/utils/index.js';
+import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent.js';
+import { FormatEmbedField, FormatEmbedOptions } from '@blargbot/core/types.js';
 import { format, IFormattable, util } from '@blargbot/formatting';
 import Eris from 'eris';
 import moment from 'moment-timezone';
 
-import templates from '../../text';
+import templates from '../../text.js';
 
 export class ModLogManager {
     public constructor(public readonly cluster: Cluster) {

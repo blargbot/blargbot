@@ -1,6 +1,11 @@
 {
     "name": "@blargbot/bbtag",
     "version": "1.0.0",
+    "type": "module",
+    "exports": {
+        ".": "./index.js",
+        "./*": "./*"
+    },
     "dependencies": {
         "@blargbot/config": "workspace:^",
         "@blargbot/core": "workspace:^",
@@ -14,7 +19,7 @@
         "eris": "^0.17.1",
         "html-entities": "^2.3.3",
         "moment-timezone": "^0.5.39",
-        "node-fetch": "^2.6.7",
+        "node-fetch": "^3.3.0",
         "rwlock": "^5.0.0"
     },
     "devDependencies": {

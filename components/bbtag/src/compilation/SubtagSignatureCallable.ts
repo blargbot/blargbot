@@ -1,5 +1,5 @@
-import { SubtagLogic } from '../logic';
-import { SubtagSignatureParameter } from '../types';
+import { SubtagLogic } from '../logic/index.js';
+import { SubtagSignatureParameter } from '../types.js';
 
 export interface SubtagSignatureCallable {
     readonly subtagName: string | undefined;

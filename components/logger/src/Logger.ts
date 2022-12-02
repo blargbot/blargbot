@@ -1,4 +1,4 @@
-import { LogMeta } from 'cat-loggr/ts';
+import { LogMeta } from 'cat-loggr/ts.js';
 
 export type LogLevel =
     | 'fatal'

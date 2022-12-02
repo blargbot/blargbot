@@ -1,9 +1,9 @@
 import Eris from 'eris';
 
-import { BBTagRuntimeError, TooManyLoopsError } from '../errors';
-import templates from '../text';
-import { GlobalLimit } from './GlobalLimit';
-import { disabledRule, UseCountRule } from './rules';
+import { BBTagRuntimeError, TooManyLoopsError } from '../errors/index.js';
+import templates from '../text.js';
+import { GlobalLimit } from './GlobalLimit.js';
+import { disabledRule, UseCountRule } from './rules/index.js';
 
 export class TagLimit extends GlobalLimit {
     public constructor(guild?: Eris.Guild) {

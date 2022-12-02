@@ -1,6 +1,6 @@
 import { Cluster } from '@blargbot/cluster';
 
-import { BanManager, CensorManager, ChatLogManager, EventLogManager, ModLogManager, MuteManager, TimeoutManager, WarnManager } from './moderation';
+import { BanManager, CensorManager, ChatLogManager, EventLogManager, ModLogManager, MuteManager, TimeoutManager, WarnManager } from './moderation/index.js';
 
 export class ModerationManager {
     public readonly modLog: ModLogManager;

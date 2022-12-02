@@ -1,11 +1,11 @@
 import { IFormattable } from '@blargbot/formatting';
 
-import { BBTagContext } from '../BBTagContext';
-import { SerializedRuntimeLimit } from '../types';
-import { limits } from './index';
-import { disabledRule } from './rules';
-import { RuntimeLimit } from './RuntimeLimit';
-import { RuntimeLimitRule } from './RuntimeLimitRule';
+import { BBTagContext } from '../BBTagContext.js';
+import { SerializedRuntimeLimit } from '../types.js';
+import { limits } from './index.js';
+import { disabledRule } from './rules/index.js';
+import { RuntimeLimit } from './RuntimeLimit.js';
+import { RuntimeLimitRule } from './RuntimeLimitRule.js';
 
 export abstract class BaseRuntimeLimit implements RuntimeLimit {
     readonly #rules: Record<string, RuntimeLimitRuleCollection | undefined>;

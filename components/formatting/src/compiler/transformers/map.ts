@@ -1,5 +1,5 @@
-import { toArray } from '../../util';
-import { IValueResolverTransform } from '../types';
+import { toArray } from '../../util/index.js';
+import { IValueResolverTransform } from '../types.js';
 
 export const map: IValueResolverTransform = {
     transform(compiler, source, ...args) {

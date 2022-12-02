@@ -1,10 +1,10 @@
-import { CommandContext, GlobalCommand } from '../../command/index';
-import { CommandType } from '@blargbot/cluster/utils';
+import { CommandContext, GlobalCommand } from '../../command/index.js';
+import { CommandType } from '@blargbot/cluster/utils/index.js';
 import { mapping } from '@blargbot/mapping';
 import fetch, { RequestInit } from 'node-fetch';
 
-import templates from '../../text';
-import { CommandResult } from '../../types';
+import templates from '../../text.js';
+import { CommandResult } from '../../types.js';
 
 const cmd = templates.commands.define;
 

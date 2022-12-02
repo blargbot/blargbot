@@ -1,7 +1,7 @@
-import { NotANumberError } from '@blargbot/bbtag/errors';
-import { NewlineSubtag } from '@blargbot/bbtag/subtags/misc/newline';
+import { NotANumberError } from '@blargbot/bbtag/errors/index.js';
+import { NewlineSubtag } from '@blargbot/bbtag/subtags/misc/newline.js';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new NewlineSubtag(),

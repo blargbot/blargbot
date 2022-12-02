@@ -1,11 +1,11 @@
-import { CommandBinderState, CommandSingleParameter, CommandVariableTypeName } from '@blargbot/cluster/types';
-import { humanize } from '@blargbot/cluster/utils';
-import { Binder } from '@blargbot/core/Binder';
-import { Binding, BindingResultAsyncIterator } from '@blargbot/core/types';
+import { CommandBinderState, CommandSingleParameter, CommandVariableTypeName } from '@blargbot/cluster/types.js';
+import { humanize } from '@blargbot/cluster/utils/index.js';
+import { Binder } from '@blargbot/core/Binder.js';
+import { Binding, BindingResultAsyncIterator } from '@blargbot/core/types.js';
 
-import { CommandContext } from '../../CommandContext';
-import { createCommandArgument } from '../commandArgument';
-import { CommandBindingBase } from './CommandBindingBase';
+import { CommandContext } from '../../CommandContext.js';
+import { createCommandArgument } from '../commandArgument.js';
+import { CommandBindingBase } from './CommandBindingBase.js';
 
 export class ConcatBinding<TContext extends CommandContext, Name extends CommandVariableTypeName> extends CommandBindingBase<TContext> {
     public readonly name: string;

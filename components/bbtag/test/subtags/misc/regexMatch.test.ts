@@ -1,7 +1,7 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { RegexMatchSubtag } from '@blargbot/bbtag/subtags/misc/regexMatch';
+import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
+import { RegexMatchSubtag } from '@blargbot/bbtag/subtags/misc/regexMatch.js';
 
-import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
+import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new RegexMatchSubtag(),

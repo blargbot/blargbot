@@ -1,4 +1,4 @@
-import { UserTodo } from './UserTodo';
+import { UserTodo } from './UserTodo.js';
 
 export interface ResettableStoredUserData {
     readonly todo: readonly UserTodo[];

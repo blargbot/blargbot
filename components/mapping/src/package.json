@@ -2,6 +2,11 @@
     "name": "@blargbot/mapping",
     "version": "1.0.0",
     "private": true,
+    "type": "module",
+    "exports": {
+        ".": "./index.js",
+        "./*": "./*"
+    },
     "dependencies": {
         "moment-timezone": "^0.5.39"
     }

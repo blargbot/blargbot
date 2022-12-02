@@ -1,9 +1,9 @@
-import { BBTagRuntimeError, RoleNotFoundError, UserNotFoundError } from '@blargbot/bbtag/errors';
-import { RoleAddSubtag } from '@blargbot/bbtag/subtags/role/roleAdd';
-import { argument } from '@blargbot/test-util/mock';
+import { BBTagRuntimeError, RoleNotFoundError, UserNotFoundError } from '@blargbot/bbtag/errors/index.js';
+import { RoleAddSubtag } from '@blargbot/bbtag/subtags/role/roleAdd.js';
+import { argument } from '@blargbot/test-util/mock.js';
 import Eris from 'eris';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new RoleAddSubtag(),

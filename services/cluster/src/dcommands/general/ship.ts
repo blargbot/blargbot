@@ -1,9 +1,9 @@
-import { GlobalCommand } from '../../command/index';
-import { CommandType, randInt } from '@blargbot/cluster/utils';
+import { GlobalCommand } from '../../command/index.js';
+import { CommandType, randInt } from '@blargbot/cluster/utils/index.js';
 import Eris from 'eris';
 
-import templates from '../../text';
-import { CommandResult } from '../../types';
+import templates from '../../text.js';
+import { CommandResult } from '../../types.js';
 
 const cmd = templates.commands.ship;
 

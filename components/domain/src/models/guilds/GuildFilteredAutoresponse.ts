@@ -1,5 +1,5 @@
-import { MessageFilter } from '../MessageFilter';
-import { GuildTriggerTag } from './GuildTriggerTag';
+import { MessageFilter } from '../MessageFilter.js';
+import { GuildTriggerTag } from './GuildTriggerTag.js';
 
 export interface GuildFilteredAutoresponse extends GuildTriggerTag, MessageFilter {
 }

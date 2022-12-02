@@ -1,4 +1,4 @@
-import { BBTagRuntimeError } from './BBTagRuntimeError';
+import { BBTagRuntimeError } from './BBTagRuntimeError.js';
 
 export class UnknownSubtagError extends BBTagRuntimeError {
     public constructor(public readonly subtagName: string) {

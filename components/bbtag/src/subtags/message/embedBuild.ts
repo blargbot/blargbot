@@ -1,10 +1,10 @@
-import { discord, guard, MessageComponent, parse } from '@blargbot/core/utils';
+import { discord, guard, MessageComponent, parse } from '@blargbot/core/utils/index.js';
 import Eris from 'eris';
 
-import { CompiledSubtag } from '../../compilation/index';
-import { InvalidEmbedError } from '../../errors/index';
-import templates from '../../text';
-import { SubtagType } from '../../utils/index';
+import { CompiledSubtag } from '../../compilation/index.js';
+import { InvalidEmbedError } from '../../errors/index.js';
+import templates from '../../text.js';
+import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.embedBuild;
 

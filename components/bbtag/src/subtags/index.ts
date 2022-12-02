@@ -1,15 +1,15 @@
-import * as array from './array';
-import * as bot from './bot';
-import * as channel from './channel';
-import * as guild from './guild';
-import * as json from './json';
-import * as loops from './loops';
-import * as math from './math';
-import * as message from './message';
-import * as misc from './misc';
-import * as role from './role';
-import * as simple from './simple';
-import * as user from './user';
+import * as array from './array/index.js';
+import * as bot from './bot/index.js';
+import * as channel from './channel/index.js';
+import * as guild from './guild/index.js';
+import * as json from './json/index.js';
+import * as loops from './loops/index.js';
+import * as math from './math/index.js';
+import * as message from './message/index.js';
+import * as misc from './misc/index.js';
+import * as role from './role/index.js';
+import * as simple from './simple/index.js';
+import * as user from './user/index.js';
 
 export {
     array,

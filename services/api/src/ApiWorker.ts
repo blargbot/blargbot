@@ -1,9 +1,9 @@
 import { Configuration } from '@blargbot/config';
-import { BaseWorker } from '@blargbot/core/worker';
+import { BaseWorker } from '@blargbot/core/worker/index.js';
 import { Logger } from '@blargbot/logger';
 
-import { Api } from './Api';
-import { ApiIPCContracts } from './types';
+import { Api } from './Api.js';
+import { ApiIPCContracts } from './types.js';
 
 export class ApiWorker extends BaseWorker<ApiIPCContracts> {
     public readonly webServer: Api;

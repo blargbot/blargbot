@@ -1,7 +1,7 @@
-import { BBTagRuntimeError, NotANumberError } from '@blargbot/bbtag/errors';
-import { RandomStringSubtag } from '@blargbot/bbtag/subtags/misc/randomString';
+import { BBTagRuntimeError, NotANumberError } from '@blargbot/bbtag/errors/index.js';
+import { RandomStringSubtag } from '@blargbot/bbtag/subtags/misc/randomString.js';
 
-import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
+import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new RandomStringSubtag(),

@@ -1,7 +1,7 @@
 import { Cluster } from '@blargbot/cluster';
-import { WolkenCommand } from '../../command/index';
+import { WolkenCommand } from '../../command/index.js';
 
-import templates from '../../text';
+import templates from '../../text.js';
 
 export class DanceCommand extends WolkenCommand {
     public constructor(cluster: Cluster) {

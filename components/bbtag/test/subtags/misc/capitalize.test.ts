@@ -1,6 +1,6 @@
-import { CapitalizeSubtag } from '@blargbot/bbtag/subtags/misc/capitalize';
+import { CapitalizeSubtag } from '@blargbot/bbtag/subtags/misc/capitalize.js';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new CapitalizeSubtag(),

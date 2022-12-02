@@ -1,8 +1,8 @@
-import { BBTagContext } from '../../BBTagContext';
-import { CompiledSubtag } from '../../compilation/index';
-import { UserNotFoundError } from '../../errors/index';
-import templates from '../../text';
-import { SubtagType } from '../../utils/index';
+import { BBTagContext } from '../../BBTagContext.js';
+import { CompiledSubtag } from '../../compilation/index.js';
+import { UserNotFoundError } from '../../errors/index.js';
+import templates from '../../text.js';
+import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.userNickname;
 

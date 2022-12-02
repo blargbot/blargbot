@@ -1,4 +1,4 @@
-import { FlagDefinition } from './flags';
+import { FlagDefinition } from './flags/index.js';
 
 export interface StoredTag {
     readonly name: string;

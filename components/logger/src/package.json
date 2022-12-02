@@ -2,6 +2,11 @@
     "name": "@blargbot/logger",
     "version": "1.0.0",
     "private": true,
+    "type": "module",
+    "exports": {
+        ".": "./index.js",
+        "./*": "./*"
+    },
     "dependencies": {
         "@blargbot/config": "workspace:^",
         "@sentry/node": "^7.21.1",

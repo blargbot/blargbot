@@ -1,10 +1,10 @@
 import { Cluster } from '@blargbot/cluster';
-import { defaultStaff, discord, parse } from '@blargbot/cluster/utils';
-import { StoredGuildSettings } from '@blargbot/domain/models';
+import { defaultStaff, discord, parse } from '@blargbot/cluster/utils/index.js';
+import { StoredGuildSettings } from '@blargbot/domain/models/index.js';
 import Eris from 'eris';
 
-import { ModerationManager } from '../ModerationManager';
-import { ModLogManager } from './ModLogManager';
+import { ModerationManager } from '../ModerationManager.js';
+import { ModLogManager } from './ModLogManager.js';
 
 export abstract class ModerationManagerBase {
     protected get cluster(): Cluster { return this.manager.cluster; }

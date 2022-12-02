@@ -1,19 +1,19 @@
 import { ApiPool } from '@blargbot/api';
 import { ClusterPool } from '@blargbot/cluster';
 import { Configuration } from '@blargbot/config';
-import { BaseClient } from '@blargbot/core/BaseClient';
-import { ModuleLoader } from '@blargbot/core/modules';
-import { BaseService } from '@blargbot/core/serviceTypes';
-import { EvalResult } from '@blargbot/core/types';
+import { BaseClient } from '@blargbot/core/BaseClient.js';
+import { ModuleLoader } from '@blargbot/core/modules/index.js';
+import { BaseService } from '@blargbot/core/serviceTypes/index.js';
+import { EvalResult } from '@blargbot/core/types.js';
 import { Logger } from '@blargbot/logger';
-import { MasterOptions } from '@blargbot/master/types';
+import { MasterOptions } from '@blargbot/master/types.js';
 import moment from 'moment-timezone';
 import fetch from 'node-fetch';
 import { metric } from 'prom-client';
 import { inspect } from 'util';
 
-import { ClusterStatsManager } from './managers';
-import { MasterWorker } from './MasterWorker';
+import { ClusterStatsManager } from './managers/index.js';
+import { MasterWorker } from './MasterWorker.js';
 
 export class Master extends BaseClient {
     public readonly clusters: ClusterPool;

@@ -1,7 +1,7 @@
-import { metrics } from '@blargbot/core/Metrics';
+import { metrics } from '@blargbot/core/Metrics.js';
 
-import { Api } from '../Api';
-import { BaseRoute } from '../BaseRoute';
+import { Api } from '../Api.js';
+import { BaseRoute } from '../BaseRoute.js';
 
 export class MetricsRoute extends BaseRoute {
     readonly #api: Api;

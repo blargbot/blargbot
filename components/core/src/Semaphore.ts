@@ -1,4 +1,4 @@
-import { PromiseCompletionSource } from './PromiseCompletionSource';
+import { PromiseCompletionSource } from './PromiseCompletionSource.js';
 
 export class Semaphore {
     readonly #waiters: Array<PromiseCompletionSource<void>>;

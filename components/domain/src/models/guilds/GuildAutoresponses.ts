@@ -1,5 +1,5 @@
-import { GuildFilteredAutoresponse } from './GuildFilteredAutoresponse';
-import { GuildTriggerTag } from './GuildTriggerTag';
+import { GuildFilteredAutoresponse } from './GuildFilteredAutoresponse.js';
+import { GuildTriggerTag } from './GuildTriggerTag.js';
 
 export interface GuildAutoresponses {
     readonly everything?: GuildTriggerTag | null;

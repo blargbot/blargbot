@@ -1,9 +1,9 @@
-import { UserMentionSubtag } from '@blargbot/bbtag/subtags/user/userMention';
+import { UserMentionSubtag } from '@blargbot/bbtag/subtags/user/userMention.js';
 import { expect } from 'chai';
 import Eris from 'eris';
 
-import { runSubtagTests } from '../SubtagTestSuite';
-import { createGetUserPropTestCases } from './_getUserPropTest';
+import { runSubtagTests } from '../SubtagTestSuite.js';
+import { createGetUserPropTestCases } from './_getUserPropTest.js';
 
 runSubtagTests({
     subtag: new UserMentionSubtag(),

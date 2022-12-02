@@ -1,13 +1,13 @@
 import { bbtag } from '@blargbot/bbtag';
 import { Cluster } from '@blargbot/cluster';
-import { WhitelistResponse } from '@blargbot/cluster/types';
-import { guard, humanize } from '@blargbot/cluster/utils';
-import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent';
-import { GuildTriggerTag } from '@blargbot/domain/models';
+import { WhitelistResponse } from '@blargbot/cluster/types.js';
+import { guard, humanize } from '@blargbot/cluster/utils/index.js';
+import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent.js';
+import { GuildTriggerTag } from '@blargbot/domain/models/index.js';
 import { mapping } from '@blargbot/mapping';
 import Eris from 'eris';
 
-import templates from '../text';
+import templates from '../text.js';
 
 export class AutoresponseManager {
     readonly #guilds: Set<string>;

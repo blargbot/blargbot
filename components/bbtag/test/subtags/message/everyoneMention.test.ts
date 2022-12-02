@@ -1,7 +1,7 @@
-import { EveryoneMentionSubtag } from '@blargbot/bbtag/subtags/message/everyoneMention';
+import { EveryoneMentionSubtag } from '@blargbot/bbtag/subtags/message/everyoneMention.js';
 import { expect } from 'chai';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new EveryoneMentionSubtag(),

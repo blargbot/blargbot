@@ -1,6 +1,6 @@
 import discord from 'discord-api-types/v9';
 
-import { BBTagRuntimeError } from './BBTagRuntimeError';
+import { BBTagRuntimeError } from './BBTagRuntimeError.js';
 
 const errorMessages: Record<discord.ChannelType, string> = {
     [discord.ChannelType.GuildVoice]: 'Channel cannot be a voice channel',

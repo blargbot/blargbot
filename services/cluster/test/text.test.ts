@@ -1,10 +1,10 @@
-import { Command } from '@blargbot/cluster/command/index';
-import templates from '@blargbot/cluster/text';
-import { CommandType } from '@blargbot/cluster/utils/index';
-import * as coreTransformers from '@blargbot/core/formatting';
+import { Command } from '@blargbot/cluster/command/index.js';
+import templates from '@blargbot/cluster/text.js';
+import { CommandType } from '@blargbot/cluster/utils/index.js';
+import * as coreTransformers from '@blargbot/core/formatting/index.js';
 import { transformers, util } from '@blargbot/formatting';
-import { quickMock } from '@blargbot/test-util/quickMock';
-import { runFormatTreeTests } from '@blargbot/test-util/runFormatTreeTests';
+import { quickMock } from '@blargbot/test-util/quickMock.js';
+import { runFormatTreeTests } from '@blargbot/test-util/runFormatTreeTests.js';
 import { expect } from 'chai';
 import Eris from 'eris';
 import { describe } from 'mocha';

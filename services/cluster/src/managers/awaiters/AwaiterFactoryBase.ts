@@ -1,7 +1,7 @@
-import { Semaphore } from '@blargbot/core/Semaphore';
+import { Semaphore } from '@blargbot/core/Semaphore.js';
 import { Logger } from '@blargbot/logger';
 
-import { Awaiter } from './Awaiter';
+import { Awaiter } from './Awaiter.js';
 
 export abstract class AwaiterFactoryBase<T> {
     readonly #awaiters: Record<string, Array<Awaiter<T>> | undefined>;

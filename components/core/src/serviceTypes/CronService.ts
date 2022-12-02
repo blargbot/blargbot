@@ -1,7 +1,7 @@
 import { Logger } from '@blargbot/logger';
 import { CronJob, CronJobParameters } from 'cron';
 
-import { BaseService } from './BaseService';
+import { BaseService } from './BaseService.js';
 
 export abstract class CronService extends BaseService {
     readonly #cronJob: CronJob;

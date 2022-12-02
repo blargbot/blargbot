@@ -1,6 +1,6 @@
-import { SubtagDisabledError } from '../../errors';
-import templates from '../../text';
-import { RuntimeLimitRule } from '../RuntimeLimitRule';
+import { SubtagDisabledError } from '../../errors/index.js';
+import templates from '../../text.js';
+import { RuntimeLimitRule } from '../RuntimeLimitRule.js';
 
 export const disabledRule: RuntimeLimitRule = Object.seal({
     check(context, subtagName) {
