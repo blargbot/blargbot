@@ -1,6 +1,6 @@
-import { CommandContext, GlobalCommand } from '../../command/index.js';
 import { CommandType, randChoose, randInt, repeat } from '@blargbot/cluster/utils/index.js';
 
+import { CommandContext, GlobalCommand } from '../../command/index.js';
 import templates from '../../text.js';
 import { CommandResult } from '../../types.js';
 

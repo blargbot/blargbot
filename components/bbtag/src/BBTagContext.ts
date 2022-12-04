@@ -1,8 +1,8 @@
 import { Emote } from '@blargbot/core/Emote.js';
 import { Timer } from '@blargbot/core/Timer.js';
 import { ChoiceQueryResult, EntityPickQueryOptions } from '@blargbot/core/types.js';
-import { guard, hasFlag, humanize, parse } from '@blargbot/core/utils/index.js';
 import { discord } from '@blargbot/core/utils/discord/index.js';
+import { guard, hasFlag, humanize, parse } from '@blargbot/core/utils/index.js';
 import { Database } from '@blargbot/database';
 import { FlagDefinition, FlagResult, NamedGuildCommandTag, StoredTag } from '@blargbot/domain/models/index.js';
 import { Logger } from '@blargbot/logger';

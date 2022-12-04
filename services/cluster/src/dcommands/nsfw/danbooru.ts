@@ -1,8 +1,8 @@
-import { GlobalCommand } from '../../command/index.js';
 import { CommandType, shuffle } from '@blargbot/cluster/utils/index.js';
 import { mapping } from '@blargbot/mapping';
 import fetch from 'node-fetch';
 
+import { GlobalCommand } from '../../command/index.js';
 import templates from '../../text.js';
 import { CommandResult } from '../../types.js';
 
@@ -67,7 +67,7 @@ export class DanbooruCommand extends GlobalCommand {
 async function requestSafe(url: string): Promise<unknown> {
     try {
         const response = await fetch(url);
-        return await response.json() as unknown;
+        return await response.json() ;
     } catch (err: unknown) {
         return undefined;
     }

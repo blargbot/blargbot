@@ -1,9 +1,9 @@
-import { GlobalCommand } from '../../command/index.js';
 import { CommandType, randInt } from '@blargbot/cluster/utils/index.js';
 import { util } from '@blargbot/formatting';
 import { mapping } from '@blargbot/mapping';
 import fetch, { Response } from 'node-fetch';
 
+import { GlobalCommand } from '../../command/index.js';
 import templates from '../../text.js';
 import { CommandResult } from '../../types.js';
 

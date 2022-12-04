@@ -13,7 +13,7 @@ export abstract class CommandManager<T> implements ICommandManager<T> {
     ) {
     }
 
-    public abstract load(commands?: boolean): Promise<void>;
+    public abstract load(rediscover?: boolean): Promise<void>;
     protected abstract getCore(name: string, location?: Eris.Guild | Eris.KnownGuildTextableChannel, user?: Eris.User): Promise<CommandGetCoreResult<T>>;
     protected abstract allCommandNames(location?: Eris.Guild | Eris.KnownGuildTextableChannel): AsyncIterable<string> | Iterable<string> | Promise<Iterable<string>>;
     public abstract configure(user: Eris.User, names: string[], guild: Eris.Guild, permissions: Partial<CommandPermissions>): Promise<readonly string[]>;

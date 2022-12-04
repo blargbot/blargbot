@@ -6,7 +6,7 @@ import res from '@blargbot/res';
 import { Cluster } from './Cluster.js';
 import { ClusterIPCContract } from './types.js';
 
-const holidays = await res.holidays.load()
+const holidays = await res.holidays.load();
 
 export class ClusterWorker extends BaseWorker<ClusterIPCContract> {
     public readonly cluster: Cluster;

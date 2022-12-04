@@ -1,9 +1,9 @@
-import { GuildCommand } from '../../command/index.js';
 import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types.js';
 import { CommandType } from '@blargbot/cluster/utils/index.js';
 import { FlagResult } from '@blargbot/domain/models/index.js';
 import { util } from '@blargbot/formatting';
 
+import { GuildCommand } from '../../command/index.js';
 import templates from '../../text.js';
 
 const cmd = templates.commands.unban;

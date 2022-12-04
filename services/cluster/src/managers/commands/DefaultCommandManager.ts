@@ -22,8 +22,8 @@ export class DefaultCommandManager extends CommandManager<Command> {
         this.modules = new ModuleLoader(source, Command, [cluster], cluster.logger, command => [command.name, ...command.aliases]);
     }
 
-    public async load(commands = true): Promise<void> {
-        await this.modules.reload(commands ?? true);
+    public async load(rediscover = true): Promise<void> {
+        await this.modules.reload(rediscover);
     }
 
     protected async getCore(name: string, location?: Eris.Guild | Eris.KnownTextableChannel, user?: Eris.User): Promise<CommandGetCoreResult<Command>> {

@@ -1,10 +1,10 @@
-import { GuildCommand } from '../../command/index.js';
 import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types.js';
 import { CommandType, createSafeRegExp, getRange, parse, randChoose, randInt } from '@blargbot/cluster/utils/index.js';
 import { guard } from '@blargbot/core/utils/index.js';
 import { GuildFilteredAutoresponse, GuildTriggerTag } from '@blargbot/domain/models/index.js';
 import { util } from '@blargbot/formatting';
 
+import { GuildCommand } from '../../command/index.js';
 import { RawBBTagCommandResult } from '../../command/RawBBTagCommandResult.js';
 import templates from '../../text.js';
 

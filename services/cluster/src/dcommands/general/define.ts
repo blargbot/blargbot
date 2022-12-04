@@ -1,8 +1,8 @@
-import { CommandContext, GlobalCommand } from '../../command/index.js';
 import { CommandType } from '@blargbot/cluster/utils/index.js';
 import { mapping } from '@blargbot/mapping';
 import fetch, { RequestInit } from 'node-fetch';
 
+import { CommandContext, GlobalCommand } from '../../command/index.js';
 import templates from '../../text.js';
 import { CommandResult } from '../../types.js';
 
@@ -72,7 +72,7 @@ function pronunciation(phonetic: string): { phonetic: string; pronunciation: str
 async function fetchSafe(url: string, init?: RequestInit): Promise<unknown> {
     try {
         const response = await fetch(url, init);
-        return await response.json() as unknown;
+        return await response.json() ;
     } catch {
         return undefined;
     }

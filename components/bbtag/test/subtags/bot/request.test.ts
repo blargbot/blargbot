@@ -9,7 +9,9 @@ import express from 'express';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-const app = express()
+const requests = new Map<string, express.Request>();
+const responses = new Map<string, (response: express.Response) => void>();
+const server = new Server(express()
     .use(req => {
         void (async () => {
             const chunks = [];
@@ -24,13 +26,7 @@ const app = express()
         const response = responses.get(req.url) ?? (r => r.status(404).end());
         responses.delete(req.url);
         response(res);
-    });
-const server = new Server(app);
-const start = promisify(server.listen.bind(server, 19000));
-const stop = promisify(server.close.bind(server));
-
-const requests = new Map<string, express.Request>();
-const responses = new Map<string, (response: express.Response) => void>();
+    }));
 
 function assertRequest(expected: Partial<express.Request> & Pick<express.Request, 'url'>): void {
     const actual = requests.get(expected.url);
@@ -54,10 +50,10 @@ runSubtagTests({
     subtag: new RequestSubtag(),
     argCountBounds: { min: 1, max: 3 },
     async setup() {
-        await start();
+        await promisify(server.listen.bind(server, 19000))();
     },
     async teardown() {
-        await stop();
+        await promisify(server.close.bind(server))();
     },
     cases: [
         {
@@ -299,6 +295,13 @@ runSubtagTests({
             expected: '`A domain could not be extracted from url: a`',
             errors: [
                 { start: 0, end: 11, error: new BBTagRuntimeError('A domain could not be extracted from url: a') }
+            ]
+        },
+        {
+            code: `{request;${import.meta.url}}`,
+            expected: `\`A domain could not be extracted from url: ${import.meta.url}\``,
+            errors: [
+                { start: 0, end: 10 + import.meta.url.length, error: new BBTagRuntimeError(`A domain could not be extracted from url: ${import.meta.url}`) }
             ]
         },
         {

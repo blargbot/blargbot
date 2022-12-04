@@ -1,7 +1,7 @@
-import { CommandContext, GlobalCommand } from '../../command/index.js';
 import { CommandType } from '@blargbot/cluster/utils/index.js';
 import moment from 'moment-timezone';
 
+import { CommandContext, GlobalCommand } from '../../command/index.js';
 import templates from '../../text.js';
 import { CommandResult } from '../../types.js';
 

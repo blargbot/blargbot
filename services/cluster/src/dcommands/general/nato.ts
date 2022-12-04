@@ -1,7 +1,7 @@
-import { GlobalCommand } from '../../command/index.js';
 import { CommandType } from '@blargbot/cluster/utils/index.js';
 import { util } from '@blargbot/formatting';
 
+import { GlobalCommand } from '../../command/index.js';
 import templates from '../../text.js';
 import { CommandResult } from '../../types.js';
 

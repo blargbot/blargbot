@@ -1,6 +1,6 @@
-import { CommandContext, GlobalImageCommand } from '../../command/index.js';
 import { guard } from '@blargbot/cluster/utils/index.js';
 
+import { CommandContext, GlobalImageCommand } from '../../command/index.js';
 import templates from '../../text.js';
 import { CommandResult } from '../../types.js';
 

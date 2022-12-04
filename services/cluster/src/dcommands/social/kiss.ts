@@ -1,6 +1,6 @@
 import { Cluster } from '@blargbot/cluster';
-import { WolkenCommand } from '../../command/index.js';
 
+import { WolkenCommand } from '../../command/index.js';
 import templates from '../../text.js';
 
 export class KissCommand extends WolkenCommand {

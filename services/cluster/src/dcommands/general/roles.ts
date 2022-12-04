@@ -1,7 +1,7 @@
-import { GuildCommand } from '../../command/index.js';
 import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types.js';
 import { CommandType } from '@blargbot/cluster/utils/index.js';
 
+import { GuildCommand } from '../../command/index.js';
 import templates from '../../text.js';
 
 const cmd = templates.commands.roles;
