@@ -4,33 +4,51 @@ import { promisify } from 'node:util';
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
 import { RequestSubtag } from '@blargbot/bbtag/subtags/bot/request.js';
 import { EscapeBBTagSubtag } from '@blargbot/bbtag/subtags/misc/escapeBBTag.js';
-import chai from 'chai';
+import chai, { expect } from 'chai';
 import express from 'express';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-const app = express().all('/*', (req, res) => {
-    for (const [expected, resolve] of requests) {
-        try {
-            const keys = new Set(Object.keys(expected));
-            const data = Object.fromEntries(Object.entries(req).filter(x => keys.has(x[0])));
-            chai.expect(data).to.deep.equal(expected);
-        } catch (err: unknown) {
-            if (err instanceof chai.AssertionError)
-                continue;
-            throw err;
-        }
-        requests.delete(expected);
-        resolve(res);
-        return;
-    }
-    res.status(500).json('Failed');
-});
+const app = express()
+    .use(req => {
+        void (async () => {
+            const chunks = [];
+            for await (const chunk of req)
+                chunks.push(chunk);
+            req.body = Buffer.concat(chunks);
+            req.next?.();
+        })();
+    })
+    .all('/*', (req, res) => {
+        requests.set(req.url, req);
+        const response = responses.get(req.url) ?? (r => r.status(404).end());
+        responses.delete(req.url);
+        response(res);
+    });
 const server = new Server(app);
 const start = promisify(server.listen.bind(server, 19000));
 const stop = promisify(server.close.bind(server));
 
-const requests = new Map<Partial<express.Request>, (res: express.Response) => void>();
+const requests = new Map<string, express.Request>();
+const responses = new Map<string, (response: express.Response) => void>();
+
+function assertRequest(expected: Partial<express.Request> & Pick<express.Request, 'url'>): void {
+    const actual = requests.get(expected.url);
+    chai.expect(responses).to.not.contain.keys(expected.url);
+    chai.expect(actual).to.not.be.undefined;
+    const toCheck = Object.fromEntries(Object.keys(expected).map(e => [e, actual?.[e as keyof express.Request]]));
+    chai.expect(toCheck).to.deep.equal(expected);
+}
+
+function assertResult(result: string): JObject {
+    let parsed: unknown;
+    function tryParseResult(result: string): unknown {
+        return parsed = JSON.parse(result);
+    }
+    chai.expect(tryParseResult.bind(null, result)).to.not.throw();
+    chai.expect(parsed).to.be.an('object');
+    return parsed as JObject;
+}
 
 runSubtagTests({
     subtag: new RequestSubtag(),
@@ -44,15 +62,20 @@ runSubtagTests({
     cases: [
         {
             code: '{request;http://localhost:19000/get-test}',
-            timeout: 10000,
             setup(ctx) {
-                requests.set({ method: 'GET', url: '/get-test' }, res => res.status(200).json({ success: true }));
+                responses.set('/get-test', res => res.status(200).json({ response: 'get-test success' }));
                 ctx.util.setup(m => m.canRequestDomain('localhost:19000')).thenReturn(true);
             },
             assert(_, result) {
-                const response = JSON.parse(result) as JObject;
-                chai.expect(response).to.deep.equal({
-                    body: { success: true },
+                assertRequest({
+                    url: '/get-test',
+                    method: 'GET',
+                    headers: defaultHeaders,
+                    body: Buffer.from('')
+                });
+                const response = assertResult(result);
+                expect(response).to.deep.equal({
+                    body: { response: 'get-test success' },
                     status: 200,
                     statusText: 'OK',
                     contentType: 'application/json; charset=utf-8',
@@ -67,18 +90,26 @@ runSubtagTests({
         {
             code: '{request;http://localhost:19000/empty-post;{escapebbtag;{"method":"post"}}}',
             subtags: [new EscapeBBTagSubtag()],
-            timeout: 10000,
             setup(ctx) {
-                requests.set({ method: 'GET', url: '/get-test' }, res => res.status(200).json({ success: true }));
+                responses.set('/empty-post', res => res.status(200).json({ response: 'empty-post success' }));
                 ctx.util.setup(m => m.canRequestDomain('localhost:19000')).thenReturn(true);
             },
             assert(_, result) {
-                const response = JSON.parse(result) as JObject;
-                chai.expect(response).excludingEvery(['X-Amzn-Trace-Id', 'origin']).to.deep.equal({
-                    body: { success: true },
+                assertRequest({
+                    method: 'POST',
+                    url: '/empty-post',
+                    headers: {
+                        ...defaultHeaders,
+                        ['content-length']: '0'
+                    },
+                    body: Buffer.from('')
+                });
+                const response = assertResult(result);
+                chai.expect(response).to.deep.equal({
+                    body: { response: 'empty-post success' },
                     status: 200,
                     statusText: 'OK',
-                    contentType: 'application/json',
+                    contentType: 'application/json; charset=utf-8',
                     date: response.date,
                     url: 'http://localhost:19000/empty-post'
                 });
@@ -88,172 +119,156 @@ runSubtagTests({
             }
         },
         {
-            code: '{request;https://httpbin.org/post;{escapebbtag;{"method":"post","headers":{"x-test":true}}};{escapebbtag;{"age":123}}}',
+            code: '{request;http://localhost:19000/post-with-json;{escapebbtag;{"method":"post","headers":{"x-test":true}}};{escapebbtag;{"age":123}}}',
             subtags: [new EscapeBBTagSubtag()],
-            timeout: 10000,
             setup(ctx) {
-                ctx.util.setup(m => m.canRequestDomain('httpbin.org')).thenReturn(true);
+                responses.set('/post-with-json', res => res.status(200).json({ response: 'post-with-json success' }));
+                ctx.util.setup(m => m.canRequestDomain('localhost:19000')).thenReturn(true);
             },
             assert(_, result) {
-                const response = JSON.parse(result) as JObject;
-                chai.expect(response).excludingEvery(['X-Amzn-Trace-Id', 'origin']).to.deep.equal({
-                    body: {
-                        args: {},
-                        data: '{"age":123}',
-                        files: {},
-                        form: {},
-                        headers: {
-                            ['Accept']: '*/*',
-                            ['Accept-Encoding']: 'gzip, deflate, br',
-                            ['Content-Length']: '11',
-                            ['Content-Type']: 'application/json',
-                            ['Host']: 'httpbin.org',
-                            ['User-Agent']: 'node-fetch',
-                            ['X-Test']: 'true'
-                        },
-                        json: {
-                            age: 123
-                        },
-                        url: 'https://httpbin.org/post'
+                assertRequest({
+                    method: 'POST',
+                    url: '/post-with-json',
+                    headers: {
+                        ...defaultHeaders,
+                        ['content-type']: 'application/json',
+                        ['content-length']: '11',
+                        ['x-test']: 'true'
                     },
-                    status: 200,
-                    statusText: 'OK',
-                    contentType: 'application/json',
-                    date: response.date,
-                    url: 'https://httpbin.org/post'
+                    body: Buffer.from('{"age":123}')
                 });
-                chai.expect(response.date).to.be.string('');
-                const date = new Date(response.date as string);
-                chai.expect(date).to.be.closeToTime(new Date(), 10);
-            }
-        },
-        {
-            code: '{request;https://httpbin.org/post;{escapebbtag;{"method":"post","headers":{"x-test":true}}};{escapebbtag;This isnt json}}',
-            subtags: [new EscapeBBTagSubtag()],
-            timeout: 10000,
-            setup(ctx) {
-                ctx.util.setup(m => m.canRequestDomain('httpbin.org')).thenReturn(true);
-            },
-            assert(_, result) {
-                const response = JSON.parse(result) as JObject;
-                chai.expect(response).excludingEvery(['X-Amzn-Trace-Id', 'origin']).to.deep.equal({
-                    body: {
-                        args: {},
-                        data: 'This isnt json',
-                        files: {},
-                        form: {},
-                        headers: {
-                            ['Accept']: '*/*',
-                            ['Accept-Encoding']: 'gzip, deflate, br',
-                            ['Content-Length']: '14',
-                            ['Content-Type']: 'text/plain;charset=UTF-8',
-                            ['Host']: 'httpbin.org',
-                            ['User-Agent']: 'node-fetch',
-                            ['X-Test']: 'true'
-                        },
-                        json: null,
-                        url: 'https://httpbin.org/post'
-                    },
-                    status: 200,
-                    statusText: 'OK',
-                    contentType: 'application/json',
-                    date: response.date,
-                    url: 'https://httpbin.org/post'
-                });
-                chai.expect(response.date).to.be.string('');
-                const date = new Date(response.date as string);
-                chai.expect(date).to.be.closeToTime(new Date(), 10);
-            }
-        },
-        {
-            code: '{request;https://httpbin.org/post;{escapebbtag;{"method":"post","headers":{"x-test":true,"content-type":"text/plain"}}};{escapebbtag;{"age":123}}}',
-            subtags: [new EscapeBBTagSubtag()],
-            timeout: 10000,
-            setup(ctx) {
-                ctx.util.setup(m => m.canRequestDomain('httpbin.org')).thenReturn(true);
-            },
-            assert(_, result) {
-                const response = JSON.parse(result) as JObject;
-                chai.expect(response).excludingEvery(['X-Amzn-Trace-Id', 'origin']).to.deep.equal({
-                    body: {
-                        args: {},
-                        data: '{"age":123}',
-                        files: {},
-                        form: {},
-                        headers: {
-                            ['Accept']: '*/*',
-                            ['Accept-Encoding']: 'gzip, deflate, br',
-                            ['Content-Length']: '11',
-                            ['Content-Type']: 'text/plain',
-                            ['Host']: 'httpbin.org',
-                            ['User-Agent']: 'node-fetch',
-                            ['X-Test']: 'true'
-                        },
-                        json: {
-                            age: 123
-                        },
-                        url: 'https://httpbin.org/post'
-                    },
-                    status: 200,
-                    statusText: 'OK',
-                    contentType: 'application/json',
-                    date: response.date,
-                    url: 'https://httpbin.org/post'
-                });
-                chai.expect(response.date).to.be.string('');
-                const date = new Date(response.date as string);
-                chai.expect(date).to.be.closeToTime(new Date(), 10);
-            }
-        },
-        {
-            code: '{request;https://httpbin.org/get;{escapebbtag;{"method":"get","headers":{"x-test":true}}};{escapebbtag;{"age":123}}}',
-            subtags: [new EscapeBBTagSubtag()],
-            timeout: 10000,
-            setup(ctx) {
-                ctx.util.setup(m => m.canRequestDomain('httpbin.org')).thenReturn(true);
-            },
-            assert(_, result) {
-                const response = JSON.parse(result) as JObject;
-                chai.expect(response).excludingEvery(['X-Amzn-Trace-Id', 'origin']).to.deep.equal({
-                    body: {
-                        args: {
-                            age: '123'
-                        },
-                        headers: {
-                            ['Accept']: '*/*',
-                            ['Accept-Encoding']: 'gzip, deflate, br',
-                            ['Host']: 'httpbin.org',
-                            ['User-Agent']: 'node-fetch',
-                            ['X-Test']: 'true'
-                        },
-                        url: 'https://httpbin.org/get?age=123'
-                    },
-                    status: 200,
-                    statusText: 'OK',
-                    contentType: 'application/json',
-                    date: response.date,
-                    url: 'https://httpbin.org/get?age=123'
-                });
-                chai.expect(response.date).to.be.string('');
-                const date = new Date(response.date as string);
-                chai.expect(date).to.be.closeToTime(new Date(), 10);
-            }
-        },
-        {
-            code: '{request;https://cdn.discordapp.com/attachments/604763099727134750/940689576853385247/e88c2e966c6ca78f2268fa8aed4621ab1.png}',
-            timeout: 10000,
-            setup(ctx) {
-                ctx.util.setup(m => m.canRequestDomain('cdn.discordapp.com')).thenReturn(true);
-            },
-            assert(_, result) {
-                const response = JSON.parse(result) as JObject;
+                const response = assertResult(result);
                 chai.expect(response).to.deep.equal({
-                    body: 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAC4UlEQVQ4EV2TS0xTQRSGa3sVJZGoMdpYWipcsSg0pSDYptJSESpagq8CWmvVUgWbgC8oaK0WRBMf+H7EBwYfUaPGxNfCa4gbFy6ICxeujS5cuXfzmRlTFG9ycmfm/uebOXPPrzMaFrNihp8FhhLGIg8xzF9Gt32QqY61JIsHSTvOoxR6SS4eYKo9wFhkVGpFjsjVuWfUyoWZUwoYi9xEiz3niPU4SmENe819dNkzKAvdJBb1cTQ0LDVCKzYUEJ0YiIVsHPMn0WKP+JX6hBZ7xruOJ/xKfUSLPebYqp4JXRaiyya+KrpP0pqmtjCGZnuKovrRPA944r2BYq1lRL2EzxSh23aEe2W3J0ASoM9zop9TjpLvRrM/x2eJopQ20l3UT2JJP/pZTqryQ7wsGEU/qwKDcTn6vHIJkYB5c20cbO7kwaLruIwhFFM1vabDMtEwt5yUeQD97Ep8+VFG1StS63QGJgNeHBjk57WHVNiD6PMc9JpSyJPlOUiZM3LsqW7h65lbjA+PMAkg7kEtdeOpW09d01ZWeTfj94Rk1Pu2cOqihfQhN2dHzPjXtNHUEp98B6KE3Woce3U9l67docuW4MKVW6wMhkn02Xl99wKnbQO8uXeRjp4ymtvi1Jj/K2FXUQxbuQ/xfAm/l++GdVH2Zxz8+KzxfeNHvo2/lYAtdXHWLNzw9w5ECUOWXtSlLtoTPTJ5X98AAhBYv50TV82Mf0jzSMslUtNBxpuZXIIjx4XD6GFbQZi1pSEcyxuo8DRyrjPJ7d4h6psjMtraV/L0sp1gVZiyadV/TiD62ZnjlpN6NSghK4oDspzW1a3EW9qp8gZpde0kVtLO0B6P1Ioc6YVl0z0TXhj1D7PAXEaiaJf8K0aTSr6lRAI2WTbhNzdyMpCWANs0J+LkOmGIbDuL/g9YgyxVKnFZ/RQUO2XsKIwyJ1eV34Qvsnpppn8BAWuDNNGgtx8RAiYiOxduFZp/Ab8B3ajWK9lV5k8AAAAASUVORK5CYII=',
+                    body: { response: 'post-with-json success' },
+                    status: 200,
+                    statusText: 'OK',
+                    contentType: 'application/json; charset=utf-8',
+                    date: response.date,
+                    url: 'http://localhost:19000/post-with-json'
+                });
+                chai.expect(response.date).to.be.string('');
+                const date = new Date(response.date as string);
+                chai.expect(date).to.be.closeToTime(new Date(), 10);
+            }
+        },
+        {
+            code: '{request;http://localhost:19000/post-with-text;{escapebbtag;{"method":"post","headers":{"x-test":true}}};{escapebbtag;This isnt json}}',
+            subtags: [new EscapeBBTagSubtag()],
+            setup(ctx) {
+                responses.set('/post-with-text', res => res.status(200).json({ response: 'post-with-text success' }));
+                ctx.util.setup(m => m.canRequestDomain('localhost:19000')).thenReturn(true);
+            },
+            assert(_, result) {
+                assertRequest({
+                    method: 'POST',
+                    url: '/post-with-text',
+                    headers: {
+                        ...defaultHeaders,
+                        ['content-type']: 'text/plain;charset=UTF-8',
+                        ['content-length']: '14',
+                        ['x-test']: 'true'
+                    },
+                    body: Buffer.from('This isnt json')
+                });
+                const response = assertResult(result);
+                chai.expect(response).to.deep.equal({
+                    body: { response: 'post-with-text success' },
+                    status: 200,
+                    statusText: 'OK',
+                    contentType: 'application/json; charset=utf-8',
+                    date: response.date,
+                    url: 'http://localhost:19000/post-with-text'
+                });
+                chai.expect(response.date).to.be.string('');
+                const date = new Date(response.date as string);
+                chai.expect(date).to.be.closeToTime(new Date(), 10);
+            }
+        },
+        {
+            code: '{request;http://localhost:19000/post-with-text-json;{escapebbtag;{"method":"post","headers":{"x-test":true,"content-type":"text/plain"}}};{escapebbtag;{"age":123}}}',
+            subtags: [new EscapeBBTagSubtag()],
+            setup(ctx) {
+                responses.set('/post-with-text-json', res => res.status(200).json({ response: 'post-with-text-json success' }));
+                ctx.util.setup(m => m.canRequestDomain('localhost:19000')).thenReturn(true);
+            },
+            assert(_, result) {
+                assertRequest({
+                    method: 'POST',
+                    url: '/post-with-text-json',
+                    headers: {
+                        ...defaultHeaders,
+                        ['content-type']: 'text/plain',
+                        ['content-length']: '11',
+                        ['x-test']: 'true'
+                    },
+                    body: Buffer.from('{"age":123}')
+                });
+                const response = assertResult(result);
+                chai.expect(response).to.deep.equal({
+                    body: { response: 'post-with-text-json success' },
+                    status: 200,
+                    statusText: 'OK',
+                    contentType: 'application/json; charset=utf-8',
+                    date: response.date,
+                    url: 'http://localhost:19000/post-with-text-json'
+                });
+                chai.expect(response.date).to.be.string('');
+                const date = new Date(response.date as string);
+                chai.expect(date).to.be.closeToTime(new Date(), 10);
+            }
+        },
+        {
+            code: '{request;http://localhost:19000/get-with-query;{escapebbtag;{"method":"get","headers":{"x-test":true}}};{escapebbtag;{"age":123}}}',
+            subtags: [new EscapeBBTagSubtag()],
+            setup(ctx) {
+                responses.set('/get-with-query?age=123', res => res.status(200).json({ response: 'get-with-query success' }));
+                ctx.util.setup(m => m.canRequestDomain('localhost:19000')).thenReturn(true);
+            },
+            assert(_, result) {
+                assertRequest({
+                    method: 'GET',
+                    url: '/get-with-query?age=123',
+                    headers: {
+                        ...defaultHeaders,
+                        ['x-test']: 'true'
+                    },
+                    body: Buffer.from('')
+                });
+                const response = assertResult(result);
+                chai.expect(response).to.deep.equal({
+                    body: { response: 'get-with-query success' },
+                    status: 200,
+                    statusText: 'OK',
+                    contentType: 'application/json; charset=utf-8',
+                    date: response.date,
+                    url: 'http://localhost:19000/get-with-query?age=123'
+                });
+                chai.expect(response.date).to.be.string('');
+                const date = new Date(response.date as string);
+                chai.expect(date).to.be.closeToTime(new Date(), 10);
+            }
+        },
+        {
+            code: '{request;http://localhost:19000/get-image-limit}',
+            setup(ctx) {
+                responses.set('/get-image-limit', res => res.status(200).contentType('image/png').send(randomData(8000000, { seed: 278364828438 })));
+                ctx.util.setup(m => m.canRequestDomain('localhost:19000')).thenReturn(true);
+            },
+            assert(_, result) {
+                assertRequest({
+                    method: 'GET',
+                    url: '/get-image-limit',
+                    headers: defaultHeaders,
+                    body: Buffer.from('')
+                });
+                const response = assertResult(result);
+                chai.expect(response).to.deep.equal({
+                    body: randomData(8000000, { seed: 278364828438 }).toString('base64'),
                     status: 200,
                     statusText: 'OK',
                     contentType: 'image/png',
                     date: response.date,
-                    url: 'https://cdn.discordapp.com/attachments/604763099727134750/940689576853385247/e88c2e966c6ca78f2268fa8aed4621ab1.png'
+                    url: 'http://localhost:19000/get-image-limit'
                 });
                 chai.expect(response.date).to.be.string('');
                 const date = new Date(response.date as string);
@@ -261,14 +276,22 @@ runSubtagTests({
             }
         },
         {
-            code: '{request;https://cdn.discordapp.com/attachments/604763099727134750/940689576853385247/e88c2e966c6ca78f2268fa8aed4621ab2.png}',
+            code: '{request;http://localhost:19000/get-forbidden}',
             expected: '`403 Forbidden`',
             errors: [
-                { start: 0, end: 124, error: new BBTagRuntimeError('403 Forbidden') }
+                { start: 0, end: 46, error: new BBTagRuntimeError('403 Forbidden') }
             ],
-            timeout: 10000,
             setup(ctx) {
-                ctx.util.setup(m => m.canRequestDomain('cdn.discordapp.com')).thenReturn(true);
+                responses.set('/get-forbidden', res => res.status(403).send('nope'));
+                ctx.util.setup(m => m.canRequestDomain('localhost:19000')).thenReturn(true);
+            },
+            assert() {
+                assertRequest({
+                    method: 'GET',
+                    url: '/get-forbidden',
+                    headers: defaultHeaders,
+                    body: Buffer.from('')
+                });
             }
         },
         {
@@ -279,26 +302,64 @@ runSubtagTests({
             ]
         },
         {
-            code: '{request;http://test.com}',
-            expected: '`Domain is not whitelisted: test.com`',
+            code: '{request;http://localhost:19000/never-called}',
+            expected: '`Domain is not whitelisted: localhost:19000`',
             errors: [
-                { start: 0, end: 25, error: new BBTagRuntimeError('Domain is not whitelisted: test.com') }
+                { start: 0, end: 45, error: new BBTagRuntimeError('Domain is not whitelisted: localhost:19000') }
             ],
-            timeout: 10000,
             setup(ctx) {
-                ctx.util.setup(m => m.canRequestDomain('test.com')).thenReturn(false);
+                ctx.util.setup(m => m.canRequestDomain('localhost:19000')).thenReturn(false);
             }
         },
         {
-            code: '{request;https://cdn.discordapp.com/attachments/604763099727134750/940689576853385247/e88c2e966c6ca78f2268fa8aed4621ab2.png;this isnt a valid option}',
+            code: '{request;http://localhost:19000/never-called;this isnt a valid option}',
             expected: '``',
             errors: [
-                { start: 0, end: 149, error: new BBTagRuntimeError('', 'Invalid request options "this isnt a valid option"') }
+                { start: 0, end: 70, error: new BBTagRuntimeError('', 'Invalid request options "this isnt a valid option"') }
             ],
-            timeout: 10000,
             setup(ctx) {
-                ctx.util.setup(m => m.canRequestDomain('cdn.discordapp.com')).thenReturn(true);
+                ctx.util.setup(m => m.canRequestDomain('localhost:19000')).thenReturn(true);
             }
         }
     ]
 });
+
+const defaultHeaders = {
+    ['accept']: '*/*',
+    ['accept-encoding']: 'gzip, deflate, br',
+    ['connection']: 'close',
+    ['host']: 'localhost:19000',
+    ['user-agent']: 'node-fetch'
+};
+
+function randomData(size: number, options = { seed: performance.now() }): Buffer {
+    if (size % 4 !== 0)
+        throw new Error('Size must be a multiple of 4');
+    const rng = seededRng(options.seed);
+    const data = Array.from({ length: size / 4 }, () => rng.next() * 0xFFFFFFFF);
+    return Buffer.from(new Uint32Array(data));
+}
+
+function seededRng(seed: number): { next(): number; } {
+    let a = 0x9E3779B9; // phi
+    let b = 0x243F6A88; // pi
+    let c = 0xB7E15162; // e
+    let d = seed ^ 0xDEADBEEF; // funny word in base16
+    return {
+        next() {
+            // sfc32
+            a >>>= 0;
+            b >>>= 0;
+            c >>>= 0;
+            d >>>= 0;
+            let t = a + b | 0;
+            a = b ^ b >>> 9;
+            b = c + (c << 3) | 0;
+            c = c << 21 | c >>> 11;
+            d = d + 1 | 0;
+            t = t + d | 0;
+            c = c + t | 0;
+            return (t >>> 0) / 4294967296;
+        }
+    };
+}
