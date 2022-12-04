@@ -1,21 +1,12 @@
 {
   "cache": false,
   "check-coverage": true,
-  "extension": [
-    ".ts",
-    ".cts",
-    ".mts"
-  ],
-  "include": [
-    "*/*/src/**/*.{js,ts,mjs,mts,cjs,cts}"
-  ],
   "exclude": [
     "coverage/**",
-    "node_modules/**",
+    ".yarn/**",
     "*/*/test/**",
     "**/*.d.{ts,mts,cts}",
-    "**/*.test.{ts,mts,cts}",
-    "*.{ts,mts,cts}"
+    "*.pnp.*"
   ],
   "sourceMap": true,
   "reporter": [
