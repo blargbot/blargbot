@@ -3,10 +3,10 @@ name: main
 on:
   push:
     branches: ["**"]
-    paths: ["**.ts", "tsconfig.json"]
+    paths: [".github/workflows/main.yml", "**.ts", "tsconfig.json"]
   pull_request:
     branches: [master]
-    paths: ["**.ts", "tsconfig.json"]
+    paths: [".github/workflows/main.yml", "**.ts", "tsconfig.json"]
   workflow_dispatch: ~
 
 jobs:
@@ -15,7 +15,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Add configuration files
         run: |
@@ -23,9 +23,9 @@ jobs:
           export = config;" >> config.json.d.ts
 
       - name: Install Node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 18
           cache: yarn
 
       - name: Install build dependencies
@@ -57,7 +57,7 @@ jobs:
 
       - name: Upload coverage
         if: always() && steps.test.outcome != 'skipped' && hashFiles('coverage/index.html') != ''
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: coverage
           path: coverage/
