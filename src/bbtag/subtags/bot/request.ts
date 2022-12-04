@@ -1,6 +1,6 @@
 import { parse } from '@blargbot/core/utils';
 import { mapping } from '@blargbot/mapping';
-import fetch, { BodyInit } from 'node-fetch';
+import fetch, { FetchError } from 'node-fetch';
 
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
@@ -49,7 +49,7 @@ export class RequestSubtag extends CompiledSubtag {
             method: 'GET',
             headers: {} as Record<string, string>,
             size: 8000000,
-            body: undefined as BodyInit | undefined
+            body: undefined as string | undefined
         };
 
         if (optionsStr !== '') {
@@ -79,31 +79,42 @@ export class RequestSubtag extends CompiledSubtag {
             request.body = dataStr;
         }
 
-        const response = await fetch(url + (query !== undefined ? `?${query}` : ''), request);
-        const result = {
-            status: response.status,
-            statusText: response.statusText,
-            contentType: response.headers.get('content-type'),
-            date: response.headers.get('date'),
-            url: response.url
-        };
+        try {
+            const response = await fetch(url + (query !== undefined ? `?${query}` : ''), request);
+            const result = {
+                status: response.status,
+                statusText: response.statusText,
+                contentType: response.headers.get('content-type'),
+                date: response.headers.get('date'),
+                url: response.url
+            };
 
-        /*
+            /*
                 I personally absolutely hate how blarg decides to error if a status code is not consider 'ok'
                 A lot of APIs actually have meaningful errors, coupled with a 'not-ok' status and it's ass that blarg doesn't return it.
                 TODO change this to return always regardless of statusCode OR add a parameter like [rawResponse] for getting the response object always without breaking bbtag.
             */
-        if (!(response.status >= 200 && response.status < 400))
-            throw new BBTagRuntimeError(`${response.status} ${response.statusText}`);
+            if (!(response.status >= 200 && response.status < 400))
+                throw new BBTagRuntimeError(`${response.status} ${response.statusText}`);
 
-        if (result.contentType?.startsWith('text') !== false)
-            return { body: await response.text(), ...result };
+            if (result.contentType?.startsWith('text') !== false)
+                return { body: await response.text(), ...result };
 
-        if (result.contentType.includes('application/json'))
-            return { body: await response.json() as JToken, ...result };
+            if (result.contentType.includes('application/json'))
+                return { body: await response.json() as JToken, ...result };
 
-        const body = await response.buffer();
-        return { body: body.toString('base64'), ...result };
+            const body = await response.buffer();
+            return { body: body.toString('base64'), ...result };
+        } catch (err: unknown) {
+            if (!(err instanceof FetchError))
+                throw err;
+
+            switch (err.type) {
+                case 'max-size':
+                    throw new BBTagRuntimeError('Response too large', err.message);
+            }
+            throw err;
+        }
     }
 }
 
