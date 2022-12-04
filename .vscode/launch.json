@@ -63,8 +63,11 @@
             "type": "node",
             "console": "integratedTerminal",
             "runtimeExecutable": "yarn",
-            "program": "node ${file}",
+            "program": "node",
             "request": "launch",
+            "args": [
+                "${fileDirname}/${fileBasenameNoExtension}.js"
+            ],
             "skipFiles": [
                 "<node_internals>/**",
                 "**/node_modules/**",

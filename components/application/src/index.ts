@@ -1,9 +1,12 @@
+import bootstrapIfEntrypoint from './bootstrapIfEntrypoint.js';
 import isEntrypoint from './isEntrypoint.js';
 
 export {
-    isEntrypoint
+    isEntrypoint,
+    bootstrapIfEntrypoint
 };
 
 export default {
-    isEntrypoint
+    isEntrypoint,
+    bootstrapIfEntrypoint
 };

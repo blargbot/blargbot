@@ -1,7 +1,7 @@
 import { fileURLToPath } from 'node:url';
 
 import { ApiWorker } from '@blargbot/api/ApiWorker.js';
-import { isEntrypoint } from '@blargbot/application';
+import Application from '@blargbot/application';
 import { config } from '@blargbot/config';
 import { createLogger } from '@blargbot/logger';
 
@@ -11,6 +11,7 @@ export * from './ApiWorker.js';
 export * from './Api.js';
 export const entrypoint = fileURLToPath(import.meta.url);
 
+await Application.bootstrapIfEntrypoint(start);
 export async function start(): Promise<void> {
     Error.stackTraceLimit = 100;
     const logger = createLogger(config, `API${process.env.WORKER_ID ?? ''}`);
@@ -18,6 +19,3 @@ export async function start(): Promise<void> {
 
     await new ApiWorker(config, logger).start();
 }
-
-if (isEntrypoint(import.meta))
-    await start();
