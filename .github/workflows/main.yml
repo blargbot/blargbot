@@ -19,7 +19,7 @@ jobs:
 
       - name: Add configuration files
         run: |
-          echo "declare const config: import('./src/config/Configuration').Configuration;
+          echo "declare const config: import('./components/config/src/Configuration.js').Configuration;
           export = config;" >> config.json.d.ts
 
       - name: Install Node
