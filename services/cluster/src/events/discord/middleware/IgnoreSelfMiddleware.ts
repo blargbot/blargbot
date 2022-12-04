@@ -1,8 +1,8 @@
 import { guard } from '@blargbot/cluster/utils/index.js';
 import { metrics } from '@blargbot/core/Metrics.js';
-import { IMiddleware, NextMiddleware } from '@blargbot/core/types.js';
-import { Logger } from '@blargbot/logger';
-import * as Eris from 'eris';
+import type { IMiddleware, NextMiddleware } from '@blargbot/core/types.js';
+import type { Logger } from '@blargbot/logger';
+import type * as Eris from 'eris';
 
 export class IgnoreSelfMiddleware implements IMiddleware<Eris.KnownMessage, boolean> {
     readonly #discord: Eris.Client;

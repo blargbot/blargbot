@@ -1,12 +1,12 @@
 import { sleep } from '@blargbot/core/utils/index.js';
-import { BotVariableStore, ChatLogIndexStore, ChatLogStore, DumpStore, EventStore, GuildStore, SuggesterStore, SuggestionStore, TagStore, TagVariableStore, UserStore } from '@blargbot/domain/stores/index.js';
-import { Logger } from '@blargbot/logger';
+import type { BotVariableStore, ChatLogIndexStore, ChatLogStore, DumpStore, EventStore, GuildStore, SuggesterStore, SuggestionStore, TagStore, TagVariableStore, UserStore } from '@blargbot/domain/stores/index.js';
+import type { Logger } from '@blargbot/logger';
 import Airtable from 'airtable';
 import type { AirtableBase } from 'airtable/lib/airtable_base.js';
 import Cassandra from 'cassandra-driver';
 
 import { PostgresDb, RethinkDb } from './clients/index.js';
-import { DatabaseOptions } from './DatabaseOptions.js';
+import type { DatabaseOptions } from './DatabaseOptions.js';
 import { AirtableSuggesterStore } from './stores/AirtableSuggesterStore.js';
 import { AirtableSuggestionStore } from './stores/AirtableSuggestionStore.js';
 import { CassandraDbChatLogStore } from './stores/CassandraDbChatLogStore.js';

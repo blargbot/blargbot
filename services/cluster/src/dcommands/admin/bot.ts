@@ -1,9 +1,11 @@
-import { StoredGuild, StoredUser, TagVariableType } from '@blargbot/domain/models/index.js';
+import type { StoredGuild, StoredUser} from '@blargbot/domain/models/index.js';
+import { TagVariableType } from '@blargbot/domain/models/index.js';
 import * as Eris from 'eris';
 
-import { CommandContext, GlobalCommand } from '../../command/index.js';
+import type { CommandContext} from '../../command/index.js';
+import { GlobalCommand } from '../../command/index.js';
 import templates from '../../text.js';
-import { CommandResult, GuildCommandContext, PrivateCommandContext } from '../../types.js';
+import type { CommandResult, GuildCommandContext, PrivateCommandContext } from '../../types.js';
 import { CommandType, guard } from '../../utils/index.js';
 
 const cmd = templates.commands.bot;

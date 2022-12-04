@@ -1,10 +1,10 @@
-import { Cluster } from '@blargbot/cluster';
-import { PollResponse } from '@blargbot/cluster/types.js';
-import { Emote } from '@blargbot/core/Emote.js';
+import type { Cluster } from '@blargbot/cluster';
+import type { PollResponse } from '@blargbot/cluster/types.js';
+import type { Emote } from '@blargbot/core/Emote.js';
 import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent.js';
-import { PollEventOptions } from '@blargbot/domain/models/index.js';
+import type { PollEventOptions } from '@blargbot/domain/models/index.js';
 import { util } from '@blargbot/formatting';
-import * as Eris from 'eris';
+import type * as Eris from 'eris';
 import moment from 'moment-timezone';
 
 import templates from '../text.js';

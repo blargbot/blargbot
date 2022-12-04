@@ -1,7 +1,8 @@
 import { BaseImageGenerator } from '@blargbot/image/BaseImageGenerator.js';
-import { ImageWorker } from '@blargbot/image/ImageWorker.js';
-import { CahOptions, ImageResult } from '@blargbot/image/types.js';
-import sharp, { OverlayOptions } from 'sharp';
+import type { ImageWorker } from '@blargbot/image/ImageWorker.js';
+import type { CahOptions, ImageResult } from '@blargbot/image/types.js';
+import type { OverlayOptions } from 'sharp';
+import sharp from 'sharp';
 
 export class CahGenerator extends BaseImageGenerator<'cah'> {
     public constructor(worker: ImageWorker) {

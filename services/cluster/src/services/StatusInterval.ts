@@ -4,8 +4,8 @@ import { CronService } from '@blargbot/core/serviceTypes/index.js';
 import * as Eris from 'eris';
 import moment from 'moment-timezone';
 
-import { Cluster } from '../Cluster.js';
-import { ClusterOptions } from '../types.js';
+import type { Cluster } from '../Cluster.js';
+import type { ClusterOptions } from '../types.js';
 
 export class StatusInterval extends CronService {
     public readonly holidays: Record<string, string | undefined>;

@@ -1,4 +1,4 @@
-import { ICompiledFormatString, IFormatStringCompiler, IFormatStringCompilerMiddleware } from '../compiler/index.js';
+import type { ICompiledFormatString, IFormatStringCompiler, IFormatStringCompilerMiddleware } from '../compiler/index.js';
 
 export class CacheMiddleware implements IFormatStringCompilerMiddleware {
     readonly #cache: { [P in string]?: ICompiledFormatString; };

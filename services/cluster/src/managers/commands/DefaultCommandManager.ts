@@ -1,15 +1,16 @@
-import { Cluster } from '@blargbot/cluster';
-import { CommandGetCoreResult, CommandParameter, CommandProperties, CommandResult, CommandSignature, ICommand } from '@blargbot/cluster/types.js';
+import type { Cluster } from '@blargbot/cluster';
+import type { CommandGetCoreResult, CommandParameter, CommandProperties, CommandResult, CommandSignature, ICommand } from '@blargbot/cluster/types.js';
 import { commandTypeDetails, guard } from '@blargbot/cluster/utils/index.js';
 import { metrics } from '@blargbot/core/Metrics.js';
 import { ModuleLoader } from '@blargbot/core/modules/index.js';
 import { Timer } from '@blargbot/core/Timer.js';
-import { NextMiddleware } from '@blargbot/core/types.js';
-import { CommandPermissions, FlagDefinition } from '@blargbot/domain/models/index.js';
-import { IFormattable } from '@blargbot/formatting';
+import type { NextMiddleware } from '@blargbot/core/types.js';
+import type { CommandPermissions, FlagDefinition } from '@blargbot/domain/models/index.js';
+import type { IFormattable } from '@blargbot/formatting';
 import * as Eris from 'eris';
 
-import { Command, CommandContext } from '../../command/index.js';
+import type { CommandContext } from '../../command/index.js';
+import { Command } from '../../command/index.js';
 import { CommandManager } from './CommandManager.js';
 
 export class DefaultCommandManager extends CommandManager<Command> {

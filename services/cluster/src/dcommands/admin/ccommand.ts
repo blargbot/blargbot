@@ -1,14 +1,15 @@
 import { createHmac } from 'node:crypto';
 
 import { bbtag } from '@blargbot/bbtag';
-import { Cluster } from '@blargbot/cluster';
-import { CommandResult, CustomCommandShrinkwrap, GuildCommandContext, GuildShrinkwrap, ICommand, SignedGuildShrinkwrap } from '@blargbot/cluster/types.js';
+import type { Cluster } from '@blargbot/cluster';
+import type { CommandResult, CustomCommandShrinkwrap, GuildCommandContext, GuildShrinkwrap, ICommand, SignedGuildShrinkwrap } from '@blargbot/cluster/types.js';
 import { codeBlock, CommandType, guard, parse, snowflake } from '@blargbot/cluster/utils/index.js';
-import { Configuration } from '@blargbot/config';
-import { FlagDefinition, NamedGuildCommandTag, NamedGuildSourceCommandTag } from '@blargbot/domain/models/index.js';
-import { IFormattable, util } from '@blargbot/formatting';
+import type { Configuration } from '@blargbot/config';
+import type { FlagDefinition, NamedGuildCommandTag, NamedGuildSourceCommandTag } from '@blargbot/domain/models/index.js';
+import type { IFormattable} from '@blargbot/formatting';
+import { util } from '@blargbot/formatting';
 import { mapping } from '@blargbot/mapping';
-import * as Eris from 'eris';
+import type * as Eris from 'eris';
 import moment from 'moment-timezone';
 import fetch from 'node-fetch';
 

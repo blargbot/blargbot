@@ -1,6 +1,6 @@
 import { BaseImageGenerator } from '@blargbot/image/BaseImageGenerator.js';
-import { ImageWorker } from '@blargbot/image/ImageWorker.js';
-import { ImageResult, StupidOptions } from '@blargbot/image/types.js';
+import type { ImageWorker } from '@blargbot/image/ImageWorker.js';
+import type { ImageResult, StupidOptions } from '@blargbot/image/types.js';
 import sharp from 'sharp';
 
 export class StupidGenerator extends BaseImageGenerator<'stupid'> {

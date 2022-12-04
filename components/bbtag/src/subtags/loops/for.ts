@@ -1,12 +1,13 @@
 import { parse } from '@blargbot/core/utils/index.js';
 
-import { SubtagArgument } from '../../arguments/index.js';
-import { BBTagContext } from '../../BBTagContext.js';
+import type { SubtagArgument } from '../../arguments/index.js';
+import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { AggregateBBTagError, BBTagRuntimeError, InvalidOperatorError, NotANumberError } from '../../errors/index.js';
 import templates from '../../text.js';
 import { BBTagRuntimeState } from '../../types.js';
-import { bbtag, OrdinalOperator, SubtagType } from '../../utils/index.js';
+import type { OrdinalOperator} from '../../utils/index.js';
+import { bbtag, SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.for;
 

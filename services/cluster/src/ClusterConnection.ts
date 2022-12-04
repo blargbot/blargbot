@@ -1,8 +1,8 @@
 import { WorkerConnection } from '@blargbot/core/worker/index.js';
-import { Logger } from '@blargbot/logger';
+import type { Logger } from '@blargbot/logger';
 
 import { entrypoint } from './index.js';
-import { ClusterIPCContract } from './types.js';
+import type { ClusterIPCContract } from './types.js';
 
 export class ClusterConnection extends WorkerConnection<ClusterIPCContract> {
     public constructor(

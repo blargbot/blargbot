@@ -1,7 +1,7 @@
-import { Cluster } from '@blargbot/cluster';
+import type { Cluster } from '@blargbot/cluster';
 import { ClusterEventService } from '@blargbot/cluster/serviceTypes/index.js';
 import { metrics } from '@blargbot/core/Metrics.js';
-import { metric } from 'prom-client';
+import type { metric } from 'prom-client';
 
 export class ClusterMetricsHandler extends ClusterEventService<'metrics'> {
     public constructor(cluster: Cluster) {

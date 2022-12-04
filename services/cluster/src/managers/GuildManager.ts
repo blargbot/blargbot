@@ -1,9 +1,9 @@
 import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent.js';
 import { metrics } from '@blargbot/core/Metrics.js';
-import * as Eris from 'eris';
+import type * as Eris from 'eris';
 import moment from 'moment-timezone';
 
-import { Cluster } from '../Cluster.js';
+import type { Cluster } from '../Cluster.js';
 import templates from '../text.js';
 
 export class GuildManager {

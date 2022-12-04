@@ -3,7 +3,7 @@ import { EditSubtag } from '@blargbot/bbtag/subtags/message/edit.js';
 import { EscapeBBTagSubtag } from '@blargbot/bbtag/subtags/misc/escapeBBTag.js';
 import { argument } from '@blargbot/test-util/mock.js';
 import chai from 'chai';
-import * as Eris from 'eris';
+import type * as Eris from 'eris';
 
 import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';
 

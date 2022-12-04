@@ -1,4 +1,5 @@
-import { format, FormatString, FormatStringCompiler, FormatStringCompilerOptions, Formatter, IFormattable, util } from '@blargbot/formatting';
+import type { FormatStringCompilerOptions, IFormattable} from '@blargbot/formatting';
+import { format, FormatString, FormatStringCompiler, Formatter, util } from '@blargbot/formatting';
 import chai from 'chai';
 import mocha from 'mocha';
 

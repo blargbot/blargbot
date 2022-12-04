@@ -1,4 +1,4 @@
-import * as Eris from 'eris';
+import type * as Eris from 'eris';
 
 import { isWellKnownChannel } from './isWellKnownChannel.js';
 

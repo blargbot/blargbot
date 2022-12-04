@@ -1,8 +1,8 @@
 import { BaseRoute } from '@blargbot/api/BaseRoute.js';
-import { ApiResponse } from '@blargbot/api/types.js';
+import type { ApiResponse } from '@blargbot/api/types.js';
 import { config } from '@blargbot/config';
 import { mapping } from '@blargbot/mapping';
-import { Request } from 'express-serve-static-core';
+import type { Request } from 'express-serve-static-core';
 import fetch from 'node-fetch';
 
 import Security from '../Security.js';

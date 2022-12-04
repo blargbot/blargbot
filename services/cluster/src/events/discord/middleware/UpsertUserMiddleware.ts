@@ -1,6 +1,6 @@
-import { IMiddleware, NextMiddleware } from '@blargbot/core/types.js';
-import { UserStore } from '@blargbot/domain/stores/index.js';
-import * as Eris from 'eris';
+import type { IMiddleware, NextMiddleware } from '@blargbot/core/types.js';
+import type { UserStore } from '@blargbot/domain/stores/index.js';
+import type * as Eris from 'eris';
 
 export class UpsertUserMiddleware implements IMiddleware<Eris.KnownMessage, boolean> {
     readonly #database: UserStore;

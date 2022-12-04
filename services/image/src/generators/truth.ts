@@ -1,6 +1,6 @@
 import { BaseImageGenerator } from '@blargbot/image/BaseImageGenerator.js';
-import { ImageWorker } from '@blargbot/image/ImageWorker.js';
-import { ImageResult, TruthOptions } from '@blargbot/image/types.js';
+import type { ImageWorker } from '@blargbot/image/ImageWorker.js';
+import type { ImageResult, TruthOptions } from '@blargbot/image/types.js';
 import sharp from 'sharp';
 
 export class TruthGenerator extends BaseImageGenerator<'truth'> {

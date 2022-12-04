@@ -1,9 +1,9 @@
-import { EventOptionsTypeMap, EventType, StoredEvent, StoredEventOptions } from '@blargbot/domain/models/index.js';
-import { EventStore } from '@blargbot/domain/stores/index.js';
-import { Logger } from '@blargbot/logger';
+import type { EventOptionsTypeMap, EventType, StoredEvent, StoredEventOptions } from '@blargbot/domain/models/index.js';
+import type { EventStore } from '@blargbot/domain/stores/index.js';
+import type { Logger } from '@blargbot/logger';
 import moment from 'moment-timezone';
 
-import { RethinkDb } from '../clients/index.js';
+import type { RethinkDb } from '../clients/index.js';
 import { RethinkDbTable } from '../tables/RethinkDbTable.js';
 
 export class RethinkDbEventStore implements EventStore {

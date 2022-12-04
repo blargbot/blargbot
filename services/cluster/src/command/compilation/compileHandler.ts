@@ -1,11 +1,11 @@
-import { CommandBinderState, CommandBinderStateFailureReason, CommandGreedyParameter, CommandHandler, CommandLiteralParameter, CommandParameter, CommandResult, CommandSignatureHandler, CommandSingleParameter, CommandVariableTypeName } from '@blargbot/cluster/types.js';
+import type { CommandBinderState, CommandBinderStateFailureReason, CommandGreedyParameter, CommandHandler, CommandLiteralParameter, CommandParameter, CommandResult, CommandSignatureHandler, CommandSingleParameter, CommandVariableTypeName } from '@blargbot/cluster/types.js';
 import { parse } from '@blargbot/cluster/utils/index.js';
 import { Binder } from '@blargbot/core/Binder.js';
-import { Binding } from '@blargbot/core/types.js';
+import type { Binding } from '@blargbot/core/types.js';
 
 import templates from '../../text.js';
-import { CommandContext } from '../CommandContext.js';
-import { ScopedCommand } from '../ScopedCommand.js';
+import type { CommandContext } from '../CommandContext.js';
+import type { ScopedCommand } from '../ScopedCommand.js';
 import * as bindings from './binding/index.js';
 import { getLookupCache } from './lookupCache.js';
 

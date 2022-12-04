@@ -1,9 +1,9 @@
-import { ResettableStoredUserData, StoredUser, StoredUsername, UserDetails, UserTodo } from '@blargbot/domain/models/index.js';
-import { UserStore } from '@blargbot/domain/stores/index.js';
-import { Logger } from '@blargbot/logger';
-import { UpdateData } from 'rethinkdb';
+import type { ResettableStoredUserData, StoredUser, StoredUsername, UserDetails, UserTodo } from '@blargbot/domain/models/index.js';
+import type { UserStore } from '@blargbot/domain/stores/index.js';
+import type { Logger } from '@blargbot/logger';
+import type { UpdateData } from 'rethinkdb';
 
-import { RethinkDb } from '../clients/index.js';
+import type { RethinkDb } from '../clients/index.js';
 import { RethinkDbCachedTable } from '../tables/RethinkDbCachedTable.js';
 
 export class RethinkDbUserStore implements UserStore {

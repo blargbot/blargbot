@@ -1,6 +1,6 @@
-import { CreationAttributes, FindOptions, Model, ModelAttributes, ModelStatic } from 'sequelize';
+import type { CreationAttributes, FindOptions, Model, ModelAttributes, ModelStatic } from 'sequelize';
 
-import { PostgresDb } from '../clients/index.js';
+import type { PostgresDb } from '../clients/index.js';
 
 export class PostgresDbTable<T extends object> {
     readonly #model: ModelStatic<Model<T>>;

@@ -1,4 +1,4 @@
-import { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { tagVariableScopeProviders } from '../../tagVariableScopeProviders.js';
 import templates from '../../text.js';

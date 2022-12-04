@@ -1,4 +1,4 @@
-import { Cluster } from '@blargbot/cluster';
+import type { Cluster } from '@blargbot/cluster';
 import { ClusterEventService } from '@blargbot/cluster/serviceTypes/index.js';
 
 import { guildSettings } from '../../utils/index.js';

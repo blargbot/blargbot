@@ -1,4 +1,4 @@
-import { Cluster } from '@blargbot/cluster';
+import type { Cluster } from '@blargbot/cluster';
 
 import { BanManager, CensorManager, ChatLogManager, EventLogManager, ModLogManager, MuteManager, TimeoutManager, WarnManager } from './moderation/index.js';
 

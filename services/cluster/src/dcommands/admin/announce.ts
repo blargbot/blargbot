@@ -1,4 +1,4 @@
-import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types.js';
+import type { CommandResult, GuildCommandContext } from '@blargbot/cluster/types.js';
 import { CommandType, discord } from '@blargbot/cluster/utils/index.js';
 import { util } from '@blargbot/formatting';
 import * as Eris from 'eris';

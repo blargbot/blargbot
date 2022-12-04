@@ -1,4 +1,4 @@
-import { Cluster } from '@blargbot/cluster';
+import type { Cluster } from '@blargbot/cluster';
 import { Emote } from '@blargbot/core/Emote.js';
 import { DiscordEventService } from '@blargbot/core/serviceTypes/index.js';
 import * as Eris from 'eris';

@@ -1,4 +1,5 @@
-import { FormatString, IFormattable } from '@blargbot/formatting';
+import type { IFormattable } from '@blargbot/formatting';
+import { FormatString } from '@blargbot/formatting';
 import * as Eris from 'eris';
 
 export function permissions(permissions: bigint | ReadonlyArray<keyof Eris.Constants['Permissions']> | Eris.Permission, hideAdminUnlessAlone = false): Array<IFormattable<string>> {

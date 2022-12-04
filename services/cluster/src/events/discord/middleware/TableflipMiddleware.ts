@@ -1,8 +1,8 @@
-import { ClusterUtilities } from '@blargbot/cluster/ClusterUtilities.js';
+import type { ClusterUtilities } from '@blargbot/cluster/ClusterUtilities.js';
 import { guard } from '@blargbot/cluster/utils/index.js';
 import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent.js';
-import { IMiddleware, NextMiddleware } from '@blargbot/core/types.js';
-import * as Eris from 'eris';
+import type { IMiddleware, NextMiddleware } from '@blargbot/core/types.js';
+import type * as Eris from 'eris';
 
 import templates from '../../../text.js';
 

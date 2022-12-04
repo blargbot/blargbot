@@ -1,4 +1,5 @@
-import { getLimit, MessageStringComponent } from './getLimit.js';
+import type { MessageStringComponent } from './getLimit.js';
+import { getLimit } from './getLimit.js';
 
 export function overflowText(component: MessageStringComponent, content: string, overflow: string, limitMod: (limit: number) => number = l => l): string {
     const limitRaw = getLimit(component);

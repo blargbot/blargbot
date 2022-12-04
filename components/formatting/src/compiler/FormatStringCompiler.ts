@@ -1,7 +1,7 @@
 import { format } from '../types.js';
 import { isFormattable } from '../util/index.js';
-import { ReplacementContext } from './ReplacementContext.js';
-import { ICompiledFormatString, IFormatStringCompiler, IFormatStringCompilerMiddleware, IValueResolver, IValueResolverTransform } from './types.js';
+import type { ReplacementContext } from './ReplacementContext.js';
+import type { ICompiledFormatString, IFormatStringCompiler, IFormatStringCompilerMiddleware, IValueResolver, IValueResolverTransform } from './types.js';
 
 export interface FormatStringCompilerOptions {
     readonly middleware?: Iterable<IFormatStringCompilerMiddleware>;

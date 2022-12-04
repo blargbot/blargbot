@@ -1,4 +1,5 @@
-import { format, IFormatter, IValueResolverTransform } from '@blargbot/formatting';
+import type { IFormatter, IValueResolverTransform } from '@blargbot/formatting';
+import { format } from '@blargbot/formatting';
 import moment from 'moment-timezone';
 
 import templates from '../text.js';

@@ -3,9 +3,10 @@ import { util } from '@blargbot/formatting';
 import { mapping } from '@blargbot/mapping';
 import fetch from 'node-fetch';
 
-import { CommandContext, GlobalCommand } from '../../command/index.js';
+import type { CommandContext} from '../../command/index.js';
+import { GlobalCommand } from '../../command/index.js';
 import templates from '../../text.js';
-import { CommandResult } from '../../types.js';
+import type { CommandResult } from '../../types.js';
 
 const cmd = templates.commands.xkcd;
 

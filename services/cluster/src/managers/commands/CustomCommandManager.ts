@@ -1,12 +1,13 @@
-import { Cluster } from '@blargbot/cluster';
-import { CommandGetCoreResult, CommandProperties, ICommand } from '@blargbot/cluster/types.js';
+import type { Cluster } from '@blargbot/cluster';
+import type { CommandGetCoreResult, CommandProperties, ICommand } from '@blargbot/cluster/types.js';
 import { CommandType, commandTypeDetails, guard } from '@blargbot/cluster/utils/index.js';
 import { metrics } from '@blargbot/core/Metrics.js';
-import { CommandPermissions, FlagDefinition, NamedGuildCommandTag, StoredTag } from '@blargbot/domain/models/index.js';
-import { IFormattable, util } from '@blargbot/formatting';
+import type { CommandPermissions, FlagDefinition, NamedGuildCommandTag, StoredTag } from '@blargbot/domain/models/index.js';
+import type { IFormattable} from '@blargbot/formatting';
+import { util } from '@blargbot/formatting';
 import * as Eris from 'eris';
 
-import { CommandContext } from '../../command/index.js';
+import type { CommandContext } from '../../command/index.js';
 import templates from '../../text.js';
 import { CommandManager } from './CommandManager.js';
 

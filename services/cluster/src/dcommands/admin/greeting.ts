@@ -1,7 +1,7 @@
 import { bbtag } from '@blargbot/bbtag';
-import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types.js';
+import type { CommandResult, GuildCommandContext } from '@blargbot/cluster/types.js';
 import { CommandType, guard } from '@blargbot/cluster/utils/index.js';
-import * as Eris from 'eris';
+import type * as Eris from 'eris';
 
 import { GuildCommand } from '../../command/index.js';
 import { RawBBTagCommandResult } from '../../command/RawBBTagCommandResult.js';

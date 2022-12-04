@@ -1,4 +1,4 @@
-import { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { UnknownSubtagError } from '../../errors/index.js';
 import { SubtagType } from '../../utils/index.js';

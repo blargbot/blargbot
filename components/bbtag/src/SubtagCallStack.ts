@@ -1,4 +1,4 @@
-import { SubtagCall } from './language/index.js';
+import type { SubtagCall } from './language/index.js';
 
 export class SubtagCallStack {
     readonly #callCounts: Record<string, number | undefined>;

@@ -1,6 +1,6 @@
-import { Cluster } from '@blargbot/cluster';
+import type { Cluster } from '@blargbot/cluster';
 import { ClusterEventService } from '@blargbot/cluster/serviceTypes/index.js';
-import { SubtagListResult } from '@blargbot/cluster/types.js';
+import type { SubtagListResult } from '@blargbot/cluster/types.js';
 import { format } from '@blargbot/formatting';
 
 export class ClusterGetSubtagListHandler extends ClusterEventService<'getSubtagList'> {

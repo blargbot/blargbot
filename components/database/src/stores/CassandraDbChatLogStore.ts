@@ -1,11 +1,12 @@
 import { metrics } from '@blargbot/core/Metrics.js';
 import { snowflake } from '@blargbot/core/utils/index.js';
-import { ChatLog, ChatLogMessage, ChatLogSearchOptions, ChatLogType } from '@blargbot/domain/models/index.js';
-import { ChatLogStore } from '@blargbot/domain/stores/index.js';
-import { Logger } from '@blargbot/logger';
+import type { ChatLog, ChatLogMessage, ChatLogSearchOptions} from '@blargbot/domain/models/index.js';
+import { ChatLogType } from '@blargbot/domain/models/index.js';
+import type { ChatLogStore } from '@blargbot/domain/stores/index.js';
+import type { Logger } from '@blargbot/logger';
 import { mapping } from '@blargbot/mapping';
 import Cassandra from 'cassandra-driver';
-import moment from 'moment-timezone';
+import type moment from 'moment-timezone';
 
 export class CassandraDbChatLogStore implements ChatLogStore {
     readonly #db: Cassandra.Client;

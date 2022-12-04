@@ -1,5 +1,5 @@
-import { IFormatStringCompiler } from './compiler/index.js';
-import { IFormatString, IFormatter } from './types.js';
+import type { IFormatStringCompiler } from './compiler/index.js';
+import type { IFormatString, IFormatter } from './types.js';
 
 export interface IFormatterMiddleware {
     handle(formatter: IFormatter, next: (string: IFormatString) => string, string: IFormatString): string;

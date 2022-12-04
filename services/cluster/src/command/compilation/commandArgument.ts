@@ -1,4 +1,4 @@
-import { CommandArgument, CommandVariableTypeMap } from '@blargbot/cluster/types.js';
+import type { CommandArgument, CommandVariableTypeMap } from '@blargbot/cluster/types.js';
 
 export function createCommandArgument<K extends keyof CommandVariableTypeMap>(key: K, value: CommandVariableTypeMap[K] | undefined | ReadonlyArray<CommandVariableTypeMap[K]>): CommandArgument {
     const name = `${key[0].toUpperCase()}${key.slice(1)}` as UppercaseFirst<K>;

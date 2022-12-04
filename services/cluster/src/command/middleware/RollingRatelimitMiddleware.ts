@@ -1,9 +1,9 @@
-import { CommandResult } from '@blargbot/cluster/types.js';
-import { IMiddleware, NextMiddleware } from '@blargbot/core/types.js';
+import type { CommandResult } from '@blargbot/cluster/types.js';
+import type { IMiddleware, NextMiddleware } from '@blargbot/core/types.js';
 import moment from 'moment-timezone';
 
 import templates from '../../text.js';
-import { CommandContext } from '../CommandContext.js';
+import type { CommandContext } from '../CommandContext.js';
 
 interface RollingRatelimitMiddlewareOptions {
     readonly period: moment.Duration;

@@ -1,9 +1,9 @@
-import { CommandBinderState, CommandSingleParameter, CommandVariableTypeName } from '@blargbot/cluster/types.js';
+import type { CommandBinderState, CommandSingleParameter, CommandVariableTypeName } from '@blargbot/cluster/types.js';
 import { humanize } from '@blargbot/cluster/utils/index.js';
 import { Binder } from '@blargbot/core/Binder.js';
-import { Binding, BindingResultAsyncIterator } from '@blargbot/core/types.js';
+import type { Binding, BindingResultAsyncIterator } from '@blargbot/core/types.js';
 
-import { CommandContext } from '../../CommandContext.js';
+import type { CommandContext } from '../../CommandContext.js';
 import { createCommandArgument } from '../commandArgument.js';
 import { CommandBindingBase } from './CommandBindingBase.js';
 

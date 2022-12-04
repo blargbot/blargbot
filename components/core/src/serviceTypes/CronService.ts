@@ -1,4 +1,4 @@
-import { Logger } from '@blargbot/logger';
+import type { Logger } from '@blargbot/logger';
 import cron from 'cron';
 
 import { BaseService } from './BaseService.js';

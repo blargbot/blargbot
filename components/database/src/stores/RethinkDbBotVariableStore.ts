@@ -1,8 +1,8 @@
-import { BotVariable, GetBotVariableOptions } from '@blargbot/domain/models/index.js';
-import { BotVariableStore } from '@blargbot/domain/stores/index.js';
-import { Logger } from '@blargbot/logger';
+import type { BotVariable, GetBotVariableOptions } from '@blargbot/domain/models/index.js';
+import type { BotVariableStore } from '@blargbot/domain/stores/index.js';
+import type { Logger } from '@blargbot/logger';
 
-import { RethinkDb } from '../clients/index.js';
+import type { RethinkDb } from '../clients/index.js';
 import { RethinkDbTable } from '../tables/RethinkDbTable.js';
 
 export class RethinkDbBotVariableStore implements BotVariableStore {

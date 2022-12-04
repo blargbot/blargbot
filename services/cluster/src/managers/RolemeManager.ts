@@ -1,9 +1,9 @@
-import { ExecutionResult } from '@blargbot/bbtag';
-import { Cluster } from '@blargbot/cluster';
+import type { ExecutionResult } from '@blargbot/bbtag';
+import type { Cluster } from '@blargbot/cluster';
 import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent.js';
 import { guard } from '@blargbot/core/utils/index.js';
-import { GuildRolemeEntry } from '@blargbot/domain/models/index.js';
-import * as Eris from 'eris';
+import type { GuildRolemeEntry } from '@blargbot/domain/models/index.js';
+import type * as Eris from 'eris';
 
 import templates from '../text.js';
 

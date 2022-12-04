@@ -1,4 +1,4 @@
-import { GuildSettingDocs } from '@blargbot/domain/models/index.js';
+import type { GuildSettingDocs } from '@blargbot/domain/models/index.js';
 
 import templates from '../../text.js';
 

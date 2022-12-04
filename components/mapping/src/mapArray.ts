@@ -1,6 +1,6 @@
 import { createMapping } from './createMapping.js';
 import { result } from './result.js';
-import { TypeMapping, TypeMappingImpl } from './types.js';
+import type { TypeMapping, TypeMappingImpl } from './types.js';
 
 export function mapArray<T>(mapping: TypeMappingImpl<T, [index: number]>): TypeMapping<T[]> {
     return createMapping(value => {

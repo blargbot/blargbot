@@ -1,4 +1,4 @@
-import { Logger } from '@blargbot/logger';
+import type { Logger } from '@blargbot/logger';
 import type { FieldSet, Record as AirRecord, Record, Table } from 'airtable';
 import type { AirtableBase } from 'airtable/lib/airtable_base.js';
 import AirtableError from 'airtable/lib/airtable_error.js';

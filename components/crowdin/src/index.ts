@@ -1,6 +1,6 @@
 import path from 'node:path';
 
-import { ITranslationSource, LanguageDetails } from '@blargbot/formatting';
+import type { ITranslationSource, LanguageDetails } from '@blargbot/formatting';
 import fetch from 'node-fetch';
 
 export class CrowdinTranslationSource implements ITranslationSource {

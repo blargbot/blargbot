@@ -1,8 +1,9 @@
 import { bbtag } from '@blargbot/bbtag';
-import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types.js';
+import type { CommandResult, GuildCommandContext } from '@blargbot/cluster/types.js';
 import { CommandType, guard } from '@blargbot/cluster/utils/index.js';
-import { GuildRolemeEntry } from '@blargbot/domain/models/index.js';
-import { IFormattable, util } from '@blargbot/formatting';
+import type { GuildRolemeEntry } from '@blargbot/domain/models/index.js';
+import type { IFormattable} from '@blargbot/formatting';
+import { util } from '@blargbot/formatting';
 import * as Eris from 'eris';
 
 import { GuildCommand } from '../../command/index.js';

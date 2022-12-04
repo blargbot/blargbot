@@ -1,6 +1,6 @@
-import moment from 'moment-timezone';
+import type moment from 'moment-timezone';
 
-import { ChatLog, ChatLogMessage, ChatLogSearchOptions, ChatLogType } from '../models/index.js';
+import type { ChatLog, ChatLogMessage, ChatLogSearchOptions, ChatLogType } from '../models/index.js';
 
 export interface ChatLogStore {
     add(message: ChatLogMessage, type: ChatLogType, lifespan?: number | moment.Duration): Promise<void>;

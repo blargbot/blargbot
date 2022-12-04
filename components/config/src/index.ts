@@ -1,5 +1,5 @@
 import configJson from '../../../config.json' assert { type: 'json' };
-import { Configuration } from './Configuration.js';
+import type { Configuration } from './Configuration.js';
 
 export * from './Configuration.js';
 

@@ -1,6 +1,6 @@
 import moment from 'moment-timezone';
 
-import { BBTagContext } from './BBTagContext.js';
+import type { BBTagContext } from './BBTagContext.js';
 
 export class TagCooldownManager {
     readonly #cooldowns: Record<string, moment.Moment | undefined>;

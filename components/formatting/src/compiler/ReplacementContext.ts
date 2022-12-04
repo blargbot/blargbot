@@ -1,4 +1,4 @@
-import { IFormatter } from '../types.js';
+import type { IFormatter } from '../types.js';
 
 export interface ReplacementContext {
     readonly formatter: IFormatter;

@@ -1,7 +1,7 @@
-import { Cluster } from '@blargbot/cluster';
+import type { Cluster } from '@blargbot/cluster';
 import { DiscordEventService } from '@blargbot/core/serviceTypes/index.js';
 import Discord from 'discord-api-types/v9';
-import * as Eris from 'eris';
+import type * as Eris from 'eris';
 
 const reemitMessageTypes = new Set([
     Discord.MessageType.ChatInputCommand,

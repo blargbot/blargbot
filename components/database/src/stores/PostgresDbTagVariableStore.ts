@@ -1,10 +1,12 @@
 import { guard } from '@blargbot/core/utils/index.js';
-import { BBTagVariable, TagVariableScope, TagVariableScopeFilter, TagVariableType } from '@blargbot/domain/models/index.js';
-import { TagVariableStore } from '@blargbot/domain/stores/index.js';
-import { Logger } from '@blargbot/logger';
-import { ENUM, FindOptions, Op, STRING, TEXT, WhereAttributeHashValue } from 'sequelize';
+import type { BBTagVariable, TagVariableScope, TagVariableScopeFilter} from '@blargbot/domain/models/index.js';
+import { TagVariableType } from '@blargbot/domain/models/index.js';
+import type { TagVariableStore } from '@blargbot/domain/stores/index.js';
+import type { Logger } from '@blargbot/logger';
+import type { FindOptions, WhereAttributeHashValue } from 'sequelize';
+import { ENUM, Op, STRING, TEXT } from 'sequelize';
 
-import { PostgresDb } from '../clients/index.js';
+import type { PostgresDb } from '../clients/index.js';
 import { PostgresDbTable } from '../tables/PostgresDbTable.js';
 
 export class PostgresDbTagVariableStore implements TagVariableStore {

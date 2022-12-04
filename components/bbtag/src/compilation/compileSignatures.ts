@@ -1,11 +1,12 @@
-import { BBTagContext } from '../BBTagContext.js';
-import { BBTagRuntimeError, NotEnoughArgumentsError, TooManyArgumentsError } from '../errors/index.js';
-import { SubtagCall } from '../language/index.js';
-import { ArgumentResolver } from './ArgumentResolver.js';
-import { CompositeSubtagHandler } from './CompositeSubtagHandler.js';
-import { ConditionalSubtagHandler } from './ConditionalSubtagHandler.js';
+import type { BBTagContext } from '../BBTagContext.js';
+import type { BBTagRuntimeError} from '../errors/index.js';
+import { NotEnoughArgumentsError, TooManyArgumentsError } from '../errors/index.js';
+import type { SubtagCall } from '../language/index.js';
+import type { ArgumentResolver } from './ArgumentResolver.js';
+import type { CompositeSubtagHandler } from './CompositeSubtagHandler.js';
+import type { ConditionalSubtagHandler } from './ConditionalSubtagHandler.js';
 import { createArgumentResolvers } from './createResolvers.js';
-import { SubtagSignatureCallable } from './SubtagSignatureCallable.js';
+import type { SubtagSignatureCallable } from './SubtagSignatureCallable.js';
 
 export function compileSignatures(signatures: readonly SubtagSignatureCallable[]): CompositeSubtagHandler {
     const handlers: ConditionalSubtagHandler[] = [];

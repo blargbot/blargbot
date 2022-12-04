@@ -1,5 +1,5 @@
 import { BaseRuntimeLimit } from './BaseRuntimeLimit.js';
-import { limits } from './index.js';
+import type { limits } from './index.js';
 import { DisabledInRule } from './rules/index.js';
 
 export abstract class GlobalLimit extends BaseRuntimeLimit {

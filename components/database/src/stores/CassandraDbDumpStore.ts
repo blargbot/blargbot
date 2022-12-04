@@ -1,7 +1,7 @@
 import { snowflake } from '@blargbot/core/utils/index.js';
-import { Dump } from '@blargbot/domain/models/index.js';
-import { DumpStore } from '@blargbot/domain/stores/index.js';
-import { Logger } from '@blargbot/logger';
+import type { Dump } from '@blargbot/domain/models/index.js';
+import type { DumpStore } from '@blargbot/domain/stores/index.js';
+import type { Logger } from '@blargbot/logger';
 import { mapping } from '@blargbot/mapping';
 import Cassandra from 'cassandra-driver';
 

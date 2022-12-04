@@ -1,6 +1,7 @@
-import { FormatActionRowComponents, FormatButton, FormatEmbedAuthor, FormatEmbedFooter, FormatEmbedOptions, FormatSelectMenu, SendContent } from '@blargbot/core/types.js';
-import { format, IFormattable, IFormatter } from '@blargbot/formatting';
-import * as Eris from 'eris';
+import type { FormatActionRowComponents, FormatButton, FormatEmbedAuthor, FormatEmbedFooter, FormatEmbedOptions, FormatSelectMenu, SendContent } from '@blargbot/core/types.js';
+import type { IFormattable, IFormatter } from '@blargbot/formatting';
+import { format } from '@blargbot/formatting';
+import type * as Eris from 'eris';
 
 export class FormattableMessageContent implements IFormattable<SendContent<string>> {
     readonly #content: SendContent<IFormattable<string>>;

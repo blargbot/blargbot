@@ -1,6 +1,6 @@
 import { toArray } from '../../util/index.js';
-import { ReplacementContext } from '../ReplacementContext.js';
-import { IValueResolverTransform } from '../types.js';
+import type { ReplacementContext } from '../ReplacementContext.js';
+import type { IValueResolverTransform } from '../types.js';
 
 export const plural: IValueResolverTransform = {
     transform(compiler, source, ...cases) {

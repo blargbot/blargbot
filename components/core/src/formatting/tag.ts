@@ -1,4 +1,4 @@
-import { IValueResolverTransform } from '@blargbot/formatting';
+import type { IValueResolverTransform } from '@blargbot/formatting';
 import * as Eris from 'eris';
 import moment from 'moment-timezone';
 

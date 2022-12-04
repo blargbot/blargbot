@@ -1,8 +1,8 @@
-import { IFormattable } from '@blargbot/formatting';
+import type { IFormattable } from '@blargbot/formatting';
 
-import { BBTagContext } from '../BBTagContext.js';
-import { SerializedRuntimeLimit } from '../types.js';
-import { RuntimeLimitRule } from './RuntimeLimitRule.js';
+import type { BBTagContext } from '../BBTagContext.js';
+import type { SerializedRuntimeLimit } from '../types.js';
+import type { RuntimeLimitRule } from './RuntimeLimitRule.js';
 
 export interface RuntimeLimit {
     addRules(rulekey: string | string[], ...rules: RuntimeLimitRule[]): this;

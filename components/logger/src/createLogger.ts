@@ -1,8 +1,9 @@
-import { Configuration } from '@blargbot/config/Configuration.js';
+import type { Configuration } from '@blargbot/config/Configuration.js';
 import * as Sentry from '@sentry/node';
-import CatLoggr, { ArgHookCallback, Color, LogLevel as CatLogLevel, PreHookCallback } from 'cat-loggr/ts.js';
+import type { ArgHookCallback, Color, PreHookCallback } from 'cat-loggr/ts.js';
+import CatLoggr, { LogLevel as CatLogLevel } from 'cat-loggr/ts.js';
 
-import { Logger, LogLevel } from './Logger.js';
+import type { Logger, LogLevel } from './Logger.js';
 
 export function createLogger(config: Configuration, workerId: string): Logger {
     const logger = new CatLoggr.default({

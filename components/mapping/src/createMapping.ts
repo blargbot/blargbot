@@ -1,5 +1,5 @@
 import { result } from './result.js';
-import { NormalizedTypeMapping, TypeMapping, TypeMappingImpl, TypeMappingResult } from './types.js';
+import type { NormalizedTypeMapping, TypeMapping, TypeMappingImpl, TypeMappingResult } from './types.js';
 
 export function createMapping<T, TArgs extends unknown[] = []>(impl: TypeMappingImpl<T, TArgs>): TypeMapping<T, TArgs> {
     return createMappingCore<T, never, TArgs>(impl, props);

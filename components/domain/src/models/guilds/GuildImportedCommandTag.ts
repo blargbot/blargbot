@@ -1,4 +1,4 @@
-import { GuildCommandTagBase } from './GuildCommandTagBase.js';
+import type { GuildCommandTagBase } from './GuildCommandTagBase.js';
 
 export interface GuildImportedCommandTag extends GuildCommandTagBase {
     readonly alias: string;

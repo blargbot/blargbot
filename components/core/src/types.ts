@@ -1,9 +1,9 @@
-import { Snowflake } from '@blargbot/domain/models/index.js';
-import { Logger } from '@blargbot/logger';
-import * as Eris from 'eris';
+import type { Snowflake } from '@blargbot/domain/models/index.js';
+import type { Logger } from '@blargbot/logger';
+import type * as Eris from 'eris';
 
 import { Binder } from './Binder.js';
-import { WorkerConnection } from './worker/index.js';
+import type { WorkerConnection } from './worker/index.js';
 
 export type MalformedEmbed = { fields: [Eris.EmbedField]; malformed: true; };
 export type ModuleResult<TModule> = { names: Iterable<string>; module: TModule; };

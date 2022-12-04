@@ -1,4 +1,4 @@
-import { Cluster } from '@blargbot/cluster';
+import type { Cluster } from '@blargbot/cluster';
 import { BaseService } from '@blargbot/core/serviceTypes/index.js';
 
 export class ImageSpawner extends BaseService {

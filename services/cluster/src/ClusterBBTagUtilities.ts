@@ -1,11 +1,12 @@
-import { AwaitReactionsResponse, BBTagContext, BBTagSendContent, BBTagUtilities } from '@blargbot/bbtag';
-import { Emote } from '@blargbot/core/Emote.js';
-import { ChoiceQueryResult, EntityPickQueryOptions, SendContent } from '@blargbot/core/types.js';
-import { IFormattable, util } from '@blargbot/formatting';
-import * as Eris from 'eris';
+import type { AwaitReactionsResponse, BBTagContext, BBTagSendContent, BBTagUtilities } from '@blargbot/bbtag';
+import type { Emote } from '@blargbot/core/Emote.js';
+import type { ChoiceQueryResult, EntityPickQueryOptions, SendContent } from '@blargbot/core/types.js';
+import type { IFormattable} from '@blargbot/formatting';
+import { util } from '@blargbot/formatting';
+import type * as Eris from 'eris';
 import moment from 'moment-timezone';
 
-import { Cluster } from './Cluster.js';
+import type { Cluster } from './Cluster.js';
 import { guard } from './utils/index.js';
 
 export class ClusterBBTagUtilities implements BBTagUtilities {

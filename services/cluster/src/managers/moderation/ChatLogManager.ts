@@ -1,6 +1,7 @@
-import { Cluster } from '@blargbot/cluster';
+import type { Cluster } from '@blargbot/cluster';
 import { guard, snowflake } from '@blargbot/cluster/utils/index.js';
-import { ChatLog, ChatLogIndex, ChatLogSearchOptions, ChatLogType } from '@blargbot/domain/models/index.js';
+import type { ChatLog, ChatLogIndex, ChatLogSearchOptions} from '@blargbot/domain/models/index.js';
+import { ChatLogType } from '@blargbot/domain/models/index.js';
 import * as Eris from 'eris';
 
 export class ChatLogManager {

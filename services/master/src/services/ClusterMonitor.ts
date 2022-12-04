@@ -1,9 +1,9 @@
-import { ClusterConnection } from '@blargbot/cluster';
+import type { ClusterConnection } from '@blargbot/cluster';
 import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent.js';
 import { IntervalService } from '@blargbot/core/serviceTypes/index.js';
 import { WorkerState } from '@blargbot/core/worker/index.js';
 import { util } from '@blargbot/formatting';
-import { Master } from '@blargbot/master';
+import type { Master } from '@blargbot/master';
 import moment from 'moment-timezone';
 
 export class ClusterMonitor extends IntervalService {

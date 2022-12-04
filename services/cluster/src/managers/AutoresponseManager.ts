@@ -1,11 +1,11 @@
 import { bbtag } from '@blargbot/bbtag';
-import { Cluster } from '@blargbot/cluster';
-import { WhitelistResponse } from '@blargbot/cluster/types.js';
+import type { Cluster } from '@blargbot/cluster';
+import type { WhitelistResponse } from '@blargbot/cluster/types.js';
 import { guard, humanize } from '@blargbot/cluster/utils/index.js';
 import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent.js';
-import { GuildTriggerTag } from '@blargbot/domain/models/index.js';
+import type { GuildTriggerTag } from '@blargbot/domain/models/index.js';
 import { mapping } from '@blargbot/mapping';
-import * as Eris from 'eris';
+import type * as Eris from 'eris';
 
 import templates from '../text.js';
 

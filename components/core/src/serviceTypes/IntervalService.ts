@@ -1,4 +1,4 @@
-import { Logger } from '@blargbot/logger';
+import type { Logger } from '@blargbot/logger';
 import moment from 'moment-timezone';
 
 import { BaseService } from './BaseService.js';

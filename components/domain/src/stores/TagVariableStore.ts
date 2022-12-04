@@ -1,4 +1,4 @@
-import { TagVariableScope, TagVariableScopeFilter } from '../models/index.js';
+import type { TagVariableScope, TagVariableScopeFilter } from '../models/index.js';
 
 export interface TagVariableStore {
     upsert(values: Record<string, JToken | undefined>, scope: TagVariableScope): Promise<void>;

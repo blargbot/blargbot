@@ -1,6 +1,6 @@
 import { parse } from '@blargbot/core/utils/index.js';
 
-import { SubtagArgument } from '../../arguments/index.js';
+import type { SubtagArgument } from '../../arguments/index.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import templates from '../../text.js';
 import { bbtag, SubtagType } from '../../utils/index.js';

@@ -1,4 +1,4 @@
-import { StoredEventOptionsBase } from './StoredEventOptionsBase.js';
+import type { StoredEventOptionsBase } from './StoredEventOptionsBase.js';
 
 export interface TagEventOptions extends StoredEventOptionsBase {
     readonly version: 4 | 3 | 2 | 1 | 0 | undefined;

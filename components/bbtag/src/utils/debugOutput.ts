@@ -1,9 +1,9 @@
-import { IFormattable } from '@blargbot/formatting';
-import * as Eris from 'eris';
+import type { IFormattable } from '@blargbot/formatting';
+import type * as Eris from 'eris';
 
-import { SubtagCall } from '../language/index.js';
+import type { SubtagCall } from '../language/index.js';
 import templates from '../text.js';
-import { ExecutionResult } from '../types.js';
+import type { ExecutionResult } from '../types.js';
 import { stringify } from './stringify.js';
 
 export function createDebugOutput(result: ExecutionResult): { content: IFormattable<string>; file: Eris.FileContent[]; } {

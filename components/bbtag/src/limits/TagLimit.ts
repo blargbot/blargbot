@@ -1,4 +1,4 @@
-import * as Eris from 'eris';
+import type * as Eris from 'eris';
 
 import { BBTagRuntimeError, TooManyLoopsError } from '../errors/index.js';
 import templates from '../text.js';

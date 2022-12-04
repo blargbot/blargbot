@@ -1,17 +1,17 @@
-import { Emote } from '@blargbot/core/Emote.js';
-import { FlagDefinition, NamedGuildCommandTag, StoredTag } from '@blargbot/domain/models/index.js';
-import { IFormattable } from '@blargbot/formatting';
-import * as Eris from 'eris';
-import ReadWriteLock from 'rwlock';
+import type { Emote } from '@blargbot/core/Emote.js';
+import type { FlagDefinition, NamedGuildCommandTag, StoredTag } from '@blargbot/domain/models/index.js';
+import type { IFormattable } from '@blargbot/formatting';
+import type * as Eris from 'eris';
+import type ReadWriteLock from 'rwlock';
 
-import { VariableCache } from './Caching.js';
-import { BBTagRuntimeError } from './errors/index.js';
-import { SourceMarker, Statement, SubtagCall } from './language/index.js';
+import type { VariableCache } from './Caching.js';
+import type { BBTagRuntimeError } from './errors/index.js';
+import type { SourceMarker, Statement, SubtagCall } from './language/index.js';
 import type { limits, RuntimeLimit } from './limits/index.js';
-import { ScopeManager } from './ScopeManager.js';
-import { SubtagCallStack } from './SubtagCallStack.js';
-import { TagCooldownManager } from './TagCooldownManager.js';
-import { SubtagType } from './utils/index.js';
+import type { ScopeManager } from './ScopeManager.js';
+import type { SubtagCallStack } from './SubtagCallStack.js';
+import type { TagCooldownManager } from './TagCooldownManager.js';
+import type { SubtagType } from './utils/index.js';
 
 export interface AnalysisResults {
     readonly errors: AnalysisResult[];

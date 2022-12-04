@@ -1,6 +1,6 @@
 import { createMapping } from './createMapping.js';
 import { result } from './result.js';
-import { TypeMapping } from './types.js';
+import type { TypeMapping } from './types.js';
 
 export const mapJToken: TypeMapping<JToken> = createMapping(value => {
     switch (typeof value) {

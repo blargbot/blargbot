@@ -1,8 +1,8 @@
-import { Configuration } from '@blargbot/config/Configuration.js';
+import type { Configuration } from '@blargbot/config/Configuration.js';
 import { ModuleLoader } from '@blargbot/core/modules/index.js';
 import { BaseWorker } from '@blargbot/core/worker/index.js';
-import { ImageGeneratorMap, ImageIPCContract } from '@blargbot/image/types.js';
-import { Logger } from '@blargbot/logger';
+import type { ImageGeneratorMap, ImageIPCContract } from '@blargbot/image/types.js';
+import type { Logger } from '@blargbot/logger';
 
 import { BaseImageGenerator } from './BaseImageGenerator.js';
 

@@ -1,11 +1,11 @@
-import { PardonResult, WarnDetails, WarnResult } from '@blargbot/cluster/types.js';
+import type { PardonResult, WarnDetails, WarnResult } from '@blargbot/cluster/types.js';
 import { ModerationType } from '@blargbot/cluster/utils/index.js';
-import { IFormattable } from '@blargbot/formatting';
-import * as Eris from 'eris';
+import type { IFormattable } from '@blargbot/formatting';
+import type * as Eris from 'eris';
 import moment from 'moment-timezone';
 
 import templates from '../../text.js';
-import { ModerationManager } from '../ModerationManager.js';
+import type { ModerationManager } from '../ModerationManager.js';
 import { ModerationManagerBase } from './ModerationManagerBase.js';
 
 export class WarnManager extends ModerationManagerBase {

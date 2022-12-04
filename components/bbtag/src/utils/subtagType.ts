@@ -1,5 +1,5 @@
 import templates from '../text.js';
-import { SubtagPropertiesSet } from '../types.js';
+import type { SubtagPropertiesSet } from '../types.js';
 
 export enum SubtagType {
     SIMPLE = 1,

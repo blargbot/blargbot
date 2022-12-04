@@ -1,7 +1,7 @@
 import { guard } from '@blargbot/core/utils/index.js';
 import * as Eris from 'eris';
 
-import { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '../../errors/index.js';
 import templates from '../../text.js';

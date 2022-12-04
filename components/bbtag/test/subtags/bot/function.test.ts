@@ -1,4 +1,4 @@
-import { Statement } from '@blargbot/bbtag';
+import type { Statement } from '@blargbot/bbtag';
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
 import { FunctionSubtag } from '@blargbot/bbtag/subtags/bot/function.js';
 import chai from 'chai';

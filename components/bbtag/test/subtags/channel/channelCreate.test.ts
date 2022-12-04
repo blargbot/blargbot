@@ -5,7 +5,8 @@ import { argument } from '@blargbot/test-util/mock.js';
 import Discord from 'discord-api-types/v9';
 import * as Eris from 'eris';
 
-import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';
+import type { SubtagTestContext } from '../SubtagTestSuite.js';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new ChannelCreateSubtag(),

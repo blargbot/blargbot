@@ -1,7 +1,7 @@
-import { Configuration } from '@blargbot/config/Configuration.js';
+import type { Configuration } from '@blargbot/config/Configuration.js';
 import { BaseWorker } from '@blargbot/core/worker/index.js';
-import { Logger } from '@blargbot/logger';
-import { MasterIPCContract, MasterOptions } from '@blargbot/master/types.js';
+import type { Logger } from '@blargbot/logger';
+import type { MasterIPCContract, MasterOptions } from '@blargbot/master/types.js';
 
 import { Master } from './Master.js';
 

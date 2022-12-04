@@ -1,6 +1,6 @@
-import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types.js';
+import type { CommandResult, GuildCommandContext } from '@blargbot/cluster/types.js';
 import { CommandType, guard, parse } from '@blargbot/cluster/utils/index.js';
-import { FlagResult } from '@blargbot/domain/models/index.js';
+import type { FlagResult } from '@blargbot/domain/models/index.js';
 import { util } from '@blargbot/formatting';
 
 import { GuildCommand } from '../../command/index.js';

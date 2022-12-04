@@ -1,8 +1,10 @@
 import { InvalidOperatorError } from '@blargbot/bbtag/errors/index.js';
 import { BoolSubtag } from '@blargbot/bbtag/subtags/misc/bool.js';
-import { bbtag, OrdinalOperator, StringOperator } from '@blargbot/bbtag/utils/index.js';
+import type { OrdinalOperator, StringOperator } from '@blargbot/bbtag/utils/index.js';
+import { bbtag } from '@blargbot/bbtag/utils/index.js';
 
-import { MarkerError, runSubtagTests, SubtagTestCase } from '../SubtagTestSuite.js';
+import type { SubtagTestCase } from '../SubtagTestSuite.js';
+import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
 const isEqualTo = { '!=': false, '<': false, '<=': true, '==': true, '>': false, '>=': true, 'startswith': true, 'endswith': true, 'includes': true, 'contains': true } as const;
 const isGreaterThan = { '!=': true, '<': false, '<=': false, '==': false, '>': true, '>=': true } as const;

@@ -1,4 +1,4 @@
-import { IValueResolverTransform } from '@blargbot/formatting';
+import type { IValueResolverTransform } from '@blargbot/formatting';
 import moment from 'moment-timezone';
 
 export const time: IValueResolverTransform = {

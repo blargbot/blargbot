@@ -1,9 +1,10 @@
-import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types.js';
+import type { CommandResult, GuildCommandContext } from '@blargbot/cluster/types.js';
 import { CommandType, ModerationType } from '@blargbot/cluster/utils/index.js';
 import { guard } from '@blargbot/core/utils/index.js';
-import { GuildCensor, GuildTriggerTag } from '@blargbot/domain/models/index.js';
-import { IFormattable, util } from '@blargbot/formatting';
-import * as Eris from 'eris';
+import type { GuildCensor, GuildTriggerTag } from '@blargbot/domain/models/index.js';
+import type { IFormattable} from '@blargbot/formatting';
+import { util } from '@blargbot/formatting';
+import type * as Eris from 'eris';
 
 import { GuildCommand } from '../../command/index.js';
 import { RawBBTagCommandResult } from '../../command/RawBBTagCommandResult.js';

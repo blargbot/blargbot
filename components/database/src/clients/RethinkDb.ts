@@ -1,5 +1,6 @@
-import { RethinkConfiguration } from '@blargbot/config/Configuration.js';
-import r, { Cursor, Expression, Query, Time } from 'rethinkdb';
+import type { RethinkConfiguration } from '@blargbot/config/Configuration.js';
+import type { Cursor, Expression, Query, Time } from 'rethinkdb';
+import r from 'rethinkdb';
 
 export class RethinkDb {
     #connection?: Promise<r.Connection>;

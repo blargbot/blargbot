@@ -1,6 +1,6 @@
-import { ModuleResult } from '@blargbot/core/types.js';
+import type { ModuleResult } from '@blargbot/core/types.js';
 import { guard } from '@blargbot/core/utils/index.js';
-import { Logger } from '@blargbot/logger';
+import type { Logger } from '@blargbot/logger';
 
 import { BaseModuleLoader } from './BaseModuleLoader.js';
 

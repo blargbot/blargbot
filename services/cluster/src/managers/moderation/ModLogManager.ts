@@ -1,10 +1,11 @@
-import { Cluster } from '@blargbot/cluster';
+import type { Cluster } from '@blargbot/cluster';
 import { guard, ModlogColour } from '@blargbot/cluster/utils/index.js';
 import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent.js';
-import { FormatEmbedField, FormatEmbedOptions } from '@blargbot/core/types.js';
-import { format, IFormattable, util } from '@blargbot/formatting';
-import * as Eris from 'eris';
-import moment from 'moment-timezone';
+import type { FormatEmbedField, FormatEmbedOptions } from '@blargbot/core/types.js';
+import type { IFormattable} from '@blargbot/formatting';
+import { format, util } from '@blargbot/formatting';
+import type * as Eris from 'eris';
+import type moment from 'moment-timezone';
 
 import templates from '../../text.js';
 

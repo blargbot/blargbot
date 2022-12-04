@@ -1,5 +1,5 @@
-import { Logger } from '@blargbot/logger';
-import * as Eris from 'eris';
+import type { Logger } from '@blargbot/logger';
+import type * as Eris from 'eris';
 
 import { AwaiterFactoryBase } from './AwaiterFactoryBase.js';
 

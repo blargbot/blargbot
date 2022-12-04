@@ -1,9 +1,9 @@
-import { Cluster } from '@blargbot/cluster';
-import { CommandResult } from '@blargbot/cluster/types.js';
+import type { Cluster } from '@blargbot/cluster';
+import type { CommandResult } from '@blargbot/cluster/types.js';
 import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent.js';
-import { IMiddleware, NextMiddleware } from '@blargbot/core/types.js';
+import type { IMiddleware, NextMiddleware } from '@blargbot/core/types.js';
 import { humanize, runMiddleware } from '@blargbot/core/utils/index.js';
-import * as Eris from 'eris';
+import type * as Eris from 'eris';
 
 import { CommandContext } from '../../../command/index.js';
 import templates from '../../../text.js';

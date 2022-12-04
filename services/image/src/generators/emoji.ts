@@ -1,8 +1,8 @@
 import path from 'node:path';
 
 import { BaseImageGenerator } from '@blargbot/image/BaseImageGenerator.js';
-import { ImageWorker } from '@blargbot/image/ImageWorker.js';
-import { EmojiOptions, ImageResult } from '@blargbot/image/types.js';
+import type { ImageWorker } from '@blargbot/image/ImageWorker.js';
+import type { EmojiOptions, ImageResult } from '@blargbot/image/types.js';
 import fetch from 'node-fetch';
 import sharp from 'sharp';
 import twemoji from 'twemoji';

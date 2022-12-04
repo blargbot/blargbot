@@ -1,8 +1,10 @@
-import { format, IFormatter } from '@blargbot/formatting';
-import * as Eris from 'eris';
+import type { IFormatter } from '@blargbot/formatting';
+import { format } from '@blargbot/formatting';
+import type * as Eris from 'eris';
 
 import templates from '../../text.js';
-import { Documentation, DocumentationManager } from './DocumentationManager.js';
+import type { Documentation} from './DocumentationManager.js';
+import { DocumentationManager } from './DocumentationManager.js';
 
 export abstract class DocumentationTreeManager extends DocumentationManager {
     protected abstract getTree(user: Eris.User, channel: Eris.KnownTextableChannel): Awaitable<Documentation>;

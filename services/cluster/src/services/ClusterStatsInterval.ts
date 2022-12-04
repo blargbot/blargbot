@@ -1,4 +1,4 @@
-import { Cluster } from '@blargbot/cluster';
+import type { Cluster } from '@blargbot/cluster';
 import { discord } from '@blargbot/cluster/utils/index.js';
 import { IntervalService } from '@blargbot/core/serviceTypes/index.js';
 

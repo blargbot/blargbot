@@ -1,13 +1,14 @@
-import { EnsureMutedRoleResult, MuteResult, UnmuteResult } from '@blargbot/cluster/types.js';
+import type { EnsureMutedRoleResult, MuteResult, UnmuteResult } from '@blargbot/cluster/types.js';
 import { discord, guard } from '@blargbot/cluster/utils/index.js';
-import { UnmuteEventOptions } from '@blargbot/domain/models/index.js';
-import { format, IFormattable } from '@blargbot/formatting';
+import type { UnmuteEventOptions } from '@blargbot/domain/models/index.js';
+import type { IFormattable } from '@blargbot/formatting';
+import { format } from '@blargbot/formatting';
 import { mapping } from '@blargbot/mapping';
 import * as Eris from 'eris';
 import moment from 'moment-timezone';
 
 import templates from '../../text.js';
-import { ModerationManager } from '../ModerationManager.js';
+import type { ModerationManager } from '../ModerationManager.js';
 import { ModerationManagerBase } from './ModerationManagerBase.js';
 
 export class MuteManager extends ModerationManagerBase {

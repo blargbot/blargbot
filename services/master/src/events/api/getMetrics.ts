@@ -1,7 +1,8 @@
-import { ApiConnection } from '@blargbot/api';
+import type { ApiConnection } from '@blargbot/api';
 import { WorkerPoolEventService } from '@blargbot/core/serviceTypes/index.js';
-import { Master } from '@blargbot/master';
-import Prometheus, { metric } from 'prom-client';
+import type { Master } from '@blargbot/master';
+import type { metric } from 'prom-client';
+import Prometheus from 'prom-client';
 
 export class ApiGetMetricsHandler extends WorkerPoolEventService<ApiConnection, 'getMetrics'> {
     readonly #master: Master;

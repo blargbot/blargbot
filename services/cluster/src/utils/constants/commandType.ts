@@ -1,4 +1,4 @@
-import { CommandPropertiesSet } from '@blargbot/cluster/types.js';
+import type { CommandPropertiesSet } from '@blargbot/cluster/types.js';
 import { guard } from '@blargbot/cluster/utils/index.js';
 import * as Eris from 'eris';
 

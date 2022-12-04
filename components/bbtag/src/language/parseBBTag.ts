@@ -1,7 +1,7 @@
 import { BBTagRuntimeError } from '../errors/index.js';
-import { SourceMarker } from './SourceMarker.js';
-import { Statement } from './Statement.js';
-import { SubtagCall } from './SubtagCall.js';
+import type { SourceMarker } from './SourceMarker.js';
+import type { Statement } from './Statement.js';
+import type { SubtagCall } from './SubtagCall.js';
 
 type ToMutable<T> = T extends ReadonlyArray<infer E> ? Array<ToMutable<E>>
     : T extends SubtagCall ? MutableSubtagCall

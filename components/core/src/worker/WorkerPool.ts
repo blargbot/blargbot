@@ -1,10 +1,10 @@
-import { IPCContracts } from '@blargbot/core/types.js';
+import type { IPCContracts } from '@blargbot/core/types.js';
 import { getRange } from '@blargbot/core/utils/index.js';
-import { Logger } from '@blargbot/logger';
+import type { Logger } from '@blargbot/logger';
 import { EventEmitter } from 'eventemitter3';
 
 import { Semaphore } from '../Semaphore.js';
-import { WorkerConnection } from './WorkerConnection.js';
+import type { WorkerConnection } from './WorkerConnection.js';
 
 export const enum RespawnStrategy {
     SPAWN_THEN_KILL,

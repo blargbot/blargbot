@@ -1,7 +1,7 @@
-import { ImageWorkerConfiguration } from '@blargbot/config';
+import type { ImageWorkerConfiguration } from '@blargbot/config';
 import { WorkerPool } from '@blargbot/core/worker/index.js';
-import { ImageGeneratorMap, ImageResult } from '@blargbot/image/types.js';
-import { Logger } from '@blargbot/logger';
+import type { ImageGeneratorMap, ImageResult } from '@blargbot/image/types.js';
+import type { Logger } from '@blargbot/logger';
 
 import { ImageConnection } from './ImageConnection.js';
 

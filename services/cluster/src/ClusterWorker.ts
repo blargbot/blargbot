@@ -1,10 +1,10 @@
-import { Configuration } from '@blargbot/config';
+import type { Configuration } from '@blargbot/config';
 import { BaseWorker } from '@blargbot/core/worker/index.js';
-import { Logger } from '@blargbot/logger';
+import type { Logger } from '@blargbot/logger';
 import res from '@blargbot/res';
 
 import { Cluster } from './Cluster.js';
-import { ClusterIPCContract } from './types.js';
+import type { ClusterIPCContract } from './types.js';
 
 const holidays = await res.holidays.load();
 

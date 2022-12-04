@@ -1,6 +1,6 @@
-import { Api } from '../Api.js';
+import type { Api } from '../Api.js';
 import { BaseRoute } from '../BaseRoute.js';
-import { ApiResponse } from '../types.js';
+import type { ApiResponse } from '../types.js';
 
 export class FeedbackRoute extends BaseRoute {
     readonly #api: Api;

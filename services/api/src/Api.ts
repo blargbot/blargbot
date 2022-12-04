@@ -1,15 +1,17 @@
-import { createServer, Server } from 'node:http';
+import type { Server } from 'node:http';
+import { createServer } from 'node:http';
 import { performance } from 'node:perf_hooks';
 
-import { Configuration } from '@blargbot/config';
+import type { Configuration } from '@blargbot/config';
 import { BaseClient } from '@blargbot/core/BaseClient.js';
 import { ModuleLoader } from '@blargbot/core/modules/index.js';
-import { Logger } from '@blargbot/logger';
-import express, { Express } from 'express';
+import type { Logger } from '@blargbot/logger';
+import type { Express } from 'express';
+import express from 'express';
 
-import { ApiWorker } from './ApiWorker.js';
+import type { ApiWorker } from './ApiWorker.js';
 import { BaseRoute } from './BaseRoute.js';
-import { ApiOptions } from './types.js';
+import type { ApiOptions } from './types.js';
 
 export class Api extends BaseClient {
     public readonly worker: ApiWorker;

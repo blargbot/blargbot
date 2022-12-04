@@ -1,13 +1,13 @@
-import { IncomingMessage } from 'node:http';
+import type { IncomingMessage } from 'node:http';
 
-import { ClusterStats, CommandListResult, CommandListResultItem, GuildPermissionDetails, SubtagDetails, SubtagListResult } from '@blargbot/cluster/types.js';
-import { GuildSettingDocs } from '@blargbot/domain/models/index.js';
-import { IRoute, IRouterHandler, Request, Response, RouteParameters } from 'express-serve-static-core';
-import { metric } from 'prom-client';
-import { WebSocket } from 'ws';
+import type { ClusterStats, CommandListResult, CommandListResultItem, GuildPermissionDetails, SubtagDetails, SubtagListResult } from '@blargbot/cluster/types.js';
+import type { GuildSettingDocs } from '@blargbot/domain/models/index.js';
+import type { IRoute, IRouterHandler, Request, Response, RouteParameters } from 'express-serve-static-core';
+import type { metric } from 'prom-client';
+import type { WebSocket } from 'ws';
 
-import { Api } from './Api.js';
-import { ApiWorker } from './ApiWorker.js';
+import type { Api } from './Api.js';
+import type { ApiWorker } from './ApiWorker.js';
 
 export type ApiIPCContracts = {
     getSubtagList: { masterGets: undefined; workerGets: SubtagListResult; };

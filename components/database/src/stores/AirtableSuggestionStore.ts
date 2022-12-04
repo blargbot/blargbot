@@ -1,6 +1,6 @@
-import { Suggestion } from '@blargbot/domain/models/index.js';
-import { SuggestionStore } from '@blargbot/domain/stores/index.js';
-import { Logger } from '@blargbot/logger';
+import type { Suggestion } from '@blargbot/domain/models/index.js';
+import type { SuggestionStore } from '@blargbot/domain/stores/index.js';
+import type { Logger } from '@blargbot/logger';
 import type { AirtableBase } from 'airtable/lib/airtable_base.js';
 
 import { AirtableDbTable } from '../tables/AirtableDbTable.js';

@@ -1,4 +1,4 @@
-import { Cluster } from '@blargbot/cluster';
+import type { Cluster } from '@blargbot/cluster';
 
 import { WolkenCommand } from '../../command/index.js';
 import templates from '../../text.js';

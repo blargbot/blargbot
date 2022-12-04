@@ -1,14 +1,14 @@
-import { Configuration } from '@blargbot/config';
-import { Emote } from '@blargbot/core/Emote.js';
-import { ChoiceQueryResult, EntityPickQueryOptions } from '@blargbot/core/types.js';
-import { Database } from '@blargbot/database';
-import { Logger } from '@blargbot/logger';
-import * as Eris from 'eris';
-import moment from 'moment-timezone';
+import type { Configuration } from '@blargbot/config';
+import type { Emote } from '@blargbot/core/Emote.js';
+import type { ChoiceQueryResult, EntityPickQueryOptions } from '@blargbot/core/types.js';
+import type { Database } from '@blargbot/database';
+import type { Logger } from '@blargbot/logger';
+import type * as Eris from 'eris';
+import type moment from 'moment-timezone';
 
-import { BBTagContext } from './BBTagContext.js';
-import { Subtag } from './Subtag.js';
-import { AwaitReactionsResponse } from './types.js';
+import type { BBTagContext } from './BBTagContext.js';
+import type { Subtag } from './Subtag.js';
+import type { AwaitReactionsResponse } from './types.js';
 
 export interface InjectionContext {
     readonly discord: Eris.Client;

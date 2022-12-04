@@ -1,10 +1,10 @@
-import { CommandOptions, CommandResult } from '@blargbot/cluster/types.js';
+import type { CommandOptions, CommandResult } from '@blargbot/cluster/types.js';
 import { CommandType } from '@blargbot/cluster/utils/index.js';
-import { ImageGeneratorMap } from '@blargbot/image/types.js';
+import type { ImageGeneratorMap } from '@blargbot/image/types.js';
 import moment from 'moment-timezone';
 
 import templates from '../text.js';
-import { CommandContext } from './CommandContext.js';
+import type { CommandContext } from './CommandContext.js';
 import { GlobalCommand } from './GlobalCommand.js';
 import { RatelimitMiddleware, SendTypingMiddleware, SingleThreadMiddleware } from './middleware/index.js';
 

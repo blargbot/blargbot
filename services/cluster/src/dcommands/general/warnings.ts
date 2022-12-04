@@ -1,7 +1,7 @@
-import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types.js';
+import type { CommandResult, GuildCommandContext } from '@blargbot/cluster/types.js';
 import { CommandType } from '@blargbot/cluster/utils/index.js';
-import { IFormattable } from '@blargbot/formatting';
-import * as Eris from 'eris';
+import type { IFormattable } from '@blargbot/formatting';
+import type * as Eris from 'eris';
 
 import { GuildCommand } from '../../command/index.js';
 import templates from '../../text.js';

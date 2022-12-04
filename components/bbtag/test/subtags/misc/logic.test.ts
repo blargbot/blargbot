@@ -1,8 +1,9 @@
 import { InvalidOperatorError, NotABooleanError } from '@blargbot/bbtag/errors/index.js';
 import { LogicSubtag } from '@blargbot/bbtag/subtags/misc/logic.js';
-import { LogicOperator } from '@blargbot/bbtag/utils/index.js';
+import type { LogicOperator } from '@blargbot/bbtag/utils/index.js';
 
-import { MarkerError, runSubtagTests, SubtagTestCase } from '../SubtagTestSuite.js';
+import type { SubtagTestCase } from '../SubtagTestSuite.js';
+import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new LogicSubtag(),

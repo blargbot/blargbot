@@ -1,14 +1,14 @@
-import { SubtagOptions } from '@blargbot/bbtag';
-import { CommandType, ModerationType } from '@blargbot/cluster/utils/index.js';
-import { EvalRequest, EvalResult, GlobalEvalResult, IMiddleware, MasterEvalRequest, SendContent } from '@blargbot/core/types.js';
-import { CommandPermissions, FlagDefinition, FlagResult, GuildSettingDocs, GuildSourceCommandTag, NamedGuildCommandTag } from '@blargbot/domain/models/index.js';
-import { IFormattable } from '@blargbot/formatting';
-import * as Eris from 'eris';
-import moment from 'moment-timezone';
-import { metric } from 'prom-client';
+import type { SubtagOptions } from '@blargbot/bbtag';
+import type { CommandType, ModerationType } from '@blargbot/cluster/utils/index.js';
+import type { EvalRequest, EvalResult, GlobalEvalResult, IMiddleware, MasterEvalRequest, SendContent } from '@blargbot/core/types.js';
+import type { CommandPermissions, FlagDefinition, FlagResult, GuildSettingDocs, GuildSourceCommandTag, NamedGuildCommandTag } from '@blargbot/domain/models/index.js';
+import type { IFormattable } from '@blargbot/formatting';
+import type * as Eris from 'eris';
+import type moment from 'moment-timezone';
+import type { metric } from 'prom-client';
 
-import { ClusterUtilities } from './ClusterUtilities.js';
-import { Command, CommandContext, ScopedCommand } from './command/index.js';
+import type { ClusterUtilities } from './ClusterUtilities.js';
+import type { Command, CommandContext, ScopedCommand } from './command/index.js';
 
 export type ClusterIPCContract = {
     shardReady: { masterGets: number; workerGets: never; };

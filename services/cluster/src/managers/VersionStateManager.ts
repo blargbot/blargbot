@@ -1,6 +1,7 @@
-import { BotVariableStore } from '@blargbot/domain/stores/index.js';
+import type { BotVariableStore } from '@blargbot/domain/stores/index.js';
 import { mapping } from '@blargbot/mapping';
-import { UpdateType, Version } from '@hunteroi/versioning';
+import type { UpdateType} from '@hunteroi/versioning';
+import { Version } from '@hunteroi/versioning';
 
 const mapUpdateType = mapping.choice(
     mapping.in<UpdateType>('major', 'minor'),

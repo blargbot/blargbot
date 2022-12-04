@@ -1,12 +1,12 @@
 import { URLSearchParams } from 'node:url';
 
-import { ClusterUtilities } from '@blargbot/cluster/ClusterUtilities.js';
+import type { ClusterUtilities } from '@blargbot/cluster/ClusterUtilities.js';
 import { guard } from '@blargbot/cluster/utils/index.js';
 import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent.js';
 import { metrics } from '@blargbot/core/Metrics.js';
-import { IMiddleware, NextMiddleware } from '@blargbot/core/types.js';
+import type { IMiddleware, NextMiddleware } from '@blargbot/core/types.js';
 import { util } from '@blargbot/formatting';
-import * as Eris from 'eris';
+import type * as Eris from 'eris';
 import fetch from 'node-fetch';
 
 import templates from '../../../text.js';

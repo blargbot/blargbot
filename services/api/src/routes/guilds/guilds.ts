@@ -1,6 +1,6 @@
-import { Api } from '@blargbot/api/Api.js';
+import type { Api } from '@blargbot/api/Api.js';
 import { BaseRoute } from '@blargbot/api/BaseRoute.js';
-import { ApiResponse } from '@blargbot/api/types.js';
+import type { ApiResponse } from '@blargbot/api/types.js';
 
 export class GuildsRoute extends BaseRoute {
     readonly #api: Api;

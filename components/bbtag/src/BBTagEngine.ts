@@ -1,18 +1,19 @@
 import { Timer } from '@blargbot/core/Timer.js';
 import { sleep } from '@blargbot/core/utils/index.js';
-import { Database } from '@blargbot/database';
-import { Logger } from '@blargbot/logger';
-import * as Eris from 'eris';
+import type { Database } from '@blargbot/database';
+import type { Logger } from '@blargbot/logger';
+import type * as Eris from 'eris';
 import moment from 'moment-timezone';
 
 import { BBTagContext } from './BBTagContext.js';
-import { BBTagUtilities, InjectionContext } from './BBTagUtilities.js';
+import type { BBTagUtilities, InjectionContext } from './BBTagUtilities.js';
 import { BBTagRuntimeError, InternalServerError, SubtagStackOverflowError, TagCooldownError } from './errors/index.js';
-import { Statement, SubtagCall } from './language/index.js';
-import { Subtag } from './Subtag.js';
+import type { Statement, SubtagCall } from './language/index.js';
+import type { Subtag } from './Subtag.js';
 import { TagCooldownManager } from './TagCooldownManager.js';
 import templates from './text.js';
-import { AnalysisResults, BBTagContextOptions, BBTagRuntimeState, ExecutionResult } from './types.js';
+import type { AnalysisResults, BBTagContextOptions, ExecutionResult } from './types.js';
+import { BBTagRuntimeState } from './types.js';
 import { bbtag as bbtagUtil } from './utils/index.js';
 
 export class BBTagEngine {

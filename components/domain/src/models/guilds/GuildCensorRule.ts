@@ -1,4 +1,4 @@
-import { GuildTriggerTag } from './GuildTriggerTag.js';
+import type { GuildTriggerTag } from './GuildTriggerTag.js';
 
 export interface GuildCensorRule {
     readonly deleteMessage?: GuildTriggerTag;

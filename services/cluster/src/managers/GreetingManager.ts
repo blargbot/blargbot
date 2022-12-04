@@ -1,9 +1,9 @@
-import { ExecutionResult } from '@blargbot/bbtag';
-import { Cluster } from '@blargbot/cluster';
+import type { ExecutionResult } from '@blargbot/bbtag';
+import type { Cluster } from '@blargbot/cluster';
 import { snowflake } from '@blargbot/cluster/utils/index.js';
 import { guard } from '@blargbot/core/utils/index.js';
-import { GuildTriggerTag } from '@blargbot/domain/models/index.js';
-import * as Eris from 'eris';
+import type { GuildTriggerTag } from '@blargbot/domain/models/index.js';
+import type * as Eris from 'eris';
 import moment from 'moment-timezone';
 
 export class GreetingManager {

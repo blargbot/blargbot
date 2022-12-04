@@ -1,6 +1,6 @@
 import { createMapping } from './createMapping.js';
 import { result } from './result.js';
-import { TypeMapping } from './types.js';
+import type { TypeMapping } from './types.js';
 
 export function mapIn<T extends readonly string[]>(...values: T): TypeMapping<T[number]>;
 export function mapIn<T>(...values: T[]): TypeMapping<T>;

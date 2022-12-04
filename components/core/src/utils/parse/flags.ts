@@ -1,4 +1,4 @@
-import { FlagDefinition, FlagResult, FlagResultValueSet } from '@blargbot/domain/models/index.js';
+import type { FlagDefinition, FlagResult, FlagResultValueSet } from '@blargbot/domain/models/index.js';
 
 import { guard, humanize } from '../../utils/index.js';
 

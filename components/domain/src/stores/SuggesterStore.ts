@@ -1,4 +1,4 @@
-import { Suggester } from '../models/index.js';
+import type { Suggester } from '../models/index.js';
 
 export interface SuggesterStore {
     get(id: string): Promise<Suggester | undefined>;

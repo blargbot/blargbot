@@ -1,4 +1,4 @@
-import { IValueResolverTransform } from '@blargbot/formatting';
+import type { IValueResolverTransform } from '@blargbot/formatting';
 
 import { Emote } from '../Emote.js';
 

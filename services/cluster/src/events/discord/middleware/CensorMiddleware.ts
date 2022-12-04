@@ -1,6 +1,6 @@
-import { CensorManager } from '@blargbot/cluster/managers/moderation/index.js';
-import { IMiddleware, NextMiddleware } from '@blargbot/core/types.js';
-import * as Eris from 'eris';
+import type { CensorManager } from '@blargbot/cluster/managers/moderation/index.js';
+import type { IMiddleware, NextMiddleware } from '@blargbot/core/types.js';
+import type * as Eris from 'eris';
 
 export class CensorMiddleware implements IMiddleware<Eris.KnownMessage, boolean> {
     readonly #censors: CensorManager;

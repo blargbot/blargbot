@@ -1,7 +1,7 @@
-import { Cluster } from '@blargbot/cluster';
+import type { Cluster } from '@blargbot/cluster';
 import { guard } from '@blargbot/cluster/utils/index.js';
 import { DiscordEventService } from '@blargbot/core/serviceTypes/index.js';
-import * as Eris from 'eris';
+import type * as Eris from 'eris';
 import moment from 'moment-timezone';
 
 export class DiscordMemberUpdateHandler extends DiscordEventService<'guildMemberUpdate'> {

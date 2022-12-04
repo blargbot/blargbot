@@ -1,4 +1,4 @@
-import { CommandContext } from './CommandContext.js';
+import type { CommandContext } from './CommandContext.js';
 import { ScopedCommand } from './ScopedCommand.js';
 
 export abstract class GlobalCommand extends ScopedCommand<CommandContext> {

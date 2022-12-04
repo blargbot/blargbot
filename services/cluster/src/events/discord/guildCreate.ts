@@ -1,6 +1,6 @@
-import { Cluster } from '@blargbot/cluster';
+import type { Cluster } from '@blargbot/cluster';
 import { DiscordEventService } from '@blargbot/core/serviceTypes/index.js';
-import * as Eris from 'eris';
+import type * as Eris from 'eris';
 
 export class DiscordGuildCreateHandler extends DiscordEventService<'guildCreate'> {
     public constructor(protected readonly cluster: Cluster) {

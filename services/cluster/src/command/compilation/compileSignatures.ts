@@ -1,6 +1,6 @@
-import { CommandDefinition, CommandGreedyParameter, CommandHandlerDefinition, CommandLiteralParameter, CommandParameter, CommandSignatureHandler, CommandSingleParameter, CommandVariableType, CommandVariableTypeName } from '@blargbot/cluster/types.js';
+import type { CommandDefinition, CommandGreedyParameter, CommandHandlerDefinition, CommandLiteralParameter, CommandParameter, CommandSignatureHandler, CommandSingleParameter, CommandVariableType, CommandVariableTypeName } from '@blargbot/cluster/types.js';
 
-import { CommandContext } from '../CommandContext.js';
+import type { CommandContext } from '../CommandContext.js';
 import { parseParameterType } from './parameterType.js';
 
 export function compileSignatures<TContext extends CommandContext>(definitions: ReadonlyArray<CommandDefinition<TContext>>): ReadonlyArray<CommandSignatureHandler<TContext>> {

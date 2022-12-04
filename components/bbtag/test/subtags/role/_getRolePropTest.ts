@@ -1,10 +1,11 @@
-import { BBTagContext } from '@blargbot/bbtag';
-import { BBTagRuntimeError, RoleNotFoundError } from '@blargbot/bbtag/errors/index.js';
+import type { BBTagContext } from '@blargbot/bbtag';
+import type { BBTagRuntimeError} from '@blargbot/bbtag/errors/index.js';
+import { RoleNotFoundError } from '@blargbot/bbtag/errors/index.js';
 import { argument } from '@blargbot/test-util/mock.js';
-import Discord from 'discord-api-types/v9';
+import type Discord from 'discord-api-types/v9';
 import * as Eris from 'eris';
 
-import { SubtagTestCase, SubtagTestContext } from '../SubtagTestSuite.js';
+import type { SubtagTestCase, SubtagTestContext } from '../SubtagTestSuite.js';
 
 export function createGetRolePropTestCases(options: GetRolePropTestData): SubtagTestCase[] {
     return [...createGetRolePropTestCasesIter(options)];

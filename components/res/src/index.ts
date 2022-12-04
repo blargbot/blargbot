@@ -1,17 +1,26 @@
+import type devAvatars from './avatars.dev.json';
+import type prdAvatars from './avatars.prd.json';
+import type beemovie from './beemovie.json';
+import type cah from './cah.json';
+import type colors from './colors.json';
+import type contributors from './contributors.json';
+import type discordEmoteData from './discordEmoteData.json';
+import type holidays from './holidays.json';
 import { getJsonResource } from './resource.js';
+import type spells from './spells.json';
 
 export * from './resource.js';
 
 export default Object.freeze({
     avatars: Object.freeze({
-        dev: getJsonResource<typeof import('./avatars.dev.json')>('./avatars.dev.json'),
-        prd: getJsonResource<typeof import('./avatars.prd.json')>('./avatars.prd.json')
+        dev: getJsonResource<typeof devAvatars>('./avatars.dev.json'),
+        prd: getJsonResource<typeof prdAvatars>('./avatars.prd.json')
     }),
-    beeMovie: getJsonResource<typeof import('./beemovie.json')>('./beemovie.json'),
-    spells: getJsonResource<typeof import('./spells.json')>('./spells.json'),
-    cardsAgainstHumanity: getJsonResource<typeof import('./cah.json')>('./cah.json'),
-    colors: getJsonResource<typeof import('./colors.json')>('./colors.json'),
-    contributors: getJsonResource<typeof import('./contributors.json')>('./contributors.json'),
-    discordEmoteData: getJsonResource<typeof import('./discordEmoteData.json')>('./discordEmoteData.json'),
-    holidays: getJsonResource<typeof import('./holidays.json')>('./holidays.json')
+    beeMovie: getJsonResource<typeof beemovie>('./beemovie.json'),
+    spells: getJsonResource<typeof spells>('./spells.json'),
+    cardsAgainstHumanity: getJsonResource<typeof cah>('./cah.json'),
+    colors: getJsonResource<typeof colors>('./colors.json'),
+    contributors: getJsonResource<typeof contributors>('./contributors.json'),
+    discordEmoteData: getJsonResource<typeof discordEmoteData>('./discordEmoteData.json'),
+    holidays: getJsonResource<typeof holidays>('./holidays.json')
 });

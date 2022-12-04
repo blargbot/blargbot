@@ -1,4 +1,4 @@
-import { FlagResultValue } from './FlagResultValue.js';
+import type { FlagResultValue } from './FlagResultValue.js';
 
 export interface FlagResultValueSet {
     merge(start?: number, end?: number): FlagResultValue;

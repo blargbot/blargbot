@@ -1,7 +1,7 @@
-import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types.js';
+import type { CommandResult, GuildCommandContext } from '@blargbot/cluster/types.js';
 import { CommandType, createSafeRegExp, getRange, parse, randChoose, randInt } from '@blargbot/cluster/utils/index.js';
 import { guard } from '@blargbot/core/utils/index.js';
-import { GuildFilteredAutoresponse, GuildTriggerTag } from '@blargbot/domain/models/index.js';
+import type { GuildFilteredAutoresponse, GuildTriggerTag } from '@blargbot/domain/models/index.js';
 import { util } from '@blargbot/formatting';
 
 import { GuildCommand } from '../../command/index.js';

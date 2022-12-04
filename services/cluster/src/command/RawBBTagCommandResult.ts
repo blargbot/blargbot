@@ -1,5 +1,6 @@
-import { SendContent } from '@blargbot/core/types.js';
-import { format, IFormattable, IFormatter } from '@blargbot/formatting';
+import type { SendContent } from '@blargbot/core/types.js';
+import type { IFormattable, IFormatter } from '@blargbot/formatting';
+import { format } from '@blargbot/formatting';
 
 import { discord } from '../utils/index.js';
 

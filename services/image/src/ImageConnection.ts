@@ -1,6 +1,6 @@
 import { WorkerConnection } from '@blargbot/core/worker/index.js';
-import { ImageGeneratorMap, ImageIPCContract, ImageResult } from '@blargbot/image/types.js';
-import { Logger } from '@blargbot/logger';
+import type { ImageGeneratorMap, ImageIPCContract, ImageResult } from '@blargbot/image/types.js';
+import type { Logger } from '@blargbot/logger';
 
 import { entrypoint } from './index.js';
 

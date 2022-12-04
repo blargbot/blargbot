@@ -1,5 +1,5 @@
 import { BaseService } from '@blargbot/core/serviceTypes/index.js';
-import { Master } from '@blargbot/master';
+import type { Master } from '@blargbot/master';
 
 export class ApiSpawner extends BaseService {
     public readonly type = 'api';

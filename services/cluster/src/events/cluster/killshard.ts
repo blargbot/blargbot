@@ -1,4 +1,4 @@
-import { Cluster } from '@blargbot/cluster';
+import type { Cluster } from '@blargbot/cluster';
 import { ClusterEventService } from '@blargbot/cluster/serviceTypes/index.js';
 
 export class ClusterKillShardHandler extends ClusterEventService<'killshard'> {

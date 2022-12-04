@@ -1,4 +1,4 @@
-import { IValueResolverTransform } from '../types.js';
+import type { IValueResolverTransform } from '../types.js';
 
 export const bool: IValueResolverTransform = {
     transform(compiler, source, ...results) {

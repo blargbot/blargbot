@@ -1,4 +1,4 @@
-import { Cluster } from '@blargbot/cluster';
+import type { Cluster } from '@blargbot/cluster';
 import { DiscordEventService } from '@blargbot/core/serviceTypes/index.js';
 
 export class DiscordGuildMemeberAddHandler extends DiscordEventService<'guildMemberAdd'> {

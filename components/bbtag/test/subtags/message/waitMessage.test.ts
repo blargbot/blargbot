@@ -1,13 +1,15 @@
-import { BBTagUtilities } from '@blargbot/bbtag/BBTagUtilities.js';
+import type { BBTagUtilities } from '@blargbot/bbtag/BBTagUtilities.js';
 import { BBTagRuntimeError, NotANumberError } from '@blargbot/bbtag/errors/index.js';
 import { MessageIdSubtag } from '@blargbot/bbtag/subtags/message/messageId.js';
 import { WaitMessageSubtag } from '@blargbot/bbtag/subtags/message/waitMessage.js';
 import { OperatorSubtag } from '@blargbot/bbtag/subtags/misc/operator.js';
-import { argument, Mock } from '@blargbot/test-util/mock.js';
+import type { Mock } from '@blargbot/test-util/mock.js';
+import { argument } from '@blargbot/test-util/mock.js';
 import chai from 'chai';
 import * as Eris from 'eris';
 
-import { MarkerError, runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';
+import type { SubtagTestContext } from '../SubtagTestSuite.js';
+import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
 type AwaitCondition = Exclude<Parameters<BBTagUtilities['awaitMessage']>[1], undefined>;
 const anyCondition = argument.is((v): v is AwaitCondition => typeof v === 'function');

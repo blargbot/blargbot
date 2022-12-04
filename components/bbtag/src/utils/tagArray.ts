@@ -1,8 +1,8 @@
 import { getRange, parse } from '@blargbot/core/utils/index.js';
 import { mapping } from '@blargbot/mapping';
 
-import { BBTagContext } from '../BBTagContext.js';
-import { BBTagArray } from '../types.js';
+import type { BBTagContext } from '../BBTagContext.js';
+import type { BBTagArray } from '../types.js';
 
 export const tagArray = Object.freeze({
     serialize(array: JArray | BBTagArray, varName?: string): string {

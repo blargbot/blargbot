@@ -1,13 +1,13 @@
-import { IncomingMessage } from 'node:http';
+import type { IncomingMessage } from 'node:http';
 
-import { Api } from '@blargbot/api/Api.js';
+import type { Api } from '@blargbot/api/Api.js';
 import { Lazy } from '@blargbot/core/Lazy.js';
 import asyncRouter from 'express-promise-router';
-import { IRoute } from 'express-serve-static-core';
+import type { IRoute } from 'express-serve-static-core';
 import { WebSocketServer } from 'ws';
 
 import Security from './Security.js';
-import { ApiResponse, AsyncRequestContext, AsyncRequestHandler, AsyncRequestMiddleware, AsyncWebsocketHandler, RequestHandlers, RequestMethods } from './types.js';
+import type { ApiResponse, AsyncRequestContext, AsyncRequestHandler, AsyncRequestMiddleware, AsyncWebsocketHandler, RequestHandlers, RequestMethods } from './types.js';
 
 export class BaseRoute {
     readonly #installSteps: Array<(api: Api, path: string) => void>;

@@ -1,7 +1,7 @@
-import { SubtagArgumentArray } from '../arguments/index.js';
-import { BBTagContext } from '../BBTagContext.js';
-import { SubtagCall } from '../language/index.js';
-import { SubtagLogic } from './SubtagLogic.js';
+import type { SubtagArgumentArray } from '../arguments/index.js';
+import type { BBTagContext } from '../BBTagContext.js';
+import type { SubtagCall } from '../language/index.js';
+import type { SubtagLogic } from './SubtagLogic.js';
 import { SubtagLogicWrapper } from './SubtagLogicWrapper.js';
 
 export class DeferredSubtagLogic extends SubtagLogicWrapper {

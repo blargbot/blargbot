@@ -1,5 +1,5 @@
 import { guard } from '@blargbot/core/utils/index.js';
-import { GuildCommandTag } from '@blargbot/domain/models/index.js';
+import type { GuildCommandTag } from '@blargbot/domain/models/index.js';
 
 export function isGuildImportedCommandTag<T extends GuildCommandTag>(command: T | undefined): command is Extract<T, { alias: string; }> {
     return command !== undefined

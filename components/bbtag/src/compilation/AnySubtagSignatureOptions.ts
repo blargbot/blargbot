@@ -1,6 +1,6 @@
-import { SubtagReturnTypeMap } from '../types.js';
-import { SubtagSignatureCallableOptions } from './SubtagSignatureCallableOptions.js';
-import { SubtagSignatureOptions } from './SubtagSignatureOptions.js';
+import type { SubtagReturnTypeMap } from '../types.js';
+import type { SubtagSignatureCallableOptions } from './SubtagSignatureCallableOptions.js';
+import type { SubtagSignatureOptions } from './SubtagSignatureOptions.js';
 
 export type AnySubtagSignatureCallableOptions = { [P in keyof SubtagReturnTypeMap]: SubtagSignatureCallableOptions<P> }[keyof SubtagReturnTypeMap];
 type NoIntersectOrFullIntersect<A, B> =

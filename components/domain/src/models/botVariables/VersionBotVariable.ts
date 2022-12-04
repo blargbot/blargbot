@@ -1,4 +1,4 @@
-import { BaseBotVariable } from './BaseBotVariable.js';
+import type { BaseBotVariable } from './BaseBotVariable.js';
 
 export interface VersionBotVariable extends BaseBotVariable<'version'> {
     readonly major: number;

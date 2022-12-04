@@ -1,7 +1,7 @@
-import ReadWriteLock from 'rwlock';
+import type ReadWriteLock from 'rwlock';
 
-import { SubtagArgument } from '../../arguments/index.js';
-import { BBTagContext } from '../../BBTagContext.js';
+import type { SubtagArgument } from '../../arguments/index.js';
+import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
 import { getLock } from '../../getLock.js';

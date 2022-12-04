@@ -1,7 +1,7 @@
 import { randInt } from '@blargbot/core/utils/index.js';
 import { BaseImageGenerator } from '@blargbot/image/BaseImageGenerator.js';
-import { ImageWorker } from '@blargbot/image/ImageWorker.js';
-import { FreeOptions, ImageResult } from '@blargbot/image/types.js';
+import type { ImageWorker } from '@blargbot/image/ImageWorker.js';
+import type { FreeOptions, ImageResult } from '@blargbot/image/types.js';
 import sharp from 'sharp';
 
 export class FreeGenerator extends BaseImageGenerator<'free'> {

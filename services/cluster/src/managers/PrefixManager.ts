@@ -1,6 +1,6 @@
 import { guard } from '@blargbot/cluster/utils/index.js';
-import { GuildStore, UserStore } from '@blargbot/domain/stores/index.js';
-import * as Eris from 'eris';
+import type { GuildStore, UserStore } from '@blargbot/domain/stores/index.js';
+import type * as Eris from 'eris';
 
 export class PrefixManager {
     readonly #defaultPrefix: string;

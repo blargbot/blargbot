@@ -1,4 +1,4 @@
-import * as Eris from 'eris';
+import type * as Eris from 'eris';
 
 export function isGuildChannel<T extends Eris.Channel>(channel: T): channel is T & Eris.KnownGuildChannel;
 export function isGuildChannel<T extends Eris.Channel | Eris.PossiblyUncachedMessage['channel']>(channel: T): channel is T & { guild: { id: string; }; }

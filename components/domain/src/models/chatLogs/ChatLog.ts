@@ -1,5 +1,5 @@
-import { ChatLogMessage } from './ChatLogMessage.js';
-import { ChatLogType } from './ChatLogType.js';
+import type { ChatLogMessage } from './ChatLogMessage.js';
+import type { ChatLogType } from './ChatLogType.js';
 
 export interface ChatLog extends ChatLogMessage {
     readonly id: string;

@@ -1,11 +1,13 @@
 import { parse } from '@blargbot/core/utils/index.js';
 
 import { CompiledSubtag } from '../../compilation/index.js';
-import { SubtagSignatureCallableOptions as Options } from '../../compilation/SubtagSignatureCallableOptions.js';
+import type { SubtagSignatureCallableOptions as Options } from '../../compilation/SubtagSignatureCallableOptions.js';
 import { InvalidOperatorError, NotABooleanError, NotANumberError } from '../../errors/index.js';
 import templates from '../../text.js';
-import { bbtag, LogicOperator, NumericOperator, OrdinalOperator, StringOperator, SubtagType } from '../../utils/index.js';
-import { AggregationOperator, aggregationOperators, logicOperators, numericOperators, ordinalOperators, stringOperators } from '../../utils/operators.js';
+import type { LogicOperator, NumericOperator, OrdinalOperator, StringOperator} from '../../utils/index.js';
+import { bbtag, SubtagType } from '../../utils/index.js';
+import type { AggregationOperator} from '../../utils/operators.js';
+import { aggregationOperators, logicOperators, numericOperators, ordinalOperators, stringOperators } from '../../utils/operators.js';
 
 const tag = templates.subtags.operator;
 

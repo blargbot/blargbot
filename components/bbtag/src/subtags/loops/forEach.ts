@@ -1,5 +1,5 @@
-import { SubtagArgument } from '../../arguments/index.js';
-import { BBTagContext } from '../../BBTagContext.js';
+import type { SubtagArgument } from '../../arguments/index.js';
+import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import templates from '../../text.js';
 import { BBTagRuntimeState } from '../../types.js';

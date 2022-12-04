@@ -1,7 +1,8 @@
-import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types.js';
+import type { CommandResult, GuildCommandContext } from '@blargbot/cluster/types.js';
 import { CommandType } from '@blargbot/cluster/utils/index.js';
 import { guard, sleep } from '@blargbot/core/utils/index.js';
-import { ChatLogSearchOptions, ChatLogType } from '@blargbot/domain/models/index.js';
+import type { ChatLogSearchOptions} from '@blargbot/domain/models/index.js';
+import { ChatLogType } from '@blargbot/domain/models/index.js';
 
 import { GuildCommand } from '../../command/index.js';
 import templates from '../../text.js';

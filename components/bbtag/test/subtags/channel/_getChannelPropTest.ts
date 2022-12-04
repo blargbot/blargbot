@@ -1,9 +1,10 @@
-import { BBTagContext } from '@blargbot/bbtag';
-import { BBTagRuntimeError, ChannelNotFoundError } from '@blargbot/bbtag/errors/index.js';
-import Discord from 'discord-api-types/v9';
-import * as Eris from 'eris';
+import type { BBTagContext } from '@blargbot/bbtag';
+import type { BBTagRuntimeError} from '@blargbot/bbtag/errors/index.js';
+import { ChannelNotFoundError } from '@blargbot/bbtag/errors/index.js';
+import type Discord from 'discord-api-types/v9';
+import type * as Eris from 'eris';
 
-import { SubtagTestCase, SubtagTestContext } from '../SubtagTestSuite.js';
+import type { SubtagTestCase, SubtagTestContext } from '../SubtagTestSuite.js';
 
 export function createGetChannelPropTestCases(options: GetChannelPropTestData): SubtagTestCase[] {
     return [...createGetChannelPropTestCasesIter(options)];

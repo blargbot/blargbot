@@ -1,10 +1,10 @@
-import { Cluster } from '@blargbot/cluster';
+import type { Cluster } from '@blargbot/cluster';
 import { guard, ModlogColour } from '@blargbot/cluster/utils/index.js';
-import { BaseUtilities } from '@blargbot/core/BaseUtilities.js';
+import type { BaseUtilities } from '@blargbot/core/BaseUtilities.js';
 import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent.js';
-import { FormatEmbedAuthor, FormatEmbedField, FormatEmbedOptions } from '@blargbot/core/types.js';
-import { StoredGuildEventLogType } from '@blargbot/domain/models/index.js';
-import { IFormattable } from '@blargbot/formatting';
+import type { FormatEmbedAuthor, FormatEmbedField, FormatEmbedOptions } from '@blargbot/core/types.js';
+import type { StoredGuildEventLogType } from '@blargbot/domain/models/index.js';
+import type { IFormattable } from '@blargbot/formatting';
 import * as Eris from 'eris';
 import moment from 'moment-timezone';
 

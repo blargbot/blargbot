@@ -1,17 +1,18 @@
-import { BBTagUtilities } from '@blargbot/bbtag/BBTagUtilities.js';
+import type { BBTagUtilities } from '@blargbot/bbtag/BBTagUtilities.js';
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
 import { MessageIdSubtag } from '@blargbot/bbtag/subtags/message/messageId.js';
 import { ReactionSubtag } from '@blargbot/bbtag/subtags/message/reaction.js';
 import { ReactionUserSubtag } from '@blargbot/bbtag/subtags/message/reactionUser.js';
 import { WaitReactionSubtag } from '@blargbot/bbtag/subtags/message/waitReaction.js';
 import { OperatorSubtag } from '@blargbot/bbtag/subtags/misc/operator.js';
-import { AwaitReactionsResponse } from '@blargbot/bbtag/types.js';
+import type { AwaitReactionsResponse } from '@blargbot/bbtag/types.js';
 import { Emote } from '@blargbot/core/Emote.js';
 import { argument } from '@blargbot/test-util/mock.js';
 import chai from 'chai';
 import * as Eris from 'eris';
 
-import { MarkerError, runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';
+import type { SubtagTestContext } from '../SubtagTestSuite.js';
+import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
 type AwaitCondition = Exclude<Parameters<BBTagUtilities['awaitReaction']>[1], undefined>;
 const anyCondition = argument.is((v): v is AwaitCondition => typeof v === 'function');

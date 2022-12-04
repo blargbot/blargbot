@@ -1,4 +1,4 @@
-import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types.js';
+import type { CommandResult, GuildCommandContext } from '@blargbot/cluster/types.js';
 import { CommandType } from '@blargbot/cluster/utils/index.js';
 import { createSafeRegExp, guard } from '@blargbot/core/utils/index.js';
 import * as Eris from 'eris';

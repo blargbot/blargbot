@@ -2,13 +2,14 @@ import path from 'node:path';
 import { Readable } from 'node:stream';
 import { promisify } from 'node:util';
 
-import { getFileResource, IResource } from '@blargbot/res';
+import type { IResource } from '@blargbot/res';
+import { getFileResource } from '@blargbot/res';
 import GIFEncoder from 'gifencoder';
 import gm from 'gm';
 import fetch from 'node-fetch';
 
-import { ImageWorker } from './ImageWorker.js';
-import { ImageGeneratorMap, ImageResult, TextOptions } from './types.js';
+import type { ImageWorker } from './ImageWorker.js';
+import type { ImageGeneratorMap, ImageResult, TextOptions } from './types.js';
 
 const im = gm.subClass({ imageMagick: true });
 const emptyBuffer = Buffer.from([]);

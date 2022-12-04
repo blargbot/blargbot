@@ -1,9 +1,9 @@
-import { CommandHandler, CommandResult, CommandSignatureHandler } from '@blargbot/cluster/types.js';
-import { IMiddleware } from '@blargbot/core/types.js';
+import type { CommandHandler, CommandResult, CommandSignatureHandler } from '@blargbot/cluster/types.js';
+import type { IMiddleware } from '@blargbot/core/types.js';
 
-import { CommandContext } from '../CommandContext.js';
+import type { CommandContext } from '../CommandContext.js';
 import { compileHandler } from '../compilation/index.js';
-import { ScopedCommand } from '../ScopedCommand.js';
+import type { ScopedCommand } from '../ScopedCommand.js';
 
 export class InvokeCommandHandlerMiddleware<TContext extends CommandContext> implements IMiddleware<TContext, CommandResult> {
     public readonly name: string;

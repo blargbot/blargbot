@@ -1,4 +1,4 @@
-import { Cluster } from '@blargbot/cluster';
+import type { Cluster } from '@blargbot/cluster';
 import { guard } from '@blargbot/cluster/utils/index.js';
 import { Lazy } from '@blargbot/core/Lazy.js';
 import { DiscordEventService } from '@blargbot/core/serviceTypes/index.js';

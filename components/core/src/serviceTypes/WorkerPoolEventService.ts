@@ -1,5 +1,5 @@
-import { GetWorkerPoolEventHandler, IPCContracts, ProcessMessageHandler, WorkerIPCContractNames, WorkerPoolEventContext } from '@blargbot/core/types.js';
-import { WorkerConnection, WorkerPool } from '@blargbot/core/worker/index.js';
+import type { GetWorkerPoolEventHandler, IPCContracts, ProcessMessageHandler, WorkerIPCContractNames, WorkerPoolEventContext } from '@blargbot/core/types.js';
+import type { WorkerConnection, WorkerPool } from '@blargbot/core/worker/index.js';
 
 import { BaseService } from './BaseService.js';
 

@@ -1,9 +1,9 @@
-import { CommandMap } from 'blargbot-image-api';
+import type { CommandMap } from 'blargbot-image-api';
 import fetch from 'node-fetch';
 
 import { BaseImageGenerator } from './BaseImageGenerator.js';
-import { ImageWorker } from './ImageWorker.js';
-import { ImageResult } from './types.js';
+import type { ImageWorker } from './ImageWorker.js';
+import type { ImageResult } from './types.js';
 
 export abstract class BaseApiImageGenerator<T extends keyof CommandMap> extends BaseImageGenerator<T> {
     protected constructor(

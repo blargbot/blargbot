@@ -1,8 +1,8 @@
-import { Configuration } from '@blargbot/config';
+import type { Configuration } from '@blargbot/config';
 import { BaseUtilities } from '@blargbot/core/BaseUtilities.js';
 import { Database } from '@blargbot/database';
 import * as Formatting from '@blargbot/formatting';
-import { Logger } from '@blargbot/logger';
+import type { Logger } from '@blargbot/logger';
 import * as Eris from 'eris';
 
 import * as transformers from './formatting/index.js';

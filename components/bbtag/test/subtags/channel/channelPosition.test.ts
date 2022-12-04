@@ -1,6 +1,6 @@
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
 import { ChannelPositionSubtag } from '@blargbot/bbtag/subtags/channel/channelPosition.js';
-import Discord from 'discord-api-types/v9';
+import type Discord from 'discord-api-types/v9';
 import * as Eris from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

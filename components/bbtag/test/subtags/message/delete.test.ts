@@ -1,7 +1,7 @@
 import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '@blargbot/bbtag/errors/index.js';
 import { DeleteSubtag } from '@blargbot/bbtag/subtags/message/delete.js';
 import chai from 'chai';
-import * as Eris from 'eris';
+import type * as Eris from 'eris';
 
 import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';
 

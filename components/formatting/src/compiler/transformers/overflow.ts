@@ -1,4 +1,4 @@
-import { IValueResolverTransform } from '../types.js';
+import type { IValueResolverTransform } from '../types.js';
 
 export const overflow: IValueResolverTransform = {
     transform(_compiler, source, ...args) {

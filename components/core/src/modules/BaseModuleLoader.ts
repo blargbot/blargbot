@@ -3,9 +3,9 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { MultiKeyMap } from '@blargbot/core/MultiKeyMap.js';
-import { ModuleResult } from '@blargbot/core/types.js';
+import type { ModuleResult } from '@blargbot/core/types.js';
 import { guard, pluralise as p } from '@blargbot/core/utils/index.js';
-import { Logger } from '@blargbot/logger';
+import type { Logger } from '@blargbot/logger';
 import { EventEmitter } from 'eventemitter3';
 
 interface ModuleLoaderEvents<TModule> {

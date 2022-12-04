@@ -1,6 +1,6 @@
-import { IFormattable } from '@blargbot/formatting';
+import type { IFormattable } from '@blargbot/formatting';
 
-import { BBTagContext } from '../BBTagContext.js';
+import type { BBTagContext } from '../BBTagContext.js';
 
 export interface RuntimeLimitRule {
     check(context: BBTagContext, subtagName: string): Awaitable<void>;

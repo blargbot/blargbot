@@ -1,17 +1,18 @@
 import { ClientRequest, IncomingMessage } from 'node:http';
 import { inspect } from 'node:util';
 
-import { BBTagContext, BBTagContextOptions, BBTagEngine, BBTagRuntimeScope, LocatedRuntimeError, SourceMarker, Subtag, SubtagCall } from '@blargbot/bbtag';
-import { BBTagUtilities, InjectionContext } from '@blargbot/bbtag/BBTagUtilities.js';
+import type { BBTagContextOptions, BBTagRuntimeScope, LocatedRuntimeError, SourceMarker, SubtagCall } from '@blargbot/bbtag';
+import { BBTagContext, BBTagEngine, Subtag } from '@blargbot/bbtag';
+import type { BBTagUtilities, InjectionContext } from '@blargbot/bbtag/BBTagUtilities.js';
 import { BBTagRuntimeError, NotEnoughArgumentsError, TooManyArgumentsError } from '@blargbot/bbtag/errors/index.js';
 import { BaseRuntimeLimit } from '@blargbot/bbtag/limits/BaseRuntimeLimit.js';
 import { bbtag, SubtagType } from '@blargbot/bbtag/utils/index.js';
 import { Timer } from '@blargbot/core/Timer.js';
 import { pluralise as p, repeat, snowflake } from '@blargbot/core/utils/index.js';
 import { Database } from '@blargbot/database';
-import { GuildCommandTag, StoredTag, TagVariableScope } from '@blargbot/domain/models/index.js';
-import { GuildStore, TagStore, TagVariableStore, UserStore } from '@blargbot/domain/stores/index.js';
-import { Logger } from '@blargbot/logger';
+import type { GuildCommandTag, StoredTag, TagVariableScope } from '@blargbot/domain/models/index.js';
+import type { GuildStore, TagStore, TagVariableStore, UserStore } from '@blargbot/domain/stores/index.js';
+import type { Logger } from '@blargbot/logger';
 import { argument, Mock } from '@blargbot/test-util/mock.js';
 import chai from 'chai';
 import chaiBytes from 'chai-bytes';

@@ -1,12 +1,12 @@
-import { ClusterUtilities } from '@blargbot/cluster/ClusterUtilities.js';
-import { CommandDefinition, CommandOptions, CommandResult } from '@blargbot/cluster/types.js';
+import type { ClusterUtilities } from '@blargbot/cluster/ClusterUtilities.js';
+import type { CommandDefinition, CommandOptions, CommandResult } from '@blargbot/cluster/types.js';
 import { commandTypeDetails, runMiddleware } from '@blargbot/cluster/utils/index.js';
-import { IMiddleware, NextMiddleware } from '@blargbot/core/types.js';
-import * as Eris from 'eris';
+import type { IMiddleware, NextMiddleware } from '@blargbot/core/types.js';
+import type * as Eris from 'eris';
 
 import templates from '../text.js';
 import { Command } from './Command.js';
-import { CommandContext } from './CommandContext.js';
+import type { CommandContext } from './CommandContext.js';
 import { compileSignatures } from './compilation/index.js';
 import { InvokeCommandHandlerMiddleware } from './middleware/index.js';
 

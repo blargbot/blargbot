@@ -1,8 +1,8 @@
-import { CommandBinderParseResult, CommandBinderState, CommandBinderStateFailureReason } from '@blargbot/cluster/types.js';
+import type { CommandBinderParseResult, CommandBinderState, CommandBinderStateFailureReason } from '@blargbot/cluster/types.js';
 import { Binder } from '@blargbot/core/Binder.js';
-import { Binding, BindingFailure, BindingResult, BindingResultValue, BindingSuccess } from '@blargbot/core/types.js';
+import type { Binding, BindingFailure, BindingResult, BindingResultValue, BindingSuccess } from '@blargbot/core/types.js';
 
-import { CommandContext } from '../../CommandContext.js';
+import type { CommandContext } from '../../CommandContext.js';
 
 export abstract class CommandBindingBase<TContext extends CommandContext> implements Binding<CommandBinderState<TContext>> {
     public abstract [Binder.binder](state: CommandBinderState<TContext>): BindingResult<CommandBinderState<TContext>>

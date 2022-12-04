@@ -1,6 +1,7 @@
-import { FormatString, IFormattable } from '@blargbot/formatting';
+import type { IFormattable } from '@blargbot/formatting';
+import { FormatString } from '@blargbot/formatting';
 
-import { Subtag } from './Subtag.js';
+import type { Subtag } from './Subtag.js';
 
 export const templates = FormatString.defineTree('bbtag', t => ({
     debug: {

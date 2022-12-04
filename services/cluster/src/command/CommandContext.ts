@@ -1,14 +1,15 @@
-import { BBTagEngine } from '@blargbot/bbtag';
-import { Cluster, ClusterUtilities } from '@blargbot/cluster';
-import { CommandResult, GuildCommandContext, ICommand } from '@blargbot/cluster/types.js';
-import { Configuration } from '@blargbot/config';
+import type { BBTagEngine } from '@blargbot/bbtag';
+import type { Cluster, ClusterUtilities } from '@blargbot/cluster';
+import type { CommandResult, GuildCommandContext, ICommand } from '@blargbot/cluster/types.js';
+import type { Configuration } from '@blargbot/config';
 import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent.js';
-import { ChoiceQueryOptions, ChoiceQueryResult, ConfirmQuery, MultipleQueryOptions, MultipleQueryResult, SendContent, SendContext, SlimConfirmQueryOptions, SlimEntityFindQueryOptions, SlimEntityPickQueryOptions, SlimEntityQueryOptions, SlimTextQueryOptions, SlimTextQueryOptionsParsed, TextQueryResult } from '@blargbot/core/types.js';
+import type { ChoiceQueryOptions, ChoiceQueryResult, ConfirmQuery, MultipleQueryOptions, MultipleQueryResult, SendContent, SendContext, SlimConfirmQueryOptions, SlimEntityFindQueryOptions, SlimEntityPickQueryOptions, SlimEntityQueryOptions, SlimTextQueryOptions, SlimTextQueryOptionsParsed, TextQueryResult } from '@blargbot/core/types.js';
 import { guard } from '@blargbot/core/utils/index.js';
-import { Database } from '@blargbot/database';
-import { format, IFormattable, util } from '@blargbot/formatting';
-import { Logger } from '@blargbot/logger';
-import * as Eris from 'eris';
+import type { Database } from '@blargbot/database';
+import type { IFormattable} from '@blargbot/formatting';
+import { format, util } from '@blargbot/formatting';
+import type { Logger } from '@blargbot/logger';
+import type * as Eris from 'eris';
 
 export class CommandContext<TChannel extends Eris.KnownTextableChannel = Eris.KnownTextableChannel> {
     public get logger(): Logger { return this.cluster.logger; }

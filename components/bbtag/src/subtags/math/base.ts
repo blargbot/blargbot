@@ -1,7 +1,7 @@
 import { Lazy } from '@blargbot/core/Lazy.js';
 import { between, parse } from '@blargbot/core/utils/index.js';
 
-import { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, NotANumberError } from '../../errors/index.js';
 import templates from '../../text.js';

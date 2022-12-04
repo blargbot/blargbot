@@ -1,7 +1,7 @@
-import { Logger } from '@blargbot/logger';
-import * as Eris from 'eris';
+import type { Logger } from '@blargbot/logger';
+import type * as Eris from 'eris';
 
-import { Awaiter } from './Awaiter.js';
+import type { Awaiter } from './Awaiter.js';
 import { AwaiterFactoryBase } from './AwaiterFactoryBase.js';
 
 export class MessageAwaiterFactory extends AwaiterFactoryBase<Eris.KnownMessage> {

@@ -3,7 +3,8 @@ import { JsonSubtag } from '@blargbot/bbtag/subtags/json/json.js';
 import { JsonGetSubtag } from '@blargbot/bbtag/subtags/json/jsonGet.js';
 import { TagVariableType } from '@blargbot/domain/models/index.js';
 
-import { runSubtagTests, SubtagTestCase } from '../SubtagTestSuite.js';
+import type { SubtagTestCase } from '../SubtagTestSuite.js';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new JsonGetSubtag(),

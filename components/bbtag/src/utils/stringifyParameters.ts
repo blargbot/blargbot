@@ -1,4 +1,4 @@
-import { SubtagSignatureParameter } from '../types.js';
+import type { SubtagSignatureParameter } from '../types.js';
 
 export function stringifyParameters(subtagName: string, parameters: readonly SubtagSignatureParameter[]): string {
     return `{${[subtagName, ...parameters.map(stringifyParameter)].join(';')}}`;

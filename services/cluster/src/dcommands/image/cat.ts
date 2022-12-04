@@ -1,11 +1,11 @@
-import { Cluster } from '@blargbot/cluster';
+import type { Cluster } from '@blargbot/cluster';
 import { CommandType, randInt } from '@blargbot/cluster/utils/index.js';
 import { util } from '@blargbot/formatting';
 import Wolken from 'wolken';
 
 import { GlobalCommand } from '../../command/index.js';
 import templates from '../../text.js';
-import { CommandResult } from '../../types.js';
+import type { CommandResult } from '../../types.js';
 
 const cmd = templates.commands.cat;
 

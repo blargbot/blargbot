@@ -1,6 +1,6 @@
 import { performance } from 'node:perf_hooks';
 
-import { IMiddleware, MiddlewareOptions, NextMiddleware } from '@blargbot/core/types.js';
+import type { IMiddleware, MiddlewareOptions, NextMiddleware } from '@blargbot/core/types.js';
 
 const mw: unique symbol = Symbol();
 

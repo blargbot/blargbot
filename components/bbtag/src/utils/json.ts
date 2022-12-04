@@ -1,6 +1,6 @@
 import { parse } from '@blargbot/core/utils/index.js';
 
-import { BBTagContext } from '../BBTagContext.js';
+import type { BBTagContext } from '../BBTagContext.js';
 import { BBTagRuntimeError } from '../errors/index.js';
 import { tagArray } from './tagArray.js';
 

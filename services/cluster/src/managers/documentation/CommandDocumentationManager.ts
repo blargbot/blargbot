@@ -1,13 +1,14 @@
-import { FormatEmbedField, SendContent } from '@blargbot/core/types.js';
+import type { FormatEmbedField, SendContent } from '@blargbot/core/types.js';
 import { discord, guard } from '@blargbot/core/utils/index.js';
-import { format, IFormattable, util } from '@blargbot/formatting';
-import * as Eris from 'eris';
+import type { IFormattable} from '@blargbot/formatting';
+import { format, util } from '@blargbot/formatting';
+import type * as Eris from 'eris';
 
-import { Cluster } from '../../Cluster.js';
+import type { Cluster } from '../../Cluster.js';
 import templates from '../../text.js';
-import { CommandGetResult, CommandParameter, ICommand } from '../../types.js';
+import type { CommandGetResult, CommandParameter, ICommand } from '../../types.js';
 import { humanize } from '../../utils/index.js';
-import { Documentation, DocumentationGroup, DocumentationPage } from './DocumentationManager.js';
+import type { Documentation, DocumentationGroup, DocumentationPage } from './DocumentationManager.js';
 import { DocumentationTreeManager } from './DocumentationTreeManager.js';
 
 const doc = templates.documentation.command;

@@ -1,5 +1,5 @@
 import { RespawnStrategy, WorkerPool } from '@blargbot/core/worker/index.js';
-import { Logger } from '@blargbot/logger';
+import type { Logger } from '@blargbot/logger';
 
 import { ApiConnection } from './ApiConnection.js';
 

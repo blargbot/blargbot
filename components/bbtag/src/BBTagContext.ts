@@ -1,27 +1,30 @@
 import { Emote } from '@blargbot/core/Emote.js';
 import { Timer } from '@blargbot/core/Timer.js';
-import { ChoiceQueryResult, EntityPickQueryOptions } from '@blargbot/core/types.js';
+import type { ChoiceQueryResult, EntityPickQueryOptions } from '@blargbot/core/types.js';
 import { discord } from '@blargbot/core/utils/discord/index.js';
 import { guard, hasFlag, humanize, parse } from '@blargbot/core/utils/index.js';
-import { Database } from '@blargbot/database';
-import { FlagDefinition, FlagResult, NamedGuildCommandTag, StoredTag } from '@blargbot/domain/models/index.js';
-import { Logger } from '@blargbot/logger';
+import type { Database } from '@blargbot/database';
+import type { FlagDefinition, FlagResult, NamedGuildCommandTag, StoredTag } from '@blargbot/domain/models/index.js';
+import type { Logger } from '@blargbot/logger';
 import * as Eris from 'eris';
-import moment from 'moment-timezone';
+import type moment from 'moment-timezone';
 import ReadWriteLock from 'rwlock';
 
-import { BBTagEngine } from './BBTagEngine.js';
-import { BBTagUtilities } from './BBTagUtilities.js';
+import type { BBTagEngine } from './BBTagEngine.js';
+import type { BBTagUtilities } from './BBTagUtilities.js';
 import { VariableCache } from './Caching.js';
-import { BBTagRuntimeError, SubtagStackOverflowError, UnknownSubtagError } from './errors/index.js';
-import { Statement, SubtagCall } from './language/index.js';
-import { limits, RuntimeLimit } from './limits/index.js';
+import type { BBTagRuntimeError} from './errors/index.js';
+import { SubtagStackOverflowError, UnknownSubtagError } from './errors/index.js';
+import type { Statement, SubtagCall } from './language/index.js';
+import type { RuntimeLimit } from './limits/index.js';
+import { limits } from './limits/index.js';
 import { ScopeManager } from './ScopeManager.js';
-import { Subtag } from './Subtag.js';
+import type { Subtag } from './Subtag.js';
 import { SubtagCallStack } from './SubtagCallStack.js';
 import { TagCooldownManager } from './TagCooldownManager.js';
 import { tagVariableScopeProviders } from './tagVariableScopeProviders.js';
-import { BBTagContextMessage, BBTagContextOptions, BBTagContextState, BBTagRuntimeScope, BBTagRuntimeState, FindEntityOptions, LocatedRuntimeError, RuntimeDebugEntry, SerializedBBTagContext } from './types.js';
+import type { BBTagContextMessage, BBTagContextOptions, BBTagContextState, BBTagRuntimeScope, FindEntityOptions, LocatedRuntimeError, RuntimeDebugEntry, SerializedBBTagContext } from './types.js';
+import { BBTagRuntimeState } from './types.js';
 
 function serializeEntity(entity: { id: string; }): { id: string; serialized: string; }
 function serializeEntity(entity?: { id: string; }): { id: string; serialized: string; } | undefined

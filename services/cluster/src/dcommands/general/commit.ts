@@ -1,11 +1,12 @@
 import { CommandType, randInt } from '@blargbot/cluster/utils/index.js';
 import { util } from '@blargbot/formatting';
 import { mapping } from '@blargbot/mapping';
-import fetch, { Response } from 'node-fetch';
+import type { Response } from 'node-fetch';
+import fetch from 'node-fetch';
 
 import { GlobalCommand } from '../../command/index.js';
 import templates from '../../text.js';
-import { CommandResult } from '../../types.js';
+import type { CommandResult } from '../../types.js';
 
 const cmd = templates.commands.commit;
 

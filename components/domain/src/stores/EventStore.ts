@@ -1,6 +1,6 @@
-import moment from 'moment-timezone';
+import type moment from 'moment-timezone';
 
-import { EventType, StoredEvent, StoredEventOptions } from '../models/index.js';
+import type { EventType, StoredEvent, StoredEventOptions } from '../models/index.js';
 
 export interface EventStore {
     list(source: string, pageNumber: number, pageSize: number): Promise<{ events: readonly StoredEvent[]; total: number; }>;

@@ -1,15 +1,15 @@
 import { guard, parse } from '@blargbot/core/utils/index.js';
-import { IFormattable } from '@blargbot/formatting';
+import type { IFormattable } from '@blargbot/formatting';
 
-import { BBTagContext } from '../BBTagContext.js';
-import { BBTagRuntimeError } from '../errors/index.js';
-import { SubtagCall } from '../language/index.js';
+import type { BBTagContext } from '../BBTagContext.js';
+import type { BBTagRuntimeError } from '../errors/index.js';
+import type { SubtagCall } from '../language/index.js';
 import { Subtag } from '../Subtag.js';
-import { SubtagOptions } from '../types.js';
+import type { SubtagOptions } from '../types.js';
 import { bbtag } from '../utils/index.js';
-import { AnySubtagSignatureOptions } from './AnySubtagSignatureOptions.js';
+import type { AnySubtagSignatureOptions } from './AnySubtagSignatureOptions.js';
 import { compileSignatures } from './compileSignatures.js';
-import { CompositeSubtagHandler } from './CompositeSubtagHandler.js';
+import type { CompositeSubtagHandler } from './CompositeSubtagHandler.js';
 import { parseDefinitions } from './parseDefinitions.js';
 
 export interface DefinedSubtagOptions extends Omit<SubtagOptions<IFormattable<string>>, 'signatures'> {

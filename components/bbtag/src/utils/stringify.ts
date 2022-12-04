@@ -1,4 +1,4 @@
-import { Statement, SubtagCall } from '../language/index.js';
+import type { Statement, SubtagCall } from '../language/index.js';
 
 export function stringify(bbtag: Statement | SubtagCall): string {
     if ('values' in bbtag) {

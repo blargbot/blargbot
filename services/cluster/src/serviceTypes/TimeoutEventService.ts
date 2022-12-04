@@ -1,8 +1,8 @@
 import { BaseService } from '@blargbot/core/serviceTypes/index.js';
-import { EventOptionsTypeMap, StoredEvent } from '@blargbot/domain/models/index.js';
-import { Logger } from '@blargbot/logger';
+import type { EventOptionsTypeMap, StoredEvent } from '@blargbot/domain/models/index.js';
+import type { Logger } from '@blargbot/logger';
 
-import { TimeoutManager } from '../managers/TimeoutManager.js';
+import type { TimeoutManager } from '../managers/TimeoutManager.js';
 
 export abstract class TimeoutEventService<TEvent extends keyof EventOptionsTypeMap> extends BaseService {
     readonly #execute: (event: StoredEvent<TEvent>) => void;

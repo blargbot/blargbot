@@ -1,5 +1,5 @@
-import { Cluster } from '@blargbot/cluster';
-import * as Eris from 'eris';
+import type { Cluster } from '@blargbot/cluster';
+import type * as Eris from 'eris';
 
 export class BotStaffManager {
     readonly #staff: Set<string>;

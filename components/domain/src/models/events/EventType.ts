@@ -1,4 +1,4 @@
-import { EventOptionsTypeMap } from './EventOptionsTypeMap.js';
+import type { EventOptionsTypeMap } from './EventOptionsTypeMap.js';
 
 export type EventType = keyof EventOptionsTypeMap;
 export type EventTypeMap = {

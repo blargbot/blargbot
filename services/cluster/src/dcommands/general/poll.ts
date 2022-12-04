@@ -1,4 +1,4 @@
-import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types.js';
+import type { CommandResult, GuildCommandContext } from '@blargbot/cluster/types.js';
 import { CommandType, parse, randInt } from '@blargbot/cluster/utils/index.js';
 import { Emote } from '@blargbot/core/Emote.js';
 import moment from 'moment-timezone';

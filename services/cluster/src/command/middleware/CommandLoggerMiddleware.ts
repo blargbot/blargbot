@@ -1,8 +1,8 @@
-import { CommandResult } from '@blargbot/cluster/types.js';
+import type { CommandResult } from '@blargbot/cluster/types.js';
 import { guard } from '@blargbot/cluster/utils/index.js';
-import { IMiddleware, NextMiddleware } from '@blargbot/core/types.js';
+import type { IMiddleware, NextMiddleware } from '@blargbot/core/types.js';
 
-import { CommandContext } from '../CommandContext.js';
+import type { CommandContext } from '../CommandContext.js';
 
 export class CommandLoggerMiddleware implements IMiddleware<CommandContext, CommandResult> {
     public execute(context: CommandContext, next: NextMiddleware<CommandResult>): Awaitable<CommandResult> {

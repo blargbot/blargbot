@@ -1,4 +1,4 @@
-import { StoredEventOptionsBase } from './StoredEventOptionsBase.js';
+import type { StoredEventOptionsBase } from './StoredEventOptionsBase.js';
 
 export interface PollEventOptions extends StoredEventOptionsBase {
     readonly color: number;

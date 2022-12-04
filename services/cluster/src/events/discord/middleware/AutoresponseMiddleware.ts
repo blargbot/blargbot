@@ -1,6 +1,6 @@
-import { AutoresponseManager } from '@blargbot/cluster/managers/index.js';
-import { IMiddleware, NextMiddleware } from '@blargbot/core/types.js';
-import * as Eris from 'eris';
+import type { AutoresponseManager } from '@blargbot/cluster/managers/index.js';
+import type { IMiddleware, NextMiddleware } from '@blargbot/core/types.js';
+import type * as Eris from 'eris';
 
 export class AutoresponseMiddleware implements IMiddleware<Eris.KnownMessage, boolean> {
     readonly #manager: AutoresponseManager;

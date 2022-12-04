@@ -1,5 +1,5 @@
 import { ChannelIsNsfwSubtag } from '@blargbot/bbtag/subtags/channel/channelIsNsfw.js';
-import Discord from 'discord-api-types/v9';
+import type Discord from 'discord-api-types/v9';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetChannelPropTestCases } from './_getChannelPropTest.js';

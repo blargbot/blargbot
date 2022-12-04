@@ -1,5 +1,5 @@
-import { MessageFilter } from '@blargbot/domain/models/index.js';
-import * as Eris from 'eris';
+import type { MessageFilter } from '@blargbot/domain/models/index.js';
+import type * as Eris from 'eris';
 
 import { matchRegexSafe } from '../createRegExp.js';
 import { humanize } from '../humanize/index.js';

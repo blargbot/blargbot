@@ -1,9 +1,9 @@
-import { PollEventOptions } from './PollEventOptions.js';
-import { RemindEventOptions } from './RemindEventOptions.js';
-import { TagEventOptions } from './TagEventOptions.js';
-import { TimerEventOptions } from './TimerEventOptions.js';
-import { UnbanEventOptions } from './UnbanEventOptions.js';
-import { UnmuteEventOptions } from './UnmuteEventOptions.js';
+import type { PollEventOptions } from './PollEventOptions.js';
+import type { RemindEventOptions } from './RemindEventOptions.js';
+import type { TagEventOptions } from './TagEventOptions.js';
+import type { TimerEventOptions } from './TimerEventOptions.js';
+import type { UnbanEventOptions } from './UnbanEventOptions.js';
+import type { UnmuteEventOptions } from './UnmuteEventOptions.js';
 
 export type EventOptionsTypeMap = {
     tag: TagEventOptions;

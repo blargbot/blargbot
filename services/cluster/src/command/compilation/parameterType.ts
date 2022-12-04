@@ -1,4 +1,4 @@
-import { CommandVariableParser, CommandVariableType, CommandVariableTypeBase, CommandVariableTypeName, CommandVariableTypes } from '@blargbot/cluster/types.js';
+import type { CommandVariableParser, CommandVariableType, CommandVariableTypeBase, CommandVariableTypeName, CommandVariableTypes } from '@blargbot/cluster/types.js';
 import { parse } from '@blargbot/cluster/utils/index.js';
 
 import { createCommandArgument } from './commandArgument.js';

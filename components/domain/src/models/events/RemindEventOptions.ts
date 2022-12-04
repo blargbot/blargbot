@@ -1,4 +1,4 @@
-import { StoredEventOptionsBase } from './StoredEventOptionsBase.js';
+import type { StoredEventOptionsBase } from './StoredEventOptionsBase.js';
 
 export interface RemindEventOptions extends StoredEventOptionsBase {
     readonly channel: string;

@@ -1,20 +1,20 @@
 import { inspect } from 'node:util';
 
 import { BBTagEngine, subtags } from '@blargbot/bbtag';
-import { ClusterOptions } from '@blargbot/cluster/types.js';
-import { Configuration } from '@blargbot/config';
+import type { ClusterOptions } from '@blargbot/cluster/types.js';
+import type { Configuration } from '@blargbot/config';
 import { BaseClient } from '@blargbot/core/BaseClient.js';
 import { ModuleLoader } from '@blargbot/core/modules/index.js';
 import { BaseService } from '@blargbot/core/serviceTypes/index.js';
-import { EvalResult } from '@blargbot/core/types.js';
+import type { EvalResult } from '@blargbot/core/types.js';
 import { ImagePool } from '@blargbot/image';
-import { Logger } from '@blargbot/logger';
+import type { Logger } from '@blargbot/logger';
 import Discord from 'discord-api-types/v9';
 import moment from 'moment-timezone';
 
 import { ClusterBBTagUtilities } from './ClusterBBTagUtilities.js';
 import { ClusterUtilities } from './ClusterUtilities.js';
-import { ClusterWorker } from './ClusterWorker.js';
+import type { ClusterWorker } from './ClusterWorker.js';
 import { CommandDocumentationManager } from './managers/documentation/CommandDocumentationManager.js';
 import { AggregateCommandManager, AnnouncementManager, AutoresponseManager, AwaiterManager, BotStaffManager, ContributorManager, CustomCommandManager, DefaultCommandManager, DomainManager, GreetingManager, GuildManager, IntervalManager, ModerationManager, PollManager, PrefixManager, RolemeManager, TimeoutManager, VersionStateManager } from './managers/index.js';
 

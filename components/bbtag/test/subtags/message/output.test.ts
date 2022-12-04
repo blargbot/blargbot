@@ -3,7 +3,7 @@ import { OutputSubtag } from '@blargbot/bbtag/subtags/message/output.js';
 import { Emote } from '@blargbot/core/Emote.js';
 import { argument } from '@blargbot/test-util/mock.js';
 import chai from 'chai';
-import * as Eris from 'eris';
+import type * as Eris from 'eris';
 
 import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';
 

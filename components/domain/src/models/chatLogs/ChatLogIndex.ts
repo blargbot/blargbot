@@ -1,4 +1,4 @@
-import { ChatLogType } from './ChatLogType.js';
+import type { ChatLogType } from './ChatLogType.js';
 
 export interface ChatLogIndex<T = string> {
     readonly keycode: string;

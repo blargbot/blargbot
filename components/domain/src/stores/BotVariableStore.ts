@@ -1,4 +1,4 @@
-import { BotVariable, GetBotVariableOptions } from '../models/index.js';
+import type { BotVariable, GetBotVariableOptions } from '../models/index.js';
 
 export interface BotVariableStore {
     set<K extends BotVariable['varname']>(name: K, value: GetBotVariableOptions<K> | undefined): Promise<boolean>;

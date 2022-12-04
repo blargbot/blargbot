@@ -1,4 +1,4 @@
-import { Api } from '../Api.js';
+import type { Api } from '../Api.js';
 import { BaseRoute } from '../BaseRoute.js';
 
 export class MetricsRoute extends BaseRoute {

@@ -1,9 +1,9 @@
 import { parse } from '@blargbot/core/utils/index.js';
-import { EventType, EventTypeMap, StoredEvent, StoredEventOptions } from '@blargbot/domain/models/index.js';
+import type { EventType, EventTypeMap, StoredEvent, StoredEventOptions } from '@blargbot/domain/models/index.js';
 import { EventEmitter } from 'eventemitter3';
 import moment from 'moment-timezone';
 
-import { Cluster } from '../Cluster.js';
+import type { Cluster } from '../Cluster.js';
 
 export class TimeoutManager {
     #events: Map<string, StoredEvent>;

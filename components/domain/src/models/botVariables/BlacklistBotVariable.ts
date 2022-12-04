@@ -1,4 +1,4 @@
-import { BaseBotVariable } from './BaseBotVariable.js';
+import type { BaseBotVariable } from './BaseBotVariable.js';
 
 export interface BlacklistBotVariable extends BaseBotVariable<'blacklist'> {
     readonly users: readonly string[];

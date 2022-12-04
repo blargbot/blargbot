@@ -1,8 +1,8 @@
-import { CommandResult } from '@blargbot/cluster/types.js';
-import { IMiddleware, NextMiddleware } from '@blargbot/core/types.js';
+import type { CommandResult } from '@blargbot/cluster/types.js';
+import type { IMiddleware, NextMiddleware } from '@blargbot/core/types.js';
 
 import templates from '../../text.js';
-import { CommandContext } from '../CommandContext.js';
+import type { CommandContext } from '../CommandContext.js';
 
 export class SingleThreadMiddleware<TContext extends CommandContext> implements IMiddleware<TContext, CommandResult> {
     readonly #locks: Record<string, { warned: boolean; } | undefined>;

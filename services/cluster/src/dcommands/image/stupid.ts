@@ -1,8 +1,9 @@
 import { guard } from '@blargbot/cluster/utils/index.js';
 
-import { CommandContext, GlobalImageCommand } from '../../command/index.js';
+import type { CommandContext} from '../../command/index.js';
+import { GlobalImageCommand } from '../../command/index.js';
 import templates from '../../text.js';
-import { CommandResult } from '../../types.js';
+import type { CommandResult } from '../../types.js';
 
 const cmd = templates.commands.stupid;
 
