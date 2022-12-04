@@ -1,6 +1,6 @@
-import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { isEntrypoint } from '@blargbot/application';
 import { config } from '@blargbot/config';
 import { createLogger } from '@blargbot/logger';
 import { MasterWorker } from '@blargbot/master';
@@ -8,7 +8,7 @@ import res from '@blargbot/res';
 
 export * from './Master.js';
 export * from './MasterWorker.js';
-export const entrypoint = path.join(fileURLToPath(import.meta.url), '../start.js');
+export const entrypoint = fileURLToPath(import.meta.url);
 
 export async function start(): Promise<void> {
     const logger = createLogger(config, 'MS');
@@ -22,3 +22,6 @@ export async function start(): Promise<void> {
     await new MasterWorker(logger, config, { avatars })
         .start();
 }
+
+if (isEntrypoint(import.meta))
+    await start();

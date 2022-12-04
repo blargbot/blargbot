@@ -2,7 +2,7 @@ import { Api } from '@blargbot/api/Api.js';
 import { guard } from '@blargbot/core/utils/index.js';
 import { Dump } from '@blargbot/domain/models/Dump.js';
 import { DiscordTagSet } from '@blargbot/domain/models/index.js';
-import { APIEmbed } from 'discord-api-types/v9';
+import Discord from 'discord-api-types/v9';
 
 import { BaseRoute } from '../BaseRoute.js';
 import { ApiResponse } from '../types.js';
@@ -36,7 +36,7 @@ export class DumpsRoute extends BaseRoute {
         if (channel !== undefined && guard.isGuildChannel(channel)) {
             if (dump.content !== undefined)
                 await this.#api.util.loadDiscordTagData(dump.content, channel.guild.id, result);
-            for (const embed of (dump.embeds ?? []) as APIEmbed[]) {
+            for (const embed of (dump.embeds ?? []) as Discord.APIEmbed[]) {
                 if (embed.title !== undefined)
                     await this.#api.util.loadDiscordTagData(embed.title, channel.guild.id, result);
                 if (embed.description !== undefined)

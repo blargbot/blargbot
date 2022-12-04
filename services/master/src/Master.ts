@@ -47,8 +47,8 @@ export class Master extends BaseClient {
         this.clusterStats = new ClusterStatsManager(this.api);
         this.metrics = {};
         this.clusters = new ClusterPool(this.config.discord.shards, this.logger);
-        this.eventHandlers = new ModuleLoader(`${__dirname}/events`, BaseService, [this, options], this.logger, e => e.name);
-        this.services = new ModuleLoader(`${__dirname}/services`, BaseService, [this, options], this.logger, e => e.name);
+        this.eventHandlers = new ModuleLoader(import.meta, 'events', BaseService, [this, options], this.logger, e => e.name);
+        this.services = new ModuleLoader(import.meta, 'services', BaseService, [this, options], this.logger, e => e.name);
 
         this.services.on('add', module => void module.start());
         this.services.on('remove', module => void module.stop());

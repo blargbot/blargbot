@@ -1,7 +1,7 @@
 import { Cluster } from '@blargbot/cluster';
 import { CommandType, randInt } from '@blargbot/cluster/utils/index.js';
 import { util } from '@blargbot/formatting';
-import { Handler as Wolken } from 'wolken';
+import Wolken from 'wolken';
 
 import { GlobalCommand } from '../../command/index.js';
 import templates from '../../text.js';

@@ -35,7 +35,10 @@
         "watch": "tsc --watch",
         "rebuild": "yarn run clean && yarn run build",
         "lint": "eslint --ext .ts,.mts,.cts ./",
-        "clean": "del-cli \"**/*.js\" \"**/*.js.map\" \"**/*.mjs\" \"**/*.mjs.map\" \"**/*.cjs\" \"**/*.cjs.map\" \"!node_modules\" \"coverage/\" \".nyc_output/\""
+        "clean": "del-cli \"**/*.js\" \"**/*.js.map\" \"**/*.mjs\" \"**/*.mjs.map\" \"**/*.cjs\" \"**/*.cjs.map\" \"!node_modules\" \"coverage/\" \".nyc_output/\"",
+        "run:master": "node services/master/src/index.js",
+        "run:cluster": "node services/cluster/src/index.js",
+        "run:api": "node services/api/src/index.js"
     },
     "repository": {
         "type": "git",

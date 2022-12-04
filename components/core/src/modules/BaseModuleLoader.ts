@@ -1,5 +1,6 @@
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 import { MultiKeyMap } from '@blargbot/core/MultiKeyMap.js';
 import { ModuleResult } from '@blargbot/core/types.js';
@@ -21,11 +22,12 @@ export abstract class BaseModuleLoader<TModule> extends EventEmitter<ModuleLoade
     public get size(): number { return this.#modules.size; }
 
     public constructor(
-        public readonly root: string,
+        public readonly context: ImportMeta,
+        public readonly path: string,
         public readonly logger: Logger
     ) {
         super();
-        this.#root = getAbsolutePath(root);
+        this.#root = getAbsolutePath(context, path);
         this.#modules = new MultiKeyMap<string, { module: TModule; location: string; }>();
 
         this.#modules.on('add', ({ module }) => this.emit('add', module));
@@ -72,7 +74,7 @@ export abstract class BaseModuleLoader<TModule> extends EventEmitter<ModuleLoade
             } catch (err: unknown) {
                 if (err instanceof Error)
                     this.logger.error(err.stack);
-                this.logger.module(this.root, 'Error while loading module', fileName);
+                this.logger.module(this.path, 'Error while loading module', fileName);
             }
         }
 
@@ -149,7 +151,8 @@ export abstract class BaseModuleLoader<TModule> extends EventEmitter<ModuleLoade
     }
 }
 
-function getAbsolutePath(...segments: string[]): string {
+function getAbsolutePath(context: ImportMeta, ...segments: string[]): string {
+    segments.unshift(path.dirname(fileURLToPath(context.url)));
     const result = path.join(...segments);
     if (path.isAbsolute(result))
         return result;

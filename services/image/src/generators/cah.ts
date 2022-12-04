@@ -9,8 +9,8 @@ export class CahGenerator extends BaseImageGenerator<'cah'> {
     }
 
     public async execute({ white, black }: CahOptions): Promise<ImageResult> {
-        const blackCard = await this.getLocal('blackcard.png');
-        const whiteCard = await this.getLocal('whitecard.png');
+        const blackCard = await this.getLocalImg('blackcard.png').load();
+        const whiteCard = await this.getLocalImg('whitecard.png').load();
 
         const cards = [
             { img: blackCard, text: black, fill: 'white' },

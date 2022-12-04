@@ -1,7 +1,7 @@
 import { BBTagContext } from '@blargbot/bbtag';
 import { BBTagRuntimeError, UserNotFoundError } from '@blargbot/bbtag/errors/index.js';
 import { argument } from '@blargbot/test-util/mock.js';
-import { APIGuildMember } from 'discord-api-types/v9';
+import Discord from 'discord-api-types/v9';
 import * as Eris from 'eris';
 
 import { SubtagTestCase, SubtagTestContext } from '../SubtagTestSuite.js';
@@ -79,7 +79,7 @@ interface GetUserPropTestCase {
     error?: BBTagRuntimeError;
     queryString?: string;
     generateCode?: (...args: [userStr?: string, quietStr?: string]) => string;
-    setup?: (member: RequiredProps<APIGuildMember, 'user'>, context: SubtagTestContext) => void;
+    setup?: (member: RequiredProps<Discord.APIGuildMember, 'user'>, context: SubtagTestContext) => void;
     postSetup?: (member: Eris.Member, context: BBTagContext, test: SubtagTestContext) => void;
     assert?: (result: string, member: Eris.Member, context: BBTagContext, test: SubtagTestContext) => void;
 }

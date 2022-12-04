@@ -12,9 +12,9 @@
                 "<node_internals>/**",
                 "**/node_modules/**",
             ],
-            "autoAttachChildProcesses": true,
             "console": "integratedTerminal",
-            "program": "${workspaceFolder}/services/master/src/start.ts",
+            "runtimeExecutable": "yarn",
+            "program": "run:master",
             "preLaunchTask": {
                 "type": "npm",
                 "script": "watch"
@@ -28,12 +28,9 @@
                 "<node_internals>/**",
                 "**/node_modules/**",
             ],
-            "autoAttachChildProcesses": true,
             "console": "integratedTerminal",
-            "program": "${workspaceFolder}/services/cluster/src/start.ts",
-            "args": [
-                "--max-old-space-size=4096"
-            ],
+            "runtimeExecutable": "yarn",
+            "program": "run:cluster",
             "env": {
                 "CLUSTER_ID": "0",
                 "SHARDS_MAX": "1",
@@ -53,9 +50,9 @@
                 "<node_internals>/**",
                 "**/node_modules/**",
             ],
-            "autoAttachChildProcesses": true,
             "console": "integratedTerminal",
-            "program": "${workspaceFolder}/services/api/src/start.ts",
+            "runtimeExecutable": "yarn",
+            "program": "run:api",
             "preLaunchTask": {
                 "type": "npm",
                 "script": "watch"
@@ -65,12 +62,13 @@
             "name": "node: current",
             "type": "node",
             "console": "integratedTerminal",
-            "program": "${file}",
+            "runtimeExecutable": "yarn",
+            "program": "node ${file}",
             "request": "launch",
             "skipFiles": [
-                "!.yarn/**",
+                "<node_internals>/**",
+                "**/node_modules/**",
             ],
-            "autoAttachChildProcesses": true,
             "preLaunchTask": {
                 "type": "npm",
                 "script": "watch"
@@ -93,7 +91,6 @@
                 "<node_internals>/**",
                 "**/node_modules/**",
             ],
-            "autoAttachChildProcesses": true,
             "preLaunchTask": {
                 "type": "npm",
                 "script": "watch"
@@ -119,7 +116,6 @@
             "env": {
                 "TS_NODE_FILES": "true"
             },
-            "autoAttachChildProcesses": true,
             "preLaunchTask": {
                 "type": "npm",
                 "script": "watch"

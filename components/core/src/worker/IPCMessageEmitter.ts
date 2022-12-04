@@ -2,7 +2,7 @@ import { ChildProcess } from 'node:child_process';
 
 import { ProcessMessage, ProcessMessageContext, ProcessMessageHandler } from '@blargbot/core/types.js';
 import { snowflake } from '@blargbot/core/utils/index.js';
-import { Snowflake } from 'catflake';
+import type { Snowflake } from 'catflake';
 import { EventEmitter } from 'eventemitter3';
 
 export class IPCMessageEmitter {

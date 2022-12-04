@@ -23,6 +23,7 @@
         "rwlock": "^5.0.0"
     },
     "devDependencies": {
+        "@blargbot/application": "workspace:^",
         "@types/brainfuck-node": "workspace:^",
         "@types/color": "^3.0.3",
         "@types/eris": "workspace:^",

@@ -26,7 +26,7 @@ export class StarVsTheForcesOfGenerator extends BaseImageGenerator<'starVsTheFor
         const max = Math.max(...channels);
         const scale = channels.map(() => 1);
         const shift = channels.map(c => (c - min) * 32 / (max - min)); // bring all channels into range 0 - 32
-        const foreground = sharp(this.getLocalPath('starvstheforcesof.png'))
+        const foreground = sharp(this.getLocalImg('starvstheforcesof.png').location)
             .resize(960, 540)
             .linear(scale.map(Math.round), shift.map(Math.round));
 

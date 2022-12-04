@@ -1,5 +1,5 @@
 import { ChannelIsNsfwSubtag } from '@blargbot/bbtag/subtags/channel/channelIsNsfw.js';
-import { APITextChannel } from 'discord-api-types/v9';
+import Discord from 'discord-api-types/v9';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetChannelPropTestCases } from './_getChannelPropTest.js';
@@ -18,13 +18,13 @@ runSubtagTests({
                 {
                     expected: 'true',
                     setup(channel) {
-                        (channel as APITextChannel).nsfw = true;
+                        (channel as Discord.APITextChannel).nsfw = true;
                     }
                 },
                 {
                     expected: 'false',
                     setup(channel) {
-                        (channel as APITextChannel).nsfw = false;
+                        (channel as Discord.APITextChannel).nsfw = false;
                     }
                 }
             ]

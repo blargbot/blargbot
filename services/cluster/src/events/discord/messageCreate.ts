@@ -4,7 +4,7 @@ import { Cluster } from '@blargbot/cluster';
 import { guard, runMiddleware, snowflake } from '@blargbot/cluster/utils/index.js';
 import { DiscordEventService } from '@blargbot/core/serviceTypes/index.js';
 import { IMiddleware } from '@blargbot/core/types.js';
-import { MessageFlags } from 'discord-api-types/v9';
+import Discord from 'discord-api-types/v9';
 import * as Eris from 'eris';
 import moment from 'moment-timezone';
 
@@ -45,7 +45,7 @@ export class DiscordMessageCreateHandler extends DiscordEventService<'messageCre
     }
 
     public async execute(message: Eris.Message<Eris.PossiblyUncachedTextableChannel>): Promise<void> {
-        if ((message.flags & MessageFlags.Loading) !== 0) {
+        if ((message.flags & Discord.MessageFlags.Loading) !== 0) {
             // Message is a loading message. Ignore this event, it will be re-raised by the update handler later once the message is no longer loading
             return;
         }

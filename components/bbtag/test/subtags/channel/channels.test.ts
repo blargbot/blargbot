@@ -1,5 +1,5 @@
 import { ChannelsSubtag } from '@blargbot/bbtag/subtags/channel/channels.js';
-import { ChannelType } from 'discord-api-types/v9';
+import Discord from 'discord-api-types/v9';
 
 import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';
 import { createGetChannelPropTestCases } from './_getChannelPropTest.js';
@@ -18,16 +18,16 @@ runSubtagTests({
                 {
                     expected: '["2398462398472","23098475928447"]',
                     setup(channel, ctx) {
-                        channel.type = ChannelType.GuildCategory;
+                        channel.type = Discord.ChannelType.GuildCategory;
 
                         ctx.channels.abc = SubtagTestContext.createApiChannel({
                             id: '2398462398472',
-                            type: ChannelType.GuildText,
+                            type: Discord.ChannelType.GuildText,
                             parent_id: channel.id
                         });
                         ctx.channels.def = SubtagTestContext.createApiChannel({
                             id: '23098475928447',
-                            type: ChannelType.GuildText,
+                            type: Discord.ChannelType.GuildText,
                             parent_id: channel.id
                         });
                     }

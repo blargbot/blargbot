@@ -44,7 +44,7 @@ export class Api extends BaseClient {
     }
 
     public async start(): Promise<void> {
-        const routes = new ModuleLoader<BaseRoute>(`${__dirname}/routes`, BaseRoute, [this], this.logger);
+        const routes = new ModuleLoader<BaseRoute>(import.meta, 'routes', BaseRoute, [this], this.logger);
         routes.on('link', module => module.install(this));
         await routes.init();
 

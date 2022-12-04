@@ -1,6 +1,6 @@
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
 import { ChannelDeleteSubtag } from '@blargbot/bbtag/subtags/channel/channelDelete.js';
-import { OverwriteType } from 'discord-api-types/v9';
+import Discord from 'discord-api-types/v9';
 import * as Eris from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
@@ -47,7 +47,7 @@ runSubtagTests({
             setup(ctx) {
                 ctx.roles.authorizer.permissions = '0';
                 ctx.channels.command.permission_overwrites = [
-                    { id: ctx.roles.authorizer.id, type: OverwriteType.Role, allow: Eris.Constants.Permissions.manageChannels.toString(), deny: '0' }
+                    { id: ctx.roles.authorizer.id, type: Discord.OverwriteType.Role, allow: Eris.Constants.Permissions.manageChannels.toString(), deny: '0' }
                 ];
                 ctx.channels.command.id = '2384762844234324';
                 ctx.message.channel_id = ctx.channels.command.id;

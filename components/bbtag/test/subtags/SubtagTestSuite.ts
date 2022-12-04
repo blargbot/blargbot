@@ -17,7 +17,7 @@ import chai from 'chai';
 import chaiBytes from 'chai-bytes';
 import chaiDateTime from 'chai-datetime';
 import chaiExclude from 'chai-exclude';
-import { APIChannel, APIGuild, APIGuildMember, APIMessage, APIRole, APITextChannel, APIThreadChannel, APIUser, ChannelType, GuildDefaultMessageNotifications, GuildExplicitContentFilter, GuildMFALevel, GuildNSFWLevel, GuildPremiumTier, GuildVerificationLevel, Snowflake } from 'discord-api-types/v9';
+import Discord from 'discord-api-types/v9';
 import * as Eris from 'eris';
 import mocha from 'mocha';
 import moment from 'moment-timezone';
@@ -145,12 +145,12 @@ export class SubtagTestContext {
     };
 
     public readonly channels = {
-        command: SubtagTestContext.createApiChannel({ id: snowflake.create().toString(), name: 'commands' }) as APITextChannel | APIThreadChannel,
-        general: SubtagTestContext.createApiChannel({ id: snowflake.create().toString(), name: 'general' }) as APITextChannel | APIThreadChannel
+        command: SubtagTestContext.createApiChannel({ id: snowflake.create().toString(), name: 'commands' }) as Discord.APITextChannel | Discord.APIThreadChannel,
+        general: SubtagTestContext.createApiChannel({ id: snowflake.create().toString(), name: 'general' }) as Discord.APITextChannel | Discord.APIThreadChannel
     } as {
-        command: Extract<APIChannel, { guild_id?: Snowflake; }>;
-        general: Extract<APIChannel, { guild_id?: Snowflake; }>;
-        [name: string]: Extract<APIChannel, { guild_id?: Snowflake; }>;
+        command: Extract<Discord.APIChannel, { guild_id?: Discord.Snowflake; }>;
+        general: Extract<Discord.APIChannel, { guild_id?: Discord.Snowflake; }>;
+        [name: string]: Extract<Discord.APIChannel, { guild_id?: Discord.Snowflake; }>;
     };
 
     public readonly guild = SubtagTestContext.createApiGuild(
@@ -161,7 +161,7 @@ export class SubtagTestContext {
         }
     );
 
-    public readonly message: APIMessage = SubtagTestContext.createApiMessage({
+    public readonly message: Discord.APIMessage = SubtagTestContext.createApiMessage({
         id: snowflake.create().toString(),
         author: this.users.command,
         channel_id: this.channels.command.id
@@ -270,7 +270,15 @@ export class SubtagTestContext {
         for (const channel of guild.channels.values())
             this.discord.setup(m => m.getChannel(channel.id), false).thenReturn(channel);
 
-        const textableChannelTypes = new Set([ChannelType.GuildText, ChannelType.DM, ChannelType.GroupDM, ChannelType.GuildAnnouncement, ChannelType.AnnouncementThread, ChannelType.PrivateThread, ChannelType.PublicThread]);
+        const textableChannelTypes = new Set([
+            Discord.ChannelType.GuildText,
+            Discord.ChannelType.DM,
+            Discord.ChannelType.GroupDM,
+            Discord.ChannelType.GuildAnnouncement,
+            Discord.ChannelType.AnnouncementThread,
+            Discord.ChannelType.PrivateThread,
+            Discord.ChannelType.PublicThread
+        ]);
         const channel = guild.channels.find(c => textableChannelTypes.has(c.type));
         if (channel === undefined)
             throw new Error('No text channels were added');
@@ -317,14 +325,14 @@ export class SubtagTestContext {
         return new Eris.DiscordHTTPError(request.instance, apiMessage.instance, { code, message }, x.stack);
     }
 
-    public createMessage<TChannel extends Eris.KnownTextableChannel>(settings: APIMessage): Eris.Message<TChannel>
-    public createMessage<TChannel extends Eris.KnownTextableChannel>(settings: RequireIds<APIMessage>, author: APIUser): Eris.Message<TChannel>
-    public createMessage<TChannel extends Eris.KnownTextableChannel>(...args: [APIMessage] | [RequireIds<APIMessage>, APIUser]): Eris.Message<TChannel> {
+    public createMessage<TChannel extends Eris.KnownTextableChannel>(settings: Discord.APIMessage): Eris.Message<TChannel>
+    public createMessage<TChannel extends Eris.KnownTextableChannel>(settings: RequireIds<Discord.APIMessage>, author: Discord.APIUser): Eris.Message<TChannel>
+    public createMessage<TChannel extends Eris.KnownTextableChannel>(...args: [Discord.APIMessage] | [RequireIds<Discord.APIMessage>, Discord.APIUser]): Eris.Message<TChannel> {
         const data = args.length === 1 ? args[0] : SubtagTestContext.createApiMessage(...args);
         return new Eris.Message<TChannel>(<Eris.BaseData><unknown>data, this.discord.instance);
     }
 
-    public static createApiMessage(settings: RequireIds<APIMessage>, author: APIUser): APIMessage {
+    public static createApiMessage(settings: RequireIds<Discord.APIMessage>, author: Discord.APIUser): Discord.APIMessage {
         return {
             author: author,
             attachments: [],
@@ -342,12 +350,12 @@ export class SubtagTestContext {
         };
     }
 
-    public createUser(settings: RequireIds<APIUser>): Eris.User {
+    public createUser(settings: RequireIds<Discord.APIUser>): Eris.User {
         const data = SubtagTestContext.createApiUser(settings);
         return new Eris.User(<Eris.BaseData><unknown>data, this.discord.instance);
     }
 
-    public static createApiUser(settings: RequireIds<APIUser>): APIUser {
+    public static createApiUser(settings: RequireIds<Discord.APIUser>): Discord.APIUser {
         return {
             avatar: null,
             discriminator: '0000',
@@ -356,12 +364,12 @@ export class SubtagTestContext {
         };
     }
 
-    public createGuildMember(guild: Eris.Guild | undefined, settings: RequireIds<APIGuildMember>, user: APIUser): Eris.Member {
+    public createGuildMember(guild: Eris.Guild | undefined, settings: RequireIds<Discord.APIGuildMember>, user: Discord.APIUser): Eris.Member {
         const data = SubtagTestContext.createApiGuildMember(settings, user);
         return new Eris.Member(<Eris.BaseData><unknown>data, guild, this.discord.instance);
     }
 
-    public static createApiGuildMember(settings: RequireIds<APIGuildMember>, user: APIUser): RequiredProps<APIGuildMember, 'user'> {
+    public static createApiGuildMember(settings: RequireIds<Discord.APIGuildMember>, user: Discord.APIUser): RequiredProps<Discord.APIGuildMember, 'user'> {
         return {
             deaf: false,
             joined_at: '1970-01-01T00:00:00Z',
@@ -372,12 +380,12 @@ export class SubtagTestContext {
         };
     }
 
-    public createRole(guild: Eris.Guild, settings: RequireIds<APIRole>): Eris.Role {
+    public createRole(guild: Eris.Guild, settings: RequireIds<Discord.APIRole>): Eris.Role {
         const data = SubtagTestContext.createApiRole(settings);
         return new Eris.Role(<Eris.BaseData><unknown>data, guild);
     }
 
-    public static createApiRole(settings: RequireIds<APIRole>): APIRole {
+    public static createApiRole(settings: RequireIds<Discord.APIRole>): Discord.APIRole {
         return {
             color: 0,
             hoist: false,
@@ -390,31 +398,31 @@ export class SubtagTestContext {
         };
     }
 
-    public createGuild(settings: APIGuild | RequireIds<APIGuild>, channels: APIChannel[], members: APIGuildMember[]): Eris.Guild {
+    public createGuild(settings: Discord.APIGuild | RequireIds<Discord.APIGuild>, channels: Discord.APIChannel[], members: Discord.APIGuildMember[]): Eris.Guild {
         const data = 'hub_type' in settings ? settings : SubtagTestContext.createApiGuild(settings);
         const guild = new Eris.Guild(<Eris.BaseData><unknown>{ ...data, members: members, channels: channels }, this.discord.instance);
         return guild;
     }
 
-    public static createApiGuild(settings: RequireIds<APIGuild>): RequiredProps<APIGuild, 'roles'> {
+    public static createApiGuild(settings: RequireIds<Discord.APIGuild>): RequiredProps<Discord.APIGuild, 'roles'> {
         return {
             afk_channel_id: null,
             afk_timeout: 60,
             application_id: null,
             banner: null,
-            default_message_notifications: GuildDefaultMessageNotifications.AllMessages,
+            default_message_notifications: 0,
             description: null,
             discovery_splash: null,
             emojis: [],
-            explicit_content_filter: GuildExplicitContentFilter.Disabled,
+            explicit_content_filter: 0,
             features: [],
             icon: null,
-            mfa_level: GuildMFALevel.None,
+            mfa_level: 0,
             name: 'Test Guild',
-            nsfw_level: GuildNSFWLevel.Default,
+            nsfw_level: 0,
             preferred_locale: 'en-US',
             premium_progress_bar_enabled: false,
-            premium_tier: GuildPremiumTier.None,
+            premium_tier: 0,
             roles: [
                 this.createApiRole({ id: settings.id })
             ],
@@ -425,28 +433,28 @@ export class SubtagTestContext {
             system_channel_flags: 0,
             system_channel_id: null,
             vanity_url_code: null,
-            verification_level: GuildVerificationLevel.None,
+            verification_level: 0,
             region: '',
             hub_type: null,
             ...settings
         };
     }
 
-    public createChannel<T extends keyof Eris.KnownChannelMap>(settings: RequireIds<APIChannel> & { type: T; }): Eris.KnownChannelMap[T]
-    public createChannel(settings: RequireIds<APITextChannel>): Eris.KnownTextableChannel
-    public createChannel(settings: RequireIds<APIChannel>): Eris.KnownChannel
-    public createChannel(settings: RequireIds<APIChannel>): Eris.KnownChannel {
+    public createChannel<T extends keyof Eris.KnownChannelMap>(settings: RequireIds<Discord.APIChannel> & { type: T; }): Eris.KnownChannelMap[T]
+    public createChannel(settings: RequireIds<Discord.APITextChannel>): Eris.KnownTextableChannel
+    public createChannel(settings: RequireIds<Discord.APIChannel>): Eris.KnownChannel
+    public createChannel(settings: RequireIds<Discord.APIChannel>): Eris.KnownChannel {
         const data = SubtagTestContext.createApiChannel(settings);
         return Eris.Channel.from(<Eris.BaseData><unknown>data, this.discord.instance);
     }
 
-    public static createApiChannel<T extends ChannelType>(settings: RequireIds<Extract<APIChannel, { type: T; }>> & { type: T; }): Extract<APIChannel, { type: T; }>;
-    public static createApiChannel(settings: RequireIds<APITextChannel>): APITextChannel;
-    public static createApiChannel<T extends APIChannel>(settings: RequireIds<T>): T;
-    public static createApiChannel<T extends APIChannel>(settings: RequireIds<T>): T {
+    public static createApiChannel<T extends Discord.ChannelType>(settings: RequireIds<Extract<Discord.APIChannel, { type: T; }>> & { type: T; }): Extract<Discord.APIChannel, { type: T; }>;
+    public static createApiChannel(settings: RequireIds<Discord.APITextChannel>): Discord.APITextChannel;
+    public static createApiChannel<T extends Discord.APIChannel>(settings: RequireIds<T>): T;
+    public static createApiChannel<T extends Discord.APIChannel>(settings: RequireIds<T>): T {
         return {
             name: 'Test Channel',
-            type: ChannelType.GuildText,
+            type: Eris.Constants.ChannelTypes.GUILD_TEXT,
             position: 0,
             permission_overwrites: [],
             nsfw: false,

@@ -1,6 +1,6 @@
-import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { isEntrypoint } from '@blargbot/application';
 import { ClusterWorker } from '@blargbot/cluster';
 import { config } from '@blargbot/config';
 import { createLogger } from '@blargbot/logger';
@@ -10,7 +10,7 @@ export * from './ClusterConnection.js';
 export * from './ClusterPool.js';
 export * from './ClusterUtilities.js';
 export * from './ClusterWorker.js';
-export const entrypoint = path.join(fileURLToPath(import.meta.url), '../start.js');
+export const entrypoint = fileURLToPath(import.meta.url);
 
 export async function start(): Promise<void> {
     Error.stackTraceLimit = 100;
@@ -20,3 +20,6 @@ export async function start(): Promise<void> {
     await new ClusterWorker(logger, config)
         .start();
 }
+
+if (isEntrypoint(import.meta))
+    await start();

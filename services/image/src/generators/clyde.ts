@@ -20,9 +20,9 @@ export class ClydeGenerator extends BaseImageGenerator<'clyde'> {
         const { height = 0 } = await sharp(textImg).metadata();
         const result = sharp({ create: { width: 864, height: height + 154, channels: 4, background: '#33363bff' } })
             .composite([
-                { input: this.getLocalPath('clydeTop.png'), gravity: sharp.gravity.northwest },
+                { input: this.getLocalImg('clydeTop.png').location, gravity: sharp.gravity.northwest },
                 { input: textImg, left: 118, top: 78 },
-                { input: this.getLocalPath('clydeBottom.png'), gravity: sharp.gravity.southwest }
+                { input: this.getLocalImg('clydeBottom.png').location, gravity: sharp.gravity.southwest }
             ]);
 
         return {

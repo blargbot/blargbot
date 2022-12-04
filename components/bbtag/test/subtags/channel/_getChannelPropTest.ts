@@ -1,6 +1,6 @@
 import { BBTagContext } from '@blargbot/bbtag';
 import { BBTagRuntimeError, ChannelNotFoundError } from '@blargbot/bbtag/errors/index.js';
-import { APIChannel } from 'discord-api-types/v9';
+import Discord from 'discord-api-types/v9';
 import * as Eris from 'eris';
 
 import { SubtagTestCase, SubtagTestContext } from '../SubtagTestSuite.js';
@@ -72,7 +72,7 @@ interface GetChannelPropTestCase {
     retries?: number;
     queryString?: string;
     generateCode?: (...args: [channelStr?: string, quietStr?: string]) => string;
-    setup?: (channel: APIChannel, context: SubtagTestContext) => void;
+    setup?: (channel: Discord.APIChannel, context: SubtagTestContext) => void;
     postSetup?: (channel: Eris.KnownGuildChannel, context: BBTagContext, test: SubtagTestContext) => void;
     assert?: (result: string, channel: Eris.KnownGuildChannel, context: BBTagContext, test: SubtagTestContext) => void;
 }

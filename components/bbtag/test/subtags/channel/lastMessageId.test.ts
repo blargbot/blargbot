@@ -1,6 +1,6 @@
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
 import { LastMessageIdSubtag } from '@blargbot/bbtag/subtags/channel/lastMessageId.js';
-import { APITextChannel } from 'discord-api-types/v9';
+import Discord from 'discord-api-types/v9';
 import * as Eris from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
@@ -21,14 +21,14 @@ runSubtagTests({
                     title: 'When a message has been sent',
                     expected: '2349786234946724',
                     setup(channel) {
-                        (channel as APITextChannel).last_message_id = '2349786234946724';
+                        (channel as Discord.APITextChannel).last_message_id = '2349786234946724';
                     }
                 },
                 {
                     title: 'When no message has been sent',
                     expected: '',
                     setup(channel) {
-                        (channel as APITextChannel).last_message_id = null;
+                        (channel as Discord.APITextChannel).last_message_id = null;
                     }
                 }
             ]

@@ -3,11 +3,11 @@ import { Dump } from '@blargbot/domain/models/index.js';
 import { DumpStore } from '@blargbot/domain/stores/index.js';
 import { Logger } from '@blargbot/logger';
 import { mapping } from '@blargbot/mapping';
-import { Client as Cassandra, types } from 'cassandra-driver';
+import Cassandra from 'cassandra-driver';
 
 export class CassandraDbDumpStore implements DumpStore {
     public constructor(
-        protected readonly cassandra: Cassandra,
+        protected readonly cassandra: Cassandra.Client,
         protected readonly logger: Logger
     ) {
     }
@@ -40,7 +40,7 @@ export class CassandraDbDumpStore implements DumpStore {
     }
 }
 
-const mapLongToSnowflake = mapping.instanceof(types.Long).map(v => v.toString()).chain(mapping.guard(snowflake.test));
+const mapLongToSnowflake = mapping.instanceof(Cassandra.types.Long).map(v => v.toString()).chain(mapping.guard(snowflake.test));
 const mapDump = mapping.object<Dump>({
     id: mapLongToSnowflake,
     channelid: mapLongToSnowflake,

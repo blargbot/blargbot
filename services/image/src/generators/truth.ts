@@ -9,7 +9,7 @@ export class TruthGenerator extends BaseImageGenerator<'truth'> {
     }
 
     public async execute({ text }: TruthOptions): Promise<ImageResult> {
-        const result = sharp(this.getLocalPath('truth.png'))
+        const result = sharp(this.getLocalImg('truth.png').location)
             .composite([{
                 input: await this.renderText(text, {
                     font: 'AnnieUseYourTelescope.ttf',

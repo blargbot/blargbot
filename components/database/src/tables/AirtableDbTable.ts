@@ -1,6 +1,6 @@
 import { Logger } from '@blargbot/logger';
-import { FieldSet, Record as AirRecord, Record, Table } from 'airtable';
-import { AirtableBase } from 'airtable/lib/airtable_base.js';
+import type { FieldSet, Record as AirRecord, Record, Table } from 'airtable';
+import type { AirtableBase } from 'airtable/lib/airtable_base.js';
 import AirtableError from 'airtable/lib/airtable_error.js';
 
 type FieldSetLike<T> = { [P in keyof T]: T[P] extends FieldSet[keyof FieldSet] ? T[P] : never }

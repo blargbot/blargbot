@@ -1,11 +1,11 @@
 import { Cluster } from '@blargbot/cluster';
 import { DiscordEventService } from '@blargbot/core/serviceTypes/index.js';
-import { MessageFlags, MessageType } from 'discord-api-types/v9';
+import Discord from 'discord-api-types/v9';
 import * as Eris from 'eris';
 
 const reemitMessageTypes = new Set([
-    MessageType.ChatInputCommand,
-    MessageType.ContextMenuCommand
+    Discord.MessageType.ChatInputCommand,
+    Discord.MessageType.ContextMenuCommand
 ]);
 
 export class DiscordMessageUpdateHandler extends DiscordEventService<'messageUpdate'> {
@@ -24,7 +24,7 @@ export class DiscordMessageUpdateHandler extends DiscordEventService<'messageUpd
             ]);
         } else if (oldMessage !== null && message.embeds.filter(e => e.type !== 'rich').length > oldMessage.embeds.filter(e => e.type !== 'rich').length) {
             // This was just links getting embedded, no need to do anything here.
-        } else if (reemitMessageTypes.has(message.type) && (message.flags & MessageFlags.Loading) === 0) {
+        } else if (reemitMessageTypes.has(message.type) && (message.flags & Discord.MessageFlags.Loading) === 0) {
             // The response was a deferred response, we should process this as a brand new message
             this.cluster.discord.emit('messageCreate', message);
         }

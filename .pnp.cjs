@@ -16,6 +16,14 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:."\
       },\
       {\
+        "name": "@blargbot/application",\
+        "reference": "workspace:components/application/src"\
+      },\
+      {\
+        "name": "test-3f7534",\
+        "reference": "workspace:components/application/test"\
+      },\
+      {\
         "name": "@blargbot/bbtag",\
         "reference": "workspace:components/bbtag/src"\
       },\
@@ -116,6 +124,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
     "ignorePatternData": "(^(?:\\\\.yarn\\\\/sdks(?:\\\\/(?!\\\\.{1,2}(?:\\\\/|$))(?:(?:(?!(?:^|\\\\/)\\\\.{1,2}(?:\\\\/|$)).)*?)|$))$)",\
     "fallbackExclusionList": [\
       ["@blargbot/api", ["workspace:services/api/src"]],\
+      ["@blargbot/application", ["workspace:components/application/src"]],\
       ["@blargbot/bbtag", ["workspace:components/bbtag/src"]],\
       ["@blargbot/bbtag-tests", ["workspace:components/bbtag/test"]],\
       ["@blargbot/cluster", ["workspace:services/cluster/src"]],\
@@ -139,7 +148,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@types/eris", ["workspace:definitions/eris"]],\
       ["@types/rethinkdb", ["workspace:definitions/rethinkdb"]],\
       ["@types/wolken", ["workspace:definitions/wolken"]],\
-      ["blargbot", ["workspace:."]]\
+      ["blargbot", ["workspace:."]],\
+      ["test-3f7534", ["workspace:components/application/test"]]\
     ],\
     "fallbackPool": [\
     ],\
@@ -219,6 +229,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./services/api/src/",\
           "packageDependencies": [\
             ["@blargbot/api", "workspace:services/api/src"],\
+            ["@blargbot/application", "workspace:components/application/src"],\
             ["@blargbot/bbtag", "workspace:components/bbtag/src"],\
             ["@blargbot/cluster", "workspace:services/cluster/src"],\
             ["@blargbot/config", "workspace:components/config/src"],\
@@ -243,11 +254,21 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "SOFT"\
         }]\
       ]],\
+      ["@blargbot/application", [\
+        ["workspace:components/application/src", {\
+          "packageLocation": "./components/application/src/",\
+          "packageDependencies": [\
+            ["@blargbot/application", "workspace:components/application/src"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
       ["@blargbot/bbtag", [\
         ["workspace:components/bbtag/src", {\
           "packageLocation": "./components/bbtag/src/",\
           "packageDependencies": [\
             ["@blargbot/bbtag", "workspace:components/bbtag/src"],\
+            ["@blargbot/application", "workspace:components/application/src"],\
             ["@blargbot/config", "workspace:components/config/src"],\
             ["@blargbot/core", "workspace:components/core/src"],\
             ["@blargbot/database", "workspace:components/database/src"],\
@@ -309,6 +330,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./services/cluster/src/",\
           "packageDependencies": [\
             ["@blargbot/cluster", "workspace:services/cluster/src"],\
+            ["@blargbot/application", "workspace:components/application/src"],\
             ["@blargbot/bbtag", "workspace:components/bbtag/src"],\
             ["@blargbot/config", "workspace:components/config/src"],\
             ["@blargbot/core", "workspace:components/core/src"],\
@@ -490,6 +512,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./services/image/src/",\
           "packageDependencies": [\
             ["@blargbot/image", "workspace:services/image/src"],\
+            ["@blargbot/application", "workspace:components/application/src"],\
             ["@blargbot/config", "workspace:components/config/src"],\
             ["@blargbot/core", "workspace:components/core/src"],\
             ["@blargbot/logger", "workspace:components/logger/src"],\
@@ -538,6 +561,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["@blargbot/master", "workspace:services/master/src"],\
             ["@blargbot/api", "workspace:services/api/src"],\
+            ["@blargbot/application", "workspace:components/application/src"],\
             ["@blargbot/cluster", "workspace:services/cluster/src"],\
             ["@blargbot/config", "workspace:components/config/src"],\
             ["@blargbot/core", "workspace:components/core/src"],\
@@ -7557,6 +7581,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["bintrees", "npm:1.0.2"]\
           ],\
           "linkType": "HARD"\
+        }]\
+      ]],\
+      ["test-3f7534", [\
+        ["workspace:components/application/test", {\
+          "packageLocation": "./components/application/test/",\
+          "packageDependencies": [\
+            ["test-3f7534", "workspace:components/application/test"]\
+          ],\
+          "linkType": "SOFT"\
         }]\
       ]],\
       ["test-exclude", [\

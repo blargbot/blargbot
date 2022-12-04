@@ -8,6 +8,7 @@
         "./*": "./*"
     },
     "dependencies": {
+        "@blargbot/application": "workspace:^",
         "@blargbot/config": "workspace:^",
         "@blargbot/core": "workspace:^",
         "@blargbot/logger": "workspace:^",

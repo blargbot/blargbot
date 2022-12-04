@@ -17,9 +17,9 @@ export class DefaultCommandManager extends CommandManager<Command> {
 
     public get size(): number { return this.modules.size; }
 
-    public constructor(source: string, cluster: Cluster) {
+    public constructor(context: ImportMeta, source: string, cluster: Cluster) {
         super(cluster);
-        this.modules = new ModuleLoader(source, Command, [cluster], cluster.logger, command => [command.name, ...command.aliases]);
+        this.modules = new ModuleLoader(context, source, Command, [cluster], cluster.logger, command => [command.name, ...command.aliases]);
     }
 
     public async load(rediscover = true): Promise<void> {

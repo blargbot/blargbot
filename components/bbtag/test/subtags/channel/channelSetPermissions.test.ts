@@ -1,6 +1,6 @@
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
 import { ChannelSetPermissionsSubtag } from '@blargbot/bbtag/subtags/channel/channelSetPermissions.js';
-import { OverwriteType } from 'discord-api-types/v9';
+import Discord from 'discord-api-types/v9';
 import * as Eris from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
@@ -57,7 +57,7 @@ runSubtagTests({
                     throw new Error('Unable to get channel under test');
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '12835768123756132')).thenResolve([channel]);
-                ctx.discord.setup(m => m.editChannelPermission(channel.id, '12876318236836323', 129837n, 0n, OverwriteType.Member, 'Command User#0000')).thenResolve(undefined);
+                ctx.discord.setup(m => m.editChannelPermission(channel.id, '12876318236836323', 129837n, 0n, Discord.OverwriteType.Member, 'Command User#0000')).thenResolve(undefined);
             }
         },
         {
@@ -73,7 +73,7 @@ runSubtagTests({
                     throw new Error('Unable to get channel under test');
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '12835768123756132')).thenResolve([channel]);
-                ctx.discord.setup(m => m.editChannelPermission(channel.id, '12876318236836323', 129837n, 0n, OverwriteType.Role, 'Command User#0000')).thenResolve(undefined);
+                ctx.discord.setup(m => m.editChannelPermission(channel.id, '12876318236836323', 129837n, 0n, Discord.OverwriteType.Role, 'Command User#0000')).thenResolve(undefined);
             }
         },
         {
@@ -89,7 +89,7 @@ runSubtagTests({
                     throw new Error('Unable to get channel under test');
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '12835768123756132')).thenResolve([channel]);
-                ctx.discord.setup(m => m.editChannelPermission(channel.id, '12876318236836323', 0n, 129837n, OverwriteType.Member, 'Command User#0000')).thenResolve(undefined);
+                ctx.discord.setup(m => m.editChannelPermission(channel.id, '12876318236836323', 0n, 129837n, Discord.OverwriteType.Member, 'Command User#0000')).thenResolve(undefined);
             }
         },
         {
@@ -105,7 +105,7 @@ runSubtagTests({
                     throw new Error('Unable to get channel under test');
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '12835768123756132')).thenResolve([channel]);
-                ctx.discord.setup(m => m.editChannelPermission(channel.id, '12876318236836323', 0n, 129837n, OverwriteType.Role, 'Command User#0000')).thenResolve(undefined);
+                ctx.discord.setup(m => m.editChannelPermission(channel.id, '12876318236836323', 0n, 129837n, Discord.OverwriteType.Role, 'Command User#0000')).thenResolve(undefined);
             }
         },
         {
@@ -121,7 +121,7 @@ runSubtagTests({
                     throw new Error('Unable to get channel under test');
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '12835768123756132')).thenResolve([channel]);
-                ctx.discord.setup(m => m.editChannelPermission(channel.id, '12876318236836323', 129837n, 832764n, OverwriteType.Member, 'Command User#0000')).thenResolve(undefined);
+                ctx.discord.setup(m => m.editChannelPermission(channel.id, '12876318236836323', 129837n, 832764n, Discord.OverwriteType.Member, 'Command User#0000')).thenResolve(undefined);
             }
         },
         {
@@ -137,7 +137,7 @@ runSubtagTests({
                     throw new Error('Unable to get channel under test');
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '12835768123756132')).thenResolve([channel]);
-                ctx.discord.setup(m => m.editChannelPermission(channel.id, '12876318236836323', 129837n, 832764n, OverwriteType.Role, 'Command User#0000')).thenResolve(undefined);
+                ctx.discord.setup(m => m.editChannelPermission(channel.id, '12876318236836323', 129837n, 832764n, Discord.OverwriteType.Role, 'Command User#0000')).thenResolve(undefined);
             }
         },
         {
@@ -246,7 +246,7 @@ runSubtagTests({
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '12835768123756132')).thenResolve([channel]);
                 const err = ctx.createRESTError(Eris.ApiError.MISSING_PERMISSIONS);
-                ctx.discord.setup(m => m.editChannelPermission(channel.id, '12876318236836323', 129837n, 832764n, OverwriteType.Role, 'Command User#0000')).thenReject(err);
+                ctx.discord.setup(m => m.editChannelPermission(channel.id, '12876318236836323', 129837n, 832764n, Discord.OverwriteType.Role, 'Command User#0000')).thenReject(err);
             }
         },
         {
@@ -263,7 +263,7 @@ runSubtagTests({
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '12835768123756132')).thenResolve([channel]);
                 const err = ctx.createRESTError(Eris.ApiError.NOT_AUTHORIZED, 'Some other error message');
-                ctx.discord.setup(m => m.editChannelPermission(channel.id, '12876318236836323', 129837n, 832764n, OverwriteType.Role, 'Command User#0000')).thenReject(err);
+                ctx.discord.setup(m => m.editChannelPermission(channel.id, '12876318236836323', 129837n, 832764n, Discord.OverwriteType.Role, 'Command User#0000')).thenReject(err);
             }
         }
     ]

@@ -27,8 +27,8 @@ export class FreeGenerator extends BaseImageGenerator<'free'> {
             height: 70
         });
 
-        const back1 = this.getLocalPath('freefreefree0.png');
-        const back2 = this.getLocalPath('freefreefree1.png');
+        const back1 = this.getLocalImg('freefreefree0.png').location;
+        const back2 = this.getLocalImg('freefreefree1.png').location;
 
         const frame = sharp({ create: { width: 400, height: 300, channels: 4, background: 'black' } });
         const frames: Array<Promise<Buffer>> = [];

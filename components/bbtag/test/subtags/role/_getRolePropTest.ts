@@ -1,7 +1,7 @@
 import { BBTagContext } from '@blargbot/bbtag';
 import { BBTagRuntimeError, RoleNotFoundError } from '@blargbot/bbtag/errors/index.js';
 import { argument } from '@blargbot/test-util/mock.js';
-import { APIRole } from 'discord-api-types/v9';
+import Discord from 'discord-api-types/v9';
 import * as Eris from 'eris';
 
 import { SubtagTestCase, SubtagTestContext } from '../SubtagTestSuite.js';
@@ -80,7 +80,7 @@ interface GetRolePropTestCase {
     error?: BBTagRuntimeError;
     queryString?: string;
     generateCode?: (...args: [roleStr?: string, quietStr?: string]) => string;
-    setup?: (role: APIRole, context: SubtagTestContext) => void;
+    setup?: (role: Discord.APIRole, context: SubtagTestContext) => void;
     postSetup?: (role: Eris.Role, context: BBTagContext, test: SubtagTestContext) => void;
     assert?: (result: string, role: Eris.Role, context: BBTagContext, test: SubtagTestContext) => void;
 }

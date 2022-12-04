@@ -9,6 +9,7 @@
     },
     "dependencies": {
         "@blargbot/api": "workspace:^",
+        "@blargbot/application": "workspace:^",
         "@blargbot/cluster": "workspace:^",
         "@blargbot/config": "workspace:^",
         "@blargbot/core": "workspace:^",

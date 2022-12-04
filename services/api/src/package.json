@@ -8,6 +8,7 @@
         "./*": "./*"
     },
     "dependencies": {
+        "@blargbot/application": "workspace:^",
         "@blargbot/bbtag": "workspace:^",
         "@blargbot/cluster": "workspace:^",
         "@blargbot/config": "workspace:^",

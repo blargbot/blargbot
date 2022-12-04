@@ -9,7 +9,7 @@ export class ClippyGenerator extends BaseImageGenerator<'clippy'> {
     }
 
     public async execute({ text }: ClippyOptions): Promise<ImageResult> {
-        const result = sharp(this.getLocalPath('clippy.png'))
+        const result = sharp(this.getLocalImg('clippy.png').location)
             .composite([{
                 input: await this.renderText(text, {
                     font: 'arial.ttf',

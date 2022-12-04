@@ -52,6 +52,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@blargbot/api@workspace:services/api/src"
   dependencies:
+    "@blargbot/application": "workspace:^"
     "@blargbot/bbtag": "workspace:^"
     "@blargbot/cluster": "workspace:^"
     "@blargbot/config": "workspace:^"
@@ -72,6 +73,12 @@ __metadata:
     node-fetch: ^3.3.0
     prom-client: ^14.1.0
     ws: ^8.11.0
+  languageName: unknown
+  linkType: soft
+
+"@blargbot/application@workspace:^, @blargbot/application@workspace:components/application/src":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/application@workspace:components/application/src"
   languageName: unknown
   linkType: soft
 
@@ -109,6 +116,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@blargbot/bbtag@workspace:components/bbtag/src"
   dependencies:
+    "@blargbot/application": "workspace:^"
     "@blargbot/config": "workspace:^"
     "@blargbot/core": "workspace:^"
     "@blargbot/database": "workspace:^"
@@ -156,6 +164,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@blargbot/cluster@workspace:services/cluster/src"
   dependencies:
+    "@blargbot/application": "workspace:^"
     "@blargbot/bbtag": "workspace:^"
     "@blargbot/config": "workspace:^"
     "@blargbot/core": "workspace:^"
@@ -297,6 +306,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@blargbot/image@workspace:services/image/src"
   dependencies:
+    "@blargbot/application": "workspace:^"
     "@blargbot/config": "workspace:^"
     "@blargbot/core": "workspace:^"
     "@blargbot/logger": "workspace:^"
@@ -339,6 +349,7 @@ __metadata:
   resolution: "@blargbot/master@workspace:services/master/src"
   dependencies:
     "@blargbot/api": "workspace:^"
+    "@blargbot/application": "workspace:^"
     "@blargbot/cluster": "workspace:^"
     "@blargbot/config": "workspace:^"
     "@blargbot/core": "workspace:^"
@@ -6351,6 +6362,12 @@ __metadata:
   checksum: 44de8246752b6f8c2924685f969fd3d94c36949f22b0907e99bef2b2220726dd8467f4730ea96b06040b9aa2587c0866049640039d1b956952dfa962bc2075a3
   languageName: node
   linkType: hard
+
+"test-3f7534@workspace:components/application/test":
+  version: 0.0.0-use.local
+  resolution: "test-3f7534@workspace:components/application/test"
+  languageName: unknown
+  linkType: soft
 
 "test-exclude@npm:^6.0.0":
   version: 6.0.0

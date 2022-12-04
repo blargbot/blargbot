@@ -4,15 +4,15 @@ import { ChatLog, ChatLogMessage, ChatLogSearchOptions, ChatLogType } from '@bla
 import { ChatLogStore } from '@blargbot/domain/stores/index.js';
 import { Logger } from '@blargbot/logger';
 import { mapping } from '@blargbot/mapping';
-import { Client as Cassandra, types } from 'cassandra-driver';
+import Cassandra from 'cassandra-driver';
 import moment from 'moment-timezone';
 
 export class CassandraDbChatLogStore implements ChatLogStore {
-    readonly #db: Cassandra;
+    readonly #db: Cassandra.Client;
     readonly #logger: Logger;
 
     public constructor(
-        cassandra: Cassandra,
+        cassandra: Cassandra.Client,
         logger: Logger
     ) {
         this.#db = cassandra;
@@ -117,7 +117,7 @@ export class CassandraDbChatLogStore implements ChatLogStore {
     }
 }
 
-const mapLongToString = mapping.instanceof(types.Long).map(v => v.toString());
+const mapLongToString = mapping.instanceof(Cassandra.types.Long).map(v => v.toString());
 
 const mapChatLog = mapping.object<ChatLog>({
     attachments: ['attachment', mapping.choice(

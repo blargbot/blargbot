@@ -1,35 +1,35 @@
 import { MessageTypeSubtag } from '@blargbot/bbtag/subtags/message/messageType.js';
 import { snowflake } from '@blargbot/core/utils/index.js';
-import { MessageType } from 'discord-api-types/v9';
+import Discord from 'discord-api-types/v9';
 
 import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';
 import { createGetMessagePropTestCases } from './_getMessagePropTest.js';
 
-const messageTypes: { [P in string & keyof typeof MessageType]: typeof MessageType[P] } = {
-    ['Default']: MessageType.Default,
-    ['RecipientAdd']: MessageType.RecipientAdd,
-    ['RecipientRemove']: MessageType.RecipientRemove,
-    ['Call']: MessageType.Call,
-    ['ChannelNameChange']: MessageType.ChannelNameChange,
-    ['ChannelIconChange']: MessageType.ChannelIconChange,
-    ['ChannelPinnedMessage']: MessageType.ChannelPinnedMessage,
-    ['ChannelFollowAdd']: MessageType.ChannelFollowAdd,
-    ['GuildDiscoveryDisqualified']: MessageType.GuildDiscoveryDisqualified,
-    ['GuildDiscoveryRequalified']: MessageType.GuildDiscoveryRequalified,
-    ['GuildDiscoveryGracePeriodInitialWarning']: MessageType.GuildDiscoveryGracePeriodInitialWarning,
-    ['GuildDiscoveryGracePeriodFinalWarning']: MessageType.GuildDiscoveryGracePeriodFinalWarning,
-    ['ThreadCreated']: MessageType.ThreadCreated,
-    ['Reply']: MessageType.Reply,
-    ['ChatInputCommand']: MessageType.ChatInputCommand,
-    ['ThreadStarterMessage']: MessageType.ThreadStarterMessage,
-    ['GuildInviteReminder']: MessageType.GuildInviteReminder,
-    ['ContextMenuCommand']: MessageType.ContextMenuCommand,
-    ['UserJoin']: MessageType.UserJoin,
-    ['GuildBoost']: MessageType.GuildBoost,
-    ['GuildBoostTier1']: MessageType.GuildBoostTier1,
-    ['GuildBoostTier2']: MessageType.GuildBoostTier2,
-    ['GuildBoostTier3']: MessageType.GuildBoostTier3,
-    ['AutoModerationAction']: MessageType.AutoModerationAction
+const messageTypes: { [P in string & keyof typeof Discord.MessageType]: typeof Discord.MessageType[P] } = {
+    ['Default']: Discord.MessageType.Default,
+    ['RecipientAdd']: Discord.MessageType.RecipientAdd,
+    ['RecipientRemove']: Discord.MessageType.RecipientRemove,
+    ['Call']: Discord.MessageType.Call,
+    ['ChannelNameChange']: Discord.MessageType.ChannelNameChange,
+    ['ChannelIconChange']: Discord.MessageType.ChannelIconChange,
+    ['ChannelPinnedMessage']: Discord.MessageType.ChannelPinnedMessage,
+    ['ChannelFollowAdd']: Discord.MessageType.ChannelFollowAdd,
+    ['GuildDiscoveryDisqualified']: Discord.MessageType.GuildDiscoveryDisqualified,
+    ['GuildDiscoveryRequalified']: Discord.MessageType.GuildDiscoveryRequalified,
+    ['GuildDiscoveryGracePeriodInitialWarning']: Discord.MessageType.GuildDiscoveryGracePeriodInitialWarning,
+    ['GuildDiscoveryGracePeriodFinalWarning']: Discord.MessageType.GuildDiscoveryGracePeriodFinalWarning,
+    ['ThreadCreated']: Discord.MessageType.ThreadCreated,
+    ['Reply']: Discord.MessageType.Reply,
+    ['ChatInputCommand']: Discord.MessageType.ChatInputCommand,
+    ['ThreadStarterMessage']: Discord.MessageType.ThreadStarterMessage,
+    ['GuildInviteReminder']: Discord.MessageType.GuildInviteReminder,
+    ['ContextMenuCommand']: Discord.MessageType.ContextMenuCommand,
+    ['UserJoin']: Discord.MessageType.UserJoin,
+    ['GuildBoost']: Discord.MessageType.GuildBoost,
+    ['GuildBoostTier1']: Discord.MessageType.GuildBoostTier1,
+    ['GuildBoostTier2']: Discord.MessageType.GuildBoostTier2,
+    ['GuildBoostTier3']: Discord.MessageType.GuildBoostTier3,
+    ['AutoModerationAction']: Discord.MessageType.AutoModerationAction
 };
 
 runSubtagTests({

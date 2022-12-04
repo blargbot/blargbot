@@ -2,8 +2,8 @@ import { sleep } from '@blargbot/core/utils/index.js';
 import { BotVariableStore, ChatLogIndexStore, ChatLogStore, DumpStore, EventStore, GuildStore, SuggesterStore, SuggestionStore, TagStore, TagVariableStore, UserStore } from '@blargbot/domain/stores/index.js';
 import { Logger } from '@blargbot/logger';
 import Airtable from 'airtable';
-import { AirtableBase } from 'airtable/lib/airtable_base.js';
-import { auth as CassandraAuth, Client as Cassandra } from 'cassandra-driver';
+import type { AirtableBase } from 'airtable/lib/airtable_base.js';
+import Cassandra from 'cassandra-driver';
 
 import { PostgresDb, RethinkDb } from './clients/index.js';
 import { DatabaseOptions } from './DatabaseOptions.js';
@@ -21,7 +21,7 @@ import { RethinkDbUserStore } from './stores/RethinkDbUserStore.js';
 
 export class Database {
     readonly #rethink: RethinkDb;
-    readonly #cassandra: Cassandra;
+    readonly #cassandra: Cassandra.Client;
     readonly #postgres: PostgresDb;
     readonly #guilds: RethinkDbGuildStore;
     readonly #users: RethinkDbUserStore;
@@ -55,11 +55,11 @@ export class Database {
         }).base(options.airtable.base);
         this.#rethink = new RethinkDb(options.rethink);
         this.#postgres = new PostgresDb(options.logger, options.postgres);
-        this.#cassandra = new Cassandra({
+        this.#cassandra = new Cassandra.Client({
             localDataCenter: 'datacenter1',
             contactPoints: [...options.cassandra.contactPoints],
             keyspace: options.cassandra.keyspace,
-            authProvider: new CassandraAuth.PlainTextAuthProvider(
+            authProvider: new Cassandra.auth.PlainTextAuthProvider(
                 options.cassandra.username,
                 options.cassandra.password
             )

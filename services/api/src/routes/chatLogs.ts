@@ -2,7 +2,7 @@ import { Api } from '@blargbot/api/Api.js';
 import { BaseRoute } from '@blargbot/api/BaseRoute.js';
 import { ApiResponse } from '@blargbot/api/types.js';
 import { ChatLog, ChatLogIndex, DiscordTagSet } from '@blargbot/domain/models/index.js';
-import { APIEmbed } from 'discord-api-types/v9';
+import Discord from 'discord-api-types/v9';
 
 export class ChatLogsRoute extends BaseRoute {
     readonly #api: Api;
@@ -35,7 +35,7 @@ export class ChatLogsRoute extends BaseRoute {
         for (const message of result.messages) {
             await this.#api.util.loadDiscordTagData(`<@${message.userid}><#${message.channelid}>`, message.guildid, result);
             await this.#api.util.loadDiscordTagData(message.content, message.guildid, result);
-            for (const embed of message.embeds as APIEmbed[]) {
+            for (const embed of message.embeds as Discord.APIEmbed[]) {
                 if (embed.title !== undefined)
                     await this.#api.util.loadDiscordTagData(embed.title, message.guildid, result);
                 if (embed.description !== undefined)

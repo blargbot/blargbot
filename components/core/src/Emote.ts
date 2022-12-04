@@ -1,5 +1,5 @@
 import res from '@blargbot/res';
-import { Snowflake } from 'catflake';
+import type { Snowflake } from 'catflake';
 import * as Eris from 'eris';
 import twemoji from 'twemoji';
 

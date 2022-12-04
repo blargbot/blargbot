@@ -5,7 +5,7 @@ import { Database } from '@blargbot/database';
 import { DiscordChannelTag, DiscordRoleTag, DiscordTagSet, DiscordUserTag, StoredUser } from '@blargbot/domain/models/index.js';
 import { format, Formatter, IFormattable, IFormatter, TranslationMiddleware, util } from '@blargbot/formatting';
 import { Logger } from '@blargbot/logger';
-import { Snowflake } from 'catflake';
+import type { Snowflake } from 'catflake';
 import * as Eris from 'eris';
 import moment from 'moment-timezone';
 

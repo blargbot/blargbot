@@ -2,7 +2,7 @@ import path from 'node:path';
 import { Readable } from 'node:stream';
 import { promisify } from 'node:util';
 
-import { getFileResource } from '@blargbot/res';
+import { getFileResource, IResource } from '@blargbot/res';
 import GIFEncoder from 'gifencoder';
 import gm from 'gm';
 import fetch from 'node-fetch';
@@ -36,12 +36,8 @@ export abstract class BaseImageGenerator<T extends keyof ImageGeneratorMap> {
 
     public abstract execute(message: ImageGeneratorMap[T]): Promise<ImageResult | undefined>;
 
-    protected getLocalPath(...segments: string[]): string {
-        return getFileResource(path.join(...segments)).location;
-    }
-
-    protected async getLocal(...segments: string[]): Promise<Buffer> {
-        return await getFileResource(path.join(...segments)).load();
+    protected getLocalImg(...segments: string[]): IResource<Buffer> {
+        return getFileResource(path.join('img', ...segments));
     }
 
     protected async getRemote(url: string): Promise<Buffer> {
@@ -84,7 +80,7 @@ export abstract class BaseImageGenerator<T extends keyof ImageGeneratorMap> {
         const caption = `caption:${text.replaceAll(/[\\%@]/g, m => `\\${m}`)}`;
         return await this.gmConvert(emptyBuffer, x => x
             .out('-size', `${options.width}x${options.height ?? ''}`)
-            .font(this.getLocalPath('fonts', options.font), options.fontsize)
+            .font(getFileResource(`fonts/${options.font}`).location, options.fontsize)
             .background('transparent')
             .fill('black')
             .gravity(options.gravity ?? 'Center')

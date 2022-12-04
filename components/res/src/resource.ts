@@ -3,7 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = path.dirname(fileURLToPath(import.meta.url));
-interface IResource<T> {
+export interface IResource<T> {
     readonly location: string;
     load(): Promise<T>;
     reload(): Promise<T>;

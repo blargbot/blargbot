@@ -13,7 +13,7 @@ export class ImageWorker extends BaseWorker<ImageIPCContract> {
         super(logger);
         this.logger.init(`IMAGE WORKER (pid ${this.id}) PROCESS INITIALIZED`);
 
-        this.renderers = new ModuleLoader<BaseImageGenerator<keyof ImageGeneratorMap>>(`${__dirname}/generators`, BaseImageGenerator, [this], this.logger, g => [g.key]);
+        this.renderers = new ModuleLoader<BaseImageGenerator<keyof ImageGeneratorMap>>(import.meta, 'generators', BaseImageGenerator, [this], this.logger, g => [g.key]);
     }
 
     public async start(): Promise<void> {

@@ -2,7 +2,7 @@ import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
 import { ChannelEditSubtag } from '@blargbot/bbtag/subtags/channel/channelEdit.js';
 import { EscapeBBTagSubtag } from '@blargbot/bbtag/subtags/misc/escapeBBTag.js';
 import { argument } from '@blargbot/test-util/mock.js';
-import { ChannelType } from 'discord-api-types/v9';
+import Discord from 'discord-api-types/v9';
 import * as Eris from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
@@ -53,7 +53,7 @@ runSubtagTests({
             expected: '1293671282973698',
             setup(ctx) {
                 ctx.channels.general.id = '1293671282973698';
-                ctx.channels.general.type = ChannelType.GuildPublicThread;
+                ctx.channels.general.type = Discord.ChannelType.GuildPublicThread;
             },
             postSetup(bbctx, ctx) {
                 const channel = bbctx.guild.channels.get(ctx.channels.general.id);
@@ -139,7 +139,7 @@ runSubtagTests({
             subtags: [new EscapeBBTagSubtag()],
             setup(ctx) {
                 ctx.channels.general.id = '1293671282973698';
-                ctx.channels.general.type = ChannelType.GuildPublicThread;
+                ctx.channels.general.type = Discord.ChannelType.GuildPublicThread;
             },
             postSetup(bbctx, ctx) {
                 const channel = bbctx.guild.channels.get(ctx.channels.general.id);
@@ -225,7 +225,7 @@ runSubtagTests({
             subtags: [new EscapeBBTagSubtag()],
             setup(ctx) {
                 ctx.channels.general.id = '1293671282973698';
-                ctx.channels.general.type = ChannelType.GuildPublicThread;
+                ctx.channels.general.type = Discord.ChannelType.GuildPublicThread;
             },
             postSetup(bbctx, ctx) {
                 const channel = bbctx.guild.channels.get(ctx.channels.general.id);
@@ -323,7 +323,7 @@ runSubtagTests({
                 { start: 0, end: 243, error: new BBTagRuntimeError('Invalid JSON') }
             ],
             setup(ctx) {
-                ctx.channels.general.type = ChannelType.GuildPublicThread;
+                ctx.channels.general.type = Discord.ChannelType.GuildPublicThread;
             },
             postSetup(bbctx, ctx) {
                 const channel = bbctx.guild.channels.get(ctx.channels.general.id);

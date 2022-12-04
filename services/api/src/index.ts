@@ -1,7 +1,7 @@
-import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { ApiWorker } from '@blargbot/api/ApiWorker.js';
+import { isEntrypoint } from '@blargbot/application';
 import { config } from '@blargbot/config';
 import { createLogger } from '@blargbot/logger';
 
@@ -9,7 +9,7 @@ export * from './ApiPool.js';
 export * from './ApiConnection.js';
 export * from './ApiWorker.js';
 export * from './Api.js';
-export const entrypoint = path.join(fileURLToPath(import.meta.url), '../start.js');
+export const entrypoint = fileURLToPath(import.meta.url);
 
 export async function start(): Promise<void> {
     Error.stackTraceLimit = 100;
@@ -18,3 +18,6 @@ export async function start(): Promise<void> {
 
     await new ApiWorker(config, logger).start();
 }
+
+if (isEntrypoint(import.meta))
+    await start();

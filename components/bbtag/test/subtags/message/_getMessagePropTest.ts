@@ -1,7 +1,7 @@
 import { BBTagContext } from '@blargbot/bbtag';
 import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '@blargbot/bbtag/errors/index.js';
 import { snowflake } from '@blargbot/core/utils/index.js';
-import { APIChannel, APIMessage } from 'discord-api-types/v9';
+import Discord from 'discord-api-types/v9';
 import * as Eris from 'eris';
 
 import { SubtagTestCase, SubtagTestContext } from '../SubtagTestSuite.js';
@@ -102,14 +102,14 @@ interface GetMessagePropTestCase {
     retries?: number;
     queryString?: string;
     generateCode?: (...args: [channelStr?: string, messageId?: string, quietStr?: string]) => string;
-    setup?: (channel: APIChannel, message: APIMessage, context: SubtagTestContext) => void;
+    setup?: (channel: Discord.APIChannel, message: Discord.APIMessage, context: SubtagTestContext) => void;
     postSetup?: (channel: Eris.KnownGuildChannel, message: Eris.Message<Eris.KnownTextableChannel>, context: BBTagContext, test: SubtagTestContext) => void;
     assert?: (result: string, channel: Eris.KnownGuildChannel, message: Eris.Message<Eris.KnownTextableChannel>, context: BBTagContext, test: SubtagTestContext) => void;
 }
 
 function createTestCase(data: GetMessagePropTestData, testCase: GetMessagePropTestCase, channelKey: keyof SubtagTestContext['channels'], args: Parameters<GetMessagePropTestData['generateCode']>): SubtagTestCase {
     const code = testCase.generateCode?.(...args) ?? data.generateCode(...args);
-    const apiMessageMap = new WeakMap<SubtagTestContext, APIMessage>();
+    const apiMessageMap = new WeakMap<SubtagTestContext, Discord.APIMessage>();
     const messageMap = new WeakMap<SubtagTestContext, Eris.Message<Eris.KnownTextableChannel>>();
     return {
         title: testCase.title,

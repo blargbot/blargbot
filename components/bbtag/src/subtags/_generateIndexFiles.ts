@@ -2,8 +2,10 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-if (`file://${process.argv[1]}` !== import.meta.url)
-    throw new Error('Cannot require() this file');
+import { isEntrypoint } from '@blargbot/application';
+
+if (!isEntrypoint(import.meta))
+    throw new Error('Cannot import this file');
 
 const dir = path.dirname(fileURLToPath(import.meta.url));
 const dirs = [] as string[];

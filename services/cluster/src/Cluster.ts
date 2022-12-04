@@ -9,7 +9,7 @@ import { BaseService } from '@blargbot/core/serviceTypes/index.js';
 import { EvalResult } from '@blargbot/core/types.js';
 import { ImagePool } from '@blargbot/image';
 import { Logger } from '@blargbot/logger';
-import { GatewayIntentBits } from 'discord-api-types/v9';
+import Discord from 'discord-api-types/v9';
 import moment from 'moment-timezone';
 
 import { ClusterBBTagUtilities } from './ClusterBBTagUtilities.js';
@@ -73,15 +73,15 @@ export class Cluster extends BaseClient {
                 defaultImageFormat: 'png',
                 defaultImageSize: 512,
                 messageLimit: 5,
-                intents: GatewayIntentBits.Guilds
-                    | GatewayIntentBits.GuildMembers
-                    | GatewayIntentBits.GuildBans
-                    | GatewayIntentBits.GuildPresences
-                    | GatewayIntentBits.GuildMessages
-                    | GatewayIntentBits.GuildMessageReactions
-                    | GatewayIntentBits.GuildEmojisAndStickers
-                    | GatewayIntentBits.DirectMessages
-                    | GatewayIntentBits.DirectMessageReactions
+                intents: Discord.GatewayIntentBits.Guilds
+                    | Discord.GatewayIntentBits.GuildMembers
+                    | Discord.GatewayIntentBits.GuildBans
+                    | Discord.GatewayIntentBits.GuildPresences
+                    | Discord.GatewayIntentBits.GuildMessages
+                    | Discord.GatewayIntentBits.GuildMessageReactions
+                    | Discord.GatewayIntentBits.GuildEmojisAndStickers
+                    | Discord.GatewayIntentBits.DirectMessages
+                    | Discord.GatewayIntentBits.DirectMessageReactions
             }
         });
 
@@ -94,10 +94,10 @@ export class Cluster extends BaseClient {
         this.prefixes = new PrefixManager(this.config.discord.defaultPrefix, this.database.guilds, this.database.users, this.discord);
         this.commands = new AggregateCommandManager(this, {
             custom: new CustomCommandManager(this),
-            default: new DefaultCommandManager(`${__dirname}/dcommands`, this)
+            default: new DefaultCommandManager(import.meta, 'dcommands', this)
         });
-        this.events = new ModuleLoader(`${__dirname}/events`, BaseService, [this], this.logger, e => e.name);
-        this.services = new ModuleLoader(`${__dirname}/services`, BaseService, [this, options], this.logger, e => e.name);
+        this.events = new ModuleLoader(import.meta, 'events', BaseService, [this], this.logger, e => e.name);
+        this.services = new ModuleLoader(import.meta, 'services', BaseService, [this, options], this.logger, e => e.name);
         this.util = new ClusterUtilities(this);
         this.timeouts = new TimeoutManager(this);
         this.autoresponses = new AutoresponseManager(this);

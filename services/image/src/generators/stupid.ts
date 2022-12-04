@@ -20,7 +20,7 @@ export class StupidGenerator extends BaseImageGenerator<'stupid'> {
             );
         }
 
-        const result = sharp(this.getLocalPath('stupid.png'))
+        const result = sharp(this.getLocalImg('stupid.png').location)
             .composite([
                 ...overlays,
                 {

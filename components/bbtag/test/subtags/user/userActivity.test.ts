@@ -1,5 +1,5 @@
 import { UserActivitySubtag } from '@blargbot/bbtag/subtags/user/userActivity.js';
-import { ActivityType } from 'discord-api-types/v9';
+import Discord from 'discord-api-types/v9';
 import moment from 'moment-timezone';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
@@ -22,7 +22,7 @@ runSubtagTests({
                             activities: [{
                                 created_at: moment().unix(),
                                 name: 'My test game',
-                                type: ActivityType.Playing
+                                type: Discord.ActivityType.Playing
                             }]
                         });
                     }
@@ -34,7 +34,7 @@ runSubtagTests({
                             activities: [{
                                 created_at: moment().unix(),
                                 name: 'Some cool music',
-                                type: ActivityType.Listening
+                                type: Discord.ActivityType.Listening
                             }]
                         });
                     }
@@ -57,7 +57,7 @@ runSubtagTests({
                             activities: [{
                                 created_at: moment().unix(),
                                 name: 'My test game',
-                                type: ActivityType.Playing
+                                type: Discord.ActivityType.Playing
                             }]
                         });
                     }
@@ -69,7 +69,7 @@ runSubtagTests({
                             activities: [{
                                 created_at: moment().unix(),
                                 name: 'Some cool music',
-                                type: ActivityType.Listening
+                                type: Discord.ActivityType.Listening
                             }]
                         });
                     }

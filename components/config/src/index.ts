@@ -1,4 +1,4 @@
-import configJson from '../../../config.json';
+import configJson from '../../../config.json' assert { type: 'json' };
 import { Configuration } from './Configuration.js';
 
 export * from './Configuration.js';

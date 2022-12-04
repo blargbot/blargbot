@@ -8,13 +8,14 @@ export class ModuleLoader<TModule> extends BaseModuleLoader<TModule> {
     readonly #getNames: (module: TModule, fileName: string) => Iterable<string>;
 
     public constructor(
-        public readonly root: string,
+        public readonly context: ImportMeta,
+        public readonly path: string,
         public readonly type: ClassOf<TModule>,
         public readonly constructorArguments: unknown[],
         public readonly logger: Logger,
         getNames?: (module: TModule) => Iterable<string>
     ) {
-        super(root, logger);
+        super(context, path, logger);
         this.#getNames = getNames === undefined
             ? (_, fileName) => [fileName]
             : module => {
