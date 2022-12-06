@@ -1,25 +1,35 @@
 import { fileURLToPath } from 'node:url';
 
 import Application from '@blargbot/application';
+import type { Configuration } from '@blargbot/config';
 import { config } from '@blargbot/config';
 import { createLogger } from '@blargbot/logger';
 import { MasterWorker } from '@blargbot/master';
-import res from '@blargbot/res';
 
 export * from './Master.js';
 export * from './MasterWorker.js';
 export const entrypoint = fileURLToPath(import.meta.url);
 
-await Application.bootstrapIfEntrypoint(start);
-export async function start(): Promise<void> {
-    const logger = createLogger(config, 'MS');
-    logger.setGlobal();
+@Application.hostIfEntrypoint(config)
+export class MasterApp extends Application {
+    public readonly worker: MasterWorker;
 
-    const avatars = config.general.isProd !== true
-        ? await res.avatars.dev.load()
-        : await res.avatars.prd.load();
+    public constructor(config: Configuration) {
+        super();
+        this.worker = new MasterWorker(
+            createLogger(config, 'MS'),
+            config,
+            {
+                avatars: []
+            }
+        );
+    }
 
-    Error.stackTraceLimit = 100;
-    await new MasterWorker(logger, config, { avatars })
-        .start();
+    protected override async start(): Promise<void> {
+        await this.worker.start();
+    }
+
+    protected override async stop(): Promise<void> {
+        await this.worker.stop();
+    }
 }

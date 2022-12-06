@@ -1,12 +1,7 @@
-import bootstrapIfEntrypoint from './bootstrapIfEntrypoint.js';
-import isEntrypoint from './isEntrypoint.js';
+import Application from './Application.js';
 
-export {
-    isEntrypoint,
-    bootstrapIfEntrypoint
-};
+export * from './ApplicationOptions.js';
+export { default as isEntrypoint } from './isEntrypoint.js';
 
-export default {
-    isEntrypoint,
-    bootstrapIfEntrypoint
-};
+export default Application;
+export { Application };

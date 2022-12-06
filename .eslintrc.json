@@ -71,7 +71,6 @@
         "import/no-duplicates": "error",
         "comma-spacing": "error",
         "no-global-assign": "error",
-        "no-console": "error",
         "no-alert": "error",
         "no-lone-blocks": "warn",
         "no-new-func": "error",
@@ -184,7 +183,6 @@
                     }
                 ],
                 "@typescript-eslint/no-extra-parens": "error",
-                "@typescript-eslint/no-implicit-any-catch": "error",
                 "@typescript-eslint/no-require-imports": "error",
                 "@typescript-eslint/prefer-for-of": "error",
                 "@typescript-eslint/prefer-includes": "warn",

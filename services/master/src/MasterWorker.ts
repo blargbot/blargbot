@@ -15,17 +15,16 @@ export class MasterWorker extends BaseWorker<MasterIPCContract> {
     ) {
         super(logger);
 
-        logger.info(`
+        this.master = new Master(logger, config, { ...options, worker: this });
+    }
+
+    public async start(): Promise<void> {
+        console.log(`
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 MAIN PROCESS INITIALIZED
 
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@`);
-
-        this.master = new Master(logger, config, { ...options, worker: this });
-    }
-
-    public async start(): Promise<void> {
         await this.master.start();
         super.start();
     }
