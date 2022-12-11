@@ -1,0 +1,19 @@
+{
+    "name": "@blargbot/rest-proxy",
+    "version": "1.0.0",
+    "private": true,
+    "type": "module",
+    "exports": {
+        ".": "./src/index.js"
+    },
+    "dependencies": {
+        "@blargbot/application": "workspace:^",
+        "@blargbot/config": "workspace:^",
+        "@blargbot/env": "workspace:^",
+        "discordeno": "^17.1.0",
+        "express": "^4.18.2"
+    },
+    "devDependencies": {
+        "@types/express": "^4.17.14"
+    }
+}

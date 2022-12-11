@@ -1,9 +1,9 @@
 {
-    "name": "@blargbot/application",
+    "name": "@blargbot/env",
     "version": "1.0.0",
     "type": "module",
     "private": true,
     "exports": {
-        ".": "./src/index.js"
+        "import": "./src/index.js"
     }
 }
