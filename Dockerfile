@@ -1,6 +1,9 @@
-FROM node:lts-alpine
-ARG APP_NAME
+FROM node:lts-alpine as build
+RUN apk add make g++ jpeg-dev cairo-dev giflib-dev pango-dev libtool autoconf automake graphicsmagick imagemagick
 WORKDIR /app
 COPY . .
-RUN yarn workspaces focus $APP_NAME
-ENTRYPOINT [ "yarn", "workspace", "$APP_NAME", "run", "start" ]
+RUN yarn --immutable --immutable-cache --inline-builds
+
+FROM build as rest-proxy
+WORKDIR /app/services/rest-proxy/src
+ENTRYPOINT [ "yarn", "run", "start" ]

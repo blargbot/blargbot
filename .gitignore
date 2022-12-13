@@ -12,6 +12,7 @@
 /.nyc_output
 /coverage
 **/node_modules/**
+**/.env
 
 /.yarn/*
 !/.yarn/cache

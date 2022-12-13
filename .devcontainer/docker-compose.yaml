@@ -1,3 +1,8 @@
+x-env_file:
+  &env-file
+  env_file:
+    - ../.env
+
 version: '3.5'
 
 services:
@@ -6,10 +11,10 @@ services:
     init: true
 
   rest-proxy:
+    <<: *env-file
     build:
       context: ..
-      args:
-        APP_NAME: '@blargbot/rest-proxy'
+      target: rest-proxy
 
   postgres:
     build: ../infra/postgres
