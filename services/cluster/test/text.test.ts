@@ -7,7 +7,7 @@ import { quickMock } from '@blargbot/test-util/quickMock.js';
 import { runFormatTreeTests } from '@blargbot/test-util/runFormatTreeTests.js';
 import chai from 'chai';
 import * as Eris from 'eris';
-import mocha from 'mocha';
+import * as mocha from 'mocha';
 import moment from 'moment-timezone';
 
 class TestCommand extends Command {

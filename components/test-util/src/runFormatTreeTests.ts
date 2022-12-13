@@ -1,7 +1,7 @@
-import type { FormatStringCompilerOptions, IFormattable} from '@blargbot/formatting';
+import type { FormatStringCompilerOptions, IFormattable } from '@blargbot/formatting';
 import { format, FormatString, FormatStringCompiler, Formatter, util } from '@blargbot/formatting';
 import chai from 'chai';
-import mocha from 'mocha';
+import * as mocha from 'mocha';
 
 export function runFormatTreeTests<T extends object>(source: T, options: FormatStringCompilerOptions, cases: TestCasesHelper<T>): void {
     runFormatTreeTestsCore([], source, options, cases);

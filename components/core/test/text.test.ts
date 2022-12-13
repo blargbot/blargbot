@@ -4,7 +4,7 @@ import { transformers, util } from '@blargbot/formatting';
 import { quickMock } from '@blargbot/test-util/quickMock.js';
 import { runFormatTreeTests } from '@blargbot/test-util/runFormatTreeTests.js';
 import * as Eris from 'eris';
-import mocha from 'mocha';
+import * as mocha from 'mocha';
 
 const client = (): Eris.Client => new Eris.Client('');
 const guild = (): Eris.Guild => new Eris.Guild({ id: '' }, client());

@@ -1,2 +1,4 @@
 **/*.js
+**/*.cjs
+**/*.mjs
 definitions/*

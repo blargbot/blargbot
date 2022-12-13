@@ -1,10 +1,12 @@
 {
     "name": "@blargbot/rest-proxy",
     "version": "1.0.0",
-    "private": true,
     "type": "module",
     "exports": {
-        ".": "./src/index.js"
+        ".": "./index.js"
+    },
+    "scripts": {
+        "start": "node ./index.js"
     },
     "dependencies": {
         "@blargbot/application": "workspace:^",

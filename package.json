@@ -4,6 +4,7 @@
     "private": true,
     "description": "blargbot is multipurpose discord bot. Coded in node.js using [Eris](https://github.com/abalabahaha/eris), blargbot hopes to bring commands and services to your discord.",
     "workspaces": [
+        "build",
         "services/*/src",
         "services/*/test",
         "components/*/src",
@@ -16,18 +17,16 @@
         "@typescript-eslint/parser": "^5.45.0",
         "@yarnpkg/sdks": "^3.0.0-rc.31",
         "c8": "^7.12.0",
-        "cross-env": "^7.0.3",
         "del-cli": "^5.0.0",
         "eslint": "^8.28.0",
         "eslint-plugin-import": "^2.26.0",
         "eslint-plugin-simple-import-sort": "^8.0.0",
-        "mocha": "^10.1.0",
         "typescript": "^4.9.3"
     },
     "scripts": {
         "filecount": "cloc ./ --exclude-dir=node_modules --exclude-ext=js,msj,cjs",
         "start": "node index.js",
-        "test": "cross-env TZ=utc mocha --config mocharc.json --recursive --parallel --reporter dot \"*/*/test/**/*.test.js\"",
+        "test": "yarn workspaces foreach -pv run test",
         "check": "yarn rebuild && yarn run rebuild && yarn run lint && yarn run test",
         "ci": "yarn rebuild && yarn run rebuild && yarn run lint && yarn run coverage",
         "coverage": "c8 yarn test",
@@ -35,10 +34,7 @@
         "watch": "tsc --watch",
         "rebuild": "yarn run clean && yarn run build",
         "lint": "eslint --ext .ts,.mts,.cts ./",
-        "clean": "del-cli \"**/*.js\" \"**/*.js.map\" \"**/*.mjs\" \"**/*.mjs.map\" \"**/*.cjs\" \"**/*.cjs.map\" \"!node_modules\" \"coverage/\" \".nyc_output/\"",
-        "run:master": "node services/master/src/index.js",
-        "run:cluster": "node services/cluster/src/index.js",
-        "run:api": "node services/api/src/index.js"
+        "clean": "del-cli \"**/*.js\" \"**/*.js.map\" \"**/*.mjs\" \"**/*.mjs.map\" \"**/*.cjs\" \"**/*.cjs.map\" \"!node_modules\" \"coverage/\" \".nyc_output/\""
     },
     "repository": {
         "type": "git",

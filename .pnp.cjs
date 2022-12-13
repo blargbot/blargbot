@@ -173,12 +173,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@typescript-eslint/parser", "virtual:292b3c08d83803def12837ade3f3c25353a4445005ce950bbdba7bad8f40a92ecccd2d8b57fa590cf1089759faf68705b69f281662cb52a640c3c6f3bc1b0575#npm:5.45.0"],\
             ["@yarnpkg/sdks", "npm:3.0.0-rc.31"],\
             ["c8", "npm:7.12.0"],\
-            ["cross-env", "npm:7.0.3"],\
             ["del-cli", "npm:5.0.0"],\
             ["eslint", "npm:8.28.0"],\
             ["eslint-plugin-import", "virtual:292b3c08d83803def12837ade3f3c25353a4445005ce950bbdba7bad8f40a92ecccd2d8b57fa590cf1089759faf68705b69f281662cb52a640c3c6f3bc1b0575#npm:2.26.0"],\
             ["eslint-plugin-simple-import-sort", "virtual:292b3c08d83803def12837ade3f3c25353a4445005ce950bbdba7bad8f40a92ecccd2d8b57fa590cf1089759faf68705b69f281662cb52a640c3c6f3bc1b0575#npm:8.0.0"],\
-            ["mocha", "npm:10.1.0"],\
             ["typescript", "patch:typescript@npm%3A4.9.3#~builtin<compat/typescript>::version=4.9.3&hash=d73830"]\
           ],\
           "linkType": "SOFT"\
@@ -399,6 +397,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/eris", "workspace:definitions/eris"],\
             ["@types/mocha", "patch:@types/mocha@npm%3A10.0.1#./.yarn/patches/@types-mocha-npm-10.0.1-7c94e9e170.patch::version=10.0.1&hash=480b76&locator=blargbot%40workspace%3A."],\
             ["chai", "npm:4.3.7"],\
+            ["cross-env", "npm:7.0.3"],\
             ["eris", "npm:0.17.1"],\
             ["mocha", "npm:10.1.0"],\
             ["moment-timezone", "npm:0.5.39"]\
@@ -464,6 +463,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/eris", "workspace:definitions/eris"],\
             ["@types/mocha", "patch:@types/mocha@npm%3A10.0.1#./.yarn/patches/@types-mocha-npm-10.0.1-7c94e9e170.patch::version=10.0.1&hash=480b76&locator=blargbot%40workspace%3A."],\
             ["chai", "npm:4.3.7"],\
+            ["cross-env", "npm:7.0.3"],\
             ["eris", "npm:0.17.1"],\
             ["mocha", "npm:10.1.0"],\
             ["ts-mockito", "npm:2.6.1"]\
@@ -2413,12 +2413,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@typescript-eslint/parser", "virtual:292b3c08d83803def12837ade3f3c25353a4445005ce950bbdba7bad8f40a92ecccd2d8b57fa590cf1089759faf68705b69f281662cb52a640c3c6f3bc1b0575#npm:5.45.0"],\
             ["@yarnpkg/sdks", "npm:3.0.0-rc.31"],\
             ["c8", "npm:7.12.0"],\
-            ["cross-env", "npm:7.0.3"],\
             ["del-cli", "npm:5.0.0"],\
             ["eslint", "npm:8.28.0"],\
             ["eslint-plugin-import", "virtual:292b3c08d83803def12837ade3f3c25353a4445005ce950bbdba7bad8f40a92ecccd2d8b57fa590cf1089759faf68705b69f281662cb52a640c3c6f3bc1b0575#npm:2.26.0"],\
             ["eslint-plugin-simple-import-sort", "virtual:292b3c08d83803def12837ade3f3c25353a4445005ce950bbdba7bad8f40a92ecccd2d8b57fa590cf1089759faf68705b69f281662cb52a640c3c6f3bc1b0575#npm:8.0.0"],\
-            ["mocha", "npm:10.1.0"],\
             ["typescript", "patch:typescript@npm%3A4.9.3#~builtin<compat/typescript>::version=4.9.3&hash=d73830"]\
           ],\
           "linkType": "SOFT"\

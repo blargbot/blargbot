@@ -1,6 +1,6 @@
 import { between } from '@blargbot/core/utils/index.js';
 import chai from 'chai';
-import mocha from 'mocha';
+import * as mocha from 'mocha';
 
 mocha.describe('between', () => {
     const data: Array<[value: number, lower: number, upper: number, inclusive: boolean, expected: boolean]> = [

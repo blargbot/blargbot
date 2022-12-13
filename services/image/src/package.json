@@ -7,6 +7,9 @@
         ".": "./index.js",
         "./*": "./*"
     },
+    "scripts": {
+        "start": "node ./index.js"
+    },
     "dependencies": {
         "@blargbot/application": "workspace:^",
         "@blargbot/config": "workspace:^",

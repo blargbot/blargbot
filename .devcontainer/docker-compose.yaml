@@ -4,7 +4,13 @@ services:
   editor:
     build: editor
     init: true
-        
+
+  rest-proxy:
+    build:
+      context: ..
+      args:
+        APP_NAME: '@blargbot/rest-proxy'
+
   postgres:
     build: ../infra/postgres
     environment:

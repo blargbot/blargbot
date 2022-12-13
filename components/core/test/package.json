@@ -7,6 +7,9 @@
         ".": "./index.js",
         "./*": "./*"
     },
+    "scripts": {
+        "test": "cross-env TZ=utc mocha --config mocharc.json --recursive --parallel --reporter dot \"**/*.test.js\""
+    },
     "dependencies": {
         "@blargbot/core": "workspace:^",
         "@blargbot/domain": "workspace:^",
@@ -20,6 +23,7 @@
     "devDependencies": {
         "@types/chai": "^4.3.4",
         "@types/eris": "workspace:^",
-        "@types/mocha": "^10.0.1"
+        "@types/mocha": "^10.0.1",
+        "cross-env": "^7.0.3"
     }
 }

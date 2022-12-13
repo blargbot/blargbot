@@ -14,7 +14,7 @@
             ],
             "console": "integratedTerminal",
             "runtimeExecutable": "yarn",
-            "program": "run:master",
+            "program": "workspace @blargbot/master start",
             "preLaunchTask": {
                 "type": "npm",
                 "script": "watch"
@@ -30,7 +30,7 @@
             ],
             "console": "integratedTerminal",
             "runtimeExecutable": "yarn",
-            "program": "run:cluster",
+            "program": "workspace @blargbot/cluster start",
             "env": {
                 "CLUSTER_ID": "0",
                 "SHARDS_MAX": "1",
@@ -52,7 +52,7 @@
             ],
             "console": "integratedTerminal",
             "runtimeExecutable": "yarn",
-            "program": "run:api",
+            "program": "workspace @blargbot/api start",
             "preLaunchTask": {
                 "type": "npm",
                 "script": "watch"
