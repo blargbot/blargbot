@@ -335,6 +335,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["chai-bytes", "virtual:a5d8bf7a2ae8421255e486c145d47ec921f9386c1e92984955811d72f1f9d40aa20fe49fb743ba13dfbf35140c84a591e0cb4c0f5392aa8a19884114e49a1580#npm:0.1.2"],\
             ["chai-datetime", "npm:1.8.0"],\
             ["chai-exclude", "virtual:a5d8bf7a2ae8421255e486c145d47ec921f9386c1e92984955811d72f1f9d40aa20fe49fb743ba13dfbf35140c84a591e0cb4c0f5392aa8a19884114e49a1580#npm:2.1.0"],\
+            ["cross-env", "npm:7.0.3"],\
             ["discord-api-types", "npm:0.37.20"],\
             ["eris", "npm:0.17.1"],\
             ["express", "npm:4.18.2"],\
