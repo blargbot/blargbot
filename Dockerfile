@@ -1,8 +1,11 @@
 FROM node:lts-alpine as build
 RUN apk add make g++ jpeg-dev cairo-dev giflib-dev pango-dev libtool autoconf automake graphicsmagick imagemagick
 WORKDIR /app
-COPY . .
+COPY */package.json .
+COPY .yarn/ .yarn/
+COPY yarn.lock .
 RUN yarn --immutable --immutable-cache --inline-builds
+COPY . .
 RUN yarn build
 
 FROM build as discord-proxy

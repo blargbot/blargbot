@@ -1,4 +1,3 @@
-import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import Application from '@blargbot/application';
@@ -9,7 +8,7 @@ import { GatewayMessageBroker } from '../GatewayMessageBroker.js';
 import type { DiscordShardManager } from './DiscordShardManager.js';
 import { createDiscordShardManager } from './DiscordShardManager.js';
 
-export const workerPath = path.dirname(fileURLToPath(import.meta.url));
+export const workerPath = fileURLToPath(import.meta.url);
 
 @Application.hostIfEntrypoint(() => [{
     messages: {

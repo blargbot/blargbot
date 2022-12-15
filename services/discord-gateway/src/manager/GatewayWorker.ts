@@ -24,8 +24,8 @@ export class GatewayWorker {
             stdio: 'pipe'
         });
 
-        this.#worker.stderr?.pipe(prependLine(`[Worker ${id}]`)).pipe(process.stderr);
-        this.#worker.stdout?.pipe(prependLine(`[Worker ${id}]`)).pipe(process.stdout);
+        this.#worker.stderr?.pipe(prependLine(`[Worker ${id}] `)).pipe(process.stderr);
+        this.#worker.stdout?.pipe(prependLine(`[Worker ${id}] `)).pipe(process.stdout);
         this.#worker.on('disconnect', () => this.#worker.kill());
         this.#started = this.#waitStarted();
         this.#stopped = this.#waitStopped();
@@ -34,6 +34,8 @@ export class GatewayWorker {
     async #waitForMessageErrorOrExit(check: (message: child_process.Serializable) => boolean): Promise<void> {
         await new Promise<void>((res, rej) => {
             const reject = (reason?: unknown): void => {
+                if (!(reason instanceof Error))
+                    reason = new Error(`Worker process ${this.#worker.connected ? 'errored' : 'exited'}`);
                 rej(reason);
                 detach();
                 if (this.#worker.connected)

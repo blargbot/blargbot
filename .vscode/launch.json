@@ -7,6 +7,40 @@
         {
             "type": "node",
             "request": "launch",
+            "name": "node: discord-gateway",
+            "skipFiles": [
+                "<node_internals>/**",
+                "**/node_modules/**",
+            ],
+            "console": "integratedTerminal",
+            "runtimeExecutable": "yarn",
+            "args": "workspace @blargbot/discord-gateway start",
+            "envFile": "${workspaceFolder}/.env",
+            "preLaunchTask": {
+                "type": "npm",
+                "script": "watch"
+            }
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "node: discord-proxy",
+            "skipFiles": [
+                "<node_internals>/**",
+                "**/node_modules/**",
+            ],
+            "console": "integratedTerminal",
+            "runtimeExecutable": "yarn",
+            "args": "workspace @blargbot/discord-proxy start",
+            "envFile": "${workspaceFolder}/.env",
+            "preLaunchTask": {
+                "type": "npm",
+                "script": "watch"
+            }
+        },
+        {
+            "type": "node",
+            "request": "launch",
             "name": "node: master",
             "skipFiles": [
                 "<node_internals>/**",
@@ -14,7 +48,7 @@
             ],
             "console": "integratedTerminal",
             "runtimeExecutable": "yarn",
-            "program": "workspace @blargbot/master start",
+            "args": "workspace @blargbot/master start",
             "preLaunchTask": {
                 "type": "npm",
                 "script": "watch"
@@ -30,7 +64,7 @@
             ],
             "console": "integratedTerminal",
             "runtimeExecutable": "yarn",
-            "program": "workspace @blargbot/cluster start",
+            "args": "workspace @blargbot/cluster start",
             "env": {
                 "CLUSTER_ID": "0",
                 "SHARDS_MAX": "1",
@@ -52,7 +86,7 @@
             ],
             "console": "integratedTerminal",
             "runtimeExecutable": "yarn",
-            "program": "workspace @blargbot/api start",
+            "args": "workspace @blargbot/api start",
             "preLaunchTask": {
                 "type": "npm",
                 "script": "watch"
