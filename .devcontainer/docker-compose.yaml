@@ -22,6 +22,14 @@ services:
       context: ..
       target: discord-gateway
 
+  rabbitmq:
+    <<: *env-file
+    build: ../infra/rabbitmq
+    volumes:
+      - rabbitmq:/var/lib/rabbitmq
+    ports:
+      - 15672:15672
+
   postgres:
     build: ../infra/postgres
     environment:
@@ -62,6 +70,7 @@ services:
       - rethink:/data
 
 volumes:
+  rabbitmq:
   rethink:
   cassandra:
   postgres:
