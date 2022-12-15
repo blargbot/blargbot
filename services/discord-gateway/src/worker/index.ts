@@ -2,7 +2,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import Application from '@blargbot/application';
-import wellKnown, { getEnvVar } from '@blargbot/env';
+import env from '@blargbot/env';
 
 import type { GatewayMessageBrokerOptions } from '../GatewayMessageBroker.js';
 import { GatewayMessageBroker } from '../GatewayMessageBroker.js';
@@ -13,14 +13,14 @@ export const workerPath = path.dirname(fileURLToPath(import.meta.url));
 
 @Application.hostIfEntrypoint({
     messages: {
-        host: wellKnown.rabbitHost,
-        password: wellKnown.rabbitPassword,
-        username: wellKnown.rabbitUsername,
-        managerId: getEnvVar(String, 'MANAGER_ID')
+        host: env.rabbitHost,
+        password: env.rabbitPassword,
+        username: env.rabbitUsername,
+        managerId: env.get(String, 'MANAGER_ID')
     },
-    lastShardId: getEnvVar(Number, 'LAST_SHARD_ID'),
-    workerId: getEnvVar(Number, 'WORKER_ID'),
-    token: wellKnown.discordToken
+    lastShardId: env.get(Number, 'LAST_SHARD_ID'),
+    workerId: env.get(Number, 'WORKER_ID'),
+    token: env.discordToken
 })
 export class DiscordGatewayWorkerApplication extends Application {
     readonly #options: DiscordGatewayWorkerApplicationOptions;

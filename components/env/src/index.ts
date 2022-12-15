@@ -1,6 +1,4 @@
-import wellKnown from './wellKnown.js';
+import env from './env.js';
 
-export { default as getEnvVar } from './getEnvVar.js';
-
-export { wellKnown };
-export default wellKnown;
+export { env };
+export default env;

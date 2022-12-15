@@ -1,7 +1,7 @@
 import { Server } from 'node:http';
 
 import Application from '@blargbot/application';
-import wellKnown from '@blargbot/env';
+import env from '@blargbot/env';
 import express from 'express';
 
 import createRestProxy from './createRestProxy.js';
@@ -10,10 +10,10 @@ import type { RestProxyOptions } from './RestProxyOptions.js';
 const requestLimit = 50 << 20; // 50MB
 
 @Application.hostIfEntrypoint({
-    url: wellKnown.restProxyUrl,
-    secret: wellKnown.restProxySecret,
-    token: wellKnown.discordToken,
-    port: wellKnown.appPort
+    url: env.restProxyUrl,
+    secret: env.restProxySecret,
+    token: env.discordToken,
+    port: env.appPort
 })
 export default class RestProxyApplication extends Application {
     readonly #app: express.Express;

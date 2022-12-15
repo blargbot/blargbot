@@ -16,19 +16,21 @@ const envVarDeclaration = {
 
 export type CommonEnvVariables = {
     [P in keyof typeof envVarDeclaration]: ReturnType<typeof envVarDeclaration[P][0]>
+} & {
+    get: typeof getEnvVar;
 }
 
-export const wellKnown = Object.freeze(
-    Object.defineProperties({},
-        Object.fromEntries(
-            (Object.entries(envVarDeclaration) as Array<{ [P in keyof typeof envVarDeclaration]: [P, typeof envVarDeclaration[P], string?] }[keyof typeof envVarDeclaration]>)
-                .map(([key, [read, id, fallback]]) => {
-                    let value: unknown;
-                    return [key, {
-                        get: () => value ??= getEnvVar<unknown>(read, id, fallback)
-                    }] as const;
-                })
-        )
-    ) as CommonEnvVariables
+export const env = Object.freeze(
+    Object.defineProperties({
+        get: getEnvVar
+    }, Object.fromEntries(
+        (Object.entries(envVarDeclaration) as Array<{ [P in keyof typeof envVarDeclaration]: [P, typeof envVarDeclaration[P], string?] }[keyof typeof envVarDeclaration]>)
+            .map(([key, [read, id, fallback]]) => {
+                let value: unknown;
+                return [key, {
+                    get: () => value ??= getEnvVar<unknown>(read, id, fallback)
+                }] as const;
+            })
+    )) as CommonEnvVariables
 );
-export default wellKnown;
+export default env;

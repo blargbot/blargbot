@@ -8,6 +8,7 @@
 /.devcontainer
 /.github
 /.vscode
+/infra
 /coverage
 **/node_modules/**
 **/.env

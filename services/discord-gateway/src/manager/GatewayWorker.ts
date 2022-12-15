@@ -1,8 +1,6 @@
 import child_process from 'node:child_process';
 import stream from 'node:stream';
 
-import { EventEmitter } from 'stream';
-
 import type { GatewayMessageBroker, WorkerMessageTypes } from '../GatewayMessageBroker.js';
 import { workerPath } from '../worker/index.js';
 
@@ -10,14 +8,12 @@ export class GatewayWorker {
     readonly #id: number;
     readonly #messages: GatewayMessageBroker;
     readonly #worker: child_process.ChildProcess;
-    readonly #emitter: EventEmitter;
     #started: Promise<void>;
     #stopped: Promise<void>;
 
     public constructor(id: number, lastShardId: number, messages: GatewayMessageBroker) {
         this.#id = id;
         this.#messages = messages;
-        this.#emitter = new EventEmitter({ captureRejections: true });
         this.#worker = child_process.fork(workerPath, {
             env: {
                 ...process.env,
@@ -30,9 +26,6 @@ export class GatewayWorker {
 
         this.#worker.stderr?.pipe(prependLine(`[Worker ${id}]`)).pipe(process.stderr);
         this.#worker.stdout?.pipe(prependLine(`[Worker ${id}]`)).pipe(process.stdout);
-
-        this.#worker.on('error', err => this.#emitter.emit('error', err));
-        this.#worker.on('exit', () => this.#emitter.emit('exit'));
         this.#worker.on('disconnect', () => this.#worker.kill());
         this.#started = this.#waitStarted();
         this.#stopped = this.#waitStopped();

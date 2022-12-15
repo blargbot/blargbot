@@ -1,6 +1,7 @@
+import { randomUUID } from 'node:crypto';
+
 import Application from '@blargbot/application';
-import wellKnown from '@blargbot/env';
-import { randomUUID } from 'crypto';
+import env from '@blargbot/env';
 import type * as discordeno from 'discordeno';
 
 import type { GatewayMessageBrokerOptions } from '../GatewayMessageBroker.js';
@@ -11,17 +12,17 @@ import { createDiscordRestClient } from './DiscordRestClient.js';
 
 @Application.hostIfEntrypoint({
     messages: {
-        host: wellKnown.rabbitHost,
-        username: wellKnown.rabbitUsername,
-        password: wellKnown.rabbitPassword,
+        host: env.rabbitHost,
+        username: env.rabbitUsername,
+        password: env.rabbitPassword,
         managerId: randomUUID()
     },
     rest: {
-        url: wellKnown.restProxyUrl,
-        secret: wellKnown.restProxySecret
+        url: env.restProxyUrl,
+        secret: env.restProxySecret
     },
-    token: wellKnown.discordToken,
-    shardsPerWorker: wellKnown.shardsPerWorker
+    token: env.discordToken,
+    shardsPerWorker: env.shardsPerWorker
 })
 export class DiscordGatewayApplication extends Application {
     readonly #options: DiscordGatewayApplicationOptions;

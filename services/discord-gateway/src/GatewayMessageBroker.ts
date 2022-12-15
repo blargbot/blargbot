@@ -1,5 +1,6 @@
+import { randomUUID } from 'node:crypto';
+
 import amqplib from 'amqplib';
-import { randomUUID } from 'crypto';
 import type * as discordeno from 'discordeno';
 
 export class GatewayMessageBroker {
