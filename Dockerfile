@@ -3,6 +3,7 @@ RUN apk add make g++ jpeg-dev cairo-dev giflib-dev pango-dev libtool autoconf au
 WORKDIR /app
 COPY . .
 RUN yarn --immutable --immutable-cache --inline-builds
+RUN yarn build
 
 FROM build as discord-proxy
 WORKDIR /app/services/discord-proxy/src
