@@ -68,10 +68,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:components/mapping/src"\
       },\
       {\
-        "name": "@blargbot/messages",\
-        "reference": "workspace:components/messages/src"\
-      },\
-      {\
         "name": "@blargbot/res",\
         "reference": "workspace:components/res/src"\
       },\
@@ -116,16 +112,20 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:services/cluster/test"\
       },\
       {\
+        "name": "@blargbot/discord-gateway",\
+        "reference": "workspace:services/discord-gateway/src"\
+      },\
+      {\
+        "name": "@blargbot/discord-proxy",\
+        "reference": "workspace:services/discord-proxy/src"\
+      },\
+      {\
         "name": "@blargbot/image",\
         "reference": "workspace:services/image/src"\
       },\
       {\
         "name": "@blargbot/master",\
         "reference": "workspace:services/master/src"\
-      },\
-      {\
-        "name": "@blargbot/rest-proxy",\
-        "reference": "workspace:services/rest-proxy/src"\
       }\
     ],\
     "enableTopLevelFallback": true,\
@@ -142,6 +142,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@blargbot/core-tests", ["workspace:components/core/test"]],\
       ["@blargbot/crowdin", ["workspace:components/crowdin/src"]],\
       ["@blargbot/database", ["workspace:components/database/src"]],\
+      ["@blargbot/discord-gateway", ["workspace:services/discord-gateway/src"]],\
+      ["@blargbot/discord-proxy", ["workspace:services/discord-proxy/src"]],\
       ["@blargbot/domain", ["workspace:components/domain/src"]],\
       ["@blargbot/env", ["workspace:components/env/src"]],\
       ["@blargbot/formatting", ["workspace:components/formatting/src"]],\
@@ -149,9 +151,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@blargbot/logger", ["workspace:components/logger/src"]],\
       ["@blargbot/mapping", ["workspace:components/mapping/src"]],\
       ["@blargbot/master", ["workspace:services/master/src"]],\
-      ["@blargbot/messages", ["workspace:components/messages/src"]],\
       ["@blargbot/res", ["workspace:components/res/src"]],\
-      ["@blargbot/rest-proxy", ["workspace:services/rest-proxy/src"]],\
       ["@blargbot/test-util", ["workspace:components/test-util/src"]],\
       ["@types/blargbot-image-api", ["workspace:definitions/blargbot-image-api"]],\
       ["@types/brainfuck-node", ["workspace:definitions/brainfuck-node"]],\
@@ -510,6 +510,38 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "SOFT"\
         }]\
       ]],\
+      ["@blargbot/discord-gateway", [\
+        ["workspace:services/discord-gateway/src", {\
+          "packageLocation": "./services/discord-gateway/src/",\
+          "packageDependencies": [\
+            ["@blargbot/discord-gateway", "workspace:services/discord-gateway/src"],\
+            ["@blargbot/application", "workspace:components/application/src"],\
+            ["@blargbot/config", "workspace:components/config/src"],\
+            ["@blargbot/env", "workspace:components/env/src"],\
+            ["@types/amqplib", "npm:0.10.0"],\
+            ["@types/express", "npm:4.17.14"],\
+            ["amqplib", "npm:0.10.3"],\
+            ["discordeno", "npm:17.1.0"],\
+            ["express", "npm:4.18.2"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
+      ["@blargbot/discord-proxy", [\
+        ["workspace:services/discord-proxy/src", {\
+          "packageLocation": "./services/discord-proxy/src/",\
+          "packageDependencies": [\
+            ["@blargbot/discord-proxy", "workspace:services/discord-proxy/src"],\
+            ["@blargbot/application", "workspace:components/application/src"],\
+            ["@blargbot/config", "workspace:components/config/src"],\
+            ["@blargbot/env", "workspace:components/env/src"],\
+            ["@types/express", "npm:4.17.14"],\
+            ["discordeno", "npm:17.1.0"],\
+            ["express", "npm:4.18.2"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
       ["@blargbot/domain", [\
         ["workspace:components/domain/src", {\
           "packageLocation": "./components/domain/src/",\
@@ -612,38 +644,11 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "SOFT"\
         }]\
       ]],\
-      ["@blargbot/messages", [\
-        ["workspace:components/messages/src", {\
-          "packageLocation": "./components/messages/src/",\
-          "packageDependencies": [\
-            ["@blargbot/messages", "workspace:components/messages/src"],\
-            ["@types/amqplib", "npm:0.10.0"],\
-            ["amqplib", "npm:0.10.3"],\
-            ["discordeno", "npm:17.1.0"]\
-          ],\
-          "linkType": "SOFT"\
-        }]\
-      ]],\
       ["@blargbot/res", [\
         ["workspace:components/res/src", {\
           "packageLocation": "./components/res/src/",\
           "packageDependencies": [\
             ["@blargbot/res", "workspace:components/res/src"]\
-          ],\
-          "linkType": "SOFT"\
-        }]\
-      ]],\
-      ["@blargbot/rest-proxy", [\
-        ["workspace:services/rest-proxy/src", {\
-          "packageLocation": "./services/rest-proxy/src/",\
-          "packageDependencies": [\
-            ["@blargbot/rest-proxy", "workspace:services/rest-proxy/src"],\
-            ["@blargbot/application", "workspace:components/application/src"],\
-            ["@blargbot/config", "workspace:components/config/src"],\
-            ["@blargbot/env", "workspace:components/env/src"],\
-            ["@types/express", "npm:4.17.14"],\
-            ["discordeno", "npm:17.1.0"],\
-            ["express", "npm:4.18.2"]\
           ],\
           "linkType": "SOFT"\
         }]\

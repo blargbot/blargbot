@@ -301,6 +301,34 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@blargbot/discord-gateway@workspace:services/discord-gateway/src":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/discord-gateway@workspace:services/discord-gateway/src"
+  dependencies:
+    "@blargbot/application": "workspace:^"
+    "@blargbot/config": "workspace:^"
+    "@blargbot/env": "workspace:^"
+    "@types/amqplib": ^0.10.0
+    "@types/express": ^4.17.14
+    amqplib: ^0.10.3
+    discordeno: ^17.1.0
+    express: ^4.18.2
+  languageName: unknown
+  linkType: soft
+
+"@blargbot/discord-proxy@workspace:services/discord-proxy/src":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/discord-proxy@workspace:services/discord-proxy/src"
+  dependencies:
+    "@blargbot/application": "workspace:^"
+    "@blargbot/config": "workspace:^"
+    "@blargbot/env": "workspace:^"
+    "@types/express": ^4.17.14
+    discordeno: ^17.1.0
+    express: ^4.18.2
+  languageName: unknown
+  linkType: soft
+
 "@blargbot/domain@workspace:^, @blargbot/domain@workspace:components/domain/src":
   version: 0.0.0-use.local
   resolution: "@blargbot/domain@workspace:components/domain/src"
@@ -387,32 +415,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@blargbot/messages@workspace:components/messages/src":
-  version: 0.0.0-use.local
-  resolution: "@blargbot/messages@workspace:components/messages/src"
-  dependencies:
-    "@types/amqplib": ^0.10.0
-    amqplib: ^0.10.3
-    discordeno: ^17.1.0
-  languageName: unknown
-  linkType: soft
-
 "@blargbot/res@workspace:^, @blargbot/res@workspace:components/res/src":
   version: 0.0.0-use.local
   resolution: "@blargbot/res@workspace:components/res/src"
-  languageName: unknown
-  linkType: soft
-
-"@blargbot/rest-proxy@workspace:services/rest-proxy/src":
-  version: 0.0.0-use.local
-  resolution: "@blargbot/rest-proxy@workspace:services/rest-proxy/src"
-  dependencies:
-    "@blargbot/application": "workspace:^"
-    "@blargbot/config": "workspace:^"
-    "@blargbot/env": "workspace:^"
-    "@types/express": ^4.17.14
-    discordeno: ^17.1.0
-    express: ^4.18.2
   languageName: unknown
   linkType: soft
 

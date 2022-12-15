@@ -1,5 +1,5 @@
 {
-    "name": "@blargbot/rest-proxy",
+    "name": "@blargbot/discord-proxy",
     "version": "1.0.0",
     "type": "module",
     "exports": {

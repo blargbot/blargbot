@@ -5,6 +5,9 @@
 **/*.mjs
 **/*.mjs.map
 /.nyc_output
+/.devcontainer
+/.github
+/.vscode
 /coverage
 **/node_modules/**
 **/.env

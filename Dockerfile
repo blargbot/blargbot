@@ -4,6 +4,10 @@ WORKDIR /app
 COPY . .
 RUN yarn --immutable --immutable-cache --inline-builds
 
-FROM build as rest-proxy
-WORKDIR /app/services/rest-proxy/src
+FROM build as discord-proxy
+WORKDIR /app/services/discord-proxy/src
+ENTRYPOINT [ "yarn", "run", "start" ]
+
+FROM build as discord-gateway
+WORKDIR /app/services/discord-gateway/src
 ENTRYPOINT [ "yarn", "run", "start" ]

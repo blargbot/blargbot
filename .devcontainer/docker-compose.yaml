@@ -10,11 +10,17 @@ services:
     build: editor
     init: true
 
-  rest-proxy:
+  discord-proxy:
     <<: *env-file
     build:
       context: ..
-      target: rest-proxy
+      target: discord-proxy
+
+  discord-gateway:
+    <<: *env-file
+    build:
+      context: ..
+      target: discord-gateway
 
   postgres:
     build: ../infra/postgres
