@@ -20,9 +20,11 @@ export default abstract class Application {
         return app;
     }
 
-    public static hostIfEntrypoint<Args extends readonly unknown[], App extends new (...args: Args) => Application>(...options: Args): (target: App) => void {
+    public static hostIfEntrypoint<App extends new () => Application>(): (target: App) => void
+    public static hostIfEntrypoint<Args extends readonly unknown[], App extends new (...args: Args) => Application>(options: () => Args): (target: App) => void
+    public static hostIfEntrypoint(options?: () => unknown[]): (target: new (...args: unknown[]) => Application) => void {
         return isEntrypoint(getCallerImportMeta())
-            ? this.host(...options)
+            ? this.host(...options?.() ?? [])
             : target => target;
     }
 

@@ -13,7 +13,7 @@ export * from './ClusterUtilities.js';
 export * from './ClusterWorker.js';
 export const entrypoint = fileURLToPath(import.meta.url);
 
-@Application.hostIfEntrypoint(config)
+@Application.hostIfEntrypoint(() => [config])
 export class ClusterApp extends Application {
     public readonly worker: ClusterWorker;
 

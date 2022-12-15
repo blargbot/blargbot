@@ -10,7 +10,7 @@ export * from './ImageConnection.js';
 export * from './ImagePool.js';
 export const entrypoint = fileURLToPath(import.meta.url);
 
-@Application.hostIfEntrypoint(config)
+@Application.hostIfEntrypoint(() => [config])
 export class ImageGeneratorApp extends Application {
     readonly #worker: ImageWorker;
 

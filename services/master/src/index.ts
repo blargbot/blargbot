@@ -10,7 +10,7 @@ export * from './Master.js';
 export * from './MasterWorker.js';
 export const entrypoint = fileURLToPath(import.meta.url);
 
-@Application.hostIfEntrypoint(config)
+@Application.hostIfEntrypoint(() => [config])
 export class MasterApp extends Application {
     public readonly worker: MasterWorker;
 

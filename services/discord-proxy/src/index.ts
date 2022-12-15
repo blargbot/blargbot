@@ -9,12 +9,12 @@ import type { RestProxyOptions } from './RestProxyOptions.js';
 
 const requestLimit = 50 << 20; // 50MB
 
-@Application.hostIfEntrypoint({
+@Application.hostIfEntrypoint(() => [{
     url: env.restProxyUrl,
     secret: env.restProxySecret,
     token: env.discordToken,
     port: env.appPort
-})
+}])
 export default class RestProxyApplication extends Application {
     readonly #app: express.Express;
     readonly #server: Server;

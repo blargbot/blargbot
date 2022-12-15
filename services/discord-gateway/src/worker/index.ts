@@ -11,7 +11,7 @@ import { createDiscordShardManager } from './DiscordShardManager.js';
 
 export const workerPath = path.dirname(fileURLToPath(import.meta.url));
 
-@Application.hostIfEntrypoint({
+@Application.hostIfEntrypoint(() => [{
     messages: {
         host: env.rabbitHost,
         password: env.rabbitPassword,
@@ -21,7 +21,7 @@ export const workerPath = path.dirname(fileURLToPath(import.meta.url));
     lastShardId: env.get(Number, 'LAST_SHARD_ID'),
     workerId: env.get(Number, 'WORKER_ID'),
     token: env.discordToken
-})
+}])
 export class DiscordGatewayWorkerApplication extends Application {
     readonly #options: DiscordGatewayWorkerApplicationOptions;
     readonly #messages: GatewayMessageBroker;

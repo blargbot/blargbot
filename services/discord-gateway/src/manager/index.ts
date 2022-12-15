@@ -10,7 +10,7 @@ import type { DiscordGatewayManager } from './DiscordGatewayManager.js';
 import { createDiscordGatewayManager } from './DiscordGatewayManager.js';
 import { createDiscordRestClient } from './DiscordRestClient.js';
 
-@Application.hostIfEntrypoint({
+@Application.hostIfEntrypoint(() => [{
     messages: {
         host: env.rabbitHost,
         username: env.rabbitUsername,
@@ -23,7 +23,7 @@ import { createDiscordRestClient } from './DiscordRestClient.js';
     },
     token: env.discordToken,
     shardsPerWorker: env.shardsPerWorker
-})
+}])
 export class DiscordGatewayApplication extends Application {
     readonly #options: DiscordGatewayApplicationOptions;
     readonly #client: discordeno.Bot;
