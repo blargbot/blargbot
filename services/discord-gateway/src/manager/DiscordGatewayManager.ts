@@ -36,10 +36,10 @@ export function createDiscordGatewayManager(options: DiscordGatewayManagerOption
             }));
         },
         async stop() {
-            await Promise.all([...workers.list()].map(w => Promise.all([
+            await Promise.all([...workers.list()].flatMap(w => [
                 requestIdentify?.disconnect().then(() => requestIdentify = undefined),
                 w.shutdown()
-            ])));
+            ]));
         }
     };
 }

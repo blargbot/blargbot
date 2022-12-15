@@ -21,6 +21,9 @@ services:
     build:
       context: ..
       target: discord-gateway
+    depends_on:
+      - discord-proxy
+      - rabbitmq
 
   rabbitmq:
     <<: *env-file
