@@ -123,22 +123,28 @@ export default abstract class MessageBroker {
         return await reply;
     }
 
-    async #handleMessage(impl: (data: Blob, message: amqplib.ConsumeMessage) => Awaitable<Blob | void>, msg: amqplib.ConsumeMessage): Promise<void> {
-        const payload = new Blob([msg.content], { type: msg.properties.contentType as string });
-        const result = await impl(payload, msg);
-        if (result !== undefined && typeof msg.properties.replyTo === 'string') {
-            await this.sendMessage('', msg.properties.replyTo, result, {
-                headers: {
-                    ['x-response-id']: msg.properties.headers['x-request-id'] as string | undefined
-                }
-            });
+    async #handleMessage(impl: (data: Blob, message: ConsumeMessage) => Awaitable<Blob | void>, msg: ConsumeMessage): Promise<void> {
+        try {
+            const payload = new Blob([msg.content], { type: msg.properties.contentType as string });
+            const result = await impl(payload, msg);
+            if (result !== undefined && typeof msg.properties.replyTo === 'string') {
+                await this.sendMessage('', msg.properties.replyTo, result, {
+                    headers: {
+                        ['x-response-id']: msg.properties.headers['x-request-id'] as string | undefined
+                    }
+                });
+            }
+            msg.ack();
+        } catch (err) {
+            msg.nack({ requeue: false });
+            console.error(err);
         }
     }
 
     protected async handleMessage<This extends this>(this: This, options: {
         queue: string;
         filter: string;
-        handle: (this: This, data: Blob, message: amqplib.ConsumeMessage) => Awaitable<Blob | void>;
+        handle: (this: This, data: Blob, message: ConsumeMessage) => Awaitable<Blob | void>;
         queueArgs?: amqplib.Options.AssertQueue;
         consumeArgs?: amqplib.Options.Consume;
         exchange?: string;
@@ -149,8 +155,11 @@ export default abstract class MessageBroker {
         if (options.exchange !== undefined)
             await channel.bindQueue(options.queue, options.exchange, options.filter);
         const tag = await channel.consume(options.queue, msg => {
-            if (msg !== null)
-                void h(msg).catch(console.error);
+            if (msg === null)
+                return;
+
+            const message = new ConsumeMessage(channel, msg, options.consumeArgs?.noAck !== true);
+            void h(message).catch(console.error);
         }, options.consumeArgs);
         return {
             disconnect: async () => {
@@ -176,6 +185,46 @@ export default abstract class MessageBroker {
         } catch {
             throw new Error('Blob content was declared to be of type \'application/json\' but is not valid json');
         }
+    }
+}
+
+export class ConsumeMessage implements amqplib.ConsumeMessage {
+    readonly #channel: amqplib.Channel;
+    readonly #message: amqplib.ConsumeMessage;
+    #ackSent: boolean;
+
+    public get fields(): amqplib.ConsumeMessageFields {
+        return this.#message.fields;
+    }
+    public get content(): Buffer {
+        return this.#message.content;
+    }
+    public get properties(): amqplib.MessageProperties {
+        return this.#message.properties;
+    }
+
+    public constructor(channel: amqplib.Channel, message: amqplib.ConsumeMessage, canNack: boolean) {
+        this.#channel = channel;
+        this.#message = message;
+        this.#ackSent = !canNack;
+    }
+
+    public ack(): void {
+        if (this.#ackSent)
+            return;
+        this.#ackSent = true;
+        try {
+            this.#channel.ack(this.#message);
+        } catch {  /* NO-OP */ }
+    }
+
+    public nack(options: { allUpTo?: boolean; requeue?: boolean; } = {}): void {
+        if (this.#ackSent)
+            return;
+        this.#ackSent = true;
+        try {
+            this.#channel.nack(this.#message, options.allUpTo, options.requeue);
+        } catch {  /* NO-OP */ }
     }
 }
 

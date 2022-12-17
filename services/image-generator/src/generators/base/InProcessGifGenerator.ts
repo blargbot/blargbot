@@ -35,7 +35,7 @@ export default abstract class InProcessGifGenerator<Options> extends InProcessIm
             if (frame instanceof Buffer)
                 yield frame;
             else
-                yield await frame.toBuffer();
+                yield await frame.png().toBuffer();
         }
     }
 }

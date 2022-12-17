@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 
-import type { MessageHandle } from '@blargbot/message-broker';
+import type { ConsumeMessage, MessageHandle } from '@blargbot/message-broker';
 import MessageBroker from '@blargbot/message-broker';
 import type amqplib from 'amqplib';
 import type * as discordeno from 'discordeno';
@@ -47,40 +47,40 @@ export class GatewayMessageBroker extends MessageBroker {
         await this.sendMessage(GatewayMessageBroker.#eventsDedupeName, `${shardId}/${lastShardId}.${event.op}.${event.t ?? '-'}`, this.jsonToBlob({ shardId, lastShardId, event }));
     }
 
-    public async handleWorkerCommand<Type extends keyof WorkerMessageTypes>(type: Type, workerId: number | '*', handler: (message: WorkerMessageTypes[Type]) => Awaitable<void>): Promise<MessageHandle> {
+    public async handleWorkerCommand<Type extends keyof WorkerMessageTypes>(type: Type, workerId: number | '*', handler: (message: WorkerMessageTypes[Type], msg: ConsumeMessage) => Awaitable<void>): Promise<MessageHandle> {
         return await this.handleMessage({
             exchange: GatewayMessageBroker.#commandsName,
             queue: `${GatewayMessageBroker.#commandsName}-${type}-${randomUUID()}`,
             queueArgs: { autoDelete: true },
             filter: `${this.managerId}.worker.${workerId}.${type}`,
-            async handle(data) {
-                await handler(await this.blobToJson(data));
+            async handle(data, msg) {
+                await handler(await this.blobToJson(data), msg);
             },
             consumeArgs: { noAck: true }
         });
     }
 
-    public async handleManagerCommand<Type extends keyof ManagerMessageTypes>(type: Type, handler: (message: ManagerMessageTypes[Type]) => Awaitable<void>): Promise<MessageHandle> {
+    public async handleManagerCommand<Type extends keyof ManagerMessageTypes>(type: Type, handler: (message: ManagerMessageTypes[Type], msg: ConsumeMessage) => Awaitable<void>): Promise<MessageHandle> {
         return await this.handleMessage({
             exchange: GatewayMessageBroker.#commandsName,
             queue: `${GatewayMessageBroker.#commandsName}-manager-${type}-${randomUUID()}`,
             queueArgs: { autoDelete: true },
             filter: `${this.managerId}.manager.${type}`,
-            async handle(data) {
-                await handler(await this.blobToJson(data));
+            async handle(data, msg) {
+                await handler(await this.blobToJson(data), msg);
             },
             consumeArgs: { noAck: true }
         });
     }
 
-    public async handleGatewayRequest(shardId: number, lastShardId: number, handler: (message: discordeno.ShardSocketRequest) => Awaitable<void>): Promise<MessageHandle> {
+    public async handleGatewayRequest(shardId: number, lastShardId: number, handler: (message: discordeno.ShardSocketRequest, msg: ConsumeMessage) => Awaitable<void>): Promise<MessageHandle> {
         return await this.handleMessage({
             exchange: GatewayMessageBroker.#requestsName,
             queue: `${GatewayMessageBroker.#requestsName}-${shardId}-${lastShardId}`,
             queueArgs: { autoDelete: true },
             filter: `${shardId}/${lastShardId}`,
-            async handle(data) {
-                await handler(await this.blobToJson(data));
+            async handle(data, msg) {
+                await handler(await this.blobToJson(data), msg);
             },
             consumeArgs: { noAck: true }
         });

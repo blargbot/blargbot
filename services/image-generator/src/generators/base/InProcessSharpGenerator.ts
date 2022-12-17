@@ -10,7 +10,7 @@ export default abstract class InProcessSharpGenerator<Options> extends InProcess
         if (result instanceof Blob)
             return result;
 
-        const { data, info } = await result.toBuffer({ resolveWithObject: true });
+        const { data, info } = await result.png().toBuffer({ resolveWithObject: true });
         return new Blob([data], { type: `image/${info.format}` });
     }
 }

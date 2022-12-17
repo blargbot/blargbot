@@ -32,6 +32,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:components/config/src"\
       },\
       {\
+        "name": "@blargbot/container-id",\
+        "reference": "workspace:components/container-id/src"\
+      },\
+      {\
         "name": "@blargbot/core",\
         "reference": "workspace:components/core/src"\
       },\
@@ -146,6 +150,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@blargbot/cluster", ["workspace:services/cluster/src"]],\
       ["@blargbot/cluster-tests", ["workspace:services/cluster/test"]],\
       ["@blargbot/config", ["workspace:components/config/src"]],\
+      ["@blargbot/container-id", ["workspace:components/container-id/src"]],\
       ["@blargbot/core", ["workspace:components/core/src"]],\
       ["@blargbot/core-tests", ["workspace:components/core/test"]],\
       ["@blargbot/crowdin", ["workspace:components/crowdin/src"]],\
@@ -421,6 +426,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./components/config/src/",\
           "packageDependencies": [\
             ["@blargbot/config", "workspace:components/config/src"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
+      ["@blargbot/container-id", [\
+        ["workspace:components/container-id/src", {\
+          "packageLocation": "./components/container-id/src/",\
+          "packageDependencies": [\
+            ["@blargbot/container-id", "workspace:components/container-id/src"]\
           ],\
           "linkType": "SOFT"\
         }]\

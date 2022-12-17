@@ -1,5 +1,6 @@
 import type { ImageOptionsMap } from '@blargbot/image-types';
 import type { MessageHandle } from '@blargbot/message-broker';
+import { randomUUID } from 'crypto';
 
 import type ImageGenerator from './generators/base/ImageGenerator.js';
 import type { ImageMessageBroker } from './ImageMessageBroker.js';
@@ -29,6 +30,10 @@ export default class ImageGeneratorManager {
         if (generator === undefined)
             throw new Error(`No generator found for images of type ${type}`);
 
-        return await generator.generate(options);
+        const id = randomUUID();
+        console.log(`Generating ${type}`, { id, options });
+        const result = await generator.generate(options);
+        console.log(`Generated ${type}`, { id, size: result.size, type: result.type });
+        return result;
     }
 }
