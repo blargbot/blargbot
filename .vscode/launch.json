@@ -41,6 +41,23 @@
         {
             "type": "node",
             "request": "launch",
+            "name": "node: image-generator",
+            "skipFiles": [
+                "<node_internals>/**",
+                "**/node_modules/**",
+            ],
+            "console": "integratedTerminal",
+            "runtimeExecutable": "yarn",
+            "args": "workspace @blargbot/image-generator start",
+            "envFile": "${workspaceFolder}/.env",
+            "preLaunchTask": {
+                "type": "npm",
+                "script": "watch"
+            }
+        },
+        {
+            "type": "node",
+            "request": "launch",
             "name": "node: master",
             "skipFiles": [
                 "<node_internals>/**",

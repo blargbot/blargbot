@@ -60,12 +60,20 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:components/formatting/src"\
       },\
       {\
+        "name": "@blargbot/image-types",\
+        "reference": "workspace:components/image-types/src"\
+      },\
+      {\
         "name": "@blargbot/logger",\
         "reference": "workspace:components/logger/src"\
       },\
       {\
         "name": "@blargbot/mapping",\
         "reference": "workspace:components/mapping/src"\
+      },\
+      {\
+        "name": "@blargbot/message-broker",\
+        "reference": "workspace:components/message-broker/src"\
       },\
       {\
         "name": "@blargbot/res",\
@@ -120,8 +128,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:services/discord-proxy/src"\
       },\
       {\
-        "name": "@blargbot/image",\
-        "reference": "workspace:services/image/src"\
+        "name": "@blargbot/image-generator",\
+        "reference": "workspace:services/image-generator/src"\
       },\
       {\
         "name": "@blargbot/master",\
@@ -147,10 +155,12 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@blargbot/domain", ["workspace:components/domain/src"]],\
       ["@blargbot/env", ["workspace:components/env/src"]],\
       ["@blargbot/formatting", ["workspace:components/formatting/src"]],\
-      ["@blargbot/image", ["workspace:services/image/src"]],\
+      ["@blargbot/image-generator", ["workspace:services/image-generator/src"]],\
+      ["@blargbot/image-types", ["workspace:components/image-types/src"]],\
       ["@blargbot/logger", ["workspace:components/logger/src"]],\
       ["@blargbot/mapping", ["workspace:components/mapping/src"]],\
       ["@blargbot/master", ["workspace:services/master/src"]],\
+      ["@blargbot/message-broker", ["virtual:3e96f56b05d68730530c83fce6f44a8eee50bc7d49651a205f051e3e2e7f5c76c1978c82290ac15c276d14ddb8c23f25868679ded89aeb408fac13e740cc12c8#workspace:components/message-broker/src", "workspace:components/message-broker/src"]],\
       ["@blargbot/res", ["workspace:components/res/src"]],\
       ["@blargbot/test-util", ["workspace:components/test-util/src"]],\
       ["@types/blargbot-image-api", ["workspace:definitions/blargbot-image-api"]],\
@@ -358,7 +368,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/database", "workspace:components/database/src"],\
             ["@blargbot/domain", "workspace:components/domain/src"],\
             ["@blargbot/formatting", "workspace:components/formatting/src"],\
-            ["@blargbot/image", "workspace:services/image/src"],\
+            ["@blargbot/image-types", "workspace:components/image-types/src"],\
             ["@blargbot/logger", "workspace:components/logger/src"],\
             ["@blargbot/mapping", "workspace:components/mapping/src"],\
             ["@blargbot/res", "workspace:components/res/src"],\
@@ -518,6 +528,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/application", "workspace:components/application/src"],\
             ["@blargbot/config", "workspace:components/config/src"],\
             ["@blargbot/env", "workspace:components/env/src"],\
+            ["@blargbot/message-broker", "virtual:3e96f56b05d68730530c83fce6f44a8eee50bc7d49651a205f051e3e2e7f5c76c1978c82290ac15c276d14ddb8c23f25868679ded89aeb408fac13e740cc12c8#workspace:components/message-broker/src"],\
             ["@types/amqplib", "npm:0.10.0"],\
             ["@types/express", "npm:4.17.14"],\
             ["amqplib", "npm:0.10.3"],\
@@ -571,27 +582,36 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "SOFT"\
         }]\
       ]],\
-      ["@blargbot/image", [\
-        ["workspace:services/image/src", {\
-          "packageLocation": "./services/image/src/",\
+      ["@blargbot/image-generator", [\
+        ["workspace:services/image-generator/src", {\
+          "packageLocation": "./services/image-generator/src/",\
           "packageDependencies": [\
-            ["@blargbot/image", "workspace:services/image/src"],\
+            ["@blargbot/image-generator", "workspace:services/image-generator/src"],\
             ["@blargbot/application", "workspace:components/application/src"],\
-            ["@blargbot/config", "workspace:components/config/src"],\
-            ["@blargbot/core", "workspace:components/core/src"],\
-            ["@blargbot/logger", "workspace:components/logger/src"],\
-            ["@blargbot/res", "workspace:components/res/src"],\
-            ["@types/blargbot-image-api", "workspace:definitions/blargbot-image-api"],\
+            ["@blargbot/env", "workspace:components/env/src"],\
+            ["@blargbot/image-types", "workspace:components/image-types/src"],\
+            ["@blargbot/message-broker", "virtual:3e96f56b05d68730530c83fce6f44a8eee50bc7d49651a205f051e3e2e7f5c76c1978c82290ac15c276d14ddb8c23f25868679ded89aeb408fac13e740cc12c8#workspace:components/message-broker/src"],\
+            ["@types/amqplib", "npm:0.10.0"],\
             ["@types/gifencoder", "npm:2.0.1"],\
             ["@types/gm", "npm:1.25.0"],\
             ["@types/node-fetch", "npm:2.6.2"],\
             ["@types/sharp", "npm:0.31.0"],\
+            ["amqplib", "npm:0.10.3"],\
             ["canvas", "npm:2.10.2"],\
             ["gifencoder", "npm:2.0.1"],\
             ["gm", "npm:1.25.0"],\
             ["node-fetch", "npm:3.3.0"],\
             ["sharp", "npm:0.31.2"],\
             ["twemoji", "npm:14.0.2"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
+      ["@blargbot/image-types", [\
+        ["workspace:components/image-types/src", {\
+          "packageLocation": "./components/image-types/src/",\
+          "packageDependencies": [\
+            ["@blargbot/image-types", "workspace:components/image-types/src"]\
           ],\
           "linkType": "SOFT"\
         }]\
@@ -640,6 +660,29 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["node-fetch", "npm:3.3.0"],\
             ["prom-client", "npm:14.1.0"],\
             ["strip-ansi", "npm:7.0.1"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
+      ["@blargbot/message-broker", [\
+        ["virtual:3e96f56b05d68730530c83fce6f44a8eee50bc7d49651a205f051e3e2e7f5c76c1978c82290ac15c276d14ddb8c23f25868679ded89aeb408fac13e740cc12c8#workspace:components/message-broker/src", {\
+          "packageLocation": "./.yarn/__virtual__/@blargbot-message-broker-virtual-2083535162/1/components/message-broker/src/",\
+          "packageDependencies": [\
+            ["@blargbot/message-broker", "virtual:3e96f56b05d68730530c83fce6f44a8eee50bc7d49651a205f051e3e2e7f5c76c1978c82290ac15c276d14ddb8c23f25868679ded89aeb408fac13e740cc12c8#workspace:components/message-broker/src"],\
+            ["@types/amqplib", "npm:0.10.0"],\
+            ["amqplib", "npm:0.10.3"]\
+          ],\
+          "packagePeers": [\
+            "@types/amqplib",\
+            "amqplib"\
+          ],\
+          "linkType": "SOFT"\
+        }],\
+        ["workspace:components/message-broker/src", {\
+          "packageLocation": "./components/message-broker/src/",\
+          "packageDependencies": [\
+            ["@blargbot/message-broker", "workspace:components/message-broker/src"],\
+            ["@types/amqplib", "npm:0.10.0"]\
           ],\
           "linkType": "SOFT"\
         }]\

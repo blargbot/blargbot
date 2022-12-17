@@ -69,12 +69,22 @@ export default abstract class Application {
     public async run(): Promise<boolean> {
         return await Application.#current.run(this, async () => {
             Application.#running.add(this);
+
             console.log('Starting application', this.constructor.name);
-            let success = await this.#tryRun('start', this.#startAbort);
-            if (success)
+            let success = true;
+            if (await this.#tryRun('start', this.#startAbort)) {
+                console.log('Started application', this.constructor.name);
                 await this.#shutdownRequested;
+            } else {
+                success = false;
+            }
+
             console.log('Stopping application', this.constructor.name);
-            success = await this.#tryRun('stop', this.#stopAbort) && success;
+            if (await this.#tryRun('stop', this.#stopAbort)) {
+                console.log('Stopped application', this.constructor.name);
+            } else {
+                success = false;
+            }
             Application.#running.delete(this);
             return success;
         });
@@ -89,7 +99,7 @@ export default abstract class Application {
             await this[action](signal);
             return true;
         } catch (err) {
-            console.error(`Error while calling application ${action}`, err);
+            console.error(`Error while calling application ${action}:`, err);
             return false;
         }
     }

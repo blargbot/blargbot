@@ -12,7 +12,7 @@ export const workerPath = fileURLToPath(import.meta.url);
 
 @Application.hostIfEntrypoint(() => [{
     messages: {
-        host: env.rabbitHost,
+        hostname: env.rabbitHost,
         password: env.rabbitPassword,
         username: env.rabbitUsername,
         managerId: env.get(String, 'MANAGER_ID')

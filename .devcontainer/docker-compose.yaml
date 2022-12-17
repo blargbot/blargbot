@@ -25,6 +25,14 @@ services:
       - discord-proxy
       - rabbitmq
 
+  image-generator:
+    <<: *env-file
+    build:
+      context: ..
+      target: image-generator
+    depends_on:
+      - rabbitmq
+
   rabbitmq:
     <<: *env-file
     build: ../infra/rabbitmq

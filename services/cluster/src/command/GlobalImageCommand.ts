@@ -1,12 +1,12 @@
 import type { CommandOptions, CommandResult } from '@blargbot/cluster/types.js';
 import { CommandType } from '@blargbot/cluster/utils/index.js';
-import type { ImageGeneratorMap } from '@blargbot/image/types.js';
+import type { ImageOptionsMap } from '@blargbot/image-types';
 import moment from 'moment-timezone';
 
 import templates from '../text.js';
 import type { CommandContext } from './CommandContext.js';
 import { GlobalCommand } from './GlobalCommand.js';
-import { RatelimitMiddleware, SendTypingMiddleware, SingleThreadMiddleware } from './middleware/index.js';
+import { ErrorMiddleware, RatelimitMiddleware, SendTypingMiddleware, SingleThreadMiddleware } from './middleware/index.js';
 
 export interface GlobalImageCommandOptions extends Omit<CommandOptions<CommandContext>, 'category'> {
     dontLimitChannel?: boolean;
@@ -26,18 +26,25 @@ export abstract class GlobalImageCommand extends GlobalCommand {
         this.middleware.push(new SendTypingMiddleware());
     }
 
-    protected async renderImage<T extends keyof ImageGeneratorMap>(context: CommandContext, command: T, data: ImageGeneratorMap[T]): Promise<CommandResult> {
-        const result = await context.cluster.images.render(command, data);
-        if (result === undefined || result.data.length === 0)
-            return templates.commands.$errors.renderFailed;
+    protected async renderImage<T extends keyof ImageOptionsMap>(context: CommandContext, command: T, data: ImageOptionsMap[T]): Promise<CommandResult> {
+        context;
+        command;
+        data;
+        ErrorMiddleware;
+        templates;
+        await Promise.resolve();
+        throw new Error('Not implemented!');
+        // const result = await context.cluster.images.render(command, data);
+        // if (result === undefined || result.data.length === 0)
+        //     return templates.commands.$errors.renderFailed;
 
-        return {
-            file: [
-                {
-                    file: result.data,
-                    name: result.fileName
-                }
-            ]
-        };
+        // return {
+        //     file: [
+        //         {
+        //             file: result.data,
+        //             name: result.fileName
+        //         }
+        //     ]
+        // };
     }
 }

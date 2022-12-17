@@ -12,7 +12,7 @@ import { createDiscordRestClient } from './DiscordRestClient.js';
 
 @Application.hostIfEntrypoint(() => [{
     messages: {
-        host: env.rabbitHost,
+        hostname: env.rabbitHost,
         username: env.rabbitUsername,
         password: env.rabbitPassword,
         managerId: randomUUID()

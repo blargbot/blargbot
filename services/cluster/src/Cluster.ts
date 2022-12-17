@@ -7,7 +7,6 @@ import { BaseClient } from '@blargbot/core/BaseClient.js';
 import { ModuleLoader } from '@blargbot/core/modules/index.js';
 import { BaseService } from '@blargbot/core/serviceTypes/index.js';
 import type { EvalResult } from '@blargbot/core/types.js';
-import { ImagePool } from '@blargbot/image';
 import type { Logger } from '@blargbot/logger';
 import Discord from 'discord-api-types/v9';
 import moment from 'moment-timezone';
@@ -28,7 +27,6 @@ export class Cluster extends BaseClient {
     public readonly autoresponses: AutoresponseManager;
     public readonly contributors: ContributorManager;
     public readonly bbtag: BBTagEngine;
-    public readonly images: ImagePool;
     public readonly events: ModuleLoader<BaseService>;
     public readonly botStaff: BotStaffManager;
     public readonly moderation: ModerationManager;
@@ -90,7 +88,6 @@ export class Cluster extends BaseClient {
         this.createdAt = Object.freeze(moment());
         this.guilds = new GuildManager(this);
         this.domains = new DomainManager(this.database.vars);
-        this.images = new ImagePool(this.id, config.discord.images, this.logger);
         this.prefixes = new PrefixManager(this.config.discord.defaultPrefix, this.database.guilds, this.database.users, this.discord);
         this.commands = new AggregateCommandManager(this, {
             custom: new CustomCommandManager(this),

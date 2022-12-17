@@ -1,0 +1,15 @@
+{
+    "name": "@blargbot/message-broker",
+    "version": "1.0.0",
+    "private": true,
+    "type": "module",
+    "exports": {
+        ".": "./index.js"
+    },
+    "devDependencies": {
+        "@types/amqplib": "^0.10.0"
+    },
+    "peerDependencies": {
+        "amqplib": "^0.10.3"
+    }
+}

@@ -1,0 +1,190 @@
+import { randomUUID } from 'node:crypto';
+
+import amqplib from 'amqplib';
+
+export default abstract class MessageBroker {
+    readonly #replies: Map<string, { res(value: amqplib.ConsumeMessage): void; rej(err: unknown): void; }>;
+    readonly #options: amqplib.Options.Connect;
+    readonly #socketOptions: unknown;
+    #connection?: Promise<amqplib.Channel>;
+    #replyListener?: Promise<void>;
+    #attemptReconnect: boolean;
+
+    public constructor(options: amqplib.Options.Connect, socketOptions?: unknown) {
+        this.#options = options;
+        this.#socketOptions = socketOptions;
+        this.#replies = new Map();
+        this.#attemptReconnect = false;
+    }
+
+    protected async getChannel(): Promise<amqplib.Channel> {
+        if (this.#connection === undefined)
+            throw new Error('Not connected');
+        return await this.#connection;
+    }
+
+    async #connect(): Promise<amqplib.Channel> {
+        try {
+            this.#attemptReconnect = false;
+            console.log(`Connecting to message bus at ${this.#options.hostname ?? 'UNDEFINED'}`);
+            const connection = await amqplib.connect(this.#options, this.#socketOptions);
+            connection.once('close', () => void this.#onClose().catch(console.error));
+            const channel = await connection.createChannel();
+            channel.once('close', () => void connection.close().catch(console.error));
+            console.log('Connected to message bus');
+
+            await this.onceConnected(channel);
+            this.#attemptReconnect = true;
+            return channel;
+        } catch (err) {
+            this.#connection = undefined;
+            throw err;
+        }
+    }
+
+    protected onceConnected(channel: amqplib.Channel): Awaitable<void> {
+        channel;
+    }
+
+    protected onceDisconnected(): Awaitable<void> {
+        this.#connection = undefined;
+        this.#replyListener = undefined;
+        for (const waiter of this.#replies.values())
+            waiter.rej(new Error('Channel closed before a response could be obtained'));
+        this.#replies.clear();
+    }
+
+    async #onClose(): Promise<void> {
+        await this.onceDisconnected();
+        if (this.#attemptReconnect)
+            await this.connect();
+    }
+
+    async #ensureReplyListener(): Promise<void> {
+        await (this.#replyListener ??= this.#createReplyListener());
+    }
+
+    async #createReplyListener(): Promise<void> {
+        try {
+            const channel = await this.getChannel();
+            await channel.consume('amq.rabbitmq.reply-to', msg => {
+                if (msg === null)
+                    return;
+                const responseId = msg.properties.headers['x-response-id'] as unknown;
+                if (typeof responseId === 'string') {
+                    this.#replies.get(responseId)?.res(msg);
+                    this.#replies.delete(responseId);
+                }
+            });
+        } catch (err) {
+            this.#replyListener = undefined;
+            throw err;
+        }
+    }
+
+    async #listenForReply(replyId: string): Promise<Blob> {
+        await this.#ensureReplyListener();
+        const message = await new Promise<amqplib.ConsumeMessage>((res, rej) => {
+            this.#replies.set(replyId, { res, rej });
+        });
+        return new Blob([message.content], { type: message.properties.contentType as string });
+    }
+
+    public async connect(): Promise<void> {
+        if (this.#connection !== undefined)
+            throw new Error('Already connected');
+        await (this.#connection = this.#connect());
+    }
+
+    public async disconnect(): Promise<void> {
+        this.#attemptReconnect = false;
+        const channel = await this.#connection;
+        await channel?.close();
+    }
+
+    protected async sendMessage(exchange: string, filter: string, message: Blob, options?: amqplib.Options.Publish): Promise<void> {
+        const channel = await this.getChannel();
+        const buffer = Buffer.from(await message.arrayBuffer());
+        channel.publish(exchange, filter, buffer, { ...options, contentType: message.type });
+    }
+
+    protected async sendRequest(exchange: string, filter: string, message: Blob, options?: amqplib.Options.Publish): Promise<Blob> {
+        const id = randomUUID();
+        const channel = await this.getChannel();
+        const buffer = Buffer.from(await message.arrayBuffer());
+        const reply = this.#listenForReply(id);
+        channel.publish(exchange, filter, buffer, {
+            ...options,
+            contentType: message.type,
+            headers: {
+                ['x-request-id']: id
+            }
+        });
+        return await reply;
+    }
+
+    async #handleMessage(impl: (data: Blob, message: amqplib.ConsumeMessage) => Awaitable<Blob | void>, msg: amqplib.ConsumeMessage): Promise<void> {
+        const payload = new Blob([msg.content], { type: msg.properties.contentType as string });
+        const result = await impl(payload, msg);
+        if (result !== undefined && typeof msg.properties.replyTo === 'string') {
+            await this.sendMessage('', msg.properties.replyTo, result, {
+                headers: {
+                    ['x-response-id']: msg.properties.headers['x-request-id'] as string | undefined
+                }
+            });
+        }
+    }
+
+    protected async handleMessage<This extends this>(this: This, options: {
+        queue: string;
+        filter: string;
+        handle: (this: This, data: Blob, message: amqplib.ConsumeMessage) => Awaitable<Blob | void>;
+        queueArgs?: amqplib.Options.AssertQueue;
+        consumeArgs?: amqplib.Options.Consume;
+        exchange?: string;
+    }): Promise<MessageHandle> {
+        const h = this.#handleMessage.bind(this, options.handle.bind(this));
+        const channel = await this.getChannel();
+        await channel.assertQueue(options.queue, options.queueArgs);
+        if (options.exchange !== undefined)
+            await channel.bindQueue(options.queue, options.exchange, options.filter);
+        const tag = await channel.consume(options.queue, msg => {
+            if (msg !== null)
+                void h(msg).catch(console.error);
+        }, options.consumeArgs);
+        return {
+            disconnect: async () => {
+                if (channel === await this.#connection)
+                    await channel.cancel(tag.consumerTag);
+            }
+        };
+    }
+
+    protected jsonToBlob(value: unknown): Blob {
+        try {
+            return new Blob([JSON.stringify(value)], { type: 'application/json' });
+        } catch {
+            throw new Error('Failed to convert value to a JSON blob');
+        }
+    }
+
+    protected async blobToJson<T>(value: Blob): Promise<T> {
+        if (value.type !== 'application/json')
+            throw new Error(`Expected blob to be of type 'application/json' but found '${value.type}'`);
+        try {
+            return JSON.parse(await value.text()) as T;
+        } catch {
+            throw new Error('Blob content was declared to be of type \'application/json\' but is not valid json');
+        }
+    }
+}
+
+export interface MessageHandle {
+    disconnect(): Promise<void>;
+}
+
+export interface MessageBrokerOptions {
+    readonly host: string;
+    readonly username: string;
+    readonly password: string;
+}

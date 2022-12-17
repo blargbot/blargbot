@@ -1,8 +1,8 @@
 import { guard } from '@blargbot/core/utils/index.js';
 import { parse } from '@blargbot/core/utils/parse/index.js';
-import type { ValidFont } from '@blargbot/image/types.js';
+import type { ValidFont } from '@blargbot/image-types';
 
-import type { CommandContext} from '../../command/index.js';
+import type { CommandContext } from '../../command/index.js';
 import { GlobalImageCommand } from '../../command/index.js';
 import templates from '../../text.js';
 import type { CommandResult } from '../../types.js';
@@ -39,7 +39,7 @@ export class CaptionCommand extends GlobalImageCommand {
     }
 
     public listFonts(): CommandResult {
-        return cmd.fonts.success({ fonts: Object.keys(fontLookup) });
+        return cmd.fonts.success({ fonts: Object.values(validFonts) });
     }
 
     public async render(
@@ -56,7 +56,8 @@ export class CaptionCommand extends GlobalImageCommand {
             && (bottom === undefined || bottom.length === 0))
             return cmd.errors.captionMissing;
 
-        if (!Object.keys(fontLookup).includes(fontName))
+        const fontNameLower = fontName.toLowerCase();
+        if (!Object.keys(validFonts).includes(fontNameLower))
             return cmd.errors.fontInvalid({ font: fontName, prefix: context.prefix });
 
         url = parse.url(url);
@@ -71,40 +72,25 @@ export class CaptionCommand extends GlobalImageCommand {
 
         return await this.renderImage(context, 'caption', {
             url,
-            font: fontLookup[fontName],
+            font: validFonts[fontNameLower],
             top: top,
             bottom: bottom
         });
     }
 }
 
-const fontLookup: { [P in ValidFont as FontNames[P]]: P } = {
-    animeace: 'animeace.ttf',
-    annieuseyourtelescope: 'AnnieUseYourTelescope.ttf',
-    arcena: 'ARCENA.ttf',
-    arial: 'arial.ttf',
-    comicjens: 'comicjens.ttf',
-    comicsans: 'comicsans.ttf',
-    delius: 'delius.ttf',
-    impact: 'impact.ttf',
-    indieflower: 'IndieFlower.ttf',
-    roboto: 'Roboto-Regular.ttf',
-    sftoontime: 'SFToontime.ttf',
-    ubuntu: 'Ubuntu-Regular.ttf',
-    whitney: 'whitney.ttf'
+const validFonts: { [P in ValidFont as Lowercase<P>]: P } = {
+    animeace: 'animeAce',
+    annieuseyourtelescope: 'annieUseYourTelescope',
+    arcena: 'arcena',
+    arial: 'arial',
+    comicjens: 'comicJens',
+    comicsans: 'comicSans',
+    delius: 'delius',
+    impact: 'impact',
+    indieflower: 'indieFlower',
+    sftoontime: 'sfToontime',
+    whitney: 'whitney',
+    roboto: 'roboto',
+    ubuntu: 'ubuntu'
 };
-interface FontNames {
-    ['ARCENA.ttf']: 'arcena';
-    ['arial.ttf']: 'arial';
-    ['animeace.ttf']: 'animeace';
-    ['AnnieUseYourTelescope.ttf']: 'annieuseyourtelescope';
-    ['comicjens.ttf']: 'comicjens';
-    ['impact.ttf']: 'impact';
-    ['SFToontime.ttf']: 'sftoontime';
-    ['delius.ttf']: 'delius';
-    ['IndieFlower.ttf']: 'indieflower';
-    ['Roboto-Regular.ttf']: 'roboto';
-    ['Ubuntu-Regular.ttf']: 'ubuntu';
-    ['comicsans.ttf']: 'comicsans';
-    ['whitney.ttf']: 'whitney';
-}

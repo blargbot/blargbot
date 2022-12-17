@@ -15,3 +15,8 @@ ENTRYPOINT [ "yarn", "run", "start" ]
 FROM build as discord-gateway
 WORKDIR /app/services/discord-gateway/src
 ENTRYPOINT [ "yarn", "run", "start" ]
+
+FROM build as image-generator
+WORKDIR /app/services/image-generator/src
+RUN yarn workspaces focus
+ENTRYPOINT [ "yarn", "run", "start" ]

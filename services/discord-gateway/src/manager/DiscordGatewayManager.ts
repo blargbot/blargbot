@@ -1,6 +1,7 @@
+import type { MessageHandle } from '@blargbot/message-broker';
 import * as discordeno from 'discordeno';
 
-import type { GatewayMessageBroker, GatewayMessageHandler } from '../GatewayMessageBroker.js';
+import type { GatewayMessageBroker } from '../GatewayMessageBroker.js';
 import { GatewayWorkerManager } from './GatewayWorkerManager.js';
 
 export interface DiscordGatewayManager {
@@ -18,7 +19,7 @@ export interface DiscordGatewayManagerOptions {
 export function createDiscordGatewayManager(options: DiscordGatewayManagerOptions): DiscordGatewayManager {
     const workers = new GatewayWorkerManager(options.messages);
     const manager = createGatewayManager(options, workers);
-    let requestIdentify: GatewayMessageHandler | undefined;
+    let requestIdentify: MessageHandle | undefined;
 
     return {
         async start() {
@@ -37,7 +38,7 @@ export function createDiscordGatewayManager(options: DiscordGatewayManagerOption
         },
         async stop() {
             await Promise.all([...workers.list()].flatMap(w => [
-                requestIdentify?.disconnect().then(() => requestIdentify = undefined),
+                requestIdentify?.disconnect().finally(() => requestIdentify = undefined),
                 w.shutdown()
             ]));
         }

@@ -35,7 +35,6 @@ export class ClusterWorker extends BaseWorker<ClusterIPCContract> {
     }
 
     public async stop(): Promise<void> {
-        await this.cluster.images.killAll();
         await super.stop();
     }
 }

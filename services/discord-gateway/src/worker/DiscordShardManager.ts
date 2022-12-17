@@ -1,6 +1,7 @@
+import type { MessageHandle } from '@blargbot/message-broker';
 import * as discordeno from 'discordeno';
 
-import type { GatewayMessageBroker, GatewayMessageHandler } from '../GatewayMessageBroker.js';
+import type { GatewayMessageBroker } from '../GatewayMessageBroker.js';
 
 export interface DiscordShardManager {
     start(): Promise<void>;
@@ -16,8 +17,9 @@ export interface DiscordShardManagerOptions {
 
 export function createDiscordShardManager(options: DiscordShardManagerOptions): DiscordShardManager {
     const identifyPromises = new Map<number, () => void>();
-    let allowIdentify: GatewayMessageHandler | undefined;
-    let identifyShard: GatewayMessageHandler | undefined;
+    let allowIdentify: MessageHandle | undefined;
+    let identifyShard: MessageHandle | undefined;
+    const gatewayRequests = new Set<MessageHandle>();
 
     const manager = discordeno.createShardManager({
         gatewayConfig: {
@@ -51,6 +53,9 @@ export function createDiscordShardManager(options: DiscordShardManagerOptions): 
             await Promise.all([
                 options.messages.handleWorkerCommand('identifyShard', options.workerId, async ({ shardId }) => {
                     await manager.identify(shardId);
+                    gatewayRequests.add(await options.messages.handleGatewayRequest(shardId, options.lastShardId, async msg => {
+                        await manager.shards.get(shardId)?.send(msg);
+                    }));
                 }).then(v => identifyShard = v),
                 options.messages.handleWorkerCommand('allowIdentify', options.workerId, ({ shardId }) => {
                     identifyPromises.get(shardId)?.();
@@ -60,8 +65,9 @@ export function createDiscordShardManager(options: DiscordShardManagerOptions): 
         },
         async stop() {
             await Promise.all([
-                identifyShard?.disconnect().then(() => identifyShard = undefined),
-                allowIdentify?.disconnect().then(() => allowIdentify = undefined),
+                ...[...gatewayRequests].map(r => r.disconnect().finally(() => gatewayRequests.delete(r))),
+                identifyShard?.disconnect().finally(() => identifyShard = undefined),
+                allowIdentify?.disconnect().finally(() => allowIdentify = undefined),
                 ...manager.shards.map(s => s.shutdown())
             ]);
         }

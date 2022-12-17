@@ -184,7 +184,7 @@ __metadata:
     "@blargbot/database": "workspace:^"
     "@blargbot/domain": "workspace:^"
     "@blargbot/formatting": "workspace:^"
-    "@blargbot/image": "workspace:^"
+    "@blargbot/image-types": "workspace:^"
     "@blargbot/logger": "workspace:^"
     "@blargbot/mapping": "workspace:^"
     "@blargbot/res": "workspace:^"
@@ -308,6 +308,7 @@ __metadata:
     "@blargbot/application": "workspace:^"
     "@blargbot/config": "workspace:^"
     "@blargbot/env": "workspace:^"
+    "@blargbot/message-broker": "workspace:^"
     "@types/amqplib": ^0.10.0
     "@types/express": ^4.17.14
     amqplib: ^0.10.3
@@ -350,26 +351,32 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@blargbot/image@workspace:^, @blargbot/image@workspace:services/image/src":
+"@blargbot/image-generator@workspace:services/image-generator/src":
   version: 0.0.0-use.local
-  resolution: "@blargbot/image@workspace:services/image/src"
+  resolution: "@blargbot/image-generator@workspace:services/image-generator/src"
   dependencies:
     "@blargbot/application": "workspace:^"
-    "@blargbot/config": "workspace:^"
-    "@blargbot/core": "workspace:^"
-    "@blargbot/logger": "workspace:^"
-    "@blargbot/res": "workspace:^"
-    "@types/blargbot-image-api": "workspace:^"
+    "@blargbot/env": "workspace:^"
+    "@blargbot/image-types": "workspace:^"
+    "@blargbot/message-broker": "workspace:^"
+    "@types/amqplib": ^0.10.0
     "@types/gifencoder": ^2.0.1
     "@types/gm": ^1.25.0
     "@types/node-fetch": ^2.6.2
     "@types/sharp": ^0.31.0
+    amqplib: ^0.10.3
     canvas: ^2.10.2
     gifencoder: ^2.0.1
     gm: ^1.25.0
     node-fetch: ^3.3.0
     sharp: ^0.31.2
     twemoji: ^14.0.2
+  languageName: unknown
+  linkType: soft
+
+"@blargbot/image-types@workspace:^, @blargbot/image-types@workspace:components/image-types/src":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/image-types@workspace:components/image-types/src"
   languageName: unknown
   linkType: soft
 
@@ -412,6 +419,16 @@ __metadata:
     node-fetch: ^3.3.0
     prom-client: ^14.1.0
     strip-ansi: ^7.0.1
+  languageName: unknown
+  linkType: soft
+
+"@blargbot/message-broker@workspace:^, @blargbot/message-broker@workspace:components/message-broker/src":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/message-broker@workspace:components/message-broker/src"
+  dependencies:
+    "@types/amqplib": ^0.10.0
+  peerDependencies:
+    amqplib: ^0.10.3
   languageName: unknown
   linkType: soft
 
@@ -847,7 +864,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/blargbot-image-api@workspace:^, @types/blargbot-image-api@workspace:definitions/blargbot-image-api":
+"@types/blargbot-image-api@workspace:definitions/blargbot-image-api":
   version: 0.0.0-use.local
   resolution: "@types/blargbot-image-api@workspace:definitions/blargbot-image-api"
   languageName: unknown
