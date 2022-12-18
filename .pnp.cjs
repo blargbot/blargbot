@@ -28,6 +28,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:components/bbtag/test"\
       },\
       {\
+        "name": "@blargbot/chatlog-types",\
+        "reference": "workspace:components/chatlog-types/src"\
+      },\
+      {\
         "name": "@blargbot/config",\
         "reference": "workspace:components/config/src"\
       },\
@@ -124,6 +128,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:services/cluster/test"\
       },\
       {\
+        "name": "@blargbot/discord-chatlog",\
+        "reference": "workspace:services/discord-chatlog/src"\
+      },\
+      {\
         "name": "@blargbot/discord-gateway",\
         "reference": "workspace:services/discord-gateway/src"\
       },\
@@ -147,6 +155,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@blargbot/application", ["workspace:components/application/src"]],\
       ["@blargbot/bbtag", ["workspace:components/bbtag/src"]],\
       ["@blargbot/bbtag-tests", ["workspace:components/bbtag/test"]],\
+      ["@blargbot/chatlog-types", ["workspace:components/chatlog-types/src"]],\
       ["@blargbot/cluster", ["workspace:services/cluster/src"]],\
       ["@blargbot/cluster-tests", ["workspace:services/cluster/test"]],\
       ["@blargbot/config", ["workspace:components/config/src"]],\
@@ -155,6 +164,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@blargbot/core-tests", ["workspace:components/core/test"]],\
       ["@blargbot/crowdin", ["workspace:components/crowdin/src"]],\
       ["@blargbot/database", ["workspace:components/database/src"]],\
+      ["@blargbot/discord-chatlog", ["workspace:services/discord-chatlog/src"]],\
       ["@blargbot/discord-gateway", ["workspace:services/discord-gateway/src"]],\
       ["@blargbot/discord-proxy", ["workspace:services/discord-proxy/src"]],\
       ["@blargbot/domain", ["workspace:components/domain/src"]],\
@@ -165,7 +175,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@blargbot/logger", ["workspace:components/logger/src"]],\
       ["@blargbot/mapping", ["workspace:components/mapping/src"]],\
       ["@blargbot/master", ["workspace:services/master/src"]],\
-      ["@blargbot/message-broker", ["virtual:3e96f56b05d68730530c83fce6f44a8eee50bc7d49651a205f051e3e2e7f5c76c1978c82290ac15c276d14ddb8c23f25868679ded89aeb408fac13e740cc12c8#workspace:components/message-broker/src", "workspace:components/message-broker/src"]],\
+      ["@blargbot/message-broker", ["virtual:aeac885bc2b91a1efa105c8fa69acf0299e4576631579d685c094479047c752b3d0be6af05bbe3225c98430520b2f21ca58c6dc42717d3d3ba0d508a26b1816e#workspace:components/message-broker/src", "workspace:components/message-broker/src"]],\
       ["@blargbot/res", ["workspace:components/res/src"]],\
       ["@blargbot/test-util", ["workspace:components/test-util/src"]],\
       ["@types/blargbot-image-api", ["workspace:definitions/blargbot-image-api"]],\
@@ -266,6 +276,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/api", "workspace:services/api/src"],\
             ["@blargbot/application", "workspace:components/application/src"],\
             ["@blargbot/bbtag", "workspace:components/bbtag/src"],\
+            ["@blargbot/chatlog-types", "workspace:components/chatlog-types/src"],\
             ["@blargbot/cluster", "workspace:services/cluster/src"],\
             ["@blargbot/config", "workspace:components/config/src"],\
             ["@blargbot/core", "workspace:components/core/src"],\
@@ -361,6 +372,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "SOFT"\
         }]\
       ]],\
+      ["@blargbot/chatlog-types", [\
+        ["workspace:components/chatlog-types/src", {\
+          "packageLocation": "./components/chatlog-types/src/",\
+          "packageDependencies": [\
+            ["@blargbot/chatlog-types", "workspace:components/chatlog-types/src"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
       ["@blargbot/cluster", [\
         ["workspace:services/cluster/src", {\
           "packageLocation": "./services/cluster/src/",\
@@ -368,6 +388,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/cluster", "workspace:services/cluster/src"],\
             ["@blargbot/application", "workspace:components/application/src"],\
             ["@blargbot/bbtag", "workspace:components/bbtag/src"],\
+            ["@blargbot/chatlog-types", "workspace:components/chatlog-types/src"],\
             ["@blargbot/config", "workspace:components/config/src"],\
             ["@blargbot/core", "workspace:components/core/src"],\
             ["@blargbot/database", "workspace:components/database/src"],\
@@ -513,6 +534,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./components/database/src/",\
           "packageDependencies": [\
             ["@blargbot/database", "workspace:components/database/src"],\
+            ["@blargbot/chatlog-types", "workspace:components/chatlog-types/src"],\
             ["@blargbot/config", "workspace:components/config/src"],\
             ["@blargbot/core", "workspace:components/core/src"],\
             ["@blargbot/domain", "workspace:components/domain/src"],\
@@ -534,15 +556,34 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "SOFT"\
         }]\
       ]],\
+      ["@blargbot/discord-chatlog", [\
+        ["workspace:services/discord-chatlog/src", {\
+          "packageLocation": "./services/discord-chatlog/src/",\
+          "packageDependencies": [\
+            ["@blargbot/discord-chatlog", "workspace:services/discord-chatlog/src"],\
+            ["@blargbot/application", "workspace:components/application/src"],\
+            ["@blargbot/chatlog-types", "workspace:components/chatlog-types/src"],\
+            ["@blargbot/env", "workspace:components/env/src"],\
+            ["@blargbot/mapping", "workspace:components/mapping/src"],\
+            ["@blargbot/message-broker", "virtual:aeac885bc2b91a1efa105c8fa69acf0299e4576631579d685c094479047c752b3d0be6af05bbe3225c98430520b2f21ca58c6dc42717d3d3ba0d508a26b1816e#workspace:components/message-broker/src"],\
+            ["@types/amqplib", "npm:0.10.0"],\
+            ["@types/express", "npm:4.17.14"],\
+            ["amqplib", "npm:0.10.3"],\
+            ["cassandra-driver", "npm:4.6.4"],\
+            ["discordeno", "npm:17.1.0"],\
+            ["express", "npm:4.18.2"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
       ["@blargbot/discord-gateway", [\
         ["workspace:services/discord-gateway/src", {\
           "packageLocation": "./services/discord-gateway/src/",\
           "packageDependencies": [\
             ["@blargbot/discord-gateway", "workspace:services/discord-gateway/src"],\
             ["@blargbot/application", "workspace:components/application/src"],\
-            ["@blargbot/config", "workspace:components/config/src"],\
             ["@blargbot/env", "workspace:components/env/src"],\
-            ["@blargbot/message-broker", "virtual:3e96f56b05d68730530c83fce6f44a8eee50bc7d49651a205f051e3e2e7f5c76c1978c82290ac15c276d14ddb8c23f25868679ded89aeb408fac13e740cc12c8#workspace:components/message-broker/src"],\
+            ["@blargbot/message-broker", "virtual:aeac885bc2b91a1efa105c8fa69acf0299e4576631579d685c094479047c752b3d0be6af05bbe3225c98430520b2f21ca58c6dc42717d3d3ba0d508a26b1816e#workspace:components/message-broker/src"],\
             ["@types/amqplib", "npm:0.10.0"],\
             ["@types/express", "npm:4.17.14"],\
             ["amqplib", "npm:0.10.3"],\
@@ -572,6 +613,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./components/domain/src/",\
           "packageDependencies": [\
             ["@blargbot/domain", "workspace:components/domain/src"],\
+            ["@blargbot/chatlog-types", "workspace:components/chatlog-types/src"],\
             ["@blargbot/formatting", "workspace:components/formatting/src"],\
             ["moment-timezone", "npm:0.5.39"]\
           ],\
@@ -604,7 +646,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/application", "workspace:components/application/src"],\
             ["@blargbot/env", "workspace:components/env/src"],\
             ["@blargbot/image-types", "workspace:components/image-types/src"],\
-            ["@blargbot/message-broker", "virtual:3e96f56b05d68730530c83fce6f44a8eee50bc7d49651a205f051e3e2e7f5c76c1978c82290ac15c276d14ddb8c23f25868679ded89aeb408fac13e740cc12c8#workspace:components/message-broker/src"],\
+            ["@blargbot/message-broker", "virtual:aeac885bc2b91a1efa105c8fa69acf0299e4576631579d685c094479047c752b3d0be6af05bbe3225c98430520b2f21ca58c6dc42717d3d3ba0d508a26b1816e#workspace:components/message-broker/src"],\
             ["@types/amqplib", "npm:0.10.0"],\
             ["@types/gifencoder", "npm:2.0.1"],\
             ["@types/gm", "npm:1.25.0"],\
@@ -679,10 +721,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["@blargbot/message-broker", [\
-        ["virtual:3e96f56b05d68730530c83fce6f44a8eee50bc7d49651a205f051e3e2e7f5c76c1978c82290ac15c276d14ddb8c23f25868679ded89aeb408fac13e740cc12c8#workspace:components/message-broker/src", {\
-          "packageLocation": "./.yarn/__virtual__/@blargbot-message-broker-virtual-2083535162/1/components/message-broker/src/",\
+        ["virtual:aeac885bc2b91a1efa105c8fa69acf0299e4576631579d685c094479047c752b3d0be6af05bbe3225c98430520b2f21ca58c6dc42717d3d3ba0d508a26b1816e#workspace:components/message-broker/src", {\
+          "packageLocation": "./.yarn/__virtual__/@blargbot-message-broker-virtual-2b79524825/1/components/message-broker/src/",\
           "packageDependencies": [\
-            ["@blargbot/message-broker", "virtual:3e96f56b05d68730530c83fce6f44a8eee50bc7d49651a205f051e3e2e7f5c76c1978c82290ac15c276d14ddb8c23f25868679ded89aeb408fac13e740cc12c8#workspace:components/message-broker/src"],\
+            ["@blargbot/message-broker", "virtual:aeac885bc2b91a1efa105c8fa69acf0299e4576631579d685c094479047c752b3d0be6af05bbe3225c98430520b2f21ca58c6dc42717d3d3ba0d508a26b1816e#workspace:components/message-broker/src"],\
             ["@types/amqplib", "npm:0.10.0"],\
             ["amqplib", "npm:0.10.3"]\
           ],\

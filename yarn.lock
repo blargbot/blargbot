@@ -65,6 +65,7 @@ __metadata:
   dependencies:
     "@blargbot/application": "workspace:^"
     "@blargbot/bbtag": "workspace:^"
+    "@blargbot/chatlog-types": "workspace:^"
     "@blargbot/cluster": "workspace:^"
     "@blargbot/config": "workspace:^"
     "@blargbot/core": "workspace:^"
@@ -152,6 +153,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@blargbot/chatlog-types@workspace:^, @blargbot/chatlog-types@workspace:components/chatlog-types/src":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/chatlog-types@workspace:components/chatlog-types/src"
+  languageName: unknown
+  linkType: soft
+
 "@blargbot/cluster-tests@workspace:services/cluster/test":
   version: 0.0.0-use.local
   resolution: "@blargbot/cluster-tests@workspace:services/cluster/test"
@@ -179,6 +186,7 @@ __metadata:
   dependencies:
     "@blargbot/application": "workspace:^"
     "@blargbot/bbtag": "workspace:^"
+    "@blargbot/chatlog-types": "workspace:^"
     "@blargbot/config": "workspace:^"
     "@blargbot/core": "workspace:^"
     "@blargbot/database": "workspace:^"
@@ -287,6 +295,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@blargbot/database@workspace:components/database/src"
   dependencies:
+    "@blargbot/chatlog-types": "workspace:^"
     "@blargbot/config": "workspace:^"
     "@blargbot/core": "workspace:^"
     "@blargbot/domain": "workspace:^"
@@ -307,12 +316,29 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@blargbot/discord-chatlog@workspace:services/discord-chatlog/src":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/discord-chatlog@workspace:services/discord-chatlog/src"
+  dependencies:
+    "@blargbot/application": "workspace:^"
+    "@blargbot/chatlog-types": "workspace:^"
+    "@blargbot/env": "workspace:^"
+    "@blargbot/mapping": "workspace:^"
+    "@blargbot/message-broker": "workspace:^"
+    "@types/amqplib": ^0.10.0
+    "@types/express": ^4.17.14
+    amqplib: ^0.10.3
+    cassandra-driver: ^4.6.4
+    discordeno: ^17.1.0
+    express: ^4.18.2
+  languageName: unknown
+  linkType: soft
+
 "@blargbot/discord-gateway@workspace:services/discord-gateway/src":
   version: 0.0.0-use.local
   resolution: "@blargbot/discord-gateway@workspace:services/discord-gateway/src"
   dependencies:
     "@blargbot/application": "workspace:^"
-    "@blargbot/config": "workspace:^"
     "@blargbot/env": "workspace:^"
     "@blargbot/message-broker": "workspace:^"
     "@types/amqplib": ^0.10.0
@@ -340,6 +366,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@blargbot/domain@workspace:components/domain/src"
   dependencies:
+    "@blargbot/chatlog-types": "workspace:^"
     "@blargbot/formatting": "workspace:^"
     moment-timezone: ^0.5.39
   languageName: unknown

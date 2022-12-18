@@ -1,7 +1,7 @@
+import type { ChatLog, ChatLogMessage, ChatLogSearchOptions } from '@blargbot/chatlog-types';
+import { ChatLogType } from '@blargbot/chatlog-types';
 import { metrics } from '@blargbot/core/Metrics.js';
 import { snowflake } from '@blargbot/core/utils/index.js';
-import type { ChatLog, ChatLogMessage, ChatLogSearchOptions} from '@blargbot/domain/models/index.js';
-import { ChatLogType } from '@blargbot/domain/models/index.js';
 import type { ChatLogStore } from '@blargbot/domain/stores/index.js';
 import type { Logger } from '@blargbot/logger';
 import { mapping } from '@blargbot/mapping';

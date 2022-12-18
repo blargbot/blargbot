@@ -20,3 +20,7 @@ FROM build as image-generator
 WORKDIR /app/services/image-generator/src
 RUN yarn workspaces focus
 ENTRYPOINT [ "yarn", "run", "start" ]
+
+FROM build as discord-chatlog
+WORKDIR /app/services/discord-chatlog/src
+ENTRYPOINT [ "yarn", "run", "start" ]

@@ -8,8 +8,7 @@ export class DiscordMessageDeleteHandler extends DiscordEventService<'messageDel
         super(cluster.discord, 'messageDelete', cluster.logger, async (message) => {
             await Promise.all([
                 this.cluster.commands.messageDeleted(message),
-                this.cluster.moderation.eventLog.messageDeleted(message),
-                this.cluster.moderation.chatLog.messageDeleted(message)
+                this.cluster.moderation.eventLog.messageDeleted(message)
             ]);
         });
     }

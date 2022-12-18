@@ -1,7 +1,6 @@
 export * from './AutoresponseMiddleware.js';
 export * from './CensorMiddleware.js';
 export * from './ChannelBlacklistMiddleware.js';
-export * from './ChatLogMiddleware.js';
 export * from './CleverbotMiddleware.js';
 export * from './CommandMiddleware.js';
 export * from './IgnoreBotsMiddleware.js';

@@ -7,10 +7,7 @@ export class DiscordMessageDeleteBulkHandler extends DiscordEventService<'messag
     ) {
         super(cluster.discord, 'messageDeleteBulk', cluster.logger, async (messages) => {
             await Promise.all([
-                ...messages.map(message => [
-                    this.cluster.commands.messageDeleted(message),
-                    this.cluster.moderation.chatLog.messageDeleted(message)
-                ]).flat(),
+                ...messages.map(message => this.cluster.commands.messageDeleted(message)).flat(),
                 this.cluster.moderation.eventLog.messagesDeleted(messages.map(m => m))
             ]);
         });

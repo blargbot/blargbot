@@ -19,8 +19,7 @@ export class DiscordMessageUpdateHandler extends DiscordEventService<'messageUpd
         if (message.editedTimestamp !== undefined) {
             await Promise.all([
                 this.cluster.moderation.censors.censor(message),
-                this.cluster.moderation.eventLog.messageUpdated(message, oldMessage),
-                this.cluster.moderation.chatLog.messageUpdated(message)
+                this.cluster.moderation.eventLog.messageUpdated(message, oldMessage)
             ]);
         } else if (oldMessage !== null && message.embeds.filter(e => e.type !== 'rich').length > oldMessage.embeds.filter(e => e.type !== 'rich').length) {
             // This was just links getting embedded, no need to do anything here.

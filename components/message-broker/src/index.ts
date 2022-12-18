@@ -143,7 +143,7 @@ export default abstract class MessageBroker {
 
     protected async handleMessage<This extends this>(this: This, options: {
         queue: string;
-        filter: string;
+        filter: string | Iterable<string>;
         handle: (this: This, data: Blob, message: ConsumeMessage) => Awaitable<Blob | void>;
         queueArgs?: amqplib.Options.AssertQueue;
         consumeArgs?: amqplib.Options.Consume;
@@ -152,8 +152,11 @@ export default abstract class MessageBroker {
         const h = this.#handleMessage.bind(this, options.handle.bind(this));
         const channel = await this.getChannel();
         await channel.assertQueue(options.queue, options.queueArgs);
-        if (options.exchange !== undefined)
-            await channel.bindQueue(options.queue, options.exchange, options.filter);
+        if (options.exchange !== undefined) {
+            const filters = typeof options.filter === 'string' ? [options.filter] : options.filter;
+            for (const filter of filters)
+                await channel.bindQueue(options.queue, options.exchange, filter);
+        }
         const tag = await channel.consume(options.queue, msg => {
             if (msg === null)
                 return;
@@ -230,10 +233,4 @@ export class ConsumeMessage implements amqplib.ConsumeMessage {
 
 export interface MessageHandle {
     disconnect(): Promise<void>;
-}
-
-export interface MessageBrokerOptions {
-    readonly host: string;
-    readonly username: string;
-    readonly password: string;
 }

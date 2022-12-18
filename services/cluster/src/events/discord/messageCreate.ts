@@ -9,7 +9,7 @@ import type * as Eris from 'eris';
 import moment from 'moment-timezone';
 
 import { CommandLoggerMiddleware, ErrorMiddleware, RollingRatelimitMiddleware } from '../../command/index.js';
-import { AutoresponseMiddleware, CensorMiddleware, ChannelBlacklistMiddleware, ChatLogMiddleware, CleverbotMiddleware, CommandMiddleware, IgnoreBotsMiddleware, IgnoreSelfMiddleware, MessageAwaiterMiddleware, RolemesMiddleware, TableflipMiddleware, UpsertUserMiddleware } from './middleware/index.js';
+import { AutoresponseMiddleware, CensorMiddleware, ChannelBlacklistMiddleware, CleverbotMiddleware, CommandMiddleware, IgnoreBotsMiddleware, IgnoreSelfMiddleware, MessageAwaiterMiddleware, RolemesMiddleware, TableflipMiddleware, UpsertUserMiddleware } from './middleware/index.js';
 
 export class DiscordMessageCreateHandler extends DiscordEventService<'messageCreate'> {
     readonly #middleware: Array<IMiddleware<Eris.KnownMessage, boolean>>;
@@ -19,7 +19,6 @@ export class DiscordMessageCreateHandler extends DiscordEventService<'messageCre
     ) {
         super(cluster.discord, 'messageCreate', cluster.logger, (msg) => this.execute(msg));
         this.#middleware = [
-            new ChatLogMiddleware(cluster.moderation.chatLog),
             new IgnoreSelfMiddleware(cluster.logger, cluster.discord),
             new UpsertUserMiddleware(cluster.database.users),
             new CensorMiddleware(cluster.moderation.censors),

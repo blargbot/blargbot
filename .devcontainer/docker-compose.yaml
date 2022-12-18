@@ -25,6 +25,15 @@ services:
       - discord-proxy
       - rabbitmq
 
+  discord-chatlog:
+    <<: *env-file
+    build:
+      context: ..
+      target: discord-chatlog
+    depends_on:
+      - cassandra
+      - rabbitmq
+
   image-generator:
     <<: *env-file
     build:
@@ -39,44 +48,42 @@ services:
     volumes:
       - rabbitmq:/var/lib/rabbitmq
     ports:
-      - 15672:15672
+      - 5000:15672
 
   postgres:
+    <<: *env-file
     build: ../infra/postgres
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: blargbot
-    ports:
-      - 5432:5432
     volumes:
       - postgres:/var/lib/postgresql/data
 
-  cassandra:
-    build: ../infra/cassandra
+  pgadmin:
+    image: dpage/pgadmin4
     environment:
-      CASSANDRA_KEYSPACE: blargbot
-      CASSANDRA_USER: blargbot
-      CASSANDRA_PASSWORD: BlargPass123
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: root
     ports:
-      - 7000:7000
-      - 7001:7001
-      - 9042:9042
-      - 7199:7199
-      - 9160:9160
+      - 5002:80
+
+  cassandra:
+    <<: *env-file
+    build: ../infra/cassandra
     volumes:
       - cassandra:/var/lib/cassandra
 
-  rethinkdb:
-    build: ../infra/rethinkdb
+  cassandra-web:
+    image: ipushc/cassandra-web
     environment:
-      RETHINKDB_DATABASE: blargbot
-      RETHINKDB_USERNAME: blargbot
-      RETHINKDB_PASSWORD: BlargPass123
+      CASSANDRA_HOST: cassandra
+      CASSANDRA_USERNAME: blargbot
+      CASSANDRA_PASSWORD: SomePassword
     ports:
-      - 29015:29015
-      - 28015:28015
-      - 29016:8080
+      - 5003:8083
+
+  rethinkdb:
+    <<: *env-file
+    build: ../infra/rethinkdb
+    ports:
+      - 5001:8080
     volumes:
       - rethink:/data
 

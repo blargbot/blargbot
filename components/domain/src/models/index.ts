@@ -1,4 +1,3 @@
-export * from './chatLogs/index.js';
 export * from './discordTags/index.js';
 export * from './events/index.js';
 export * from './flags/index.js';

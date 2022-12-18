@@ -13,6 +13,7 @@
     "dependencies": {
         "@blargbot/application": "workspace:^",
         "@blargbot/bbtag": "workspace:^",
+        "@blargbot/chatlog-types": "workspace:^",
         "@blargbot/cluster": "workspace:^",
         "@blargbot/config": "workspace:^",
         "@blargbot/core": "workspace:^",

@@ -8,6 +8,7 @@
         "./*": "./*"
     },
     "dependencies": {
+        "@blargbot/chatlog-types": "workspace:^",
         "@blargbot/formatting": "workspace:^",
         "moment-timezone": "^0.5.39"
     }

@@ -1,20 +1,22 @@
 {
-    "name": "@blargbot/discord-gateway",
+    "name": "@blargbot/discord-chatlog",
     "version": "1.0.0",
     "private": true,
     "type": "module",
     "exports": {
-        "./manager": "./manager/index.js",
-        "./worker": "./worker/index.js"
+        ".": "./index.js"
     },
     "scripts": {
-        "start": "node ./manager/index.js"
+        "start": "node ./index.js"
     },
     "dependencies": {
         "@blargbot/application": "workspace:^",
+        "@blargbot/chatlog-types": "workspace:^",
         "@blargbot/env": "workspace:^",
+        "@blargbot/mapping": "workspace:^",
         "@blargbot/message-broker": "workspace:^",
         "amqplib": "^0.10.3",
+        "cassandra-driver": "^4.6.4",
         "discordeno": "^17.1.0",
         "express": "^4.18.2"
     },

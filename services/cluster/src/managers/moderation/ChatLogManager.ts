@@ -1,70 +1,12 @@
+import type { ChatLog, ChatLogIndex, ChatLogSearchOptions } from '@blargbot/chatlog-types';
 import type { Cluster } from '@blargbot/cluster';
 import { guard, snowflake } from '@blargbot/cluster/utils/index.js';
-import type { ChatLog, ChatLogIndex, ChatLogSearchOptions} from '@blargbot/domain/models/index.js';
-import { ChatLogType } from '@blargbot/domain/models/index.js';
-import * as Eris from 'eris';
 
 export class ChatLogManager {
     public constructor(
         protected readonly cluster: Cluster
     ) {
 
-    }
-
-    public async messageCreated(message: Eris.KnownMessage): Promise<void> {
-        if (!guard.isGuildMessage(message) || await this.cluster.database.guilds.getSetting(message.channel.guild.id, 'makelogs') !== true)
-            return;
-
-        await this.cluster.database.chatlogs.add({
-            channelid: message.channel.id,
-            content: message.content,
-            embeds: message.embeds,
-            guildid: message.channel.guild.id,
-            msgid: message.id,
-            userid: message.author.id,
-            attachments: message.attachments.map(a => a.url)
-        }, ChatLogType.CREATE);
-    }
-
-    public async messageDeleted(message: Eris.PossiblyUncachedMessage): Promise<void> {
-        if (!guard.isGuildMessage(message) || await this.cluster.database.guilds.getSetting(message.channel.guild.id, 'makelogs') !== true)
-            return;
-
-        const chatlog = message instanceof Eris.Message
-            ? {
-                content: message.content,
-                embeds: message.embeds,
-                userid: message.author.id,
-                attachments: message.attachments.map(a => a.url)
-            }
-            : await this.cluster.database.chatlogs.getByMessageId(message.id);
-        if (chatlog === undefined)
-            return;
-
-        await this.cluster.database.chatlogs.add({
-            channelid: message.channel.id,
-            content: chatlog.content,
-            embeds: chatlog.embeds,
-            guildid: message.channel.guild.id,
-            msgid: message.id,
-            userid: chatlog.userid,
-            attachments: chatlog.attachments
-        }, ChatLogType.DELETE);
-    }
-
-    public async messageUpdated(message: Eris.Message<Eris.PossiblyUncachedTextableChannel>): Promise<void> {
-        if (!guard.isGuildMessage(message) || await this.cluster.database.guilds.getSetting(message.channel.guild.id, 'makelogs') !== true || !guard.hasValue(message.author))
-            return;
-
-        await this.cluster.database.chatlogs.add({
-            channelid: message.channel.id,
-            content: message.content,
-            embeds: message.embeds,
-            guildid: message.channel.guild.id,
-            msgid: message.id,
-            userid: message.author.id,
-            attachments: message.attachments.map(a => a.url)
-        }, ChatLogType.UPDATE);
     }
 
     public async find(options: ChatLogSearchOptions): Promise<readonly ChatLog[]> {

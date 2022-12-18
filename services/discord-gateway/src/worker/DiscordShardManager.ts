@@ -28,6 +28,7 @@ export function createDiscordShardManager(options: DiscordShardManagerOptions): 
                 | discordeno.Intents.GuildBans
                 | discordeno.Intents.GuildPresences
                 | discordeno.Intents.GuildMessages
+                | discordeno.Intents.MessageContent
                 | discordeno.Intents.GuildMessageReactions
                 | discordeno.Intents.GuildEmojis
                 | discordeno.Intents.DirectMessages
