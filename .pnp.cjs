@@ -20,6 +20,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:components/application/src"\
       },\
       {\
+        "name": "@bbtag/core",\
+        "reference": "workspace:components/bbtag-core/src"\
+      },\
+      {\
         "name": "@blargbot/bbtag",\
         "reference": "workspace:components/bbtag/src"\
       },\
@@ -151,6 +155,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
     "enableTopLevelFallback": true,\
     "ignorePatternData": "(^(?:\\\\.yarn\\\\/sdks(?:\\\\/(?!\\\\.{1,2}(?:\\\\/|$))(?:(?:(?!(?:^|\\\\/)\\\\.{1,2}(?:\\\\/|$)).)*?)|$))$)",\
     "fallbackExclusionList": [\
+      ["@bbtag/core", ["workspace:components/bbtag-core/src"]],\
       ["@blargbot/api", ["workspace:services/api/src"]],\
       ["@blargbot/application", ["workspace:components/application/src"]],\
       ["@blargbot/bbtag", ["workspace:components/bbtag/src"]],\
@@ -258,6 +263,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["js-tokens", "npm:4.0.0"]\
           ],\
           "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@bbtag/core", [\
+        ["workspace:components/bbtag-core/src", {\
+          "packageLocation": "./components/bbtag-core/src/",\
+          "packageDependencies": [\
+            ["@bbtag/core", "workspace:components/bbtag-core/src"]\
+          ],\
+          "linkType": "SOFT"\
         }]\
       ]],\
       ["@bcoe/v8-coverage", [\

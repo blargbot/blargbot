@@ -63,6 +63,8 @@ services:
       PGADMIN_DEFAULT_PASSWORD: root
     ports:
       - 5002:80
+    volumes:
+      - pgadmin:/var/lib/pgadmin
 
   cassandra:
     <<: *env-file
@@ -92,3 +94,4 @@ volumes:
   rethink:
   cassandra:
   postgres:
+  pgadmin:

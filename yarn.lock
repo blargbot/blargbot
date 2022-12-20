@@ -52,6 +52,12 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@bbtag/core@workspace:components/bbtag-core/src":
+  version: 0.0.0-use.local
+  resolution: "@bbtag/core@workspace:components/bbtag-core/src"
+  languageName: unknown
+  linkType: soft
+
 "@bcoe/v8-coverage@npm:^0.2.3":
   version: 0.2.3
   resolution: "@bcoe/v8-coverage@npm:0.2.3"
