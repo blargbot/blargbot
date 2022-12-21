@@ -8,9 +8,8 @@ export class RoundSubtag extends Subtag {
         });
     }
 
-    @Subtag.signature(p.number('number'))
-        .returns('number')
-    public round(value: number): number {
-        return Math.round(value);
+    @Subtag.signature(p.float('number')).returns('number')
+    public round(number: number): number {
+        return Math.round(number);
     }
 }

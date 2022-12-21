@@ -152,6 +152,7 @@ export interface BBTagScriptOptions {
     readonly type: string;
     readonly author: string;
     readonly authorizer: string;
+    readonly args: string[];
 }
 
 export interface FullIterable<Item, Return, Next> {

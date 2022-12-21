@@ -1,82 +1,64 @@
-import { NumberPlugin } from '../../plugins/NumberPlugin.js';
-import type { BBTagScript } from '../../runtime/BBTagScript.js';
-import type { InterruptableProcess } from '../../runtime/InterruptableProcess.js';
+import type { BBTagPluginType } from '../../plugins/BBTagPluginType.js';
+import type { InterruptableAsyncProcess } from '../../runtime/InterruptableProcess.js';
 import { processResult } from '../../runtime/processResult.js';
-import type { SubtagParameter } from '../SubtagParameter.js';
-import OptionalParsedParameter from './parsed/OptionalParsedParameter.js';
-import ParsedArrayParameter from './parsed/ParsedArrayParameter.js';
-import ParsedParameter from './parsed/ParsedParameter.js';
-import OptionalStringParameter from './string/OptionalStringParameter.js';
-import StringArrayParameter from './string/StringArrayParameter.js';
-import StringParameter from './string/StringParameter.js';
+import type { SubtagParameterItem, SubtagParameterItemTypes } from '../SubtagParameter.js';
+import { RequiredAggregatedParameter } from './aggregators/RequiredAggregatedParameter.js';
+import { RequiredSingleParameter } from './aggregators/RequiredSingleParameter.js';
+import { BBTagPluginParameter } from './BBTagPluginParameter.js';
+import { BBTagScriptParameter } from './BBTagScriptParameter.js';
+import type { DeferredParameterItemOptions } from './items/DeferredParameterItem.js';
+import { DeferredParameterItem } from './items/DeferredParameterItem.js';
+import type { FloatParameterItemOptions } from './items/FloatParameterItem.js';
+import { FloatParameterItem } from './items/FloatParameterItem.js';
+import type { IntParameterItemOptions } from './items/IntParameterItem.js';
+import { IntParameterItem } from './items/IntParameterItem.js';
+import type { RawParameterItemOptions } from './items/RawParameterItem.js';
+import { RawParameterItem } from './items/RawParameterItem.js';
+import type { StringParameterItemOptions } from './items/StringParameterItem.js';
+import { StringParameterItem } from './items/StringParameterItem.js';
+import { SubtagNameParameter } from './SubtagNameParameter.js';
 
 export const defaultMaxSize = 1_000_000;
 
+function createDeferred(name: string, options?: Partial<DeferredParameterItemOptions<() => InterruptableAsyncProcess<string>>>): RequiredSingleParameter<() => InterruptableAsyncProcess<string>>;
+function createDeferred<R>(name: string, reader: (value: InterruptableAsyncProcess<string>) => R, options?: Partial<DeferredParameterItemOptions<() => R>>): RequiredSingleParameter<() => R>;
+function createDeferred(name: string, ...args: [reader: (value: InterruptableAsyncProcess<string>) => unknown, options?: Partial<DeferredParameterItemOptions<() => unknown>>] | [options?: Partial<DeferredParameterItemOptions<() => unknown>>]): RequiredSingleParameter<() => unknown> {
+    const [reader, options] = typeof args[0] === 'function' ? [args[0], args[1]] : [(v: unknown) => v, args[0]];
+    return new RequiredSingleParameter(new DeferredParameterItem(name, {
+        maxSize: defaultMaxSize,
+        ...options,
+        read: reader
+    }));
+}
+
+function createAggregate<Items extends readonly SubtagParameterItem[]>(...items: Items): RequiredAggregatedParameter<SubtagParameterItemTypes<Items>, SubtagParameterItemTypes<Items>>
+function createAggregate(...items: SubtagParameterItem[]): RequiredAggregatedParameter<unknown[], unknown[]> {
+    return new RequiredAggregatedParameter(items, v => processResult(v));
+}
+
 export const subtagParameter = {
-    string: Object.assign((name: string, options?: BaseOptions) => {
-        return new StringParameter(name, options?.maxSize ?? defaultMaxSize);
-    }, {
-        array(name: string, options?: BaseArrayOptions) {
-            return new StringArrayParameter(name, options?.minLength ?? 1, options?.maxLength ?? Infinity, options?.maxSize ?? defaultMaxSize);
-        },
-        optional(name: string, options?: BaseOptionalOptions) {
-            return new OptionalStringParameter<undefined>(name, options?.fallback, options?.maxSize ?? defaultMaxSize);
-        }
-    }) as SubtagParameterFactory<string, BaseOptions>,
-    number: createParsedSubtagParameterFactory(function parseAsNumber(value, script) {
-        const parser = script.process.plugins.get(NumberPlugin);
-        return processResult(parser.parseFloat(value));
-    })
+    script: new BBTagScriptParameter(),
+    name: new SubtagNameParameter(),
+    plugin: <Type extends BBTagPluginType>(type: Type) => new BBTagPluginParameter(type),
+
+    deferred: createDeferred,
+    aggregate: createAggregate,
+    raw: (name: string, options?: Partial<RawParameterItemOptions>) => new RequiredSingleParameter(new RawParameterItem(name, {
+        maxSize: defaultMaxSize,
+        ...options
+    })),
+    string: (name: string, options?: Partial<StringParameterItemOptions>) => new RequiredSingleParameter(new StringParameterItem(name, {
+        maxSize: defaultMaxSize,
+        ifEmpty: '',
+        ...options
+    })),
+    int: (name: string, options?: Partial<IntParameterItemOptions>) => new RequiredSingleParameter(new IntParameterItem(name, {
+        maxSize: defaultMaxSize,
+        radix: 10,
+        ...options
+    })),
+    float: (name: string, options?: Partial<FloatParameterItemOptions>) => new RequiredSingleParameter(new FloatParameterItem(name, {
+        maxSize: defaultMaxSize,
+        ...options
+    }))
 };
-
-function createParsedSubtagParameterFactory<T, Options extends BaseOptions>(parse: (value: string, script: BBTagScript, options?: Options) => InterruptableProcess<T>): SubtagParameterFactory<T, Options> {
-    return Object.assign((name: string, options?: Options) => {
-        return new ParsedParameter(
-            name,
-            (value, script) => parse(value, script, options),
-            options?.maxSize ?? defaultMaxSize
-        );
-    }, {
-        array(name: string, options?: Options & BaseArrayOptions) {
-            return new ParsedArrayParameter(
-                name,
-                (value, script) => parse(value, script, options),
-                options?.minLength ?? 1,
-                options?.maxLength ?? Infinity,
-                options?.maxSize ?? defaultMaxSize
-            );
-        },
-        optional(name: string, options?: Options & BaseOptionalOptions) {
-            return new OptionalParsedParameter<T, unknown>(
-                name,
-                (value, script) => parse(value, script, options),
-                options?.fallback,
-                options?.maxSize ?? defaultMaxSize
-            );
-        }
-    }) as SubtagParameterFactory<T, Options>;
-}
-
-export interface BaseOptions {
-    readonly maxSize?: number;
-}
-
-export interface BaseArrayOptions extends BaseOptions {
-    readonly minLength?: number;
-    readonly maxLength?: number;
-}
-
-export interface BaseOptionalOptions extends BaseOptions {
-    readonly fallback?: undefined;
-}
-
-export interface BaseDefaultOptions<F> extends BaseOptions {
-    readonly fallback: F;
-}
-
-export interface SubtagParameterFactory<T, Options> {
-    (name: string, options?: Options): SubtagParameter<T>;
-    array(name: string, options?: Options & BaseArrayOptions): SubtagParameter<T[]>;
-    optional(name: string, options?: Options & BaseOptionalOptions): SubtagParameter<T | undefined>;
-    optional<F>(name: string, options: Options & BaseDefaultOptions<F>): SubtagParameter<T | F>;
-}

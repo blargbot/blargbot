@@ -1,13 +1,13 @@
-import type { InterruptableSyncProcess } from '../../runtime/InterruptableProcess.js';
+import type { InterruptableProcess } from '../../runtime/InterruptableProcess.js';
 import { processResult } from '../../runtime/processResult.js';
 import type { SubtagParameter } from '../SubtagParameter.js';
 
-export class SubtagNameParameter implements SubtagParameter<string> {
+export class SubtagNameParameter implements SubtagParameter<string, readonly []> {
     public readonly minRepeat = 0;
     public readonly maxRepeat = 0;
-    public readonly values = [];
+    public readonly values = [] as const;
 
-    public getValue(name: string): InterruptableSyncProcess<string> {
+    public aggregate(name: string): InterruptableProcess<string> {
         return processResult(name);
     }
 }

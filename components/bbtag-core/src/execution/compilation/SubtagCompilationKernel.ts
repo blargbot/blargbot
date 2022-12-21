@@ -161,8 +161,16 @@ class SubtagInvokerFactory {
         const invoker = this.#invoker;
         return async function* bindAndInvoke(name, args, script) {
             const result = [];
-            for (const { parameter, start, end } of argBindings)
-                result.push(yield* parameter.getValue(name, args.slice(start, end), script));
+            for (const { parameter, start, end } of argBindings) {
+                const groups = [];
+                for (let i = start; i < end; i += parameter.values.length) {
+                    const group = [];
+                    for (let j = 0; i < parameter.values.length; j++)
+                        group.push(yield* parameter.values[j].getValue(name, args[i + j], script));
+                    groups.push(group);
+                }
+                result.push(yield* parameter.aggregate(name, groups, script));
+            }
             return yield* invoker(...result);
         };
     }
