@@ -5,5 +5,8 @@
     "type": "module",
     "exports": {
         ".": "./index.js"
+    },
+    "scripts": {
+        "index-subtags": "node ./subtags/index.template.js"
     }
 }
