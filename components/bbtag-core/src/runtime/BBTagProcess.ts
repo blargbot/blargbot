@@ -1,7 +1,7 @@
+import type { SubtagCallEvaluator } from '../execution/SubtagCallEvaluator.js';
 import type { SourceMarker } from '../language/SourceMarker.js';
 import type { BBTagPluginFactory } from '../plugins/BBTagPluginFactory.js';
 import { BBTagPluginManager } from '../plugins/BBTagPluginManager.js';
-import type { SubtagEvaluator } from '../subtags/SubtagEvaluator.js';
 import { BBTagClosure } from './BBTagClosure.js';
 import type { BBTagClosureValue } from './BBTagClosureValue.js';
 import type { BBTagScriptOptions } from './BBTagScript.js';
@@ -13,7 +13,7 @@ export class BBTagProcess extends BBTagClosure implements InterruptableAsyncProc
     public readonly next: InterruptableAsyncProcess<string>['next'];
     public readonly return: InterruptableAsyncProcess<string>['return'];
     public readonly throw: InterruptableAsyncProcess<string>['throw'];
-    public readonly evaluator: SubtagEvaluator;
+    public readonly evaluator: SubtagCallEvaluator;
     public readonly mainScript: BBTagScript;
     public readonly plugins: BBTagPluginManager;
     public readonly debug: BBTagDebugMessage[];
@@ -68,7 +68,7 @@ export interface BBTagRuntimeArgs {
     readonly signal: AbortSignal;
     readonly plugins: Iterable<BBTagPluginFactory>;
     readonly script: BBTagScriptOptions;
-    readonly evaluator: SubtagEvaluator;
+    readonly evaluator: SubtagCallEvaluator;
     readonly initialData?: Record<string, BBTagClosureValue>;
 }
 

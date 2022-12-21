@@ -1,17 +1,21 @@
+import type { SubtagCallEvaluator } from '../execution/SubtagCallEvaluator.js';
 import type { BBTagPluginFactory } from '../plugins/BBTagPluginFactory.js';
+import { DefaultBooleanPlugin } from '../plugins/BooleanPlugin.js';
 import { DefaultFallbackPlugin } from '../plugins/FallbackPlugin.js';
+import { DefaultNumberPlugin } from '../plugins/NumberPlugin.js';
 import { DefaultQuietPlugin } from '../plugins/QuietPlugin.js';
-import type { SubtagEvaluator } from '../subtags/SubtagEvaluator.js';
 import type { BBTagClosureData } from './BBTagClosureData.js';
 import { BBTagProcess } from './BBTagProcess.js';
 import type { BBTagScriptOptions } from './BBTagScript.js';
 
 export class BBTagRunner {
     readonly #plugins: ReadonlySet<BBTagPluginFactory>;
-    readonly #evaluator: SubtagEvaluator;
+    readonly #evaluator: SubtagCallEvaluator;
 
     public constructor(options: BBTagRunnerOptions) {
         this.#plugins = new Set([
+            DefaultNumberPlugin,
+            DefaultBooleanPlugin,
             DefaultQuietPlugin,
             DefaultFallbackPlugin,
             ...options.plugins
@@ -44,7 +48,7 @@ export class BBTagRunner {
 
 export interface BBTagRunnerOptions {
     readonly plugins: Iterable<BBTagPluginFactory>;
-    readonly evaluator: SubtagEvaluator;
+    readonly evaluator: SubtagCallEvaluator;
 }
 
 export interface BBTagExecuteArgs {

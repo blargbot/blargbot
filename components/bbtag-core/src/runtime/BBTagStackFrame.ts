@@ -1,4 +1,5 @@
-import type { BBTagSubtagCall, SourceMarker } from '../index.js';
+import type { BBTagSubtagCall } from '../language/BBTagSubtagCall.js';
+import type { SourceMarker } from '../language/SourceMarker.js';
 
 export class BBTagStackFrame {
     public readonly subtag: BBTagSubtagCall;

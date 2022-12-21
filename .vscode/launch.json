@@ -129,11 +129,11 @@
         {
             "name": "node: current",
             "type": "node",
+            "request": "launch",
             "console": "integratedTerminal",
             "runtimeExecutable": "yarn",
-            "program": "node",
-            "request": "launch",
             "args": [
+                "node",
                 "${fileDirname}/${fileBasenameNoExtension}.js"
             ],
             "skipFiles": [

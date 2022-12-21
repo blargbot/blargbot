@@ -1,4 +1,4 @@
-import type { BBTagProcess } from '../index.js';
+import type { BBTagProcess } from '../runtime/BBTagProcess.js';
 import { BBTagPlugin } from './BBTagPlugin.js';
 
 export abstract class QuietPlugin extends BBTagPlugin {

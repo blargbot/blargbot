@@ -110,9 +110,10 @@ export class BBTagScript extends BBTagClosure implements InterruptableAsyncProce
         this.#closures.push(new BBTagClosure());
         try {
             for (const statement of template.statements) {
-                result.push(typeof statement === 'string'
+                const value = typeof statement === 'string'
                     ? statement
-                    : yield* this.#invoke(statement));
+                    : yield* this.#invoke(statement);
+                result.push(value);
                 if (!this.#running)
                     break;
             }
