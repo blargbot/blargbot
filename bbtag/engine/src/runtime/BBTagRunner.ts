@@ -1,17 +1,14 @@
 import type { BBTagClosureData } from '../closure/BBTagClosureData.js';
-import type { BBTagPluginFactory } from '../plugin/BBTagPluginFactory.js';
 import { BBTagProcess } from './BBTagProcess.js';
 import type { BBTagScriptOptions } from './BBTagScript.js';
 import type { SubtagCallEvaluator } from './SubtagCallEvaluator.js';
 
 export class BBTagRunner {
-    readonly #plugins: ReadonlySet<BBTagPluginFactory>;
+    readonly #plugins: (process: BBTagProcess) => Iterable<object>;
     readonly #evaluator: SubtagCallEvaluator;
 
     public constructor(options: BBTagRunnerOptions) {
-        this.#plugins = new Set([
-            ...options.plugins
-        ]);
+        this.#plugins = options.plugins;
         this.#evaluator = options.evaluator;
     }
 
@@ -20,9 +17,9 @@ export class BBTagRunner {
         const process = new BBTagProcess({
             script: options.script,
             signal: options.signal,
-            plugins: [
-                ...this.#plugins,
-                ...options.plugins
+            plugins: p => [
+                ...this.#plugins(p),
+                ...options.plugins(p)
             ],
             evaluator: this.#evaluator
         });
@@ -39,13 +36,13 @@ export class BBTagRunner {
 }
 
 export interface BBTagRunnerOptions {
-    readonly plugins: Iterable<BBTagPluginFactory>;
+    readonly plugins: (process: BBTagProcess) => Iterable<object>;
     readonly evaluator: SubtagCallEvaluator;
 }
 
 export interface BBTagExecuteArgs {
     readonly signal: AbortSignal;
-    readonly plugins: Iterable<BBTagPluginFactory>;
+    readonly plugins: (process: BBTagProcess) => Iterable<object>;
     readonly script: BBTagScriptOptions;
 }
 

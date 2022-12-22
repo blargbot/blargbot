@@ -1,18 +1,12 @@
-import type { BBTagProcess } from '@bbtag/engine';
 import { BBTagPlugin, BBTagRuntimeError } from '@bbtag/engine';
 
-export abstract class ArrayPlugin extends BBTagPlugin {
+export abstract class ArrayPlugin {
     public abstract parseArray(value: string): BBTagArray;
     public abstract tryParseArray(value: string): BBTagArray | undefined;
 }
 
-@BBTagPlugin.factory(ArrayPlugin)
+@BBTagPlugin.provides(ArrayPlugin)
 export class DefaultArrayPlugin extends ArrayPlugin {
-    public static type = ArrayPlugin;
-    public static createPlugin(process: BBTagProcess): DefaultArrayPlugin {
-        return new DefaultArrayPlugin(process);
-    }
-
     public override parseArray(value: string): BBTagArray {
         const result = this.tryParseArray(value);
         if (result === undefined)

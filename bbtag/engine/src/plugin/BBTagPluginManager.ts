@@ -1,17 +1,20 @@
-import type { BBTagProcess } from '../runtime/BBTagProcess.js';
-import type { BBTagPlugin } from './BBTagPlugin.js';
-import type { BBTagPluginFactory } from './BBTagPluginFactory.js';
+import { BBTagPlugin } from './BBTagPlugin.js';
 import type { BBTagPluginInstance } from './BBTagPluginInstance.js';
 import type { BBTagPluginType } from './BBTagPluginType.js';
 
 export class BBTagPluginManager {
-    readonly #plugins: Map<BBTagPluginType, BBTagPlugin>;
+    readonly #plugins: Map<BBTagPluginType, BBTagPluginInstance<BBTagPluginType>>;
 
-    public constructor(process: BBTagProcess, plugins: Iterable<BBTagPluginFactory>) {
+    public constructor(plugins: Iterable<object>) {
         this.#plugins = new Map();
 
-        for (const plugin of plugins)
-            this.#plugins.set(plugin.type, plugin.createPlugin(process));
+        for (const plugin of plugins) {
+            const types = BBTagPlugin.getProviderTypes(plugin);
+            if (types.length === 0)
+                throw new Error(`Plugin ${String(plugin.constructor)} doesnt have any registered plugin types.`);
+            for (const type of types)
+                this.#plugins.set(type, plugin);
+        }
     }
 
     public has<Type extends BBTagPluginType>(type: Type): boolean {

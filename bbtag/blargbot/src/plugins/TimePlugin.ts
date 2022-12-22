@@ -1,16 +1,11 @@
-import type { BBTagProcess } from '@bbtag/engine';
 import { BBTagPlugin, BBTagRuntimeError } from '@bbtag/engine';
 
-export abstract class TimePlugin extends BBTagPlugin {
+export abstract class TimePlugin {
     public abstract parseTime(timestamp: string, format?: string, timezone?: string): Timestamp;
 }
 
+@BBTagPlugin.provides(TimePlugin)
 export class DefaultTimePlugin extends TimePlugin {
-    public static type = TimePlugin;
-    public static createPlugin(process: BBTagProcess): DefaultTimePlugin {
-        return new DefaultTimePlugin(process);
-    }
-
     public override parseTime(timestamp: string, format?: string, timezone?: string): Timestamp {
         // TODO: Proper implementation
         timestamp;

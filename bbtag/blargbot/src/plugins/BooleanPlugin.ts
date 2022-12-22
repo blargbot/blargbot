@@ -1,20 +1,14 @@
-import type { BBTagProcess } from '@bbtag/engine';
 import { BBTagPlugin } from '@bbtag/engine';
 
 import { NotABooleanError } from '../errors/NotABooleanError.js';
 
-export abstract class BooleanPlugin extends BBTagPlugin {
+export abstract class BooleanPlugin {
     public abstract parseBoolean(value: string, options?: BooleanPluginOptions<undefined>): boolean;
     public abstract parseBoolean<T>(value: string, options?: BooleanPluginOptions<T>): boolean | T;
 }
 
-@BBTagPlugin.factory(BooleanPlugin)
+@BBTagPlugin.provides(BooleanPlugin)
 export class DefaultBooleanPlugin extends BooleanPlugin {
-    public static type = BooleanPlugin;
-    public static createPlugin(process: BBTagProcess): DefaultBooleanPlugin {
-        return new DefaultBooleanPlugin(process);
-    }
-
     public override parseBoolean<T>(value: string, options?: BooleanPluginOptions<T>): boolean | T {
         if (options?.numbers !== false) {
             const asNumber = parseFloat(value);

@@ -1,3 +1,1 @@
-import type { BBTagPlugin } from './BBTagPlugin.js';
-
-export type BBTagPluginType<Plugin extends BBTagPlugin = BBTagPlugin> = abstract new (...args: never) => Plugin;
+export type BBTagPluginType<Plugin = unknown> = abstract new (...args: never) => Plugin;

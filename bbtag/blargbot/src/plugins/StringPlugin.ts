@@ -1,21 +1,11 @@
-import type { BBTagProcess } from '@bbtag/engine';
 import { BBTagPlugin } from '@bbtag/engine';
 
-export abstract class StringPlugin extends BBTagPlugin {
+export abstract class StringPlugin {
     public abstract toString(value: unknown): string;
 }
 
-@BBTagPlugin.factory(StringPlugin)
+@BBTagPlugin.provides(StringPlugin)
 export class DefaultStringPlugin extends StringPlugin {
-    public static type = StringPlugin;
-    public static createPlugin(process: BBTagProcess): DefaultStringPlugin {
-        return new DefaultStringPlugin(process);
-    }
-
-    public constructor(process: BBTagProcess) {
-        super(process);
-    }
-
     public override toString(value: unknown): string {
         switch (typeof value) {
             case 'string': return value;

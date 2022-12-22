@@ -3,7 +3,6 @@ import type { SourceMarker } from '@bbtag/language';
 import { BBTagClosure } from '../closure/BBTagClosure.js';
 import type { BBTagClosureValue } from '../closure/BBTagClosureValue.js';
 import type { InterruptableAsyncProcess } from '../InterruptableProcess.js';
-import type { BBTagPluginFactory } from '../plugin/BBTagPluginFactory.js';
 import { BBTagPluginManager } from '../plugin/BBTagPluginManager.js';
 import type { BBTagScriptOptions } from './BBTagScript.js';
 import { BBTagScript } from './BBTagScript.js';
@@ -43,7 +42,7 @@ export class BBTagProcess extends BBTagClosure implements InterruptableAsyncProc
         this.return = result.return.bind(result);
         this.throw = result.throw.bind(result);
 
-        this.plugins = new BBTagPluginManager(this, options.plugins);
+        this.plugins = new BBTagPluginManager(options.plugins(this));
     }
 
     public [Symbol.asyncIterator](): this {
@@ -67,7 +66,7 @@ export class BBTagProcess extends BBTagClosure implements InterruptableAsyncProc
 
 export interface BBTagRuntimeArgs {
     readonly signal: AbortSignal;
-    readonly plugins: Iterable<BBTagPluginFactory>;
+    readonly plugins: (process: BBTagProcess) => Iterable<object>;
     readonly script: BBTagScriptOptions;
     readonly evaluator: SubtagCallEvaluator;
     readonly initialData?: Record<string, BBTagClosureValue>;
