@@ -1,36 +1,31 @@
 import { Subtag } from '@bbtag/subtag';
 
-import { bbtag, SubtagType } from '../../utils/index.js';
+import { ArrayPlugin } from '../../index.js';
+import { VariablesPlugin } from '../../plugins/VariablesPlugin.js';
 import { p } from '../p.js';
 
 export class ReverseSubtag extends Subtag {
     public constructor() {
         super({
-            name: 'reverse',
-            category: SubtagType.MISC,
-            definition: [
-                {
-                    parameters: ['text'],
-                    description: tag.default.description,
-                    exampleCode: tag.default.exampleCode,
-                    exampleOut: tag.default.exampleOut,
-                    returns: 'string',
-                    execute: (ctx, [text]) => this.reverse(ctx, text.value)
-                }
-            ]
+            name: 'reverse'
         });
     }
 
-    public async reverse(context: BBTagContext, input: string): Promise<string> {
-        const arr = bbtag.tagArray.deserialize(input);
+    @Subtag.signature(
+        p.plugin(ArrayPlugin),
+        p.plugin(VariablesPlugin),
+        p.string('text')
+    ).returns('string')
+    public async reverse(array: ArrayPlugin, variables: VariablesPlugin, input: string): Promise<string> {
+        const arr = array.tryParseArray(input);
         if (arr === undefined)
             return input.split('').reverse().join('');
 
-        arr.v = arr.v.reverse();
+        const result = [...arr.v].reverse();
         if (arr.n === undefined)
-            return bbtag.tagArray.serialize(arr.v);
+            return array.serialize(result);
 
-        await context.variables.set(arr.n, arr.v);
+        await variables.set(arr.n, arr.v);
         return '';
     }
 }

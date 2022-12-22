@@ -3,6 +3,7 @@ import { processResult } from '@bbtag/engine';
 
 import { BBTagPluginParameter } from './parameter/BBTagPluginParameter.js';
 import { BBTagScriptParameter } from './parameter/BBTagScriptParameter.js';
+import { FallbackParameter } from './parameter/FallbackParameter.js';
 import { RequiredAggregatedParameter } from './parameter/RequiredAggregatedParameter.js';
 import { RequiredSingleParameter } from './parameter/RequiredSingleParameter.js';
 import { SubtagNameParameter } from './parameter/SubtagNameParameter.js';
@@ -29,6 +30,7 @@ export type SubtagParamHelper<T> = Exclude<typeof param, keyof T> & T;
 const param = {
     script: new BBTagScriptParameter(),
     name: new SubtagNameParameter(),
+    fallback: new FallbackParameter(),
     plugin: <Type extends BBTagPluginType>(type: Type) => new BBTagPluginParameter(type),
 
     deferred: createDeferred,

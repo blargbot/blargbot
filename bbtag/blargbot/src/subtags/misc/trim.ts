@@ -1,4 +1,5 @@
-import { Subtag } from '@bbtag/subtag'
+import { Subtag } from '@bbtag/subtag';
+
 import { p } from '../p.js';
 
 export class TrimSubtag extends Subtag {

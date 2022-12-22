@@ -1,9 +1,9 @@
-import { processResult } from '@bbtag/engine';
+import { processAsyncResult } from '@bbtag/engine';
 
 import type { SubtagReturnAdapter } from './SubtagReturnAdapter.js';
 
 export default {
     getResult(value) {
-        return processResult(value);
+        return processAsyncResult(value);
     }
-} satisfies SubtagReturnAdapter<string>;
+} satisfies SubtagReturnAdapter<Awaitable<string>>;

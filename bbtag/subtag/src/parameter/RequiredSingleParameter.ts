@@ -1,7 +1,8 @@
 import type { InterruptableProcess } from '@bbtag/engine';
-import { processResult } from '@bbtag/engine';
+import { BBTagRuntimeError, processResult } from '@bbtag/engine';
 
 import type { SubtagArgumentReader } from '../readers/SubtagArgumentReader.js';
+import { SubtagArgument } from '../SubtagArgument.js';
 import { OptionalSingleParameter } from './OptionalSingleParameter.js';
 import { RepeatedSingleParameter } from './RepeatedSingleParameter.js';
 import type { SubtagParameter } from './SubtagParameter.js';
@@ -39,5 +40,38 @@ export class RequiredSingleParameter<T> implements SubtagParameter<T, [T]>, Subt
             minItems = 1;
         }
         return new RepeatedSingleParameter(this.values[0], minItems, maxItems);
+    }
+
+    public fallback(): RequiredSingleParameter<T> {
+        const value = this.values[0];
+        return new RequiredSingleParameter({
+            ...value,
+            read(name, arg, script) {
+                let error;
+                try {
+                    return value.read(name, arg, script);
+                } catch (err) {
+                    error = err;
+                }
+
+                const fallback = script.currentClosure.fallback;
+                if (fallback === undefined)
+                    throw error;
+
+                if (!(error instanceof BBTagRuntimeError))
+                    throw error;
+
+                try {
+                    arg = new SubtagArgument(script, {
+                        ...arg.template,
+                        source: fallback,
+                        statements: [fallback]
+                    });
+                    return value.read(name, arg, script);
+                } catch {
+                    throw error;
+                }
+            }
+        });
     }
 }

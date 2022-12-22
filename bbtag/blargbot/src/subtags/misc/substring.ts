@@ -1,38 +1,20 @@
-import { NotANumberError } from '@bbtag/engine';
 import { Subtag } from '@bbtag/subtag';
-import { Lazy } from '@blargbot/core/Lazy.js';
-import { parse } from '@blargbot/core/utils/index.js';
 
 import { p } from '../p.js';
 
 export class SubstringSubtag extends Subtag {
     public constructor() {
         super({
-            name: 'substring',
-            category: SubtagType.MISC,
-            definition: [
-                {
-                    parameters: ['text', 'start', 'end?'],
-                    description: tag.default.description,
-                    exampleCode: tag.default.exampleCode,
-                    exampleOut: tag.default.exampleOut,
-                    returns: 'string',
-                    execute: (ctx, [text, start, end]) => this.substring(ctx, text.value, start.value, end.value)
-                }
-            ]
+            name: 'substring'
         });
     }
 
-    public substring(context: BBTagContext, text: string, startStr: string, endStr: string): string {
-        const fallback = new Lazy(() => parse.int(context.scopes.local.fallback ?? ''));
-        const start = parse.int(startStr) ?? fallback.value;
-        if (start === undefined)
-            throw new NotANumberError(startStr);
-
-        const end = endStr === '' ? text.length : parse.int(endStr) ?? fallback.value;
-        if (end === undefined)
-            throw new NotANumberError(endStr);
-
+    @Subtag.signature(
+        p.string('text'),
+        p.int('start').fallback(),
+        p.int('end').fallback().optional().ignoreEmpty()
+    ).returns('string')
+    public substring(text: string, start: number, end = text.length): string {
         return text.substring(start, end);
     }
 }
