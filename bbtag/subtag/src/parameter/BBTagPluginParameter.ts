@@ -7,7 +7,7 @@ export class BBTagPluginParameter<Type extends BBTagPluginType> implements Subta
     readonly #type: Type;
     public readonly minRepeat = 0;
     public readonly maxRepeat = 0;
-    public readonly values = [] as const;
+    public readonly readers = [] as const;
 
     public constructor(type: Type) {
         this.#type = type;

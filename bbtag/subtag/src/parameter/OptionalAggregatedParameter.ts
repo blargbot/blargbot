@@ -10,12 +10,12 @@ export class OptionalAggregatedParameter<T, R, Items extends readonly unknown[]>
 
     public readonly minRepeat = 0;
     public readonly maxRepeat = 1;
-    public readonly values: SubtagParameter<T, Items>['values'];
+    public readonly readers: SubtagParameter<T, Items>['readers'];
 
-    public constructor(values: SubtagParameter<T, Items>['values'], aggregate: (values: Items, script: BBTagScript) => InterruptableProcess<T>, fallback: R) {
+    public constructor(readers: SubtagParameter<T, Items>['readers'], aggregate: (values: Items, script: BBTagScript) => InterruptableProcess<T>, fallback: R) {
         this.#aggregate = aggregate;
         this.#fallback = fallback;
-        this.values = values;
+        this.readers = readers;
     }
 
     public aggregate(_name: string, values: Items[], script: BBTagScript): InterruptableProcess<T | R> {
@@ -25,10 +25,10 @@ export class OptionalAggregatedParameter<T, R, Items extends readonly unknown[]>
     }
 
     public required(): RequiredAggregatedParameter<T, Items> {
-        return new RequiredAggregatedParameter(this.values, this.#aggregate);
+        return new RequiredAggregatedParameter(this.readers, this.#aggregate);
     }
 
     public use<T>(aggregate: (values: Items, script: BBTagScript) => InterruptableProcess<T>): OptionalAggregatedParameter<T, R, Items> {
-        return new OptionalAggregatedParameter(this.values, aggregate, this.#fallback);
+        return new OptionalAggregatedParameter(this.readers, aggregate, this.#fallback);
     }
 }

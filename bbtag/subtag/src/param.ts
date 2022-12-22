@@ -3,6 +3,7 @@ import { processResult } from '@bbtag/engine';
 
 import { BBTagPluginParameter } from './parameter/BBTagPluginParameter.js';
 import { BBTagScriptParameter } from './parameter/BBTagScriptParameter.js';
+import { ConstParameter } from './parameter/ConstParameter.js';
 import { FallbackParameter } from './parameter/FallbackParameter.js';
 import { RequiredAggregatedParameter } from './parameter/RequiredAggregatedParameter.js';
 import { RequiredSingleParameter } from './parameter/RequiredSingleParameter.js';
@@ -35,6 +36,7 @@ const param = {
 
     deferred: createDeferred,
     group: createGroup,
+    const: <T>(value: T) => new ConstParameter(value),
     raw: (name: string, options?: Partial<RawParameterItemOptions>) => new RequiredSingleParameter(new RawArgumentReader(name, {
         maxSize: defaultMaxSize,
         ...options

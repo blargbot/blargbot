@@ -8,11 +8,11 @@ export class RepeatedFlatParameter<T, Items extends readonly unknown[]> implemen
 
     public readonly minRepeat: number;
     public readonly maxRepeat: number;
-    public readonly values: SubtagParameter<T, Items>['values'];
+    public readonly readers: SubtagParameter<T, Items>['readers'];
 
-    public constructor(values: SubtagParameter<T, Items>['values'], flatten: (values: Items[], script: BBTagScript) => InterruptableProcess<T>, minItems: number, maxItems: number) {
+    public constructor(readers: SubtagParameter<T, Items>['readers'], flatten: (values: Items[], script: BBTagScript) => InterruptableProcess<T>, minItems: number, maxItems: number) {
         this.#flatten = flatten;
-        this.values = values;
+        this.readers = readers;
         this.maxRepeat = maxItems;
         this.minRepeat = minItems;
     }
@@ -22,10 +22,10 @@ export class RepeatedFlatParameter<T, Items extends readonly unknown[]> implemen
     }
 
     public use<T>(flatten: (values: Items[], script: BBTagScript) => InterruptableProcess<T>): RepeatedFlatParameter<T, Items> {
-        return new RepeatedFlatParameter(this.values, flatten, this.minRepeat, this.maxRepeat);
+        return new RepeatedFlatParameter(this.readers, flatten, this.minRepeat, this.maxRepeat);
     }
 
     public map<T>(flatten: (values: Items[], script: BBTagScript) => T): RepeatedFlatParameter<T, Items> {
-        return new RepeatedFlatParameter<T, Items>(this.values, (v, s) => processResult(flatten(v, s)), this.minRepeat, this.maxRepeat);
+        return new RepeatedFlatParameter<T, Items>(this.readers, (v, s) => processResult(flatten(v, s)), this.minRepeat, this.maxRepeat);
     }
 }

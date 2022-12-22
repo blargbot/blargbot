@@ -7,7 +7,7 @@ export class BBTagScriptGetterParameter<T> implements SubtagParameter<T, readonl
 
     public readonly minRepeat = 0;
     public readonly maxRepeat = 0;
-    public readonly values = [] as const;
+    public readonly readers = [] as const;
 
     public constructor(getter: (script: BBTagScript) => InterruptableProcess<T>) {
         this.#getter = getter;

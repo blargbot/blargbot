@@ -1,46 +1,34 @@
 import { Subtag } from '@bbtag/subtag';
-import { randChoose } from '@blargbot/core/utils/index.js';
 
-import type { SubtagArgument } from '../../arguments/index.js';
-import { bbtag, SubtagType } from '../../utils/index.js';
+import type { BBTagArrayRef } from '../../index.js';
+import SubtagVariableResult from '../../results/SubtagVariableResult.js';
 import { p } from '../p.js';
 
 export class RandomChooseSubtag extends Subtag {
     public constructor() {
         super({
             name: 'randomChoose',
-            aliases: ['randChoose'],
-            category: SubtagType.MISC,
-            definition: [
-                {
-                    parameters: ['choiceArray'],
-                    description: tag.array.description,
-                    exampleCode: tag.array.exampleCode,
-                    exampleOut: tag.array.exampleOut,
-                    returns: 'json',
-                    execute: (ctx, [choice]) => this.randChoose(ctx, choice.value)
-                },
-                {
-                    parameters: ['~choices+2'],
-                    description: tag.args.description,
-                    exampleCode: tag.args.exampleCode,
-                    exampleOut: tag.args.exampleOut,
-                    returns: 'string',
-                    execute: (_, choices) => this.randChooseArg(choices)
-                }
-            ]
+            aliases: ['randChoose']
         });
     }
 
-    public async randChooseArg(choices: readonly SubtagArgument[]): Promise<string> {
-        return await randChoose(choices).wait();
+    @Subtag.signature({ id: 'args', returns: 'transparent' })
+        .parameter(p.deferred('choices').repeat(2, Infinity))
+    public randChooseArg<T>(choices: Array<() => T>): T {
+        const index = Math.floor(Math.random() * choices.length);
+        return choices[index]();
     }
 
-    public async randChoose(context: BBTagContext, arrayStr: string): Promise<JToken> {
-        const choices = await bbtag.tagArray.deserializeOrGetArray(context, arrayStr);
-        if (choices === undefined)
-            return arrayStr;
+    @Subtag.signature({ id: 'array', returns: SubtagVariableResult })
+        .parameter(p.array('choices'))
+    public randChoose({ v: choices }: BBTagArrayRef): JToken {
+        const index = Math.floor(Math.random() * choices.length);
+        return choices[index];
+    }
 
-        return randChoose(choices.v);
+    @Subtag.signature({ id: 'single', returns: 'string' })
+        .parameter(p.string('choices'))
+    public randChooseSingle(value: string): string {
+        return value;
     }
 }

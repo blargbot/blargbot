@@ -1,30 +1,30 @@
 import type { BBTagScript, InterruptableProcess, SubtagCallEvaluator } from '@bbtag/engine';
-import { NotEnoughArgumentsError, TooManyArgumentsError, UnknownSubtagError } from '@bbtag/engine';
+import { BBTagRuntimeError, NotEnoughArgumentsError, TooManyArgumentsError, UnknownSubtagError } from '@bbtag/engine';
 
 import type { SubtagParameter } from '../parameter/SubtagParameter.js';
 import { SubtagArgument } from '../SubtagArgument.js';
 import type { SubtagCompilationItem } from './SubtagCompilationItem.js';
 
 export class SubtagCompilationKernel {
-    readonly #nameMap: Map<string, SubtagCompilationBinderCollection>;
+    readonly #nameMap: Map<string, SubtagBinderAggregator>;
 
     public constructor() {
         this.#nameMap = new Map();
     }
 
     public add(item: SubtagCompilationItem): void {
-        const factory = new SubtagInvokerFactory(item);
+        const factory = new SubtagBinderFactory(item);
         for (const name of item.names) {
             const lname = name.toLowerCase();
-            let invokers = this.#nameMap.get(lname);
-            if (invokers === undefined)
-                this.#nameMap.set(lname, invokers = new SubtagCompilationBinderCollection(lname));
-            invokers.add(factory);
+            let binders = this.#nameMap.get(lname);
+            if (binders === undefined)
+                this.#nameMap.set(lname, binders = new SubtagBinderAggregator());
+            binders.add(factory);
         }
     }
 
     public compile(): SubtagCallEvaluator['execute'] {
-        const nameMap = new Map([...this.#nameMap].map(([name, binders]) => [name, binders.compile()] as const));
+        const binderMap = new Map([...this.#nameMap].map(([name, binders]) => [name, binders.compile()] as const));
         function* namesFor(name: string): Generator<string> {
             name = name.toLowerCase();
             yield name;
@@ -33,10 +33,13 @@ export class SubtagCompilationKernel {
                 yield `${name.slice(0, dotIndex)}.*`;
         }
         return async function* (name, call, script) {
+            const args = call.args.map((t, i) => new SubtagArgument(script, i, t));
             for (const n of namesFor(name)) {
-                const invoker = nameMap.get(n);
-                if (invoker !== undefined)
-                    return yield* invoker(name, call.args.map((a, i) => new SubtagArgument(script, i, a)), script);
+                const binder = binderMap.get(n);
+                if (binder !== undefined) {
+                    const details = yield* binder(name, args, script);
+                    return yield* details.implementation(script, ...details.args);
+                }
             }
 
             throw new UnknownSubtagError(name);
@@ -44,20 +47,18 @@ export class SubtagCompilationKernel {
     }
 }
 
-class SubtagCompilationBinderCollection {
-    readonly #factories: SubtagInvokerFactory[];
-    readonly #name: string;
+class SubtagBinderAggregator {
+    readonly #factories: SubtagBinderFactory[];
     #minArgs: number;
     #maxArgs: number;
 
-    public constructor(name: string) {
-        this.#name = name;
+    public constructor() {
         this.#factories = [];
         this.#minArgs = Infinity;
         this.#maxArgs = -Infinity;
     }
 
-    public add(factory: SubtagInvokerFactory): void {
+    public add(factory: SubtagBinderFactory): void {
         this.#factories.push(factory);
         if (this.#minArgs > factory.minArgs)
             this.#minArgs = factory.minArgs;
@@ -65,88 +66,100 @@ class SubtagCompilationBinderCollection {
             this.#maxArgs = factory.maxArgs;
     }
 
-    public compile(): SubtagArgumentInvoker {
-        const lookup = new Map<number, SubtagArgumentInvoker>();
-        const tests = [] as Array<(argCount: number) => SubtagArgumentInvoker | undefined>;
-        const name = this.#name;
+    public compile(): SubtagArgumentBinder {
+        const lookup = new Map<number, SubtagArgumentBinder[]>();
+        const tests = [] as Array<(argCount: number) => SubtagArgumentBinder | undefined>;
         const minArgs = this.#minArgs;
         const maxArgs = this.#maxArgs;
         for (const factory of this.#factories) {
-            const invokers = factory.createInvokers();
-            if (typeof invokers === 'function')
-                tests.push(invokers);
-            else for (const { argCount, invoker } of invokers) {
-                if (lookup.has(argCount))
-                    throw new Error(`Multiple bindings for name ${name} with arg count ${argCount}`);
-                lookup.set(argCount, invoker);
+            const binders = factory.createBinders();
+            if (typeof binders === 'function')
+                tests.push(binders);
+            else for (const { argCount, binder } of binders) {
+                let binders = lookup.get(argCount);
+                if (binders === undefined)
+                    lookup.set(argCount, binders = []);
+                binders.push(binder);
             }
         }
 
-        return async function* findAndInvoke(name, args, script) {
-            const invoker = lookup.get(args.length);
-            if (invoker !== undefined)
-                return yield* invoker(name, args, script);
+        function findBinders(argCount: number): SubtagArgumentBinder[] {
+            let binders = lookup.get(argCount);
+            if (binders === undefined)
+                lookup.set(argCount, binders = tests.map(t => t(argCount)).filter(hasValue));
+            return binders;
+        }
 
-            const tested = tests
-                .map(t => t(args.length))
-                .filter((v): v is Exclude<typeof v, undefined> => v !== undefined);
-            if (tested.length === 1)
-                return yield* tested[0](name, args, script);
-
-            if (tested.length > 1)
-                throw new Error(`Multiple bindings for name ${name} with arg count ${args.length}`);
+        return async function* findAndBindImplementation(name, args, script) {
             if (args.length < minArgs)
                 throw new NotEnoughArgumentsError(minArgs, args.length);
-            else if (args.length > maxArgs)
+            if (args.length > maxArgs)
                 throw new TooManyArgumentsError(maxArgs, args.length);
+
+            let firstError: BBTagRuntimeError | undefined;
+            for (const binder of findBinders(args.length)) {
+                try {
+                    return yield* binder(name, args, script);
+                } catch (err) {
+                    if (!(err instanceof BBTagRuntimeError))
+                        throw err;
+                    firstError ??= err;
+                }
+            }
+            if (firstError !== undefined)
+                throw firstError;
             throw new Error(`No binding available to handle ${name} with ${args.length} arguments`);
         };
     }
 }
 
-class SubtagInvokerFactory {
-    readonly #invoker: SubtagCompilationItem['implementation'];
+function hasValue<T>(value: T): value is NonNullable<T> {
+    return value !== null && value !== undefined;
+}
+
+class SubtagBinderFactory {
+    readonly #implementation: SubtagCompilationItem['implementation'];
     readonly #parameters: SubtagCompilationItem['parameters'];
     public readonly minArgs: number;
     public readonly maxArgs: number;
 
     public constructor(item: SubtagCompilationItem) {
-        this.#invoker = item.implementation;
+        this.#implementation = item.implementation;
         this.#parameters = item.parameters;
         let min = 0;
         let max = 0;
 
         for (const parameter of this.#parameters) {
-            min += parameter.minRepeat * parameter.values.length;
-            max += parameter.maxRepeat * parameter.values.length;
+            min += parameter.minRepeat * parameter.readers.length;
+            max += parameter.maxRepeat * parameter.readers.length;
         }
 
         this.minArgs = min;
         this.maxArgs = max;
     }
 
-    public createInvokers(): Array<{ argCount: number; invoker: SubtagArgumentInvoker; }> | ((argCount: number) => SubtagArgumentInvoker | undefined) {
+    public createBinders(): Array<{ argCount: number; binder: SubtagArgumentBinder; }> | ((argCount: number) => SubtagArgumentBinder | undefined) {
         if (Number.isFinite(this.minArgs) && Number.isFinite(this.maxArgs))
-            return [...this.#createStaticInvokers()];
+            return [...this.#createStaticBinders()];
 
-        return this.#createInvoker.bind(this);
+        return this.#createBinder.bind(this);
     }
 
-    * #createStaticInvokers(): Generator<{ argCount: number; invoker: SubtagArgumentInvoker; }> {
+    * #createStaticBinders(): Generator<{ argCount: number; binder: SubtagArgumentBinder; }> {
         for (let argCount = this.minArgs; argCount <= this.maxArgs; argCount++) {
-            const invoker = this.#createInvoker(argCount);
-            if (invoker !== undefined)
-                yield { argCount, invoker };
+            const binder = this.#createBinder(argCount);
+            if (binder !== undefined)
+                yield { argCount, binder };
         }
     }
 
-    #createInvoker(argCount: number): SubtagArgumentInvoker | undefined {
+    #createBinder(argCount: number): SubtagArgumentBinder | undefined {
         const argBindings: Array<{ parameter: SubtagParameter; start: number; end: number; }> = [];
         let start = 0;
         let allowed = argCount - this.minArgs;
         for (const parameter of this.#parameters) {
-            allowed += parameter.minRepeat * parameter.values.length;
-            const consume = allowed - allowed % parameter.values.length;
+            allowed += parameter.minRepeat * parameter.readers.length;
+            const consume = allowed - allowed % parameter.readers.length;
             argBindings.push({ parameter, start, end: start + consume });
             allowed -= consume;
             start += consume;
@@ -155,22 +168,30 @@ class SubtagInvokerFactory {
         if (start !== argCount)
             return undefined;
 
-        const invoker = this.#invoker;
-        return async function* bindAndInvoke(name, args, script) {
-            const result = [];
+        const implementation = this.#implementation;
+        return async function* bindImplementation(name, args, script) {
+            const result: unknown[] = [];
             for (const { parameter, start, end } of argBindings) {
                 const groups = [];
-                for (let i = start; i < end; i += parameter.values.length) {
+                for (let i = start; i < end; i += parameter.readers.length) {
                     const group = [];
-                    for (let j = 0; i < parameter.values.length; j++)
-                        group.push(yield* parameter.values[j].read(name, args[i + j], script));
+                    for (let j = 0; i < parameter.readers.length; j++)
+                        group.push(yield* parameter.readers[j].read(name, args[i + j], script));
                     groups.push(group);
                 }
                 result.push(yield* parameter.aggregate(name, groups, script));
             }
-            return yield* invoker(...result);
+
+            return {
+                implementation,
+                args: result
+            };
         };
     }
 }
 
-type SubtagArgumentInvoker = (name: string, values: SubtagArgument[], script: BBTagScript) => InterruptableProcess<string>;
+type SubtagArgumentBinder = (name: string, values: SubtagArgument[], script: BBTagScript) => InterruptableProcess<InvokerBindingDetails>;
+interface InvokerBindingDetails {
+    readonly implementation: SubtagCompilationItem['implementation'];
+    readonly args: readonly unknown[];
+}

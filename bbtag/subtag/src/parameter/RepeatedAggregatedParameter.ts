@@ -9,11 +9,11 @@ export class RepeatedAggregatedParameter<T, Items extends readonly unknown[]> im
 
     public readonly minRepeat: number;
     public readonly maxRepeat: number;
-    public readonly values: SubtagParameter<T[], Items>['values'];
+    public readonly readers: SubtagParameter<T[], Items>['readers'];
 
-    public constructor(values: SubtagParameter<T[], Items>['values'], aggregate: (values: Items, script: BBTagScript) => InterruptableProcess<T>, minItems = 0, maxItems = Infinity) {
+    public constructor(readers: SubtagParameter<T[], Items>['readers'], aggregate: (values: Items, script: BBTagScript) => InterruptableProcess<T>, minItems = 0, maxItems = Infinity) {
         this.#aggregate = aggregate;
-        this.values = values;
+        this.readers = readers;
         this.maxRepeat = maxItems;
         this.minRepeat = minItems;
     }
@@ -26,18 +26,18 @@ export class RepeatedAggregatedParameter<T, Items extends readonly unknown[]> im
     }
 
     public flatUse<T>(flatten: (values: Items[], script: BBTagScript) => InterruptableProcess<T>): RepeatedFlatParameter<T, Items> {
-        return new RepeatedFlatParameter(this.values, flatten, this.minRepeat, this.maxRepeat);
+        return new RepeatedFlatParameter(this.readers, flatten, this.minRepeat, this.maxRepeat);
     }
 
     public flatMap<T>(flatten: (values: Items[], script: BBTagScript) => T): RepeatedFlatParameter<T, Items> {
-        return new RepeatedFlatParameter<T, Items>(this.values, (v, s) => processResult(flatten(v, s)), this.minRepeat, this.maxRepeat);
+        return new RepeatedFlatParameter<T, Items>(this.readers, (v, s) => processResult(flatten(v, s)), this.minRepeat, this.maxRepeat);
     }
 
     public use<T>(aggregate: (values: Items, script: BBTagScript) => InterruptableProcess<T>): RepeatedAggregatedParameter<T, Items> {
-        return new RepeatedAggregatedParameter(this.values, aggregate, this.minRepeat, this.maxRepeat);
+        return new RepeatedAggregatedParameter(this.readers, aggregate, this.minRepeat, this.maxRepeat);
     }
 
     public map<T>(aggregate: (values: Items, script: BBTagScript) => T): RepeatedAggregatedParameter<T, Items> {
-        return new RepeatedAggregatedParameter<T, Items>(this.values, (v, s) => processResult(aggregate(v, s)));
+        return new RepeatedAggregatedParameter<T, Items>(this.readers, (v, s) => processResult(aggregate(v, s)));
     }
 }

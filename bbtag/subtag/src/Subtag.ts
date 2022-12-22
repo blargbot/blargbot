@@ -1,27 +1,27 @@
 import type { SubtagCompilationItem } from './compiler/SubtagCompilationItem.js';
 import type { SubtagParameter } from './parameter/SubtagParameter.js';
-import BooleanReturnAdapter from './returns/BooleanReturnAdapter.js';
-import NumberReturnAdapter from './returns/NumberReturnAdapter.js';
-import StringArrayReturnAdapter from './returns/StringArrayReturnAdapter.js';
-import StringReturnAdapter from './returns/StringReturnAdapter.js';
-import type { SubtagReturnAdapter, SubtagReturnAdapterType } from './returns/SubtagReturnAdapter.js';
-import TransparentReturnAdapter from './returns/TransparentReturnAdapter.js';
-import VoidReturnAdapter from './returns/VoidReturnAdapter.js';
+import StringArrayReturnAdapter from './results/SubtagArrayResult.js';
+import BooleanReturnAdapter from './results/SubtagBooleanResult.js';
+import VoidReturnAdapter from './results/SubtagEmptyResult.js';
+import NumberReturnAdapter from './results/SubtagNumberResult.js';
+import type { SubtagResult, SubtagResultType } from './results/SubtagResult.js';
+import StringReturnAdapter from './results/SubtagStringResult.js';
+import TransparentReturnAdapter from './results/SubtagTransparentResult.js';
 
 export abstract class Subtag implements Iterable<SubtagCompilationItem> {
     static readonly #signatures = new Map<unknown, Array<(subtag: Subtag) => SubtagCompilationItem>>();
     readonly #options: SubtagOptions;
 
-    public static signature<Result>(options: SubtagSignatureDecoratorOptions<SubtagReturnAdapter<Result>>): SubtagSignatureDecorator<[], Result>;
-    public static signature<Result extends keyof typeof wellKnownReturnAdapters>(options: SubtagSignatureDecoratorOptions<Result>): SubtagSignatureDecorator<[], SubtagReturnAdapterType<typeof wellKnownReturnAdapters[Result]>>;
-    public static signature(options: SubtagSignatureDecoratorOptions<SubtagReturnAdapter | keyof typeof wellKnownReturnAdapters>): SubtagSignatureDecorator<[], unknown> {
+    public static signature<Result>(options: SubtagSignatureDecoratorOptions<SubtagResult<Result>>): SubtagSignatureDecorator<[], Result>;
+    public static signature<Result extends keyof typeof wellKnownReturnAdapters>(options: SubtagSignatureDecoratorOptions<Result>): SubtagSignatureDecorator<[], SubtagResultType<typeof wellKnownReturnAdapters[Result]>>;
+    public static signature(options: SubtagSignatureDecoratorOptions<SubtagResult | keyof typeof wellKnownReturnAdapters>): SubtagSignatureDecorator<[], unknown> {
         const adapter = typeof options.returns === 'string' ? wellKnownReturnAdapters[options.returns] : options.returns;
         return this.#createSignatureDecorator([], { ...options, returns: adapter });
     }
 
     static #createSignatureDecorator<Parameters extends readonly unknown[], ReturnType>(
         parameters: { [P in keyof Parameters]: SubtagParameter<Parameters[P]> },
-        options: SubtagSignatureDecoratorOptions<SubtagReturnAdapter<ReturnType>>
+        options: SubtagSignatureDecoratorOptions<SubtagResult<ReturnType>>
     ): SubtagSignatureDecorator<Parameters, ReturnType> {
         return Object.assign<
             SubtagSignatureDecoratorFn<Parameters, ReturnType>,
@@ -33,11 +33,12 @@ export abstract class Subtag implements Iterable<SubtagCompilationItem> {
 
             signatures.push(self => ({
                 id: `${self.#options.name}.${options.id}`,
-                implementation: function (...args) {
-                    return options.returns.getResult((self as typeof target)[methodName](...args as Parameters));
-                },
                 names: options.subtagName ?? [self.#options.name, ...self.#options.aliases ?? []],
-                parameters: parameters
+                parameters: parameters,
+                implementation(script, ...args) {
+                    const result = (self as typeof target)[methodName](...args as Parameters);
+                    return options.returns.execute(result, script);
+                }
             }));
         }, {
             parameter: p => this.#createSignatureDecorator([...parameters, p], options)
@@ -61,7 +62,7 @@ const wellKnownReturnAdapters = {
     boolean: BooleanReturnAdapter,
     void: VoidReturnAdapter,
     'string[]': StringArrayReturnAdapter
-} satisfies Record<string, SubtagReturnAdapter<unknown>>;
+} satisfies Record<string, SubtagResult>;
 
 export interface SubtagOptions {
     readonly name: string;

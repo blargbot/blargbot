@@ -9,11 +9,11 @@ export class RequiredAggregatedParameter<T, Items extends readonly unknown[]> im
 
     public readonly minRepeat = 1;
     public readonly maxRepeat = 1;
-    public readonly values: SubtagParameter<T, Items>['values'];
+    public readonly readers: SubtagParameter<T, Items>['readers'];
 
-    public constructor(values: SubtagParameter<T, Items>['values'], aggregate: (values: Items, script: BBTagScript) => InterruptableProcess<T>) {
+    public constructor(readers: SubtagParameter<T, Items>['readers'], aggregate: (values: Items, script: BBTagScript) => InterruptableProcess<T>) {
         this.#aggregate = aggregate;
-        this.values = values;
+        this.readers = readers;
     }
 
     public aggregate(_name: string, values: Items[], script: BBTagScript): InterruptableProcess<T> {
@@ -23,7 +23,7 @@ export class RequiredAggregatedParameter<T, Items extends readonly unknown[]> im
     public optional<R>(fallback: R): OptionalAggregatedParameter<T, R, Items>
     public optional<R>(fallback?: R): OptionalAggregatedParameter<T, R | undefined, Items>
     public optional<R>(fallback?: R): OptionalAggregatedParameter<T, R | undefined, Items> {
-        return new OptionalAggregatedParameter(this.values, this.#aggregate, fallback);
+        return new OptionalAggregatedParameter(this.readers, this.#aggregate, fallback);
     }
 
     public repeat(maxItems?: number): RepeatedAggregatedParameter<T, Items>
@@ -33,10 +33,10 @@ export class RequiredAggregatedParameter<T, Items extends readonly unknown[]> im
             maxItems = minItems ?? Infinity;
             minItems = 1;
         }
-        return new RepeatedAggregatedParameter(this.values, this.#aggregate, minItems, maxItems);
+        return new RepeatedAggregatedParameter(this.readers, this.#aggregate, minItems, maxItems);
     }
 
     public use<T>(aggregate: (values: Items, script: BBTagScript) => InterruptableProcess<T>): RequiredAggregatedParameter<T, Items> {
-        return new RequiredAggregatedParameter(this.values, aggregate);
+        return new RequiredAggregatedParameter(this.readers, aggregate);
     }
 }

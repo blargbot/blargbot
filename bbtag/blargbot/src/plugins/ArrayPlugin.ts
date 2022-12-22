@@ -35,5 +35,5 @@ export class DefaultArrayPlugin extends ArrayPlugin {
 
 export interface BBTagArrayRef {
     readonly n?: string;
-    readonly v: readonly BBTagVariableValue[];
+    readonly v: BBTagVariableValue[];
 }

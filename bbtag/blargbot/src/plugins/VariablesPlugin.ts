@@ -6,4 +6,4 @@ export abstract class VariablesPlugin {
     public abstract rollback(names?: Iterable<string>): Promise<void>;
 }
 
-export type BBTagVariableValue = string | number | boolean | null | { [P: string]: BBTagVariableValue; } | BBTagVariableValue[] | readonly BBTagVariableValue[];
+export type BBTagVariableValue = string | number | boolean | null | { [P: string]: BBTagVariableValue; } | BBTagVariableValue[];

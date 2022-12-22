@@ -11,7 +11,7 @@ export class SpaceSubtag extends Subtag {
     }
 
     @Subtag.signature({ id: 'default', returns: 'string' })
-        .parameter(p.int('count').fallback().optional(1).ignoreEmpty())
+        .parameter(p.int('count').tryFallback().optional(1))
     public getSpaces(count: number): string {
         // TODO: limit count
         return ' '.repeat(count);

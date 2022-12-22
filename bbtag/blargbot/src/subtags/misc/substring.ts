@@ -11,8 +11,8 @@ export class SubstringSubtag extends Subtag {
 
     @Subtag.signature({ id: 'default', returns: 'string' })
         .parameter(p.string('text'))
-        .parameter(p.int('start').fallback())
-        .parameter(p.int('end').fallback().optional().ignoreEmpty())
+        .parameter(p.int('start').tryFallback())
+        .parameter(p.int('end').tryFallback().optional())
     public substring(text: string, start: number, end = text.length): string {
         return text.substring(start, end);
     }

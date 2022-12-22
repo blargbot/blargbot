@@ -1,6 +1,5 @@
-import { BBTagRuntimeError, NotANumberError } from '@bbtag/engine';
+import { BBTagRuntimeError } from '@bbtag/engine';
 import { Subtag } from '@bbtag/subtag';
-import { parse } from '@blargbot/core/utils/index.js';
 
 import { p } from '../p.js';
 
@@ -8,31 +7,17 @@ export class RandomStringSubtag extends Subtag {
     public constructor() {
         super({
             name: 'randomString',
-            aliases: ['randStr', 'randString'],
-            category: SubtagType.MISC,
-            definition: [
-                {
-                    parameters: ['chars', 'length'],
-                    description: tag.default.description,
-                    exampleCode: tag.default.exampleCode,
-                    exampleOut: tag.default.exampleOut,
-                    returns: 'string',
-                    execute: (ctx, [chars, count]) => this.randStr(ctx, chars.value, count.value)
-                }
-            ]
+            aliases: ['randStr', 'randString']
         });
     }
 
+    @Subtag.signature({ id: 'default', returns: 'string' })
+        .parameter(p.string('chars'))
+        .parameter(p.int('count').tryFallback())
     public randStr(
-        context: BBTagContext,
-        charsStr: string,
-        countStr: string
+        chars: string,
+        count: number
     ): string {
-        const chars = charsStr.split('');
-        const count = parse.int(countStr) ?? parse.int(context.scopes.local.fallback ?? '');
-        if (count === undefined)
-            throw new NotANumberError(countStr);
-
         if (chars.length === 0)
             throw new BBTagRuntimeError('Not enough characters');
 
