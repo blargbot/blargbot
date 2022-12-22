@@ -1,0 +1,17 @@
+{
+    "name": "@bbtag/blargbot",
+    "version": "1.0.0",
+    "private": true,
+    "type": "module",
+    "exports": {
+        ".": "./index.js"
+    },
+    "dependencies": {
+        "@bbtag/engine": "workspace:^",
+        "@bbtag/subtag": "workspace:^",
+        "@bbtag/language": "workspace:^"
+    },
+    "scripts": {
+        "index-subtags": "node ./subtags/index.template.js"
+    }
+}

@@ -16,12 +16,24 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:."\
       },\
       {\
-        "name": "@blargbot/application",\
-        "reference": "workspace:components/application/src"\
+        "name": "@bbtag/blargbot",\
+        "reference": "workspace:bbtag/blargbot/src"\
       },\
       {\
-        "name": "@bbtag/core",\
-        "reference": "workspace:components/bbtag-core/src"\
+        "name": "@bbtag/engine",\
+        "reference": "workspace:bbtag/engine/src"\
+      },\
+      {\
+        "name": "@bbtag/language",\
+        "reference": "workspace:bbtag/language/src"\
+      },\
+      {\
+        "name": "@bbtag/subtag",\
+        "reference": "workspace:bbtag/subtag/src"\
+      },\
+      {\
+        "name": "@blargbot/application",\
+        "reference": "workspace:components/application/src"\
       },\
       {\
         "name": "@blargbot/bbtag",\
@@ -155,7 +167,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
     "enableTopLevelFallback": true,\
     "ignorePatternData": "(^(?:\\\\.yarn\\\\/sdks(?:\\\\/(?!\\\\.{1,2}(?:\\\\/|$))(?:(?:(?!(?:^|\\\\/)\\\\.{1,2}(?:\\\\/|$)).)*?)|$))$)",\
     "fallbackExclusionList": [\
-      ["@bbtag/core", ["workspace:components/bbtag-core/src"]],\
+      ["@bbtag/blargbot", ["workspace:bbtag/blargbot/src"]],\
+      ["@bbtag/engine", ["workspace:bbtag/engine/src"]],\
+      ["@bbtag/language", ["workspace:bbtag/language/src"]],\
+      ["@bbtag/subtag", ["workspace:bbtag/subtag/src"]],\
       ["@blargbot/api", ["workspace:services/api/src"]],\
       ["@blargbot/application", ["workspace:components/application/src"]],\
       ["@blargbot/bbtag", ["workspace:components/bbtag/src"]],\
@@ -265,11 +280,44 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
-      ["@bbtag/core", [\
-        ["workspace:components/bbtag-core/src", {\
-          "packageLocation": "./components/bbtag-core/src/",\
+      ["@bbtag/blargbot", [\
+        ["workspace:bbtag/blargbot/src", {\
+          "packageLocation": "./bbtag/blargbot/src/",\
           "packageDependencies": [\
-            ["@bbtag/core", "workspace:components/bbtag-core/src"]\
+            ["@bbtag/blargbot", "workspace:bbtag/blargbot/src"],\
+            ["@bbtag/engine", "workspace:bbtag/engine/src"],\
+            ["@bbtag/language", "workspace:bbtag/language/src"],\
+            ["@bbtag/subtag", "workspace:bbtag/subtag/src"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
+      ["@bbtag/engine", [\
+        ["workspace:bbtag/engine/src", {\
+          "packageLocation": "./bbtag/engine/src/",\
+          "packageDependencies": [\
+            ["@bbtag/engine", "workspace:bbtag/engine/src"],\
+            ["@bbtag/language", "workspace:bbtag/language/src"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
+      ["@bbtag/language", [\
+        ["workspace:bbtag/language/src", {\
+          "packageLocation": "./bbtag/language/src/",\
+          "packageDependencies": [\
+            ["@bbtag/language", "workspace:bbtag/language/src"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
+      ["@bbtag/subtag", [\
+        ["workspace:bbtag/subtag/src", {\
+          "packageLocation": "./bbtag/subtag/src/",\
+          "packageDependencies": [\
+            ["@bbtag/subtag", "workspace:bbtag/subtag/src"],\
+            ["@bbtag/engine", "workspace:bbtag/engine/src"],\
+            ["@bbtag/language", "workspace:bbtag/language/src"]\
           ],\
           "linkType": "SOFT"\
         }]\

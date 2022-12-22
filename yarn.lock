@@ -52,9 +52,36 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@bbtag/core@workspace:components/bbtag-core/src":
+"@bbtag/blargbot@workspace:bbtag/blargbot/src":
   version: 0.0.0-use.local
-  resolution: "@bbtag/core@workspace:components/bbtag-core/src"
+  resolution: "@bbtag/blargbot@workspace:bbtag/blargbot/src"
+  dependencies:
+    "@bbtag/engine": "workspace:^"
+    "@bbtag/language": "workspace:^"
+    "@bbtag/subtag": "workspace:^"
+  languageName: unknown
+  linkType: soft
+
+"@bbtag/engine@workspace:^, @bbtag/engine@workspace:bbtag/engine/src":
+  version: 0.0.0-use.local
+  resolution: "@bbtag/engine@workspace:bbtag/engine/src"
+  dependencies:
+    "@bbtag/language": "workspace:^"
+  languageName: unknown
+  linkType: soft
+
+"@bbtag/language@workspace:^, @bbtag/language@workspace:bbtag/language/src":
+  version: 0.0.0-use.local
+  resolution: "@bbtag/language@workspace:bbtag/language/src"
+  languageName: unknown
+  linkType: soft
+
+"@bbtag/subtag@workspace:^, @bbtag/subtag@workspace:bbtag/subtag/src":
+  version: 0.0.0-use.local
+  resolution: "@bbtag/subtag@workspace:bbtag/subtag/src"
+  dependencies:
+    "@bbtag/engine": "workspace:^"
+    "@bbtag/language": "workspace:^"
   languageName: unknown
   linkType: soft
 
