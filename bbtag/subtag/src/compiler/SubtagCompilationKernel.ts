@@ -1,7 +1,7 @@
 import type { BBTagScript, InterruptableProcess, SubtagCallEvaluator } from '@bbtag/engine';
 import { BBTagRuntimeError, NotEnoughArgumentsError, TooManyArgumentsError, UnknownSubtagError } from '@bbtag/engine';
 
-import type { SubtagParameter } from '../parameter/SubtagParameter.js';
+import type { SubtagParameter, SubtagParameterType } from '../parameter/SubtagParameter.js';
 import { SubtagArgument } from '../SubtagArgument.js';
 import type { SubtagCompilationItem } from './SubtagCompilationItem.js';
 
@@ -12,6 +12,7 @@ export class SubtagCompilationKernel {
         this.#nameMap = new Map();
     }
 
+    public add<P extends readonly SubtagParameter[]>(item: SubtagCompilationItem<P>): void
     public add(item: SubtagCompilationItem): void {
         const factory = new SubtagBinderFactory(item);
         for (const name of item.names) {
@@ -58,6 +59,7 @@ class SubtagBinderAggregator {
         this.#maxArgs = -Infinity;
     }
 
+    public add<P extends readonly SubtagParameter[]>(factory: SubtagBinderFactory<P>): void
     public add(factory: SubtagBinderFactory): void {
         this.#factories.push(factory);
         if (this.#minArgs > factory.minArgs)
@@ -117,13 +119,13 @@ function hasValue<T>(value: T): value is NonNullable<T> {
     return value !== null && value !== undefined;
 }
 
-class SubtagBinderFactory {
-    readonly #implementation: SubtagCompilationItem['implementation'];
-    readonly #parameters: SubtagCompilationItem['parameters'];
+class SubtagBinderFactory<P extends readonly SubtagParameter[] = readonly SubtagParameter[]> {
+    readonly #implementation: SubtagCompilationItem<P>['implementation'];
+    readonly #parameters: SubtagCompilationItem<P>['parameters'];
     public readonly minArgs: number;
     public readonly maxArgs: number;
 
-    public constructor(item: SubtagCompilationItem) {
+    public constructor(item: SubtagCompilationItem<P>) {
         this.#implementation = item.implementation;
         this.#parameters = item.parameters;
         let min = 0;
@@ -138,14 +140,14 @@ class SubtagBinderFactory {
         this.maxArgs = max;
     }
 
-    public createBinders(): Array<{ argCount: number; binder: SubtagArgumentBinder; }> | ((argCount: number) => SubtagArgumentBinder | undefined) {
+    public createBinders(): Array<{ argCount: number; binder: SubtagArgumentBinder<P>; }> | ((argCount: number) => SubtagArgumentBinder<P> | undefined) {
         if (Number.isFinite(this.minArgs) && Number.isFinite(this.maxArgs))
             return [...this.#createStaticBinders()];
 
         return this.#createBinder.bind(this);
     }
 
-    * #createStaticBinders(): Generator<{ argCount: number; binder: SubtagArgumentBinder; }> {
+    * #createStaticBinders(): Generator<{ argCount: number; binder: SubtagArgumentBinder<P>; }> {
         for (let argCount = this.minArgs; argCount <= this.maxArgs; argCount++) {
             const binder = this.#createBinder(argCount);
             if (binder !== undefined)
@@ -153,8 +155,8 @@ class SubtagBinderFactory {
         }
     }
 
-    #createBinder(argCount: number): SubtagArgumentBinder | undefined {
-        const argBindings: Array<{ parameter: SubtagParameter; start: number; end: number; }> = [];
+    #createBinder(argCount: number): SubtagArgumentBinder<P> | undefined {
+        const argBindings = [] as { -readonly [Q in keyof P]?: { parameter: P[Q]; start: number; end: number; } };
         let start = 0;
         let allowed = argCount - this.minArgs;
         for (const parameter of this.#parameters) {
@@ -168,10 +170,11 @@ class SubtagBinderFactory {
         if (start !== argCount)
             return undefined;
 
+        const argBindingsFinal = argBindings as { [Q in keyof P]: { parameter: P[Q]; start: number; end: number; } };
         const implementation = this.#implementation;
         return async function* bindImplementation(name, args, script) {
-            const result: unknown[] = [];
-            for (const { parameter, start, end } of argBindings) {
+            const result = [] as { -readonly [Q in keyof P]?: SubtagParameterType<P[Q]> };
+            for (const { parameter, start, end } of argBindingsFinal) {
                 const groups = [];
                 for (let i = start; i < end; i += parameter.readers.length) {
                     const group = [];
@@ -184,14 +187,14 @@ class SubtagBinderFactory {
 
             return {
                 implementation,
-                args: result
+                args: result as P
             };
         };
     }
 }
 
-type SubtagArgumentBinder = (name: string, values: SubtagArgument[], script: BBTagScript) => InterruptableProcess<InvokerBindingDetails>;
-interface InvokerBindingDetails {
-    readonly implementation: SubtagCompilationItem['implementation'];
-    readonly args: readonly unknown[];
+type SubtagArgumentBinder<Parameters extends readonly SubtagParameter[] = readonly SubtagParameter[]> = (name: string, values: SubtagArgument[], script: BBTagScript) => InterruptableProcess<InvokerBindingDetails<Parameters>>;
+interface InvokerBindingDetails<Parameters extends readonly SubtagParameter[]> {
+    readonly implementation: SubtagCompilationItem<Parameters>['implementation'];
+    readonly args: Parameters;
 }

@@ -11,3 +11,8 @@ export interface SubtagParameter<T = unknown, Items extends readonly unknown[] =
 
     aggregate(name: string, values: Array<[...Items]>, script: BBTagScript): InterruptableProcess<T>;
 }
+
+export type SubtagParameterType<P extends SubtagParameter> = P extends SubtagParameter<infer R> ? R : never;
+export type SubtagParameterTypes<P extends readonly SubtagParameter[]> = {
+    [Q in keyof P]: SubtagParameterType<P[Q]>
+};

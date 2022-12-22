@@ -1,10 +1,10 @@
 import type { BBTagScript, InterruptableProcess } from '@bbtag/engine';
 
-import type { SubtagParameter } from '../parameter/SubtagParameter.js';
+import type { SubtagParameter, SubtagParameterTypes } from '../parameter/SubtagParameter.js';
 
-export interface SubtagCompilationItem {
+export interface SubtagCompilationItem<Parameters extends readonly SubtagParameter[] = readonly SubtagParameter[]> {
     readonly id: string;
     readonly names: Iterable<string>;
-    readonly parameters: readonly SubtagParameter[];
-    readonly implementation: (script: BBTagScript, ...args: readonly unknown[]) => InterruptableProcess<string>;
+    readonly parameters: Parameters;
+    readonly implementation: (script: BBTagScript, ...args: SubtagParameterTypes<Parameters>) => InterruptableProcess<string>;
 }
