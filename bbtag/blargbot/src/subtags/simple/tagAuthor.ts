@@ -11,7 +11,8 @@ export class TagAuthorSubtag extends Subtag {
         });
     }
 
-    @Subtag.signature(p.script).returns('string')
+    @Subtag.signature({ id: 'default', returns: 'string' })
+        .parameter(p.script)
     public getAuthor(script: BBTagScript): string {
         return script.options.author;
     }

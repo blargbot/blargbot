@@ -18,7 +18,6 @@ export * from './parameter/RequiredAggregatedParameter.js';
 export * from './parameter/RequiredSingleParameter.js';
 export * from './parameter/SubtagNameParameter.js';
 export * from './parameter/SubtagParameter.js';
-export * from './parameter/index.js';
 
 export * from './readers/DeferredArgumentReader.js';
 export * from './readers/RawArgumentReader.js';

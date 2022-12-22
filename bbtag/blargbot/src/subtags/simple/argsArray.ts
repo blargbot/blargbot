@@ -10,7 +10,8 @@ export class ArgsArraySubtag extends Subtag {
         });
     }
 
-    @Subtag.signature(p.script).returns('string[]')
+    @Subtag.signature({ id: 'default', returns: 'string[]' })
+        .parameter(p.script)
     public getInput(context: BBTagScript): string[] {
         return context.options.args;
     }

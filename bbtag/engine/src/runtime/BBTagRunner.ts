@@ -1,4 +1,5 @@
 import type { BBTagClosureData } from '../closure/BBTagClosureData.js';
+import type { BBTagPluginManager } from '../index.js';
 import { BBTagProcess } from './BBTagProcess.js';
 import type { BBTagScriptOptions } from './BBTagScript.js';
 import type { SubtagCallEvaluator } from './SubtagCallEvaluator.js';
@@ -30,7 +31,8 @@ export class BBTagRunner {
 
         return {
             result: next.value,
-            data: process.data
+            data: process.data,
+            plugins: process.plugins
         };
     }
 }
@@ -49,4 +51,5 @@ export interface BBTagExecuteArgs {
 export interface BBTagResult {
     readonly result: string;
     readonly data: BBTagClosureData;
+    readonly plugins: BBTagPluginManager;
 }

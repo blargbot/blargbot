@@ -1,29 +1,20 @@
-import { RegexSubtag } from '../../RegexSubtag.js';
+import { Subtag } from '@bbtag/subtag';
 
-export class RegexMatchSubtag extends RegexSubtag {
+import { p } from '../p.js';
+
+export class RegexMatchSubtag extends Subtag {
     public constructor() {
         super({
             name: 'regexMatch',
-            category: SubtagType.ARRAY, //? Why?
-            aliases: ['match'],
-            definition: [
-                {
-                    parameters: ['text', '~regex#50000'],
-                    description: tag.default.description,
-                    exampleCode: tag.default.exampleCode,
-                    exampleOut: tag.default.exampleOut,
-                    returns: 'string[]',
-                    execute: (_, [text, regex]) => this.regexMatch(text.value, regex.raw)
-                }
-            ]
+            aliases: ['match']
         });
     }
 
-    public regexMatch(text: string, regexStr: string): string[] {
-        const regex = this.createRegex(regexStr);
+    @Subtag.signature({ id: 'default', returns: 'string[]' })
+        .parameter(p.string('text'))
+        .parameter(p.regex('regex', { maxSize: 50000 }))
+    public regexMatch(text: string, regex: RegExp): string[] {
         const matches = text.match(regex);
-        if (matches === null)
-            return [];
-        return matches;
+        return matches ?? [];
     }
 }

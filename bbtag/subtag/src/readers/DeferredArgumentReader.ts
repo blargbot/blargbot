@@ -19,7 +19,7 @@ export class DeferredArgumentReader<T> implements SubtagArgumentReader<() => T> 
     public read(name: string, arg: SubtagArgument): InterruptableProcess<() => T> {
         if (arg.isEvaluated)
             throw new Error(`Deferred argument has already been executed! ${JSON.stringify({ subtag: name, parameter: this.name })}`);
-        return processResult(() => this.#read(arg.value()));
+        return processResult(() => this.#read(arg.value(this.maxSize)));
     }
 }
 

@@ -10,7 +10,9 @@ export class UnindentSubtag extends Subtag {
         });
     }
 
-    @Subtag.signature(p.string('text'), p.int('level').optional()).returns('string')
+    @Subtag.signature({ id: 'default', returns: 'string' })
+        .parameter(p.string('text'))
+        .parameter(p.int('level').optional())
     public unindent(text: string, level?: number): string {
         if (level === undefined) {
             const lines = text.split('\n').slice(1);

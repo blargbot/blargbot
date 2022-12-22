@@ -7,7 +7,7 @@ export class ZwsSubtag extends Subtag {
         });
     }
 
-    @Subtag.signature().returns('string')
+    @Subtag.signature({ id: 'default', returns: 'string' })
     public getZws(): '\u200B' {
         return '\u200B';
     }

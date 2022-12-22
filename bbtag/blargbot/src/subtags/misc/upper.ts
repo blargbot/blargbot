@@ -1,4 +1,5 @@
-import { Subtag } from '@bbtag/subtag'
+import { Subtag } from '@bbtag/subtag';
+
 import { p } from '../p.js';
 
 export class UpperSubtag extends Subtag {
@@ -8,7 +9,8 @@ export class UpperSubtag extends Subtag {
         });
     }
 
-    @Subtag.signature(p.string('text')).returns('string')
+    @Subtag.signature({ id: 'default', returns: 'string' })
+        .parameter(p.string('text'))
     public uppercase(text: string): string {
         return text.toUpperCase();
     }

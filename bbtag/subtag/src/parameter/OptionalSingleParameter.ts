@@ -24,7 +24,7 @@ export class OptionalSingleParameter<T, R> implements SubtagParameter<T | R, [T 
         return new OptionalSingleParameter<T, R>({
             ...value,
             async * read(name, arg, script) {
-                const res = yield* arg.value();
+                const res = yield* arg.value(value.maxSize);
                 if (res.length === 0)
                     return undefined;
                 return yield* value.read(name, arg, script);

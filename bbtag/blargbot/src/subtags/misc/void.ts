@@ -1,4 +1,5 @@
-import { Subtag } from '@bbtag/subtag'
+import { Subtag } from '@bbtag/subtag';
+
 import { p } from '../p.js';
 
 export class VoidSubtag extends Subtag {
@@ -9,7 +10,8 @@ export class VoidSubtag extends Subtag {
         });
     }
 
-    @Subtag.signature(p.string('code').repeat()).returns('void')
+    @Subtag.signature({ id: 'default', returns: 'void' })
+        .parameter(p.string('code').repeat())
     public returnNothing(): void {
         /*NOOP*/
     }

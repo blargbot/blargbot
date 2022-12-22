@@ -10,7 +10,8 @@ export class ArgsLengthSubtag extends Subtag {
         });
     }
 
-    @Subtag.signature(p.script).returns('number')
+    @Subtag.signature({ id: 'default', returns: 'number' })
+        .parameter(p.script)
     public getArgsLength(context: BBTagScript): number {
         return context.options.args.length;
     }

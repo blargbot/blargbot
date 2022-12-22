@@ -17,7 +17,7 @@ export class IntArgumentReader implements SubtagArgumentReader<number> {
 
     public async * read(_name: string, arg: SubtagArgument, script: BBTagScript): InterruptableAsyncProcess<number> {
         const number = script.process.plugins.get(NumberPlugin);
-        return number.parseInt(yield* arg.value(), this.#radix);
+        return number.parseInt(yield* arg.value(this.maxSize), this.#radix);
     }
 }
 

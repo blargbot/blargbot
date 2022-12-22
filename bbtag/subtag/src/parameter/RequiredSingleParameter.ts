@@ -62,7 +62,7 @@ export class RequiredSingleParameter<T> implements SubtagParameter<T, [T]>, Subt
                     throw error;
 
                 try {
-                    arg = new SubtagArgument(script, {
+                    arg = new SubtagArgument(script, arg.index, {
                         ...arg.template,
                         source: fallback,
                         statements: [fallback]

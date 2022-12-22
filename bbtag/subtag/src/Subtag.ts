@@ -1,5 +1,3 @@
-import type { InterruptableProcess } from '@bbtag/engine';
-
 import type { SubtagCompilationItem } from './compiler/SubtagCompilationItem.js';
 import type { SubtagParameter } from './parameter/SubtagParameter.js';
 import BooleanReturnAdapter from './returns/BooleanReturnAdapter.js';
@@ -14,20 +12,21 @@ export abstract class Subtag implements Iterable<SubtagCompilationItem> {
     static readonly #signatures = new Map<unknown, Array<(subtag: Subtag) => SubtagCompilationItem>>();
     readonly #options: SubtagOptions;
 
-    public static signature<Parameters extends readonly SubtagParameter[]>(...parameters: Parameters): SubtagSignatureDecorator<Parameters, InterruptableProcess<string>> {
-        return this.#signature<Parameters, InterruptableProcess<string>>({
-            parameters: parameters,
-            names: undefined,
-            adapter: TransparentReturnAdapter,
-            id: 'default'
-        });
+    public static signature<Result>(options: SubtagSignatureDecoratorOptions<SubtagReturnAdapter<Result>>): SubtagSignatureDecorator<[], Result>;
+    public static signature<Result extends keyof typeof wellKnownReturnAdapters>(options: SubtagSignatureDecoratorOptions<Result>): SubtagSignatureDecorator<[], SubtagReturnAdapterType<typeof wellKnownReturnAdapters[Result]>>;
+    public static signature(options: SubtagSignatureDecoratorOptions<SubtagReturnAdapter | keyof typeof wellKnownReturnAdapters>): SubtagSignatureDecorator<[], unknown> {
+        const adapter = typeof options.returns === 'string' ? wellKnownReturnAdapters[options.returns] : options.returns;
+        return this.#createSignatureDecorator([], { ...options, returns: adapter });
     }
 
-    static #signature<Parameters extends readonly SubtagParameter[], ReturnType>(options: SubtagSignatureDecoratorOptions<Parameters, ReturnType>): SubtagSignatureDecorator<Parameters, ReturnType> {
-        return Object.assign(<This extends Subtag, MethodName extends PropertyKey>(
-            target: This & { [P in MethodName]: (...args: ParameterTypes<Parameters>) => ReturnType },
-            methodName: MethodName
-        ) => {
+    static #createSignatureDecorator<Parameters extends readonly unknown[], ReturnType>(
+        parameters: { [P in keyof Parameters]: SubtagParameter<Parameters[P]> },
+        options: SubtagSignatureDecoratorOptions<SubtagReturnAdapter<ReturnType>>
+    ): SubtagSignatureDecorator<Parameters, ReturnType> {
+        return Object.assign<
+            SubtagSignatureDecoratorFn<Parameters, ReturnType>,
+            Required<Partial<SubtagSignatureDecorator<Parameters, ReturnType>>>
+        >((target, methodName) => {
             let signatures = this.#signatures.get(target);
             if (signatures === undefined)
                 this.#signatures.set(target, signatures = []);
@@ -35,15 +34,13 @@ export abstract class Subtag implements Iterable<SubtagCompilationItem> {
             signatures.push(self => ({
                 id: `${self.#options.name}.${options.id}`,
                 implementation: function (...args) {
-                    return options.adapter.getResult((self as This & { [P in MethodName]: (...args: ParameterTypes<Parameters>) => ReturnType })[methodName](...args as ParameterTypes<Parameters>));
+                    return options.returns.getResult((self as typeof target)[methodName](...args as Parameters));
                 },
-                names: options.names ?? [self.#options.name, ...self.#options.aliases ?? []],
-                parameters: options.parameters
+                names: options.subtagName ?? [self.#options.name, ...self.#options.aliases ?? []],
+                parameters: parameters
             }));
         }, {
-            returns: (adapter: SubtagReturnAdapter<unknown> | keyof typeof wellKnownReturnAdapters) => this.#signature({ ...options, adapter: typeof adapter === 'string' ? wellKnownReturnAdapters[adapter] : adapter }),
-            withName: (name: string | Iterable<string>) => this.#signature({ ...options, names: typeof name === 'string' ? [...options.names ?? [], name] : [...options.names ?? [], ...name] }),
-            withId: (id: string) => this.#signature({ ...options, id })
+            parameter: p => this.#createSignatureDecorator([...parameters, p], options)
         }) satisfies SubtagSignatureDecorator<Parameters, ReturnType>;
     }
 
@@ -71,25 +68,20 @@ export interface SubtagOptions {
     readonly aliases?: Iterable<string>;
 }
 
-export interface SubtagSignatureDecoratorOptions<Parameters extends readonly SubtagParameter[], ReturnType> {
-    readonly parameters: Parameters;
-    readonly adapter: SubtagReturnAdapter<ReturnType>;
-    readonly names?: readonly string[];
+interface SubtagSignatureDecoratorFn<Parameters extends readonly unknown[], ReturnType> {
+    <This extends SignatureDecoratorThis<MethodName, ReturnType, Parameters>, MethodName extends PropertyKey>(target: This, method: MethodName): void;
+}
+
+export interface SubtagSignatureDecorator<Parameters extends readonly unknown[], ReturnType> extends SubtagSignatureDecoratorFn<Parameters, ReturnType> {
+    parameter<Parameter>(parameter: SubtagParameter<Parameter>): SubtagSignatureDecorator<[...Parameters, Parameter], ReturnType>;
+}
+
+export interface SubtagSignatureDecoratorOptions<Return> {
     readonly id: string;
+    readonly returns: Return;
+    readonly subtagName?: string | Iterable<string>;
 }
 
-export interface SubtagSignatureDecorator<Parameters extends readonly SubtagParameter[], ReturnType> {
-    <This extends Subtag, MethodName extends PropertyKey>(
-        target: This & { [P in MethodName]: (...args: ParameterTypes<Parameters>) => ReturnType },
-        method: MethodName
-    ): void;
-
-    returns<ReturnType>(handler: SubtagReturnAdapter<ReturnType>): SubtagSignatureDecorator<Parameters, ReturnType>;
-    returns<ReturnType extends keyof typeof wellKnownReturnAdapters>(handler: ReturnType): SubtagSignatureDecorator<Parameters, SubtagReturnAdapterType<typeof wellKnownReturnAdapters[ReturnType]>>;
-    withName(name: string | Iterable<string>): SubtagSignatureDecorator<Parameters, ReturnType>;
-    withId(id: string): SubtagSignatureDecorator<Parameters, ReturnType>;
-}
-
-type ParameterTypes<Parameters extends readonly SubtagParameter[]> = {
-    [P in keyof Parameters]: Parameters[P] extends SubtagParameter<infer R> ? R : unknown
+type SignatureDecoratorThis<MethodName extends PropertyKey, ReturnType, Parameters extends readonly unknown[]> = Subtag & {
+    [P in MethodName]: (...args: Parameters) => ReturnType
 }

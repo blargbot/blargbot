@@ -1,41 +1,28 @@
-import { RegexSubtag } from '../../RegexSubtag.js';
+import { Subtag } from '@bbtag/subtag';
 
-export class RegexReplaceSubtag extends RegexSubtag {
+import { ReplacementPlugin } from '../../plugins/ReplacementPlugin.js';
+import { p } from '../p.js';
+
+export class RegexReplaceSubtag extends Subtag {
     public constructor() {
         super({
-            name: 'regexReplace',
-            category: SubtagType.MISC,
-            description: tag.description,
-            definition: [
-                {
-                    parameters: ['~regex#50000', 'replaceWith'],
-                    description: tag.output.description,
-                    exampleCode: tag.output.exampleCode,
-                    exampleOut: tag.output.exampleOut,
-                    returns: 'nothing',
-                    execute: (ctx, [regex, replaceWith]) => this.setOutputReplacement(ctx, regex.raw, replaceWith.value)
-                },
-                {
-                    parameters: ['text', '~regex#50000', 'replaceWith'],
-                    description: tag.text.description,
-                    exampleCode: tag.text.exampleCode,
-                    exampleOut: tag.text.exampleOut,
-                    returns: 'string',
-                    execute: (_, [text, regex, replaceWith]) => this.regexReplace(text.value, regex.raw, replaceWith.value)
-                }
-            ]
+            name: 'regexReplace'
         });
     }
 
-    public setOutputReplacement(context: BBTagContext, regexStr: string, replacement: string): void {
-        context.data.replace = {
-            regex: this.createRegex(regexStr),
-            with: replacement
-        };
+    @Subtag.signature({ id: 'output', returns: 'void' })
+        .parameter(p.plugin(ReplacementPlugin))
+        .parameter(p.regex('phrase', { maxSize: 50000 }))
+        .parameter(p.string('replacement'))
+    public setOutputReplacement(context: ReplacementPlugin, regex: RegExp, replacement: string): void {
+        context.replacer = v => v.replace(regex, replacement);
     }
 
-    public regexReplace(text: string, regexStr: string, replaceWith: string): string {
-        const regex = this.createRegex(regexStr);
-        return text.replace(regex, replaceWith);
+    @Subtag.signature({ id: 'text', returns: 'string' })
+        .parameter(p.string('text'))
+        .parameter(p.regex('phrase', { maxSize: 50000 }))
+        .parameter(p.string('replacement'))
+    public regexReplace(text: string, regex: RegExp, replacement: string): string {
+        return text.replace(regex, replacement);
     }
 }

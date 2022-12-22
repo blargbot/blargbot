@@ -11,11 +11,10 @@ export class ReverseSubtag extends Subtag {
         });
     }
 
-    @Subtag.signature(
-        p.plugin(ArrayPlugin),
-        p.plugin(VariablesPlugin),
-        p.string('text')
-    ).returns('string')
+    @Subtag.signature({ id: 'default', returns: 'string' })
+        .parameter(p.plugin(ArrayPlugin))
+        .parameter(p.plugin(VariablesPlugin))
+        .parameter(p.string('text'))
     public async reverse(array: ArrayPlugin, variables: VariablesPlugin, input: string): Promise<string> {
         const arr = array.tryParseArray(input);
         if (arr === undefined)

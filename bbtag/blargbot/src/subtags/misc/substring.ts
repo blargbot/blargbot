@@ -9,11 +9,10 @@ export class SubstringSubtag extends Subtag {
         });
     }
 
-    @Subtag.signature(
-        p.string('text'),
-        p.int('start').fallback(),
-        p.int('end').fallback().optional().ignoreEmpty()
-    ).returns('string')
+    @Subtag.signature({ id: 'default', returns: 'string' })
+        .parameter(p.string('text'))
+        .parameter(p.int('start').fallback())
+        .parameter(p.int('end').fallback().optional().ignoreEmpty())
     public substring(text: string, start: number, end = text.length): string {
         return text.substring(start, end);
     }

@@ -11,7 +11,8 @@ export class IsCustomCommandSubtag extends Subtag {
         });
     }
 
-    @Subtag.signature(p.script).returns('boolean')
+    @Subtag.signature({ id: 'default', returns: 'boolean' })
+        .parameter(p.script)
     public isCC(context: BBTagScript): boolean {
         return context.options.type === 'cc';
     }

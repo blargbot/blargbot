@@ -10,14 +10,13 @@ export class TimeSubtag extends Subtag {
         });
     }
 
-    @Subtag.signature(
-        p.plugin(TimePlugin),
-        p.string('format').optional('YYYY-MM-DDTHH:mm:ssZ'),
-        p.string('time').optional('now'),
-        p.string('parseFormat').optional(''),
-        p.string('fromTimezone').optional('Etc/UTC'),
-        p.string('toTimezone').optional('Etc/UTC')
-    ).returns('string')
+    @Subtag.signature({ id: 'default', returns: 'string' })
+        .parameter(p.plugin(TimePlugin))
+        .parameter(p.string('format').optional('YYYY-MM-DDTHH:mm:ssZ'))
+        .parameter(p.string('time').optional('now'))
+        .parameter(p.string('parseFormat').optional(''))
+        .parameter(p.string('fromTimezone').optional('Etc/UTC'))
+        .parameter(p.string('toTimezone').optional('Etc/UTC'))
     public changeTimezone(time: TimePlugin, outputFormat: string, timestampStr: string, inputFormat: string, inputTimezone: string, outputTimezone: string): string {
         return time.parseTime(timestampStr, inputFormat, inputTimezone)
             .toTimezone(outputTimezone)

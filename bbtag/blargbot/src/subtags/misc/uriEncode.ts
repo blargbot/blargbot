@@ -9,7 +9,8 @@ export class UriEncodeSubtag extends Subtag {
         });
     }
 
-    @Subtag.signature(p.string('text')).returns('string')
+    @Subtag.signature({ id: 'default', returns: 'string' })
+        .parameter(p.string('text'))
     public encodeUri(text: string): string {
         return encodeURIComponent(text);
     }

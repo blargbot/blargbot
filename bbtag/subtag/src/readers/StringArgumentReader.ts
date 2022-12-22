@@ -15,7 +15,7 @@ export class StringArgumentReader implements SubtagArgumentReader<string> {
     }
 
     public async * read(_name: string, arg: SubtagArgument): InterruptableAsyncProcess<string> {
-        const value = yield* arg.value();
+        const value = yield* arg.value(this.maxSize);
         return value.length === 0 ? this.#ifEmpty : value;
     }
 }

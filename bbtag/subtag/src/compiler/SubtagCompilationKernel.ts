@@ -36,7 +36,7 @@ export class SubtagCompilationKernel {
             for (const n of namesFor(name)) {
                 const invoker = nameMap.get(n);
                 if (invoker !== undefined)
-                    return yield* invoker(name, call.args.map(a => new SubtagArgument(script, a)), script);
+                    return yield* invoker(name, call.args.map((a, i) => new SubtagArgument(script, i, a)), script);
             }
 
             throw new UnknownSubtagError(name);

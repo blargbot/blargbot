@@ -14,7 +14,7 @@ export class FloatArgumentReader implements SubtagArgumentReader<number> {
 
     public async * read(_name: string, arg: SubtagArgument, script: BBTagScript): InterruptableAsyncProcess<number> {
         const number = script.process.plugins.get(NumberPlugin);
-        return number.parseFloat(yield* arg.value());
+        return number.parseFloat(yield* arg.value(this.maxSize));
     }
 }
 

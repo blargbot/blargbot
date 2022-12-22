@@ -7,7 +7,7 @@ export class LbSubtag extends Subtag {
         });
     }
 
-    @Subtag.signature().returns('string')
+    @Subtag.signature({ id: 'default', returns: 'string' })
     public getOpenBrace(): '{' {
         return '{';
     }

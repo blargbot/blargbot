@@ -1,25 +1,18 @@
-import { RegexSubtag } from '../../RegexSubtag.js';
+import { Subtag } from '@bbtag/subtag';
 
-export class RegexTestSubtag extends RegexSubtag {
+import { p } from '../p.js';
+
+export class RegexTestSubtag extends Subtag {
     public constructor() {
         super({
-            name: 'regexTest',
-            category: SubtagType.MISC,
-            definition: [
-                {
-                    parameters: ['text', '~regex#50000'],
-                    description: tag.default.description,
-                    exampleCode: tag.default.exampleCode,
-                    exampleOut: tag.default.exampleOut,
-                    returns: 'boolean',
-                    execute: (_, [text, regex]) => this.regexTest(text.value, regex.raw)
-                }
-            ]
+            name: 'regexTest'
         });
     }
 
-    public regexTest(text: string, regexStr: string): boolean {
-        const regex = this.createRegex(regexStr);
+    @Subtag.signature({ id: 'default', returns: 'boolean' })
+        .parameter(p.string('text'))
+        .parameter(p.regex('regex', { maxSize: 50000 }))
+    public regexTest(text: string, regex: RegExp): boolean {
         return regex.test(text);
     }
 }
