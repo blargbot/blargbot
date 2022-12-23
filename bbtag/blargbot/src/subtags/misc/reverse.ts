@@ -16,7 +16,7 @@ export class ReverseSubtag extends Subtag {
         .parameter(p.plugin(VariablesPlugin))
         .parameter(p.string('text'))
     public async reverse(array: ArrayPlugin, variables: VariablesPlugin, input: string): Promise<string> {
-        const arr = array.tryParseArray(input);
+        const arr = array.parseArray(input);
         if (arr === undefined)
             return input.split('').reverse().join('');
 

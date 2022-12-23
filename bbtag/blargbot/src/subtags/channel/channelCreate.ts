@@ -1,10 +1,10 @@
-import { Subtag } from '@bbtag/subtag'
-import { p } from '../p.js';
+import { BBTagRuntimeError } from '@bbtag/engine';
+import { Subtag } from '@bbtag/subtag';
 import { guard } from '@blargbot/core/utils/index.js';
 import { mapping } from '@blargbot/mapping';
 import * as Eris from 'eris';
 
-import { BBTagRuntimeError } from '../../errors/BBTagRuntimeError.js';
+import { p } from '../p.js';
 
 export class ChannelCreateSubtag extends Subtag {
     public constructor() {

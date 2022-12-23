@@ -1,8 +1,8 @@
 import { createHash, getHashes } from 'node:crypto';
 
+import { BBTagRuntimeError } from '@bbtag/engine';
 import { Subtag } from '@bbtag/subtag';
 
-import { BBTagRuntimeError } from '../../errors/BBTagRuntimeError.js';
 import { p } from '../p.js';
 
 export class HashSubtag extends Subtag {
@@ -12,29 +12,12 @@ export class HashSubtag extends Subtag {
 
     public constructor() {
         super({
-            name: 'hash',
-            category: SubtagType.MISC,
-            definition: [
-                {
-                    parameters: ['text'],
-                    description: tag.basic.description,
-                    exampleCode: tag.basic.exampleCode,
-                    exampleOut: tag.basic.exampleOut,
-                    returns: 'number',
-                    execute: (_, [text]) => this.computeHash(text.value)
-                },
-                {
-                    parameters: ['algorithm', 'text'],
-                    description: tag.secure.description({ methods: HashSubtag.methods }),
-                    exampleCode: tag.secure.exampleCode,
-                    exampleOut: tag.secure.exampleOut,
-                    returns: 'string',
-                    execute: (_, [algorithm, text]) => this.computeStrongHash(algorithm.value, text.value)
-                }
-            ]
+            name: 'hash'
         });
     }
 
+    @Subtag.signature({ id: 'basic', returns: 'number' })
+        .parameter(p.string('text'))
     public computeHash(text: string): number {
         return text.split('')
             .reduce(function (a, b) {
@@ -43,6 +26,9 @@ export class HashSubtag extends Subtag {
             }, 0);
     }
 
+    @Subtag.signature({ id: 'secure', returns: 'string' })
+        .parameter(p.string('algorithm'))
+        .parameter(p.string('text'))
     public computeStrongHash(algorithm: string, text: string): string {
         if (!HashSubtag.methods.includes(algorithm.toLowerCase()))
             throw new BBTagRuntimeError('Unsupported hash', `${algorithm} is not a supported hash algorithm`);

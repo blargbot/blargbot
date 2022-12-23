@@ -2,6 +2,7 @@ import type { InterruptableProcess } from '@bbtag/engine';
 import { processResult } from '@bbtag/engine';
 
 import type { SubtagArgumentReader } from '../index.js';
+import { RepeatedSingleParameter } from '../index.js';
 import { RequiredSingleParameter } from './RequiredSingleParameter.js';
 import type { SubtagParameter } from './SubtagParameter.js';
 
@@ -29,6 +30,16 @@ export class OptionalSingleParameter<T, R> implements SubtagParameter<NonNullabl
 
     public required(): RequiredSingleParameter<T> {
         return new RequiredSingleParameter(this.#reader);
+    }
+
+    public repeat(maxItems?: number): RepeatedSingleParameter<T>
+    public repeat(minItems: number, maxItems?: number): RepeatedSingleParameter<T>
+    public repeat(minItems?: number, maxItems?: number): RepeatedSingleParameter<T> {
+        if (maxItems === undefined) {
+            maxItems = minItems ?? Infinity;
+            minItems = 0;
+        }
+        return new RepeatedSingleParameter(this.#reader, minItems, maxItems);
     }
 
     public aggregate(_name: string, values: Array<[T | undefined]>): InterruptableProcess<NonNullable<T> | R> {

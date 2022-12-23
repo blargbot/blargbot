@@ -6,21 +6,12 @@ export class CommentSubtag extends Subtag {
     public constructor() {
         super({
             name: 'comment',
-            aliases: ['//'],
-            category: SubtagType.MISC,
-            definition: [
-                {
-                    parameters: ['~anything*'],
-                    description: tag.default.description,
-                    exampleCode: tag.default.exampleCode,
-                    exampleOut: tag.default.exampleOut,
-                    returns: 'nothing',
-                    execute: () => this.doNothing()
-                }
-            ]
+            aliases: ['//']
         });
     }
 
+    @Subtag.signature({ id: 'default', returns: 'void' })
+        .parameter(p.raw('anything').optional().repeat())
     public doNothing(): void {
         /*NOOP*/
     }

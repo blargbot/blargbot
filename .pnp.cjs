@@ -136,6 +136,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:services/api/src"\
       },\
       {\
+        "name": "@blargbot/bbtag-runner",\
+        "reference": "workspace:services/bbtag-runner/src"\
+      },\
+      {\
         "name": "@blargbot/cluster",\
         "reference": "workspace:services/cluster/src"\
       },\
@@ -174,6 +178,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@blargbot/api", ["workspace:services/api/src"]],\
       ["@blargbot/application", ["workspace:components/application/src"]],\
       ["@blargbot/bbtag", ["workspace:components/bbtag/src"]],\
+      ["@blargbot/bbtag-runner", ["workspace:services/bbtag-runner/src"]],\
       ["@blargbot/bbtag-tests", ["workspace:components/bbtag/test"]],\
       ["@blargbot/chatlog-types", ["workspace:components/chatlog-types/src"]],\
       ["@blargbot/cluster", ["workspace:services/cluster/src"]],\
@@ -397,6 +402,20 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["moment-timezone", "npm:0.5.39"],\
             ["node-fetch", "npm:3.3.0"],\
             ["rwlock", "npm:5.0.0"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
+      ["@blargbot/bbtag-runner", [\
+        ["workspace:services/bbtag-runner/src", {\
+          "packageLocation": "./services/bbtag-runner/src/",\
+          "packageDependencies": [\
+            ["@blargbot/bbtag-runner", "workspace:services/bbtag-runner/src"],\
+            ["@bbtag/blargbot", "workspace:bbtag/blargbot/src"],\
+            ["@bbtag/engine", "workspace:bbtag/engine/src"],\
+            ["@bbtag/subtag", "workspace:bbtag/subtag/src"],\
+            ["@blargbot/application", "workspace:components/application/src"],\
+            ["@blargbot/env", "workspace:components/env/src"]\
           ],\
           "linkType": "SOFT"\
         }]\

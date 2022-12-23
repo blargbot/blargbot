@@ -21,7 +21,7 @@ export class ArrayArgumentReader implements SubtagArgumentReader<BBTagArrayRef> 
     public async * read(_name: string, arg: SubtagArgument, script: BBTagScript): InterruptableAsyncProcess<BBTagArrayRef> {
         const array = script.process.plugins.get(ArrayPlugin);
         const value = yield* arg.value(this.maxSize);
-        const result = array.tryParseArray(value);
+        const result = array.parseArray(value);
         if (result !== undefined)
             return result;
 

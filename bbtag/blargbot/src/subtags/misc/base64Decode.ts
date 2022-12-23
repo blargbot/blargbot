@@ -6,21 +6,12 @@ export class Base64DecodeSubtag extends Subtag {
     public constructor() {
         super({
             name: 'base64Decode',
-            aliases: ['aToB'],
-            category: SubtagType.MISC,
-            definition: [
-                {
-                    parameters: ['text'],
-                    description: tag.default.description,
-                    exampleCode: tag.default.exampleCode,
-                    exampleOut: tag.default.exampleOut,
-                    returns: 'string',
-                    execute: (_, [text]) => this.decode(text.value)
-                }
-            ]
+            aliases: ['aToB']
         });
     }
 
+    @Subtag.signature({ id: 'default', returns: 'string' })
+        .parameter(p.string('text'))
     public decode(base64: string): string {
         return Buffer.from(base64, 'base64').toString();
     }

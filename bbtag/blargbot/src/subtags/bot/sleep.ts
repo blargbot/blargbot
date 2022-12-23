@@ -1,9 +1,9 @@
-import { Subtag } from '@bbtag/subtag'
-import { p } from '../p.js';
+import { BBTagRuntimeError } from '@bbtag/engine';
+import { Subtag } from '@bbtag/subtag';
 import { parse, sleep } from '@blargbot/core/utils/index.js';
 import moment from 'moment-timezone';
 
-import { BBTagRuntimeError } from '../../errors/BBTagRuntimeError.js';
+import { p } from '../p.js';
 
 const maxSleep = moment.duration(5, 'minutes');
 

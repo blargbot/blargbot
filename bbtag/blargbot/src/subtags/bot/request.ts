@@ -1,10 +1,10 @@
-import { Subtag } from '@bbtag/subtag'
-import { p } from '../p.js';
+import { BBTagRuntimeError } from '@bbtag/engine';
+import { Subtag } from '@bbtag/subtag';
 import { parse } from '@blargbot/core/utils/index.js';
 import { mapping } from '@blargbot/mapping';
 import fetch from 'node-fetch';
 
-import { BBTagRuntimeError } from '../../errors/BBTagRuntimeError.js';
+import { p } from '../p.js';
 
 const domainRegex = /^https?:\/\/(.+?)(?:\/.?|$)/i;
 

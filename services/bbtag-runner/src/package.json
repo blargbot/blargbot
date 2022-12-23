@@ -1,0 +1,16 @@
+{
+    "name": "@blargbot/bbtag-runner",
+    "version": "1.0.0",
+    "private": true,
+    "type": "module",
+    "exports": {
+        ".": "./index.js"
+    },
+    "dependencies": {
+        "@bbtag/blargbot": "workspace:^",
+        "@bbtag/engine": "workspace:^",
+        "@bbtag/subtag": "workspace:^",
+        "@blargbot/application": "workspace:^",
+        "@blargbot/env": "workspace:^"
+    }
+}

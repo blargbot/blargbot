@@ -1,7 +1,7 @@
-import { } from '@bbtag/subtag'
-import { p } from '../p.js';
+import { BBTagRuntimeError } from '@bbtag/engine';
 import { Subtag } from '@bbtag/subtag';
-import { BBTagRuntimeError } from '../../errors/BBTagRuntimeError.js';
+
+import { p } from '../p.js';
 
 export class ReactionSubtag extends Subtag {
     public constructor() {

@@ -1,10 +1,10 @@
-import { Subtag } from '@bbtag/subtag'
-import { p } from '../p.js';
+import { BBTagRuntimeError } from '@bbtag/engine';
+import { Subtag } from '@bbtag/subtag';
 import { humanize, parse } from '@blargbot/core/utils/index.js';
 
-import { BBTagRuntimeError } from '../../errors/BBTagRuntimeError.js';
 import { BBTagRuntimeState } from '../../types.js';
 import { bbtag, SubtagType } from '../../utils/index.js';
+import { p } from '../p.js';
 
 export class ExecCustomCommandSubtag extends Subtag {
     public constructor() {

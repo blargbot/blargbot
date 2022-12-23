@@ -1,11 +1,11 @@
-import { Subtag } from '@bbtag/subtag'
-import { p } from '../p.js';
+import { BBTagRuntimeError } from '@bbtag/engine';
+import { Subtag } from '@bbtag/subtag';
 import type ReadWriteLock from 'rwlock';
 
 import type { SubtagArgument } from '../../arguments/index.js';
-import { BBTagRuntimeError } from '../../errors/BBTagRuntimeError.js';
 import { getLock } from '../../getLock.js';
 import { tagVariableScopeProviders } from '../../tagVariableScopeProviders.js';
+import { p } from '../p.js';
 
 export class LockSubtag extends Subtag {
     public constructor() {

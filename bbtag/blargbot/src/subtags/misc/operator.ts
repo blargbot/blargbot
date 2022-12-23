@@ -3,10 +3,11 @@ import { Subtag } from '@bbtag/subtag';
 import { parse } from '@blargbot/core/utils/index.js';
 
 import type { SubtagSignatureCallableOptions as Options } from '../../compilation/SubtagSignatureCallableOptions.js';
-import type { LogicOperator, NumericOperator, OrdinalOperator, StringOperator } from '../../utils/index.js';
+import { ArrayPlugin, StringPlugin } from '../../index.js';
+import { ordinalOperators } from '../../operators/ordinalOperators.js';
+import { ComparePlugin } from '../../plugins/ComparePlugin.js';
 import { bbtag, SubtagType } from '../../utils/index.js';
 import type { AggregationOperator } from '../../utils/operators.js';
-import { aggregationOperators, logicOperators, numericOperators, ordinalOperators, stringOperators } from '../../utils/operators.js';
 import { p } from '../p.js';
 
 export class OperatorSubtag extends Subtag {
@@ -57,11 +58,16 @@ export class OperatorSubtag extends Subtag {
                 }
             ]
         });
+
     }
 
-    public applyOrdinalOperation(operator: OrdinalOperator, values: string[]): boolean {
-        const flattenedValues = bbtag.tagArray.flattenArray(values).map(v => parse.string(v));
-        return bbtag.operate('&&', generatePairs(flattenedValues).map(args => bbtag.operate(operator, ...args)));
+    public applyOrdinalOperation(array: ArrayPlugin, string: StringPlugin, compare: ComparePlugin, values: string[], operator: (comp: ComparePlugin, a: string, b: string) => boolean): boolean {
+        const flat = array.flatten(values).map(v => string.toString(v));
+        let prev = flat[0];
+        for (const item of flat.slice(1))
+            if (!operator(compare, prev, prev = item))
+                return false;
+        return true;
     }
 
     public applyAggregationOperation(operator: AggregationOperator, values: string[]): string {
@@ -109,3 +115,18 @@ function generatePairs(array: string[]): Array<[string, string]> {
     }
     return pairedArrays;
 }
+
+function decorateAll<T extends (...args: Args) => void, Args extends readonly unknown[]>(items: Iterable<T>): (...args: Args) => void {
+    return (...args) => {
+        for (const item of [...items].reverse())
+            item(...args);
+    };
+}
+
+for (const [name, op] of Object.entries(ordinalOperators))
+    Subtag.signature({ id: name, returns: 'boolean', subtagName: name })
+        .parameter(p.plugin(ArrayPlugin))
+        .parameter(p.plugin(StringPlugin))
+        .parameter(p.plugin(ComparePlugin))
+        .parameter(p.string('values').repeat())
+        .parameter(p.const(op))(OperatorSubtag.prototype, 'applyOrdinalOperation');

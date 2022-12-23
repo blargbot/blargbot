@@ -1,6 +1,7 @@
 import type { BBTagScript, InterruptableAsyncProcess } from '@bbtag/engine';
 import type { SubtagArgument, SubtagArgumentReader } from '@bbtag/subtag';
 
+import { NotANumberError } from '../index.js';
 import { NumberPlugin } from '../plugins/NumberPlugin.js';
 
 export class IntArgumentReader implements SubtagArgumentReader<number> {
@@ -17,7 +18,11 @@ export class IntArgumentReader implements SubtagArgumentReader<number> {
 
     public async * read(_name: string, arg: SubtagArgument, script: BBTagScript): InterruptableAsyncProcess<number> {
         const number = script.process.plugins.get(NumberPlugin);
-        return number.parseInt(yield* arg.value(this.maxSize), this.#radix);
+        const text = yield* arg.value(this.maxSize);
+        const result = number.parseInt(text, this.#radix);
+        if (result === undefined)
+            throw new NotANumberError(text);
+        return result;
     }
 }
 

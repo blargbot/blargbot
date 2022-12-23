@@ -1,8 +1,8 @@
-import { Subtag } from '@bbtag/subtag'
-import { p } from '../p.js';
+import { BBTagRuntimeError } from '@bbtag/engine';
+import { Subtag } from '@bbtag/subtag';
 
-import { BBTagRuntimeError } from '../../errors/BBTagRuntimeError.js';
 import type { Statement } from '../../language/index.js';
+import { p } from '../p.js';
 
 export class FunctionSubtag extends Subtag {
     public constructor() {

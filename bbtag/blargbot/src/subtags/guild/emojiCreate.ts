@@ -1,13 +1,12 @@
+import { BBTagRuntimeError } from '@bbtag/engine';
+import { Subtag } from '@bbtag/subtag';
 import { guard } from '@blargbot/core/utils/index.js';
 import { parse } from '@blargbot/core/utils/parse/index.js';
 import * as Eris from 'eris';
 import fetch from 'node-fetch';
 
-import { BBTagRuntimeError } from '../../errors/BBTagRuntimeError.js';
-import { } from '@bbtag/subtag'
-import { p } from '../p.js';
-import { Subtag } from '@bbtag/subtag';
 import { bbtag, SubtagType } from '../../utils/index.js';
+import { p } from '../p.js';
 
 interface EmojiCreateOptions {
     name: string;

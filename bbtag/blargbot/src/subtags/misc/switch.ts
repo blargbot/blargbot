@@ -21,7 +21,7 @@ export class SwitchSubtag extends Subtag {
             const array = script.process.plugins.get(ArrayPlugin);
             const string = script.process.plugins.get(StringPlugin);
             for (const [caseValue, then] of values) {
-                const asArray = array.tryParseArray(caseValue);
+                const asArray = array.parseArray(caseValue);
                 const options = asArray?.v.map(v => string.toString(v)) ?? [caseValue];
                 yield { options, then };
             }

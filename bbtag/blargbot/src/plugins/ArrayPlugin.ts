@@ -1,23 +1,16 @@
-import { BBTagPlugin, BBTagRuntimeError } from '@bbtag/engine';
+import { BBTagPlugin } from '@bbtag/engine';
 
 import type { BBTagVariableValue } from './VariablesPlugin.js';
 
 export abstract class ArrayPlugin {
-    public abstract parseArray(value: string): BBTagArrayRef;
-    public abstract tryParseArray(value: string): BBTagArrayRef | undefined;
+    public abstract parseArray(value: string): BBTagArrayRef | undefined;
     public abstract serialize(value: BBTagArrayRef['v'], name?: string): string;
+    public abstract flatten(values: readonly BBTagVariableValue[]): BBTagVariableValue[];
 }
 
 @BBTagPlugin.provides(ArrayPlugin)
 export class DefaultArrayPlugin extends ArrayPlugin {
-    public override parseArray(value: string): BBTagArrayRef {
-        const result = this.tryParseArray(value);
-        if (result === undefined)
-            throw new BBTagRuntimeError('Invalid array');
-        return result;
-    }
-
-    public override tryParseArray(value: string): BBTagArrayRef | undefined {
+    public override parseArray(value: string): BBTagArrayRef | undefined {
         // TODO: Proper implementation
         value;
         return undefined;
@@ -30,6 +23,33 @@ export class DefaultArrayPlugin extends ArrayPlugin {
             n: name,
             v: value
         });
+    }
+
+    public override flatten(values: readonly BBTagVariableValue[]): BBTagVariableValue[] {
+        const result: BBTagVariableValue[] = [];
+        for (const item of values) {
+            switch (typeof item) {
+                case 'string': {
+                    const parsed = this.parseArray(item);
+                    if (parsed === undefined)
+                        result.push(item);
+                    else
+                        result.push(...parsed.v);
+                    break;
+                }
+                case 'object': {
+                    if (Array.isArray(item))
+                        result.push(...item);
+                    else
+                        result.push(item);
+                    break;
+                }
+                default:
+                    result.push(item);
+                    break;
+            }
+        }
+        return result;
     }
 }
 

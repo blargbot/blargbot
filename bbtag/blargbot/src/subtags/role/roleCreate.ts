@@ -1,10 +1,9 @@
+import { BBTagRuntimeError } from '@bbtag/engine';
+import { Subtag } from '@bbtag/subtag';
 import { parse } from '@blargbot/core/utils/index.js';
 import * as Eris from 'eris';
 
-import { } from '@bbtag/subtag'
 import { p } from '../p.js';
-import { Subtag } from '@bbtag/subtag';
-import { BBTagRuntimeError } from '../../errors/BBTagRuntimeError.js';
 
 export class RoleCreateSubtag extends Subtag {
     public constructor() {

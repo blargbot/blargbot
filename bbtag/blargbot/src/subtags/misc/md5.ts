@@ -9,21 +9,12 @@ export class Md5Subtag extends Subtag {
         super({
             name: 'md5',
             aliases: ['md5encode'],
-            category: SubtagType.MISC,
-            deprecated: 'hash',
-            definition: [
-                {
-                    parameters: ['text'],
-                    description: tag.default.description,
-                    exampleCode: tag.default.exampleCode,
-                    exampleOut: tag.default.exampleOut,
-                    returns: 'string',
-                    execute: (_, [text]) => this.md5Hash(text.value)
-                }
-            ]
+            deprecated: true
         });
     }
 
+    @Subtag.signature({ id: 'default', returns: 'string' })
+        .parameter(p.string('text'))
     public md5Hash(value: string): string {
         const hash = createHash('md5');
         return hash.update(value).digest('hex');

@@ -1,27 +1,19 @@
 import { Subtag } from '@bbtag/subtag';
-import { humanize } from '@blargbot/core/utils/index.js';
 
+import { DecancerPlugin } from '../../plugins/DecancerPlugin.js';
 import { p } from '../p.js';
 
 export class DecancerSubtag extends Subtag {
     public constructor() {
         super({
-            name: 'decancer',
-            category: SubtagType.MISC,
-            definition: [
-                {
-                    parameters: ['text'],
-                    description: tag.default.description,
-                    exampleCode: tag.default.exampleCode,
-                    exampleOut: tag.default.exampleOut,
-                    returns: 'string',
-                    execute: (_, [text]) => this.decancer(text.value)
-                }
-            ]
+            name: 'decancer'
         });
     }
 
-    public decancer(text: string): string {
-        return humanize.decancer(text);
+    @Subtag.signature({ id: 'default', returns: 'string' })
+        .parameter(p.plugin(DecancerPlugin))
+        .parameter(p.string('text'))
+    public decancer(decancer: DecancerPlugin, text: string): string {
+        return decancer.decancer(text);
     }
 }

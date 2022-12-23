@@ -5,21 +5,12 @@ import { p } from '../p.js';
 export class CleanSubtag extends Subtag {
     public constructor() {
         super({
-            name: 'clean',
-            category: SubtagType.MISC,
-            definition: [
-                {
-                    parameters: ['text'],
-                    description: tag.default.description,
-                    exampleCode: tag.default.exampleCode,
-                    exampleOut: tag.default.exampleOut,
-                    returns: 'string',
-                    execute: (_, [text]) => this.clean(text.value)
-                }
-            ]
+            name: 'clean'
         });
     }
 
+    @Subtag.signature({ id: 'default', returns: 'string' })
+        .parameter(p.string('text'))
     public clean(text: string): string {
         return text.replace(/\s+/g, (match) => {
             if (match.includes('\n')) return '\n';

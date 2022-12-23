@@ -1,9 +1,8 @@
+import { BBTagRuntimeError } from '@bbtag/engine';
+import { Subtag } from '@bbtag/subtag';
 import * as Eris from 'eris';
 
-import { BBTagRuntimeError } from '../../errors/BBTagRuntimeError.js';
-import { } from '@bbtag/subtag'
 import { p } from '../p.js';
-import { Subtag } from '@bbtag/subtag';
 
 export class GuildBansSubtag extends Subtag {
     public constructor() {

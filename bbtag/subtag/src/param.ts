@@ -50,9 +50,9 @@ const param = {
 
 function createDeferred(name: string, options?: Partial<DeferredParameterItemOptions<() => InterruptableAsyncProcess<string>>>): RequiredSingleParameter<() => InterruptableAsyncProcess<string>>;
 function createDeferred<R>(name: string, reader: (value: InterruptableAsyncProcess<string>) => R, options?: Partial<DeferredParameterItemOptions<() => R>>): RequiredSingleParameter<() => R>;
-function createDeferred(name: string, ...args: [reader: (value: InterruptableAsyncProcess<string>) => unknown, options?: Partial<DeferredParameterItemOptions<() => unknown>>] | [options?: Partial<DeferredParameterItemOptions<() => unknown>>]): RequiredSingleParameter<() => unknown> {
-    const [reader, options] = typeof args[0] === 'function' ? [args[0], args[1]] : [(v: unknown) => v, args[0]];
-    return new RequiredSingleParameter(new DeferredArgumentReader(name, {
+function createDeferred<R>(name: string, ...args: [reader: (value: InterruptableAsyncProcess<string>) => R, options?: Partial<DeferredParameterItemOptions<() => R>>] | [options?: Partial<DeferredParameterItemOptions<() => R>>]): RequiredSingleParameter<() => R> {
+    const [reader, options] = typeof args[0] === 'function' ? [args[0], args[1]] : [(v: unknown) => v as R, args[0]];
+    return new RequiredSingleParameter(new DeferredArgumentReader<R>(name, {
         maxSize: defaultMaxSize,
         ...options,
         read: reader

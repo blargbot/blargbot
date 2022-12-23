@@ -42,6 +42,17 @@ export class RequiredSingleParameter<T> implements SubtagParameter<T, [T]>, Subt
         return new RepeatedSingleParameter(this.readers[0], minItems, maxItems);
     }
 
+    public map<R>(mapper: (value: T) => R): RequiredSingleParameter<R> {
+        const reader = this.readers[0];
+        return new RequiredSingleParameter<R>({
+            ...reader,
+            async * read(name, arg, script) {
+                const value = yield* reader.read(name, arg, script);
+                return mapper(value);
+            }
+        });
+    }
+
     public ifEmpty<Q>(value: Q): RequiredSingleParameter<T | Q> {
         const v = this.readers[0];
         return new RequiredSingleParameter<T | Q>({

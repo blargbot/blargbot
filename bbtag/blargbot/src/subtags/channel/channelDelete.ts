@@ -1,8 +1,8 @@
-import { Subtag } from '@bbtag/subtag'
-import { p } from '../p.js';
+import { BBTagRuntimeError } from '@bbtag/engine';
+import { Subtag } from '@bbtag/subtag';
 import * as Eris from 'eris';
 
-import { BBTagRuntimeError } from '../../errors/BBTagRuntimeError.js';
+import { p } from '../p.js';
 
 export class ChannelDeleteSubtag extends Subtag {
     public constructor() {

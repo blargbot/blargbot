@@ -8,8 +8,8 @@
     },
     "dependencies": {
         "@bbtag/engine": "workspace:^",
-        "@bbtag/subtag": "workspace:^",
-        "@bbtag/language": "workspace:^"
+        "@bbtag/language": "workspace:^",
+        "@bbtag/subtag": "workspace:^"
     },
     "scripts": {
         "index-subtags": "node ./subtags/index.template.js"

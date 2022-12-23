@@ -8,8 +8,9 @@ import type { SubtagResult, SubtagResultType } from './results/SubtagResult.js';
 import StringReturnAdapter from './results/SubtagStringResult.js';
 import TransparentReturnAdapter from './results/SubtagTransparentResult.js';
 
+const signaturesList: unique symbol = Symbol('SignaturesList');
+
 export abstract class Subtag implements Iterable<SubtagCompilationItem> {
-    static readonly #signatures = new Map<unknown, Array<(subtag: Subtag) => SubtagCompilationItem>>();
     readonly #options: SubtagOptions;
 
     public static signature<Result>(options: SubtagSignatureDecoratorOptions<SubtagResult<Result>>): SubtagSignatureDecorator<[], Result>;
@@ -27,22 +28,18 @@ export abstract class Subtag implements Iterable<SubtagCompilationItem> {
             SubtagSignatureDecoratorFn<Parameters, ReturnType>,
             Required<Partial<SubtagSignatureDecorator<Parameters, ReturnType>>>
         >((target, methodName) => {
-            let signatures = this.#signatures.get(target);
-            if (signatures === undefined)
-                this.#signatures.set(target, signatures = []);
-
-            signatures.push(self => ({
+            getSignatureList(target).push(self => ({
                 id: `${self.#options.name}.${options.id}`,
                 names: options.subtagName ?? [self.#options.name, ...self.#options.aliases ?? []],
                 parameters: parameters,
                 implementation(script, ...args) {
-                    const result = (self as typeof target)[methodName](...args as Parameters);
+                    const result = self[methodName](...args as Parameters);
                     return options.returns.execute(result, script);
                 }
             }));
         }, {
             parameter: p => this.#createSignatureDecorator([...parameters, p], options)
-        }) satisfies SubtagSignatureDecorator<Parameters, ReturnType>;
+        });
     }
 
     public constructor(options: SubtagOptions) {
@@ -50,9 +47,22 @@ export abstract class Subtag implements Iterable<SubtagCompilationItem> {
     }
 
     public *[Symbol.iterator](): Generator<SubtagCompilationItem> {
-        for (const signature of Subtag.#signatures.get(Object.getPrototypeOf(this)) ?? [])
+        for (const signature of getSignatureList(this))
             yield signature(this);
     }
+}
+
+function getSignatureList<Target extends Subtag>(target: Target): Array<(self: Target) => SubtagCompilationItem> {
+    let signatures = (target as { [signaturesList]?: ReturnType<typeof getSignatureList<Target>>; })[signaturesList] ?? [];
+    if (!Object.prototype.hasOwnProperty.call(target, signaturesList)) {
+        Object.defineProperty(target, signaturesList, {
+            configurable: false,
+            enumerable: false,
+            writable: false,
+            value: signatures = [...signatures]
+        });
+    }
+    return signatures;
 }
 
 const wellKnownReturnAdapters = {
@@ -67,6 +77,7 @@ const wellKnownReturnAdapters = {
 export interface SubtagOptions {
     readonly name: string;
     readonly aliases?: Iterable<string>;
+    readonly deprecated?: boolean;
 }
 
 interface SubtagSignatureDecoratorFn<Parameters extends readonly unknown[], ReturnType> {

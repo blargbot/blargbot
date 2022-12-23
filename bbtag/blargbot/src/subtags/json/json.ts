@@ -1,8 +1,8 @@
-import { } from '@bbtag/subtag'
-import { p } from '../p.js';
+import { BBTagRuntimeError } from '@bbtag/engine';
 import { Subtag } from '@bbtag/subtag';
-import { BBTagRuntimeError } from '../../errors/BBTagRuntimeError.js';
+
 import { bbtag, SubtagType } from '../../utils/index.js';
+import { p } from '../p.js';
 
 export class JsonSubtag extends Subtag {
     public constructor() {

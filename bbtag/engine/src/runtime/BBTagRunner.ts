@@ -5,7 +5,7 @@ import type { BBTagScriptOptions } from './BBTagScript.js';
 import type { SubtagCallEvaluator } from './SubtagCallEvaluator.js';
 
 export class BBTagRunner {
-    readonly #plugins: (process: BBTagProcess) => Iterable<object>;
+    readonly #plugins: ReadonlyArray<((process: BBTagProcess) => object) | object>;
     readonly #evaluator: SubtagCallEvaluator;
 
     public constructor(options: BBTagRunnerOptions) {
@@ -18,9 +18,9 @@ export class BBTagRunner {
         const process = new BBTagProcess({
             script: options.script,
             signal: options.signal,
-            plugins: p => [
-                ...this.#plugins(p),
-                ...options.plugins(p)
+            plugins: [
+                ...this.#plugins,
+                ...options.plugins
             ],
             evaluator: this.#evaluator
         });
@@ -38,13 +38,13 @@ export class BBTagRunner {
 }
 
 export interface BBTagRunnerOptions {
-    readonly plugins: (process: BBTagProcess) => Iterable<object>;
+    readonly plugins: Array<((process: BBTagProcess) => object) | object>;
     readonly evaluator: SubtagCallEvaluator;
 }
 
 export interface BBTagExecuteArgs {
     readonly signal: AbortSignal;
-    readonly plugins: (process: BBTagProcess) => Iterable<object>;
+    readonly plugins: Array<((process: BBTagProcess) => object) | object>;
     readonly script: BBTagScriptOptions;
 }
 

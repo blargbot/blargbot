@@ -42,7 +42,7 @@ export class BBTagProcess extends BBTagClosure implements InterruptableAsyncProc
         this.return = result.return.bind(result);
         this.throw = result.throw.bind(result);
 
-        this.plugins = new BBTagPluginManager(options.plugins(this));
+        this.plugins = new BBTagPluginManager(options.plugins.map(p => typeof p === 'object' ? p : p(this)));
     }
 
     public [Symbol.asyncIterator](): this {
@@ -66,7 +66,7 @@ export class BBTagProcess extends BBTagClosure implements InterruptableAsyncProc
 
 export interface BBTagRuntimeArgs {
     readonly signal: AbortSignal;
-    readonly plugins: (process: BBTagProcess) => Iterable<object>;
+    readonly plugins: Array<((process: BBTagProcess) => object) | object>;
     readonly script: BBTagScriptOptions;
     readonly evaluator: SubtagCallEvaluator;
     readonly initialData?: Record<string, BBTagClosureValue>;
