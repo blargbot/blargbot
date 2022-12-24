@@ -1,5 +1,5 @@
 import type { BBTagScript } from '@bbtag/engine';
-import { Subtag } from '@bbtag/subtag';
+import { arrayResultAdapter, Subtag } from '@bbtag/subtag';
 
 import { p } from '../p.js';
 
@@ -10,8 +10,9 @@ export class ArgsArraySubtag extends Subtag {
         });
     }
 
-    @Subtag.signature({ id: 'default', returns: 'string[]' })
+    @Subtag.signature({ id: 'default' })
         .parameter(p.script)
+        .useConversion(arrayResultAdapter)
     public getInput(context: BBTagScript): string[] {
         return context.options.args;
     }

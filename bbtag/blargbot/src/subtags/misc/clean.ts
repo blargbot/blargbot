@@ -9,7 +9,7 @@ export class CleanSubtag extends Subtag {
         });
     }
 
-    @Subtag.signature({ id: 'default', returns: 'string' })
+    @Subtag.signature({ id: 'default' })
         .parameter(p.string('text'))
     public clean(text: string): string {
         return text.replace(/\s+/g, (match) => {

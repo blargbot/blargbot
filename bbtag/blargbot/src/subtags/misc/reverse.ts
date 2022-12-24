@@ -11,7 +11,7 @@ export class ReverseSubtag extends Subtag {
         });
     }
 
-    @Subtag.signature({ id: 'default', returns: 'string' })
+    @Subtag.signature({ id: 'default' })
         .parameter(p.plugin(ArrayPlugin))
         .parameter(p.plugin(VariablesPlugin))
         .parameter(p.string('text'))

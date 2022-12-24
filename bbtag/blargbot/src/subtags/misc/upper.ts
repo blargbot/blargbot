@@ -9,7 +9,7 @@ export class UpperSubtag extends Subtag {
         });
     }
 
-    @Subtag.signature({ id: 'default', returns: 'string' })
+    @Subtag.signature({ id: 'default' })
         .parameter(p.string('text'))
     public uppercase(text: string): string {
         return text.toUpperCase();

@@ -1,4 +1,4 @@
-import { Subtag } from '@bbtag/subtag';
+import { booleanResultAdapter, Subtag } from '@bbtag/subtag';
 
 import { InvalidOperatorError } from '../../errors/InvalidOperatorError.js';
 import { NotABooleanError } from '../../errors/NotABooleanError.js';
@@ -18,7 +18,7 @@ export class BoolSubtag extends Subtag {
         });
     }
 
-    @Subtag.signature({ id: 'conditionElse', returns: 'boolean' })
+    @Subtag.signature({ id: 'conditionElse' })
         .parameter(p.plugin(ArrayPlugin))
         .parameter(p.plugin(BooleanPlugin))
         .parameter(p.plugin(ComparePlugin))
@@ -26,6 +26,7 @@ export class BoolSubtag extends Subtag {
         .parameter(p.string('value1'))
         .parameter(p.string('operator'))
         .parameter(p.string('value2'))
+        .useConversion(booleanResultAdapter)
     public runCondition(
         array: ArrayPlugin,
         boolean: BooleanPlugin,

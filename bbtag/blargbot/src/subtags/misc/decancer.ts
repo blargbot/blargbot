@@ -10,7 +10,7 @@ export class DecancerSubtag extends Subtag {
         });
     }
 
-    @Subtag.signature({ id: 'default', returns: 'string' })
+    @Subtag.signature({ id: 'default' })
         .parameter(p.plugin(DecancerPlugin))
         .parameter(p.string('text'))
     public decancer(decancer: DecancerPlugin, text: string): string {

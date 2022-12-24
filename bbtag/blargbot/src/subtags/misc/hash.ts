@@ -1,7 +1,7 @@
 import { createHash, getHashes } from 'node:crypto';
 
 import { BBTagRuntimeError } from '@bbtag/engine';
-import { Subtag } from '@bbtag/subtag';
+import { numberResultAdapter, Subtag } from '@bbtag/subtag';
 
 import { p } from '../p.js';
 
@@ -16,8 +16,9 @@ export class HashSubtag extends Subtag {
         });
     }
 
-    @Subtag.signature({ id: 'basic', returns: 'number' })
+    @Subtag.signature({ id: 'basic' })
         .parameter(p.string('text'))
+        .useConversion(numberResultAdapter)
     public computeHash(text: string): number {
         return text.split('')
             .reduce(function (a, b) {
@@ -26,7 +27,7 @@ export class HashSubtag extends Subtag {
             }, 0);
     }
 
-    @Subtag.signature({ id: 'secure', returns: 'string' })
+    @Subtag.signature({ id: 'secure' })
         .parameter(p.string('algorithm'))
         .parameter(p.string('text'))
     public computeStrongHash(algorithm: string, text: string): string {

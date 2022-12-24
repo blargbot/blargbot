@@ -1,5 +1,5 @@
 import { BBTagRuntimeError } from '@bbtag/engine';
-import { Subtag } from '@bbtag/subtag';
+import { Subtag, transparentResultAdapter } from '@bbtag/subtag';
 
 import { p } from '../p.js';
 
@@ -10,9 +10,10 @@ export class ChooseSubtag extends Subtag {
         });
     }
 
-    @Subtag.signature({ id: 'default', returns: 'transparent' })
+    @Subtag.signature({ id: 'default' })
         .parameter(p.int('choice'))
         .parameter(p.deferred('options').repeat())
+        .useConversion(transparentResultAdapter)
     public choose<T>(index: number, options: Array<() => T>): T {
         if (index < 0)
             throw new BBTagRuntimeError('Choice cannot be negative');

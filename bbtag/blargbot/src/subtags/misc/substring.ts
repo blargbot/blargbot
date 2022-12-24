@@ -9,7 +9,7 @@ export class SubstringSubtag extends Subtag {
         });
     }
 
-    @Subtag.signature({ id: 'default', returns: 'string' })
+    @Subtag.signature({ id: 'default' })
         .parameter(p.string('text'))
         .parameter(p.int('start').tryFallback())
         .parameter(p.int('end').tryFallback().optional())

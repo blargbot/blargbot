@@ -11,7 +11,7 @@ export class BrainfuckSubtag extends Subtag {
         });
     }
 
-    @Subtag.signature({ id: 'default', returns: 'string' })
+    @Subtag.signature({ id: 'default' })
         .parameter(p.plugin(BrainfuckPlugin))
         .parameter(p.string('code'))
         .parameter(p.string('input').optional(''))

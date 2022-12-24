@@ -1,4 +1,5 @@
-import { Subtag } from '@bbtag/subtag'
+import { Subtag } from '@bbtag/subtag';
+
 import { p } from '../p.js';
 
 export class RoundSubtag extends Subtag {
@@ -8,7 +9,7 @@ export class RoundSubtag extends Subtag {
         });
     }
 
-    @Subtag.signature(p.float('number')).returns('number')
+    @Subtag.signature(p.float('number')).useConversion('number')
     public round(number: number): number {
         return Math.round(number);
     }

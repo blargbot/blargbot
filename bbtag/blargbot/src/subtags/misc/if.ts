@@ -1,5 +1,5 @@
 import { processAsyncResult } from '@bbtag/engine';
-import { Subtag } from '@bbtag/subtag';
+import { Subtag, transparentResultAdapter } from '@bbtag/subtag';
 
 import { ArrayPlugin } from '../../plugins/ArrayPlugin.js';
 import { BooleanPlugin } from '../../plugins/BooleanPlugin.js';
@@ -15,10 +15,11 @@ export class IfSubtag extends Subtag {
         });
     }
 
-    @Subtag.signature({ id: 'valueElse', returns: 'transparent' })
+    @Subtag.signature({ id: 'valueElse' })
         .parameter(p.boolean('boolean'))
         .parameter(p.deferred('then'))
-        .parameter(p.deferred('else').optional(() => processAsyncResult('')))
+        .parameter(p.deferred('else').optional(() => processAsyncResult(''), true))
+        .useConversion(transparentResultAdapter)
     public simpleBooleanCheck<T>(
         bool: boolean,
         thenCode: () => T,
@@ -27,7 +28,7 @@ export class IfSubtag extends Subtag {
         return bool ? thenCode() : elseCode();
     }
 
-    @Subtag.signature({ id: 'conditionElse', returns: 'transparent' })
+    @Subtag.signature({ id: 'conditionElse' })
         .parameter(p.plugin(ArrayPlugin))
         .parameter(p.plugin(BooleanPlugin))
         .parameter(p.plugin(ComparePlugin))
@@ -36,7 +37,8 @@ export class IfSubtag extends Subtag {
         .parameter(p.string('operator'))
         .parameter(p.string('value2'))
         .parameter(p.deferred('then'))
-        .parameter(p.deferred('else').optional(() => processAsyncResult('')))
+        .parameter(p.deferred('else').optional(() => processAsyncResult(''), true))
+        .useConversion(transparentResultAdapter)
     public evaluatorCheck<T>(
         array: ArrayPlugin,
         boolean: BooleanPlugin,

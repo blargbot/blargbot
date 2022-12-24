@@ -10,7 +10,7 @@ export class HtmlEncodeSubtag extends Subtag {
         });
     }
 
-    @Subtag.signature({ id: 'default', returns: 'string' })
+    @Subtag.signature({ id: 'default' })
         .parameter(p.plugin(HtmlPlugin))
         .parameter(p.string('text'))
     public htmlEncode(html: HtmlPlugin, text: string): string {

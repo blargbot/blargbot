@@ -1,4 +1,4 @@
-import { Subtag } from '@bbtag/subtag';
+import { emptyResultAdapter, Subtag } from '@bbtag/subtag';
 
 export class LangSubtag extends Subtag {
     public constructor() {
@@ -8,7 +8,8 @@ export class LangSubtag extends Subtag {
         });
     }
 
-    @Subtag.signature({ id: 'default', returns: 'void' })
+    @Subtag.signature({ id: 'default' })
+        .useConversion(emptyResultAdapter)
     public godIHateThisSubtag(): void {
         /* NOOP */
     }

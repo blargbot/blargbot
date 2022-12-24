@@ -1,4 +1,5 @@
-import { Subtag } from '@bbtag/subtag';
+import type { InterruptableProcess } from '@bbtag/engine';
+import { Subtag, transparentResultAdapter } from '@bbtag/subtag';
 
 import { p } from '../p.js';
 
@@ -10,9 +11,12 @@ export class VoidSubtag extends Subtag {
         });
     }
 
-    @Subtag.signature({ id: 'default', returns: 'void' })
-        .parameter(p.string('code').repeat())
-    public returnNothing(): void {
-        /*NOOP*/
+    @Subtag.signature({ id: 'default' })
+        .parameter(p.deferred('code').repeat())
+        .useConversion(transparentResultAdapter)
+    public async * execute(args: Array<() => InterruptableProcess<string>>): InterruptableProcess<''> {
+        for (const arg of args)
+            yield* arg();
+        return '';
     }
 }

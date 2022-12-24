@@ -10,7 +10,7 @@ export class TimeSubtag extends Subtag {
         });
     }
 
-    @Subtag.signature({ id: 'default', returns: 'string' })
+    @Subtag.signature({ id: 'default' })
         .parameter(p.plugin(TimePlugin))
         .parameter(p.string('format').optional('YYYY-MM-DDTHH:mm:ssZ'))
         .parameter(p.string('time').optional('now'))

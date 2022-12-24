@@ -13,7 +13,7 @@ export class Md5Subtag extends Subtag {
         });
     }
 
-    @Subtag.signature({ id: 'default', returns: 'string' })
+    @Subtag.signature({ id: 'default' })
         .parameter(p.string('text'))
     public md5Hash(value: string): string {
         const hash = createHash('md5');

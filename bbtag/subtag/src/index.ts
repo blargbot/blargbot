@@ -25,10 +25,10 @@ export * from './readers/StringArgumentReader.js';
 export * from './readers/SubtagArgumentReader.js';
 export * from './readers/TransparentArgumentReader.js';
 
-export * from './results/SubtagBooleanResult.js';
-export * from './results/SubtagNumberResult.js';
-export * from './results/SubtagArrayResult.js';
-export * from './results/SubtagStringResult.js';
-export * from './results/SubtagResult.js';
-export * from './results/SubtagTransparentResult.js';
-export * from './results/SubtagEmptyResult.js';
+export * from './results/booleanResultAdapter.js';
+export * from './results/numberResultAdapter.js';
+export * from './results/arrayResultAdapter.js';
+export * from './results/stringResultAdapter.js';
+export * from './results/SubtagResultAdapter.js';
+export * from './results/transparentResultAdapter.js';
+export * from './results/emptyResultAdapter.js';

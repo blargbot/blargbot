@@ -10,7 +10,7 @@ export class SpaceSubtag extends Subtag {
         });
     }
 
-    @Subtag.signature({ id: 'default', returns: 'string' })
+    @Subtag.signature({ id: 'default' })
         .parameter(p.int('count').tryFallback().optional(1))
     public getSpaces(count: number): string {
         // TODO: limit count

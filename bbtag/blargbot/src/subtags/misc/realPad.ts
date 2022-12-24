@@ -10,12 +10,12 @@ export class RealPadSubtag extends Subtag {
         });
     }
 
-    @Subtag.signature({ id: 'default', returns: 'string' })
+    @Subtag.signature({ id: 'default' })
         .parameter(p.string('text'))
         .parameter(p.int('length'))
         .parameter(p.const(' '))
         .parameter(p.const('right'))
-    @Subtag.signature({ id: 'withDirection', returns: 'string' })
+    @Subtag.signature({ id: 'withDirection' })
         .parameter(p.string('text'))
         .parameter(p.int('length'))
         .parameter(p.string('filler').ifEmpty(' '))

@@ -1,5 +1,5 @@
 import type { BBTagScript } from '@bbtag/engine';
-import { Subtag } from '@bbtag/subtag';
+import { booleanResultAdapter, Subtag } from '@bbtag/subtag';
 
 import { p } from '../p.js';
 
@@ -11,8 +11,9 @@ export class IsCustomCommandSubtag extends Subtag {
         });
     }
 
-    @Subtag.signature({ id: 'default', returns: 'boolean' })
+    @Subtag.signature({ id: 'default' })
         .parameter(p.script)
+        .useConversion(booleanResultAdapter)
     public isCC(context: BBTagScript): boolean {
         return context.options.type === 'cc';
     }

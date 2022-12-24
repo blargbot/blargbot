@@ -9,10 +9,10 @@ export class CapitalizeSubtag extends Subtag {
         });
     }
 
-    @Subtag.signature({ id: 'ignoreRest', returns: 'string' })
+    @Subtag.signature({ id: 'ignoreRest' })
         .parameter(p.string('text'))
         .parameter(p.const(false))
-    @Subtag.signature({ id: 'restLower', returns: 'string' })
+    @Subtag.signature({ id: 'restLower' })
         .parameter(p.string('text'))
         .parameter(p.string('lower').map(() => true))
     public capitalize(text: string, lowercase: boolean): string {

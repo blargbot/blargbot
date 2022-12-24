@@ -10,7 +10,7 @@ export class EscapeBBTagSubtag extends Subtag {
         });
     }
 
-    @Subtag.signature({ id: 'default', returns: 'string' })
+    @Subtag.signature({ id: 'default' })
         .parameter(p.raw('input').optional().repeat().flatMap(v => v.join(';')))
     public escape(text: string): string {
         return text;

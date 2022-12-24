@@ -1,5 +1,5 @@
 import { processAsyncResult } from '@bbtag/engine';
-import { Subtag } from '@bbtag/subtag';
+import { Subtag, transparentResultAdapter } from '@bbtag/subtag';
 
 import { ArrayPlugin } from '../../plugins/ArrayPlugin.js';
 import { StringPlugin } from '../../plugins/StringPlugin.js';
@@ -12,7 +12,7 @@ export class SwitchSubtag extends Subtag {
         });
     }
 
-    @Subtag.signature({ id: 'default', returns: 'transparent' })
+    @Subtag.signature({ id: 'default' })
         .parameter(p.string('value'))
         .parameter(p.group(
             p.string('case'),
@@ -26,7 +26,8 @@ export class SwitchSubtag extends Subtag {
                 yield { options, then };
             }
         }))
-        .parameter(p.deferred('default').optional(() => processAsyncResult('')))
+        .parameter(p.deferred('default').optional(() => processAsyncResult(''), true))
+        .useConversion(transparentResultAdapter)
     public switch<T>(
         value: string,
         cases: Iterable<{ readonly options: Iterable<string>; readonly then: () => T; }>,

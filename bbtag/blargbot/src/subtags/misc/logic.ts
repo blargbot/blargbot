@@ -1,4 +1,4 @@
-import { Subtag } from '@bbtag/subtag';
+import { booleanResultAdapter, Subtag } from '@bbtag/subtag';
 
 import { InvalidOperatorError } from '../../errors/InvalidOperatorError.js';
 import { NotABooleanError } from '../../errors/NotABooleanError.js';
@@ -14,10 +14,11 @@ export class LogicSubtag extends Subtag {
         });
     }
 
-    @Subtag.signature({ id: 'default', returns: 'boolean' })
+    @Subtag.signature({ id: 'default' })
         .parameter(p.plugin(BooleanPlugin))
         .parameter(p.string('operator'))
         .parameter(p.string('values').repeat())
+        .useConversion(booleanResultAdapter)
     public applyLogicOperation(boolean: BooleanPlugin, operator: string, values: string[]): boolean {
         let op;
         const args = [operator, ...values];

@@ -11,7 +11,7 @@ export class RandomStringSubtag extends Subtag {
         });
     }
 
-    @Subtag.signature({ id: 'default', returns: 'string' })
+    @Subtag.signature({ id: 'default' })
         .parameter(p.string('chars'))
         .parameter(p.int('count').tryFallback())
     public randStr(

@@ -1,4 +1,4 @@
-import { Subtag } from '@bbtag/subtag';
+import { booleanResultAdapter, numberResultAdapter, Subtag } from '@bbtag/subtag';
 
 import { InvalidOperatorError } from '../../errors/InvalidOperatorError.js';
 import { NotABooleanError } from '../../errors/NotABooleanError.js';
@@ -28,7 +28,7 @@ export class OperatorSubtag extends Subtag {
 
     }
 
-    @Subtag.signature({ id: 'error', returns: 'void' })
+    @Subtag.signature({ id: 'error' })
         .parameter(p.name)
         .parameter(p.string('values').repeat())
     public returnError(subtagName: string): never {
@@ -109,17 +109,18 @@ export class OperatorSubtag extends Subtag {
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 function ordinalOp<T extends OrdinalOperator>(name: T) {
-    return Subtag.signature({ id: name, returns: 'boolean', subtagName: name })
+    return Subtag.signature({ id: name, subtagName: name })
         .parameter(p.plugin(ArrayPlugin))
         .parameter(p.plugin(StringPlugin))
         .parameter(p.plugin(ComparePlugin))
         .parameter(p.string('values').repeat())
-        .parameter(p.const(ordinalOperators[name]));
+        .parameter(p.const(ordinalOperators[name]))
+        .useConversion(booleanResultAdapter);
 }
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 function aggregateOp<T extends AggregationOperator>(name: T) {
-    return Subtag.signature({ id: name, returns: 'string', subtagName: name })
+    return Subtag.signature({ id: name, subtagName: name })
         .parameter(p.plugin(ArrayPlugin))
         .parameter(p.plugin(StringPlugin))
         .parameter(p.string('values').repeat())
@@ -128,28 +129,31 @@ function aggregateOp<T extends AggregationOperator>(name: T) {
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 function setOp<T extends SetOperator>(name: T) {
-    return Subtag.signature({ id: name, returns: 'boolean', subtagName: name })
+    return Subtag.signature({ id: name, subtagName: name })
         .parameter(p.plugin(ArrayPlugin))
         .parameter(p.plugin(StringPlugin))
         .parameter(p.string('target'))
         .parameter(p.string('values').optional().repeat())
-        .parameter(p.const(setOperators[name]));
+        .parameter(p.const(setOperators[name]))
+        .useConversion(booleanResultAdapter);
 }
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 function numberOp<T extends NumericOperator>(name: T) {
-    return Subtag.signature({ id: name, returns: 'number', subtagName: name })
+    return Subtag.signature({ id: name, subtagName: name })
         .parameter(p.plugin(ArrayPlugin))
         .parameter(p.plugin(NumberPlugin))
         .parameter(p.string('values').repeat())
-        .parameter(p.const(numericOperators[name]));
+        .parameter(p.const(numericOperators[name]))
+        .useConversion(numberResultAdapter);
 }
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 function logicOp<T extends LogicOperator>(name: T) {
-    return Subtag.signature({ id: name, returns: 'boolean', subtagName: name })
+    return Subtag.signature({ id: name, subtagName: name })
         .parameter(p.plugin(ArrayPlugin))
         .parameter(p.plugin(BooleanPlugin))
         .parameter(p.string('values').repeat())
-        .parameter(p.const(logicOperators[name]));
+        .parameter(p.const(logicOperators[name]))
+        .useConversion(booleanResultAdapter);
 }

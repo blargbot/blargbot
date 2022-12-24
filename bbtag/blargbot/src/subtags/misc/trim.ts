@@ -9,7 +9,7 @@ export class TrimSubtag extends Subtag {
         });
     }
 
-    @Subtag.signature({ id: 'default', returns: 'string' })
+    @Subtag.signature({ id: 'default' })
         .parameter(p.string('text'))
     public trim(text: string): string {
         return text.trim();

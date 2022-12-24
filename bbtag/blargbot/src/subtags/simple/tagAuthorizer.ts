@@ -11,7 +11,7 @@ export class TagAuthorizerSubtag extends Subtag {
         });
     }
 
-    @Subtag.signature({ id: 'default', returns: 'string' })
+    @Subtag.signature({ id: 'default' })
         .parameter(p.script)
     public getAuthorizer(script: BBTagScript): string {
         return script.options.authorizer;

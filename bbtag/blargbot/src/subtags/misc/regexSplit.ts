@@ -1,4 +1,4 @@
-import { Subtag } from '@bbtag/subtag';
+import { arrayResultAdapter, Subtag } from '@bbtag/subtag';
 
 import { p } from '../p.js';
 
@@ -9,9 +9,10 @@ export class RegexSplitSubtag extends Subtag {
         });
     }
 
-    @Subtag.signature({ id: 'default', returns: 'string[]' })
+    @Subtag.signature({ id: 'default' })
         .parameter(p.string('text'))
         .parameter(p.regex('regex', { maxSize: 50000 }))
+        .useConversion(arrayResultAdapter)
     public regexSplit(text: string, regex: RegExp): string[] {
         return text.split(regex);
     }

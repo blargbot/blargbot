@@ -10,7 +10,7 @@ export class UnindentSubtag extends Subtag {
         });
     }
 
-    @Subtag.signature({ id: 'default', returns: 'string' })
+    @Subtag.signature({ id: 'default' })
         .parameter(p.string('text'))
         .parameter(p.int('level').optional())
     public unindent(text: string, level?: number): string {

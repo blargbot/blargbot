@@ -1,7 +1,8 @@
-import { Subtag } from '@bbtag/subtag';
+import { Subtag, transparentResultAdapter } from '@bbtag/subtag';
 
 import type { BBTagArrayRef } from '../../plugins/ArrayPlugin.js';
-import SubtagVariableResult from '../../results/SubtagVariableResult.js';
+import type { BBTagVariableValue } from '../../plugins/VariablesPlugin.js';
+import { jsonResultAdapter } from '../../results/jsonResultAdapter.js';
 import { p } from '../p.js';
 
 export class RandomChooseSubtag extends Subtag {
@@ -12,21 +13,23 @@ export class RandomChooseSubtag extends Subtag {
         });
     }
 
-    @Subtag.signature({ id: 'args', returns: 'transparent' })
+    @Subtag.signature({ id: 'args' })
         .parameter(p.deferred('choices').repeat(2, Infinity))
+        .useConversion(transparentResultAdapter)
     public randChooseArg<T>(choices: Array<() => T>): T {
         const index = Math.floor(Math.random() * choices.length);
         return choices[index]();
     }
 
-    @Subtag.signature({ id: 'array', returns: SubtagVariableResult })
+    @Subtag.signature({ id: 'array' })
         .parameter(p.array('choices'))
-    public randChoose({ v: choices }: BBTagArrayRef): JToken {
+        .useConversion(jsonResultAdapter)
+    public randChoose({ v: choices }: BBTagArrayRef): BBTagVariableValue {
         const index = Math.floor(Math.random() * choices.length);
         return choices[index];
     }
 
-    @Subtag.signature({ id: 'single', returns: 'string' })
+    @Subtag.signature({ id: 'single' })
         .parameter(p.string('choices'))
     public randChooseSingle(value: string): string {
         return value;

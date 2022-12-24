@@ -1,4 +1,4 @@
-import { Subtag } from '@bbtag/subtag';
+import { emptyResultAdapter, Subtag } from '@bbtag/subtag';
 
 import { ReplacementPlugin } from '../../plugins/ReplacementPlugin.js';
 import { p } from '../p.js';
@@ -10,15 +10,16 @@ export class RegexReplaceSubtag extends Subtag {
         });
     }
 
-    @Subtag.signature({ id: 'output', returns: 'void' })
+    @Subtag.signature({ id: 'output' })
         .parameter(p.plugin(ReplacementPlugin))
         .parameter(p.regex('phrase', { maxSize: 50000 }))
         .parameter(p.string('replacement'))
+        .useConversion(emptyResultAdapter)
     public setOutputReplacement(context: ReplacementPlugin, regex: RegExp, replacement: string): void {
         context.replacer = v => v.replace(regex, replacement);
     }
 
-    @Subtag.signature({ id: 'text', returns: 'string' })
+    @Subtag.signature({ id: 'text' })
         .parameter(p.string('text'))
         .parameter(p.regex('phrase', { maxSize: 50000 }))
         .parameter(p.string('replacement'))

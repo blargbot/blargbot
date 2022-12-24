@@ -10,7 +10,7 @@ export class UriDecodeSubtag extends Subtag {
         });
     }
 
-    @Subtag.signature({ id: 'default', returns: 'string' })
+    @Subtag.signature({ id: 'default' })
         .parameter(p.string('text'))
     public decodeUri(text: string): string {
         try {

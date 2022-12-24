@@ -9,7 +9,7 @@ export class LowerSubtag extends Subtag {
         });
     }
 
-    @Subtag.signature({ id: 'default', returns: 'string' })
+    @Subtag.signature({ id: 'default' })
         .parameter(p.string('text'))
     public lowercase(value: string): string {
         return value.toLowerCase();

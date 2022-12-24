@@ -1,4 +1,4 @@
-import { Subtag } from '@bbtag/subtag';
+import { emptyResultAdapter, Subtag } from '@bbtag/subtag';
 
 import { p } from '../p.js';
 
@@ -10,8 +10,9 @@ export class CommentSubtag extends Subtag {
         });
     }
 
-    @Subtag.signature({ id: 'default', returns: 'void' })
+    @Subtag.signature({ id: 'default' })
         .parameter(p.raw('anything').optional().repeat())
+        .useConversion(emptyResultAdapter)
     public doNothing(): void {
         /*NOOP*/
     }

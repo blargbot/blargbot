@@ -11,7 +11,7 @@ export class PadSubtag extends Subtag {
         });
     }
 
-    @Subtag.signature({ id: 'default', returns: 'string' })
+    @Subtag.signature({ id: 'default' })
         .parameter(p.string('direction'))
         .parameter(p.string('back'))
         .parameter(p.string('text'))

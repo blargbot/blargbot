@@ -7,7 +7,7 @@ export class RbSubtag extends Subtag {
         });
     }
 
-    @Subtag.signature({ id: 'default', returns: 'string' })
+    @Subtag.signature({ id: 'default' })
     public getCloseBrace(): '}' {
         return '}';
     }

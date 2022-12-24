@@ -1,4 +1,4 @@
-import { Subtag } from '@bbtag/subtag';
+import { numberResultAdapter, Subtag } from '@bbtag/subtag';
 
 import { ArrayPlugin } from '../../plugins/ArrayPlugin.js';
 import { p } from '../p.js';
@@ -10,9 +10,10 @@ export class LengthSubtag extends Subtag {
         });
     }
 
-    @Subtag.signature({ id: 'default', returns: 'number' })
+    @Subtag.signature({ id: 'default' })
         .parameter(p.plugin(ArrayPlugin))
         .parameter(p.string('value'))
+        .useConversion(numberResultAdapter)
     public getLength(array: ArrayPlugin, value: string): number {
         const deserializedArray = array.parseArray(value);
         if (deserializedArray !== undefined)

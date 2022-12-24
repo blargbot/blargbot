@@ -13,14 +13,14 @@ export class ColorSubtag extends Subtag {
         });
     }
 
-    @Subtag.signature({ id: 'default', returns: 'string' })
+    @Subtag.signature({ id: 'default' })
         .parameter(p.plugin(ColorPlugin))
         .parameter(p.plugin(ArrayPlugin))
         .parameter(p.plugin(VariablesPlugin))
         .parameter(p.string('color'))
         .parameter(p.string('outputFormat').optional(''))
         .parameter(p.const(''))
-    @Subtag.signature({ id: 'convert', returns: 'string' })
+    @Subtag.signature({ id: 'convert' })
         .parameter(p.plugin(ColorPlugin))
         .parameter(p.plugin(ArrayPlugin))
         .parameter(p.plugin(VariablesPlugin))
