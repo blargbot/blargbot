@@ -2,6 +2,8 @@ import { createParamHelper, defaultMaxSize, RequiredSingleParameter } from '@bbt
 
 import type { ArrayArgumentReaderOptions } from '../parameters/ArrayArgumentReader.js';
 import { ArrayArgumentReader } from '../parameters/ArrayArgumentReader.js';
+import type { BooleanArgumentReaderOptions } from '../parameters/BooleanArgumentReader.js';
+import { BooleanArgumentReader } from '../parameters/BooleanArgumentReader.js';
 import type { FloatArgumentReaderOptions } from '../parameters/FloatArgumentReader.js';
 import { FloatArgumentReader } from '../parameters/FloatArgumentReader.js';
 import type { IntArgumentReaderOptions } from '../parameters/IntArgumentReader.js';
@@ -17,6 +19,11 @@ export const p = createParamHelper({
     })),
     float: (name: string, options?: Partial<FloatArgumentReaderOptions>) => new RequiredSingleParameter(new FloatArgumentReader(name, {
         maxSize: defaultMaxSize,
+        ...options
+    })),
+    boolean: (name: string, options?: Partial<BooleanArgumentReaderOptions>) => new RequiredSingleParameter(new BooleanArgumentReader(name, {
+        maxSize: defaultMaxSize,
+        allowNumbers: true,
         ...options
     })),
     regex: (name: string, options?: Partial<RegexArgumentReaderOptions>) => new RequiredSingleParameter(new RegexArgumentReader(name, {

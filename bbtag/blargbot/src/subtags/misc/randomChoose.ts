@@ -1,6 +1,6 @@
 import { Subtag } from '@bbtag/subtag';
 
-import type { BBTagArrayRef } from '../../index.js';
+import type { BBTagArrayRef } from '../../plugins/ArrayPlugin.js';
 import SubtagVariableResult from '../../results/SubtagVariableResult.js';
 import { p } from '../p.js';
 

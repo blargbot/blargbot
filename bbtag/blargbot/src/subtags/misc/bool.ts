@@ -1,50 +1,93 @@
-import { InvalidOperatorError } from '@bbtag/engine';
 import { Subtag } from '@bbtag/subtag';
-import { parse } from '@blargbot/core/utils/index.js';
 
-import { bbtag, SubtagType } from '../../utils/index.js';
+import { InvalidOperatorError } from '../../errors/InvalidOperatorError.js';
+import { NotABooleanError } from '../../errors/NotABooleanError.js';
+import { isLogicOperator, logicOperators } from '../../operators/logicOperators.js';
+import { isOrdinalOperator, ordinalOperators } from '../../operators/ordinalOperators.js';
+import { isSetOperator, setOperators } from '../../operators/setOperators.js';
+import { ArrayPlugin } from '../../plugins/ArrayPlugin.js';
+import { BooleanPlugin } from '../../plugins/BooleanPlugin.js';
+import { ComparePlugin } from '../../plugins/ComparePlugin.js';
+import { StringPlugin } from '../../plugins/StringPlugin.js';
 import { p } from '../p.js';
 
 export class BoolSubtag extends Subtag {
     public constructor() {
         super({
-            name: 'bool',
-            category: SubtagType.MISC,
-            definition: [
-                {
-                    parameters: ['arg1', 'evaluator', 'arg2'],
-                    description: tag.default.description({ operators: Object.keys(bbtag.comparisonOperators) }),
-                    exampleCode: tag.default.exampleCode,
-                    exampleOut: tag.default.exampleOut,
-                    returns: 'boolean',
-                    execute: (_, [arg1, evaluator, arg2]) => this.runCondition(arg1.value, evaluator.value, arg2.value)
-                }
-            ]
+            name: 'bool'
         });
     }
 
+    @Subtag.signature({ id: 'conditionElse', returns: 'boolean' })
+        .parameter(p.plugin(ArrayPlugin))
+        .parameter(p.plugin(BooleanPlugin))
+        .parameter(p.plugin(ComparePlugin))
+        .parameter(p.plugin(StringPlugin))
+        .parameter(p.string('value1'))
+        .parameter(p.string('operator'))
+        .parameter(p.string('value2'))
     public runCondition(
-        left: string,
-        evaluator: string,
-        right: string
+        array: ArrayPlugin,
+        boolean: BooleanPlugin,
+        compare: ComparePlugin,
+        string: StringPlugin,
+        value1: string,
+        operator: string,
+        value2: string
     ): boolean {
-        let operator;
-        if (bbtag.isComparisonOperator(evaluator)) {
-            operator = evaluator;
-        } else if (bbtag.isComparisonOperator(left)) {
-            [left, operator] = [evaluator, left];
-        } else if (bbtag.isComparisonOperator(right)) {
-            [operator, right] = [right, evaluator];
-        } else
-            throw new InvalidOperatorError(evaluator);
+        return BoolSubtag.runCondition(array, boolean, compare, string, value1, operator, value2);
+    }
 
-        const leftBool = parse.boolean(left, undefined, false);
-        if (leftBool !== undefined)
-            left = leftBool.toString();
-        const rightBool = parse.boolean(right, undefined, false);
-        if (rightBool !== undefined)
-            right = rightBool.toString();
+    public static runCondition(
+        array: ArrayPlugin,
+        boolean: BooleanPlugin,
+        compare: ComparePlugin,
+        string: StringPlugin,
+        value1: string,
+        operator: string,
+        value2: string
+    ): boolean {
+        const success = this.#test(array, boolean, compare, string, value1, operator, value2)
+            ?? this.#test(array, boolean, compare, string, operator, value1, value2)
+            ?? this.#test(array, boolean, compare, string, value2, value1, operator);
 
-        return bbtag.operate(operator, left, right);
+        if (success === undefined)
+            throw new InvalidOperatorError(operator);
+
+        return success;
+    }
+
+    static #test(
+        array: ArrayPlugin,
+        boolean: BooleanPlugin,
+        compare: ComparePlugin,
+        string: StringPlugin,
+        value1: string,
+        operator: string,
+        value2: string
+    ): boolean | undefined {
+        if (isSetOperator(operator)) {
+            const left = array.parseArray(value1)?.v.map(v => string.toString(v)) ?? value1;
+            const right = value2;
+            return setOperators[operator](left, right);
+        }
+
+        if (isOrdinalOperator(operator)) {
+            const left = boolean.parseBoolean(value1, { allowNumbers: false })?.toString() ?? value1;
+            const right = boolean.parseBoolean(value2, { allowNumbers: false })?.toString() ?? value2;
+            return ordinalOperators[operator](compare.compare(left, right), 0);
+        }
+
+        if (isLogicOperator(operator)) {
+            const left = boolean.parseBoolean(value1);
+            if (left === undefined)
+                throw new NotABooleanError(value1);
+            const right = boolean.parseBoolean(value2);
+            if (right === undefined)
+                throw new NotABooleanError(value2);
+            return logicOperators[operator]([left, right]);
+        }
+
+        return undefined;
     }
 }

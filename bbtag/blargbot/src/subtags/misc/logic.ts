@@ -1,58 +1,53 @@
-import { InvalidOperatorError, NotABooleanError } from '@bbtag/engine';
 import { Subtag } from '@bbtag/subtag';
-import { parse } from '@blargbot/core/utils/index.js';
 
-import type { LogicOperator } from '../../utils/index.js';
-import { bbtag, SubtagType } from '../../utils/index.js';
+import { InvalidOperatorError } from '../../errors/InvalidOperatorError.js';
+import { NotABooleanError } from '../../errors/NotABooleanError.js';
+import type { LogicOperator } from '../../operators/logicOperators.js';
+import { isLogicOperator, logicOperators } from '../../operators/logicOperators.js';
+import { BooleanPlugin } from '../../plugins/BooleanPlugin.js';
 import { p } from '../p.js';
 
 export class LogicSubtag extends Subtag {
     public constructor() {
         super({
-            name: 'logic',
-            category: SubtagType.MISC,
-            definition: [
-                {
-                    parameters: ['operator', 'values+'],
-                    description: tag.default.description({ operators: [...Object.keys(bbtag.logicOperators), '^'] }),
-                    exampleCode: tag.default.exampleCode,
-                    exampleOut: tag.default.exampleOut,
-                    returns: 'boolean',
-                    execute: (_, values) => this.applyLogicOperation(values.map(arg => arg.value))
-                }
-            ]
+            name: 'logic'
         });
     }
 
-    public applyLogicOperation(args: string[]): boolean {
-        let operator;
-
+    @Subtag.signature({ id: 'default', returns: 'boolean' })
+        .parameter(p.plugin(BooleanPlugin))
+        .parameter(p.string('operator'))
+        .parameter(p.string('values').repeat())
+    public applyLogicOperation(boolean: BooleanPlugin, operator: string, values: string[]): boolean {
+        let op;
+        const args = [operator, ...values];
         for (let i = 0; i < args.length; i++) {
             const operatorName = args[i].toLowerCase();
-            operator = toLogicOperator(operatorName);
-            if (operator !== undefined) {
+            op = toLogicOperator(operatorName);
+            if (op !== undefined) {
                 args.splice(i, 1);
                 break;
             }
         }
 
-        if (operator === undefined)
+        if (op === undefined)
             throw new InvalidOperatorError(args[0]);
 
-        const values = args;
-        const parsed = values.map((value) => {
-            const parsed = parse.boolean(value);
-            if (parsed === undefined)
-                throw new NotABooleanError(value);
-            return parsed;
-        });
-
-        return bbtag.operate(operator, parsed);
+        return logicOperators[op](args.map(v => {
+            if (typeof v === 'boolean')
+                return v;
+            if (typeof v !== 'string')
+                throw new NotABooleanError(v);
+            const res = boolean.parseBoolean(v);
+            if (res === undefined)
+                throw new NotABooleanError(v);
+            return res;
+        }));
     }
 }
 
 function toLogicOperator(operator: string): LogicOperator | undefined {
-    if (bbtag.isLogicOperator(operator))
+    if (isLogicOperator(operator))
         return operator;
     if (operator === '^')
         return 'xor';

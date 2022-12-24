@@ -1,7 +1,7 @@
 import type { BBTagScript, InterruptableAsyncProcess } from '@bbtag/engine';
 import type { SubtagArgument, SubtagArgumentReader } from '@bbtag/subtag';
 
-import { NotANumberError } from '../index.js';
+import { NotANumberError } from '../errors/NotANumberError.js';
 import { NumberPlugin } from '../plugins/NumberPlugin.js';
 
 export class IntArgumentReader implements SubtagArgumentReader<number> {

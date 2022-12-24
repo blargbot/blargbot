@@ -24,22 +24,24 @@ export abstract class Subtag implements Iterable<SubtagCompilationItem> {
         parameters: { [P in keyof Parameters]: SubtagParameter<Parameters[P]> },
         options: SubtagSignatureDecoratorOptions<SubtagResult<ReturnType>>
     ): SubtagSignatureDecorator<Parameters, ReturnType> {
-        return Object.assign<
-            SubtagSignatureDecoratorFn<Parameters, ReturnType>,
-            Required<Partial<SubtagSignatureDecorator<Parameters, ReturnType>>>
-        >((target, methodName) => {
-            getSignatureList(target).push(self => ({
-                id: `${self.#options.name}.${options.id}`,
-                names: options.subtagName ?? [self.#options.name, ...self.#options.aliases ?? []],
-                parameters: parameters,
-                implementation(script, ...args) {
-                    const result = self[methodName](...args as Parameters);
-                    return options.returns.execute(result, script);
-                }
-            }));
-        }, {
-            parameter: p => this.#createSignatureDecorator([...parameters, p], options)
-        });
+        const decorator: Required<Partial<SubtagSignatureDecorator<Parameters, ReturnType>>> = {
+            parameter: p => this.#createSignatureDecorator([...parameters, p], options),
+            implementedBy: (target, methodName) => {
+                if (typeof target === 'function')
+                    target = target.prototype as Extract<typeof target, Subtag>;
+
+                getSignatureList(target).push(self => ({
+                    id: `${self.#options.name}.${options.id}`,
+                    names: options.subtagName ?? [self.#options.name, ...self.#options.aliases ?? []],
+                    parameters: parameters,
+                    implementation(script, ...args) {
+                        const result = self[methodName](...args as Parameters);
+                        return options.returns.execute(result, script);
+                    }
+                }));
+            }
+        };
+        return Object.assign(decorator.implementedBy, decorator);
     }
 
     public constructor(options: SubtagOptions) {
@@ -81,11 +83,12 @@ export interface SubtagOptions {
 }
 
 interface SubtagSignatureDecoratorFn<Parameters extends readonly unknown[], ReturnType> {
-    <This extends SignatureDecoratorThis<MethodName, ReturnType, Parameters>, MethodName extends PropertyKey>(target: This, method: MethodName): void;
+    <This extends SignatureDecoratorThis<MethodName, ReturnType, Parameters>, MethodName extends PropertyKey>(target: This | (abstract new (...args: never) => This), method: MethodName): void;
 }
 
 export interface SubtagSignatureDecorator<Parameters extends readonly unknown[], ReturnType> extends SubtagSignatureDecoratorFn<Parameters, ReturnType> {
     parameter<Parameter>(parameter: SubtagParameter<Parameter>): SubtagSignatureDecorator<[...Parameters, Parameter], ReturnType>;
+    implementedBy: SubtagSignatureDecoratorFn<Parameters, ReturnType>;
 }
 
 export interface SubtagSignatureDecoratorOptions<Return> {

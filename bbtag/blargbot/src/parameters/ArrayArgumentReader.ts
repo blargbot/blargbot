@@ -2,8 +2,8 @@ import type { BBTagScript, InterruptableAsyncProcess } from '@bbtag/engine';
 import type { SubtagArgument, SubtagArgumentReader } from '@bbtag/subtag';
 
 import { NotAnArrayError } from '../errors/NotAnArrayError.js';
-import type { BBTagArrayRef } from '../index.js';
-import { ArrayPlugin } from '../index.js';
+import type { BBTagArrayRef } from '../plugins/ArrayPlugin.js';
+import { ArrayPlugin } from '../plugins/ArrayPlugin.js';
 import { VariablesPlugin } from '../plugins/VariablesPlugin.js';
 
 export class ArrayArgumentReader implements SubtagArgumentReader<BBTagArrayRef> {

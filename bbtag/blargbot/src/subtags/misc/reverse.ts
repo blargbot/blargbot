@@ -1,6 +1,6 @@
 import { Subtag } from '@bbtag/subtag';
 
-import { ArrayPlugin } from '../../index.js';
+import { ArrayPlugin } from '../../plugins/ArrayPlugin.js';
 import { VariablesPlugin } from '../../plugins/VariablesPlugin.js';
 import { p } from '../p.js';
 
