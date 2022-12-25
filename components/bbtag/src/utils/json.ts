@@ -28,13 +28,6 @@ export const json = Object.freeze({
 
         return { variable: input, object: {} };
     },
-    parseObj(input: string): JObject | JArray {
-        let obj = this.parse(input) ?? {};
-        if (typeof obj !== 'object')
-            obj = {};
-
-        return obj;
-    },
     get(input: JToken | undefined, path: string | readonly string[]): JToken | undefined {
         return this.getPathKeys(path)
             .reduce((obj, part) => {

@@ -1,30 +1,25 @@
 import { BBTagRuntimeError } from '@bbtag/engine';
 import { Subtag } from '@bbtag/subtag';
 
-import { bbtag, SubtagType } from '../../utils/index.js';
+import { JsonPlugin } from '../../plugins/JsonPlugin.js';
+import type { BBTagVariableValue } from '../../plugins/VariablesPlugin.js';
+import { jsonResultAdapter } from '../../results/jsonResultAdapter.js';
 import { p } from '../p.js';
 
 export class JsonSubtag extends Subtag {
     public constructor() {
         super({
             name: 'json',
-            category: SubtagType.JSON,
-            aliases: ['j'],
-            definition: [
-                {
-                    parameters: ['~input?:{}'],
-                    description: tag.default.description,
-                    exampleCode: tag.default.exampleCode,
-                    exampleOut: tag.default.exampleOut,
-                    returns: 'json',
-                    execute: (_, [value]) => this.getJson(value.raw)
-                }
-            ]
+            aliases: ['j']
         });
     }
 
-    public getJson(input: string): JToken {
-        const result = bbtag.json.parse(input);
+    @Subtag.signature({ id: 'default' })
+        .parameter(p.plugin(JsonPlugin))
+        .parameter(p.raw('input').optional('{}'))
+        .useConversion(jsonResultAdapter)
+    public parse(json: JsonPlugin, input: string): BBTagVariableValue {
+        const result = json.parse(input);
         if (result === undefined)
             throw new BBTagRuntimeError('Invalid JSON provided');
         return result;
