@@ -79,7 +79,7 @@ function ensureOwnSignatureList<Target extends Subtag>(target: Target): Array<(s
 }
 
 export interface SubtagOptions {
-    readonly name?: string;
+    readonly name: string;
     readonly aliases?: Iterable<string>;
     readonly deprecated?: boolean;
 }
