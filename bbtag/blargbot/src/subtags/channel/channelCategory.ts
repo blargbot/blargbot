@@ -1,49 +1,36 @@
-import { BBTagRuntimeError, ChannelNotFoundError } from '@bbtag/engine';
-import { Subtag } from '@bbtag/subtag'
+import { BBTagRuntimeError } from '@bbtag/engine';
+import { Subtag } from '@bbtag/subtag';
+
+import { ChannelNotFoundError } from '../../errors/ChannelNotFoundError.js';
+import type { Channel } from '../../plugins/ChannelPlugin.js';
+import { ChannelPlugin } from '../../plugins/ChannelPlugin.js';
 import { p } from '../p.js';
 
 export class ChannelCategorySubtag extends Subtag {
     public constructor() {
         super({
             name: 'channelCategory',
-            aliases: ['category'],
-            category: SubtagType.CHANNEL,
-            definition: [
-                {
-                    parameters: [],
-                    description: tag.current.description,
-                    exampleCode: tag.current.exampleCode,
-                    exampleOut: tag.current.exampleOut,
-                    returns: 'id',
-                    execute: (ctx) => this.getCategory(ctx, ctx.channel.id, true)
-                },
-                {
-                    parameters: ['channel', 'quiet?'],
-                    description: tag.channel.description,
-                    exampleCode: tag.channel.exampleCode,
-                    exampleOut: tag.channel.exampleOut,
-                    returns: 'id',
-                    execute: (ctx, [channel, quiet]) => this.getCategory(ctx, channel.value, quiet.value !== '')
-                }
-            ]
+            aliases: ['category']
         });
     }
 
-    public async getCategory(
-        context: BBTagContext,
-        channelStr: string,
-        quiet: boolean
-    ): Promise<string> {
-        quiet ||= context.scopes.local.quiet ?? false;
-        const channel = await context.queryChannel(channelStr, { noLookup: quiet });
-        if (channel === undefined)
-            throw new ChannelNotFoundError(channelStr)
-                .withDisplay(quiet ? '' : undefined);
-
-        if (typeof channel.parentID !== 'string')
+    @Subtag.signature({ id: 'current' })
+        .parameter(p.plugin(ChannelPlugin).map(c => c.currentChannel))
+    @Subtag.signature({ id: 'channel' })
+        .parameter(p.group(p.string('channel'), p.quiet)
+            .transform(async function* ([channel, quiet], script) {
+                const channels = script.process.plugins.get(ChannelPlugin);
+                const result = await channels.query(channel, { noLookup: quiet });
+                if (result !== undefined)
+                    return result;
+                throw new ChannelNotFoundError(channel)
+                    .withDisplay(quiet ? '' : undefined);
+            }))
+    public getCategory(channel: Channel): string {
+        if (typeof channel.category !== 'string')
             throw new BBTagRuntimeError('Channel has no parent')
                 .withDisplay('');
 
-        return channel.parentID;
+        return channel.category;
     }
 }

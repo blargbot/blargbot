@@ -1,7 +1,7 @@
 import type { BBTagScript, InterruptableProcess, SubtagCallEvaluator } from '@bbtag/engine';
 import { BBTagRuntimeError, NotEnoughArgumentsError, TooManyArgumentsError, UnknownSubtagError } from '@bbtag/engine';
 
-import type { SubtagParameter, SubtagParameterType } from '../parameter/SubtagParameter.js';
+import type { SubtagParameterDetails, SubtagParameterType } from '../parameter/SubtagParameter.js';
 import { SubtagArgument } from '../SubtagArgument.js';
 import type { SubtagCompilationItem } from './SubtagCompilationItem.js';
 
@@ -12,7 +12,7 @@ export class SubtagCompilationKernel {
         this.#nameMap = new Map();
     }
 
-    public add<P extends readonly SubtagParameter[]>(item: SubtagCompilationItem<P>): void
+    public add<P extends readonly SubtagParameterDetails[]>(item: SubtagCompilationItem<P>): void
     public add(item: SubtagCompilationItem): void {
         const factory = new SubtagBinderFactory(item);
         for (const name of item.names) {
@@ -59,7 +59,7 @@ class SubtagBinderAggregator {
         this.#maxArgs = -Infinity;
     }
 
-    public add<P extends readonly SubtagParameter[]>(factory: SubtagBinderFactory<P>): void
+    public add<P extends readonly SubtagParameterDetails[]>(factory: SubtagBinderFactory<P>): void
     public add(factory: SubtagBinderFactory): void {
         this.#factories.push(factory);
         if (this.#minArgs > factory.minArgs)
@@ -119,7 +119,7 @@ function hasValue<T>(value: T): value is NonNullable<T> {
     return value !== null && value !== undefined;
 }
 
-class SubtagBinderFactory<P extends readonly SubtagParameter[] = readonly SubtagParameter[]> {
+class SubtagBinderFactory<P extends readonly SubtagParameterDetails[] = readonly SubtagParameterDetails[]> {
     readonly #implementation: SubtagCompilationItem<P>['implementation'];
     readonly #parameters: SubtagCompilationItem<P>['parameters'];
     public readonly minArgs: number;
@@ -193,8 +193,8 @@ class SubtagBinderFactory<P extends readonly SubtagParameter[] = readonly Subtag
     }
 }
 
-type SubtagArgumentBinder<Parameters extends readonly SubtagParameter[] = readonly SubtagParameter[]> = (name: string, values: SubtagArgument[], script: BBTagScript) => InterruptableProcess<InvokerBindingDetails<Parameters>>;
-interface InvokerBindingDetails<Parameters extends readonly SubtagParameter[]> {
+type SubtagArgumentBinder<Parameters extends readonly SubtagParameterDetails[] = readonly SubtagParameterDetails[]> = (name: string, values: SubtagArgument[], script: BBTagScript) => InterruptableProcess<InvokerBindingDetails<Parameters>>;
+interface InvokerBindingDetails<Parameters extends readonly SubtagParameterDetails[]> {
     readonly implementation: SubtagCompilationItem<Parameters>['implementation'];
     readonly args: Parameters;
 }

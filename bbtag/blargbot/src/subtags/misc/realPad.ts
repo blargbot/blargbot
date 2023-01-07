@@ -18,7 +18,7 @@ export class RealPadSubtag extends Subtag {
     @Subtag.signature({ id: 'withDirection' })
         .parameter(p.string('text'))
         .parameter(p.int('length'))
-        .parameter(p.string('filler').ifEmpty(' '))
+        .parameter(p.string('filler').default(' '))
         .parameter(p.string('direction').optional('right'))
     public realPad(
         text: string,

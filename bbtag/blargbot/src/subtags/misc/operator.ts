@@ -30,7 +30,7 @@ export class OperatorSubtag extends Subtag {
 
     @Subtag.signature({ id: 'error' })
         .parameter(p.name)
-        .parameter(p.string('values').repeat())
+        .parameter(p.string('values').repeat(1))
     public returnError(subtagName: string): never {
         throw new InvalidOperatorError(subtagName);
     }
@@ -113,7 +113,7 @@ function ordinalOp<T extends OrdinalOperator>(name: T) {
         .parameter(p.plugin(ArrayPlugin))
         .parameter(p.plugin(StringPlugin))
         .parameter(p.plugin(ComparePlugin))
-        .parameter(p.string('values').repeat())
+        .parameter(p.string('values').repeat(1))
         .parameter(p.const(ordinalOperators[name]))
         .useConversion(booleanResultAdapter);
 }
@@ -123,7 +123,7 @@ function aggregateOp<T extends AggregationOperator>(name: T) {
     return Subtag.signature({ id: name, subtagName: name })
         .parameter(p.plugin(ArrayPlugin))
         .parameter(p.plugin(StringPlugin))
-        .parameter(p.string('values').repeat())
+        .parameter(p.string('values').repeat(1))
         .parameter(p.const(aggregationOperators[name]));
 }
 
@@ -133,7 +133,7 @@ function setOp<T extends SetOperator>(name: T) {
         .parameter(p.plugin(ArrayPlugin))
         .parameter(p.plugin(StringPlugin))
         .parameter(p.string('target'))
-        .parameter(p.string('values').optional().repeat())
+        .parameter(p.string('values').repeat(0))
         .parameter(p.const(setOperators[name]))
         .useConversion(booleanResultAdapter);
 }
@@ -143,7 +143,7 @@ function numberOp<T extends NumericOperator>(name: T) {
     return Subtag.signature({ id: name, subtagName: name })
         .parameter(p.plugin(ArrayPlugin))
         .parameter(p.plugin(NumberPlugin))
-        .parameter(p.string('values').repeat())
+        .parameter(p.string('values').repeat(1))
         .parameter(p.const(numericOperators[name]))
         .useConversion(numberResultAdapter);
 }
@@ -153,7 +153,7 @@ function logicOp<T extends LogicOperator>(name: T) {
     return Subtag.signature({ id: name, subtagName: name })
         .parameter(p.plugin(ArrayPlugin))
         .parameter(p.plugin(BooleanPlugin))
-        .parameter(p.string('values').repeat())
+        .parameter(p.string('values').repeat(1))
         .parameter(p.const(logicOperators[name]))
         .useConversion(booleanResultAdapter);
 }

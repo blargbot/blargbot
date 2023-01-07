@@ -12,7 +12,7 @@ export class HtmlDecodeSubtag extends Subtag {
 
     @Subtag.signature({ id: 'default' })
         .parameter(p.plugin(HtmlPlugin))
-        .parameter(p.string('html').repeat().flatMap(v => v.join(';')))
+        .parameter(p.string('html').repeat(1).map(v => v.join(';')))
     public htmlDecode(html: HtmlPlugin, text: string): string {
         return html.decode(text);
     }

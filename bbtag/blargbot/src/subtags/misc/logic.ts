@@ -17,7 +17,7 @@ export class LogicSubtag extends Subtag {
     @Subtag.signature({ id: 'default' })
         .parameter(p.plugin(BooleanPlugin))
         .parameter(p.string('operator'))
-        .parameter(p.string('values').repeat())
+        .parameter(p.string('values').repeat(1))
         .useConversion(booleanResultAdapter)
     public applyLogicOperation(boolean: BooleanPlugin, operator: string, values: string[]): boolean {
         let op;

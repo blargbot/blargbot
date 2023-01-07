@@ -7,15 +7,10 @@ export * from './compiler/SubtagCompilationItem.js';
 export * from './compiler/SubtagCompilationKernel.js';
 
 export * from './parameter/BBTagPluginParameter.js';
-export * from './parameter/BBTagScriptGetterParameter.js';
 export * from './parameter/BBTagScriptParameter.js';
-export * from './parameter/OptionalAggregatedParameter.js';
-export * from './parameter/OptionalSingleParameter.js';
-export * from './parameter/RepeatedAggregatedParameter.js';
-export * from './parameter/RepeatedFlatParameter.js';
-export * from './parameter/RepeatedSingleParameter.js';
-export * from './parameter/RequiredAggregatedParameter.js';
-export * from './parameter/RequiredSingleParameter.js';
+export * from './parameter/OptionalSubtagParameter.js';
+export * from './parameter/RepeatedSubtagParameter.js';
+export * from './parameter/RequiredSubtagParameter.js';
 export * from './parameter/SubtagNameParameter.js';
 export * from './parameter/SubtagParameter.js';
 

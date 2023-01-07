@@ -1,27 +1,20 @@
-import { Subtag } from '@bbtag/subtag'
+import { arrayResultAdapter, Subtag } from '@bbtag/subtag';
+
+import { ChannelPlugin } from '../../plugins/ChannelPlugin.js';
 import { p } from '../p.js';
-import { guard } from '@blargbot/core/utils/index.js';
 
 export class ChannelCategoriesSubtag extends Subtag {
     public constructor() {
         super({
             name: 'channelCategories',
-            category: SubtagType.CHANNEL,
-            aliases: ['categories'],
-            definition: [
-                {
-                    parameters: [],
-                    description: tag.default.description,
-                    exampleCode: tag.default.exampleCode,
-                    exampleOut: tag.default.exampleOut,
-                    returns: 'id[]',
-                    execute: (ctx) => this.getChannelCategories(ctx)
-                }
-            ]
+            aliases: ['categories']
         });
     }
 
-    public getChannelCategories(context: BBTagContext): string[] {
-        return context.guild.channels.filter(guard.isCategoryChannel).map(c => c.id);
+    @Subtag.signature({ id: 'default' })
+        .parameter(p.plugin(ChannelPlugin))
+        .useConversion(arrayResultAdapter)
+    public async getChannelCategories(channel: ChannelPlugin): Promise<string[]> {
+        return await channel.getCategories();
     }
 }

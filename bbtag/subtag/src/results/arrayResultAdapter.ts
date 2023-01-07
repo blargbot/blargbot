@@ -1,9 +1,8 @@
-import { processResult } from '@bbtag/engine';
-
 import type { SubtagResultAdapter } from './SubtagResultAdapter.js';
 
 export const arrayResultAdapter = {
-    execute(value) {
-        return processResult(JSON.stringify([...value]));
+    async *execute(value) {
+        const result = await value;
+        return JSON.stringify(Array.isArray(result) ? result : [...result]);
     }
-} satisfies SubtagResultAdapter<Iterable<unknown>>;
+} satisfies SubtagResultAdapter<Awaitable<Iterable<unknown>>>;

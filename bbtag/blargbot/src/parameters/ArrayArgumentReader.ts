@@ -9,6 +9,7 @@ import { VariablesPlugin } from '../plugins/VariablesPlugin.js';
 export class ArrayArgumentReader implements SubtagArgumentReader<BBTagArrayRef> {
     readonly #allowVarName: boolean;
 
+    public readonly reader = this;
     public readonly name: string;
     public readonly maxSize: number;
 

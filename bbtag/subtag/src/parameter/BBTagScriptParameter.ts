@@ -1,14 +1,13 @@
 import type { BBTagScript, InterruptableSyncProcess } from '@bbtag/engine';
-import { processResult } from '@bbtag/engine';
 
-import type { SubtagParameter } from './SubtagParameter.js';
+import { SubtagParameter } from './SubtagParameter.js';
 
-export class BBTagScriptParameter implements SubtagParameter<BBTagScript, readonly []> {
+export class BBTagScriptParameter extends SubtagParameter<BBTagScript, readonly []> {
     public readonly minRepeat = 0;
     public readonly maxRepeat = 0;
     public readonly readers = [] as const;
 
-    public aggregate(_name: string, _values: [], script: BBTagScript): InterruptableSyncProcess<BBTagScript> {
-        return processResult(script);
+    public *aggregate(_name: string, _values: [], script: BBTagScript): InterruptableSyncProcess<BBTagScript> {
+        return script;
     }
 }

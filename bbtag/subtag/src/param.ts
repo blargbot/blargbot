@@ -1,20 +1,19 @@
 import type { BBTagPluginType, InterruptableAsyncProcess } from '@bbtag/engine';
-import { processResult } from '@bbtag/engine';
 
 import { BBTagPluginParameter } from './parameter/BBTagPluginParameter.js';
 import { BBTagScriptParameter } from './parameter/BBTagScriptParameter.js';
 import { ConstParameter } from './parameter/ConstParameter.js';
 import { FallbackParameter } from './parameter/FallbackParameter.js';
-import { RequiredAggregatedParameter } from './parameter/RequiredAggregatedParameter.js';
-import { RequiredSingleParameter } from './parameter/RequiredSingleParameter.js';
+import { RequiredSubtagParameter } from './parameter/RequiredSubtagParameter.js';
 import { SubtagNameParameter } from './parameter/SubtagNameParameter.js';
+import { SubtagParameterGroup } from './parameter/SubtagParameterGroup.js';
 import type { DeferredParameterItemOptions } from './readers/DeferredArgumentReader.js';
 import { DeferredArgumentReader } from './readers/DeferredArgumentReader.js';
 import type { RawParameterItemOptions } from './readers/RawArgumentReader.js';
 import { RawArgumentReader } from './readers/RawArgumentReader.js';
 import type { StringParameterItemOptions } from './readers/StringArgumentReader.js';
 import { StringArgumentReader } from './readers/StringArgumentReader.js';
-import type { SubtagArgumentReader, SubtagArgumentReaderTypes } from './readers/SubtagArgumentReader.js';
+import type { SubtagArgumentReaderProvider, SubtagArgumentReaderTypes } from './readers/SubtagArgumentReader.js';
 
 export let defaultMaxSize = 1_000_000;
 
@@ -37,29 +36,35 @@ const param = {
     deferred: createDeferred,
     group: createGroup,
     const: <T>(value: T) => new ConstParameter(value),
-    raw: (name: string, options?: Partial<RawParameterItemOptions>) => new RequiredSingleParameter(new RawArgumentReader(name, {
+    raw: (name: string, options?: Partial<RawParameterItemOptions>) => new RequiredSubtagParameter(new RawArgumentReader(name, {
         maxSize: defaultMaxSize,
         ...options
     })),
-    string: (name: string, options?: Partial<StringParameterItemOptions>) => new RequiredSingleParameter(new StringArgumentReader(name, {
+    string: (name: string, options?: Partial<StringParameterItemOptions>) => new RequiredSubtagParameter(new StringArgumentReader(name, {
         maxSize: defaultMaxSize,
         ifEmpty: '',
         ...options
     }))
 };
 
-function createDeferred(name: string, options?: Partial<DeferredParameterItemOptions<() => InterruptableAsyncProcess<string>>>): RequiredSingleParameter<() => InterruptableAsyncProcess<string>>;
-function createDeferred<R>(name: string, reader: (value: InterruptableAsyncProcess<string>) => R, options?: Partial<DeferredParameterItemOptions<() => R>>): RequiredSingleParameter<() => R>;
-function createDeferred<R>(name: string, ...args: [reader: (value: InterruptableAsyncProcess<string>) => R, options?: Partial<DeferredParameterItemOptions<() => R>>] | [options?: Partial<DeferredParameterItemOptions<() => R>>]): RequiredSingleParameter<() => R> {
+function createDeferred(name: string, options?: Partial<DeferredParameterItemOptions<() => InterruptableAsyncProcess<string>>>): RequiredSubtagParameter<() => InterruptableAsyncProcess<string>>;
+function createDeferred<R>(name: string, reader: (value: InterruptableAsyncProcess<string>) => R, options?: Partial<DeferredParameterItemOptions<() => R>>): RequiredSubtagParameter<() => R>;
+function createDeferred<R>(name: string, ...args: [reader: (value: InterruptableAsyncProcess<string>) => R, options?: Partial<DeferredParameterItemOptions<() => R>>] | [options?: Partial<DeferredParameterItemOptions<() => R>>]): RequiredSubtagParameter<() => R> {
     const [reader, options] = typeof args[0] === 'function' ? [args[0], args[1]] : [(v: unknown) => v as R, args[0]];
-    return new RequiredSingleParameter(new DeferredArgumentReader<R>(name, {
+    return new RequiredSubtagParameter(new DeferredArgumentReader<R>(name, {
         maxSize: defaultMaxSize,
         ...options,
         read: reader
     }));
 }
 
-function createGroup<Items extends readonly SubtagArgumentReader[]>(...items: Items): RequiredAggregatedParameter<SubtagArgumentReaderTypes<Items>, SubtagArgumentReaderTypes<Items>>
-function createGroup(...items: SubtagArgumentReader[]): RequiredAggregatedParameter<unknown[], unknown[]> {
-    return new RequiredAggregatedParameter(items, v => processResult(v));
+function createGroup<Items extends readonly SubtagArgumentReaderProvider[]>(...items: Items): SubtagParameterGroup<SubtagArgumentReaderTypes<Items>>;
+function createGroup(...items: SubtagArgumentReaderProvider[]): SubtagParameterGroup<unknown[]> {
+    return new SubtagParameterGroup(items.map(x => x.reader));
+}
+
+export function deferredValue<T>(value: Awaitable<T>): () => () => InterruptableAsyncProcess<T> {
+    return () => async function* () {
+        return await value;
+    };
 }

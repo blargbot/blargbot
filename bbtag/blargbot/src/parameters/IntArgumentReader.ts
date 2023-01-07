@@ -7,6 +7,7 @@ import { NumberPlugin } from '../plugins/NumberPlugin.js';
 export class IntArgumentReader implements SubtagArgumentReader<number> {
     readonly #radix: number;
 
+    public readonly reader = this;
     public readonly name: string;
     public readonly maxSize: number;
 

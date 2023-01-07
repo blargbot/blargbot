@@ -5,6 +5,8 @@ import type { SubtagArgumentReader as SubtagArgumentReader } from './SubtagArgum
 
 export class StringArgumentReader implements SubtagArgumentReader<string> {
     readonly #ifEmpty: string;
+
+    public readonly reader = this;
     public readonly name: string;
     public readonly maxSize: number;
 

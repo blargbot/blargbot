@@ -1,14 +1,13 @@
 import type { InterruptableProcess } from '@bbtag/engine';
-import { processResult } from '@bbtag/engine';
 
-import type { SubtagParameter } from './SubtagParameter.js';
+import type { SubtagParameterDetails } from './SubtagParameter.js';
 
-export class SubtagNameParameter implements SubtagParameter<string, readonly []> {
+export class SubtagNameParameter implements SubtagParameterDetails<string, readonly []> {
     public readonly minRepeat = 0;
     public readonly maxRepeat = 0;
     public readonly readers = [] as const;
 
-    public aggregate(name: string): InterruptableProcess<string> {
-        return processResult(name);
+    public *aggregate(name: string): InterruptableProcess<string> {
+        return name;
     }
 }

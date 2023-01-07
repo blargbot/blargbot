@@ -1,9 +1,7 @@
-import { processAsyncResult } from '@bbtag/engine';
-
 import type { SubtagResultAdapter } from './SubtagResultAdapter.js';
 
 export const stringResultAdapter = {
-    execute(value) {
-        return processAsyncResult(value);
+    async *execute(value) {
+        return await value;
     }
 } satisfies SubtagResultAdapter<Awaitable<string>>;

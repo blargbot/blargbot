@@ -5,6 +5,7 @@ import { NotANumberError } from '../errors/NotANumberError.js';
 import { NumberPlugin } from '../plugins/NumberPlugin.js';
 
 export class FloatArgumentReader implements SubtagArgumentReader<number> {
+    public readonly reader = this;
     public readonly name: string;
     public readonly maxSize: number;
 

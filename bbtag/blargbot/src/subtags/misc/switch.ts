@@ -1,5 +1,4 @@
-import { processAsyncResult } from '@bbtag/engine';
-import { Subtag, transparentResultAdapter } from '@bbtag/subtag';
+import { deferredValue, Subtag, transparentResultAdapter } from '@bbtag/subtag';
 
 import { ArrayPlugin } from '../../plugins/ArrayPlugin.js';
 import { StringPlugin } from '../../plugins/StringPlugin.js';
@@ -14,19 +13,21 @@ export class SwitchSubtag extends Subtag {
 
     @Subtag.signature({ id: 'default' })
         .parameter(p.string('value'))
-        .parameter(p.group(
-            p.string('case'),
-            p.deferred('then')
-        ).repeat().flatMap(function* (values, script) {
-            const array = script.process.plugins.get(ArrayPlugin);
-            const string = script.process.plugins.get(StringPlugin);
-            for (const [caseValue, then] of values) {
-                const asArray = array.parseArray(caseValue);
-                const options = asArray?.v.map(v => string.toString(v)) ?? [caseValue];
-                yield { options, then };
-            }
-        }))
-        .parameter(p.deferred('default').optional(() => processAsyncResult(''), true))
+        .parameter(
+            p.group(
+                p.string('case'),
+                p.deferred('then')
+            ).repeat(0).map((values, script) => {
+                const array = script.process.plugins.get(ArrayPlugin);
+                const string = script.process.plugins.get(StringPlugin);
+                return values.map(([caseValue, then]) => {
+                    const asArray = array.parseArray(caseValue);
+                    const options = asArray?.v.map(v => string.toString(v)) ?? [caseValue];
+                    return { options, then };
+                });
+            })
+        )
+        .parameter(p.deferred('default').optional(deferredValue('')))
         .useConversion(transparentResultAdapter)
     public switch<T>(
         value: string,

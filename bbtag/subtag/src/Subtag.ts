@@ -1,6 +1,6 @@
 import type { SubtagCompilationItem } from './compiler/SubtagCompilationItem.js';
 import { stringResultAdapter } from './index.js';
-import type { SubtagParameter } from './parameter/SubtagParameter.js';
+import type { SubtagParameterDetails } from './parameter/SubtagParameter.js';
 import type { SubtagResultAdapter } from './results/SubtagResultAdapter.js';
 
 const signaturesList: unique symbol = Symbol('SignaturesList');
@@ -11,7 +11,7 @@ export abstract class Subtag implements Iterable<SubtagCompilationItem> {
     }
 
     static #createSignatureDecorator<Parameters extends readonly unknown[], ReturnType>(
-        parameters: { [P in keyof Parameters]: SubtagParameter<Parameters[P]> },
+        parameters: { [P in keyof Parameters]: SubtagParameterDetails<Parameters[P]> },
         resultAdapter: SubtagResultAdapter<ReturnType>,
         options: SubtagSignatureDecoratorOptions
     ): SubtagSignatureDecorator<Parameters, ReturnType> {
@@ -80,7 +80,7 @@ interface SubtagSignatureDecoratorFn<Parameters extends readonly unknown[], Retu
 }
 
 export interface SubtagSignatureDecorator<Parameters extends readonly unknown[], ReturnType> extends SubtagSignatureDecoratorFn<Parameters, ReturnType> {
-    parameter<Parameter>(parameter: SubtagParameter<Parameter>): SubtagSignatureDecorator<[...Parameters, Parameter], ReturnType>;
+    parameter<Parameter>(parameter: SubtagParameterDetails<Parameter>): SubtagSignatureDecorator<[...Parameters, Parameter], ReturnType>;
     useConversion<ReturnType>(adapter: SubtagResultAdapter<ReturnType>): SubtagSignatureDecorator<Parameters, ReturnType>;
     implementedBy: SubtagSignatureDecoratorFn<Parameters, ReturnType>;
 }

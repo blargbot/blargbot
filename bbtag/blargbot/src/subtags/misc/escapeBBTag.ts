@@ -11,7 +11,7 @@ export class EscapeBBTagSubtag extends Subtag {
     }
 
     @Subtag.signature({ id: 'default' })
-        .parameter(p.raw('input').optional().repeat().flatMap(v => v.join(';')))
+        .parameter(p.raw('input').repeat(0).map(v => v.join(';')))
     public escape(text: string): string {
         return text;
     }

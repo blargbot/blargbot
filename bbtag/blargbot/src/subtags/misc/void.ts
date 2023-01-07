@@ -12,7 +12,7 @@ export class VoidSubtag extends Subtag {
     }
 
     @Subtag.signature({ id: 'default' })
-        .parameter(p.deferred('code').repeat())
+        .parameter(p.deferred('code').repeat(0))
         .useConversion(transparentResultAdapter)
     public async * execute(args: Array<() => InterruptableProcess<string>>): InterruptableProcess<''> {
         for (const arg of args)

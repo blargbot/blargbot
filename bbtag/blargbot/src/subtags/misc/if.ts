@@ -1,5 +1,4 @@
-import { processAsyncResult } from '@bbtag/engine';
-import { Subtag, transparentResultAdapter } from '@bbtag/subtag';
+import { deferredValue, Subtag, transparentResultAdapter } from '@bbtag/subtag';
 
 import { ArrayPlugin } from '../../plugins/ArrayPlugin.js';
 import { BooleanPlugin } from '../../plugins/BooleanPlugin.js';
@@ -18,7 +17,7 @@ export class IfSubtag extends Subtag {
     @Subtag.signature({ id: 'valueElse' })
         .parameter(p.boolean('boolean'))
         .parameter(p.deferred('then'))
-        .parameter(p.deferred('else').optional(() => processAsyncResult(''), true))
+        .parameter(p.deferred('else').optional(deferredValue(''), false))
         .useConversion(transparentResultAdapter)
     public simpleBooleanCheck<T>(
         bool: boolean,
@@ -37,7 +36,7 @@ export class IfSubtag extends Subtag {
         .parameter(p.string('operator'))
         .parameter(p.string('value2'))
         .parameter(p.deferred('then'))
-        .parameter(p.deferred('else').optional(() => processAsyncResult(''), true))
+        .parameter(p.deferred('else').optional(deferredValue(''), false))
         .useConversion(transparentResultAdapter)
     public evaluatorCheck<T>(
         array: ArrayPlugin,

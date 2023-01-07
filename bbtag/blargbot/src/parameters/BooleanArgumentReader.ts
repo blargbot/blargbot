@@ -7,6 +7,7 @@ import { BooleanPlugin } from '../plugins/BooleanPlugin.js';
 export class BooleanArgumentReader implements SubtagArgumentReader<boolean> {
     readonly #allowNumbers: boolean;
 
+    public readonly reader = this;
     public readonly name: string;
     public readonly maxSize: number;
 
