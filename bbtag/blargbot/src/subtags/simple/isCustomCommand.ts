@@ -13,7 +13,7 @@ export class IsCustomCommandSubtag extends Subtag {
 
     @Subtag.signature({ id: 'default' })
         .parameter(p.script)
-        .useConversion(booleanResultAdapter)
+        .convertResultUsing(booleanResultAdapter)
     public isCC(context: BBTagScript): boolean {
         return context.options.type === 'cc';
     }

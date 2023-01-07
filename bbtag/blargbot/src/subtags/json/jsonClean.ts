@@ -18,7 +18,7 @@ export class JsonCleanSubtag extends Subtag {
         .parameter(p.plugin(JsonPlugin))
         .parameter(p.plugin(VariablesPlugin))
         .parameter(p.string('input').optional('{}'))
-        .useConversion(jsonResultAdapter)
+        .convertResultUsing(jsonResultAdapter)
     public async cleanJson(json: JsonPlugin, variables: VariablesPlugin, input: string): Promise<BBTagVariableValue> {
         let value = json.parse(input);
         if (value === undefined) {

@@ -23,9 +23,12 @@ export class RequiredSubtagParameter<T> extends SubtagParameter<T, [T]> implemen
     }
 
     public optional<R>(fallback: () => R, alsoDefault: false): OptionalSubtagParameter<T, R>;
+    public optional<R>(fallback: () => R, alsoDefault?: true): OptionalSubtagParameter<T | R, R>;
     public optional<R>(fallback: () => R, alsoDefault?: boolean): OptionalSubtagParameter<T | R, R>;
     public optional<R>(fallback: R, alsoDefault: false): OptionalSubtagParameter<T, R>;
+    public optional<R>(fallback: R, alsoDefault?: true): OptionalSubtagParameter<T | R, R>;
     public optional<R>(fallback: R, alsoDefault?: boolean): OptionalSubtagParameter<T | R, R>;
+    public optional(fallback?: () => undefined, alsoDefault?: true): OptionalSubtagParameter<T | undefined, undefined>
     public optional(fallback?: () => undefined, alsoDefault?: boolean): OptionalSubtagParameter<T | undefined, undefined>
     public optional<R>(fallback?: R | (() => R), alsoDefault = true): OptionalSubtagParameter<T | R, R> {
         const fb = typeof fallback === 'function' ? fallback as () => R : () => fallback as R;

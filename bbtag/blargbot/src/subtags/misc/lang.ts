@@ -9,7 +9,7 @@ export class LangSubtag extends Subtag {
     }
 
     @Subtag.signature({ id: 'default' })
-        .useConversion(emptyResultAdapter)
+        .convertResultUsing(emptyResultAdapter)
     public godIHateThisSubtag(): void {
         /* NOOP */
     }

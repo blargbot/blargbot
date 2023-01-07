@@ -13,7 +13,7 @@ export class RegexMatchSubtag extends Subtag {
     @Subtag.signature({ id: 'default' })
         .parameter(p.string('text'))
         .parameter(p.regex('regex', { maxSize: 50000 }))
-        .useConversion(arrayResultAdapter)
+        .convertResultUsing(arrayResultAdapter)
     public regexMatch(text: string, regex: RegExp): string[] {
         const matches = text.match(regex);
         return matches ?? [];

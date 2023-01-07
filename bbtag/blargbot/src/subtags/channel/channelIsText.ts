@@ -1,48 +1,35 @@
-import { guard } from '@blargbot/core/utils/index.js';
+import { booleanResultAdapter, Subtag } from '@bbtag/subtag';
 
-import { ChannelNotFoundError } from '@bbtag/engine';
-import { } from '@bbtag/subtag'
+import type { Channel } from '../../plugins/ChannelPlugin.js';
+import { ChannelPlugin, ChannelType } from '../../plugins/ChannelPlugin.js';
 import { p } from '../p.js';
-import { Subtag } from '@bbtag/subtag';
 
 export class ChannelIsTextSubtag extends Subtag {
     public constructor() {
         super({
             name: 'channelIsText',
-            aliases: ['isText'],
-            category: SubtagType.CHANNEL,
-            definition: [
-                {
-                    parameters: [],
-                    description: tag.current.description,
-                    exampleCode: tag.current.exampleCode,
-                    exampleOut: tag.current.exampleOut,
-                    returns: 'boolean',
-                    execute: (ctx) => this.isTextChannel(ctx, ctx.channel.id, true)
-                },
-                {
-                    parameters: ['channel', 'quiet?'],
-                    description: tag.channel.description,
-                    exampleCode: tag.channel.exampleCode,
-                    exampleOut: tag.channel.exampleOut,
-                    returns: 'boolean',
-                    execute: (ctx, [channel, quiet]) => this.isTextChannel(ctx, channel.value, quiet.value !== '')
-                }
-            ]
+            aliases: ['isText']
         });
     }
 
-    public async isTextChannel(
-        context: BBTagContext,
-        channelStr: string,
-        quiet: boolean
-    ): Promise<boolean> {
-        quiet ||= context.scopes.local.quiet ?? false;
-        const channel = await context.queryChannel(channelStr, { noLookup: quiet });
-        if (channel === undefined) {
-            throw new ChannelNotFoundError(channelStr)
-                .withDisplay(quiet ? '' : undefined);
-        }
-        return guard.isTextableChannel(channel);
+    @Subtag.signature({ id: 'current' })
+        .parameter(p.plugin(ChannelPlugin).map(c => c.current))
+        .convertResultUsing(booleanResultAdapter)
+    @Subtag.signature({ id: 'channel' })
+        .parameter(p.channel({ quietMode: 'arg' }))
+        .convertResultUsing(booleanResultAdapter)
+    public isText(channel: Channel): boolean {
+        return textChannels.has(channel.type);
     }
 }
+
+export const textChannels = new Set([
+    ChannelType.DM,
+    ChannelType.GROUP_DM,
+    ChannelType.NEWS,
+    ChannelType.THREAD_NEWS,
+    ChannelType.THREAD_PRIVATE,
+    ChannelType.THREAD_PUBLIC,
+    ChannelType.TEXT,
+    ChannelType.VOICE
+] as const);

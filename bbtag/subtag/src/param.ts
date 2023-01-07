@@ -9,9 +9,13 @@ import { SubtagNameParameter } from './parameter/SubtagNameParameter.js';
 import { SubtagParameterGroup } from './parameter/SubtagParameterGroup.js';
 import type { DeferredParameterItemOptions } from './readers/DeferredArgumentReader.js';
 import { DeferredArgumentReader } from './readers/DeferredArgumentReader.js';
-import type { RawParameterItemOptions } from './readers/RawArgumentReader.js';
+import type { JsonArgumentReaderOptions } from './readers/JsonArgumentReader.js';
+import { JsonArgumentReader } from './readers/JsonArgumentReader.js';
+import type { OneOfArgumentReaderOptions } from './readers/OneOfArgumentReader.js';
+import { OneOfArgumentReader } from './readers/OneOfArgumentReader.js';
+import type { RawArgumentReaderOptions } from './readers/RawArgumentReader.js';
 import { RawArgumentReader } from './readers/RawArgumentReader.js';
-import type { StringParameterItemOptions } from './readers/StringArgumentReader.js';
+import type { StringArgumentReaderOptions } from './readers/StringArgumentReader.js';
 import { StringArgumentReader } from './readers/StringArgumentReader.js';
 import type { SubtagArgumentReaderProvider, SubtagArgumentReaderTypes } from './readers/SubtagArgumentReader.js';
 
@@ -36,13 +40,22 @@ const param = {
     deferred: createDeferred,
     group: createGroup,
     const: <T>(value: T) => new ConstParameter(value),
-    raw: (name: string, options?: Partial<RawParameterItemOptions>) => new RequiredSubtagParameter(new RawArgumentReader(name, {
+    raw: (name: string, options?: Partial<RawArgumentReaderOptions>) => new RequiredSubtagParameter(new RawArgumentReader(name, {
         maxSize: defaultMaxSize,
         ...options
     })),
-    string: (name: string, options?: Partial<StringParameterItemOptions>) => new RequiredSubtagParameter(new StringArgumentReader(name, {
+    string: (name: string, options?: Partial<StringArgumentReaderOptions>) => new RequiredSubtagParameter(new StringArgumentReader(name, {
         maxSize: defaultMaxSize,
         ifEmpty: '',
+        ...options
+    })),
+    json: <T>(name: string, reader: (value: string) => { valid: true; value: T; } | { valid: false; }, options?: Partial<JsonArgumentReaderOptions>) => new RequiredSubtagParameter(new JsonArgumentReader(name, reader, {
+        maxSize: defaultMaxSize,
+        ...options
+    })),
+    oneOf: <T extends readonly string[]>(name: string, choices: T, error: string, options?: Partial<OneOfArgumentReaderOptions>) => new RequiredSubtagParameter(new OneOfArgumentReader(name, choices, error, {
+        maxSize: defaultMaxSize,
+        caseSensitive: true,
         ...options
     }))
 };

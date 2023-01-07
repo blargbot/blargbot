@@ -15,7 +15,7 @@ export class IndexOfSubtag extends Subtag {
         .parameter(p.string('text|array'))
         .parameter(p.string('searchFor'))
         .parameter(p.int('start').tryFallback().optional(0))
-        .useConversion(numberResultAdapter)
+        .convertResultUsing(numberResultAdapter)
     public indexOf(array: ArrayPlugin, text: string, query: string, from: number): number {
         const { v: input } = array.parseArray(text) ?? { v: text };
         return input.indexOf(query, from);

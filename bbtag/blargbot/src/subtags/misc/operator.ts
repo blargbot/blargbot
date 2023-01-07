@@ -115,7 +115,7 @@ function ordinalOp<T extends OrdinalOperator>(name: T) {
         .parameter(p.plugin(ComparePlugin))
         .parameter(p.string('values').repeat(1))
         .parameter(p.const(ordinalOperators[name]))
-        .useConversion(booleanResultAdapter);
+        .convertResultUsing(booleanResultAdapter);
 }
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
@@ -135,7 +135,7 @@ function setOp<T extends SetOperator>(name: T) {
         .parameter(p.string('target'))
         .parameter(p.string('values').repeat(0))
         .parameter(p.const(setOperators[name]))
-        .useConversion(booleanResultAdapter);
+        .convertResultUsing(booleanResultAdapter);
 }
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
@@ -145,7 +145,7 @@ function numberOp<T extends NumericOperator>(name: T) {
         .parameter(p.plugin(NumberPlugin))
         .parameter(p.string('values').repeat(1))
         .parameter(p.const(numericOperators[name]))
-        .useConversion(numberResultAdapter);
+        .convertResultUsing(numberResultAdapter);
 }
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
@@ -155,5 +155,5 @@ function logicOp<T extends LogicOperator>(name: T) {
         .parameter(p.plugin(BooleanPlugin))
         .parameter(p.string('values').repeat(1))
         .parameter(p.const(logicOperators[name]))
-        .useConversion(booleanResultAdapter);
+        .convertResultUsing(booleanResultAdapter);
 }

@@ -13,7 +13,7 @@ export class ChooseSubtag extends Subtag {
     @Subtag.signature({ id: 'default' })
         .parameter(p.int('choice'))
         .parameter(p.deferred('options').repeat(1))
-        .useConversion(transparentResultAdapter)
+        .convertResultUsing(transparentResultAdapter)
     public choose<T>(index: number, options: Array<() => T>): T {
         if (index < 0)
             throw new BBTagRuntimeError('Choice cannot be negative');

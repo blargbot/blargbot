@@ -1,6 +1,6 @@
 import type { BBTagScript, InterruptableProcess } from '@bbtag/engine';
 
-import type { SubtagArgumentReader, SubtagArgumentReaderProvider } from '../readers/SubtagArgumentReader.js';
+import type { SubtagArgumentReader } from '../readers/SubtagArgumentReader.js';
 import { BBTagParameterTransform } from './BBTagParameterTransform.js';
 import { RepeatedSubtagParameter } from './RepeatedSubtagParameter.js';
 
@@ -21,13 +21,13 @@ export abstract class SubtagParameter<T, Items extends readonly unknown[]> imple
 
     public abstract aggregate(name: string, values: Array<[...Items]>, script: BBTagScript): InterruptableProcess<T>
 
-    public map<R>(mapping: (source: T, script: BBTagScript) => Awaitable<R>): SubtagParameterDetails<Awaited<R>, Items> {
+    public map<R>(mapping: (source: T, script: BBTagScript) => R): BBTagParameterTransform<T, R, Items> {
         return new BBTagParameterTransform(this, function* (src, script) {
             return mapping(src, script);
         });
     }
 
-    public transform<R>(mapping: (source: T, script: BBTagScript) => InterruptableProcess<R>): SubtagParameterDetails<Awaited<R>, Items> {
+    public transform<R>(mapping: (source: T, script: BBTagScript) => InterruptableProcess<R>): BBTagParameterTransform<T, R, Items> {
         return new BBTagParameterTransform(this, mapping);
     }
 

@@ -18,7 +18,7 @@ export class LogicSubtag extends Subtag {
         .parameter(p.plugin(BooleanPlugin))
         .parameter(p.string('operator'))
         .parameter(p.string('values').repeat(1))
-        .useConversion(booleanResultAdapter)
+        .convertResultUsing(booleanResultAdapter)
     public applyLogicOperation(boolean: BooleanPlugin, operator: string, values: string[]): boolean {
         let op;
         const args = [operator, ...values];

@@ -15,7 +15,7 @@ export class RandomChooseSubtag extends Subtag {
 
     @Subtag.signature({ id: 'args' })
         .parameter(p.deferred('choices').repeat(2, Infinity))
-        .useConversion(transparentResultAdapter)
+        .convertResultUsing(transparentResultAdapter)
     public randChooseArg<T>(choices: Array<() => T>): T {
         const index = Math.floor(Math.random() * choices.length);
         return choices[index]();
@@ -23,7 +23,7 @@ export class RandomChooseSubtag extends Subtag {
 
     @Subtag.signature({ id: 'array' })
         .parameter(p.array('choices'))
-        .useConversion(jsonResultAdapter)
+        .convertResultUsing(jsonResultAdapter)
     public randChoose({ v: choices }: BBTagArrayRef): BBTagVariableValue {
         const index = Math.floor(Math.random() * choices.length);
         return choices[index];

@@ -12,7 +12,7 @@ export class CommentSubtag extends Subtag {
 
     @Subtag.signature({ id: 'default' })
         .parameter(p.raw('anything').repeat(0))
-        .useConversion(emptyResultAdapter)
+        .convertResultUsing(emptyResultAdapter)
     public doNothing(): void {
         /*NOOP*/
     }

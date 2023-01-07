@@ -17,7 +17,7 @@ export class JsonSubtag extends Subtag {
     @Subtag.signature({ id: 'default' })
         .parameter(p.plugin(JsonPlugin))
         .parameter(p.raw('input').optional('{}'))
-        .useConversion(jsonResultAdapter)
+        .convertResultUsing(jsonResultAdapter)
     public parse(json: JsonPlugin, input: string): BBTagVariableValue {
         const result = json.parse(input);
         if (result === undefined)

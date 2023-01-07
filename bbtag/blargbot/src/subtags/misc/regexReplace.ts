@@ -14,7 +14,7 @@ export class RegexReplaceSubtag extends Subtag {
         .parameter(p.plugin(ReplacementPlugin))
         .parameter(p.regex('phrase', { maxSize: 50000 }))
         .parameter(p.string('replacement'))
-        .useConversion(emptyResultAdapter)
+        .convertResultUsing(emptyResultAdapter)
     public setOutputReplacement(context: ReplacementPlugin, regex: RegExp, replacement: string): void {
         context.replacer = v => v.replace(regex, replacement);
     }

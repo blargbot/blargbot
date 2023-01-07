@@ -1,39 +1,21 @@
-import { ChannelNotFoundError } from '@bbtag/engine';
-import { Subtag } from '@bbtag/subtag'
+import { booleanResultAdapter, Subtag } from '@bbtag/subtag';
+
+import type { Channel } from '../../plugins/ChannelPlugin.js';
+import { ChannelType } from '../../plugins/ChannelPlugin.js';
 import { p } from '../p.js';
-import { guard } from '@blargbot/core/utils/index.js';
 
 export class ChannelIsCategorySubtag extends Subtag {
     public constructor() {
         super({
             name: 'channelIsCategory',
-            aliases: ['isCategory'],
-            category: SubtagType.CHANNEL,
-            definition: [
-                {
-                    parameters: ['channel', 'quiet?'],
-                    description: tag.default.description,
-                    exampleCode: tag.default.exampleCode,
-                    exampleOut: tag.default.exampleOut,
-                    returns: 'boolean',
-                    execute: (ctx, [channel, quiet]) => this.isCategory(ctx, channel.value, quiet.value !== '')
-
-                }
-            ]
+            aliases: ['isCategory']
         });
     }
 
-    public async isCategory(
-        context: BBTagContext,
-        channelStr: string,
-        quiet: boolean
-    ): Promise<boolean> {
-        quiet ||= context.scopes.local.quiet ?? false;
-        const channel = await context.queryChannel(channelStr, { noLookup: quiet });
-        if (channel === undefined) {
-            throw new ChannelNotFoundError(channelStr)
-                .withDisplay(quiet ? '' : undefined);
-        }
-        return guard.isCategoryChannel(channel);
+    @Subtag.signature({ id: 'channel' })
+        .parameter(p.channel({ quietMode: 'arg' }))
+        .convertResultUsing(booleanResultAdapter)
+    public isCategory(channel: Channel): boolean {
+        return channel.type === ChannelType.CATEGORY;
     }
 }

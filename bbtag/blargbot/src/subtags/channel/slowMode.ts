@@ -1,80 +1,36 @@
 import { BBTagRuntimeError } from '@bbtag/engine';
-import { Subtag } from '@bbtag/subtag';
-import { parse } from '@blargbot/core/utils/index.js';
-import * as Eris from 'eris';
+import { emptyResultAdapter, Subtag } from '@bbtag/subtag';
 
+import type { Channel } from '../../plugins/ChannelPlugin.js';
+import { ChannelPlugin } from '../../plugins/ChannelPlugin.js';
 import { p } from '../p.js';
 
 export class SlowModeSubtag extends Subtag {
     public constructor() {
         super({
-            name: 'slowMode',
-            category: SubtagType.CHANNEL,
-            definition: [
-                {
-                    parameters: [],
-                    description: tag.clearCurrent.description,
-                    exampleCode: tag.clearCurrent.exampleCode,
-                    exampleOut: tag.clearCurrent.exampleOut,
-                    returns: 'nothing',
-                    execute: (ctx) => this.setSlowmode(ctx, ctx.channel.id, '0')
-                },
-                {
-                    parameters: ['channel|time'],
-                    returns: 'nothing',
-                    execute: (ctx, [arg]) => this.setSlowmode(ctx, arg.value, '')
-                },
-                {
-                    parameters: ['channel'],
-                    description: tag.clearChannel.description,
-                    exampleCode: tag.clearChannel.exampleCode,
-                    exampleOut: tag.clearChannel.exampleOut
-                },
-                {
-                    parameters: ['time'],
-                    description: tag.setCurrent.description,
-                    exampleCode: tag.setCurrent.exampleCode,
-                    exampleOut: tag.setCurrent.exampleOut
-                },
-                {
-                    parameters: ['channel', 'time:0'],
-                    description: tag.setChannel.description, //TODO thank backwards compatibility
-                    exampleCode: tag.setChannel.exampleCode,
-                    exampleOut: tag.setChannel.exampleOut,
-                    returns: 'nothing',
-                    execute: (ctx, [channel, time]) => this.setSlowmode(ctx, channel.value, time.value)
-                }
-            ]
+            name: 'slowMode'
         });
     }
 
+    @Subtag.signature({ id: 'setChannel' })
+        .parameter(p.plugin(ChannelPlugin))
+        .parameter(p.channel({ quietMode: true }))
+        .parameter(p.int('time').optional(0))
+        .convertResultUsing(emptyResultAdapter)
+    @Subtag.signature({ id: 'setCurrent' })
+        .parameter(p.plugin(ChannelPlugin))
+        .parameter(p.plugin(ChannelPlugin).map(c => c.current))
+        .parameter(p.int('time', { ifInvalidUse: 0 }).optional(0))
+        .convertResultUsing(emptyResultAdapter)
     public async setSlowmode(
-        context: BBTagContext,
-        channelStr: string,
-        timeStr: string
+        channels: ChannelPlugin,
+        channel: Channel,
+        timeout: number
     ): Promise<void> {
-        let time = parse.int(timeStr);
-        let channel;
-        const lookupChannel = await context.queryChannel(channelStr, { noLookup: true });//TODO yikes
-        if (lookupChannel !== undefined)
-            channel = lookupChannel;
-        else {
-            channel = context.channel;
-            time = parse.int(channelStr);
-        }
+        timeout = Math.min(timeout, 21600);
 
-        if (time === undefined)
-            time = 0;
-
-        time = Math.min(time, 21600);
-
-        try {
-            await channel.edit({ rateLimitPerUser: time }, context.auditReason());
-        } catch (err: unknown) {
-            if (!(err instanceof Eris.DiscordRESTError))
-                throw err;
-
-            throw new BBTagRuntimeError('Missing required permissions', err.message);
-        }
+        const result = await channels.edit(channel.id, { rateLimitPerUser: timeout });
+        if (typeof result === 'string')
+            throw new BBTagRuntimeError('Missing required permissions', result);
     }
 }

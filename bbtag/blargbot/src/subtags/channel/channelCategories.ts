@@ -13,7 +13,7 @@ export class ChannelCategoriesSubtag extends Subtag {
 
     @Subtag.signature({ id: 'default' })
         .parameter(p.plugin(ChannelPlugin))
-        .useConversion(arrayResultAdapter)
+        .convertResultUsing(arrayResultAdapter)
     public async getChannelCategories(channel: ChannelPlugin): Promise<string[]> {
         return await channel.getCategories();
     }

@@ -22,8 +22,11 @@ import { mapTuple } from './mapTuple.js';
 import { mapTypeof } from './mapTypeof.js';
 import { mapUnknown } from './mapUnknown.js';
 import { result } from './result.js';
+import type { TypeMappingImpl } from './types.js';
 
 export * from './types.js';
+
+export type MappingType<T extends TypeMappingImpl<unknown>> = T extends TypeMappingImpl<infer R> ? R : never;
 
 export const mapping = Object.seal({
     create: createMapping,

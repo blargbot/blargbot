@@ -12,7 +12,7 @@ export class ArgsArraySubtag extends Subtag {
 
     @Subtag.signature({ id: 'default' })
         .parameter(p.script)
-        .useConversion(arrayResultAdapter)
+        .convertResultUsing(arrayResultAdapter)
     public getInput(context: BBTagScript): string[] {
         return context.options.args;
     }

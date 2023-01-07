@@ -28,7 +28,7 @@ export class SwitchSubtag extends Subtag {
             })
         )
         .parameter(p.deferred('default').optional(deferredValue('')))
-        .useConversion(transparentResultAdapter)
+        .convertResultUsing(transparentResultAdapter)
     public switch<T>(
         value: string,
         cases: Iterable<{ readonly options: Iterable<string>; readonly then: () => T; }>,

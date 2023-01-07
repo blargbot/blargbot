@@ -9,7 +9,7 @@ export class RoundSubtag extends Subtag {
         });
     }
 
-    @Subtag.signature(p.float('number')).useConversion('number')
+    @Subtag.signature(p.float('number')).convertResultUsing('number')
     public round(number: number): number {
         return Math.round(number);
     }

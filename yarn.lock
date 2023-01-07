@@ -59,6 +59,7 @@ __metadata:
     "@bbtag/engine": "workspace:^"
     "@bbtag/language": "workspace:^"
     "@bbtag/subtag": "workspace:^"
+    "@blargbot/mapping": "workspace:^"
   languageName: unknown
   linkType: soft
 

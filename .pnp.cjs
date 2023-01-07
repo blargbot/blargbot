@@ -292,7 +292,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@bbtag/blargbot", "workspace:bbtag/blargbot/src"],\
             ["@bbtag/engine", "workspace:bbtag/engine/src"],\
             ["@bbtag/language", "workspace:bbtag/language/src"],\
-            ["@bbtag/subtag", "workspace:bbtag/subtag/src"]\
+            ["@bbtag/subtag", "workspace:bbtag/subtag/src"],\
+            ["@blargbot/mapping", "workspace:components/mapping/src"]\
           ],\
           "linkType": "SOFT"\
         }]\

@@ -13,7 +13,7 @@ export class LengthSubtag extends Subtag {
     @Subtag.signature({ id: 'default' })
         .parameter(p.plugin(ArrayPlugin))
         .parameter(p.string('value'))
-        .useConversion(numberResultAdapter)
+        .convertResultUsing(numberResultAdapter)
     public getLength(array: ArrayPlugin, value: string): number {
         const deserializedArray = array.parseArray(value);
         if (deserializedArray !== undefined)

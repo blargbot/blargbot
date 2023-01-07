@@ -9,7 +9,8 @@
     "dependencies": {
         "@bbtag/engine": "workspace:^",
         "@bbtag/language": "workspace:^",
-        "@bbtag/subtag": "workspace:^"
+        "@bbtag/subtag": "workspace:^",
+        "@blargbot/mapping": "workspace:^"
     },
     "scripts": {
         "index-subtags": "node ./subtags/index.template.js"

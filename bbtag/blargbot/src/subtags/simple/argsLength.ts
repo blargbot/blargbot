@@ -12,7 +12,7 @@ export class ArgsLengthSubtag extends Subtag {
 
     @Subtag.signature({ id: 'default' })
         .parameter(p.script)
-        .useConversion(numberResultAdapter)
+        .convertResultUsing(numberResultAdapter)
     public getArgsLength(context: BBTagScript): number {
         return context.options.args.length;
     }

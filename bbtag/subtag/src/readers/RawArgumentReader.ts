@@ -8,7 +8,7 @@ export class RawArgumentReader implements SubtagArgumentReader<string> {
     public readonly name: string;
     public readonly maxSize: number;
 
-    public constructor(name: string, options: RawParameterItemOptions) {
+    public constructor(name: string, options: RawArgumentReaderOptions) {
         this.name = name;
         this.maxSize = options.maxSize;
     }
@@ -18,6 +18,6 @@ export class RawArgumentReader implements SubtagArgumentReader<string> {
     }
 }
 
-export interface RawParameterItemOptions {
+export interface RawArgumentReaderOptions {
     readonly maxSize: number;
 }

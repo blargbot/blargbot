@@ -1,49 +1,28 @@
-import { BBTagRuntimeError, ChannelNotFoundError } from '@bbtag/engine';
-import { Subtag } from '@bbtag/subtag'
+import { BBTagRuntimeError } from '@bbtag/engine';
+import { optionalStringResultAdapter, Subtag } from '@bbtag/subtag';
+
+import { ChannelNotFoundError } from '../../errors/ChannelNotFoundError.js';
+import type { Channel } from '../../plugins/ChannelPlugin.js';
+import { ChannelPlugin } from '../../plugins/ChannelPlugin.js';
 import { p } from '../p.js';
-import { guard } from '@blargbot/core/utils/index.js';
+import { textChannels } from './channelIsText.js';
 
 export class LastMessageIdSubtag extends Subtag {
     public constructor() {
         super({
-            name: 'lastMessageId',
-            category: SubtagType.CHANNEL,
-            description: tag.description,
-            definition: [
-                {
-                    parameters: [],
-                    description: tag.current.description,
-                    exampleCode: tag.current.exampleCode,
-                    exampleOut: tag.current.exampleOut,
-                    returns: 'id',
-                    execute: (ctx) => this.getLastMessageID(ctx, ctx.channel.id)
-                },
-                {
-                    parameters: ['channel'],
-                    description: tag.channel.description,
-                    exampleCode: tag.channel.exampleCode,
-                    exampleOut: tag.channel.exampleOut,
-                    returns: 'id',
-                    execute: (ctx, [channel]) => this.getLastMessageID(ctx, channel.value)
-                }
-            ]
+            name: 'lastMessageId'
         });
     }
 
-    public async getLastMessageID(
-        context: BBTagContext,
-        channelStr: string
-    ): Promise<string> {
-        const channel = await context.queryChannel(channelStr, {
-            noLookup: context.scopes.local.quiet,
-            noErrors: context.scopes.local.noLookupErrors
-        });
-
-        if (channel === undefined)
-            throw new ChannelNotFoundError(channelStr);
-        if (!guard.isTextableChannel(channel))
+    @Subtag.signature({ id: 'current' })
+        .parameter(p.plugin(ChannelPlugin).map(c => c.current))
+        .convertResultUsing(optionalStringResultAdapter(''))
+    @Subtag.signature({ id: 'channel' })
+        .parameter(p.channel({ quietMode: 'scope', notFound: query => new ChannelNotFoundError(query) }))
+        .convertResultUsing(optionalStringResultAdapter(''))
+    public getLastMessage(channel: Channel): string | undefined {
+        if (!textChannels.has(channel.type))
             throw new BBTagRuntimeError('Channel must be a textable channel');
-
-        return channel.lastMessageID;
+        return channel.lastMessageId;
     }
 }

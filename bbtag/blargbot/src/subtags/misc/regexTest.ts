@@ -12,7 +12,7 @@ export class RegexTestSubtag extends Subtag {
     @Subtag.signature({ id: 'default' })
         .parameter(p.string('text'))
         .parameter(p.regex('regex', { maxSize: 50000 }))
-        .useConversion(booleanResultAdapter)
+        .convertResultUsing(booleanResultAdapter)
     public regexTest(text: string, regex: RegExp): boolean {
         return regex.test(text);
     }

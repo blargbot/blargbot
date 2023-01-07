@@ -18,7 +18,7 @@ export class HashSubtag extends Subtag {
 
     @Subtag.signature({ id: 'basic' })
         .parameter(p.string('text'))
-        .useConversion(numberResultAdapter)
+        .convertResultUsing(numberResultAdapter)
     public computeHash(text: string): number {
         return text.split('')
             .reduce(function (a, b) {

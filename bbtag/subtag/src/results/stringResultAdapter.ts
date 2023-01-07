@@ -5,3 +5,11 @@ export const stringResultAdapter = {
         return await value;
     }
 } satisfies SubtagResultAdapter<Awaitable<string>>;
+
+export function optionalStringResultAdapter(fallback = ''): SubtagResultAdapter<Awaitable<string | undefined | null>> {
+    return {
+        async *execute(value) {
+            return await value ?? fallback;
+        }
+    };
+}

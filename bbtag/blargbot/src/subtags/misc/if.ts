@@ -18,7 +18,7 @@ export class IfSubtag extends Subtag {
         .parameter(p.boolean('boolean'))
         .parameter(p.deferred('then'))
         .parameter(p.deferred('else').optional(deferredValue(''), false))
-        .useConversion(transparentResultAdapter)
+        .convertResultUsing(transparentResultAdapter)
     public simpleBooleanCheck<T>(
         bool: boolean,
         thenCode: () => T,
@@ -37,7 +37,7 @@ export class IfSubtag extends Subtag {
         .parameter(p.string('value2'))
         .parameter(p.deferred('then'))
         .parameter(p.deferred('else').optional(deferredValue(''), false))
-        .useConversion(transparentResultAdapter)
+        .convertResultUsing(transparentResultAdapter)
     public evaluatorCheck<T>(
         array: ArrayPlugin,
         boolean: BooleanPlugin,

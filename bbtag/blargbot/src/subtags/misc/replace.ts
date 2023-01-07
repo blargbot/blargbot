@@ -22,7 +22,7 @@ export class ReplaceSubtag extends Subtag {
         .parameter(p.plugin(ReplacementPlugin))
         .parameter(p.string('phrase'))
         .parameter(p.string('replacement'))
-        .useConversion(emptyResultAdapter)
+        .convertResultUsing(emptyResultAdapter)
     public setOutputReplacement(context: ReplacementPlugin, phrase: string, replacement: string): void {
         context.replacer = v => v.replaceAll(phrase, replacement);
     }

@@ -26,7 +26,7 @@ export class BoolSubtag extends Subtag {
         .parameter(p.string('value1'))
         .parameter(p.string('operator'))
         .parameter(p.string('value2'))
-        .useConversion(booleanResultAdapter)
+        .convertResultUsing(booleanResultAdapter)
     public runCondition(
         array: ArrayPlugin,
         boolean: BooleanPlugin,
