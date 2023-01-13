@@ -7,20 +7,28 @@
         "./*": "./*"
     },
     "dependencies": {
+        "@blargbot/config": "workspace:^",
+        "@blargbot/core": "workspace:^",
+        "@blargbot/database": "workspace:^",
+        "@blargbot/domain": "workspace:^",
+        "@blargbot/formatting": "workspace:^",
+        "@blargbot/logger": "workspace:^",
         "@blargbot/mapping": "workspace:^",
         "brainfuck-node": "^1.0.2",
         "color": "^4.2.3",
+        "eris": "^0.17.1",
         "html-entities": "^2.3.3",
-        "moment-timezone": "^0.5.39",
+        "moment-timezone": "^0.5.40",
         "node-fetch": "^3.3.0",
         "rwlock": "^5.0.0"
     },
     "devDependencies": {
+        "@blargbot/application": "workspace:^",
         "@types/brainfuck-node": "workspace:^",
         "@types/color": "^3.0.3",
         "@types/eris": "workspace:^",
         "@types/node-fetch": "^2.6.2",
         "@types/rwlock": "^5.0.3",
-        "discord-api-types": "^0.37.20"
+        "discord-api-types": "^0.37.28"
     }
 }

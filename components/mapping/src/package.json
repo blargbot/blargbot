@@ -8,6 +8,6 @@
         "./*": "./*"
     },
     "dependencies": {
-        "moment-timezone": "^0.5.39"
+        "moment-timezone": "^0.5.40"
     }
 }

@@ -7,7 +7,7 @@
         ".": "./index.js"
     },
     "devDependencies": {
-        "@types/amqplib": "^0.10.0"
+        "@types/amqplib": "^0.10.1"
     },
     "peerDependencies": {
         "amqplib": "^0.10.3"

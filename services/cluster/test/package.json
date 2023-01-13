@@ -19,8 +19,8 @@
         "@blargbot/test-util": "workspace:^",
         "chai": "^4.3.7",
         "eris": "^0.17.1",
-        "mocha": "^10.1.0",
-        "moment-timezone": "^0.5.39"
+        "mocha": "^10.2.0",
+        "moment-timezone": "^0.5.40"
     },
     "devDependencies": {
         "@types/chai": "^4.3.4",

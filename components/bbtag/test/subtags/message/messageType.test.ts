@@ -29,7 +29,15 @@ const messageTypes: { [P in string & keyof typeof Discord.MessageType]: typeof D
     ['GuildBoostTier1']: Discord.MessageType.GuildBoostTier1,
     ['GuildBoostTier2']: Discord.MessageType.GuildBoostTier2,
     ['GuildBoostTier3']: Discord.MessageType.GuildBoostTier3,
-    ['AutoModerationAction']: Discord.MessageType.AutoModerationAction
+    ['AutoModerationAction']: Discord.MessageType.AutoModerationAction,
+    ['RoleSubscriptionPurchase']: Discord.MessageType.RoleSubscriptionPurchase,
+    ['InteractionPremiumUpsell']: Discord.MessageType.InteractionPremiumUpsell,
+    ['StageStart']: Discord.MessageType.StageStart,
+    ['StageEnd']: Discord.MessageType.StageEnd,
+    ['StageSpeaker']: Discord.MessageType.StageSpeaker,
+    ['StageRaiseHand']: Discord.MessageType.StageRaiseHand,
+    ['StageTopic']: Discord.MessageType.StageTopic,
+    ['GuildApplicationPremiumSubscription']: Discord.MessageType.GuildApplicationPremiumSubscription
 };
 
 runSubtagTests({

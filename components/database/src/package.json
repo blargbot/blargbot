@@ -17,15 +17,15 @@
         "airtable": "^0.11.6",
         "cassandra-driver": "^4.6.4",
         "catflake": "^1.0.0",
-        "moment-timezone": "^0.5.39",
+        "moment-timezone": "^0.5.40",
         "pg": "^8.8.0",
         "pg-hstore": "^2.3.4",
         "rethinkdb": "^2.4.2",
-        "sequelize": "^6.25.8"
+        "sequelize": "^6.28.0"
     },
     "devDependencies": {
         "@types/catflake": "workspace:^",
-        "@types/pg": "^8.6.5",
+        "@types/pg": "^8.6.6",
         "@types/rethinkdb": "workspace:^",
         "@types/sequelize": "^4.28.14"
     }

@@ -12,7 +12,7 @@
         "@blargbot/domain": "workspace:^",
         "@blargbot/formatting": "workspace:^",
         "chai": "^4.3.7",
-        "mocha": "^10.1.0",
+        "mocha": "^10.2.0",
         "ts-mockito": "^2.6.1"
     },
     "devDependencies": {

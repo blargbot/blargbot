@@ -27,9 +27,9 @@
         "crypto": "^1.0.1",
         "eris": "^0.17.1",
         "eventemitter3": "^5.0.0",
-        "moment-timezone": "^0.5.39",
+        "moment-timezone": "^0.5.40",
         "node-fetch": "^3.3.0",
-        "prom-client": "^14.1.0",
+        "prom-client": "^14.1.1",
         "wolken": "^0.2.1",
         "xml2js": "^0.4.23"
     },
@@ -41,6 +41,6 @@
         "@types/node-fetch": "^2.6.2",
         "@types/wolken": "workspace:^",
         "@types/xml2js": "^0.4.11",
-        "discord-api-types": "^0.37.20"
+        "discord-api-types": "^0.37.28"
     }
 }

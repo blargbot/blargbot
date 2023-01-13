@@ -1,6 +1,6 @@
 {
     "name": "blargbot",
-    "packageManager": "yarn@3.3.0",
+    "packageManager": "yarn@3.3.1",
     "private": true,
     "description": "blargbot is multipurpose discord bot. Coded in node.js using [Eris](https://github.com/abalabahaha/eris), blargbot hopes to bring commands and services to your discord.",
     "workspaces": [
@@ -14,16 +14,16 @@
         "definitions/*"
     ],
     "devDependencies": {
-        "@types/node": "^18.11.9",
-        "@typescript-eslint/eslint-plugin": "^5.45.0",
-        "@typescript-eslint/parser": "^5.45.0",
-        "@yarnpkg/sdks": "^3.0.0-rc.31",
+        "@types/node": "^18.11.18",
+        "@typescript-eslint/eslint-plugin": "^5.48.1",
+        "@typescript-eslint/parser": "^5.48.1",
+        "@yarnpkg/sdks": "^3.0.0-rc.35",
         "c8": "^7.12.0",
         "del-cli": "^5.0.0",
-        "eslint": "^8.28.0",
-        "eslint-plugin-import": "^2.26.0",
+        "eslint": "^8.31.0",
+        "eslint-plugin-import": "^2.27.4",
         "eslint-plugin-simple-import-sort": "^8.0.0",
-        "typescript": "^4.9.3"
+        "typescript": "^4.9.4"
     },
     "scripts": {
         "filecount": "cloc ./ --exclude-dir=node_modules --exclude-ext=js,msj,cjs",
