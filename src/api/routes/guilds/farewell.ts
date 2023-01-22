@@ -3,17 +3,17 @@ import { BaseRoute } from '@blargbot/api/BaseRoute';
 import { ApiResponse } from '@blargbot/api/types';
 import { mapping } from '@blargbot/mapping';
 
-export class FarewellRoute extends BaseRoute {
+export class FarewellRoute extends BaseRoute<['/guilds/:guildId/farewell']> {
     readonly #api: Api;
 
     public constructor(api: Api) {
-        super('/guilds');
+        super('/guilds/:guildId/farewell');
 
         this.#api = api;
 
         this.middleware.push(async (req, _, next) => await this.#checkAccess(req.params.guildId, this.getUserId(req, true)) ?? await next());
 
-        this.addRoute('/:guildId/farewell', {
+        this.addRoute('/', {
             get: ({ request }) => this.getFarewell(request.params.guildId),
             put: ({ request }) => this.setFarewell(request.params.guildId, request.body, this.getUserId(request)),
             delete: ({ request }) => this.deleteFarewell(request.params.guildId)
@@ -28,12 +28,10 @@ export class FarewellRoute extends BaseRoute {
     }
 
     public async setFarewell(guildId: string, body: unknown, userId: string): Promise<ApiResponse> {
-        const mapped = mapTag(body);
-        if (!mapped.valid)
-            return this.badRequest();
+        const request = this.mapRequestValue(body, mapTag);
 
         const current = await this.#api.database.guilds.getFarewell(guildId);
-        const result = { ...current, ...mapped.value, author: userId };
+        const result = { ...current, ...request, author: userId };
         if (!await this.#api.database.guilds.setFarewell(guildId, result))
             return this.internalServerError('Failed to set farewell');
         return this.ok(result);

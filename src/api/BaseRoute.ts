@@ -1,6 +1,6 @@
 import { Api } from '@blargbot/api/Api';
 import { Lazy } from '@blargbot/core/Lazy';
-import asyncRouter from 'express-promise-router';
+import { TypeMapping } from '@blargbot/mapping';
 import { IRoute } from 'express-serve-static-core';
 import { IncomingMessage } from 'http';
 import { WebSocketServer } from 'ws';
@@ -8,11 +8,14 @@ import { WebSocketServer } from 'ws';
 import Security from './Security';
 import { ApiResponse, AsyncRequestContext, AsyncRequestHandler, AsyncRequestMiddleware, AsyncWebsocketHandler, RequestHandlers, RequestMethods } from './types';
 
-export class BaseRoute {
-    readonly #installSteps: Array<(api: Api, path: string) => void>;
+type JoinRoutes<BaseRoutes extends Array<`/${string}`>, Route extends `/${string}`>
+    = BaseRoutes[number] extends `${infer R}/` ? `${R}${Route}` : `${BaseRoutes[number]}${Route}`;
+
+export class BaseRoute<BaseRoutes extends Array<`/${string}`>> {
+    readonly #installSteps: Array<(api: Api, path: BaseRoutes[number]) => void>;
     public readonly paths: ReadonlyArray<`/${string}`>;
-    protected readonly middleware: Array<AsyncRequestMiddleware<this, string>>;
-    public constructor(...paths: Array<`/${string}`>) {
+    protected readonly middleware: Array<AsyncRequestMiddleware<this, BaseRoutes[number]>>;
+    public constructor(...paths: BaseRoutes) {
         this.paths = paths;
         this.#installSteps = [];
         this.middleware = [];
@@ -26,6 +29,14 @@ export class BaseRoute {
     protected installAt(api: Api, path: `/${string}`): void {
         for (const step of this.#installSteps)
             step(api, path);
+    }
+
+    protected mapRequestValue<T>(value: unknown, mapping: TypeMapping<T>): T {
+        const result = mapping(value);
+        if (!result.valid)
+            throw new ApiRequestError(this.badRequest());
+
+        return result.value;
     }
 
     #bindWebsocket(api: Api, path: string, handler: AsyncWebsocketHandler<this>): void {
@@ -43,15 +54,15 @@ export class BaseRoute {
         });
     }
 
-    #bindRoute<Route extends `/${string}`>(api: Api, router: IRoute<Route>, method: RequestMethods, middleware: Array<AsyncRequestMiddleware<this, Route>>, handler: AsyncRequestHandler<this, Route>): void {
-        const getResult = createMiddlewareCaller<this, Route>(this, () => [...this.middleware, ...middleware], handler);
+    #bindRoute<Route extends `/${string}`>(api: Api, router: IRoute<JoinRoutes<BaseRoutes, Route>>, method: RequestMethods, middleware: Array<AsyncRequestMiddleware<this, JoinRoutes<BaseRoutes, Route>>>, handler: AsyncRequestHandler<this, JoinRoutes<BaseRoutes, Route>>): void {
+        const getResult = createMiddlewareCaller<this, BaseRoutes, Route>(this, () => [...this.middleware, ...middleware], handler);
         router[method](voidResult(async (request, response) => {
             try {
                 const result = await getResult({ request, response, api });
                 await result.execute(response);
             } catch (err: unknown) {
-                if (err instanceof UnauthenticatedError) {
-                    await this.unauthorized().execute(response);
+                if (err instanceof ApiRequestError) {
+                    await err.response.execute(response);
                     return;
                 }
                 api.logger.error('Error while handling', request.originalUrl, err);
@@ -60,18 +71,16 @@ export class BaseRoute {
         }));
     }
 
-    protected addRoute<Route extends `/${string}`>(route: Route, handlers: RequestHandlers<this, Route>, ...middleware: Array<AsyncRequestMiddleware<this, Route>>): this {
+    protected addRoute<Route extends `/${string}`>(route: Route, handlers: RequestHandlers<this, JoinRoutes<BaseRoutes, Route>>, ...middleware: Array<AsyncRequestMiddleware<this, JoinRoutes<BaseRoutes, Route>>>): this {
         this.#installSteps.push((api, baseRoute) => {
-            const fullPath = baseRoute + route;
+            const fullPath = baseRoute + route as JoinRoutes<BaseRoutes, Route>;
             const { ws, ...http } = handlers;
 
             if (ws !== undefined)
                 this.#bindWebsocket(api, fullPath, ws);
 
             const router = new Lazy(() => {
-                const router = asyncRouter();
-                api.app.use(baseRoute, router);
-                return router.route(route);
+                return api.router.route(fullPath);
             });
             for (const [method, handler] of Object.entries(http)) {
                 if (handler === undefined)
@@ -93,7 +102,7 @@ export class BaseRoute {
             return id;
         if (allowUndef)
             return undefined;
-        throw new UnauthenticatedError();
+        throw new ApiRequestError(this.unauthorized());
     }
 
     protected status(status: number, body?: unknown, contentType?: string): ApiResponse {
@@ -140,21 +149,34 @@ export class BaseRoute {
     }
 }
 
-class UnauthenticatedError extends Error {
+class ApiRequestError extends Error {
+    public readonly response: ApiResponse;
 
+    public constructor(response: ApiResponse) {
+        super();
+        this.response = response;
+    }
 }
 
-function createMiddlewareCaller<This, Route extends string>(
+type RouteMiddleware<This, BaseRoutes extends Array<`/${string}`>, Route extends `/${string}`> = AsyncRequestMiddleware<This, BaseRoutes[number]> | AsyncRequestMiddleware<This, JoinRoutes<BaseRoutes, Route>>;
+function createMiddlewareCaller<This, BaseRoutes extends Array<`/${string}`>, Route extends `/${string}`>(
     thisArg: This,
-    getMiddleware: () => ReadonlyArray<AsyncRequestMiddleware<This, string> | AsyncRequestMiddleware<This, Route>>,
-    handler: AsyncRequestHandler<This, Route>
-): (context: AsyncRequestContext<Route>) => Awaitable<ApiResponse> {
-    const callMiddleware = (context: AsyncRequestContext<Route>, index: number, middleware: ReadonlyArray<AsyncRequestMiddleware<This, string> | AsyncRequestMiddleware<This, Route>>): Awaitable<ApiResponse> => {
+    getMiddleware: () => ReadonlyArray<RouteMiddleware<This, BaseRoutes, Route>>,
+    handler: AsyncRequestHandler<This, JoinRoutes<BaseRoutes, Route>>
+): (context: AsyncRequestContext<JoinRoutes<BaseRoutes, Route>>) => Awaitable<ApiResponse> {
+
+    function callMiddleware<T extends string>(
+        context: AsyncRequestContext<T>,
+        index: number,
+        middleware: ReadonlyArray<AsyncRequestMiddleware<This, T>>,
+        handler: AsyncRequestHandler<This, T>
+    ): Awaitable<ApiResponse> {
         if (index >= middleware.length)
             return handler.call(thisArg, context);
-        return middleware[index].call(thisArg, context.request, context.response, () => callMiddleware(context, index + 1, middleware));
-    };
-    return (context) => callMiddleware(context, 0, getMiddleware());
+        return middleware[index].call(thisArg, context.request, context.response, () => callMiddleware(context, index + 1, middleware, handler));
+    }
+
+    return (context) => callMiddleware(context, 0, getMiddleware() as ReadonlyArray<AsyncRequestMiddleware<This, JoinRoutes<BaseRoutes, Route>>>, handler);
 }
 
 function voidResult<Args extends readonly unknown[]>(func: (...args: Args) => unknown): (...args: Args) => void {

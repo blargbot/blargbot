@@ -7,7 +7,7 @@ import { APIEmbed } from 'discord-api-types/v9';
 import { BaseRoute } from '../BaseRoute';
 import { ApiResponse } from '../types';
 
-export class DumpsRoute extends BaseRoute {
+export class DumpsRoute extends BaseRoute<['/dumps']> {
     readonly #api: Api;
 
     public constructor(api: Api) {

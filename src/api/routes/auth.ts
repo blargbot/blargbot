@@ -9,7 +9,7 @@ import Security from '../Security';
 
 const baseEndpoint = 'https://discordapp.com/api/v9/';
 const tokenEndpoint = 'https://discordapp.com/api/oauth2/token';
-const userEndpoint = `${baseEndpoint  }users/@me`;
+const userEndpoint = `${baseEndpoint}users/@me`;
 
 /* eslint-disable @typescript-eslint/naming-convention */
 type AccessTokenResponse = {
@@ -21,7 +21,7 @@ type AccessTokenResponse = {
 }
 /* eslint-enable @typescript-eslint/naming-convention */
 
-export class AuthRoute extends BaseRoute {
+export class AuthRoute extends BaseRoute<['/auth']> {
     public constructor() {
         super('/auth');
 
@@ -31,15 +31,13 @@ export class AuthRoute extends BaseRoute {
     }
 
     public async validate(request: Request): Promise<ApiResponse> {
-        const mappedBody = mapValidateBody(request.body);
-        if (!mappedBody.valid)
-            return this.badRequest();
+        const body = this.mapRequestValue(request.body, mapValidateBody);
 
         const params = new URLSearchParams();
         params.append('client_id', config.website.clientId);
         params.append('client_secret', config.website.secret);
         params.append('grant_type', 'authorization_code');
-        params.append('code', mappedBody.value.code);
+        params.append('code', body.code);
         params.append('redirect_uri', config.website.callback);
         params.append('scope', 'identify');
 
@@ -54,7 +52,7 @@ export class AuthRoute extends BaseRoute {
         const token = await tokenRes.json() as AccessTokenResponse;
         const userRes = await fetch(userEndpoint, {
             headers: {
-                authorization: `Bearer ${  token.access_token}`
+                authorization: `Bearer ${token.access_token}`
             }
         });
         const user = await userRes.json() as { id: string; };

@@ -3,17 +3,17 @@ import { BaseRoute } from '@blargbot/api/BaseRoute';
 import { ApiResponse } from '@blargbot/api/types';
 import { mapping } from '@blargbot/mapping';
 
-export class GreetingRoute extends BaseRoute {
+export class GreetingRoute extends BaseRoute<['/guilds/:guildId/greeting']> {
     readonly #api: Api;
 
     public constructor(api: Api) {
-        super('/guilds');
+        super('/guilds/:guildId/greeting');
 
         this.#api = api;
 
         this.middleware.push(async (req, _, next) => await this.#checkAccess(req.params.guildId, this.getUserId(req, true)) ?? await next());
 
-        this.addRoute('/:guildId/greeting', {
+        this.addRoute('/', {
             get: ({ request }) => this.getGreeting(request.params.guildId),
             put: ({ request }) => this.setGreeting(request.params.guildId, request.body, this.getUserId(request)),
             delete: ({ request }) => this.deleteGreeting(request.params.guildId)
@@ -28,12 +28,10 @@ export class GreetingRoute extends BaseRoute {
     }
 
     public async setGreeting(guildId: string, body: unknown, userId: string): Promise<ApiResponse> {
-        const mapped = mapTag(body);
-        if (!mapped.valid)
-            return this.badRequest();
+        const request = this.mapRequestValue(body, mapTag);
 
         const current = await this.#api.database.guilds.getGreeting(guildId);
-        const result = { ...current, ...mapped.value, author: userId };
+        const result = { ...current, ...request, author: userId };
         if (!await this.#api.database.guilds.setGreeting(guildId, result))
             return this.internalServerError('Failed to set greeting');
         return this.ok(result);

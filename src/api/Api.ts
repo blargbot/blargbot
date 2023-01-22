@@ -2,7 +2,8 @@ import { Configuration } from '@blargbot/config';
 import { BaseClient } from '@blargbot/core/BaseClient';
 import { ModuleLoader } from '@blargbot/core/modules';
 import { Logger } from '@blargbot/logger';
-import express, { Express } from 'express';
+import express, { Express, Router } from 'express';
+import asyncRouter from 'express-promise-router';
 import { createServer, Server } from 'http';
 import { performance } from 'perf_hooks';
 
@@ -13,6 +14,7 @@ import { ApiOptions } from './types';
 export class Api extends BaseClient {
     public readonly worker: ApiWorker;
     public readonly app: Express;
+    public readonly router: Router;
     public readonly server: Server;
 
     public constructor(
@@ -30,6 +32,7 @@ export class Api extends BaseClient {
         });
 
         this.worker = options.worker;
+        this.router = asyncRouter();
         this.app = express();
         this.app.use(express.json());
         this.app.use((req, resp, next) => {
@@ -39,11 +42,12 @@ export class Api extends BaseClient {
             next();
         });
 
+        this.app.use(this.router);
         this.server = createServer(this.app);
     }
 
     public async start(): Promise<void> {
-        const routes = new ModuleLoader<BaseRoute>(`${__dirname}/routes`, BaseRoute, [this], this.logger);
+        const routes = new ModuleLoader<Pick<BaseRoute<['/']>, 'install'>>(`${__dirname}/routes`, BaseRoute, [this], this.logger);
         routes.on('link', module => module.install(this));
         await routes.init();
 

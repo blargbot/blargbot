@@ -4,7 +4,7 @@ import { ApiResponse } from '@blargbot/api/types';
 import { ClusterStats } from '@blargbot/cluster/types';
 import { WebSocket } from 'ws';
 
-export class ClustersRoute extends BaseRoute {
+export class ClustersRoute extends BaseRoute<['/clusters']> {
     #clusterStats: Record<number, ClusterStats | undefined>;
     readonly #sockets: Set<WebSocket>;
     readonly #api: Api;

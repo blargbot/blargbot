@@ -4,7 +4,7 @@ import { ApiResponse } from '@blargbot/api/types';
 import { StoredTag } from '@blargbot/domain/models';
 import { mapping } from '@blargbot/mapping';
 
-export class TagsRoute extends BaseRoute {
+export class TagsRoute extends BaseRoute<['/tags']> {
     readonly #api: Api;
 
     public constructor(api: Api) {
@@ -37,23 +37,16 @@ export class TagsRoute extends BaseRoute {
     }
 
     public async setTag(tagName: string, body: unknown, author: string): Promise<ApiResponse> {
-        const mapped = mapUpdateTag(body);
-        if (!mapped.valid)
-            return this.badRequest();
+        const request = this.mapRequestValue(body, mapUpdateTag);
 
         const current = await this.#api.database.tags.get(tagName);
         if (current === undefined)
-            return await this.#createTag(tagName, mapped.value.content ?? '', author);
-        return await this.#editTag(tagName, mapped.value, author, current);
+            return await this.#createTag(tagName, request.content ?? '', author);
+        return await this.#editTag(tagName, request, author, current);
     }
 
     public async createTag(body: unknown, author: string): Promise<ApiResponse> {
-        const mapped = mapCreateTag(body);
-        if (!mapped.valid)
-            return this.badRequest();
-
-        const { name: tagName, content } = mapped.value;
-
+        const { name: tagName, content } = this.mapRequestValue(body, mapCreateTag);
         const exists = await this.#api.database.tags.get(tagName);
         if (exists !== undefined)
             return this.forbidden(`A tag with the name ${tagName} already exists`);
@@ -78,15 +71,13 @@ export class TagsRoute extends BaseRoute {
     }
 
     public async editTag(tagName: string, body: unknown, author: string): Promise<ApiResponse> {
-        const mapped = mapUpdateTag(body);
-        if (!mapped.valid)
-            return this.badRequest();
+        const request = this.mapRequestValue(body, mapUpdateTag);
 
         const current = await this.#api.database.tags.get(tagName);
         if (current === undefined)
             return this.notFound();
 
-        return await this.#editTag(tagName, mapped.value, author, current);
+        return await this.#editTag(tagName, request, author, current);
     }
 
     async #editTag(tagName: string, update: Partial<StoredTag>, author: string, current: StoredTag): Promise<ApiResponse> {
