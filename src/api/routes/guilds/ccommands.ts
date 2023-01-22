@@ -5,22 +5,22 @@ import { snowflake } from '@blargbot/core/utils/snowflake';
 import { GuildCommandTag, NamedGuildSourceCommandTag } from '@blargbot/domain/models';
 import { mapping } from '@blargbot/mapping';
 
-export class CCommandsRoute extends BaseRoute {
+export class CCommandsRoute extends BaseRoute<['/guilds/:guildId/ccommands']> {
     readonly #api: Api;
 
     public constructor(api: Api) {
-        super('/guilds');
+        super('/guilds/:guildId/ccommands');
 
         this.#api = api;
 
         this.middleware.push(async (req, _, next) => await this.#checkAccess(req.params.guildId, this.getUserId(req, true)) ?? await next());
 
-        this.addRoute('/:guildId/ccommands', {
+        this.addRoute('/', {
             get: ({ request }) => this.listCCommands(request.params.guildId),
             post: ({ request }) => this.createCommand(request.params.guildId, request.body, this.getUserId(request))
         });
 
-        this.addRoute('/:guildId/ccommands/:commandName', {
+        this.addRoute('/:commandName', {
             get: ({ request }) => this.getCommand(request.params.guildId, request.params.commandName),
             delete: ({ request }) => this.deleteCommand(request.params.guildId, request.params.commandName),
             put: ({ request }) => this.setCommand(request.params.guildId, request.params.commandName, request.body, this.getUserId(request)),
@@ -42,23 +42,16 @@ export class CCommandsRoute extends BaseRoute {
     }
 
     public async setCommand(guildId: string, commandName: string, body: unknown, author: string): Promise<ApiResponse> {
-        const mapped = mapUpdateCommand(body);
-        if (!mapped.valid)
-            return this.badRequest();
+        const request = this.mapRequestValue(body, mapUpdateCommand);
 
         const current = await this.#api.database.guilds.getCommand(guildId, commandName);
         if (current === undefined)
-            return await this.#createCommand(guildId, commandName, mapped.value.content ?? '', author);
-        return await this.#editCommand(guildId, commandName, mapped.value, author, current);
+            return await this.#createCommand(guildId, commandName, request.content ?? '', author);
+        return await this.#editCommand(guildId, commandName, request, author, current);
     }
 
     public async createCommand(guildId: string, body: unknown, author: string): Promise<ApiResponse> {
-        const mapped = mapCreateCommand(body);
-        if (!mapped.valid)
-            return this.badRequest();
-
-        const { name: commandName, content } = mapped.value;
-
+        const { name: commandName, content } = this.mapRequestValue(body, mapCreateCommand);
         const current = await this.#api.database.guilds.getCommand(guildId, commandName);
         if (current !== undefined)
             return this.forbidden(`A custom command with the name ${commandName} already exists`);
@@ -83,15 +76,13 @@ export class CCommandsRoute extends BaseRoute {
     }
 
     public async editCommand(guildId: string, commandName: string, body: unknown, author: string): Promise<ApiResponse> {
-        const mapped = mapUpdateCommand(body);
-        if (!mapped.valid)
-            return this.badRequest();
+        const request = this.mapRequestValue(body, mapUpdateCommand);
 
         const current = await this.#api.database.guilds.getCommand(guildId, commandName);
         if (current === undefined)
             return this.forbidden(`There is no custom command with the name ${commandName}`);
 
-        return await this.#editCommand(guildId, commandName, mapped.value, author, current);
+        return await this.#editCommand(guildId, commandName, request, author, current);
     }
 
     async #editCommand(guildId: string, commandName: string, update: Partial<NamedGuildSourceCommandTag>, author: string, current: GuildCommandTag): Promise<ApiResponse> {

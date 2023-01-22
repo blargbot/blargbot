@@ -4,7 +4,7 @@ import { ApiResponse } from '@blargbot/api/types';
 import { ChatLog, ChatLogIndex, DiscordTagSet } from '@blargbot/domain/models';
 import { APIEmbed } from 'discord-api-types/v9';
 
-export class ChatLogsRoute extends BaseRoute {
+export class ChatLogsRoute extends BaseRoute<['/chatlogs']> {
     readonly #api: Api;
 
     public constructor(api: Api) {

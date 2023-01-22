@@ -2,7 +2,7 @@ import { Api } from '@blargbot/api/Api';
 import { BaseRoute } from '@blargbot/api/BaseRoute';
 import { ApiResponse } from '@blargbot/api/types';
 
-export class CommandsRoute extends BaseRoute {
+export class CommandsRoute extends BaseRoute<['/commands']> {
     readonly #api: Api;
 
     public constructor(api: Api) {

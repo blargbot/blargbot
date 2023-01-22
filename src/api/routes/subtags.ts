@@ -5,7 +5,7 @@ import { tagTypeDetails } from '@blargbot/bbtag/utils';
 import { SubtagListResult } from '@blargbot/cluster/types';
 import { format } from '@blargbot/formatting';
 
-export class SubtagsRoute extends BaseRoute {
+export class SubtagsRoute extends BaseRoute<['/subtags']> {
     readonly #api: Api;
 
     public constructor(api: Api) {

@@ -2,7 +2,7 @@ import { Api } from '../Api';
 import { BaseRoute } from '../BaseRoute';
 import { ApiResponse } from '../types';
 
-export class FeedbackRoute extends BaseRoute {
+export class FeedbackRoute extends BaseRoute<['/feedback']> {
     readonly #api: Api;
 
     public constructor(api: Api) {

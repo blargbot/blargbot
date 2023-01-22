@@ -1,5 +1,4 @@
 import { Api } from '@blargbot/api/Api';
-import { parse } from '@blargbot/core/utils';
 import { mapping } from '@blargbot/mapping';
 
 import { BaseRoute } from '../../BaseRoute';
@@ -7,33 +6,72 @@ import { ApiResponse } from '../../types';
 
 type CensorRuleType = 'timeout' | 'kick' | 'ban' | 'delete';
 
-export class CensorsRoute extends BaseRoute {
+export class CensorsRoute extends BaseRoute<['/guilds/:guildId/censors']> {
     readonly #api: Api;
 
     public constructor(api: Api) {
-        super('/guilds');
+        super('/guilds/:guildId/censors');
 
         this.#api = api;
 
         this.middleware.push(async (req, _, next) => await this.#checkAccess(req.params.guildId, this.getUserId(req, true)) ?? await next());
 
-        this.addRoute('/:guildId/censors', {
-            get: ({ request }) => this.listCensors(request.params.guildId)
+        this.addRoute('/', {
+            get: ({ request }) => this.listCensors(request.params.guildId),
+            post: ({ request }) => this.createCensor(request.params.guildId, request.body)
         });
 
         for (const type of ['delete', 'ban', 'kick'] as const) {
-            this.addRoute(`/:guildId/censors/${type}Message`, {
+            this.addRoute(`/${type}Message`, {
                 get: ({ request }) => this.getCensorDefaultMessage(request.params.guildId, type),
                 put: ({ request }) => this.setCensorDefaultMessage(request.params.guildId, type, request.body, this.getUserId(request)),
                 delete: ({ request }) => this.deleteCensorDefaultMessage(request.params.guildId, type)
             });
 
-            this.addRoute(`/:guildId/censors/:id/${type}Message`, {
+            this.addRoute(`/:id/${type}Message`, {
                 get: ({ request }) => this.getCensorMessage(request.params.guildId, request.params.id, type),
                 put: ({ request }) => this.setCensorMessage(request.params.guildId, request.params.id, type, request.body, this.getUserId(request)),
                 delete: ({ request }) => this.deleteCensorMessage(request.params.guildId, request.params.id, type)
             });
         }
+
+        this.addRoute('/:id', {
+            get: ({ request }) => this.getCensor(request.params.guildId, request.params.id),
+            delete: ({ request }) => this.deleteCensor(request.params.guildId, request.params.id),
+            patch: ({ request }) => this.editCensor(request.params.guildId, request.params.id, request.body)
+        });
+    }
+
+    public async createCensor(guildId: string, body: unknown): Promise<ApiResponse> {
+        guildId;
+        body;
+        await Promise.resolve();
+        return this.badRequest({ message: 'Creating censors via the API isnt supported yet!' });
+    }
+
+    public async getCensor(guildId: string, idStr: string): Promise<ApiResponse> {
+        const id = this.mapRequestValue(idStr, mapping.number);
+        const censor = await this.#api.database.guilds.getCensor(guildId, id);
+        if (censor === undefined)
+            return this.notFound();
+
+        return this.ok(censor);
+    }
+
+    public async deleteCensor(guildId: string, idStr: string): Promise<ApiResponse> {
+        const id = this.mapRequestValue(idStr, mapping.number);
+        if (!await this.#api.database.guilds.setCensor(guildId, id, undefined))
+            return this.notFound();
+
+        return this.noContent();
+    }
+
+    public async editCensor(guildId: string, idStr: string, body: unknown): Promise<ApiResponse> {
+        guildId;
+        idStr;
+        body;
+        await Promise.resolve();
+        return this.badRequest({ message: 'Editing censors via the API isnt supported yet!' });
     }
 
     public async getCensorDefaultMessage(guildId: string, type: CensorRuleType): Promise<ApiResponse> {
@@ -46,12 +84,9 @@ export class CensorsRoute extends BaseRoute {
     }
 
     public async setCensorDefaultMessage(guildId: string, type: CensorRuleType, body: unknown, userId: string): Promise<ApiResponse> {
-        const mapped = mapTag(body);
-        if (!mapped.valid)
-            return this.badRequest();
-
+        const request = this.mapRequestValue(body, mapTag);
         const current = await this.#api.database.guilds.getCensorRule(guildId, undefined, type);
-        const result = { ...current, ...mapped.value, author: userId };
+        const result = { ...current, ...request, author: userId };
         if (!await this.#api.database.guilds.setCensorRule(guildId, undefined, type, result))
             return this.internalServerError('Failed to update record');
 
@@ -64,10 +99,7 @@ export class CensorsRoute extends BaseRoute {
     }
 
     public async getCensorMessage(guildId: string, idStr: string, type: CensorRuleType): Promise<ApiResponse> {
-        const id = parse.int(idStr, { strict: true });
-        if (id === undefined)
-            return this.badRequest();
-
+        const id = this.mapRequestValue(idStr, mapping.number);
         const censor = await this.#api.database.guilds.getCensor(guildId, id);
         const result = censor?.[`${type}Message`];
         if (result === undefined)
@@ -77,19 +109,13 @@ export class CensorsRoute extends BaseRoute {
     }
 
     public async setCensorMessage(guildId: string, idStr: string, type: CensorRuleType, body: unknown, userId: string): Promise<ApiResponse> {
-        const id = parse.int(idStr, { strict: true });
-        if (id === undefined)
-            return this.badRequest();
-
-        const mapped = mapTag(body);
-        if (!mapped.valid)
-            return this.badRequest();
-
+        const id = this.mapRequestValue(idStr, mapping.number);
+        const request = this.mapRequestValue(body, mapTag);
         const current = await this.#api.database.guilds.getCensor(guildId, id);
         if (current === undefined)
             return this.notFound();
 
-        const result = { ...current[`${type}Message`], ...mapped.value, author: userId };
+        const result = { ...current[`${type}Message`], ...request, author: userId };
         if (!await this.#api.database.guilds.setCensorRule(guildId, id, type, result))
             return this.internalServerError('Failed to update record');
 
@@ -97,10 +123,7 @@ export class CensorsRoute extends BaseRoute {
     }
 
     public async deleteCensorMessage(guildId: string, idStr: string, type: CensorRuleType): Promise<ApiResponse> {
-        const id = parse.int(idStr, { strict: true });
-        if (id === undefined)
-            return this.badRequest();
-
+        const id = this.mapRequestValue(idStr, mapping.number);
         if (await this.#api.database.guilds.getCensor(guildId, id) === undefined)
             return this.notFound();
 

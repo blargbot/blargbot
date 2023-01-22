@@ -4,21 +4,21 @@ import { ApiResponse } from '@blargbot/api/types';
 import { parse } from '@blargbot/core/utils';
 import { mapping } from '@blargbot/mapping';
 
-export class RolemesRoute extends BaseRoute {
+export class RolemesRoute extends BaseRoute<['/guilds/:guildId/rolemes']> {
     readonly #api: Api;
 
     public constructor(api: Api) {
-        super('/guilds');
+        super('/guilds/:guildId/rolemes');
 
         this.#api = api;
 
         this.middleware.push(async (req, _, next) => await this.#checkAccess(req.params.guildId, this.getUserId(req, true)) ?? await next());
 
-        this.addRoute('/:guildId/rolemes', {
+        this.addRoute('/', {
             get: ({ request }) => this.listRolemes(request.params.guildId)
         });
 
-        this.addRoute('/:guildId/rolemes/:id/output', {
+        this.addRoute('/:id/output', {
             get: ({ request }) => this.getRoleme(request.params.guildId, request.params.id),
             put: ({ request }) => this.setRoleme(request.params.guildId, request.params.id, request.body, this.getUserId(request)),
             delete: ({ request }) => this.deleteRoleme(request.params.guildId, request.params.id)
@@ -42,15 +42,13 @@ export class RolemesRoute extends BaseRoute {
         if (id === undefined)
             return this.badRequest();
 
-        const mapped = mapTag(body);
-        if (!mapped.valid)
-            return this.badRequest();
+        const request = this.mapRequestValue(body, mapTag);
 
         const current = await this.#api.database.guilds.getRoleme(guildId, id);
         if (current === undefined)
             return this.notFound();
 
-        const result = { ...current, output: { ...current.output, ...mapped.value, author: userId } };
+        const result = { ...current, output: { ...current.output, ...request, author: userId } };
         if (!await this.#api.database.guilds.setRoleme(guildId, id, result))
             return this.internalServerError('Failed to save changes');
 
