@@ -4,8 +4,8 @@ import { performance } from 'node:perf_hooks';
 
 import type { Configuration } from '@blargbot/config';
 import { BaseClient } from '@blargbot/core/BaseClient.js';
-import { ModuleLoader } from '@blargbot/core/modules/index.js';
 import type { Logger } from '@blargbot/logger';
+import { ModuleLoader } from '@blargbot/modules';
 import type { Express } from 'express';
 import express from 'express';
 

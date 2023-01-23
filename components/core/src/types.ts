@@ -5,7 +5,6 @@ import type * as Eris from 'eris';
 import type { WorkerConnection } from './worker/index.js';
 
 export type MalformedEmbed = { fields: [Eris.EmbedField]; malformed: true; };
-export type ModuleResult<TModule> = { names: Iterable<string>; module: TModule; };
 export type DMContext = string | Eris.KnownMessage | Eris.User | Eris.Member;
 export type SendContext = Eris.TextableChannel | string | Eris.User;
 export interface SendContent<TString> extends FormatAdvancedMessageContent<TString> {

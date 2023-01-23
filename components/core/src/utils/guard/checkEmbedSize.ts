@@ -1,7 +1,6 @@
 import { discord } from '@blargbot/core/utils/discord/index.js';
+import { hasValue } from '@blargbot/guards';
 import type * as Eris from 'eris';
-
-import { hasValue } from './hasValue.js';
 
 export function checkEmbedSize(embed: ReadonlyArray<Eris.EmbedOptions | Eris.Embed> | undefined): boolean {
     if (embed === undefined) return true;

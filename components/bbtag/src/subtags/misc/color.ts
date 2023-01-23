@@ -1,4 +1,4 @@
-import { guard } from '@blargbot/core/utils/index.js';
+import { hasProperty } from '@blargbot/guards';
 import Color from 'color';
 
 import type { BBTagContext } from '../../BBTagContext.js';
@@ -79,7 +79,7 @@ interface ColorConverter {
 
 function getConverter(name: string): ColorConverter | undefined {
     name = name.toLowerCase();
-    if (guard.hasProperty(colorConverters, name))
+    if (hasProperty(colorConverters, name))
         return colorConverters[name];
     if (name === '')
         return defaultColorConverter;

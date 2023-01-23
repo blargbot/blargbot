@@ -1,11 +1,11 @@
 import { CommandType } from '@blargbot/cluster/utils/index.js';
-import { guard } from '@blargbot/core/utils/index.js';
-import type { IFormattable} from '@blargbot/formatting';
+import type { IFormattable } from '@blargbot/formatting';
 import { util } from '@blargbot/formatting';
+import { hasProperty } from '@blargbot/guards';
 import * as Eris from 'eris';
 import moment from 'moment-timezone';
 
-import type { CommandContext} from '../../command/index.js';
+import type { CommandContext } from '../../command/index.js';
 import { GlobalCommand } from '../../command/index.js';
 import templates from '../../text.js';
 import type { CommandResult } from '../../types.js';
@@ -56,10 +56,10 @@ export class InfoCommand extends GlobalCommand {
                             name: cmd.default.embed.field.other.name,
                             value: cmd.default.embed.field.other.value.layout({
                                 details: context.cluster.contributors.others.map(x => {
-                                    const decorator = guard.hasProperty(cmd.default.embed.field.other.value.decorators, x.decorator)
+                                    const decorator = hasProperty(cmd.default.embed.field.other.value.decorators, x.decorator)
                                         ? cmd.default.embed.field.other.value.decorators[x.decorator]
                                         : cmd.default.embed.field.other.value.decorators.amazing;
-                                    const reason = guard.hasProperty(cmd.default.embed.field.other.value.reasons, x.reason)
+                                    const reason = hasProperty(cmd.default.embed.field.other.value.reasons, x.reason)
                                         ? cmd.default.embed.field.other.value.reasons[x.reason]
                                         : cmd.default.embed.field.other.value.reasons.unknown;
 

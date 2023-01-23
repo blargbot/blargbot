@@ -6,8 +6,9 @@ import type { CommandResult, CustomCommandShrinkwrap, GuildCommandContext, Guild
 import { codeBlock, CommandType, guard, parse, snowflake } from '@blargbot/cluster/utils/index.js';
 import type { Configuration } from '@blargbot/config';
 import type { FlagDefinition, NamedGuildCommandTag, NamedGuildSourceCommandTag } from '@blargbot/domain/models/index.js';
-import type { IFormattable} from '@blargbot/formatting';
+import type { IFormattable } from '@blargbot/formatting';
 import { util } from '@blargbot/formatting';
+import { hasValue, isAlphanumeric } from '@blargbot/guards';
 import { mapping } from '@blargbot/mapping';
 import type * as Eris from 'eris';
 import moment from 'moment-timezone';
@@ -363,7 +364,7 @@ export class CustomCommandCommand extends GuildCommand {
             return match.response;
 
         const author = await context.database.users.get(match.author ?? '');
-        if (!guard.hasValue(match.authorizer) || match.authorizer === match.author)
+        if (!hasValue(match.authorizer) || match.authorizer === match.author)
             return cmd.author.noAuthorizer({ name: match.name, author });
 
         const authorizer = await context.database.users.get(match.authorizer);
@@ -770,7 +771,7 @@ const mapCustomCommandShrinkwrap = mapping.object<CustomCommandShrinkwrap>({
         mapping.object<FlagDefinition<string>>({
             description: mapping.string,
             word: mapping.string,
-            flag: mapping.in(...guard.isFlagChar.accept)
+            flag: mapping.in(...isAlphanumeric.characters)
         })
     ).optional,
     help: mapping.string.optional,

@@ -3,6 +3,7 @@ import { ChatLogType } from '@blargbot/chatlog-types';
 import type { CommandResult, GuildCommandContext } from '@blargbot/cluster/types.js';
 import { CommandType } from '@blargbot/cluster/utils/index.js';
 import { guard, sleep } from '@blargbot/core/utils/index.js';
+import { hasValue } from '@blargbot/guards';
 
 import { GuildCommand } from '../../command/index.js';
 import templates from '../../text.js';
@@ -34,7 +35,7 @@ export class LogsCommand extends GuildCommand {
                             flags.C !== undefined ? ChatLogType.CREATE : undefined,
                             flags.U !== undefined ? ChatLogType.UPDATE : undefined,
                             flags.D !== undefined ? ChatLogType.DELETE : undefined
-                        ].filter(guard.hasValue),
+                        ].filter(hasValue),
                         channel: flags.c?.merge().value ?? ctx.channel.id,
                         json: flags.j !== undefined
                     })

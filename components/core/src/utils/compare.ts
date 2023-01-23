@@ -1,4 +1,4 @@
-import { guard } from '@blargbot/core/utils/index.js';
+import { hasProperty } from '@blargbot/guards';
 
 import { toBlocks } from './toBlocks.js';
 
@@ -13,7 +13,7 @@ export function compare(a: string, b: string): number {
 
     for (const [a, b] of pairs) {
         const key = `${typeof a}|${typeof b}`;
-        if (!guard.hasProperty(sorter, key))
+        if (!hasProperty(sorter, key))
             continue;
 
         const value = sorter[key](a, b);

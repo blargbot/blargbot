@@ -1,5 +1,5 @@
-import { guard } from '@blargbot/core/utils/index.js';
 import { parse } from '@blargbot/core/utils/parse/index.js';
+import { isUrl } from '@blargbot/guards';
 import * as Eris from 'eris';
 import fetch from 'node-fetch';
 
@@ -54,7 +54,7 @@ export class EmojiCreateSubtag extends CompiledSubtag {
             throw new BBTagRuntimeError('Name was not provided');
 
         const image: string = parse.url(options.image);
-        if (guard.isUrl(image)) {
+        if (isUrl(image)) {
             const res = await fetch(image);
             const contentType = res.headers.get('content-type');
             options.image = `data:${contentType ?? ''};base64,${Buffer.from(await res.arrayBuffer()).toString('base64')}`;

@@ -1,5 +1,5 @@
-import { guard } from '@blargbot/core/utils/index.js';
 import { parse } from '@blargbot/core/utils/parse/index.js';
+import { isUrl } from '@blargbot/guards';
 import type { ValidFont } from '@blargbot/image-types';
 
 import type { CommandContext } from '../../command/index.js';
@@ -61,7 +61,7 @@ export class CaptionCommand extends GlobalImageCommand {
             return cmd.errors.fontInvalid({ font: fontName, prefix: context.prefix });
 
         url = parse.url(url);
-        if (!guard.isUrl(url))
+        if (!isUrl(url))
             return cmd.linked.invalidUrl({ url });
 
         if (top !== undefined)

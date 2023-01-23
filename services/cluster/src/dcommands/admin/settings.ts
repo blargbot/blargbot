@@ -3,6 +3,7 @@ import type { CommandResult, GuildCommandContext } from '@blargbot/cluster/types
 import { codeBlock, CommandType, defaultStaff, guard, guildSettings, parse } from '@blargbot/cluster/utils/index.js';
 import type { IFormattable, ITranslationSource } from '@blargbot/formatting';
 import { format, FormatString } from '@blargbot/formatting';
+import { hasProperty } from '@blargbot/guards';
 import type * as Eris from 'eris';
 
 import { GuildCommand } from '../../command/index.js';
@@ -114,7 +115,7 @@ export class SettingsCommand extends GuildCommand {
 
     public async set(context: GuildCommandContext, setting: string, value: string | undefined): Promise<CommandResult> {
         const key = setting.toLowerCase();
-        if (!guard.hasProperty(guildSettings, key))
+        if (!hasProperty(guildSettings, key))
             return cmd.set.keyInvalid;
 
         const parsed = await parse.guildSetting(context, context.util, key, value);

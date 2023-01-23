@@ -1,8 +1,9 @@
 import type { BanResult, KickResult, MassBanResult, UnbanResult } from '@blargbot/cluster/types.js';
-import { guard, sleep } from '@blargbot/cluster/utils/index.js';
+import { sleep } from '@blargbot/cluster/utils/index.js';
 import type { UnbanEventOptions } from '@blargbot/domain/models/index.js';
-import type { IFormattable} from '@blargbot/formatting';
+import type { IFormattable } from '@blargbot/formatting';
 import { format, util } from '@blargbot/formatting';
+import { hasValue } from '@blargbot/guards';
 import { mapping } from '@blargbot/mapping';
 import * as Eris from 'eris';
 import moment from 'moment-timezone';
@@ -76,7 +77,7 @@ export class BanManager extends ModerationManagerBase {
 
         const allBans = await this.cluster.util.requestAllBans(guild);
         const banLookup = new Map(allBans.map(b => [b.user.id, b.user] as const));
-        const banned = [...bannedIds].map(id => banLookup.get(id)).filter(guard.hasValue);
+        const banned = [...bannedIds].map(id => banLookup.get(id)).filter(hasValue);
 
         await this.modLog.logMassBan(guild, banned, moderator);
         return banned;

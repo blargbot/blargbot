@@ -6,6 +6,7 @@ import type { Emote } from '@blargbot/discord-emote';
 import type { DiscordChannelTag, DiscordRoleTag, DiscordTagSet, DiscordUserTag, StoredUser } from '@blargbot/domain/models/index.js';
 import type { IFormattable, IFormatter } from '@blargbot/formatting';
 import { format, Formatter, TranslationMiddleware, util } from '@blargbot/formatting';
+import { hasProperty, hasValue } from '@blargbot/guards';
 import type { Logger } from '@blargbot/logger';
 import type { Snowflake } from 'catflake';
 import * as Eris from 'eris';
@@ -172,7 +173,7 @@ export class BaseUtilities {
                 throw error;
 
             const code = error.code;
-            if (!guard.hasProperty(sendErrors, code))
+            if (!hasProperty(sendErrors, code))
                 return undefined;
 
             const result = sendErrors[code](this, channel, content, error);
@@ -450,7 +451,7 @@ export class BaseUtilities {
         const normalizedQuery = query.toLowerCase();
 
         if (guard.isGuildChannel(channel)) {
-            if (!guard.hasValue(channel.name))
+            if (!hasValue(channel.name))
                 return 0;
 
             const normalizedName = channel.name.toLowerCase();

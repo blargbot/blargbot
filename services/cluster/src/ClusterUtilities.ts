@@ -2,8 +2,9 @@ import { defaultStaff, discord, guard, parse, snowflake } from '@blargbot/cluste
 import { BaseUtilities } from '@blargbot/core/BaseUtilities.js';
 import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent.js';
 import type { ChoiceQuery, ChoiceQueryOptions, ChoiceQueryResult, ConfirmQuery, ConfirmQueryOptions, EntityFindQueryOptions, EntityPickQueryOptions, EntityQueryOptions, FormatSelectMenuOptions, MultipleQuery, MultipleQueryOptions, MultipleQueryResult, QueryButton, SendContent, TextQuery, TextQueryOptions, TextQueryOptionsParsed, TextQueryResult } from '@blargbot/core/types.js';
-import type { IFormattable} from '@blargbot/formatting';
+import type { IFormattable } from '@blargbot/formatting';
 import { format, util } from '@blargbot/formatting';
+import { hasValue } from '@blargbot/guards';
 import * as Eris from 'eris';
 import fetch from 'node-fetch';
 
@@ -921,7 +922,7 @@ function sortChannels<T extends Eris.KnownChannel>(channels: Iterable<T>): T[] {
         if (!guard.isGuildChannel(channel))
             continue;
 
-        if (guard.hasValue(channel.parentID)) {
+        if (hasValue(channel.parentID)) {
             const parent = channel.guild.channels.get(channel.parentID);
             if (parent === undefined || !guard.isCategoryChannel(parent)) {
                 channelGroups.nonGroup.push(channel);
@@ -941,7 +942,7 @@ function sortChannels<T extends Eris.KnownChannel>(channels: Iterable<T>): T[] {
         ...channelGroups.nonGuild.sort((a, b) => a.recipient.username > b.recipient.username ? 1 : -1),
         ...channelGroups.nonGroup.sort(compareGuildChannels),
         ...Object.values(channelGroups.groups)
-            .filter(guard.hasValue)
+            .filter(hasValue)
             .sort((a, b) => a.parent.position - b.parent.position)
             .flatMap(g => {
                 const result = g.children.sort(compareGuildChannels) as T[];

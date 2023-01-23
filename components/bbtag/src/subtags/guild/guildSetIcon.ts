@@ -1,5 +1,5 @@
-import { guard } from '@blargbot/core/utils/index.js';
 import { parse } from '@blargbot/core/utils/parse/index.js';
+import { isUrl } from '@blargbot/guards';
 import * as Eris from 'eris';
 import fetch from 'node-fetch';
 
@@ -35,7 +35,7 @@ export class GuildSetIconSubtag extends CompiledSubtag {
             throw new BBTagRuntimeError('Author cannot modify the guild');
 
         image = parse.url(image);
-        if (guard.isUrl(image)) {
+        if (isUrl(image)) {
             const res = await fetch(image);
             const contentType = res.headers.get('content-type');
             image = `data:${contentType !== null ? contentType : ''};base64,${Buffer.from(await res.arrayBuffer()).toString('base64')}`;

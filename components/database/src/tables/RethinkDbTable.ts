@@ -1,4 +1,4 @@
-import { guard } from '@blargbot/core/utils/index.js';
+import { hasValue } from '@blargbot/guards';
 import type { Logger } from '@blargbot/logger';
 import type { Cursor, Expression, TableQuery, UpdateRequest, WriteResult } from 'rethinkdb';
 
@@ -87,7 +87,7 @@ export class RethinkDbTable<Table> {
         if (!returnChanges)
             return result.deleted > 0;
 
-        return result.changes?.map(c => c.old_val).filter(guard.hasValue) ?? [];
+        return result.changes?.map(c => c.old_val).filter(hasValue) ?? [];
     }
 
     public updateExpr<T>(value: T): T {

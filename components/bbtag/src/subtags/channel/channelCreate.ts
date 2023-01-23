@@ -1,4 +1,4 @@
-import { guard } from '@blargbot/core/utils/index.js';
+import { hasProperty } from '@blargbot/guards';
 import { mapping } from '@blargbot/mapping';
 import * as Eris from 'eris';
 
@@ -43,7 +43,7 @@ export class ChannelCreateSubtag extends CompiledSubtag {
             throw new BBTagRuntimeError('Invalid JSON');
         const options = mapped.value;
 
-        const type = guard.hasProperty(channelTypes, typeKey) ? channelTypes[typeKey] : Eris.Constants.ChannelTypes.GUILD_TEXT;
+        const type = hasProperty(channelTypes, typeKey) ? channelTypes[typeKey] : Eris.Constants.ChannelTypes.GUILD_TEXT;
 
         for (const permission of options.permissionOverwrites ?? [])
             if (!context.hasPermission((permission.allow as bigint) | (permission.deny as bigint)))

@@ -1,7 +1,7 @@
-import { guard } from '@blargbot/core/utils/index.js';
-import type { BBTagVariable, TagVariableScope, TagVariableScopeFilter} from '@blargbot/domain/models/index.js';
+import type { BBTagVariable, TagVariableScope, TagVariableScopeFilter } from '@blargbot/domain/models/index.js';
 import { TagVariableType } from '@blargbot/domain/models/index.js';
 import type { TagVariableStore } from '@blargbot/domain/stores/index.js';
+import { hasValue } from '@blargbot/guards';
 import type { Logger } from '@blargbot/logger';
 import type { FindOptions, WhereAttributeHashValue } from 'sequelize';
 import { ENUM, Op, STRING, TEXT } from 'sequelize';
@@ -70,7 +70,7 @@ export class PostgresDbTagVariableStore implements TagVariableStore {
                 type: scope.type
             };
             try {
-                if (guard.hasValue(value))
+                if (hasValue(value))
                     await this.#table.upsert({ ...query, content: JSON.stringify(value) });
                 else
                     await this.#table.destroy({ where: query });
@@ -90,7 +90,7 @@ export class PostgresDbTagVariableStore implements TagVariableStore {
             }
         });
 
-        return guard.hasValue(record)
+        return hasValue(record)
             ? deserialize(record.content)
             : undefined;
     }

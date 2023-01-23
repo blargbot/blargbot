@@ -2,11 +2,11 @@ import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { MultiKeyMap } from '@blargbot/core/MultiKeyMap.js';
-import type { ModuleResult } from '@blargbot/core/types.js';
-import { guard, pluralise as p } from '@blargbot/core/utils/index.js';
-import type { Logger } from '@blargbot/logger';
+import { hasValue } from '@blargbot/guards';
 import { EventEmitter } from 'eventemitter3';
+
+import type { Logger } from './Logger.js';
+import type { ModuleResult } from './ModuleResult.js';
 
 interface ModuleLoaderEvents<TModule> {
     add: [module: TModule];
@@ -17,7 +17,7 @@ interface ModuleLoaderEvents<TModule> {
 
 export abstract class BaseModuleLoader<TModule> extends EventEmitter<ModuleLoaderEvents<TModule>> {
     readonly #root: string;
-    readonly #modules: MultiKeyMap<string, { module: TModule; location: string; }>;
+    readonly #modules: Map<string, { module: TModule; location: string; }>;
 
     public get size(): number { return this.#modules.size; }
 
@@ -28,12 +28,7 @@ export abstract class BaseModuleLoader<TModule> extends EventEmitter<ModuleLoade
     ) {
         super();
         this.#root = getAbsolutePath(context, path);
-        this.#modules = new MultiKeyMap<string, { module: TModule; location: string; }>();
-
-        this.#modules.on('add', ({ module }) => this.emit('add', module));
-        this.#modules.on('remove', ({ module }) => this.emit('remove', module));
-        this.#modules.on('link', ({ module }, key) => this.emit('link', module, key));
-        this.#modules.on('unlink', ({ module }, key) => this.emit('unlink', module, key));
+        this.#modules = new Map<string, { module: TModule; location: string; }>();
     }
 
     public list(): Generator<TModule>;
@@ -74,11 +69,11 @@ export abstract class BaseModuleLoader<TModule> extends EventEmitter<ModuleLoade
             } catch (err: unknown) {
                 if (err instanceof Error)
                     this.logger.error(err.stack);
-                this.logger.module(this.path, 'Error while loading module', fileName);
+                this.logger.error(this.path, 'Error while loading module', fileName);
             }
         }
 
-        this.logger.init(`Loaded ${loaded.size} ${p(loaded.size, 'module')} from ${this.#root}`);
+        this.logger.info(`Loaded ${loaded.size} ${loaded.size} module(s) from ${this.#root}`);
     }
 
     public foreach(action: (module: TModule) => void): void;
@@ -105,7 +100,7 @@ export abstract class BaseModuleLoader<TModule> extends EventEmitter<ModuleLoade
         if (typeof modules === 'string')
             return this.#modules.get(modules)?.location;
 
-        return mapIter(modules, m => this.#modules.get(m)?.location, guard.hasValue);
+        return mapIter(modules, m => this.#modules.get(m)?.location, hasValue);
     }
 
     public * sources(): Iterable<string> {
@@ -117,19 +112,19 @@ export abstract class BaseModuleLoader<TModule> extends EventEmitter<ModuleLoade
         switch (typeof rawModule) {
             case 'function':
             case 'object': {
-                if (!guard.hasValue(rawModule))
+                if (!hasValue(rawModule))
                     break;
                 const result = this.tryActivate(rawModule, fileName);
-                if (guard.hasValue(result))
+                if (hasValue(result))
                     return [result];
                 const values = Object.values(rawModule)
                     .map(m => this.tryActivate(m, fileName))
-                    .filter(guard.hasValue);
+                    .filter(hasValue);
                 if (values.length > 0)
                     return values;
             }
         }
-        this.logger.debug(`No modules found in ${fileName}`);
+        this.logger.info(`No modules found in ${fileName}`);
         return [];
     }
 

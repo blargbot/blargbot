@@ -1,8 +1,8 @@
-import { guard } from '@blargbot/core/utils/index.js';
 import { parse } from '@blargbot/core/utils/parse/index.js';
+import { isUrl } from '@blargbot/guards';
 import type * as Eris from 'eris';
 
-import type { CommandContext} from '../../command/index.js';
+import type { CommandContext } from '../../command/index.js';
 import { GlobalImageCommand } from '../../command/index.js';
 import templates from '../../text.js';
 import type { CommandResult } from '../../types.js';
@@ -45,7 +45,7 @@ export class PixelateCommand extends GlobalImageCommand {
 
     public async render(context: CommandContext, url: string, scale: number): Promise<CommandResult> {
         url = parse.url(url);
-        if (!guard.isUrl(url))
+        if (!isUrl(url))
             return cmd.default.invalidUrl({ url });
 
         return await this.renderImage(context, 'pixelate', { url: url, scale });

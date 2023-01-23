@@ -2,10 +2,11 @@ import type { Cluster } from '@blargbot/cluster';
 import type { CommandGetCoreResult, CommandParameter, CommandProperties, CommandResult, CommandSignature, ICommand } from '@blargbot/cluster/types.js';
 import { commandTypeDetails, guard } from '@blargbot/cluster/utils/index.js';
 import { metrics } from '@blargbot/core/Metrics.js';
-import { ModuleLoader } from '@blargbot/core/modules/index.js';
 import type { NextMiddleware } from '@blargbot/core/types.js';
 import type { CommandPermissions, FlagDefinition } from '@blargbot/domain/models/index.js';
 import type { IFormattable } from '@blargbot/formatting';
+import { hasValue } from '@blargbot/guards';
+import { ModuleLoader } from '@blargbot/modules';
 import { Timer } from '@blargbot/timer';
 import * as Eris from 'eris';
 
@@ -63,7 +64,7 @@ export class DefaultCommandManager extends CommandManager<Command> {
 
         const visible = await Promise.all(
             names.map(n => this.modules.get(n))
-                .filter(guard.hasValue)
+                .filter(hasValue)
                 .map(async m => ({ isVisible: await m.isVisible(this.cluster.util, guild, user), name: m.name }))
         );
 

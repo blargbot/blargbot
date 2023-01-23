@@ -1,4 +1,4 @@
-import { guard } from '@blargbot/core/utils/index.js';
+import { hasValue } from '@blargbot/guards';
 import { Timer } from '@blargbot/timer';
 
 import type { BBTagContext } from './BBTagContext.js';
@@ -19,7 +19,7 @@ export class VariableCache {
 
     public get list(): VariableReference[] {
         return Object.values(this.#cache)
-            .filter(guard.hasValue)
+            .filter(hasValue)
             .map(v => v.reference);
     }
 
@@ -32,8 +32,8 @@ export class VariableCache {
 
     #getCached(variables?: string[]): CacheEntry[] {
         if (variables === undefined)
-            return Object.values(this.#cache).filter(guard.hasValue);
-        return variables.map(k => this.#cache[k]).filter(guard.hasValue);
+            return Object.values(this.#cache).filter(hasValue);
+        return variables.map(k => this.#cache[k]).filter(hasValue);
     }
 
     async #getEntry(variable: string): Promise<CacheEntry> {

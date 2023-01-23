@@ -1,5 +1,6 @@
-import { guard, parse } from '@blargbot/core/utils/index.js';
+import { parse } from '@blargbot/core/utils/index.js';
 import type { IFormattable } from '@blargbot/formatting';
+import { hasValue } from '@blargbot/guards';
 
 import type { BBTagContext } from '../BBTagContext.js';
 import type { BBTagRuntimeError } from '../errors/index.js';
@@ -21,9 +22,9 @@ export abstract class CompiledSubtag extends Subtag {
 
     public constructor(options: DefinedSubtagOptions) {
         const signatures = parseDefinitions(options.definition);
-        super({ ...options, signatures: signatures.map(s => s.signature).filter(guard.hasValue) });
+        super({ ...options, signatures: signatures.map(s => s.signature).filter(hasValue) });
 
-        this.#handler = compileSignatures(signatures.map(s => s.implementation).filter(guard.hasValue));
+        this.#handler = compileSignatures(signatures.map(s => s.implementation).filter(hasValue));
     }
 
     protected executeCore(context: BBTagContext, subtagName: string, subtag: SubtagCall): AsyncIterable<string | undefined> {

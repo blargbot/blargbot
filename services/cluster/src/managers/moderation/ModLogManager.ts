@@ -1,9 +1,10 @@
 import type { Cluster } from '@blargbot/cluster';
-import { guard, ModlogColour } from '@blargbot/cluster/utils/index.js';
+import { ModlogColour } from '@blargbot/cluster/utils/index.js';
 import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent.js';
 import type { FormatEmbedField, FormatEmbedOptions } from '@blargbot/core/types.js';
-import type { IFormattable} from '@blargbot/formatting';
+import type { IFormattable } from '@blargbot/formatting';
 import { format, util } from '@blargbot/formatting';
+import { hasValue } from '@blargbot/guards';
 import type * as Eris from 'eris';
 import type moment from 'moment-timezone';
 
@@ -269,7 +270,7 @@ export class ModLogManager {
         // TODO modlog setting can be channel id or tag
         type ??= templates.modlog.types.generic;
         const modlogChannelId = await this.cluster.database.guilds.getSetting(guildId, 'modlog');
-        if (!guard.hasValue(modlogChannelId)) // TODO Should this still create the modlog entry in the db?
+        if (!hasValue(modlogChannelId)) // TODO Should this still create the modlog entry in the db?
             return;
 
         const caseId = await this.cluster.database.guilds.getNewModlogCaseId(guildId);

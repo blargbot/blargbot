@@ -1,4 +1,4 @@
-import { guard } from '@blargbot/core/utils/index.js';
+import { isAlphanumeric } from '@blargbot/guards';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
@@ -27,7 +27,7 @@ export class FlagSubtag extends CompiledSubtag {
     }
 
     public getFlag(context: BBTagContext, flagName: string): string | undefined {
-        if (!guard.isFlagChar(flagName) && flagName !== '_')
+        if (!isAlphanumeric(flagName) && flagName !== '_')
             return undefined;
 
         return context.flaggedInput[flagName]?.merge().value;

@@ -3,8 +3,9 @@ import type { CommandGetCoreResult, CommandProperties, ICommand } from '@blargbo
 import { CommandType, commandTypeDetails, guard } from '@blargbot/cluster/utils/index.js';
 import { metrics } from '@blargbot/core/Metrics.js';
 import type { CommandPermissions, FlagDefinition, NamedGuildCommandTag, StoredTag } from '@blargbot/domain/models/index.js';
-import type { IFormattable} from '@blargbot/formatting';
+import type { IFormattable } from '@blargbot/formatting';
 import { util } from '@blargbot/formatting';
+import { hasValue } from '@blargbot/guards';
 import * as Eris from 'eris';
 
 import type { CommandContext } from '../../command/index.js';
@@ -160,7 +161,7 @@ class NormalizedCommandTag implements ICommand<NamedGuildCommandTag> {
             };
         }
 
-        if (this.implementation.author === this.tag.author || !guard.hasValue(this.implementation.author)) {
+        if (this.implementation.author === this.tag.author || !hasValue(this.implementation.author)) {
             await context.database.tags.incrementUses(this.tag.name);
             const cooldown = Math.max(this.tag.cooldown ?? 0, this.implementation.cooldown ?? 0);
             return {

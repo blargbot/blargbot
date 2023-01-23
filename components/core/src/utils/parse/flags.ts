@@ -1,6 +1,7 @@
 import type { FlagDefinition, FlagResult, FlagResultValueSet } from '@blargbot/domain/models/index.js';
+import { isAlphanumeric } from '@blargbot/guards';
 
-import { guard, humanize } from '../../utils/index.js';
+import { humanize } from '../../utils/index.js';
 
 export function parseFlags(definitions: Iterable<FlagDefinition<unknown>>, text: string, strict = false): FlagResult {
     let currentFlag: keyof FlagResult = '_';
@@ -41,7 +42,7 @@ export function parseFlags(definitions: Iterable<FlagDefinition<unknown>>, text:
             const flagStr = value.split(' ')[0];
             for (const char of flagStr.slice(1)) {
                 flagMatched ||= flagKeys.has(char);
-                if (guard.isFlagChar(char) && currentFlag !== char && (!strict || flagKeys.has(char))) {
+                if (isAlphanumeric(char) && currentFlag !== char && (!strict || flagKeys.has(char))) {
                     flagMatched = true;
                     pushFlagGroup(resultGroups, currentFlag, currentGroup);
                     currentFlag = char;

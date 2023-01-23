@@ -1,4 +1,5 @@
-import { guard, sleep } from '@blargbot/core/utils/index.js';
+import { sleep } from '@blargbot/core/utils/index.js';
+import { hasValue } from '@blargbot/guards';
 import type { Logger } from '@blargbot/logger';
 import type { UpdateRequest } from 'rethinkdb';
 
@@ -119,8 +120,8 @@ export class RethinkDbCachedTable<Table extends { [P in KeyName]: string }, KeyN
             try {
                 const changefeed = this.stream(t => t.changes({ squash: true }));
                 for await (const data of changefeed) {
-                    if (!guard.hasValue(data.new_val)) {
-                        if (guard.hasValue(data.old_val))
+                    if (!hasValue(data.new_val)) {
+                        if (hasValue(data.old_val))
                             this.cache.delete(this.getKey(data.old_val));
                     } else {
                         const id = this.getKey(data.new_val);

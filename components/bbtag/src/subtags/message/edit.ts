@@ -1,4 +1,5 @@
-import { guard, parse } from '@blargbot/core/utils/index.js';
+import { parse } from '@blargbot/core/utils/index.js';
+import { hasProperty } from '@blargbot/guards';
 import type * as Eris from 'eris';
 
 import type { BBTagContext } from '../../BBTagContext.js';
@@ -95,7 +96,7 @@ export class EditSubtag extends CompiledSubtag {
             content = contentStr;
         } else {
             const parsedEmbed = parse.embed(contentStr);
-            if (parsedEmbed === undefined || parsedEmbed.some(e => guard.hasProperty(e, 'malformed'))) {
+            if (parsedEmbed === undefined || parsedEmbed.some(e => hasProperty(e, 'malformed'))) {
                 content = contentStr;
             } else {
                 embeds = parsedEmbed;

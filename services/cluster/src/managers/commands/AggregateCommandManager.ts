@@ -1,7 +1,7 @@
 import type { Cluster } from '@blargbot/cluster';
 import type { CommandGetResult, CommandManagers, ICommandManager } from '@blargbot/cluster/types.js';
+import { RollingArray } from '@blargbot/collections';
 import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent.js';
-import { MessageIdQueue } from '@blargbot/core/MessageIdQueue.js';
 import { guard } from '@blargbot/core/utils/index.js';
 import type { CommandPermissions, NamedGuildCommandTag } from '@blargbot/domain/models/index.js';
 import * as Eris from 'eris';
@@ -102,7 +102,7 @@ export class AggregateCommandManager implements ICommandManager, CommandManagers
     public async messageDeleted(message: Eris.PossiblyUncachedMessage): Promise<void> {
         if (!guard.isGuildMessage(message))
             return;
-        if (!this.messages.has(message.channel.guild.id, message.id)
+        if (!this.messages.has(message.channel.id, message.id)
             || await this.#cluster.database.guilds.getSetting(message.channel.guild.id, 'deletenotif') !== true) {
             return;
         }
@@ -121,5 +121,41 @@ export class AggregateCommandManager implements ICommandManager, CommandManagers
             await this.#cluster.util.send(message.channel.id, new FormattableMessageContent({
                 content: templates.commands.$errors.messageDeleted({ user: author })
             }));
+    }
+}
+
+class MessageIdQueue {
+    readonly #messageQueue: Record<string, RollingArray<string> | undefined>;
+
+    public constructor(
+        public readonly maxSize: number = 100
+    ) {
+        this.#messageQueue = {};
+    }
+
+    public push(channelId: string, messageId: string): void {
+        const messageQueue = this.#messageQueue[channelId] ??= new RollingArray(this.maxSize);
+        messageQueue.push(messageId);
+    }
+
+    public has(channelId: string, messageId: string): boolean {
+        return this.#messageQueue[channelId]?.includes(messageId)
+            ?? false;
+    }
+
+    public remove(channelId: string, messageId: string): boolean {
+        const messageQueue = this.#messageQueue[channelId];
+        if (messageQueue === undefined)
+            return false;
+
+        let success = false;
+        for (let i = messageQueue.length - 1; i >= 0; i--) {
+            if (messageQueue[i] === messageId) {
+                messageQueue.splice(i, 1);
+                success = true;
+            }
+        }
+        return success;
+
     }
 }

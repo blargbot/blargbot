@@ -1,8 +1,8 @@
-import type { Subtag, SubtagSignature, SubtagSignatureValueParameter, SubtagType} from '@blargbot/bbtag';
+import type { Subtag, SubtagSignature, SubtagSignatureValueParameter, SubtagType } from '@blargbot/bbtag';
 import { bbtag, limits, tagTypeDetails, tagVariableScopeProviders } from '@blargbot/bbtag';
 import type { SendContent } from '@blargbot/core/types.js';
-import { guard } from '@blargbot/core/utils/index.js';
 import type { IFormattable } from '@blargbot/formatting';
+import { hasValue } from '@blargbot/guards';
 
 import type { Cluster } from '../../Cluster.js';
 import templates from '../../text.js';
@@ -236,7 +236,7 @@ export class BBTagDocumentationManager extends DocumentationTreeManager {
                                 ...signature.parameters
                                     .flatMap<SubtagSignatureValueParameter>(p => 'nested' in p ? p.nested : [p])
                                     .map(this.#getParameterModifiers)
-                                    .filter(guard.hasValue),
+                                    .filter(hasValue),
                                 signature.description
                             ]
                         })

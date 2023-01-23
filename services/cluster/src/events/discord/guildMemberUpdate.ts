@@ -1,6 +1,6 @@
 import type { Cluster } from '@blargbot/cluster';
-import { guard } from '@blargbot/cluster/utils/index.js';
 import { DiscordEventService } from '@blargbot/core/serviceTypes/index.js';
+import { hasValue } from '@blargbot/guards';
 import type * as Eris from 'eris';
 import moment from 'moment-timezone';
 
@@ -14,7 +14,7 @@ export class DiscordMemberUpdateHandler extends DiscordEventService<'guildMember
             return;
 
         const promises: Array<Promise<unknown>> = [this.cluster.database.users.upsert(member.user)];
-        if (!guard.hasValue(oldMember)) {
+        if (!hasValue(oldMember)) {
             await Promise.all(promises);
             return;
         }

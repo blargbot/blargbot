@@ -1,5 +1,5 @@
 import type { CommandBinderState } from '@blargbot/cluster/types.js';
-import { guard } from '@blargbot/cluster/utils/index.js';
+import { hasValue } from '@blargbot/guards';
 
 import type { CommandContext } from '../../CommandContext.js';
 import type { Binding, BindingResult } from './Binder.js';
@@ -26,9 +26,9 @@ export class SwitchBinding<TContext extends CommandContext> extends CommandBindi
         this.expected = Object.entries(options).filter(e => e[1]?.hidden !== true).map(e => e[0]);
 
         this.lookup = Object.fromEntries([
-            ...Object.entries(aliases).map(entry => [entry[0].toLowerCase(), entry[1]?.flatMap(k => options[k]?.bindings).filter(guard.hasValue)] as const),
+            ...Object.entries(aliases).map(entry => [entry[0].toLowerCase(), entry[1]?.flatMap(k => options[k]?.bindings).filter(hasValue)] as const),
             ...Object.entries(options).map(entry => [entry[0].toLowerCase(), entry[1]?.bindings] as const),
-            ...Object.entries(aliases).map(entry => [entry[0], entry[1]?.flatMap(k => options[k]?.bindings).filter(guard.hasValue)] as const),
+            ...Object.entries(aliases).map(entry => [entry[0], entry[1]?.flatMap(k => options[k]?.bindings).filter(hasValue)] as const),
             ...Object.entries(options).map(entry => [entry[0], entry[1]?.bindings] as const)
         ]);
     }

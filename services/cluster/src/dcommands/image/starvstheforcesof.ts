@@ -1,5 +1,5 @@
-import { guard } from '@blargbot/cluster/utils/index.js';
 import { parse } from '@blargbot/core/utils/parse/index.js';
+import { isUrl } from '@blargbot/guards';
 import type * as Eris from 'eris';
 
 import type { CommandContext } from '../../command/index.js';
@@ -43,7 +43,7 @@ export class StarVsTheForcesOfCommand extends GlobalImageCommand {
 
     public async render(context: CommandContext, url: string): Promise<CommandResult> {
         url = parse.url(url);
-        if (!guard.isUrl(url))
+        if (!isUrl(url))
             return cmd.default.invalidUrl({ url });
 
         return await this.renderImage(context, 'starvstheforcesof', { avatar: url });

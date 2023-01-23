@@ -3,6 +3,7 @@ import type { Cluster } from '@blargbot/cluster';
 import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent.js';
 import { guard } from '@blargbot/core/utils/index.js';
 import type { GuildRolemeEntry } from '@blargbot/domain/models/index.js';
+import { hasValue } from '@blargbot/guards';
 import type * as Eris from 'eris';
 
 import templates from '../text.js';
@@ -17,7 +18,7 @@ export class RolemeManager {
     }
 
     public async execute(message: Eris.KnownMessage): Promise<void> {
-        if (!guard.isGuildMessage(message) || !guard.hasValue(message.member))
+        if (!guard.isGuildMessage(message) || !hasValue(message.member))
             return;
 
         const rolemes = await this.#cluster.database.guilds.getRolemes(message.channel.guild.id);

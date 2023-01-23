@@ -1,8 +1,8 @@
 import type { CommandResult, GuildCommandContext } from '@blargbot/cluster/types.js';
 import { CommandType, createSafeRegExp, getRange, parse, randChoose, randInt } from '@blargbot/cluster/utils/index.js';
-import { guard } from '@blargbot/core/utils/index.js';
 import type { GuildFilteredAutoresponse, GuildTriggerTag } from '@blargbot/domain/models/index.js';
 import { util } from '@blargbot/formatting';
+import { hasValue } from '@blargbot/guards';
 
 import { GuildCommand } from '../../command/index.js';
 import { RawBBTagCommandResult } from '../../command/RawBBTagCommandResult.js';
@@ -260,7 +260,7 @@ export class AutoResponseCommand extends GuildCommand {
             return cmd.create.success({ prefix: context.prefix, id: 'everything' });
         }
 
-        const ids = Object.entries(ars.filtered ?? {}).filter(ar => guard.hasValue(ar[1])).map(ar => parseInt(ar[0]));
+        const ids = Object.entries(ars.filtered ?? {}).filter(ar => hasValue(ar[1])).map(ar => parseInt(ar[0]));
         if (ids.length >= 20)
             return cmd.create.tooMany({ max: 20 });
 

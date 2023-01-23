@@ -1,6 +1,6 @@
 import { metrics } from '@blargbot/core/Metrics.js';
-import { guard } from '@blargbot/core/utils/index.js';
 import type { IFormattable } from '@blargbot/formatting';
+import { hasValue } from '@blargbot/guards';
 import { Timer } from '@blargbot/timer';
 
 import type { BBTagContext } from './BBTagContext.js';
@@ -23,7 +23,7 @@ export abstract class Subtag implements SubtagOptions<IFormattable<string>> {
         this.aliases = [
             ...options.aliases ?? [],
             ...options.signatures.map(s => s.subtagName)
-                .filter(guard.hasValue)
+                .filter(hasValue)
         ];
         this.category = options.category;
         this.description = options.description;

@@ -2,6 +2,7 @@ import type { CommandResult, GuildCommandContext } from '@blargbot/cluster/types
 import { CommandType, guard } from '@blargbot/cluster/utils/index.js';
 import type { StoredGuildEventLogType } from '@blargbot/domain/models/index.js';
 import type { IFormattable } from '@blargbot/formatting';
+import { hasProperty } from '@blargbot/guards';
 import type * as Eris from 'eris';
 
 import { GuildCommand } from '../../command/index.js';
@@ -153,5 +154,5 @@ const eventDescriptions: { [key in Exclude<StoredGuildEventLogType, `role:${stri
 };
 
 function isLogEventType(eventName: string): eventName is StoredGuildEventLogType {
-    return eventName.startsWith('role:') || guard.hasProperty(eventDescriptions, eventName);
+    return eventName.startsWith('role:') || hasProperty(eventDescriptions, eventName);
 }

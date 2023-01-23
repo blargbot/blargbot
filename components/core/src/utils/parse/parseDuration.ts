@@ -1,3 +1,4 @@
+import { hasValue } from '@blargbot/guards';
 import moment from 'moment-timezone';
 
 export function parseDuration(text: string, fallback: moment.Duration): moment.Duration;
@@ -14,7 +15,7 @@ export function parseDuration(text: string, fallback?: moment.Duration): moment.
         find(ctx, /([0-9]+) ?(minutes?|mins?|m)\b/i, 'minutes'),
         find(ctx, /((?:[0-9]*[.])?[0-9]+) ?(seconds?|secs?|s)\b/i, 'seconds'),
         find(ctx, /([0-9]+) ?(milliseconds?|ms)\b/i, 'milliseconds')
-    ].filter((d): d is moment.Duration => d !== undefined);
+    ].filter(hasValue);
 
     if (durations.length === 0 || ctx.text.trim().length > 0)
         return fallback;

@@ -4,6 +4,7 @@ import { guard } from '@blargbot/cluster/utils/index.js';
 import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent.js';
 import type { GuildCensor, GuildCensorExceptions } from '@blargbot/domain/models/index.js';
 import { util } from '@blargbot/formatting';
+import { hasValue } from '@blargbot/guards';
 import type * as Eris from 'eris';
 import moment from 'moment-timezone';
 
@@ -47,7 +48,7 @@ export class CensorManager extends ModerationManagerBase {
             // NOOP
         }
 
-        if (!guard.hasValue(message.member))
+        if (!hasValue(message.member))
             return true;
 
         const tags = [];
@@ -125,7 +126,7 @@ export class CensorManager extends ModerationManagerBase {
         const channels = exemptions.channel ?? [];
         const users = exemptions.user ?? [];
         const roles = exemptions.role ?? [];
-        const userRoles = guard.hasValue(message.member) ? message.member.roles : [];
+        const userRoles = hasValue(message.member) ? message.member.roles : [];
 
         return channels.includes(message.channel.id)
             || users.includes(message.author.id)

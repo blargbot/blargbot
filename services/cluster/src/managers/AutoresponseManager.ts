@@ -4,6 +4,7 @@ import type { WhitelistResponse } from '@blargbot/cluster/types.js';
 import { guard, humanize } from '@blargbot/cluster/utils/index.js';
 import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent.js';
 import type { GuildTriggerTag } from '@blargbot/domain/models/index.js';
+import { hasProperty } from '@blargbot/guards';
 import { mapping } from '@blargbot/mapping';
 import type * as Eris from 'eris';
 
@@ -131,7 +132,7 @@ export class AutoresponseManager {
 
     public async handleWhitelistApproval(message: Eris.KnownMessage, emoji: Eris.PartialEmoji, user: Eris.User): Promise<void> {
         if (message.channel.id !== this.#cluster.config.discord.channels.autoresponse
-            || !guard.hasProperty(emojiValues, emoji.name)
+            || !hasProperty(emojiValues, emoji.name)
             || !this.#cluster.util.isBotStaff(user.id))
             return;
 

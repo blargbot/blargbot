@@ -1,5 +1,6 @@
-import type { MessageComponent} from '@blargbot/core/utils/index.js';
+import type { MessageComponent } from '@blargbot/core/utils/index.js';
 import { discord, guard, parse } from '@blargbot/core/utils/index.js';
+import { hasProperty, isUrl } from '@blargbot/guards';
 import type * as Eris from 'eris';
 
 import { CompiledSubtag } from '../../compilation/index.js';
@@ -61,7 +62,7 @@ export class EmbedBuildSubtag extends CompiledSubtag {
 
     #setField(embed: EmbedBuildOptions, key: string, value: string): void {
         const id = key.toLowerCase();
-        if (!guard.hasProperty(fields, id))
+        if (!hasProperty(fields, id))
             throw new InvalidEmbedError(`Unknown key '${key}'`);
         fields[id].set(embed, value.trim());
     }
@@ -85,7 +86,7 @@ function validateLength(value: { length: number; } | undefined, limitKey: Messag
 }
 
 function validateUrl(value: string, errorText: string): void {
-    if (!guard.isUrl(value))
+    if (!isUrl(value))
         throw new InvalidEmbedError(errorText, value);
 }
 

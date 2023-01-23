@@ -73,6 +73,7 @@ __metadata:
     "@blargbot/formatting": "workspace:^"
     "@blargbot/logger": "workspace:^"
     "@blargbot/mapping": "workspace:^"
+    "@blargbot/modules": "workspace:^"
     "@types/express": ^4.17.15
     "@types/express-serve-static-core": ^4.17.32
     "@types/jsonwebtoken": ^9.0.1
@@ -153,6 +154,7 @@ __metadata:
     "@blargbot/discord-emote": "workspace:^"
     "@blargbot/domain": "workspace:^"
     "@blargbot/formatting": "workspace:^"
+    "@blargbot/guards": "workspace:^"
     "@blargbot/logger": "workspace:^"
     "@blargbot/mapping": "workspace:^"
     "@blargbot/timer": "workspace:^"
@@ -207,15 +209,18 @@ __metadata:
     "@blargbot/async-tools": "workspace:^"
     "@blargbot/bbtag": "workspace:^"
     "@blargbot/chatlog-types": "workspace:^"
+    "@blargbot/collections": "workspace:^"
     "@blargbot/config": "workspace:^"
     "@blargbot/core": "workspace:^"
     "@blargbot/database": "workspace:^"
     "@blargbot/discord-emote": "workspace:^"
     "@blargbot/domain": "workspace:^"
     "@blargbot/formatting": "workspace:^"
+    "@blargbot/guards": "workspace:^"
     "@blargbot/image-types": "workspace:^"
     "@blargbot/logger": "workspace:^"
     "@blargbot/mapping": "workspace:^"
+    "@blargbot/modules": "workspace:^"
     "@blargbot/res": "workspace:^"
     "@blargbot/timer": "workspace:^"
     "@hunteroi/versioning": ^1.3.2
@@ -235,6 +240,12 @@ __metadata:
     prom-client: ^14.1.1
     wolken: ^0.2.1
     xml2js: ^0.4.23
+  languageName: unknown
+  linkType: soft
+
+"@blargbot/collections@workspace:^, @blargbot/collections@workspace:components/collections/src":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/collections@workspace:components/collections/src"
   languageName: unknown
   linkType: soft
 
@@ -281,6 +292,7 @@ __metadata:
     "@blargbot/discord-emote": "workspace:^"
     "@blargbot/domain": "workspace:^"
     "@blargbot/formatting": "workspace:^"
+    "@blargbot/guards": "workspace:^"
     "@blargbot/logger": "workspace:^"
     "@blargbot/mapping": "workspace:^"
     "@blargbot/res": "workspace:^"
@@ -323,6 +335,7 @@ __metadata:
     "@blargbot/config": "workspace:^"
     "@blargbot/core": "workspace:^"
     "@blargbot/domain": "workspace:^"
+    "@blargbot/guards": "workspace:^"
     "@blargbot/logger": "workspace:^"
     "@blargbot/mapping": "workspace:^"
     "@types/catflake": "workspace:^"
@@ -416,6 +429,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@blargbot/guards@workspace:^, @blargbot/guards@workspace:components/guards/src":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/guards@workspace:components/guards/src"
+  languageName: unknown
+  linkType: soft
+
 "@blargbot/image-generator@workspace:services/image-generator/src":
   version: 0.0.0-use.local
   resolution: "@blargbot/image-generator@workspace:services/image-generator/src"
@@ -476,6 +495,7 @@ __metadata:
     "@blargbot/domain": "workspace:^"
     "@blargbot/formatting": "workspace:^"
     "@blargbot/logger": "workspace:^"
+    "@blargbot/modules": "workspace:^"
     "@blargbot/res": "workspace:^"
     "@blargbot/timer": "workspace:^"
     "@types/eris": "workspace:^"
@@ -495,6 +515,15 @@ __metadata:
     "@types/amqplib": ^0.10.1
   peerDependencies:
     amqplib: ^0.10.3
+  languageName: unknown
+  linkType: soft
+
+"@blargbot/modules@workspace:^, @blargbot/modules@workspace:components/modules/src":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/modules@workspace:components/modules/src"
+  dependencies:
+    "@blargbot/guards": "workspace:^"
+    eventemitter3: ^5.0.0
   languageName: unknown
   linkType: soft
 

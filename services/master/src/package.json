@@ -19,6 +19,7 @@
         "@blargbot/domain": "workspace:^",
         "@blargbot/formatting": "workspace:^",
         "@blargbot/logger": "workspace:^",
+        "@blargbot/modules": "workspace:^",
         "@blargbot/res": "workspace:^",
         "@blargbot/timer": "workspace:^",
         "eris": "^0.17.1",

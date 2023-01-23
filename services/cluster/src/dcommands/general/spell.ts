@@ -1,8 +1,9 @@
-import { CommandType, guard, randChoose } from '@blargbot/cluster/utils/index.js';
+import { CommandType, randChoose } from '@blargbot/cluster/utils/index.js';
 import { util } from '@blargbot/formatting';
+import { hasValue } from '@blargbot/guards';
 import res from '@blargbot/res';
 
-import type { CommandContext} from '../../command/index.js';
+import type { CommandContext } from '../../command/index.js';
 import { GlobalCommand } from '../../command/index.js';
 import templates from '../../text.js';
 import type { CommandResult } from '../../types.js';
@@ -84,7 +85,7 @@ export class SpellCommand extends GlobalCommand {
             prompt: cmd.default.query.prompt,
             placeholder: cmd.default.query.placeholder,
             choices: Object.values(spells)
-                .filter(guard.hasValue)
+                .filter(hasValue)
                 .filter(s => s.name.toLowerCase().includes(name.toLowerCase()))
                 .map(s => ({
                     label: util.literal(s.name),

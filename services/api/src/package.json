@@ -21,6 +21,7 @@
         "@blargbot/formatting": "workspace:^",
         "@blargbot/logger": "workspace:^",
         "@blargbot/mapping": "workspace:^",
+        "@blargbot/modules": "workspace:^",
         "express": "^4.18.2",
         "express-promise-router": "^4.1.1",
         "jsonwebtoken": "^9.0.0",

@@ -1,7 +1,7 @@
 import type { Cluster } from '@blargbot/cluster';
-import { guard } from '@blargbot/cluster/utils/index.js';
 import { Lazy } from '@blargbot/core/Lazy.js';
 import { DiscordEventService } from '@blargbot/core/serviceTypes/index.js';
+import { hasValue } from '@blargbot/guards';
 import * as Eris from 'eris';
 
 export class DiscordUserUpdateHandler extends DiscordEventService<'userUpdate'> {
@@ -10,11 +10,11 @@ export class DiscordUserUpdateHandler extends DiscordEventService<'userUpdate'> 
     }
 
     public async execute(user: Eris.User | undefined | null, oldUser: Eris.PartialUser | null | undefined): Promise<void> {
-        if (!guard.hasValue(user) || user.id === this.cluster.discord.user.id)
+        if (!hasValue(user) || user.id === this.cluster.discord.user.id)
             return;
 
         const promises: Array<Promise<unknown>> = [this.#updateDb(user)];
-        if (!guard.hasValue(oldUser)) {
+        if (!hasValue(oldUser)) {
             await Promise.all(promises);
             return;
         }

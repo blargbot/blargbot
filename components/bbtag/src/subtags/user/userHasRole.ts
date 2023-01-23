@@ -1,4 +1,5 @@
-import { guard, parse } from '@blargbot/core/utils/index.js';
+import { parse } from '@blargbot/core/utils/index.js';
+import { hasValue } from '@blargbot/guards';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
@@ -50,7 +51,7 @@ export class UserHasRoleSubtag extends CompiledSubtag {
 
         const arr = bbtag.tagArray.deserialize(roleStr) ?? { v: [roleStr] };
         const roleArr = arr.v.map(x => parse.string(x));
-        if (!guard.hasValue(member.guild) || !guard.hasValue(member.roles))
+        if (!hasValue(member.guild) || !hasValue(member.roles))
             return false;
 
         if (roleArr.every(role => member.guild.roles.get(role) === undefined))

@@ -3,6 +3,7 @@ import type { CommandGetCoreResult, CommandGetResult, ICommandManager, Permissio
 import { defaultStaff, guard } from '@blargbot/cluster/utils/index.js';
 import { parse } from '@blargbot/core/utils/index.js';
 import type { CommandPermissions } from '@blargbot/domain/models/index.js';
+import { hasValue } from '@blargbot/guards';
 import * as Eris from 'eris';
 
 export abstract class CommandManager<T> implements ICommandManager<T> {
@@ -102,7 +103,7 @@ export abstract class CommandManager<T> implements ICommandManager<T> {
 
         const roleIds = [...permissions.roles]
             .map(findRoleId.bind(undefined, member.guild.roles))
-            .filter(guard.hasValue);
+            .filter(hasValue);
 
         if (roleIds.length > 0) {
             // User has one of the roles this command is linked to or the admin role?

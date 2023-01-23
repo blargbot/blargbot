@@ -1,7 +1,7 @@
 import type { Cluster } from '@blargbot/cluster';
 import { ClusterEventService } from '@blargbot/cluster/serviceTypes/index.js';
 import type { GuildPermissionDetails } from '@blargbot/cluster/types.js';
-import { guard } from '@blargbot/core/utils/index.js';
+import { hasValue } from '@blargbot/guards';
 
 export class ClusterGetGuildPermssionListHandler extends ClusterEventService<'getGuildPermissionList'> {
     public constructor(
@@ -19,7 +19,7 @@ export class ClusterGetGuildPermssionListHandler extends ClusterEventService<'ge
             .filter(g => g.members.get(userId) !== undefined)
             .map(g => this.cluster.util.getMember(g, userId)));
 
-        return await Promise.all(members.filter(guard.hasValue)
+        return await Promise.all(members.filter(hasValue)
             .map(async (member) => ({
                 userId: member.id,
                 guild: {

@@ -1,6 +1,7 @@
-import { guard, snowflake } from '@blargbot/core/utils/index.js';
+import { snowflake } from '@blargbot/core/utils/index.js';
 import type { ChannelSettings, CommandPermissions, GuildAnnounceOptions, GuildAutoresponses, GuildCensor, GuildCensorExceptions, GuildCensors, GuildCommandTag, GuildDetails, GuildFilteredAutoresponse, GuildModlogEntry, GuildRolemeEntry, GuildTriggerTag, GuildVoteban, GuildVotebans, NamedGuildCommandTag, StoredGuild, StoredGuildEventLogConfig, StoredGuildEventLogType, StoredGuildSettings } from '@blargbot/domain/models/index.js';
 import type { GuildStore } from '@blargbot/domain/stores/index.js';
+import { hasValue } from '@blargbot/guards';
 import type { Logger } from '@blargbot/logger';
 import type { UpdateData } from 'rethinkdb';
 
@@ -481,7 +482,7 @@ export class RethinkDbGuildStore implements GuildStore {
             return [];
 
         return Object.entries(guild.ccommands)
-            .filter((v): v is [string, GuildCommandTag] => guard.hasValue(v[1]))
+            .filter((v): v is [string, GuildCommandTag] => hasValue(v[1]))
             .map(v => ({ ...v[1], name: v[0] }));
     }
 
@@ -509,7 +510,7 @@ export class RethinkDbGuildStore implements GuildStore {
             if (current.name !== guild.name)
                 update.name = guild.name;
 
-            if (Object.values(update).some(guard.hasValue) && await this.#table.update(guild.id, update))
+            if (Object.values(update).some(hasValue) && await this.#table.update(guild.id, update))
                 return 'updated';
         }
 
@@ -560,7 +561,7 @@ export class RethinkDbGuildStore implements GuildStore {
     public async getIntervals(): Promise<ReadonlyArray<{ readonly guildId: string; readonly interval: GuildTriggerTag; }>> {
         const guilds = await this.#table.queryAll(t => t.getAll(true, { index: 'interval' }).filter(g => g('active').eq(true)).pluck('guildid', 'interval'));
         return guilds.map(g => g.interval === undefined ? undefined : { guildId: g.guildid, interval: g.interval })
-            .filter(guard.hasValue);
+            .filter(hasValue);
     }
 
     public async updateCommand(guildId: string, commandName: string, partialCommand: Partial<GuildCommandTag>): Promise<boolean> {

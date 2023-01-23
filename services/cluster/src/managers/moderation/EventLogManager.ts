@@ -5,6 +5,7 @@ import { FormattableMessageContent } from '@blargbot/core/FormattableMessageCont
 import type { FormatEmbedAuthor, FormatEmbedField, FormatEmbedOptions } from '@blargbot/core/types.js';
 import type { StoredGuildEventLogType } from '@blargbot/domain/models/index.js';
 import type { IFormattable } from '@blargbot/formatting';
+import { hasValue } from '@blargbot/guards';
 import * as Eris from 'eris';
 import moment from 'moment-timezone';
 
@@ -105,7 +106,7 @@ export class EventLogManager {
             return;
 
         const details = await Promise.all(messages.map(m => this.#getMessageDetails(m)));
-        const authorIds = details.map(d => d.authorId).filter(guard.hasValue);
+        const authorIds = details.map(d => d.authorId).filter(hasValue);
         if (authorIds.length > 0 && await this.#isExempt(guildId, ...authorIds))
             return;
 

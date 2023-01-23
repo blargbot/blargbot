@@ -36,6 +36,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:components/chatlog-types/src"\
       },\
       {\
+        "name": "@blargbot/collections",\
+        "reference": "workspace:components/collections/src"\
+      },\
+      {\
         "name": "@blargbot/config",\
         "reference": "workspace:components/config/src"\
       },\
@@ -76,6 +80,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:components/formatting/src"\
       },\
       {\
+        "name": "@blargbot/guards",\
+        "reference": "workspace:components/guards/src"\
+      },\
+      {\
         "name": "@blargbot/image-types",\
         "reference": "workspace:components/image-types/src"\
       },\
@@ -90,6 +98,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       {\
         "name": "@blargbot/message-broker",\
         "reference": "workspace:components/message-broker/src"\
+      },\
+      {\
+        "name": "@blargbot/modules",\
+        "reference": "workspace:components/modules/src"\
       },\
       {\
         "name": "@blargbot/res",\
@@ -176,6 +188,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@blargbot/chatlog-types", ["workspace:components/chatlog-types/src"]],\
       ["@blargbot/cluster", ["workspace:services/cluster/src"]],\
       ["@blargbot/cluster-tests", ["workspace:services/cluster/test"]],\
+      ["@blargbot/collections", ["workspace:components/collections/src"]],\
       ["@blargbot/config", ["workspace:components/config/src"]],\
       ["@blargbot/container-id", ["workspace:components/container-id/src"]],\
       ["@blargbot/core", ["workspace:components/core/src"]],\
@@ -189,12 +202,14 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@blargbot/domain", ["workspace:components/domain/src"]],\
       ["@blargbot/env", ["workspace:components/env/src"]],\
       ["@blargbot/formatting", ["workspace:components/formatting/src"]],\
+      ["@blargbot/guards", ["workspace:components/guards/src"]],\
       ["@blargbot/image-generator", ["workspace:services/image-generator/src"]],\
       ["@blargbot/image-types", ["workspace:components/image-types/src"]],\
       ["@blargbot/logger", ["workspace:components/logger/src"]],\
       ["@blargbot/mapping", ["workspace:components/mapping/src"]],\
       ["@blargbot/master", ["workspace:services/master/src"]],\
       ["@blargbot/message-broker", ["virtual:aeac885bc2b91a1efa105c8fa69acf0299e4576631579d685c094479047c752b3d0be6af05bbe3225c98430520b2f21ca58c6dc42717d3d3ba0d508a26b1816e#workspace:components/message-broker/src", "workspace:components/message-broker/src"]],\
+      ["@blargbot/modules", ["workspace:components/modules/src"]],\
       ["@blargbot/res", ["workspace:components/res/src"]],\
       ["@blargbot/test-util", ["workspace:components/test-util/src"]],\
       ["@blargbot/timer", ["workspace:components/timer/src"]],\
@@ -304,6 +319,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/formatting", "workspace:components/formatting/src"],\
             ["@blargbot/logger", "workspace:components/logger/src"],\
             ["@blargbot/mapping", "workspace:components/mapping/src"],\
+            ["@blargbot/modules", "workspace:components/modules/src"],\
             ["@types/express", "npm:4.17.15"],\
             ["@types/express-serve-static-core", "npm:4.17.32"],\
             ["@types/jsonwebtoken", "npm:9.0.1"],\
@@ -350,6 +366,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/discord-emote", "workspace:components/discord-emote/src"],\
             ["@blargbot/domain", "workspace:components/domain/src"],\
             ["@blargbot/formatting", "workspace:components/formatting/src"],\
+            ["@blargbot/guards", "workspace:components/guards/src"],\
             ["@blargbot/logger", "workspace:components/logger/src"],\
             ["@blargbot/mapping", "workspace:components/mapping/src"],\
             ["@blargbot/timer", "workspace:components/timer/src"],\
@@ -434,15 +451,18 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/async-tools", "workspace:components/async-tools/src"],\
             ["@blargbot/bbtag", "workspace:components/bbtag/src"],\
             ["@blargbot/chatlog-types", "workspace:components/chatlog-types/src"],\
+            ["@blargbot/collections", "workspace:components/collections/src"],\
             ["@blargbot/config", "workspace:components/config/src"],\
             ["@blargbot/core", "workspace:components/core/src"],\
             ["@blargbot/database", "workspace:components/database/src"],\
             ["@blargbot/discord-emote", "workspace:components/discord-emote/src"],\
             ["@blargbot/domain", "workspace:components/domain/src"],\
             ["@blargbot/formatting", "workspace:components/formatting/src"],\
+            ["@blargbot/guards", "workspace:components/guards/src"],\
             ["@blargbot/image-types", "workspace:components/image-types/src"],\
             ["@blargbot/logger", "workspace:components/logger/src"],\
             ["@blargbot/mapping", "workspace:components/mapping/src"],\
+            ["@blargbot/modules", "workspace:components/modules/src"],\
             ["@blargbot/res", "workspace:components/res/src"],\
             ["@blargbot/timer", "workspace:components/timer/src"],\
             ["@hunteroi/versioning", "npm:1.3.2"],\
@@ -489,6 +509,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "SOFT"\
         }]\
       ]],\
+      ["@blargbot/collections", [\
+        ["workspace:components/collections/src", {\
+          "packageLocation": "./components/collections/src/",\
+          "packageDependencies": [\
+            ["@blargbot/collections", "workspace:components/collections/src"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
       ["@blargbot/config", [\
         ["workspace:components/config/src", {\
           "packageLocation": "./components/config/src/",\
@@ -520,6 +549,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/discord-emote", "workspace:components/discord-emote/src"],\
             ["@blargbot/domain", "workspace:components/domain/src"],\
             ["@blargbot/formatting", "workspace:components/formatting/src"],\
+            ["@blargbot/guards", "workspace:components/guards/src"],\
             ["@blargbot/logger", "workspace:components/logger/src"],\
             ["@blargbot/mapping", "workspace:components/mapping/src"],\
             ["@blargbot/res", "workspace:components/res/src"],\
@@ -587,6 +617,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/config", "workspace:components/config/src"],\
             ["@blargbot/core", "workspace:components/core/src"],\
             ["@blargbot/domain", "workspace:components/domain/src"],\
+            ["@blargbot/guards", "workspace:components/guards/src"],\
             ["@blargbot/logger", "workspace:components/logger/src"],\
             ["@blargbot/mapping", "workspace:components/mapping/src"],\
             ["@types/catflake", "workspace:definitions/catflake"],\
@@ -697,6 +728,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "SOFT"\
         }]\
       ]],\
+      ["@blargbot/guards", [\
+        ["workspace:components/guards/src", {\
+          "packageLocation": "./components/guards/src/",\
+          "packageDependencies": [\
+            ["@blargbot/guards", "workspace:components/guards/src"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
       ["@blargbot/image-generator", [\
         ["workspace:services/image-generator/src", {\
           "packageLocation": "./services/image-generator/src/",\
@@ -767,6 +807,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/domain", "workspace:components/domain/src"],\
             ["@blargbot/formatting", "workspace:components/formatting/src"],\
             ["@blargbot/logger", "workspace:components/logger/src"],\
+            ["@blargbot/modules", "workspace:components/modules/src"],\
             ["@blargbot/res", "workspace:components/res/src"],\
             ["@blargbot/timer", "workspace:components/timer/src"],\
             ["@types/eris", "workspace:definitions/eris"],\
@@ -799,6 +840,17 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["@blargbot/message-broker", "workspace:components/message-broker/src"],\
             ["@types/amqplib", "npm:0.10.1"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
+      ["@blargbot/modules", [\
+        ["workspace:components/modules/src", {\
+          "packageLocation": "./components/modules/src/",\
+          "packageDependencies": [\
+            ["@blargbot/modules", "workspace:components/modules/src"],\
+            ["@blargbot/guards", "workspace:components/guards/src"],\
+            ["eventemitter3", "npm:5.0.0"]\
           ],\
           "linkType": "SOFT"\
         }]\

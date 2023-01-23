@@ -1,9 +1,10 @@
 import type { ClusterStats, CommandResult, ShardStats } from '@blargbot/cluster/types.js';
 import { CommandType, discord, guard, snowflake } from '@blargbot/cluster/utils/index.js';
 import type { IFormattable } from '@blargbot/formatting';
+import { hasValue } from '@blargbot/guards';
 import moment from 'moment-timezone';
 
-import type { CommandContext} from '../../command/index.js';
+import type { CommandContext } from '../../command/index.js';
 import { GlobalCommand } from '../../command/index.js';
 import templates from '../../text.js';
 
@@ -40,7 +41,7 @@ export class ShardsCommand extends GlobalCommand {
         const shardConfig = context.config.discord.shards;
         const clusterCount = Math.ceil(shardConfig.max / shardConfig.perCluster);
         const clusterData = await context.cluster.worker.request('getClusterStats', undefined);
-        let clusters = Object.values(clusterData).filter(guard.hasValue);
+        let clusters = Object.values(clusterData).filter(hasValue);
         if (downOnly) {
             clusters = clusters.filter(cluster => {
                 const downedShards = cluster.shards.filter(shard => shard.status !== 'ready');

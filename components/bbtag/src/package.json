@@ -13,6 +13,7 @@
         "@blargbot/discord-emote": "workspace:^",
         "@blargbot/domain": "workspace:^",
         "@blargbot/formatting": "workspace:^",
+        "@blargbot/guards": "workspace:^",
         "@blargbot/logger": "workspace:^",
         "@blargbot/mapping": "workspace:^",
         "@blargbot/timer": "workspace:^",

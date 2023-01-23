@@ -1,6 +1,7 @@
-import { CommandType, guard, parse, randChoose, randInt, repeat } from '@blargbot/cluster/utils/index.js';
+import { CommandType, parse, randChoose, randInt, repeat } from '@blargbot/cluster/utils/index.js';
+import { hasProperty } from '@blargbot/guards';
 
-import type { CommandContext} from '../../command/index.js';
+import type { CommandContext } from '../../command/index.js';
 import { GlobalCommand } from '../../command/index.js';
 import templates from '../../text.js';
 import type { CommandResult } from '../../types.js';
@@ -72,7 +73,7 @@ export class RollCommand extends GlobalCommand {
 
         if (faceCount === 20 && rollCount === 1) {
             const key = `natural${rolls[0]}` as const;
-            if (guard.hasProperty(cmd.default.embed.description, key))
+            if (hasProperty(cmd.default.embed.description, key))
                 natText = cmd.default.embed.description[key];
         }
 

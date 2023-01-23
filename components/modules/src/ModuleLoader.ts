@@ -1,8 +1,8 @@
-import type { ModuleResult } from '@blargbot/core/types.js';
-import { guard } from '@blargbot/core/utils/index.js';
-import type { Logger } from '@blargbot/logger';
+import { isClass } from '@blargbot/guards';
 
 import { BaseModuleLoader } from './BaseModuleLoader.js';
+import type { Logger } from './Logger.js';
+import type { ModuleResult } from './ModuleResult.js';
 
 export class ModuleLoader<TModule> extends BaseModuleLoader<TModule> {
     readonly #getNames: (module: TModule, fileName: string) => Iterable<string>;
@@ -30,7 +30,7 @@ export class ModuleLoader<TModule> extends BaseModuleLoader<TModule> {
         if (rawModule instanceof this.type)
             return { module: rawModule, names: this.#getNames(rawModule, fileName) };
 
-        if (guard.isClass(rawModule, this.type)) {
+        if (isClass(rawModule, this.type)) {
             const instance = new rawModule(...this.constructorArguments);
             return { module: instance, names: this.#getNames(instance, fileName) };
         }

@@ -1,4 +1,4 @@
-import type * as Eris from 'eris';
+import { hasValue } from '@blargbot/guards';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
@@ -55,7 +55,7 @@ export class RoleRemoveSubtag extends CompiledSubtag {
         }
 
         const roleStrs = bbtag.tagArray.deserialize(roleStr)?.v.map(v => v?.toString() ?? '~') ?? [roleStr];
-        const roles = roleStrs.map(role => context.guild.roles.get(role)).filter((r): r is Eris.Role => r !== undefined);
+        const roles = roleStrs.map(role => context.guild.roles.get(role)).filter(hasValue);
 
         if (roles.length === 0)
             throw new RoleNotFoundError(roleStr);

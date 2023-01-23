@@ -4,10 +4,10 @@ import { BBTagEngine, subtags } from '@blargbot/bbtag';
 import type { ClusterOptions } from '@blargbot/cluster/types.js';
 import type { Configuration } from '@blargbot/config';
 import { BaseClient } from '@blargbot/core/BaseClient.js';
-import { ModuleLoader } from '@blargbot/core/modules/index.js';
 import { BaseService } from '@blargbot/core/serviceTypes/index.js';
 import type { EvalResult } from '@blargbot/core/types.js';
 import type { Logger } from '@blargbot/logger';
+import { ModuleLoader } from '@blargbot/modules';
 import Discord from 'discord-api-types/v9';
 import moment from 'moment-timezone';
 

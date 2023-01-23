@@ -1,4 +1,4 @@
-import { guard } from '@blargbot/core/utils/index.js';
+import { hasValue } from '@blargbot/guards';
 import type * as Eris from 'eris';
 import moment from 'moment-timezone';
 
@@ -13,11 +13,11 @@ function* embedsIter(embeds: ReadonlyArray<(Eris.EmbedOptions | Eris.Embed) & { 
             continue;
         }
 
-        if (guard.hasValue(embed.author))
+        if (hasValue(embed.author))
             yield `__**${embed.author.name}**__`;
-        if (guard.hasValue(embed.title))
+        if (hasValue(embed.title))
             yield embed.title;
-        if (guard.hasValue(embed.description))
+        if (hasValue(embed.description))
             yield embed.description;
         for (const field of embed.fields ?? []) {
             if (field.name.replace('\u200b', '').trim().length > 0)
@@ -26,7 +26,7 @@ function* embedsIter(embeds: ReadonlyArray<(Eris.EmbedOptions | Eris.Embed) & { 
                 yield field.value;
         }
         const footer = [];
-        if (guard.hasValue(embed.footer))
+        if (hasValue(embed.footer))
             footer.push(embed.footer.text);
         if (embed.timestamp !== undefined)
             footer.push(moment(embed.timestamp).format('dddd, MMMM, Do YYYY, h:mm:ss a zz'));

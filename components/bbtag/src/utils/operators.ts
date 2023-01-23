@@ -1,4 +1,5 @@
-import { compare as compareFn, guard, parse } from '@blargbot/core/utils/index.js';
+import { compare as compareFn, parse } from '@blargbot/core/utils/index.js';
+import { hasProperty } from '@blargbot/guards';
 
 import { tagArray } from './tagArray.js';
 
@@ -10,11 +11,11 @@ export type LogicOperator = '||' | '&&' | '!' | 'xor';
 export type AggregationOperator = '??';
 
 export function isOrdinalOperator(operator: string): operator is OrdinalOperator {
-    return guard.hasProperty(ordinalOperators, operator);
+    return hasProperty(ordinalOperators, operator);
 }
 
 export function isStringOperator(operator: string): operator is StringOperator {
-    return guard.hasProperty(stringOperators, operator);
+    return hasProperty(stringOperators, operator);
 }
 
 export function isComparisonOperator(operator: string): operator is ComparisonOperator {
@@ -22,11 +23,11 @@ export function isComparisonOperator(operator: string): operator is ComparisonOp
 }
 
 export function isNumericOperator(operator: string): operator is NumericOperator {
-    return guard.hasProperty(numericOperators, operator);
+    return hasProperty(numericOperators, operator);
 }
 
 export function isLogicOperator(operator: string): operator is LogicOperator {
-    return guard.hasProperty(logicOperators, operator);
+    return hasProperty(logicOperators, operator);
 }
 
 export function operate<T extends keyof typeof operators>(operator: T, ...args: Parameters<typeof operators[T]>): ReturnType<typeof operators[T]> {
