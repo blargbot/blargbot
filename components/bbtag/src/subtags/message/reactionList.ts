@@ -1,5 +1,5 @@
-import { Emote } from '@blargbot/core/Emote.js';
 import { snowflake } from '@blargbot/core/utils/index.js';
+import { Emote } from '@blargbot/discord-emote';
 import * as Eris from 'eris';
 
 import type { BBTagContext } from '../../BBTagContext.js';

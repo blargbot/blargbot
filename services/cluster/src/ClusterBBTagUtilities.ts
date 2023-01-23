@@ -1,7 +1,7 @@
 import type { AwaitReactionsResponse, BBTagContext, BBTagSendContent, BBTagUtilities } from '@blargbot/bbtag';
-import type { Emote } from '@blargbot/core/Emote.js';
 import type { ChoiceQueryResult, EntityPickQueryOptions, SendContent } from '@blargbot/core/types.js';
-import type { IFormattable} from '@blargbot/formatting';
+import type { Emote } from '@blargbot/discord-emote';
+import type { IFormattable } from '@blargbot/formatting';
 import { util } from '@blargbot/formatting';
 import type * as Eris from 'eris';
 import moment from 'moment-timezone';

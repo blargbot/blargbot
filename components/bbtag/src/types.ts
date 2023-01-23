@@ -1,4 +1,4 @@
-import type { Emote } from '@blargbot/core/Emote.js';
+import type { Emote } from '@blargbot/discord-emote';
 import type { FlagDefinition, NamedGuildCommandTag, StoredTag } from '@blargbot/domain/models/index.js';
 import type { IFormattable } from '@blargbot/formatting';
 import type * as Eris from 'eris';

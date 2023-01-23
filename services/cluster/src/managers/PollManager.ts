@@ -1,7 +1,7 @@
 import type { Cluster } from '@blargbot/cluster';
 import type { PollResponse } from '@blargbot/cluster/types.js';
-import type { Emote } from '@blargbot/core/Emote.js';
 import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent.js';
+import type { Emote } from '@blargbot/discord-emote';
 import type { PollEventOptions } from '@blargbot/domain/models/index.js';
 import { util } from '@blargbot/formatting';
 import type * as Eris from 'eris';

@@ -1,6 +1,6 @@
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
 import { OutputSubtag } from '@blargbot/bbtag/subtags/message/output.js';
-import { Emote } from '@blargbot/core/Emote.js';
+import { Emote } from '@blargbot/discord-emote';
 import { argument } from '@blargbot/test-util/mock.js';
 import chai from 'chai';
 import type * as Eris from 'eris';

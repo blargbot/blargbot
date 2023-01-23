@@ -6,7 +6,7 @@ import { ReactionUserSubtag } from '@blargbot/bbtag/subtags/message/reactionUser
 import { WaitReactionSubtag } from '@blargbot/bbtag/subtags/message/waitReaction.js';
 import { OperatorSubtag } from '@blargbot/bbtag/subtags/misc/operator.js';
 import type { AwaitReactionsResponse } from '@blargbot/bbtag/types.js';
-import { Emote } from '@blargbot/core/Emote.js';
+import { Emote } from '@blargbot/discord-emote';
 import { argument } from '@blargbot/test-util/mock.js';
 import chai from 'chai';
 import * as Eris from 'eris';

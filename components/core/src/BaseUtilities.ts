@@ -2,8 +2,9 @@ import type { Configuration } from '@blargbot/config/Configuration.js';
 import type { FormatEmbedAuthor, SendContent, SendContext } from '@blargbot/core/types.js';
 import { CrowdinTranslationSource } from '@blargbot/crowdin';
 import type { Database } from '@blargbot/database';
+import type { Emote } from '@blargbot/discord-emote';
 import type { DiscordChannelTag, DiscordRoleTag, DiscordTagSet, DiscordUserTag, StoredUser } from '@blargbot/domain/models/index.js';
-import type { IFormattable, IFormatter} from '@blargbot/formatting';
+import type { IFormattable, IFormatter } from '@blargbot/formatting';
 import { format, Formatter, TranslationMiddleware, util } from '@blargbot/formatting';
 import type { Logger } from '@blargbot/logger';
 import type { Snowflake } from 'catflake';
@@ -11,7 +12,6 @@ import * as Eris from 'eris';
 import moment from 'moment-timezone';
 
 import type { BaseClient } from './BaseClient.js';
-import type { Emote } from './Emote.js';
 import { metrics } from './Metrics.js';
 import templates from './text.js';
 import { guard, humanize, parse, snowflake } from './utils/index.js';

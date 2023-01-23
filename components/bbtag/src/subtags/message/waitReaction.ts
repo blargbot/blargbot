@@ -1,5 +1,5 @@
-import { Emote } from '@blargbot/core/Emote.js';
 import { clamp, discord, guard, parse } from '@blargbot/core/utils/index.js';
+import { Emote } from '@blargbot/discord-emote';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';

@@ -1,7 +1,7 @@
 import type { Configuration } from '@blargbot/config';
-import type { Emote } from '@blargbot/core/Emote.js';
 import type { ChoiceQueryResult, EntityPickQueryOptions } from '@blargbot/core/types.js';
 import type { Database } from '@blargbot/database';
+import type { Emote } from '@blargbot/discord-emote';
 import type { Logger } from '@blargbot/logger';
 import type * as Eris from 'eris';
 import type moment from 'moment-timezone';

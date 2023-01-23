@@ -1,8 +1,7 @@
+import { Emote } from '@blargbot/discord-emote';
 import type { IValueResolverTransform } from '@blargbot/formatting';
 import * as Eris from 'eris';
 import moment from 'moment-timezone';
-
-import { Emote } from '../Emote.js';
 
 export const tag: IValueResolverTransform = {
     transform(_compiler, source, ...args) {

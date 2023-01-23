@@ -1,0 +1,12 @@
+{
+    "name": "@blargbot/discord-emote",
+    "version": "1.0.0",
+    "private": true,
+    "type": "module",
+    "exports": {
+        ".": "./index.js"
+    },
+    "dependencies": {
+        "twemoji": "^14.0.2"
+    }
+}

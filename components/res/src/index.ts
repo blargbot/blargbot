@@ -4,7 +4,6 @@ import type beemovie from './beemovie.json';
 import type cah from './cah.json';
 import type colors from './colors.json';
 import type contributors from './contributors.json';
-import type discordEmoteData from './discordEmoteData.json';
 import type holidays from './holidays.json';
 import { getJsonResource } from './resource.js';
 import type spells from './spells.json';
@@ -21,6 +20,5 @@ export default Object.freeze({
     cardsAgainstHumanity: getJsonResource<typeof cah>('./cah.json'),
     colors: getJsonResource<typeof colors>('./colors.json'),
     contributors: getJsonResource<typeof contributors>('./contributors.json'),
-    discordEmoteData: getJsonResource<typeof discordEmoteData>('./discordEmoteData.json'),
     holidays: getJsonResource<typeof holidays>('./holidays.json')
 });

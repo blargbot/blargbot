@@ -1,10 +1,18 @@
-import res from '@blargbot/res';
-import type { Snowflake } from 'catflake';
-import type * as Eris from 'eris';
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
 import twemoji from 'twemoji';
 
-import { snowflake } from './utils/index.js';
+import type discordEmoteDataType from './discordEmoteData.json';
 
+export interface PartialEmoji {
+    readonly id?: string | null;
+    readonly name: string;
+    readonly animated?: boolean;
+}
+
+export default Emote;
 export class Emote {
     public static findAll(this: void, text: string): Emote[] {
         return Emote.#findAll(text)[0];
@@ -18,8 +26,8 @@ export class Emote {
         return result[0];
     }
 
-    public static create(this: void, data: Eris.PartialEmoji): Emote {
-        if (data.id === null)
+    public static create(this: void, data: PartialEmoji): Emote {
+        if (data.id === null || data.id === undefined)
             return Emote.parse(data.name);
         return Emote.parse(`<${data.animated === true ? 'a' : ''}:${data.name}:${data.id}>`);
     }
@@ -28,11 +36,11 @@ export class Emote {
         const initial = text;
         const emotes: Emote[] = [];
         guildEmoteRegex.lastIndex = 0;
-        text = text.replaceAll(guildEmoteRegex, (_, animated: string, name: string, id: Snowflake) => {
-            emotes.push(new Emote(name, id, animated !== ''));
+        text = text.replaceAll(guildEmoteRegex, (_, animated: string, name: string, id: string) => {
+            emotes.push(new Emote(name, BigInt(id), animated !== ''));
             return '';
-        }).replaceAll(guildApiEmoteRegex, (_, name: string, id: Snowflake) => {
-            emotes.push(new Emote(name, id));
+        }).replaceAll(guildApiEmoteRegex, (_, name: string, id: string) => {
+            emotes.push(new Emote(name, BigInt(id)));
             return '';
         }).replaceAll(discordEmoteRegex, emote => {
             emotes.push(new Emote(emote));
@@ -61,20 +69,18 @@ export class Emote {
     }
 
     public constructor(name: string);
-    public constructor(name: string, id: Snowflake, animated?: boolean);
+    public constructor(name: string, id: bigint, animated?: boolean);
     public constructor(
         public readonly name: string,
-        public readonly id?: Snowflake,
+        public readonly id?: bigint,
         public readonly animated = false) {
-        if (id !== undefined && !snowflake.test(id))
-            throw new Error(`${id as string} is not a valid emote id`);
     }
 
-    public toApi(): `${string}:${Snowflake}` | string {
+    public toApi(): `${string}:${bigint}` | string {
         return this.id === undefined ? this.name : `${this.name}:${this.id}`;
     }
 
-    public toString(): `<${'a' | ''}:${string}:${Snowflake}>` | string {
+    public toString(): `<${'a' | ''}:${string}:${bigint}>` | string {
         if (this.id === undefined)
             return this.name;
         if (this.animated)
@@ -83,11 +89,17 @@ export class Emote {
     }
 }
 
+async function loadDiscordEmoteData(): Promise<typeof discordEmoteDataType> {
+    const location = path.join(fileURLToPath(import.meta.url), './discordEmoteData.json');
+    const content = await fs.readFile(location, 'utf-8');
+    return JSON.parse(content) as unknown as typeof discordEmoteDataType;
+}
+
 const guildEmoteRegex = /<(?<animated>a?):(?<name>[\w_]{1,32}):(?<id>\d{17,23})>/g;
 const guildApiEmoteRegex = /(?<name>[\w_]{1,32}):(?<id>\d{17,23})/g;
 const keycapEmote = /[#*0-9]\uFE0F?\u20E3/g;
 const otherEmotes = /©️/g;
-const discordEmoteData = await res.discordEmoteData.load();
+const discordEmoteData = await loadDiscordEmoteData();
 const discordEmotes = Object.values(discordEmoteData)
     .flat()
     .flatMap(entry => 'diversityChildren' in entry ? [entry, ...entry.diversityChildren ?? []] : [entry])

@@ -56,6 +56,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:components/database/src"\
       },\
       {\
+        "name": "@blargbot/discord-emote",\
+        "reference": "workspace:components/discord-emote/src"\
+      },\
+      {\
         "name": "@blargbot/domain",\
         "reference": "workspace:components/domain/src"\
       },\
@@ -174,6 +178,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@blargbot/crowdin", ["workspace:components/crowdin/src"]],\
       ["@blargbot/database", ["workspace:components/database/src"]],\
       ["@blargbot/discord-chatlog", ["workspace:services/discord-chatlog/src"]],\
+      ["@blargbot/discord-emote", ["workspace:components/discord-emote/src"]],\
       ["@blargbot/discord-gateway", ["workspace:services/discord-gateway/src"]],\
       ["@blargbot/discord-proxy", ["workspace:services/discord-proxy/src"]],\
       ["@blargbot/domain", ["workspace:components/domain/src"]],\
@@ -328,6 +333,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/config", "workspace:components/config/src"],\
             ["@blargbot/core", "workspace:components/core/src"],\
             ["@blargbot/database", "workspace:components/database/src"],\
+            ["@blargbot/discord-emote", "workspace:components/discord-emote/src"],\
             ["@blargbot/domain", "workspace:components/domain/src"],\
             ["@blargbot/formatting", "workspace:components/formatting/src"],\
             ["@blargbot/logger", "workspace:components/logger/src"],\
@@ -370,6 +376,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/config", "workspace:components/config/src"],\
             ["@blargbot/core", "workspace:components/core/src"],\
             ["@blargbot/database", "workspace:components/database/src"],\
+            ["@blargbot/discord-emote", "workspace:components/discord-emote/src"],\
             ["@blargbot/domain", "workspace:components/domain/src"],\
             ["@blargbot/formatting", "workspace:components/formatting/src"],\
             ["@blargbot/logger", "workspace:components/logger/src"],\
@@ -415,6 +422,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/config", "workspace:components/config/src"],\
             ["@blargbot/core", "workspace:components/core/src"],\
             ["@blargbot/database", "workspace:components/database/src"],\
+            ["@blargbot/discord-emote", "workspace:components/discord-emote/src"],\
             ["@blargbot/domain", "workspace:components/domain/src"],\
             ["@blargbot/formatting", "workspace:components/formatting/src"],\
             ["@blargbot/image-types", "workspace:components/image-types/src"],\
@@ -493,6 +501,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/config", "workspace:components/config/src"],\
             ["@blargbot/crowdin", "workspace:components/crowdin/src"],\
             ["@blargbot/database", "workspace:components/database/src"],\
+            ["@blargbot/discord-emote", "workspace:components/discord-emote/src"],\
             ["@blargbot/domain", "workspace:components/domain/src"],\
             ["@blargbot/formatting", "workspace:components/formatting/src"],\
             ["@blargbot/logger", "workspace:components/logger/src"],\
@@ -515,7 +524,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["moment-timezone", "npm:0.5.40"],\
             ["prom-client", "npm:14.1.1"],\
             ["safe-regex", "npm:2.1.1"],\
-            ["twemoji", "npm:14.0.2"],\
             ["unorm", "npm:1.6.0"]\
           ],\
           "linkType": "SOFT"\
@@ -597,6 +605,16 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["cassandra-driver", "npm:4.6.4"],\
             ["discordeno", "npm:18.0.1"],\
             ["express", "npm:4.18.2"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
+      ["@blargbot/discord-emote", [\
+        ["workspace:components/discord-emote/src", {\
+          "packageLocation": "./components/discord-emote/src/",\
+          "packageDependencies": [\
+            ["@blargbot/discord-emote", "workspace:components/discord-emote/src"],\
+            ["twemoji", "npm:14.0.2"]\
           ],\
           "linkType": "SOFT"\
         }]\

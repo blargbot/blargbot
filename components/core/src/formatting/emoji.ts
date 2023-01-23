@@ -1,6 +1,5 @@
+import { Emote } from '@blargbot/discord-emote';
 import type { IValueResolverTransform } from '@blargbot/formatting';
-
-import { Emote } from '../Emote.js';
 
 export const emoji: IValueResolverTransform = {
     transform(_compiler, source, ...args) {

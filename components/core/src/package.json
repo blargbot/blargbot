@@ -12,6 +12,7 @@
         "@blargbot/config": "workspace:^",
         "@blargbot/crowdin": "workspace:^",
         "@blargbot/database": "workspace:^",
+        "@blargbot/discord-emote": "workspace:^",
         "@blargbot/domain": "workspace:^",
         "@blargbot/formatting": "workspace:^",
         "@blargbot/logger": "workspace:^",
@@ -28,7 +29,6 @@
         "moment-timezone": "^0.5.40",
         "prom-client": "^14.1.1",
         "safe-regex": "^2.1.1",
-        "twemoji": "^14.0.2",
         "unorm": "^1.6.0"
     },
     "devDependencies": {

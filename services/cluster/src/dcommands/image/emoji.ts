@@ -1,7 +1,7 @@
-import { Emote } from '@blargbot/core/Emote.js';
+import { Emote } from '@blargbot/discord-emote';
 import { util } from '@blargbot/formatting';
 
-import type { CommandContext} from '../../command/index.js';
+import type { CommandContext } from '../../command/index.js';
 import { GlobalImageCommand } from '../../command/index.js';
 import templates from '../../text.js';
 import type { CommandResult } from '../../types.js';

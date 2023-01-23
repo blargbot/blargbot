@@ -1,4 +1,4 @@
-import { Emote } from '@blargbot/core/Emote.js';
+import { Emote } from '@blargbot/discord-emote';
 import * as Eris from 'eris';
 
 import type { SubtagArgumentArray } from '../../arguments/index.js';
