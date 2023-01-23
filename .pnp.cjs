@@ -20,6 +20,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:components/application/src"\
       },\
       {\
+        "name": "@blargbot/async-tools",\
+        "reference": "workspace:components/async-tools/src"\
+      },\
+      {\
         "name": "@blargbot/bbtag",\
         "reference": "workspace:components/bbtag/src"\
       },\
@@ -165,6 +169,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
     "fallbackExclusionList": [\
       ["@blargbot/api", ["workspace:services/api/src"]],\
       ["@blargbot/application", ["workspace:components/application/src"]],\
+      ["@blargbot/async-tools", ["workspace:components/async-tools/src"]],\
       ["@blargbot/bbtag", ["workspace:components/bbtag/src"]],\
       ["@blargbot/bbtag-runner", ["workspace:services/bbtag-runner/src"]],\
       ["@blargbot/bbtag-tests", ["workspace:components/bbtag/test"]],\
@@ -324,6 +329,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "SOFT"\
         }]\
       ]],\
+      ["@blargbot/async-tools", [\
+        ["workspace:components/async-tools/src", {\
+          "packageLocation": "./components/async-tools/src/",\
+          "packageDependencies": [\
+            ["@blargbot/async-tools", "workspace:components/async-tools/src"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
       ["@blargbot/bbtag", [\
         ["workspace:components/bbtag/src", {\
           "packageLocation": "./components/bbtag/src/",\
@@ -417,6 +431,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["@blargbot/cluster", "workspace:services/cluster/src"],\
             ["@blargbot/application", "workspace:components/application/src"],\
+            ["@blargbot/async-tools", "workspace:components/async-tools/src"],\
             ["@blargbot/bbtag", "workspace:components/bbtag/src"],\
             ["@blargbot/chatlog-types", "workspace:components/chatlog-types/src"],\
             ["@blargbot/config", "workspace:components/config/src"],\
@@ -497,6 +512,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./components/core/src/",\
           "packageDependencies": [\
             ["@blargbot/core", "workspace:components/core/src"],\
+            ["@blargbot/async-tools", "workspace:components/async-tools/src"],\
             ["@blargbot/bbtag", "workspace:components/bbtag/src"],\
             ["@blargbot/config", "workspace:components/config/src"],\
             ["@blargbot/crowdin", "workspace:components/crowdin/src"],\

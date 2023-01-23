@@ -1,4 +1,4 @@
-import { Semaphore } from '@blargbot/core/Semaphore.js';
+import { Semaphore } from '@blargbot/async-tools';
 import type { Logger } from '@blargbot/logger';
 
 import { Awaiter } from './Awaiter.js';

@@ -1,9 +1,9 @@
+import { Semaphore } from '@blargbot/async-tools';
 import type { IPCContracts } from '@blargbot/core/types.js';
 import { getRange } from '@blargbot/core/utils/index.js';
 import type { Logger } from '@blargbot/logger';
 import { EventEmitter } from 'eventemitter3';
 
-import { Semaphore } from '../Semaphore.js';
 import type { WorkerConnection } from './WorkerConnection.js';
 
 export const enum RespawnStrategy {

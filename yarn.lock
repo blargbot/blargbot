@@ -94,6 +94,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@blargbot/async-tools@workspace:^, @blargbot/async-tools@workspace:components/async-tools/src":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/async-tools@workspace:components/async-tools/src"
+  languageName: unknown
+  linkType: soft
+
 "@blargbot/bbtag-runner@workspace:services/bbtag-runner/src":
   version: 0.0.0-use.local
   resolution: "@blargbot/bbtag-runner@workspace:services/bbtag-runner/src"
@@ -198,6 +204,7 @@ __metadata:
   resolution: "@blargbot/cluster@workspace:services/cluster/src"
   dependencies:
     "@blargbot/application": "workspace:^"
+    "@blargbot/async-tools": "workspace:^"
     "@blargbot/bbtag": "workspace:^"
     "@blargbot/chatlog-types": "workspace:^"
     "@blargbot/config": "workspace:^"
@@ -266,6 +273,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@blargbot/core@workspace:components/core/src"
   dependencies:
+    "@blargbot/async-tools": "workspace:^"
     "@blargbot/bbtag": "workspace:^"
     "@blargbot/config": "workspace:^"
     "@blargbot/crowdin": "workspace:^"

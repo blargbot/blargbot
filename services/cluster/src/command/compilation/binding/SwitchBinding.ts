@@ -1,9 +1,9 @@
 import type { CommandBinderState } from '@blargbot/cluster/types.js';
 import { guard } from '@blargbot/cluster/utils/index.js';
-import { Binder } from '@blargbot/core/Binder.js';
-import type { Binding, BindingResult } from '@blargbot/core/types.js';
 
 import type { CommandContext } from '../../CommandContext.js';
+import type { Binding, BindingResult } from './Binder.js';
+import { Binder } from './Binder.js';
 import { CommandBindingBase } from './CommandBindingBase.js';
 
 interface SwitchOptions<TContext extends CommandContext> {

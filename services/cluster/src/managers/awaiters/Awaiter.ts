@@ -1,4 +1,4 @@
-import { PromiseCompletionSource } from '@blargbot/core/PromiseCompletionSource.js';
+import { PromiseCompletionSource } from '@blargbot/async-tools';
 
 export class Awaiter<T> {
     readonly #timeout: NodeJS.Timeout;

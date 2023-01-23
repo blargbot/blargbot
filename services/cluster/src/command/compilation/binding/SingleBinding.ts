@@ -1,10 +1,10 @@
 import type { CommandBinderState, CommandSingleParameter, CommandVariableTypeName } from '@blargbot/cluster/types.js';
 import { humanize } from '@blargbot/cluster/utils/index.js';
-import { Binder } from '@blargbot/core/Binder.js';
-import type { Binding, BindingResultAsyncIterator } from '@blargbot/core/types.js';
 
 import type { CommandContext } from '../../CommandContext.js';
 import { createCommandArgument } from '../commandArgument.js';
+import type { Binding, BindingResultAsyncIterator } from './Binder.js';
+import { Binder } from './Binder.js';
 import { CommandBindingBase } from './CommandBindingBase.js';
 
 export class SingleBinding<TContext extends CommandContext, Name extends CommandVariableTypeName> extends CommandBindingBase<TContext> {

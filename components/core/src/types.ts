@@ -2,7 +2,6 @@ import type { Snowflake } from '@blargbot/domain/models/index.js';
 import type { Logger } from '@blargbot/logger';
 import type * as Eris from 'eris';
 
-import { Binder } from './Binder.js';
 import type { WorkerConnection } from './worker/index.js';
 
 export type MalformedEmbed = { fields: [Eris.EmbedField]; malformed: true; };
@@ -99,24 +98,6 @@ export type BaseIPCContract = {
     kill: { masterGets: unknown; workerGets: never; };
     error: { masterGets: Error; workerGets: never; };
 }
-
-export interface Binding<TState> {
-    [Binder.binder](state: TState): BindingResult<TState>;
-    debugView(): Iterable<string>;
-}
-
-export type BindingResult<TState> =
-    | BindingResultAsyncIterator<TState>
-    | BindingResultIterator<TState>
-    | Promise<BindingResultValue<TState>>
-    | BindingResultValue<TState>
-
-export type BindingResultIterator<TState> = Iterator<BindingResultValue<TState>, void, void>;
-export type BindingResultAsyncIterator<TState> = AsyncIterator<BindingResultValue<TState>, void, void>;
-
-export type BindingResultValue<TState> =
-    | BindingSuccess<TState>
-    | BindingFailure<TState>
 
 type ConfirmQueryOptionsFallback<T extends boolean | undefined> = T extends undefined
     ? { fallback?: undefined; }
@@ -236,23 +217,6 @@ export interface EntityFindQueryOptions<TString> extends BaseEntityQueryOptions<
 }
 
 export type SlimEntityFindQueryOptions<TString> = Omit<EntityFindQueryOptions<TString>, 'context' | 'actors'>;
-
-export interface BindingSuccess<TState> {
-    readonly success: true;
-    readonly state: TState;
-    readonly next: ReadonlyArray<Binding<TState>>;
-    readonly checkNext: boolean;
-}
-
-export interface BindingFailure<TState> {
-    readonly success: false;
-    readonly state: TState;
-}
-
-export interface BinderResult<TState> {
-    readonly success: boolean;
-    readonly state: TState;
-}
 
 export interface IMiddleware<Context, Result = void> {
     readonly name?: string;

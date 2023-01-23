@@ -12,6 +12,7 @@
     },
     "dependencies": {
         "@blargbot/application": "workspace:^",
+        "@blargbot/async-tools": "workspace:^",
         "@blargbot/bbtag": "workspace:^",
         "@blargbot/chatlog-types": "workspace:^",
         "@blargbot/config": "workspace:^",

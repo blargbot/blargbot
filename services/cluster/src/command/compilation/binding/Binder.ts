@@ -1,5 +1,3 @@
-import type { BinderResult, Binding, BindingResultAsyncIterator, BindingResultIterator, BindingResultValue } from '@blargbot/core/types.js';
-
 export class Binder<TState> {
     public static readonly binder = Symbol('binder');
     readonly #bindings: ReadonlyArray<Binding<TState>>;
@@ -22,6 +20,40 @@ export class Binder<TState> {
     }
 }
 
+export interface Binding<TState> {
+    [Binder.binder](state: TState): BindingResult<TState>;
+    debugView(): Iterable<string>;
+}
+
+export type BindingResult<TState> =
+    | BindingResultAsyncIterator<TState>
+    | BindingResultIterator<TState>
+    | Promise<BindingResultValue<TState>>
+    | BindingResultValue<TState>
+
+export type BindingResultIterator<TState> = Iterator<BindingResultValue<TState>, void, void>;
+export type BindingResultAsyncIterator<TState> = AsyncIterator<BindingResultValue<TState>, void, void>;
+
+export type BindingResultValue<TState> =
+    | BindingSuccess<TState>
+    | BindingFailure<TState>
+
+export interface BindingSuccess<TState> {
+    readonly success: true;
+    readonly state: TState;
+    readonly next: ReadonlyArray<Binding<TState>>;
+    readonly checkNext: boolean;
+}
+
+export interface BindingFailure<TState> {
+    readonly success: false;
+    readonly state: TState;
+}
+
+export interface BinderResult<TState> {
+    readonly success: boolean;
+    readonly state: TState;
+}
 interface AsyncEnumerator<TResult> {
     moveNext(): Promise<boolean>;
     get current(): TResult;

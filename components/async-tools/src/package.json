@@ -1,0 +1,9 @@
+{
+    "name": "@blargbot/async-tools",
+    "version": "1.0.0",
+    "private": true,
+    "type": "module",
+    "exports": {
+        ".": "./index.js"
+    }
+}
