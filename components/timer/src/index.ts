@@ -1,7 +1,6 @@
 import { performance } from 'node:perf_hooks';
 
-import moment from 'moment-timezone';
-
+export default Timer;
 export class Timer {
     #elapsed: number;
     #start: number | undefined;
@@ -16,15 +15,6 @@ export class Timer {
         if (this.#start === undefined)
             return this.#elapsed;
         return this.#elapsed + (performance.now() - this.#start);
-    }
-
-    public get duration(): moment.Duration {
-        return moment.duration(this.elapsed, 'milliseconds');
-    }
-
-    public format(): string {
-        const diff = this.duration;
-        return `${diff.minutes()} minutes, ${diff.seconds()} seconds, and ${diff.milliseconds()} milliseconds`;
     }
 
     public start(reset = true): this {

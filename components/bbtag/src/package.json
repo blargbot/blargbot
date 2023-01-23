@@ -14,6 +14,7 @@
         "@blargbot/formatting": "workspace:^",
         "@blargbot/logger": "workspace:^",
         "@blargbot/mapping": "workspace:^",
+        "@blargbot/timer": "workspace:^",
         "brainfuck-node": "^1.0.2",
         "color": "^4.2.3",
         "eris": "^0.17.1",

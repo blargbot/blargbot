@@ -92,6 +92,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:components/test-util/src"\
       },\
       {\
+        "name": "@blargbot/timer",\
+        "reference": "workspace:components/timer/src"\
+      },\
+      {\
         "name": "@types/blargbot-image-api",\
         "reference": "workspace:definitions/blargbot-image-api"\
       },\
@@ -183,6 +187,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@blargbot/message-broker", ["virtual:aeac885bc2b91a1efa105c8fa69acf0299e4576631579d685c094479047c752b3d0be6af05bbe3225c98430520b2f21ca58c6dc42717d3d3ba0d508a26b1816e#workspace:components/message-broker/src", "workspace:components/message-broker/src"]],\
       ["@blargbot/res", ["workspace:components/res/src"]],\
       ["@blargbot/test-util", ["workspace:components/test-util/src"]],\
+      ["@blargbot/timer", ["workspace:components/timer/src"]],\
       ["@types/blargbot-image-api", ["workspace:definitions/blargbot-image-api"]],\
       ["@types/brainfuck-node", ["workspace:definitions/brainfuck-node"]],\
       ["@types/catflake", ["workspace:definitions/catflake"]],\
@@ -327,6 +332,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/formatting", "workspace:components/formatting/src"],\
             ["@blargbot/logger", "workspace:components/logger/src"],\
             ["@blargbot/mapping", "workspace:components/mapping/src"],\
+            ["@blargbot/timer", "workspace:components/timer/src"],\
             ["@types/brainfuck-node", "workspace:definitions/brainfuck-node"],\
             ["@types/color", "npm:3.0.3"],\
             ["@types/eris", "workspace:definitions/eris"],\
@@ -368,6 +374,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/formatting", "workspace:components/formatting/src"],\
             ["@blargbot/logger", "workspace:components/logger/src"],\
             ["@blargbot/test-util", "workspace:components/test-util/src"],\
+            ["@blargbot/timer", "workspace:components/timer/src"],\
             ["@types/chai", "npm:4.3.4"],\
             ["@types/chai-datetime", "npm:0.0.37"],\
             ["@types/eris", "workspace:definitions/eris"],\
@@ -414,6 +421,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/logger", "workspace:components/logger/src"],\
             ["@blargbot/mapping", "workspace:components/mapping/src"],\
             ["@blargbot/res", "workspace:components/res/src"],\
+            ["@blargbot/timer", "workspace:components/timer/src"],\
             ["@hunteroi/versioning", "npm:1.3.2"],\
             ["@types/brainfuck-node", "workspace:definitions/brainfuck-node"],\
             ["@types/eris", "workspace:definitions/eris"],\
@@ -490,6 +498,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/logger", "workspace:components/logger/src"],\
             ["@blargbot/mapping", "workspace:components/mapping/src"],\
             ["@blargbot/res", "workspace:components/res/src"],\
+            ["@blargbot/timer", "workspace:components/timer/src"],\
             ["@types/catflake", "workspace:definitions/catflake"],\
             ["@types/color", "npm:3.0.3"],\
             ["@types/cron", "npm:2.0.0"],\
@@ -725,6 +734,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/formatting", "workspace:components/formatting/src"],\
             ["@blargbot/logger", "workspace:components/logger/src"],\
             ["@blargbot/res", "workspace:components/res/src"],\
+            ["@blargbot/timer", "workspace:components/timer/src"],\
             ["@types/eris", "workspace:definitions/eris"],\
             ["@types/node-fetch", "npm:2.6.2"],\
             ["eris", "npm:0.17.1"],\
@@ -781,6 +791,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["chai", "npm:4.3.7"],\
             ["mocha", "npm:10.2.0"],\
             ["ts-mockito", "npm:2.6.1"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
+      ["@blargbot/timer", [\
+        ["workspace:components/timer/src", {\
+          "packageLocation": "./components/timer/src/",\
+          "packageDependencies": [\
+            ["@blargbot/timer", "workspace:components/timer/src"]\
           ],\
           "linkType": "SOFT"\
         }]\

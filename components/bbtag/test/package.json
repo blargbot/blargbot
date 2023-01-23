@@ -19,6 +19,7 @@
         "@blargbot/formatting": "workspace:^",
         "@blargbot/logger": "workspace:^",
         "@blargbot/test-util": "workspace:^",
+        "@blargbot/timer": "workspace:^",
         "chai": "^4.3.7",
         "chai-bytes": "^0.1.2",
         "chai-datetime": "^1.8.0",

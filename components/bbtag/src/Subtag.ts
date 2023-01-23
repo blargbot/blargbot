@@ -1,7 +1,7 @@
 import { metrics } from '@blargbot/core/Metrics.js';
-import { Timer } from '@blargbot/core/Timer.js';
 import { guard } from '@blargbot/core/utils/index.js';
 import type { IFormattable } from '@blargbot/formatting';
+import { Timer } from '@blargbot/timer';
 
 import type { BBTagContext } from './BBTagContext.js';
 import type { SubtagCall } from './language/index.js';

@@ -17,6 +17,7 @@
         "@blargbot/logger": "workspace:^",
         "@blargbot/mapping": "workspace:^",
         "@blargbot/res": "workspace:^",
+        "@blargbot/timer": "workspace:^",
         "airtable": "^0.11.6",
         "catflake": "^1.0.0",
         "color": "^4.2.3",

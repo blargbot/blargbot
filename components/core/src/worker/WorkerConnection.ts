@@ -2,9 +2,9 @@ import child_process from 'node:child_process';
 import { createInterface } from 'node:readline';
 import streams from 'node:stream';
 
-import { Timer } from '@blargbot/core/Timer.js';
 import type { GetMasterProcessMessageHandler, IPCContractMasterGets, IPCContractNames, IPCContracts, IPCContractWorkerGets } from '@blargbot/core/types.js';
 import type { Logger } from '@blargbot/logger';
+import { Timer } from '@blargbot/timer';
 import moment from 'moment-timezone';
 
 import { IPCMessageEmitter } from './IPCMessageEmitter.js';

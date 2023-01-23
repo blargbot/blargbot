@@ -1,11 +1,11 @@
 import { Emote } from '@blargbot/core/Emote.js';
-import { Timer } from '@blargbot/core/Timer.js';
 import type { ChoiceQueryResult, EntityPickQueryOptions } from '@blargbot/core/types.js';
 import { discord } from '@blargbot/core/utils/discord/index.js';
 import { guard, hasFlag, humanize, parse } from '@blargbot/core/utils/index.js';
 import type { Database } from '@blargbot/database';
 import type { FlagDefinition, FlagResult, NamedGuildCommandTag, StoredTag } from '@blargbot/domain/models/index.js';
 import type { Logger } from '@blargbot/logger';
+import { Timer } from '@blargbot/timer';
 import * as Eris from 'eris';
 import type moment from 'moment-timezone';
 import ReadWriteLock from 'rwlock';
@@ -13,7 +13,7 @@ import ReadWriteLock from 'rwlock';
 import type { BBTagEngine } from './BBTagEngine.js';
 import type { BBTagUtilities } from './BBTagUtilities.js';
 import { VariableCache } from './Caching.js';
-import type { BBTagRuntimeError} from './errors/index.js';
+import type { BBTagRuntimeError } from './errors/index.js';
 import { SubtagStackOverflowError, UnknownSubtagError } from './errors/index.js';
 import type { Statement, SubtagCall } from './language/index.js';
 import type { RuntimeLimit } from './limits/index.js';
@@ -68,7 +68,7 @@ export class BBTagContext implements BBTagContextOptions {
     public readonly prefix?: string;
 
     public get parent(): BBTagContext | undefined { return this.#parent; }
-    public get totalDuration(): moment.Duration { return this.execTimer.duration.add(this.dbTimer.duration); }
+    public get totalElapsed(): number { return this.execTimer.elapsed + this.dbTimer.elapsed; }
     public get channel(): Eris.KnownGuildTextableChannel { return this.message.channel; }
     public get member(): Eris.Member | undefined { return (this.message.member as Eris.Member | null) ?? undefined; }
     public get guild(): Eris.Guild { return this.message.channel.guild; }

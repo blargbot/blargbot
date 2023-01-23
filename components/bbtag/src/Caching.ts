@@ -1,5 +1,5 @@
-import { Timer } from '@blargbot/core/Timer.js';
 import { guard } from '@blargbot/core/utils/index.js';
+import { Timer } from '@blargbot/timer';
 
 import type { BBTagContext } from './BBTagContext.js';
 import type { TagVariableScopeProvider } from './tagVariableScopeProviders.js';

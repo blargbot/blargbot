@@ -1,7 +1,7 @@
-import { Timer } from '@blargbot/core/Timer.js';
 import { sleep } from '@blargbot/core/utils/index.js';
 import type { Database } from '@blargbot/database';
 import type { Logger } from '@blargbot/logger';
+import { Timer } from '@blargbot/timer';
 import type * as Eris from 'eris';
 import moment from 'moment-timezone';
 
@@ -93,7 +93,7 @@ export class BBTagEngine {
             duration: {
                 active: context.execTimer.elapsed,
                 database: context.dbTimer.elapsed,
-                total: context.totalDuration.asMilliseconds(),
+                total: context.totalElapsed,
                 subtag: context.data.subtags
             },
             database: {

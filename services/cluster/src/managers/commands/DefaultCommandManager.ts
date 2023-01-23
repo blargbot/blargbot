@@ -3,10 +3,10 @@ import type { CommandGetCoreResult, CommandParameter, CommandProperties, Command
 import { commandTypeDetails, guard } from '@blargbot/cluster/utils/index.js';
 import { metrics } from '@blargbot/core/Metrics.js';
 import { ModuleLoader } from '@blargbot/core/modules/index.js';
-import { Timer } from '@blargbot/core/Timer.js';
 import type { NextMiddleware } from '@blargbot/core/types.js';
 import type { CommandPermissions, FlagDefinition } from '@blargbot/domain/models/index.js';
 import type { IFormattable } from '@blargbot/formatting';
+import { Timer } from '@blargbot/timer';
 import * as Eris from 'eris';
 
 import type { CommandContext } from '../../command/index.js';

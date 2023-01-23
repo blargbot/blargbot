@@ -20,6 +20,7 @@
         "@blargbot/formatting": "workspace:^",
         "@blargbot/logger": "workspace:^",
         "@blargbot/res": "workspace:^",
+        "@blargbot/timer": "workspace:^",
         "eris": "^0.17.1",
         "moment-timezone": "^0.5.40",
         "node-fetch": "^3.3.0",

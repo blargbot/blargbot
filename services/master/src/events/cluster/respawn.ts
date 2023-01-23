@@ -1,9 +1,9 @@
 import type { ClusterConnection } from '@blargbot/cluster';
 import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent.js';
 import { WorkerPoolEventService } from '@blargbot/core/serviceTypes/index.js';
-import { Timer } from '@blargbot/core/Timer.js';
 import { util } from '@blargbot/formatting';
 import type { Master } from '@blargbot/master';
+import { Timer } from '@blargbot/timer';
 
 export class ClusterRespawnHandler extends WorkerPoolEventService<ClusterConnection, 'respawn'> {
     public constructor(
@@ -18,7 +18,7 @@ export class ClusterRespawnHandler extends WorkerPoolEventService<ClusterConnect
         await this.master.clusters.spawn(workerId);
         timer.end();
         await this.master.util.send(channelId, new FormattableMessageContent({
-            content: util.literal(`The shard has been successfully respawned! It only took me ${timer.format()}`)
+            content: util.literal(`The shard has been successfully respawned! It only took me ${timer.elapsed}ms`)
         }));
     }
 }

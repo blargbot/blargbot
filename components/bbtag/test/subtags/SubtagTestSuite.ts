@@ -7,13 +7,13 @@ import type { BBTagUtilities, InjectionContext } from '@blargbot/bbtag/BBTagUtil
 import { BBTagRuntimeError, NotEnoughArgumentsError, TooManyArgumentsError } from '@blargbot/bbtag/errors/index.js';
 import { BaseRuntimeLimit } from '@blargbot/bbtag/limits/BaseRuntimeLimit.js';
 import { bbtag, SubtagType } from '@blargbot/bbtag/utils/index.js';
-import { Timer } from '@blargbot/core/Timer.js';
 import { pluralise as p, repeat, snowflake } from '@blargbot/core/utils/index.js';
 import { Database } from '@blargbot/database';
 import type { GuildCommandTag, StoredTag, TagVariableScope } from '@blargbot/domain/models/index.js';
 import type { GuildStore, TagStore, TagVariableStore, UserStore } from '@blargbot/domain/stores/index.js';
 import type { Logger } from '@blargbot/logger';
 import { argument, Mock } from '@blargbot/test-util/mock.js';
+import { Timer } from '@blargbot/timer';
 import chai from 'chai';
 import chaiBytes from 'chai-bytes';
 import chaiDateTime from 'chai-datetime';
