@@ -1,9 +1,10 @@
+import { Subtag } from '@blargbot/bbtag';
 import { GuildCreatedAtSubtag } from '@blargbot/bbtag/subtags/guild/guildCreatedAt.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new GuildCreatedAtSubtag(),
+    subtag: Subtag.getDescriptor(GuildCreatedAtSubtag),
     argCountBounds: { min: 0, max: 1 },
     setupEach(ctx) {
         ctx.guild.id = '417411399422312468';

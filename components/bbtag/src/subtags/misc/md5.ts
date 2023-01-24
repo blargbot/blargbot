@@ -1,16 +1,17 @@
 import { createHash } from 'node:crypto';
 
 import { CompiledSubtag } from '../../compilation/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.md5;
 
+@Subtag.id('md5', 'md5encode')
+@Subtag.factory()
 export class Md5Subtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: 'md5',
-            aliases: ['md5encode'],
             category: SubtagType.MISC,
             deprecated: 'hash',
             definition: [

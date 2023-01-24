@@ -1,16 +1,17 @@
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.guildFeatures;
 
+@Subtag.id('guildFeatures', 'features')
+@Subtag.factory()
 export class GuildFeaturesSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: 'guildFeatures',
             category: SubtagType.GUILD,
-            aliases: ['features'],
             definition: [
                 {
                     parameters: [],

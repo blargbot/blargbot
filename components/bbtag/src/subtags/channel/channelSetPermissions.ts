@@ -1,19 +1,23 @@
-import { guard, parse } from '@blargbot/core/utils/index.js';
+import { guard } from '@blargbot/core/utils/index.js';
 import * as Eris from 'eris';
 
 import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.channelSetPermissions;
 
+@Subtag.id('channelSetPermissions', 'channelSetPerms')
+@Subtag.factory(Subtag.converter())
 export class ChannelSetPermissionsSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #converter: BBTagValueConverter;
+
+    public constructor(converter: BBTagValueConverter) {
         super({
-            name: 'channelSetPermissions',
-            aliases: ['channelSetPerms'],
             category: SubtagType.CHANNEL,
             definition: [
                 {
@@ -30,10 +34,12 @@ export class ChannelSetPermissionsSubtag extends CompiledSubtag {
                     exampleCode: tag.channel.exampleCode,
                     exampleOut: tag.channel.exampleOut,
                     returns: 'id',
-                    execute: (ctx, [channel, type, entityId, allow, deny]) => this.channelSetPerms(ctx, channel.value, type.value, entityId.value, parse.bigInt(allow.value), parse.bigInt(deny.value))
+                    execute: (ctx, [channel, type, entityId, allow, deny]) => this.channelSetPerms(ctx, channel.value, type.value, entityId.value, this.#converter.bigInt(allow.value), this.#converter.bigInt(deny.value))
                 }
             ]
         });
+
+        this.#converter = converter;
     }
 
     public async channelSetPerms(

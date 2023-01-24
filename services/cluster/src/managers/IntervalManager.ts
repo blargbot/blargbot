@@ -1,6 +1,7 @@
+import { sleep } from '@blargbot/async-tools';
 import type { ExecutionResult } from '@blargbot/bbtag';
 import type { Cluster } from '@blargbot/cluster';
-import { guard, sleep, snowflake } from '@blargbot/cluster/utils/index.js';
+import { guard, snowflake } from '@blargbot/cluster/utils/index.js';
 import type { GuildTriggerTag } from '@blargbot/domain/models/index.js';
 import type * as Eris from 'eris';
 import moment from 'moment-timezone';
@@ -70,7 +71,7 @@ export class IntervalManager {
 
         return await Promise.race([
             this.#invoke(member, channel, interval),
-            sleep(this.timeLimit.asMilliseconds()).then(() => 'TOO_LONG' as const)
+            sleep(this.timeLimit.asMilliseconds(), 'TOO_LONG' as const)
         ]);
     }
 

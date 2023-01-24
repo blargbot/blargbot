@@ -1,51 +1,56 @@
-import { parse } from '@blargbot/core/utils/index.js';
-
+import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import type { SubtagSignatureCallableOptions as Options } from '../../compilation/SubtagSignatureCallableOptions.js';
 import { InvalidOperatorError, NotABooleanError, NotANumberError } from '../../errors/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
-import type { LogicOperator, NumericOperator, OrdinalOperator, StringOperator} from '../../utils/index.js';
-import { bbtag, SubtagType } from '../../utils/index.js';
-import type { AggregationOperator} from '../../utils/operators.js';
+import type { BBTagArrayTools, LogicOperator, NumericOperator, OrdinalOperator, StringOperator } from '../../utils/index.js';
+import { SubtagType } from '../../utils/index.js';
+import type { AggregationOperator, BBTagOperators } from '../../utils/operators.js';
 import { aggregationOperators, logicOperators, numericOperators, ordinalOperators, stringOperators } from '../../utils/operators.js';
 
 const tag = templates.subtags.operator;
 
+@Subtag.id('operator')
+@Subtag.factory(Subtag.operators(), Subtag.arrayTools(), Subtag.converter())
 export class OperatorSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #operators: BBTagOperators;
+    readonly #arrayTools: BBTagArrayTools;
+    readonly #converter: BBTagValueConverter;
+
+    public constructor(operators: BBTagOperators, arrayTools: BBTagArrayTools, converter: BBTagValueConverter) {
         super({
-            name: 'operator',
             category: SubtagType.MISC,
             definition: [
-                ...Object.keys(ordinalOperators).map<Options<'boolean'>>(op => ({
+                ...ordinalOperators.keys.map<Options<'boolean'>>(op => ({
                     ...tag[op],
                     subtagName: op,
                     parameters: ['values+'],
                     returns: 'boolean',
                     execute: (_, values) => this.applyOrdinalOperation(op, values.map(v => v.value))
                 })),
-                ...Object.keys(stringOperators).map<Options<'boolean'>>(op => ({
+                ...stringOperators.keys.map<Options<'boolean'>>(op => ({
                     ...tag[op],
                     subtagName: op,
                     parameters: ['values+'],
                     returns: 'boolean',
                     execute: (_, values) => this.applyStringOperation(op, values.map(v => v.value))
                 })),
-                ...Object.keys(logicOperators).map<Options<'boolean'>>(op => ({
+                ...logicOperators.keys.map<Options<'boolean'>>(op => ({
                     ...tag[op],
                     subtagName: op,
                     parameters: ['values+'],
                     returns: 'boolean',
                     execute: (_, values) => this.applyLogicOperation(op, values.map(v => v.value))
                 })),
-                ...Object.keys(numericOperators).map<Options<'number'>>(op => ({
+                ...numericOperators.keys.map<Options<'number'>>(op => ({
                     ...tag[op],
                     subtagName: op,
                     parameters: ['values+'],
                     returns: 'number',
                     execute: (_, values) => this.applyNumericOperation(op, values.map(v => v.value))
                 })),
-                ...Object.keys(aggregationOperators).map<Options<'string'>>(op => ({
+                ...aggregationOperators.keys.map<Options<'string'>>(op => ({
                     ...tag[op],
                     subtagName: op,
                     parameters: ['values+'],
@@ -59,47 +64,49 @@ export class OperatorSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#operators = operators;
+        this.#arrayTools = arrayTools;
+        this.#converter = converter;
     }
 
     public applyOrdinalOperation(operator: OrdinalOperator, values: string[]): boolean {
-        const flattenedValues = bbtag.tagArray.flattenArray(values).map(v => parse.string(v));
-        return bbtag.operate('&&', generatePairs(flattenedValues).map(args => bbtag.operate(operator, ...args)));
+        const flattenedValues = this.#arrayTools.flattenArray(values).map(v => this.#converter.string(v));
+        return this.#operators.logic['&&'](generatePairs(flattenedValues)
+            .map(args => this.#operators.ordinal[operator](...args)));
     }
 
     public applyAggregationOperation(operator: AggregationOperator, values: string[]): string {
-        const flattenedValues = bbtag.tagArray.flattenArray(values).map(v => parse.string(v));
-        return bbtag.operate(operator, flattenedValues);
+        const flattenedValues = this.#arrayTools.flattenArray(values).map(v => this.#converter.string(v));
+        return this.#operators.aggregation[operator](flattenedValues);
     }
 
     public applyStringOperation(operator: StringOperator, values: string[]): boolean {
         const firstValue = values[0];
         values = values.slice(1);
-        const operatedValues = values.map((value) => {
-            return bbtag.operate(operator, firstValue, value);
-        });
+        const operatedValues = values.map((value) => this.#operators.string[operator](firstValue, value));
 
-        return bbtag.operate('&&', operatedValues);
+        return this.#operators.logic['&&'](operatedValues);
     }
 
     public applyNumericOperation(operator: NumericOperator, values: string[]): number {
-        return bbtag.tagArray.flattenArray(values).map((arg: JToken | undefined) => {
+        return this.#arrayTools.flattenArray(values).map((arg: JToken | undefined) => {
             if (typeof arg === 'string')
-                arg = parse.float(arg);
+                arg = this.#converter.float(arg);
             if (typeof arg !== 'number')
                 throw new NotANumberError(arg);
             return arg;
-        }).reduce(bbtag.operators[operator]);
+        }).reduce(this.#operators.numeric[operator]);
     }
 
-    public applyLogicOperation(operator: LogicOperator, values: string[]
-    ): boolean {
+    public applyLogicOperation(operator: LogicOperator, values: string[]): boolean {
         const parsed = values.map((value) => {
-            const bool = parse.boolean(value);
+            const bool = this.#converter.boolean(value);
             if (bool === undefined)
                 throw new NotABooleanError(value);
             return bool;
         });
-        return bbtag.operate(operator, parsed);
+        return this.#operators.logic[operator](parsed);
     }
 }
 

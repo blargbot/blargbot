@@ -1,4 +1,3 @@
-import { parse } from '@blargbot/core/utils/index.js';
 import type { IFormattable } from '@blargbot/formatting';
 
 import type { SubtagLogic } from '../logic/index.js';
@@ -56,8 +55,8 @@ function parseArgument(parameter: SubtagSignatureParameterOptions): SubtagSignat
 
     let name = parameter.slice(0, Math.min(startDefault, startMaxLength));
     let defaultValue = parameter.slice(startDefault + 1, startMaxLength);
-    let maxLength = parse.int(parameter.slice(startMaxLength + 1), { strict: true });
-    if (maxLength === undefined) {
+    let maxLength = parseInt(parameter.slice(startMaxLength + 1));
+    if (isNaN(maxLength)) {
         maxLength = 1_000_000;
         defaultValue = parameter.slice(startDefault + 1);
     }
@@ -128,8 +127,8 @@ const logicWrappers: { [P in keyof SubtagReturnTypeMap]: new (factory: SubtagLog
     'string': StringSubtagLogic,
     'string|nothing': StringSubtagLogic,
     'string[]': ArraySubtagLogic,
-    'json': StringSubtagLogic.withConversion(parse.string),
-    'json|nothing': StringSubtagLogic.withConversion(parse.string),
+    'json': StringSubtagLogic.withConversion((v, e) => e.dependencies.converter.string(v)),
+    'json|nothing': StringSubtagLogic.withConversion((v, e) => e.dependencies.converter.string(v)),
     'json[]': ArraySubtagLogic,
     'json[]|nothing': ArraySubtagLogic,
     'nothing': IgnoreSubtagLogic,
@@ -137,7 +136,7 @@ const logicWrappers: { [P in keyof SubtagReturnTypeMap]: new (factory: SubtagLog
     'id[]': ArraySubtagLogic,
     'loop': StringIterableSubtagLogic,
     'error': IgnoreSubtagLogic,
-    'embed': StringSubtagLogic.withConversion(JSON.stringify),
+    'embed': StringSubtagLogic.withConversion(v => JSON.stringify(v)),
     'embed[]': ArraySubtagLogic,
     'hex[]': ArraySubtagLogic,
     'nothing[]': ArraySubtagLogic,

@@ -1,6 +1,7 @@
+import { Subtag } from '@blargbot/bbtag';
 import { SetSubtag } from '@blargbot/bbtag/subtags/bot/set.js';
 import { snowflake } from '@blargbot/core/utils/index.js';
-import type { TagVariableScope} from '@blargbot/domain/models/index.js';
+import type { TagVariableScope } from '@blargbot/domain/models/index.js';
 import { TagVariableType } from '@blargbot/domain/models/index.js';
 import { argument } from '@blargbot/test-util/mock.js';
 import chai from 'chai';
@@ -9,7 +10,7 @@ import type { SubtagTestCase } from '../SubtagTestSuite.js';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new SetSubtag(),
+    subtag: Subtag.getDescriptor(SetSubtag),
     argCountBounds: { min: 1, max: Infinity },
     cases: [
         ...createTestCases([

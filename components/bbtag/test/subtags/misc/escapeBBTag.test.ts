@@ -1,9 +1,10 @@
+import { Subtag } from '@blargbot/bbtag';
 import { EscapeBBTagSubtag } from '@blargbot/bbtag/subtags/misc/escapeBBTag.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new EscapeBBTagSubtag(),
+    subtag: Subtag.getDescriptor(EscapeBBTagSubtag),
     argCountBounds: { min: 0, max: Infinity },
     cases: [
         { code: '{escapebbtag}', expected: '' },

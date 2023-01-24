@@ -1,14 +1,16 @@
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.argsLength;
 
+@Subtag.id('argsLength')
+@Subtag.factory()
 export class ArgsLengthSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: 'argsLength',
             category: SubtagType.SIMPLE,
             definition: [
                 {

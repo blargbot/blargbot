@@ -1,13 +1,15 @@
 import { CompiledSubtag } from '../../compilation/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.trim;
 
+@Subtag.id('trim')
+@Subtag.factory()
 export class TrimSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: 'trim',
             category: SubtagType.MISC,
             definition: [
                 {

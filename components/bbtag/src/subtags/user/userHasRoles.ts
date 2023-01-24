@@ -1,20 +1,25 @@
-import { parse } from '@blargbot/core/utils/index.js';
 import { hasValue } from '@blargbot/guards';
 
 import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { RoleNotFoundError, UserNotFoundError } from '../../errors/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
-import { bbtag, SubtagType } from '../../utils/index.js';
+import type { BBTagArrayTools } from '../../utils/index.js';
+import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.userHasRoles;
 
+@Subtag.id('userHasRoles', 'hasRoles')
+@Subtag.factory(Subtag.arrayTools(), Subtag.converter())
 export class UserHasRolesSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #arrayTools: BBTagArrayTools;
+    readonly #converter: BBTagValueConverter;
+
+    public constructor(arrayTools: BBTagArrayTools, converter: BBTagValueConverter) {
         super({
-            name: 'userHasRoles',
             category: SubtagType.USER,
-            aliases: ['hasRoles'],
             description: tag.description,
             definition: [
                 {
@@ -35,6 +40,9 @@ export class UserHasRolesSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#arrayTools = arrayTools;
+        this.#converter = converter;
     }
 
     public async userHasRoles(
@@ -52,8 +60,8 @@ export class UserHasRolesSubtag extends CompiledSubtag {
         if (!hasValue(member.guild) || !hasValue(member.roles))
             return false;
 
-        const arr = bbtag.tagArray.deserialize(roleStr) ?? { v: [roleStr] };
-        const roleArr = arr.v.map(x => parse.string(x));
+        const arr = this.#arrayTools.deserialize(roleStr) ?? { v: [roleStr] };
+        const roleArr = arr.v.map(x => this.#converter.string(x));
         for (const role of roleArr) {
             if (member.guild.roles.get(role) === undefined) {
                 throw new RoleNotFoundError(role)

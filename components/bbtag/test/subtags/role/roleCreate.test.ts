@@ -1,3 +1,4 @@
+import { Subtag } from '@blargbot/bbtag';
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
 import { RoleCreateSubtag } from '@blargbot/bbtag/subtags/role/roleCreate.js';
 import { argument } from '@blargbot/test-util/mock.js';
@@ -6,7 +7,7 @@ import * as Eris from 'eris';
 import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new RoleCreateSubtag(),
+    subtag: Subtag.getDescriptor(RoleCreateSubtag),
     argCountBounds: { min: 1, max: 5 },
     setupEach(ctx) {
         ctx.roles.authorizer.permissions = Eris.Constants.Permissions.all.toString();

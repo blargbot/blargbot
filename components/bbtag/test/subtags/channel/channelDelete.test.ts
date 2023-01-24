@@ -1,3 +1,4 @@
+import { Subtag } from '@blargbot/bbtag';
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
 import { ChannelDeleteSubtag } from '@blargbot/bbtag/subtags/channel/channelDelete.js';
 import Discord from 'discord-api-types/v9';
@@ -7,7 +8,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetChannelPropTestCases } from './_getChannelPropTest.js';
 
 runSubtagTests({
-    subtag: new ChannelDeleteSubtag(),
+    subtag: Subtag.getDescriptor(ChannelDeleteSubtag),
     argCountBounds: { min: 1, max: 1 },
     setupEach(ctx) {
         ctx.roles.authorizer.permissions = Eris.Constants.Permissions.manageChannels.toString();

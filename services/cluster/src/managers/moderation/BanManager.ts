@@ -1,5 +1,5 @@
+import { sleep } from '@blargbot/async-tools';
 import type { BanResult, KickResult, MassBanResult, UnbanResult } from '@blargbot/cluster/types.js';
-import { sleep } from '@blargbot/cluster/utils/index.js';
 import type { UnbanEventOptions } from '@blargbot/domain/models/index.js';
 import type { IFormattable } from '@blargbot/formatting';
 import { format, util } from '@blargbot/formatting';

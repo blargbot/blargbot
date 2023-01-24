@@ -1,3 +1,4 @@
+import { Subtag } from '@blargbot/bbtag';
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
 import { EmojiCreateSubtag } from '@blargbot/bbtag/subtags/guild/emojiCreate.js';
 import { SemiSubtag } from '@blargbot/bbtag/subtags/simple/semi.js';
@@ -7,7 +8,7 @@ import * as Eris from 'eris';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new EmojiCreateSubtag(),
+    subtag: Subtag.getDescriptor(EmojiCreateSubtag),
     argCountBounds: { min: 2, max: 3 },
     setupEach(ctx) {
         ctx.roles.authorizer.permissions = Eris.Constants.Permissions.manageEmojisAndStickers.toString();
@@ -15,7 +16,7 @@ runSubtagTests({
     cases: [
         {
             code: '{emojicreate;My cool emoji;data:image/png{semi}base64,abcdef}',
-            subtags: [new SemiSubtag()],
+            subtags: [Subtag.getDescriptor(SemiSubtag)],
             expected: '23946249762743426',
             setup(ctx) {
                 ctx.discord.setup(m => m.createGuildEmoji(ctx.guild.id, argument.isDeepEqual({
@@ -73,7 +74,7 @@ runSubtagTests({
         },
         {
             code: '{emojicreate;My cool emoji;data:image/png{semi}base64,abcdef;["9128735617428916","abc",null]}',
-            subtags: [new SemiSubtag()],
+            subtags: [Subtag.getDescriptor(SemiSubtag)],
             expected: '23946249762743426',
             setup(ctx) {
                 ctx.roles.other.id = '9128735617428916';
@@ -104,7 +105,7 @@ runSubtagTests({
         },
         {
             code: '{emojicreate;My cool emoji;data:image/png{semi}base64,abcdef}',
-            subtags: [new SemiSubtag()],
+            subtags: [Subtag.getDescriptor(SemiSubtag)],
             expected: '`Author cannot create emojis`',
             errors: [
                 { start: 0, end: 61, error: new BBTagRuntimeError('Author cannot create emojis') }
@@ -115,7 +116,7 @@ runSubtagTests({
         },
         {
             code: '{emojicreate;;data:image/png{semi}base64,abcdef}',
-            subtags: [new SemiSubtag()],
+            subtags: [Subtag.getDescriptor(SemiSubtag)],
             expected: '`Name was not provided`',
             errors: [
                 { start: 0, end: 48, error: new BBTagRuntimeError('Name was not provided') }
@@ -123,7 +124,7 @@ runSubtagTests({
         },
         {
             code: '{emojicreate;My cool emoji;abcdef}',
-            subtags: [new SemiSubtag()],
+            subtags: [Subtag.getDescriptor(SemiSubtag)],
             expected: '`Image was not a buffer or a URL`',
             errors: [
                 { start: 0, end: 34, error: new BBTagRuntimeError('Image was not a buffer or a URL') }
@@ -131,7 +132,7 @@ runSubtagTests({
         },
         {
             code: '{emojicreate;My cool emoji;data:image/png{semi}base64,abcdef}',
-            subtags: [new SemiSubtag()],
+            subtags: [Subtag.getDescriptor(SemiSubtag)],
             expected: '`Failed to create emoji: This is an error`',
             errors: [
                 { start: 0, end: 61, error: new BBTagRuntimeError('Failed to create emoji: This is an error') }
@@ -147,7 +148,7 @@ runSubtagTests({
         },
         {
             code: '{emojicreate;My cool emoji;data:image/png{semi}base64,abcdef}',
-            subtags: [new SemiSubtag()],
+            subtags: [Subtag.getDescriptor(SemiSubtag)],
             expected: '`Failed to create emoji: And this is line 2`',
             errors: [
                 { start: 0, end: 61, error: new BBTagRuntimeError('Failed to create emoji: And this is line 2') }

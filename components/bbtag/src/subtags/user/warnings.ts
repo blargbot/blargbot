@@ -1,15 +1,21 @@
+import type { GuildStore } from '@blargbot/domain/stores/GuildStore.js';
+
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { UserNotFoundError } from '../../errors/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.warnings;
 
+@Subtag.id('warnings')
+@Subtag.factory(Subtag.store('guilds'))
 export class WarningsSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #guilds: GuildStore;
+
+    public constructor(guilds: GuildStore) {
         super({
-            name: 'warnings',
             category: SubtagType.USER,
             definition: [
                 {
@@ -22,6 +28,7 @@ export class WarningsSubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#guilds = guilds;
     }
 
     public async getUserWarnings(context: BBTagContext, userQuery: string, quiet: boolean): Promise<number> {
@@ -30,6 +37,6 @@ export class WarningsSubtag extends CompiledSubtag {
         if (user === undefined)
             throw new UserNotFoundError(userQuery);
 
-        return await context.database.guilds.getWarnings(context.guild.id, user.id) ?? 0;
+        return await this.#guilds.getWarnings(context.guild.id, user.id) ?? 0;
     }
 }

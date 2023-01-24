@@ -1,5 +1,6 @@
 import type { Emote } from '@blargbot/discord-emote';
-import type { FlagDefinition, NamedGuildCommandTag, StoredTag } from '@blargbot/domain/models/index.js';
+import type { NamedGuildCommandTag, StoredTag } from '@blargbot/domain/models/index.js';
+import type { FlagDefinition } from '@blargbot/flags';
 import type { IFormattable } from '@blargbot/formatting';
 import type * as Eris from 'eris';
 import type ReadWriteLock from 'rwlock';
@@ -255,8 +256,6 @@ export type SubtagReturnTypeMap = {
 }
 
 export interface SubtagOptions<TString> {
-    readonly name: string;
-    readonly aliases?: readonly string[];
     readonly category: SubtagType;
     readonly description?: TString;
     readonly deprecated?: string | boolean;

@@ -1,16 +1,21 @@
 import type { SubtagArgument } from '../../arguments/index.js';
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { BBTagRuntimeState } from '../../types.js';
-import { bbtag, SubtagType } from '../../utils/index.js';
+import type { BBTagArrayTools } from '../../utils/index.js';
+import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.forEach;
 
+@Subtag.id('forEach')
+@Subtag.factory(Subtag.arrayTools())
 export class ForEachSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #arrayTools: BBTagArrayTools;
+
+    public constructor(arrayTools: BBTagArrayTools) {
         super({
-            name: 'forEach',
             category: SubtagType.LOOPS,
             definition: [
                 {
@@ -23,6 +28,8 @@ export class ForEachSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#arrayTools = arrayTools;
     }
     public async * foreach(
         context: BBTagContext,
@@ -30,7 +37,7 @@ export class ForEachSubtag extends CompiledSubtag {
         source: string,
         code: SubtagArgument
     ): AsyncIterable<string> {
-        const array = await bbtag.tagArray.deserializeOrGetIterable(context, source) ?? [];
+        const array = await this.#arrayTools.deserializeOrGetIterable(context, source) ?? [];
         try {
             for (const item of array) {
                 await context.limit.check(context, 'foreach:loops');

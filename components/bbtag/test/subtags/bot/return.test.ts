@@ -1,3 +1,4 @@
+import { Subtag } from '@blargbot/bbtag';
 import { ReturnSubtag } from '@blargbot/bbtag/subtags/bot/return.js';
 import { BBTagRuntimeState } from '@blargbot/bbtag/types.js';
 import chai from 'chai';
@@ -5,7 +6,7 @@ import chai from 'chai';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new ReturnSubtag(),
+    subtag: Subtag.getDescriptor(ReturnSubtag),
     argCountBounds: { min: 0, max: 1 },
     cases: [
         {

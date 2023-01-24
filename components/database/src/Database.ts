@@ -1,4 +1,4 @@
-import { sleep } from '@blargbot/core/utils/index.js';
+import { sleep } from '@blargbot/async-tools';
 import type { BotVariableStore, ChatLogIndexStore, ChatLogStore, DumpStore, EventStore, GuildStore, SuggesterStore, SuggestionStore, TagStore, TagVariableStore, UserStore } from '@blargbot/domain/stores/index.js';
 import type { Logger } from '@blargbot/logger';
 import Airtable from 'airtable';

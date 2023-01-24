@@ -1,14 +1,16 @@
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.reason;
 
+@Subtag.id('reason')
+@Subtag.factory()
 export class ReasonSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: 'reason',
             category: SubtagType.BOT,
             definition: [
                 {

@@ -1,9 +1,10 @@
+import { Subtag } from '@blargbot/bbtag';
 import { PrefixSubtag } from '@blargbot/bbtag/subtags/bot/prefix.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new PrefixSubtag(),
+    subtag: Subtag.getDescriptor(PrefixSubtag),
     argCountBounds: { min: 0, max: 0 },
     cases: [
         {

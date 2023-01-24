@@ -1,3 +1,4 @@
+import { Subtag } from '@blargbot/bbtag';
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
 import { RegexReplaceSubtag } from '@blargbot/bbtag/subtags/misc/regexReplace.js';
 import chai from 'chai';
@@ -5,7 +6,7 @@ import chai from 'chai';
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new RegexReplaceSubtag(),
+    subtag: Subtag.getDescriptor(RegexReplaceSubtag),
     argCountBounds: { min: { count: 2, noEval: [0] }, max: { count: 3, noEval: [1] } },
     cases: [
         {

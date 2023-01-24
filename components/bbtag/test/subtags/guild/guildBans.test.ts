@@ -1,3 +1,4 @@
+import { Subtag } from '@blargbot/bbtag';
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
 import { GuildBansSubtag } from '@blargbot/bbtag/subtags/guild/guildBans.js';
 import * as Eris from 'eris';
@@ -5,7 +6,7 @@ import * as Eris from 'eris';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new GuildBansSubtag(),
+    subtag: Subtag.getDescriptor(GuildBansSubtag),
     argCountBounds: { min: 0, max: 0 },
     cases: [
         {

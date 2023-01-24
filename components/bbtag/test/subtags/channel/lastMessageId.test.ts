@@ -1,3 +1,4 @@
+import { Subtag } from '@blargbot/bbtag';
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
 import { LastMessageIdSubtag } from '@blargbot/bbtag/subtags/channel/lastMessageId.js';
 import type Discord from 'discord-api-types/v9';
@@ -7,7 +8,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetChannelPropTestCases } from './_getChannelPropTest.js';
 
 runSubtagTests({
-    subtag: new LastMessageIdSubtag(),
+    subtag: Subtag.getDescriptor(LastMessageIdSubtag),
     argCountBounds: { min: 0, max: 1 },
     cases: [
         ...createGetChannelPropTestCases({

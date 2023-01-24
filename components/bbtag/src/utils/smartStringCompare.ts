@@ -1,8 +1,6 @@
 import { hasProperty } from '@blargbot/guards';
 
-import { toBlocks } from './toBlocks.js';
-
-export function compare(a: string, b: string): number {
+export function smartStringCompare(a: string, b: string): number {
     const aBlocks = toBlocks(a);
     const bBlocks = toBlocks(b);
 
@@ -22,6 +20,22 @@ export function compare(a: string, b: string): number {
     }
 
     return 0;
+}
+
+function toBlocks(text: string): Array<string | number> {
+    const regex = /[-+]?\d+(?:\.\d*)?(?:e\+?\d+)?/g;
+    const numbers = text.match(regex) ?? [];
+    const words = text.split(regex);
+
+    const result = [];
+    const max = Math.max(numbers.length, words.length);
+    for (let i = 0; i < max; i++) {
+        if (i < words.length)
+            result.push(words[i]);
+        if (i < numbers.length)
+            result.push(parseFloat(numbers[i]));
+    }
+    return result;
 }
 
 type BlockTypePairs = `${keyof BlockTypes}|${keyof BlockTypes}`;

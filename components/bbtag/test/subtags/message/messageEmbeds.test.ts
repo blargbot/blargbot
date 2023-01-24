@@ -1,10 +1,11 @@
+import { Subtag } from '@blargbot/bbtag';
 import { MessageEmbedsSubtag } from '@blargbot/bbtag/subtags/message/messageEmbeds.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetMessagePropTestCases } from './_getMessagePropTest.js';
 
 runSubtagTests({
-    subtag: new MessageEmbedsSubtag(),
+    subtag: Subtag.getDescriptor(MessageEmbedsSubtag),
     argCountBounds: { min: 0, max: 3 },
     cases: [
         ...createGetMessagePropTestCases({

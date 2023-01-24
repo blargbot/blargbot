@@ -1,14 +1,14 @@
-import { bbtag } from '@blargbot/bbtag';
 import type { CommandResult, GuildCommandContext } from '@blargbot/cluster/types.js';
 import { CommandType, guard } from '@blargbot/cluster/utils/index.js';
 import type { GuildRolemeEntry } from '@blargbot/domain/models/index.js';
-import type { IFormattable} from '@blargbot/formatting';
+import type { IFormattable } from '@blargbot/formatting';
 import { util } from '@blargbot/formatting';
 import * as Eris from 'eris';
 
 import { GuildCommand } from '../../command/index.js';
 import { RawBBTagCommandResult } from '../../command/RawBBTagCommandResult.js';
 import templates from '../../text.js';
+import { bbtagDebugOutput } from '../../utils/bbtagDebugOutput.js';
 
 const cmd = templates.commands.roleMe;
 
@@ -285,7 +285,7 @@ export class RolemeCommand extends GuildCommand {
             return cmd.errors.noMessage({ id });
 
         const result = await context.cluster.rolemes.invokeMessage(context.message, roleme);
-        await context.send(context.author, bbtag.createDebugOutput(result));
+        await context.send(context.author, bbtagDebugOutput(result));
         return cmd.debugMessage.success;
     }
 

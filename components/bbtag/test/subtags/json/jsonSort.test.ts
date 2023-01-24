@@ -1,3 +1,4 @@
+import { Subtag } from '@blargbot/bbtag';
 import { BBTagRuntimeError, NotAnArrayError } from '@blargbot/bbtag/errors/index.js';
 import { JsonSubtag } from '@blargbot/bbtag/subtags/json/json.js';
 import { JsonSortSubtag } from '@blargbot/bbtag/subtags/json/jsonSort.js';
@@ -7,18 +8,18 @@ import chai from 'chai';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new JsonSortSubtag(),
+    subtag: Subtag.getDescriptor(JsonSortSubtag),
     argCountBounds: { min: 2, max: 3 },
     cases: [
         {
             code: '{jsonsort;{j;[{"points": 10, "name": "Blargbot"},{"points": 3, "name": "UNO"},{"points": 6, "name": "Stupid cat"},{"points": 12, "name": "Winner"}]};points}',
             expected: '[{"points":3,"name":"UNO"},{"points":6,"name":"Stupid cat"},{"points":10,"name":"Blargbot"},{"points":12,"name":"Winner"}]',
-            subtags: [new JsonSubtag()]
+            subtags: [Subtag.getDescriptor(JsonSubtag)]
         },
         {
             code: '{jsonsort;{j;[{"points": 10, "name": "Blargbot"},{"points": 3, "name": "UNO"},{"points": 6, "name": "Stupid cat"},{"points": 12, "name": "Winner"}]};points;a}',
             expected: '[{"points":12,"name":"Winner"},{"points":10,"name":"Blargbot"},{"points":6,"name":"Stupid cat"},{"points":3,"name":"UNO"}]',
-            subtags: [new JsonSubtag()]
+            subtags: [Subtag.getDescriptor(JsonSubtag)]
         },
         {
             code: '{jsonsort;arrayVar;points}',

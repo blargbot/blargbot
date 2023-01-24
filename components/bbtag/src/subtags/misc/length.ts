@@ -1,13 +1,18 @@
 import { CompiledSubtag } from '../../compilation/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
-import { bbtag, SubtagType } from '../../utils/index.js';
+import type { BBTagArrayTools } from '../../utils/index.js';
+import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.length;
 
+@Subtag.id('length')
+@Subtag.factory(Subtag.arrayTools())
 export class LengthSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #arrayTools: BBTagArrayTools;
+
+    public constructor(arrayTools: BBTagArrayTools) {
         super({
-            name: 'length',
             category: SubtagType.MISC,
             definition: [
                 {
@@ -21,10 +26,12 @@ export class LengthSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#arrayTools = arrayTools;
     }
 
     public getLength(value: string): number {
-        const deserializedArray = bbtag.tagArray.deserialize(value);
+        const deserializedArray = this.#arrayTools.deserialize(value);
         if (deserializedArray !== undefined)
             return deserializedArray.v.length;
         return value.length;

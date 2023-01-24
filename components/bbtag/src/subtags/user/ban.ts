@@ -1,9 +1,10 @@
-import { parse } from '@blargbot/core/utils/index.js';
 import moment from 'moment-timezone';
 
 import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagUtilities, BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, NotANumberError, UserNotFoundError } from '../../errors/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
@@ -16,10 +17,13 @@ const errorMap = {
     'moderatorTooLow': 'User has no permissions'
 };
 
+@Subtag.id('ban')
+@Subtag.factory(Subtag.util(), Subtag.converter())
 export class BanSubtag extends CompiledSubtag {
-    public constructor() {
+    #util: BBTagUtilities;
+    #converter: BBTagValueConverter;
+    public constructor(util: BBTagUtilities, converter: BBTagValueConverter) {
         super({
-            name: 'ban',
             category: SubtagType.USER,
             description: tag.description,
             definition: [
@@ -49,6 +53,9 @@ export class BanSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#util = util;
+        this.#converter = converter;
     }
 
     public async banMember(
@@ -65,7 +72,7 @@ export class BanSubtag extends CompiledSubtag {
 
         if (user === undefined)
             throw new UserNotFoundError(userStr);
-        const daysToDelete = parse.int(daysToDeleteStr);
+        const daysToDelete = this.#converter.int(daysToDeleteStr);
         if (daysToDelete === undefined) {
             throw new NotANumberError(daysToDeleteStr)
                 .withDisplay('false');
@@ -73,13 +80,13 @@ export class BanSubtag extends CompiledSubtag {
         let duration = moment.duration(Infinity);
 
         if (timeToUnbanStr !== '')
-            duration = parse.duration(timeToUnbanStr) ?? duration;
+            duration = this.#converter.duration(timeToUnbanStr) ?? duration;
 
         if (reason === '')
             reason = 'Tag Ban';
 
         const authorizer = noPerms ? context.authorizer?.user ?? context.user : context.user;
-        const response = await context.util.ban(context.guild, user, context.user, authorizer, daysToDelete, reason, duration);
+        const response = await this.#util.ban(context.guild, user, context.user, authorizer, daysToDelete, reason, duration);
         if (response === 'success' || response === 'alreadyBanned')
             return duration.asMilliseconds() < Infinity ? duration.asMilliseconds() : true;
         throw new BBTagRuntimeError(errorMap[response]);

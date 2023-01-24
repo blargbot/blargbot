@@ -1,16 +1,17 @@
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { ChannelNotFoundError } from '../../errors/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.channelId;
 
+@Subtag.id('channelId', 'categoryId')
+@Subtag.factory()
 export class ChannelIdSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: 'channelId',
-            aliases: ['categoryId'],
             category: SubtagType.CHANNEL,
             definition: [
                 {

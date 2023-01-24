@@ -1,7 +1,8 @@
+import { Subtag } from '@blargbot/bbtag';
 import { InvalidOperatorError } from '@blargbot/bbtag/errors/index.js';
 import { OperatorSubtag } from '@blargbot/bbtag/subtags/misc/operator.js';
 import type { LogicOperator, NumericOperator, OrdinalOperator, StringOperator } from '@blargbot/bbtag/utils/index.js';
-import { bbtag } from '@blargbot/bbtag/utils/index.js';
+import { ordinalOperators, stringOperators } from '@blargbot/bbtag/utils/index.js';
 
 import type { SubtagTestCase } from '../SubtagTestSuite.js';
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
@@ -17,7 +18,7 @@ const doesntContain = { 'startswith': false, 'endswith': false, 'includes': fals
 const isFalse = { '!=': false, '<': false, '<=': false, '==': false, '>': false, '>=': false } as const;
 
 runSubtagTests({
-    subtag: new OperatorSubtag(),
+    subtag: Subtag.getDescriptor(OperatorSubtag),
     argCountBounds: { min: 1, max: Infinity },
     cases: [
         {
@@ -117,13 +118,13 @@ function createLogicTestCases(args: boolean[], results: Record<Exclude<LogicOper
 }
 
 function createOrdinalTestCases(args: string[], results: Record<OrdinalOperator, boolean>): SubtagTestCase[] {
-    return Object.entries(results).filter(x => bbtag.isOrdinalOperator(x[0])).flatMap(([op, expected]) => [
+    return Object.entries(results).filter(x => ordinalOperators.test(x[0])).flatMap(([op, expected]) => [
         { code: `{${op};${args.join(';')}}`, expected: expected.toString() }
     ]);
 }
 
 function createStringTestCases(args: string[], results: Record<StringOperator, boolean>): SubtagTestCase[] {
-    return Object.entries(results).filter(x => bbtag.isStringOperator(x[0])).flatMap(([op, expected]) => [
+    return Object.entries(results).filter(x => stringOperators.test(x[0])).flatMap(([op, expected]) => [
         { code: `{${op};${args.join(';')}}`, expected: expected.toString() }
     ]);
 }

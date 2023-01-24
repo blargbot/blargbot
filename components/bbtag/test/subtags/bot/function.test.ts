@@ -1,4 +1,5 @@
 import type { Statement } from '@blargbot/bbtag';
+import { Subtag } from '@blargbot/bbtag';
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
 import { FunctionSubtag } from '@blargbot/bbtag/subtags/bot/function.js';
 import chai from 'chai';
@@ -6,7 +7,7 @@ import chai from 'chai';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new FunctionSubtag(),
+    subtag: Subtag.getDescriptor(FunctionSubtag),
     argCountBounds: { min: { count: 2, noEval: [1] }, max: { count: 2, noEval: [1] } },
     cases: [
         {

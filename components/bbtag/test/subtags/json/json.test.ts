@@ -1,10 +1,11 @@
+import { Subtag } from '@blargbot/bbtag';
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
 import { JsonSubtag } from '@blargbot/bbtag/subtags/json/json.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new JsonSubtag(),
+    subtag: Subtag.getDescriptor(JsonSubtag),
     argCountBounds: { min: 0, max: { count: 1, noEval: [0] } },
     cases: [
         {

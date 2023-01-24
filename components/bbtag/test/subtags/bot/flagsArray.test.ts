@@ -1,9 +1,10 @@
+import { Subtag } from '@blargbot/bbtag';
 import { FlagsArraySubtag } from '@blargbot/bbtag/subtags/bot/flagsArray.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new FlagsArraySubtag(),
+    subtag: Subtag.getDescriptor(FlagsArraySubtag),
     argCountBounds: { min: 0, max: 0 },
     cases: [
         {

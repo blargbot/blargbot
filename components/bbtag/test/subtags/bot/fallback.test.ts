@@ -1,3 +1,4 @@
+import { Subtag } from '@blargbot/bbtag';
 import { UnknownSubtagError } from '@blargbot/bbtag/errors/index.js';
 import { FallbackSubtag } from '@blargbot/bbtag/subtags/bot/fallback.js';
 import chai from 'chai';
@@ -5,7 +6,7 @@ import chai from 'chai';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new FallbackSubtag(),
+    subtag: Subtag.getDescriptor(FallbackSubtag),
     argCountBounds: { min: 0, max: 1 },
     cases: [
         {

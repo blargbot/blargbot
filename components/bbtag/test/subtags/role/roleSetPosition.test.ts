@@ -1,3 +1,4 @@
+import { Subtag } from '@blargbot/bbtag';
 import { BBTagRuntimeError, NotANumberError } from '@blargbot/bbtag/errors/index.js';
 import { RoleSetPositionSubtag } from '@blargbot/bbtag/subtags/role/roleSetPosition.js';
 import * as Eris from 'eris';
@@ -6,7 +7,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetRolePropTestCases } from './_getRolePropTest.js';
 
 runSubtagTests({
-    subtag: new RoleSetPositionSubtag(),
+    subtag: Subtag.getDescriptor(RoleSetPositionSubtag),
     argCountBounds: { min: 2, max: 3 },
     setupEach(ctx) {
         ctx.roles.authorizer.permissions = Eris.Constants.Permissions.manageRoles.toString();

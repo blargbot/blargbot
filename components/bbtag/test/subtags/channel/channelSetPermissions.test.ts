@@ -1,3 +1,4 @@
+import { Subtag } from '@blargbot/bbtag';
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
 import { ChannelSetPermissionsSubtag } from '@blargbot/bbtag/subtags/channel/channelSetPermissions.js';
 import Discord from 'discord-api-types/v9';
@@ -6,7 +7,7 @@ import * as Eris from 'eris';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new ChannelSetPermissionsSubtag(),
+    subtag: Subtag.getDescriptor(ChannelSetPermissionsSubtag),
     argCountBounds: { min: 3, max: 5 },
     setupEach(ctx) {
         ctx.roles.authorizer.permissions = (Eris.Constants.Permissions.manageChannels | Eris.Constants.Permissions.administrator).toString();

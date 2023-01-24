@@ -1,3 +1,4 @@
+import { Subtag } from '@blargbot/bbtag';
 import { BBTagRuntimeError, NotANumberError } from '@blargbot/bbtag/errors/index.js';
 import { ChannelSetPositionSubtag } from '@blargbot/bbtag/subtags/channel/channelSetPosition.js';
 import * as Eris from 'eris';
@@ -5,7 +6,7 @@ import * as Eris from 'eris';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new ChannelSetPositionSubtag(),
+    subtag: Subtag.getDescriptor(ChannelSetPositionSubtag),
     argCountBounds: { min: 2, max: 2 },
     setupEach(ctx) {
         ctx.roles.authorizer.permissions = Eris.Constants.Permissions.manageChannels.toString();

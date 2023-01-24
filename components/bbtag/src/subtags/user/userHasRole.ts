@@ -1,20 +1,25 @@
-import { parse } from '@blargbot/core/utils/index.js';
 import { hasValue } from '@blargbot/guards';
 
 import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { RoleNotFoundError, UserNotFoundError } from '../../errors/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
-import { bbtag, SubtagType } from '../../utils/index.js';
+import type { BBTagArrayTools } from '../../utils/index.js';
+import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.userHasRole;
 
+@Subtag.id('userHasRole', 'hasRole')
+@Subtag.factory(Subtag.arrayTools(), Subtag.converter())
 export class UserHasRoleSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #arrayTools: BBTagArrayTools;
+    readonly #converter: BBTagValueConverter;
+
+    public constructor(arrayTools: BBTagArrayTools, converter: BBTagValueConverter) {
         super({
-            name: 'userHasRole',
             category: SubtagType.USER,
-            aliases: ['hasRole'],
             description: tag.description,
             definition: [
                 {
@@ -35,6 +40,9 @@ export class UserHasRoleSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#arrayTools = arrayTools;
+        this.#converter = converter;
     }
 
     public async userHasRole(
@@ -49,8 +57,8 @@ export class UserHasRoleSubtag extends CompiledSubtag {
             throw new UserNotFoundError(userStr)
                 .withDisplay(quiet ? 'false' : undefined);
 
-        const arr = bbtag.tagArray.deserialize(roleStr) ?? { v: [roleStr] };
-        const roleArr = arr.v.map(x => parse.string(x));
+        const arr = this.#arrayTools.deserialize(roleStr) ?? { v: [roleStr] };
+        const roleArr = arr.v.map(x => this.#converter.string(x));
         if (!hasValue(member.guild) || !hasValue(member.roles))
             return false;
 

@@ -1,14 +1,16 @@
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.uriDecode;
 
+@Subtag.id('uriDecode')
+@Subtag.factory()
 export class UriDecodeSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: 'uriDecode',
             category: SubtagType.MISC,
             definition: [
                 {

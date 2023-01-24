@@ -1,3 +1,4 @@
+import { Subtag } from '@blargbot/bbtag';
 import { RoleMentionSubtag } from '@blargbot/bbtag/subtags/role/roleMention.js';
 import chai from 'chai';
 
@@ -5,7 +6,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetRolePropTestCases } from './_getRolePropTest.js';
 
 runSubtagTests({
-    subtag: new RoleMentionSubtag(),
+    subtag: Subtag.getDescriptor(RoleMentionSubtag),
     argCountBounds: { min: 1, max: 3 },
     cases: [
         ...createGetRolePropTestCases({

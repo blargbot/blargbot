@@ -1,3 +1,4 @@
+import { Subtag } from '@blargbot/bbtag';
 import { GuildFeaturesSubtag } from '@blargbot/bbtag/subtags/guild/guildFeatures.js';
 import type Discord from 'discord-api-types/v9';
 import * as Eris from 'eris';
@@ -5,7 +6,7 @@ import * as Eris from 'eris';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new GuildFeaturesSubtag(),
+    subtag: Subtag.getDescriptor(GuildFeaturesSubtag),
     argCountBounds: { min: 0, max: 0 },
     cases: [
         {

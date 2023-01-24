@@ -1,18 +1,25 @@
-import { parse } from '@blargbot/core/utils/index.js';
+import type { Logger } from '@blargbot/logger';
 
 import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, NotAnArrayError, RoleNotFoundError, UserNotFoundError } from '../../errors/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
-import { bbtag, SubtagType } from '../../utils/index.js';
+import type { BBTagArrayTools } from '../../utils/index.js';
+import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.userSetRoles;
 
+@Subtag.id('userSetRoles', 'setRoles')
+@Subtag.factory(Subtag.arrayTools(), Subtag.converter(), Subtag.logger())
 export class UserSetRolesSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #arrayTools: BBTagArrayTools;
+    readonly #converter: BBTagValueConverter;
+    readonly #logger: Logger;
+
+    public constructor(arrayTools: BBTagArrayTools, converter: BBTagValueConverter, logger: Logger) {
         super({
-            name: 'userSetRoles',
-            aliases: ['setRoles'],
             category: SubtagType.USER,
             description: tag.description,
             definition: [
@@ -34,6 +41,10 @@ export class UserSetRolesSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#arrayTools = arrayTools;
+        this.#converter = converter;
+        this.#logger = logger;
     }
 
     public async userSetRole(
@@ -60,7 +71,7 @@ export class UserSetRolesSubtag extends CompiledSubtag {
                 .withDisplay(quiet ? 'false' : undefined);
         }
 
-        const roleArr = await bbtag.tagArray.deserializeOrGetArray(context, rolesStr !== '' ? rolesStr : '[]');
+        const roleArr = await this.#arrayTools.deserializeOrGetArray(context, rolesStr !== '' ? rolesStr : '[]');
         if (roleArr === undefined) {
             throw new NotAnArrayError(rolesStr)
                 .withDisplay(quiet ? 'false' : undefined);
@@ -68,7 +79,7 @@ export class UserSetRolesSubtag extends CompiledSubtag {
 
         const parsedRoles: string[] = [];
 
-        for (const roleStr of roleArr.v.map(v => parse.string(v))) {
+        for (const roleStr of roleArr.v.map(v => this.#converter.string(v))) {
             const role = await context.queryRole(roleStr, {
                 noLookup: quiet,
                 noErrors: context.scopes.local.noLookupErrors
@@ -85,7 +96,7 @@ export class UserSetRolesSubtag extends CompiledSubtag {
             member.roles = parsedRoles;
             return true;
         } catch (err: unknown) {
-            context.logger.error(err);
+            this.#logger.error(err);
             return false;
         }
 

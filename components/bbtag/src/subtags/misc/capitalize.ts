@@ -1,13 +1,15 @@
 import { CompiledSubtag } from '../../compilation/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.capitalize;
 
+@Subtag.id('capitalize')
+@Subtag.factory()
 export class CapitalizeSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: 'capitalize',
             category: SubtagType.MISC,
             definition: [
                 {

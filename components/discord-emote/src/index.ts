@@ -12,7 +12,6 @@ export interface PartialEmoji {
     readonly animated?: boolean;
 }
 
-export default Emote;
 export class Emote {
     public static findAll(this: void, text: string): Emote[] {
         return Emote.#findAll(text)[0];
@@ -90,7 +89,7 @@ export class Emote {
 }
 
 async function loadDiscordEmoteData(): Promise<typeof discordEmoteDataType> {
-    const location = path.join(fileURLToPath(import.meta.url), './discordEmoteData.json');
+    const location = path.join(fileURLToPath(import.meta.url), '../discordEmoteData.json');
     const content = await fs.readFile(location, 'utf-8');
     return JSON.parse(content) as unknown as typeof discordEmoteDataType;
 }

@@ -1,16 +1,22 @@
-import { parse } from '@blargbot/core/utils/index.js';
 import { hasValue } from '@blargbot/guards';
 
+import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
-import { bbtag, SubtagType } from '../../utils/index.js';
+import type { BBTagArrayTools } from '../../utils/index.js';
+import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.min;
 
+@Subtag.id('min')
+@Subtag.factory(Subtag.arrayTools(), Subtag.converter())
 export class MinSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #arrayTools: BBTagArrayTools;
+    readonly #converter: BBTagValueConverter;
+
+    public constructor(arrayTools: BBTagArrayTools, converter: BBTagValueConverter) {
         super({
-            name: 'min',
             category: SubtagType.MATH,
             definition: [
                 {
@@ -23,11 +29,14 @@ export class MinSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#arrayTools = arrayTools;
+        this.#converter = converter;
     }
 
     public min(args: string[]): number {
-        const flattenedArgs = bbtag.tagArray.flattenArray(args);
-        const parsedArgs = flattenedArgs.map(arg => parse.float(arg?.toString() ?? ''));
+        const flattenedArgs = this.#arrayTools.flattenArray(args);
+        const parsedArgs = flattenedArgs.map(arg => this.#converter.float(arg?.toString() ?? ''));
         const filteredArgs = parsedArgs.filter(hasValue);
 
         if (filteredArgs.length < parsedArgs.length)

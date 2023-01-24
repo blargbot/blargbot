@@ -1,4 +1,3 @@
-import { bbtag } from '@blargbot/bbtag';
 import type { Cluster } from '@blargbot/cluster';
 import type { WhitelistResponse } from '@blargbot/cluster/types.js';
 import { guard, humanize } from '@blargbot/cluster/utils/index.js';
@@ -9,6 +8,7 @@ import { mapping } from '@blargbot/mapping';
 import type * as Eris from 'eris';
 
 import templates from '../text.js';
+import { bbtagDebugOutput } from '../utils/bbtagDebugOutput.js';
 
 export class AutoresponseManager {
     readonly #guilds: Set<string>;
@@ -127,7 +127,7 @@ export class AutoresponseManager {
             return;
 
         delete this.#debugOutput[key];
-        await this.#cluster.util.send(msg.author, new FormattableMessageContent(bbtag.createDebugOutput(result)));
+        await this.#cluster.util.send(msg.author, new FormattableMessageContent(bbtagDebugOutput(result)));
     }
 
     public async handleWhitelistApproval(message: Eris.KnownMessage, emoji: Eris.PartialEmoji, user: Eris.User): Promise<void> {

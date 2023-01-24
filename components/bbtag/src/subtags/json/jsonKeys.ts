@@ -1,16 +1,20 @@
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
-import { bbtag, SubtagType } from '../../utils/index.js';
+import type { BBTagJsonTools } from '../../utils/index.js';
+import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.jsonKeys;
 
+@Subtag.id('jsonKeys', 'jKeys')
+@Subtag.factory(Subtag.jsonTools())
 export class JsonKeysSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #jsonTools: BBTagJsonTools;
+
+    public constructor(jsonTools: BBTagJsonTools) {
         super({
-            name: 'jsonKeys',
             category: SubtagType.JSON,
-            aliases: ['jKeys'],
             definition: [
                 {
                     parameters: ['object:{}#10000000', 'path?'],
@@ -22,13 +26,15 @@ export class JsonKeysSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#jsonTools = jsonTools;
     }
 
     public async getJsonKeys(context: BBTagContext, objStr: string, path: string): Promise<string[]> {
-        const obj = (await bbtag.json.resolveObj(context, objStr)).object;
+        const obj = (await this.#jsonTools.resolveObj(context, objStr)).object;
 
         if (path !== '')
-            return Object.keys(bbtag.json.get(obj, path) ?? {});
+            return Object.keys(this.#jsonTools.get(obj, path) ?? {});
 
         return Object.keys(obj);
     }

@@ -1,17 +1,19 @@
-import { parse } from '@blargbot/core/utils/index.js';
-
 import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.everyoneMention;
 
+@Subtag.id('everyoneMention', 'everyone')
+@Subtag.factory(Subtag.converter())
 export class EveryoneMentionSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #converter: BBTagValueConverter;
+
+    public constructor(converter: BBTagValueConverter) {
         super({
-            name: 'everyoneMention',
-            aliases: ['everyone'],
             category: SubtagType.MESSAGE,
             definition: [
                 {
@@ -24,13 +26,15 @@ export class EveryoneMentionSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#converter = converter;
     }
 
     public everyoneMention(
         context: BBTagContext,
         mention: string
     ): string {
-        const enabled = parse.boolean(mention, true);
+        const enabled = this.#converter.boolean(mention, true);
         context.data.allowedMentions.everybody = enabled;
 
         return '@everyone';

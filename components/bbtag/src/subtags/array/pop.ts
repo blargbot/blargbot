@@ -1,15 +1,20 @@
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { NotAnArrayError } from '../../errors/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
-import { bbtag, SubtagType } from '../../utils/index.js';
+import type { BBTagArrayTools } from '../../utils/index.js';
+import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.pop;
 
+@Subtag.id('pop')
+@Subtag.factory(Subtag.arrayTools())
 export class PopSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #arrayTools: BBTagArrayTools;
+
+    public constructor(arrayTools: BBTagArrayTools) {
         super({
-            name: 'pop',
             category: SubtagType.ARRAY,
             definition: [
                 {
@@ -22,10 +27,12 @@ export class PopSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#arrayTools = arrayTools;
     }
 
     public async pop(context: BBTagContext, arrayStr: string): Promise<JToken | undefined> {
-        const { n: varName, v: array } = await bbtag.tagArray.deserializeOrGetArray(context, arrayStr) ?? {};
+        const { n: varName, v: array } = await this.#arrayTools.deserializeOrGetArray(context, arrayStr) ?? {};
         if (array === undefined)
             throw new NotAnArrayError(arrayStr);
 

@@ -1,9 +1,10 @@
+import { Subtag } from '@blargbot/bbtag';
 import { TagAuthorizerSubtag } from '@blargbot/bbtag/subtags/simple/tagAuthorizer.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new TagAuthorizerSubtag(),
+    subtag: Subtag.getDescriptor(TagAuthorizerSubtag),
     argCountBounds: { min: 0, max: 0 },
     cases: [
         {

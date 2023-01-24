@@ -1,10 +1,11 @@
+import { Subtag } from '@blargbot/bbtag';
 import { NotANumberError } from '@blargbot/bbtag/errors/index.js';
 import { SubstringSubtag } from '@blargbot/bbtag/subtags/misc/substring.js';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new SubstringSubtag(),
+    subtag: Subtag.getDescriptor(SubstringSubtag),
     argCountBounds: { min: 2, max: 3 },
     cases: [
         { code: '{substring;This is some text;5}', expected: 'is some text' },

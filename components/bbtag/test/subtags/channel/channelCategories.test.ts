@@ -1,10 +1,11 @@
+import { Subtag } from '@blargbot/bbtag';
 import { ChannelCategoriesSubtag } from '@blargbot/bbtag/subtags/channel/channelCategories.js';
 import Discord from 'discord-api-types/v9';
 
 import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new ChannelCategoriesSubtag(),
+    subtag: Subtag.getDescriptor(ChannelCategoriesSubtag),
     argCountBounds: { min: 0, max: 0 },
     cases: [
         {

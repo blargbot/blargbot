@@ -1,3 +1,4 @@
+import { Subtag } from '@blargbot/bbtag';
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
 import { UserBoostDateSubtag } from '@blargbot/bbtag/subtags/user/userBoostDate.js';
 
@@ -5,7 +6,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetUserPropTestCases } from './_getUserPropTest.js';
 
 runSubtagTests({
-    subtag: new UserBoostDateSubtag(),
+    subtag: Subtag.getDescriptor(UserBoostDateSubtag),
     argCountBounds: { min: 0, max: 3 },
     cases: [
         {

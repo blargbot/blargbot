@@ -1,3 +1,4 @@
+import { Subtag } from '@blargbot/bbtag';
 import { JsonSubtag } from '@blargbot/bbtag/subtags/json/json.js';
 import { JsonCleanSubtag } from '@blargbot/bbtag/subtags/json/jsonClean.js';
 import { TagVariableType } from '@blargbot/domain/models/index.js';
@@ -5,28 +6,28 @@ import { TagVariableType } from '@blargbot/domain/models/index.js';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new JsonCleanSubtag(),
+    subtag: Subtag.getDescriptor(JsonCleanSubtag),
     argCountBounds: { min: 1, max: 1 },
     cases: [
         {
             code: '{jsonclean;{j;{"test":"[]"}}}',
             expected: '{"test":[]}',
-            subtags: [new JsonSubtag()]
+            subtags: [Subtag.getDescriptor(JsonSubtag)]
         },
         {
             code: '{jsonclean;{j;{"test":"[\\"{}\\"]"}}}',
             expected: '{"test":[{}]}',
-            subtags: [new JsonSubtag()]
+            subtags: [Subtag.getDescriptor(JsonSubtag)]
         },
         {
             code: '{jsonclean;{j;["test","[\\"{}\\"]"]}}',
             expected: '["test",[{}]]',
-            subtags: [new JsonSubtag()]
+            subtags: [Subtag.getDescriptor(JsonSubtag)]
         },
         {
             code: '{jsonclean;{j;{"n":"arr1","v":["abc","{\\"x\\":\\"5\\"}"]}}}',
             expected: '["abc",{"x":"5"}]',
-            subtags: [new JsonSubtag()]
+            subtags: [Subtag.getDescriptor(JsonSubtag)]
         },
         {
             code: '{jsonclean;arr1}',

@@ -1,10 +1,11 @@
+import { Subtag } from '@blargbot/bbtag';
 import { UserNameSubtag } from '@blargbot/bbtag/subtags/user/userName.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetUserPropTestCases } from './_getUserPropTest.js';
 
 runSubtagTests({
-    subtag: new UserNameSubtag(),
+    subtag: Subtag.getDescriptor(UserNameSubtag),
     argCountBounds: { min: 0, max: 2 },
     cases: [
         ...createGetUserPropTestCases({

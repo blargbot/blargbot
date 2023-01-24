@@ -1,3 +1,4 @@
+import { Subtag } from '@blargbot/bbtag';
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
 import { OutputSubtag } from '@blargbot/bbtag/subtags/message/output.js';
 import { Emote } from '@blargbot/discord-emote';
@@ -10,7 +11,7 @@ import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';
 const emotes = [Emote.parse('<a:test:120272372032032937>'), Emote.parse('<:alsoatest:23094632472398746234>'), Emote.parse('🤔')];
 
 runSubtagTests({
-    subtag: new OutputSubtag(),
+    subtag: Subtag.getDescriptor(OutputSubtag),
     argCountBounds: { min: 0, max: 1 },
     cases: [
         {

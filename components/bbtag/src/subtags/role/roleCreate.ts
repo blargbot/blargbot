@@ -1,18 +1,22 @@
-import { parse } from '@blargbot/core/utils/index.js';
 import * as Eris from 'eris';
 
 import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.roleCreate;
 
+@Subtag.id('roleCreate')
+@Subtag.factory(Subtag.converter())
 export class RoleCreateSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #converter: BBTagValueConverter;
+
+    public constructor(converter: BBTagValueConverter) {
         super({
-            name: 'roleCreate',
             category: SubtagType.ROLE,
             definition: [
                 {
@@ -25,6 +29,8 @@ export class RoleCreateSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#converter = converter;
     }
 
     public async createRole(
@@ -39,16 +45,16 @@ export class RoleCreateSubtag extends CompiledSubtag {
         if (topRole <= 0)
             throw new BBTagRuntimeError('Author cannot create roles');
 
-        const rolePerms = parse.bigInt(permStr);
+        const rolePerms = this.#converter.bigInt(permStr);
         if (rolePerms === undefined)
             throw new BBTagRuntimeError('Permission not a number', `${JSON.stringify(permStr)} is not a number`);
 
         const options: Eris.RoleOptions = {
             name,
-            color: parse.color(colorStr),
+            color: this.#converter.color(colorStr),
             permissions: rolePerms,
-            mentionable: parse.boolean(mentionableStr, false),
-            hoist: parse.boolean(hoistedStr, false)
+            mentionable: this.#converter.boolean(mentionableStr, false),
+            hoist: this.#converter.boolean(hoistedStr, false)
         };
 
         if (!context.hasPermission(rolePerms))

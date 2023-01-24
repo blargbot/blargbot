@@ -4,17 +4,18 @@ import moment from 'moment-timezone';
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { ChannelNotFoundError, MessageNotFoundError } from '../../errors/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.messageTime;
 
+@Subtag.id('messageTime', 'timestamp')
+@Subtag.factory()
 export class MessageTimeSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: 'messageTime',
             category: SubtagType.MESSAGE,
-            aliases: ['timestamp'],
             definition: [
                 {
                     parameters: [],

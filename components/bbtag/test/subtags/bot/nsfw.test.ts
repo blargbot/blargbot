@@ -1,10 +1,11 @@
+import { Subtag } from '@blargbot/bbtag';
 import { NsfwSubtag } from '@blargbot/bbtag/subtags/bot/nsfw.js';
 import chai from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new NsfwSubtag(),
+    subtag: Subtag.getDescriptor(NsfwSubtag),
     argCountBounds: { min: 0, max: 1 },
     cases: [
         {

@@ -1,12 +1,11 @@
+import type { SubtagCall } from '@blargbot/bbtag/language/index.js';
+import templates from '@blargbot/bbtag/text.js';
+import type { ExecutionResult } from '@blargbot/bbtag/types.js';
+import { stringify } from '@blargbot/bbtag/utils/stringify.js';
 import type { IFormattable } from '@blargbot/formatting';
 import type * as Eris from 'eris';
 
-import type { SubtagCall } from '../language/index.js';
-import templates from '../text.js';
-import type { ExecutionResult } from '../types.js';
-import { stringify } from './stringify.js';
-
-export function createDebugOutput(result: ExecutionResult): { content: IFormattable<string>; file: Eris.FileContent[]; } {
+export function bbtagDebugOutput(result: ExecutionResult): { content: IFormattable<string>; file: Eris.FileContent[]; } {
     const performance: Record<string, unknown> = {};
     for (const [key, times] of Object.entries(result.duration.subtag)) {
         if (times !== undefined && times.length > 0) {

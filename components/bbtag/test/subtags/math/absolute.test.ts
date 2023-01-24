@@ -1,10 +1,11 @@
+import { Subtag } from '@blargbot/bbtag';
 import { NotANumberError } from '@blargbot/bbtag/errors/index.js';
 import { AbsoluteSubtag } from '@blargbot/bbtag/subtags/math/absolute.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new AbsoluteSubtag(),
+    subtag: Subtag.getDescriptor(AbsoluteSubtag),
     argCountBounds: { min: 1, max: Infinity },
     cases: [
         { code: '{abs;12345}', expected: '12345' },

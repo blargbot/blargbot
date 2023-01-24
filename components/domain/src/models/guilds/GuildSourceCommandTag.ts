@@ -1,4 +1,5 @@
-import type { FlagDefinition } from '../flags/index.js';
+import type { FlagDefinition } from '@blargbot/flags';
+
 import type { GuildCommandTagBase } from './GuildCommandTagBase.js';
 
 export interface GuildSourceCommandTag extends GuildCommandTagBase {

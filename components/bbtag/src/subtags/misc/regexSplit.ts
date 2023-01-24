@@ -1,13 +1,15 @@
 import { RegexSubtag } from '../../RegexSubtag.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.regexSplit;
 
+@Subtag.id('regexSplit')
+@Subtag.factory()
 export class RegexSplitSubtag extends RegexSubtag {
     public constructor() {
         super({
-            name: 'regexSplit',
             category: SubtagType.MISC,
             definition: [
                 {

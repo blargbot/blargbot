@@ -1,17 +1,21 @@
-import { parse } from '@blargbot/core/utils/index.js';
-
 import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagUtilities, BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, UserNotFoundError } from '../../errors/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.timeout;
 
+@Subtag.id('timeout')
+@Subtag.factory(Subtag.util(), Subtag.converter())
 export class TimeoutSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #util: BBTagUtilities;
+    readonly #converter: BBTagValueConverter;
+
+    public constructor(util: BBTagUtilities, converter: BBTagValueConverter) {
         super({
-            name: 'timeout',
             category: SubtagType.USER,
             description: tag.description,
             definition: [
@@ -33,6 +37,8 @@ export class TimeoutSubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#util = util;
+        this.#converter = converter;
     }
 
     public async timeoutMember(
@@ -42,7 +48,7 @@ export class TimeoutSubtag extends CompiledSubtag {
         reason: string,
         noPerms: boolean
     ): Promise<string> {
-        const delay = parse.duration(duration);
+        const delay = this.#converter.duration(duration);
         if (delay === undefined)
             throw new BBTagRuntimeError('Invalid duration');
 
@@ -55,8 +61,8 @@ export class TimeoutSubtag extends CompiledSubtag {
 
         const authorizer = noPerms ? context.authorizer?.user ?? context.user : context.user;
         const response = delay.asMilliseconds() !== 0
-            ? await context.util.timeout(member, context.user, authorizer, delay, reason)
-            : await context.util.clearTimeout(member, context.user, authorizer, reason);
+            ? await this.#util.timeout(member, context.user, authorizer, delay, reason)
+            : await this.#util.clearTimeout(member, context.user, authorizer, reason);
 
         switch (response) {
             case 'success':

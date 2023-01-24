@@ -1,3 +1,4 @@
+import { Subtag } from '@blargbot/bbtag';
 import { BBTagRuntimeError, UserNotFoundError } from '@blargbot/bbtag/errors/index.js';
 import { KickSubtag } from '@blargbot/bbtag/subtags/user/kick.js';
 import * as Eris from 'eris';
@@ -5,7 +6,7 @@ import * as Eris from 'eris';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new KickSubtag(),
+    subtag: Subtag.getDescriptor(KickSubtag),
     argCountBounds: { min: 1, max: 3 },
     cases: [
         {

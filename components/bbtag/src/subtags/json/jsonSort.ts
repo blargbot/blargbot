@@ -1,19 +1,24 @@
-import { compare, parse } from '@blargbot/core/utils/index.js';
-
 import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, NotAnArrayError } from '../../errors/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
-import { bbtag, SubtagType } from '../../utils/index.js';
+import type { BBTagJsonTools, BBTagOperators } from '../../utils/index.js';
+import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.jsonSort;
 
+@Subtag.id('jsonSort', 'jSort')
+@Subtag.factory(Subtag.operators(), Subtag.jsonTools(), Subtag.converter())
 export class JsonSortSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #operators: BBTagOperators;
+    readonly #jsonTools: BBTagJsonTools;
+    readonly #converter: BBTagValueConverter;
+
+    public constructor(operators: BBTagOperators, jsonTools: BBTagJsonTools, converter: BBTagValueConverter) {
         super({
-            name: 'jsonSort',
             category: SubtagType.JSON,
-            aliases: ['jSort'],
             definition: [
                 {
                     parameters: ['array', 'path', 'descending?'],
@@ -25,24 +30,28 @@ export class JsonSortSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#operators = operators;
+        this.#jsonTools = jsonTools;
+        this.#converter = converter;
     }
 
     public async jsonSort(context: BBTagContext, arrStr: string, pathStr: string, descStr: string): Promise<JArray | undefined> {
-        const descending = parse.boolean(descStr) ?? descStr !== '';
-        const obj = await bbtag.json.resolveObj(context, arrStr);
+        const descending = this.#converter.boolean(descStr) ?? descStr !== '';
+        const obj = await this.#jsonTools.resolveObj(context, arrStr);
         if (!Array.isArray(obj.object))
             throw new NotAnArrayError(arrStr);
 
-        const path = bbtag.json.getPathKeys(pathStr);
-        const orderMult = descending ? -1 : 1;
+        const path = this.#jsonTools.getPathKeys(pathStr);
+        const sorter = this.#operators.comparison[descending ? '<' : '>'];
 
-        obj.object = obj.object.map(v => ({ value: v, sortKey: bbtag.json.get(v, path) }))
+        obj.object = obj.object.map(v => ({ value: v, sortKey: this.#jsonTools.get(v, path) }))
             .map((v, i, a) => {
                 if (v.sortKey === undefined)
                     throw new BBTagRuntimeError(`Cannot read property ${pathStr} at index ${i}, ${a.filter(x => x.sortKey === undefined).length} total failures`);
-                return { value: v.value, sortKey: parse.string(v.sortKey) };
+                return { value: v.value, sortKey: this.#converter.string(v.sortKey) };
             })
-            .sort((a, b) => orderMult * compare(a.sortKey, b.sortKey))
+            .sort((a, b) => sorter(a.sortKey, b.sortKey) ? 1 : -1)
             .map(x => x.value);
 
         if (obj.variable === undefined)

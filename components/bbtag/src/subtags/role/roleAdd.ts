@@ -1,19 +1,25 @@
 import { hasValue } from '@blargbot/guards';
+import type { Logger } from '@blargbot/logger';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, RoleNotFoundError, UserNotFoundError } from '../../errors/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
-import { bbtag, SubtagType } from '../../utils/index.js';
+import type { BBTagArrayTools } from '../../utils/index.js';
+import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.roleAdd;
 
+@Subtag.id('roleAdd', 'addRole')
+@Subtag.factory(Subtag.arrayTools(), Subtag.logger())
 export class RoleAddSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #arrayTools: BBTagArrayTools;
+    readonly #logger: Logger;
+
+    public constructor(arrayTools: BBTagArrayTools, logger: Logger) {
         super({
-            name: 'roleAdd',
             category: SubtagType.ROLE,
-            aliases: ['addRole'],
             description: tag.description,
             definition: [
                 {
@@ -34,6 +40,9 @@ export class RoleAddSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#arrayTools = arrayTools;
+        this.#logger = logger;
     }
 
     public async addRole(
@@ -54,7 +63,7 @@ export class RoleAddSubtag extends CompiledSubtag {
                 .withDisplay(quiet ? 'false' : undefined);
         }
 
-        const roleStrs = bbtag.tagArray.deserialize(roleStr)?.v.map(v => v?.toString() ?? '~') ?? [roleStr];
+        const roleStrs = this.#arrayTools.deserialize(roleStr)?.v.map(v => v?.toString() ?? '~') ?? [roleStr];
         const roles = roleStrs.map(role => context.guild.roles.get(role)).filter(hasValue);
 
         if (roles.length === 0)
@@ -72,7 +81,7 @@ export class RoleAddSubtag extends CompiledSubtag {
             member.roles = newRoleList;
             return true;
         } catch (err: unknown) {
-            context.logger.error(err);
+            this.#logger.error(err);
             return false;
         }
     }

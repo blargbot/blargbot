@@ -1,10 +1,11 @@
+import { Subtag } from '@blargbot/bbtag';
 import { EscapeBBTagSubtag } from '@blargbot/bbtag/subtags/misc/escapeBBTag.js';
 import { HtmlDecodeSubtag } from '@blargbot/bbtag/subtags/misc/htmlDecode.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new HtmlDecodeSubtag(),
+    subtag: Subtag.getDescriptor(HtmlDecodeSubtag),
     argCountBounds: { min: 1, max: Infinity },
     cases: [
         {
@@ -14,7 +15,7 @@ runSubtagTests({
         {
             code: '{htmldecode;{escapebbtag;&lt;p&gt;Hello &amp; welcome! Im your host&semi;&nbsp; Blargbot!&lt;/p&gt;}}',
             expected: '<p>Hello & welcome! Im your host;\u00a0 Blargbot!</p>',
-            subtags: [new EscapeBBTagSubtag()]
+            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)]
         }
     ]
 });

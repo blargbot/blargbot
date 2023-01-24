@@ -2,16 +2,18 @@ import Brainfuck from 'brainfuck-node';
 
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.brainfuck;
 
+@Subtag.id('brainfuck')
+@Subtag.factory()
 export class BrainfuckSubtag extends CompiledSubtag {
     readonly #bfClient: Brainfuck;
     public constructor() {
         super({
-            name: 'brainfuck',
             category: SubtagType.MISC,
             definition: [
                 {

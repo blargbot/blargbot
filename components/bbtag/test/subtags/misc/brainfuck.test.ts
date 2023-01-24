@@ -1,10 +1,11 @@
+import { Subtag } from '@blargbot/bbtag';
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
 import { BrainfuckSubtag } from '@blargbot/bbtag/subtags/misc/brainfuck.js';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new BrainfuckSubtag(),
+    subtag: Subtag.getDescriptor(BrainfuckSubtag),
     argCountBounds: { min: 1, max: 2 },
     cases: [
         {

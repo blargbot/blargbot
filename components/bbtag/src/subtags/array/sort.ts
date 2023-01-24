@@ -1,17 +1,23 @@
-import { compare, parse } from '@blargbot/core/utils/index.js';
-
 import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { NotAnArrayError } from '../../errors/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
-import { bbtag, SubtagType } from '../../utils/index.js';
+import type { BBTagArrayTools, BBTagOperators } from '../../utils/index.js';
+import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.sort;
 
+@Subtag.id('sort')
+@Subtag.factory(Subtag.operators(), Subtag.arrayTools(), Subtag.converter())
 export class SortSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #operators: BBTagOperators;
+    readonly #arrayTools: BBTagArrayTools;
+    readonly #converter: BBTagValueConverter;
+
+    public constructor(operators: BBTagOperators, arrayTools: BBTagArrayTools, converter: BBTagValueConverter) {
         super({
-            name: 'sort',
             category: SubtagType.ARRAY,
             definition: [
                 {
@@ -24,15 +30,20 @@ export class SortSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#operators = operators;
+        this.#arrayTools = arrayTools;
+        this.#converter = converter;
     }
 
     public async sort(context: BBTagContext, arrayStr: string, descendingStr: string): Promise<JArray | undefined> {
-        const arr = await bbtag.tagArray.deserializeOrGetArray(context, arrayStr);
+        const arr = await this.#arrayTools.deserializeOrGetArray(context, arrayStr);
         if (arr === undefined)
             throw new NotAnArrayError(arrayStr);
 
-        const direction = parse.boolean(descendingStr, descendingStr !== '') ? -1 : 1;
-        arr.v = arr.v.sort((a, b) => direction * compare(parse.string(a), parse.string(b)));
+        const descending = this.#converter.boolean(descendingStr, descendingStr !== '');
+        const sorter = this.#operators.comparison[descending ? '<' : '>'];
+        arr.v = arr.v.sort((a, b) => sorter(this.#converter.string(a), this.#converter.string(b)) ? 1 : -1);
 
         if (arr.n === undefined)
             return arr.v;

@@ -2,19 +2,23 @@ import { snowflake } from '@blargbot/core/utils/index.js';
 import { Emote } from '@blargbot/discord-emote';
 
 import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagUtilities } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '../../errors/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.reactionAdd;
 
+@Subtag.id('reactionAdd', 'reactAdd', 'addReact')
+@Subtag.factory(Subtag.util())
 export class ReactionAddSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #util: BBTagUtilities;
+
+    public constructor(util: BBTagUtilities) {
         super({
-            name: 'reactionAdd',
             category: SubtagType.MESSAGE,
-            aliases: ['reactAdd', 'addReact'],
             description: tag.description,
             definition: [//! Overwritten
                 {
@@ -42,6 +46,8 @@ export class ReactionAddSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#util = util;
     }
 
     public async addReactions(
@@ -67,7 +73,7 @@ export class ReactionAddSubtag extends CompiledSubtag {
 
         if (message !== undefined) {
             // Perform add of each reaction
-            const errors = await context.util.addReactions(message, reactions);
+            const errors = await this.#util.addReactions(message, reactions);
             if (errors.failed.length > 0)
                 throw new BBTagRuntimeError(`I cannot add '${errors.failed.toString()}' as reactions`);
 

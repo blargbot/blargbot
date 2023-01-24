@@ -1,3 +1,4 @@
+import { Subtag } from '@blargbot/bbtag';
 import { UserActivitySubtag } from '@blargbot/bbtag/subtags/user/userActivity.js';
 import Discord from 'discord-api-types/v9';
 import moment from 'moment-timezone';
@@ -6,7 +7,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetUserPropTestCases } from './_getUserPropTest.js';
 
 runSubtagTests({
-    subtag: new UserActivitySubtag(),
+    subtag: Subtag.getDescriptor(UserActivitySubtag),
     argCountBounds: { min: 0, max: 2 },
     cases: [
         ...createGetUserPropTestCases({

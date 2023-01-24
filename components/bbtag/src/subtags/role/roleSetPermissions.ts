@@ -1,20 +1,23 @@
-import { parse } from '@blargbot/core/utils/index.js';
 import * as Eris from 'eris';
 
 import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.roleSetPermissions;
 
+@Subtag.id('roleSetPermissions', 'roleSetPerms')
+@Subtag.factory(Subtag.converter())
 export class RoleSetPermissionsSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #converter: BBTagValueConverter;
+
+    public constructor(converter: BBTagValueConverter) {
         super({
-            name: 'roleSetPermissions',
             category: SubtagType.ROLE,
-            aliases: ['roleSetPerms'],
             definition: [
                 {
                     parameters: ['role'],
@@ -34,6 +37,8 @@ export class RoleSetPermissionsSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#converter = converter;
     }
 
     public async roleSetPerms(
@@ -48,7 +53,7 @@ export class RoleSetPermissionsSubtag extends CompiledSubtag {
 
         const quiet = typeof context.scopes.local.quiet === 'boolean' ? context.scopes.local.quiet : quietStr !== '';
         const role = await context.queryRole(roleStr, { noLookup: quiet, noErrors: context.scopes.local.noLookupErrors });
-        const perms = parse.bigInt(permsStr) ?? 0n;
+        const perms = this.#converter.bigInt(permsStr) ?? 0n;
 
         const mappedPerms = perms & context.permission.allow;
 

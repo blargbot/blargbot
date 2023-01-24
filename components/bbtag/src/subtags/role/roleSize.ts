@@ -1,17 +1,21 @@
 import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagUtilities } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { RoleNotFoundError } from '../../errors/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
-import { /*parse,*/ SubtagType } from '../../utils/index.js';
+import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.roleSize;
 
+@Subtag.id('roleSize', 'inRole')
+@Subtag.factory(Subtag.util())
 export class RoleSizeSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #util: BBTagUtilities;
+
+    public constructor(util: BBTagUtilities) {
         super({
-            name: 'roleSize',
             category: SubtagType.ROLE,
-            aliases: ['inRole'],
             definition: [
                 {
                     parameters: ['role'/*, 'quiet?:false'*/], //TODO uncomment quiet parameter for new code
@@ -23,6 +27,7 @@ export class RoleSizeSubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#util = util;
     }
 
     public async getRoleSize(context: BBTagContext, roleStr: string/*, quiet: boolean*/): Promise<number> {
@@ -34,7 +39,7 @@ export class RoleSizeSubtag extends CompiledSubtag {
         if (role === undefined)
             throw new RoleNotFoundError(roleStr);
 
-        await context.util.ensureMemberCache(context.guild);
+        await this.#util.ensureMemberCache(context.guild);
         return context.guild.members.filter(m => m.roles.includes(role.id)).length;
     }
 }

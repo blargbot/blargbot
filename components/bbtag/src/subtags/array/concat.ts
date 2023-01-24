@@ -1,13 +1,18 @@
 import { CompiledSubtag } from '../../compilation/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
-import { bbtag, SubtagType } from '../../utils/index.js';
+import type { BBTagArrayTools } from '../../utils/index.js';
+import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.concat;
 
+@Subtag.id('concat')
+@Subtag.factory(Subtag.arrayTools())
 export class ConcatSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #arrayTools: BBTagArrayTools;
+
+    public constructor(arrayTools: BBTagArrayTools) {
         super({
-            name: 'concat',
             category: SubtagType.ARRAY,
             definition: [
                 {
@@ -20,9 +25,11 @@ export class ConcatSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#arrayTools = arrayTools;
     }
 
     public concatArrays(values: string[]): JArray {
-        return bbtag.tagArray.flattenArray(values);
+        return this.#arrayTools.flattenArray(values);
     }
 }

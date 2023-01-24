@@ -1,3 +1,4 @@
+import { Subtag } from '@blargbot/bbtag';
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
 import { MapSubtag } from '@blargbot/bbtag/subtags/array/map.js';
 import { GetSubtag } from '@blargbot/bbtag/subtags/bot/get.js';
@@ -10,7 +11,7 @@ import chai from 'chai';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new MapSubtag(),
+    subtag: Subtag.getDescriptor(MapSubtag),
     argCountBounds: { min: { count: 3, noEval: [2] }, max: { count: 3, noEval: [2] } },
     cases: [
         {
@@ -20,7 +21,7 @@ runSubtagTests({
         {
             code: '{map;a;arr1;<{get;a}>}',
             expected: '["<this>","<is>","<arr1>"]',
-            subtags: [new GetSubtag()],
+            subtags: [Subtag.getDescriptor(GetSubtag)],
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, ['this', 'is', 'arr1']);
@@ -37,7 +38,7 @@ runSubtagTests({
         {
             code: '{map;a;{get;arr1};<{get;a}>}',
             expected: '["<this>","<is>","<arr1>"]',
-            subtags: [new GetSubtag()],
+            subtags: [Subtag.getDescriptor(GetSubtag)],
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, ['this', 'is', 'arr1']);
@@ -54,7 +55,7 @@ runSubtagTests({
         {
             code: '{map;a;var1;<{get;a}>}',
             expected: '["<t>","<h>","<i>","<s>","< >","<i>","<s>","< >","<v>","<a>","<r>","<1>"]',
-            subtags: [new GetSubtag()],
+            subtags: [Subtag.getDescriptor(GetSubtag)],
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'var1' }, 'this is var1');
@@ -71,7 +72,7 @@ runSubtagTests({
         {
             code: '{map;a;var1;<{get;a}>{if;{get;a};==;s;{return}}}',
             expected: '["<t>","<h>","<i>","<s>"]',
-            subtags: [new GetSubtag(), new IfSubtag(), new ReturnSubtag()],
+            subtags: [Subtag.getDescriptor(GetSubtag), Subtag.getDescriptor(IfSubtag), Subtag.getDescriptor(ReturnSubtag)],
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'var1' }, 'this is var1');
@@ -92,7 +93,7 @@ runSubtagTests({
             errors: [
                 { start: 0, end: 28, error: new BBTagRuntimeError('Too many loops') }
             ],
-            subtags: [new GetSubtag()],
+            subtags: [Subtag.getDescriptor(GetSubtag)],
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, ['this', 'is', 'arr1']);

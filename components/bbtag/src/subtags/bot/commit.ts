@@ -1,16 +1,21 @@
-import { parse } from '@blargbot/core/utils/index.js';
-
 import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
-import { bbtag, SubtagType } from '../../utils/index.js';
+import type { BBTagArrayTools } from '../../utils/index.js';
+import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.commit;
 
+@Subtag.id('commit')
+@Subtag.factory(Subtag.arrayTools(), Subtag.converter())
 export class CommitSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #arrayTools: BBTagArrayTools;
+    readonly #converter: BBTagValueConverter;
+
+    public constructor(arrayTools: BBTagArrayTools, converter: BBTagValueConverter) {
         super({
-            name: 'commit',
             category: SubtagType.BOT,
             description: tag.description,
             definition: [
@@ -32,6 +37,9 @@ export class CommitSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#arrayTools = arrayTools;
+        this.#converter = converter;
     }
 
     public async commit(
@@ -40,7 +48,7 @@ export class CommitSubtag extends CompiledSubtag {
     ): Promise<void> {
         const values = args.length === 0
             ? undefined
-            : bbtag.tagArray.flattenArray(args).map(value => parse.string(value));
+            : this.#arrayTools.flattenArray(args).map(value => this.#converter.string(value));
         await context.variables.persist(values);
     }
 }

@@ -1,6 +1,5 @@
 export * from './discordTags/index.js';
 export * from './events/index.js';
-export * from './flags/index.js';
 export * from './guilds/index.js';
 export * from './StoredTag.js';
 export * from './tagVariables/index.js';

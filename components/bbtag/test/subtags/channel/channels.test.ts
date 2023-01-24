@@ -1,3 +1,4 @@
+import { Subtag } from '@blargbot/bbtag';
 import { ChannelsSubtag } from '@blargbot/bbtag/subtags/channel/channels.js';
 import Discord from 'discord-api-types/v9';
 
@@ -5,7 +6,7 @@ import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';
 import { createGetChannelPropTestCases } from './_getChannelPropTest.js';
 
 runSubtagTests({
-    subtag: new ChannelsSubtag(),
+    subtag: Subtag.getDescriptor(ChannelsSubtag),
     argCountBounds: { min: 0, max: 2 },
     cases: [
         ...createGetChannelPropTestCases({

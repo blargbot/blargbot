@@ -1,17 +1,20 @@
-import { parse } from '@blargbot/core/utils/index.js';
-
 import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { BBTagRuntimeState } from '../../types.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.return;
 
+@Subtag.id('return')
+@Subtag.factory(Subtag.converter())
 export class ReturnSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #converter: BBTagValueConverter;
+
+    public constructor(converter: BBTagValueConverter) {
         super({
-            name: 'return',
             category: SubtagType.BOT,
             definition: [
                 {
@@ -24,10 +27,12 @@ export class ReturnSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#converter = converter;
     }
 
     public setReturn(context: BBTagContext, forcedStr: string): void {
-        const forced = parse.boolean(forcedStr, true);
+        const forced = this.#converter.boolean(forcedStr, true);
         context.data.state = forced ? BBTagRuntimeState.ABORT : BBTagRuntimeState.RETURN;
     }
 }

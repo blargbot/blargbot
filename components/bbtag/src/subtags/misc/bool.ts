@@ -1,21 +1,26 @@
-import { parse } from '@blargbot/core/utils/index.js';
-
+import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { InvalidOperatorError } from '../../errors/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
-import { bbtag, SubtagType } from '../../utils/index.js';
+import type { BBTagOperators } from '../../utils/index.js';
+import { comparisonOperators, SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.bool;
 
+@Subtag.id('bool')
+@Subtag.factory(Subtag.operators(), Subtag.converter())
 export class BoolSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #operators: BBTagOperators;
+    readonly #converter: BBTagValueConverter;
+
+    public constructor(operators: BBTagOperators, converter: BBTagValueConverter) {
         super({
-            name: 'bool',
             category: SubtagType.MISC,
             definition: [
                 {
                     parameters: ['arg1', 'evaluator', 'arg2'],
-                    description: tag.default.description({ operators: Object.keys(bbtag.comparisonOperators) }),
+                    description: tag.default.description({ operators: comparisonOperators.keys }),
                     exampleCode: tag.default.exampleCode,
                     exampleOut: tag.default.exampleOut,
                     returns: 'boolean',
@@ -23,6 +28,9 @@ export class BoolSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#operators = operators;
+        this.#converter = converter;
     }
 
     public runCondition(
@@ -31,22 +39,22 @@ export class BoolSubtag extends CompiledSubtag {
         right: string
     ): boolean {
         let operator;
-        if (bbtag.isComparisonOperator(evaluator)) {
+        if (comparisonOperators.test(evaluator)) {
             operator = evaluator;
-        } else if (bbtag.isComparisonOperator(left)) {
+        } else if (comparisonOperators.test(left)) {
             [left, operator] = [evaluator, left];
-        } else if (bbtag.isComparisonOperator(right)) {
+        } else if (comparisonOperators.test(right)) {
             [operator, right] = [right, evaluator];
         } else
             throw new InvalidOperatorError(evaluator);
 
-        const leftBool = parse.boolean(left, undefined, false);
+        const leftBool = this.#converter.boolean(left, undefined, false);
         if (leftBool !== undefined)
             left = leftBool.toString();
-        const rightBool = parse.boolean(right, undefined, false);
+        const rightBool = this.#converter.boolean(right, undefined, false);
         if (rightBool !== undefined)
             right = rightBool.toString();
 
-        return bbtag.operate(operator, left, right);
+        return this.#operators.comparison[operator](left, right);
     }
 }

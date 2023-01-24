@@ -1,14 +1,15 @@
 import { CompiledSubtag } from '../../compilation/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.base64Decode;
 
+@Subtag.id('base64Decode', 'aToB')
+@Subtag.factory()
 export class Base64DecodeSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: 'base64Decode',
-            aliases: ['aToB'],
             category: SubtagType.MISC,
             definition: [
                 {

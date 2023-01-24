@@ -1,3 +1,4 @@
+import { Subtag } from '@blargbot/bbtag';
 import { BBTagRuntimeError, NotAnArrayError, RoleNotFoundError } from '@blargbot/bbtag/errors/index.js';
 import { UserSetRolesSubtag } from '@blargbot/bbtag/subtags/user/userSetRoles.js';
 import { argument } from '@blargbot/test-util/mock.js';
@@ -7,7 +8,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetUserPropTestCases } from './_getUserPropTest.js';
 
 runSubtagTests({
-    subtag: new UserSetRolesSubtag(),
+    subtag: Subtag.getDescriptor(UserSetRolesSubtag),
     argCountBounds: { min: 0, max: 3 },
     setupEach(ctx) {
         ctx.roles.authorizer.permissions = Eris.Constants.Permissions.manageRoles.toString();

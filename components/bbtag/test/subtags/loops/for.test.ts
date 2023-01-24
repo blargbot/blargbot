@@ -1,3 +1,4 @@
+import { Subtag } from '@blargbot/bbtag';
 import { AggregateBBTagError, BBTagRuntimeError, InvalidOperatorError, NotANumberError } from '@blargbot/bbtag/errors/index.js';
 import { GetSubtag } from '@blargbot/bbtag/subtags/bot/get.js';
 import { ReturnSubtag } from '@blargbot/bbtag/subtags/bot/return.js';
@@ -12,13 +13,13 @@ import chai from 'chai';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new ForSubtag(),
+    subtag: Subtag.getDescriptor(ForSubtag),
     argCountBounds: { min: { count: 5, noEval: [4] }, max: { count: 6, noEval: [5] } },
     cases: [
         {
             code: '{for;index;0;<;10;{get;index},}',
             expected: '0,1,2,3,4,5,6,7,8,9,',
-            subtags: [new GetSubtag()],
+            subtags: [Subtag.getDescriptor(GetSubtag)],
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, 'initial');
@@ -34,7 +35,7 @@ runSubtagTests({
         {
             code: '{for;index;0;<;10;2;{get;index},}',
             expected: '0,2,4,6,8,',
-            subtags: [new GetSubtag()],
+            subtags: [Subtag.getDescriptor(GetSubtag)],
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, 'initial');
@@ -50,7 +51,7 @@ runSubtagTests({
         {
             code: '{for;index;10;>;0;-1;{get;index},}',
             expected: '10,9,8,7,6,5,4,3,2,1,',
-            subtags: [new GetSubtag()],
+            subtags: [Subtag.getDescriptor(GetSubtag)],
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, 'initial');
@@ -66,7 +67,7 @@ runSubtagTests({
         {
             code: '{for;index;1;<;513;0;{get;index},{set;index;{*;{get;index};2}}}',
             expected: '1,2,4,8,16,32,64,128,256,512,',
-            subtags: [new GetSubtag(), new SetSubtag(), new OperatorSubtag()],
+            subtags: [Subtag.getDescriptor(GetSubtag), Subtag.getDescriptor(SetSubtag), Subtag.getDescriptor(OperatorSubtag)],
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, 'initial');
@@ -85,7 +86,7 @@ runSubtagTests({
             errors: [
                 { start: 0, end: 37, error: new NotANumberError('abc') }
             ],
-            subtags: [new SetSubtag()],
+            subtags: [Subtag.getDescriptor(SetSubtag)],
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, 'initial');
@@ -146,7 +147,7 @@ runSubtagTests({
             errors: [
                 { start: 0, end: 31, error: new BBTagRuntimeError('Too many loops') }
             ],
-            subtags: [new GetSubtag()],
+            subtags: [Subtag.getDescriptor(GetSubtag)],
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, 'initial');
@@ -167,7 +168,7 @@ runSubtagTests({
         {
             code: '{for;index;0;<;10;{get;index}{if;{get;index};==;5;{return}},}',
             expected: '0,1,2,3,4,5',
-            subtags: [new GetSubtag(), new IfSubtag(), new ReturnSubtag()],
+            subtags: [Subtag.getDescriptor(GetSubtag), Subtag.getDescriptor(IfSubtag), Subtag.getDescriptor(ReturnSubtag)],
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, 'initial');

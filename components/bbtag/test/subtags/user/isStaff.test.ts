@@ -1,3 +1,4 @@
+import { Subtag } from '@blargbot/bbtag';
 import { UserNotFoundError } from '@blargbot/bbtag/errors/index.js';
 import { IsStaffSubtag } from '@blargbot/bbtag/subtags/user/isStaff.js';
 import * as Eris from 'eris';
@@ -5,7 +6,7 @@ import * as Eris from 'eris';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new IsStaffSubtag(),
+    subtag: Subtag.getDescriptor(IsStaffSubtag),
     argCountBounds: { min: 0, max: 2 },
     cases: [
         {

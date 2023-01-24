@@ -1,17 +1,18 @@
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { ChannelNotFoundError, MessageNotFoundError } from '../../errors/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.messageAttachments;
 
+@Subtag.id('messageAttachments', 'attachments')
+@Subtag.factory()
 export class MessageAttachmentsSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: 'messageAttachments',
             category: SubtagType.MESSAGE,
-            aliases: ['attachments'],
             definition: [
                 {
                     parameters: [],

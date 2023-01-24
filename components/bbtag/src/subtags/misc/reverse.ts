@@ -1,14 +1,19 @@
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
-import { bbtag, SubtagType } from '../../utils/index.js';
+import type { BBTagArrayTools } from '../../utils/index.js';
+import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.reverse;
 
+@Subtag.id('reverse')
+@Subtag.factory(Subtag.arrayTools())
 export class ReverseSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #arrayTools: BBTagArrayTools;
+
+    public constructor(arrayTools: BBTagArrayTools) {
         super({
-            name: 'reverse',
             category: SubtagType.MISC,
             definition: [
                 {
@@ -21,16 +26,18 @@ export class ReverseSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#arrayTools = arrayTools;
     }
 
     public async reverse(context: BBTagContext, input: string): Promise<string> {
-        const arr = bbtag.tagArray.deserialize(input);
+        const arr = this.#arrayTools.deserialize(input);
         if (arr === undefined)
             return input.split('').reverse().join('');
 
         arr.v = arr.v.reverse();
         if (arr.n === undefined)
-            return bbtag.tagArray.serialize(arr.v);
+            return this.#arrayTools.serialize(arr.v);
 
         await context.variables.set(arr.n, arr.v);
         return '';

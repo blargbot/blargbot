@@ -1,17 +1,22 @@
+import type { Logger } from '@blargbot/logger';
+
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, UserNotFoundError } from '../../errors/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.userSetNickname;
 
+@Subtag.id('userSetNickname', 'setNickname', 'setNick', 'userSetNick')
+@Subtag.factory(Subtag.logger())
 export class UserSetNickSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #logger: Logger;
+
+    public constructor(logger: Logger) {
         super({
-            name: 'userSetNickname',
             category: SubtagType.USER,
-            aliases: ['setNickname', 'setNick', 'userSetNick'],
             definition: [
                 {
                     parameters: ['nick', 'user?'],
@@ -23,6 +28,8 @@ export class UserSetNickSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#logger = logger;
     }
 
     public async setUserNick(context: BBTagContext, nick: string, userStr: string): Promise<void> {
@@ -35,7 +42,7 @@ export class UserSetNickSubtag extends CompiledSubtag {
             await member.edit({ nick }, context.auditReason());
             member.nick = nick;
         } catch (err: unknown) {
-            context.logger.error(err);
+            this.#logger.error(err);
             if (err instanceof Error)
                 throw new BBTagRuntimeError('Could not change nickname');
             throw err;

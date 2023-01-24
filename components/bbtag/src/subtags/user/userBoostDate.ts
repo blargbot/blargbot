@@ -4,15 +4,17 @@ import moment from 'moment-timezone';
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, UserNotFoundError } from '../../errors/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.userBoostDate;
 
+@Subtag.id('userBoostDate')
+@Subtag.factory()
 export class UserBoostDateSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: 'userBoostDate',
             category: SubtagType.USER,
             description: tag.description,
             definition: [

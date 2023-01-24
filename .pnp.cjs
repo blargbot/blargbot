@@ -76,12 +76,20 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:components/env/src"\
       },\
       {\
+        "name": "@blargbot/flags",\
+        "reference": "workspace:components/flags/src"\
+      },\
+      {\
         "name": "@blargbot/formatting",\
         "reference": "workspace:components/formatting/src"\
       },\
       {\
         "name": "@blargbot/guards",\
         "reference": "workspace:components/guards/src"\
+      },\
+      {\
+        "name": "@blargbot/guards-tests",\
+        "reference": "workspace:components/guards/test"\
       },\
       {\
         "name": "@blargbot/image-types",\
@@ -201,8 +209,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@blargbot/discord-proxy", ["workspace:services/discord-proxy/src"]],\
       ["@blargbot/domain", ["workspace:components/domain/src"]],\
       ["@blargbot/env", ["workspace:components/env/src"]],\
+      ["@blargbot/flags", ["workspace:components/flags/src"]],\
       ["@blargbot/formatting", ["workspace:components/formatting/src"]],\
       ["@blargbot/guards", ["workspace:components/guards/src"]],\
+      ["@blargbot/guards-tests", ["workspace:components/guards/test"]],\
       ["@blargbot/image-generator", ["workspace:services/image-generator/src"]],\
       ["@blargbot/image-types", ["workspace:components/image-types/src"]],\
       ["@blargbot/logger", ["workspace:components/logger/src"]],\
@@ -360,11 +370,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["@blargbot/bbtag", "workspace:components/bbtag/src"],\
             ["@blargbot/application", "workspace:components/application/src"],\
+            ["@blargbot/async-tools", "workspace:components/async-tools/src"],\
             ["@blargbot/config", "workspace:components/config/src"],\
             ["@blargbot/core", "workspace:components/core/src"],\
             ["@blargbot/database", "workspace:components/database/src"],\
             ["@blargbot/discord-emote", "workspace:components/discord-emote/src"],\
             ["@blargbot/domain", "workspace:components/domain/src"],\
+            ["@blargbot/flags", "workspace:components/flags/src"],\
             ["@blargbot/formatting", "workspace:components/formatting/src"],\
             ["@blargbot/guards", "workspace:components/guards/src"],\
             ["@blargbot/logger", "workspace:components/logger/src"],\
@@ -409,6 +421,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/database", "workspace:components/database/src"],\
             ["@blargbot/discord-emote", "workspace:components/discord-emote/src"],\
             ["@blargbot/domain", "workspace:components/domain/src"],\
+            ["@blargbot/flags", "workspace:components/flags/src"],\
             ["@blargbot/formatting", "workspace:components/formatting/src"],\
             ["@blargbot/logger", "workspace:components/logger/src"],\
             ["@blargbot/test-util", "workspace:components/test-util/src"],\
@@ -457,6 +470,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/database", "workspace:components/database/src"],\
             ["@blargbot/discord-emote", "workspace:components/discord-emote/src"],\
             ["@blargbot/domain", "workspace:components/domain/src"],\
+            ["@blargbot/flags", "workspace:components/flags/src"],\
             ["@blargbot/formatting", "workspace:components/formatting/src"],\
             ["@blargbot/guards", "workspace:components/guards/src"],\
             ["@blargbot/image-types", "workspace:components/image-types/src"],\
@@ -613,6 +627,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./components/database/src/",\
           "packageDependencies": [\
             ["@blargbot/database", "workspace:components/database/src"],\
+            ["@blargbot/async-tools", "workspace:components/async-tools/src"],\
             ["@blargbot/chatlog-types", "workspace:components/chatlog-types/src"],\
             ["@blargbot/config", "workspace:components/config/src"],\
             ["@blargbot/core", "workspace:components/core/src"],\
@@ -704,6 +719,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["@blargbot/domain", "workspace:components/domain/src"],\
             ["@blargbot/chatlog-types", "workspace:components/chatlog-types/src"],\
+            ["@blargbot/flags", "workspace:components/flags/src"],\
             ["@blargbot/formatting", "workspace:components/formatting/src"],\
             ["moment-timezone", "npm:0.5.40"]\
           ],\
@@ -715,6 +731,16 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./components/env/src/",\
           "packageDependencies": [\
             ["@blargbot/env", "workspace:components/env/src"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
+      ["@blargbot/flags", [\
+        ["workspace:components/flags/src", {\
+          "packageLocation": "./components/flags/src/",\
+          "packageDependencies": [\
+            ["@blargbot/flags", "workspace:components/flags/src"],\
+            ["@blargbot/guards", "workspace:components/guards/src"]\
           ],\
           "linkType": "SOFT"\
         }]\
@@ -733,6 +759,23 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./components/guards/src/",\
           "packageDependencies": [\
             ["@blargbot/guards", "workspace:components/guards/src"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
+      ["@blargbot/guards-tests", [\
+        ["workspace:components/guards/test", {\
+          "packageLocation": "./components/guards/test/",\
+          "packageDependencies": [\
+            ["@blargbot/guards-tests", "workspace:components/guards/test"],\
+            ["@blargbot/guards", "workspace:components/guards/src"],\
+            ["@types/chai", "npm:4.3.4"],\
+            ["@types/eris", "workspace:definitions/eris"],\
+            ["@types/mocha", "patch:@types/mocha@npm%3A10.0.1#./.yarn/patches/@types-mocha-npm-10.0.1-7c94e9e170.patch::version=10.0.1&hash=480b76&locator=blargbot%40workspace%3A."],\
+            ["chai", "npm:4.3.7"],\
+            ["cross-env", "npm:7.0.3"],\
+            ["mocha", "npm:10.2.0"],\
+            ["ts-mockito", "npm:2.6.1"]\
           ],\
           "linkType": "SOFT"\
         }]\

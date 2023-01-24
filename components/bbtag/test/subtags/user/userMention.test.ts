@@ -1,3 +1,4 @@
+import { Subtag } from '@blargbot/bbtag';
 import { UserMentionSubtag } from '@blargbot/bbtag/subtags/user/userMention.js';
 import chai from 'chai';
 import * as Eris from 'eris';
@@ -6,7 +7,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetUserPropTestCases } from './_getUserPropTest.js';
 
 runSubtagTests({
-    subtag: new UserMentionSubtag(),
+    subtag: Subtag.getDescriptor(UserMentionSubtag),
     argCountBounds: { min: 0, max: 3 },
     cases: [
         ...createGetUserPropTestCases({

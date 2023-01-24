@@ -1,13 +1,15 @@
 import { CompiledSubtag } from '../../compilation/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.zws;
 
+@Subtag.id('zws')
+@Subtag.factory()
 export class ZwsSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: 'zws',
             category: SubtagType.SIMPLE,
             definition: [
                 {

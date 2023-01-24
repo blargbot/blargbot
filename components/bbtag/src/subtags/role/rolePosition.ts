@@ -1,17 +1,18 @@
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { RoleNotFoundError } from '../../errors/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.rolePosition;
 
+@Subtag.id('rolePosition', 'rolePos')
+@Subtag.factory()
 export class RolePositionSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: 'rolePosition',
             category: SubtagType.ROLE,
-            aliases: ['rolePos'],
             definition: [
                 {
                     parameters: ['role', 'quiet?'],

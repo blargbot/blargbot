@@ -1,16 +1,17 @@
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.tagAuthorizer;
 
+@Subtag.id('tagAuthorizer', 'customCommandAuthorizer', 'ccAuthorizer')
+@Subtag.factory()
 export class TagAuthorizerSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: 'tagAuthorizer',
             category: SubtagType.SIMPLE,
-            aliases: ['customCommandAuthorizer', 'ccAuthorizer'],
             definition: [
                 {
                     parameters: [],

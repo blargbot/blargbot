@@ -1,10 +1,11 @@
+import { Subtag } from '@blargbot/bbtag';
 import { DebugSubtag } from '@blargbot/bbtag/subtags/bot/debug.js';
 import chai from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new DebugSubtag(),
+    subtag: Subtag.getDescriptor(DebugSubtag),
     argCountBounds: { min: 0, max: Infinity },
     cases: [
         {

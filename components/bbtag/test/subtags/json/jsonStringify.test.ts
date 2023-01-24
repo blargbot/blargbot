@@ -1,3 +1,4 @@
+import { Subtag } from '@blargbot/bbtag';
 import { NotANumberError } from '@blargbot/bbtag/errors/index.js';
 import { JsonSubtag } from '@blargbot/bbtag/subtags/json/json.js';
 import { JsonStringifySubtag } from '@blargbot/bbtag/subtags/json/jsonStringify.js';
@@ -6,27 +7,27 @@ import { TagVariableType } from '@blargbot/domain/models/index.js';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new JsonStringifySubtag(),
+    subtag: Subtag.getDescriptor(JsonStringifySubtag),
     argCountBounds: { min: 1, max: 2 },
     cases: [
         {
             code: '{jsonstringify;{j;{}}}',
             expected: '{}',
-            subtags: [new JsonSubtag()]
+            subtags: [Subtag.getDescriptor(JsonSubtag)]
         },
         {
             code: '{jsonstringify;{j;{"abc":123}}}',
             expected: `{
     "abc": 123
 }`,
-            subtags: [new JsonSubtag()]
+            subtags: [Subtag.getDescriptor(JsonSubtag)]
         },
         {
             code: '{jsonstringify;{j;{"abc":123}};2}',
             expected: `{
   "abc": 123
 }`,
-            subtags: [new JsonSubtag()]
+            subtags: [Subtag.getDescriptor(JsonSubtag)]
         },
         {
             code: '{jsonstringify;{j;{"abc":123,"def":{"ghi":[1,2,3]}}}}',
@@ -40,7 +41,7 @@ runSubtagTests({
         ]
     }
 }`,
-            subtags: [new JsonSubtag()]
+            subtags: [Subtag.getDescriptor(JsonSubtag)]
         },
         {
             code: '{jsonstringify;"abc"}',

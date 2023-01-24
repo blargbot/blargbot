@@ -1,11 +1,11 @@
 import { createHmac } from 'node:crypto';
 
-import { bbtag } from '@blargbot/bbtag';
 import type { Cluster } from '@blargbot/cluster';
 import type { CommandResult, CustomCommandShrinkwrap, GuildCommandContext, GuildShrinkwrap, ICommand, SignedGuildShrinkwrap } from '@blargbot/cluster/types.js';
-import { codeBlock, CommandType, guard, parse, snowflake } from '@blargbot/cluster/utils/index.js';
+import { codeBlock, CommandType, guard, snowflake } from '@blargbot/cluster/utils/index.js';
 import type { Configuration } from '@blargbot/config';
-import type { FlagDefinition, NamedGuildCommandTag, NamedGuildSourceCommandTag } from '@blargbot/domain/models/index.js';
+import type { NamedGuildCommandTag, NamedGuildSourceCommandTag } from '@blargbot/domain/models/index.js';
+import type { FlagDefinition } from '@blargbot/flags';
 import type { IFormattable } from '@blargbot/formatting';
 import { util } from '@blargbot/formatting';
 import { hasValue, isAlphanumeric } from '@blargbot/guards';
@@ -18,6 +18,7 @@ import { GuildCommand } from '../../command/index.js';
 import { RawBBTagCommandResult } from '../../command/RawBBTagCommandResult.js';
 import { BBTagDocumentationManager } from '../../managers/documentation/BBTagDocumentationManager.js';
 import templates from '../../text.js';
+import { bbtagDebugOutput } from '../../utils/bbtagDebugOutput.js';
 
 const cmd = templates.commands.ccommand;
 
@@ -181,7 +182,7 @@ export class CustomCommandCommand extends GuildCommand {
         if (!debug)
             return undefined;
 
-        await context.send(context.author, bbtag.createDebugOutput(result));
+        await context.send(context.author, bbtagDebugOutput(result));
         return cmd.debug.success;
     }
 
@@ -221,7 +222,7 @@ export class CustomCommandCommand extends GuildCommand {
         if (!debug)
             return undefined;
 
-        await context.send(context.author, bbtag.createDebugOutput(result));
+        await context.send(context.author, bbtagDebugOutput(result));
         return cmd.debug.success;
     }
 
@@ -393,7 +394,7 @@ export class CustomCommandCommand extends GuildCommand {
         if (guard.isGuildImportedCommandTag(match))
             return cmd.errors.isAlias({ commandName: match.name, tagName: match.alias });
 
-        const { _, ...addFlags } = parse.flags([], flagsRaw);
+        const { _, ...addFlags } = context.cluster.parseFlags([], flagsRaw);
         const flags = [...match.flags ?? []];
         for (const [flag, args] of Object.entries(addFlags)) {
             if (args === undefined || args.length === 0)
@@ -422,7 +423,7 @@ export class CustomCommandCommand extends GuildCommand {
         if (guard.isGuildImportedCommandTag(match))
             return cmd.errors.isAlias({ commandName: match.name, tagName: match.alias });
 
-        const { _, ...removeFlags } = parse.flags([], flagsRaw);
+        const { _, ...removeFlags } = context.cluster.parseFlags([], flagsRaw);
         const flags = [...match.flags ?? []]
             .filter(f => removeFlags[f.flag] === undefined);
 

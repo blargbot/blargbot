@@ -1,15 +1,20 @@
 import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagUtilities } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { UserNotFoundError } from '../../errors/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.userAvatar;
 
+@Subtag.id('userAvatar')
+@Subtag.factory(Subtag.util())
 export class UserAvatarSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #util: BBTagUtilities;
+
+    public constructor(util: BBTagUtilities) {
         super({
-            name: 'userAvatar',
             category: SubtagType.USER,
             description: tag.description,
             definition: [
@@ -31,6 +36,8 @@ export class UserAvatarSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#util = util;
     }
 
     public async getUserAvatarUrl(
@@ -43,7 +50,7 @@ export class UserAvatarSubtag extends CompiledSubtag {
         if (member !== undefined)
             return member.avatarURL;
 
-        const user = await context.util.getUser(userId);
+        const user = await this.#util.getUser(userId);
         if (user !== undefined)
             return user.avatarURL;
 

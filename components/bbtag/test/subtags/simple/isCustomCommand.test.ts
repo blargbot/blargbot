@@ -1,9 +1,10 @@
+import { Subtag } from '@blargbot/bbtag';
 import { IsCustomCommandSubtag } from '@blargbot/bbtag/subtags/simple/isCustomCommand.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new IsCustomCommandSubtag(),
+    subtag: Subtag.getDescriptor(IsCustomCommandSubtag),
     argCountBounds: { min: 0, max: 0 },
     cases: [
         {

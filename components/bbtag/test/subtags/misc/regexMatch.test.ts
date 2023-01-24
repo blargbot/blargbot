@@ -1,10 +1,11 @@
+import { Subtag } from '@blargbot/bbtag';
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
 import { RegexMatchSubtag } from '@blargbot/bbtag/subtags/misc/regexMatch.js';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new RegexMatchSubtag(),
+    subtag: Subtag.getDescriptor(RegexMatchSubtag),
     argCountBounds: { min: 2, max: { count: 2, noEval: [1] } },
     cases: [
         { code: '{regexmatch;a1b2c3;/[a-z]\\d/g}', expected: '["a1","b2","c3"]' },

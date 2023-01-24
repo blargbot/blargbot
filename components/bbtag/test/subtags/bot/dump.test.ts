@@ -1,10 +1,11 @@
+import { Subtag } from '@blargbot/bbtag';
 import { DumpSubtag } from '@blargbot/bbtag/subtags/bot/dump.js';
 import { argument } from '@blargbot/test-util/mock.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new DumpSubtag(),
+    subtag: Subtag.getDescriptor(DumpSubtag),
     argCountBounds: { min: 1, max: 1 },
     cases: [
         {

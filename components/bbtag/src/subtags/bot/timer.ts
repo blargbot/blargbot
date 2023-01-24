@@ -1,17 +1,21 @@
-import { parse } from '@blargbot/core/utils/index.js';
-
 import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagUtilities, BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.timer;
 
+@Subtag.id('timer')
+@Subtag.factory(Subtag.util(), Subtag.converter())
 export class TimerSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #util: BBTagUtilities;
+    readonly #converter: BBTagValueConverter;
+
+    public constructor(util: BBTagUtilities, converter: BBTagValueConverter) {
         super({
-            name: 'timer',
             category: SubtagType.BOT,
             definition: [
                 {
@@ -24,13 +28,16 @@ export class TimerSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#util = util;
+        this.#converter = converter;
     }
 
     public async queueTimer(context: BBTagContext, code: string, durationStr: string): Promise<void> {
-        const duration = parse.duration(durationStr);
+        const duration = this.#converter.duration(durationStr);
 
         if (duration === undefined || duration.asMilliseconds() <= 0)
             throw new BBTagRuntimeError('Invalid duration');
-        await context.util.setTimeout(context, code, duration);
+        await this.#util.setTimeout(context, code, duration);
     }
 }

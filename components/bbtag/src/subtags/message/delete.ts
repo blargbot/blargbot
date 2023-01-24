@@ -1,18 +1,23 @@
 import { guard } from '@blargbot/core/utils/index.js';
+import type { Logger } from '@blargbot/logger';
 import * as Eris from 'eris';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '../../errors/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.delete;
 
+@Subtag.id('delete')
+@Subtag.factory(Subtag.logger())
 export class DeleteSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #logger: Logger;
+
+    public constructor(logger: Logger) {
         super({
-            name: 'delete',
             description: tag.description,
             category: SubtagType.MESSAGE,
             definition: [
@@ -42,6 +47,8 @@ export class DeleteSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#logger = logger;
     }
 
     public async deleteMessage(
@@ -68,7 +75,7 @@ export class DeleteSubtag extends CompiledSubtag {
         } catch (e: unknown) {
             if (e instanceof Eris.DiscordRESTError && e.code === Eris.ApiError.UNKNOWN_MESSAGE)
                 return;
-            context.logger.warn('Failed to delete message', e);
+            this.#logger.warn('Failed to delete message', e);
             // NOOP
         }
         //TODO return something like true/false

@@ -1,10 +1,11 @@
+import { Subtag } from '@blargbot/bbtag';
 import { BBTagRuntimeError, NotANumberError, NotEnoughArgumentsError } from '@blargbot/bbtag/errors/index.js';
 import { ParamsSubtag } from '@blargbot/bbtag/subtags/bot/params.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new ParamsSubtag(),
+    subtag: Subtag.getDescriptor(ParamsSubtag),
     argCountBounds: { min: 0, max: 2 },
     setupEach(ctx) {
         ctx.rootScope.paramsarray = ['arg1', 'arg2', 'arg3 arg3', 'arg4', 'arg5'];

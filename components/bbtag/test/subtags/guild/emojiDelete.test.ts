@@ -1,3 +1,4 @@
+import { Subtag } from '@blargbot/bbtag';
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
 import { EmojiDeleteSubtag } from '@blargbot/bbtag/subtags/guild/emojiDelete.js';
 import * as Eris from 'eris';
@@ -5,7 +6,7 @@ import * as Eris from 'eris';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new EmojiDeleteSubtag(),
+    subtag: Subtag.getDescriptor(EmojiDeleteSubtag),
     argCountBounds: { min: 1, max: 1 },
     setupEach(ctx) {
         ctx.roles.authorizer.permissions = Eris.Constants.Permissions.manageEmojisAndStickers.toString();

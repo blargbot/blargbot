@@ -1,3 +1,4 @@
+import { Subtag } from '@blargbot/bbtag';
 import { NotANumberError } from '@blargbot/bbtag/errors/index.js';
 import { EscapeBBTagSubtag } from '@blargbot/bbtag/subtags/misc/escapeBBTag.js';
 import { IndexOfSubtag } from '@blargbot/bbtag/subtags/misc/indexOf.js';
@@ -5,7 +6,7 @@ import { IndexOfSubtag } from '@blargbot/bbtag/subtags/misc/indexOf.js';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new IndexOfSubtag(),
+    subtag: Subtag.getDescriptor(IndexOfSubtag),
     argCountBounds: { min: 2, max: 3 },
     cases: [
         { code: '{indexof;This is some text;s}', expected: '3' },
@@ -51,6 +52,6 @@ runSubtagTests({
         { code: '{indexof;This is some text;z}', expected: '-1' },
         { code: '{indexof;;z}', expected: '-1' },
         { code: '{indexof;[];a}', expected: '-1' },
-        { code: '{indexof;{escapebbtag;{"n":"abc","v":["a"]}};a}', expected: '0', subtags: [new EscapeBBTagSubtag()] }
+        { code: '{indexof;{escapebbtag;{"n":"abc","v":["a"]}};a}', expected: '0', subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)] }
     ]
 });

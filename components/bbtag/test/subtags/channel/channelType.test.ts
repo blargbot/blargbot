@@ -1,3 +1,4 @@
+import { Subtag } from '@blargbot/bbtag';
 import { ChannelTypeSubtag } from '@blargbot/bbtag/subtags/channel/channelType.js';
 import * as Eris from 'eris';
 
@@ -5,7 +6,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetChannelPropTestCases } from './_getChannelPropTest.js';
 
 runSubtagTests({
-    subtag: new ChannelTypeSubtag(),
+    subtag: Subtag.getDescriptor(ChannelTypeSubtag),
     argCountBounds: { min: 0, max: 2 },
     cases: [
         ...createGetChannelPropTestCases({

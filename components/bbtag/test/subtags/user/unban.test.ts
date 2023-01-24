@@ -1,3 +1,4 @@
+import { Subtag } from '@blargbot/bbtag';
 import { BBTagRuntimeError, UserNotFoundError } from '@blargbot/bbtag/errors/index.js';
 import { UnbanSubtag } from '@blargbot/bbtag/subtags/user/unban.js';
 import * as Eris from 'eris';
@@ -5,7 +6,7 @@ import * as Eris from 'eris';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new UnbanSubtag(),
+    subtag: Subtag.getDescriptor(UnbanSubtag),
     argCountBounds: { min: 1, max: 3 },
     cases: [
         {

@@ -1,16 +1,21 @@
-import { parse } from '@blargbot/core/utils/index.js';
-
 import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
-import { bbtag, SubtagType } from '../../utils/index.js';
+import type { BBTagArrayTools } from '../../utils/index.js';
+import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.rollback;
 
+@Subtag.id('rollback')
+@Subtag.factory(Subtag.arrayTools(), Subtag.converter())
 export class RollbackSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #arrayTools: BBTagArrayTools;
+    readonly #converter: BBTagValueConverter;
+
+    public constructor(arrayTools: BBTagArrayTools, converter: BBTagValueConverter) {
         super({
-            name: 'rollback',
             category: SubtagType.BOT,
             description: tag.description,
             definition: [
@@ -32,12 +37,15 @@ export class RollbackSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#arrayTools = arrayTools;
+        this.#converter = converter;
     }
 
     public rollback(context: BBTagContext, args: string[]): void {
         const keys = args.length === 0
             ? undefined
-            : bbtag.tagArray.flattenArray(args).map(v => parse.string(v));
+            : this.#arrayTools.flattenArray(args).map(v => this.#converter.string(v));
         context.variables.reset(keys);
     }
 }

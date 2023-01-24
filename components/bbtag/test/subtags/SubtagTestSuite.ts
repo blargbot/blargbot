@@ -3,14 +3,25 @@ import { inspect } from 'node:util';
 
 import type { BBTagContextOptions, BBTagRuntimeScope, LocatedRuntimeError, SourceMarker, SubtagCall } from '@blargbot/bbtag';
 import { BBTagContext, BBTagEngine, Subtag } from '@blargbot/bbtag';
-import type { BBTagUtilities, InjectionContext } from '@blargbot/bbtag/BBTagUtilities.js';
+import type { BBTagUtilities, InjectionContext, SubtagDescriptor } from '@blargbot/bbtag/BBTagUtilities.js';
 import { BBTagRuntimeError, NotEnoughArgumentsError, TooManyArgumentsError } from '@blargbot/bbtag/errors/index.js';
 import { BaseRuntimeLimit } from '@blargbot/bbtag/limits/BaseRuntimeLimit.js';
-import { bbtag, SubtagType } from '@blargbot/bbtag/utils/index.js';
-import { pluralise as p, repeat, snowflake } from '@blargbot/core/utils/index.js';
+import { createBBTagArrayTools, createBBTagJsonTools, createBBTagOperators, parseBBTag, smartStringCompare, SubtagType } from '@blargbot/bbtag/utils/index.js';
+import { smartSplitRanges } from '@blargbot/core/utils/humanize/smartSplit.js';
+import { repeat, snowflake } from '@blargbot/core/utils/index.js';
+import { parseBigInt } from '@blargbot/core/utils/parse/parseBigInt.js';
+import { parseBoolean } from '@blargbot/core/utils/parse/parseBoolean.js';
+import { parseColor } from '@blargbot/core/utils/parse/parseColor.js';
+import { parseDuration } from '@blargbot/core/utils/parse/parseDuration.js';
+import { parseEmbed } from '@blargbot/core/utils/parse/parseEmbed.js';
+import { parseFloat } from '@blargbot/core/utils/parse/parseFloat.js';
+import { parseInt as bbtagParseInt } from '@blargbot/core/utils/parse/parseInt.js';
+import { parseString } from '@blargbot/core/utils/parse/parseString.js';
+import { parseTime } from '@blargbot/core/utils/parse/parseTime.js';
 import { Database } from '@blargbot/database';
 import type { GuildCommandTag, StoredTag, TagVariableScope } from '@blargbot/domain/models/index.js';
 import type { GuildStore, TagStore, TagVariableStore, UserStore } from '@blargbot/domain/stores/index.js';
+import { createFlagParser } from '@blargbot/flags';
 import type { Logger } from '@blargbot/logger';
 import { argument, Mock } from '@blargbot/test-util/mock.js';
 import { Timer } from '@blargbot/timer';
@@ -50,7 +61,7 @@ export interface SubtagTestCase {
         handle: (error: unknown) => Awaitable<void>;
     };
     readonly errors?: ReadonlyArray<{ start?: SourceMarkerResolvable; end?: SourceMarkerResolvable; error: BBTagRuntimeError; }> | ((errors: LocatedRuntimeError[]) => void);
-    readonly subtags?: readonly Subtag[];
+    readonly subtags?: readonly SubtagDescriptor[];
     readonly skip?: boolean | (() => Awaitable<boolean>);
     readonly retries?: number;
     readonly timeout?: number;
@@ -79,8 +90,8 @@ type SuiteEachSetup<T extends SubtagTestCase> = {
 
 export interface SubtagTestSuiteData<T extends Subtag = Subtag, TestCase extends SubtagTestCase = SubtagTestCase> extends SuiteEachSetup<TestCase> {
     readonly cases: TestCase[];
-    readonly subtag: T;
-    readonly runOtherTests?: (subtag: T) => void;
+    readonly subtag: SubtagDescriptor<T>;
+    readonly runOtherTests?: (subtag: SubtagDescriptor<T>) => void;
     readonly argCountBounds: { min: ArgCountBound; max: ArgCountBound; };
     readonly setup?: (this: void) => Awaitable<void>;
     readonly teardown?: (this: void) => Awaitable<void>;
@@ -168,7 +179,7 @@ export class SubtagTestContext {
         channel_id: this.channels.command.id
     }, this.users.command);
 
-    public constructor(public readonly testCase: SubtagTestCase, subtags: Iterable<Subtag>) {
+    public constructor(public readonly testCase: SubtagTestCase, subtags: Iterable<SubtagDescriptor>) {
         this.discordOptions = { intents: [] };
         this.tagVariables = new MapByValue();
         this.tags = {};
@@ -182,10 +193,38 @@ export class SubtagTestContext {
             });
         }
 
+        const bbtagArrayTools = createBBTagArrayTools({
+            convertToInt: parseInt
+        });
+
         this.dependencies.setup(m => m.discord, false).thenReturn(this.discord.instance);
         this.dependencies.setup(m => m.database, false).thenReturn(this.database.instance);
         this.dependencies.setup(m => m.logger, false).thenReturn(this.logger.instance);
         this.dependencies.setup(m => m.util, false).thenReturn(this.util.instance);
+        this.dependencies.setup(m => m.arrayTools, false).thenReturn(bbtagArrayTools);
+        this.dependencies.setup(m => m.jsonTools, false).thenReturn(createBBTagJsonTools({
+            convertToInt: bbtagParseInt,
+            isTagArray: bbtagArrayTools.isTagArray
+        }));
+        this.dependencies.setup(m => m.operators, false).thenReturn(createBBTagOperators({
+            compare: smartStringCompare,
+            convertToString: parseString,
+            parseArray: v => bbtagArrayTools.deserialize(v)?.v
+        }));
+        this.dependencies.setup(m => m.parseFlags, false).thenReturn(createFlagParser({
+            splitter: smartSplitRanges
+        }));
+        this.dependencies.setup(m => m.converter, false).thenReturn({
+            int: bbtagParseInt,
+            float: parseFloat,
+            string: parseString,
+            boolean: parseBoolean,
+            duration: parseDuration,
+            embed: parseEmbed,
+            bigInt: parseBigInt,
+            color: parseColor,
+            time: parseTime
+        });
 
         this.discord.setup(m => m.emit('warn', tsMockito.anything()), false).thenReturn(false);
 
@@ -466,6 +505,14 @@ export class SubtagTestContext {
 }
 /* eslint-enable @typescript-eslint/naming-convention */
 
+export function createDescriptor<T extends Subtag>(subtag: T): SubtagDescriptor<T> {
+    return {
+        name: subtag.name,
+        aliases: subtag.aliases,
+        createInstance: () => subtag
+    };
+}
+
 export function runSubtagTests<T extends Subtag>(data: SubtagTestSuiteData<T>): void
 export function runSubtagTests<T extends Subtag, TestCase extends SubtagTestCase>(data: SubtagTestSuiteData<T, TestCase>): void
 export function runSubtagTests<T extends Subtag, TestCase extends SubtagTestCase>(data: SubtagTestSuiteData<T, TestCase>): void {
@@ -511,10 +558,11 @@ export function sourceMarker(location: SourceMarkerResolvable | undefined): Sour
 
     return { index: parseInt(index), line: parseInt(line), column: parseInt(column) };
 }
+
+@Subtag.id('testdata')
 export class TestDataSubtag extends Subtag {
     public constructor(public readonly values: Record<string, string | undefined>) {
         super({
-            name: 'testdata',
             category: SubtagType.SIMPLE,
             signatures: []
         });
@@ -533,10 +581,11 @@ export class TestDataSubtag extends Subtag {
     }
 }
 
+@Subtag.factory()
+@Subtag.id('eval')
 export class EvalSubtag extends Subtag {
     public constructor() {
         super({
-            name: 'eval',
             category: SubtagType.SIMPLE,
             hidden: true,
             signatures: []
@@ -548,12 +597,12 @@ export class EvalSubtag extends Subtag {
     }
 }
 
+@Subtag.id('assert')
 export class AssertSubtag extends Subtag {
     readonly #assertion: (context: BBTagContext, subtagName: string, subtag: SubtagCall) => Awaitable<string>;
 
     public constructor(assertion: (...args: Parameters<Subtag['executeCore']>) => Awaitable<string>) {
         super({
-            name: 'assert',
             category: SubtagType.SIMPLE,
             hidden: true,
             signatures: []
@@ -567,10 +616,11 @@ export class AssertSubtag extends Subtag {
     }
 }
 
+@Subtag.factory()
+@Subtag.id('fail')
 export class FailTestSubtag extends Subtag {
     public constructor() {
         super({
-            name: 'fail',
             category: SubtagType.SIMPLE,
             signatures: [],
             hidden: true
@@ -582,13 +632,13 @@ export class FailTestSubtag extends Subtag {
     }
 }
 
+@Subtag.id('limit')
 export class LimitedTestSubtag extends Subtag {
     readonly #counts = new WeakMap<BBTagContext, number>();
     readonly #limit: number;
 
     public constructor(limit = 1) {
         super({
-            name: 'limit',
             category: SubtagType.SIMPLE,
             hidden: true,
             signatures: []
@@ -606,10 +656,11 @@ export class LimitedTestSubtag extends Subtag {
     }
 }
 
+@Subtag.factory()
+@Subtag.id('echoargs')
 export class EchoArgsSubtag extends Subtag {
     public constructor() {
         super({
-            name: 'echoargs',
             category: SubtagType.SIMPLE,
             hidden: true,
             signatures: []
@@ -631,9 +682,9 @@ export class EchoArgsSubtag extends Subtag {
 export class SubtagTestSuite<TestCase extends SubtagTestCase> {
     readonly #config: TestSuiteConfig<TestCase> = { setup: [], teardown: [], setupEach: [], assertEach: [], postSetupEach: [], teardownEach: [] };
     readonly #testCases: TestCase[] = [];
-    readonly #subtag: Subtag;
+    readonly #subtag: SubtagDescriptor;
 
-    public constructor(subtag: Subtag) {
+    public constructor(subtag: SubtagDescriptor) {
         this.#subtag = subtag;
     }
 
@@ -718,8 +769,8 @@ function getTestName(testCase: SubtagTestCase): string {
     if (typeof testCase.errors === 'object') {
         const [errorCount, markerCount] = testCase.errors.reduce((p, c) => c.error instanceof MarkerError ? [p[0], p[1] + 1] : [p[0] + 1, p[1]], [0, 0]);
         if (errorCount > 0 || markerCount > 0) {
-            const errorStr = errorCount === 0 ? undefined : `${errorCount} ${p(errorCount, 'error')}`;
-            const markerStr = markerCount === 0 ? undefined : `${markerCount} ${p(markerCount, 'marker')}`;
+            const errorStr = errorCount === 0 ? undefined : `${errorCount} error(s)`;
+            const markerStr = markerCount === 0 ? undefined : `${markerCount} marker(s)`;
             result += ` with ${[markerStr, errorStr].filter(x => x !== undefined).join(' and ')}`;
         }
     }
@@ -730,11 +781,11 @@ function getTestName(testCase: SubtagTestCase): string {
     return result;
 }
 
-async function runTestCase<TestCase extends SubtagTestCase>(context: mocha.Context, subtag: Subtag, testCase: TestCase, config: TestSuiteConfig<TestCase>): Promise<void> {
+async function runTestCase<TestCase extends SubtagTestCase>(context: mocha.Context, subtag: SubtagDescriptor, testCase: TestCase, config: TestSuiteConfig<TestCase>): Promise<void> {
     if (typeof testCase.skip === 'boolean' ? testCase.skip : await testCase.skip?.() ?? false)
         context.skip();
 
-    const subtags = [subtag, new EvalSubtag(), new FailTestSubtag(), ...testCase.subtags ?? []];
+    const subtags = [subtag, Subtag.getDescriptor(EvalSubtag), Subtag.getDescriptor(FailTestSubtag), ...testCase.subtags ?? []];
     const test = new SubtagTestContext(testCase, subtags);
     const actualTestCase = Object.create(testCase, { 'timestamp': { value: moment() } });
 
@@ -745,7 +796,7 @@ async function runTestCase<TestCase extends SubtagTestCase>(context: mocha.Conte
         for (const setup of config.setupEach)
             await setup.call(actualTestCase, test);
         await actualTestCase.setup?.(test);
-        const code = bbtag.parse(testCase.code);
+        const code = parseBBTag(testCase.code);
         const context = test.createContext();
         for (const postSetup of config.postSetupEach)
             await postSetup.call(actualTestCase, context, test);

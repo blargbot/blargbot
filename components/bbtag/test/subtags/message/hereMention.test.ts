@@ -1,10 +1,11 @@
+import { Subtag } from '@blargbot/bbtag';
 import { HereMentionSubtag } from '@blargbot/bbtag/subtags/message/hereMention.js';
 import chai from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new HereMentionSubtag(),
+    subtag: Subtag.getDescriptor(HereMentionSubtag),
     argCountBounds: { min: 0, max: 1 },
     cases: [
         {

@@ -1,10 +1,11 @@
+import { Subtag } from '@blargbot/bbtag';
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
 import { ThrowSubtag } from '@blargbot/bbtag/subtags/bot/throw.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new ThrowSubtag(),
+    subtag: Subtag.getDescriptor(ThrowSubtag),
     argCountBounds: { min: 0, max: 1 },
     cases: [
         {

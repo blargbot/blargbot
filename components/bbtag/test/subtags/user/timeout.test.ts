@@ -1,3 +1,4 @@
+import { Subtag } from '@blargbot/bbtag';
 import { BBTagRuntimeError, UserNotFoundError } from '@blargbot/bbtag/errors/index.js';
 import { TimeoutSubtag } from '@blargbot/bbtag/subtags/user/timeout.js';
 import { argument } from '@blargbot/test-util/mock.js';
@@ -12,7 +13,7 @@ function isDuration(ms: number): moment.Duration {
 }
 
 runSubtagTests({
-    subtag: new TimeoutSubtag(),
+    subtag: Subtag.getDescriptor(TimeoutSubtag),
     argCountBounds: { min: 2, max: 4 },
     cases: [
         {

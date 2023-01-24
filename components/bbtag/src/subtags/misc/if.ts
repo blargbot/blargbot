@@ -1,19 +1,24 @@
-import { parse } from '@blargbot/core/utils/index.js';
-
 import type { SubtagArgument } from '../../arguments/index.js';
+import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { InvalidOperatorError, NotABooleanError } from '../../errors/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
-import { bbtag, SubtagType } from '../../utils/index.js';
+import type { BBTagOperators } from '../../utils/index.js';
+import { comparisonOperators, SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.if;
 
+@Subtag.id('if')
+@Subtag.factory(Subtag.operators(), Subtag.converter())
 export class IfSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #operators: BBTagOperators;
+    readonly #converter: BBTagValueConverter;
+
+    public constructor(operators: BBTagOperators, converter: BBTagValueConverter) {
         super({
-            name: 'if',
             category: SubtagType.MISC,
-            description: tag.description({ operators: Object.keys(bbtag.comparisonOperators) }),
+            description: tag.description({ operators: comparisonOperators.keys }),
             definition: [
                 {
                     parameters: ['boolean', '~then'],
@@ -49,13 +54,16 @@ export class IfSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#operators = operators;
+        this.#converter = converter;
     }
     public async simpleBooleanCheck(
         bool: string,
         thenCode: SubtagArgument,
         elseCode?: SubtagArgument
     ): Promise<string> {
-        const actualBoolean = parse.boolean(bool);
+        const actualBoolean = this.#converter.boolean(bool);
         if (typeof actualBoolean !== 'boolean')
             throw new NotABooleanError(bool);
 
@@ -74,26 +82,26 @@ export class IfSubtag extends CompiledSubtag {
         elseCode?: SubtagArgument
     ): Promise<string> {
         let operator;
-        if (bbtag.isComparisonOperator(evaluator)) {
+        if (comparisonOperators.test(evaluator)) {
             operator = evaluator;
-        } else if (bbtag.isComparisonOperator(value1)) {
+        } else if (comparisonOperators.test(value1)) {
             operator = value1;
             [value1, evaluator] = [evaluator, value1];
-        } else if (bbtag.isComparisonOperator(value2)) {
+        } else if (comparisonOperators.test(value2)) {
             operator = value2;
             [evaluator, value2] = [value2, evaluator];
         } else
             throw new InvalidOperatorError(evaluator);
 
-        const leftBool = parse.boolean(value1, undefined, false);
+        const leftBool = this.#converter.boolean(value1, undefined, false);
         if (leftBool !== undefined)
             value1 = leftBool.toString();
 
-        const rightBool = parse.boolean(value2, undefined, false);
+        const rightBool = this.#converter.boolean(value2, undefined, false);
         if (rightBool !== undefined)
             value2 = rightBool.toString();
 
-        if (bbtag.operate(operator, value1, value2))
+        if (this.#operators.comparison[operator](value1, value2))
             return await thenCode.wait();
         return await elseCode?.wait() ?? '';
     }

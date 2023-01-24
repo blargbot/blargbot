@@ -1,14 +1,17 @@
+import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { BBTagRuntimeState } from '../../types.js';
-import { bbtag, SubtagType } from '../../utils/index.js';
+import { parseBBTag, SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.inject;
 
+@Subtag.id('inject')
+@Subtag.factory()
 export class InjectSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: 'inject',
             category: SubtagType.BOT,
             definition: [
                 {
@@ -17,17 +20,19 @@ export class InjectSubtag extends CompiledSubtag {
                     exampleCode: tag.default.exampleCode,
                     exampleOut: tag.default.exampleOut,
                     returns: 'string',
-                    execute: async (context, [code]) => {
-                        return await context.withStack(async () => {
-                            const ast = bbtag.parse(code.value, true);
-                            const result = await context.engine.eval(ast, context);
-                            if (context.data.state === BBTagRuntimeState.RETURN)
-                                context.data.state = BBTagRuntimeState.RUNNING;
-                            return result;
-                        });
-                    }
+                    execute: (context, [code]) => this.inject(context, code.value)
                 }
             ]
+        });
+    }
+
+    public async inject(context: BBTagContext, code: string): Promise<string> {
+        return await context.withStack(async () => {
+            const ast = parseBBTag(code, true);
+            const result = await context.eval(ast);
+            if (context.data.state === BBTagRuntimeState.RETURN)
+                context.data.state = BBTagRuntimeState.RUNNING;
+            return result;
         });
     }
 }

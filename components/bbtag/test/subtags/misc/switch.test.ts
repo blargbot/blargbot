@@ -1,9 +1,10 @@
+import { Subtag } from '@blargbot/bbtag';
 import { SwitchSubtag } from '@blargbot/bbtag/subtags/misc/switch.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new SwitchSubtag(),
+    subtag: Subtag.getDescriptor(SwitchSubtag),
     argCountBounds: { min: 3, max: Infinity },
     cases: [
         { code: '{switch;abc;abc;aaaa;def;{fail};ghi;{fail}}', expected: 'aaaa' },

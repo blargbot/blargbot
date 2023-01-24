@@ -1,3 +1,4 @@
+import { Subtag } from '@blargbot/bbtag';
 import { NotAnArrayError } from '@blargbot/bbtag/errors/index.js';
 import { PopSubtag } from '@blargbot/bbtag/subtags/array/pop.js';
 import { GetSubtag } from '@blargbot/bbtag/subtags/bot/get.js';
@@ -8,7 +9,7 @@ import chai from 'chai';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new PopSubtag(),
+    subtag: Subtag.getDescriptor(PopSubtag),
     argCountBounds: { min: 1, max: 1 },
     cases: [
         {
@@ -36,7 +37,7 @@ runSubtagTests({
         {
             code: '{pop;{get;arr1}}',
             expected: 'arr1',
-            subtags: [new GetSubtag()],
+            subtags: [Subtag.getDescriptor(GetSubtag)],
             setupSaveVariables: false,
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
@@ -50,7 +51,7 @@ runSubtagTests({
         {
             code: '{pop;arr1}',
             expected: 'arr1',
-            subtags: [new GetSubtag()],
+            subtags: [Subtag.getDescriptor(GetSubtag)],
             setupSaveVariables: false,
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
@@ -64,7 +65,7 @@ runSubtagTests({
         {
             code: '{pop;!arr1}',
             expected: 'arr1',
-            subtags: [new GetSubtag()],
+            subtags: [Subtag.getDescriptor(GetSubtag)],
             setupSaveVariables: false,
             setup(ctx) {
                 ctx.options.tagName = 'testTag';

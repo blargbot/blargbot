@@ -1,16 +1,20 @@
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
-import { bbtag, SubtagType } from '../../utils/index.js';
+import type { BBTagJsonTools } from '../../utils/index.js';
+import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.jsonSet;
 
+@Subtag.id('jsonSet', 'jSet')
+@Subtag.factory(Subtag.jsonTools())
 export class JsonSetSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #jsonTools: BBTagJsonTools;
+
+    public constructor(jsonTools: BBTagJsonTools) {
         super({
-            name: 'jsonSet',
             category: SubtagType.JSON,
-            aliases: ['jSet'],
             definition: [
                 {
                     parameters: ['input:{}', 'path'],
@@ -38,6 +42,8 @@ export class JsonSetSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#jsonTools = jsonTools;
     }
 
     public async setValue(
@@ -47,9 +53,9 @@ export class JsonSetSubtag extends CompiledSubtag {
         value: string | undefined,
         create: boolean
     ): Promise<JToken | undefined> {
-        const target = await bbtag.json.resolveObj(context, input);
+        const target = await this.#jsonTools.resolveObj(context, input);
 
-        bbtag.json.set(target.object, path, value, create);
+        this.#jsonTools.set(target.object, path, value, create);
 
         if (target.variable !== undefined) {
             await context.variables.set(target.variable, target.object);

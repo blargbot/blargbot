@@ -1,4 +1,3 @@
-import { bbtag } from '@blargbot/bbtag';
 import type { CommandResult, GuildCommandContext } from '@blargbot/cluster/types.js';
 import { CommandType, guard } from '@blargbot/cluster/utils/index.js';
 import type * as Eris from 'eris';
@@ -6,6 +5,7 @@ import type * as Eris from 'eris';
 import { GuildCommand } from '../../command/index.js';
 import { RawBBTagCommandResult } from '../../command/RawBBTagCommandResult.js';
 import templates from '../../text.js';
+import { bbtagDebugOutput } from '../../utils/bbtagDebugOutput.js';
 
 const cmd = templates.commands.greeting;
 
@@ -120,7 +120,7 @@ export class GreetingCommand extends GuildCommand {
             case 'CHANNEL_MISSING': return cmd.debug.channelMissing;
             case 'CODE_MISSING': return cmd.errors.notSet;
             default:
-                await context.send(context.author, bbtag.createDebugOutput(result));
+                await context.send(context.author, bbtagDebugOutput(result));
                 return cmd.debug.success;
         }
     }

@@ -2,11 +2,14 @@ import { createHash, getHashes } from 'node:crypto';
 
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.hash;
 
+@Subtag.id('hash')
+@Subtag.factory()
 export class HashSubtag extends CompiledSubtag {
     public static get methods(): readonly string[] {
         return getHashes().filter(h => allowedHashes.has(h));
@@ -14,7 +17,6 @@ export class HashSubtag extends CompiledSubtag {
 
     public constructor() {
         super({
-            name: 'hash',
             category: SubtagType.MISC,
             definition: [
                 {

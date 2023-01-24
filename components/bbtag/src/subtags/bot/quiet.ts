@@ -1,16 +1,19 @@
-import { parse } from '@blargbot/core/utils/index.js';
-
 import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.quiet;
 
+@Subtag.id('quiet')
+@Subtag.factory(Subtag.converter())
 export class QuietSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #converter: BBTagValueConverter;
+
+    public constructor(converter: BBTagValueConverter) {
         super({
-            name: 'quiet',
             category: SubtagType.BOT,
             definition: [
                 {
@@ -23,9 +26,11 @@ export class QuietSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#converter = converter;
     }
 
     public setQuiet(context: BBTagContext, valueStr: string): void {
-        context.scopes.local.quiet = parse.boolean(valueStr);
+        context.scopes.local.quiet = this.#converter.boolean(valueStr);
     }
 }

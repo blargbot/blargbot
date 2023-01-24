@@ -1,19 +1,20 @@
+import { Subtag } from '@blargbot/bbtag';
 import { BBTagRuntimeError, SubtagStackOverflowError } from '@blargbot/bbtag/errors/index.js';
 import { ExecCustomCommandSubtag } from '@blargbot/bbtag/subtags/bot/execCustomCommand.js';
 import { JsonSubtag } from '@blargbot/bbtag/subtags/json/index.js';
 import { BBTagRuntimeState } from '@blargbot/bbtag/types.js';
 import chai from 'chai';
 
-import { AssertSubtag, MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
+import { AssertSubtag, createDescriptor, MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new ExecCustomCommandSubtag(),
+    subtag: Subtag.getDescriptor(ExecCustomCommandSubtag),
     argCountBounds: { min: 1, max: Infinity },
     cases: [
         {
             code: '{execcc;otherSubtag}',
             expected: 'Success!',
-            subtags: [new AssertSubtag((ctx) => {
+            subtags: [createDescriptor(new AssertSubtag((ctx) => {
                 chai.expect(ctx.parent).to.not.be.undefined;
                 chai.expect(ctx.tagName).to.equal('othersubtag');
                 chai.expect(ctx.rootTagName).to.equal('test tag');
@@ -25,7 +26,7 @@ runSubtagTests({
                 chai.expect(ctx.data.stackSize).to.equal(101);
                 ctx.data.embeds = [{ title: 'abc' }];
                 return 'Success!';
-            })],
+            }))],
             errors: [
                 { start: 8, end: 14, error: new MarkerError('eval', 8) }
             ],
@@ -57,7 +58,7 @@ runSubtagTests({
         {
             code: '{execcc;otherSubtag;}',
             expected: 'Success!',
-            subtags: [new AssertSubtag((ctx) => {
+            subtags: [createDescriptor(new AssertSubtag((ctx) => {
                 chai.expect(ctx.parent).to.not.be.undefined;
                 chai.expect(ctx.tagName).to.equal('othersubtag');
                 chai.expect(ctx.rootTagName).to.equal('test tag');
@@ -68,7 +69,7 @@ runSubtagTests({
                 chai.expect(ctx.scopes.local).to.not.equal(ctx.scopes.root);
                 chai.expect(ctx.scopes.tag).to.not.equal(ctx.scopes.root);
                 return 'Success!';
-            })],
+            }))],
             errors: [
                 { start: 8, end: 14, error: new MarkerError('eval', 8) }
             ],
@@ -98,7 +99,7 @@ runSubtagTests({
         {
             code: '{execcc;otherSubtag;abc;\\"def\\";ghi}',
             expected: 'Success!',
-            subtags: [new AssertSubtag((ctx) => {
+            subtags: [createDescriptor(new AssertSubtag((ctx) => {
                 chai.expect(ctx.parent).to.not.be.undefined;
                 chai.expect(ctx.tagName).to.equal('othersubtag');
                 chai.expect(ctx.rootTagName).to.equal('test tag');
@@ -109,7 +110,7 @@ runSubtagTests({
                 chai.expect(ctx.scopes.local).to.not.equal(ctx.scopes.root);
                 chai.expect(ctx.scopes.tag).to.not.equal(ctx.scopes.root);
                 return 'Success!';
-            })],
+            }))],
             errors: [
                 { start: 8, end: 14, error: new MarkerError('eval', 8) }
             ],
@@ -140,7 +141,7 @@ runSubtagTests({
         {
             code: '{execcc;otherSubtag;abc;{j;{"def":123}}}',
             expected: 'Success!',
-            subtags: [new AssertSubtag((ctx) => {
+            subtags: [createDescriptor(new AssertSubtag((ctx) => {
                 chai.expect(ctx.parent).to.not.be.undefined;
                 chai.expect(ctx.tagName).to.equal('othersubtag');
                 chai.expect(ctx.rootTagName).to.equal('test tag');
@@ -151,7 +152,7 @@ runSubtagTests({
                 chai.expect(ctx.scopes.tag).to.not.equal(ctx.scopes.root);
                 chai.expect(ctx.data.stackSize).to.equal(101);
                 return 'Success!';
-            }), new JsonSubtag()],
+            })), Subtag.getDescriptor(JsonSubtag)],
             errors: [
                 { start: 8, end: 14, error: new MarkerError('eval', 8) }
             ],
@@ -225,7 +226,7 @@ runSubtagTests({
         {
             code: '{execcc;otherSubtag;arg1;arg2;-f flag value}',
             expected: 'Success!',
-            subtags: [new AssertSubtag((ctx) => {
+            subtags: [createDescriptor(new AssertSubtag((ctx) => {
                 chai.expect(ctx.parent).to.not.be.undefined;
                 chai.expect(ctx.tagName).to.equal('othersubtag');
                 chai.expect(ctx.rootTagName).to.equal('test tag');
@@ -238,7 +239,7 @@ runSubtagTests({
                 chai.expect(ctx.scopes.local).to.not.equal(ctx.scopes.root);
                 chai.expect(ctx.scopes.tag).to.not.equal(ctx.scopes.root);
                 return 'Success!';
-            })],
+            }))],
             errors: [
                 { start: 8, end: 14, error: new MarkerError('eval', 8) }
             ],
@@ -271,7 +272,7 @@ runSubtagTests({
         {
             code: '{execcc;otherSubtag;arg1 arg2 -f flag value}',
             expected: 'Success!',
-            subtags: [new AssertSubtag((ctx) => {
+            subtags: [createDescriptor(new AssertSubtag((ctx) => {
                 chai.expect(ctx.parent).to.not.be.undefined;
                 chai.expect(ctx.tagName).to.equal('othersubtag');
                 chai.expect(ctx.rootTagName).to.equal('test tag');
@@ -284,7 +285,7 @@ runSubtagTests({
                 chai.expect(ctx.scopes.local).to.not.equal(ctx.scopes.root);
                 chai.expect(ctx.scopes.tag).to.not.equal(ctx.scopes.root);
                 return 'Success!';
-            })],
+            }))],
             errors: [
                 { start: 8, end: 14, error: new MarkerError('eval', 8) }
             ],
@@ -317,7 +318,7 @@ runSubtagTests({
         {
             code: '{execcc;otherSubtag;arg1 arg2 \\-f flag value}',
             expected: 'Success!',
-            subtags: [new AssertSubtag((ctx) => {
+            subtags: [createDescriptor(new AssertSubtag((ctx) => {
                 chai.expect(ctx.parent).to.not.be.undefined;
                 chai.expect(ctx.tagName).to.equal('othersubtag');
                 chai.expect(ctx.rootTagName).to.equal('test tag');
@@ -330,7 +331,7 @@ runSubtagTests({
                 chai.expect(ctx.scopes.local).to.not.equal(ctx.scopes.root);
                 chai.expect(ctx.scopes.tag).to.not.equal(ctx.scopes.root);
                 return 'Success!';
-            })],
+            }))],
             errors: [
                 { start: 8, end: 14, error: new MarkerError('eval', 8) }
             ],

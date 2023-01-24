@@ -1,3 +1,4 @@
+import { Subtag } from '@blargbot/bbtag';
 import { UserNotFoundError } from '@blargbot/bbtag/errors/index.js';
 import { EscapeBBTagSubtag } from '@blargbot/bbtag/subtags/misc/escapeBBTag.js';
 import { DMSubtag } from '@blargbot/bbtag/subtags/user/dm.js';
@@ -7,7 +8,7 @@ import * as Eris from 'eris';
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new DMSubtag(),
+    subtag: Subtag.getDescriptor(DMSubtag),
     argCountBounds: { min: 2, max: 3 },
     cases: [
         {
@@ -48,7 +49,7 @@ runSubtagTests({
         },
         {
             code: '{dm;other user;{escapebbtag;{ "title": "Hi!" }}}',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
             expected: '',
             setup(ctx) {
                 const member = ctx.createMock(Eris.Member);
@@ -71,7 +72,7 @@ runSubtagTests({
         },
         {
             code: '{dm;other user;Hello there!;{escapebbtag;{ "title": "General Kenobi!" }}}',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
             expected: '',
             setup(ctx) {
                 const member = ctx.createMock(Eris.Member);
@@ -94,7 +95,7 @@ runSubtagTests({
         },
         {
             code: '{dm;other user;{escapebbtag;{ "title": "this isnt actually an embed" }};{escapebbtag;{ "title": "General Kenobi!" }}}',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
             expected: '',
             setup(ctx) {
                 const member = ctx.createMock(Eris.Member);

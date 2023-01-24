@@ -1,25 +1,26 @@
+import { Subtag } from '@blargbot/bbtag';
 import { SubtagStackOverflowError, UnknownSubtagError } from '@blargbot/bbtag/errors/index.js';
 import { FunctionInvokeSubtag } from '@blargbot/bbtag/subtags/bot/func..js';
 import { BBTagRuntimeState } from '@blargbot/bbtag/types.js';
-import { bbtag } from '@blargbot/bbtag/utils/index.js';
+import { parseBBTag } from '@blargbot/bbtag/utils/index.js';
 import chai from 'chai';
 
-import { AssertSubtag, runSubtagTests } from '../SubtagTestSuite.js';
+import { AssertSubtag, createDescriptor, runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new FunctionInvokeSubtag(),
+    subtag: Subtag.getDescriptor(FunctionInvokeSubtag),
     argCountBounds: { min: 0, max: Infinity },
     cases: [
         {
             code: '{func.test}',
             expected: 'Success!',
-            subtags: [new AssertSubtag(ctx => {
+            subtags: [createDescriptor(new AssertSubtag(ctx => {
                 chai.expect(ctx.scopes.local.paramsarray).to.deep.equal([]);
                 chai.expect(ctx.data.stackSize).to.equal(123);
                 return 'Success!';
-            })],
+            }))],
             setup(ctx) {
-                ctx.rootScope.functions['test'] = bbtag.parse('{assert}');
+                ctx.rootScope.functions['test'] = parseBBTag('{assert}');
                 ctx.options.data = { stackSize: 122 };
             },
             assert(ctx) {
@@ -30,13 +31,13 @@ runSubtagTests({
         {
             code: '{func.test;arg1;arg2;["arg3","arg3"];arg4;}',
             expected: 'Success!',
-            subtags: [new AssertSubtag(ctx => {
+            subtags: [createDescriptor(new AssertSubtag(ctx => {
                 chai.expect(ctx.scopes.local.paramsarray).to.deep.equal(['arg1', 'arg2', '["arg3","arg3"]', 'arg4', '']);
                 chai.expect(ctx.data.stackSize).to.equal(123);
                 return 'Success!';
-            })],
+            }))],
             setup(ctx) {
-                ctx.rootScope.functions['test'] = bbtag.parse('{assert}');
+                ctx.rootScope.functions['test'] = parseBBTag('{assert}');
                 ctx.options.data = { stackSize: 122 };
             },
             assert(ctx) {
@@ -59,7 +60,7 @@ runSubtagTests({
             ],
             setup(ctx) {
                 ctx.options.data = { stackSize: 200 };
-                ctx.rootScope.functions['test'] = bbtag.parse('{assert}');
+                ctx.rootScope.functions['test'] = parseBBTag('{assert}');
             },
             assert(ctx) {
                 chai.expect(ctx.data.stackSize).to.equal(200);

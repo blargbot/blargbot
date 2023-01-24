@@ -3,16 +3,17 @@ import { guard } from '@blargbot/core/utils/index.js';
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { ChannelNotFoundError } from '../../errors/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.channelIsThread;
 
+@Subtag.id('channelIsThread', 'isThread')
+@Subtag.factory()
 export class ChannelIsThreadSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: 'channelIsThread',
-            aliases: ['isThread'],
             category: SubtagType.CHANNEL,
             definition: [
                 {

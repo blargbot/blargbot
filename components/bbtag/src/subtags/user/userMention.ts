@@ -1,17 +1,20 @@
-import { parse } from '@blargbot/core/utils/index.js';
-
 import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { NotABooleanError, UserNotFoundError } from '../../errors/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.userMention;
 
+@Subtag.id('userMention')
+@Subtag.factory(Subtag.converter())
 export class UserMentionSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #converter: BBTagValueConverter;
+
+    public constructor(converter: BBTagValueConverter) {
         super({
-            name: 'userMention',
             category: SubtagType.USER,
             definition: [
                 {
@@ -32,6 +35,8 @@ export class UserMentionSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#converter = converter;
     }
 
     public async userMention(
@@ -41,7 +46,7 @@ export class UserMentionSubtag extends CompiledSubtag {
         noPingStr: string
     ): Promise<string> {
         quiet ||= context.scopes.local.quiet ?? false;
-        const noPing = parse.boolean(noPingStr);
+        const noPing = this.#converter.boolean(noPingStr);
         if (noPing === undefined)
             throw new NotABooleanError(noPing);
 

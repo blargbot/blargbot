@@ -1,13 +1,16 @@
+import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.subtagExists;
 
+@Subtag.id('subtagExists')
+@Subtag.factory()
 export class SubtagExistsSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: 'subtagExists',
             category: SubtagType.BOT,
             definition: [
                 {
@@ -16,9 +19,18 @@ export class SubtagExistsSubtag extends CompiledSubtag {
                     exampleCode: tag.default.exampleCode,
                     exampleOut: tag.default.exampleOut,
                     returns: 'boolean',
-                    execute: (ctx, [subtag]) => ctx.subtags.get(subtag.value) !== undefined
+                    execute: (ctx, [subtag]) => this.subtagExists(ctx, subtag.value)
                 }
             ]
         });
+    }
+
+    public subtagExists(context: BBTagContext, name: string): boolean {
+        try {
+            context.getSubtag(name);
+            return true;
+        } catch {
+            return false;
+        }
     }
 }

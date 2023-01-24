@@ -1,18 +1,24 @@
 import { Lazy } from '@blargbot/core/Lazy.js';
-import { parse } from '@blargbot/core/utils/index.js';
 
 import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { NotAnArrayError, NotANumberError } from '../../errors/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
-import { bbtag, SubtagType } from '../../utils/index.js';
+import type { BBTagArrayTools } from '../../utils/index.js';
+import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.splice;
 
+@Subtag.id('splice')
+@Subtag.factory(Subtag.arrayTools(), Subtag.converter())
 export class SpliceSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #arrayTools: BBTagArrayTools;
+    readonly #converter: BBTagValueConverter;
+
+    public constructor(arrayTools: BBTagArrayTools, converter: BBTagValueConverter) {
         super({
-            name: 'splice',
             category: SubtagType.ARRAY,
             description: tag.description,
             definition: [
@@ -34,6 +40,9 @@ export class SpliceSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#arrayTools = arrayTools;
+        this.#converter = converter;
     }
 
     public async spliceArray(
@@ -43,21 +52,21 @@ export class SpliceSubtag extends CompiledSubtag {
         countStr: string,
         replaceItems: string[]
     ): Promise<JArray> {
-        const arr = await bbtag.tagArray.deserializeOrGetArray(context, arrStr);
-        const fallback = new Lazy(() => parse.int(context.scopes.local.fallback ?? ''));
+        const arr = await this.#arrayTools.deserializeOrGetArray(context, arrStr);
+        const fallback = new Lazy(() => this.#converter.int(context.scopes.local.fallback ?? ''));
 
         if (arr === undefined)
             throw new NotAnArrayError(arrStr);
 
-        const start = parse.int(startStr) ?? fallback.value;
+        const start = this.#converter.int(startStr) ?? fallback.value;
         if (start === undefined)
             throw new NotANumberError(startStr);
 
-        const delCount = parse.int(countStr) ?? fallback.value;
+        const delCount = this.#converter.int(countStr) ?? fallback.value;
         if (delCount === undefined)
             throw new NotANumberError(countStr);
 
-        const insert = bbtag.tagArray.flattenArray(replaceItems);
+        const insert = this.#arrayTools.flattenArray(replaceItems);
         const result = arr.v.splice(start, delCount, ...insert);
         if (arr.n !== undefined)
             await context.variables.set(arr.n, arr.v);

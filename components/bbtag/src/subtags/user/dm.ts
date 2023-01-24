@@ -1,19 +1,25 @@
-import { parse } from '@blargbot/core/utils/index.js';
+import type { Logger } from '@blargbot/logger';
 
 import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagUtilities, BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, UserNotFoundError } from '../../errors/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.dm;
 
+@Subtag.id('dm')
+@Subtag.factory(Subtag.util(), Subtag.converter(), Subtag.logger())
 export class DMSubtag extends CompiledSubtag {
     readonly #dmCache: DMCache = {};
+    readonly #util: BBTagUtilities;
+    readonly #converter: BBTagValueConverter;
+    readonly #logger: Logger;
 
-    public constructor() {
+    public constructor(util: BBTagUtilities, converter: BBTagValueConverter, logger: Logger) {
         super({
-            name: 'dm',
             category: SubtagType.USER,
             definition: [
                 {
@@ -43,6 +49,10 @@ export class DMSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#util = util;
+        this.#converter = converter;
+        this.#logger = logger;
     }
 
     public async sendDm(
@@ -55,8 +65,8 @@ export class DMSubtag extends CompiledSubtag {
         if (member === undefined)
             throw new UserNotFoundError(userStr);
 
-        const messageAsEmbeds = embedStr === undefined ? parse.embed(messageStr, false) : undefined;
-        const embeds = messageAsEmbeds ?? parse.embed(embedStr);
+        const messageAsEmbeds = embedStr === undefined ? this.#converter.embed(messageStr, false) : undefined;
+        const embeds = messageAsEmbeds ?? this.#converter.embed(embedStr);
         const content = messageAsEmbeds === undefined ? messageStr : undefined;
 
         try {
@@ -68,16 +78,16 @@ export class DMSubtag extends CompiledSubtag {
                 cache.guild !== context.guild.id) {
                 // Ew we're gonna send a message first? It was voted...
                 // TODO: Maybe change to a footer embed on every DM? I dont think its possible to disable embeds in DMs
-                await context.util.send(channel, { content: `The following message was sent from **__${context.guild.name}__** (${context.guild.id}), and was sent by **__${context.user.username}#${context.user.discriminator}__** (${context.user.id}):` });
+                await this.#util.send(channel, { content: `The following message was sent from **__${context.guild.name}__** (${context.guild.id}), and was sent by **__${context.user.username}#${context.user.discriminator}__** (${context.user.id}):` });
                 cache = this.#dmCache[member.id] = { user: context.user.id, guild: context.guild.id, count: 1 };
             }
 
             context.data.nsfw === undefined
-                ? await context.util.send(channel, { content, embeds })
-                : await context.util.send(channel, { content: context.data.nsfw });
+                ? await this.#util.send(channel, { content, embeds })
+                : await this.#util.send(channel, { content: context.data.nsfw });
             cache.count++;
         } catch (e: unknown) {
-            context.logger.error('DM failed', e);
+            this.#logger.error('DM failed', e);
             throw new BBTagRuntimeError('Could not send DM');
         }
     }

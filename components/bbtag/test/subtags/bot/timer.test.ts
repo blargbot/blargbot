@@ -1,3 +1,4 @@
+import { Subtag } from '@blargbot/bbtag';
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
 import { TimerSubtag } from '@blargbot/bbtag/subtags/bot/timer.js';
 import { argument } from '@blargbot/test-util/mock.js';
@@ -6,7 +7,7 @@ import moment from 'moment-timezone';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new TimerSubtag(),
+    subtag: Subtag.getDescriptor(TimerSubtag),
     argCountBounds: { min: { count: 2, noEval: [0] }, max: { count: 2, noEval: [0] } },
     cases: [
         {

@@ -1,15 +1,19 @@
 import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagUtilities } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.guildSize;
 
+@Subtag.id('guildSize', 'inGuild')
+@Subtag.factory(Subtag.util())
 export class GuildSizeSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #util: BBTagUtilities;
+
+    public constructor(util: BBTagUtilities) {
         super({
-            name: 'guildSize',
-            aliases: ['inGuild'],
             category: SubtagType.GUILD,
             definition: [
                 {
@@ -22,10 +26,12 @@ export class GuildSizeSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#util = util;
     }
 
     public async getMemberCount(context: BBTagContext): Promise<number> {
-        await context.util.ensureMemberCache(context.guild);
+        await this.#util.ensureMemberCache(context.guild);
         return context.guild.members.size;
     }
 }

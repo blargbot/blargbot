@@ -1,19 +1,23 @@
 import { Lazy } from '@blargbot/core/Lazy.js';
-import { parse, randInt } from '@blargbot/core/utils/index.js';
+import { randInt } from '@blargbot/core/utils/index.js';
 
 import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { NotANumberError } from '../../errors/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.randomInt;
 
+@Subtag.id('randomInt', 'randInt')
+@Subtag.factory(Subtag.converter())
 export class RandomIntSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #converter: BBTagValueConverter;
+
+    public constructor(converter: BBTagValueConverter) {
         super({
-            name: 'randomInt',
-            aliases: ['randInt'],
             category: SubtagType.MATH,
             definition: [
                 {
@@ -26,6 +30,8 @@ export class RandomIntSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#converter = converter;
     }
 
     public randInt(
@@ -33,12 +39,12 @@ export class RandomIntSubtag extends CompiledSubtag {
         minStr: string,
         maxStr: string
     ): number {
-        const fallback = new Lazy(() => parse.int(context.scopes.local.fallback ?? ''));
-        const min = parse.int(minStr) ?? fallback.value;
+        const fallback = new Lazy(() => this.#converter.int(context.scopes.local.fallback ?? ''));
+        const min = this.#converter.int(minStr) ?? fallback.value;
         if (min === undefined)
             throw new NotANumberError(minStr);
 
-        const max = parse.int(maxStr) ?? fallback.value;
+        const max = this.#converter.int(maxStr) ?? fallback.value;
         if (max === undefined)
             throw new NotANumberError(maxStr);
 

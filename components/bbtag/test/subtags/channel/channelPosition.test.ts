@@ -1,3 +1,4 @@
+import { Subtag } from '@blargbot/bbtag';
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
 import { ChannelPositionSubtag } from '@blargbot/bbtag/subtags/channel/channelPosition.js';
 import type Discord from 'discord-api-types/v9';
@@ -7,7 +8,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetChannelPropTestCases } from './_getChannelPropTest.js';
 
 runSubtagTests({
-    subtag: new ChannelPositionSubtag(),
+    subtag: Subtag.getDescriptor(ChannelPositionSubtag),
     argCountBounds: { min: 0, max: 2 },
     cases: [
         ...createGetChannelPropTestCases({

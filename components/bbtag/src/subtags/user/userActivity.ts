@@ -1,16 +1,17 @@
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { UserNotFoundError } from '../../errors/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.userActivity;
 
+@Subtag.id('userActivity', 'userGame')
+@Subtag.factory()
 export class UserActivitySubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: 'userActivity',
-            aliases: ['userGame'],
             category: SubtagType.USER,
             description: tag.description,
             definition: [

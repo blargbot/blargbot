@@ -1,3 +1,4 @@
+import { Subtag } from '@blargbot/bbtag';
 import type { BBTagUtilities } from '@blargbot/bbtag/BBTagUtilities.js';
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
 import { MessageIdSubtag } from '@blargbot/bbtag/subtags/message/messageId.js';
@@ -18,7 +19,7 @@ type AwaitCondition = Exclude<Parameters<BBTagUtilities['awaitReaction']>[1], un
 const anyCondition = argument.is((v): v is AwaitCondition => typeof v === 'function');
 
 runSubtagTests({
-    subtag: new WaitReactionSubtag(),
+    subtag: Subtag.getDescriptor(WaitReactionSubtag),
     argCountBounds: { min: 1, max: { count: 5, noEval: [3] } },
     cases: [
         {
@@ -337,7 +338,7 @@ runSubtagTests({
                 { start: 58, end: 64, error: new MarkerError('eval', 58) },
                 { start: 58, end: 64, error: new MarkerError('eval', 58) }
             ],
-            subtags: [new OperatorSubtag(), new MessageIdSubtag()],
+            subtags: [Subtag.getDescriptor(OperatorSubtag), Subtag.getDescriptor(MessageIdSubtag)],
             setup(ctx) {
                 ctx.channels.command.id = '2384792374232398472';
                 ctx.message.channel_id = ctx.channels.command.id;
@@ -364,7 +365,7 @@ runSubtagTests({
                 { start: 58, end: 64, error: new MarkerError('eval', 58) },
                 { start: 58, end: 64, error: new MarkerError('eval', 58) }
             ],
-            subtags: [new OperatorSubtag(), new ReactionSubtag()],
+            subtags: [Subtag.getDescriptor(OperatorSubtag), Subtag.getDescriptor(ReactionSubtag)],
             setup(ctx) {
                 ctx.channels.command.id = '2384792374232398472';
                 ctx.message.channel_id = ctx.channels.command.id;
@@ -390,7 +391,7 @@ runSubtagTests({
             errors: [
                 { start: 58, end: 64, error: new MarkerError('eval', 58) }
             ],
-            subtags: [new OperatorSubtag(), new ReactionUserSubtag()],
+            subtags: [Subtag.getDescriptor(OperatorSubtag), Subtag.getDescriptor(ReactionUserSubtag)],
             setup(ctx) {
                 ctx.channels.command.id = '2384792374232398472';
                 ctx.message.channel_id = ctx.channels.command.id;

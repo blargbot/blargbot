@@ -1,3 +1,4 @@
+import { Subtag } from '@blargbot/bbtag';
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
 import { ChannelEditSubtag } from '@blargbot/bbtag/subtags/channel/channelEdit.js';
 import { EscapeBBTagSubtag } from '@blargbot/bbtag/subtags/misc/escapeBBTag.js';
@@ -8,7 +9,7 @@ import * as Eris from 'eris';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new ChannelEditSubtag(),
+    subtag: Subtag.getDescriptor(ChannelEditSubtag),
     argCountBounds: { min: 1, max: 2 },
     setupEach(ctx) {
         ctx.roles.authorizer.permissions = Eris.Constants.Permissions.manageChannels.toString();
@@ -95,7 +96,7 @@ runSubtagTests({
                 locked: true
             })}}}`,
             expected: '1293671282973698',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
             setup(ctx) {
                 ctx.channels.general.id = '1293671282973698';
             },
@@ -136,7 +137,7 @@ runSubtagTests({
                 invitable: true
             })}}}`,
             expected: '1293671282973698',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
             setup(ctx) {
                 ctx.channels.general.id = '1293671282973698';
                 ctx.channels.general.type = Discord.ChannelType.GuildPublicThread;
@@ -181,7 +182,7 @@ runSubtagTests({
                 locked: 'true'
             })}}}`,
             expected: '1293671282973698',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
             setup(ctx) {
                 ctx.channels.general.id = '1293671282973698';
             },
@@ -222,7 +223,7 @@ runSubtagTests({
                 invitable: 'true'
             })}}}`,
             expected: '1293671282973698',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
             setup(ctx) {
                 ctx.channels.general.id = '1293671282973698';
                 ctx.channels.general.type = Discord.ChannelType.GuildPublicThread;
@@ -266,7 +267,7 @@ runSubtagTests({
         {
             code: '{channeledit;1293671282973698}',
             expected: '`Author cannot edit this channel`',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
             errors: [
                 { start: 0, end: 30, error: new BBTagRuntimeError('Author cannot edit this channel') }
             ],
@@ -292,7 +293,7 @@ runSubtagTests({
                 invitable: true
             })}}}`,
             expected: '`Invalid JSON`',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
             errors: [
                 { start: 0, end: 168, error: new BBTagRuntimeError('Invalid JSON') }
             ],
@@ -318,7 +319,7 @@ runSubtagTests({
                 locked: true
             })}}}`,
             expected: '`Invalid JSON`',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
             errors: [
                 { start: 0, end: 243, error: new BBTagRuntimeError('Invalid JSON') }
             ],

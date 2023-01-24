@@ -1,6 +1,5 @@
 import { performance } from 'node:perf_hooks';
 
-export default Timer;
 export class Timer {
     #elapsed: number;
     #start: number | undefined;

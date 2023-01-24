@@ -1,4 +1,3 @@
-import { bbtag } from '@blargbot/bbtag';
 import type { ModerationType } from '@blargbot/cluster/utils/index.js';
 import { guard } from '@blargbot/cluster/utils/index.js';
 import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent.js';
@@ -9,6 +8,7 @@ import type * as Eris from 'eris';
 import moment from 'moment-timezone';
 
 import templates from '../../text.js';
+import { bbtagDebugOutput } from '../../utils/bbtagDebugOutput.js';
 import type { ModerationManager } from '../ModerationManager.js';
 import { ModerationManagerBase } from './ModerationManagerBase.js';
 
@@ -81,7 +81,7 @@ export class CensorManager extends ModerationManagerBase {
             });
 
             if (debugCtx?.channelId === message.channel.id)
-                await this.cluster.util.send(message.author, new FormattableMessageContent(bbtag.createDebugOutput(result)));
+                await this.cluster.util.send(message.author, new FormattableMessageContent(bbtagDebugOutput(result)));
         }));
 
         return true;

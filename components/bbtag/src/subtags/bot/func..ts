@@ -1,12 +1,14 @@
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { UnknownSubtagError } from '../../errors/index.js';
+import { Subtag } from '../../Subtag.js';
 import { SubtagType } from '../../utils/index.js';
 
+@Subtag.id('func.')
+@Subtag.factory()
 export class FunctionInvokeSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: 'func.',
             category: SubtagType.BOT,
             hidden: true,
             definition: [

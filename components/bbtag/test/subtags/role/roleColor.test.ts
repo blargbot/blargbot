@@ -1,10 +1,11 @@
+import { Subtag } from '@blargbot/bbtag';
 import { RoleColorSubtag } from '@blargbot/bbtag/subtags/role/roleColor.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetRolePropTestCases } from './_getRolePropTest.js';
 
 runSubtagTests({
-    subtag: new RoleColorSubtag(),
+    subtag: Subtag.getDescriptor(RoleColorSubtag),
     argCountBounds: { min: 1, max: 2 },
     cases: [
         ...createGetRolePropTestCases({

@@ -1,17 +1,20 @@
-import { parse } from '@blargbot/core/utils/index.js';
-
 import type { SubtagArgument } from '../../arguments/index.js';
+import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, NotANumberError } from '../../errors/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.choose;
 
+@Subtag.id('choose')
+@Subtag.factory(Subtag.converter())
 export class ChooseSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #converter: BBTagValueConverter;
+
+    public constructor(converter: BBTagValueConverter) {
         super({
-            name: 'choose',
             category: SubtagType.MISC,
             definition: [
                 {
@@ -24,12 +27,14 @@ export class ChooseSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#converter = converter;
     }
     public choose(
         choice: string,
         options: SubtagArgument[]
     ): Promise<string> | string {
-        const index = parse.int(choice);
+        const index = this.#converter.int(choice);
 
         if (index === undefined)
             throw new NotANumberError(choice);

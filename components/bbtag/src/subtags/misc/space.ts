@@ -1,19 +1,21 @@
-import { parse } from '@blargbot/core/utils/index.js';
-
 import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { NotANumberError } from '../../errors/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.space;
 
+@Subtag.id('space', 's')
+@Subtag.factory(Subtag.converter())
 export class SpaceSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #converter: BBTagValueConverter;
+
+    public constructor(converter: BBTagValueConverter) {
         super({
-            name: 'space',
             category: SubtagType.MISC,
-            aliases: ['s'],
             definition: [
                 {
                     parameters: ['count?:1'],
@@ -25,10 +27,12 @@ export class SpaceSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#converter = converter;
     }
 
-    public getSpaces(ctx: BBTagContext, countStr: string): string {
-        const count = parse.int(countStr) ?? parse.int(ctx.scopes.local.fallback ?? '');
+    public getSpaces(context: BBTagContext, countStr: string): string {
+        const count = this.#converter.int(countStr) ?? this.#converter.int(context.scopes.local.fallback ?? '');
         if (count === undefined)
             throw new NotANumberError(countStr);
 

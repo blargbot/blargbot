@@ -1,19 +1,25 @@
-import { parse } from '@blargbot/core/utils/index.js';
 import { hasProperty } from '@blargbot/guards';
+import type { Logger } from '@blargbot/logger';
 import type * as Eris from 'eris';
 
 import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '../../errors/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.edit;
 
+@Subtag.id('edit')
+@Subtag.factory(Subtag.converter(), Subtag.logger())
 export class EditSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #converter: BBTagValueConverter;
+    readonly #logger: Logger;
+
+    public constructor(converter: BBTagValueConverter, logger: Logger) {
         super({
-            name: 'edit',
             category: SubtagType.MESSAGE,
             description: tag.description,
             definition: [
@@ -76,6 +82,9 @@ export class EditSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#converter = converter;
+        this.#logger = logger;
     }
 
     public async edit(
@@ -92,10 +101,10 @@ export class EditSubtag extends CompiledSubtag {
         let content: string | undefined;
         let embeds: Eris.EmbedOptions[] | undefined;
         if (embedStr !== undefined) {
-            embeds = parse.embed(embedStr);
+            embeds = this.#converter.embed(embedStr);
             content = contentStr;
         } else {
-            const parsedEmbed = parse.embed(contentStr);
+            const parsedEmbed = this.#converter.embed(contentStr);
             if (parsedEmbed === undefined || parsedEmbed.some(e => hasProperty(e, 'malformed'))) {
                 content = contentStr;
             } else {
@@ -124,7 +133,7 @@ export class EditSubtag extends CompiledSubtag {
                 embeds
             });
         } catch (err: unknown) {
-            context.logger.error('Failed to edit message', err);
+            this.#logger.error('Failed to edit message', err);
         }
     }
 }

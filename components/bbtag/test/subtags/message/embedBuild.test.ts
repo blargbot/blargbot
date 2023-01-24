@@ -1,9 +1,10 @@
+import { Subtag } from '@blargbot/bbtag';
 import { InvalidEmbedError } from '@blargbot/bbtag/errors/index.js';
 import { EmbedBuildSubtag } from '@blargbot/bbtag/subtags/message/embedBuild.js';
 import { repeat } from '@blargbot/core/utils/index.js';
 import moment from 'moment-timezone';
 
-import { runSubtagTests, TestDataSubtag } from '../SubtagTestSuite.js';
+import { createDescriptor, runSubtagTests, TestDataSubtag } from '../SubtagTestSuite.js';
 
 const testData = {
     '256': repeat(256, 'a').join(''),
@@ -17,7 +18,7 @@ const testData = {
 };
 
 runSubtagTests({
-    subtag: new EmbedBuildSubtag(),
+    subtag: Subtag.getDescriptor(EmbedBuildSubtag),
     argCountBounds: { min: 1, max: Infinity },
     cases: [
         {
@@ -33,12 +34,12 @@ runSubtagTests({
         },
         {
             code: '{buildembed;title:{testdata;256}}',
-            subtags: [new TestDataSubtag(testData)],
+            subtags: [createDescriptor(new TestDataSubtag(testData))],
             expected: /^{"title":"a{256}"}$/
         },
         {
             code: '{buildembed;title:{testdata;257}}',
-            subtags: [new TestDataSubtag(testData)],
+            subtags: [createDescriptor(new TestDataSubtag(testData))],
             expected: '`Invalid embed: Title too long`',
             errors: [
                 { start: 0, end: 33, error: new InvalidEmbedError('Title too long', testData[257]) }
@@ -50,12 +51,12 @@ runSubtagTests({
         },
         {
             code: '{buildembed;description:{testdata;4096}}',
-            subtags: [new TestDataSubtag(testData)],
+            subtags: [createDescriptor(new TestDataSubtag(testData))],
             expected: /^{"description":"a{4096}"}$/
         },
         {
             code: '{buildembed;description:{testdata;4097}}',
-            subtags: [new TestDataSubtag(testData)],
+            subtags: [createDescriptor(new TestDataSubtag(testData))],
             expected: '`Invalid embed: Description too long`',
             errors: [
                 { start: 0, end: 40, error: new InvalidEmbedError('Description too long', testData[4097]) }
@@ -67,12 +68,12 @@ runSubtagTests({
         },
         {
             code: '{buildembed;footer.text:{testdata;2048}}',
-            subtags: [new TestDataSubtag(testData)],
+            subtags: [createDescriptor(new TestDataSubtag(testData))],
             expected: /^{"footer":{"text":"a{2048}"}}$/
         },
         {
             code: '{buildembed;footer.text:{testdata;2049}}',
-            subtags: [new TestDataSubtag(testData)],
+            subtags: [createDescriptor(new TestDataSubtag(testData))],
             expected: '`Invalid embed: Footer text too long`',
             errors: [
                 { start: 0, end: 40, error: new InvalidEmbedError('Footer text too long', testData[2049]) }
@@ -84,12 +85,12 @@ runSubtagTests({
         },
         {
             code: '{buildembed;author.name:{testdata;256}}',
-            subtags: [new TestDataSubtag(testData)],
+            subtags: [createDescriptor(new TestDataSubtag(testData))],
             expected: /^{"author":{"name":"a{256}"}}$/
         },
         {
             code: '{buildembed;author.name:{testdata;257}}',
-            subtags: [new TestDataSubtag(testData)],
+            subtags: [createDescriptor(new TestDataSubtag(testData))],
             expected: '`Invalid embed: Author name too long`',
             errors: [
                 { start: 0, end: 39, error: new InvalidEmbedError('Author name too long', testData[257]) }
@@ -101,7 +102,7 @@ runSubtagTests({
         },
         {
             code: '{buildembed;fields.name:{testdata;256};fields.value: def}',
-            subtags: [new TestDataSubtag(testData)],
+            subtags: [createDescriptor(new TestDataSubtag(testData))],
             expected: /^{"fields":\[{"name":"a{256}","value":"def"}]}$/
         },
         {
@@ -117,7 +118,7 @@ runSubtagTests({
         },
         {
             code: '{buildembed;fields.name:{testdata;257};fields.value: def}',
-            subtags: [new TestDataSubtag(testData)],
+            subtags: [createDescriptor(new TestDataSubtag(testData))],
             expected: '`Invalid embed: Field name too long`',
             errors: [
                 { start: 0, end: 57, error: new InvalidEmbedError('Field name too long', testData[257]) }
@@ -139,12 +140,12 @@ runSubtagTests({
         },
         {
             code: '{buildembed;fields.name: abc;fields.value:{testdata;1024}}',
-            subtags: [new TestDataSubtag(testData)],
+            subtags: [createDescriptor(new TestDataSubtag(testData))],
             expected: /^{"fields":\[{"name":"abc","value":"a{1024}"}]}$/
         },
         {
             code: '{buildembed;fields.name: abc;fields.value:{testdata;1025}}',
-            subtags: [new TestDataSubtag(testData)],
+            subtags: [createDescriptor(new TestDataSubtag(testData))],
             expected: '`Invalid embed: Field value too long`',
             errors: [
                 { start: 0, end: 58, error: new InvalidEmbedError('Field value too long', testData[1025]) }
@@ -312,7 +313,7 @@ runSubtagTests({
         },
         {
             code: '{buildembed;title:{testdata;256};description:{testdata;4096};footer.text:{testdata;2048}}',
-            subtags: [new TestDataSubtag(testData)],
+            subtags: [createDescriptor(new TestDataSubtag(testData))],
             expected: '`Invalid embed: Embed too long`',
             errors: [
                 { start: 0, end: 89, error: new InvalidEmbedError('Embed too long', `{"title":"${testData[256]}","description":"${testData[4096]}","footer":{"text":"${testData[2048]}"}}`) }

@@ -1,13 +1,18 @@
 import { CompiledSubtag } from '../../compilation/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
-import { bbtag, SubtagType } from '../../utils/index.js';
+import type { BBTagArrayTools } from '../../utils/index.js';
+import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.isArray;
 
+@Subtag.id('isArray')
+@Subtag.factory(Subtag.arrayTools())
 export class IsArraySubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #arrayTools: BBTagArrayTools;
+
+    public constructor(arrayTools: BBTagArrayTools) {
         super({
-            name: 'isArray',
             category: SubtagType.ARRAY,
             definition: [
                 {
@@ -20,10 +25,12 @@ export class IsArraySubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#arrayTools = arrayTools;
     }
 
     public isArray(arrayStr: string): boolean {
-        const array = bbtag.tagArray.deserialize(arrayStr);
+        const array = this.#arrayTools.deserialize(arrayStr);
         return array !== undefined;
     }
 }

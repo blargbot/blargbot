@@ -1,17 +1,16 @@
 import type { ChoiceQueryResult, EntityPickQueryOptions } from '@blargbot/core/types.js';
 import { discord } from '@blargbot/core/utils/discord/index.js';
-import { guard, hasFlag, humanize, parse } from '@blargbot/core/utils/index.js';
-import type { Database } from '@blargbot/database';
+import { guard, humanize } from '@blargbot/core/utils/index.js';
 import { Emote } from '@blargbot/discord-emote';
-import type { FlagDefinition, FlagResult, NamedGuildCommandTag, StoredTag } from '@blargbot/domain/models/index.js';
-import type { Logger } from '@blargbot/logger';
+import type { NamedGuildCommandTag, StoredTag } from '@blargbot/domain/models/index.js';
+import type { FlagDefinition, FlagResult } from '@blargbot/flags';
+import { hasFlag } from '@blargbot/guards';
 import { Timer } from '@blargbot/timer';
 import * as Eris from 'eris';
 import type moment from 'moment-timezone';
 import ReadWriteLock from 'rwlock';
 
 import type { BBTagEngine } from './BBTagEngine.js';
-import type { BBTagUtilities } from './BBTagUtilities.js';
 import { VariableCache } from './Caching.js';
 import type { BBTagRuntimeError } from './errors/index.js';
 import { SubtagStackOverflowError, UnknownSubtagError } from './errors/index.js';
@@ -38,6 +37,7 @@ export class BBTagContext implements BBTagContextOptions {
     #isStaffPromise?: Promise<boolean>;
     #parent?: BBTagContext;
 
+    public readonly engine: BBTagEngine;
     public readonly message: BBTagContextMessage;
     public readonly inputRaw: string;
     public readonly input: string[];
@@ -73,11 +73,7 @@ export class BBTagContext implements BBTagContextOptions {
     public get member(): Eris.Member | undefined { return (this.message.member as Eris.Member | null) ?? undefined; }
     public get guild(): Eris.Guild { return this.message.channel.guild; }
     public get user(): Eris.User { return this.message.author; }
-    public get database(): Database { return this.engine.database; }
-    public get logger(): Logger { return this.engine.logger; }
-    public get util(): BBTagUtilities { return this.engine.util; }
     public get discord(): Eris.Client { return this.engine.discord; }
-    public get subtags(): ReadonlyMap<string, Subtag> { return this.engine.subtags; }
     public get cooldownEnd(): moment.Moment { return this.cooldowns.get(this); }
 
     public get bot(): Eris.Member {
@@ -94,9 +90,10 @@ export class BBTagContext implements BBTagContextOptions {
     }
 
     public constructor(
-        public readonly engine: BBTagEngine,
+        engine: BBTagEngine,
         options: BBTagContextOptions
     ) {
+        this.engine = engine;
         this.message = options.message;
         this.prefix = options.prefix;
         this.inputRaw = options.inputRaw;
@@ -118,12 +115,12 @@ export class BBTagContext implements BBTagContextOptions {
         this.locks = options.locks ?? {};
         this.limit = typeof options.limit === 'string' ? new limits[options.limit](this.guild) : options.limit;
         this.silent = options.silent ?? false;
-        this.flaggedInput = parse.flags(this.flags, this.inputRaw);
+        this.flaggedInput = engine.dependencies.parseFlags(this.flags, this.inputRaw);
         this.errors = [];
         this.debug = [];
         this.scopes = options.scopes ?? new ScopeManager();
         this.callStack = options.callStack ?? new SubtagCallStack();
-        this.variables = options.variables ?? new VariableCache(this, tagVariableScopeProviders);
+        this.variables = options.variables ?? new VariableCache(this, tagVariableScopeProviders, this.engine.database.tagVariables, this.engine.logger);
         this.execTimer = new Timer();
         this.dbTimer = new Timer();
         this.dbObjectsCommitted = 0;
@@ -256,11 +253,11 @@ export class BBTagContext implements BBTagContextOptions {
     }
 
     public getSubtag(name: string): Subtag {
-        let result = this.subtags.get(name);
+        let result = this.engine.subtags.get(name);
         if (result !== undefined)
             return result;
 
-        result = this.subtags.get(`${name.split('.', 1)[0]}.`);
+        result = this.engine.subtags.get(`${name.split('.', 1)[0]}.`);
         if (result !== undefined)
             return result;
 
@@ -272,10 +269,23 @@ export class BBTagContext implements BBTagContextOptions {
         return error.display ?? this.scopes.local.fallback ?? `\`${error.message}\``;
     }
 
+    public async bulkLookup<T>(source: string, lookup: (value: string) => Awaitable<T | undefined>, error: new (term: string) => BBTagRuntimeError): Promise<T[] | undefined> {
+        if (source === '')
+            return undefined;
+
+        const flatSource = this.engine.dependencies.arrayTools.flattenArray([source]).map(i => this.engine.dependencies.converter.string(i));
+        return await Promise.all(flatSource.map(async input => {
+            const element = await lookup(input);
+            if (element === undefined)
+                throw new error(input);
+            return element;
+        }));
+    }
+
     public async queryUser(query: string | undefined, options: FindEntityOptions = {}): Promise<Eris.User | undefined> {
         if (query === '' || query === undefined || query === this.user.id)
             return this.user;
-        const user = await this.util.getUser(query);
+        const user = await this.engine.util.getUser(query);
         if (user !== undefined)
             return user;
         const member = await this.queryMember(query, options);
@@ -287,9 +297,9 @@ export class BBTagContext implements BBTagContextOptions {
             return this.member;
         return await this.#queryEntity(
             query, 'user', 'User',
-            async (id) => await this.util.getMember(this.guild, id),
-            async (query) => await this.util.findMembers(this.guild, query),
-            async (options) => await this.util.queryMember(options),
+            async (id) => await this.engine.util.getMember(this.guild, id),
+            async (query) => await this.engine.util.findMembers(this.guild, query),
+            async (options) => await this.engine.util.queryMember(options),
             options
         );
     }
@@ -297,9 +307,9 @@ export class BBTagContext implements BBTagContextOptions {
     public async queryRole(query: string, options: FindEntityOptions = {}): Promise<Eris.Role | undefined> {
         return await this.#queryEntity(
             query, 'role', 'Role',
-            async (id) => await this.util.getRole(this.guild, id),
-            async (query) => await this.util.findRoles(this.guild, query),
-            async (options) => await this.util.queryRole(options),
+            async (id) => await this.engine.util.getRole(this.guild, id),
+            async (query) => await this.engine.util.findRoles(this.guild, query),
+            async (options) => await this.engine.util.queryRole(options),
             options
         );
     }
@@ -310,11 +320,11 @@ export class BBTagContext implements BBTagContextOptions {
         return await this.#queryEntity(
             query, 'channel', 'Channel',
             async (id) => {
-                const channel = await this.util.getChannel(this.guild, id);
+                const channel = await this.engine.util.getChannel(this.guild, id);
                 return channel !== undefined && guard.isGuildChannel(channel) && channel.guild.id === this.guild.id ? channel : undefined;
             },
-            async (query) => await this.util.findChannels(this.guild, query),
-            async (options) => await this.util.queryChannel(options),
+            async (query) => await this.engine.util.findChannels(this.guild, query),
+            async (options) => await this.engine.util.queryChannel(options),
             options
         );
     }
@@ -324,9 +334,9 @@ export class BBTagContext implements BBTagContextOptions {
             return this.channel;
         return await this.#queryEntity(
             query ?? '', 'channel', 'Thread',
-            async (id) => threadsOnly(await this.util.getChannel(this.guild, id)),
-            async (query) => threadsOnly(await this.util.findChannels(this.guild, query)),
-            async (options) => await this.util.queryChannel(options),
+            async (id) => threadsOnly(await this.engine.util.getChannel(this.guild, id)),
+            async (query) => threadsOnly(await this.engine.util.findChannels(this.guild, query)),
+            async (options) => await this.engine.util.queryChannel(options),
             options
         );
     }
@@ -337,7 +347,7 @@ export class BBTagContext implements BBTagContextOptions {
         if (!force && channel.id === this.channel.id && (messageId === this.message.id || messageId === '') && this.message instanceof Eris.Message)
             return this.message;
 
-        return await this.util.getMessage(channel, messageId, force);
+        return await this.engine.util.getMessage(channel, messageId, force);
     }
 
     async #queryEntity<T extends { id: string; }>(
@@ -364,7 +374,7 @@ export class BBTagContext implements BBTagContextOptions {
             case 'FAILED':
             case 'NO_OPTIONS':
                 if (!noErrors) {
-                    await this.util.send(this.channel, { content: `No ${type.toLowerCase()} matching \`${queryString}\` found in ${this.isCC ? 'custom command' : 'tag'} \`${this.rootTagName}\`.` });
+                    await this.engine.util.send(this.channel, { content: `No ${type.toLowerCase()} matching \`${queryString}\` found in ${this.isCC ? 'custom command' : 'tag'} \`${this.rootTagName}\`.` });
                     this.data.query.count++;
                 }
                 return undefined;
@@ -372,7 +382,7 @@ export class BBTagContext implements BBTagContextOptions {
             case 'CANCELLED':
                 this.data.query.count = Infinity;
                 if (!noErrors)
-                    await this.util.send(this.channel, { content: `${type} query canceled in ${this.isCC ? 'custom command' : 'tag'} \`${this.rootTagName}\`.` });
+                    await this.engine.util.send(this.channel, { content: `${type} query canceled in ${this.isCC ? 'custom command' : 'tag'} \`${this.rootTagName}\`.` });
                 return undefined;
             case 'SUCCESS':
                 this.data.query[cacheKey][queryString] = result.value.id;
@@ -408,7 +418,7 @@ export class BBTagContext implements BBTagContextOptions {
             });
 
             if (response !== undefined) {
-                await this.util.addReactions(response, [...new Set(this.data.reactions)].map(Emote.parse));
+                await this.engine.util.addReactions(response, [...new Set(this.data.reactions)].map(Emote.parse));
                 this.data.ownedMsgs.push(response.id);
                 return response.id;
             }
@@ -419,7 +429,7 @@ export class BBTagContext implements BBTagContextOptions {
                     return undefined;
                 throw err;
             }
-            this.logger.error('Failed to send message', err);
+            this.engine.logger.error('Failed to send message', err);
             throw new Error('Failed to send message');
         }
     }

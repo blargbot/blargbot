@@ -6,6 +6,7 @@ import { quickMock } from '@blargbot/test-util/quickMock.js';
 import { runFormatTreeTests } from '@blargbot/test-util/runFormatTreeTests.js';
 import mocha from 'mocha';
 
+@Subtag.id('')
 class TestSubtag extends Subtag {
     protected executeCore: Subtag['executeCore'] = () => {
         throw new Error('Method not implemented');
@@ -13,7 +14,6 @@ class TestSubtag extends Subtag {
 }
 const subtag = (): Subtag => new TestSubtag({
     category: SubtagType.MISC,
-    name: '',
     signatures: []
 });
 

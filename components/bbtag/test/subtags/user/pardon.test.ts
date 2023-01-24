@@ -1,3 +1,4 @@
+import { Subtag } from '@blargbot/bbtag';
 import { NotANumberError, UserNotFoundError } from '@blargbot/bbtag/errors/index.js';
 import { PardonSubtag } from '@blargbot/bbtag/subtags/user/pardon.js';
 import { argument } from '@blargbot/test-util/mock.js';
@@ -6,7 +7,7 @@ import * as Eris from 'eris';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new PardonSubtag(),
+    subtag: Subtag.getDescriptor(PardonSubtag),
     argCountBounds: { min: 0, max: 3 },
     cases: [
         {

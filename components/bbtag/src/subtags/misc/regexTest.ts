@@ -1,13 +1,15 @@
 import { RegexSubtag } from '../../RegexSubtag.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.regexTest;
 
+@Subtag.id('regexTest')
+@Subtag.factory()
 export class RegexTestSubtag extends RegexSubtag {
     public constructor() {
         super({
-            name: 'regexTest',
             category: SubtagType.MISC,
             definition: [
                 {

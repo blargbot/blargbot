@@ -1,3 +1,4 @@
+import { Subtag } from '@blargbot/bbtag';
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
 import { HashSubtag } from '@blargbot/bbtag/subtags/misc/hash.js';
 
@@ -8,7 +9,7 @@ function hashMissing(algorithm: string): boolean {
 }
 
 runSubtagTests({
-    subtag: new HashSubtag(),
+    subtag: Subtag.getDescriptor(HashSubtag),
     argCountBounds: { min: 1, max: 2 },
     cases: [
         { code: '{hash;brown}', expected: '94011702' },

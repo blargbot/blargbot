@@ -120,6 +120,7 @@ __metadata:
     "@blargbot/database": "workspace:^"
     "@blargbot/discord-emote": "workspace:^"
     "@blargbot/domain": "workspace:^"
+    "@blargbot/flags": "workspace:^"
     "@blargbot/formatting": "workspace:^"
     "@blargbot/logger": "workspace:^"
     "@blargbot/test-util": "workspace:^"
@@ -148,11 +149,13 @@ __metadata:
   resolution: "@blargbot/bbtag@workspace:components/bbtag/src"
   dependencies:
     "@blargbot/application": "workspace:^"
+    "@blargbot/async-tools": "workspace:^"
     "@blargbot/config": "workspace:^"
     "@blargbot/core": "workspace:^"
     "@blargbot/database": "workspace:^"
     "@blargbot/discord-emote": "workspace:^"
     "@blargbot/domain": "workspace:^"
+    "@blargbot/flags": "workspace:^"
     "@blargbot/formatting": "workspace:^"
     "@blargbot/guards": "workspace:^"
     "@blargbot/logger": "workspace:^"
@@ -215,6 +218,7 @@ __metadata:
     "@blargbot/database": "workspace:^"
     "@blargbot/discord-emote": "workspace:^"
     "@blargbot/domain": "workspace:^"
+    "@blargbot/flags": "workspace:^"
     "@blargbot/formatting": "workspace:^"
     "@blargbot/guards": "workspace:^"
     "@blargbot/image-types": "workspace:^"
@@ -331,6 +335,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@blargbot/database@workspace:components/database/src"
   dependencies:
+    "@blargbot/async-tools": "workspace:^"
     "@blargbot/chatlog-types": "workspace:^"
     "@blargbot/config": "workspace:^"
     "@blargbot/core": "workspace:^"
@@ -412,6 +417,7 @@ __metadata:
   resolution: "@blargbot/domain@workspace:components/domain/src"
   dependencies:
     "@blargbot/chatlog-types": "workspace:^"
+    "@blargbot/flags": "workspace:^"
     "@blargbot/formatting": "workspace:^"
     moment-timezone: ^0.5.40
   languageName: unknown
@@ -423,9 +429,32 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@blargbot/flags@workspace:^, @blargbot/flags@workspace:components/flags/src":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/flags@workspace:components/flags/src"
+  dependencies:
+    "@blargbot/guards": "workspace:^"
+  languageName: unknown
+  linkType: soft
+
 "@blargbot/formatting@workspace:^, @blargbot/formatting@workspace:components/formatting/src":
   version: 0.0.0-use.local
   resolution: "@blargbot/formatting@workspace:components/formatting/src"
+  languageName: unknown
+  linkType: soft
+
+"@blargbot/guards-tests@workspace:components/guards/test":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/guards-tests@workspace:components/guards/test"
+  dependencies:
+    "@blargbot/guards": "workspace:^"
+    "@types/chai": ^4.3.4
+    "@types/eris": "workspace:^"
+    "@types/mocha": ^10.0.1
+    chai: ^4.3.7
+    cross-env: ^7.0.3
+    mocha: ^10.2.0
+    ts-mockito: ^2.6.1
   languageName: unknown
   linkType: soft
 

@@ -1,10 +1,11 @@
+import { Subtag } from '@blargbot/bbtag';
 import { WarnSubtag } from '@blargbot/bbtag/subtags/user/warn.js';
 import * as Eris from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new WarnSubtag(),
+    subtag: Subtag.getDescriptor(WarnSubtag),
     argCountBounds: { min: 0, max: 3 },
     cases: [
         {

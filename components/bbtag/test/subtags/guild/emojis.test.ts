@@ -1,9 +1,10 @@
+import { Subtag } from '@blargbot/bbtag';
 import { EmojisSubtag } from '@blargbot/bbtag/subtags/guild/emojis.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new EmojisSubtag(),
+    subtag: Subtag.getDescriptor(EmojisSubtag),
     argCountBounds: { min: 0, max: 1 },
     setupEach(ctx) {
         ctx.roles.other.id = '329476274682462386432';

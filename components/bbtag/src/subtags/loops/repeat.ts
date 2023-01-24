@@ -1,21 +1,23 @@
-import { parse } from '@blargbot/core/utils/index.js';
-
 import type { SubtagArgument } from '../../arguments/index.js';
 import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, NotANumberError } from '../../errors/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { BBTagRuntimeState } from '../../types.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.repeat;
 
+@Subtag.id('repeat', 'loop')
+@Subtag.factory(Subtag.converter())
 export class RepeatSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #converter: BBTagValueConverter;
+
+    public constructor(converter: BBTagValueConverter) {
         super({
-            name: 'repeat',
             category: SubtagType.LOOPS,
-            aliases: ['loop'],
             definition: [
                 {
                     parameters: ['~code', 'amount'],
@@ -27,13 +29,15 @@ export class RepeatSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#converter = converter;
     }
     public async* repeat(
         context: BBTagContext,
         amountStr: string,
         code: SubtagArgument
     ): AsyncIterable<string> {
-        const amount = parse.int(amountStr) ?? parse.int(context.scopes.local.fallback ?? '');
+        const amount = this.#converter.int(amountStr) ?? this.#converter.int(context.scopes.local.fallback ?? '');
         if (amount === undefined)
             throw new NotANumberError(amountStr);
         if (amount < 0)

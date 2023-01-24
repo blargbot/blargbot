@@ -1,9 +1,10 @@
+import { Subtag } from '@blargbot/bbtag';
 import { CapitalizeSubtag } from '@blargbot/bbtag/subtags/misc/capitalize.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new CapitalizeSubtag(),
+    subtag: Subtag.getDescriptor(CapitalizeSubtag),
     argCountBounds: { min: 1, max: 2 },
     cases: [
         {

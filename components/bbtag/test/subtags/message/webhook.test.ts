@@ -1,3 +1,4 @@
+import { Subtag } from '@blargbot/bbtag';
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
 import { WebhookSubtag } from '@blargbot/bbtag/subtags/message/webhook.js';
 import { EscapeBBTagSubtag } from '@blargbot/bbtag/subtags/misc/escapeBBTag.js';
@@ -7,12 +8,12 @@ import chai from 'chai';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new WebhookSubtag(),
+    subtag: Subtag.getDescriptor(WebhookSubtag),
     argCountBounds: { min: 2, max: 8 },
     cases: [
         {
             code: '{webhook;abc;def}',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
             expected: '`Error executing webhook: Test error`',
             errors: [
                 { start: 0, end: 17, error: new BBTagRuntimeError('Error executing webhook: Test error') }
@@ -29,7 +30,7 @@ runSubtagTests({
         },
         {
             code: '{webhook;abc;def}',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
             expected: '`Error executing webhook: 404 NotFound on POST /webhooks`',
             errors: [
                 { start: 0, end: 17, error: new BBTagRuntimeError('Error executing webhook: 404 NotFound on POST /webhooks') }
@@ -46,7 +47,7 @@ runSubtagTests({
         },
         {
             code: '{webhook;abc;def}',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
             expected: '`Error executing webhook: UNKNOWN`',
             errors: [
                 { start: 0, end: 17, error: new BBTagRuntimeError('Error executing webhook: UNKNOWN') }
@@ -66,7 +67,7 @@ runSubtagTests({
         },
         {
             code: '{webhook;abc;def}',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
             expected: '',
             setup(ctx) {
                 ctx.discord.setup(m => m.executeWebhook('abc', 'def', argument.isDeepEqual({
@@ -80,7 +81,7 @@ runSubtagTests({
         },
         {
             code: '{webhook;abc;def;ghi}',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
             expected: '',
             setup(ctx) {
                 ctx.discord.setup(m => m.executeWebhook('abc', 'def', argument.isDeepEqual({
@@ -94,7 +95,7 @@ runSubtagTests({
         },
         {
             code: '{webhook;abc;def;ghi;{escapebbtag;{"color":"This isnt an embed"}}}',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
             expected: '',
             setup(ctx) {
                 ctx.discord.setup(m => m.executeWebhook('abc', 'def', argument.isDeepEqual({
@@ -108,7 +109,7 @@ runSubtagTests({
         },
         {
             code: '{webhook;abc;def;ghi;{escapebbtag;{"title":"My cool embed"}}}',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
             expected: '',
             setup(ctx) {
                 ctx.discord.setup(m => m.executeWebhook('abc', 'def', argument.isDeepEqual({
@@ -122,7 +123,7 @@ runSubtagTests({
         },
         {
             code: '{webhook;abc;def;ghi;{escapebbtag;{"title":"My cool embed"}};jkl}',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
             expected: '',
             setup(ctx) {
                 ctx.discord.setup(m => m.executeWebhook('abc', 'def', argument.isDeepEqual({
@@ -136,7 +137,7 @@ runSubtagTests({
         },
         {
             code: '{webhook;abc;def;ghi;{escapebbtag;{"title":"My cool embed"}};jkl;mno}',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
             expected: '',
             setup(ctx) {
                 ctx.discord.setup(m => m.executeWebhook('abc', 'def', argument.isDeepEqual({
@@ -150,7 +151,7 @@ runSubtagTests({
         },
         {
             code: '{webhook;abc;def;ghi;{escapebbtag;{"title":"My cool embed"}};jkl;mno;pqrs}',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
             expected: '',
             setup(ctx) {
                 ctx.discord.setup(m => m.executeWebhook('abc', 'def', argument.isDeepEqual({
@@ -164,7 +165,7 @@ runSubtagTests({
         },
         {
             code: '{webhook;abc;def;ghi;{escapebbtag;{"title":"My cool embed"}};jkl;mno;buffer:pqrs}',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
             expected: '',
             setup(ctx) {
                 ctx.discord.setup(m => m.executeWebhook('abc', 'def', argument.isDeepEqual({
@@ -178,7 +179,7 @@ runSubtagTests({
         },
         {
             code: '{webhook;abc;def;ghi;{escapebbtag;{"title":"My cool embed"}};jkl;mno;pqrs;tuv}',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
             expected: '',
             setup(ctx) {
                 ctx.discord.setup(m => m.executeWebhook('abc', 'def', argument.isDeepEqual({
@@ -192,7 +193,7 @@ runSubtagTests({
         },
         {
             code: '{webhook;abc;def;ghi;{escapebbtag;{"title":"My cool embed"}};jkl;mno;buffer:pqrs;tuv}',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
             expected: '',
             setup(ctx) {
                 ctx.discord.setup(m => m.executeWebhook('abc', 'def', argument.isDeepEqual({

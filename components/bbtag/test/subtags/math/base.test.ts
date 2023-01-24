@@ -1,10 +1,11 @@
+import { Subtag } from '@blargbot/bbtag';
 import { BBTagRuntimeError, NotANumberError } from '@blargbot/bbtag/errors/index.js';
 import { BaseNumberSubtag } from '@blargbot/bbtag/subtags/math/base.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new BaseNumberSubtag(),
+    subtag: Subtag.getDescriptor(BaseNumberSubtag),
     argCountBounds: { min: 2, max: 3 },
     cases: [
         { code: '{base;10;16}', expected: 'a' },

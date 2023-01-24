@@ -1,16 +1,19 @@
-import { parse } from '@blargbot/core/utils/index.js';
-
+import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, NotANumberError } from '../../errors/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.realPad;
 
+@Subtag.id('realPad')
+@Subtag.factory(Subtag.converter())
 export class RealPadSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #converter: BBTagValueConverter;
+
+    public constructor(converter: BBTagValueConverter) {
         super({
-            name: 'realPad',
             category: SubtagType.MISC,
             definition: [
                 {
@@ -31,6 +34,8 @@ export class RealPadSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#converter = converter;
     }
 
     public realPad(
@@ -39,7 +44,7 @@ export class RealPadSubtag extends CompiledSubtag {
         filler: string,
         directionStr: string
     ): string {
-        const length = parse.int(lengthStr);
+        const length = this.#converter.int(lengthStr);
         if (length === undefined)
             throw new NotANumberError(lengthStr);
 

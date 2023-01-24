@@ -1,9 +1,10 @@
+import { Subtag } from '@blargbot/bbtag';
 import { CommentSubtag } from '@blargbot/bbtag/subtags/misc/comment.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new CommentSubtag(),
+    subtag: Subtag.getDescriptor(CommentSubtag),
     argCountBounds: { min: 0, max: Infinity },
     cases: [
         { code: '{comment}', expected: '' },

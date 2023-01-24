@@ -5,16 +5,18 @@ import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
 import { getLock } from '../../getLock.js';
+import { Subtag } from '../../Subtag.js';
 import { tagVariableScopeProviders } from '../../tagVariableScopeProviders.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.lock;
 
+@Subtag.id('lock')
+@Subtag.factory()
 export class LockSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: 'lock',
             category: SubtagType.BOT,
             definition: [
                 {

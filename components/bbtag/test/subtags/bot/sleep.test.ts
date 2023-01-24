@@ -1,3 +1,4 @@
+import { Subtag } from '@blargbot/bbtag';
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
 import { SleepSubtag } from '@blargbot/bbtag/subtags/bot/sleep.js';
 import chai from 'chai';
@@ -5,7 +6,7 @@ import chai from 'chai';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new SleepSubtag(),
+    subtag: Subtag.getDescriptor(SleepSubtag),
     argCountBounds: { min: 1, max: 1 },
     cases: [
         {

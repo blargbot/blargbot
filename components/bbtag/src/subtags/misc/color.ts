@@ -4,17 +4,22 @@ import Color from 'color';
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
-import { bbtag, SubtagType } from '../../utils/index.js';
+import type { BBTagArrayTools } from '../../utils/index.js';
+import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.color;
 
 export type ColorFormat = keyof typeof colorConverters;
 
+@Subtag.id('color')
+@Subtag.factory(Subtag.arrayTools())
 export class ColorSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #arrayTools: BBTagArrayTools;
+
+    public constructor(arrayTools: BBTagArrayTools) {
         super({
-            name: 'color',
             category: SubtagType.MISC,
             description: tag.description, //TODO document the other formats too perhaps? As these are supported/working. (lab, lch, ansi256, hcg, apple, gray, xyz)
             definition: [
@@ -36,6 +41,8 @@ export class ColorSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#arrayTools = arrayTools;
     }
 
     public async parseColor(
@@ -47,7 +54,7 @@ export class ColorSubtag extends CompiledSubtag {
         if (colorStr === '')
             throw new BBTagRuntimeError('Invalid color', 'value was empty');
 
-        const arr = await bbtag.tagArray.deserializeOrGetArray(context, colorStr);
+        const arr = await this.#arrayTools.deserializeOrGetArray(context, colorStr);
         const input = arr?.v.map(elem => elem?.toString()).join(',') ?? colorStr;
 
         const inputConverter = getConverter(inputStr ?? '');

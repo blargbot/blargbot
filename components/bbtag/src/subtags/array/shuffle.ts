@@ -3,15 +3,20 @@ import { shuffle } from '@blargbot/core/utils/index.js';
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { NotAnArrayError } from '../../errors/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
-import { bbtag, SubtagType } from '../../utils/index.js';
+import type { BBTagArrayTools } from '../../utils/index.js';
+import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.shuffle;
 
+@Subtag.id('shuffle')
+@Subtag.factory(Subtag.arrayTools())
 export class ShuffleSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #arrayTools: BBTagArrayTools;
+
+    public constructor(arrayTools: BBTagArrayTools) {
         super({
-            name: 'shuffle',
             category: SubtagType.ARRAY,
             definition: [
                 {
@@ -33,6 +38,8 @@ export class ShuffleSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#arrayTools = arrayTools;
     }
 
     public shuffleInput(context: BBTagContext): void {
@@ -40,7 +47,7 @@ export class ShuffleSubtag extends CompiledSubtag {
     }
 
     public async shuffle(context: BBTagContext, array: string): Promise<JArray | undefined> {
-        const arr = bbtag.tagArray.deserialize(array);
+        const arr = this.#arrayTools.deserialize(array);
         if (arr === undefined)
             throw new NotAnArrayError(array);
 

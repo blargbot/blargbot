@@ -1,16 +1,19 @@
-import { parse } from '@blargbot/core/utils/index.js';
-
 import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.embed;
 
+@Subtag.id('embed')
+@Subtag.factory(Subtag.converter())
 export class EmbedSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #converter: BBTagValueConverter;
+
+    public constructor(converter: BBTagValueConverter) {
         super({
-            name: 'embed',
             category: SubtagType.MESSAGE,
             definition: [
                 {
@@ -23,10 +26,12 @@ export class EmbedSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#converter = converter;
     }
 
     public setEmbed(context: BBTagContext, embedStr: string[]): void {
-        context.data.embeds = embedStr.flatMap(e => parse.embed(e) ?? []);
+        context.data.embeds = embedStr.flatMap(e => this.#converter.embed(e) ?? []);
 
     }
 }

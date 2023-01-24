@@ -1,9 +1,10 @@
+import { Subtag } from '@blargbot/bbtag';
 import { LangSubtag } from '@blargbot/bbtag/subtags/misc/lang.js';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new LangSubtag(),
+    subtag: Subtag.getDescriptor(LangSubtag),
     argCountBounds: { min: 1, max: 1 },
     cases: [
         { code: '{lang;}', expected: '' },

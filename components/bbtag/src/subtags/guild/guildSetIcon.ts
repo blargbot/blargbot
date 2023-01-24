@@ -1,4 +1,3 @@
-import { parse } from '@blargbot/core/utils/parse/index.js';
 import { isUrl } from '@blargbot/guards';
 import * as Eris from 'eris';
 import fetch from 'node-fetch';
@@ -6,15 +5,17 @@ import fetch from 'node-fetch';
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.guildSetIcon;
 
+@Subtag.id('guildSetIcon')
+@Subtag.factory()
 export class GuildSetIconSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: 'guildSetIcon',
             category: SubtagType.GUILD,
             definition: [
                 {
@@ -34,7 +35,8 @@ export class GuildSetIconSubtag extends CompiledSubtag {
         if (!context.hasPermission('manageGuild'))
             throw new BBTagRuntimeError('Author cannot modify the guild');
 
-        image = parse.url(image);
+        if (image.startsWith('<') && image.endsWith('>'))
+            image = image.slice(1, -1);
         if (isUrl(image)) {
             const res = await fetch(image);
             const contentType = res.headers.get('content-type');

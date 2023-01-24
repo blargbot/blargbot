@@ -1,13 +1,15 @@
 import { CompiledSubtag } from '../../compilation/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.lb;
 
+@Subtag.id('lb')
+@Subtag.factory()
 export class LbSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: 'lb',
             category: SubtagType.SIMPLE,
             description: tag.description,
             definition: [

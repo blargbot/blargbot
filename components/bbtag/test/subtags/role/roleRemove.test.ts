@@ -1,3 +1,4 @@
+import { Subtag } from '@blargbot/bbtag';
 import { BBTagRuntimeError, RoleNotFoundError, UserNotFoundError } from '@blargbot/bbtag/errors/index.js';
 import { RoleRemoveSubtag } from '@blargbot/bbtag/subtags/role/roleRemove.js';
 import { argument } from '@blargbot/test-util/mock.js';
@@ -6,7 +7,7 @@ import * as Eris from 'eris';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new RoleRemoveSubtag(),
+    subtag: Subtag.getDescriptor(RoleRemoveSubtag),
     argCountBounds: { min: 1, max: 3 },
     setupEach(ctx) {
         ctx.roles.authorizer.permissions = Eris.Constants.Permissions.manageRoles.toString();

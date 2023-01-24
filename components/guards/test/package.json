@@ -1,0 +1,25 @@
+{
+    "name": "@blargbot/guards-tests",
+    "version": "1.0.0",
+    "private": true,
+    "type": "module",
+    "exports": {
+        ".": "./index.js",
+        "./*": "./*"
+    },
+    "scripts": {
+        "test": "cross-env TZ=utc mocha --config mocharc.json --recursive --parallel --reporter dot \"**/*.test.js\""
+    },
+    "dependencies": {
+        "@blargbot/guards": "workspace:^",
+        "chai": "^4.3.7",
+        "mocha": "^10.2.0",
+        "ts-mockito": "^2.6.1"
+    },
+    "devDependencies": {
+        "@types/chai": "^4.3.4",
+        "@types/eris": "workspace:^",
+        "@types/mocha": "^10.0.1",
+        "cross-env": "^7.0.3"
+    }
+}

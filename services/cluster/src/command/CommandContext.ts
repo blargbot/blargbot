@@ -6,7 +6,7 @@ import { FormattableMessageContent } from '@blargbot/core/FormattableMessageCont
 import type { ChoiceQueryOptions, ChoiceQueryResult, ConfirmQuery, MultipleQueryOptions, MultipleQueryResult, SendContent, SendContext, SlimConfirmQueryOptions, SlimEntityFindQueryOptions, SlimEntityPickQueryOptions, SlimEntityQueryOptions, SlimTextQueryOptions, SlimTextQueryOptionsParsed, TextQueryResult } from '@blargbot/core/types.js';
 import { guard } from '@blargbot/core/utils/index.js';
 import type { Database } from '@blargbot/database';
-import type { IFormattable} from '@blargbot/formatting';
+import type { IFormattable } from '@blargbot/formatting';
 import { format, util } from '@blargbot/formatting';
 import type { Logger } from '@blargbot/logger';
 import type * as Eris from 'eris';

@@ -1,3 +1,4 @@
+import { Subtag } from '@blargbot/bbtag';
 import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '@blargbot/bbtag/errors/index.js';
 import { DeleteSubtag } from '@blargbot/bbtag/subtags/message/delete.js';
 import chai from 'chai';
@@ -6,7 +7,7 @@ import type * as Eris from 'eris';
 import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new DeleteSubtag(),
+    subtag: Subtag.getDescriptor(DeleteSubtag),
     argCountBounds: { min: 0, max: 2 },
     cases: [
         {

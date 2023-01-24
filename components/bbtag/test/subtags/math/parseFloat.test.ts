@@ -1,9 +1,10 @@
+import { Subtag } from '@blargbot/bbtag';
 import { ParseFloatSubtag } from '@blargbot/bbtag/subtags/math/parseFloat.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new ParseFloatSubtag(),
+    subtag: Subtag.getDescriptor(ParseFloatSubtag),
     argCountBounds: { min: 1, max: 1 },
     cases: [
         { code: '{parsefloat;123}', expected: '123' },

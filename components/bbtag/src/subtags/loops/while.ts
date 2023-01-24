@@ -1,16 +1,21 @@
 import type { SubtagArgument } from '../../arguments/index.js';
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { BBTagRuntimeState } from '../../types.js';
-import { bbtag, SubtagType } from '../../utils/index.js';
+import type { BBTagOperators } from '../../utils/index.js';
+import { comparisonOperators, SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.while;
 
+@Subtag.id('while')
+@Subtag.factory(Subtag.operators())
 export class WhileSubtag extends CompiledSubtag {
-    public constructor() {
+    #operators: BBTagOperators;
+
+    public constructor(operators: BBTagOperators) {
         super({
-            name: 'while',
             category: SubtagType.LOOPS,
             definition: [
                 {
@@ -23,7 +28,7 @@ export class WhileSubtag extends CompiledSubtag {
                 },
                 {
                     parameters: ['~value1', '~evaluator', '~value2', '~code'],
-                    description: tag.condition.description({ operators: Object.keys(bbtag.comparisonOperators) }),
+                    description: tag.condition.description({ operators: comparisonOperators.keys }),
                     exampleCode: tag.condition.exampleCode,
                     exampleOut: tag.condition.exampleOut,
                     returns: 'loop',
@@ -31,6 +36,8 @@ export class WhileSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#operators = operators;
     }
 
     public async * while(
@@ -46,21 +53,21 @@ export class WhileSubtag extends CompiledSubtag {
             let operator = typeof evaluator === 'string' ? evaluator : await evaluator.execute();
             let left = typeof val2Raw === 'string' ? val2Raw : await val2Raw.execute();
 
-            if (bbtag.isComparisonOperator(operator)) {
+            if (comparisonOperators.test(operator)) {
                 //operator = operator;
-            } else if (bbtag.isComparisonOperator(left)) {
+            } else if (comparisonOperators.test(left)) {
                 //operator = left;
                 [left, operator] = [operator, left];
-            } else if (bbtag.isComparisonOperator(right)) {
+            } else if (comparisonOperators.test(right)) {
                 //operator = right;
                 [operator, right] = [right, operator];
             }
 
-            if (!bbtag.isComparisonOperator(operator)) {
+            if (!comparisonOperators.test(operator)) {
                 //TODO invalid operator stuff here
                 await context.limit.check(context, 'while:loops');
                 yield await codeRaw.execute();
-            } else if (!bbtag.operate(operator, right, left))
+            } else if (!this.#operators.comparison[operator](right, left))
                 break;
             else {
                 await context.limit.check(context, 'while:loops');

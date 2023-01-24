@@ -151,11 +151,9 @@
             "name": "mocha: all",
             "console": "integratedTerminal",
             "runtimeExecutable": "yarn",
-            "program": "mocha",
             "args": [
+                "test",
                 "--no-timeouts",
-                "--config",
-                "${workspaceFolder}/mocharc.json",
                 "--recursive"
             ],
             "skipFiles": [
@@ -173,11 +171,10 @@
             "name": "mocha: current",
             "console": "integratedTerminal",
             "runtimeExecutable": "yarn",
-            "program": "mocha",
+            "cwd": "${fileDirname}",
             "args": [
+                "test",
                 "--no-timeouts",
-                "--config",
-                "${workspaceFolder}/mocharc.json",
                 "${fileDirname}/${fileBasenameNoExtension}.js"
             ],
             "skipFiles": [

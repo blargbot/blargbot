@@ -1,3 +1,4 @@
+import { Subtag } from '@blargbot/bbtag';
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
 import { ReactionAddSubtag } from '@blargbot/bbtag/subtags/message/reactionAdd.js';
 import { Emote } from '@blargbot/discord-emote';
@@ -12,7 +13,7 @@ const unicodeEmote = Emote.parse('🤔');
 const guildEmote = Emote.parse('<:notlikecat:280110565161041921>');
 
 runSubtagTests({
-    subtag: new ReactionAddSubtag(),
+    subtag: Subtag.getDescriptor(ReactionAddSubtag),
     argCountBounds: { min: 1, max: Infinity },
     setupEach(ctx) {
         ctx.roles.bot.permissions = Eris.Constants.Permissions.addReactions.toString();

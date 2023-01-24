@@ -1,3 +1,4 @@
+import { Subtag } from '@blargbot/bbtag';
 import { NotABooleanError } from '@blargbot/bbtag/errors/index.js';
 import { SuppressLookupSubtag } from '@blargbot/bbtag/subtags/bot/suppressLookup.js';
 import chai from 'chai';
@@ -5,7 +6,7 @@ import chai from 'chai';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new SuppressLookupSubtag(),
+    subtag: Subtag.getDescriptor(SuppressLookupSubtag),
     argCountBounds: { min: 0, max: 1 },
     cases: [
         {

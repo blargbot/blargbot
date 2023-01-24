@@ -1,9 +1,10 @@
+import { Subtag } from '@blargbot/bbtag';
 import { Base64EncodeSubtag } from '@blargbot/bbtag/subtags/misc/base64Encode.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new Base64EncodeSubtag(),
+    subtag: Subtag.getDescriptor(Base64EncodeSubtag),
     argCountBounds: { min: 1, max: 1 },
     cases: [
         {

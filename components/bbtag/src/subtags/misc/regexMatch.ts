@@ -1,15 +1,16 @@
 import { RegexSubtag } from '../../RegexSubtag.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.regexMatch;
 
+@Subtag.id('regexMatch', 'match')
+@Subtag.factory()
 export class RegexMatchSubtag extends RegexSubtag {
     public constructor() {
         super({
-            name: 'regexMatch',
             category: SubtagType.ARRAY, //? Why?
-            aliases: ['match'],
             definition: [
                 {
                     parameters: ['text', '~regex#50000'],

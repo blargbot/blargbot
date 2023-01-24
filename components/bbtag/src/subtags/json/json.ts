@@ -1,16 +1,20 @@
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
-import { bbtag, SubtagType } from '../../utils/index.js';
+import type { BBTagJsonTools } from '../../utils/index.js';
+import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.json;
 
+@Subtag.id('json', 'j')
+@Subtag.factory(Subtag.jsonTools())
 export class JsonSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #jsonTools: BBTagJsonTools;
+
+    public constructor(jsonTools: BBTagJsonTools) {
         super({
-            name: 'json',
             category: SubtagType.JSON,
-            aliases: ['j'],
             definition: [
                 {
                     parameters: ['~input?:{}'],
@@ -22,10 +26,12 @@ export class JsonSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#jsonTools = jsonTools;
     }
 
     public getJson(input: string): JToken {
-        const result = bbtag.json.parse(input);
+        const result = this.#jsonTools.parse(input);
         if (result === undefined)
             throw new BBTagRuntimeError('Invalid JSON provided');
         return result;

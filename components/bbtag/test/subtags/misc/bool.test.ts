@@ -1,7 +1,8 @@
+import { Subtag } from '@blargbot/bbtag';
 import { InvalidOperatorError } from '@blargbot/bbtag/errors/index.js';
 import { BoolSubtag } from '@blargbot/bbtag/subtags/misc/bool.js';
 import type { OrdinalOperator, StringOperator } from '@blargbot/bbtag/utils/index.js';
-import { bbtag } from '@blargbot/bbtag/utils/index.js';
+import { ordinalOperators, stringOperators } from '@blargbot/bbtag/utils/index.js';
 
 import type { SubtagTestCase } from '../SubtagTestSuite.js';
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
@@ -15,7 +16,7 @@ const endsWith = { 'startswith': false, 'endswith': true, 'includes': true, 'con
 const doesntContain = { 'startswith': false, 'endswith': false, 'includes': false, 'contains': false } as const;
 
 runSubtagTests({
-    subtag: new BoolSubtag(),
+    subtag: Subtag.getDescriptor(BoolSubtag),
     argCountBounds: { min: 3, max: 3 },
     cases: [
         ...generateOrdinalTestCases('123', isEqualTo, '123'),
@@ -56,7 +57,7 @@ function generateOrdinalTestCases(left: boolean | string, tests: Record<OrdinalO
     const leftStrs = typeof left === 'boolean' ? left ? ['true', 't', 'yes', 'y'] : ['false', 'f', 'no', 'n'] : [left];
     const rightStrs = typeof right === 'boolean' ? right ? ['true', 't', 'yes', 'y'] : ['false', 'f', 'no', 'n'] : [right];
 
-    return Object.entries(tests).filter(x => bbtag.isOrdinalOperator(x[0])).flatMap(([op, expected]) => {
+    return Object.entries(tests).filter(x => ordinalOperators.test(x[0])).flatMap(([op, expected]) => {
         const expectedStr = expected.toString();
 
         return leftStrs.flatMap(l => rightStrs.flatMap(r => [
@@ -71,7 +72,7 @@ function generateStringTestCases(left: boolean | string, tests: Record<StringOpe
     const leftStrs = typeof left === 'boolean' ? left ? ['true', 't', 'yes', 'y'] : ['false', 'f', 'no', 'n'] : [left];
     const rightStrs = typeof right === 'boolean' ? right ? ['true', 't', 'yes', 'y'] : ['false', 'f', 'no', 'n'] : [right];
 
-    return Object.entries(tests).filter(x => bbtag.isStringOperator(x[0])).flatMap(([op, expected]) => {
+    return Object.entries(tests).filter(x => stringOperators.test(x[0])).flatMap(([op, expected]) => {
         const expectedStr = expected.toString();
 
         return leftStrs.flatMap(l => rightStrs.flatMap(r => [

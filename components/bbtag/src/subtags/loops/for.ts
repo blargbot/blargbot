@@ -1,20 +1,24 @@
-import { parse } from '@blargbot/core/utils/index.js';
-
 import type { SubtagArgument } from '../../arguments/index.js';
 import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { AggregateBBTagError, BBTagRuntimeError, InvalidOperatorError, NotANumberError } from '../../errors/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { BBTagRuntimeState } from '../../types.js';
-import type { OrdinalOperator} from '../../utils/index.js';
-import { bbtag, SubtagType } from '../../utils/index.js';
+import type { BBTagOperators, OrdinalOperator } from '../../utils/index.js';
+import { comparisonOperators, SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.for;
 
+@Subtag.id('for')
+@Subtag.factory(Subtag.operators(), Subtag.converter())
 export class ForSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #operators: BBTagOperators;
+    readonly #converter: BBTagValueConverter;
+
+    public constructor(operators: BBTagOperators, converter: BBTagValueConverter) {
         super({
-            name: 'for',
             category: SubtagType.LOOPS,
             definition: [
                 {
@@ -27,6 +31,9 @@ export class ForSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#operators = operators;
+        this.#converter = converter;
     }
 
     public async * for(
@@ -39,25 +46,25 @@ export class ForSubtag extends CompiledSubtag {
         code: SubtagArgument
     ): AsyncIterable<string> {
         const errors = [];
-        const initial = parse.float(initialStr) ?? NaN;
-        const limit = parse.float(limitStr) ?? NaN;
-        const increment = parse.float(incrementStr) ?? NaN;
+        const initial = this.#converter.float(initialStr) ?? NaN;
+        const limit = this.#converter.float(limitStr) ?? NaN;
+        const increment = this.#converter.float(incrementStr) ?? NaN;
 
         if (isNaN(initial)) errors.push(new BBTagRuntimeError('Initial must be a number'));
-        if (!bbtag.isComparisonOperator(operator)) errors.push(new InvalidOperatorError(operator));
+        if (!comparisonOperators.test(operator)) errors.push(new InvalidOperatorError(operator));
         if (isNaN(limit)) errors.push(new BBTagRuntimeError('Limit must be a number'));
         if (isNaN(increment)) errors.push(new BBTagRuntimeError('Increment must be a number'));
         if (errors.length > 0)
             throw new AggregateBBTagError(errors);
 
         try {
-            for (let i = initial; bbtag.operate(operator as OrdinalOperator, i.toString(), limit.toString()); i += increment) {
+            for (let i = initial; this.#operators.comparison[operator as OrdinalOperator](i.toString(), limit.toString()); i += increment) {
                 await context.limit.check(context, 'for:loops');
                 await context.variables.set(varName, i);
                 yield await code.execute();
 
                 const varEntry = await context.variables.get(varName);
-                i = parse.float(parse.string(varEntry.value)) ?? NaN;
+                i = this.#converter.float(this.#converter.string(varEntry.value)) ?? NaN;
 
                 if (isNaN(i))
                     throw new NotANumberError(varEntry.value);

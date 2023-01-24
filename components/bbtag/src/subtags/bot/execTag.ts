@@ -1,19 +1,27 @@
-import { humanize, parse } from '@blargbot/core/utils/index.js';
+import { humanize } from '@blargbot/core/utils/index.js';
+import type { TagStore } from '@blargbot/domain/stores/TagStore.js';
 
 import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { BBTagRuntimeState } from '../../types.js';
-import { bbtag, SubtagType } from '../../utils/index.js';
+import type { BBTagArrayTools } from '../../utils/index.js';
+import { parseBBTag, SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.execTag;
 
+@Subtag.id('execTag', 'exec')
+@Subtag.factory(Subtag.arrayTools(), Subtag.converter(), Subtag.store('tags'))
 export class ExecTagSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #arrayTools: BBTagArrayTools;
+    readonly #converter: BBTagValueConverter;
+    readonly #tags: TagStore;
+
+    public constructor(arrayTools: BBTagArrayTools, converter: BBTagValueConverter, tags: TagStore) {
         super({
-            name: 'execTag',
-            aliases: ['exec'],
             category: SubtagType.BOT,
             definition: [
                 {
@@ -26,28 +34,33 @@ export class ExecTagSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#arrayTools = arrayTools;
+        this.#converter = converter;
+        this.#tags = tags;
     }
 
     public async execTag(context: BBTagContext, name: string, args: string[]): Promise<string> {
         const tagName = name;
-        const tag = await context.getTag('tag', tagName, (key) => context.database.tags.get(key));
+        const tag = await context.getTag('tag', tagName, (key) => this.#tags.get(key));
 
         if (tag === null)
             throw new BBTagRuntimeError(`Tag not found: ${tagName}`);
 
         let input = args[0] ?? '';
         if (args.length > 1)
-            input = humanize.smartSplit.inverse(bbtag.tagArray.flattenArray(args).map(x => parse.string(x)));
+            input = humanize.smartSplit.inverse(this.#arrayTools.flattenArray(args).map(x => this.#converter.string(x)));
 
-        return await context.withScope(true, () => context.withChild({
+        return await context.withScope(true, () => context.withStack(() => context.withChild({
             tagName,
             cooldown: tag.cooldown ?? 0,
             inputRaw: input
         }, async context => {
-            const result = await context.engine.execute(tag.content, context);
+            const ast = parseBBTag(tag.content);
+            const result = await context.eval(ast);
             if (context.data.state === BBTagRuntimeState.RETURN)
                 context.data.state = BBTagRuntimeState.RUNNING;
-            return result.content;
-        }));
+            return result;
+        })));
     }
 }

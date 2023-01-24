@@ -1,10 +1,10 @@
 import { CommandType, guard } from '@blargbot/cluster/utils/index.js';
-import type { FlagResult } from '@blargbot/domain/models/index.js';
-import type { IFormattable} from '@blargbot/formatting';
+import type { FlagResult } from '@blargbot/flags';
+import type { IFormattable } from '@blargbot/formatting';
 import { util } from '@blargbot/formatting';
 import moment from 'moment-timezone';
 
-import type { CommandContext} from '../../command/index.js';
+import type { CommandContext } from '../../command/index.js';
 import { GlobalCommand, SendTypingMiddleware } from '../../command/index.js';
 import templates from '../../text.js';
 import type { CommandResult } from '../../types.js';

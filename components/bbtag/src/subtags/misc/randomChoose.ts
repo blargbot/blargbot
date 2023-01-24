@@ -3,16 +3,20 @@ import { randChoose } from '@blargbot/core/utils/index.js';
 import type { SubtagArgument } from '../../arguments/index.js';
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
-import { bbtag, SubtagType } from '../../utils/index.js';
+import type { BBTagArrayTools } from '../../utils/index.js';
+import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.randomChoose;
 
+@Subtag.id('randomChoose', 'randChoose')
+@Subtag.factory(Subtag.arrayTools())
 export class RandomChooseSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #arrayTools: BBTagArrayTools;
+
+    public constructor(arrayTools: BBTagArrayTools) {
         super({
-            name: 'randomChoose',
-            aliases: ['randChoose'],
             category: SubtagType.MISC,
             definition: [
                 {
@@ -33,6 +37,8 @@ export class RandomChooseSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#arrayTools = arrayTools;
     }
 
     public async randChooseArg(choices: readonly SubtagArgument[]): Promise<string> {
@@ -40,7 +46,7 @@ export class RandomChooseSubtag extends CompiledSubtag {
     }
 
     public async randChoose(context: BBTagContext, arrayStr: string): Promise<JToken> {
-        const choices = await bbtag.tagArray.deserializeOrGetArray(context, arrayStr);
+        const choices = await this.#arrayTools.deserializeOrGetArray(context, arrayStr);
         if (choices === undefined)
             return arrayStr;
 

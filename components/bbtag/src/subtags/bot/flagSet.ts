@@ -2,15 +2,17 @@ import { isAlphanumeric } from '@blargbot/guards';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.flagSet;
 
+@Subtag.id('flagSet')
+@Subtag.factory()
 export class FlagSetSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: 'flagSet',
             category: SubtagType.BOT,
             definition: [
                 {

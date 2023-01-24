@@ -1,5 +1,5 @@
-import type { Subtag, SubtagSignature, SubtagSignatureValueParameter, SubtagType } from '@blargbot/bbtag';
-import { bbtag, limits, tagTypeDetails, tagVariableScopeProviders } from '@blargbot/bbtag';
+import type { Subtag, SubtagSignature, SubtagSignatureParameter, SubtagSignatureValueParameter, SubtagType } from '@blargbot/bbtag';
+import { limits, tagTypeDetails, tagVariableScopeProviders } from '@blargbot/bbtag';
 import type { SendContent } from '@blargbot/core/types.js';
 import type { IFormattable } from '@blargbot/formatting';
 import { hasValue } from '@blargbot/guards';
@@ -222,7 +222,7 @@ export class BBTagDocumentationManager extends DocumentationTreeManager {
     }
 
     #toSubtagSignaturePage(subtag: Subtag, signature: SubtagSignature<IFormattable<string>>): DocumentationPage {
-        const parameters = bbtag.stringifyParameters(signature.subtagName ?? subtag.name, signature.parameters);
+        const parameters = stringifyParameters(signature.subtagName ?? subtag.name, signature.parameters);
 
         return {
             name: doc.subtag.pages.signature.name({ parameters }),
@@ -288,4 +288,19 @@ export class BBTagDocumentationManager extends DocumentationTreeManager {
             embeds: []
         };
     }
+}
+
+function stringifyParameters(subtagName: string, parameters: readonly SubtagSignatureParameter[]): string {
+    return `{${[subtagName, ...parameters.map(stringifyParameter)].join(';')}}`;
+}
+
+function stringifyParameter(parameter: SubtagSignatureParameter): string {
+    if ('nested' in parameter) {
+        if (parameter.nested.length === 1)
+            return `${stringifyParameter(parameter.nested[0])}...`;
+        return `(${parameter.nested.map(stringifyParameter).join(';')})...`;
+    }
+    return parameter.required
+        ? `<${parameter.name}>`
+        : `[${parameter.name}]`;
 }

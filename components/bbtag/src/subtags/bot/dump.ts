@@ -1,14 +1,19 @@
 import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagUtilities } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.dump;
 
+@Subtag.id('dump')
+@Subtag.factory(Subtag.util())
 export class DumpSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #util: BBTagUtilities;
+
+    public constructor(util: BBTagUtilities) {
         super({
-            name: 'dump',
             category: SubtagType.BOT,
             definition: [
                 {
@@ -21,10 +26,12 @@ export class DumpSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#util = util;
     }
 
     public async createDump(context: BBTagContext, text: string): Promise<string> {
-        const id = await context.util.generateDumpPage({ content: text }, context.channel);
-        return context.util.websiteLink(`dumps/${id}`);
+        const id = await this.#util.generateDumpPage({ content: text }, context.channel);
+        return this.#util.websiteLink(`dumps/${id}`);
     }
 }

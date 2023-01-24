@@ -1,10 +1,11 @@
+import { Subtag } from '@blargbot/bbtag';
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
 import { ReactionUserSubtag } from '@blargbot/bbtag/subtags/message/reactionUser.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new ReactionUserSubtag(),
+    subtag: Subtag.getDescriptor(ReactionUserSubtag),
     argCountBounds: { min: 0, max: 0 },
     cases: [
         {

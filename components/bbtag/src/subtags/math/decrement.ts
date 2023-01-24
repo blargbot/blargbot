@@ -1,17 +1,20 @@
-import { parse } from '@blargbot/core/utils/index.js';
-
 import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { NotABooleanError, NotANumberError } from '../../errors/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.decrement;
 
+@Subtag.id('decrement')
+@Subtag.factory(Subtag.converter())
 export class DecrementSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #converter: BBTagValueConverter;
+
+    public constructor(converter: BBTagValueConverter) {
         super({
-            name: 'decrement',
             category: SubtagType.MATH,
             definition: [
                 {
@@ -32,14 +35,16 @@ export class DecrementSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#converter = converter;
     }
 
     public async decrement(context: BBTagContext, varName: string, amountStr: string, floorStr: string): Promise<number> {
-        let amount = parse.float(amountStr);
+        let amount = this.#converter.float(amountStr);
         if (amount === undefined)
             throw new NotANumberError(amountStr);
 
-        const floor = parse.boolean(floorStr);
+        const floor = this.#converter.boolean(floorStr);
         if (floor === undefined)
             throw new NotABooleanError(floorStr);
 
@@ -47,7 +52,7 @@ export class DecrementSubtag extends CompiledSubtag {
         let value: number | undefined;
         switch (typeof valueRaw.value) {
             case 'string':
-                value = parse.float(valueRaw.value);
+                value = this.#converter.float(valueRaw.value);
                 break;
             case 'number':
                 value = valueRaw.value;

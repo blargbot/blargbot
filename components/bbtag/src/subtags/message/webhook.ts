@@ -1,18 +1,24 @@
-import { parse } from '@blargbot/core/utils/index.js';
+import type { Logger } from '@blargbot/logger';
 import * as Eris from 'eris';
 
 import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.webhook;
 
+@Subtag.id('webhook')
+@Subtag.factory(Subtag.converter(), Subtag.logger())
 export class WebhookSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #converter: BBTagValueConverter;
+    readonly #logger: Logger;
+
+    public constructor(converter: BBTagValueConverter, logger: Logger) {
         super({
-            name: 'webhook',
             category: SubtagType.MESSAGE,
             description: tag.description,
             definition: [
@@ -50,6 +56,9 @@ export class WebhookSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#converter = converter;
+        this.#logger = logger;
     }
 
     public async executeWebhook(context: BBTagContext, webhookID: string, webhookToken: string): Promise<never>;
@@ -60,7 +69,7 @@ export class WebhookSubtag extends CompiledSubtag {
                 username: username ||= undefined,
                 avatarURL: avatar ||= undefined,
                 content: content,
-                embeds: parse.embed(embedStr),
+                embeds: this.#converter.embed(embedStr),
                 file: fileStr === undefined ? undefined : [
                     {
                         name: fileName ?? 'file.txt',
@@ -73,7 +82,7 @@ export class WebhookSubtag extends CompiledSubtag {
         } catch (err: unknown) {
             if (err instanceof Eris.DiscordHTTPError || err instanceof Eris.DiscordRESTError)
                 throw new BBTagRuntimeError(`Error executing webhook: ${err.message}`);
-            context.logger.error('Error executing webhook', err);
+            this.#logger.error('Error executing webhook', err);
             throw new BBTagRuntimeError('Error executing webhook: UNKNOWN');
         }
     }

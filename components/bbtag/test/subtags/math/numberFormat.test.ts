@@ -1,9 +1,10 @@
+import { Subtag } from '@blargbot/bbtag';
 import { NumberFormatSubtag } from '@blargbot/bbtag/subtags/math/numberFormat.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new NumberFormatSubtag(),
+    subtag: Subtag.getDescriptor(NumberFormatSubtag),
     argCountBounds: { min: 2, max: 4 },
     cases: [
         { code: '{numformat;123456.789;2}', expected: '123456.79' },

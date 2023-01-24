@@ -1,3 +1,4 @@
+import { Subtag } from '@blargbot/bbtag';
 import { BBTagRuntimeError, NotANumberError } from '@blargbot/bbtag/errors/index.js';
 import { GetSubtag } from '@blargbot/bbtag/subtags/bot/get.js';
 import { ReturnSubtag } from '@blargbot/bbtag/subtags/bot/return.js';
@@ -11,7 +12,7 @@ import chai from 'chai';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new RepeatSubtag(),
+    subtag: Subtag.getDescriptor(RepeatSubtag),
     argCountBounds: { min: { count: 2, noEval: [0] }, max: { count: 2, noEval: [0] } },
     cases: [
         {
@@ -24,7 +25,7 @@ runSubtagTests({
         {
             code: '{repeat;{increment;index},;8}',
             expected: '1,2,3,4,5,6,7,8,',
-            subtags: [new IncrementSubtag()],
+            subtags: [Subtag.getDescriptor(IncrementSubtag)],
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, '0');
@@ -54,7 +55,7 @@ runSubtagTests({
         {
             code: '{repeat;{increment;index}{if;{get;index};==;6;{return}},;10}',
             expected: '1,2,3,4,5,6',
-            subtags: [new GetSubtag(), new IfSubtag(), new ReturnSubtag(), new IncrementSubtag()],
+            subtags: [Subtag.getDescriptor(GetSubtag), Subtag.getDescriptor(IfSubtag), Subtag.getDescriptor(ReturnSubtag), Subtag.getDescriptor(IncrementSubtag)],
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, '0');
@@ -74,7 +75,7 @@ runSubtagTests({
             errors: [
                 { start: 0, end: 30, error: new BBTagRuntimeError('Too many loops') }
             ],
-            subtags: [new IncrementSubtag()],
+            subtags: [Subtag.getDescriptor(IncrementSubtag)],
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, '0');

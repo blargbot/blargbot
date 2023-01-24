@@ -1,8 +1,9 @@
+import { sleep } from '@blargbot/async-tools';
 import type { ChatLogSearchOptions } from '@blargbot/chatlog-types';
 import { ChatLogType } from '@blargbot/chatlog-types';
 import type { CommandResult, GuildCommandContext } from '@blargbot/cluster/types.js';
 import { CommandType } from '@blargbot/cluster/utils/index.js';
-import { guard, sleep } from '@blargbot/core/utils/index.js';
+import { guard } from '@blargbot/core/utils/index.js';
 import { hasValue } from '@blargbot/guards';
 
 import { GuildCommand } from '../../command/index.js';

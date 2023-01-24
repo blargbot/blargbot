@@ -4,17 +4,18 @@ import moment from 'moment-timezone';
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, UserNotFoundError } from '../../errors/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.userTimeout;
 
+@Subtag.id('userTimeout', 'timedoutUntil', 'userTimedoutUntil', 'memberTimeout', 'memberTimedoutUntil')
+@Subtag.factory()
 export class UserTimeoutSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: 'userTimeout',
             category: SubtagType.USER,
-            aliases: ['timedoutUntil', 'userTimedoutUntil', 'memberTimeout', 'memberTimedoutUntil'],
             description: tag.description,
             definition: [
                 {

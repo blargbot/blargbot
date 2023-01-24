@@ -1,10 +1,11 @@
+import { Subtag } from '@blargbot/bbtag';
 import { ChannelIdSubtag } from '@blargbot/bbtag/subtags/channel/channelId.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetChannelPropTestCases } from './_getChannelPropTest.js';
 
 runSubtagTests({
-    subtag: new ChannelIdSubtag(),
+    subtag: Subtag.getDescriptor(ChannelIdSubtag),
     argCountBounds: { min: 0, max: 2 },
     cases: [
         ...createGetChannelPropTestCases({

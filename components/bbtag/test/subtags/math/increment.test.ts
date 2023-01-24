@@ -1,3 +1,4 @@
+import { Subtag } from '@blargbot/bbtag';
 import { NotABooleanError, NotANumberError } from '@blargbot/bbtag/errors/index.js';
 import { IncrementSubtag } from '@blargbot/bbtag/subtags/math/increment.js';
 import { TagVariableType } from '@blargbot/domain/models/index.js';
@@ -6,7 +7,7 @@ import chai from 'chai';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new IncrementSubtag(),
+    subtag: Subtag.getDescriptor(IncrementSubtag),
     argCountBounds: { min: 1, max: 3 },
     cases: [
         {

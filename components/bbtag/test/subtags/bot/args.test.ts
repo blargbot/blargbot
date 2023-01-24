@@ -1,10 +1,11 @@
+import { Subtag } from '@blargbot/bbtag';
 import { NotANumberError, NotEnoughArgumentsError } from '@blargbot/bbtag/errors/index.js';
 import { ArgsSubtag } from '@blargbot/bbtag/subtags/bot/args.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new ArgsSubtag(),
+    subtag: Subtag.getDescriptor(ArgsSubtag),
     argCountBounds: { min: 0, max: 2 },
     setupEach(ctx) {
         ctx.options.inputRaw = 'arg1 arg2 "arg3 arg3" arg4 "arg5"';

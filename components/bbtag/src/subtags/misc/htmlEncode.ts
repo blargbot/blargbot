@@ -1,15 +1,17 @@
 import htmlEntities from 'html-entities';
 
 import { CompiledSubtag } from '../../compilation/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.htmlEncode;
 
+@Subtag.id('htmlEncode')
+@Subtag.factory()
 export class HtmlEncodeSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: 'htmlEncode',
             category: SubtagType.MISC,
             definition: [
                 {

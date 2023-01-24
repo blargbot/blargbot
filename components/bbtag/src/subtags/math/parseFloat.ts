@@ -1,15 +1,18 @@
-import { parse } from '@blargbot/core/utils/index.js';
-
+import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.parseFloat;
 
+@Subtag.id('parseFloat')
+@Subtag.factory(Subtag.converter())
 export class ParseFloatSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #converter: BBTagValueConverter;
+
+    public constructor(converter: BBTagValueConverter) {
         super({
-            name: 'parseFloat',
             category: SubtagType.MATH,
             definition: [
                 {
@@ -22,9 +25,11 @@ export class ParseFloatSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#converter = converter;
     }
 
     public parseFloat(number: string): number {
-        return parse.float(number) ?? NaN;
+        return this.#converter.float(number) ?? NaN;
     }
 }

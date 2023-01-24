@@ -1,3 +1,4 @@
+import { Subtag } from '@blargbot/bbtag';
 import { RoleMembersSubtag } from '@blargbot/bbtag/subtags/role/roleMembers.js';
 import type * as Eris from 'eris';
 
@@ -5,7 +6,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetRolePropTestCases } from './_getRolePropTest.js';
 
 runSubtagTests({
-    subtag: new RoleMembersSubtag(),
+    subtag: Subtag.getDescriptor(RoleMembersSubtag),
     argCountBounds: { min: 1, max: 2 },
     cases: [
         ...createGetRolePropTestCases({

@@ -1,4 +1,4 @@
-import { sleep } from '@blargbot/core/utils/index.js';
+import { sleep } from '@blargbot/async-tools';
 import type { Database } from '@blargbot/database';
 import type { Logger } from '@blargbot/logger';
 import { Timer } from '@blargbot/timer';
@@ -9,12 +9,12 @@ import { BBTagContext } from './BBTagContext.js';
 import type { BBTagUtilities, InjectionContext } from './BBTagUtilities.js';
 import { BBTagRuntimeError, InternalServerError, SubtagStackOverflowError, TagCooldownError } from './errors/index.js';
 import type { Statement, SubtagCall } from './language/index.js';
+import { parseBBTag } from './language/index.js';
 import type { Subtag } from './Subtag.js';
 import { TagCooldownManager } from './TagCooldownManager.js';
 import templates from './text.js';
 import type { AnalysisResults, BBTagContextOptions, ExecutionResult } from './types.js';
 import { BBTagRuntimeState } from './types.js';
-import { bbtag as bbtagUtil } from './utils/index.js';
 
 export class BBTagEngine {
     readonly #cooldowns: TagCooldownManager;
@@ -30,11 +30,12 @@ export class BBTagEngine {
         this.#cooldowns = new TagCooldownManager();
         const subtags = new Map<string, Subtag>();
         this.subtags = subtags;
-        for (const subtag of dependencies.subtags) {
+        for (const descriptor of dependencies.subtags) {
+            const subtag = descriptor.createInstance(this);
             for (const name of BBTagEngine.#subtagNames(subtag)) {
                 const current = subtags.get(name);
                 if (current !== undefined)
-                    throw new Error(`Duplicate subtag with name ${JSON.stringify(subtag.name)} found`);
+                    throw new Error(`Duplicate subtag with name ${JSON.stringify(descriptor.name)} found`);
                 subtags.set(name, subtag);
             }
         }
@@ -51,7 +52,7 @@ export class BBTagEngine {
     public async execute(source: string, options: BBTagContextOptions | BBTagContext, caller?: SubtagCall): Promise<ExecutionResult> {
         this.logger.bbtag(`Start running ${options.isCC ? 'CC' : 'tag'} ${options.rootTagName ?? ''}`);
         const timer = new Timer().start();
-        const bbtag = bbtagUtil.parse(source, options instanceof BBTagContext);
+        const bbtag = parseBBTag(source, options instanceof BBTagContext);
         this.logger.bbtag(`Parsed bbtag in ${timer.poll(true)}ms`);
         const context = options instanceof BBTagContext ? options : new BBTagContext(this, { cooldowns: this.#cooldowns, ...options });
         this.logger.bbtag(`Created context in ${timer.poll(true)}ms`);
@@ -179,7 +180,7 @@ export class BBTagEngine {
     public check(source: string): AnalysisResults {
         const result: AnalysisResults = { errors: [], warnings: [] };
 
-        const statement = bbtagUtil.parse(source);
+        const statement = parseBBTag(source);
 
         for (const call of getSubtagCalls(statement)) {
             if (call.name.values.length === 0)

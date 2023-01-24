@@ -1,20 +1,20 @@
-import { bbtag } from '@blargbot/bbtag';
 import type { Cluster, ClusterUtilities } from '@blargbot/cluster';
 import type { CommandResult, GuildCommandContext } from '@blargbot/cluster/types.js';
-import { CommandType, discord, parse } from '@blargbot/cluster/utils/index.js';
+import { CommandType, discord } from '@blargbot/cluster/utils/index.js';
 import type { SendContent } from '@blargbot/core/types.js';
 import type { StoredTag } from '@blargbot/domain/models/index.js';
-import type { IFormattable} from '@blargbot/formatting';
+import type { IFormattable } from '@blargbot/formatting';
 import { util } from '@blargbot/formatting';
 import type * as Eris from 'eris';
 import moment from 'moment-timezone';
 import fetch from 'node-fetch';
 
-import type { CommandContext} from '../../command/index.js';
+import type { CommandContext } from '../../command/index.js';
 import { GuildCommand } from '../../command/index.js';
 import { RawBBTagCommandResult } from '../../command/RawBBTagCommandResult.js';
 import { BBTagDocumentationManager } from '../../managers/documentation/BBTagDocumentationManager.js';
 import templates from '../../text.js';
+import { bbtagDebugOutput } from '../../utils/bbtagDebugOutput.js';
 
 const cmd = templates.commands.tag;
 
@@ -207,7 +207,7 @@ export class TagCommand extends GuildCommand {
         if (!debug)
             return undefined;
 
-        await context.send(context.author, bbtag.createDebugOutput(result));
+        await context.send(context.author, bbtagDebugOutput(result));
         return cmd.common.debugInDm;
     }
 
@@ -230,7 +230,7 @@ export class TagCommand extends GuildCommand {
         if (!debug)
             return undefined;
 
-        await context.send(context.author, bbtag.createDebugOutput(result));
+        await context.send(context.author, bbtagDebugOutput(result));
         return cmd.common.debugInDm;
     }
 
@@ -560,7 +560,7 @@ export class TagCommand extends GuildCommand {
         if ('response' in match)
             return match.response;
 
-        const { _, ...addFlags } = parse.flags([], flagsRaw);
+        const { _, ...addFlags } = context.cluster.parseFlags([], flagsRaw);
         const flags = [...match.flags ?? []];
         for (const [flag, args] of Object.entries(addFlags)) {
             if (args === undefined || args.length === 0)
@@ -586,7 +586,7 @@ export class TagCommand extends GuildCommand {
         if ('response' in match)
             return match.response;
 
-        const { _, ...removeFlags } = parse.flags([], flagsRaw);
+        const { _, ...removeFlags } = context.cluster.parseFlags([], flagsRaw);
         const flags = [...match.flags ?? []]
             .filter(f => removeFlags[f.flag] === undefined);
 

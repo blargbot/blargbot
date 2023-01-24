@@ -1,3 +1,4 @@
+import { Subtag } from '@blargbot/bbtag';
 import { CommitSubtag } from '@blargbot/bbtag/subtags/bot/commit.js';
 import { TagVariableType } from '@blargbot/domain/models/index.js';
 import { argument } from '@blargbot/test-util/mock.js';
@@ -5,7 +6,7 @@ import { argument } from '@blargbot/test-util/mock.js';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new CommitSubtag(),
+    subtag: Subtag.getDescriptor(CommitSubtag),
     argCountBounds: { min: 0, max: Infinity },
     cases: [
         {

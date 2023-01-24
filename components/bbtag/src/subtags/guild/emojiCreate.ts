@@ -1,4 +1,3 @@
-import { parse } from '@blargbot/core/utils/parse/index.js';
 import { isUrl } from '@blargbot/guards';
 import * as Eris from 'eris';
 import fetch from 'node-fetch';
@@ -6,8 +5,10 @@ import fetch from 'node-fetch';
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
-import { bbtag, SubtagType } from '../../utils/index.js';
+import type { BBTagArrayTools } from '../../utils/index.js';
+import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.emojiCreate;
 
@@ -17,10 +18,13 @@ interface EmojiCreateOptions {
     roles: string[];
 }
 
+@Subtag.id('emojiCreate')
+@Subtag.factory(Subtag.arrayTools())
 export class EmojiCreateSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #arrayTools: BBTagArrayTools;
+
+    public constructor(arrayTools: BBTagArrayTools) {
         super({
-            name: 'emojiCreate',
             category: SubtagType.GUILD,
             definition: [
                 {
@@ -33,6 +37,8 @@ export class EmojiCreateSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#arrayTools = arrayTools;
     }
 
     public async createEmoji(
@@ -53,17 +59,18 @@ export class EmojiCreateSubtag extends CompiledSubtag {
         if (options.name === '')
             throw new BBTagRuntimeError('Name was not provided');
 
-        const image: string = parse.url(options.image);
-        if (isUrl(image)) {
-            const res = await fetch(image);
+        if (imageStr.startsWith('<') && imageStr.endsWith('>'))
+            imageStr = imageStr.slice(1, -1);
+        if (isUrl(imageStr)) {
+            const res = await fetch(imageStr);
             const contentType = res.headers.get('content-type');
             options.image = `data:${contentType ?? ''};base64,${Buffer.from(await res.arrayBuffer()).toString('base64')}`;
-        } else if (!image.startsWith('data:')) {
+        } else if (!imageStr.startsWith('data:')) {
             throw new BBTagRuntimeError('Image was not a buffer or a URL');
         }
 
         //TODO would be nice to be able to provide one role without using an array like {emojicreate;name;image;role} and not {emojicreate;name;image;["role"]}
-        const roleArray = await bbtag.tagArray.deserializeOrGetArray(context, rolesStr);
+        const roleArray = await this.#arrayTools.deserializeOrGetArray(context, rolesStr);
         if (roleArray !== undefined) {
             for (const roleQuery of roleArray.v) {
                 const role = await context.queryRole(roleQuery?.toString() ?? '', { noLookup: true });

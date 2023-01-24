@@ -3,15 +3,17 @@ import * as Eris from 'eris';
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.channelDelete;
 
+@Subtag.id('channelDelete')
+@Subtag.factory()
 export class ChannelDeleteSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: 'channelDelete',
             category: SubtagType.CHANNEL,
             definition: [
                 {

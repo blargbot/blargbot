@@ -1,5 +1,4 @@
 import type { CommandBinderState, CommandBinderStateFailureReason, CommandGreedyParameter, CommandHandler, CommandLiteralParameter, CommandParameter, CommandResult, CommandSignatureHandler, CommandSingleParameter, CommandVariableTypeName } from '@blargbot/cluster/types.js';
-import { parse } from '@blargbot/cluster/utils/index.js';
 
 import templates from '../../text.js';
 import type { CommandContext } from '../CommandContext.js';
@@ -35,7 +34,7 @@ export function compileHandler<TContext extends CommandContext>(
                 argIndex: 0,
                 arguments: [],
                 bindIndex: 0,
-                flags: parse.flags(command.flags, context.argsString, true),
+                flags: context.cluster.parseFlags(command.flags, context.argsString, true),
                 context,
                 command,
                 lookupCache: getLookupCache(context),

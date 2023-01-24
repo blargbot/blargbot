@@ -1,4 +1,4 @@
-import { sleep } from '@blargbot/core/utils/index.js';
+import { sleep } from '@blargbot/async-tools';
 import { hasValue } from '@blargbot/guards';
 import type { Logger } from '@blargbot/logger';
 import type { UpdateRequest } from 'rethinkdb';

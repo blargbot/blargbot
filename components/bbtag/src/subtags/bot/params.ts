@@ -1,17 +1,20 @@
-import { parse } from '@blargbot/core/utils/index.js';
-
 import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, NotANumberError, NotEnoughArgumentsError } from '../../errors/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.params;
 
+@Subtag.id('params')
+@Subtag.factory(Subtag.converter())
 export class ParamsSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #converter: BBTagValueConverter;
+
+    public constructor(converter: BBTagValueConverter) {
         super({
-            name: 'params',
             category: SubtagType.BOT,
             definition: [
                 {
@@ -40,6 +43,8 @@ export class ParamsSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#converter = converter;
     }
 
     public getAllParams(context: BBTagContext): string {
@@ -54,7 +59,7 @@ export class ParamsSubtag extends CompiledSubtag {
         if (params === undefined)
             throw new BBTagRuntimeError('{params} can only be used inside {function}');
 
-        const i = parse.int(index);
+        const i = this.#converter.int(index);
         if (i === undefined)
             throw new NotANumberError(index);
 
@@ -73,13 +78,13 @@ export class ParamsSubtag extends CompiledSubtag {
         if (params === undefined)
             throw new BBTagRuntimeError('{params} can only be used inside {function}');
 
-        let from = parse.int(start);
+        let from = this.#converter.int(start);
         if (from === undefined)
             throw new NotANumberError(start);
 
         let to = end.toLowerCase() === 'n'
             ? params.length
-            : parse.int(end);
+            : this.#converter.int(end);
 
         if (to === undefined)
             throw new NotANumberError(end);

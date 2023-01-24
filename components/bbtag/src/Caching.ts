@@ -1,4 +1,6 @@
+import type { TagVariableStore } from '@blargbot/domain/stores/TagVariableStore.js';
 import { hasValue } from '@blargbot/guards';
+import type { Logger } from '@blargbot/logger';
 import { Timer } from '@blargbot/timer';
 
 import type { BBTagContext } from './BBTagContext.js';
@@ -16,6 +18,8 @@ interface ValueSource {
 
 export class VariableCache {
     readonly #cache: Record<string, CacheEntry | undefined>;
+    readonly #tagVariables: TagVariableStore;
+    readonly #logger: Logger;
 
     public get list(): VariableReference[] {
         return Object.values(this.#cache)
@@ -25,9 +29,13 @@ export class VariableCache {
 
     public constructor(
         public readonly context: BBTagContext,
-        public readonly scopeProviders: readonly TagVariableScopeProvider[]
+        public readonly scopeProviders: readonly TagVariableScopeProvider[],
+        tagVariables: TagVariableStore,
+        logger: Logger
     ) {
         this.#cache = {};
+        this.#logger = logger;
+        this.#tagVariables = tagVariables;
     }
 
     #getCached(variables?: string[]): CacheEntry[] {
@@ -52,10 +60,10 @@ export class VariableCache {
         const varName = variable.substring(provider.prefix.length);
         const scope = provider.getScope(this.context);
         try {
-            const value = scope !== undefined ? await this.context.database.tagVariables.get(varName, scope) : undefined;
+            const value = scope !== undefined ? await this.#tagVariables.get(varName, scope) : undefined;
             return this.#cache[variable] = new CacheEntry(this.context, provider, varName, value);
         } catch (err: unknown) {
-            this.context.logger.error(err, this.context.isCC, this.context.rootTagName);
+            this.#logger.error(err, this.context.isCC, this.context.rootTagName);
             throw err;
         }
     }
@@ -102,12 +110,12 @@ export class VariableCache {
         for (const [provider, pool] of pools) {
             const timer = new Timer().start();
             const objectCount = Object.keys(pool).length;
-            this.context.logger.bbtag('Committing', objectCount, 'objects to the', provider.prefix, 'pool.');
+            this.#logger.bbtag('Committing', objectCount, 'objects to the', provider.prefix, 'pool.');
             const scope = provider.getScope(this.context);
             if (scope !== undefined)
-                await this.context.database.tagVariables.upsert(pool, scope);
+                await this.#tagVariables.upsert(pool, scope);
             timer.end();
-            this.context.logger[timer.elapsed > 3000 ? 'info' : 'bbtag']('Commited', objectCount, 'objects to the', provider.prefix, 'pool in', timer.elapsed, 'ms.');
+            this.#logger[timer.elapsed > 3000 ? 'info' : 'bbtag']('Commited', objectCount, 'objects to the', provider.prefix, 'pool in', timer.elapsed, 'ms.');
             this.context.dbObjectsCommitted += objectCount;
         }
         this.context.dbTimer.end();

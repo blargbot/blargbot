@@ -3,15 +3,17 @@ import type * as Eris from 'eris';
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { ChannelNotFoundError, MessageNotFoundError } from '../../errors/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.messageEmbeds;
 
+@Subtag.id('messageEmbeds')
+@Subtag.factory()
 export class MessageEmbedsSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: 'messageEmbeds',
             category: SubtagType.MESSAGE,
             definition: [
                 {

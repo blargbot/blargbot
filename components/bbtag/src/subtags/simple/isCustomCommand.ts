@@ -1,15 +1,16 @@
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.isCustomCommand;
 
+@Subtag.id('isCustomCommand', 'isCC')
+@Subtag.factory()
 export class IsCustomCommandSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: 'isCustomCommand',
-            aliases: ['isCC'],
             category: SubtagType.SIMPLE,
             definition: [
                 {

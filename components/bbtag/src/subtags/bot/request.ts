@@ -1,10 +1,11 @@
-import { parse } from '@blargbot/core/utils/index.js';
+import type { TypeMapping } from '@blargbot/mapping';
 import { mapping } from '@blargbot/mapping';
 import fetch from 'node-fetch';
 
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagUtilities, BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
@@ -12,10 +13,15 @@ const tag = templates.subtags.request;
 
 const domainRegex = /^https?:\/\/(.+?)(?:\/.?|$)/i;
 
+@Subtag.id('request')
+@Subtag.factory(Subtag.util(), Subtag.converter())
 export class RequestSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #util: BBTagUtilities;
+    readonly #converter: BBTagValueConverter;
+    readonly #mapOptions: TypeMapping<RequestOptions>;
+
+    public constructor(util: BBTagUtilities, converter: BBTagValueConverter) {
         super({
-            name: 'request',
             category: SubtagType.BOT,
             description: tag.description,
             definition: [
@@ -25,14 +31,17 @@ export class RequestSubtag extends CompiledSubtag {
                     exampleCode: tag.default.exampleCode,
                     exampleOut: tag.default.exampleOut,
                     returns: 'json',
-                    execute: (ctx, [url, options, data]) => this.requestUrl(ctx, url.value, options.value, data.value)
+                    execute: (_, [url, options, data]) => this.requestUrl(url.value, options.value, data.value)
                 }
             ]
         });
+
+        this.#util = util;
+        this.#converter = converter;
+        this.#mapOptions = createMapOptions(this.#converter);
     }
 
     public async requestUrl(
-        context: BBTagContext,
         url: string,
         optionsStr: string,
         dataStr: string
@@ -42,7 +51,7 @@ export class RequestSubtag extends CompiledSubtag {
             throw new BBTagRuntimeError(`A domain could not be extracted from url: ${url}`);
 
         const domain = domainMatch[1];
-        if (!context.util.canRequestDomain(domain))
+        if (!this.#util.canRequestDomain(domain))
             throw new BBTagRuntimeError(`Domain is not whitelisted: ${domain}`);
 
         const request = {
@@ -53,7 +62,7 @@ export class RequestSubtag extends CompiledSubtag {
         };
 
         if (optionsStr !== '') {
-            const mappedOptions = mapOptions(optionsStr);
+            const mappedOptions = this.#mapOptions(optionsStr);
             if (!mappedOptions.valid)
                 throw new BBTagRuntimeError('', `Invalid request options "${optionsStr}"`);
             request.method = mappedOptions.value.method;
@@ -68,7 +77,7 @@ export class RequestSubtag extends CompiledSubtag {
         let query;
         if (request.method === 'GET') {
             if (typeof data === 'object' && data !== null) {
-                query = new URLSearchParams(Object.fromEntries(Object.entries(data).map(([k, v]) => [k, parse.string(v as JToken)] as const))).toString();
+                query = new URLSearchParams(Object.fromEntries(Object.entries(data).map(([k, v]) => [k, this.#converter.string(v as JToken)] as const))).toString();
                 data = undefined;
             }
         } else if (data !== undefined) {
@@ -107,14 +116,21 @@ export class RequestSubtag extends CompiledSubtag {
     }
 }
 
-const mapOptions = mapping.json(mapping.object({
-    method: mapping.string
-        .map(s => s.toUpperCase())
-        .chain(mapping.in('GET', 'POST', 'PUT', 'PATCH', 'DELETE'))
-        .optional
-        .map(v => v ?? 'GET'),
-    headers: mapping.choice(
-        mapping.json(mapping.record(mapping.jToken.map(parse.string))),
-        mapping.record(mapping.jToken.map(parse.string))
-    ).optional.map(v => v ?? {})
-}));
+interface RequestOptions {
+    method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
+    headers: Record<string, string>;
+}
+
+function createMapOptions(converter: BBTagValueConverter): TypeMapping<RequestOptions> {
+    return mapping.json(mapping.object<RequestOptions>({
+        method: mapping.string
+            .map(s => s.toUpperCase())
+            .chain(mapping.in('GET', 'POST', 'PUT', 'PATCH', 'DELETE'))
+            .optional
+            .map(v => v ?? 'GET'),
+        headers: mapping.choice(
+            mapping.json(mapping.record(mapping.jToken.map(converter.string))),
+            mapping.record(mapping.jToken.map(converter.string))
+        ).optional.map(v => v ?? {})
+    }));
+}

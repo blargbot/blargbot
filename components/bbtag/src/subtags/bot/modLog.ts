@@ -1,17 +1,21 @@
-import { parse } from '@blargbot/core/utils/index.js';
-
 import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagUtilities, BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { UserNotFoundError } from '../../errors/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.modLog;
 
+@Subtag.id('modLog')
+@Subtag.factory(Subtag.util(), Subtag.converter())
 export class ModLogSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #util: BBTagUtilities;
+    readonly #converter: BBTagValueConverter;
+
+    public constructor(util: BBTagUtilities, converter: BBTagValueConverter) {
         super({
-            name: 'modLog',
             category: SubtagType.BOT,
             description: tag.description,
             definition: [
@@ -25,6 +29,9 @@ export class ModLogSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#util = util;
+        this.#converter = converter;
     }
 
     public async createModLog(
@@ -39,11 +46,11 @@ export class ModLogSubtag extends CompiledSubtag {
         if (user === undefined)
             throw new UserNotFoundError(userStr);
 
-        const color = parse.color(colorStr);
+        const color = this.#converter.color(colorStr);
 
         //TODO no user found for this?
         const mod = await context.queryUser(modStr) ?? context.user;
 
-        await context.util.addModLog(context.guild, action, user, mod, reason, color);
+        await this.#util.addModLog(context.guild, action, user, mod, reason, color);
     }
 }

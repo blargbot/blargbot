@@ -1,16 +1,20 @@
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
-import { bbtag, SubtagType } from '../../utils/index.js';
+import type { BBTagJsonTools } from '../../utils/index.js';
+import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.jsonGet;
 
+@Subtag.id('jsonGet', 'jGet')
+@Subtag.factory(Subtag.jsonTools())
 export class JsonGetSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #jsonTools: BBTagJsonTools;
+
+    public constructor(jsonTools: BBTagJsonTools) {
         super({
-            name: 'jsonGet',
             category: SubtagType.JSON,
-            aliases: ['jGet'],
             definition: [
                 {
                     parameters: ['input:{}#10000000'],
@@ -30,12 +34,14 @@ export class JsonGetSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#jsonTools = jsonTools;
     }
 
     public async jsonGet(context: BBTagContext, input: string, path?: string): Promise<JToken | undefined> {
-        const obj = (await bbtag.json.resolveObj(context, input)).object;
+        const obj = (await this.#jsonTools.resolveObj(context, input)).object;
         if (path === undefined)
             return obj;
-        return bbtag.json.get(obj, path);
+        return this.#jsonTools.get(obj, path);
     }
 }

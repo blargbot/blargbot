@@ -1,3 +1,4 @@
+import { Subtag } from '@blargbot/bbtag';
 import { NotAnArrayError } from '@blargbot/bbtag/errors/index.js';
 import { ShuffleSubtag } from '@blargbot/bbtag/subtags/array/shuffle.js';
 import { GetSubtag } from '@blargbot/bbtag/subtags/bot/get.js';
@@ -7,7 +8,7 @@ import chai from 'chai';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new ShuffleSubtag(),
+    subtag: Subtag.getDescriptor(ShuffleSubtag),
     argCountBounds: { min: 0, max: 1 },
     cases: [
         {
@@ -52,7 +53,7 @@ runSubtagTests({
         {
             code: '{shuffle;{get;arr1}}',
             expected: '',
-            subtags: [new GetSubtag()],
+            subtags: [Subtag.getDescriptor(GetSubtag)],
             retries: 1,
             setupSaveVariables: false,
             setup(ctx) {

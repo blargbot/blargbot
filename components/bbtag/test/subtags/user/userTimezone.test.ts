@@ -1,10 +1,11 @@
+import { Subtag } from '@blargbot/bbtag';
 import { UserTimezoneSubtag } from '@blargbot/bbtag/subtags/user/userTimeZone.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetUserPropTestCases } from './_getUserPropTest.js';
 
 runSubtagTests({
-    subtag: new UserTimezoneSubtag(),
+    subtag: Subtag.getDescriptor(UserTimezoneSubtag),
     argCountBounds: { min: 0, max: 2 },
     cases: [
         ...createGetUserPropTestCases({

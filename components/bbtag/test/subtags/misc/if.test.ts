@@ -1,3 +1,4 @@
+import { Subtag } from '@blargbot/bbtag';
 import { InvalidOperatorError, NotABooleanError } from '@blargbot/bbtag/errors/index.js';
 import { IfSubtag } from '@blargbot/bbtag/subtags/misc/if.js';
 
@@ -9,7 +10,7 @@ const isGreaterThan = { '!=': true, '<': false, '<=': false, '==': false, '>': t
 const isLessThan = { '!=': true, '<': true, '<=': true, '==': false, '>': false, '>=': false } as const;
 
 runSubtagTests({
-    subtag: new IfSubtag(),
+    subtag: Subtag.getDescriptor(IfSubtag),
     argCountBounds: { min: 2, max: { count: 5, noEval: [3, 4] } },
     cases: [
         /* {if;<bool>;<then>} */

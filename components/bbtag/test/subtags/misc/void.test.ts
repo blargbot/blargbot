@@ -1,9 +1,10 @@
+import { Subtag } from '@blargbot/bbtag';
 import { VoidSubtag } from '@blargbot/bbtag/subtags/misc/void.js';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new VoidSubtag(),
+    subtag: Subtag.getDescriptor(VoidSubtag),
     argCountBounds: { min: 0, max: Infinity },
     cases: [
         { code: '{void}', expected: '' },

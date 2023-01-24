@@ -2,17 +2,18 @@ import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
 import type { Statement } from '../../language/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.function;
 
+@Subtag.id('function', 'func')
+@Subtag.factory()
 export class FunctionSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: 'function',
             category: SubtagType.BOT,
-            aliases: ['func'],
             definition: [
                 {
                     parameters: ['name', '~code'],

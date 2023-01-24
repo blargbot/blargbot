@@ -1,18 +1,24 @@
 import { Lazy } from '@blargbot/core/Lazy.js';
-import { parse } from '@blargbot/core/utils/index.js';
 
 import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { NotAnArrayError, NotANumberError } from '../../errors/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
-import { bbtag, SubtagType } from '../../utils/index.js';
+import type { BBTagArrayTools } from '../../utils/index.js';
+import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.slice;
 
+@Subtag.id('slice')
+@Subtag.factory(Subtag.arrayTools(), Subtag.converter())
 export class SliceSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #arrayTools: BBTagArrayTools;
+    readonly #converter: BBTagValueConverter;
+
+    public constructor(arrayTools: BBTagArrayTools, converter: BBTagValueConverter) {
         super({
-            name: 'slice',
             category: SubtagType.ARRAY,
             definition: [
                 {
@@ -25,20 +31,23 @@ export class SliceSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#arrayTools = arrayTools;
+        this.#converter = converter;
     }
 
     public async slice(context: BBTagContext, array: string, startStr: string, endStr: string): Promise<JArray> {
-        const arr = await bbtag.tagArray.deserializeOrGetArray(context, array);
-        const fallback = new Lazy(() => parse.int(context.scopes.local.fallback ?? ''));
+        const arr = await this.#arrayTools.deserializeOrGetArray(context, array);
+        const fallback = new Lazy(() => this.#converter.int(context.scopes.local.fallback ?? ''));
 
         if (arr === undefined)
             throw new NotAnArrayError(array);
 
-        const start = parse.int(startStr) ?? fallback.value;
+        const start = this.#converter.int(startStr) ?? fallback.value;
         if (start === undefined)
             throw new NotANumberError(startStr);
 
-        const end = parse.int(endStr) ?? fallback.value;
+        const end = this.#converter.int(endStr) ?? fallback.value;
         if (end === undefined)
             throw new NotANumberError(endStr);
 

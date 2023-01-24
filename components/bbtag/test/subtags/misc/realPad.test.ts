@@ -1,10 +1,11 @@
+import { Subtag } from '@blargbot/bbtag';
 import { BBTagRuntimeError, NotANumberError } from '@blargbot/bbtag/errors/index.js';
 import { RealPadSubtag } from '@blargbot/bbtag/subtags/misc/realPad.js';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new RealPadSubtag(),
+    subtag: Subtag.getDescriptor(RealPadSubtag),
     argCountBounds: { min: 2, max: 4 },
     cases: [
         { code: '{realpad;;5}', expected: '     ' },

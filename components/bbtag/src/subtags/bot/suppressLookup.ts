@@ -1,17 +1,20 @@
-import { parse } from '@blargbot/core/utils/index.js';
-
 import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { NotABooleanError } from '../../errors/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.suppressLookup;
 
+@Subtag.id('suppressLookup')
+@Subtag.factory(Subtag.converter())
 export class SuppressLookupSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #converter: BBTagValueConverter;
+
+    public constructor(converter: BBTagValueConverter) {
         super({
-            name: 'suppressLookup',
             category: SubtagType.BOT,
             definition: [
                 {
@@ -24,12 +27,14 @@ export class SuppressLookupSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#converter = converter;
     }
 
     public suppress(context: BBTagContext, value: string): void {
         let suppress: boolean | undefined = true;
         if (value !== '') {
-            suppress = parse.boolean(value);
+            suppress = this.#converter.boolean(value);
             if (suppress === undefined)
                 throw new NotABooleanError(value);
         }

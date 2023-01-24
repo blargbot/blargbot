@@ -1,19 +1,23 @@
 import { Lazy } from '@blargbot/core/Lazy.js';
-import { between, parse } from '@blargbot/core/utils/index.js';
+import { isBetween } from '@blargbot/guards';
 
 import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, NotANumberError } from '../../errors/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.base;
 
+@Subtag.id('base', 'radix')
+@Subtag.factory(Subtag.converter())
 export class BaseNumberSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #converter: BBTagValueConverter;
+
+    public constructor(converter: BBTagValueConverter) {
         super({
-            name: 'base',
-            aliases: ['radix'],
             category: SubtagType.MATH,
             definition: [
                 {
@@ -26,6 +30,8 @@ export class BaseNumberSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#converter = converter;
     }
 
     public toBase(
@@ -34,22 +40,22 @@ export class BaseNumberSubtag extends CompiledSubtag {
         originStr: string,
         radixStr: string
     ): string {
-        const fallback = new Lazy(() => parse.int(context.scopes.local.fallback ?? ''));
-        let origin = parse.int(originStr) ?? fallback.value;
+        const fallback = new Lazy(() => this.#converter.int(context.scopes.local.fallback ?? ''));
+        let origin = this.#converter.int(originStr) ?? fallback.value;
         if (origin === undefined)
             throw new NotANumberError(originStr);
 
-        let radix = parse.int(radixStr) ?? fallback.value;
+        let radix = this.#converter.int(radixStr) ?? fallback.value;
         if (radix === undefined)
             throw new NotANumberError(radixStr);
 
-        if (!between(origin, 2, 36, true) && fallback.value !== undefined) origin = fallback.value;
-        if (!between(radix, 2, 36, true) && fallback.value !== undefined) radix = fallback.value;
+        if (!isBetween(origin, 2, 36, true) && fallback.value !== undefined) origin = fallback.value;
+        if (!isBetween(radix, 2, 36, true) && fallback.value !== undefined) radix = fallback.value;
 
-        if (!between(origin, 2, 36, true) || !between(radix, 2, 36, true))
+        if (!isBetween(origin, 2, 36, true) || !isBetween(radix, 2, 36, true))
             throw new BBTagRuntimeError('Base must be between 2 and 36');
 
-        const value = parse.int(valueStr, { radix: origin }) ?? fallback.value;
+        const value = this.#converter.int(valueStr, { radix: origin }) ?? fallback.value;
         if (value === undefined)
             throw new NotANumberError(valueStr);
         return value.toString(radix);

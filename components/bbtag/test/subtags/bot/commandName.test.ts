@@ -1,9 +1,10 @@
+import { Subtag } from '@blargbot/bbtag';
 import { CommandNameSubtag } from '@blargbot/bbtag/subtags/bot/commandName.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new CommandNameSubtag(),
+    subtag: Subtag.getDescriptor(CommandNameSubtag),
     argCountBounds: { min: 0, max: 0 },
     cases: [
         {

@@ -1,3 +1,4 @@
+import { Subtag } from '@blargbot/bbtag';
 import { BBTagRuntimeError, MessageNotFoundError } from '@blargbot/bbtag/errors/index.js';
 import { ReactionListSubtag } from '@blargbot/bbtag/subtags/message/reactionList.js';
 import * as Eris from 'eris';
@@ -6,7 +7,7 @@ import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';
 import { createGetMessagePropTestCases } from './_getMessagePropTest.js';
 
 runSubtagTests({
-    subtag: new ReactionListSubtag(),
+    subtag: Subtag.getDescriptor(ReactionListSubtag),
     argCountBounds: { min: 0, max: Infinity },
     cases: [
         {

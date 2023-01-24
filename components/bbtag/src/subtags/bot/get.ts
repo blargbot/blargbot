@@ -1,18 +1,21 @@
-import { parse } from '@blargbot/core/utils/index.js';
-
 import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, NotANumberError } from '../../errors/index.js';
+import { Subtag } from '../../Subtag.js';
 import { tagVariableScopeProviders } from '../../tagVariableScopeProviders.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.get;
 
+@Subtag.id('get')
+@Subtag.factory(Subtag.converter())
 export class GetSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #converter: BBTagValueConverter;
+
+    public constructor(converter: BBTagValueConverter) {
         super({
-            name: 'get',
             category: SubtagType.BOT,
             definition: [
                 {
@@ -33,6 +36,8 @@ export class GetSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#converter = converter;
     }
 
     public async get(context: BBTagContext, variableName: string): Promise<JToken | undefined> {
@@ -51,7 +56,7 @@ export class GetSubtag extends CompiledSubtag {
         if (indexStr === '')
             return { v: result.value, n: result.key };
 
-        const index = parse.int(indexStr);
+        const index = this.#converter.int(indexStr);
         if (index === undefined)
             throw new NotANumberError(indexStr);
 

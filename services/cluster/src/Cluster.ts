@@ -1,11 +1,27 @@
 import { inspect } from 'node:util';
 
-import { BBTagEngine, subtags } from '@blargbot/bbtag';
+import { BBTagEngine, Subtag, subtags } from '@blargbot/bbtag';
+import { createBBTagJsonTools } from '@blargbot/bbtag/utils/json.js';
+import { createBBTagOperators } from '@blargbot/bbtag/utils/operators.js';
+import { smartStringCompare } from '@blargbot/bbtag/utils/smartStringCompare.js';
+import { createBBTagArrayTools } from '@blargbot/bbtag/utils/tagArray.js';
 import type { ClusterOptions } from '@blargbot/cluster/types.js';
 import type { Configuration } from '@blargbot/config';
 import { BaseClient } from '@blargbot/core/BaseClient.js';
 import { BaseService } from '@blargbot/core/serviceTypes/index.js';
 import type { EvalResult } from '@blargbot/core/types.js';
+import { smartSplitRanges } from '@blargbot/core/utils/humanize/smartSplit.js';
+import { parseBigInt } from '@blargbot/core/utils/parse/parseBigInt.js';
+import { parseBoolean } from '@blargbot/core/utils/parse/parseBoolean.js';
+import { parseColor } from '@blargbot/core/utils/parse/parseColor.js';
+import { parseDuration } from '@blargbot/core/utils/parse/parseDuration.js';
+import { parseEmbed } from '@blargbot/core/utils/parse/parseEmbed.js';
+import { parseFloat } from '@blargbot/core/utils/parse/parseFloat.js';
+import { parseInt } from '@blargbot/core/utils/parse/parseInt.js';
+import { parseString } from '@blargbot/core/utils/parse/parseString.js';
+import { parseTime } from '@blargbot/core/utils/parse/parseTime.js';
+import type { FlagParser } from '@blargbot/flags';
+import { createFlagParser } from '@blargbot/flags';
 import type { Logger } from '@blargbot/logger';
 import { ModuleLoader } from '@blargbot/modules';
 import Discord from 'discord-api-types/v9';
@@ -42,6 +58,7 @@ export class Cluster extends BaseClient {
     public readonly version: VersionStateManager;
     public readonly guilds: GuildManager;
     public readonly announcements: AnnouncementManager;
+    public readonly parseFlags: FlagParser;
 
     public constructor(
         worker: ClusterWorker,
@@ -103,6 +120,12 @@ export class Cluster extends BaseClient {
         this.botStaff = new BotStaffManager(this);
         this.moderation = new ModerationManager(this);
         this.greetings = new GreetingManager(this);
+        this.parseFlags = createFlagParser({
+            splitter: smartSplitRanges
+        });
+        const bbtagArrayTools = createBBTagArrayTools({
+            convertToInt: parseInt
+        });
         this.bbtag = new BBTagEngine({
             config: this.config,
             database: this.database,
@@ -110,7 +133,29 @@ export class Cluster extends BaseClient {
             logger: this.logger,
             util: new ClusterBBTagUtilities(this),
             subtags: Object.values(subtags.all)
-                .map(subtag => new subtag())
+                .map(Subtag.getDescriptor),
+            arrayTools: bbtagArrayTools,
+            jsonTools: createBBTagJsonTools({
+                convertToInt: parseInt,
+                isTagArray: bbtagArrayTools.isTagArray
+            }),
+            operators: createBBTagOperators({
+                compare: smartStringCompare,
+                convertToString: parseString,
+                parseArray: v => bbtagArrayTools.deserialize(v)?.v
+            }),
+            parseFlags: this.parseFlags,
+            converter: {
+                int: parseInt,
+                float: parseFloat,
+                string: parseString,
+                boolean: parseBoolean,
+                duration: parseDuration,
+                embed: parseEmbed,
+                bigInt: parseBigInt,
+                color: parseColor,
+                time: parseTime
+            }
         });
         this.intervals = new IntervalManager(this, moment.duration(10, 's'));
         this.rolemes = new RolemeManager(this);

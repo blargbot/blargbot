@@ -1,3 +1,4 @@
+import { Subtag } from '@blargbot/bbtag';
 import { NotAnArrayError } from '@blargbot/bbtag/errors/index.js';
 import { ShiftSubtag } from '@blargbot/bbtag/subtags/array/shift.js';
 import { GetSubtag } from '@blargbot/bbtag/subtags/bot/get.js';
@@ -8,7 +9,7 @@ import chai from 'chai';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new ShiftSubtag(),
+    subtag: Subtag.getDescriptor(ShiftSubtag),
     argCountBounds: { min: 1, max: 1 },
     cases: [
         {
@@ -36,7 +37,7 @@ runSubtagTests({
         {
             code: '{shift;{get;arr1}}',
             expected: 'this',
-            subtags: [new GetSubtag()],
+            subtags: [Subtag.getDescriptor(GetSubtag)],
             setupSaveVariables: false,
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
@@ -50,7 +51,7 @@ runSubtagTests({
         {
             code: '{shift;arr1}',
             expected: 'this',
-            subtags: [new GetSubtag()],
+            subtags: [Subtag.getDescriptor(GetSubtag)],
             setupSaveVariables: false,
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
@@ -64,7 +65,7 @@ runSubtagTests({
         {
             code: '{shift;!arr1}',
             expected: 'this',
-            subtags: [new GetSubtag()],
+            subtags: [Subtag.getDescriptor(GetSubtag)],
             setupSaveVariables: false,
             setup(ctx) {
                 ctx.options.tagName = 'testTag';

@@ -1,10 +1,11 @@
+import { Subtag } from '@blargbot/bbtag';
 import { NotANumberError } from '@blargbot/bbtag/errors/index.js';
 import { RoundDownSubtag } from '@blargbot/bbtag/subtags/math/roundDown.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new RoundDownSubtag(),
+    subtag: Subtag.getDescriptor(RoundDownSubtag),
     argCountBounds: { min: 1, max: 1 },
     cases: [
         { code: '{rounddown;5}', expected: '5' },

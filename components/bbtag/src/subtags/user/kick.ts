@@ -1,15 +1,20 @@
 import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagUtilities } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, UserNotFoundError } from '../../errors/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.kick;
 
+@Subtag.id('kick')
+@Subtag.factory(Subtag.util())
 export class KickSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #util: BBTagUtilities;
+
+    public constructor(util: BBTagUtilities) {
         super({
-            name: 'kick',
             category: SubtagType.USER,
             description: tag.description,
             definition: [
@@ -31,6 +36,8 @@ export class KickSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#util = util;
     }
 
     public async kickMember(
@@ -47,7 +54,7 @@ export class KickSubtag extends CompiledSubtag {
             reason = 'Tag Kick';
 
         const authorizer = noPerms ? context.authorizer?.user ?? context.user : context.user;
-        const response = await context.util.kick(member, context.user, authorizer, reason);
+        const response = await this.#util.kick(member, context.user, authorizer, reason);
 
         switch (response) {
             case 'success': //Successful

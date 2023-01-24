@@ -3,15 +3,17 @@ import * as Eris from 'eris';
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, RoleNotFoundError } from '../../errors/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.roleSetName;
 
+@Subtag.id('roleSetName')
+@Subtag.factory()
 export class RoleSetNameSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: 'roleSetName',
             category: SubtagType.ROLE,
             definition: [
                 {

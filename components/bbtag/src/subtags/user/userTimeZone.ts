@@ -1,15 +1,21 @@
+import type { UserStore } from '@blargbot/domain/stores/UserStore.js';
+
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { UserNotFoundError } from '../../errors/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.userTimeZone;
 
+@Subtag.id('userTimeZone')
+@Subtag.factory(Subtag.store('users'))
 export class UserTimezoneSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #users: UserStore;
+
+    public constructor(users: UserStore) {
         super({
-            name: 'userTimeZone',
             category: SubtagType.USER,
             definition: [
                 {
@@ -30,6 +36,8 @@ export class UserTimezoneSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#users = users;
     }
 
     public async getUserTimezone(
@@ -45,7 +53,7 @@ export class UserTimezoneSubtag extends CompiledSubtag {
                 .withDisplay(quiet ? '' : undefined);
         }
 
-        const userTimezone = await context.database.users.getProp(user.id, 'timezone');
+        const userTimezone = await this.#users.getProp(user.id, 'timezone');
         return userTimezone ?? 'UTC';
     }
 }

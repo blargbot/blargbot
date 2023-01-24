@@ -1,15 +1,17 @@
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.paramsLength;
 
+@Subtag.id('paramsLength')
+@Subtag.factory()
 export class ParamsLengthSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: 'paramsLength',
             category: SubtagType.BOT,
             definition: [
                 {

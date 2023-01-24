@@ -1,3 +1,4 @@
+import { Subtag } from '@blargbot/bbtag';
 import { BBTagRuntimeError, ChannelNotFoundError } from '@blargbot/bbtag/errors/index.js';
 import { SendSubtag } from '@blargbot/bbtag/subtags/message/send.js';
 import { EscapeBBTagSubtag } from '@blargbot/bbtag/subtags/misc/escapeBBTag.js';
@@ -8,7 +9,7 @@ import type * as Eris from 'eris';
 import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new SendSubtag(),
+    subtag: Subtag.getDescriptor(SendSubtag),
     argCountBounds: { min: 2, max: 5 },
     cases: [
         {
@@ -177,7 +178,7 @@ runSubtagTests({
         {
             title: 'Custom command',
             code: '{send;1923681361978632931;{escapebbtag;{"title":"New embed!"}}}',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
             expected: '239476239742340234',
             setup(ctx) {
                 ctx.options.isCC = true;
@@ -259,7 +260,7 @@ runSubtagTests({
         {
             title: 'Tag command',
             code: '{send;1923681361978632931;{escapebbtag;{"title":"New embed!"}}}',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
             expected: '239476239742340234',
             setup(ctx) {
                 ctx.options.isCC = false;
@@ -299,7 +300,7 @@ runSubtagTests({
         {
             title: 'Custom command',
             code: '{send;1923681361978632931;abc;{escapebbtag;{"title":"New embed!"}}}',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
             expected: '239476239742340234',
             setup(ctx) {
                 ctx.options.isCC = true;
@@ -342,7 +343,7 @@ runSubtagTests({
         {
             title: 'Tag command',
             code: '{send;1923681361978632931;abc;{escapebbtag;{"title":"New embed!"}}}',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
             expected: '239476239742340234',
             setup(ctx) {
                 ctx.options.isCC = false;
@@ -382,7 +383,7 @@ runSubtagTests({
         {
             title: 'Custom command',
             code: '{send;1923681361978632931;abc;{escapebbtag;{"title":"New embed!"}};my file content}',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
             expected: '239476239742340234',
             setup(ctx) {
                 ctx.options.isCC = true;
@@ -425,7 +426,7 @@ runSubtagTests({
         {
             title: 'Tag command',
             code: '{send;1923681361978632931;abc;{escapebbtag;{"title":"New embed!"}};my file content}',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
             expected: '239476239742340234',
             setup(ctx) {
                 ctx.options.isCC = false;
@@ -465,7 +466,7 @@ runSubtagTests({
         {
             title: 'Custom command',
             code: '{send;1923681361978632931;abc;{escapebbtag;{"title":"New embed!"}};buffer:abcdef}',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
             expected: '239476239742340234',
             setup(ctx) {
                 ctx.options.isCC = true;
@@ -514,7 +515,7 @@ runSubtagTests({
         {
             title: 'Tag command',
             code: '{send;1923681361978632931;abc;{escapebbtag;{"title":"New embed!"}};buffer:abcdef}',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
             expected: '239476239742340234',
             setup(ctx) {
                 ctx.options.isCC = false;
@@ -560,7 +561,7 @@ runSubtagTests({
         {
             title: 'Custom command',
             code: '{send;1923681361978632931;abc;{escapebbtag;{"title":"New embed!"}};my file content;test.zip}',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
             expected: '239476239742340234',
             setup(ctx) {
                 ctx.options.isCC = true;
@@ -603,7 +604,7 @@ runSubtagTests({
         {
             title: 'Tag command',
             code: '{send;1923681361978632931;abc;{escapebbtag;{"title":"New embed!"}};my file content;test.zip}',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
             expected: '239476239742340234',
             setup(ctx) {
                 ctx.options.isCC = false;
@@ -643,7 +644,7 @@ runSubtagTests({
         {
             title: 'Custom command',
             code: '{send;1923681361978632931;abc;{escapebbtag;{"title":"New embed!"}};buffer:abcdef;test.zip}',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
             expected: '239476239742340234',
             setup(ctx) {
                 ctx.options.isCC = true;
@@ -692,7 +693,7 @@ runSubtagTests({
         {
             title: 'Tag command',
             code: '{send;1923681361978632931;abc;{escapebbtag;{"title":"New embed!"}};buffer:abcdef;test.zip}',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
             expected: '239476239742340234',
             setup(ctx) {
                 ctx.options.isCC = false;

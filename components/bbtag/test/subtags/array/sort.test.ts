@@ -1,3 +1,4 @@
+import { Subtag } from '@blargbot/bbtag';
 import { SortSubtag } from '@blargbot/bbtag/subtags/array/sort.js';
 import { GetSubtag } from '@blargbot/bbtag/subtags/bot/get.js';
 import { TagVariableType } from '@blargbot/domain/models/index.js';
@@ -7,7 +8,7 @@ import chai from 'chai';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new SortSubtag(),
+    subtag: Subtag.getDescriptor(SortSubtag),
     argCountBounds: { min: 1, max: 2 },
     cases: [
         {
@@ -46,7 +47,7 @@ runSubtagTests({
         {
             code: '{sort;{get;arr1}}',
             expected: '',
-            subtags: [new GetSubtag()],
+            subtags: [Subtag.getDescriptor(GetSubtag)],
             setupSaveVariables: false,
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
@@ -60,7 +61,7 @@ runSubtagTests({
         {
             code: '{sort;arr1}',
             expected: '',
-            subtags: [new GetSubtag()],
+            subtags: [Subtag.getDescriptor(GetSubtag)],
             setupSaveVariables: false,
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
@@ -74,7 +75,7 @@ runSubtagTests({
         {
             code: '{sort;!arr1}',
             expected: '',
-            subtags: [new GetSubtag()],
+            subtags: [Subtag.getDescriptor(GetSubtag)],
             setupSaveVariables: false,
             setup(ctx) {
                 ctx.options.tagName = 'testTag';

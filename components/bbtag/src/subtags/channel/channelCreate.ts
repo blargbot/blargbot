@@ -5,15 +5,17 @@ import * as Eris from 'eris';
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.channelCreate;
 
+@Subtag.id('channelCreate')
+@Subtag.factory()
 export class ChannelCreateSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: 'channelCreate',
             category: SubtagType.CHANNEL,
             description: tag.description,
             definition: [

@@ -1,3 +1,4 @@
+import { Subtag } from '@blargbot/bbtag';
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
 import { RoleSetMentionableSubtag } from '@blargbot/bbtag/subtags/role/roleSetMentionable.js';
 import { argument } from '@blargbot/test-util/mock.js';
@@ -7,7 +8,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetRolePropTestCases } from './_getRolePropTest.js';
 
 runSubtagTests({
-    subtag: new RoleSetMentionableSubtag(),
+    subtag: Subtag.getDescriptor(RoleSetMentionableSubtag),
     argCountBounds: { min: 1, max: 3 },
     setupEach(ctx) {
         ctx.roles.authorizer.permissions = Eris.Constants.Permissions.manageRoles.toString();

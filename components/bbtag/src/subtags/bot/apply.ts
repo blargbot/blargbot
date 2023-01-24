@@ -1,18 +1,23 @@
-import { parse } from '@blargbot/core/utils/index.js';
-
 import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, UnknownSubtagError } from '../../errors/index.js';
 import type { SubtagCall } from '../../language/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
-import { bbtag, SubtagType } from '../../utils/index.js';
+import type { BBTagArrayTools } from '../../utils/index.js';
+import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.apply;
 
+@Subtag.id('apply')
+@Subtag.factory(Subtag.arrayTools(), Subtag.converter())
 export class ApplySubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #arrayTools: BBTagArrayTools;
+    readonly #converter: BBTagValueConverter;
+
+    public constructor(arrayTools: BBTagArrayTools, converter: BBTagValueConverter) {
         super({
-            name: 'apply',
             category: SubtagType.ARRAY,
             definition: [
                 {
@@ -25,6 +30,9 @@ export class ApplySubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#arrayTools = arrayTools;
+        this.#converter = converter;
     }
 
     public async defaultApply(
@@ -42,8 +50,8 @@ export class ApplySubtag extends CompiledSubtag {
         }
 
         const flatArgs = args
-            .flatMap(arg => bbtag.tagArray.deserialize(arg)?.v ?? [arg])
-            .map(v => parse.string(v));
+            .flatMap(arg => this.#arrayTools.deserialize(arg)?.v ?? [arg])
+            .map(v => this.#converter.string(v));
 
         const source = `{${[subtagName, ...flatArgs].join(';')}}`;
 

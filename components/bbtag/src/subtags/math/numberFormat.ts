@@ -1,16 +1,18 @@
-import { parse } from '@blargbot/core/utils/index.js';
-
+import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.numberFormat;
 
+@Subtag.id('numberFormat', 'numFormat')
+@Subtag.factory(Subtag.converter())
 export class NumberFormatSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #converter: BBTagValueConverter;
+
+    public constructor(converter: BBTagValueConverter) {
         super({
-            name: 'numberFormat',
-            aliases: ['numFormat'],
             description: tag.description,
             category: SubtagType.MATH,
             definition: [
@@ -32,6 +34,8 @@ export class NumberFormatSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#converter = converter;
     }
     public numFormat(
         numberStr: string,
@@ -39,10 +43,10 @@ export class NumberFormatSubtag extends CompiledSubtag {
         decimal: string,
         thousands: string
     ): string {
-        const number = parse.float(numberStr);
+        const number = this.#converter.float(numberStr);
         if (number === undefined)
             return 'NaN';
-        let roundto = parse.int(roundToStr);
+        let roundto = this.#converter.int(roundToStr);
         const options: Intl.NumberFormatOptions = {}; // create formatter options
         if (roundto !== undefined) {
             roundto = Math.min(20, Math.max(-21, roundto));

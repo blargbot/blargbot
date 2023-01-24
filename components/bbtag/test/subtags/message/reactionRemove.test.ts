@@ -1,3 +1,4 @@
+import { Subtag } from '@blargbot/bbtag';
 import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError, UserNotFoundError } from '@blargbot/bbtag/errors/index.js';
 import { ReactionRemoveSubtag } from '@blargbot/bbtag/subtags/message/reactionRemove.js';
 import * as Eris from 'eris';
@@ -5,7 +6,7 @@ import * as Eris from 'eris';
 import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new ReactionRemoveSubtag(),
+    subtag: Subtag.getDescriptor(ReactionRemoveSubtag),
     argCountBounds: { min: 1, max: Infinity },
     setupEach(ctx) {
         ctx.roles.bot.permissions = Eris.Constants.Permissions.manageMessages.toString();

@@ -1,3 +1,4 @@
+import { Subtag } from '@blargbot/bbtag';
 import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '@blargbot/bbtag/errors/index.js';
 import { EditSubtag } from '@blargbot/bbtag/subtags/message/edit.js';
 import { EscapeBBTagSubtag } from '@blargbot/bbtag/subtags/misc/escapeBBTag.js';
@@ -8,7 +9,7 @@ import type * as Eris from 'eris';
 import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new EditSubtag(),
+    subtag: Subtag.getDescriptor(EditSubtag),
     argCountBounds: { min: 2, max: 4 },
     cases: [
         {
@@ -80,7 +81,7 @@ runSubtagTests({
         },
         {
             code: '{edit;12345678901234567;{escapebbtag;{"title":"New embed!"}}}',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
             expected: '',
             postSetup(bbctx, ctx) {
                 const message = ctx.createMessage(SubtagTestContext.createApiMessage({
@@ -99,7 +100,7 @@ runSubtagTests({
         },
         {
             code: '{edit;12345678901234567;{escapebbtag;{"title":false}}}',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
             expected: '',
             postSetup(bbctx, ctx) {
                 const message = ctx.createMessage(SubtagTestContext.createApiMessage({
@@ -136,7 +137,7 @@ runSubtagTests({
         },
         {
             code: '{edit;12345678901234567;New message text;{escapebbtag;{"title":"New embed!"}}}',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
             expected: '',
             postSetup(bbctx, ctx) {
                 const message = ctx.createMessage(SubtagTestContext.createApiMessage({
@@ -156,7 +157,7 @@ runSubtagTests({
         },
         {
             code: '{edit;12345678901234567;{escapebbtag;{"title":"New embed!"}};New message text}',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
             expected: '',
             postSetup(bbctx, ctx) {
                 const message = ctx.createMessage(SubtagTestContext.createApiMessage({
@@ -219,7 +220,7 @@ runSubtagTests({
         },
         {
             code: '{edit;9876543212345678;12345678901234567;{escapebbtag;{"title":"New embed!"}}}',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
             expected: '',
             setup(ctx) {
                 ctx.channels.general.id = '9876543212345678';
@@ -244,7 +245,7 @@ runSubtagTests({
         },
         {
             code: '{edit;9876543212345678;12345678901234567;{escapebbtag;{"title":false}}}',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
             expected: '',
             setup(ctx) {
                 ctx.channels.general.id = '9876543212345678';
@@ -293,7 +294,7 @@ runSubtagTests({
         },
         {
             code: '{edit;9876543212345678;12345678901234567;New message text;{escapebbtag;{"title":"New embed!"}}}',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
             expected: '',
             setup(ctx) {
                 ctx.channels.general.id = '9876543212345678';
@@ -319,7 +320,7 @@ runSubtagTests({
         {
             title: 'When no channel is found',
             code: '{edit;9876543212345678;12345678901234567;New message text;{escapebbtag;{"title":"New embed!"}}}',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
             expected: '`No channel found`',
             postSetup(bbctx, ctx) {
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '9876543212345678')).thenResolve([]);

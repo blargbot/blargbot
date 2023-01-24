@@ -1,8 +1,3 @@
-import { compare as compareFn, parse } from '@blargbot/core/utils/index.js';
-import { hasProperty } from '@blargbot/guards';
-
-import { tagArray } from './tagArray.js';
-
 export type OrdinalOperator = '==' | '!=' | '>=' | '>' | '<=' | '<';
 export type StringOperator = 'startswith' | 'endswith' | 'includes' | 'contains';
 export type ComparisonOperator = OrdinalOperator | StringOperator;
@@ -10,105 +5,118 @@ export type NumericOperator = '+' | '-' | '*' | '/' | '%' | '^';
 export type LogicOperator = '||' | '&&' | '!' | 'xor';
 export type AggregationOperator = '??';
 
-export function isOrdinalOperator(operator: string): operator is OrdinalOperator {
-    return hasProperty(ordinalOperators, operator);
+export interface BBTagOperatorsOptions {
+    compare: (a: string, b: string) => number;
+    parseArray: (value: string) => JArray | undefined;
+    convertToString: (value: JToken) => string;
 }
 
-export function isStringOperator(operator: string): operator is StringOperator {
-    return hasProperty(stringOperators, operator);
+type OperatorMethods<Operators extends string, Args extends readonly unknown[], Result> = {
+    readonly [P in Operators]: (this: void, ...args: Args) => Result
 }
 
-export function isComparisonOperator(operator: string): operator is ComparisonOperator {
-    return isOrdinalOperator(operator) || isStringOperator(operator);
+export interface BBTagOperators {
+    readonly ordinal: OperatorMethods<OrdinalOperator, [a: string, b: string], boolean>;
+    readonly string: OperatorMethods<StringOperator, [a: string, b: string], boolean>;
+    readonly numeric: OperatorMethods<NumericOperator, [a: number, b: number], number>;
+    readonly logic: OperatorMethods<LogicOperator, [vals: boolean[]], boolean>;
+    readonly aggregation: OperatorMethods<AggregationOperator, [values: string[]], string>;
+    readonly comparison: OperatorMethods<ComparisonOperator, [a: string, b: string], boolean>;
 }
 
-export function isNumericOperator(operator: string): operator is NumericOperator {
-    return hasProperty(numericOperators, operator);
+export type OperatorGroupDetails<Operators extends string> = {
+    keys: readonly Operators[];
+    test(value: string): value is Operators;
 }
 
-export function isLogicOperator(operator: string): operator is LogicOperator {
-    return hasProperty(logicOperators, operator);
+const dummyOperators = createBBTagOperators({
+    compare: () => 0,
+    convertToString: () => '',
+    parseArray: () => undefined
+});
+
+export const ordinalOperators = toOperatorGroupDetails(dummyOperators.ordinal);
+export const stringOperators = toOperatorGroupDetails(dummyOperators.string);
+export const numericOperators = toOperatorGroupDetails(dummyOperators.numeric);
+export const logicOperators = toOperatorGroupDetails(dummyOperators.logic);
+export const aggregationOperators = toOperatorGroupDetails(dummyOperators.aggregation);
+export const comparisonOperators = toOperatorGroupDetails(dummyOperators.comparison);
+
+function toOperatorGroupDetails<Operators extends string>(operators: OperatorMethods<Operators, never, unknown>): OperatorGroupDetails<Operators> {
+    const keys = Object.freeze(Object.keys(operators));
+    const lookup = new Set<string>(keys);
+    return {
+        keys: keys,
+        test: (v): v is Operators => lookup.has(v)
+    };
 }
 
-export function operate<T extends keyof typeof operators>(operator: T, ...args: Parameters<typeof operators[T]>): ReturnType<typeof operators[T]> {
-    return operators[operator](...args as [never, never]) as ReturnType<typeof operators[T]>;
-}
-
-export const ordinalOperators: Readonly<Record<OrdinalOperator, (a: string, b: string) => boolean>> = {
-    '==': (a, b) => compareFn(a, b) === 0,
-    '!=': (a, b) => compareFn(a, b) !== 0,
-    '>=': (a, b) => compareFn(a, b) >= 0,
-    '>': (a, b) => compareFn(a, b) > 0,
-    '<=': (a, b) => compareFn(a, b) <= 0,
-    '<': (a, b) => compareFn(a, b) < 0
-};
-
-export const stringOperators: Readonly<Record<StringOperator, (a: string, b: string) => boolean>> = {
-    startswith(a, b) {
-        const arr = getStrArray(a);
-        return arr === undefined
-            ? a.startsWith(b)
-            : arr[0] === b;
-    },
-    endswith(a, b) {
-        const arr = getStrArray(a);
-        return arr === undefined
-            ? a.endsWith(b)
-            : arr[arr.length - 1] === b;
-    },
-    includes(a, b) {
-        const arr = getStrArray(a) ?? a;
-        return arr.includes(b);
-
-    },
-    get contains() {
-        return this.includes;
+export function createBBTagOperators(options: BBTagOperatorsOptions): BBTagOperators {
+    function readAsMaybeArray(value: string): string | string[] {
+        return options.parseArray(value)?.map(options.convertToString) ?? value;
     }
-};
+    const ordinalOperators: BBTagOperators['ordinal'] = {
+        '==': (a, b) => options.compare(a, b) === 0,
+        '!=': (a, b) => options.compare(a, b) !== 0,
+        '>=': (a, b) => options.compare(a, b) >= 0,
+        '>': (a, b) => options.compare(a, b) > 0,
+        '<=': (a, b) => options.compare(a, b) <= 0,
+        '<': (a, b) => options.compare(a, b) < 0
+    };
+    const stringOperators: BBTagOperators['string'] = {
+        startswith(a, b) {
+            const arr = readAsMaybeArray(a);
+            return typeof arr === 'string'
+                ? arr.startsWith(b)
+                : arr[0] === b;
+        },
+        endswith(a, b) {
+            const arr = readAsMaybeArray(a);
+            return typeof arr === 'string'
+                ? arr.endsWith(b)
+                : arr[arr.length - 1] === b;
+        },
+        includes(a, b) {
+            const arr = readAsMaybeArray(a);
+            return arr.includes(b);
 
-export const numericOperators: Readonly<Record<NumericOperator, (a: number, b: number) => number>> = {
-    '+': (a, b) => a + b,
-    '-': (a, b) => a - b,
-    '*': (a, b) => a * b,
-    '/': (a, b) => a / b,
-    '%': (a, b) => a % b,
-    '^': (a, b) => Math.pow(a, b)
-};
-
-export const logicOperators: Readonly<Record<LogicOperator, (vals: boolean[]) => boolean>> = {
-    '&&': (vals) => vals.length > 0 && vals.filter(v => v).length === vals.length,
-    '||': (vals) => vals.filter(v => v).length > 0,
-    'xor': (vals) => vals.filter(v => v).length === 1,
-    '!': (vals) => !vals[0]
-};
-
-export const aggregationOperators: Readonly<Record<AggregationOperator, (values: string[]) => string>> = {
-    '??': values => {
-        for (const value of values)
-            if (value.length > 0)
-                return value;
-        return '';
-    }
-};
-
-export const comparisonOperators: Readonly<Record<ComparisonOperator, (a: string, b: string) => boolean>> = {
-    ...ordinalOperators,
-    ...stringOperators
-};
-
-export const operators = {
-    ...ordinalOperators,
-    ...stringOperators,
-    ...logicOperators,
-    ...numericOperators,
-    ...aggregationOperators
-} as const;
-//TODO bitwise
-
-function getStrArray(text: string): JArray | undefined {
-    const arr = tagArray.deserialize(text);
-    if (arr !== undefined) {
-        return arr.v.map(v => parse.string(v));
-    }
-    return undefined;
+        },
+        get contains() {
+            return this.includes;
+        }
+    };
+    const numericOperators: BBTagOperators['numeric'] = {
+        '+': (a, b) => a + b,
+        '-': (a, b) => a - b,
+        '*': (a, b) => a * b,
+        '/': (a, b) => a / b,
+        '%': (a, b) => a % b,
+        '^': (a, b) => Math.pow(a, b)
+    };
+    const logicOperators: BBTagOperators['logic'] = {
+        '&&': (vals) => vals.length > 0 && vals.filter(v => v).length === vals.length,
+        '||': (vals) => vals.filter(v => v).length > 0,
+        'xor': (vals) => vals.filter(v => v).length === 1,
+        '!': (vals) => !vals[0]
+    };
+    const aggregationOperators: BBTagOperators['aggregation'] = {
+        '??': values => {
+            for (const value of values)
+                if (value.length > 0)
+                    return value;
+            return '';
+        }
+    };
+    const comparisonOperators: BBTagOperators['comparison'] = {
+        ...ordinalOperators,
+        ...stringOperators
+    };
+    return {
+        ordinal: ordinalOperators,
+        aggregation: aggregationOperators,
+        comparison: comparisonOperators,
+        logic: logicOperators,
+        numeric: numericOperators,
+        string: stringOperators
+    };
 }

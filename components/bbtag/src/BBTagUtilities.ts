@@ -1,22 +1,55 @@
 import type { Configuration } from '@blargbot/config';
-import type { ChoiceQueryResult, EntityPickQueryOptions } from '@blargbot/core/types.js';
+import type { ChoiceQueryResult, EntityPickQueryOptions, MalformedEmbed } from '@blargbot/core/types.js';
 import type { Database } from '@blargbot/database';
 import type { Emote } from '@blargbot/discord-emote';
+import type { FlagParser } from '@blargbot/flags';
 import type { Logger } from '@blargbot/logger';
 import type * as Eris from 'eris';
 import type moment from 'moment-timezone';
 
 import type { BBTagContext } from './BBTagContext.js';
+import type { BBTagEngine } from './BBTagEngine.js';
 import type { Subtag } from './Subtag.js';
 import type { AwaitReactionsResponse } from './types.js';
+import type { BBTagJsonTools } from './utils/json.js';
+import type { BBTagOperators } from './utils/operators.js';
+import type { BBTagArrayTools } from './utils/tagArray.js';
 
 export interface InjectionContext {
     readonly discord: Eris.Client;
     readonly logger: Logger;
     readonly database: Database;
-    readonly subtags: Iterable<Subtag>;
+    readonly subtags: Iterable<SubtagDescriptor>;
     readonly config: Configuration;
     readonly util: BBTagUtilities;
+    readonly parseFlags: FlagParser;
+    readonly operators: BBTagOperators;
+    readonly arrayTools: BBTagArrayTools;
+    readonly jsonTools: BBTagJsonTools;
+
+    readonly converter: BBTagValueConverter;
+}
+
+export interface SubtagDescriptor<T extends Subtag = Subtag> {
+    createInstance(engine: BBTagEngine): T;
+    readonly name: string;
+    readonly aliases: string[];
+}
+
+export interface BBTagValueConverter {
+    int(this: void, value: string, options?: { strict?: boolean; radix?: number; }): number | undefined;
+    float(this: void, value: string, options?: { strict?: boolean; }): number | undefined;
+    string(this: void, value: JToken | undefined, includeNull?: boolean): string;
+    boolean(this: void, value: string | boolean | number | undefined, defValue: boolean, includeNumbers?: boolean): boolean;
+    boolean(this: void, value: string | boolean | number | undefined, defValue?: undefined, includeNumbers?: boolean): boolean | undefined;
+    duration(this: void, text: string, fallback: moment.Duration): moment.Duration;
+    duration(this: void, text: string, fallback?: moment.Duration): moment.Duration | undefined;
+    embed(this: void, embedText: undefined, allowMalformed?: true): undefined;
+    embed(this: void, embedText: string | undefined, allowMalformed?: true): Array<Eris.EmbedOptions | MalformedEmbed> | undefined;
+    embed(this: void, embedText: string | undefined, allowMalformed: false): Eris.EmbedOptions[] | undefined;
+    bigInt(this: void, s: string | number | bigint): bigint | undefined;
+    color(this: void, text: number | 'random' | string): number | undefined;
+    time(this: void, text: 'now' | 'today' | 'tomorrow' | 'yesterday' | string, format?: string, timezone?: string): moment.Moment;
 }
 
 export interface BBTagSendContent extends Omit<Eris.AdvancedMessageContent, 'embed' | 'messageReferenceID'> {

@@ -1,3 +1,4 @@
+import { Subtag } from '@blargbot/bbtag';
 import { BBTagRuntimeError, NotANumberError, UserNotFoundError } from '@blargbot/bbtag/errors/index.js';
 import { BanSubtag } from '@blargbot/bbtag/subtags/user/ban.js';
 import { argument } from '@blargbot/test-util/mock.js';
@@ -12,7 +13,7 @@ function isDuration(ms: number): moment.Duration {
 }
 
 runSubtagTests({
-    subtag: new BanSubtag(),
+    subtag: Subtag.getDescriptor(BanSubtag),
     argCountBounds: { min: 1, max: 5 },
     cases: [
         {

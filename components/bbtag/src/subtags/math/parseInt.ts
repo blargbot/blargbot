@@ -1,15 +1,18 @@
-import { parse } from '@blargbot/core/utils/index.js';
-
+import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.parseInt;
 
+@Subtag.id('parseInt')
+@Subtag.factory(Subtag.converter())
 export class ParseIntSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #converter: BBTagValueConverter;
+
+    public constructor(converter: BBTagValueConverter) {
         super({
-            name: 'parseInt',
             category: SubtagType.MATH,
             definition: [
                 {
@@ -22,9 +25,11 @@ export class ParseIntSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#converter = converter;
     }
 
     public parseInt(number: string): number {
-        return parse.int(number) ?? NaN;
+        return this.#converter.int(number) ?? NaN;
     }
 }

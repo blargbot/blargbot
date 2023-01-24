@@ -1,3 +1,4 @@
+import { Subtag } from '@blargbot/bbtag';
 import { InvalidOperatorError, NotANumberError } from '@blargbot/bbtag/errors/index.js';
 import { MathSubtag } from '@blargbot/bbtag/subtags/math/math.js';
 import type { NumericOperator } from '@blargbot/bbtag/utils/index.js';
@@ -8,7 +9,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 const exp = Math.pow;
 
 runSubtagTests({
-    subtag: new MathSubtag(),
+    subtag: Subtag.getDescriptor(MathSubtag),
     argCountBounds: { min: 2, max: Infinity },
     cases: [
         ...createTestCases([0], { '%': 0, '*': 0, '+': 0, '-': 0, '/': 0, '^': 0 }),

@@ -1,3 +1,4 @@
+import { Subtag } from '@blargbot/bbtag';
 import type { BBTagUtilities } from '@blargbot/bbtag/BBTagUtilities.js';
 import { BBTagRuntimeError, NotANumberError } from '@blargbot/bbtag/errors/index.js';
 import { MessageIdSubtag } from '@blargbot/bbtag/subtags/message/messageId.js';
@@ -15,7 +16,7 @@ type AwaitCondition = Exclude<Parameters<BBTagUtilities['awaitMessage']>[1], und
 const anyCondition = argument.is((v): v is AwaitCondition => typeof v === 'function');
 
 runSubtagTests({
-    subtag: new WaitMessageSubtag(),
+    subtag: Subtag.getDescriptor(WaitMessageSubtag),
     argCountBounds: { min: 0, max: { count: 4, noEval: [2] } },
     cases: [
         {
@@ -202,7 +203,7 @@ runSubtagTests({
                 { start: 53, end: 59, error: new MarkerError('eval', 53) },
                 { start: 53, end: 59, error: new MarkerError('eval', 53) }
             ],
-            subtags: [new OperatorSubtag(), new MessageIdSubtag()],
+            subtags: [Subtag.getDescriptor(OperatorSubtag), Subtag.getDescriptor(MessageIdSubtag)],
             setup(ctx) {
                 ctx.channels.command.id = '9834653278429843564';
                 ctx.message.channel_id = ctx.channels.command.id;
@@ -233,7 +234,7 @@ runSubtagTests({
                 { start: 53, end: 59, error: new MarkerError('eval', 53) },
                 { start: 53, end: 59, error: new MarkerError('eval', 53) }
             ],
-            subtags: [new OperatorSubtag(), new MessageIdSubtag()],
+            subtags: [Subtag.getDescriptor(OperatorSubtag), Subtag.getDescriptor(MessageIdSubtag)],
             setup(ctx) {
                 ctx.channels.command.id = '9834653278429843564';
                 ctx.message.channel_id = ctx.channels.command.id;
@@ -264,7 +265,7 @@ runSubtagTests({
                 { start: 53, end: 59, error: new MarkerError('eval', 53) },
                 { start: 53, end: 59, error: new MarkerError('eval', 53) }
             ],
-            subtags: [new OperatorSubtag(), new MessageIdSubtag()],
+            subtags: [Subtag.getDescriptor(OperatorSubtag), Subtag.getDescriptor(MessageIdSubtag)],
             setup(ctx) {
                 ctx.channels.command.id = '9834653278429843564';
                 ctx.message.channel_id = ctx.channels.command.id;
@@ -295,7 +296,7 @@ runSubtagTests({
                 { start: 53, end: 59, error: new MarkerError('eval', 53) },
                 { start: 53, end: 59, error: new MarkerError('eval', 53) }
             ],
-            subtags: [new OperatorSubtag(), new MessageIdSubtag()],
+            subtags: [Subtag.getDescriptor(OperatorSubtag), Subtag.getDescriptor(MessageIdSubtag)],
             setup(ctx) {
                 ctx.channels.command.id = '9834653278429843564';
                 ctx.message.channel_id = ctx.channels.command.id;

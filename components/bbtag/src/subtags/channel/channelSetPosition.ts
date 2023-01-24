@@ -1,19 +1,22 @@
-import { parse } from '@blargbot/core/utils/index.js';
 import * as Eris from 'eris';
 
 import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, NotANumberError } from '../../errors/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.channelSetPosition;
 
+@Subtag.id('channelSetPosition', 'channelSetPos')
+@Subtag.factory(Subtag.converter())
 export class ChannelSetPositionSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #converter: BBTagValueConverter;
+
+    public constructor(converter: BBTagValueConverter) {
         super({
-            name: 'channelSetPosition',
-            aliases: ['channelSetPos'],
             category: SubtagType.CHANNEL,
             definition: [
                 {
@@ -26,6 +29,8 @@ export class ChannelSetPositionSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#converter = converter;
     }
 
     public async setChannelPosition(context: BBTagContext, channelStr: string, posStr: string): Promise<void> {
@@ -37,7 +42,7 @@ export class ChannelSetPositionSubtag extends CompiledSubtag {
         if (!context.hasPermission(channel, 'manageChannels'))
             throw new BBTagRuntimeError('Author cannot move this channel');
 
-        const pos = parse.int(posStr);
+        const pos = this.#converter.int(posStr);
         if (pos === undefined)
             throw new NotANumberError(posStr);
 

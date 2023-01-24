@@ -1,14 +1,16 @@
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.pad;
 
+@Subtag.id('pad')
+@Subtag.factory()
 export class PadSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: 'pad',
             category: SubtagType.MISC,
             deprecated: 'realpad',
             definition: [

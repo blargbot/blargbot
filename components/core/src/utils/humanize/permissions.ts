@@ -1,5 +1,6 @@
 import type { IFormattable } from '@blargbot/formatting';
 import { FormatString } from '@blargbot/formatting';
+import { hasFlag } from '@blargbot/guards';
 import * as Eris from 'eris';
 
 export function permissions(permissions: bigint | ReadonlyArray<keyof Eris.Constants['Permissions']> | Eris.Permission, hideAdminUnlessAlone = false): Array<IFormattable<string>> {
@@ -11,7 +12,7 @@ export function permissions(permissions: bigint | ReadonlyArray<keyof Eris.Const
         flags &= ~Eris.Constants.Permissions.administrator; // remove admin flag
 
     return permDisplay
-        .filter(x => (flags & x.value) === x.value)
+        .filter(x => hasFlag(flags, x.value))
         .map(x => x.display);
 }
 

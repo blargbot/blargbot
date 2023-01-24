@@ -1,9 +1,10 @@
+import { Subtag } from '@blargbot/bbtag';
 import { GuildMembersSubtag } from '@blargbot/bbtag/subtags/guild/guildMembers.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new GuildMembersSubtag(),
+    subtag: Subtag.getDescriptor(GuildMembersSubtag),
     argCountBounds: { min: 0, max: 0 },
     cases: [
         {

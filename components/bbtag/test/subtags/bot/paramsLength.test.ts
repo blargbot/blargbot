@@ -1,10 +1,11 @@
+import { Subtag } from '@blargbot/bbtag';
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
 import { ParamsLengthSubtag } from '@blargbot/bbtag/subtags/bot/paramsLength.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new ParamsLengthSubtag(),
+    subtag: Subtag.getDescriptor(ParamsLengthSubtag),
     argCountBounds: { min: 0, max: 0 },
     cases: [
         {

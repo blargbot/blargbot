@@ -1,17 +1,19 @@
-import { parse } from '@blargbot/core/utils/index.js';
-
+import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.unindent;
 
+@Subtag.id('unindent', 'ui')
+@Subtag.factory(Subtag.converter())
 export class UnindentSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #converter: BBTagValueConverter;
+
+    public constructor(converter: BBTagValueConverter) {
         super({
-            name: 'unindent',
             category: SubtagType.MISC,
-            aliases: ['ui'],
             definition: [
                 {
                     parameters: ['text', 'level?'],
@@ -23,10 +25,12 @@ export class UnindentSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#converter = converter;
     }
 
     public unindent(text: string, levelStr: string): string {
-        let level = parse.int(levelStr);
+        let level = this.#converter.int(levelStr);
         if (level === undefined) {
             const lines = text.split('\n').slice(1);
             level = lines.length === 0 ? 0 : Math.min(...lines.map(l => l.length - l.replace(/^ +/, '').length));

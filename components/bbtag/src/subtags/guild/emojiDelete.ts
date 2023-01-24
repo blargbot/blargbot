@@ -3,15 +3,17 @@ import * as Eris from 'eris';
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.emojiDelete;
 
+@Subtag.id('emojiDelete')
+@Subtag.factory()
 export class EmojiDeleteSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: 'emojiDelete',
             category: SubtagType.GUILD,
             definition: [
                 {

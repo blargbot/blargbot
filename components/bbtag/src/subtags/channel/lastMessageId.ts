@@ -3,15 +3,17 @@ import { guard } from '@blargbot/core/utils/index.js';
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, ChannelNotFoundError } from '../../errors/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.lastMessageId;
 
+@Subtag.id('lastMessageId')
+@Subtag.factory()
 export class LastMessageIdSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: 'lastMessageId',
             category: SubtagType.CHANNEL,
             description: tag.description,
             definition: [

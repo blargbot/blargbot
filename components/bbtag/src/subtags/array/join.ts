@@ -1,15 +1,20 @@
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { NotAnArrayError } from '../../errors/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
-import { bbtag, SubtagType } from '../../utils/index.js';
+import type { BBTagArrayTools } from '../../utils/index.js';
+import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.join;
 
+@Subtag.id('join')
+@Subtag.factory(Subtag.arrayTools())
 export class JoinSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #arrayTools: BBTagArrayTools;
+
+    public constructor(arrayTools: BBTagArrayTools) {
         super({
-            name: 'join',
             category: SubtagType.ARRAY,
             definition: [
                 {
@@ -22,10 +27,12 @@ export class JoinSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#arrayTools = arrayTools;
     }
 
     public async join(context: BBTagContext, arrayStr: string, separator: string): Promise<string> {
-        const { v: array } = await bbtag.tagArray.deserializeOrGetArray(context, arrayStr) ?? {};
+        const { v: array } = await this.#arrayTools.deserializeOrGetArray(context, arrayStr) ?? {};
 
         if (array === undefined)
             throw new NotAnArrayError(arrayStr);

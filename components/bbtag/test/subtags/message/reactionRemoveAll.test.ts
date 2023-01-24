@@ -1,3 +1,4 @@
+import { Subtag } from '@blargbot/bbtag';
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
 import { ReactionRemoveAllSubtag } from '@blargbot/bbtag/subtags/message/reactionRemoveAll.js';
 import * as Eris from 'eris';
@@ -6,7 +7,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetMessagePropTestCases } from './_getMessagePropTest.js';
 
 runSubtagTests({
-    subtag: new ReactionRemoveAllSubtag(),
+    subtag: Subtag.getDescriptor(ReactionRemoveAllSubtag),
     argCountBounds: { min: 1, max: 2 },
     cases: [
         ...createGetMessagePropTestCases({

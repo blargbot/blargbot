@@ -1,3 +1,4 @@
+import { Subtag } from '@blargbot/bbtag';
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
 import { GuildSetIconSubtag } from '@blargbot/bbtag/subtags/guild/guildSetIcon.js';
 import { SemiSubtag } from '@blargbot/bbtag/subtags/simple/semi.js';
@@ -7,7 +8,7 @@ import * as Eris from 'eris';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new GuildSetIconSubtag(),
+    subtag: Subtag.getDescriptor(GuildSetIconSubtag),
     argCountBounds: { min: 1, max: 1 },
     setupEach(ctx) {
         ctx.roles.authorizer.permissions = Eris.Constants.Permissions.manageGuild.toString();
@@ -15,7 +16,7 @@ runSubtagTests({
     cases: [
         {
             code: '{guildseticon;data:image/png{semi}base64,abcdef}',
-            subtags: [new SemiSubtag()],
+            subtags: [Subtag.getDescriptor(SemiSubtag)],
             expected: '',
             postSetup(bbctx, ctx) {
                 ctx.discord.setup(m => m.editGuild(ctx.guild.id, argument.isDeepEqual({
@@ -43,7 +44,7 @@ runSubtagTests({
         },
         {
             code: '{guildseticon;data:image/png{semi}base64,abcdef}',
-            subtags: [new SemiSubtag()],
+            subtags: [Subtag.getDescriptor(SemiSubtag)],
             expected: '`Author cannot modify the guild`',
             errors: [
                 { start: 0, end: 48, error: new BBTagRuntimeError('Author cannot modify the guild') }
@@ -54,7 +55,7 @@ runSubtagTests({
         },
         {
             code: '{guildseticon;abcdef}',
-            subtags: [new SemiSubtag()],
+            subtags: [Subtag.getDescriptor(SemiSubtag)],
             expected: '`Image was not a buffer or a URL`',
             errors: [
                 { start: 0, end: 21, error: new BBTagRuntimeError('Image was not a buffer or a URL') }
@@ -62,7 +63,7 @@ runSubtagTests({
         },
         {
             code: '{guildseticon;data:image/png{semi}base64,abcdef}',
-            subtags: [new SemiSubtag()],
+            subtags: [Subtag.getDescriptor(SemiSubtag)],
             expected: '`Failed to set icon: This is an error`',
             errors: [
                 { start: 0, end: 48, error: new BBTagRuntimeError('Failed to set icon: This is an error') }
@@ -76,7 +77,7 @@ runSubtagTests({
         },
         {
             code: '{guildseticon;data:image/png{semi}base64,abcdef}',
-            subtags: [new SemiSubtag()],
+            subtags: [Subtag.getDescriptor(SemiSubtag)],
             expected: '`Failed to set icon: And this is line 2`',
             errors: [
                 { start: 0, end: 48, error: new BBTagRuntimeError('Failed to set icon: And this is line 2') }

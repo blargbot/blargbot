@@ -1,16 +1,21 @@
-import { parse } from '@blargbot/core/utils/index.js';
-
 import type { SubtagArgument } from '../../arguments/index.js';
+import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
-import { bbtag, SubtagType } from '../../utils/index.js';
+import type { BBTagArrayTools } from '../../utils/index.js';
+import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.switch;
 
+@Subtag.id('switch')
+@Subtag.factory(Subtag.arrayTools(), Subtag.converter())
 export class SwitchSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #arrayTools: BBTagArrayTools;
+    readonly #converter: BBTagValueConverter;
+
+    public constructor(arrayTools: BBTagArrayTools, converter: BBTagValueConverter) {
         super({
-            name: 'switch',
             category: SubtagType.MISC,
             definition: [
                 {
@@ -24,6 +29,9 @@ export class SwitchSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#arrayTools = arrayTools;
+        this.#converter = converter;
     }
 
     public async switch(
@@ -32,9 +40,9 @@ export class SwitchSubtag extends CompiledSubtag {
         defaultCase?: SubtagArgument
     ): Promise<string> {
         for (const [caseValue, then] of cases) {
-            const { v: options = [caseValue] } = bbtag.tagArray.deserialize(caseValue) ?? {};
+            const { v: options = [caseValue] } = this.#arrayTools.deserialize(caseValue) ?? {};
             for (const option of options)
-                if (parse.string(option) === value)
+                if (this.#converter.string(option) === value)
                     return await then.execute();
         }
         return await defaultCase?.execute() ?? '';

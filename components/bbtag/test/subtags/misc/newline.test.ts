@@ -1,10 +1,11 @@
+import { Subtag } from '@blargbot/bbtag';
 import { NotANumberError } from '@blargbot/bbtag/errors/index.js';
 import { NewlineSubtag } from '@blargbot/bbtag/subtags/misc/newline.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new NewlineSubtag(),
+    subtag: Subtag.getDescriptor(NewlineSubtag),
     argCountBounds: { min: 0, max: 1 },
     cases: [
         { code: '{newline}', expected: '\n' },

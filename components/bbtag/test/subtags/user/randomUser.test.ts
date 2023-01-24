@@ -1,10 +1,11 @@
+import { Subtag } from '@blargbot/bbtag';
 import { RandomUserSubtag } from '@blargbot/bbtag/subtags/user/randomUser.js';
 import chai from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new RandomUserSubtag(),
+    subtag: Subtag.getDescriptor(RandomUserSubtag),
     argCountBounds: { min: 0, max: 0 },
     cases: [
         {

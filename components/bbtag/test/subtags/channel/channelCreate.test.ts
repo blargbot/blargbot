@@ -1,3 +1,4 @@
+import { Subtag } from '@blargbot/bbtag';
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
 import { ChannelCreateSubtag } from '@blargbot/bbtag/subtags/channel/channelCreate.js';
 import { EscapeBBTagSubtag } from '@blargbot/bbtag/subtags/misc/escapeBBTag.js';
@@ -9,7 +10,7 @@ import type { SubtagTestContext } from '../SubtagTestSuite.js';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new ChannelCreateSubtag(),
+    subtag: Subtag.getDescriptor(ChannelCreateSubtag),
     argCountBounds: { min: 1, max: 3 },
     setupEach(ctx) {
         ctx.roles.authorizer.permissions = Eris.Constants.Permissions.administrator.toString();
@@ -64,7 +65,7 @@ runSubtagTests({
             {
                 code: `{channelcreate;My new channel;${type};{escapebbtag;{}}}`,
                 expected: '28376128632132',
-                subtags: [new EscapeBBTagSubtag()],
+                subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
                 setup(ctx: SubtagTestContext) {
                     const channel = ctx.createMock<Eris.Channel>(instance);
                     channel.setup(m => m.id).thenReturn('28376128632132');
@@ -106,7 +107,7 @@ runSubtagTests({
                     userLimit: 32042430
                 })}}}`,
                 expected: '28376128632132',
-                subtags: [new EscapeBBTagSubtag()],
+                subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
                 setup(ctx: SubtagTestContext) {
                     const channel = ctx.createMock<Eris.Channel>(instance);
                     channel.setup(m => m.id).thenReturn('28376128632132');
@@ -161,7 +162,7 @@ runSubtagTests({
                     userLimit: '32042430'
                 })}}}`,
                 expected: '28376128632132',
-                subtags: [new EscapeBBTagSubtag()],
+                subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
                 setup(ctx: SubtagTestContext) {
                     const channel = ctx.createMock<Eris.Channel>(instance);
                     channel.setup(m => m.id).thenReturn('28376128632132');
@@ -202,7 +203,7 @@ runSubtagTests({
                 ]
             })}}}`,
             expected: '28376128632132',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
             setup(ctx: SubtagTestContext) {
                 const channel = ctx.createMock(Eris.TextChannel);
                 channel.setup(m => m.id).thenReturn('28376128632132');
@@ -237,7 +238,7 @@ runSubtagTests({
                 ]
             })}}}`,
             expected: '`Author missing requested permissions`',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
             errors: [
                 { start: 0, end: 124, error: new BBTagRuntimeError('Author missing requested permissions') }
             ],

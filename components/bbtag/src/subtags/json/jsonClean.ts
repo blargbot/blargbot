@@ -1,16 +1,20 @@
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
-import { bbtag, SubtagType } from '../../utils/index.js';
+import type { BBTagJsonTools } from '../../utils/index.js';
+import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.jsonClean;
 
+@Subtag.id('jsonClean', 'jClean')
+@Subtag.factory(Subtag.jsonTools())
 export class JsonCleanSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #jsonTools: BBTagJsonTools;
+
+    public constructor(jsonTools: BBTagJsonTools) {
         super({
-            name: 'jsonClean',
             category: SubtagType.JSON,
-            aliases: ['jClean'],
             definition: [
                 {
                     parameters: ['input:{}'],
@@ -22,10 +26,12 @@ export class JsonCleanSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#jsonTools = jsonTools;
     }
 
     public async cleanJson(context: BBTagContext, input: string): Promise<JToken> {
-        const obj = await bbtag.json.resolveObj(context, input);
-        return bbtag.json.clean(obj.object);
+        const obj = await this.#jsonTools.resolveObj(context, input);
+        return this.#jsonTools.clean(obj.object);
     }
 }

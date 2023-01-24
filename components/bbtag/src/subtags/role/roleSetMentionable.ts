@@ -1,18 +1,22 @@
-import { parse } from '@blargbot/core/utils/index.js';
 import * as Eris from 'eris';
 
 import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.roleSetMentionable;
 
+@Subtag.id('roleSetMentionable')
+@Subtag.factory(Subtag.converter())
 export class RoleSetMentionableSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #converter: BBTagValueConverter;
+
+    public constructor(converter: BBTagValueConverter) {
         super({
-            name: 'roleSetMentionable',
             category: SubtagType.ROLE,
             definition: [
                 {
@@ -33,6 +37,8 @@ export class RoleSetMentionableSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#converter = converter;
     }
 
     public async setRolementionable(
@@ -47,7 +53,7 @@ export class RoleSetMentionableSubtag extends CompiledSubtag {
 
         quiet ||= context.scopes.local.quiet ?? false;
         const role = await context.queryRole(roleStr, { noLookup: quiet });
-        const mentionable = parse.boolean(toggleStr, false);
+        const mentionable = this.#converter.boolean(toggleStr, false);
 
         if (role === undefined)
             throw new BBTagRuntimeError('Role not found'); //TODO RoleNotFoundError instead

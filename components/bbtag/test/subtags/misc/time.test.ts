@@ -1,3 +1,4 @@
+import { Subtag } from '@blargbot/bbtag';
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
 import { TimeSubtag } from '@blargbot/bbtag/subtags/misc/time.js';
 import moment from 'moment-timezone';
@@ -5,7 +6,7 @@ import moment from 'moment-timezone';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: new TimeSubtag(),
+    subtag: Subtag.getDescriptor(TimeSubtag),
     argCountBounds: { min: 0, max: 5 },
     cases: [
         { code: '{time}', expected: () => moment.tz('Etc/UTC').format('YYYY-MM-DDTHH:mm:ssZ'), retries: 5 },

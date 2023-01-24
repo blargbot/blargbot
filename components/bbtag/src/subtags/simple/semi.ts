@@ -1,13 +1,15 @@
 import { CompiledSubtag } from '../../compilation/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.semi;
 
+@Subtag.id('semi')
+@Subtag.factory()
 export class SemiSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: 'semi',
             category: SubtagType.SIMPLE,
             definition: [
                 {

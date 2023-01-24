@@ -5,17 +5,18 @@ import type { SubtagArgumentArray } from '../../arguments/index.js';
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError, UserNotFoundError } from '../../errors/index.js';
+import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.reactionRemove;
 
+@Subtag.id('reactionRemove', 'reactRemove', 'removeReact')
+@Subtag.factory()
 export class ReactionRemoveSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: 'reactionRemove',
             category: SubtagType.MESSAGE,
-            aliases: ['reactRemove', 'removeReact'],
             definition: [
                 {
                     parameters: ['arguments+'],

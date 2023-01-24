@@ -1,7 +1,8 @@
 import type { SubtagOptions } from '@blargbot/bbtag';
 import type { CommandType, ModerationType } from '@blargbot/cluster/utils/index.js';
 import type { EvalRequest, EvalResult, GlobalEvalResult, IMiddleware, MasterEvalRequest, SendContent } from '@blargbot/core/types.js';
-import type { CommandPermissions, FlagDefinition, FlagResult, GuildSettingDocs, GuildSourceCommandTag, NamedGuildCommandTag } from '@blargbot/domain/models/index.js';
+import type { CommandPermissions, GuildSettingDocs, GuildSourceCommandTag, NamedGuildCommandTag } from '@blargbot/domain/models/index.js';
+import type { FlagDefinition, FlagResult } from '@blargbot/flags';
 import type { IFormattable } from '@blargbot/formatting';
 import type * as Eris from 'eris';
 import type moment from 'moment-timezone';
@@ -258,7 +259,10 @@ export interface SubtagListResult {
     [tagName: string]: SubtagDetails | undefined;
 }
 
-export type SubtagDetails = SubtagOptions<string>
+export interface SubtagDetails extends SubtagOptions<string> {
+    readonly name: string;
+    readonly aliases: string[];
+}
 
 export interface GuildDetails {
     readonly id: string;

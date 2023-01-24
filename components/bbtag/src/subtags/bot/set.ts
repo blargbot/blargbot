@@ -1,15 +1,20 @@
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
+import { Subtag } from '../../Subtag.js';
 import { tagVariableScopeProviders } from '../../tagVariableScopeProviders.js';
 import templates from '../../text.js';
-import { bbtag, SubtagType } from '../../utils/index.js';
+import type { BBTagArrayTools } from '../../utils/index.js';
+import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.set;
 
+@Subtag.id('set')
+@Subtag.factory(Subtag.arrayTools())
 export class SetSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #arrayTools: BBTagArrayTools;
+
+    public constructor(arrayTools: BBTagArrayTools) {
         super({
-            name: 'set',
             category: SubtagType.BOT,
             definition: [
                 {
@@ -38,6 +43,8 @@ export class SetSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#arrayTools = arrayTools;
     }
 
     public async set(
@@ -45,7 +52,7 @@ export class SetSubtag extends CompiledSubtag {
         variableName: string,
         value: string
     ): Promise<void> {
-        const deserializedArray = bbtag.tagArray.deserialize(value);
+        const deserializedArray = this.#arrayTools.deserialize(value);
         if (deserializedArray !== undefined) {
             await context.variables.set(variableName, deserializedArray.v);
         } else {
