@@ -7,7 +7,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.unindent;
 
 @Subtag.id('unindent', 'ui')
-@Subtag.factory(Subtag.converter())
+@Subtag.ctorArgs(Subtag.converter())
 export class UnindentSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;
 

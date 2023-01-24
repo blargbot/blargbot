@@ -8,7 +8,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.quiet;
 
 @Subtag.id('quiet')
-@Subtag.factory(Subtag.converter())
+@Subtag.ctorArgs(Subtag.converter())
 export class QuietSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;
 

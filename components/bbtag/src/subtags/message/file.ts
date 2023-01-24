@@ -7,7 +7,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.file;
 
 @Subtag.id('file')
-@Subtag.factory()
+@Subtag.ctorArgs()
 export class FileSubtag extends CompiledSubtag {
     public constructor() {
         super({

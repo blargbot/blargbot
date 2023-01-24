@@ -9,7 +9,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.function;
 
 @Subtag.id('function', 'func')
-@Subtag.factory()
+@Subtag.ctorArgs()
 export class FunctionSubtag extends CompiledSubtag {
     public constructor() {
         super({

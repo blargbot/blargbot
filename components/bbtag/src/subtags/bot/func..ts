@@ -5,7 +5,7 @@ import { Subtag } from '../../Subtag.js';
 import { SubtagType } from '../../utils/index.js';
 
 @Subtag.id('func.')
-@Subtag.factory()
+@Subtag.ctorArgs()
 export class FunctionInvokeSubtag extends CompiledSubtag {
     public constructor() {
         super({

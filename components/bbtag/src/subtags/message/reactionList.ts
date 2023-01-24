@@ -12,7 +12,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.reactionList;
 
 @Subtag.id('reactionList', 'reactList', 'listReact')
-@Subtag.factory()
+@Subtag.ctorArgs()
 export class ReactionListSubtag extends CompiledSubtag {
     public constructor() {
         super({

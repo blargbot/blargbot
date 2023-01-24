@@ -10,7 +10,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.emojiDelete;
 
 @Subtag.id('emojiDelete')
-@Subtag.factory()
+@Subtag.ctorArgs()
 export class EmojiDeleteSubtag extends CompiledSubtag {
     public constructor() {
         super({

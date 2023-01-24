@@ -10,7 +10,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.randomUser;
 
 @Subtag.id('randomUser', 'randUser')
-@Subtag.factory(Subtag.util())
+@Subtag.ctorArgs(Subtag.util())
 export class RandomUserSubtag extends CompiledSubtag {
     readonly #util: BBTagUtilities;
 

@@ -9,7 +9,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.return;
 
 @Subtag.id('return')
-@Subtag.factory(Subtag.converter())
+@Subtag.ctorArgs(Subtag.converter())
 export class ReturnSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;
 

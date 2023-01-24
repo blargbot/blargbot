@@ -12,7 +12,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.guildSetIcon;
 
 @Subtag.id('guildSetIcon')
-@Subtag.factory()
+@Subtag.ctorArgs()
 export class GuildSetIconSubtag extends CompiledSubtag {
     public constructor() {
         super({

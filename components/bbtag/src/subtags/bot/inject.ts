@@ -8,7 +8,7 @@ import { parseBBTag, SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.inject;
 
 @Subtag.id('inject')
-@Subtag.factory()
+@Subtag.ctorArgs()
 export class InjectSubtag extends CompiledSubtag {
     public constructor() {
         super({

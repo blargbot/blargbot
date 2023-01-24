@@ -19,7 +19,7 @@ interface EmojiCreateOptions {
 }
 
 @Subtag.id('emojiCreate')
-@Subtag.factory(Subtag.arrayTools())
+@Subtag.ctorArgs(Subtag.arrayTools())
 export class EmojiCreateSubtag extends CompiledSubtag {
     readonly #arrayTools: BBTagArrayTools;
 

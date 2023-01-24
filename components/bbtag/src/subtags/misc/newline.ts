@@ -9,7 +9,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.newline;
 
 @Subtag.id('newline', 'n')
-@Subtag.factory(Subtag.converter())
+@Subtag.ctorArgs(Subtag.converter())
 export class NewlineSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;
 

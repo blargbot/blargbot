@@ -8,7 +8,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.paramsLength;
 
 @Subtag.id('paramsLength')
-@Subtag.factory()
+@Subtag.ctorArgs()
 export class ParamsLengthSubtag extends CompiledSubtag {
     public constructor() {
         super({

@@ -10,7 +10,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.forEach;
 
 @Subtag.id('forEach')
-@Subtag.factory(Subtag.arrayTools())
+@Subtag.ctorArgs(Subtag.arrayTools())
 export class ForEachSubtag extends CompiledSubtag {
     readonly #arrayTools: BBTagArrayTools;
 

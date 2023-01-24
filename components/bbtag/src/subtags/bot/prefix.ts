@@ -10,7 +10,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.prefix;
 
 @Subtag.id('prefix')
-@Subtag.factory(Subtag.util(), Subtag.store('guilds'))
+@Subtag.ctorArgs(Subtag.util(), Subtag.store('guilds'))
 export class PrefixSubtag extends CompiledSubtag {
     readonly #util: BBTagUtilities;
     readonly #guilds: GuildStore;

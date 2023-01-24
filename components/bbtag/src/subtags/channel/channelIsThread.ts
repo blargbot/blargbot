@@ -10,7 +10,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.channelIsThread;
 
 @Subtag.id('channelIsThread', 'isThread')
-@Subtag.factory()
+@Subtag.ctorArgs()
 export class ChannelIsThreadSubtag extends CompiledSubtag {
     public constructor() {
         super({

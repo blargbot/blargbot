@@ -18,7 +18,7 @@ const errorMap = {
 };
 
 @Subtag.id('ban')
-@Subtag.factory(Subtag.util(), Subtag.converter())
+@Subtag.ctorArgs(Subtag.util(), Subtag.converter())
 export class BanSubtag extends CompiledSubtag {
     #util: BBTagUtilities;
     #converter: BBTagValueConverter;

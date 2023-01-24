@@ -9,7 +9,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.unban;
 
 @Subtag.id('unban')
-@Subtag.factory(Subtag.util())
+@Subtag.ctorArgs(Subtag.util())
 export class UnbanSubtag extends CompiledSubtag {
     readonly #util: BBTagUtilities;
 

@@ -7,7 +7,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.pad;
 
 @Subtag.id('pad')
-@Subtag.factory()
+@Subtag.ctorArgs()
 export class PadSubtag extends CompiledSubtag {
     public constructor() {
         super({

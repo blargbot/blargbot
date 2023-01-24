@@ -11,7 +11,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.messageTime;
 
 @Subtag.id('messageTime', 'timestamp')
-@Subtag.factory()
+@Subtag.ctorArgs()
 export class MessageTimeSubtag extends CompiledSubtag {
     public constructor() {
         super({

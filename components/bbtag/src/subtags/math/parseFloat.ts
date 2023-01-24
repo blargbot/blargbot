@@ -7,7 +7,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.parseFloat;
 
 @Subtag.id('parseFloat')
-@Subtag.factory(Subtag.converter())
+@Subtag.ctorArgs(Subtag.converter())
 export class ParseFloatSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;
 

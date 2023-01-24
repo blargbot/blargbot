@@ -9,7 +9,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.userAvatar;
 
 @Subtag.id('userAvatar')
-@Subtag.factory(Subtag.util())
+@Subtag.ctorArgs(Subtag.util())
 export class UserAvatarSubtag extends CompiledSubtag {
     readonly #util: BBTagUtilities;
 

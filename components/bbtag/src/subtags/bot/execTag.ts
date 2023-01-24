@@ -14,7 +14,7 @@ import { parseBBTag, SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.execTag;
 
 @Subtag.id('execTag', 'exec')
-@Subtag.factory(Subtag.arrayTools(), Subtag.converter(), Subtag.store('tags'))
+@Subtag.ctorArgs(Subtag.arrayTools(), Subtag.converter(), Subtag.store('tags'))
 export class ExecTagSubtag extends CompiledSubtag {
     readonly #arrayTools: BBTagArrayTools;
     readonly #converter: BBTagValueConverter;

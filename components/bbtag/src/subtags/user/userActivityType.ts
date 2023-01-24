@@ -8,7 +8,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.userActivityType;
 
 @Subtag.id('userActivityType', 'userGameType')
-@Subtag.factory()
+@Subtag.ctorArgs()
 export class UserActivityTypeSubtag extends CompiledSubtag {
     public constructor() {
         super({

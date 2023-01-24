@@ -10,7 +10,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.messageEmbeds;
 
 @Subtag.id('messageEmbeds')
-@Subtag.factory()
+@Subtag.ctorArgs()
 export class MessageEmbedsSubtag extends CompiledSubtag {
     public constructor() {
         super({

@@ -9,7 +9,7 @@ import { numericOperators, SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.math;
 
 @Subtag.id('math')
-@Subtag.factory(Subtag.operators(), Subtag.arrayTools(), Subtag.converter())
+@Subtag.ctorArgs(Subtag.operators(), Subtag.arrayTools(), Subtag.converter())
 export class MathSubtag extends CompiledSubtag {
     readonly #operators: BBTagOperators;
     readonly #arrayTools: BBTagArrayTools;

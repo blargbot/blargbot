@@ -8,7 +8,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.hereMention;
 
 @Subtag.id('hereMention', 'here')
-@Subtag.factory(Subtag.converter())
+@Subtag.ctorArgs(Subtag.converter())
 export class HereMentionSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;
 

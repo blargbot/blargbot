@@ -11,7 +11,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.roleSetColor;
 
 @Subtag.id('roleSetColor')
-@Subtag.factory(Subtag.converter())
+@Subtag.ctorArgs(Subtag.converter())
 export class RoleSetColorSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;
 

@@ -8,7 +8,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.reactionRemoveAll;
 
 @Subtag.id('reactionRemoveAll', 'reactRemoveAll', 'removeReactAll')
-@Subtag.factory()
+@Subtag.ctorArgs()
 export class ReactionRemoveAllSubtag extends CompiledSubtag {
     public constructor() {
         super({

@@ -8,7 +8,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.time;
 
 @Subtag.id('time')
-@Subtag.factory(Subtag.converter())
+@Subtag.ctorArgs(Subtag.converter())
 export class TimeSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;
 

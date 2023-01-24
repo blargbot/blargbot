@@ -12,7 +12,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.slice;
 
 @Subtag.id('slice')
-@Subtag.factory(Subtag.arrayTools(), Subtag.converter())
+@Subtag.ctorArgs(Subtag.arrayTools(), Subtag.converter())
 export class SliceSubtag extends CompiledSubtag {
     readonly #arrayTools: BBTagArrayTools;
     readonly #converter: BBTagValueConverter;

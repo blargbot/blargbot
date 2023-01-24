@@ -17,7 +17,7 @@ const tag = templates.subtags.waitReaction;
 const defaultCondition = parseBBTag('true');
 
 @Subtag.id('waitReaction', 'waitReact')
-@Subtag.factory(Subtag.util(), Subtag.arrayTools(), Subtag.converter())
+@Subtag.ctorArgs(Subtag.util(), Subtag.arrayTools(), Subtag.converter())
 export class WaitReactionSubtag extends CompiledSubtag {
     readonly #util: BBTagUtilities;
     readonly #arrayTools: BBTagArrayTools;

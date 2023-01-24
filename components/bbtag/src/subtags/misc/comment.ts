@@ -6,7 +6,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.comment;
 
 @Subtag.id('comment', '//')
-@Subtag.factory()
+@Subtag.ctorArgs()
 export class CommentSubtag extends CompiledSubtag {
     public constructor() {
         super({

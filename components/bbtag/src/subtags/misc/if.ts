@@ -10,7 +10,7 @@ import { comparisonOperators, SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.if;
 
 @Subtag.id('if')
-@Subtag.factory(Subtag.operators(), Subtag.converter())
+@Subtag.ctorArgs(Subtag.operators(), Subtag.converter())
 export class IfSubtag extends CompiledSubtag {
     readonly #operators: BBTagOperators;
     readonly #converter: BBTagValueConverter;

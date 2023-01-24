@@ -9,7 +9,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.absolute;
 
 @Subtag.id('absolute', 'abs')
-@Subtag.factory(Subtag.arrayTools(), Subtag.converter())
+@Subtag.ctorArgs(Subtag.arrayTools(), Subtag.converter())
 export class AbsoluteSubtag extends CompiledSubtag {
     readonly #arrayTools: BBTagArrayTools;
     readonly #converter: BBTagValueConverter;

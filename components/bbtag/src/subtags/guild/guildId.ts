@@ -7,7 +7,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.guildId;
 
 @Subtag.id('guildId')
-@Subtag.factory()
+@Subtag.ctorArgs()
 export class GuildIdSubtag extends CompiledSubtag {
     public constructor() {
         super({

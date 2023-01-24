@@ -9,7 +9,7 @@ import { comparisonOperators, SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.bool;
 
 @Subtag.id('bool')
-@Subtag.factory(Subtag.operators(), Subtag.converter())
+@Subtag.ctorArgs(Subtag.operators(), Subtag.converter())
 export class BoolSubtag extends CompiledSubtag {
     readonly #operators: BBTagOperators;
     readonly #converter: BBTagValueConverter;

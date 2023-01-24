@@ -7,7 +7,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.tagAuthorizer;
 
 @Subtag.id('tagAuthorizer', 'customCommandAuthorizer', 'ccAuthorizer')
-@Subtag.factory()
+@Subtag.ctorArgs()
 export class TagAuthorizerSubtag extends CompiledSubtag {
     public constructor() {
         super({

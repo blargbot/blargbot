@@ -8,7 +8,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.dump;
 
 @Subtag.id('dump')
-@Subtag.factory(Subtag.util())
+@Subtag.ctorArgs(Subtag.util())
 export class DumpSubtag extends CompiledSubtag {
     readonly #util: BBTagUtilities;
 

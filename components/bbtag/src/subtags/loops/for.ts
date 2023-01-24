@@ -12,7 +12,7 @@ import { comparisonOperators, SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.for;
 
 @Subtag.id('for')
-@Subtag.factory(Subtag.operators(), Subtag.converter())
+@Subtag.ctorArgs(Subtag.operators(), Subtag.converter())
 export class ForSubtag extends CompiledSubtag {
     readonly #operators: BBTagOperators;
     readonly #converter: BBTagValueConverter;

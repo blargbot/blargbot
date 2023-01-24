@@ -10,7 +10,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.min;
 
 @Subtag.id('min')
-@Subtag.factory(Subtag.arrayTools(), Subtag.converter())
+@Subtag.ctorArgs(Subtag.arrayTools(), Subtag.converter())
 export class MinSubtag extends CompiledSubtag {
     readonly #arrayTools: BBTagArrayTools;
     readonly #converter: BBTagValueConverter;

@@ -8,7 +8,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.roundDown;
 
 @Subtag.id('roundDown', 'floor')
-@Subtag.factory(Subtag.converter())
+@Subtag.ctorArgs(Subtag.converter())
 export class RoundDownSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;
 

@@ -11,7 +11,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.channelSetPosition;
 
 @Subtag.id('channelSetPosition', 'channelSetPos')
-@Subtag.factory(Subtag.converter())
+@Subtag.ctorArgs(Subtag.converter())
 export class ChannelSetPositionSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;
 

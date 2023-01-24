@@ -11,7 +11,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.repeat;
 
 @Subtag.id('repeat', 'loop')
-@Subtag.factory(Subtag.converter())
+@Subtag.ctorArgs(Subtag.converter())
 export class RepeatSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;
 

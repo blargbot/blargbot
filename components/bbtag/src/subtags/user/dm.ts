@@ -11,7 +11,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.dm;
 
 @Subtag.id('dm')
-@Subtag.factory(Subtag.util(), Subtag.converter(), Subtag.logger())
+@Subtag.ctorArgs(Subtag.util(), Subtag.converter(), Subtag.logger())
 export class DMSubtag extends CompiledSubtag {
     readonly #dmCache: DMCache = {};
     readonly #util: BBTagUtilities;

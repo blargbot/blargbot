@@ -12,7 +12,7 @@ import { aggregationOperators, logicOperators, numericOperators, ordinalOperator
 const tag = templates.subtags.operator;
 
 @Subtag.id('operator')
-@Subtag.factory(Subtag.operators(), Subtag.arrayTools(), Subtag.converter())
+@Subtag.ctorArgs(Subtag.operators(), Subtag.arrayTools(), Subtag.converter())
 export class OperatorSubtag extends CompiledSubtag {
     readonly #operators: BBTagOperators;
     readonly #arrayTools: BBTagArrayTools;

@@ -7,7 +7,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.throw;
 
 @Subtag.id('throw')
-@Subtag.factory()
+@Subtag.ctorArgs()
 export class ThrowSubtag extends CompiledSubtag {
     public constructor() {
         super({

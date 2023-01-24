@@ -8,7 +8,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.userDiscriminator;
 
 @Subtag.id('userDiscriminator', 'userDiscrim')
-@Subtag.factory()
+@Subtag.ctorArgs()
 export class UserDiscriminatorSubtag extends CompiledSubtag {
     public constructor() {
         super({

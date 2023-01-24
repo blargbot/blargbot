@@ -10,7 +10,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.warnings;
 
 @Subtag.id('warnings')
-@Subtag.factory(Subtag.store('guilds'))
+@Subtag.ctorArgs(Subtag.store('guilds'))
 export class WarningsSubtag extends CompiledSubtag {
     readonly #guilds: GuildStore;
 

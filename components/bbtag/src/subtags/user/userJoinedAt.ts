@@ -10,7 +10,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.userJoinedAt;
 
 @Subtag.id('userJoinedAt')
-@Subtag.factory()
+@Subtag.ctorArgs()
 export class UserJoinedAtSubtag extends CompiledSubtag {
     public constructor() {
         super({

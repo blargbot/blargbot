@@ -9,7 +9,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.suppressLookup;
 
 @Subtag.id('suppressLookup')
-@Subtag.factory(Subtag.converter())
+@Subtag.ctorArgs(Subtag.converter())
 export class SuppressLookupSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;
 

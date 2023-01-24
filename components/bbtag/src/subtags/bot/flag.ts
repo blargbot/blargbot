@@ -9,7 +9,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.flag;
 
 @Subtag.id('flag')
-@Subtag.factory()
+@Subtag.ctorArgs()
 export class FlagSubtag extends CompiledSubtag {
     public constructor() {
         super({

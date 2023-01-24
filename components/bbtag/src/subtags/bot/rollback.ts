@@ -9,7 +9,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.rollback;
 
 @Subtag.id('rollback')
-@Subtag.factory(Subtag.arrayTools(), Subtag.converter())
+@Subtag.ctorArgs(Subtag.arrayTools(), Subtag.converter())
 export class RollbackSubtag extends CompiledSubtag {
     readonly #arrayTools: BBTagArrayTools;
     readonly #converter: BBTagValueConverter;

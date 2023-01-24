@@ -13,7 +13,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.edit;
 
 @Subtag.id('edit')
-@Subtag.factory(Subtag.converter(), Subtag.logger())
+@Subtag.ctorArgs(Subtag.converter(), Subtag.logger())
 export class EditSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;
     readonly #logger: Logger;

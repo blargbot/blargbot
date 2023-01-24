@@ -9,7 +9,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.choose;
 
 @Subtag.id('choose')
-@Subtag.factory(Subtag.converter())
+@Subtag.ctorArgs(Subtag.converter())
 export class ChooseSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;
 

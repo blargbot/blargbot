@@ -12,7 +12,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.delete;
 
 @Subtag.id('delete')
-@Subtag.factory(Subtag.logger())
+@Subtag.ctorArgs(Subtag.logger())
 export class DeleteSubtag extends CompiledSubtag {
     readonly #logger: Logger;
 

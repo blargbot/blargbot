@@ -8,7 +8,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.jsonGet;
 
 @Subtag.id('jsonGet', 'jGet')
-@Subtag.factory(Subtag.jsonTools())
+@Subtag.ctorArgs(Subtag.jsonTools())
 export class JsonGetSubtag extends CompiledSubtag {
     readonly #jsonTools: BBTagJsonTools;
 

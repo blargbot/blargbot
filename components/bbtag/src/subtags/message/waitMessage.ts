@@ -15,7 +15,7 @@ const tag = templates.subtags.waitMessage;
 const defaultCondition = parseBBTag('true');
 
 @Subtag.id('waitMessage')
-@Subtag.factory(Subtag.util(), Subtag.converter())
+@Subtag.ctorArgs(Subtag.util(), Subtag.converter())
 export class WaitMessageSubtag extends CompiledSubtag {
     readonly #util: BBTagUtilities;
     readonly #converter: BBTagValueConverter;

@@ -8,7 +8,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.round;
 
 @Subtag.id('round')
-@Subtag.factory(Subtag.converter())
+@Subtag.ctorArgs(Subtag.converter())
 export class RoundSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;
 

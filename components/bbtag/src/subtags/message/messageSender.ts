@@ -8,7 +8,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.messageSender;
 
 @Subtag.id('messageSender', 'sender')
-@Subtag.factory()
+@Subtag.ctorArgs()
 export class MessageSenderSubtag extends CompiledSubtag {
     public constructor() {
         super({

@@ -10,7 +10,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.userSetNickname;
 
 @Subtag.id('userSetNickname', 'setNickname', 'setNick', 'userSetNick')
-@Subtag.factory(Subtag.logger())
+@Subtag.ctorArgs(Subtag.logger())
 export class UserSetNickSubtag extends CompiledSubtag {
     readonly #logger: Logger;
 

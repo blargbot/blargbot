@@ -9,7 +9,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.pardon;
 
 @Subtag.id('pardon')
-@Subtag.factory(Subtag.util(), Subtag.converter())
+@Subtag.ctorArgs(Subtag.util(), Subtag.converter())
 export class PardonSubtag extends CompiledSubtag {
     readonly #util: BBTagUtilities;
     readonly #converter: BBTagValueConverter;

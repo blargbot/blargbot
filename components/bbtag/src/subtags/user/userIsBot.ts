@@ -8,7 +8,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.userIsBot;
 
 @Subtag.id('userIsBot', 'userBot')
-@Subtag.factory()
+@Subtag.ctorArgs()
 export class UserIsBotSubtag extends CompiledSubtag {
     public constructor() {
         super({

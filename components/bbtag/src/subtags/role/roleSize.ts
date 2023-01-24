@@ -9,7 +9,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.roleSize;
 
 @Subtag.id('roleSize', 'inRole')
-@Subtag.factory(Subtag.util())
+@Subtag.ctorArgs(Subtag.util())
 export class RoleSizeSubtag extends CompiledSubtag {
     readonly #util: BBTagUtilities;
 

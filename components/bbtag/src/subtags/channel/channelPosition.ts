@@ -11,7 +11,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.channelPosition;
 
 @Subtag.id('channelPosition', 'channelPos', 'categoryPosition', 'categoryPos')
-@Subtag.factory()
+@Subtag.ctorArgs()
 export class ChannelPositionSubtag extends CompiledSubtag {
     public constructor() {
         super({

@@ -9,7 +9,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.userMention;
 
 @Subtag.id('userMention')
-@Subtag.factory(Subtag.converter())
+@Subtag.ctorArgs(Subtag.converter())
 export class UserMentionSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;
 

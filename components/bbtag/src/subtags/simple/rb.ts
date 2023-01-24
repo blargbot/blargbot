@@ -6,7 +6,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.rb;
 
 @Subtag.id('rb')
-@Subtag.factory()
+@Subtag.ctorArgs()
 export class RbSubtag extends CompiledSubtag {
     public constructor() {
         super({

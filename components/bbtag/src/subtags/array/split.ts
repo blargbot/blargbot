@@ -6,7 +6,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.split;
 
 @Subtag.id('split')
-@Subtag.factory()
+@Subtag.ctorArgs()
 export class SplitSubtag extends CompiledSubtag {
     public constructor() {
         super({

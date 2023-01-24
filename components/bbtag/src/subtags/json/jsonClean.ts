@@ -8,7 +8,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.jsonClean;
 
 @Subtag.id('jsonClean', 'jClean')
-@Subtag.factory(Subtag.jsonTools())
+@Subtag.ctorArgs(Subtag.jsonTools())
 export class JsonCleanSubtag extends CompiledSubtag {
     readonly #jsonTools: BBTagJsonTools;
 

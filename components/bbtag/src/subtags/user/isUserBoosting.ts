@@ -10,7 +10,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.isUserBoosting;
 
 @Subtag.id('isUserBoosting')
-@Subtag.factory()
+@Subtag.ctorArgs()
 export class IsUserBoostingSubtag extends CompiledSubtag {
     public constructor() {
         super({

@@ -7,7 +7,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.tagAuthor;
 
 @Subtag.id('tagAuthor', 'customCommandAuthor', 'ccAuthor')
-@Subtag.factory()
+@Subtag.ctorArgs()
 export class TagAuthorSubtag extends CompiledSubtag {
     public constructor() {
         super({

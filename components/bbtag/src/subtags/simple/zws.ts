@@ -6,7 +6,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.zws;
 
 @Subtag.id('zws')
-@Subtag.factory()
+@Subtag.ctorArgs()
 export class ZwsSubtag extends CompiledSubtag {
     public constructor() {
         super({

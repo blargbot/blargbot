@@ -6,7 +6,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.uriEncode;
 
 @Subtag.id('uriEncode')
-@Subtag.factory()
+@Subtag.ctorArgs()
 export class UriEncodeSubtag extends CompiledSubtag {
     public constructor() {
         super({

@@ -10,7 +10,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.roles;
 
 @Subtag.id('roles')
-@Subtag.factory()
+@Subtag.ctorArgs()
 export class RolesSubtag extends CompiledSubtag {
     public constructor() {
         super({

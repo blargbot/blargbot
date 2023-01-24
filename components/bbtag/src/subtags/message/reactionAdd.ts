@@ -12,7 +12,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.reactionAdd;
 
 @Subtag.id('reactionAdd', 'reactAdd', 'addReact')
-@Subtag.factory(Subtag.util())
+@Subtag.ctorArgs(Subtag.util())
 export class ReactionAddSubtag extends CompiledSubtag {
     readonly #util: BBTagUtilities;
 

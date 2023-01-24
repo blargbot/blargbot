@@ -10,7 +10,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.jsonStringify;
 
 @Subtag.id('jsonStringify', 'jStringify')
-@Subtag.factory(Subtag.jsonTools(), Subtag.converter())
+@Subtag.ctorArgs(Subtag.jsonTools(), Subtag.converter())
 export class JsonStringifySubtag extends CompiledSubtag {
     readonly #jsonTools: BBTagJsonTools;
     readonly #converter: BBTagValueConverter;

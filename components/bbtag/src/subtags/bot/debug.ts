@@ -8,7 +8,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.debug;
 
 @Subtag.id('debug')
-@Subtag.factory()
+@Subtag.ctorArgs()
 export class DebugSubtag extends CompiledSubtag {
     public constructor() {
         super({

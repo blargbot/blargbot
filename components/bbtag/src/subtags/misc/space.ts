@@ -9,7 +9,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.space;
 
 @Subtag.id('space', 's')
-@Subtag.factory(Subtag.converter())
+@Subtag.ctorArgs(Subtag.converter())
 export class SpaceSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;
 

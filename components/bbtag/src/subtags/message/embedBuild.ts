@@ -13,7 +13,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.embedBuild;
 
 @Subtag.id('embedBuild', 'buildEmbed')
-@Subtag.factory(Subtag.converter())
+@Subtag.ctorArgs(Subtag.converter())
 export class EmbedBuildSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;
     readonly #fieldSetters: Record<typeof fieldKeys[number], EmbedFieldSetter>;

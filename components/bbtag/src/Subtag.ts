@@ -47,8 +47,8 @@ export abstract class Subtag implements SubtagOptions<IFormattable<string>> {
         };
     }
 
-    public static factory<Args extends readonly unknown[]>(...args: { [P in keyof Args]: (engine: BBTagEngine) => Args[P] }): (type: new (...args: Args) => Subtag) => void
-    public static factory(...args: ReadonlyArray<(engine: BBTagEngine) => unknown>): (type: new (...args: readonly unknown[]) => Subtag) => void {
+    public static ctorArgs<Args extends readonly unknown[]>(...args: { [P in keyof Args]: (engine: BBTagEngine) => Args[P] }): (type: new (...args: Args) => Subtag) => void
+    public static ctorArgs(...args: ReadonlyArray<(engine: BBTagEngine) => unknown>): (type: new (...args: readonly unknown[]) => Subtag) => void {
         return type => {
             Object.defineProperty(type, factoryKey, {
                 configurable: false,

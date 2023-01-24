@@ -9,7 +9,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.hash;
 
 @Subtag.id('hash')
-@Subtag.factory()
+@Subtag.ctorArgs()
 export class HashSubtag extends CompiledSubtag {
     public static get methods(): readonly string[] {
         return getHashes().filter(h => allowedHashes.has(h));

@@ -8,7 +8,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.reaction;
 
 @Subtag.id('reaction')
-@Subtag.factory()
+@Subtag.ctorArgs()
 export class ReactionSubtag extends CompiledSubtag {
     public constructor() {
         super({

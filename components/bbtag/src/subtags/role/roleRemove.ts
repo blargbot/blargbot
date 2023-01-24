@@ -12,7 +12,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.roleRemove;
 
 @Subtag.id('roleRemove', 'removeRole')
-@Subtag.factory(Subtag.arrayTools(), Subtag.logger())
+@Subtag.ctorArgs(Subtag.arrayTools(), Subtag.logger())
 export class RoleRemoveSubtag extends CompiledSubtag {
     readonly #arrayTools: BBTagArrayTools;
     readonly #logger: Logger;

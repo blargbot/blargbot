@@ -8,7 +8,7 @@ const tag = templates.subtags.emojis;
 
 //TODO IMO this should return an array of emoji IDs instead of an array of emojis
 @Subtag.id('emojis')
-@Subtag.factory()
+@Subtag.ctorArgs()
 export class EmojisSubtag extends CompiledSubtag {
     public constructor() {
         super({

@@ -9,7 +9,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.modLog;
 
 @Subtag.id('modLog')
-@Subtag.factory(Subtag.util(), Subtag.converter())
+@Subtag.ctorArgs(Subtag.util(), Subtag.converter())
 export class ModLogSubtag extends CompiledSubtag {
     readonly #util: BBTagUtilities;
     readonly #converter: BBTagValueConverter;

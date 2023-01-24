@@ -8,7 +8,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.md5;
 
 @Subtag.id('md5', 'md5encode')
-@Subtag.factory()
+@Subtag.ctorArgs()
 export class Md5Subtag extends CompiledSubtag {
     public constructor() {
         super({

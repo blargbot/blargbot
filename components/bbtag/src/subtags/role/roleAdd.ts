@@ -12,7 +12,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.roleAdd;
 
 @Subtag.id('roleAdd', 'addRole')
-@Subtag.factory(Subtag.arrayTools(), Subtag.logger())
+@Subtag.ctorArgs(Subtag.arrayTools(), Subtag.logger())
 export class RoleAddSubtag extends CompiledSubtag {
     readonly #arrayTools: BBTagArrayTools;
     readonly #logger: Logger;

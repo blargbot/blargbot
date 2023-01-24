@@ -11,7 +11,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.userTimeout;
 
 @Subtag.id('userTimeout', 'timedoutUntil', 'userTimedoutUntil', 'memberTimeout', 'memberTimedoutUntil')
-@Subtag.factory()
+@Subtag.ctorArgs()
 export class UserTimeoutSubtag extends CompiledSubtag {
     public constructor() {
         super({

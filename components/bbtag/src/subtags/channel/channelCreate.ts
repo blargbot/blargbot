@@ -12,7 +12,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.channelCreate;
 
 @Subtag.id('channelCreate')
-@Subtag.factory()
+@Subtag.ctorArgs()
 export class ChannelCreateSubtag extends CompiledSubtag {
     public constructor() {
         super({

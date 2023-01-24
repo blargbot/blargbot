@@ -7,7 +7,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.argsLength;
 
 @Subtag.id('argsLength')
-@Subtag.factory()
+@Subtag.ctorArgs()
 export class ArgsLengthSubtag extends CompiledSubtag {
     public constructor() {
         super({

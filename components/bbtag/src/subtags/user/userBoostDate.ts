@@ -11,7 +11,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.userBoostDate;
 
 @Subtag.id('userBoostDate')
-@Subtag.factory()
+@Subtag.ctorArgs()
 export class UserBoostDateSubtag extends CompiledSubtag {
     public constructor() {
         super({

@@ -10,7 +10,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.roleDelete;
 
 @Subtag.id('roleDelete')
-@Subtag.factory()
+@Subtag.ctorArgs()
 export class RoleDeleteSubtag extends CompiledSubtag {
     public constructor() {
         super({

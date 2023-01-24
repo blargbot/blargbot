@@ -8,7 +8,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.guildSize;
 
 @Subtag.id('guildSize', 'inGuild')
-@Subtag.factory(Subtag.util())
+@Subtag.ctorArgs(Subtag.util())
 export class GuildSizeSubtag extends CompiledSubtag {
     readonly #util: BBTagUtilities;
 

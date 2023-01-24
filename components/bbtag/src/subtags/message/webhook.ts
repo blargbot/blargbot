@@ -12,7 +12,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.webhook;
 
 @Subtag.id('webhook')
-@Subtag.factory(Subtag.converter(), Subtag.logger())
+@Subtag.ctorArgs(Subtag.converter(), Subtag.logger())
 export class WebhookSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;
     readonly #logger: Logger;

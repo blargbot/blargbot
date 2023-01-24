@@ -6,7 +6,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.regexMatch;
 
 @Subtag.id('regexMatch', 'match')
-@Subtag.factory()
+@Subtag.ctorArgs()
 export class RegexMatchSubtag extends RegexSubtag {
     public constructor() {
         super({

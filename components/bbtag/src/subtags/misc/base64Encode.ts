@@ -6,7 +6,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.base64Encode;
 
 @Subtag.id('base64Encode', 'bToA')
-@Subtag.factory()
+@Subtag.ctorArgs()
 export class Base64EncodeSubtag extends CompiledSubtag {
     public constructor() {
         super({

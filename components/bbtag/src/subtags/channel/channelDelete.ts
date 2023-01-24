@@ -10,7 +10,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.channelDelete;
 
 @Subtag.id('channelDelete')
-@Subtag.factory()
+@Subtag.ctorArgs()
 export class ChannelDeleteSubtag extends CompiledSubtag {
     public constructor() {
         super({

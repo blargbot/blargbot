@@ -11,7 +11,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.guildBans;
 
 @Subtag.id('guildBans')
-@Subtag.factory(Subtag.util())
+@Subtag.ctorArgs(Subtag.util())
 export class GuildBansSubtag extends CompiledSubtag {
     readonly #util: BBTagUtilities;
 

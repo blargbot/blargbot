@@ -9,7 +9,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.kick;
 
 @Subtag.id('kick')
-@Subtag.factory(Subtag.util())
+@Subtag.ctorArgs(Subtag.util())
 export class KickSubtag extends CompiledSubtag {
     readonly #util: BBTagUtilities;
 

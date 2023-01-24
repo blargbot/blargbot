@@ -11,7 +11,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.slowMode;
 
 @Subtag.id('slowMode')
-@Subtag.factory(Subtag.converter())
+@Subtag.ctorArgs(Subtag.converter())
 export class SlowModeSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;
 

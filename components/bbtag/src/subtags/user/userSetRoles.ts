@@ -12,7 +12,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.userSetRoles;
 
 @Subtag.id('userSetRoles', 'setRoles')
-@Subtag.factory(Subtag.arrayTools(), Subtag.converter(), Subtag.logger())
+@Subtag.ctorArgs(Subtag.arrayTools(), Subtag.converter(), Subtag.logger())
 export class UserSetRolesSubtag extends CompiledSubtag {
     readonly #arrayTools: BBTagArrayTools;
     readonly #converter: BBTagValueConverter;

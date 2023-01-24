@@ -15,7 +15,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.send;
 
 @Subtag.id('send')
-@Subtag.factory(Subtag.util(), Subtag.converter(), Subtag.store('guilds'), Subtag.logger())
+@Subtag.ctorArgs(Subtag.util(), Subtag.converter(), Subtag.store('guilds'), Subtag.logger())
 export class SendSubtag extends CompiledSubtag {
     readonly #util: BBTagUtilities;
     readonly #converter: BBTagValueConverter;

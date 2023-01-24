@@ -9,7 +9,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.isStaff;
 
 @Subtag.id('isStaff', 'isMod')
-@Subtag.factory(Subtag.util())
+@Subtag.ctorArgs(Subtag.util())
 export class IsStaffSubtag extends CompiledSubtag {
     readonly #util: BBTagUtilities;
 

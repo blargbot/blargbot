@@ -7,7 +7,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.fallback;
 
 @Subtag.id('fallback')
-@Subtag.factory()
+@Subtag.ctorArgs()
 export class FallbackSubtag extends CompiledSubtag {
     public constructor() {
         super({

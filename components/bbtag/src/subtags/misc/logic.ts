@@ -9,7 +9,7 @@ import { logicOperators, SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.logic;
 
 @Subtag.id('logic')
-@Subtag.factory(Subtag.operators(), Subtag.converter())
+@Subtag.ctorArgs(Subtag.operators(), Subtag.converter())
 export class LogicSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;
     readonly #operators: BBTagOperators;

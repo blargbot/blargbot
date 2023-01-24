@@ -10,7 +10,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.userTimeZone;
 
 @Subtag.id('userTimeZone')
-@Subtag.factory(Subtag.store('users'))
+@Subtag.ctorArgs(Subtag.store('users'))
 export class UserTimezoneSubtag extends CompiledSubtag {
     readonly #users: UserStore;
 

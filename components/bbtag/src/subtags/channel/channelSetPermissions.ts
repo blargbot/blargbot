@@ -12,7 +12,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.channelSetPermissions;
 
 @Subtag.id('channelSetPermissions', 'channelSetPerms')
-@Subtag.factory(Subtag.converter())
+@Subtag.ctorArgs(Subtag.converter())
 export class ChannelSetPermissionsSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;
 

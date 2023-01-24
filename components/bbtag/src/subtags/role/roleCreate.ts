@@ -11,7 +11,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.roleCreate;
 
 @Subtag.id('roleCreate')
-@Subtag.factory(Subtag.converter())
+@Subtag.ctorArgs(Subtag.converter())
 export class RoleCreateSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;
 

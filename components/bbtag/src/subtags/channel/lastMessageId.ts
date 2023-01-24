@@ -10,7 +10,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.lastMessageId;
 
 @Subtag.id('lastMessageId')
-@Subtag.factory()
+@Subtag.ctorArgs()
 export class LastMessageIdSubtag extends CompiledSubtag {
     public constructor() {
         super({

@@ -581,7 +581,7 @@ export class TestDataSubtag extends Subtag {
     }
 }
 
-@Subtag.factory()
+@Subtag.ctorArgs()
 @Subtag.id('eval')
 export class EvalSubtag extends Subtag {
     public constructor() {
@@ -616,7 +616,7 @@ export class AssertSubtag extends Subtag {
     }
 }
 
-@Subtag.factory()
+@Subtag.ctorArgs()
 @Subtag.id('fail')
 export class FailTestSubtag extends Subtag {
     public constructor() {
@@ -656,7 +656,7 @@ export class LimitedTestSubtag extends Subtag {
     }
 }
 
-@Subtag.factory()
+@Subtag.ctorArgs()
 @Subtag.id('echoargs')
 export class EchoArgsSubtag extends Subtag {
     public constructor() {

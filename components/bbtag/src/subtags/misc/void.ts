@@ -6,7 +6,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.void;
 
 @Subtag.id('void', 'null')
-@Subtag.factory()
+@Subtag.ctorArgs()
 export class VoidSubtag extends CompiledSubtag {
     public constructor() {
         super({
