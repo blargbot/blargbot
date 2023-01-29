@@ -54,16 +54,16 @@ export class ExecCustomCommandSubtag extends CompiledSubtag {
         if (args.length > 1)
             input = humanize.smartSplit.inverse(this.#arrayTools.flattenArray(args).map(x => this.#converter.string(x)));
 
-        return await context.withScope(true, () => context.withStack(() => context.withChild({
+        return await context.withScope(true, () => context.withChild({
             tagName,
             cooldown: ccommand.cooldown ?? 0,
             inputRaw: input
         }, async context => {
             const ast = parseBBTag(ccommand.content);
-            const result = await context.eval(ast);
+            const result = await context.withStack(() => context.eval(ast));
             if (context.data.state === BBTagRuntimeState.RETURN)
                 context.data.state = BBTagRuntimeState.RUNNING;
             return result;
-        })));
+        }));
     }
 }

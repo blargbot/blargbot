@@ -114,7 +114,7 @@ export class BBTagContext implements BBTagContextOptions {
         this.execTimer = new Timer();
         this.dbTimer = new Timer();
         this.dbObjectsCommitted = 0;
-        this.data = {
+        this.data = Object.assign(options.data ?? {}, {
             query: {
                 count: 0,
                 user: {},
@@ -141,7 +141,7 @@ export class BBTagContext implements BBTagContextOptions {
                 everybody: false
             },
             ...options.data ?? {}
-        };
+        });
     }
 
     public getPermission(user: Entities.User, channel?: Entities.Channel): bigint {
