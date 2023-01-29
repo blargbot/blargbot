@@ -5,7 +5,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.base64Decode;
 
-@Subtag.id('base64Decode', 'aToB')
+@Subtag.names('base64Decode', 'aToB')
 @Subtag.ctorArgs()
 export class Base64DecodeSubtag extends CompiledSubtag {
     public constructor() {

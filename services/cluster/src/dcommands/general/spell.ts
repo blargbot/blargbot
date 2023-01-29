@@ -80,7 +80,7 @@ export class SpellCommand extends GlobalCommand {
             return exact;
 
         const result = await context.queryChoice({
-            context: context.message,
+            context: context.message.channel,
             actors: context.author,
             prompt: cmd.default.query.prompt,
             placeholder: cmd.default.query.placeholder,

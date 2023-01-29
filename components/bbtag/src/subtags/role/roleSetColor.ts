@@ -1,21 +1,21 @@
-import * as Eris from 'eris';
-
 import type { BBTagContext } from '../../BBTagContext.js';
 import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
+import type { RoleService } from '../../services/RoleService.js';
 import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.roleSetColor;
 
-@Subtag.id('roleSetColor')
-@Subtag.ctorArgs(Subtag.converter())
+@Subtag.names('roleSetColor')
+@Subtag.ctorArgs(Subtag.converter(), Subtag.service('role'))
 export class RoleSetColorSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;
+    readonly #roles: RoleService;
 
-    public constructor(converter: BBTagValueConverter) {
+    public constructor(converter: BBTagValueConverter, roles: RoleService) {
         super({
             category: SubtagType.ROLE,
             definition: [
@@ -39,6 +39,7 @@ export class RoleSetColorSubtag extends CompiledSubtag {
         });
 
         this.#converter = converter;
+        this.#roles = roles;
     }
 
     public async setRolecolor(
@@ -47,12 +48,12 @@ export class RoleSetColorSubtag extends CompiledSubtag {
         colorStr: string,
         quiet: boolean
     ): Promise<void> {
-        const topRole = context.roleEditPosition();
+        const topRole = context.roleEditPosition(context.authorizer);
         if (topRole <= 0)
             throw new BBTagRuntimeError('Author cannot edit roles');
 
         quiet ||= context.scopes.local.quiet ?? false;
-        const role = await context.queryRole(roleStr, { noLookup: quiet });
+        const role = await this.#roles.querySingle(context, roleStr, { noLookup: quiet });
         const color = this.#converter.color(colorStr !== '' ? colorStr : 0);
 
         if (role === undefined)
@@ -61,16 +62,11 @@ export class RoleSetColorSubtag extends CompiledSubtag {
         if (role.position >= topRole)
             throw new BBTagRuntimeError('Role above author');
 
-        try {
-            await role.edit({ color }, context.auditReason());
-        } catch (err: unknown) {
-            if (!(err instanceof Eris.DiscordRESTError))
-                throw err;
+        const result = await this.#roles.edit(context, role.id, { color });
 
-            if (quiet)
-                return;
+        if (result === undefined || quiet)
+            return;
 
-            throw new BBTagRuntimeError('Failed to edit role: no perms', err.message);
-        }
+        throw new BBTagRuntimeError('Failed to edit role: no perms', result.error);
     }
 }

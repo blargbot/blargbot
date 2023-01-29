@@ -1,21 +1,21 @@
-import * as Eris from 'eris';
-
 import type { BBTagContext } from '../../BBTagContext.js';
 import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
+import type { ChannelService } from '../../services/ChannelService.js';
 import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.slowMode;
 
-@Subtag.id('slowMode')
-@Subtag.ctorArgs(Subtag.converter())
+@Subtag.names('slowMode')
+@Subtag.ctorArgs(Subtag.converter(), Subtag.service('channel'))
 export class SlowModeSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;
+    readonly #channels: ChannelService;
 
-    public constructor(converter: BBTagValueConverter) {
+    public constructor(converter: BBTagValueConverter, channels: ChannelService) {
         super({
             category: SubtagType.CHANNEL,
             definition: [
@@ -56,6 +56,7 @@ export class SlowModeSubtag extends CompiledSubtag {
         });
 
         this.#converter = converter;
+        this.#channels = channels;
     }
 
     public async setSlowmode(
@@ -65,7 +66,7 @@ export class SlowModeSubtag extends CompiledSubtag {
     ): Promise<void> {
         let time = this.#converter.int(timeStr);
         let channel;
-        const lookupChannel = await context.queryChannel(channelStr, { noLookup: true });//TODO yikes
+        const lookupChannel = await this.#channels.querySingle(context, channelStr, { noLookup: true });//TODO yikes
         if (lookupChannel !== undefined)
             channel = lookupChannel;
         else {
@@ -78,13 +79,10 @@ export class SlowModeSubtag extends CompiledSubtag {
 
         time = Math.min(time, 21600);
 
-        try {
-            await channel.edit({ rateLimitPerUser: time }, context.auditReason());
-        } catch (err: unknown) {
-            if (!(err instanceof Eris.DiscordRESTError))
-                throw err;
+        const result = await this.#channels.edit(context, channel.id, { rateLimitPerUser: time });
+        if (result === undefined)
+            return;
 
-            throw new BBTagRuntimeError('Missing required permissions', err.message);
-        }
+        throw new BBTagRuntimeError('Missing required permissions', result.error);
     }
 }

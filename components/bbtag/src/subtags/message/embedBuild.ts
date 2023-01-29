@@ -1,7 +1,7 @@
-import type { MessageComponent } from '@blargbot/core/utils/index.js';
-import { discord, guard } from '@blargbot/core/utils/index.js';
+import type { MessageComponent } from '@blargbot/discord-util';
+import { checkEmbedSize, getMessageComponentLimit } from '@blargbot/discord-util';
 import { hasProperty, isUrl } from '@blargbot/guards';
-import type * as Eris from 'eris';
+import type * as Discord from 'discord-api-types/v10';
 
 import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
@@ -12,7 +12,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.embedBuild;
 
-@Subtag.id('embedBuild', 'buildEmbed')
+@Subtag.names('embedBuild', 'buildEmbed')
 @Subtag.ctorArgs(Subtag.converter())
 export class EmbedBuildSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;
@@ -63,7 +63,7 @@ export class EmbedBuildSubtag extends CompiledSubtag {
                     throw new InvalidEmbedError('Field missing name', `Field at index ${i}`);
             }
         }
-        if (!guard.checkEmbedSize([<Eris.EmbedOptions>embed]))
+        if (!checkEmbedSize([embed]))
             throw new InvalidEmbedError('Embed too long', JSON.stringify(embed));
         return embed as JObject;
     }
@@ -78,10 +78,12 @@ export class EmbedBuildSubtag extends CompiledSubtag {
 
 type Overwrite<T, U> = Pick<T, Exclude<keyof T, keyof U>> & U;
 // custom message for fields missing values/names
-type EmbedBuildOptions = Overwrite<Eris.EmbedOptions, {
-    fields?: Array<Partial<Eris.EmbedField>>;
-    author?: Partial<Eris.EmbedAuthor>;
-    footer?: Partial<Eris.EmbedFooter>;
+type EmbedBuildOptions = Overwrite<Discord.APIEmbed, {
+    fields?: Array<Partial<Discord.APIEmbedField>>;
+    author?: Partial<Discord.APIEmbedAuthor>;
+    footer?: Partial<Discord.APIEmbedFooter>;
+    thumbnail?: Partial<Discord.APIEmbedThumbnail>;
+    image?: Partial<Discord.APIEmbedThumbnail>;
 }>
 
 interface EmbedFieldSetter {
@@ -90,7 +92,7 @@ interface EmbedFieldSetter {
 }
 
 function validateLength(value: { length: number; } | undefined, limitKey: MessageComponent, errorText: string): void {
-    if (value !== undefined && value.length > discord.getLimit(limitKey))
+    if (value !== undefined && value.length > getMessageComponentLimit(limitKey))
         throw new InvalidEmbedError(errorText, typeof value === 'string' ? value : undefined);
 }
 
@@ -106,7 +108,7 @@ function parseOrError<T>(value: string, parse: (value: string) => T | undefined,
     return result;
 }
 
-function getCurrentField(embed: EmbedBuildOptions, errorText: string): Partial<Eris.EmbedField> {
+function getCurrentField(embed: EmbedBuildOptions, errorText: string): Partial<Discord.APIEmbedField> {
     if (embed.fields === undefined || embed.fields.length === 0)
         throw new InvalidEmbedError(errorText);
     return embed.fields[embed.fields.length - 1];
@@ -196,7 +198,7 @@ function fieldSetters(converter: BBTagValueConverter): Record<typeof fieldKeys[n
         },
         'timestamp'(embed, value) {
             const date = parseOrError(value, converter.time, 'Invalid timestamp', t => t.isValid());
-            embed.timestamp = date.toDate();
+            embed.timestamp = date.toDate().toISOString();
         },
         'fields.inline'(embed, value) {
             const field = getCurrentField(embed, 'Field name not specified');

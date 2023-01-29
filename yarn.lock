@@ -69,6 +69,7 @@ __metadata:
     "@blargbot/cluster": "workspace:^"
     "@blargbot/config": "workspace:^"
     "@blargbot/core": "workspace:^"
+    "@blargbot/discord-util": "workspace:^"
     "@blargbot/domain": "workspace:^"
     "@blargbot/formatting": "workspace:^"
     "@blargbot/logger": "workspace:^"
@@ -119,6 +120,7 @@ __metadata:
     "@blargbot/core": "workspace:^"
     "@blargbot/database": "workspace:^"
     "@blargbot/discord-emote": "workspace:^"
+    "@blargbot/discord-util": "workspace:^"
     "@blargbot/domain": "workspace:^"
     "@blargbot/flags": "workspace:^"
     "@blargbot/formatting": "workspace:^"
@@ -127,7 +129,6 @@ __metadata:
     "@blargbot/timer": "workspace:^"
     "@types/chai": ^4.3.4
     "@types/chai-datetime": ^0.0.37
-    "@types/eris": "workspace:^"
     "@types/express": ^4.17.15
     "@types/mocha": ^10.0.1
     chai: ^4.3.7
@@ -136,7 +137,6 @@ __metadata:
     chai-exclude: ^2.1.0
     cross-env: ^7.0.3
     discord-api-types: ^0.37.28
-    eris: ^0.17.1
     express: ^4.18.2
     mocha: ^10.2.0
     moment-timezone: ^0.5.40
@@ -154,6 +154,7 @@ __metadata:
     "@blargbot/core": "workspace:^"
     "@blargbot/database": "workspace:^"
     "@blargbot/discord-emote": "workspace:^"
+    "@blargbot/discord-util": "workspace:^"
     "@blargbot/domain": "workspace:^"
     "@blargbot/flags": "workspace:^"
     "@blargbot/formatting": "workspace:^"
@@ -163,13 +164,11 @@ __metadata:
     "@blargbot/timer": "workspace:^"
     "@types/brainfuck-node": "workspace:^"
     "@types/color": ^3.0.3
-    "@types/eris": "workspace:^"
     "@types/node-fetch": ^2.6.2
     "@types/rwlock": ^5.0.3
     brainfuck-node: ^1.0.2
     color: ^4.2.3
-    discord-api-types: ^0.37.28
-    eris: ^0.17.1
+    discord-api-types: ^0.37.29
     html-entities: ^2.3.3
     moment-timezone: ^0.5.40
     node-fetch: ^3.3.0
@@ -217,6 +216,7 @@ __metadata:
     "@blargbot/core": "workspace:^"
     "@blargbot/database": "workspace:^"
     "@blargbot/discord-emote": "workspace:^"
+    "@blargbot/discord-util": "workspace:^"
     "@blargbot/domain": "workspace:^"
     "@blargbot/flags": "workspace:^"
     "@blargbot/formatting": "workspace:^"
@@ -294,6 +294,7 @@ __metadata:
     "@blargbot/crowdin": "workspace:^"
     "@blargbot/database": "workspace:^"
     "@blargbot/discord-emote": "workspace:^"
+    "@blargbot/discord-util": "workspace:^"
     "@blargbot/domain": "workspace:^"
     "@blargbot/formatting": "workspace:^"
     "@blargbot/guards": "workspace:^"
@@ -301,16 +302,15 @@ __metadata:
     "@blargbot/mapping": "workspace:^"
     "@blargbot/res": "workspace:^"
     "@blargbot/timer": "workspace:^"
-    "@types/catflake": "workspace:^"
     "@types/color": ^3.0.3
     "@types/cron": ^2.0.0
     "@types/eris": "workspace:^"
     "@types/safe-regex": ^1.1.4
     "@types/unorm": ^1.3.28
     airtable: ^0.11.6
-    catflake: ^1.0.0
     color: ^4.2.3
     cron: ^2.2.0
+    discord-api-types: ^0.37.29
     eris: ^0.17.1
     eventemitter3: ^5.0.0
     limax: ^3.0.0
@@ -339,17 +339,16 @@ __metadata:
     "@blargbot/chatlog-types": "workspace:^"
     "@blargbot/config": "workspace:^"
     "@blargbot/core": "workspace:^"
+    "@blargbot/discord-util": "workspace:^"
     "@blargbot/domain": "workspace:^"
     "@blargbot/guards": "workspace:^"
     "@blargbot/logger": "workspace:^"
     "@blargbot/mapping": "workspace:^"
-    "@types/catflake": "workspace:^"
     "@types/pg": ^8.6.6
     "@types/rethinkdb": "workspace:^"
     "@types/sequelize": ^4.28.14
     airtable: ^0.11.6
     cassandra-driver: ^4.6.4
-    catflake: ^1.0.0
     moment-timezone: ^0.5.40
     pg: ^8.8.0
     pg-hstore: ^2.3.4
@@ -380,6 +379,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@blargbot/discord-emote@workspace:components/discord-emote/src"
   dependencies:
+    "@blargbot/discord-util": "workspace:^"
     twemoji: ^14.0.2
   languageName: unknown
   linkType: soft
@@ -409,6 +409,12 @@ __metadata:
     "@types/express": ^4.17.15
     discordeno: ^18.0.1
     express: ^4.18.2
+  languageName: unknown
+  linkType: soft
+
+"@blargbot/discord-util@workspace:^, @blargbot/discord-util@workspace:components/discord-util/src":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/discord-util@workspace:components/discord-util/src"
   languageName: unknown
   linkType: soft
 
@@ -521,6 +527,7 @@ __metadata:
     "@blargbot/cluster": "workspace:^"
     "@blargbot/config": "workspace:^"
     "@blargbot/core": "workspace:^"
+    "@blargbot/discord-util": "workspace:^"
     "@blargbot/domain": "workspace:^"
     "@blargbot/formatting": "workspace:^"
     "@blargbot/logger": "workspace:^"
@@ -1034,12 +1041,6 @@ __metadata:
   checksum: 667d25808dbf46fe104d6f029e0281ff56058d50c7c1b9182774b3e38bb9c1124f56e4c367ba54f92dbde2d1cc573f26eb0e9748710b2822bc0fd1e5498859c6
   languageName: node
   linkType: hard
-
-"@types/catflake@workspace:^, @types/catflake@workspace:definitions/catflake":
-  version: 0.0.0-use.local
-  resolution: "@types/catflake@workspace:definitions/catflake"
-  languageName: unknown
-  linkType: soft
 
 "@types/chai-datetime@npm:^0.0.37":
   version: 0.0.37
@@ -2025,13 +2026,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"big-integer@npm:^1.6.36":
-  version: 1.6.51
-  resolution: "big-integer@npm:1.6.51"
-  checksum: 3d444173d1b2e20747e2c175568bedeebd8315b0637ea95d75fd27830d3b8e8ba36c6af40374f36bdaea7b5de376dcada1b07587cb2a79a928fccdb6e6e3c518
-  languageName: node
-  linkType: hard
-
 "binary-extensions@npm:^2.0.0":
   version: 2.2.0
   resolution: "binary-extensions@npm:2.2.0"
@@ -2341,15 +2335,6 @@ __metadata:
     chalk: ^2.4.1
     dayjs: ^1.10.5
   checksum: ec01ad393207aa5645015d629fe7ab8e38e4399569ad44c6744fa0ca826a4e3ed670e3054414fb1826cda0981ecda220a9edf0a32237ae43509b6ab1fcd02d78
-  languageName: node
-  linkType: hard
-
-"catflake@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "catflake@npm:1.0.0"
-  dependencies:
-    big-integer: ^1.6.36
-  checksum: 521865e02e451819f5b92f6663021bb3d4519a06c6b3ee17b0512ba85af9d66a7dd090ee0638250816b2269bbd74ab440986242d1a35674d0eff8570e2a75ff5
   languageName: node
   linkType: hard
 
@@ -2945,10 +2930,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"discord-api-types@npm:^0.37.28":
-  version: 0.37.28
-  resolution: "discord-api-types@npm:0.37.28"
-  checksum: c033b9c82d5ecb3f273d563db578e21e982a35d106cc66e7ea42d7ef0a79817ca43badd3aade8a5ddb491bc8679ed08b1bcccc105e64ecd1ea5a53a11c2b1f8b
+"discord-api-types@npm:^0.37.28, discord-api-types@npm:^0.37.29":
+  version: 0.37.29
+  resolution: "discord-api-types@npm:0.37.29"
+  checksum: f523f40e95f19dd9de164d9ae2b5714aefb2dd0caf1e22d0ae939e346fe93041a3f2de85756cde6e3060a55b472a1eca0cb7d256335cd16cafa16da90b807b64
   languageName: node
   linkType: hard
 

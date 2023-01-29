@@ -1,5 +1,6 @@
 import type { Cluster } from '@blargbot/cluster';
-import { defaultStaff, discord, parse } from '@blargbot/cluster/utils/index.js';
+import { defaultStaff, parse } from '@blargbot/cluster/utils/index.js';
+import { findRolePosition } from '@blargbot/discord-util';
 import type { StoredGuildSettings } from '@blargbot/domain/models/index.js';
 import type * as Eris from 'eris';
 
@@ -46,15 +47,17 @@ export abstract class ModerationManagerBase {
         if (guild.ownerID === targetId)
             return false;
 
-        const moderatorMember = await this.cluster.util.getMember(guild, moderatorId);
-        if (moderatorMember === undefined)
+        const moderator = await this.cluster.util.getMember(guild, moderatorId);
+        if (moderator === undefined)
             return false;
 
-        const targetMember = await this.cluster.util.getMember(guild, targetId);
-        if (targetMember === undefined)
+        const target = await this.cluster.util.getMember(guild, targetId);
+        if (target === undefined)
             return true;
 
-        return discord.getMemberPosition(targetMember) < discord.getMemberPosition(moderatorMember);
+        const targetPosition = findRolePosition(target.roles, target.guild.roles.values());
+        const moderatorPosition = findRolePosition(moderator.roles, moderator.guild.roles.values());
+        return targetPosition < moderatorPosition;
     }
 
     async #getStaffPerms(guild: Eris.Guild, overrideKey?: keyof StoredGuildSettings): Promise<bigint> {

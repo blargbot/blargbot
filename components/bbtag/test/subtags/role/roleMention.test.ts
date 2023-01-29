@@ -1,5 +1,6 @@
 import { Subtag } from '@blargbot/bbtag';
 import { RoleMentionSubtag } from '@blargbot/bbtag/subtags/role/roleMention.js';
+import { argument } from '@blargbot/test-util/mock.js';
 import chai from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
@@ -16,12 +17,12 @@ runSubtagTests({
             },
             cases: [
                 {
-                    expected: '<@&89176598273912362713>',
+                    expected: '<@&89176598273362713>',
                     setup(role) {
-                        role.id = '89176598273912362713';
+                        role.id = '89176598273362713';
                     },
                     assert(_, __, ctx) {
-                        chai.expect(ctx.data.allowedMentions.roles).to.include('89176598273912362713');
+                        chai.expect(ctx.data.allowedMentions.roles).to.include('89176598273362713');
                     }
                 }
             ]
@@ -33,11 +34,7 @@ runSubtagTests({
                 ctx.roles.other.id = '347865137576334534';
             },
             postSetup(bbctx, ctx) {
-                const role = bbctx.guild.roles.get(ctx.roles.other.id);
-                if (role === undefined)
-                    throw new Error('Cannot find the role under test');
-                ctx.util.setup(m => m.findRoles(role.guild, 'other role'))
-                    .thenResolve([role]);
+                ctx.roleService.setup(m => m.querySingle(bbctx, 'other role', argument.isDeepEqual({ noLookup: false }))).thenResolve(ctx.roles.other);
             },
             assert(bbctx) {
                 chai.expect(bbctx.data.allowedMentions.roles).to.deep.equal(['347865137576334534']);
@@ -50,11 +47,7 @@ runSubtagTests({
                 ctx.roles.other.id = '347865137576334534';
             },
             postSetup(bbctx, ctx) {
-                const role = bbctx.guild.roles.get(ctx.roles.other.id);
-                if (role === undefined)
-                    throw new Error('Cannot find the role under test');
-                ctx.util.setup(m => m.findRoles(role.guild, 'other role'))
-                    .thenResolve([role]);
+                ctx.roleService.setup(m => m.querySingle(bbctx, 'other role', argument.isDeepEqual({ noLookup: false }))).thenResolve(ctx.roles.other);
             },
             assert(bbctx) {
                 chai.expect(bbctx.data.allowedMentions.roles).to.deep.equal([]);
@@ -67,11 +60,7 @@ runSubtagTests({
                 ctx.roles.other.id = '347865137576334534';
             },
             postSetup(bbctx, ctx) {
-                const role = bbctx.guild.roles.get(ctx.roles.other.id);
-                if (role === undefined)
-                    throw new Error('Cannot find the role under test');
-                ctx.util.setup(m => m.findRoles(role.guild, 'other role'))
-                    .thenResolve([role]);
+                ctx.roleService.setup(m => m.querySingle(bbctx, 'other role', argument.isDeepEqual({ noLookup: false }))).thenResolve(ctx.roles.other);
             },
             assert(bbctx) {
                 chai.expect(bbctx.data.allowedMentions.roles).to.deep.equal(['347865137576334534']);

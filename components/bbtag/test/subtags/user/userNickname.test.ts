@@ -17,31 +17,39 @@ runSubtagTests({
                 {
                     expected: 'cooldood69',
                     setup(member) {
-                        member.nick = 'cooldood69';
+                        if (member.member === undefined)
+                            throw new Error('User isnt member of guild');
+                        member.member.nick = 'cooldood69';
                     }
                 },
                 {
                     expected: 'aaaaaaaa',
                     setup(member) {
-                        member.nick = 'aaaaaaaa';
+                        if (member.member === undefined)
+                            throw new Error('User isnt member of guild');
+                        member.member.nick = 'aaaaaaaa';
                     }
                 },
                 {
                     queryString: '123456789098765432',
                     expected: 'nice',
                     setup(member) {
-                        member.nick = null;
-                        member.user.username = 'nice';
-                        member.user.id = '123456789098765432';
+                        if (member.member === undefined)
+                            throw new Error('User isnt member of guild');
+                        member.member.nick = null;
+                        member.username = 'nice';
+                        member.id = '123456789098765432';
                     }
                 },
                 {
                     queryString: '98765432234567890243',
                     expected: 'asdfgh',
                     setup(member) {
-                        member.nick = undefined;
-                        member.user.username = 'asdfgh';
-                        member.user.id = '98765432234567890243';
+                        if (member.member === undefined)
+                            throw new Error('User isnt member of guild');
+                        member.member.nick = undefined;
+                        member.username = 'asdfgh';
+                        member.id = '98765432234567890243';
                     }
                 }
             ]

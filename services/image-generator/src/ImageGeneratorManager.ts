@@ -1,6 +1,7 @@
+import { randomUUID } from 'node:crypto';
+
 import type { ImageOptionsMap } from '@blargbot/image-types';
 import type { MessageHandle } from '@blargbot/message-broker';
-import { randomUUID } from 'crypto';
 
 import type ImageGenerator from './generators/base/ImageGenerator.js';
 import type { ImageMessageBroker } from './ImageMessageBroker.js';

@@ -6,7 +6,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.nsfw;
 
-@Subtag.id('nsfw')
+@Subtag.names('nsfw')
 @Subtag.ctorArgs()
 export class NsfwSubtag extends CompiledSubtag {
     public constructor() {

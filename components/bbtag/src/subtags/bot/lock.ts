@@ -12,7 +12,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.lock;
 
-@Subtag.id('lock')
+@Subtag.names('lock')
 @Subtag.ctorArgs()
 export class LockSubtag extends CompiledSubtag {
     public constructor() {

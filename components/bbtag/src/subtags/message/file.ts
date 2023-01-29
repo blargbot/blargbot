@@ -6,7 +6,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.file;
 
-@Subtag.id('file')
+@Subtag.names('file')
 @Subtag.ctorArgs()
 export class FileSubtag extends CompiledSubtag {
     public constructor() {
@@ -27,8 +27,8 @@ export class FileSubtag extends CompiledSubtag {
 
     public attachFile(context: BBTagContext, fileName: string, fileContent: string): void {
         const data = fileContent.startsWith('buffer:')
-            ? Buffer.from(fileContent.substring(7), 'base64')
-            : fileContent;
+            ? fileContent.substring(7)
+            : Buffer.from(fileContent).toString('base64');
         context.data.file = { file: data, name: fileName };
     }
 }

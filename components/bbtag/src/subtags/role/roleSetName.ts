@@ -1,18 +1,19 @@
-import * as Eris from 'eris';
-
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, RoleNotFoundError } from '../../errors/index.js';
+import type { RoleService } from '../../services/RoleService.js';
 import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.roleSetName;
 
-@Subtag.id('roleSetName')
-@Subtag.ctorArgs()
+@Subtag.names('roleSetName')
+@Subtag.ctorArgs(Subtag.service('role'))
 export class RoleSetNameSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #roles: RoleService;
+
+    public constructor(roles: RoleService) {
         super({
             category: SubtagType.ROLE,
             definition: [
@@ -26,6 +27,8 @@ export class RoleSetNameSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#roles = roles;
     }
 
     public async setRolename(
@@ -34,12 +37,12 @@ export class RoleSetNameSubtag extends CompiledSubtag {
         name: string,
         quiet: boolean
     ): Promise<void> {
-        const topRole = context.roleEditPosition();
+        const topRole = context.roleEditPosition(context.authorizer);
         if (topRole <= 0)
             throw new BBTagRuntimeError('Author cannot edit roles');
 
         quiet ||= context.scopes.local.quiet ?? false;
-        const role = await context.queryRole(roleStr, { noLookup: quiet });
+        const role = await this.#roles.querySingle(context, roleStr, { noLookup: quiet });
 
         if (role === undefined)
             throw new RoleNotFoundError(roleStr);
@@ -47,16 +50,11 @@ export class RoleSetNameSubtag extends CompiledSubtag {
         if (role.position >= topRole)
             throw new BBTagRuntimeError('Role above author');
 
-        try {
-            await role.edit({ name }, context.auditReason());
-        } catch (err: unknown) {
-            if (!(err instanceof Eris.DiscordRESTError))
-                throw err;
+        const result = await this.#roles.edit(context, role.id, { name });
 
-            if (quiet)
-                return;
+        if (result === undefined || quiet)
+            return;
 
-            throw new BBTagRuntimeError('Failed to edit role: no perms', err.message);
-        }
+        throw new BBTagRuntimeError('Failed to edit role: no perms', result.error);
     }
 }

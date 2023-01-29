@@ -1,8 +1,9 @@
+import type { Entities } from '@blargbot/bbtag';
 import { Subtag } from '@blargbot/bbtag';
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
 import { ChannelSetPermissionsSubtag } from '@blargbot/bbtag/subtags/channel/channelSetPermissions.js';
-import Discord from 'discord-api-types/v9';
-import * as Eris from 'eris';
+import { argument } from '@blargbot/test-util/mock.js';
+import Discord from 'discord-api-types/v10';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
@@ -10,7 +11,7 @@ runSubtagTests({
     subtag: Subtag.getDescriptor(ChannelSetPermissionsSubtag),
     argCountBounds: { min: 3, max: 5 },
     setupEach(ctx) {
-        ctx.roles.authorizer.permissions = (Eris.Constants.Permissions.manageChannels | Eris.Constants.Permissions.administrator).toString();
+        ctx.roles.authorizer.permissions = (Discord.PermissionFlagsBits.ManageChannels | Discord.PermissionFlagsBits.Administrator).toString();
     },
     cases: [
         {
@@ -20,13 +21,14 @@ runSubtagTests({
                 ctx.channels.general.id = '12835768123756132';
             },
             postSetup(bbctx, ctx) {
-                const channel = bbctx.guild.channels.get(ctx.channels.general.id);
-
-                if (channel === undefined)
-                    throw new Error('Unable to get channel under test');
-
-                ctx.util.setup(m => m.findChannels(bbctx.guild, '12835768123756132')).thenResolve([channel]);
-                ctx.discord.setup(m => m.deleteChannelPermission(channel.id, '12876318236836323', 'Command User#0000')).thenResolve(undefined);
+                const channel = ctx.channels.general;
+                ctx.channelService.setup(m => m.querySingle(bbctx, '12835768123756132')).thenResolve(channel);
+                ctx.channelService.setup(m => m.setPermission(bbctx, channel.id, argument.isDeepEqual({
+                    id: '12876318236836323',
+                    allow: '0',
+                    deny: '0',
+                    type: Discord.OverwriteType.Member
+                }))).thenResolve(undefined);
             }
         },
         {
@@ -36,13 +38,14 @@ runSubtagTests({
                 ctx.channels.general.id = '12835768123756132';
             },
             postSetup(bbctx, ctx) {
-                const channel = bbctx.guild.channels.get(ctx.channels.general.id);
-
-                if (channel === undefined)
-                    throw new Error('Unable to get channel under test');
-
-                ctx.util.setup(m => m.findChannels(bbctx.guild, '12835768123756132')).thenResolve([channel]);
-                ctx.discord.setup(m => m.deleteChannelPermission(channel.id, '12876318236836323', 'Command User#0000')).thenResolve(undefined);
+                const channel = ctx.channels.general;
+                ctx.channelService.setup(m => m.querySingle(bbctx, '12835768123756132')).thenResolve(channel);
+                ctx.channelService.setup(m => m.setPermission(bbctx, channel.id, argument.isDeepEqual({
+                    id: '12876318236836323',
+                    allow: '0',
+                    deny: '0',
+                    type: Discord.OverwriteType.Role
+                }))).thenResolve(undefined);
             }
         },
         {
@@ -52,13 +55,14 @@ runSubtagTests({
                 ctx.channels.general.id = '12835768123756132';
             },
             postSetup(bbctx, ctx) {
-                const channel = bbctx.guild.channels.get(ctx.channels.general.id);
-
-                if (channel === undefined)
-                    throw new Error('Unable to get channel under test');
-
-                ctx.util.setup(m => m.findChannels(bbctx.guild, '12835768123756132')).thenResolve([channel]);
-                ctx.discord.setup(m => m.editChannelPermission(channel.id, '12876318236836323', 129837n, 0n, Discord.OverwriteType.Member, 'Command User#0000')).thenResolve(undefined);
+                const channel = ctx.channels.general;
+                ctx.channelService.setup(m => m.querySingle(bbctx, '12835768123756132')).thenResolve(channel);
+                ctx.channelService.setup(m => m.setPermission(bbctx, channel.id, argument.isDeepEqual({
+                    id: '12876318236836323',
+                    allow: '129837',
+                    deny: '0',
+                    type: Discord.OverwriteType.Member
+                }))).thenResolve(undefined);
             }
         },
         {
@@ -68,13 +72,14 @@ runSubtagTests({
                 ctx.channels.general.id = '12835768123756132';
             },
             postSetup(bbctx, ctx) {
-                const channel = bbctx.guild.channels.get(ctx.channels.general.id);
-
-                if (channel === undefined)
-                    throw new Error('Unable to get channel under test');
-
-                ctx.util.setup(m => m.findChannels(bbctx.guild, '12835768123756132')).thenResolve([channel]);
-                ctx.discord.setup(m => m.editChannelPermission(channel.id, '12876318236836323', 129837n, 0n, Discord.OverwriteType.Role, 'Command User#0000')).thenResolve(undefined);
+                const channel = ctx.channels.general;
+                ctx.channelService.setup(m => m.querySingle(bbctx, '12835768123756132')).thenResolve(channel);
+                ctx.channelService.setup(m => m.setPermission(bbctx, channel.id, argument.isDeepEqual({
+                    id: '12876318236836323',
+                    allow: '129837',
+                    deny: '0',
+                    type: Discord.OverwriteType.Role
+                }))).thenResolve(undefined);
             }
         },
         {
@@ -84,13 +89,14 @@ runSubtagTests({
                 ctx.channels.general.id = '12835768123756132';
             },
             postSetup(bbctx, ctx) {
-                const channel = bbctx.guild.channels.get(ctx.channels.general.id);
-
-                if (channel === undefined)
-                    throw new Error('Unable to get channel under test');
-
-                ctx.util.setup(m => m.findChannels(bbctx.guild, '12835768123756132')).thenResolve([channel]);
-                ctx.discord.setup(m => m.editChannelPermission(channel.id, '12876318236836323', 0n, 129837n, Discord.OverwriteType.Member, 'Command User#0000')).thenResolve(undefined);
+                const channel = ctx.channels.general;
+                ctx.channelService.setup(m => m.querySingle(bbctx, '12835768123756132')).thenResolve(channel);
+                ctx.channelService.setup(m => m.setPermission(bbctx, channel.id, argument.isDeepEqual({
+                    id: '12876318236836323',
+                    allow: '0',
+                    deny: '129837',
+                    type: Discord.OverwriteType.Member
+                }))).thenResolve(undefined);
             }
         },
         {
@@ -100,13 +106,14 @@ runSubtagTests({
                 ctx.channels.general.id = '12835768123756132';
             },
             postSetup(bbctx, ctx) {
-                const channel = bbctx.guild.channels.get(ctx.channels.general.id);
-
-                if (channel === undefined)
-                    throw new Error('Unable to get channel under test');
-
-                ctx.util.setup(m => m.findChannels(bbctx.guild, '12835768123756132')).thenResolve([channel]);
-                ctx.discord.setup(m => m.editChannelPermission(channel.id, '12876318236836323', 0n, 129837n, Discord.OverwriteType.Role, 'Command User#0000')).thenResolve(undefined);
+                const channel = ctx.channels.general;
+                ctx.channelService.setup(m => m.querySingle(bbctx, '12835768123756132')).thenResolve(channel);
+                ctx.channelService.setup(m => m.setPermission(bbctx, channel.id, argument.isDeepEqual({
+                    id: '12876318236836323',
+                    allow: '0',
+                    deny: '129837',
+                    type: Discord.OverwriteType.Role
+                }))).thenResolve(undefined);
             }
         },
         {
@@ -116,13 +123,14 @@ runSubtagTests({
                 ctx.channels.general.id = '12835768123756132';
             },
             postSetup(bbctx, ctx) {
-                const channel = bbctx.guild.channels.get(ctx.channels.general.id);
-
-                if (channel === undefined)
-                    throw new Error('Unable to get channel under test');
-
-                ctx.util.setup(m => m.findChannels(bbctx.guild, '12835768123756132')).thenResolve([channel]);
-                ctx.discord.setup(m => m.editChannelPermission(channel.id, '12876318236836323', 129837n, 832764n, Discord.OverwriteType.Member, 'Command User#0000')).thenResolve(undefined);
+                const channel = ctx.channels.general;
+                ctx.channelService.setup(m => m.querySingle(bbctx, '12835768123756132')).thenResolve(channel);
+                ctx.channelService.setup(m => m.setPermission(bbctx, channel.id, argument.isDeepEqual({
+                    id: '12876318236836323',
+                    allow: '129837',
+                    deny: '832764',
+                    type: Discord.OverwriteType.Member
+                }))).thenResolve(undefined);
             }
         },
         {
@@ -132,13 +140,14 @@ runSubtagTests({
                 ctx.channels.general.id = '12835768123756132';
             },
             postSetup(bbctx, ctx) {
-                const channel = bbctx.guild.channels.get(ctx.channels.general.id);
-
-                if (channel === undefined)
-                    throw new Error('Unable to get channel under test');
-
-                ctx.util.setup(m => m.findChannels(bbctx.guild, '12835768123756132')).thenResolve([channel]);
-                ctx.discord.setup(m => m.editChannelPermission(channel.id, '12876318236836323', 129837n, 832764n, Discord.OverwriteType.Role, 'Command User#0000')).thenResolve(undefined);
+                const channel = ctx.channels.general;
+                ctx.channelService.setup(m => m.querySingle(bbctx, '12835768123756132')).thenResolve(channel);
+                ctx.channelService.setup(m => m.setPermission(bbctx, channel.id, argument.isDeepEqual({
+                    id: '12876318236836323',
+                    allow: '129837',
+                    deny: '832764',
+                    type: Discord.OverwriteType.Role
+                }))).thenResolve(undefined);
             }
         },
         {
@@ -148,7 +157,7 @@ runSubtagTests({
                 { start: 0, end: 72, error: new BBTagRuntimeError('Channel does not exist') }
             ],
             postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.findChannels(bbctx.guild, '12835768123756132')).thenResolve([]);
+                ctx.channelService.setup(m => m.querySingle(bbctx, '12835768123756132')).thenResolve();
             }
         },
         {
@@ -158,10 +167,10 @@ runSubtagTests({
                 { start: 0, end: 72, error: new BBTagRuntimeError('Cannot set permissions for a thread channel') }
             ],
             postSetup(bbctx, ctx) {
-                const channel = ctx.createMock(Eris.PublicThreadChannel);
-                channel.setup(m => m.type).thenReturn(Eris.Constants.ChannelTypes.GUILD_PUBLIC_THREAD);
+                const channel = ctx.createMock<Entities.Channel>();
+                channel.setup(m => m.type).thenReturn(Discord.ChannelType.PublicThread);
 
-                ctx.util.setup(m => m.findChannels(bbctx.guild, '12835768123756132')).thenResolve([channel.instance]);
+                ctx.channelService.setup(m => m.querySingle(bbctx, '12835768123756132')).thenResolve(channel.instance);
             }
         },
         {
@@ -174,12 +183,8 @@ runSubtagTests({
                 ctx.roles.authorizer.permissions = '0';
             },
             postSetup(bbctx, ctx) {
-                const channel = bbctx.guild.channels.get(ctx.channels.general.id);
-
-                if (channel === undefined)
-                    throw new Error('Unable to get channel under test');
-
-                ctx.util.setup(m => m.findChannels(bbctx.guild, '12835768123756132')).thenResolve([channel]);
+                const channel = ctx.channels.general;
+                ctx.channelService.setup(m => m.querySingle(bbctx, '12835768123756132')).thenResolve(channel);
             }
         },
         {
@@ -189,12 +194,8 @@ runSubtagTests({
                 { start: 0, end: 71, error: new BBTagRuntimeError('Type must be member or role') }
             ],
             postSetup(bbctx, ctx) {
-                const channel = bbctx.guild.channels.get(ctx.channels.general.id);
-
-                if (channel === undefined)
-                    throw new Error('Unable to get channel under test');
-
-                ctx.util.setup(m => m.findChannels(bbctx.guild, '12835768123756132')).thenResolve([channel]);
+                const channel = ctx.channels.general;
+                ctx.channelService.setup(m => m.querySingle(bbctx, '12835768123756132')).thenResolve(channel);
             }
         },
         {
@@ -204,15 +205,11 @@ runSubtagTests({
                 { start: 0, end: 74, error: new BBTagRuntimeError('Author missing requested permissions') }
             ],
             setup(ctx) {
-                ctx.roles.authorizer.permissions = Eris.Constants.Permissions.manageChannels.toString();
+                ctx.roles.authorizer.permissions = Discord.PermissionFlagsBits.ManageChannels.toString();
             },
             postSetup(bbctx, ctx) {
-                const channel = bbctx.guild.channels.get(ctx.channels.general.id);
-
-                if (channel === undefined)
-                    throw new Error('Unable to get channel under test');
-
-                ctx.util.setup(m => m.findChannels(bbctx.guild, '12835768123756132')).thenResolve([channel]);
+                const channel = ctx.channels.general;
+                ctx.channelService.setup(m => m.querySingle(bbctx, '12835768123756132')).thenResolve(channel);
             }
         },
         {
@@ -222,15 +219,11 @@ runSubtagTests({
                 { start: 0, end: 72, error: new BBTagRuntimeError('Author missing requested permissions') }
             ],
             setup(ctx) {
-                ctx.roles.authorizer.permissions = Eris.Constants.Permissions.manageChannels.toString();
+                ctx.roles.authorizer.permissions = Discord.PermissionFlagsBits.ManageChannels.toString();
             },
             postSetup(bbctx, ctx) {
-                const channel = bbctx.guild.channels.get(ctx.channels.general.id);
-
-                if (channel === undefined)
-                    throw new Error('Unable to get channel under test');
-
-                ctx.util.setup(m => m.findChannels(bbctx.guild, '12835768123756132')).thenResolve([channel]);
+                const channel = ctx.channels.general;
+                ctx.channelService.setup(m => m.querySingle(bbctx, '12835768123756132')).thenResolve(channel);
             }
         },
         {
@@ -240,14 +233,14 @@ runSubtagTests({
                 { start: 0, end: 72, error: new BBTagRuntimeError('Failed to edit channel: no perms', 'Test REST error') }
             ],
             postSetup(bbctx, ctx) {
-                const channel = bbctx.guild.channels.get(ctx.channels.general.id);
-
-                if (channel === undefined)
-                    throw new Error('Unable to get channel under test');
-
-                ctx.util.setup(m => m.findChannels(bbctx.guild, '12835768123756132')).thenResolve([channel]);
-                const err = ctx.createRESTError(Eris.ApiError.MISSING_PERMISSIONS);
-                ctx.discord.setup(m => m.editChannelPermission(channel.id, '12876318236836323', 129837n, 832764n, Discord.OverwriteType.Role, 'Command User#0000')).thenReject(err);
+                const channel = ctx.channels.general;
+                ctx.channelService.setup(m => m.querySingle(bbctx, '12835768123756132')).thenResolve(channel);
+                ctx.channelService.setup(m => m.setPermission(bbctx, channel.id, argument.isDeepEqual({
+                    id: '12876318236836323',
+                    allow: '129837',
+                    deny: '832764',
+                    type: Discord.OverwriteType.Role
+                }))).thenResolve({ error: 'Test REST error' });
             }
         },
         {
@@ -257,14 +250,14 @@ runSubtagTests({
                 { start: 0, end: 72, error: new BBTagRuntimeError('Failed to edit channel: no perms', 'Some other error message') }
             ],
             postSetup(bbctx, ctx) {
-                const channel = bbctx.guild.channels.get(ctx.channels.general.id);
-
-                if (channel === undefined)
-                    throw new Error('Unable to get channel under test');
-
-                ctx.util.setup(m => m.findChannels(bbctx.guild, '12835768123756132')).thenResolve([channel]);
-                const err = ctx.createRESTError(Eris.ApiError.NOT_AUTHORIZED, 'Some other error message');
-                ctx.discord.setup(m => m.editChannelPermission(channel.id, '12876318236836323', 129837n, 832764n, Discord.OverwriteType.Role, 'Command User#0000')).thenReject(err);
+                const channel = ctx.channels.general;
+                ctx.channelService.setup(m => m.querySingle(bbctx, '12835768123756132')).thenResolve(channel);
+                ctx.channelService.setup(m => m.setPermission(bbctx, channel.id, argument.isDeepEqual({
+                    id: '12876318236836323',
+                    allow: '129837',
+                    deny: '832764',
+                    type: Discord.OverwriteType.Role
+                }))).thenResolve({ error: 'Some other error message' });
             }
         }
     ]

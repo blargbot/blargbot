@@ -1,6 +1,7 @@
+import { randomUUID } from 'node:crypto';
+
 import type { ExecutionResult } from '@blargbot/bbtag';
 import type { Cluster } from '@blargbot/cluster';
-import { snowflake } from '@blargbot/cluster/utils/index.js';
 import { guard } from '@blargbot/core/utils/index.js';
 import type { GuildTriggerTag } from '@blargbot/domain/models/index.js';
 import type * as Eris from 'eris';
@@ -48,10 +49,10 @@ export class GreetingManager {
                 channel: channel,
                 content: '',
                 embeds: [],
-                id: snowflake.create().toString(),
+                id: randomUUID(),
                 member: member,
                 createdAt: moment().valueOf()
-            },
+            } as never,
             authorizerId: command.authorizer ?? undefined,
             tagVars: false,
             rootTagName: name

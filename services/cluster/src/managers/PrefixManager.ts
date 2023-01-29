@@ -1,4 +1,5 @@
 import { guard } from '@blargbot/cluster/utils/index.js';
+import { markup } from '@blargbot/discord-util';
 import type { GuildStore, UserStore } from '@blargbot/domain/stores/index.js';
 import type * as Eris from 'eris';
 
@@ -63,10 +64,11 @@ export class PrefixManager {
     public async findPrefix(message: Eris.KnownMessage): Promise<string | undefined> {
         const prefixes = [
             this.#defaultPrefix,
-            ...await this.getUserPrefixes(message.author.id)
+            ...await this.getUserPrefixes(message.author.id),
+            markup.user(this.#discord.user.id),
+            markup.user.nickname(this.#discord.user.id)
         ];
 
-        prefixes.push(`<@${this.#discord.user.id}>`, `<@!${this.#discord.user.id}>`);
         if (guard.isGuildMessage(message))
             prefixes.push(...await this.getGuildPrefixes(message.channel.guild.id));
         else

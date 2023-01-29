@@ -1,9 +1,9 @@
-import { hasValue } from '@blargbot/guards';
 import type { Logger } from '@blargbot/logger';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, RoleNotFoundError, UserNotFoundError } from '../../errors/index.js';
+import type { UserService } from '../../services/UserService.js';
 import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import type { BBTagArrayTools } from '../../utils/index.js';
@@ -11,13 +11,14 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.roleAdd;
 
-@Subtag.id('roleAdd', 'addRole')
-@Subtag.ctorArgs(Subtag.arrayTools(), Subtag.logger())
+@Subtag.names('roleAdd', 'addRole')
+@Subtag.ctorArgs(Subtag.arrayTools(), Subtag.service('user'), Subtag.logger())
 export class RoleAddSubtag extends CompiledSubtag {
     readonly #arrayTools: BBTagArrayTools;
+    readonly #users: UserService;
     readonly #logger: Logger;
 
-    public constructor(arrayTools: BBTagArrayTools, logger: Logger) {
+    public constructor(arrayTools: BBTagArrayTools, users: UserService, logger: Logger) {
         super({
             category: SubtagType.ROLE,
             description: tag.description,
@@ -42,6 +43,7 @@ export class RoleAddSubtag extends CompiledSubtag {
         });
 
         this.#arrayTools = arrayTools;
+        this.#users = users;
         this.#logger = logger;
     }
 
@@ -51,20 +53,20 @@ export class RoleAddSubtag extends CompiledSubtag {
         userStr: string,
         quiet: boolean
     ): Promise<boolean> {
-        const topRole = context.roleEditPosition();
+        const topRole = context.roleEditPosition(context.authorizer);
         if (topRole <= 0)
             throw new BBTagRuntimeError('Author cannot add roles');
 
         quiet ||= context.scopes.local.quiet ?? false;
-        const member = await context.queryMember(userStr, { noLookup: quiet });
+        const user = await this.#users.querySingle(context, userStr, { noLookup: quiet });
 
-        if (member === undefined) {
+        if (user?.member === undefined) {
             throw new UserNotFoundError(userStr)
                 .withDisplay(quiet ? 'false' : undefined);
         }
 
-        const roleStrs = this.#arrayTools.deserialize(roleStr)?.v.map(v => v?.toString() ?? '~') ?? [roleStr];
-        const roles = roleStrs.map(role => context.guild.roles.get(role)).filter(hasValue);
+        const roleStrs = new Set(this.#arrayTools.deserialize(roleStr)?.v.map(v => v?.toString() ?? '~') ?? [roleStr]);
+        const roles = context.guild.roles.filter(r => roleStrs.has(r.id));
 
         if (roles.length === 0)
             throw new RoleNotFoundError(roleStr);
@@ -72,13 +74,13 @@ export class RoleAddSubtag extends CompiledSubtag {
         if (roles.find(role => role.position >= topRole) !== undefined)
             throw new BBTagRuntimeError('Role above author');
 
-        if (roles.every(r => member.roles.includes(r.id)))
+        const userRoles = new Set(user.member.roles);
+        if (roles.every(r => userRoles.has(r.id)))
             return false;
 
         try {
-            const newRoleList = [...new Set([...member.roles, ...roles.map(r => r.id)])];
-            await member.edit({ roles: newRoleList }, context.auditReason());
-            member.roles = newRoleList;
+            const newRoleList = [...new Set([...userRoles, ...roles.map(r => r.id)])];
+            await this.#users.edit(context, user.id, { roles: newRoleList });
             return true;
         } catch (err: unknown) {
             this.#logger.error(err);

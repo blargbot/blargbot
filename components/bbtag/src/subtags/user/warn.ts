@@ -2,19 +2,21 @@ import type { BBTagContext } from '../../BBTagContext.js';
 import type { BBTagUtilities, BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { NotANumberError, UserNotFoundError } from '../../errors/index.js';
+import type { UserService } from '../../services/UserService.js';
 import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.warn;
 
-@Subtag.id('warn')
-@Subtag.ctorArgs(Subtag.converter(), Subtag.util())
+@Subtag.names('warn')
+@Subtag.ctorArgs(Subtag.converter(), Subtag.util(), Subtag.service('user'))
 export class WarnSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;
     readonly #util: BBTagUtilities;
+    readonly #users: UserService;
 
-    public constructor(converter: BBTagValueConverter, util: BBTagUtilities) {
+    public constructor(converter: BBTagValueConverter, util: BBTagUtilities, users: UserService) {
         super({
             category: SubtagType.USER,
             description: tag.description,
@@ -40,6 +42,7 @@ export class WarnSubtag extends CompiledSubtag {
 
         this.#converter = converter;
         this.#util = util;
+        this.#users = users;
     }
 
     public async warnUser(
@@ -50,14 +53,14 @@ export class WarnSubtag extends CompiledSubtag {
     ): Promise<number> {
         const count = this.#converter.int(countStr);
 
-        const member = await context.queryMember(userStr);
+        const user = await this.#users.querySingle(context, userStr);
 
-        if (member === undefined)
+        if (user === undefined)
             throw new UserNotFoundError(userStr);
 
         if (count === undefined)
             throw new NotANumberError(countStr);
 
-        return await this.#util.warn(member, context.user, count, reason !== '' ? reason : 'Tag Warning');
+        return await this.#util.warn(user, context.user, count, reason !== '' ? reason : 'Tag Warning');
     }
 }

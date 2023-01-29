@@ -9,7 +9,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.sort;
 
-@Subtag.id('sort')
+@Subtag.names('sort')
 @Subtag.ctorArgs(Subtag.operators(), Subtag.arrayTools(), Subtag.converter())
 export class SortSubtag extends CompiledSubtag {
     readonly #operators: BBTagOperators;

@@ -10,7 +10,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.randomChoose;
 
-@Subtag.id('randomChoose', 'randChoose')
+@Subtag.names('randomChoose', 'randChoose')
 @Subtag.ctorArgs(Subtag.arrayTools())
 export class RandomChooseSubtag extends CompiledSubtag {
     readonly #arrayTools: BBTagArrayTools;

@@ -6,7 +6,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.replace;
 
-@Subtag.id('replace')
+@Subtag.names('replace')
 @Subtag.ctorArgs()
 export class ReplaceSubtag extends CompiledSubtag {
     public constructor() {

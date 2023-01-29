@@ -8,7 +8,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.hash;
 
-@Subtag.id('hash')
+@Subtag.names('hash')
 @Subtag.ctorArgs()
 export class HashSubtag extends CompiledSubtag {
     public static get methods(): readonly string[] {

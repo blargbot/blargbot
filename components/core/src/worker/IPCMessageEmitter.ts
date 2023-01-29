@@ -1,8 +1,7 @@
 import type { ChildProcess } from 'node:child_process';
+import { randomUUID } from 'node:crypto';
 
 import type { ProcessMessage, ProcessMessageContext, ProcessMessageHandler } from '@blargbot/core/types.js';
-import { snowflake } from '@blargbot/core/utils/index.js';
-import type { Snowflake } from 'catflake';
 import { EventEmitter } from 'eventemitter3';
 
 export class IPCMessageEmitter {
@@ -38,7 +37,7 @@ export class IPCMessageEmitter {
 
         if (!('execPath' in process)) {
             const relay = (code: string, data?: unknown): void => {
-                this.emit(code, data, snowflake.create());
+                this.emit(code, data, randomUUID());
             };
             process.on('exit', (code, signal) => relay('exit', { code, signal }));
             process.on('close', (code, signal) => relay('close', { code, signal }));
@@ -48,14 +47,14 @@ export class IPCMessageEmitter {
         }
     }
 
-    public send(type: string, data?: unknown, id?: Snowflake): boolean {
+    public send(type: string, data?: unknown, id?: string): boolean {
         if (this.#sender === undefined)
             throw new Error('No process has been attached to yet');
 
-        return this.#sender({ type, id: id ?? snowflake.create(), data });
+        return this.#sender({ type, id: id ?? randomUUID(), data });
     }
 
-    protected emit(type: string, data: unknown, id: Snowflake): boolean {
+    protected emit(type: string, data: unknown, id: string): boolean {
         const context: ProcessMessageContext<unknown, unknown> = { data, id, reply: (data) => this.send(type, data, id) };
         const result = this.#events.emit(`message_${type}`, context);
         return this.#events.emit('any', type, context) || result;
@@ -77,7 +76,7 @@ export class IPCMessageEmitter {
     }
 
     public async request(type: string, data: unknown, timeoutMS = 10000): Promise<unknown> {
-        const requestId = snowflake.create();
+        const requestId = randomUUID();
         const result = await new Promise<{ success: true; data: unknown; } | { success: false; }>(res => {
             const handler: ProcessMessageHandler = ({ data, id }) => {
                 if (id === requestId) {

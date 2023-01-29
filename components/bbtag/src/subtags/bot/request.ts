@@ -13,7 +13,7 @@ const tag = templates.subtags.request;
 
 const domainRegex = /^https?:\/\/(.+?)(?:\/.?|$)/i;
 
-@Subtag.id('request')
+@Subtag.names('request')
 @Subtag.ctorArgs(Subtag.util(), Subtag.converter())
 export class RequestSubtag extends CompiledSubtag {
     readonly #util: BBTagUtilities;

@@ -1,6 +1,8 @@
+import { randomUUID } from 'node:crypto';
+
 import { Subtag } from '@blargbot/bbtag';
 import { UserActivitySubtag } from '@blargbot/bbtag/subtags/user/userActivity.js';
-import Discord from 'discord-api-types/v9';
+import Discord from 'discord-api-types/v10';
 import moment from 'moment-timezone';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
@@ -19,25 +21,27 @@ runSubtagTests({
                 {
                     expected: 'My test game',
                     postSetup(member) {
-                        member.update({
-                            activities: [{
-                                created_at: moment().unix(),
-                                name: 'My test game',
-                                type: Discord.ActivityType.Playing
-                            }]
-                        });
+                        if (member.member === undefined)
+                            throw new Error('User isnt member of guild');
+                        member.member.activities = [{
+                            id: randomUUID(),
+                            created_at: moment().unix(),
+                            name: 'My test game',
+                            type: Discord.ActivityType.Playing
+                        }];
                     }
                 },
                 {
                     expected: 'Some cool music',
                     postSetup(member) {
-                        member.update({
-                            activities: [{
-                                created_at: moment().unix(),
-                                name: 'Some cool music',
-                                type: Discord.ActivityType.Listening
-                            }]
-                        });
+                        if (member.member === undefined)
+                            throw new Error('User isnt member of guild');
+                        member.member.activities = [{
+                            id: randomUUID(),
+                            created_at: moment().unix(),
+                            name: 'Some cool music',
+                            type: Discord.ActivityType.Listening
+                        }];
                     }
                 },
                 {
@@ -54,25 +58,27 @@ runSubtagTests({
                 {
                     expected: 'My test game',
                     postSetup(member) {
-                        member.update({
-                            activities: [{
-                                created_at: moment().unix(),
-                                name: 'My test game',
-                                type: Discord.ActivityType.Playing
-                            }]
-                        });
+                        if (member.member === undefined)
+                            throw new Error('User isnt member of guild');
+                        member.member.activities = [{
+                            id: randomUUID(),
+                            created_at: moment().unix(),
+                            name: 'My test game',
+                            type: Discord.ActivityType.Playing
+                        }];
                     }
                 },
                 {
                     expected: 'Some cool music',
                     postSetup(member) {
-                        member.update({
-                            activities: [{
-                                created_at: moment().unix(),
-                                name: 'Some cool music',
-                                type: Discord.ActivityType.Listening
-                            }]
-                        });
+                        if (member.member === undefined)
+                            throw new Error('User isnt member of guild');
+                        member.member.activities = [{
+                            id: randomUUID(),
+                            created_at: moment().unix(),
+                            name: 'Some cool music',
+                            type: Discord.ActivityType.Listening
+                        }];
                     }
                 },
                 {

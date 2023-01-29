@@ -8,7 +8,8 @@
         "./*": "./*"
     },
     "scripts": {
-        "test": "cross-env TZ=utc mocha --config mocharc.json --recursive --parallel --reporter dot \"**/*.test.js\""
+        "test": "yarn run test:base \"**/*.test.js\"",
+        "test:base": "cross-env TZ=utc mocha --config mocharc.json --recursive --parallel --reporter dot"
     },
     "dependencies": {
         "@blargbot/bbtag": "workspace:^",

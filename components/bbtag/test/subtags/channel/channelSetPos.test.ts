@@ -1,7 +1,9 @@
 import { Subtag } from '@blargbot/bbtag';
 import { BBTagRuntimeError, NotANumberError } from '@blargbot/bbtag/errors/index.js';
 import { ChannelSetPositionSubtag } from '@blargbot/bbtag/subtags/channel/channelSetPosition.js';
-import * as Eris from 'eris';
+import { randChoose } from '@blargbot/core/utils/index.js';
+import { argument } from '@blargbot/test-util/mock.js';
+import Discord from 'discord-api-types/v10';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
@@ -9,19 +11,16 @@ runSubtagTests({
     subtag: Subtag.getDescriptor(ChannelSetPositionSubtag),
     argCountBounds: { min: 2, max: 2 },
     setupEach(ctx) {
-        ctx.roles.authorizer.permissions = Eris.Constants.Permissions.manageChannels.toString();
+        ctx.roles.authorizer.permissions = Discord.PermissionFlagsBits.ManageChannels.toString();
     },
     cases: [
         {
             code: '{channelsetpos;239874692346327846;123}',
             expected: '',
             postSetup(bbctx, ctx) {
-                const channel = bbctx.guild.channels.random();
-                if (channel === undefined)
-                    throw new Error('Could not find channel under test');
-
-                ctx.discord.setup(m => m.editChannelPosition(channel.id, 123, undefined)).thenResolve(undefined);
-                ctx.util.setup(m => m.findChannels(bbctx.guild, '239874692346327846')).thenResolve([channel]);
+                const channel = randChoose(Object.values(ctx.channels));
+                ctx.channelService.setup(m => m.edit(bbctx, channel.id, argument.isDeepEqual({ position: 123 }))).thenResolve(undefined);
+                ctx.channelService.setup(m => m.querySingle(bbctx, '239874692346327846')).thenResolve(channel);
             }
         },
         {
@@ -31,11 +30,8 @@ runSubtagTests({
                 { start: 0, end: 38, error: new NotANumberError('abc') }
             ],
             postSetup(bbctx, ctx) {
-                const channel = bbctx.guild.channels.random();
-                if (channel === undefined)
-                    throw new Error('Could not find channel under test');
-
-                ctx.util.setup(m => m.findChannels(bbctx.guild, '239874692346327846')).thenResolve([channel]);
+                const channel = randChoose(Object.values(ctx.channels));
+                ctx.channelService.setup(m => m.querySingle(bbctx, '239874692346327846')).thenResolve(channel);
             }
         },
         {
@@ -45,7 +41,7 @@ runSubtagTests({
                 { start: 0, end: 38, error: new BBTagRuntimeError('Channel does not exist') }
             ],
             postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.findChannels(bbctx.guild, '239874692346327846')).thenResolve([]);
+                ctx.channelService.setup(m => m.querySingle(bbctx, '239874692346327846')).thenResolve();
             }
         },
         {
@@ -58,11 +54,8 @@ runSubtagTests({
                 ctx.roles.authorizer.permissions = '0';
             },
             postSetup(bbctx, ctx) {
-                const channel = bbctx.guild.channels.random();
-                if (channel === undefined)
-                    throw new Error('Could not find channel under test');
-
-                ctx.util.setup(m => m.findChannels(bbctx.guild, '239874692346327846')).thenResolve([channel]);
+                const channel = randChoose(Object.values(ctx.channels));
+                ctx.channelService.setup(m => m.querySingle(bbctx, '239874692346327846')).thenResolve(channel);
             }
         },
         {
@@ -72,13 +65,10 @@ runSubtagTests({
                 { start: 0, end: 38, error: new BBTagRuntimeError('Failed to move channel: no perms', 'Test REST error') }
             ],
             postSetup(bbctx, ctx) {
-                const err = ctx.createRESTError(Eris.ApiError.MISSING_PERMISSIONS);
-                const channel = bbctx.guild.channels.random();
-                if (channel === undefined)
-                    throw new Error('Could not find channel under test');
-
-                ctx.util.setup(m => m.findChannels(bbctx.guild, '239874692346327846')).thenResolve([channel]);
-                ctx.discord.setup(m => m.editChannelPosition(channel.id, 123, undefined)).thenReject(err);
+                const channel = randChoose(Object.values(ctx.channels));
+                ctx.channelService.setup(m => m.querySingle(bbctx, '239874692346327846')).thenResolve(channel);
+                ctx.channelService.setup(m => m.edit(bbctx, channel.id, argument.isDeepEqual({ position: 123 })))
+                    .thenResolve({ error: 'Test REST error' });
             }
         },
         {
@@ -88,13 +78,10 @@ runSubtagTests({
                 { start: 0, end: 38, error: new BBTagRuntimeError('Failed to move channel: no perms', 'Some other error message') }
             ],
             postSetup(bbctx, ctx) {
-                const err = ctx.createRESTError(Eris.ApiError.NOT_AUTHORIZED, 'Some other error message');
-                const channel = bbctx.guild.channels.random();
-                if (channel === undefined)
-                    throw new Error('Could not find channel under test');
-
-                ctx.util.setup(m => m.findChannels(bbctx.guild, '239874692346327846')).thenResolve([channel]);
-                ctx.discord.setup(m => m.editChannelPosition(channel.id, 123, undefined)).thenReject(err);
+                const channel = randChoose(Object.values(ctx.channels));
+                ctx.channelService.setup(m => m.querySingle(bbctx, '239874692346327846')).thenResolve(channel);
+                ctx.channelService.setup(m => m.edit(bbctx, channel.id, argument.isDeepEqual({ position: 123 })))
+                    .thenResolve({ error: 'Some other error message' });
             }
         }
     ]

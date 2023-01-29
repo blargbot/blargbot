@@ -1,7 +1,7 @@
 import { performance } from 'node:perf_hooks';
 
 import type { Cluster } from '@blargbot/cluster';
-import { guard, runMiddleware, snowflake } from '@blargbot/cluster/utils/index.js';
+import { guard, runMiddleware } from '@blargbot/cluster/utils/index.js';
 import { DiscordEventService } from '@blargbot/core/serviceTypes/index.js';
 import type { IMiddleware } from '@blargbot/core/types.js';
 import Discord from 'discord-api-types/v9';
@@ -57,7 +57,7 @@ export class DiscordMessageCreateHandler extends DiscordEventService<'messageCre
             return;
 
         const options = Object.seal({
-            id: snowflake.parse(message.id),
+            id: message.id,
             logger: this.logger,
             start: performance.now()
         });

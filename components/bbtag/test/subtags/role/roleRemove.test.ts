@@ -2,7 +2,7 @@ import { Subtag } from '@blargbot/bbtag';
 import { BBTagRuntimeError, RoleNotFoundError, UserNotFoundError } from '@blargbot/bbtag/errors/index.js';
 import { RoleRemoveSubtag } from '@blargbot/bbtag/subtags/role/roleRemove.js';
 import { argument } from '@blargbot/test-util/mock.js';
-import * as Eris from 'eris';
+import * as Discord from 'discord-api-types/v10';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
@@ -10,17 +10,16 @@ runSubtagTests({
     subtag: Subtag.getDescriptor(RoleRemoveSubtag),
     argCountBounds: { min: 1, max: 3 },
     setupEach(ctx) {
-        ctx.roles.authorizer.permissions = Eris.Constants.Permissions.manageRoles.toString();
+        ctx.roles.authorizer.permissions = Discord.PermissionFlagsBits.ManageRoles.toString();
     },
     cases: [
         {
             code: '{roleremove;3298746326924}',
             expected: 'true',
-            setup(ctx) {
+            postSetup(bbctx, ctx) {
                 ctx.roles.other.id = '3298746326924';
-                ctx.members.command.roles.push(ctx.roles.other.id, ctx.roles.bot.id);
-                ctx.discord.setup(m => m.editGuildMember(ctx.guild.id, ctx.users.command.id, argument.isDeepEqual({ roles: [ctx.roles.command.id, ctx.roles.bot.id] }), 'Command User#0000'))
-                    .thenResolve();
+                ctx.users.command.member.roles.push(ctx.roles.other.id, ctx.roles.bot.id);
+                ctx.userService.setup(m => m.edit(bbctx, ctx.users.command.id, argument.isDeepEqual({ roles: [ctx.roles.everyone.id, ctx.roles.command.id, ctx.roles.bot.id] }))).thenResolve();
             }
         },
         {
@@ -33,23 +32,21 @@ runSubtagTests({
         {
             code: '{roleremove;["3298746326924","9238476938485"]}',
             expected: 'true',
-            setup(ctx) {
+            postSetup(bbctx, ctx) {
                 ctx.roles.other.id = '3298746326924';
                 ctx.roles.bot.id = '9238476938485';
-                ctx.members.command.roles.push(ctx.roles.other.id, ctx.roles.bot.id);
-                ctx.discord.setup(m => m.editGuildMember(ctx.guild.id, ctx.users.command.id, argument.isDeepEqual({ roles: [ctx.roles.command.id] }), 'Command User#0000'))
-                    .thenResolve();
+                ctx.users.command.member.roles.push(ctx.roles.other.id, ctx.roles.bot.id);
+                ctx.userService.setup(m => m.edit(bbctx, ctx.users.command.id, argument.isDeepEqual({ roles: [ctx.roles.everyone.id, ctx.roles.command.id] }))).thenResolve();
             }
         },
         {
             code: '{roleremove;["3298746326924",null]}',
             expected: 'true',
-            setup(ctx) {
+            postSetup(bbctx, ctx) {
                 ctx.roles.other.id = '3298746326924';
                 ctx.roles.bot.id = '9238476938485';
-                ctx.members.command.roles.push(ctx.roles.other.id, ctx.roles.bot.id);
-                ctx.discord.setup(m => m.editGuildMember(ctx.guild.id, ctx.users.command.id, argument.isDeepEqual({ roles: [ctx.roles.command.id, ctx.roles.bot.id] }), 'Command User#0000'))
-                    .thenResolve();
+                ctx.users.command.member.roles.push(ctx.roles.other.id, ctx.roles.bot.id);
+                ctx.userService.setup(m => m.edit(bbctx, ctx.users.command.id, argument.isDeepEqual({ roles: [ctx.roles.everyone.id, ctx.roles.command.id, ctx.roles.bot.id] }))).thenResolve();
             }
         },
         {
@@ -82,18 +79,11 @@ runSubtagTests({
         {
             code: '{roleremove;3298746326924;other user}',
             expected: 'true',
-            setup(ctx) {
-                ctx.roles.bot.id = '3298746326924';
-                ctx.members.other.roles.push(ctx.roles.authorizer.id, ctx.roles.bot.id);
-                ctx.discord.setup(m => m.editGuildMember(ctx.guild.id, ctx.users.other.id, argument.isDeepEqual({ roles: [ctx.roles.other.id, ctx.roles.authorizer.id] }), 'Command User#0000'))
-                    .thenResolve();
-            },
             postSetup(bbctx, ctx) {
-                const member = bbctx.guild.members.get(ctx.users.other.id);
-                if (member === undefined)
-                    throw new Error('Unable to find member under test');
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .thenResolve([member]);
+                ctx.roles.bot.id = '3298746326924';
+                ctx.users.other.member.roles.push(ctx.roles.authorizer.id, ctx.roles.bot.id);
+                ctx.userService.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: false }))).thenResolve(ctx.users.other);
+                ctx.userService.setup(m => m.edit(bbctx, ctx.users.other.id, argument.isDeepEqual({ roles: [ctx.roles.everyone.id, ctx.roles.other.id, ctx.roles.authorizer.id] }))).thenResolve();
             }
         },
         {
@@ -103,8 +93,7 @@ runSubtagTests({
                 { start: 0, end: 37, error: new UserNotFoundError('other user') }
             ],
             postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .thenResolve([]);
+                ctx.userService.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: false }))).thenResolve(undefined);
             }
         },
         {
@@ -117,8 +106,7 @@ runSubtagTests({
                 ctx.rootScope.quiet = true;
             },
             postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .thenResolve([]);
+                ctx.userService.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).thenResolve(undefined);
             }
         },
         {
@@ -128,8 +116,7 @@ runSubtagTests({
                 { start: 0, end: 39, error: new UserNotFoundError('other user').withDisplay('false') }
             ],
             postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .thenResolve([]);
+                ctx.userService.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).thenResolve(undefined);
             }
         }
     ]

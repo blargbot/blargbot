@@ -2,16 +2,19 @@ import { guard } from '@blargbot/core/utils/index.js';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
+import type { ChannelService } from '../../services/ChannelService.js';
 import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.channelCategories;
 
-@Subtag.id('channelCategories', 'categories')
-@Subtag.ctorArgs()
+@Subtag.names('channelCategories', 'categories')
+@Subtag.ctorArgs(Subtag.service('channel'))
 export class ChannelCategoriesSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #channels: ChannelService;
+
+    public constructor(channels: ChannelService) {
         super({
             category: SubtagType.CHANNEL,
             definition: [
@@ -25,9 +28,12 @@ export class ChannelCategoriesSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#channels = channels;
     }
 
-    public getChannelCategories(context: BBTagContext): string[] {
-        return context.guild.channels.filter(guard.isCategoryChannel).map(c => c.id);
+    public async getChannelCategories(context: BBTagContext): Promise<string[]> {
+        const channels = await this.#channels.getAll(context);
+        return channels.filter(guard.isCategoryChannel).map(c => c.id);
     }
 }

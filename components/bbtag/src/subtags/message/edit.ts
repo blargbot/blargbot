@@ -1,24 +1,25 @@
-import { hasProperty } from '@blargbot/guards';
-import type { Logger } from '@blargbot/logger';
-import type * as Eris from 'eris';
+import type * as Discord from 'discord-api-types/v10';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '../../errors/index.js';
+import type { ChannelService } from '../../services/ChannelService.js';
+import type { MessageService } from '../../services/MessageService.js';
 import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.edit;
 
-@Subtag.id('edit')
-@Subtag.ctorArgs(Subtag.converter(), Subtag.logger())
+@Subtag.names('edit')
+@Subtag.ctorArgs(Subtag.converter(), Subtag.service('channel'), Subtag.service('message'))
 export class EditSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;
-    readonly #logger: Logger;
+    readonly #channels: ChannelService;
+    readonly #messages: MessageService;
 
-    public constructor(converter: BBTagValueConverter, logger: Logger) {
+    public constructor(converter: BBTagValueConverter, channels: ChannelService, messages: MessageService) {
         super({
             category: SubtagType.MESSAGE,
             description: tag.description,
@@ -62,7 +63,7 @@ export class EditSubtag extends CompiledSubtag {
                     parameters: ['messageId|channelId', 'messageId|text', '(text|embed)|(embed)'],
                     returns: 'nothing',
                     execute: async (ctx, [chanOrMessage, messageOrText, content]) => {
-                        const channel = await ctx.queryChannel(chanOrMessage.value, { noLookup: true });
+                        const channel = await this.#channels.querySingle(ctx, chanOrMessage.value, { noLookup: true });
                         if (channel === undefined)
                             //{edit;msg;text;embed}
                             return await this.edit(ctx, ctx.channel.id, chanOrMessage.value, messageOrText.value, content.value);
@@ -84,7 +85,8 @@ export class EditSubtag extends CompiledSubtag {
         });
 
         this.#converter = converter;
-        this.#logger = logger;
+        this.#channels = channels;
+        this.#messages = messages;
     }
 
     public async edit(
@@ -94,28 +96,28 @@ export class EditSubtag extends CompiledSubtag {
         contentStr: string,
         embedStr?: string
     ): Promise<void> {
-        const channel = await context.queryChannel(channelStr, { noLookup: true });
+        const channel = await this.#channels.querySingle(context, channelStr, { noLookup: true });
         if (channel === undefined)
             throw new ChannelNotFoundError(channelStr);
 
         let content: string | undefined;
-        let embeds: Eris.EmbedOptions[] | undefined;
+        let embeds: Discord.APIEmbed[] | undefined;
         if (embedStr !== undefined) {
-            embeds = this.#converter.embed(embedStr);
+            embeds = this.#converter.embed(embedStr, { allowMalformed: true });
             content = contentStr;
         } else {
             const parsedEmbed = this.#converter.embed(contentStr);
-            if (parsedEmbed === undefined || parsedEmbed.some(e => hasProperty(e, 'malformed'))) {
+            if (parsedEmbed === undefined) {
                 content = contentStr;
             } else {
                 embeds = parsedEmbed;
             }
         }
 
-        const message = await context.getMessage(channel, messageStr);
+        const message = await this.#messages.get(context, channel.id, messageStr);
         if (message === undefined)
             throw new MessageNotFoundError(channel.id, messageStr);
-        if (message.author.id !== context.discord.user.id)
+        if (message.author.id !== context.bot.id)
             throw new BBTagRuntimeError('I must be the message author');
 
         content = content ?? message.content;
@@ -127,13 +129,6 @@ export class EditSubtag extends CompiledSubtag {
         if (content.trim() === '' && embeds.length === 0)
             throw new BBTagRuntimeError('Message cannot be empty');
 
-        try {
-            await message.edit({
-                content,
-                embeds
-            });
-        } catch (err: unknown) {
-            this.#logger.error('Failed to edit message', err);
-        }
+        await this.#messages.edit(context, channel.id, message.id, { content, embeds });
     }
 }

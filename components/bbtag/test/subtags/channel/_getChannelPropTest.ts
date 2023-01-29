@@ -1,33 +1,34 @@
-import type { BBTagContext } from '@blargbot/bbtag';
-import type { BBTagRuntimeError} from '@blargbot/bbtag/errors/index.js';
+import type { BBTagContext, Entities, FindEntityOptions } from '@blargbot/bbtag';
+import type { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
 import { ChannelNotFoundError } from '@blargbot/bbtag/errors/index.js';
-import type Discord from 'discord-api-types/v9';
-import type * as Eris from 'eris';
+import { argument } from '@blargbot/test-util/mock.js';
 
 import type { SubtagTestCase, SubtagTestContext } from '../SubtagTestSuite.js';
 
 export function createGetChannelPropTestCases(options: GetChannelPropTestData): SubtagTestCase[] {
+    if (options.quiet !== false)
+        options.getQueryOptions ??= q => ({ noLookup: q });
     return [...createGetChannelPropTestCasesIter(options)];
 }
 
 function* createGetChannelPropTestCasesIter(options: GetChannelPropTestData): Generator<SubtagTestCase, void, undefined> {
     if (options.includeNoArgs === true)
-        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'command', []));
+        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, false, c, 'command', []));
 
-    yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'command', ['']));
+    yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, false, c, 'command', ['']));
     if (options.quiet !== false) {
-        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'command', ['', '']));
-        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'command', ['', 'q']));
+        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, false, c, 'command', ['', '']));
+        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, true, c, 'command', ['', 'q']));
     }
-    yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'command', ['command']));
+    yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, false, c, 'command', ['command']));
     if (options.quiet !== false) {
-        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'command', ['command', '']));
-        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'command', ['command', 'q']));
+        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, false, c, 'command', ['command', '']));
+        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, true, c, 'command', ['command', 'q']));
     }
-    yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'general', [c.queryString ?? 'general']));
+    yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, false, c, 'general', [c.queryString ?? 'general']));
     if (options.quiet !== false) {
-        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'general', [c.queryString ?? 'general', '']));
-        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'general', [c.queryString ?? 'general', 'q']));
+        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, false, c, 'general', [c.queryString ?? 'general', '']));
+        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, true, c, 'general', [c.queryString ?? 'general', 'q']));
     }
 
     const notFound = options.notFound ?? (c => new ChannelNotFoundError(c));
@@ -40,7 +41,10 @@ function* createGetChannelPropTestCasesIter(options: GetChannelPropTestData): Ge
             { start: 0, end: options.generateCode('12345678998765432').length, error: notFound('12345678998765432') }
         ],
         postSetup(bbctx, ctx) {
-            ctx.util.setup(m => m.findChannels(bbctx.guild, '12345678998765432')).thenResolve([]);
+            const opt = options.getQueryOptions?.(false);
+            if (opt === undefined)
+                ctx.channelService.setup(m => m.querySingle(bbctx, '12345678998765432'), false).thenResolve(undefined);
+            ctx.channelService.setup(m => m.querySingle(bbctx, '12345678998765432', argument.isDeepEqual(opt)), false).thenResolve(undefined);
         }
     };
     if (options.quiet !== false) {
@@ -52,7 +56,7 @@ function* createGetChannelPropTestCasesIter(options: GetChannelPropTestData): Ge
                 { start: 0, end: options.generateCode('12345678998765432', 'q').length, error: notFound('12345678998765432').withDisplay(options.quiet) }
             ],
             postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.findChannels(bbctx.guild, '12345678998765432')).thenResolve([]);
+                ctx.channelService.setup(m => m.querySingle(bbctx, '12345678998765432', argument.isDeepEqual(options.getQueryOptions?.(true))), false).thenResolve(undefined);
             }
         };
     }
@@ -62,6 +66,7 @@ interface GetChannelPropTestData {
     cases: GetChannelPropTestCase[];
     includeNoArgs?: boolean;
     quiet?: string | false;
+    getQueryOptions?: (quiet: boolean) => FindEntityOptions;
     generateCode: (...args: [channelStr?: string, quietStr?: string]) => string;
     notFound?: (channelStr: string) => BBTagRuntimeError;
 }
@@ -73,12 +78,12 @@ interface GetChannelPropTestCase {
     retries?: number;
     queryString?: string;
     generateCode?: (...args: [channelStr?: string, quietStr?: string]) => string;
-    setup?: (channel: Discord.APIChannel, context: SubtagTestContext) => void;
-    postSetup?: (channel: Eris.KnownGuildChannel, context: BBTagContext, test: SubtagTestContext) => void;
-    assert?: (result: string, channel: Eris.KnownGuildChannel, context: BBTagContext, test: SubtagTestContext) => void;
+    setup?: (channel: Entities.Channel, context: SubtagTestContext) => void;
+    postSetup?: (channel: Entities.Channel, context: BBTagContext, test: SubtagTestContext) => void;
+    assert?: (result: string, channel: Entities.Channel, context: BBTagContext, test: SubtagTestContext) => void;
 }
 
-function createTestCase(data: GetChannelPropTestData, testCase: GetChannelPropTestCase, channelKey: keyof SubtagTestContext['channels'], args: Parameters<GetChannelPropTestData['generateCode']>): SubtagTestCase {
+function createTestCase(data: GetChannelPropTestData, isQuiet: boolean, testCase: GetChannelPropTestCase, channelKey: keyof SubtagTestContext['channels'], args: Parameters<GetChannelPropTestData['generateCode']>): SubtagTestCase {
     const code = testCase.generateCode?.(...args) ?? data.generateCode(...args);
     return {
         title: testCase.title,
@@ -94,22 +99,22 @@ function createTestCase(data: GetChannelPropTestData, testCase: GetChannelPropTe
                 ctx.message.channel_id = channel.id;
         },
         postSetup(bbctx, ctx) {
-            const channel = bbctx.guild.channels.get(ctx.channels[channelKey].id);
-            if (channel === undefined)
-                throw new Error('Cannot find the channel under test');
-
+            const channel = ctx.channels[channelKey];
             const channelQuery = args[0];
-            if (channelQuery !== undefined && channelQuery !== '')
-                ctx.util.setup(m => m.findChannels(bbctx.guild, channelQuery)).thenResolve([channel]);
+            if (channelQuery !== undefined && channelQuery !== '') {
+
+                const opt = data.getQueryOptions?.(isQuiet);
+                if (opt === undefined)
+                    ctx.channelService.setup(m => m.querySingle(bbctx, channelQuery), false).thenResolve(channel);
+                ctx.channelService.setup(m => m.querySingle(bbctx, channelQuery, argument.isDeepEqual(opt)), false).thenResolve(channel);
+            }
 
             testCase.postSetup?.(channel, bbctx, ctx);
         },
         assert(bbctx, result, ctx) {
             if (testCase.assert === undefined)
                 return;
-            const channel = bbctx.guild.channels.get(ctx.channels[channelKey].id);
-            if (channel === undefined)
-                throw new Error('Cannot find the channel under test');
+            const channel = ctx.channels[channelKey];
             testCase.assert(result, channel, bbctx, ctx);
         }
     };

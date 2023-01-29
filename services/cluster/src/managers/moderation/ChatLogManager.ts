@@ -1,6 +1,8 @@
+import { randomUUID } from 'node:crypto';
+
 import type { ChatLog, ChatLogIndex, ChatLogSearchOptions } from '@blargbot/chatlog-types';
 import type { Cluster } from '@blargbot/cluster';
-import { guard, snowflake } from '@blargbot/cluster/utils/index.js';
+import { guard } from '@blargbot/cluster/utils/index.js';
 
 export class ChatLogManager {
     public constructor(
@@ -15,7 +17,7 @@ export class ChatLogManager {
 
     public async createIndex(options: ChatLogSearchOptions): Promise<ChatLogIndex<ChatLog>> {
         const chatlogs = await this.cluster.database.chatlogs.findAll(options);
-        const key = snowflake.create().toString();
+        const key = randomUUID();
 
         const channel = await this.cluster.util.getChannel(options.channelId);
 

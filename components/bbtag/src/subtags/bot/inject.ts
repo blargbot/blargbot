@@ -1,13 +1,14 @@
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
+import { parseBBTag } from '../../language/parseBBTag.js';
 import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { BBTagRuntimeState } from '../../types.js';
-import { parseBBTag, SubtagType } from '../../utils/index.js';
+import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.inject;
 
-@Subtag.id('inject')
+@Subtag.names('inject')
 @Subtag.ctorArgs()
 export class InjectSubtag extends CompiledSubtag {
     public constructor() {

@@ -8,7 +8,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.commit;
 
-@Subtag.id('commit')
+@Subtag.names('commit')
 @Subtag.ctorArgs(Subtag.arrayTools(), Subtag.converter())
 export class CommitSubtag extends CompiledSubtag {
     readonly #arrayTools: BBTagArrayTools;

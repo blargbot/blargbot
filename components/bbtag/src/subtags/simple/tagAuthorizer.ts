@@ -6,7 +6,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.tagAuthorizer;
 
-@Subtag.id('tagAuthorizer', 'customCommandAuthorizer', 'ccAuthorizer')
+@Subtag.names('tagAuthorizer', 'customCommandAuthorizer', 'ccAuthorizer')
 @Subtag.ctorArgs()
 export class TagAuthorizerSubtag extends CompiledSubtag {
     public constructor() {
@@ -26,6 +26,6 @@ export class TagAuthorizerSubtag extends CompiledSubtag {
     }
 
     public getAuthorizer(context: BBTagContext): string {
-        return context.authorizerId ?? context.guild.id;
+        return context.authorizer.id;
     }
 }

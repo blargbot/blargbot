@@ -1,6 +1,3 @@
-import * as checkEmbedSize from './checkEmbedSize.js';
-import * as checkMessageSize from './checkMessageSize.js';
-import * as hasInvite from './hasInvite.js';
 import * as isCategoryChannel from './isCategoryChannel.js';
 import * as isGuildChannel from './isGuildChannel.js';
 import * as isGuildMessage from './isGuildMessage.js';
@@ -17,8 +14,6 @@ import * as isWellKnownMessage from './isWellKnownMessage.js';
 import * as testMessageFilter from './matchMessageFilter.js';
 
 export const guard = {
-    ...checkEmbedSize,
-    ...checkMessageSize,
     ...isCategoryChannel,
     ...isGuildChannel,
     ...isGuildMessage,
@@ -32,6 +27,5 @@ export const guard = {
     ...isVoiceChannel,
     ...testMessageFilter,
     ...isUncached,
-    ...hasInvite,
     ...isThreadableChannel
 };

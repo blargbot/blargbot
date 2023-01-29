@@ -8,7 +8,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.decrement;
 
-@Subtag.id('decrement')
+@Subtag.names('decrement')
 @Subtag.ctorArgs(Subtag.converter())
 export class DecrementSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;

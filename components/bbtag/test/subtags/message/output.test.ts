@@ -4,7 +4,7 @@ import { OutputSubtag } from '@blargbot/bbtag/subtags/message/output.js';
 import { Emote } from '@blargbot/discord-emote';
 import { argument } from '@blargbot/test-util/mock.js';
 import chai from 'chai';
-import type * as Eris from 'eris';
+import * as Discord from 'discord-api-types/v10';
 
 import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';
 
@@ -27,10 +27,10 @@ runSubtagTests({
                 const files = [{ file: 'test content', name: 'test.txt' }];
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
-                const message = ctx.createMessage<Eris.KnownGuildTextableChannel>(SubtagTestContext.createApiMessage({
+                const message = SubtagTestContext.createMessage({
                     id: '0987654331234567',
                     channel_id: bbctx.channel.id
-                }, ctx.users.command));
+                }, ctx.users.command);
 
                 bbctx.data.embeds = embeds;
                 bbctx.data.file = files[0];
@@ -38,16 +38,14 @@ runSubtagTests({
                 bbctx.data.allowedMentions.roles = roleMentions;
                 bbctx.data.allowedMentions.users = userMentions;
                 bbctx.data.reactions = emotes.map(m => m.toString());
-                bbctx.data.nsfw = 'This is the nsfw message';
 
-                ctx.util.setup(m => m.addReactions(message, argument.isDeepEqual(emotes))).thenResolve({ success: emotes, failed: [] });
-                ctx.util.setup(m => m.send(bbctx.message.channel, argument.isDeepEqual({
+                ctx.messageService.setup(m => m.addReactions(bbctx, message.channel_id, message.id, argument.isDeepEqual(emotes))).thenResolve({ success: emotes, failed: [] });
+                ctx.messageService.setup(m => m.create(bbctx, bbctx.message.channel_id, argument.isDeepEqual({
                     content: '',
                     embeds: embeds,
-                    file: files,
-                    nsfw: 'This is the nsfw message',
-                    allowedMentions: {
-                        everyone: true,
+                    files: files,
+                    allowed_mentions: {
+                        parse: [Discord.AllowedMentionsTypes.Everyone],
                         roles: roleMentions,
                         users: userMentions
                     }
@@ -69,10 +67,10 @@ runSubtagTests({
                 const files = [{ file: 'test content', name: 'test.txt' }];
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
-                const message = ctx.createMessage<Eris.KnownGuildTextableChannel>(SubtagTestContext.createApiMessage({
+                const message = SubtagTestContext.createMessage({
                     id: '0987654331234567',
                     channel_id: bbctx.channel.id
-                }, ctx.users.command));
+                }, ctx.users.command);
 
                 bbctx.data.embeds = embeds;
                 bbctx.data.file = files[0];
@@ -82,14 +80,13 @@ runSubtagTests({
                 bbctx.data.reactions = emotes.map(m => m.toString());
                 bbctx.data.nsfw = 'This is the nsfw message';
 
-                ctx.util.setup(m => m.addReactions(message, argument.isDeepEqual(emotes))).thenResolve({ success: emotes, failed: [] });
-                ctx.util.setup(m => m.send(bbctx.message.channel, argument.isDeepEqual({
+                ctx.messageService.setup(m => m.addReactions(bbctx, message.channel_id, message.id, argument.isDeepEqual(emotes))).thenResolve({ success: emotes, failed: [] });
+                ctx.messageService.setup(m => m.create(bbctx, bbctx.message.channel_id, argument.isDeepEqual({
                     content: '',
                     embeds: embeds,
-                    file: files,
-                    nsfw: 'This is the nsfw message',
-                    allowedMentions: {
-                        everyone: false
+                    files: files,
+                    allowed_mentions: {
+                        parse: []
                     }
                 }))).thenResolve(message);
             },
@@ -110,10 +107,10 @@ runSubtagTests({
                 const files = [{ file: 'test content', name: 'test.txt' }];
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
-                const message = ctx.createMessage<Eris.KnownGuildTextableChannel>(SubtagTestContext.createApiMessage({
+                const message = SubtagTestContext.createMessage({
                     id: '0987654331234567',
                     channel_id: bbctx.channel.id
-                }, ctx.users.command));
+                }, ctx.users.command);
 
                 bbctx.data.embeds = embeds;
                 bbctx.data.file = files[0];
@@ -123,14 +120,13 @@ runSubtagTests({
                 bbctx.data.reactions = emotes.map(m => m.toString());
                 bbctx.data.nsfw = 'This is the nsfw message';
 
-                ctx.util.setup(m => m.addReactions(message, argument.isDeepEqual(emotes))).thenResolve({ success: emotes, failed: [] });
-                ctx.util.setup(m => m.send(bbctx.message.channel, argument.isDeepEqual({
+                ctx.messageService.setup(m => m.addReactions(bbctx, message.channel_id, message.id, argument.isDeepEqual(emotes))).thenResolve({ success: emotes, failed: [] });
+                ctx.messageService.setup(m => m.create(bbctx, bbctx.message.channel_id, argument.isDeepEqual({
                     content: 'This is my message content',
                     embeds: embeds,
-                    file: files,
-                    nsfw: 'This is the nsfw message',
-                    allowedMentions: {
-                        everyone: true,
+                    files: files,
+                    allowed_mentions: {
+                        parse: [Discord.AllowedMentionsTypes.Everyone],
                         roles: roleMentions,
                         users: userMentions
                     }
@@ -152,10 +148,10 @@ runSubtagTests({
                 const files = [{ file: 'test content', name: 'test.txt' }];
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
-                const message = ctx.createMessage<Eris.KnownGuildTextableChannel>(SubtagTestContext.createApiMessage({
+                const message = SubtagTestContext.createMessage({
                     id: '0987654331234567',
                     channel_id: bbctx.channel.id
-                }, ctx.users.command));
+                }, ctx.users.command);
 
                 bbctx.data.embeds = embeds;
                 bbctx.data.file = files[0];
@@ -165,14 +161,13 @@ runSubtagTests({
                 bbctx.data.reactions = emotes.map(m => m.toString());
                 bbctx.data.nsfw = 'This is the nsfw message';
 
-                ctx.util.setup(m => m.addReactions(message, argument.isDeepEqual(emotes))).thenResolve({ success: emotes, failed: [] });
-                ctx.util.setup(m => m.send(bbctx.message.channel, argument.isDeepEqual({
+                ctx.messageService.setup(m => m.addReactions(bbctx, message.channel_id, message.id, argument.isDeepEqual(emotes))).thenResolve({ success: emotes, failed: [] });
+                ctx.messageService.setup(m => m.create(bbctx, bbctx.message.channel_id, argument.isDeepEqual({
                     content: 'This is my message content',
                     embeds: embeds,
-                    file: files,
-                    nsfw: 'This is the nsfw message',
-                    allowedMentions: {
-                        everyone: false
+                    files: files,
+                    allowed_mentions: {
+                        parse: []
                     }
                 }))).thenResolve(message);
             },
@@ -188,10 +183,10 @@ runSubtagTests({
                 ctx.options.isCC = false;
             },
             postSetup(bbctx, ctx) {
-                const message = ctx.createMessage<Eris.KnownGuildTextableChannel>(SubtagTestContext.createApiMessage({
+                const message = SubtagTestContext.createMessage({
                     id: '0987654331234567',
                     channel_id: bbctx.channel.id
-                }, ctx.users.command));
+                }, ctx.users.command);
 
                 bbctx.data.embeds = [];
                 bbctx.data.file = undefined;
@@ -201,14 +196,13 @@ runSubtagTests({
                 bbctx.data.reactions = [];
                 bbctx.data.nsfw = undefined;
 
-                ctx.util.setup(m => m.addReactions(message, argument.isDeepEqual([]))).thenResolve({ success: [], failed: [] });
-                ctx.util.setup(m => m.send(bbctx.message.channel, argument.isDeepEqual({
+                ctx.messageService.setup(m => m.addReactions(bbctx, message.channel_id, message.id, argument.isDeepEqual([]))).thenResolve({ success: [], failed: [] });
+                ctx.messageService.setup(m => m.create(bbctx, bbctx.message.channel_id, argument.isDeepEqual({
                     content: 'This is my message content',
                     embeds: [],
-                    file: undefined,
-                    nsfw: undefined,
-                    allowedMentions: {
-                        everyone: false
+                    files: undefined,
+                    allowed_mentions: {
+                        parse: []
                     }
                 }))).thenResolve(message);
             },

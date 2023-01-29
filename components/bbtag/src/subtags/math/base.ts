@@ -11,7 +11,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.base;
 
-@Subtag.id('base', 'radix')
+@Subtag.names('base', 'radix')
 @Subtag.ctorArgs(Subtag.converter())
 export class BaseNumberSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;

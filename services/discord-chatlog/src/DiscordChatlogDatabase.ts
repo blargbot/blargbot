@@ -1,8 +1,9 @@
+import { randomInt } from 'node:crypto';
+
 import type { ChatLog, ChatLogMessage } from '@blargbot/chatlog-types';
 import { ChatLogType } from '@blargbot/chatlog-types';
 import { mapping } from '@blargbot/mapping';
 import cassandra from 'cassandra-driver';
-import { randomInt } from 'crypto';
 
 export default class DiscordChatlogDatabase {
     readonly #database: cassandra.Client;

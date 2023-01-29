@@ -4,7 +4,7 @@ import { UnknownSubtagError } from '../../errors/index.js';
 import { Subtag } from '../../Subtag.js';
 import { SubtagType } from '../../utils/index.js';
 
-@Subtag.id('func.')
+@Subtag.names('func.')
 @Subtag.ctorArgs()
 export class FunctionInvokeSubtag extends CompiledSubtag {
     public constructor() {

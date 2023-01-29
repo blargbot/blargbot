@@ -1,19 +1,21 @@
 import type { BBTagContext } from '../../BBTagContext.js';
-import type { BBTagUtilities } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { RoleNotFoundError } from '../../errors/index.js';
+import type { RoleService } from '../../services/RoleService.js';
+import type { UserService } from '../../services/UserService.js';
 import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.roleSize;
 
-@Subtag.id('roleSize', 'inRole')
-@Subtag.ctorArgs(Subtag.util())
+@Subtag.names('roleSize', 'inRole')
+@Subtag.ctorArgs(Subtag.service('role'), Subtag.service('user'))
 export class RoleSizeSubtag extends CompiledSubtag {
-    readonly #util: BBTagUtilities;
+    readonly #roles: RoleService;
+    readonly #users: UserService;
 
-    public constructor(util: BBTagUtilities) {
+    public constructor(roles: RoleService, users: UserService) {
         super({
             category: SubtagType.ROLE,
             definition: [
@@ -27,19 +29,21 @@ export class RoleSizeSubtag extends CompiledSubtag {
                 }
             ]
         });
-        this.#util = util;
+
+        this.#roles = roles;
+        this.#users = users;
     }
 
     public async getRoleSize(context: BBTagContext, roleStr: string/*, quiet: boolean*/): Promise<number> {
         /* quiet ||= context.scopes.local.quiet ?? false */
-        /* const role = await context.queryRole(roleStr, {
+        /* const role = await this.#roles.querySingle(context, roleStr, {
             quiet
         }) */
-        const role = await context.queryRole(roleStr, { noLookup: true, noErrors: true });
+        const role = await this.#roles.querySingle(context, roleStr, { noLookup: true, noErrors: true });
         if (role === undefined)
             throw new RoleNotFoundError(roleStr);
 
-        await this.#util.ensureMemberCache(context.guild);
-        return context.guild.members.filter(m => m.roles.includes(role.id)).length;
+        const users = await this.#users.getAll(context);
+        return users.filter(u => u.member?.roles.includes(role.id) === true).length;
     }
 }

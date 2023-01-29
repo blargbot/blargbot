@@ -1,7 +1,8 @@
 import { Subtag } from '@blargbot/bbtag';
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
 import { RoleDeleteSubtag } from '@blargbot/bbtag/subtags/role/roleDelete.js';
-import * as Eris from 'eris';
+import { argument } from '@blargbot/test-util/mock.js';
+import * as Discord from 'discord-api-types/v10';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetRolePropTestCases } from './_getRolePropTest.js';
@@ -10,20 +11,21 @@ runSubtagTests({
     subtag: Subtag.getDescriptor(RoleDeleteSubtag),
     argCountBounds: { min: 1, max: 2 },
     setupEach(ctx) {
-        ctx.roles.authorizer.permissions = Eris.Constants.Permissions.manageRoles.toString();
-        ctx.members.authorizer.roles.push(ctx.roles.top.id);
+        ctx.roles.authorizer.permissions = Discord.PermissionFlagsBits.ManageRoles.toString();
+        ctx.users.authorizer.member.roles.push(ctx.roles.top.id);
     },
     cases: [
         ...createGetRolePropTestCases({
             quiet: '',
+            getQueryOptions: q => ({ noLookup: q, noErrors: q }),
             generateCode(...args) {
                 return `{${['roledelete', ...args].join(';')}}`;
             },
             cases: [
                 {
                     expected: '',
-                    setup(role, ctx) {
-                        ctx.discord.setup(m => m.deleteRole(ctx.guild.id, role.id, 'Command User#0000')).thenResolve(undefined);
+                    postSetup(role, bbctx, ctx) {
+                        ctx.roleService.setup(m => m.delete(bbctx, role.id)).thenResolve(undefined);
                     }
                 }
             ]
@@ -44,16 +46,8 @@ runSubtagTests({
             errors: [
                 { start: 0, end: 26, error: new BBTagRuntimeError('Role above author') }
             ],
-            setup(ctx) {
-                ctx.roles.top.id = '3298746326924';
-            },
             postSetup(bbctx, ctx) {
-                const role = bbctx.guild.roles.get('3298746326924');
-                if (role === undefined)
-                    throw new Error('Unable to locate role under test');
-
-                ctx.util.setup(m => m.findRoles(bbctx.guild, '3298746326924'))
-                    .thenResolve([role]);
+                ctx.roleService.setup(m => m.querySingle(bbctx, '3298746326924', argument.isDeepEqual({ noErrors: false, noLookup: false }))).thenResolve(ctx.roles.top);
             }
         },
         {
@@ -62,19 +56,9 @@ runSubtagTests({
             errors: [
                 { start: 0, end: 26, error: new BBTagRuntimeError('Failed to delete role: no perms', 'Test REST error') }
             ],
-            setup(ctx) {
-                ctx.roles.other.id = '3298746326924';
-            },
             postSetup(bbctx, ctx) {
-                const err = ctx.createRESTError(Eris.ApiError.MISSING_PERMISSIONS);
-                const role = bbctx.guild.roles.get('3298746326924');
-                if (role === undefined)
-                    throw new Error('Unable to locate role under test');
-
-                ctx.util.setup(m => m.findRoles(bbctx.guild, '3298746326924'))
-                    .thenResolve([role]);
-                ctx.discord.setup(m => m.deleteRole(ctx.guild.id, role.id, 'Command User#0000'))
-                    .thenReject(err);
+                ctx.roleService.setup(m => m.querySingle(bbctx, '3298746326924', argument.isDeepEqual({ noErrors: false, noLookup: false }))).thenResolve(ctx.roles.other);
+                ctx.roleService.setup(m => m.delete(bbctx, ctx.roles.other.id)).thenResolve({ error: 'Test REST error' });
             }
         },
         {
@@ -83,19 +67,9 @@ runSubtagTests({
             errors: [
                 { start: 0, end: 26, error: new BBTagRuntimeError('Failed to delete role: no perms', 'Some other error message') }
             ],
-            setup(ctx) {
-                ctx.roles.other.id = '3298746326924';
-            },
             postSetup(bbctx, ctx) {
-                const err = ctx.createRESTError(Eris.ApiError.NOT_AUTHORIZED, 'Some other error message');
-                const role = bbctx.guild.roles.get('3298746326924');
-                if (role === undefined)
-                    throw new Error('Unable to locate role under test');
-
-                ctx.util.setup(m => m.findRoles(bbctx.guild, '3298746326924'))
-                    .thenResolve([role]);
-                ctx.discord.setup(m => m.deleteRole(ctx.guild.id, role.id, 'Command User#0000'))
-                    .thenReject(err);
+                ctx.roleService.setup(m => m.querySingle(bbctx, '3298746326924', argument.isDeepEqual({ noErrors: false, noLookup: false }))).thenResolve(ctx.roles.other);
+                ctx.roleService.setup(m => m.delete(bbctx, ctx.roles.other.id)).thenResolve({ error: 'Some other error message' });
             }
         }
     ]

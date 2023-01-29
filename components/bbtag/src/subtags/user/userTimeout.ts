@@ -1,19 +1,22 @@
-import type * as Eris from 'eris';
 import moment from 'moment-timezone';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, UserNotFoundError } from '../../errors/index.js';
+import type { UserService } from '../../services/UserService.js';
 import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
+import type { Entities } from '../../types.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.userTimeout;
 
-@Subtag.id('userTimeout', 'timedoutUntil', 'userTimedoutUntil', 'memberTimeout', 'memberTimedoutUntil')
-@Subtag.ctorArgs()
+@Subtag.names('userTimeout', 'timedoutUntil', 'userTimedoutUntil', 'memberTimeout', 'memberTimedoutUntil')
+@Subtag.ctorArgs(Subtag.service('user'))
 export class UserTimeoutSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #users: UserService;
+
+    public constructor(users: UserService) {
         super({
             category: SubtagType.USER,
             description: tag.description,
@@ -36,6 +39,8 @@ export class UserTimeoutSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#users = users;
     }
 
     public async findUserTimeout(
@@ -45,19 +50,19 @@ export class UserTimeoutSubtag extends CompiledSubtag {
         quiet: boolean
     ): Promise<string> {
         quiet ||= context.scopes.local.quiet ?? false;
-        const member = await context.queryMember(userId, { noLookup: quiet });
+        const user = await this.#users.querySingle(context, userId, { noLookup: quiet });
 
-        if (member === undefined) {
+        if (user?.member === undefined) {
             throw new UserNotFoundError(userId)
                 .withDisplay(quiet ? '' : undefined);
         }
 
-        return this.#getUserCommunicationDisabledUntil(member, format);
+        return this.#getUserCommunicationDisabledUntil(user.member, format);
     }
 
-    #getUserCommunicationDisabledUntil(member: Eris.Member, format: string): string {
-        if (typeof member.communicationDisabledUntil !== 'number')
+    #getUserCommunicationDisabledUntil(member: Entities.Member, format: string): string {
+        if (typeof member.communication_disabled_until !== 'string')
             throw new BBTagRuntimeError('User not timed out');
-        return moment(member.communicationDisabledUntil).utcOffset(0).format(format);
+        return moment(member.communication_disabled_until).utcOffset(0).format(format);
     }
 }

@@ -1,8 +1,7 @@
+import type { Entities } from '@blargbot/bbtag';
 import { Subtag } from '@blargbot/bbtag';
 import { NotANumberError, UserNotFoundError } from '@blargbot/bbtag/errors/index.js';
 import { PardonSubtag } from '@blargbot/bbtag/subtags/user/pardon.js';
-import { argument } from '@blargbot/test-util/mock.js';
-import * as Eris from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
@@ -15,7 +14,7 @@ runSubtagTests({
             expected: '0',
             postSetup(bbctx, ctx) {
                 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                ctx.util.setup(m => m.pardon(bbctx.member!, bbctx.user, 1, 'Tag Pardon'))
+                ctx.util.setup(m => m.pardon(bbctx.user, bbctx.user, 1, 'Tag Pardon'))
                     .verifiable(1)
                     .thenResolve(0);
             }
@@ -25,7 +24,7 @@ runSubtagTests({
             expected: '5',
             postSetup(bbctx, ctx) {
                 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                ctx.util.setup(m => m.pardon(bbctx.member!, bbctx.user, 1, 'Tag Pardon'))
+                ctx.util.setup(m => m.pardon(bbctx.user, bbctx.user, 1, 'Tag Pardon'))
                     .verifiable(1)
                     .thenResolve(5);
             }
@@ -35,7 +34,7 @@ runSubtagTests({
             expected: '3',
             postSetup(bbctx, ctx) {
                 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                ctx.util.setup(m => m.pardon(bbctx.member!, bbctx.user, 1, 'Tag Pardon'))
+                ctx.util.setup(m => m.pardon(bbctx.user, bbctx.user, 1, 'Tag Pardon'))
                     .verifiable(1)
                     .thenResolve(3);
             }
@@ -44,12 +43,9 @@ runSubtagTests({
             code: '{pardon;other user}',
             expected: '7',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Eris.Member);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
-
-                ctx.util.setup(m => m.pardon(member.instance, bbctx.user, 1, 'Tag Pardon'))
+                const user = ctx.createMock<Entities.User>();
+                ctx.userService.setup(m => m.querySingle(bbctx, 'other user')).verifiable(1).thenResolve(user.instance);
+                ctx.util.setup(m => m.pardon(user.instance, bbctx.user, 1, 'Tag Pardon'))
                     .verifiable(1)
                     .thenResolve(7);
             }
@@ -58,8 +54,7 @@ runSubtagTests({
             code: '{pardon;;6}',
             expected: '26',
             postSetup(bbctx, ctx) {
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                ctx.util.setup(m => m.pardon(bbctx.member!, bbctx.user, 6, 'Tag Pardon'))
+                ctx.util.setup(m => m.pardon(bbctx.user, bbctx.user, 6, 'Tag Pardon'))
                     .verifiable(1)
                     .thenResolve(26);
             }
@@ -68,12 +63,9 @@ runSubtagTests({
             code: '{pardon;other user;9}',
             expected: '0',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Eris.Member);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
-
-                ctx.util.setup(m => m.pardon(member.instance, bbctx.user, 9, 'Tag Pardon'))
+                const user = ctx.createMock<Entities.User>();
+                ctx.userService.setup(m => m.querySingle(bbctx, 'other user')).verifiable(1).thenResolve(user.instance);
+                ctx.util.setup(m => m.pardon(user.instance, bbctx.user, 9, 'Tag Pardon'))
                     .verifiable(1)
                     .thenResolve(0);
             }
@@ -82,12 +74,9 @@ runSubtagTests({
             code: '{pardon;other user;8;Because I felt like it}',
             expected: '6',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Eris.Member);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
-
-                ctx.util.setup(m => m.pardon(member.instance, bbctx.user, 8, 'Because I felt like it'))
+                const user = ctx.createMock<Entities.User>();
+                ctx.userService.setup(m => m.querySingle(bbctx, 'other user')).verifiable(1).thenResolve(user.instance);
+                ctx.util.setup(m => m.pardon(user.instance, bbctx.user, 8, 'Because I felt like it'))
                     .verifiable(1)
                     .thenResolve(6);
             }
@@ -98,10 +87,8 @@ runSubtagTests({
             errors: [
                 { start: 0, end: 21, error: new UserNotFoundError('unknown user') }
             ],
-            setup(ctx) {
-                ctx.util.setup(m => m.findMembers(argument.isInstanceof(Eris.Guild).and(g => g.id === ctx.guild.id).value, 'unknown user'))
-                    .verifiable(1)
-                    .thenResolve([]);
+            postSetup(bbctx, ctx) {
+                ctx.userService.setup(m => m.querySingle(bbctx, 'unknown user')).verifiable(1).thenResolve(undefined);
             }
         },
         {
@@ -110,11 +97,9 @@ runSubtagTests({
             errors: [
                 { start: 0, end: 23, error: new NotANumberError('abc') }
             ],
-            setup(ctx) {
-                const member = ctx.createMock(Eris.Member);
-                ctx.util.setup(m => m.findMembers(argument.isInstanceof(Eris.Guild).and(g => g.id === ctx.guild.id).value, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
+            postSetup(bbctx, ctx) {
+                const user = ctx.createMock<Entities.User>();
+                ctx.userService.setup(m => m.querySingle(bbctx, 'other user')).verifiable(1).thenResolve(user.instance);
             }
         }
     ]

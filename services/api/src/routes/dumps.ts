@@ -25,32 +25,28 @@ export class DumpsRoute extends BaseRoute {
         if (dump === undefined)
             return this.notFound();
 
-        const result: ExpandedDump = {
-            ...dump,
-            parsedChannels: {},
-            parsedRoles: {},
-            parsedUsers: {}
-        };
-
+        let tags = noTags;
         const channel = await this.#api.util.getChannel(dump.channelid.toString());
         if (channel !== undefined && guard.isGuildChannel(channel)) {
-            if (dump.content !== undefined)
-                await this.#api.util.loadDiscordTagData(dump.content, channel.guild.id, result);
-            for (const embed of (dump.embeds ?? []) as Discord.APIEmbed[]) {
-                if (embed.title !== undefined)
-                    await this.#api.util.loadDiscordTagData(embed.title, channel.guild.id, result);
-                if (embed.description !== undefined)
-                    await this.#api.util.loadDiscordTagData(embed.description, channel.guild.id, result);
-                for (const field of embed.fields ?? []) {
-                    await this.#api.util.loadDiscordTagData(field.name, channel.guild.id, result);
-                    await this.#api.util.loadDiscordTagData(field.value, channel.guild.id, result);
-                }
-            }
+            tags = await this.#api.util.discoverMessageEntities({
+                guildId: channel.guild.id,
+                content: dump.content,
+                embeds: dump.embeds as Discord.APIEmbed[]
+            });
         }
 
-        return this.ok(result);
+        return this.ok<ExpandedDump>({
+            ...dump,
+            ...tags
+        });
     }
 }
 
 interface ExpandedDump extends Dump, DiscordTagSet {
 }
+
+const noTags: DiscordTagSet = {
+    parsedChannels: {},
+    parsedRoles: {},
+    parsedUsers: {}
+};

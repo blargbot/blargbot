@@ -17,19 +17,19 @@ runSubtagTests({
                 {
                     expected: 'true',
                     setup(member) {
-                        member.user.bot = true;
+                        member.bot = true;
                     }
                 },
                 {
                     expected: 'false',
                     setup(member) {
-                        member.user.bot = false;
+                        member.bot = false;
                     }
                 },
                 {
                     expected: 'false',
                     setup(member) {
-                        member.user.bot = undefined;
+                        member.bot = undefined;
                     }
                 }
             ]

@@ -133,6 +133,7 @@ const logicWrappers: { [P in keyof SubtagReturnTypeMap]: new (factory: SubtagLog
     'json[]|nothing': ArraySubtagLogic,
     'nothing': IgnoreSubtagLogic,
     'id': StringSubtagLogic,
+    'id|nothing': StringSubtagLogic,
     'id[]': ArraySubtagLogic,
     'loop': StringIterableSubtagLogic,
     'error': IgnoreSubtagLogic,

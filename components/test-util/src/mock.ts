@@ -32,9 +32,12 @@ export class Mock<T> {
     public setup<R>(action: (instance: T) => R, requireCall?: boolean): [R] extends [PromiseLike<infer P>] ? VerifiableMethodStubSetter<R, P, Error> : VerifiableMethodStubSetter<R>
     public setup(action: (instance: T) => unknown, requireCall = true): VerifiableMethodStubSetter<unknown, unknown, unknown> {
         const call = action(this.#expressionProvider);
+        function canVerify(): boolean {
+            return typeof call === 'function' && 'matchers' in call && Array.isArray(call.matchers);
+        }
         const setter = when(call);
         if (requireCall)
-            this.#assertions.push(() => verify(call).atLeast(1));
+            this.#assertions.push(() => canVerify() && verify(call).atLeast(1));
         return Object.defineProperties(
             setter,
             {
@@ -42,10 +45,10 @@ export class Mock<T> {
                     value: (verifier: number | ((verifier: MethodStubVerificator<T>) => void)) => {
                         switch (typeof verifier) {
                             case 'function':
-                                this.#assertions.push(() => verifier(verify(call)));
+                                this.#assertions.push(() => canVerify() && verifier(verify(call)));
                                 break;
                             case 'number':
-                                this.#assertions.push(() => verify(call).times(verifier));
+                                this.#assertions.push(() => canVerify() && verify(call).times(verifier));
                                 break;
                         }
                         return setter;

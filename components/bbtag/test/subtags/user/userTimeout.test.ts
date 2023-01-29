@@ -13,7 +13,7 @@ runSubtagTests({
             code: '{usertimeout}',
             expected: '2021-01-01T00:00:00+00:00',
             setup(ctx) {
-                ctx.members.command.communication_disabled_until = '2021-01-01T00:00:00+0000';
+                ctx.users.command.member.communication_disabled_until = '2021-01-01T00:00:00+0000';
             }
         },
         ...createGetUserPropTestCases({
@@ -25,27 +25,35 @@ runSubtagTests({
                 {
                     expected: '2021-01-01T00:00:00+00:00',
                     setup(member) {
-                        member.communication_disabled_until = '2021-01-01T00:00:00+0000';
+                        if (member.member === undefined)
+                            throw new Error('User isnt member of guild');
+                        member.member.communication_disabled_until = '2021-01-01T00:00:00+0000';
                     }
                 },
                 {
                     expected: '2021-12-20T15:12:37+00:00',
                     setup(member) {
-                        member.communication_disabled_until = '2021-12-20T15:12:37+00:00';
+                        if (member.member === undefined)
+                            throw new Error('User isnt member of guild');
+                        member.member.communication_disabled_until = '2021-12-20T15:12:37+00:00';
                     }
                 },
                 {
                     expected: '`User not timed out`',
                     error: new BBTagRuntimeError('User not timed out'),
                     setup(member) {
-                        member.communication_disabled_until = null;
+                        if (member.member === undefined)
+                            throw new Error('User isnt member of guild');
+                        member.member.communication_disabled_until = null;
                     }
                 },
                 {
                     expected: '`User not timed out`',
                     error: new BBTagRuntimeError('User not timed out'),
                     setup(member) {
-                        member.communication_disabled_until = undefined;
+                        if (member.member === undefined)
+                            throw new Error('User isnt member of guild');
+                        member.member.communication_disabled_until = undefined;
                     }
                 }
             ]
@@ -59,27 +67,35 @@ runSubtagTests({
                 {
                     expected: '01/01/2021',
                     setup(member) {
-                        member.communication_disabled_until = '2021-01-01T00:00:00+0000';
+                        if (member.member === undefined)
+                            throw new Error('User isnt member of guild');
+                        member.member.communication_disabled_until = '2021-01-01T00:00:00+0000';
                     }
                 },
                 {
                     expected: '20/12/2021',
                     setup(member) {
-                        member.communication_disabled_until = '2021-12-20T15:12:37+00:00';
+                        if (member.member === undefined)
+                            throw new Error('User isnt member of guild');
+                        member.member.communication_disabled_until = '2021-12-20T15:12:37+00:00';
                     }
                 },
                 {
                     expected: '`User not timed out`',
                     error: new BBTagRuntimeError('User not timed out'),
                     setup(member) {
-                        member.communication_disabled_until = null;
+                        if (member.member === undefined)
+                            throw new Error('User isnt member of guild');
+                        member.member.communication_disabled_until = null;
                     }
                 },
                 {
                     expected: '`User not timed out`',
                     error: new BBTagRuntimeError('User not timed out'),
                     setup(member) {
-                        member.communication_disabled_until = undefined;
+                        if (member.member === undefined)
+                            throw new Error('User isnt member of guild');
+                        member.member.communication_disabled_until = undefined;
                     }
                 }
             ]

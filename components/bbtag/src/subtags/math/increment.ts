@@ -8,7 +8,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.increment;
 
-@Subtag.id('increment')
+@Subtag.names('increment')
 @Subtag.ctorArgs(Subtag.converter())
 export class IncrementSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;

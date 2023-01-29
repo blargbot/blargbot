@@ -1,8 +1,7 @@
 import { Subtag } from '@blargbot/bbtag';
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
 import { ChannelPositionSubtag } from '@blargbot/bbtag/subtags/channel/channelPosition.js';
-import type Discord from 'discord-api-types/v9';
-import * as Eris from 'eris';
+import Discord from 'discord-api-types/v10';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetChannelPropTestCases } from './_getChannelPropTest.js';
@@ -30,12 +29,12 @@ runSubtagTests({
             code: '{channelpos}',
             expected: '`Threads dont have a position`',
             errors: [
-                { start: 0, end: 12, error: new BBTagRuntimeError('Threads dont have a position', '<#23948762874624372942> is a thread and doesnt have a position') }
+                { start: 0, end: 12, error: new BBTagRuntimeError('Threads dont have a position', '<#239487628724372942> is a thread and doesnt have a position') }
             ],
             setup(ctx) {
-                ctx.channels.command.id = '23948762874624372942';
+                ctx.channels.command.id = '239487628724372942';
                 ctx.message.channel_id = ctx.channels.command.id;
-                ctx.channels.command.type = Eris.Constants.ChannelTypes.GUILD_PUBLIC_THREAD;
+                ctx.channels.command.type = Discord.ChannelType.PublicThread;
             }
         }
     ]

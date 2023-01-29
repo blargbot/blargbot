@@ -17,19 +17,19 @@ runSubtagTests({
                 {
                     expected: 'UTC',
                     setup(member, ctx) {
-                        ctx.userTable.setup(m => m.getProp(member.user.id, 'timezone')).thenResolve(undefined);
+                        ctx.userTable.setup(m => m.getProp(member.id, 'timezone')).thenResolve(undefined);
                     }
                 },
                 {
                     expected: 'abc',
                     setup(member, ctx) {
-                        ctx.userTable.setup(m => m.getProp(member.user.id, 'timezone')).thenResolve('abc');
+                        ctx.userTable.setup(m => m.getProp(member.id, 'timezone')).thenResolve('abc');
                     }
                 },
                 {
                     expected: 'Etc/UTC',
                     setup(member, ctx) {
-                        ctx.userTable.setup(m => m.getProp(member.user.id, 'timezone')).thenResolve('Etc/UTC');
+                        ctx.userTable.setup(m => m.getProp(member.id, 'timezone')).thenResolve('Etc/UTC');
                     }
                 }
             ]

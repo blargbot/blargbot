@@ -1,21 +1,21 @@
-import * as Eris from 'eris';
-
 import type { BBTagContext } from '../../BBTagContext.js';
 import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
+import type { RoleService } from '../../services/RoleService.js';
 import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.roleSetPermissions;
 
-@Subtag.id('roleSetPermissions', 'roleSetPerms')
-@Subtag.ctorArgs(Subtag.converter())
+@Subtag.names('roleSetPermissions', 'roleSetPerms')
+@Subtag.ctorArgs(Subtag.converter(), Subtag.service('role'))
 export class RoleSetPermissionsSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;
+    readonly #roles: RoleService;
 
-    public constructor(converter: BBTagValueConverter) {
+    public constructor(converter: BBTagValueConverter, roles: RoleService) {
         super({
             category: SubtagType.ROLE,
             definition: [
@@ -39,6 +39,7 @@ export class RoleSetPermissionsSubtag extends CompiledSubtag {
         });
 
         this.#converter = converter;
+        this.#roles = roles;
     }
 
     public async roleSetPerms(
@@ -47,15 +48,15 @@ export class RoleSetPermissionsSubtag extends CompiledSubtag {
         permsStr: string,
         quietStr: string
     ): Promise<void> {
-        const topRole = context.roleEditPosition();
+        const topRole = context.roleEditPosition(context.authorizer);
         if (topRole <= 0)
             throw new BBTagRuntimeError('Author cannot edit roles');
 
         const quiet = typeof context.scopes.local.quiet === 'boolean' ? context.scopes.local.quiet : quietStr !== '';
-        const role = await context.queryRole(roleStr, { noLookup: quiet, noErrors: context.scopes.local.noLookupErrors });
+        const role = await this.#roles.querySingle(context, roleStr, { noLookup: quiet });
         const perms = this.#converter.bigInt(permsStr) ?? 0n;
 
-        const mappedPerms = perms & context.permission.allow;
+        const mappedPerms = perms & context.authorizerPermissions;
 
         if (role === undefined)
             throw new BBTagRuntimeError('Role not found');
@@ -63,16 +64,11 @@ export class RoleSetPermissionsSubtag extends CompiledSubtag {
         if (role.position >= topRole)
             throw new BBTagRuntimeError('Role above author');
 
-        try {
-            await role.edit({ permissions: mappedPerms }, context.auditReason());
-        } catch (err: unknown) {
-            if (!(err instanceof Eris.DiscordRESTError))
-                throw err;
+        const result = await this.#roles.edit(context, role.id, { permissions: mappedPerms.toString() });
 
-            if (quiet)
-                return;
+        if (result === undefined || quiet)
+            return;
 
-            throw new BBTagRuntimeError('Failed to edit role: no perms', err.message);
-        }
+        throw new BBTagRuntimeError('Failed to edit role: no perms', result.error);
     }
 }

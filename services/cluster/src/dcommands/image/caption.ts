@@ -65,10 +65,10 @@ export class CaptionCommand extends GlobalImageCommand {
             return cmd.linked.invalidUrl({ url });
 
         if (top !== undefined)
-            top = await context.util.resolveTags(context, top);
+            top = await context.util.resolveTags(top, context.channel);
 
         if (bottom !== undefined)
-            bottom = await context.util.resolveTags(context, bottom);
+            bottom = await context.util.resolveTags(bottom, context.channel);
 
         return await this.renderImage(context, 'caption', {
             url,

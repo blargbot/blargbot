@@ -1,22 +1,26 @@
-import { snowflake } from '@blargbot/core/utils/index.js';
 import { Emote } from '@blargbot/discord-emote';
+import { snowflake } from '@blargbot/discord-util';
+import { hasFlag } from '@blargbot/guards';
+import * as Discord from 'discord-api-types/v10';
 
 import type { BBTagContext } from '../../BBTagContext.js';
-import type { BBTagUtilities } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '../../errors/index.js';
+import type { ChannelService } from '../../services/ChannelService.js';
+import type { MessageService } from '../../services/MessageService.js';
 import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.reactionAdd;
 
-@Subtag.id('reactionAdd', 'reactAdd', 'addReact')
-@Subtag.ctorArgs(Subtag.util())
+@Subtag.names('reactionAdd', 'reactAdd', 'addReact')
+@Subtag.ctorArgs(Subtag.service('message'), Subtag.service('channel'))
 export class ReactionAddSubtag extends CompiledSubtag {
-    readonly #util: BBTagUtilities;
+    readonly #channels: ChannelService;
+    readonly #messages: MessageService;
 
-    public constructor(util: BBTagUtilities) {
+    public constructor(messages: MessageService, channels: ChannelService) {
         super({
             category: SubtagType.MESSAGE,
             description: tag.description,
@@ -47,7 +51,8 @@ export class ReactionAddSubtag extends CompiledSubtag {
             ]
         });
 
-        this.#util = util;
+        this.#messages = messages;
+        this.#channels = channels;
     }
 
     public async addReactions(
@@ -56,16 +61,16 @@ export class ReactionAddSubtag extends CompiledSubtag {
         messageId: string | undefined,
         reactions: Emote[]
     ): Promise<void> {
-        const channel = await context.queryChannel(channelStr, { noErrors: true, noLookup: true });
+        const channel = await this.#channels.querySingle(context, channelStr, { noErrors: true, noLookup: true });
         if (channel === undefined)
             throw new ChannelNotFoundError(channelStr);
 
-        const message = messageId === undefined ? undefined : await context.getMessage(channel, messageId);
+        const message = messageId === undefined ? undefined : await this.#messages.get(context, channel.id, messageId);
         if (message === undefined && messageId !== undefined)
             throw new MessageNotFoundError(channel.id, messageId);
 
-        const permissions = channel.permissionsOf(context.discord.user.id);
-        if (!permissions.has('addReactions'))
+        const permissions = context.getPermission(context.bot, channel);
+        if (!hasFlag(permissions, Discord.PermissionFlagsBits.AddReactions))
             throw new BBTagRuntimeError('I dont have permission to Add Reactions');
 
         if (reactions.length === 0)
@@ -73,7 +78,7 @@ export class ReactionAddSubtag extends CompiledSubtag {
 
         if (message !== undefined) {
             // Perform add of each reaction
-            const errors = await this.#util.addReactions(message, reactions);
+            const errors = await this.#messages.addReactions(context, channel.id, message.id, reactions);
             if (errors.failed.length > 0)
                 throw new BBTagRuntimeError(`I cannot add '${errors.failed.toString()}' as reactions`);
 

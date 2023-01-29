@@ -6,7 +6,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.numberFormat;
 
-@Subtag.id('numberFormat', 'numFormat')
+@Subtag.names('numberFormat', 'numFormat')
 @Subtag.ctorArgs(Subtag.converter())
 export class NumberFormatSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;

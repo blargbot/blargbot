@@ -1,16 +1,21 @@
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { RoleNotFoundError } from '../../errors/index.js';
+import type { RoleService } from '../../services/RoleService.js';
+import type { UserService } from '../../services/UserService.js';
 import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.roleMembers;
 
-@Subtag.id('roleMembers')
-@Subtag.ctorArgs()
+@Subtag.names('roleMembers')
+@Subtag.ctorArgs(Subtag.service('role'), Subtag.service('user'))
 export class RoleMembersSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #roles: RoleService;
+    readonly #users: UserService;
+
+    public constructor(roles: RoleService, users: UserService) {
         super({
             category: SubtagType.ROLE,
             definition: [
@@ -24,6 +29,9 @@ export class RoleMembersSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#roles = roles;
+        this.#users = users;
     }
 
     public async getRoleMembers(
@@ -32,15 +40,15 @@ export class RoleMembersSubtag extends CompiledSubtag {
         quiet: boolean
     ): Promise<string[]> {
         quiet ||= context.scopes.local.quiet ?? false;
-        const role = await context.queryRole(roleId, { noLookup: quiet });
+        const role = await this.#roles.querySingle(context, roleId, { noLookup: quiet });
 
         if (role === undefined) {
             throw new RoleNotFoundError(roleId)
                 .withDisplay(quiet ? '' : undefined);
         }
 
-        const members = await context.guild.fetchMembers();
-        const membersInRole = members.filter(m => m.roles.includes(role.id));
-        return membersInRole.map(m => m.user.id);
+        const users = await this.#users.getAll(context);
+        const usersInRole = users.filter(u => u.member?.roles.includes(role.id) === true);
+        return usersInRole.map(m => m.id);
     }
 }

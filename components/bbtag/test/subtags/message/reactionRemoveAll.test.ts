@@ -1,7 +1,7 @@
 import { Subtag } from '@blargbot/bbtag';
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
 import { ReactionRemoveAllSubtag } from '@blargbot/bbtag/subtags/message/reactionRemoveAll.js';
-import * as Eris from 'eris';
+import * as Discord from 'discord-api-types/v10';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetMessagePropTestCases } from './_getMessagePropTest.js';
@@ -28,21 +28,23 @@ runSubtagTests({
                 {
                     title: 'User is staff',
                     expected: '',
-                    setup(channel, message, ctx) {
+                    setup(_, __, ctx) {
                         ctx.isStaff = true;
-                        ctx.roles.bot.permissions = Eris.Constants.Permissions.manageMessages.toString();
-                        ctx.discord.setup(m => m.removeMessageReactions(channel.id, message.id)).thenResolve(undefined);
+                    },
+                    postSetup(channel, message, bbctx, ctx) {
+                        ctx.roles.bot.permissions = Discord.PermissionFlagsBits.ManageMessages.toString();
+                        ctx.messageService.setup(m => m.removeReactions(bbctx, channel.id, message.id)).thenResolve(undefined);
                     }
                 },
                 {
                     title: 'User is not staff, but the message is owned',
                     expected: '',
-                    setup(channel, message, ctx) {
+                    setup(_, __, ctx) {
                         ctx.isStaff = false;
-                        ctx.roles.bot.permissions = Eris.Constants.Permissions.manageMessages.toString();
-                        ctx.discord.setup(m => m.removeMessageReactions(channel.id, message.id)).thenResolve(undefined);
                     },
-                    postSetup(_, message, bbctx) {
+                    postSetup(channel, message, bbctx, ctx) {
+                        ctx.roles.bot.permissions = Discord.PermissionFlagsBits.ManageMessages.toString();
+                        ctx.messageService.setup(m => m.removeReactions(bbctx, channel.id, message.id)).thenResolve(undefined);
                         bbctx.data.ownedMsgs.push(message.id);
                     }
                 },
@@ -52,7 +54,7 @@ runSubtagTests({
                     error: new BBTagRuntimeError('Author must be staff to modify unrelated messages'),
                     setup(_, __, ctx) {
                         ctx.isStaff = false;
-                        ctx.roles.bot.permissions = Eris.Constants.Permissions.manageMessages.toString();
+                        ctx.roles.bot.permissions = Discord.PermissionFlagsBits.ManageMessages.toString();
                     }
                 }
             ]

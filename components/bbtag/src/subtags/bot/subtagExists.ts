@@ -6,7 +6,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.subtagExists;
 
-@Subtag.id('subtagExists')
+@Subtag.names('subtagExists')
 @Subtag.ctorArgs()
 export class SubtagExistsSubtag extends CompiledSubtag {
     public constructor() {

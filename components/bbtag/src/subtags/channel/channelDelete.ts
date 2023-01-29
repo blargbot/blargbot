@@ -1,18 +1,22 @@
-import * as Eris from 'eris';
+import { hasFlag } from '@blargbot/guards';
+import * as Discord from 'discord-api-types/v10';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
+import type { ChannelService } from '../../services/ChannelService.js';
 import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.channelDelete;
 
-@Subtag.id('channelDelete')
-@Subtag.ctorArgs()
+@Subtag.names('channelDelete')
+@Subtag.ctorArgs(Subtag.service('channel'))
 export class ChannelDeleteSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #channels: ChannelService;
+
+    public constructor(channels: ChannelService) {
         super({
             category: SubtagType.CHANNEL,
             definition: [
@@ -26,10 +30,12 @@ export class ChannelDeleteSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#channels = channels;
     }
 
     public async deleteChannel(context: BBTagContext, channelStr: string): Promise<void> {
-        const channel = await context.queryChannel(channelStr);
+        const channel = await this.#channels.querySingle(context, channelStr);
 
         /**
          * TODO change this to "No channel found" for consistency
@@ -38,16 +44,15 @@ export class ChannelDeleteSubtag extends CompiledSubtag {
         if (channel === undefined)
             throw new BBTagRuntimeError('Channel does not exist');
 
-        if (!context.hasPermission(channel, 'manageChannels'))
+        const permission = context.getPermission(context.authorizer, channel);
+        if (!hasFlag(permission, Discord.PermissionFlagsBits.ManageChannels))
             throw new BBTagRuntimeError('Author cannot edit this channel');
 
-        try {
-            await channel.delete(context.auditReason());
-        } catch (err: unknown) {
-            if (!(err instanceof Eris.DiscordRESTError))
-                throw err;
+        const result = await this.#channels.delete(context, channel.id);
 
-            throw new BBTagRuntimeError('Failed to edit channel: no perms', err.message);
-        }
+        if (result === undefined)
+            return;
+
+        throw new BBTagRuntimeError('Failed to edit channel: no perms', result.error);
     }
 }

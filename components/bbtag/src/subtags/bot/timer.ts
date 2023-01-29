@@ -8,7 +8,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.timer;
 
-@Subtag.id('timer')
+@Subtag.names('timer')
 @Subtag.ctorArgs(Subtag.util(), Subtag.converter())
 export class TimerSubtag extends CompiledSubtag {
     readonly #util: BBTagUtilities;

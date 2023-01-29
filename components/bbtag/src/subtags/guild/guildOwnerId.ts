@@ -6,7 +6,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.guildOwnerId;
 
-@Subtag.id('guildOwnerId')
+@Subtag.names('guildOwnerId')
 @Subtag.ctorArgs()
 export class GuildOwnerIdSubtag extends CompiledSubtag {
     public constructor() {
@@ -26,6 +26,6 @@ export class GuildOwnerIdSubtag extends CompiledSubtag {
     }
 
     public getGuildOwnerId(context: BBTagContext): string {
-        return context.guild.ownerID;
+        return context.guild.owner_id;
     }
 }

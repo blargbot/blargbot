@@ -1,6 +1,5 @@
 import { Subtag } from '@blargbot/bbtag';
 import { RoleMembersSubtag } from '@blargbot/bbtag/subtags/role/roleMembers.js';
-import type * as Eris from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetRolePropTestCases } from './_getRolePropTest.js';
@@ -17,34 +16,30 @@ runSubtagTests({
             cases: [
                 {
                     expected: '[]',
-                    setup(role, ctx) {
+                    postSetup(role, bbctx, ctx) {
                         role.id = '92348672342308424';
-                        ctx.shard.setup(m => m.requestGuildMembers(ctx.guild.id, undefined))
-                            .thenResolve(Object.values(ctx.members).map(m => ctx.createGuildMember(undefined, m, m.user)) as unknown as Eris.RequestGuildMembersReturn);
+                        ctx.userService.setup(m => m.getAll(bbctx)).thenResolve(Object.values(ctx.users));
                     }
                 },
                 {
                     expected: '["23908467240974"]',
-                    setup(role, ctx) {
+                    postSetup(role, bbctx, ctx) {
                         role.id = '29384723084374304';
                         ctx.users.other.id = '23908467240974';
-                        ctx.members.other.roles.push(role.id);
-
-                        ctx.shard.setup(m => m.requestGuildMembers(ctx.guild.id, undefined))
-                            .thenResolve(Object.values(ctx.members).map(m => ctx.createGuildMember(undefined, m, m.user)) as unknown as Eris.RequestGuildMembersReturn);
+                        ctx.users.other.member.roles.push(role.id);
+                        ctx.userService.setup(m => m.getAll(bbctx)).thenResolve(Object.values(ctx.users));
                     }
                 },
                 {
                     expected: '["23908467240974","98347593834657389"]',
-                    setup(role, ctx) {
+                    postSetup(role, bbctx, ctx) {
                         role.id = '29384723084374304';
                         ctx.users.other.id = '23908467240974';
                         ctx.users.bot.id = '98347593834657389';
-                        ctx.members.other.roles.push(role.id);
-                        ctx.members.bot.roles.push(role.id);
+                        ctx.users.other.member.roles.push(role.id);
+                        ctx.users.bot.member.roles.push(role.id);
 
-                        ctx.shard.setup(m => m.requestGuildMembers(ctx.guild.id, undefined))
-                            .thenResolve(Object.values(ctx.members).map(m => ctx.createGuildMember(undefined, m, m.user)) as unknown as Eris.RequestGuildMembersReturn);
+                        ctx.userService.setup(m => m.getAll(bbctx)).thenResolve(Object.values(ctx.users));
                     }
                 }
             ]

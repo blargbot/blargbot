@@ -7,7 +7,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.embed;
 
-@Subtag.id('embed')
+@Subtag.names('embed')
 @Subtag.ctorArgs(Subtag.converter())
 export class EmbedSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;
@@ -31,7 +31,6 @@ export class EmbedSubtag extends CompiledSubtag {
     }
 
     public setEmbed(context: BBTagContext, embedStr: string[]): void {
-        context.data.embeds = embedStr.flatMap(e => this.#converter.embed(e) ?? []);
-
+        context.data.embeds = embedStr.flatMap(e => this.#converter.embed(e, { allowMalformed: true }) ?? []);
     }
 }

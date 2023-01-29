@@ -2,6 +2,7 @@ import type { Cluster } from '@blargbot/cluster';
 import type { CommandGetCoreResult, CommandGetResult, ICommandManager, PermissionCheckResult } from '@blargbot/cluster/types.js';
 import { defaultStaff, guard } from '@blargbot/cluster/utils/index.js';
 import { parse } from '@blargbot/core/utils/index.js';
+import { markup, snowflake } from '@blargbot/discord-util';
 import type { CommandPermissions } from '@blargbot/domain/models/index.js';
 import { hasValue } from '@blargbot/guards';
 import * as Eris from 'eris';
@@ -120,8 +121,8 @@ function findRoleId(roles: Eris.Collection<Eris.Role>, roleSetting: string | und
     if (roleSetting === undefined)
         return undefined;
 
-    const id = parse.entityId(roleSetting, '@&', true);
-    if (id !== undefined)
+    const id = markup.role.tryParse(roleSetting) ?? roleSetting;
+    if (snowflake.test(id))
         return roles.get(id)?.id;
 
     const norm = roleSetting.toLowerCase();

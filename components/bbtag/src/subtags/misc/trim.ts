@@ -5,7 +5,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.trim;
 
-@Subtag.id('trim')
+@Subtag.names('trim')
 @Subtag.ctorArgs()
 export class TrimSubtag extends CompiledSubtag {
     public constructor() {

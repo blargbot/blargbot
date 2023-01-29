@@ -1,7 +1,9 @@
+import { randomUUID } from 'node:crypto';
+
 import { sleep } from '@blargbot/async-tools';
 import type { ExecutionResult } from '@blargbot/bbtag';
 import type { Cluster } from '@blargbot/cluster';
-import { guard, snowflake } from '@blargbot/cluster/utils/index.js';
+import { guard } from '@blargbot/cluster/utils/index.js';
 import type { GuildTriggerTag } from '@blargbot/domain/models/index.js';
 import type * as Eris from 'eris';
 import moment from 'moment-timezone';
@@ -86,8 +88,8 @@ export class IntervalManager {
                     attachments: [],
                     embeds: [],
                     content: '',
-                    id: snowflake.create().toString()
-                },
+                    id: randomUUID()
+                } as never,
                 limit: 'customCommandLimit',
                 inputRaw: '',
                 isCC: true,

@@ -5,15 +5,16 @@ import type { BBTagContext } from '../../BBTagContext.js';
 import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
+import { parseBBTag } from '../../language/parseBBTag.js';
 import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { BBTagRuntimeState } from '../../types.js';
 import type { BBTagArrayTools } from '../../utils/index.js';
-import { parseBBTag, SubtagType } from '../../utils/index.js';
+import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.execCustomCommand;
 
-@Subtag.id('execCustomCommand', 'execCC')
+@Subtag.names('execCustomCommand', 'execCC')
 @Subtag.ctorArgs(Subtag.arrayTools(), Subtag.converter(), Subtag.store('guilds'))
 export class ExecCustomCommandSubtag extends CompiledSubtag {
     readonly #arrayTools: BBTagArrayTools;

@@ -1,20 +1,11 @@
 import * as Eris from 'eris';
 
-type ChannelType = typeof Eris.Constants['ChannelTypes'];
-const isPrivateMap: Record<ChannelType[keyof ChannelType], boolean> = {
-    [Eris.Constants.ChannelTypes.DM]: true,
-    [Eris.Constants.ChannelTypes.GROUP_DM]: true,
-    [Eris.Constants.ChannelTypes.GUILD_CATEGORY]: false,
-    [Eris.Constants.ChannelTypes.GUILD_NEWS]: false,
-    [Eris.Constants.ChannelTypes.GUILD_NEWS_THREAD]: false,
-    [Eris.Constants.ChannelTypes.GUILD_PRIVATE_THREAD]: false,
-    [Eris.Constants.ChannelTypes.GUILD_PUBLIC_THREAD]: false,
-    [Eris.Constants.ChannelTypes.GUILD_STAGE_VOICE]: false,
-    [Eris.Constants.ChannelTypes.GUILD_STORE]: false,
-    [Eris.Constants.ChannelTypes.GUILD_TEXT]: false,
-    [Eris.Constants.ChannelTypes.GUILD_VOICE]: false
-};
+type PrivateType = Eris.PrivateChannel['type'];
+const privateTypes = new Set(Object.keys<`${PrivateType}`>({
+    [Eris.Constants.ChannelTypes.DM]: null,
+    [Eris.Constants.ChannelTypes.GROUP_DM]: null
+}).map(v => Number(v) as PrivateType));
 
-export function isPrivateChannel<T extends Eris.Channel>(channel: T): channel is Eris.PrivateChannel & T {
-    return isPrivateMap[channel.type];
+export function isPrivateChannel<T extends { type: number; }>(channel: T): channel is Extract<T, { type: PrivateType; }> {
+    return privateTypes.has(channel.type);
 }

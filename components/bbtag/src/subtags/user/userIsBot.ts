@@ -1,16 +1,19 @@
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { UserNotFoundError } from '../../errors/index.js';
+import type { UserService } from '../../services/UserService.js';
 import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.userIsBot;
 
-@Subtag.id('userIsBot', 'userBot')
-@Subtag.ctorArgs()
+@Subtag.names('userIsBot', 'userBot')
+@Subtag.ctorArgs(Subtag.service('user'))
 export class UserIsBotSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #users: UserService;
+
+    public constructor(users: UserService) {
         super({
             category: SubtagType.USER,
             definition: [
@@ -32,6 +35,8 @@ export class UserIsBotSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#users = users;
     }
 
     public async getUserIsBot(
@@ -40,13 +45,13 @@ export class UserIsBotSubtag extends CompiledSubtag {
         quiet: boolean
     ): Promise<boolean> {
         quiet ||= context.scopes.local.quiet ?? false;
-        const user = await context.queryUser(userId, { noLookup: quiet });
+        const user = await this.#users.querySingle(context, userId, { noLookup: quiet });
 
         if (user === undefined) {
             throw new UserNotFoundError(userId)
                 .withDisplay(quiet ? '' : undefined);
         }
 
-        return user.bot;
+        return user.bot ?? false;
     }
 }

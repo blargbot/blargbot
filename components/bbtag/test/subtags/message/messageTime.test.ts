@@ -11,6 +11,7 @@ runSubtagTests({
         ...createGetMessagePropTestCases({
             quiet: false,
             includeNoArgs: true,
+            getQueryOptions: () => ({ noLookup: true }),
             generateCode(...args) {
                 return `{${['messagetime', ...args].filter(a => a !== undefined).join(';')}}`;
             },
@@ -26,6 +27,7 @@ runSubtagTests({
         ...createGetMessagePropTestCases({
             quiet: false,
             includeNoArgs: true,
+            getQueryOptions: () => ({ noLookup: true }),
             generateCode(...args) {
                 return `{${['messagetime', ...args, 'DD/MM/YYYY'].filter(a => a !== undefined).join(';')}}`;
             },

@@ -1,6 +1,7 @@
 import type { Cluster } from '@blargbot/cluster';
-import { discord } from '@blargbot/cluster/utils/index.js';
 import { IntervalService } from '@blargbot/core/serviceTypes/index.js';
+
+import { getStats } from '../utils/index.js';
 
 export class ClusterStatsInterval extends IntervalService {
     public readonly type = 'cluster';
@@ -11,6 +12,6 @@ export class ClusterStatsInterval extends IntervalService {
     }
 
     public execute(): void | Promise<void> {
-        this.cluster.worker.send('clusterStats', discord.cluster.getStats(this.cluster));
+        this.cluster.worker.send('clusterStats', getStats(this.cluster));
     }
 }

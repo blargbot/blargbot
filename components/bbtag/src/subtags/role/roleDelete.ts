@@ -1,18 +1,19 @@
-import * as Eris from 'eris';
-
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, RoleNotFoundError } from '../../errors/index.js';
+import type { RoleService } from '../../services/RoleService.js';
 import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.roleDelete;
 
-@Subtag.id('roleDelete')
-@Subtag.ctorArgs()
+@Subtag.names('roleDelete')
+@Subtag.ctorArgs(Subtag.service('role'))
 export class RoleDeleteSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #roles: RoleService;
+
+    public constructor(roles: RoleService) {
         super({
             category: SubtagType.ROLE,
             definition: [
@@ -26,15 +27,17 @@ export class RoleDeleteSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#roles = roles;
     }
 
     public async deleteRole(context: BBTagContext, roleStr: string, quiet: boolean): Promise<void> {
-        const topRole = context.roleEditPosition();
+        const topRole = context.roleEditPosition(context.authorizer);
         if (topRole <= 0)
             throw new BBTagRuntimeError('Author cannot delete roles');
 
         quiet ||= context.scopes.local.quiet ?? false;
-        const role = await context.queryRole(roleStr, {
+        const role = await this.#roles.querySingle(context, roleStr, {
             noErrors: quiet,
             noLookup: quiet
         });
@@ -47,16 +50,11 @@ export class RoleDeleteSubtag extends CompiledSubtag {
         if (role.position >= topRole)
             throw new BBTagRuntimeError('Role above author');
 
-        try {
-            await role.delete(context.auditReason());
-        } catch (err: unknown) {
-            if (!(err instanceof Eris.DiscordRESTError))
-                throw err;
+        const result = await this.#roles.delete(context, role.id);
 
-            if (quiet)
-                return;
+        if (result === undefined || quiet)
+            return;
 
-            throw new BBTagRuntimeError('Failed to delete role: no perms', err.message);
-        }
+        throw new BBTagRuntimeError('Failed to delete role: no perms', result.error);
     }
 }

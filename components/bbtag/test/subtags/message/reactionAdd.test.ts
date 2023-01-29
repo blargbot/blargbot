@@ -4,19 +4,19 @@ import { ReactionAddSubtag } from '@blargbot/bbtag/subtags/message/reactionAdd.j
 import { Emote } from '@blargbot/discord-emote';
 import { argument } from '@blargbot/test-util/mock.js';
 import chai from 'chai';
-import * as Eris from 'eris';
+import * as Discord from 'discord-api-types/v10';
 
 import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';
 import { createGetMessagePropTestCases } from './_getMessagePropTest.js';
 
-const unicodeEmote = Emote.parse('🤔');
-const guildEmote = Emote.parse('<:notlikecat:280110565161041921>');
+const think = Emote.parse('🤔');
+const notLikeCat = Emote.parse('<:notlikecat:280110565161041921>');
 
 runSubtagTests({
     subtag: Subtag.getDescriptor(ReactionAddSubtag),
     argCountBounds: { min: 1, max: Infinity },
     setupEach(ctx) {
-        ctx.roles.bot.permissions = Eris.Constants.Permissions.addReactions.toString();
+        ctx.roles.bot.permissions = Discord.PermissionFlagsBits.AddReactions.toString();
     },
     cases: [
         {
@@ -29,14 +29,16 @@ runSubtagTests({
         ...createGetMessagePropTestCases({
             includeNoArgs: false,
             quiet: false,
+            getQueryOptions: () => ({ noErrors: true, noLookup: true }),
             generateCode(...args) {
                 return `{${['reactadd', ...args, '🤔'].filter(a => a !== undefined).join(';')}}`;
             },
             cases: [
                 {
                     expected: '',
-                    postSetup(_, message, __, ctx) {
-                        ctx.util.setup(m => m.addReactions(message, argument.isDeepEqual([unicodeEmote]))).thenResolve({ success: [unicodeEmote], failed: [] });
+                    postSetup(channel, message, bbctx, ctx) {
+                        ctx.messageService.setup(m => m.addReactions(bbctx, channel.id, message.id, argument.isDeepEqual([think])))
+                            .thenResolve({ success: [think], failed: [] });
                     }
                 },
                 {
@@ -52,23 +54,25 @@ runSubtagTests({
             code: '{reactadd;🤔<:notlikecat:280110565161041921>}',
             expected: '',
             setup(ctx) {
-                ctx.roles.bot.permissions = Eris.Constants.Permissions.addReactions.toString();
+                ctx.roles.bot.permissions = Discord.PermissionFlagsBits.AddReactions.toString();
             },
             assert(bbctx) {
-                chai.expect(bbctx.data.reactions).to.deep.equal([unicodeEmote.toString(), guildEmote.toString()]);
+                chai.expect(bbctx.data.reactions).to.deep.equal([think.toString(), notLikeCat.toString()]);
             }
         },
         ...createGetMessagePropTestCases({
             includeNoArgs: false,
             quiet: false,
+            getQueryOptions: () => ({ noErrors: true, noLookup: true }),
             generateCode(...args) {
                 return `{${['reactadd', ...args, '🤔<:notlikecat:280110565161041921>'].filter(a => a !== undefined).join(';')}}`;
             },
             cases: [
                 {
                     expected: '',
-                    postSetup(_, message, __, ctx) {
-                        ctx.util.setup(m => m.addReactions(message, argument.isDeepEqual([unicodeEmote, guildEmote]))).thenResolve({ success: [unicodeEmote, guildEmote], failed: [] });
+                    postSetup(channel, message, bbctx, ctx) {
+                        ctx.messageService.setup(m => m.addReactions(bbctx, channel.id, message.id, argument.isDeepEqual([think, notLikeCat])))
+                            .thenResolve({ success: [think, notLikeCat], failed: [] });
                     }
                 }
             ]
@@ -77,23 +81,25 @@ runSubtagTests({
             code: '{reactadd;🤔;<:notlikecat:280110565161041921>}',
             expected: '',
             setup(ctx) {
-                ctx.roles.bot.permissions = Eris.Constants.Permissions.addReactions.toString();
+                ctx.roles.bot.permissions = Discord.PermissionFlagsBits.AddReactions.toString();
             },
             assert(bbctx) {
-                chai.expect(bbctx.data.reactions).to.deep.equal([unicodeEmote.toString(), guildEmote.toString()]);
+                chai.expect(bbctx.data.reactions).to.deep.equal([think.toString(), notLikeCat.toString()]);
             }
         },
         ...createGetMessagePropTestCases({
             includeNoArgs: false,
             quiet: false,
+            getQueryOptions: () => ({ noErrors: true, noLookup: true }),
             generateCode(...args) {
                 return `{${['reactadd', ...args, '🤔', '<:notlikecat:280110565161041921>'].filter(a => a !== undefined).join(';')}}`;
             },
             cases: [
                 {
                     expected: '',
-                    postSetup(_, message, __, ctx) {
-                        ctx.util.setup(m => m.addReactions(message, argument.isDeepEqual([unicodeEmote, guildEmote]))).thenResolve({ success: [unicodeEmote, guildEmote], failed: [] });
+                    postSetup(channel, message, bbctx, ctx) {
+                        ctx.messageService.setup(m => m.addReactions(bbctx, channel.id, message.id, argument.isDeepEqual([think, notLikeCat])))
+                            .thenResolve({ success: [think, notLikeCat], failed: [] });
                     }
                 }
             ]
@@ -116,13 +122,14 @@ runSubtagTests({
             code: '{reactadd;2938456469267324234;🤔}',
             expected: '`I cannot add \'🤔\' as reactions`',
             postSetup(bbctx, ctx) {
-                const message = ctx.createMessage(SubtagTestContext.createApiMessage({
+                const message = SubtagTestContext.createMessage({
                     id: '2938456469267324234',
                     channel_id: bbctx.channel.id
-                }, ctx.users.command));
+                }, ctx.users.command);
 
-                ctx.util.setup(m => m.getMessage(bbctx.channel, message.id, false)).thenResolve(message);
-                ctx.util.setup(m => m.addReactions(message, argument.isDeepEqual([unicodeEmote]))).thenResolve({ success: [], failed: [unicodeEmote] });
+                ctx.messageService.setup(m => m.get(bbctx, ctx.channels.command.id, message.id)).thenResolve(message);
+                ctx.messageService.setup(m => m.addReactions(bbctx, ctx.channels.command.id, message.id, argument.isDeepEqual([think])))
+                    .thenResolve({ success: [], failed: [think] });
             },
             errors: [
                 { start: 0, end: 33, error: new BBTagRuntimeError('I cannot add \'🤔\' as reactions') }

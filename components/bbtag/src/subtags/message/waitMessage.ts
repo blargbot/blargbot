@@ -1,11 +1,14 @@
-import { clamp, guard } from '@blargbot/core/utils/index.js';
+import { clamp } from '@blargbot/core/utils/index.js';
 
 import type { BBTagContext } from '../../BBTagContext.js';
-import type { BBTagUtilities, BBTagValueConverter } from '../../BBTagUtilities.js';
+import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, ChannelNotFoundError, NotANumberError, UserNotFoundError } from '../../errors/index.js';
 import type { Statement } from '../../language/index.js';
 import { parseBBTag } from '../../language/index.js';
+import type { ChannelService } from '../../services/ChannelService.js';
+import type { MessageService } from '../../services/MessageService.js';
+import type { UserService } from '../../services/UserService.js';
 import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { overrides, SubtagType } from '../../utils/index.js';
@@ -14,13 +17,15 @@ const tag = templates.subtags.waitMessage;
 
 const defaultCondition = parseBBTag('true');
 
-@Subtag.id('waitMessage')
-@Subtag.ctorArgs(Subtag.util(), Subtag.converter())
+@Subtag.names('waitMessage')
+@Subtag.ctorArgs(Subtag.service('user'), Subtag.service('channel'), Subtag.service('message'), Subtag.converter())
 export class WaitMessageSubtag extends CompiledSubtag {
-    readonly #util: BBTagUtilities;
+    readonly #users: UserService;
     readonly #converter: BBTagValueConverter;
+    readonly #channels: ChannelService;
+    readonly #messages: MessageService;
 
-    public constructor(util: BBTagUtilities, converter: BBTagValueConverter) {
+    public constructor(users: UserService, channels: ChannelService, messages: MessageService, converter: BBTagValueConverter) {
         super({
             category: SubtagType.MESSAGE,
             description: tag.description({ disabled: overrides.waitmessage }),
@@ -44,7 +49,9 @@ export class WaitMessageSubtag extends CompiledSubtag {
             ]
         });
 
-        this.#util = util;
+        this.#users = users;
+        this.#channels = channels;
+        this.#messages = messages;
         this.#converter = converter;
     }
 
@@ -55,10 +62,10 @@ export class WaitMessageSubtag extends CompiledSubtag {
         condition: Statement,
         timeoutStr: string
     ): Promise<[channelId: string, messageId: string]> {
-        const channels = await context.bulkLookup(channelStr, i => context.queryChannel(i, { noLookup: true }), ChannelNotFoundError)
+        const channels = await context.bulkLookup(channelStr, i => this.#channels.querySingle(context, i, { noLookup: true }), ChannelNotFoundError)
             ?? [context.channel];
 
-        const users = await context.bulkLookup(userStr, i => context.queryUser(i, { noLookup: true }), UserNotFoundError)
+        const users = await context.bulkLookup(userStr, i => this.#users.querySingle(context, i, { noLookup: true }), UserNotFoundError)
             ?? [context.user];
 
         const timeout = clamp(this.#converter.float(timeoutStr) ?? NaN, 0, 300);
@@ -69,8 +76,8 @@ export class WaitMessageSubtag extends CompiledSubtag {
             condition = defaultCondition;
 
         const userSet = new Set(users.map(u => u.id));
-        const result = await this.#util.awaitMessage(channels.map(c => c.id), async message => {
-            if (!userSet.has(message.author.id) || !guard.isGuildMessage(message))
+        const result = await this.#messages.awaitMessage(context, channels.map(c => c.id), async message => {
+            if (!userSet.has(message.author.id))
                 return false;
 
             const resultStr = await context.withChild({ message }, async context => await context.eval(condition));
@@ -83,7 +90,7 @@ export class WaitMessageSubtag extends CompiledSubtag {
         if (result === undefined)
             throw new BBTagRuntimeError(`Wait timed out after ${timeout * 1000}`);
 
-        return [result.channel.id, result.id];
+        return [result.channel_id, result.id];
 
     }
 }

@@ -53,7 +53,7 @@ export class RolemeManager {
         };
 
         return await this.#cluster.bbtag.execute(tag.content, {
-            message: trigger,
+            message: trigger as never,
             rootTagName: 'roleme',
             limit: 'customCommandLimit',
             inputRaw: '',

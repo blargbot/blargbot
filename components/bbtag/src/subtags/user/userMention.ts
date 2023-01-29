@@ -1,19 +1,23 @@
+import { markup } from '@blargbot/discord-util';
+
 import type { BBTagContext } from '../../BBTagContext.js';
 import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { NotABooleanError, UserNotFoundError } from '../../errors/index.js';
+import type { UserService } from '../../services/UserService.js';
 import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.userMention;
 
-@Subtag.id('userMention')
-@Subtag.ctorArgs(Subtag.converter())
+@Subtag.names('userMention')
+@Subtag.ctorArgs(Subtag.converter(), Subtag.service('user'))
 export class UserMentionSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;
+    readonly #users: UserService;
 
-    public constructor(converter: BBTagValueConverter) {
+    public constructor(converter: BBTagValueConverter, users: UserService) {
         super({
             category: SubtagType.USER,
             definition: [
@@ -37,6 +41,7 @@ export class UserMentionSubtag extends CompiledSubtag {
         });
 
         this.#converter = converter;
+        this.#users = users;
     }
 
     public async userMention(
@@ -50,7 +55,7 @@ export class UserMentionSubtag extends CompiledSubtag {
         if (noPing === undefined)
             throw new NotABooleanError(noPing);
 
-        const user = await context.queryUser(userId, { noLookup: quiet });
+        const user = await this.#users.querySingle(context, userId, { noLookup: quiet });
 
         if (user === undefined) {
             throw new UserNotFoundError(userId)
@@ -59,6 +64,7 @@ export class UserMentionSubtag extends CompiledSubtag {
 
         if (!noPing && !context.data.allowedMentions.users.includes(user.id))
             context.data.allowedMentions.users.push(user.id);
-        return user.mention;
+
+        return markup.user(user.id);
     }
 }

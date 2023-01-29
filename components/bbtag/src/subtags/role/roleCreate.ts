@@ -1,21 +1,22 @@
-import * as Eris from 'eris';
-
 import type { BBTagContext } from '../../BBTagContext.js';
 import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
+import type { RoleService } from '../../services/RoleService.js';
 import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
+import type { Entities } from '../../types.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.roleCreate;
 
-@Subtag.id('roleCreate')
-@Subtag.ctorArgs(Subtag.converter())
+@Subtag.names('roleCreate')
+@Subtag.ctorArgs(Subtag.converter(), Subtag.service('role'))
 export class RoleCreateSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;
+    readonly #roles: RoleService;
 
-    public constructor(converter: BBTagValueConverter) {
+    public constructor(converter: BBTagValueConverter, roles: RoleService) {
         super({
             category: SubtagType.ROLE,
             definition: [
@@ -31,6 +32,7 @@ export class RoleCreateSubtag extends CompiledSubtag {
         });
 
         this.#converter = converter;
+        this.#roles = roles;
     }
 
     public async createRole(
@@ -41,7 +43,7 @@ export class RoleCreateSubtag extends CompiledSubtag {
         mentionableStr: string,
         hoistedStr: string
     ): Promise<string> {
-        const topRole = context.roleEditPosition();
+        const topRole = context.roleEditPosition(context.authorizer);
         if (topRole <= 0)
             throw new BBTagRuntimeError('Author cannot create roles');
 
@@ -49,7 +51,7 @@ export class RoleCreateSubtag extends CompiledSubtag {
         if (rolePerms === undefined)
             throw new BBTagRuntimeError('Permission not a number', `${JSON.stringify(permStr)} is not a number`);
 
-        const options: Eris.RoleOptions = {
+        const options: Entities.RoleCreate = {
             name,
             color: this.#converter.color(colorStr),
             permissions: rolePerms,
@@ -57,19 +59,14 @@ export class RoleCreateSubtag extends CompiledSubtag {
             hoist: this.#converter.boolean(hoistedStr, false)
         };
 
-        if (!context.hasPermission(rolePerms))
+        if ((context.authorizerPermissions & rolePerms) !== rolePerms)
             throw new BBTagRuntimeError('Author missing requested permissions');
 
-        try {
-            const role = await context.guild.createRole(options, context.auditReason());
-            if (context.guild.roles.get(role.id) === undefined)
-                context.guild.roles.set(role.id, role);
-            return role.id;
-        } catch (err: unknown) {
-            if (!(err instanceof Eris.DiscordRESTError))
-                throw err;
+        const result = await this.#roles.create(context, options);
 
-            throw new BBTagRuntimeError('Failed to create role: no perms', err.message);
-        }
+        if (!('error' in result))
+            return result.id;
+
+        throw new BBTagRuntimeError('Failed to create role: no perms', result.error);
     }
 }

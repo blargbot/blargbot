@@ -11,7 +11,6 @@ export module 'eris' {
         | TextChannel
         | TextVoiceChannel
         | PrivateChannel
-        | VoiceChannel
         | GroupChannel
         | CategoryChannel
         | NewsChannel
@@ -19,6 +18,7 @@ export module 'eris' {
         | NewsThreadChannel
         | PublicThreadChannel
         | PrivateThreadChannel
+        | ThreadChannel
         | StageChannel;
 
     type _KnownChannelMap = { [P in KnownChannel as P['type']]: P };
@@ -66,9 +66,13 @@ export module 'eris' {
         _formatAllowedMentions(arg: never): never;
     }
 
+    export interface StageChannel extends GuildTextable, Textable {
+
+    }
+
     type ChannelTypeMap = {
         [Constants.ChannelTypes.GUILD_TEXT]: TextChannel;
-        [Constants.ChannelTypes.GUILD_VOICE]: VoiceChannel;
+        [Constants.ChannelTypes.GUILD_VOICE]: TextVoiceChannel;
         [Constants.ChannelTypes.GUILD_CATEGORY]: CategoryChannel;
         [Constants.ChannelTypes.GUILD_NEWS]: NewsChannel;
         [Constants.ChannelTypes.GUILD_STORE]: StoreChannel;

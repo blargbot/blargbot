@@ -1,5 +1,7 @@
+import { randomUUID } from 'node:crypto';
+
 import type { CommandResult } from '@blargbot/cluster/types.js';
-import { guard, snowflake } from '@blargbot/cluster/utils/index.js';
+import { guard } from '@blargbot/cluster/utils/index.js';
 import type { IMiddleware, NextMiddleware } from '@blargbot/core/types.js';
 import * as Eris from 'eris';
 
@@ -11,7 +13,7 @@ export class ErrorMiddleware<TContext extends CommandContext> implements IMiddle
         try {
             return await next();
         } catch (err: unknown) {
-            const token = snowflake.create().toString();
+            const token = randomUUID();
             context.logger.error(`[Command error ${token}]`, context.command.name, err);
 
             if (err instanceof Eris.DiscordRESTError

@@ -1,6 +1,6 @@
 import { inspect } from 'node:util';
 
-import { BBTagEngine, Subtag, subtags } from '@blargbot/bbtag';
+import { BBTagEngine, createEmbedParser, Subtag, subtags } from '@blargbot/bbtag';
 import { createBBTagJsonTools } from '@blargbot/bbtag/utils/json.js';
 import { createBBTagOperators } from '@blargbot/bbtag/utils/operators.js';
 import { smartStringCompare } from '@blargbot/bbtag/utils/smartStringCompare.js';
@@ -15,7 +15,6 @@ import { parseBigInt } from '@blargbot/core/utils/parse/parseBigInt.js';
 import { parseBoolean } from '@blargbot/core/utils/parse/parseBoolean.js';
 import { parseColor } from '@blargbot/core/utils/parse/parseColor.js';
 import { parseDuration } from '@blargbot/core/utils/parse/parseDuration.js';
-import { parseEmbed } from '@blargbot/core/utils/parse/parseEmbed.js';
 import { parseFloat } from '@blargbot/core/utils/parse/parseFloat.js';
 import { parseInt } from '@blargbot/core/utils/parse/parseInt.js';
 import { parseString } from '@blargbot/core/utils/parse/parseString.js';
@@ -32,6 +31,7 @@ import { ClusterUtilities } from './ClusterUtilities.js';
 import type { ClusterWorker } from './ClusterWorker.js';
 import { CommandDocumentationManager } from './managers/documentation/CommandDocumentationManager.js';
 import { AggregateCommandManager, AnnouncementManager, AutoresponseManager, AwaiterManager, BotStaffManager, ContributorManager, CustomCommandManager, DefaultCommandManager, DomainManager, GreetingManager, GuildManager, IntervalManager, ModerationManager, PollManager, PrefixManager, RolemeManager, TimeoutManager, VersionStateManager } from './managers/index.js';
+import { ErisChannelProvider, ErisMemberProvider, ErisRoleProvider, ErisUserProvider } from './utils/bbtag/ErisChannelProvider.js';
 
 export class Cluster extends BaseClient {
     public readonly id: number;
@@ -151,10 +151,19 @@ export class Cluster extends BaseClient {
                 string: parseString,
                 boolean: parseBoolean,
                 duration: parseDuration,
-                embed: parseEmbed,
+                embed: createEmbedParser({
+                    convertToColor: parseColor,
+                    convertToNumber: parseInt
+                }),
                 bigInt: parseBigInt,
                 color: parseColor,
                 time: parseTime
+            },
+            services: {
+                channel: new ErisChannelProvider(this),
+                member: new ErisMemberProvider(this),
+                user: new ErisUserProvider(this),
+                role: new ErisRoleProvider(this)
             }
         });
         this.intervals = new IntervalManager(this, moment.duration(10, 's'));

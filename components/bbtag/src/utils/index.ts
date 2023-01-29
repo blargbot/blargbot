@@ -1,4 +1,4 @@
-export * from '../language/parseBBTag.js';
+export * from './embedParser.js';
 export * from './json.js';
 export * from './operators.js';
 export * from './overrides.js';

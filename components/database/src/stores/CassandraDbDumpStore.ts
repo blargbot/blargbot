@@ -1,8 +1,9 @@
-import { snowflake } from '@blargbot/core/utils/index.js';
+import { snowflake } from '@blargbot/discord-util';
 import type { Dump } from '@blargbot/domain/models/index.js';
 import type { DumpStore } from '@blargbot/domain/stores/index.js';
 import type { Logger } from '@blargbot/logger';
 import { mapping } from '@blargbot/mapping';
+import { result } from '@blargbot/mapping/result.js';
 import Cassandra from 'cassandra-driver';
 
 export class CassandraDbDumpStore implements DumpStore {
@@ -40,7 +41,13 @@ export class CassandraDbDumpStore implements DumpStore {
     }
 }
 
-const mapLongToSnowflake = mapping.instanceof(Cassandra.types.Long).map(v => v.toString()).chain(mapping.guard(snowflake.test));
+const mapLongToSnowflake = mapping.instanceof(Cassandra.types.Long)
+    .chain(v => {
+        const r = v.toString();
+        return snowflake.test(r)
+            ? result.success(r)
+            : result.failed;
+    });
 const mapDump = mapping.object<Dump>({
     id: mapLongToSnowflake,
     channelid: mapLongToSnowflake,

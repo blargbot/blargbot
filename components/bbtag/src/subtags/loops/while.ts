@@ -9,7 +9,7 @@ import { comparisonOperators, SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.while;
 
-@Subtag.id('while')
+@Subtag.names('while')
 @Subtag.ctorArgs(Subtag.operators())
 export class WhileSubtag extends CompiledSubtag {
     #operators: BBTagOperators;

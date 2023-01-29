@@ -1,7 +1,8 @@
+import { randomUUID } from 'node:crypto';
+
 import type { ChatLog, ChatLogMessage, ChatLogSearchOptions } from '@blargbot/chatlog-types';
 import { ChatLogType } from '@blargbot/chatlog-types';
 import { metrics } from '@blargbot/core/Metrics.js';
-import { snowflake } from '@blargbot/core/utils/index.js';
 import type { ChatLogStore } from '@blargbot/domain/stores/index.js';
 import type { Logger } from '@blargbot/logger';
 import { mapping } from '@blargbot/mapping';
@@ -89,7 +90,7 @@ export class CassandraDbChatLogStore implements ChatLogStore {
         const lifespan = typeof lifespanS === 'number' ? lifespanS : lifespanS.asSeconds();
         const chatlog = {
             ...message,
-            id: snowflake.create().toString(),
+            id: randomUUID(),
             msgtime: new Date(),
             type: type,
             embeds: JSON.stringify(message.embeds),

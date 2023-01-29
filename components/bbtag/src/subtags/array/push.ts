@@ -8,7 +8,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.push;
 
-@Subtag.id('push')
+@Subtag.names('push')
 @Subtag.ctorArgs(Subtag.arrayTools())
 export class PushSubtag extends CompiledSubtag {
     readonly #arrayTools: BBTagArrayTools;

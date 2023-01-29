@@ -2,7 +2,7 @@ import { Subtag } from '@blargbot/bbtag';
 import { BBTagRuntimeError, NotAnArrayError, RoleNotFoundError } from '@blargbot/bbtag/errors/index.js';
 import { UserSetRolesSubtag } from '@blargbot/bbtag/subtags/user/userSetRoles.js';
 import { argument } from '@blargbot/test-util/mock.js';
-import * as Eris from 'eris';
+import * as Discord from 'discord-api-types/v10';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetUserPropTestCases } from './_getUserPropTest.js';
@@ -11,16 +11,15 @@ runSubtagTests({
     subtag: Subtag.getDescriptor(UserSetRolesSubtag),
     argCountBounds: { min: 0, max: 3 },
     setupEach(ctx) {
-        ctx.roles.authorizer.permissions = Eris.Constants.Permissions.manageRoles.toString();
-        ctx.members.authorizer.roles.push(ctx.roles.top.id);
+        ctx.roles.authorizer.permissions = Discord.PermissionFlagsBits.ManageRoles.toString();
+        ctx.users.authorizer.member.roles.push(ctx.roles.top.id);
     },
     cases: [
         {
             code: '{usersetroles}',
             expected: 'true',
-            setup(ctx) {
-                ctx.discord.setup(m => m.editGuildMember(ctx.guild.id, ctx.users.command.id, argument.isDeepEqual({ roles: [] }), 'Command User#0000'))
-                    .thenResolve(ctx.createGuildMember(undefined, ctx.members.command, ctx.users.command));
+            postSetup(bbctx, ctx) {
+                ctx.userService.setup(m => m.edit(bbctx, ctx.users.command.id, argument.isDeepEqual({ roles: [] }))).thenResolve(undefined);
             }
         },
         ...createGetUserPropTestCases({
@@ -31,9 +30,8 @@ runSubtagTests({
             cases: [
                 {
                     expected: 'true',
-                    postSetup(member, _, ctx) {
-                        ctx.discord.setup(m => m.editGuildMember(ctx.guild.id, member.user.id, argument.isDeepEqual({ roles: [] }), 'Command User#0000'))
-                            .thenResolve(member);
+                    postSetup(member, bbctx, ctx) {
+                        ctx.userService.setup(m => m.edit(bbctx, member.id, argument.isDeepEqual({ roles: [] }))).thenResolve(undefined);
                     }
                 }
             ]
@@ -50,16 +48,10 @@ runSubtagTests({
                         ctx.roles.other.id = '283674284762348926';
                         ctx.roles.bot.id = '234967249876489624';
                     },
-                    postSetup(member, bbctx, ctx) {
-                        const otherRole = bbctx.guild.roles.get(ctx.roles.other.id);
-                        const botRole = bbctx.guild.roles.get(ctx.roles.bot.id);
-                        if (otherRole === undefined || botRole === undefined)
-                            throw new Error('Unable to locate roles under test');
-
-                        ctx.util.setup(m => m.findRoles(bbctx.guild, '283674284762348926')).thenResolve([otherRole]);
-                        ctx.util.setup(m => m.findRoles(bbctx.guild, '234967249876489624')).thenResolve([botRole]);
-                        ctx.discord.setup(m => m.editGuildMember(ctx.guild.id, member.user.id, argument.isDeepEqual({ roles: ['283674284762348926', '234967249876489624'] }), 'Command User#0000'))
-                            .thenResolve(member);
+                    postSetup(member, bbctx, ctx, q) {
+                        ctx.roleService.setup(m => m.querySingle(bbctx, '283674284762348926', argument.isDeepEqual({ noLookup: q }))).thenResolve(ctx.roles.other);
+                        ctx.roleService.setup(m => m.querySingle(bbctx, '234967249876489624', argument.isDeepEqual({ noLookup: q }))).thenResolve(ctx.roles.bot);
+                        ctx.userService.setup(m => m.edit(bbctx, member.id, argument.isDeepEqual({ roles: ['283674284762348926', '234967249876489624'] }))).thenResolve(undefined);
                     }
                 }
             ]
@@ -95,7 +87,7 @@ runSubtagTests({
                 { start: 0, end: 31, error: new RoleNotFoundError('unknown role') }
             ],
             postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.findRoles(bbctx.guild, 'unknown role')).thenResolve([]);
+                ctx.roleService.setup(m => m.querySingle(bbctx, 'unknown role', argument.isDeepEqual({ noLookup: false }))).thenResolve(undefined);
             }
         },
         {
@@ -105,7 +97,7 @@ runSubtagTests({
                 { start: 0, end: 34, error: new RoleNotFoundError('unknown role').withDisplay('false') }
             ],
             postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.findRoles(bbctx.guild, 'unknown role')).thenResolve([]);
+                ctx.roleService.setup(m => m.querySingle(bbctx, 'unknown role', argument.isDeepEqual({ noLookup: true }))).thenResolve(undefined);
             }
         }
     ]

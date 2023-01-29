@@ -1,20 +1,28 @@
 import { Emote } from '@blargbot/discord-emote';
-import * as Eris from 'eris';
+import { hasFlag } from '@blargbot/guards';
+import * as Discord from 'discord-api-types/v10';
 
 import type { SubtagArgumentArray } from '../../arguments/index.js';
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError, UserNotFoundError } from '../../errors/index.js';
+import type { ChannelService } from '../../services/ChannelService.js';
+import type { MessageService } from '../../services/MessageService.js';
+import type { UserService } from '../../services/UserService.js';
 import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.reactionRemove;
 
-@Subtag.id('reactionRemove', 'reactRemove', 'removeReact')
-@Subtag.ctorArgs()
+@Subtag.names('reactionRemove', 'reactRemove', 'removeReact')
+@Subtag.ctorArgs(Subtag.service('user'), Subtag.service('channel'), Subtag.service('message'))
 export class ReactionRemoveSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #users: UserService;
+    readonly #channels: ChannelService;
+    readonly #messages: MessageService;
+
+    public constructor(users: UserService, channels: ChannelService, messages: MessageService) {
         super({
             category: SubtagType.MESSAGE,
             definition: [
@@ -37,6 +45,10 @@ export class ReactionRemoveSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#users = users;
+        this.#channels = channels;
+        this.#messages = messages;
     }
 
     public async removeReactions(
@@ -46,52 +58,35 @@ export class ReactionRemoveSubtag extends CompiledSubtag {
         userStr: string,
         reactions: Emote[] | undefined
     ): Promise<void> {
-        const channel = await context.queryChannel(channelStr, { noErrors: true, noLookup: true });
+        const channel = await this.#channels.querySingle(context, channelStr, { noErrors: true, noLookup: true });
         if (channel === undefined)
             throw new ChannelNotFoundError(channelStr);
 
-        const permissions = channel.permissionsOf(context.discord.user.id);
-        if (!permissions.has('manageMessages'))
+        const permissions = context.getPermission(context.bot, channel);
+        if (!hasFlag(permissions, Discord.PermissionFlagsBits.ManageMessages))
             throw new BBTagRuntimeError('I need to be able to Manage Messages to remove reactions');
 
-        const message = await context.getMessage(channel, messageId, true);
+        const message = await this.#messages.get(context, channel.id, messageId);
         if (message === undefined)
             throw new MessageNotFoundError(channel.id, messageId);
 
-        if (!context.ownsMessage(message.id) && !await context.isStaff)
+        if (!context.ownsMessage(message.id) && !context.isStaff)
             throw new BBTagRuntimeError('Author must be staff to modify unrelated messages');
 
-        const user = await context.queryUser(userStr, { noErrors: true, noLookup: true });
+        const user = await this.#users.querySingle(context, userStr, { noErrors: true, noLookup: true });
         if (user === undefined)
             throw new UserNotFoundError(userStr);
 
         if (reactions?.length === 0)
             throw new BBTagRuntimeError('Invalid Emojis');
-        reactions ??= Object.keys(message.reactions).map(Emote.parse);
+        reactions ??= message.reactions?.map(r => Emote.create(r.emoji)) ?? [];
 
-        const errored = [];
-        for (const reaction of reactions) {
-            try {
-                await context.limit.check(context, 'reactremove:requests');
-                await message.removeReaction(reaction.toApi(), user.id);
-            } catch (err: unknown) {
-                if (!(err instanceof Eris.DiscordRESTError))
-                    throw err;
+        const result = await this.#messages.removeReactions(context, channel.id, message.id, user.id, reactions);
+        if (result === 'noPerms')
+            throw new BBTagRuntimeError('I need to be able to Manage Messages to remove reactions');
 
-                switch (err.code) {
-                    case Eris.ApiError.UNKNOWN_EMOJI:
-                        errored.push(reaction);
-                        break;
-                    case Eris.ApiError.MISSING_PERMISSIONS:
-                        throw new BBTagRuntimeError('I need to be able to Manage Messages to remove reactions');
-                    default:
-                        throw err;
-                }
-            }
-        }
-
-        if (errored.length > 0)
-            throw new BBTagRuntimeError(`Unknown Emoji: ${errored.join(', ')}`);
+        if (result.failed.length > 0)
+            throw new BBTagRuntimeError(`Unknown Emoji: ${result.failed.join(', ')}`);
     }
 
     async #bindArguments(context: BBTagContext, rawArgs: SubtagArgumentArray): Promise<[channel: string, message: string, user: string, reactions: Emote[] | undefined]> {
@@ -99,7 +94,7 @@ export class ReactionRemoveSubtag extends CompiledSubtag {
         if (args.length === 1)
             return [context.channel.id, args[0].value, context.user.id, undefined];
 
-        const channel = await context.queryChannel(args[0].value, { noLookup: true, noErrors: true });
+        const channel = await this.#channels.querySingle(context, args[0].value, { noLookup: true, noErrors: true });
         const channelId = channel?.id ?? context.channel.id;
         if (channel !== undefined)
             args.shift();
@@ -110,7 +105,7 @@ export class ReactionRemoveSubtag extends CompiledSubtag {
             // {reactremove;<channel>;<messageId>}
             return [channelId, message, context.user.id, undefined];
 
-        const user = await context.queryUser(args[0].value, { noLookup: true, noErrors: true });
+        const user = await this.#users.querySingle(context, args[0].value, { noLookup: true, noErrors: true });
         const userId = user?.id ?? context.user.id;
         if (user !== undefined)
             args.shift();

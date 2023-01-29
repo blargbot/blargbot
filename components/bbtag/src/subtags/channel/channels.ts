@@ -1,18 +1,19 @@
-import { guard } from '@blargbot/core/utils/index.js';
-
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { ChannelNotFoundError } from '../../errors/index.js';
+import type { ChannelService } from '../../services/ChannelService.js';
 import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.channels;
 
-@Subtag.id('channels')
-@Subtag.ctorArgs()
+@Subtag.names('channels')
+@Subtag.ctorArgs(Subtag.service('channel'))
 export class ChannelsSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #channels: ChannelService;
+
+    public constructor(channels: ChannelService) {
         super({
             category: SubtagType.CHANNEL,
             definition: [
@@ -34,21 +35,24 @@ export class ChannelsSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#channels = channels;
     }
 
-    public getChannels(context: BBTagContext): string[] {
-        return context.guild.channels.map(c => c.id);
+    public async getChannels(context: BBTagContext): Promise<string[]> {
+        const channels = await this.#channels.getAll(context);
+        return channels.map(c => c.id);
     }
 
     public async getChannelsInCategory(context: BBTagContext, channelStr: string, quiet: boolean): Promise<string[]> {
         quiet ||= context.scopes.local.quiet ?? false;
-        const channel = await context.queryChannel(channelStr, { noLookup: quiet });
+        const channel = await this.#channels.querySingle(context, channelStr, { noLookup: quiet });
         if (channel === undefined) {
             throw new ChannelNotFoundError(channelStr)
                 .withDisplay(quiet ? '' : undefined);
         }
-        if (!guard.isCategoryChannel(channel))
-            return [];
-        return channel.channels.map(c => c.id);
+
+        const channels = await this.#channels.getAll(context);
+        return channels.filter(c => c.parent_id === channel.id).map(c => c.id);
     }
 }

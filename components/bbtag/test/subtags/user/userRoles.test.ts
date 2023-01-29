@@ -17,19 +17,25 @@ runSubtagTests({
                 {
                     expected: '[]',
                     setup(member) {
-                        member.roles = [];
+                        if (member.member === undefined)
+                            throw new Error('User isnt member of guild');
+                        member.member.roles = [];
                     }
                 },
                 {
                     expected: '["098765434512212678"]',
                     setup(member) {
-                        member.roles = ['098765434512212678'];
+                        if (member.member === undefined)
+                            throw new Error('User isnt member of guild');
+                        member.member.roles = ['098765434512212678'];
                     }
                 },
                 {
                     expected: '["098765434512212678","1234567890987654"]',
                     setup(member) {
-                        member.roles = ['098765434512212678', '1234567890987654'];
+                        if (member.member === undefined)
+                            throw new Error('User isnt member of guild');
+                        member.member.roles = ['098765434512212678', '1234567890987654'];
                     }
                 }
             ]

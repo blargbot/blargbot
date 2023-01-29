@@ -1,8 +1,8 @@
-import { createHmac } from 'node:crypto';
+import { createHmac, randomUUID } from 'node:crypto';
 
 import type { Cluster } from '@blargbot/cluster';
 import type { CommandResult, CustomCommandShrinkwrap, GuildCommandContext, GuildShrinkwrap, ICommand, SignedGuildShrinkwrap } from '@blargbot/cluster/types.js';
-import { codeBlock, CommandType, guard, snowflake } from '@blargbot/cluster/utils/index.js';
+import { CommandType, guard } from '@blargbot/cluster/utils/index.js';
 import type { Configuration } from '@blargbot/config';
 import type { NamedGuildCommandTag, NamedGuildSourceCommandTag } from '@blargbot/domain/models/index.js';
 import type { FlagDefinition } from '@blargbot/flags';
@@ -170,7 +170,7 @@ export class CustomCommandCommand extends GuildCommand {
         debug: boolean
     ): Promise<CommandResult> {
         const result = await context.bbtag.execute(content, {
-            message: context.message,
+            message: context.message as never,
             inputRaw: input,
             isCC: true,
             limit: 'customCommandLimit',
@@ -207,7 +207,7 @@ export class CustomCommandCommand extends GuildCommand {
             return cmd.errors.isAlias({ commandName, tagName: match.alias });
 
         const result = await context.bbtag.execute(match.content, {
-            message: context.message,
+            message: context.message as never,
             inputRaw: input ?? '',
             isCC: true,
             limit: 'customCommandLimit',
@@ -323,7 +323,7 @@ export class CustomCommandCommand extends GuildCommand {
                     ].filter(x => x.commands.length > 0)
                         .map(x => ({
                             name: x.name,
-                            value: util.literal(codeBlock(x.commands.join(', '), 'ini')),
+                            value: util.literal(`\`\`\`ini\n${x.commands.join(', ')}\`\`\``),
                             inline: true
                         }))
                 }
@@ -473,7 +473,7 @@ export class CustomCommandCommand extends GuildCommand {
 
         const author = await context.database.users.get(tag.author);
         await context.database.guilds.setCommand(context.channel.guild.id, commandName, {
-            id: snowflake.create().toString(),
+            id: randomUUID(),
             author: tag.author,
             alias: tagName,
             authorizer: context.author.id
@@ -568,7 +568,7 @@ export class CustomCommandCommand extends GuildCommand {
             steps.push(cmd.install.confirm.import({ name: commandName }));
             importSteps.push(async () => {
                 await context.cluster.database.guilds.setCommand(guildId, commandName, {
-                    id: snowflake.create().toString(),
+                    id: randomUUID(),
                     ...command,
                     author: context.author.id
                 });
@@ -614,7 +614,7 @@ export class CustomCommandCommand extends GuildCommand {
             return cmd.errors.invalidBBTag({ errors });
 
         const command = {
-            id: id ?? snowflake.create().toString(),
+            id: id ?? randomUUID(),
             content: content,
             author: context.author.id,
             authorizer: context.author.id,

@@ -7,7 +7,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.everyoneMention;
 
-@Subtag.id('everyoneMention', 'everyone')
+@Subtag.names('everyoneMention', 'everyone')
 @Subtag.ctorArgs(Subtag.converter())
 export class EveryoneMentionSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;

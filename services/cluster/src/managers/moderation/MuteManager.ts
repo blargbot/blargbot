@@ -1,5 +1,6 @@
 import type { EnsureMutedRoleResult, MuteResult, UnmuteResult } from '@blargbot/cluster/types.js';
-import { discord, guard } from '@blargbot/cluster/utils/index.js';
+import { guard } from '@blargbot/cluster/utils/index.js';
+import { findRolePosition } from '@blargbot/discord-util';
 import type { UnmuteEventOptions } from '@blargbot/domain/models/index.js';
 import type { IFormattable } from '@blargbot/formatting';
 import { format } from '@blargbot/formatting';
@@ -28,7 +29,7 @@ export class MuteManager extends ModerationManagerBase {
         if (self?.permissions.has('manageRoles') !== true)
             return 'noPerms';
 
-        if (role.position >= discord.getMemberPosition(self))
+        if (role.position >= findRolePosition(self.roles, self.guild.roles.values()))
             return 'roleTooHigh';
 
         const formatter = await this.manager.cluster.util.getFormatter(member.guild);
@@ -57,7 +58,7 @@ export class MuteManager extends ModerationManagerBase {
         if (self?.permissions.has('manageRoles') !== true)
             return 'noPerms';
 
-        if (role.position >= discord.getMemberPosition(self))
+        if (role.position >= findRolePosition(self.roles, self.guild.roles.values()))
             return 'roleTooHigh';
 
         const formatter = await this.manager.cluster.util.getFormatter(member.guild);

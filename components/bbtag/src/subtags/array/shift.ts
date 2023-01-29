@@ -8,7 +8,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.shift;
 
-@Subtag.id('shift')
+@Subtag.names('shift')
 @Subtag.ctorArgs(Subtag.arrayTools())
 export class ShiftSubtag extends CompiledSubtag {
     readonly #arrayTools: BBTagArrayTools;

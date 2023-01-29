@@ -8,7 +8,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.params;
 
-@Subtag.id('params')
+@Subtag.names('params')
 @Subtag.ctorArgs(Subtag.converter())
 export class ParamsSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;

@@ -1,20 +1,11 @@
 import * as Eris from 'eris';
 
-type ChannelType = typeof Eris.Constants['ChannelTypes'];
-const isThreadableMap: Record<ChannelType[keyof ChannelType], boolean> = {
-    [Eris.Constants.ChannelTypes.DM]: false,
-    [Eris.Constants.ChannelTypes.GROUP_DM]: false,
-    [Eris.Constants.ChannelTypes.GUILD_CATEGORY]: false,
-    [Eris.Constants.ChannelTypes.GUILD_NEWS]: true,
-    [Eris.Constants.ChannelTypes.GUILD_NEWS_THREAD]: false,
-    [Eris.Constants.ChannelTypes.GUILD_PRIVATE_THREAD]: false,
-    [Eris.Constants.ChannelTypes.GUILD_PUBLIC_THREAD]: false,
-    [Eris.Constants.ChannelTypes.GUILD_STAGE_VOICE]: false,
-    [Eris.Constants.ChannelTypes.GUILD_STORE]: false,
-    [Eris.Constants.ChannelTypes.GUILD_TEXT]: true,
-    [Eris.Constants.ChannelTypes.GUILD_VOICE]: false
-};
+type ThreadableType = Eris.KnownThreadableChannel['type'];
+const threadableTypes = new Set(Object.keys<`${ThreadableType}`>({
+    [Eris.Constants.ChannelTypes.GUILD_NEWS]: null,
+    [Eris.Constants.ChannelTypes.GUILD_TEXT]: null
+}).map(v => Number(v) as ThreadableType));
 
-export function isThreadableChannel<T extends Eris.KnownChannel>(channel: T): channel is T & Eris.KnownThreadableChannel {
-    return isThreadableMap[channel.type];
+export function isThreadableChannel<T extends { type: number; }>(channel: T): channel is Extract<T, { type: ThreadableType; }> {
+    return threadableTypes.has(channel.type);
 }

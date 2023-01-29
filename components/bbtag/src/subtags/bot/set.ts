@@ -8,7 +8,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.set;
 
-@Subtag.id('set')
+@Subtag.names('set')
 @Subtag.ctorArgs(Subtag.arrayTools())
 export class SetSubtag extends CompiledSubtag {
     readonly #arrayTools: BBTagArrayTools;

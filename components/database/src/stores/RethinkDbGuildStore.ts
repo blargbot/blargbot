@@ -1,4 +1,5 @@
-import { snowflake } from '@blargbot/core/utils/index.js';
+import { randomUUID } from 'node:crypto';
+
 import type { ChannelSettings, CommandPermissions, GuildAnnounceOptions, GuildAutoresponses, GuildCensor, GuildCensorExceptions, GuildCensors, GuildCommandTag, GuildDetails, GuildFilteredAutoresponse, GuildModlogEntry, GuildRolemeEntry, GuildTriggerTag, GuildVoteban, GuildVotebans, NamedGuildCommandTag, StoredGuild, StoredGuildEventLogConfig, StoredGuildEventLogType, StoredGuildSettings } from '@blargbot/domain/models/index.js';
 import type { GuildStore } from '@blargbot/domain/stores/index.js';
 import { hasValue } from '@blargbot/guards';
@@ -836,7 +837,7 @@ const migrations: GuildStoreMigration[] = [
                 const ccommands: Record<string, { id: string; }> = {};
                 for (const [name, ccommand] of Object.entries(guild.ccommands)) {
                     if (ccommand?.id === undefined) {
-                        ccommands[name] = { id: snowflake.create().toString() };
+                        ccommands[name] = { id: randomUUID() };
                     }
                 }
                 await table.update(guild.guildid, { ccommands });

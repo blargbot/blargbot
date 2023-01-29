@@ -1,6 +1,6 @@
 import { Subtag } from '@blargbot/bbtag';
 import { SetSubtag } from '@blargbot/bbtag/subtags/bot/set.js';
-import { snowflake } from '@blargbot/core/utils/index.js';
+import { snowflake } from '@blargbot/discord-util';
 import type { TagVariableScope } from '@blargbot/domain/models/index.js';
 import { TagVariableType } from '@blargbot/domain/models/index.js';
 import { argument } from '@blargbot/test-util/mock.js';
@@ -9,6 +9,7 @@ import chai from 'chai';
 import type { SubtagTestCase } from '../SubtagTestSuite.js';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
+const createSnowflake = snowflake.nextFactory();
 runSubtagTests({
     subtag: Subtag.getDescriptor(SetSubtag),
     argCountBounds: { min: 1, max: Infinity },
@@ -100,7 +101,7 @@ function* createTestCases(setups: Array<{ varName: string; prefix: string; db?: 
                     if (db !== undefined) {
                         ctx.tagVariablesTable.setup(m => m.upsert(argument.isDeepEqual({ [varName]: value }), argument.isDeepEqual(db)))
                             .thenResolve(undefined);
-                        ctx.tagVariables.set({ scope: db, name: varName }, snowflake.create().toString());
+                        ctx.tagVariables.set({ scope: db, name: varName }, createSnowflake());
                     }
                     await setup?.call(this, ctx, ...args);
                 },

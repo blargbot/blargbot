@@ -8,7 +8,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.switch;
 
-@Subtag.id('switch')
+@Subtag.names('switch')
 @Subtag.ctorArgs(Subtag.arrayTools(), Subtag.converter())
 export class SwitchSubtag extends CompiledSubtag {
     readonly #arrayTools: BBTagArrayTools;

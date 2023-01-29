@@ -1,12 +1,11 @@
-import type * as Eris from 'eris';
-
 import { BBTagRuntimeError, TooManyLoopsError } from '../errors/index.js';
 import templates from '../text.js';
+import type { Entities } from '../types.js';
 import { GlobalLimit } from './GlobalLimit.js';
 import { staffOnlyRule, UseCountRule } from './rules/index.js';
 
 export class CustomCommandLimit extends GlobalLimit {
-    public constructor(guild?: Eris.Guild) {
+    public constructor(guild?: Entities.Guild) {
         super('customCommandLimit');
 
         this.addRules('ban', staffOnlyRule)
@@ -53,9 +52,9 @@ export class CustomCommandLimit extends GlobalLimit {
                 'repeat:loops',
                 'while:loops'
             ], new UseCountRule(10000, templates.limits.rules.useCount.loops, () => new TooManyLoopsError(10000)))
-            .addRules('foreach:loops', new UseCountRule((guild?.memberCount ?? 0) + 100000, templates.limits.rules.useCount.loops, () => new TooManyLoopsError(1000000)))
-            .addRules('map:loops', new UseCountRule((guild?.memberCount ?? 0) + 100000, templates.limits.rules.useCount.loops, () => new TooManyLoopsError(1000000)))
-            .addRules('filter:loops', new UseCountRule((guild?.memberCount ?? 0) + 100000, templates.limits.rules.useCount.loops, () => new BBTagRuntimeError('Max safeloops reached')))
+            .addRules('foreach:loops', new UseCountRule((guild?.approximate_member_count ?? 0) + 100000, templates.limits.rules.useCount.loops, () => new TooManyLoopsError(1000000)))
+            .addRules('map:loops', new UseCountRule((guild?.approximate_member_count ?? 0) + 100000, templates.limits.rules.useCount.loops, () => new TooManyLoopsError(1000000)))
+            .addRules('filter:loops', new UseCountRule((guild?.approximate_member_count ?? 0) + 100000, templates.limits.rules.useCount.loops, () => new BBTagRuntimeError('Max safeloops reached')))
             .addRules('dump', new UseCountRule(5));
     }
 }

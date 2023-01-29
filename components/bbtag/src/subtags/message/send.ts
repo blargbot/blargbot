@@ -1,28 +1,28 @@
-import type { MalformedEmbed } from '@blargbot/core/types.js';
-import { guard } from '@blargbot/core/utils/index.js';
 import type { GuildStore } from '@blargbot/domain/stores/GuildStore.js';
-import type { Logger } from '@blargbot/logger';
-import * as Eris from 'eris';
+import * as Discord from 'discord-api-types/v10';
 
 import type { BBTagContext } from '../../BBTagContext.js';
-import type { BBTagUtilities, BBTagValueConverter } from '../../BBTagUtilities.js';
+import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, ChannelNotFoundError } from '../../errors/index.js';
+import type { ChannelService } from '../../services/ChannelService.js';
+import type { MessageService } from '../../services/MessageService.js';
 import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
+import type { Entities } from '../../types.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.send;
 
-@Subtag.id('send')
-@Subtag.ctorArgs(Subtag.util(), Subtag.converter(), Subtag.store('guilds'), Subtag.logger())
+@Subtag.names('send')
+@Subtag.ctorArgs(Subtag.converter(), Subtag.store('guilds'), Subtag.service('channel'), Subtag.service('message'))
 export class SendSubtag extends CompiledSubtag {
-    readonly #util: BBTagUtilities;
     readonly #converter: BBTagValueConverter;
     readonly #guilds: GuildStore;
-    readonly #logger: Logger;
+    readonly #channels: ChannelService;
+    readonly #messages: MessageService;
 
-    public constructor(util: BBTagUtilities, converter: BBTagValueConverter, guilds: GuildStore, logger: Logger) {
+    public constructor(converter: BBTagValueConverter, guilds: GuildStore, channels: ChannelService, messages: MessageService) {
         super({
             category: SubtagType.MESSAGE,
             description: tag.description,
@@ -33,7 +33,7 @@ export class SendSubtag extends CompiledSubtag {
                     exampleCode: tag.full.exampleCode,
                     exampleOut: tag.full.exampleOut,
                     returns: 'id',
-                    execute: (ctx, [channel, message, embed, fileContent, fileName]) => this.send(ctx, channel.value, message.value, this.#converter.embed(embed.value), { file: fileContent.value, name: fileName.value })
+                    execute: (ctx, [channel, message, embed, fileContent, fileName]) => this.send(ctx, channel.value, message.value, this.#converter.embed(embed.value, { allowMalformed: true }), { file: fileContent.value, name: fileName.value })
                 },
                 {
                     parameters: ['channel', 'message', 'embed'],
@@ -41,7 +41,7 @@ export class SendSubtag extends CompiledSubtag {
                     exampleCode: tag.textAndEmbed.exampleCode,
                     exampleOut: tag.textAndEmbed.exampleOut,
                     returns: 'id',
-                    execute: (ctx, [channel, message, embed]) => this.send(ctx, channel.value, message.value, this.#converter.embed(embed.value))
+                    execute: (ctx, [channel, message, embed]) => this.send(ctx, channel.value, message.value, this.#converter.embed(embed.value, { allowMalformed: true }))
                 },
                 {
                     parameters: ['channel', 'content'],
@@ -56,55 +56,52 @@ export class SendSubtag extends CompiledSubtag {
 
         this.#converter = converter;
         this.#guilds = guilds;
-        this.#logger = logger;
-        this.#util = util;
+        this.#channels = channels;
+        this.#messages = messages;
     }
 
-    public async send(context: BBTagContext, channelId: string, message?: string, embed?: Eris.EmbedOptions[] | MalformedEmbed[], file?: Eris.FileContent): Promise<string> {
-        const channel = await context.queryChannel(channelId, { noLookup: true });
-        if (channel === undefined || !guard.isTextableChannel(channel))
+    public async send(context: BBTagContext, channelId: string, message?: string, embed?: Entities.Message['embeds'], file?: Entities.FileContent): Promise<string> {
+        const channel = await this.#channels.querySingle(context, channelId, { noLookup: true });
+        if (channel === undefined)
             throw new ChannelNotFoundError(channelId);
 
-        if (typeof file?.file === 'string' && file.file.startsWith('buffer:'))
-            file.file = Buffer.from(file.file.slice(7), 'base64');
+        if (file !== undefined) {
+            if (file.file.startsWith('buffer:'))
+                file.file = file.file.slice(7);
+            else
+                file.file = Buffer.from(file.file).toString('base64');
+        }
 
         const disableEveryone = !context.isCC
-            || (await this.#guilds.getSetting(channel.guild.id, 'disableeveryone')
+            || (await this.#guilds.getSetting(context.guild.id, 'disableeveryone')
                 ?? !context.data.allowedMentions.everybody);
 
-        try {
-            const sent = await this.#util.send(channel, {
-                content: message,
-                embeds: embed !== undefined ? embed : undefined,
-                nsfw: context.data.nsfw,
-                allowedMentions: {
-                    everyone: !disableEveryone,
-                    roles: context.isCC ? context.data.allowedMentions.roles : undefined,
-                    users: context.isCC ? context.data.allowedMentions.users : undefined
-                },
-                file: file !== undefined ? [file] : undefined
-            });
+        const result = await this.#messages.create(context, channel.id, {
+            content: message,
+            embeds: embed !== undefined ? embed : undefined,
+            allowed_mentions: {
+                parse: disableEveryone ? [] : [Discord.AllowedMentionsTypes.Everyone],
+                roles: context.isCC ? context.data.allowedMentions.roles : undefined,
+                users: context.isCC ? context.data.allowedMentions.users : undefined
+            },
+            files: file !== undefined ? [file] : undefined
+        });
 
-            if (sent === undefined)
-                throw new BBTagRuntimeError('Send unsuccessful');
+        if (result === undefined)
+            throw new BBTagRuntimeError('Send unsuccessful');
 
-            context.data.ownedMsgs.push(sent.id);
-            return sent.id;
-        } catch (err: unknown) {
-            if (err instanceof BBTagRuntimeError)
-                throw err;
-            if (err instanceof Eris.DiscordRESTError)
-                throw new BBTagRuntimeError(`Failed to send: ${err.message}`);
-            if (!(err instanceof Error && err.message === 'No content'))
-                this.#logger.error('Failed to send!', err);
-            throw new BBTagRuntimeError('Failed to send: UNKNOWN');
+        if (!('error' in result)) {
+            context.data.ownedMsgs.push(result.id);
+            return result.id;
         }
+
+        throw new BBTagRuntimeError(`Failed to send: ${result.error}`);
 
     }
 
-    #resolveContent(content: string): [string | undefined, Eris.EmbedOptions[] | undefined] {
+    #resolveContent(content: string): [string | undefined, Entities.Message['embeds'] | undefined] {
         const embeds = this.#converter.embed(content);
-        if (embeds === undefined || 'malformed' in embeds[0])
+        if (embeds === undefined)
             return [content, undefined];
         return [undefined, embeds];
     }

@@ -13,7 +13,7 @@ runSubtagTests({
             code: '{userboostdate}',
             expected: '2021-01-01T00:00:00+00:00',
             setup(ctx) {
-                ctx.members.command.premium_since = '2021-01-01T00:00:00+0000';
+                ctx.users.command.member.premium_since = '2021-01-01T00:00:00+0000';
             }
         },
         ...createGetUserPropTestCases({
@@ -25,20 +25,26 @@ runSubtagTests({
                 {
                     expected: '2021-01-01T00:00:00+00:00',
                     setup(user) {
-                        user.premium_since = '2021-01-01T00:00:00+0000';
+                        if (user.member === undefined)
+                            throw new Error('User isnt member of guild');
+                        user.member.premium_since = '2021-01-01T00:00:00+0000';
                     }
                 },
                 {
                     expected: '`User not boosting`',
                     setup(user) {
-                        user.premium_since = null;
+                        if (user.member === undefined)
+                            throw new Error('User isnt member of guild');
+                        user.member.premium_since = null;
                     },
                     error: new BBTagRuntimeError('User not boosting')
                 },
                 {
                     expected: '`User not boosting`',
                     setup(user) {
-                        user.premium_since = undefined;
+                        if (user.member === undefined)
+                            throw new Error('User isnt member of guild');
+                        user.member.premium_since = undefined;
                     },
                     error: new BBTagRuntimeError('User not boosting')
                 }
@@ -53,20 +59,26 @@ runSubtagTests({
                 {
                     expected: '01/01/2021',
                     setup(user) {
-                        user.premium_since = '2021-01-01T00:00:00+0000';
+                        if (user.member === undefined)
+                            throw new Error('User isnt member of guild');
+                        user.member.premium_since = '2021-01-01T00:00:00+0000';
                     }
                 },
                 {
                     expected: '`User not boosting`',
                     setup(user) {
-                        user.premium_since = null;
+                        if (user.member === undefined)
+                            throw new Error('User isnt member of guild');
+                        user.member.premium_since = null;
                     },
                     error: new BBTagRuntimeError('User not boosting')
                 },
                 {
                     expected: '`User not boosting`',
                     setup(user) {
-                        user.premium_since = undefined;
+                        if (user.member === undefined)
+                            throw new Error('User isnt member of guild');
+                        user.member.premium_since = undefined;
                     },
                     error: new BBTagRuntimeError('User not boosting')
                 }

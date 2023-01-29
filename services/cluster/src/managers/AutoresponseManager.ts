@@ -111,7 +111,7 @@ export class AutoresponseManager {
         this.#logAutoresponses(msg.channel.guild.id, id);
 
         const result = await this.#cluster.bbtag.execute(tag.content, {
-            message: msg,
+            message: msg as never,
             limit: id === 'everything' ? 'everythingAutoResponseLimit' : 'generalAutoResponseLimit',
             authorId: tag.author ?? undefined,
             authorizerId: tag.authorizer ?? undefined,

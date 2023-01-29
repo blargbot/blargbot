@@ -3,19 +3,21 @@ import type { FormatEmbedAuthor, SendContent, SendContext } from '@blargbot/core
 import { CrowdinTranslationSource } from '@blargbot/crowdin';
 import type { Database } from '@blargbot/database';
 import type { Emote } from '@blargbot/discord-emote';
+import type { Snowflake } from '@blargbot/discord-util';
+import { checkEmbedSize, checkMessageSize, markup, snowflake } from '@blargbot/discord-util';
 import type { DiscordChannelTag, DiscordRoleTag, DiscordTagSet, DiscordUserTag, StoredUser } from '@blargbot/domain/models/index.js';
 import type { IFormattable, IFormatter } from '@blargbot/formatting';
 import { format, Formatter, TranslationMiddleware, util } from '@blargbot/formatting';
 import { hasProperty, hasValue } from '@blargbot/guards';
 import type { Logger } from '@blargbot/logger';
-import type { Snowflake } from 'catflake';
+import type * as Discord from 'discord-api-types/v10';
 import * as Eris from 'eris';
 import moment from 'moment-timezone';
 
 import type { BaseClient } from './BaseClient.js';
 import { metrics } from './Metrics.js';
 import templates from './text.js';
-import { guard, humanize, parse, snowflake } from './utils/index.js';
+import { guard, humanize } from './utils/index.js';
 
 export class BaseUtilities {
     readonly #translator: TranslationMiddleware;
@@ -47,7 +49,7 @@ export class BaseUtilities {
             const channel = await this.getChannel(context);
             if (channel === undefined)
                 throw new Error('Channel not found');
-            if (guard.isTextableChannel(channel))
+            if (guard.isTextableChannel(channel) && !guard.isVoiceChannel(channel))
                 return channel;
             throw new Error('Channel is not textable');
         }
@@ -58,7 +60,7 @@ export class BaseUtilities {
     }
 
     public async getFormatter(target?: Eris.Channel | Eris.Guild | string): Promise<IFormatter> {
-        const guildId = typeof target === 'object' ? target instanceof Eris.Guild ? target.id : guard.isGuildChannel(target) ? target.guild.id : undefined : target;
+        const guildId = typeof target === 'object' ? target instanceof Eris.Guild ? target.id : target instanceof Eris.GuildChannel ? target.guild.id : undefined : target;
         const localeStr = guildId === undefined ? undefined : await this.database.guilds.getSetting(guildId, 'language');
         return new Formatter(
             new Intl.Locale(localeStr ?? 'en'),
@@ -104,7 +106,7 @@ export class BaseUtilities {
         return target; // never
     }
 
-    public async reply<T extends Eris.TextableChannel>(message: Eris.Message<T>, payload: IFormattable<SendContent<string>>, author?: Eris.User): Promise<Eris.Message<T> | undefined> {
+    public async reply<T extends Eris.Textable & Eris.Channel>(message: Eris.Message<T>, payload: IFormattable<SendContent<string>>, author?: Eris.User): Promise<Eris.Message<T> | undefined> {
         return await this.send(message.channel, {
             [format](formatter) {
                 return {
@@ -119,7 +121,7 @@ export class BaseUtilities {
         }, author);
     }
 
-    public async send<T extends Eris.TextableChannel>(context: T, payload: IFormattable<SendContent<string>>, author?: Eris.User): Promise<Eris.Message<T> | undefined>;
+    public async send<T extends Eris.Textable & Eris.Channel>(context: T, payload: IFormattable<SendContent<string>>, author?: Eris.User): Promise<Eris.Message<T> | undefined>;
     public async send(context: SendContext, payload: IFormattable<SendContent<string>>, author?: Eris.User): Promise<Eris.Message | undefined>;
     public async send(context: SendContext, payload: IFormattable<SendContent<string>>, author?: Eris.User): Promise<Eris.Message | undefined> {
         metrics.sendCounter.inc();
@@ -148,13 +150,13 @@ export class BaseUtilities {
             throw new Error('No content');
         }
 
-        if (!guard.checkEmbedSize(content.embeds)) {
+        if (!checkEmbedSize(content.embeds)) {
             const id = await this.generateDumpPage(content, channel);
             const output = this.websiteLink(`/dumps/${id}`);
             content.content = `Oops! I tried to send a message that was too long. If you think this is a bug, please report it!\n\nTo see what I would have said, please visit ${output}`;
             if (content.embeds !== undefined)
                 delete content.embeds;
-        } else if (content.content !== undefined && !guard.checkMessageSize(content.content)) {
+        } else if (content.content !== undefined && !checkMessageSize(content.content)) {
             files.unshift({
                 file: content.content,
                 name: 'message.txt'
@@ -230,37 +232,100 @@ export class BaseUtilities {
         return results;
     }
 
-    public async resolveTags(context: Eris.ChannelInteraction | Eris.UserChannelInteraction | Eris.KnownChannel, message: string): Promise<string> {
-        const regex = /<[^<>\s]+>/g;
-        const promiseMap: { [tag: string]: Promise<string>; } = {};
-        let match;
-        while ((match = regex.exec(message)) !== null) {
-            promiseMap[match[0]] ??= this.resolveTag('channel' in context ? context.channel : context, match[0]);
-        }
-        const replacements = Object.fromEntries(await Promise.all(Object.entries(promiseMap).map(async e => [e[0], await e[1]] as const)));
-        return message.replace(regex, match => replacements[match]);
+    public async resolveTags(message: string, context?: string | Eris.KnownChannel): Promise<string> {
+        const guildId = typeof context === 'object' ? guard.isGuildChannel(context) ? context.guild.id : undefined : context;
+        const tags = await this.discoverMessageEntities({ guildId, content: message });
+
+        return message.replaceAll(markup.user.pattern.anywhere, v => {
+            const user = tags.parsedUsers[markup.user.parse(v)];
+            if (user.username === undefined)
+                return '@UNKNOWN USER';
+            return `@${user.username}#${user.discriminator}`;
+        }).replaceAll(markup.user.nickname.pattern.anywhere, v => {
+            const user = tags.parsedUsers[markup.user.nickname.parse(v)];
+            if (user.username === undefined)
+                return '@UNKNOWN USER';
+            return `@${user.username}#${user.discriminator}`;
+        }).replaceAll(markup.role.pattern.anywhere, v => {
+            const role = tags.parsedRoles[markup.role.parse(v)];
+            if (role.name === undefined)
+                return '@UNKNOWN ROLE';
+            return `@${role.name}`;
+        }).replaceAll(markup.channel.pattern.anywhere, v => {
+            const channel = tags.parsedChannels[markup.channel.parse(v)];
+            if (channel.name === undefined)
+                return '#UNKNOWN CHANNEL';
+            return `#${channel.name}`;
+        }).replaceAll(markup.customEmoji.pattern.anywhere, v => {
+            const emoji = markup.customEmoji.parse(v);
+            return emoji.name;
+        }).replaceAll(markup.timestamp.pattern.anywhere, v => {
+            const timestamp = markup.timestamp.parse(v);
+            switch (timestamp.style) {
+                case 't': return moment(timestamp.timeMs).format('HH:mm');
+                case 'T': return moment(timestamp.timeMs).format('HH:mm:ss');
+                case 'd': return moment(timestamp.timeMs).format('DD/MM/yyyy');
+                case 'D': return moment(timestamp.timeMs).format('DD MMMM yyyy');
+                case 'F': return moment(timestamp.timeMs).format('dddd, DD MMMM yyyy HH:mm');
+                case undefined:
+                case 'f': return moment(timestamp.timeMs).format('DD MMMM yyyy HH:mm');
+                case 'R': return moment.duration(moment(timestamp.timeMs).diff(moment())).humanize(true);
+            }
+        });
     }
 
-    public async loadDiscordTagData(content: string, guildId: string, cache: DiscordTagSet): Promise<void> {
-        for (const match of content.matchAll(/<[^<>\s]+>/g)) {
-            let id = parse.entityId(match[0], '@&');
-            if (id !== undefined) {
-                cache.parsedRoles[id] ??= await this.#getDiscordRoleTag(guildId, id);
-                continue;
+    public async discoverMessageEntities(message: { guildId?: string; content?: string; embeds?: Discord.APIEmbed[]; }): Promise<DiscordTagSet> {
+        return await this.discoverMessagesEntities([message]);
+    }
+
+    public async discoverMessagesEntities(messages: Iterable<{ guildId?: string; content?: string; embeds?: Discord.APIEmbed[]; }>): Promise<DiscordTagSet> {
+        const parsedChannels = {} as Record<string, Promise<DiscordChannelTag>>;
+        const parsedRoles = {} as Record<string, Promise<DiscordUserTag>>;
+        const parsedUsers = {} as Record<string, Promise<DiscordRoleTag>>;
+
+        for (const { guildId, ...message } of messages) {
+            for (const content of this.#getMessageMarkdownContent(message)) {
+                for (const roleId of markup.user.findAll(content))
+                    parsedRoles[roleId] ??= this.#getDiscordRoleTag(roleId, guildId);
+                for (const userId of markup.user.findAll(content))
+                    parsedUsers[userId] ??= this.#getDiscordUserTag(userId);
+                for (const channelId of markup.channel.findAll(content))
+                    parsedChannels[channelId] ??= this.#getDiscordChannelTag(channelId);
             }
-            id = parse.entityId(match[0], '@!') ?? parse.entityId(match[0], '@');
-            if (id !== undefined) {
-                cache.parsedUsers[id] ??= await this.#getDiscordUserTag(id);
-                continue;
+        }
+
+        const parsedChannelsResults = Promise.all(Object.entries(parsedChannels).map(async e => [e[0], await e[1]] as const));
+        const parsedRolesResults = Promise.all(Object.entries(parsedRoles).map(async e => [e[0], await e[1]] as const));
+        const parsedUsersResults = Promise.all(Object.entries(parsedUsers).map(async e => [e[0], await e[1]] as const));
+
+        return {
+            parsedChannels: Object.fromEntries(await parsedChannelsResults),
+            parsedRoles: Object.fromEntries(await parsedRolesResults),
+            parsedUsers: Object.fromEntries(await parsedUsersResults)
+        };
+    }
+
+    * #getMessageMarkdownContent(message: { content?: string; embeds?: Discord.APIEmbed[]; }): Generator<string> {
+        if (message.content !== undefined)
+            yield message.content;
+        if (message.embeds !== undefined) {
+            for (const embed of message.embeds) {
+                if (embed.title !== undefined)
+                    yield embed.title;
+                if (embed.description !== undefined)
+                    yield embed.description;
+                if (embed.fields !== undefined) {
+                    for (const field of embed.fields) {
+                        yield field.name;
+                        yield field.value;
+                    }
+                }
             }
-            id = parse.entityId(match[0], '#');
-            if (id !== undefined)
-                cache.parsedChannels[id] ??= await this.#getDiscordChannelTag(id);
         }
     }
 
-    async #getDiscordRoleTag(guildId: string, id: string): Promise<DiscordRoleTag> {
-        const role = await this.getRole(guildId, id);
+    async #getDiscordRoleTag(id: string, guildId?: string): Promise<DiscordRoleTag> {
+        const role = guildId === undefined ? undefined : await this.getRole(guildId, id);
         return {
             id: id,
             color: role?.color,
@@ -279,7 +344,7 @@ export class BaseUtilities {
 
     async #getDiscordUserTag(userId: string): Promise<DiscordUserTag> {
         const dbUser = await this.database.users.get(userId);
-        if (dbUser !== undefined) {
+        if (dbUser?.username !== undefined && dbUser.discriminator !== undefined) {
             return {
                 id: userId,
                 avatarURL: dbUser.avatarURL,
@@ -289,69 +354,25 @@ export class BaseUtilities {
         }
 
         const apiUser = await this.getUser(userId);
-        return {
-            id: userId,
-            avatarURL: apiUser?.avatarURL,
-            discriminator: apiUser?.discriminator,
-            username: apiUser?.username
-        };
-    }
+        if (apiUser !== undefined) {
+            return {
+                id: userId,
+                avatarURL: apiUser.avatarURL,
+                discriminator: apiUser.discriminator,
+                username: apiUser.username
+            };
+        }
 
-    public async resolveTag(context: Eris.KnownChannel, tag: string): Promise<string> {
-        let id = parse.entityId(tag, '@&');
-        if (id !== undefined) { // ROLE
-            const role = guard.isGuildChannel(context)
-                ? await this.getRole(context.guild, id)
-                : undefined;
-
-            return `@${role?.name ?? 'UNKNOWN ROLE'}`;
-        }
-        id = parse.entityId(tag, '@!');
-        if (id !== undefined) { // USER (NICKNAME)
-            if (guard.isGuildChannel(context)) {
-                const member = await this.getMember(context.guild, tag.substring(2));
-                if (member !== undefined)
-                    return member.nick ?? member.username;
-            }
-            const user = await this.getUser(id);
-            return user === undefined ? 'UNKNOWN USER' : `${user.username}#${user.discriminator}`;
-        }
-        id = parse.entityId(tag, '@');
-        if (id !== undefined) { // USER
-            const user = await this.getUser(id);
-            return user === undefined ? 'UNKNOWN USER' : `${user.username}#${user.discriminator}`;
-        }
-        id = parse.entityId(tag, '#');
-        if (id !== undefined) { // CHANNEL
-            const channel = await this.getChannel(id);
-            return channel !== undefined && guard.isGuildChannel(channel) ? `#${channel.name}` : '';
-        }
-        if (tag.startsWith('<t:')) { // TIMESTAMP
-            const [, val, format = 'f'] = tag.split(':');
-            const timestamp = moment.unix(parseInt(val));
-            switch (format.substring(0, format.length - 1)) {
-                case 't': return timestamp.format('HH:mm');
-                case 'T': return timestamp.format('HH:mm:ss');
-                case 'd': return timestamp.format('DD/MM/yyyy');
-                case 'D': return timestamp.format('DD MMMM yyyy');
-                case 'F': return timestamp.format('dddd, DD MMMM yyyy HH:mm');
-                case 'R': return moment.duration(timestamp.diff(moment())).humanize(true);
-                case 'f': return timestamp.format('DD MMMM yyyy HH:mm');
-            }
-        }
-        if (tag.startsWith('<a:') || tag.startsWith('<:')) { // EMOJI
-            return tag.split(':')[1];
-        }
-        return tag;
+        return { id: userId };
     }
 
     public async generateDumpPage(payload: Eris.AdvancedMessageContent, channel: Eris.Channel): Promise<Snowflake> {
-        const id = snowflake.create();
+        const id = snowflake.fromTime();
         await this.database.dumps.add({
             id: id,
             content: payload.content ?? undefined,
             embeds: payload.embeds,
-            channelid: snowflake.parse(channel.id),
+            channelid: channel.id as Snowflake,
             expiry: 604800
         });
         return id;
@@ -394,8 +415,8 @@ export class BaseUtilities {
     public async getChannel(...args: [string] | [string | Eris.Guild, string]): Promise<Eris.KnownChannel | undefined> {
         const [guildVal, channelVal] = args.length === 2 ? args : [undefined, args[0]] as const;
 
-        const channelId = parse.entityId(channelVal, '@!?', true) ?? '';
-        if (channelId === '')
+        const channelId = markup.channel.tryParse(channelVal) ?? channelVal;
+        if (!snowflake.test(channelId))
             return undefined;
 
         if (guildVal === undefined)
@@ -436,7 +457,7 @@ export class BaseUtilities {
         if (typeof guild === 'string')
             return [];
 
-        const allChannels = [...guild.channels.values(), ...guild.threads.filter(guard.isThreadChannel)];
+        const allChannels = [...guild.channels.values(), ...guild.threads.values()];
         if (query === undefined)
             return allChannels;
 
@@ -468,8 +489,8 @@ export class BaseUtilities {
     }
 
     public async getUser(userId: string): Promise<Eris.User | undefined> {
-        userId = parse.entityId(userId, '@!?', true) ?? '';
-        if (userId === '')
+        userId = markup.user.tryParse(userId) ?? userId;
+        if (!snowflake.test(userId))
             return undefined;
 
         try {
@@ -500,8 +521,7 @@ export class BaseUtilities {
     }
 
     public async getGuild(guildId: string): Promise<Eris.Guild | undefined> {
-        guildId = parse.entityId(guildId) ?? '';
-        if (guildId === '')
+        if (!snowflake.test(guildId))
             return undefined;
 
         try {
@@ -524,13 +544,12 @@ export class BaseUtilities {
     public async getMessage(channel: string, messageId: string, force?: boolean): Promise<Eris.KnownMessage | undefined>;
     public async getMessage(channel: Eris.KnownChannel, messageId: string, force?: boolean): Promise<Eris.KnownMessage | undefined>;
     public async getMessage(channel: string | Eris.KnownChannel, messageId: string, force?: boolean): Promise<Eris.KnownMessage | undefined> {
-        messageId = parse.entityId(messageId) ?? '';
-        if (messageId === '')
+        if (!snowflake.test(messageId))
             return undefined;
 
         const foundChannel = typeof channel === 'string' ? await this.getChannel(channel) : channel;
 
-        if (foundChannel === undefined || !guard.isTextableChannel(foundChannel))
+        if (foundChannel === undefined || !guard.isTextableChannel(foundChannel) || guard.isVoiceChannel(foundChannel))
             return undefined;
 
         try {
@@ -553,8 +572,8 @@ export class BaseUtilities {
     }
 
     public async getMember(guild: string | Eris.Guild, userId: string): Promise<Eris.Member | undefined> {
-        userId = parse.entityId(userId) ?? '';
-        if (userId === '')
+        userId = markup.user.tryParse(userId) ?? userId;
+        if (!snowflake.test(userId))
             return undefined;
 
         if (typeof guild === 'string')
@@ -714,8 +733,7 @@ export class BaseUtilities {
         if (query === undefined)
             return webhooks;
 
-        const webhookId = parse.entityId(query) ?? '';
-        const byId = webhooks.find(w => w.id === webhookId);
+        const byId = webhooks.find(w => w.id === query);
         if (byId !== undefined)
             return [byId];
 
@@ -723,8 +741,8 @@ export class BaseUtilities {
     }
 
     public async getSender(guild: string | Eris.Guild, senderId: string): Promise<Eris.Member | Eris.Webhook | undefined> {
-        senderId = parse.entityId(senderId) ?? '';
-        if (senderId === '')
+        senderId = markup.user.tryParse(senderId) ?? senderId;
+        if (!snowflake.test(senderId))
             return undefined;
 
         if (typeof guild === 'string')
@@ -791,8 +809,8 @@ export class BaseUtilities {
     }
 
     public async getRole(guild: string | Eris.Guild, roleId: string): Promise<Eris.Role | undefined> {
-        roleId = parse.entityId(roleId, '@&', true) ?? '';
-        if (roleId === '')
+        roleId = markup.role.tryParse(roleId) ?? roleId;
+        if (!snowflake.test(roleId))
             return undefined;
 
         if (typeof guild === 'string')

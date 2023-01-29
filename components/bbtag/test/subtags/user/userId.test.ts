@@ -17,19 +17,19 @@ runSubtagTests({
                 {
                     expected: '12345678900987236',
                     setup(member) {
-                        member.user.id = '12345678900987236';
+                        member.id = '12345678900987236';
                     }
                 },
                 {
                     expected: '098765434512212678',
                     setup(member) {
-                        member.user.id = '098765434512212678';
+                        member.id = '098765434512212678';
                     }
                 },
                 {
                     expected: '876543456782978367654',
                     setup(member) {
-                        member.user.id = '876543456782978367654';
+                        member.id = '876543456782978367654';
                     }
                 }
             ]

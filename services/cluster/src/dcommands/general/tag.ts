@@ -1,7 +1,8 @@
 import type { Cluster, ClusterUtilities } from '@blargbot/cluster';
 import type { CommandResult, GuildCommandContext } from '@blargbot/cluster/types.js';
-import { CommandType, discord } from '@blargbot/cluster/utils/index.js';
+import { CommandType } from '@blargbot/cluster/utils/index.js';
 import type { SendContent } from '@blargbot/core/types.js';
+import { overflowMessageContent } from '@blargbot/discord-util';
 import type { StoredTag } from '@blargbot/domain/models/index.js';
 import type { IFormattable } from '@blargbot/formatting';
 import { util } from '@blargbot/formatting';
@@ -192,7 +193,7 @@ export class TagCommand extends GuildCommand {
         await context.database.tags.incrementUses(match.name, 1);
 
         const result = await context.bbtag.execute(match.content, {
-            message: context.message,
+            message: context.message as never,
             inputRaw: input ?? '',
             isCC: false,
             limit: 'tagLimit',
@@ -218,7 +219,7 @@ export class TagCommand extends GuildCommand {
         debug: boolean
     ): Promise<CommandResult> {
         const result = await context.bbtag.execute(content, {
-            message: context.message,
+            message: context.message as never,
             inputRaw: input,
             isCC: false,
             limit: 'tagLimit',
@@ -768,7 +769,7 @@ export class TagCommand extends GuildCommand {
                     color: tagChangeActionColour[action],
                     fields: Object.entries(details).map(([key, detail]) => ({
                         name: util.literal(key),
-                        value: util.literal(discord.overflowText('embed.field.value', detail, '(too long)')),
+                        value: util.literal(overflowMessageContent('embed.field.value', detail, '(too long)')),
                         inline: true
                     })),
                     author: {

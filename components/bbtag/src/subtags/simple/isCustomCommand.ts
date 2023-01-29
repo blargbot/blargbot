@@ -6,7 +6,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.isCustomCommand;
 
-@Subtag.id('isCustomCommand', 'isCC')
+@Subtag.names('isCustomCommand', 'isCC')
 @Subtag.ctorArgs()
 export class IsCustomCommandSubtag extends CompiledSubtag {
     public constructor() {

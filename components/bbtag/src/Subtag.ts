@@ -7,7 +7,7 @@ import { Timer } from '@blargbot/timer';
 
 import type { BBTagContext } from './BBTagContext.js';
 import type { BBTagEngine } from './BBTagEngine.js';
-import type { BBTagUtilities, BBTagValueConverter, SubtagDescriptor } from './BBTagUtilities.js';
+import type { BBTagQueryServices, BBTagUtilities, BBTagValueConverter, SubtagDescriptor } from './BBTagUtilities.js';
 import type { SubtagCall } from './language/index.js';
 import type { SubtagOptions, SubtagSignature } from './types.js';
 import type { BBTagArrayTools, BBTagJsonTools, BBTagOperators, SubtagType } from './utils/index.js';
@@ -30,7 +30,7 @@ export abstract class Subtag implements SubtagOptions<IFormattable<string>> {
         throw new Error('You must set a name, or use the Subtag.id(name, ...aliases) decorator');
     }
 
-    public static id(name: string, ...aliases: string[]): (type: new (...args: never) => Subtag) => void {
+    public static names(name: string, ...aliases: string[]): (type: new (...args: never) => Subtag) => void {
         return type => {
             Object.defineProperties(type.prototype, {
                 name: {
@@ -61,6 +61,10 @@ export abstract class Subtag implements SubtagOptions<IFormattable<string>> {
 
     public static converter(): (engine: BBTagEngine) => BBTagValueConverter {
         return e => e.dependencies.converter;
+    }
+
+    public static service<T extends keyof BBTagQueryServices>(type: T): (engine: BBTagEngine) => BBTagQueryServices[T] {
+        return e => e.dependencies.services[type];
     }
 
     public static store(): (engine: BBTagEngine) => Database;

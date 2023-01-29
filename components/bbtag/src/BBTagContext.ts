@@ -1,12 +1,12 @@
-import type { ChoiceQueryResult, EntityPickQueryOptions } from '@blargbot/core/types.js';
-import { discord } from '@blargbot/core/utils/discord/index.js';
 import { guard, humanize } from '@blargbot/core/utils/index.js';
 import { Emote } from '@blargbot/discord-emote';
+import { findRolePosition, permission } from '@blargbot/discord-util';
 import type { NamedGuildCommandTag, StoredTag } from '@blargbot/domain/models/index.js';
 import type { FlagDefinition, FlagResult } from '@blargbot/flags';
 import { hasFlag } from '@blargbot/guards';
 import { Timer } from '@blargbot/timer';
-import * as Eris from 'eris';
+import * as Discord from 'discord-api-types/v10';
+import { AllowedMentionsTypes } from 'discord-api-types/v10';
 import type moment from 'moment-timezone';
 import ReadWriteLock from 'rwlock';
 
@@ -22,7 +22,7 @@ import type { Subtag } from './Subtag.js';
 import { SubtagCallStack } from './SubtagCallStack.js';
 import { TagCooldownManager } from './TagCooldownManager.js';
 import { tagVariableScopeProviders } from './tagVariableScopeProviders.js';
-import type { BBTagContextMessage, BBTagContextOptions, BBTagContextState, BBTagRuntimeScope, FindEntityOptions, LocatedRuntimeError, RuntimeDebugEntry, SerializedBBTagContext } from './types.js';
+import type { BBTagContextOptions, BBTagContextState, BBTagRuntimeScope, Entities, LocatedRuntimeError, RuntimeDebugEntry, SerializedBBTagContext } from './types.js';
 import { BBTagRuntimeState } from './types.js';
 
 function serializeEntity(entity: { id: string; }): { id: string; serialized: string; }
@@ -34,19 +34,17 @@ function serializeEntity(entity?: { id: string; }): { id: string; serialized: st
 }
 
 export class BBTagContext implements BBTagContextOptions {
-    #isStaffPromise?: Promise<boolean>;
     #parent?: BBTagContext;
 
     public readonly engine: BBTagEngine;
-    public readonly message: BBTagContextMessage;
+    public readonly message: Entities.Message;
     public readonly inputRaw: string;
     public readonly input: string[];
     public readonly flags: ReadonlyArray<FlagDefinition<string>>;
     public readonly isCC: boolean;
     public readonly tagVars: boolean;
     public readonly authorId: string | undefined;
-    public readonly authorizer: Eris.Member | undefined;
-    public readonly authorizerId: string | undefined;
+    public readonly authorizer: Entities.User;
     public readonly rootTagName: string;
     public readonly tagName: string;
     public readonly cooldown: number;
@@ -64,36 +62,34 @@ export class BBTagContext implements BBTagContextOptions {
     public dbObjectsCommitted: number;
     public readonly data: BBTagContextState;
     public readonly callStack: SubtagCallStack;
-    public readonly permission: Eris.Permission;
     public readonly prefix?: string;
+    public readonly bot: Entities.User;
+    public readonly channel: Entities.Channel;
+    public readonly user: Entities.User;
+    public readonly guild: Entities.Guild;
+    public readonly isStaff: boolean;
+    public readonly botPermissions: bigint;
+    public readonly userPermissions: bigint;
+    public readonly authorizerPermissions: bigint;
 
     public get parent(): BBTagContext | undefined { return this.#parent; }
     public get totalElapsed(): number { return this.execTimer.elapsed + this.dbTimer.elapsed; }
-    public get channel(): Eris.KnownGuildTextableChannel { return this.message.channel; }
-    public get member(): Eris.Member | undefined { return (this.message.member as Eris.Member | null) ?? undefined; }
-    public get guild(): Eris.Guild { return this.message.channel.guild; }
-    public get user(): Eris.User { return this.message.author; }
-    public get discord(): Eris.Client { return this.engine.discord; }
     public get cooldownEnd(): moment.Moment { return this.cooldowns.get(this); }
-
-    public get bot(): Eris.Member {
-        const member = this.guild.members.get(this.discord.user.id);
-        if (member === undefined)
-            throw new Error('Bot is not a member of the current guild');
-        return member;
-    }
-
-    public get isStaff(): Promise<boolean> {
-        return this.#isStaffPromise ??= this.authorizer === undefined
-            ? Promise.resolve(false)
-            : this.engine.util.isUserStaff(this.authorizer);
-    }
 
     public constructor(
         engine: BBTagEngine,
         options: BBTagContextOptions
     ) {
         this.engine = engine;
+        this.guild = options.guild;
+        this.bot = options.bot;
+        this.botPermissions = this.getPermission(this.bot);
+        this.user = options.user;
+        this.userPermissions = this.getPermission(this.user);
+        this.authorizer = options.authorizer;
+        this.authorizerPermissions = this.getPermission(this.authorizer);
+        this.channel = options.channel;
+        this.isStaff = options.isStaff;
         this.message = options.message;
         this.prefix = options.prefix;
         this.inputRaw = options.inputRaw;
@@ -102,12 +98,6 @@ export class BBTagContext implements BBTagContextOptions {
         this.isCC = options.isCC;
         this.tagVars = options.tagVars ?? !this.isCC;
         this.authorId = options.authorId;
-        this.authorizerId = options.authorizerId ?? this.authorId;
-        this.authorizer = this.guild.members.get(this.authorizerId ?? '');
-        this.permission = this.authorizer === undefined
-            ? this.authorizerId === undefined ? new Eris.Permission(8n) : new Eris.Permission(0n)
-            : this.authorizer.permissions.has('administrator') ? new Eris.Permission(Eris.Constants.Permissions.all)
-                : this.authorizer.permissions;
         this.rootTagName = options.rootTagName ?? options.tagName ?? 'unknown';
         this.tagName = options.tagName ?? this.rootTagName;
         this.cooldown = options.cooldown ?? 0;
@@ -124,7 +114,7 @@ export class BBTagContext implements BBTagContextOptions {
         this.execTimer = new Timer();
         this.dbTimer = new Timer();
         this.dbObjectsCommitted = 0;
-        this.data = Object.assign(options.data ?? {}, {
+        this.data = {
             query: {
                 count: 0,
                 user: {},
@@ -151,16 +141,20 @@ export class BBTagContext implements BBTagContextOptions {
                 everybody: false
             },
             ...options.data ?? {}
-        });
+        };
     }
 
-    public permissionIn(channel: Eris.KnownGuildChannel): Eris.Permission {
-        if (this.authorizer === undefined)
-            return new Eris.Permission(0n);
-        const permissions = channel.permissionsOf(this.authorizer);
-        if (permissions.has('administrator'))
-            return new Eris.Permission(Eris.Constants.Permissions.all);
-        return permissions;
+    public getPermission(user: Entities.User, channel?: Entities.Channel): bigint {
+        if (user.id === this.guild.id)
+            return -1n;
+
+        return permission.discover(
+            user.id,
+            this.guild.owner_id,
+            user.member?.roles ?? [],
+            this.guild.roles,
+            channel?.permission_overwrites
+        );
     }
 
     public withStack<T>(action: () => T, maxStack = 200): T {
@@ -214,29 +208,18 @@ export class BBTagContext implements BBTagContextOptions {
         return result;
     }
 
-    public hasPermission(permission: bigint | keyof Eris.Constants['Permissions']): boolean;
-    public hasPermission(channel: Eris.KnownGuildChannel, permission: bigint | keyof Eris.Constants['Permissions']): boolean;
-    public hasPermission(...args: [permission: bigint | keyof Eris.Constants['Permissions']] | [channel: Eris.KnownGuildChannel, permission: bigint | keyof Eris.Constants['Permissions']]): boolean {
-        const [permissions, permission] = args.length === 1
-            ? [this.permission, args[0]]
-            : [this.permissionIn(args[0]), args[1]];
-
-        const flags = typeof permission === 'bigint' ? permission : Eris.Constants.Permissions[permission];
-        return hasFlag(permissions.allow, flags);
-    }
-
-    public roleEditPosition(channel?: Eris.KnownGuildChannel): number {
-        if (this.guild.ownerID === this.authorizer?.id)
+    public roleEditPosition(user: Entities.User, channel?: Entities.Channel): number {
+        if (this.guild.owner_id === this.authorizer.id)
             return Infinity;
 
-        const permission = channel === undefined ? this.permission : this.permissionIn(channel);
-        if (!permission.has('manageRoles'))
+        const permission = this.getPermission(user, channel);
+        if (!hasFlag(permission, Discord.PermissionFlagsBits.ManageRoles))
             return -Infinity;
 
-        return discord.getMemberPosition(this.authorizer);
+        return findRolePosition(this.authorizer.member?.roles ?? [], this.guild.roles);
     }
 
-    public auditReason(user: Eris.User = this.user): string {
+    public auditReason(user: Entities.User = this.user): string {
         const reason = this.scopes.local.reason ?? '';
         const tag = `${user.username}#${user.discriminator}`;
         return reason.length > 0
@@ -282,115 +265,12 @@ export class BBTagContext implements BBTagContextOptions {
         }));
     }
 
-    public async queryUser(query: string | undefined, options: FindEntityOptions = {}): Promise<Eris.User | undefined> {
-        if (query === '' || query === undefined || query === this.user.id)
-            return this.user;
-        const user = await this.engine.util.getUser(query);
-        if (user !== undefined)
-            return user;
-        const member = await this.queryMember(query, options);
-        return member?.user;
-    }
+    // public async getMessage(channel: Entities.Channel, messageId: string, force = false): Promise<Entities.Message | undefined> {
+    //     if (!force && channel.id === this.channel.id && (messageId === this.message.id || messageId === ''))
+    //         return this.message;
 
-    public async queryMember(query: string | undefined, options: FindEntityOptions = {}): Promise<Eris.Member | undefined> {
-        if (query === '' || query === undefined || query === this.member?.id)
-            return this.member;
-        return await this.#queryEntity(
-            query, 'user', 'User',
-            async (id) => await this.engine.util.getMember(this.guild, id),
-            async (query) => await this.engine.util.findMembers(this.guild, query),
-            async (options) => await this.engine.util.queryMember(options),
-            options
-        );
-    }
-
-    public async queryRole(query: string, options: FindEntityOptions = {}): Promise<Eris.Role | undefined> {
-        return await this.#queryEntity(
-            query, 'role', 'Role',
-            async (id) => await this.engine.util.getRole(this.guild, id),
-            async (query) => await this.engine.util.findRoles(this.guild, query),
-            async (options) => await this.engine.util.queryRole(options),
-            options
-        );
-    }
-
-    public async queryChannel(query: string | undefined, options: FindEntityOptions = {}): Promise<Eris.KnownGuildChannel | undefined> {
-        if (query === '' || query === undefined || query === this.channel.id)
-            return this.channel;
-        return await this.#queryEntity(
-            query, 'channel', 'Channel',
-            async (id) => {
-                const channel = await this.engine.util.getChannel(this.guild, id);
-                return channel !== undefined && guard.isGuildChannel(channel) && channel.guild.id === this.guild.id ? channel : undefined;
-            },
-            async (query) => await this.engine.util.findChannels(this.guild, query),
-            async (options) => await this.engine.util.queryChannel(options),
-            options
-        );
-    }
-
-    public async queryThread(query: string | undefined, options: FindEntityOptions = {}): Promise<Eris.KnownThreadChannel | undefined> {
-        if (guard.isThreadChannel(this.channel) && (query === '' || query === undefined || query === this.channel.id))
-            return this.channel;
-        return await this.#queryEntity(
-            query ?? '', 'channel', 'Thread',
-            async (id) => threadsOnly(await this.engine.util.getChannel(this.guild, id)),
-            async (query) => threadsOnly(await this.engine.util.findChannels(this.guild, query)),
-            async (options) => await this.engine.util.queryChannel(options),
-            options
-        );
-    }
-
-    public async getMessage(channel: Eris.KnownChannel, messageId: string, force?: boolean): Promise<Eris.KnownMessage | undefined>
-    public async getMessage<T extends Eris.KnownTextableChannel>(channel: T, messageId: string, force?: boolean): Promise<Eris.Message<T> | undefined>
-    public async getMessage(channel: Eris.KnownChannel, messageId: string, force = false): Promise<Eris.KnownMessage | undefined> {
-        if (!force && channel.id === this.channel.id && (messageId === this.message.id || messageId === '') && this.message instanceof Eris.Message)
-            return this.message;
-
-        return await this.engine.util.getMessage(channel, messageId, force);
-    }
-
-    async #queryEntity<T extends { id: string; }>(
-        queryString: string,
-        cacheKey: FilteredKeys<BBTagContextState['query'], Record<string, string | undefined>>,
-        type: string,
-        fetch: (id: string) => Promise<T | undefined>,
-        find: (query: string) => Promise<T[]>,
-        query: (options: EntityPickQueryOptions<string, T>) => Promise<ChoiceQueryResult<T>>,
-        options: FindEntityOptions
-    ): Promise<T | undefined> {
-        const cached = this.data.query[cacheKey][queryString];
-        if (cached !== undefined)
-            return await fetch(cached) ?? undefined;
-
-        const noLookup = options.noLookup === true || this.scopes.local.quiet === true;
-        const entities = await find(queryString);
-        if (entities.length <= 1 || this.data.query.count >= 5 || noLookup)
-            return entities.length === 1 ? entities[0] ?? undefined : undefined;
-
-        const result = await query({ context: this.channel, actors: this.user.id, choices: entities, filter: queryString });
-        const noErrors = options.noErrors === true || this.scopes.local.noLookupErrors === true;
-        switch (result.state) {
-            case 'FAILED':
-            case 'NO_OPTIONS':
-                if (!noErrors) {
-                    await this.engine.util.send(this.channel, { content: `No ${type.toLowerCase()} matching \`${queryString}\` found in ${this.isCC ? 'custom command' : 'tag'} \`${this.rootTagName}\`.` });
-                    this.data.query.count++;
-                }
-                return undefined;
-            case 'TIMED_OUT':
-            case 'CANCELLED':
-                this.data.query.count = Infinity;
-                if (!noErrors)
-                    await this.engine.util.send(this.channel, { content: `${type} query canceled in ${this.isCC ? 'custom command' : 'tag'} \`${this.rootTagName}\`.` });
-                return undefined;
-            case 'SUCCESS':
-                this.data.query[cacheKey][queryString] = result.value.id;
-                return result.value;
-            default:
-                return result;
-        }
-    }
+    //     return await this.engine.util.getMessage(channel, messageId, force);
+    // }
 
     public getLock(key: string): ReadWriteLock {
         return this.locks[key] ??= new ReadWriteLock();
@@ -404,34 +284,30 @@ export class BBTagContext implements BBTagContextOptions {
 
             this.engine.logger.log('Allowed mentions:', this.data.allowedMentions, disableEveryone);
         }
-        try {
-            const response = await this.engine.util.send(this.message.channel, {
-                content: text,
-                embeds: this.data.embeds !== undefined ? this.data.embeds : undefined,
-                nsfw: this.data.nsfw,
-                allowedMentions: {
-                    everyone: !disableEveryone,
-                    roles: this.isCC ? this.data.allowedMentions.roles : undefined,
-                    users: this.isCC ? this.data.allowedMentions.users : undefined
-                },
-                file: this.data.file !== undefined ? [this.data.file] : undefined
-            });
 
-            if (response !== undefined) {
-                await this.engine.util.addReactions(response, [...new Set(this.data.reactions)].map(Emote.parse));
-                this.data.ownedMsgs.push(response.id);
-                return response.id;
-            }
-            throw new Error('Failed to send message');
-        } catch (err: unknown) {
-            if (err instanceof Error) {
-                if (err.message === 'No content')
-                    return undefined;
-                throw err;
-            }
-            this.engine.logger.error('Failed to send message', err);
+        const response = await this.engine.dependencies.services.message.create(this, this.channel.id, {
+            content: text,
+            embeds: this.data.embeds !== undefined ? this.data.embeds : undefined,
+            allowed_mentions: {
+                parse: disableEveryone ? [] : [AllowedMentionsTypes.Everyone],
+                roles: this.isCC ? this.data.allowedMentions.roles : undefined,
+                users: this.isCC ? this.data.allowedMentions.users : undefined
+            },
+            files: this.data.file !== undefined ? [this.data.file] : undefined
+        });
+
+        if (response === undefined)
+            return undefined;
+
+        if ('error' in response) {
+            if (response.error === 'No content')
+                return undefined;
             throw new Error('Failed to send message');
         }
+
+        this.data.ownedMsgs.push(response.id);
+        await this.engine.dependencies.services.message.addReactions(this, this.channel.id, response.id, [...new Set(this.data.reactions)].map(Emote.parse));
+        return response.id;
     }
 
     public async sendOutput(text: string): Promise<string | undefined> {
@@ -488,7 +364,7 @@ export class BBTagContext implements BBTagContextOptions {
                 timestamp: this.message.createdAt,
                 content: this.message.content,
                 channel: serializeEntity(this.channel),
-                member: serializeEntity(this.member),
+                member: serializeEntity(this.user),
                 attachments: this.message.attachments,
                 embeds: this.message.embeds
             },
@@ -519,15 +395,12 @@ export class BBTagContext implements BBTagContextOptions {
         };
     }
 
-    static async #getOrFabricateMessage(engine: BBTagEngine, obj: SerializedBBTagContext): Promise<BBTagContextMessage> {
+    static async #getOrFabricateMessage(engine: BBTagEngine, obj: SerializedBBTagContext): Promise<Entities.Message> {
         const msg = await engine.util.getMessage(obj.msg.channel.id, obj.msg.id);
-        if (msg !== undefined) {
-            if (guard.isGuildMessage(msg))
-                return msg;
-            throw new Error('Channel must be a guild channel to work with BBTag');
-        }
+        if (msg !== undefined)
+            return msg;
 
-        const channel = await engine.util.getChannel(obj.msg.channel.id);
+        const channel = await engine.dependencies.services.channel.get(this, obj.msg.channel.id);
         if (channel === undefined || !guard.isGuildChannel(channel))
             throw new Error('Channel must be a guild channel to work with BBTag');
 
@@ -547,7 +420,7 @@ export class BBTagContext implements BBTagContextOptions {
         };
     }
 
-    static async #getOrFabricateMember(engine: BBTagEngine, guild: Eris.Guild, obj: SerializedBBTagContext): Promise<Eris.Member> {
+    static async #getOrFabricateMember(engine: BBTagEngine, guild: Entities.Guild, obj: SerializedBBTagContext): Promise<Entities.User> {
         if (obj.msg.member === undefined)
             throw new Error('No user id given');
 
@@ -574,14 +447,4 @@ export class BBTagContext implements BBTagContextOptions {
             user: user.toJSON()
         }, guild, engine.dependencies.discord);
     }
-}
-
-function threadsOnly(channel: Eris.KnownChannel | undefined): Eris.KnownThreadChannel | undefined
-function threadsOnly(channel: Eris.KnownChannel[]): Eris.KnownThreadChannel[]
-function threadsOnly(channel: Eris.KnownChannel | Eris.KnownChannel[] | undefined): Eris.KnownThreadChannel | Eris.KnownThreadChannel[] | undefined {
-    if (Array.isArray(channel))
-        return channel.filter(guard.isThreadChannel);
-    if (channel === undefined || guard.isThreadChannel(channel))
-        return channel;
-    return undefined;
 }

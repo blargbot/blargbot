@@ -21,7 +21,9 @@ declare global {
     type PropertiesOfType<T, P> = { [K in PropertyNamesOfType<T, P>]: T[K] }
     type Intersect<T1, T2> = { [K in (keyof T1 & keyof T2)]: T1[K] extends T2[K] ? T2[K] extends T1[K] ? T1[K] : never : never };
 
-    type RequiredProps<T, Props extends keyof T> = Required<Pick<T, Props>> & Omit<T, Props>;
+    type AnyPropertyKey<T> = T extends infer R ? keyof R : never;
+    type WithProp<T, Prop extends AnyPropertyKey<T>> = T extends infer R ? Prop extends keyof R ? R : never : never;
+    type RequiredProps<T, Props extends AnyPropertyKey<T>> = T extends infer R ? Required<Pick<R, Props>> & Omit<R, Props> : never;
     type UppercaseFirst<T extends string> = T extends `${infer L}${infer R}` ? `${Uppercase<L>}${R}` : T;
     type LowercaseFirst<T extends string> = T extends `${infer L}${infer R}` ? `${Lowercase<L>}${R}` : T;
     type LowerLetter = Lowercase<'a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h' | 'i' | 'j' | 'k' | 'l' | 'm' | 'n' | 'o' | 'p' | 'q' | 'r' | 's' | 't' | 'u' | 'v' | 'w' | 'x' | 'y' | 'z'>;
@@ -64,7 +66,7 @@ declare global {
         entries(value: object): Array<[string, unknown]>;
         create<T, U>(o: T, properties: { [P in keyof U]: TypedPropertyDescriptor<U[P]> }): T & U;
         create<T extends object>(value: T): T;
-        fromEntries<TKey extends PropertyKey, TValue>(entries: Iterable<readonly [TKey, TValue]>): Record<TKey, TValue>;
+        fromEntries<TKey extends PropertyKey, TValue>(entries: Iterable<readonly [TKey, TValue]>): { [P in TKey]: TValue };
 
         defineProperties<T, U>(o: T, properties: { [P in keyof U]: TypedPropertyDescriptor<U[P]> }): T & U;
         defineProperty<T, Key extends PropertyKey, U>(o: T, key: Key, attributes: TypedPropertyDescriptor<U>): T & { [P in Key]: U; };

@@ -1,18 +1,19 @@
-import type * as Eris from 'eris';
-
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { UserNotFoundError } from '../../errors/index.js';
+import type { UserService } from '../../services/UserService.js';
 import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.isUserBoosting;
 
-@Subtag.id('isUserBoosting')
-@Subtag.ctorArgs()
+@Subtag.names('isUserBoosting')
+@Subtag.ctorArgs(Subtag.service('user'))
 export class IsUserBoostingSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #users: UserService;
+
+    public constructor(users: UserService) {
         super({
             category: SubtagType.USER,
             definition: [
@@ -22,8 +23,7 @@ export class IsUserBoostingSubtag extends CompiledSubtag {
                     exampleCode: tag.target.exampleCode,
                     exampleOut: tag.target.exampleOut,
                     returns: 'boolean',
-                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                    execute: (ctx) => this.isUserBoosting(ctx.member!)
+                    execute: (ctx) => this.findIsUserBoosting(ctx, '', true)
                 },
                 {
                     parameters: ['user', 'quiet?'],
@@ -35,21 +35,19 @@ export class IsUserBoostingSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#users = users;
     }
 
     public async findIsUserBoosting(context: BBTagContext, userStr: string, quiet: boolean): Promise<boolean> {
         quiet ||= context.scopes.local.quiet ?? false;
-        const member = await context.queryMember(userStr, { noLookup: quiet });
+        const user = await this.#users.querySingle(context, userStr, { noLookup: quiet });
 
-        if (member === undefined) {
+        if (user?.member === undefined) {
             throw new UserNotFoundError(userStr)
                 .withDisplay(quiet ? '' : undefined);
         }
 
-        return this.isUserBoosting(member);
-    }
-
-    public isUserBoosting(member: Eris.Member): boolean {
-        return typeof member.premiumSince === 'number';
+        return typeof user.member.premium_since === 'string';
     }
 }

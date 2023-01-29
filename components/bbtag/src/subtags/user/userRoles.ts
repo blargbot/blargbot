@@ -1,18 +1,19 @@
-import { hasValue } from '@blargbot/guards';
-
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { UserNotFoundError } from '../../errors/index.js';
+import type { UserService } from '../../services/UserService.js';
 import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.userRoles;
 
-@Subtag.id('userRoles')
-@Subtag.ctorArgs()
+@Subtag.names('userRoles')
+@Subtag.ctorArgs(Subtag.service('user'))
 export class UserRolesSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #users: UserService;
+
+    public constructor(users: UserService) {
         super({
             category: SubtagType.USER,
             definition: [
@@ -34,6 +35,8 @@ export class UserRolesSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#users = users;
     }
 
     public async getUserRoles(
@@ -42,16 +45,13 @@ export class UserRolesSubtag extends CompiledSubtag {
         quiet: boolean
     ): Promise<Iterable<string>> {
         quiet ||= context.scopes.local.quiet ?? false;
-        const member = await context.queryMember(userId, { noLookup: quiet });
+        const user = await this.#users.querySingle(context, userId, { noLookup: quiet });
 
-        if (member === undefined) {
+        if (user?.member === undefined) {
             throw new UserNotFoundError(userId)
                 .withDisplay(quiet ? '' : undefined);
         }
 
-        if (!hasValue(member.guild) || !hasValue(member.roles))
-            return [];
-
-        return member.roles;
+        return user.member.roles;
     }
 }

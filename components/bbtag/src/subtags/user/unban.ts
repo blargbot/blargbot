@@ -2,18 +2,20 @@ import type { BBTagContext } from '../../BBTagContext.js';
 import type { BBTagUtilities } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, UserNotFoundError } from '../../errors/index.js';
+import type { UserService } from '../../services/UserService.js';
 import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.unban;
 
-@Subtag.id('unban')
-@Subtag.ctorArgs(Subtag.util())
+@Subtag.names('unban')
+@Subtag.ctorArgs(Subtag.util(), Subtag.service('user'))
 export class UnbanSubtag extends CompiledSubtag {
     readonly #util: BBTagUtilities;
+    readonly #users: UserService;
 
-    public constructor(util: BBTagUtilities) {
+    public constructor(util: BBTagUtilities, users: UserService) {
         super({
             category: SubtagType.USER,
             definition: [
@@ -37,6 +39,7 @@ export class UnbanSubtag extends CompiledSubtag {
         });
 
         this.#util = util;
+        this.#users = users;
     }
 
     public async unbanUser(
@@ -45,7 +48,7 @@ export class UnbanSubtag extends CompiledSubtag {
         reason: string,
         noPerms: boolean
     ): Promise<boolean> {
-        const user = await context.queryUser(userStr, { noErrors: context.scopes.local.noLookupErrors });
+        const user = await this.#users.querySingle(context, userStr);
 
         if (user === undefined)
             throw new UserNotFoundError(userStr);
@@ -53,7 +56,7 @@ export class UnbanSubtag extends CompiledSubtag {
         if (reason === '')
             reason = 'Tag Unban';
 
-        const authorizer = noPerms ? context.authorizer?.user ?? context.user : context.user;
+        const authorizer = noPerms ? context.authorizer : context.user;
         const result = await this.#util.unban(context.guild, user, context.user, authorizer, reason);
 
         switch (result) {

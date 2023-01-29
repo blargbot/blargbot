@@ -5,7 +5,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.lower;
 
-@Subtag.id('lower')
+@Subtag.names('lower')
 @Subtag.ctorArgs()
 export class LowerSubtag extends CompiledSubtag {
     public constructor() {

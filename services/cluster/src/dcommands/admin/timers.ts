@@ -1,10 +1,11 @@
 import { CommandType, guard } from '@blargbot/cluster/utils/index.js';
-import type { IFormattable} from '@blargbot/formatting';
+import { markup } from '@blargbot/discord-util';
+import type { IFormattable } from '@blargbot/formatting';
 import { format, util } from '@blargbot/formatting';
 import type * as Eris from 'eris';
 import moment from 'moment-timezone';
 
-import type { CommandContext} from '../../command/index.js';
+import type { CommandContext } from '../../command/index.js';
 import { GlobalCommand } from '../../command/index.js';
 import templates from '../../text.js';
 import type { CommandResult } from '../../types.js';
@@ -130,14 +131,14 @@ export class TimersCommand extends GlobalCommand {
         if ('user' in timer) {
             fields.push({
                 name: 'Started by',
-                value: `<@${timer.user}>`,
+                value: markup.user(timer.user),
                 inline: true
             });
         }
 
         fields.push({
             name: 'Duration',
-            value: `Started <t:${moment(timer.starttime).unix()}>\nEnds <t:${moment(timer.endtime).unix()}>`,
+            value: `Started ${markup.timestamp(timer.starttime)}\nEnds ${markup.timestamp(timer.endtime)}`,
             inline: false
         });
 

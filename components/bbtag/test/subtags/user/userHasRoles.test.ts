@@ -25,9 +25,11 @@ runSubtagTests({
                 {
                     expected: 'true',
                     setup(user, ctx) {
-                        const role = SubtagTestContext.createApiRole({ id: '12345678901234567' });
+                        const role = SubtagTestContext.createRole({ id: '12345678901234567' });
                         ctx.guild.roles.push(role);
-                        user.roles.push(role.id);
+                        if (user.member === undefined)
+                            throw new Error('User isnt member of guild');
+                        user.member.roles.push(role.id);
                     }
                 }
             ]
@@ -41,7 +43,7 @@ runSubtagTests({
                 {
                     expected: 'false',
                     setup(_, ctx) {
-                        const role = SubtagTestContext.createApiRole({ id: '09876544321098765' });
+                        const role = SubtagTestContext.createRole({ id: '09876544321098765' });
                         ctx.guild.roles.push(role);
                     }
                 }
@@ -56,9 +58,11 @@ runSubtagTests({
                 {
                     expected: 'true',
                     setup(user, ctx) {
-                        const role = SubtagTestContext.createApiRole({ id: '12345678901234567' });
+                        const role = SubtagTestContext.createRole({ id: '12345678901234567' });
                         ctx.guild.roles.push(role);
-                        user.roles.push(role.id);
+                        if (user.member === undefined)
+                            throw new Error('User isnt member of guild');
+                        user.member.roles.push(role.id);
                     }
                 }
             ]
@@ -72,7 +76,7 @@ runSubtagTests({
                 {
                     expected: 'false',
                     setup(_, ctx) {
-                        const role = SubtagTestContext.createApiRole({ id: '09876544321098765' });
+                        const role = SubtagTestContext.createRole({ id: '09876544321098765' });
                         ctx.guild.roles.push(role);
                     }
                 }
@@ -87,10 +91,12 @@ runSubtagTests({
                 {
                     expected: 'false',
                     setup(user, ctx) {
-                        const role1 = SubtagTestContext.createApiRole({ id: '12345678901234567' });
-                        const role2 = SubtagTestContext.createApiRole({ id: '123456788909876543' });
+                        const role1 = SubtagTestContext.createRole({ id: '12345678901234567' });
+                        const role2 = SubtagTestContext.createRole({ id: '123456788909876543' });
                         ctx.guild.roles.push(role1, role2);
-                        user.roles.push(role1.id);
+                        if (user.member === undefined)
+                            throw new Error('User isnt member of guild');
+                        user.member.roles.push(role1.id);
                     }
                 }
             ]
@@ -104,8 +110,8 @@ runSubtagTests({
                 {
                     expected: 'false',
                     setup(_, ctx) {
-                        const role1 = SubtagTestContext.createApiRole({ id: '09876544321098765' });
-                        const role2 = SubtagTestContext.createApiRole({ id: '123456788909876543' });
+                        const role1 = SubtagTestContext.createRole({ id: '09876544321098765' });
+                        const role2 = SubtagTestContext.createRole({ id: '123456788909876543' });
                         ctx.guild.roles.push(role1, role2);
                     }
                 }

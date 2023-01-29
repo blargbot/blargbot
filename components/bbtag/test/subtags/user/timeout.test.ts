@@ -1,8 +1,8 @@
+import type { Entities } from '@blargbot/bbtag';
 import { Subtag } from '@blargbot/bbtag';
 import { BBTagRuntimeError, UserNotFoundError } from '@blargbot/bbtag/errors/index.js';
 import { TimeoutSubtag } from '@blargbot/bbtag/subtags/user/timeout.js';
 import { argument } from '@blargbot/test-util/mock.js';
-import * as Eris from 'eris';
 import moment from 'moment-timezone';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
@@ -30,22 +30,16 @@ runSubtagTests({
                 { start: 0, end: 16, error: new UserNotFoundError('abc') }
             ],
             postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'abc'))
-                    .verifiable(1)
-                    .thenResolve([]);
+                ctx.userService.setup(m => m.querySingle(bbctx, 'abc', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(undefined);
             }
         },
         {
             code: '{timeout;other user;1s}',
             expected: 'Success',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Eris.Member);
-
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
-
-                ctx.util.setup(x => x.timeout(member.instance, bbctx.user, bbctx.user, isDuration(1000), 'Tag Timeout'))
+                const user = ctx.createMock<Entities.User>();
+                ctx.userService.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
+                ctx.util.setup(x => x.timeout(user.instance, bbctx.user, bbctx.user, isDuration(1000), 'Tag Timeout'))
                     .verifiable(1)
                     .thenResolve('success');
             }
@@ -54,13 +48,9 @@ runSubtagTests({
             code: '{timeout;other user;29d}',
             expected: 'Success',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Eris.Member);
-
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
-
-                ctx.util.setup(x => x.timeout(member.instance, bbctx.user, bbctx.user, isDuration(2505600000), 'Tag Timeout'))
+                const user = ctx.createMock<Entities.User>();
+                ctx.userService.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
+                ctx.util.setup(x => x.timeout(user.instance, bbctx.user, bbctx.user, isDuration(2505600000), 'Tag Timeout'))
                     .verifiable(1)
                     .thenResolve('success');
             }
@@ -79,16 +69,10 @@ runSubtagTests({
                 { start: 0, end: 23, error: new BBTagRuntimeError('User is not timed out', 'other user is not timed out!') }
             ],
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Eris.Member);
-                const user = ctx.createMock(Eris.User);
-                user.setup(u => u.username).thenReturn('other user');
-                member.setup(m => m.user).thenReturn(user.instance);
-
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
-
-                ctx.util.setup(x => x.clearTimeout(member.instance, bbctx.user, bbctx.user, 'Tag Timeout'))
+                const user = ctx.createMock<Entities.User>();
+                user.setup(m => m.username).thenReturn('other user');
+                ctx.userService.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
+                ctx.util.setup(x => x.clearTimeout(user.instance, bbctx.user, bbctx.user, 'Tag Timeout'))
                     .verifiable(1)
                     .thenResolve('notTimedOut');
             }
@@ -100,16 +84,10 @@ runSubtagTests({
                 { start: 0, end: 23, error: new BBTagRuntimeError('User is already timed out', 'other user is already timed out!') }
             ],
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Eris.Member);
-                const user = ctx.createMock(Eris.User);
-                user.setup(u => u.username).thenReturn('other user');
-                member.setup(m => m.user).thenReturn(user.instance);
-
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
-
-                ctx.util.setup(x => x.timeout(member.instance, bbctx.user, bbctx.user, isDuration(1000), 'Tag Timeout'))
+                const user = ctx.createMock<Entities.User>();
+                user.setup(m => m.username).thenReturn('other user');
+                ctx.userService.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
+                ctx.util.setup(x => x.timeout(user.instance, bbctx.user, bbctx.user, isDuration(1000), 'Tag Timeout'))
                     .verifiable(1)
                     .thenResolve('alreadyTimedOut');
             }
@@ -121,13 +99,9 @@ runSubtagTests({
                 { start: 0, end: 23, error: new BBTagRuntimeError('Bot has no permissions', 'I don\'t have permission to (remove) time out (from) users!') }
             ],
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Eris.Member);
-
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
-
-                ctx.util.setup(x => x.timeout(member.instance, bbctx.user, bbctx.user, isDuration(1000), 'Tag Timeout'))
+                const user = ctx.createMock<Entities.User>();
+                ctx.userService.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
+                ctx.util.setup(x => x.timeout(user.instance, bbctx.user, bbctx.user, isDuration(1000), 'Tag Timeout'))
                     .verifiable(1)
                     .thenResolve('noPerms');
             }
@@ -139,16 +113,10 @@ runSubtagTests({
                 { start: 0, end: 23, error: new BBTagRuntimeError('Bot has no permissions', 'I don\'t have permission to (remove) time out (from) other user!') }
             ],
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Eris.Member);
-                const user = ctx.createMock(Eris.User);
-                user.setup(u => u.username).thenReturn('other user');
-                member.setup(m => m.user).thenReturn(user.instance);
-
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
-
-                ctx.util.setup(x => x.timeout(member.instance, bbctx.user, bbctx.user, isDuration(1000), 'Tag Timeout'))
+                const user = ctx.createMock<Entities.User>();
+                user.setup(m => m.username).thenReturn('other user');
+                ctx.userService.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
+                ctx.util.setup(x => x.timeout(user.instance, bbctx.user, bbctx.user, isDuration(1000), 'Tag Timeout'))
                     .verifiable(1)
                     .thenResolve('memberTooHigh');
             }
@@ -160,13 +128,9 @@ runSubtagTests({
                 { start: 0, end: 23, error: new BBTagRuntimeError('User has no permissions', 'You don\'t have permission to (remove) time out (from) users!') }
             ],
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Eris.Member);
-
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
-
-                ctx.util.setup(x => x.timeout(member.instance, bbctx.user, bbctx.user, isDuration(1000), 'Tag Timeout'))
+                const user = ctx.createMock<Entities.User>();
+                ctx.userService.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
+                ctx.util.setup(x => x.timeout(user.instance, bbctx.user, bbctx.user, isDuration(1000), 'Tag Timeout'))
                     .verifiable(1)
                     .thenResolve('moderatorNoPerms');
             }
@@ -178,16 +142,10 @@ runSubtagTests({
                 { start: 0, end: 23, error: new BBTagRuntimeError('User has no permissions', 'You don\'t have permission to (remove) time out (from) other user!') }
             ],
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Eris.Member);
-                const user = ctx.createMock(Eris.User);
-                user.setup(u => u.username).thenReturn('other user');
-                member.setup(m => m.user).thenReturn(user.instance);
-
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
-
-                ctx.util.setup(x => x.timeout(member.instance, bbctx.user, bbctx.user, isDuration(1000), 'Tag Timeout'))
+                const user = ctx.createMock<Entities.User>();
+                user.setup(m => m.username).thenReturn('other user');
+                ctx.userService.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
+                ctx.util.setup(x => x.timeout(user.instance, bbctx.user, bbctx.user, isDuration(1000), 'Tag Timeout'))
                     .verifiable(1)
                     .thenResolve('moderatorTooLow');
             }

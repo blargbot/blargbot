@@ -1,9 +1,10 @@
 import type { ClusterStats, CommandResult, ShardStats } from '@blargbot/cluster/types.js';
-import { CommandType, discord, guard, snowflake } from '@blargbot/cluster/utils/index.js';
+import { CommandType, getGuildClusterStats, getStats, guard, statusEmojiMap } from '@blargbot/cluster/utils/index.js';
+import { snowflake } from '@blargbot/discord-util';
 import type { IFormattable } from '@blargbot/formatting';
 import moment from 'moment-timezone';
 
-import type { CommandContext} from '../../command/index.js';
+import type { CommandContext } from '../../command/index.js';
 import { GlobalCommand } from '../../command/index.js';
 import templates from '../../text.js';
 
@@ -40,14 +41,14 @@ export class ShardCommand extends GlobalCommand {
     public async showGuildShard(context: CommandContext, guildId: string): Promise<CommandResult> {
         if (!snowflake.test(guildId))
             return cmd.guild.invalidGuild({ id: guildId });
-        const clusterData = await discord.cluster.getGuildClusterStats(context.cluster, guildId);
+        const clusterData = await getGuildClusterStats(context.cluster, guildId);
 
         const isSameGuild = guard.isGuildCommandContext(context) ? context.channel.guild.id === guildId : false;
         return this.#shardEmbed(context, clusterData.cluster, clusterData.shard, cmd.guild.embed.description[isSameGuild ? 'here' : 'other']({ shardId: clusterData.shard.id, clusterId: clusterData.cluster.id, guildId }));
     }
 
     public showCurrentDMShard(context: CommandContext): CommandResult {
-        const clusterData = discord.cluster.getStats(context.cluster);
+        const clusterData = getStats(context.cluster);
         return this.#shardEmbed(context, clusterData, clusterData.shards[0], cmd.current.dm.embed.description({ clusterId: clusterData.id })); // should be cluster 0 always but idk
     }
 
@@ -66,7 +67,7 @@ export class ShardCommand extends GlobalCommand {
                                 guildCount: shard.guilds,
                                 lastUpdate: moment(shard.time, 'x'),
                                 latency: shard.latency,
-                                statusEmote: discord.cluster.statusEmojiMap[shard.status]
+                                statusEmote: statusEmojiMap[shard.status]
                             })
                         },
                         {
@@ -84,7 +85,7 @@ export class ShardCommand extends GlobalCommand {
                                 shards: cluster.shards.map(s => ({
                                     id: s.id,
                                     latency: s.latency,
-                                    statusEmote: discord.cluster.statusEmojiMap[s.status]
+                                    statusEmote: statusEmojiMap[s.status]
                                 }))
                             })
                         }

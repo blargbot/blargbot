@@ -1,16 +1,19 @@
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { RoleNotFoundError } from '../../errors/index.js';
+import type { RoleService } from '../../services/RoleService.js';
 import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.roleColor;
 
-@Subtag.id('roleColor')
-@Subtag.ctorArgs()
+@Subtag.names('roleColor')
+@Subtag.ctorArgs(Subtag.service('role'))
 export class RoleColorSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #roles: RoleService;
+
+    public constructor(roles: RoleService) {
         super({
             category: SubtagType.ROLE,
             definition: [
@@ -24,6 +27,8 @@ export class RoleColorSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#roles = roles;
     }
 
     public async getRoleHexColor(
@@ -32,7 +37,7 @@ export class RoleColorSubtag extends CompiledSubtag {
         quiet: boolean
     ): Promise<number> {
         quiet ||= context.scopes.local.quiet ?? false;
-        const role = await context.queryRole(roleId, { noLookup: quiet });
+        const role = await this.#roles.querySingle(context, roleId, { noLookup: quiet });
 
         if (role === undefined) {
             throw new RoleNotFoundError(roleId)

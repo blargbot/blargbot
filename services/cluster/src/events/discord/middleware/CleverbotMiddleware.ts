@@ -5,6 +5,7 @@ import { guard } from '@blargbot/cluster/utils/index.js';
 import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent.js';
 import { metrics } from '@blargbot/core/Metrics.js';
 import type { IMiddleware, NextMiddleware } from '@blargbot/core/types.js';
+import { markup } from '@blargbot/discord-util';
 import { util } from '@blargbot/formatting';
 import type * as Eris from 'eris';
 import fetch from 'node-fetch';
@@ -25,7 +26,7 @@ export class CleverbotMiddleware implements IMiddleware<Eris.KnownMessage, boole
         if (!guard.isGuildMessage(context))
             return false;
 
-        if (!new RegExp(`^<@!?${this.#util.discord.user.id}>`).test(context.content))
+        if (!markup.user.pattern.start.test(context.content))
             return false;
 
         if (await this.#util.database.guilds.getSetting(context.channel.guild.id, 'nocleverbot') === true)
@@ -38,7 +39,7 @@ export class CleverbotMiddleware implements IMiddleware<Eris.KnownMessage, boole
     async #reply(context: Eris.KnownMessage): Promise<void> {
         metrics.cleverbotStats.inc();
         await context.channel.sendTyping();
-        const query = await this.#util.resolveTags(context, context.content);
+        const query = await this.#util.resolveTags(context.content, context.channel);
         try {
             await this.#util.reply(context, new FormattableMessageContent({ content: util.literal(await this.#queryCleverbot(query)) }));
         } catch (err: unknown) {

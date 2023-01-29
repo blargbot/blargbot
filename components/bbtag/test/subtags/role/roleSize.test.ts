@@ -10,6 +10,7 @@ runSubtagTests({
     cases: [
         ...createGetRolePropTestCases({
             quiet: false,
+            getQueryOptions: () => ({ noErrors: true, noLookup: true }),
             generateCode(...args) {
                 return `{${['rolesize', ...args].join(';')}}`;
             },
@@ -20,7 +21,7 @@ runSubtagTests({
                         role.id = '92348672342308424';
                     },
                     postSetup(_, bbctx, ctx) {
-                        ctx.util.setup(m => m.ensureMemberCache(bbctx.guild)).thenResolve(undefined);
+                        ctx.userService.setup(m => m.getAll(bbctx)).thenResolve(Object.values(ctx.users));
                     }
                 },
                 {
@@ -28,10 +29,10 @@ runSubtagTests({
                     setup(role, ctx) {
                         role.id = '29384723084374304';
                         ctx.users.other.id = '23908467240974';
-                        ctx.members.other.roles.push(role.id);
+                        ctx.users.other.member.roles.push(role.id);
                     },
                     postSetup(_, bbctx, ctx) {
-                        ctx.util.setup(m => m.ensureMemberCache(bbctx.guild)).thenResolve(undefined);
+                        ctx.userService.setup(m => m.getAll(bbctx)).thenResolve(Object.values(ctx.users));
                     }
                 },
                 {
@@ -40,11 +41,11 @@ runSubtagTests({
                         role.id = '29384723084374304';
                         ctx.users.other.id = '23908467240974';
                         ctx.users.bot.id = '98347593834657389';
-                        ctx.members.other.roles.push(role.id);
-                        ctx.members.bot.roles.push(role.id);
+                        ctx.users.other.member.roles.push(role.id);
+                        ctx.users.bot.member.roles.push(role.id);
                     },
                     postSetup(_, bbctx, ctx) {
-                        ctx.util.setup(m => m.ensureMemberCache(bbctx.guild)).thenResolve(undefined);
+                        ctx.userService.setup(m => m.getAll(bbctx)).thenResolve(Object.values(ctx.users));
                     }
                 }
             ]

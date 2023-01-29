@@ -1,22 +1,27 @@
 import { guard } from '@blargbot/core/utils/index.js';
-import * as Eris from 'eris';
+import { hasFlag } from '@blargbot/guards';
+import { OverwriteType } from 'discord-api-types/v10';
+import * as Discord from 'discord-api-types/v10';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
+import type { ChannelService } from '../../services/ChannelService.js';
 import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
+import type { Entities } from '../../types.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.channelSetPermissions;
 
-@Subtag.id('channelSetPermissions', 'channelSetPerms')
-@Subtag.ctorArgs(Subtag.converter())
+@Subtag.names('channelSetPermissions', 'channelSetPerms')
+@Subtag.ctorArgs(Subtag.converter(), Subtag.service('channel'))
 export class ChannelSetPermissionsSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;
+    readonly #channels: ChannelService;
 
-    public constructor(converter: BBTagValueConverter) {
+    public constructor(converter: BBTagValueConverter, channels: ChannelService) {
         super({
             category: SubtagType.CHANNEL,
             definition: [
@@ -40,6 +45,7 @@ export class ChannelSetPermissionsSubtag extends CompiledSubtag {
         });
 
         this.#converter = converter;
+        this.#channels = channels;
     }
 
     public async channelSetPerms(
@@ -50,7 +56,7 @@ export class ChannelSetPermissionsSubtag extends CompiledSubtag {
         allow = 0n,
         deny = 0n
     ): Promise<string> {
-        const channel = await context.queryChannel(channelStr);
+        const channel = await this.#channels.querySingle(context, channelStr);
 
         if (channel === undefined)
             throw new BBTagRuntimeError('Channel does not exist'); //TODO No channel found error
@@ -58,33 +64,32 @@ export class ChannelSetPermissionsSubtag extends CompiledSubtag {
         if (guard.isThreadChannel(channel))
             throw new BBTagRuntimeError('Cannot set permissions for a thread channel');
 
-        if (!context.hasPermission(channel, 'manageChannels'))
+        const permission = context.getPermission(context.authorizer, channel);
+        if (!hasFlag(permission, Discord.PermissionFlagsBits.ManageChannels))
             throw new BBTagRuntimeError('Author cannot edit this channel');
 
-        if (!context.hasPermission(channel, allow | deny))
+        if (!hasFlag(permission, allow | deny))
             throw new BBTagRuntimeError('Author missing requested permissions');
 
         const type = this.#getOverwriteType(typeStr);
-        try {
-            if (allow !== 0n || deny !== 0n)
-                await channel.editPermission(entityId, allow, deny, type, context.auditReason());
-            else
-                await channel.deletePermission(entityId, context.auditReason());
 
+        const result = await this.#channels.setPermission(context, channel.id, {
+            id: entityId,
+            allow: allow.toString(),
+            deny: deny.toString(),
+            type
+        });
+
+        if (result === undefined)
             return channel.id;
-        } catch (err: unknown) {
-            if (!(err instanceof Eris.DiscordRESTError))
-                throw err;
 
-            throw new BBTagRuntimeError('Failed to edit channel: no perms', err.message);
-        }
+        throw new BBTagRuntimeError('Failed to edit channel: no perms', result.error);
     }
 
-    #getOverwriteType(typeStr: string): Eris.Constants['PermissionOverwriteTypes'][keyof Eris.Constants['PermissionOverwriteTypes']] {
-
+    #getOverwriteType(typeStr: string): Entities.PermissionOverwrite['type'] {
         switch (typeStr) {
-            case 'member': return Eris.Constants.PermissionOverwriteTypes.USER;
-            case 'role': return Eris.Constants.PermissionOverwriteTypes.ROLE;
+            case 'member': return OverwriteType.Member;
+            case 'role': return OverwriteType.Role;
             default: throw new BBTagRuntimeError('Type must be member or role');
         }
     }

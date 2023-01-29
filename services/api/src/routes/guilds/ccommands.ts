@@ -1,7 +1,8 @@
+import { randomUUID } from 'node:crypto';
+
 import type { Api } from '@blargbot/api/Api.js';
 import { BaseRoute } from '@blargbot/api/BaseRoute.js';
 import type { ApiResponse } from '@blargbot/api/types.js';
-import { snowflake } from '@blargbot/core/utils/snowflake.js';
 import type { GuildCommandTag, NamedGuildSourceCommandTag } from '@blargbot/domain/models/index.js';
 import { mapping } from '@blargbot/mapping';
 
@@ -71,7 +72,7 @@ export class CCommandsRoute extends BaseRoute {
             return this.badRequest('name cannot be longer than 100 characters');
 
         const success = await this.#api.database.guilds.setCommand(guildId, commandName, {
-            id: snowflake.create().toString(),
+            id: randomUUID(),
             content,
             author
         });

@@ -1,5 +1,6 @@
 import { Subtag } from '@blargbot/bbtag';
 import { UserStatusSubtag } from '@blargbot/bbtag/subtags/user/userStatus.js';
+import * as Discord from 'discord-api-types/v10';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetUserPropTestCases } from './_getUserPropTest.js';
@@ -16,34 +17,42 @@ runSubtagTests({
             cases: [
                 {
                     expected: 'dnd',
-                    postSetup(member) {
-                        member.update({
-                            status: 'dnd'
-                        });
+                    setup(member) {
+                        if (member.member === undefined)
+                            throw new Error('User isnt member of guild');
+                        member.member.status = Discord.PresenceUpdateStatus.DoNotDisturb;
                     }
                 },
                 {
                     expected: 'idle',
-                    postSetup(member) {
-                        member.update({
-                            status: 'idle'
-                        });
+                    setup(member) {
+                        if (member.member === undefined)
+                            throw new Error('User isnt member of guild');
+                        member.member.status = Discord.PresenceUpdateStatus.Idle;
                     }
                 },
                 {
                     expected: 'offline',
-                    postSetup(member) {
-                        member.update({
-                            status: 'offline'
-                        });
+                    setup(member) {
+                        if (member.member === undefined)
+                            throw new Error('User isnt member of guild');
+                        member.member.status = Discord.PresenceUpdateStatus.Offline;
                     }
                 },
                 {
                     expected: 'online',
-                    postSetup(member) {
-                        member.update({
-                            status: 'online'
-                        });
+                    setup(member) {
+                        if (member.member === undefined)
+                            throw new Error('User isnt member of guild');
+                        member.member.status = Discord.PresenceUpdateStatus.Online;
+                    }
+                },
+                {
+                    expected: 'offline',
+                    setup(member) {
+                        if (member.member === undefined)
+                            throw new Error('User isnt member of guild');
+                        member.member.status = undefined;
                     }
                 }
             ]

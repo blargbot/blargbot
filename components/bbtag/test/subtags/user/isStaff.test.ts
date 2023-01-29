@@ -1,7 +1,8 @@
+import type { Entities } from '@blargbot/bbtag';
 import { Subtag } from '@blargbot/bbtag';
 import { UserNotFoundError } from '@blargbot/bbtag/errors/index.js';
 import { IsStaffSubtag } from '@blargbot/bbtag/subtags/user/isStaff.js';
-import * as Eris from 'eris';
+import { argument } from '@blargbot/test-util/mock.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
@@ -27,10 +28,8 @@ runSubtagTests({
             code: '{isstaff;other user}',
             expected: 'true',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Eris.Member);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
+                const member = ctx.createMock<Entities.User>();
+                ctx.userService.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: false }))).verifiable(1).thenResolve(member.instance);
                 ctx.util.setup(m => m.isUserStaff(member.instance))
                     .verifiable(1)
                     .thenResolve(true);
@@ -40,10 +39,8 @@ runSubtagTests({
             code: '{isstaff;other user}',
             expected: 'false',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Eris.Member);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
+                const member = ctx.createMock<Entities.User>();
+                ctx.userService.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: false }))).verifiable(1).thenResolve(member.instance);
                 ctx.util.setup(m => m.isUserStaff(member.instance))
                     .verifiable(1)
                     .thenResolve(false);
@@ -57,9 +54,7 @@ runSubtagTests({
 
             ],
             postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([]);
+                ctx.userService.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: false }))).verifiable(1).thenResolve(undefined);
             }
         },
         {
@@ -70,9 +65,7 @@ runSubtagTests({
 
             ],
             postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([]);
+                ctx.userService.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: false }))).verifiable(1).thenResolve(undefined);
             }
         },
         {
@@ -82,9 +75,7 @@ runSubtagTests({
                 { start: 0, end: 22, error: new UserNotFoundError('other user').withDisplay('') }
             ],
             postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([]);
+                ctx.userService.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(undefined);
             }
         }
     ]

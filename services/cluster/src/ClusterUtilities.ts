@@ -1,7 +1,10 @@
-import { defaultStaff, discord, guard, parse, snowflake } from '@blargbot/cluster/utils/index.js';
+import { randomUUID } from 'node:crypto';
+
+import { defaultStaff, guard, parse } from '@blargbot/cluster/utils/index.js';
 import { BaseUtilities } from '@blargbot/core/BaseUtilities.js';
 import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent.js';
 import type { ChoiceQuery, ChoiceQueryOptions, ChoiceQueryResult, ConfirmQuery, ConfirmQueryOptions, EntityFindQueryOptions, EntityPickQueryOptions, EntityQueryOptions, FormatSelectMenuOptions, MultipleQuery, MultipleQueryOptions, MultipleQueryResult, QueryButton, SendContent, TextQuery, TextQueryOptions, TextQueryOptionsParsed, TextQueryResult } from '@blargbot/core/types.js';
+import { findRolePosition } from '@blargbot/discord-util';
 import type { IFormattable } from '@blargbot/formatting';
 import { format, util } from '@blargbot/formatting';
 import { hasValue } from '@blargbot/guards';
@@ -34,7 +37,7 @@ export class ClusterUtilities extends BaseUtilities {
         const pageSize = 25;
 
         for (const option of options.choices) {
-            const id = snowflake.create().toString();
+            const id = randomUUID();
             valueMap[id] = option.value;
             selectData.push({ ...option, value: id });
         }
@@ -66,13 +69,13 @@ export class ClusterUtilities extends BaseUtilities {
             page: 0,
             lastPage: Math.floor((selectData.length - 1) / pageSize),
             placeholder: options.placeholder,
-            prevId: snowflake.create().toString(),
-            nextId: snowflake.create().toString(),
-            cancelId: snowflake.create().toString(),
-            selectId: snowflake.create().toString()
+            prevId: randomUUID(),
+            nextId: randomUUID(),
+            cancelId: randomUUID(),
+            selectId: randomUUID()
         };
 
-        const channel = options.context instanceof Eris.Message ? options.context.channel : options.context;
+        const channel = options.context;
         const formatter = await this.getFormatter(channel);
         const awaiter = this.createComponentAwaiter(options.actors, templates.common.query.cantUse, options.timeout, {
             [component.cancelId]: () => true,
@@ -135,7 +138,7 @@ export class ClusterUtilities extends BaseUtilities {
         const selectData: Array<FormatSelectMenuOptions<IFormattable<string>>> = [];
 
         for (const option of options.choices) {
-            const id = snowflake.create().toString();
+            const id = randomUUID();
             valueMap[id] = option.value;
             selectData.push({ ...option, value: id });
         }
@@ -159,8 +162,8 @@ export class ClusterUtilities extends BaseUtilities {
         const component: MultipleComponentOptions<IFormattable<string>> = {
             select: selectData,
             placeholder: options.placeholder,
-            cancelId: snowflake.create().toString(),
-            selectId: snowflake.create().toString(),
+            cancelId: randomUUID(),
+            selectId: randomUUID(),
             maxCount: options.maxCount,
             minCount: options.minCount
         };
@@ -222,8 +225,8 @@ export class ClusterUtilities extends BaseUtilities {
     public async createConfirmQuery(options: ConfirmQueryOptions<IFormattable<string>, boolean | undefined>): Promise<ConfirmQuery<boolean | undefined>>
     public async createConfirmQuery(options: ConfirmQueryOptions<IFormattable<string>, boolean | undefined>): Promise<ConfirmQuery<boolean | undefined>> {
         const component: ConfirmComponentOptions<IFormattable<string>> = {
-            cancelId: snowflake.create().toString(),
-            confirmId: snowflake.create().toString(),
+            cancelId: randomUUID(),
+            confirmId: randomUUID(),
             cancelButton: options.cancel,
             confirmButton: options.continue
         };
@@ -278,14 +281,14 @@ export class ClusterUtilities extends BaseUtilities {
     public async createTextQuery<T>(options: TextQueryOptionsParsed<IFormattable<string>, T> | TextQueryOptions<IFormattable<string>>): Promise<TextQuery<T | string>>
     public async createTextQuery<T>(options: TextQueryOptionsParsed<IFormattable<string>, T> | TextQueryOptions<IFormattable<string>>): Promise<TextQuery<T | string>> {
         const component: TextComponentOptions<IFormattable<string>> = {
-            cancelId: snowflake.create().toString(),
+            cancelId: randomUUID(),
             cancelButton: options.cancel ?? templates.common.query.cancel
         };
 
         let parsed: { success: true; value: T | string; } | { success: false; } | undefined;
-        const messages: Eris.Message[] = [];
+        const messages: Array<Eris.Message<Eris.Textable & Eris.Channel>> = [];
         const parse = options.parse ?? (m => ({ success: true, value: m.content }));
-        const channel = options.context instanceof Eris.Message ? options.context.channel : options.context;
+        const channel = options.context;
         const componentAwaiter = this.createComponentAwaiter(options.actors, templates.common.query.cantUse, options.timeout, { [component.cancelId]: () => true });
         const messageAwaiter = this.createMessageAwaiter(channel, options.actors, options.timeout, async message => {
             const parseResult = await parse(message);
@@ -347,7 +350,7 @@ export class ClusterUtilities extends BaseUtilities {
         };
     }
 
-    async #sendOrReply<T extends Eris.TextableChannel>(context: T | Eris.Message<T>, content: IFormattable<SendContent<string>>, author?: Eris.User): Promise<Eris.Message<T> | undefined> {
+    async #sendOrReply<T extends Eris.Textable & Eris.Channel>(context: T | Eris.Message<T>, content: IFormattable<SendContent<string>>, author?: Eris.User): Promise<Eris.Message<T> | undefined> {
         return context instanceof Eris.Message
             ? await this.reply(context, content, author)
             : await this.send(context, content, author);
@@ -373,7 +376,7 @@ export class ClusterUtilities extends BaseUtilities {
         }, timeout ?? 60000);
     }
 
-    public createMessageAwaiter<T extends Eris.TextableChannel>(
+    public createMessageAwaiter<T extends Eris.Textable & Eris.Channel>(
         channel: T,
         actors: Iterable<string | Eris.User> | string | Eris.User,
         timeout: number | undefined,
@@ -622,7 +625,9 @@ export class ClusterUtilities extends BaseUtilities {
         if (bot === undefined)
             return false;
 
-        return discord.getMemberPosition(bot) > discord.getMemberPosition(member);
+        const botPosition = findRolePosition(bot.roles, bot.guild.roles.values());
+        const memberPosition = findRolePosition(member.roles, member.guild.roles.values());
+        return botPosition > memberPosition;
     }
 
     public async isUserStaff(member: Eris.Member): Promise<boolean>;
@@ -863,7 +868,7 @@ function getChannelLookupSelect(channel: Eris.KnownChannel): { label: IFormattab
     }
 }
 
-async function cleanupQuery(...items: Array<Eris.Message | Eris.ComponentInteraction | undefined>): Promise<void> {
+async function cleanupQuery(...items: Array<Eris.Message<Eris.Textable & Eris.Channel> | Eris.ComponentInteraction | undefined>): Promise<void> {
     const promises = [];
     for (const item of items) {
         if (item instanceof Eris.ComponentInteraction)
@@ -907,15 +912,13 @@ function* disableComponentsCore(components: Iterable<Eris.ActionRow | Eris.Butto
 }
 
 function sortChannels<T extends Eris.KnownChannel>(channels: Iterable<T>): T[] {
-    const channelGroups = {
-        nonGuild: [] as Array<T & Eris.KnownPrivateChannel>,
-        nonGroup: [] as Array<T & Eris.KnownGuildChannel>,
-        groups: {} as Record<string, { parent: Eris.KnownCategoryChannel; includeParent: boolean; children: Array<T & Eris.KnownGuildChannel>; } | undefined>
-    };
+    const nonGuild = [];
+    const nonGroup = [];
+    const groups = {} as Record<string, { parent: Eris.KnownCategoryChannel; includeParent: boolean; children: Array<T & Eris.GuildChannel>; } | undefined>;
 
     for (const channel of channels) {
         if (guard.isPrivateChannel(channel)) {
-            channelGroups.nonGuild.push(channel);
+            nonGuild.push(channel);
             continue;
         }
 
@@ -925,35 +928,35 @@ function sortChannels<T extends Eris.KnownChannel>(channels: Iterable<T>): T[] {
         if (hasValue(channel.parentID)) {
             const parent = channel.guild.channels.get(channel.parentID);
             if (parent === undefined || !guard.isCategoryChannel(parent)) {
-                channelGroups.nonGroup.push(channel);
+                nonGroup.push(channel);
             } else {
-                const group = channelGroups.groups[channel.parentID] ??= { parent, includeParent: false, children: [] };
+                const group = groups[channel.parentID] ??= { parent, includeParent: false, children: [] };
                 group.children.push(channel);
             }
         } else if (guard.isCategoryChannel(channel)) {
-            const group = channelGroups.groups[channel.id] ??= { parent: channel, includeParent: true, children: [] };
+            const group = groups[channel.id] ??= { parent: channel, includeParent: true, children: [] };
             group.includeParent = true;
         } else {
-            channelGroups.nonGroup.push(channel);
+            nonGroup.push(channel);
         }
     }
 
     return [
-        ...channelGroups.nonGuild.sort((a, b) => a.recipient.username > b.recipient.username ? 1 : -1),
-        ...channelGroups.nonGroup.sort(compareGuildChannels),
-        ...Object.values(channelGroups.groups)
+        ...nonGuild.sort((a, b) => a.recipient.username > b.recipient.username ? 1 : -1),
+        ...nonGroup.sort(compareGuildChannels),
+        ...Object.values(groups)
             .filter(hasValue)
             .sort((a, b) => a.parent.position - b.parent.position)
             .flatMap(g => {
-                const result = g.children.sort(compareGuildChannels) as T[];
+                const result = g.children.sort(compareGuildChannels);
                 if (g.includeParent)
-                    result.unshift(g.parent as T);
+                    result.unshift(g.parent as never);
                 return result;
             })
     ];
 }
 
-function compareGuildChannels(left: Eris.KnownGuildChannel, right: Eris.KnownGuildChannel): number {
+function compareGuildChannels(left: Eris.GuildChannel, right: Eris.GuildChannel): number {
     return guard.isVoiceChannel(left) ? guard.isVoiceChannel(right)
         ? left.position - right.position
         : 1

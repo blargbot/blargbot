@@ -1,12 +1,14 @@
-import { clamp, discord, guard } from '@blargbot/core/utils/index.js';
+import { clamp } from '@blargbot/core/utils/index.js';
 import { Emote } from '@blargbot/discord-emote';
 
 import type { BBTagContext } from '../../BBTagContext.js';
-import type { BBTagUtilities, BBTagValueConverter } from '../../BBTagUtilities.js';
+import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, NotANumberError, UserNotFoundError } from '../../errors/index.js';
 import type { Statement } from '../../language/index.js';
 import { parseBBTag } from '../../language/index.js';
+import type { MessageService } from '../../services/MessageService.js';
+import type { UserService } from '../../services/UserService.js';
 import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import type { BBTagArrayTools } from '../../utils/index.js';
@@ -16,14 +18,15 @@ const tag = templates.subtags.waitReaction;
 
 const defaultCondition = parseBBTag('true');
 
-@Subtag.id('waitReaction', 'waitReact')
-@Subtag.ctorArgs(Subtag.util(), Subtag.arrayTools(), Subtag.converter())
+@Subtag.names('waitReaction', 'waitReact')
+@Subtag.ctorArgs(Subtag.service('user'), Subtag.service('message'), Subtag.arrayTools(), Subtag.converter())
 export class WaitReactionSubtag extends CompiledSubtag {
-    readonly #util: BBTagUtilities;
+    readonly #users: UserService;
+    readonly #messages: MessageService;
     readonly #arrayTools: BBTagArrayTools;
     readonly #converter: BBTagValueConverter;
 
-    public constructor(util: BBTagUtilities, arrayTools: BBTagArrayTools, converter: BBTagValueConverter) {
+    public constructor(users: UserService, messages: MessageService, arrayTools: BBTagArrayTools, converter: BBTagValueConverter) {
         super({
             category: SubtagType.MESSAGE,
             description: tag.description({ disabled: overrides.waitreaction }),
@@ -49,7 +52,8 @@ export class WaitReactionSubtag extends CompiledSubtag {
             ]
         });
 
-        this.#util = util;
+        this.#users = users;
+        this.#messages = messages;
         this.#arrayTools = arrayTools;
         this.#converter = converter;
     }
@@ -63,7 +67,7 @@ export class WaitReactionSubtag extends CompiledSubtag {
         timeoutStr: string
     ): Promise<[channelId: string, messageId: string, userId: string, emoji: string]> {
         const messages = this.#arrayTools.flattenArray([messageStr]).map(i => this.#converter.string(i));
-        const users = await context.bulkLookup(userIDStr, i => context.queryUser(i, { noErrors: true, noLookup: true }), UserNotFoundError)
+        const users = await context.bulkLookup(userIDStr, i => this.#users.querySingle(context, i, { noErrors: true, noLookup: true }), UserNotFoundError)
             ?? [context.user];
 
         // parse reactions
@@ -87,8 +91,8 @@ export class WaitReactionSubtag extends CompiledSubtag {
         const userSet = new Set(users.map(u => u.id));
         const reactionSet = new Set(parsedReactions?.map(r => r.toString()));
         const checkReaction = reactionSet.size === 0 ? () => true : (emoji: Emote) => reactionSet.has(emoji.toString());
-        const result = await this.#util.awaitReaction(messages, async ({ user, reaction, message }) => {
-            if (!userSet.has(user.id) || !checkReaction(reaction) || !guard.isGuildMessage(message))
+        const result = await this.#messages.awaitReaction(context, messages, async ({ user, reaction, message }) => {
+            if (!userSet.has(user.id) || !checkReaction(reaction))
                 return false;
 
             const resultStr = await context.withScope(scope => {
@@ -105,6 +109,6 @@ export class WaitReactionSubtag extends CompiledSubtag {
         if (result === undefined)
             throw new BBTagRuntimeError(`Wait timed out after ${timeout * 1000}`);
 
-        return [result.message.channel.id, result.message.id, result.user.id, discord.emojiString(result.reaction)];
+        return [result.message.channel_id, result.message.id, result.user.id, result.reaction.toString()];
     }
 }

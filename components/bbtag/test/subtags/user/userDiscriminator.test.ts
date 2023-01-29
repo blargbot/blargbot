@@ -13,23 +13,24 @@ runSubtagTests({
             generateCode(...args) {
                 return `{${['userdiscrim', ...args].join(';')}}`;
             },
+            getQueryOptions: q => ({ noLookup: q }),
             cases: [
                 {
                     expected: '1234',
                     setup(member) {
-                        member.user.discriminator = '1234';
+                        member.discriminator = '1234';
                     }
                 },
                 {
                     expected: '5678',
                     setup(member) {
-                        member.user.discriminator = '5678';
+                        member.discriminator = '5678';
                     }
                 },
                 {
                     expected: '0000',
                     setup(member) {
-                        member.user.discriminator = '0000';
+                        member.discriminator = '0000';
                     }
                 }
             ]

@@ -1,6 +1,7 @@
 import type { FormatEmbedField, SendContent } from '@blargbot/core/types.js';
-import { discord, guard } from '@blargbot/core/utils/index.js';
-import type { IFormattable} from '@blargbot/formatting';
+import { guard } from '@blargbot/core/utils/index.js';
+import { getMessageComponentLimit } from '@blargbot/discord-util';
+import type { IFormattable } from '@blargbot/formatting';
 import { format, util } from '@blargbot/formatting';
 import type * as Eris from 'eris';
 
@@ -111,7 +112,7 @@ export class CommandDocumentationManager extends DocumentationTreeManager {
             }
         }
 
-        const charLimit = discord.getLimit('embed.field.value');
+        const charLimit = getMessageComponentLimit('embed.field.value');
         return {
             [format](formatter) {
                 for (const result of getPotentialResults()) {

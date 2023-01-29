@@ -1,21 +1,24 @@
-import * as Eris from 'eris';
+import { hasFlag } from '@blargbot/guards';
+import * as Discord from 'discord-api-types/v10';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, NotANumberError } from '../../errors/index.js';
+import type { ChannelService } from '../../services/ChannelService.js';
 import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.channelSetPosition;
 
-@Subtag.id('channelSetPosition', 'channelSetPos')
-@Subtag.ctorArgs(Subtag.converter())
+@Subtag.names('channelSetPosition', 'channelSetPos')
+@Subtag.ctorArgs(Subtag.converter(), Subtag.service('channel'))
 export class ChannelSetPositionSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;
+    readonly #channels: ChannelService;
 
-    public constructor(converter: BBTagValueConverter) {
+    public constructor(converter: BBTagValueConverter, channels: ChannelService) {
         super({
             category: SubtagType.CHANNEL,
             definition: [
@@ -31,15 +34,17 @@ export class ChannelSetPositionSubtag extends CompiledSubtag {
         });
 
         this.#converter = converter;
+        this.#channels = channels;
     }
 
     public async setChannelPosition(context: BBTagContext, channelStr: string, posStr: string): Promise<void> {
-        const channel = await context.queryChannel(channelStr);
+        const channel = await this.#channels.querySingle(context, channelStr);
 
         if (channel === undefined)
             throw new BBTagRuntimeError('Channel does not exist');//TODO No channel found error
 
-        if (!context.hasPermission(channel, 'manageChannels'))
+        const permission = context.getPermission(context.authorizer, channel);
+        if (!hasFlag(permission, Discord.PermissionFlagsBits.ManageChannels))
             throw new BBTagRuntimeError('Author cannot move this channel');
 
         const pos = this.#converter.int(posStr);
@@ -48,13 +53,11 @@ export class ChannelSetPositionSubtag extends CompiledSubtag {
 
         //TODO maybe check if the position doesn't exceed any bounds? Like amount of channels / greater than -1?
 
-        try {
-            await channel.editPosition(pos);
-        } catch (err: unknown) {
-            if (!(err instanceof Eris.DiscordRESTError))
-                throw err;
+        const result = await this.#channels.edit(context, channel.id, { position: pos });
 
-            throw new BBTagRuntimeError('Failed to move channel: no perms', err.message);
-        }
+        if (result === undefined)
+            return;
+
+        throw new BBTagRuntimeError('Failed to move channel: no perms', result.error);
     }
 }

@@ -5,7 +5,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.escapeBBTag;
 
-@Subtag.id('escapeBBTag', 'escape')
+@Subtag.names('escapeBBTag', 'escape')
 @Subtag.ctorArgs()
 export class EscapeBBTagSubtag extends CompiledSubtag {
     public constructor() {

@@ -9,7 +9,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.prefix;
 
-@Subtag.id('prefix')
+@Subtag.names('prefix')
 @Subtag.ctorArgs(Subtag.util(), Subtag.store('guilds'))
 export class PrefixSubtag extends CompiledSubtag {
     readonly #util: BBTagUtilities;

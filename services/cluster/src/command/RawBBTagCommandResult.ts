@@ -1,8 +1,7 @@
 import type { SendContent } from '@blargbot/core/types.js';
+import { getMessageComponentLimit } from '@blargbot/discord-util';
 import type { IFormattable, IFormatter } from '@blargbot/formatting';
 import { format } from '@blargbot/formatting';
-
-import { discord } from '../utils/index.js';
 
 export class RawBBTagCommandResult implements IFormattable<string | SendContent<string>> {
     readonly #inline: IFormattable<string>;
@@ -22,7 +21,7 @@ export class RawBBTagCommandResult implements IFormattable<string | SendContent<
             return this.#attach(formatter);
 
         const inlineRaw = this.#inline[format](formatter);
-        if (discord.getLimit('content') < inlineRaw.length)
+        if (getMessageComponentLimit('content') < inlineRaw.length)
             return this.#attach(formatter);
 
         return inlineRaw;

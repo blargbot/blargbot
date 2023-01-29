@@ -1,8 +1,7 @@
 import { Subtag } from '@blargbot/bbtag';
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
 import { ChannelDeleteSubtag } from '@blargbot/bbtag/subtags/channel/channelDelete.js';
-import Discord from 'discord-api-types/v9';
-import * as Eris from 'eris';
+import Discord from 'discord-api-types/v10';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetChannelPropTestCases } from './_getChannelPropTest.js';
@@ -11,7 +10,7 @@ runSubtagTests({
     subtag: Subtag.getDescriptor(ChannelDeleteSubtag),
     argCountBounds: { min: 1, max: 1 },
     setupEach(ctx) {
-        ctx.roles.authorizer.permissions = Eris.Constants.Permissions.manageChannels.toString();
+        ctx.roles.authorizer.permissions = Discord.PermissionFlagsBits.ManageChannels.toString();
     },
     cases: [
         ...createGetChannelPropTestCases({
@@ -24,8 +23,8 @@ runSubtagTests({
             cases: [
                 {
                     expected: '',
-                    setup(channel, ctx) {
-                        ctx.discord.setup(m => m.deleteChannel(channel.id, 'Command User#0000')).thenResolve(undefined);
+                    postSetup(channel, bbctx, ctx) {
+                        ctx.channelService.setup(m => m.delete(bbctx, channel.id)).thenResolve(undefined);
                     }
                 }
             ]
@@ -35,10 +34,12 @@ runSubtagTests({
             code: '{channeldelete;2384762844234324}',
             expected: '',
             setup(ctx) {
-                ctx.roles.authorizer.permissions = Eris.Constants.Permissions.administrator.toString();
+                ctx.roles.authorizer.permissions = Discord.PermissionFlagsBits.Administrator.toString();
                 ctx.channels.command.id = '2384762844234324';
                 ctx.message.channel_id = ctx.channels.command.id;
-                ctx.discord.setup(m => m.deleteChannel('2384762844234324', 'Command User#0000')).thenResolve(undefined);
+            },
+            postSetup(bbctx, ctx) {
+                ctx.channelService.setup(m => m.delete(bbctx, '2384762844234324')).thenResolve(undefined);
             }
         },
         {
@@ -48,11 +49,13 @@ runSubtagTests({
             setup(ctx) {
                 ctx.roles.authorizer.permissions = '0';
                 ctx.channels.command.permission_overwrites = [
-                    { id: ctx.roles.authorizer.id, type: Discord.OverwriteType.Role, allow: Eris.Constants.Permissions.manageChannels.toString(), deny: '0' }
+                    { id: ctx.roles.authorizer.id, type: Discord.OverwriteType.Role, allow: Discord.PermissionFlagsBits.ManageChannels.toString(), deny: '0' }
                 ];
                 ctx.channels.command.id = '2384762844234324';
                 ctx.message.channel_id = ctx.channels.command.id;
-                ctx.discord.setup(m => m.deleteChannel('2384762844234324', 'Command User#0000')).thenResolve(undefined);
+            },
+            postSetup(bbctx, ctx) {
+                ctx.channelService.setup(m => m.delete(bbctx, '2384762844234324')).thenResolve(undefined);
             }
         },
         {
@@ -74,10 +77,11 @@ runSubtagTests({
                 { start: 0, end: 32, error: new BBTagRuntimeError('Failed to edit channel: no perms', 'Test REST error') }
             ],
             setup(ctx) {
-                const err = ctx.createRESTError(Eris.ApiError.MISSING_PERMISSIONS);
                 ctx.channels.command.id = '2384762844234324';
                 ctx.message.channel_id = ctx.channels.command.id;
-                ctx.discord.setup(m => m.deleteChannel('2384762844234324', 'Command User#0000')).thenReject(err);
+            },
+            postSetup(bbctx, ctx) {
+                ctx.channelService.setup(m => m.delete(bbctx, '2384762844234324')).thenResolve({ error: 'Test REST error' });
             }
         },
         {
@@ -87,10 +91,11 @@ runSubtagTests({
                 { start: 0, end: 32, error: new BBTagRuntimeError('Failed to edit channel: no perms', 'Some other error message') }
             ],
             setup(ctx) {
-                const err = ctx.createRESTError(Eris.ApiError.NOT_AUTHORIZED, 'Some other error message');
                 ctx.channels.command.id = '2384762844234324';
                 ctx.message.channel_id = ctx.channels.command.id;
-                ctx.discord.setup(m => m.deleteChannel('2384762844234324', 'Command User#0000')).thenReject(err);
+            },
+            postSetup(bbctx, ctx) {
+                ctx.channelService.setup(m => m.delete(bbctx, '2384762844234324')).thenResolve({ error: 'Some other error message' });
             }
         }
     ]

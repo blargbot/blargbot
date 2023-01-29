@@ -1,9 +1,7 @@
-import type { Snowflake } from './Snowflake.js';
-
 export interface Dump {
-    readonly id: Snowflake;
+    readonly id: `${bigint}`;
     readonly content?: string;
     readonly embeds?: object[];
-    readonly channelid: Snowflake;
+    readonly channelid: `${bigint}`;
     readonly expiry: number;
 }

@@ -1,19 +1,22 @@
 import { guard } from '@blargbot/core/utils/index.js';
-import type * as Eris from 'eris';
+import { markup } from '@blargbot/discord-util';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, ChannelNotFoundError } from '../../errors/index.js';
+import type { ChannelService } from '../../services/ChannelService.js';
 import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.channelPosition;
 
-@Subtag.id('channelPosition', 'channelPos', 'categoryPosition', 'categoryPos')
-@Subtag.ctorArgs()
+@Subtag.names('channelPosition', 'channelPos', 'categoryPosition', 'categoryPos')
+@Subtag.ctorArgs(Subtag.service('channel'))
 export class ChannelPositionSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #channels: ChannelService;
+
+    public constructor(channels: ChannelService) {
         super({
             category: SubtagType.CHANNEL,
             description: tag.description,
@@ -24,7 +27,7 @@ export class ChannelPositionSubtag extends CompiledSubtag {
                     exampleCode: tag.current.exampleCode,
                     exampleOut: tag.current.exampleOut,
                     returns: 'number',
-                    execute: (ctx) => this.#getChanelPosition(ctx.channel)
+                    execute: (ctx) => this.getChannelPosition(ctx, '', true)
                 },
                 {
                     parameters: ['channel', 'quiet?'],
@@ -36,6 +39,8 @@ export class ChannelPositionSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#channels = channels;
     }
 
     public async getChannelPosition(
@@ -44,18 +49,14 @@ export class ChannelPositionSubtag extends CompiledSubtag {
         quiet: boolean
     ): Promise<number> {
         quiet ||= context.scopes.local.quiet ?? false;
-        const channel = await context.queryChannel(channelStr, { noLookup: quiet });
+        const channel = await this.#channels.querySingle(context, channelStr, { noLookup: quiet });
         if (channel === undefined) {
             throw new ChannelNotFoundError(channelStr)
                 .withDisplay(quiet ? '' : undefined);
         }
 
-        return this.#getChanelPosition(channel);
-    }
-
-    #getChanelPosition(channel: Eris.GuildChannel): number {
         if (guard.isThreadChannel(channel))
-            throw new BBTagRuntimeError('Threads dont have a position', `${channel.mention} is a thread and doesnt have a position`);
+            throw new BBTagRuntimeError('Threads dont have a position', `${markup.channel(channel.id)} is a thread and doesnt have a position`);
 
         return channel.position;
     }

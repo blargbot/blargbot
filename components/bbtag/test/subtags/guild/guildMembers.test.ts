@@ -18,7 +18,7 @@ runSubtagTests({
                 ctx.users.bot.id = '23746392746789426394';
             },
             postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.ensureMemberCache(bbctx.guild)).thenResolve(undefined);
+                ctx.userService.setup(m => m.getAll(bbctx)).thenResolve(Object.values(ctx.users));
             }
         }
     ]

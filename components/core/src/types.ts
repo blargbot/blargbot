@@ -1,10 +1,8 @@
-import type { Snowflake } from '@blargbot/domain/models/index.js';
 import type { Logger } from '@blargbot/logger';
 import type * as Eris from 'eris';
 
 import type { WorkerConnection } from './worker/index.js';
 
-export type MalformedEmbed = { fields: [Eris.EmbedField]; malformed: true; };
 export type DMContext = string | Eris.KnownMessage | Eris.User | Eris.Member;
 export type SendContext = Eris.TextableChannel | string | Eris.User;
 export interface SendContent<TString> extends FormatAdvancedMessageContent<TString> {
@@ -55,8 +53,8 @@ export type FormatEmbedFooter<TString> = ReplaceProps<Eris.EmbedFooter, {
 }>;
 
 export type LogEntry = { text: string; level: string; timestamp: string; }
-export type ProcessMessage = { type: string; id: Snowflake; data: unknown; };
-export type ProcessMessageContext<TData, TReply> = { data: TData; id: Snowflake; reply: (data: TReply) => void; };
+export type ProcessMessage = { type: string; id: string; data: unknown; };
+export type ProcessMessageContext<TData, TReply> = { data: TData; id: string; reply: (data: TReply) => void; };
 export type WorkerPoolEventContext<TWorker extends WorkerConnection<IPCContracts>, TData, TReply> = ProcessMessageContext<TData, TReply> & { worker: TWorker; };
 export type ProcessMessageHandler<TData = unknown, TReply = unknown> = (context: ProcessMessageContext<TData, TReply>) => Awaitable<unknown>;
 export type WorkerPoolEventHandler<TWorker extends WorkerConnection<IPCContracts>, TData = unknown, TReply = unknown> = (context: WorkerPoolEventContext<TWorker, TData, TReply>) => unknown;
@@ -103,7 +101,7 @@ type ConfirmQueryOptionsFallback<T extends boolean | undefined> = T extends unde
     : { fallback: boolean; };
 
 export interface QueryOptionsBase<TString> {
-    context: Eris.TextableChannel | Eris.Message;
+    context: Eris.Textable & Eris.Channel;
     actors: Iterable<string | Eris.User> | string | Eris.User;
     prompt?: Omit<SendContent<TString>, 'components'> | TString;
     timeout?: number;
@@ -155,7 +153,7 @@ export interface TextQueryOptions<TString> extends TextQueryOptionsBase<TString,
 export type SlimTextQueryOptions<TString> = Omit<TextQueryOptions<TString>, 'context' | 'actors'>;
 
 export interface TextQueryOptionsParser<TString, T> {
-    (message: Eris.Message): Promise<TextQueryOptionsParseResult<TString, T>> | TextQueryOptionsParseResult<TString, T>;
+    (message: Eris.Message<Eris.Textable & Eris.Channel>): Promise<TextQueryOptionsParseResult<TString, T>> | TextQueryOptionsParseResult<TString, T>;
 }
 
 export type TextQueryOptionsParseResult<TString, T> =
@@ -168,19 +166,19 @@ export interface MultipleQueryOptions<TString, T> extends ChoiceQueryOptions<TSt
 }
 
 export interface ChoiceQuery<T> extends QueryBase<ChoiceQueryResult<T>> {
-    prompt: Eris.Message | undefined;
+    prompt: Eris.Message<Eris.Textable & Eris.Channel> | undefined;
 }
 
 export interface MultipleQuery<T> extends QueryBase<MultipleQueryResult<T>> {
-    prompt: Eris.Message | undefined;
+    prompt: Eris.Message<Eris.Textable & Eris.Channel> | undefined;
 }
 
 export interface ConfirmQuery<T extends boolean | undefined = undefined> extends QueryBase<T> {
-    prompt: Eris.Message | undefined;
+    prompt: Eris.Message<Eris.Textable & Eris.Channel> | undefined;
 }
 
 export interface TextQuery<T> extends QueryBase<TextQueryResult<T>> {
-    messages: readonly Eris.Message[];
+    messages: ReadonlyArray<Eris.Message<Eris.Textable & Eris.Channel>>;
 }
 
 export type ChoiceQueryResult<T> = QueryResult<'NO_OPTIONS' | 'TIMED_OUT' | 'CANCELLED' | 'FAILED', T>;
@@ -227,7 +225,7 @@ export interface NextMiddleware<Result> extends MiddlewareOptions {
 }
 
 export interface MiddlewareOptions {
-    readonly id: Snowflake;
+    readonly id: string;
     readonly logger: Logger;
     readonly start: number;
 }

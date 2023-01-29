@@ -18,16 +18,16 @@ runSubtagTests({
                     queryString: '09876509876543211234',
                     expected: 'abcdef',
                     setup(member) {
-                        member.user.id = '09876509876543211234';
-                        member.user.username = 'abcdef';
+                        member.id = '09876509876543211234';
+                        member.username = 'abcdef';
                     }
                 },
                 {
                     queryString: '09876509876543211234',
                     expected: 'oooh nice username',
                     setup(member) {
-                        member.user.id = '09876509876543211234';
-                        member.user.username = 'oooh nice username';
+                        member.id = '09876509876543211234';
+                        member.username = 'oooh nice username';
                     }
                 }
             ]

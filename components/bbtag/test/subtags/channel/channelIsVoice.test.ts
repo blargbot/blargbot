@@ -1,6 +1,7 @@
+import type { Entities } from '@blargbot/bbtag';
 import { Subtag } from '@blargbot/bbtag';
 import { ChannelIsVoiceSubtag } from '@blargbot/bbtag/subtags/channel/channelIsVoice.js';
-import * as Eris from 'eris';
+import * as Discord from 'discord-api-types/v10';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetChannelPropTestCases } from './_getChannelPropTest.js';
@@ -15,24 +16,23 @@ runSubtagTests({
             generateCode(...args) {
                 return `{${['channelisvoice', ...args].join(';')}}`;
             },
-            cases: Object.entries({
-                ['GUILD_TEXT']: false,
-                ['GUILD_VOICE']: true,
-                ['GUILD_CATEGORY']: false,
-                ['GUILD_NEWS']: false,
-                ['GUILD_STORE']: false,
-                ['GUILD_NEWS_THREAD']: false,
-                ['GUILD_PUBLIC_THREAD']: false,
-                ['GUILD_PRIVATE_THREAD']: false,
-                ['GUILD_STAGE_VOICE']: true
-            }).map(([key, success]) => ({
-                title: `Channel is a ${key} (${Eris.Constants.ChannelTypes[key]})`,
+            cases: Object.values<{ [P in Entities.Channel['type']]: { type: P; name: string; success: boolean; } }>({
+                [Discord.ChannelType.GuildText]: { type: Discord.ChannelType.GuildText, name: 'GUILD_TEXT', success: false },
+                [Discord.ChannelType.GuildVoice]: { type: Discord.ChannelType.GuildVoice, name: 'GUILD_VOICE', success: true },
+                [Discord.ChannelType.GuildCategory]: { type: Discord.ChannelType.GuildCategory, name: 'GUILD_CATEGORY', success: false },
+                [Discord.ChannelType.GuildAnnouncement]: { type: Discord.ChannelType.GuildAnnouncement, name: 'GUILD_NEWS', success: false },
+                [Discord.ChannelType.AnnouncementThread]: { type: Discord.ChannelType.AnnouncementThread, name: 'GUILD_NEWS_THREAD', success: false },
+                [Discord.ChannelType.PublicThread]: { type: Discord.ChannelType.PublicThread, name: 'GUILD_PUBLIC_THREAD', success: false },
+                [Discord.ChannelType.PrivateThread]: { type: Discord.ChannelType.PrivateThread, name: 'GUILD_PRIVATE_THREAD', success: false },
+                [Discord.ChannelType.GuildStageVoice]: { type: Discord.ChannelType.GuildStageVoice, name: 'GUILD_STAGE_VOICE', success: true },
+                [Discord.ChannelType.GuildForum]: { type: Discord.ChannelType.GuildForum, name: 'GUILD_FORUM', success: false }
+            }).map(({ type, name, success }) => ({
+                title: `Channel is a ${name} (${type})`,
                 expected: success.toString(),
                 setup(channel) {
-                    channel.type = Eris.Constants.ChannelTypes[key];
+                    channel.type = type;
                 }
             }))
-
         })
     ]
 });

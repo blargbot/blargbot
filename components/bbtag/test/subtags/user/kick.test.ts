@@ -1,7 +1,8 @@
+import type { Entities } from '@blargbot/bbtag';
 import { Subtag } from '@blargbot/bbtag';
 import { BBTagRuntimeError, UserNotFoundError } from '@blargbot/bbtag/errors/index.js';
 import { KickSubtag } from '@blargbot/bbtag/subtags/user/kick.js';
-import * as Eris from 'eris';
+import { argument } from '@blargbot/test-util/mock.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
@@ -16,21 +17,16 @@ runSubtagTests({
                 { start: 0, end: 10, error: new UserNotFoundError('abc') }
             ],
             postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'abc'))
-                    .verifiable(1)
-                    .thenResolve([]);
+                ctx.userService.setup(m => m.querySingle(bbctx, 'abc', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(undefined);
             }
         },
         {
             code: '{kick;other user}',
             expected: 'Success',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Eris.Member);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
-
-                ctx.util.setup(x => x.kick(member.instance, bbctx.user, bbctx.user, 'Tag Kick'))
+                const user = ctx.createMock<Entities.User>();
+                ctx.userService.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
+                ctx.util.setup(m => m.kick(user.instance, bbctx.user, bbctx.user, 'Tag Kick'))
                     .verifiable(1)
                     .thenResolve('success');
             }
@@ -42,12 +38,9 @@ runSubtagTests({
                 { start: 0, end: 17, error: new BBTagRuntimeError('Bot has no permissions', 'I don\'t have permission to kick users!') }
             ],
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Eris.Member);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
-
-                ctx.util.setup(x => x.kick(member.instance, bbctx.user, bbctx.user, 'Tag Kick'))
+                const user = ctx.createMock<Entities.User>();
+                ctx.userService.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
+                ctx.util.setup(m => m.kick(user.instance, bbctx.user, bbctx.user, 'Tag Kick'))
                     .verifiable(1)
                     .thenResolve('noPerms');
             }
@@ -59,15 +52,10 @@ runSubtagTests({
                 { start: 0, end: 17, error: new BBTagRuntimeError('Bot has no permissions', 'I don\'t have permission to kick other user!') }
             ],
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Eris.Member);
-                const user = ctx.createMock(Eris.User);
-                member.setup(m => m.user).thenReturn(user.instance);
+                const user = ctx.createMock<Entities.User>();
                 user.setup(m => m.username).thenReturn('other user');
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
-
-                ctx.util.setup(x => x.kick(member.instance, bbctx.user, bbctx.user, 'Tag Kick'))
+                ctx.userService.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
+                ctx.util.setup(m => m.kick(user.instance, bbctx.user, bbctx.user, 'Tag Kick'))
                     .verifiable(1)
                     .thenResolve('memberTooHigh');
             }
@@ -79,12 +67,9 @@ runSubtagTests({
                 { start: 0, end: 17, error: new BBTagRuntimeError('User has no permissions', 'You don\'t have permission to kick users!') }
             ],
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Eris.Member);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
-
-                ctx.util.setup(x => x.kick(member.instance, bbctx.user, bbctx.user, 'Tag Kick'))
+                const user = ctx.createMock<Entities.User>();
+                ctx.userService.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
+                ctx.util.setup(m => m.kick(user.instance, bbctx.user, bbctx.user, 'Tag Kick'))
                     .verifiable(1)
                     .thenResolve('moderatorNoPerms');
             }
@@ -96,15 +81,10 @@ runSubtagTests({
                 { start: 0, end: 17, error: new BBTagRuntimeError('User has no permissions', 'You don\'t have permission to kick other user!') }
             ],
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Eris.Member);
-                const user = ctx.createMock(Eris.User);
-                member.setup(m => m.user).thenReturn(user.instance);
+                const user = ctx.createMock<Entities.User>();
                 user.setup(m => m.username).thenReturn('other user');
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
-
-                ctx.util.setup(x => x.kick(member.instance, bbctx.user, bbctx.user, 'Tag Kick'))
+                ctx.userService.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
+                ctx.util.setup(m => m.kick(user.instance, bbctx.user, bbctx.user, 'Tag Kick'))
                     .verifiable(1)
                     .thenResolve('moderatorTooLow');
             }
@@ -113,12 +93,9 @@ runSubtagTests({
             code: '{kick;other user;My reason here}',
             expected: 'Success',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Eris.Member);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
-
-                ctx.util.setup(x => x.kick(member.instance, bbctx.user, bbctx.user, 'My reason here'))
+                const user = ctx.createMock<Entities.User>();
+                ctx.userService.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
+                ctx.util.setup(m => m.kick(user.instance, bbctx.user, bbctx.user, 'My reason here'))
                     .verifiable(1)
                     .thenResolve('success');
             }
@@ -127,15 +104,9 @@ runSubtagTests({
             code: '{kick;other user;My reason here;x}',
             expected: 'Success',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Eris.Member);
-                const authorizer = bbctx.guild.members.get(ctx.users.authorizer.id)?.user;
-                if (authorizer === undefined)
-                    throw new Error('Authorizer missing');
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
-
-                ctx.util.setup(x => x.kick(member.instance, bbctx.user, authorizer, 'My reason here'))
+                const user = ctx.createMock<Entities.User>();
+                ctx.userService.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
+                ctx.util.setup(m => m.kick(user.instance, bbctx.user, ctx.users.authorizer, 'My reason here'))
                     .verifiable(1)
                     .thenResolve('success');
             }
@@ -144,12 +115,9 @@ runSubtagTests({
             code: '{kick;other user;My reason here;}',
             expected: 'Success',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Eris.Member);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
-
-                ctx.util.setup(x => x.kick(member.instance, bbctx.user, bbctx.user, 'My reason here'))
+                const user = ctx.createMock<Entities.User>();
+                ctx.userService.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
+                ctx.util.setup(m => m.kick(user.instance, bbctx.user, bbctx.user, 'My reason here'))
                     .verifiable(1)
                     .thenResolve('success');
             }

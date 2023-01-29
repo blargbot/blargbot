@@ -3,16 +3,19 @@ import { guard } from '@blargbot/core/utils/index.js';
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { ChannelNotFoundError } from '../../errors/index.js';
+import type { ChannelService } from '../../services/ChannelService.js';
 import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.channelIsThread;
 
-@Subtag.id('channelIsThread', 'isThread')
-@Subtag.ctorArgs()
+@Subtag.names('channelIsThread', 'isThread')
+@Subtag.ctorArgs(Subtag.service('channel'))
 export class ChannelIsThreadSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #channels: ChannelService;
+
+    public constructor(channels: ChannelService) {
         super({
             category: SubtagType.CHANNEL,
             definition: [
@@ -34,6 +37,8 @@ export class ChannelIsThreadSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#channels = channels;
     }
 
     public async isThreadChannel(
@@ -42,7 +47,7 @@ export class ChannelIsThreadSubtag extends CompiledSubtag {
         quiet: boolean
     ): Promise<boolean> {
         quiet ||= context.scopes.local.quiet ?? false;
-        const channel = await context.queryChannel(channelStr, { noLookup: quiet });
+        const channel = await this.#channels.querySingle(context, channelStr, { noLookup: quiet });
         if (channel === undefined) {
             throw new ChannelNotFoundError(channelStr)
                 .withDisplay(quiet ? '' : undefined);

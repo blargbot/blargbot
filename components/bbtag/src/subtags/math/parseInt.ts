@@ -6,7 +6,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.parseInt;
 
-@Subtag.id('parseInt')
+@Subtag.names('parseInt')
 @Subtag.ctorArgs(Subtag.converter())
 export class ParseIntSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;

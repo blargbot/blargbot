@@ -1,15 +1,21 @@
 import { Subtag } from '@blargbot/bbtag';
 import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError, UserNotFoundError } from '@blargbot/bbtag/errors/index.js';
 import { ReactionRemoveSubtag } from '@blargbot/bbtag/subtags/message/reactionRemove.js';
-import * as Eris from 'eris';
+import { Emote } from '@blargbot/discord-emote';
+import { argument } from '@blargbot/test-util/mock.js';
+import * as Discord from 'discord-api-types/v10';
 
 import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';
+
+const think = Emote.parse('🤔');
+const notLikeCat = Emote.parse('notlikecat:280110565161041921');
+const fakeEmote = Emote.parse('fakeemote:192612896213677963');
 
 runSubtagTests({
     subtag: Subtag.getDescriptor(ReactionRemoveSubtag),
     argCountBounds: { min: 1, max: Infinity },
     setupEach(ctx) {
-        ctx.roles.bot.permissions = Eris.Constants.Permissions.manageMessages.toString();
+        ctx.roles.bot.permissions = Discord.PermissionFlagsBits.ManageMessages.toString();
         ctx.isStaff = true;
     },
     cases: [
@@ -18,7 +24,7 @@ runSubtagTests({
             expected: '',
             postSetup(bbctx, ctx) {
                 ctx.limit.setup(m => m.check(bbctx, 'reactremove:requests')).verifiable(2).thenResolve(undefined);
-                const message = ctx.createMessage(SubtagTestContext.createApiMessage({
+                const message = SubtagTestContext.createMessage({
                     id: '2938453289453240',
                     channel_id: bbctx.channel.id,
                     reactions: [
@@ -33,11 +39,11 @@ runSubtagTests({
                             me: false
                         }
                     ]
-                }, ctx.users.other));
+                }, ctx.users.other);
 
-                ctx.util.setup(m => m.getMessage(bbctx.channel, message.id, true)).thenResolve(message);
-                ctx.discord.setup(m => m.removeMessageReaction(message.channel.id, message.id, '🤔', ctx.users.command.id)).verifiable(1).thenResolve(undefined);
-                ctx.discord.setup(m => m.removeMessageReaction(message.channel.id, message.id, 'notlikecat:280110565161041921', ctx.users.command.id)).verifiable(1).thenResolve(undefined);
+                ctx.messageService.setup(m => m.get(bbctx, bbctx.channel.id, message.id)).thenResolve(message);
+                ctx.messageService.setup(m => m.removeReactions(bbctx, message.channel_id, message.id, ctx.users.command.id, argument.isDeepEqual([think, notLikeCat])))
+                    .thenResolve({ success: [think, notLikeCat], failed: [] });
             }
         },
         {
@@ -45,11 +51,9 @@ runSubtagTests({
             expected: '',
             postSetup(bbctx, ctx) {
                 ctx.limit.setup(m => m.check(bbctx, 'reactremove:requests')).verifiable(2).thenResolve(undefined);
-                const general = bbctx.guild.channels.get(ctx.channels.general.id);
-                if (general === undefined)
-                    throw new Error('General channel is missing');
+                const general = ctx.channels.general;
 
-                const message = ctx.createMessage(SubtagTestContext.createApiMessage({
+                const message = SubtagTestContext.createMessage({
                     id: '2938453289453240',
                     channel_id: general.id,
                     reactions: [
@@ -64,13 +68,13 @@ runSubtagTests({
                             me: false
                         }
                     ]
-                }, ctx.users.other));
+                }, ctx.users.other);
 
-                ctx.util.setup(m => m.findChannels(bbctx.guild, 'general')).thenResolve([general]);
-                ctx.util.setup(m => m.findChannels(bbctx.guild, general.id)).thenResolve([general]);
-                ctx.util.setup(m => m.getMessage(general, message.id, true)).thenResolve(message);
-                ctx.discord.setup(m => m.removeMessageReaction(general.id, message.id, '🤔', ctx.users.command.id)).verifiable(1).thenResolve(undefined);
-                ctx.discord.setup(m => m.removeMessageReaction(general.id, message.id, 'notlikecat:280110565161041921', ctx.users.command.id)).verifiable(1).thenResolve(undefined);
+                ctx.channelService.setup(m => m.querySingle(bbctx, 'general', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(general);
+                ctx.channelService.setup(m => m.querySingle(bbctx, general.id, argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(general);
+                ctx.messageService.setup(m => m.get(bbctx, general.id, message.id)).thenResolve(message);
+                ctx.messageService.setup(m => m.removeReactions(bbctx, general.id, message.id, ctx.users.command.id, argument.isDeepEqual([think, notLikeCat])))
+                    .thenResolve({ success: [think, notLikeCat], failed: [] });
             }
         },
         {
@@ -78,11 +82,9 @@ runSubtagTests({
             expected: '',
             postSetup(bbctx, ctx) {
                 ctx.limit.setup(m => m.check(bbctx, 'reactremove:requests')).verifiable(2).thenResolve(undefined);
-                const otherUser = bbctx.guild.members.get(ctx.users.other.id);
-                if (otherUser === undefined)
-                    throw new Error('Other user is missing');
+                const otherUser = ctx.users.other;
 
-                const message = ctx.createMessage(SubtagTestContext.createApiMessage({
+                const message = SubtagTestContext.createMessage({
                     id: '2938453289453240',
                     channel_id: bbctx.channel.id,
                     reactions: [
@@ -97,16 +99,14 @@ runSubtagTests({
                             me: false
                         }
                     ]
-                }, ctx.users.other));
+                }, ctx.users.other);
 
-                ctx.util.setup(m => m.findChannels(bbctx.guild, '2938453289453240')).thenResolve([]);
-                ctx.util.setup(m => m.getUser('other')).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other')).thenResolve([otherUser]);
-                ctx.util.setup(m => m.getUser(otherUser.id)).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, otherUser.id)).thenResolve([otherUser]);
-                ctx.util.setup(m => m.getMessage(bbctx.channel, message.id, true)).thenResolve(message);
-                ctx.discord.setup(m => m.removeMessageReaction(bbctx.channel.id, message.id, '🤔', otherUser.id)).verifiable(1).thenResolve(undefined);
-                ctx.discord.setup(m => m.removeMessageReaction(bbctx.channel.id, message.id, 'notlikecat:280110565161041921', otherUser.id)).verifiable(1).thenResolve(undefined);
+                ctx.channelService.setup(m => m.querySingle(bbctx, '2938453289453240', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve();
+                ctx.userService.setup(m => m.querySingle(bbctx, 'other', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(otherUser);
+                ctx.userService.setup(m => m.querySingle(bbctx, otherUser.id, argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(otherUser);
+                ctx.messageService.setup(m => m.get(bbctx, bbctx.channel.id, message.id)).thenResolve(message);
+                ctx.messageService.setup(m => m.removeReactions(bbctx, bbctx.channel.id, message.id, otherUser.id, argument.isDeepEqual([think, notLikeCat])))
+                    .thenResolve({ success: [think, notLikeCat], failed: [] });
             }
         },
         {
@@ -114,14 +114,10 @@ runSubtagTests({
             expected: '',
             postSetup(bbctx, ctx) {
                 ctx.limit.setup(m => m.check(bbctx, 'reactremove:requests')).verifiable(2).thenResolve(undefined);
-                const general = bbctx.guild.channels.get(ctx.channels.general.id);
-                if (general === undefined)
-                    throw new Error('General channel is missing');
-                const otherUser = bbctx.guild.members.get(ctx.users.other.id);
-                if (otherUser === undefined)
-                    throw new Error('Other user is missing');
+                const general = ctx.channels.general;
+                const otherUser = ctx.users.other;
 
-                const message = ctx.createMessage(SubtagTestContext.createApiMessage({
+                const message = SubtagTestContext.createMessage({
                     id: '2938453289453240',
                     channel_id: general.id,
                     reactions: [
@@ -136,17 +132,15 @@ runSubtagTests({
                             me: false
                         }
                     ]
-                }, ctx.users.other));
+                }, ctx.users.other);
 
-                ctx.util.setup(m => m.findChannels(bbctx.guild, 'general')).thenResolve([general]);
-                ctx.util.setup(m => m.findChannels(bbctx.guild, general.id)).thenResolve([general]);
-                ctx.util.setup(m => m.getUser('other')).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other')).thenResolve([otherUser]);
-                ctx.util.setup(m => m.getUser(otherUser.id)).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, otherUser.id)).thenResolve([otherUser]);
-                ctx.util.setup(m => m.getMessage(general, message.id, true)).thenResolve(message);
-                ctx.discord.setup(m => m.removeMessageReaction(general.id, message.id, '🤔', otherUser.id)).verifiable(1).thenResolve(undefined);
-                ctx.discord.setup(m => m.removeMessageReaction(general.id, message.id, 'notlikecat:280110565161041921', otherUser.id)).verifiable(1).thenResolve(undefined);
+                ctx.channelService.setup(m => m.querySingle(bbctx, 'general', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(general);
+                ctx.channelService.setup(m => m.querySingle(bbctx, general.id, argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(general);
+                ctx.userService.setup(m => m.querySingle(bbctx, 'other', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(otherUser);
+                ctx.userService.setup(m => m.querySingle(bbctx, otherUser.id, argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(otherUser);
+                ctx.messageService.setup(m => m.get(bbctx, general.id, message.id)).thenResolve(message);
+                ctx.messageService.setup(m => m.removeReactions(bbctx, general.id, message.id, otherUser.id, argument.isDeepEqual([think, notLikeCat])))
+                    .thenResolve({ success: [think, notLikeCat], failed: [] });
             }
         },
         {
@@ -154,11 +148,9 @@ runSubtagTests({
             expected: '',
             postSetup(bbctx, ctx) {
                 ctx.limit.setup(m => m.check(bbctx, 'reactremove:requests')).verifiable(1).thenResolve(undefined);
-                const otherUser = bbctx.guild.members.get(ctx.users.other.id);
-                if (otherUser === undefined)
-                    throw new Error('Other user is missing');
+                const otherUser = ctx.users.other;
 
-                const message = ctx.createMessage(SubtagTestContext.createApiMessage({
+                const message = SubtagTestContext.createMessage({
                     id: '2938453289453240',
                     channel_id: bbctx.channel.id,
                     reactions: [
@@ -173,15 +165,14 @@ runSubtagTests({
                             me: false
                         }
                     ]
-                }, ctx.users.other));
+                }, ctx.users.other);
 
-                ctx.util.setup(m => m.findChannels(bbctx.guild, '2938453289453240')).thenResolve([]);
-                ctx.util.setup(m => m.getUser('other')).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other')).thenResolve([otherUser]);
-                ctx.util.setup(m => m.getUser(otherUser.id)).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, otherUser.id)).thenResolve([otherUser]);
-                ctx.util.setup(m => m.getMessage(bbctx.channel, message.id, true)).thenResolve(message);
-                ctx.discord.setup(m => m.removeMessageReaction(bbctx.channel.id, message.id, '🤔', otherUser.id)).verifiable(1).thenResolve(undefined);
+                ctx.channelService.setup(m => m.querySingle(bbctx, '2938453289453240', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve();
+                ctx.userService.setup(m => m.querySingle(bbctx, 'other', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(otherUser);
+                ctx.userService.setup(m => m.querySingle(bbctx, otherUser.id, argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(otherUser);
+                ctx.messageService.setup(m => m.get(bbctx, bbctx.channel.id, message.id)).thenResolve(message);
+                ctx.messageService.setup(m => m.removeReactions(bbctx, bbctx.channel.id, message.id, otherUser.id, argument.isDeepEqual([think])))
+                    .thenResolve({ success: [think], failed: [] });
             }
         },
         {
@@ -189,11 +180,9 @@ runSubtagTests({
             expected: '',
             postSetup(bbctx, ctx) {
                 ctx.limit.setup(m => m.check(bbctx, 'reactremove:requests')).verifiable(1).thenResolve(undefined);
-                const general = bbctx.guild.channels.get(ctx.channels.general.id);
-                if (general === undefined)
-                    throw new Error('General channel is missing');
+                const general = ctx.channels.general;
 
-                const message = ctx.createMessage(SubtagTestContext.createApiMessage({
+                const message = SubtagTestContext.createMessage({
                     id: '2938453289453240',
                     channel_id: general.id,
                     reactions: [
@@ -208,14 +197,14 @@ runSubtagTests({
                             me: false
                         }
                     ]
-                }, ctx.users.other));
+                }, ctx.users.other);
 
-                ctx.util.setup(m => m.findChannels(bbctx.guild, 'general')).thenResolve([general]);
-                ctx.util.setup(m => m.findChannels(bbctx.guild, general.id)).thenResolve([general]);
-                ctx.util.setup(m => m.getUser('🤔')).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, '🤔')).thenResolve([]);
-                ctx.util.setup(m => m.getMessage(general, message.id, true)).thenResolve(message);
-                ctx.discord.setup(m => m.removeMessageReaction(general.id, message.id, '🤔', ctx.users.command.id)).verifiable(1).thenResolve(undefined);
+                ctx.channelService.setup(m => m.querySingle(bbctx, 'general', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(general);
+                ctx.channelService.setup(m => m.querySingle(bbctx, general.id, argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(general);
+                ctx.userService.setup(m => m.querySingle(bbctx, '🤔', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(undefined);
+                ctx.messageService.setup(m => m.get(bbctx, general.id, message.id)).thenResolve(message);
+                ctx.messageService.setup(m => m.removeReactions(bbctx, general.id, message.id, ctx.users.command.id, argument.isDeepEqual([think])))
+                    .thenResolve({ success: [think], failed: [] });
             }
         },
         {
@@ -223,14 +212,10 @@ runSubtagTests({
             expected: '',
             postSetup(bbctx, ctx) {
                 ctx.limit.setup(m => m.check(bbctx, 'reactremove:requests')).verifiable(1).thenResolve(undefined);
-                const general = bbctx.guild.channels.get(ctx.channels.general.id);
-                if (general === undefined)
-                    throw new Error('General channel is missing');
-                const otherUser = bbctx.guild.members.get(ctx.users.other.id);
-                if (otherUser === undefined)
-                    throw new Error('Other user is missing');
+                const general = ctx.channels.general;
+                const otherUser = ctx.users.other;
 
-                const message = ctx.createMessage(SubtagTestContext.createApiMessage({
+                const message = SubtagTestContext.createMessage({
                     id: '2938453289453240',
                     channel_id: general.id,
                     reactions: [
@@ -245,16 +230,15 @@ runSubtagTests({
                             me: false
                         }
                     ]
-                }, ctx.users.other));
+                }, ctx.users.other);
 
-                ctx.util.setup(m => m.findChannels(bbctx.guild, 'general')).thenResolve([general]);
-                ctx.util.setup(m => m.findChannels(bbctx.guild, general.id)).thenResolve([general]);
-                ctx.util.setup(m => m.getUser('other')).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other')).thenResolve([otherUser]);
-                ctx.util.setup(m => m.getUser(otherUser.id)).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, otherUser.id)).thenResolve([otherUser]);
-                ctx.util.setup(m => m.getMessage(general, message.id, true)).thenResolve(message);
-                ctx.discord.setup(m => m.removeMessageReaction(general.id, message.id, '🤔', otherUser.id)).verifiable(1).thenResolve(undefined);
+                ctx.channelService.setup(m => m.querySingle(bbctx, 'general', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(general);
+                ctx.channelService.setup(m => m.querySingle(bbctx, general.id, argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(general);
+                ctx.userService.setup(m => m.querySingle(bbctx, 'other', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(otherUser);
+                ctx.userService.setup(m => m.querySingle(bbctx, otherUser.id, argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(otherUser);
+                ctx.messageService.setup(m => m.get(bbctx, general.id, message.id)).thenResolve(message);
+                ctx.messageService.setup(m => m.removeReactions(bbctx, general.id, message.id, otherUser.id, argument.isDeepEqual([think])))
+                    .thenResolve({ success: [think], failed: [] });
             }
         },
         {
@@ -264,14 +248,10 @@ runSubtagTests({
                 { start: 0, end: 48, error: new BBTagRuntimeError('Invalid Emojis') }
             ],
             postSetup(bbctx, ctx) {
-                const general = bbctx.guild.channels.get(ctx.channels.general.id);
-                if (general === undefined)
-                    throw new Error('General channel is missing');
-                const otherUser = bbctx.guild.members.get(ctx.users.other.id);
-                if (otherUser === undefined)
-                    throw new Error('Other user is missing');
+                const general = ctx.channels.general;
+                const otherUser = ctx.users.other;
 
-                const message = ctx.createMessage(SubtagTestContext.createApiMessage({
+                const message = SubtagTestContext.createMessage({
                     id: '2938453289453240',
                     channel_id: general.id,
                     reactions: [
@@ -286,15 +266,13 @@ runSubtagTests({
                             me: false
                         }
                     ]
-                }, ctx.users.other));
+                }, ctx.users.other);
 
-                ctx.util.setup(m => m.findChannels(bbctx.guild, 'general')).thenResolve([general]);
-                ctx.util.setup(m => m.findChannels(bbctx.guild, general.id)).thenResolve([general]);
-                ctx.util.setup(m => m.getUser('other')).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other')).thenResolve([otherUser]);
-                ctx.util.setup(m => m.getUser(otherUser.id)).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, otherUser.id)).thenResolve([otherUser]);
-                ctx.util.setup(m => m.getMessage(general, message.id, true)).thenResolve(message);
+                ctx.channelService.setup(m => m.querySingle(bbctx, 'general', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(general);
+                ctx.channelService.setup(m => m.querySingle(bbctx, general.id, argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(general);
+                ctx.userService.setup(m => m.querySingle(bbctx, 'other', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(otherUser);
+                ctx.userService.setup(m => m.querySingle(bbctx, otherUser.id, argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(otherUser);
+                ctx.messageService.setup(m => m.get(bbctx, general.id, message.id)).thenResolve(message);
             }
         },
         {
@@ -307,17 +285,12 @@ runSubtagTests({
                 ctx.channels.general.id = '027346489624927346';
             },
             postSetup(bbctx, ctx) {
-                const general = bbctx.guild.channels.get(ctx.channels.general.id);
-                if (general === undefined)
-                    throw new Error('General channel is missing');
-                const otherUser = bbctx.guild.members.get(ctx.users.other.id);
-                if (otherUser === undefined)
-                    throw new Error('Other user is missing');
+                const general = ctx.channels.general;
+                const otherUser = ctx.users.other;
 
-                ctx.util.setup(m => m.findChannels(bbctx.guild, 'general')).thenResolve([general]);
-                ctx.util.setup(m => m.findChannels(bbctx.guild, general.id)).thenResolve([]);
-                ctx.util.setup(m => m.getUser('other')).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other')).thenResolve([otherUser]);
+                ctx.channelService.setup(m => m.querySingle(bbctx, 'general', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(general);
+                ctx.channelService.setup(m => m.querySingle(bbctx, general.id, argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve();
+                ctx.userService.setup(m => m.querySingle(bbctx, 'other', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(otherUser);
             }
         },
         {
@@ -330,17 +303,12 @@ runSubtagTests({
                 ctx.roles.bot.permissions = '0';
             },
             postSetup(bbctx, ctx) {
-                const general = bbctx.guild.channels.get(ctx.channels.general.id);
-                if (general === undefined)
-                    throw new Error('General channel is missing');
-                const otherUser = bbctx.guild.members.get(ctx.users.other.id);
-                if (otherUser === undefined)
-                    throw new Error('Other user is missing');
+                const general = ctx.channels.general;
+                const otherUser = ctx.users.other;
 
-                ctx.util.setup(m => m.findChannels(bbctx.guild, 'general')).thenResolve([general]);
-                ctx.util.setup(m => m.findChannels(bbctx.guild, general.id)).thenResolve([general]);
-                ctx.util.setup(m => m.getUser('other')).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other')).thenResolve([otherUser]);
+                ctx.channelService.setup(m => m.querySingle(bbctx, 'general', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(general);
+                ctx.channelService.setup(m => m.querySingle(bbctx, general.id, argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(general);
+                ctx.userService.setup(m => m.querySingle(bbctx, 'other', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(otherUser);
             }
         },
         {
@@ -353,18 +321,13 @@ runSubtagTests({
                 ctx.channels.general.id = '2389476728423424378';
             },
             postSetup(bbctx, ctx) {
-                const general = bbctx.guild.channels.get(ctx.channels.general.id);
-                if (general === undefined)
-                    throw new Error('General channel is missing');
-                const otherUser = bbctx.guild.members.get(ctx.users.other.id);
-                if (otherUser === undefined)
-                    throw new Error('Other user is missing');
+                const general = ctx.channels.general;
+                const otherUser = ctx.users.other;
 
-                ctx.util.setup(m => m.findChannels(bbctx.guild, 'general')).thenResolve([general]);
-                ctx.util.setup(m => m.findChannels(bbctx.guild, general.id)).thenResolve([general]);
-                ctx.util.setup(m => m.getUser('other')).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other')).thenResolve([otherUser]);
-                ctx.util.setup(m => m.getMessage(general, '2938453289453240', true)).thenResolve(undefined);
+                ctx.channelService.setup(m => m.querySingle(bbctx, 'general', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(general);
+                ctx.channelService.setup(m => m.querySingle(bbctx, general.id, argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(general);
+                ctx.userService.setup(m => m.querySingle(bbctx, 'other', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(otherUser);
+                ctx.messageService.setup(m => m.get(bbctx, general.id, '2938453289453240')).thenResolve(undefined);
             }
         },
         {
@@ -377,14 +340,10 @@ runSubtagTests({
                 ctx.isStaff = false;
             },
             postSetup(bbctx, ctx) {
-                const general = bbctx.guild.channels.get(ctx.channels.general.id);
-                if (general === undefined)
-                    throw new Error('General channel is missing');
-                const otherUser = bbctx.guild.members.get(ctx.users.other.id);
-                if (otherUser === undefined)
-                    throw new Error('Other user is missing');
+                const general = ctx.channels.general;
+                const otherUser = ctx.users.other;
 
-                const message = ctx.createMessage(SubtagTestContext.createApiMessage({
+                const message = SubtagTestContext.createMessage({
                     id: '2938453289453240',
                     channel_id: general.id,
                     reactions: [
@@ -399,13 +358,12 @@ runSubtagTests({
                             me: false
                         }
                     ]
-                }, ctx.users.other));
+                }, ctx.users.other);
 
-                ctx.util.setup(m => m.findChannels(bbctx.guild, 'general')).thenResolve([general]);
-                ctx.util.setup(m => m.findChannels(bbctx.guild, general.id)).thenResolve([general]);
-                ctx.util.setup(m => m.getUser('other')).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other')).thenResolve([otherUser]);
-                ctx.util.setup(m => m.getMessage(general, message.id, true)).thenResolve(message);
+                ctx.channelService.setup(m => m.querySingle(bbctx, 'general', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(general);
+                ctx.channelService.setup(m => m.querySingle(bbctx, general.id, argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(general);
+                ctx.userService.setup(m => m.querySingle(bbctx, 'other', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(otherUser);
+                ctx.messageService.setup(m => m.get(bbctx, general.id, message.id)).thenResolve(message);
             }
         },
         {
@@ -417,14 +375,10 @@ runSubtagTests({
             postSetup(bbctx, ctx) {
                 ctx.limit.setup(m => m.check(bbctx, 'reactremove:requests')).verifiable(1).thenResolve(undefined);
                 bbctx.data.ownedMsgs.push('2938453289453240');
-                const general = bbctx.guild.channels.get(ctx.channels.general.id);
-                if (general === undefined)
-                    throw new Error('General channel is missing');
-                const otherUser = bbctx.guild.members.get(ctx.users.other.id);
-                if (otherUser === undefined)
-                    throw new Error('Other user is missing');
+                const general = ctx.channels.general;
+                const otherUser = ctx.users.other;
 
-                const message = ctx.createMessage(SubtagTestContext.createApiMessage({
+                const message = SubtagTestContext.createMessage({
                     id: '2938453289453240',
                     channel_id: general.id,
                     reactions: [
@@ -439,16 +393,15 @@ runSubtagTests({
                             me: false
                         }
                     ]
-                }, ctx.users.other));
+                }, ctx.users.other);
 
-                ctx.util.setup(m => m.findChannels(bbctx.guild, 'general')).thenResolve([general]);
-                ctx.util.setup(m => m.findChannels(bbctx.guild, general.id)).thenResolve([general]);
-                ctx.util.setup(m => m.getUser('other')).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other')).thenResolve([otherUser]);
-                ctx.util.setup(m => m.getUser(otherUser.id)).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, otherUser.id)).thenResolve([otherUser]);
-                ctx.util.setup(m => m.getMessage(general, message.id, true)).thenResolve(message);
-                ctx.discord.setup(m => m.removeMessageReaction(general.id, message.id, '🤔', otherUser.id)).verifiable(1).thenResolve(undefined);
+                ctx.channelService.setup(m => m.querySingle(bbctx, 'general', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(general);
+                ctx.channelService.setup(m => m.querySingle(bbctx, general.id, argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(general);
+                ctx.userService.setup(m => m.querySingle(bbctx, 'other', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(otherUser);
+                ctx.userService.setup(m => m.querySingle(bbctx, otherUser.id, argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(otherUser);
+                ctx.messageService.setup(m => m.get(bbctx, general.id, message.id)).thenResolve(message);
+                ctx.messageService.setup(m => m.removeReactions(bbctx, general.id, message.id, otherUser.id, argument.isDeepEqual([think])))
+                    .thenResolve({ success: [think], failed: [] });
             }
         },
         {
@@ -461,14 +414,10 @@ runSubtagTests({
                 ctx.users.other.id = '3298746234246796432';
             },
             postSetup(bbctx, ctx) {
-                const general = bbctx.guild.channels.get(ctx.channels.general.id);
-                if (general === undefined)
-                    throw new Error('General channel is missing');
-                const otherUser = bbctx.guild.members.get(ctx.users.other.id);
-                if (otherUser === undefined)
-                    throw new Error('Other user is missing');
+                const general = ctx.channels.general;
+                const otherUser = ctx.users.other;
 
-                const message = ctx.createMessage(SubtagTestContext.createApiMessage({
+                const message = SubtagTestContext.createMessage({
                     id: '2938453289453240',
                     channel_id: general.id,
                     reactions: [
@@ -483,15 +432,13 @@ runSubtagTests({
                             me: false
                         }
                     ]
-                }, ctx.users.other));
+                }, ctx.users.other);
 
-                ctx.util.setup(m => m.findChannels(bbctx.guild, 'general')).thenResolve([general]);
-                ctx.util.setup(m => m.findChannels(bbctx.guild, general.id)).thenResolve([general]);
-                ctx.util.setup(m => m.getUser('other')).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other')).thenResolve([otherUser]);
-                ctx.util.setup(m => m.getUser(otherUser.id)).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, otherUser.id)).thenResolve([]);
-                ctx.util.setup(m => m.getMessage(general, message.id, true)).thenResolve(message);
+                ctx.channelService.setup(m => m.querySingle(bbctx, 'general', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(general);
+                ctx.channelService.setup(m => m.querySingle(bbctx, general.id, argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(general);
+                ctx.userService.setup(m => m.querySingle(bbctx, 'other', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(otherUser);
+                ctx.userService.setup(m => m.querySingle(bbctx, otherUser.id, argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve();
+                ctx.messageService.setup(m => m.get(bbctx, general.id, message.id)).thenResolve(message);
             }
         },
         {
@@ -502,14 +449,10 @@ runSubtagTests({
             ],
             postSetup(bbctx, ctx) {
                 ctx.limit.setup(m => m.check(bbctx, 'reactremove:requests')).verifiable(1).thenResolve(undefined);
-                const general = bbctx.guild.channels.get(ctx.channels.general.id);
-                if (general === undefined)
-                    throw new Error('General channel is missing');
-                const otherUser = bbctx.guild.members.get(ctx.users.other.id);
-                if (otherUser === undefined)
-                    throw new Error('Other user is missing');
+                const general = ctx.channels.general;
+                const otherUser = ctx.users.other;
 
-                const message = ctx.createMessage(SubtagTestContext.createApiMessage({
+                const message = SubtagTestContext.createMessage({
                     id: '2938453289453240',
                     channel_id: general.id,
                     reactions: [
@@ -524,17 +467,16 @@ runSubtagTests({
                             me: false
                         }
                     ]
-                }, ctx.users.other));
+                }, ctx.users.other);
 
-                ctx.util.setup(m => m.findChannels(bbctx.guild, 'general')).thenResolve([general]);
-                ctx.util.setup(m => m.findChannels(bbctx.guild, general.id)).thenResolve([general]);
-                ctx.util.setup(m => m.getUser('other')).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other')).thenResolve([otherUser]);
-                ctx.util.setup(m => m.getUser(otherUser.id)).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, otherUser.id)).thenResolve([otherUser]);
-                ctx.util.setup(m => m.getMessage(general, message.id, true)).thenResolve(message);
-                ctx.discord.setup(m => m.removeMessageReaction(general.id, message.id, 'fakeemote:192612896213677963', otherUser.id)).verifiable(1)
-                    .thenReject(ctx.createRESTError(Eris.ApiError.UNKNOWN_EMOJI));
+                ctx.channelService.setup(m => m.querySingle(bbctx, 'general', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(general);
+                ctx.channelService.setup(m => m.querySingle(bbctx, general.id, argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(general);
+                ctx.userService.setup(m => m.querySingle(bbctx, 'other', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(otherUser);
+                ctx.userService.setup(m => m.querySingle(bbctx, otherUser.id, argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(otherUser);
+                ctx.messageService.setup(m => m.get(bbctx, general.id, message.id)).thenResolve(message);
+                ctx.messageService.setup(m => m.removeReactions(bbctx, general.id, message.id, otherUser.id, argument.isDeepEqual([fakeEmote])))
+                    .verifiable(1)
+                    .thenResolve({ success: [], failed: [fakeEmote] });
 
             }
         },
@@ -546,14 +488,10 @@ runSubtagTests({
             ],
             postSetup(bbctx, ctx) {
                 ctx.limit.setup(m => m.check(bbctx, 'reactremove:requests')).verifiable(1).thenResolve(undefined);
-                const general = bbctx.guild.channels.get(ctx.channels.general.id);
-                if (general === undefined)
-                    throw new Error('General channel is missing');
-                const otherUser = bbctx.guild.members.get(ctx.users.other.id);
-                if (otherUser === undefined)
-                    throw new Error('Other user is missing');
+                const general = ctx.channels.general;
+                const otherUser = ctx.users.other;
 
-                const message = ctx.createMessage(SubtagTestContext.createApiMessage({
+                const message = SubtagTestContext.createMessage({
                     id: '2938453289453240',
                     channel_id: general.id,
                     reactions: [
@@ -568,17 +506,16 @@ runSubtagTests({
                             me: false
                         }
                     ]
-                }, ctx.users.other));
+                }, ctx.users.other);
 
-                ctx.util.setup(m => m.findChannels(bbctx.guild, 'general')).thenResolve([general]);
-                ctx.util.setup(m => m.findChannels(bbctx.guild, general.id)).thenResolve([general]);
-                ctx.util.setup(m => m.getUser('other')).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other')).thenResolve([otherUser]);
-                ctx.util.setup(m => m.getUser(otherUser.id)).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, otherUser.id)).thenResolve([otherUser]);
-                ctx.util.setup(m => m.getMessage(general, message.id, true)).thenResolve(message);
-                ctx.discord.setup(m => m.removeMessageReaction(general.id, message.id, '🤔', otherUser.id)).verifiable(1)
-                    .thenReject(ctx.createRESTError(Eris.ApiError.MISSING_PERMISSIONS));
+                ctx.channelService.setup(m => m.querySingle(bbctx, 'general', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(general);
+                ctx.channelService.setup(m => m.querySingle(bbctx, general.id, argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(general);
+                ctx.userService.setup(m => m.querySingle(bbctx, 'other', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(otherUser);
+                ctx.userService.setup(m => m.querySingle(bbctx, otherUser.id, argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(otherUser);
+                ctx.messageService.setup(m => m.get(bbctx, general.id, message.id)).thenResolve(message);
+                ctx.messageService.setup(m => m.removeReactions(bbctx, general.id, message.id, otherUser.id, argument.isDeepEqual([think])))
+                    .verifiable(1)
+                    .thenResolve('noPerms');
 
             }
         }

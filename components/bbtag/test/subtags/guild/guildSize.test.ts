@@ -1,10 +1,10 @@
 import { Subtag } from '@blargbot/bbtag';
 import { GuildSizeSubtag } from '@blargbot/bbtag/subtags/guild/guildSize.js';
-import { snowflake } from '@blargbot/core/utils/index.js';
-import * as Eris from 'eris';
+import { snowflake } from '@blargbot/discord-util';
 
-import { runSubtagTests } from '../SubtagTestSuite.js';
+import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';
 
+const createSnowflake = snowflake.nextFactory();
 runSubtagTests({
     subtag: Subtag.getDescriptor(GuildSizeSubtag),
     argCountBounds: { min: 0, max: 0 },
@@ -13,13 +13,8 @@ runSubtagTests({
             code: '{guildsize}',
             expected: '123',
             postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.ensureMemberCache(bbctx.guild))
-                    .thenCall(() => {
-                        for (let i = bbctx.guild.members.size; i < 123; i++)
-                            bbctx.guild.members.add(new Eris.Member({ id: snowflake.create().toString() }));
-                    })
-                    .thenResolve(undefined);
-
+                ctx.userService.setup(m => m.getAll(bbctx))
+                    .thenResolve(Array.from({ length: 123 }, () => SubtagTestContext.createMember({ id: createSnowflake() })));
             }
         }
     ]

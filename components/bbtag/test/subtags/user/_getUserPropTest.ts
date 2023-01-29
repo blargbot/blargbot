@@ -1,29 +1,29 @@
-import type { BBTagContext } from '@blargbot/bbtag';
-import type { BBTagRuntimeError} from '@blargbot/bbtag/errors/index.js';
+import type { BBTagContext, Entities, FindEntityOptions } from '@blargbot/bbtag';
+import type { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
 import { UserNotFoundError } from '@blargbot/bbtag/errors/index.js';
 import { argument } from '@blargbot/test-util/mock.js';
-import type Discord from 'discord-api-types/v9';
-import * as Eris from 'eris';
 
 import type { SubtagTestCase, SubtagTestContext } from '../SubtagTestSuite.js';
 
 export function createGetUserPropTestCases(options: GetUserPropTestData): SubtagTestCase[] {
+    if (options.quiet !== false)
+        options.getQueryOptions ??= q => ({ noLookup: q });
     return [...createGetUserPropTestCasesIter(options)];
 }
 
 export function* createGetUserPropTestCasesIter(options: GetUserPropTestData): Generator<SubtagTestCase, void, undefined> {
     if (options.includeNoArgs !== false)
-        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'command', []));
+        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, false, c, 'command', []));
 
-    yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'command', ['']));
+    yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, false, c, 'command', ['']));
     if (options.quiet !== false) {
-        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'command', ['', '']));
-        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'command', ['', 'q']));
+        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, false, c, 'command', ['', '']));
+        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, true, c, 'command', ['', 'q']));
     }
-    yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'other', [c.queryString ?? 'other user']));
+    yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, false, c, 'other', [c.queryString ?? 'other user']));
     if (options.quiet !== false) {
-        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'other', [c.queryString ?? 'other user', '']));
-        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'other', [c.queryString ?? 'other user', 'q']));
+        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, false, c, 'other', [c.queryString ?? 'other user', '']));
+        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, true, c, 'other', [c.queryString ?? 'other user', 'q']));
     }
     yield {
         code: options.generateCode('unknown user'),
@@ -31,11 +31,8 @@ export function* createGetUserPropTestCasesIter(options: GetUserPropTestData): G
         errors: [
             { start: 0, end: options.generateCode('unknown user').length, error: new UserNotFoundError('unknown user') }
         ],
-        setup(ctx) {
-            ctx.util.setup(m => m.getUser('unknown user'), false).thenResolve(undefined);
-            ctx.util.setup(m => m.findMembers(argument.isInstanceof(Eris.Guild).and(g => g.id === ctx.guild.id).value, 'unknown user'))
-                .verifiable(1)
-                .thenResolve([]);
+        postSetup(bbctx, ctx) {
+            ctx.userService.setup(m => m.querySingle(bbctx, 'unknown user', argument.isDeepEqual(options.getQueryOptions?.(false))), false).thenResolve(undefined);
         }
     };
     if (options.quiet !== false) {
@@ -45,11 +42,8 @@ export function* createGetUserPropTestCasesIter(options: GetUserPropTestData): G
             errors: [
                 { start: 0, end: options.generateCode('unknown user', '').length, error: new UserNotFoundError('unknown user') }
             ],
-            setup(ctx) {
-                ctx.util.setup(m => m.getUser('unknown user'), false).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(argument.isInstanceof(Eris.Guild).and(g => g.id === ctx.guild.id).value, 'unknown user'))
-                    .verifiable(1)
-                    .thenResolve([]);
+            postSetup(bbctx, ctx) {
+                ctx.userService.setup(m => m.querySingle(bbctx, 'unknown user', argument.isDeepEqual(options.getQueryOptions?.(false))), false).thenResolve(undefined);
             }
         };
         yield {
@@ -58,11 +52,8 @@ export function* createGetUserPropTestCasesIter(options: GetUserPropTestData): G
             errors: [
                 { start: 0, end: options.generateCode('unknown user', 'q').length, error: new UserNotFoundError('unknown user').withDisplay(options.quiet) }
             ],
-            setup(ctx) {
-                ctx.util.setup(m => m.getUser('unknown user'), false).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(argument.isInstanceof(Eris.Guild).and(g => g.id === ctx.guild.id).value, 'unknown user'))
-                    .verifiable(1)
-                    .thenResolve([]);
+            postSetup(bbctx, ctx) {
+                ctx.userService.setup(m => m.querySingle(bbctx, 'unknown user', argument.isDeepEqual(options.getQueryOptions?.(true))), false).thenResolve(undefined);
             }
         };
     }
@@ -72,6 +63,7 @@ interface GetUserPropTestData {
     cases: GetUserPropTestCase[];
     quiet?: string | false;
     includeNoArgs?: boolean;
+    getQueryOptions?: (quiet: boolean) => FindEntityOptions;
     generateCode: (...args: [userStr?: string, quietStr?: string]) => string;
 }
 
@@ -80,39 +72,33 @@ interface GetUserPropTestCase {
     error?: BBTagRuntimeError;
     queryString?: string;
     generateCode?: (...args: [userStr?: string, quietStr?: string]) => string;
-    setup?: (member: RequiredProps<Discord.APIGuildMember, 'user'>, context: SubtagTestContext) => void;
-    postSetup?: (member: Eris.Member, context: BBTagContext, test: SubtagTestContext) => void;
-    assert?: (result: string, member: Eris.Member, context: BBTagContext, test: SubtagTestContext) => void;
+    setup?: (member: Entities.User, context: SubtagTestContext, quiet: boolean) => void;
+    postSetup?: (member: Entities.User, context: BBTagContext, test: SubtagTestContext, quiet: boolean) => void;
+    assert?: (result: string, member: Entities.User, context: BBTagContext, test: SubtagTestContext, quiet: boolean) => void;
 }
 
-function createTestCase(data: GetUserPropTestData, testCase: GetUserPropTestCase, memberKey: keyof SubtagTestContext['members'], args: Parameters<GetUserPropTestData['generateCode']>): SubtagTestCase {
+function createTestCase(data: GetUserPropTestData, isQuiet: boolean, testCase: GetUserPropTestCase, memberKey: keyof SubtagTestContext['users'], args: Parameters<GetUserPropTestData['generateCode']>): SubtagTestCase {
     const code = testCase.generateCode?.(...args) ?? data.generateCode(...args);
     return {
         code,
         expected: testCase.expected,
         errors: testCase.error === undefined ? [] : [{ start: 0, end: code.length, error: testCase.error }],
         setup(ctx) {
-            testCase.setup?.(ctx.members[memberKey], ctx);
+            testCase.setup?.(ctx.users[memberKey], ctx, isQuiet);
         },
         postSetup(bbctx, ctx) {
-            const member = bbctx.guild.members.get(ctx.members[memberKey].user.id);
-            if (member === undefined)
-                throw new Error('Cannot find the member under test');
+            const member = ctx.users[memberKey];
             if (args[0] !== undefined && args[0] !== '') {
-                ctx.util.setup(m => m.getUser(args[0] as string), false).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(member.guild, args[0]))
-                    .thenResolve([member]);
+                ctx.userService.setup(m => m.querySingle(bbctx, args[0] as string, argument.isDeepEqual(data.getQueryOptions?.(isQuiet))), false).thenResolve(member);
             }
 
-            testCase.postSetup?.(member, bbctx, ctx);
+            testCase.postSetup?.(member, bbctx, ctx, isQuiet);
         },
         assert(bbctx, result, ctx) {
             if (testCase.assert === undefined)
                 return;
-            const member = bbctx.guild.members.get(ctx.members[memberKey].user.id);
-            if (member === undefined)
-                throw new Error('Cannot find the member under test');
-            testCase.assert(result, member, bbctx, ctx);
+            const member = ctx.users[memberKey];
+            testCase.assert(result, member, bbctx, ctx, isQuiet);
         }
     };
 }

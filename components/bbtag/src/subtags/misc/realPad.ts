@@ -7,7 +7,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.realPad;
 
-@Subtag.id('realPad')
+@Subtag.names('realPad')
 @Subtag.ctorArgs(Subtag.converter())
 export class RealPadSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;

@@ -1,5 +1,6 @@
 import type { CommandResult, GuildCommandContext } from '@blargbot/cluster/types.js';
 import { CommandType, guard } from '@blargbot/cluster/utils/index.js';
+import { markup } from '@blargbot/discord-util';
 import type { StoredGuildEventLogType } from '@blargbot/domain/models/index.js';
 import type { IFormattable } from '@blargbot/formatting';
 import { hasProperty } from '@blargbot/guards';
@@ -88,7 +89,7 @@ export class LogCommand extends GuildCommand {
         await context.database.guilds.setLogChannel(context.channel.guild.id, validEvents, channel?.id);
         const eventStrings = validEvents.map(e => {
             if (e.startsWith('role:'))
-                return `<@&${e.slice(5)}>`;
+                return markup.role(e.slice(5));
             return `\`${e}\``;
         });
 

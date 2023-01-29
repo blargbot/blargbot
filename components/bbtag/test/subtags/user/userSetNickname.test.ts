@@ -1,8 +1,10 @@
+import { randomUUID } from 'node:crypto';
+
+import type { Entities } from '@blargbot/bbtag';
 import { Subtag } from '@blargbot/bbtag';
 import { UserNotFoundError } from '@blargbot/bbtag/errors/index.js';
 import { UserSetNickSubtag } from '@blargbot/bbtag/subtags/user/userSetNickname.js';
 import { argument } from '@blargbot/test-util/mock.js';
-import * as Eris from 'eris';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
@@ -13,21 +15,21 @@ runSubtagTests({
         {
             code: '{usersetnick;abc}',
             expected: '',
-            setup(ctx) {
-                ctx.discord.setup(m => m.editGuildMember(ctx.guild.id, ctx.users.command.id, argument.isDeepEqual({ nick: 'abc' }), 'Command User#0000'))
-                    .verifiable(1)
-                    .thenResolve();
+            postSetup(bbctx, ctx) {
+                ctx.userService.setup(m => m.edit(bbctx, ctx.users.command.id, argument.isDeepEqual({ nick: 'abc' }))).thenResolve(undefined);
             }
         },
         {
             code: '{usersetnick;abc;other user}',
             expected: '',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Eris.Member);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
+                const member = ctx.createMock<Entities.User>();
+                const userId = randomUUID();
+                member.setup(m => m.id).thenReturn(userId);
+                ctx.userService.setup(m => m.querySingle(bbctx, 'other user'))
                     .verifiable(1)
-                    .thenResolve([member.instance]);
-                member.setup(m => m.edit(argument.isDeepEqual({ nick: 'abc' }), 'Command User#0000'))
+                    .thenResolve(member.instance);
+                ctx.userService.setup(m => m.edit(bbctx, userId, argument.isDeepEqual({ nick: 'abc' })))
                     .verifiable(1)
                     .thenResolve();
             }
@@ -36,11 +38,13 @@ runSubtagTests({
             code: '{usersetnick;abc;blargbot}',
             expected: '',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Eris.Member);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'blargbot'))
+                const member = ctx.createMock<Entities.User>();
+                const userId = randomUUID();
+                member.setup(m => m.id).thenReturn(userId);
+                ctx.userService.setup(m => m.querySingle(bbctx, 'blargbot'))
                     .verifiable(1)
-                    .thenResolve([member.instance]);
-                member.setup(m => m.edit(argument.isDeepEqual({ nick: 'abc' }), 'Command User#0000'))
+                    .thenResolve(member.instance);
+                ctx.userService.setup(m => m.edit(bbctx, userId, argument.isDeepEqual({ nick: 'abc' })))
                     .verifiable(1)
                     .thenResolve();
             }
@@ -53,9 +57,9 @@ runSubtagTests({
                 { start: 0, end: 33, error: new UserNotFoundError('unknown user') }
             ],
             postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'unknown user'))
+                ctx.userService.setup(m => m.querySingle(bbctx, 'unknown user'))
                     .verifiable(1)
-                    .thenResolve([]);
+                    .thenResolve(undefined);
             }
         }
     ]

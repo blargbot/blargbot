@@ -10,7 +10,7 @@ import { overrides, SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.filter;
 
-@Subtag.id('filter')
+@Subtag.names('filter')
 @Subtag.ctorArgs(Subtag.arrayTools(), Subtag.converter())
 export class FilterSubtag extends CompiledSubtag {
     readonly #arrayTools: BBTagArrayTools;

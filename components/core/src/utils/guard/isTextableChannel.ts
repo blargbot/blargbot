@@ -1,20 +1,18 @@
 import * as Eris from 'eris';
 
-type ChannelType = typeof Eris.Constants['ChannelTypes'];
-const isTextableMap: Record<ChannelType[keyof ChannelType], boolean> = {
-    [Eris.Constants.ChannelTypes.DM]: true,
-    [Eris.Constants.ChannelTypes.GROUP_DM]: true,
-    [Eris.Constants.ChannelTypes.GUILD_CATEGORY]: false,
-    [Eris.Constants.ChannelTypes.GUILD_NEWS]: true,
-    [Eris.Constants.ChannelTypes.GUILD_NEWS_THREAD]: true,
-    [Eris.Constants.ChannelTypes.GUILD_PRIVATE_THREAD]: true,
-    [Eris.Constants.ChannelTypes.GUILD_PUBLIC_THREAD]: true,
-    [Eris.Constants.ChannelTypes.GUILD_STAGE_VOICE]: false,
-    [Eris.Constants.ChannelTypes.GUILD_STORE]: false,
-    [Eris.Constants.ChannelTypes.GUILD_TEXT]: true,
-    [Eris.Constants.ChannelTypes.GUILD_VOICE]: true
-};
+type TextableType = Eris.KnownTextableChannel['type'];
+const textableTypes = new Set(Object.keys<`${TextableType}`>({
+    [Eris.Constants.ChannelTypes.DM]: null,
+    [Eris.Constants.ChannelTypes.GROUP_DM]: null,
+    [Eris.Constants.ChannelTypes.GUILD_NEWS]: null,
+    [Eris.Constants.ChannelTypes.GUILD_NEWS_THREAD]: null,
+    [Eris.Constants.ChannelTypes.GUILD_PRIVATE_THREAD]: null,
+    [Eris.Constants.ChannelTypes.GUILD_PUBLIC_THREAD]: null,
+    [Eris.Constants.ChannelTypes.GUILD_TEXT]: null,
+    [Eris.Constants.ChannelTypes.GUILD_VOICE]: null,
+    [Eris.Constants.ChannelTypes.GUILD_STAGE_VOICE]: null
+}).map(v => Number(v) as TextableType));
 
-export function isTextableChannel<T extends Eris.KnownChannel>(channel: T): channel is T & Eris.KnownGuildTextableChannel {
-    return isTextableMap[channel.type] && 'messages' in channel;
+export function isTextableChannel<T extends { type: number; }>(channel: T): channel is Extract<T, { type: TextableType; }> {
+    return textableTypes.has(channel.type);
 }

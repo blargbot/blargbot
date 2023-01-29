@@ -2,7 +2,7 @@ import { Subtag } from '@blargbot/bbtag';
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
 import { RoleSetColorSubtag } from '@blargbot/bbtag/subtags/role/roleSetColor.js';
 import { argument } from '@blargbot/test-util/mock.js';
-import * as Eris from 'eris';
+import * as Discord from 'discord-api-types/v10';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetRolePropTestCases } from './_getRolePropTest.js';
@@ -11,8 +11,8 @@ runSubtagTests({
     subtag: Subtag.getDescriptor(RoleSetColorSubtag),
     argCountBounds: { min: 1, max: 3 },
     setupEach(ctx) {
-        ctx.roles.authorizer.permissions = Eris.Constants.Permissions.manageRoles.toString();
-        ctx.members.authorizer.roles.push(ctx.roles.top.id);
+        ctx.roles.authorizer.permissions = Discord.PermissionFlagsBits.ManageRoles.toString();
+        ctx.users.authorizer.member.roles.push(ctx.roles.top.id);
     },
     cases: [
         ...createGetRolePropTestCases({
@@ -21,12 +21,12 @@ runSubtagTests({
                 return `{${['rolesetcolor', ...args].join(';')}}`;
             },
             notFound: () => new BBTagRuntimeError('Role not found'),
+            getQueryOptions: () => ({ noLookup: false }),
             cases: [
                 {
                     expected: '',
-                    postSetup(role, _, ctx) {
-                        ctx.discord.setup(m => m.editRole(ctx.guild.id, role.id, argument.isDeepEqual({ color: 0 }), 'Command User#0000'))
-                            .thenResolve(role);
+                    postSetup(role, bbctx, ctx) {
+                        ctx.roleService.setup(m => m.edit(bbctx, role.id, argument.isDeepEqual({ color: 0 }))).thenResolve(undefined);
                     }
                 }
             ]
@@ -45,9 +45,8 @@ runSubtagTests({
             cases: [
                 {
                     expected: '',
-                    postSetup(role, _, ctx) {
-                        ctx.discord.setup(m => m.editRole(ctx.guild.id, role.id, argument.isDeepEqual({ color: color }), 'Command User#0000'))
-                            .thenResolve(role);
+                    postSetup(role, bbctx, ctx) {
+                        ctx.roleService.setup(m => m.edit(bbctx, role.id, argument.isDeepEqual({ color: color }))).thenResolve(undefined);
                     }
                 }
             ]
@@ -68,16 +67,8 @@ runSubtagTests({
             errors: [
                 { start: 0, end: 28, error: new BBTagRuntimeError('Role above author') }
             ],
-            setup(ctx) {
-                ctx.roles.top.id = '3298746326924';
-            },
             postSetup(bbctx, ctx) {
-                const role = bbctx.guild.roles.get('3298746326924');
-                if (role === undefined)
-                    throw new Error('Unable to locate role under test');
-
-                ctx.util.setup(m => m.findRoles(bbctx.guild, '3298746326924'))
-                    .thenResolve([role]);
+                ctx.roleService.setup(m => m.querySingle(bbctx, '3298746326924', argument.isDeepEqual({ noLookup: false }))).thenResolve(ctx.roles.top);
             }
         },
         {
@@ -90,15 +81,8 @@ runSubtagTests({
                 ctx.roles.other.id = '3298746326924';
             },
             postSetup(bbctx, ctx) {
-                const err = ctx.createRESTError(Eris.ApiError.MISSING_PERMISSIONS);
-                const role = bbctx.guild.roles.get('3298746326924');
-                if (role === undefined)
-                    throw new Error('Unable to locate role under test');
-
-                ctx.util.setup(m => m.findRoles(bbctx.guild, '3298746326924'))
-                    .thenResolve([role]);
-                ctx.discord.setup(m => m.editRole(ctx.guild.id, role.id, argument.isDeepEqual({ color: 0 }), 'Command User#0000'))
-                    .thenReject(err);
+                ctx.roleService.setup(m => m.querySingle(bbctx, '3298746326924', argument.isDeepEqual({ noLookup: false }))).thenResolve(ctx.roles.bot);
+                ctx.roleService.setup(m => m.edit(bbctx, ctx.roles.bot.id, argument.isDeepEqual({ color: 0 }))).thenResolve({ error: 'Test REST error' });
             }
         },
         {
@@ -111,15 +95,8 @@ runSubtagTests({
                 ctx.roles.other.id = '3298746326924';
             },
             postSetup(bbctx, ctx) {
-                const err = ctx.createRESTError(Eris.ApiError.NOT_AUTHORIZED, 'Some other error message');
-                const role = bbctx.guild.roles.get('3298746326924');
-                if (role === undefined)
-                    throw new Error('Unable to locate role under test');
-
-                ctx.util.setup(m => m.findRoles(bbctx.guild, '3298746326924'))
-                    .thenResolve([role]);
-                ctx.discord.setup(m => m.editRole(ctx.guild.id, role.id, argument.isDeepEqual({ color: 0 }), 'Command User#0000'))
-                    .thenReject(err);
+                ctx.roleService.setup(m => m.querySingle(bbctx, '3298746326924', argument.isDeepEqual({ noLookup: false }))).thenResolve(ctx.roles.bot);
+                ctx.roleService.setup(m => m.edit(bbctx, ctx.roles.bot.id, argument.isDeepEqual({ color: 0 }))).thenResolve({ error: 'Some other error message' });
             }
         }
     ]

@@ -1,8 +1,8 @@
 import { sleep } from '@blargbot/async-tools';
 import type { Database } from '@blargbot/database';
+import { markup } from '@blargbot/discord-util';
 import type { Logger } from '@blargbot/logger';
 import { Timer } from '@blargbot/timer';
-import type * as Eris from 'eris';
 import moment from 'moment-timezone';
 
 import { BBTagContext } from './BBTagContext.js';
@@ -18,7 +18,6 @@ import { BBTagRuntimeState } from './types.js';
 
 export class BBTagEngine {
     readonly #cooldowns: TagCooldownManager;
-    public get discord(): Eris.Client { return this.dependencies.discord; }
     public get logger(): Logger { return this.dependencies.logger; }
     public get database(): Database { return this.dependencies.database; }
     public get util(): BBTagUtilities { return this.dependencies.util; }
@@ -60,7 +59,7 @@ export class BBTagEngine {
         if (context.cooldownEnd.isAfter(moment())) {
             const remaining = moment.duration(context.cooldownEnd.diff(moment()));
             if (context.data.stackSize === 0)
-                await context.sendOutput(`This ${context.isCC ? 'custom command' : 'tag'} is currently under cooldown. Please try again <t:${moment().add(remaining).unix()}:R>.`);
+                await context.sendOutput(`This ${context.isCC ? 'custom command' : 'tag'} is currently under cooldown. Please try again ${markup.timestamp.relative(moment().add(remaining).toDate())}.`);
             content = context.addError(new TagCooldownError(context.tagName, context.isCC, remaining), caller);
         } else if (context.data.stackSize > 200) {
             context.data.state = BBTagRuntimeState.ABORT;

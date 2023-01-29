@@ -1,4 +1,5 @@
-import { snowflake } from '@blargbot/core/utils/index.js';
+import { randomUUID } from 'node:crypto';
+
 import limax from 'limax';
 import unorm from 'unorm';
 
@@ -13,7 +14,7 @@ const limaxOpt = {
 export function decancer(text: string): string {
     const opt = {
         ...limaxOpt,
-        replacement: snowflake.create().toString()
+        replacement: randomUUID()
     };
     return unorm.nfkd(text)
         .replace(/[^ ]+/g, text => limax(text, opt))

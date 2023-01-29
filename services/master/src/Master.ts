@@ -6,10 +6,10 @@ import type { Configuration } from '@blargbot/config';
 import { BaseClient } from '@blargbot/core/BaseClient.js';
 import { BaseService } from '@blargbot/core/serviceTypes/index.js';
 import type { EvalResult } from '@blargbot/core/types.js';
+import { markup } from '@blargbot/discord-util';
 import type { Logger } from '@blargbot/logger';
 import type { MasterOptions } from '@blargbot/master/types.js';
 import { ModuleLoader } from '@blargbot/modules';
-import moment from 'moment-timezone';
 import fetch from 'node-fetch';
 import type { metric } from 'prom-client';
 
@@ -77,7 +77,7 @@ export class Master extends BaseClient {
                     'Content-Type': 'application/json'
                     /* eslint-enable @typescript-eslint/naming-convention */
                 },
-                body: JSON.stringify({ content: `My master process just initialized on <t:${moment().unix()}>.` })
+                body: JSON.stringify({ content: `My master process just initialized on ${markup.timestamp(new Date())}.` })
             });
         } catch (err: unknown) {
             this.logger.error('Could not post startup message', err);

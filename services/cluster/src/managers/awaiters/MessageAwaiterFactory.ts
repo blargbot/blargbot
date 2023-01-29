@@ -14,7 +14,7 @@ export class MessageAwaiterFactory extends AwaiterFactoryBase<Eris.KnownMessage>
     }
 
     public getAwaiter(pools: Iterable<string>, check?: (item: Eris.KnownMessage) => Awaitable<boolean>, timeout?: number): Awaiter<Eris.KnownMessage>;
-    public getAwaiter<T extends Eris.TextableChannel>(pools: Iterable<T>, check?: (item: Eris.Message<T>) => Awaitable<boolean>, timeout?: number): Awaiter<Eris.Message<T>>;
+    public getAwaiter<T extends Eris.Textable & Eris.Channel>(pools: Iterable<T>, check?: (item: Eris.Message<T>) => Awaitable<boolean>, timeout?: number): Awaiter<Eris.Message<T>>;
     public getAwaiter(pools: Iterable<string | Eris.KnownTextableChannel>, check?: (item: Eris.KnownMessage) => Awaitable<boolean>, timeout?: number): Awaiter<Eris.KnownMessage> {
         return super.getAwaiter(getIds(pools), check, timeout);
     }

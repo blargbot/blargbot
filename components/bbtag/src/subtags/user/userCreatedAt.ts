@@ -1,18 +1,22 @@
+import { snowflake } from '@blargbot/discord-util';
 import moment from 'moment-timezone';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { UserNotFoundError } from '../../errors/index.js';
+import type { UserService } from '../../services/UserService.js';
 import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.userCreatedAt;
 
-@Subtag.id('userCreatedAt')
-@Subtag.ctorArgs()
+@Subtag.names('userCreatedAt')
+@Subtag.ctorArgs(Subtag.service('user'))
 export class UserCreatedAtSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #users: UserService;
+
+    public constructor(users: UserService) {
         super({
             category: SubtagType.USER,
             definition: [
@@ -34,17 +38,20 @@ export class UserCreatedAtSubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#users = users;
+
     }
 
     public async getUserCreatedAt(context: BBTagContext, format: string, userStr: string, quiet: boolean): Promise<string> {
         quiet ||= context.scopes.local.quiet ?? false;
-        const user = await context.queryUser(userStr, { noLookup: quiet });
+        const user = await this.#users.querySingle(context, userStr, { noLookup: quiet });
 
         if (user === undefined) {
             throw new UserNotFoundError(userStr)
                 .withDisplay(quiet ? '' : undefined);
         }
 
-        return moment(user.createdAt).utcOffset(0).format(format);
+        const { timestampMs } = snowflake.parse(user.id);
+        return moment(timestampMs).utcOffset(0).format(format);
     }
 }

@@ -1,5 +1,6 @@
 import type { CommandResult, GuildCommandContext } from '@blargbot/cluster/types.js';
-import { CommandType, discord } from '@blargbot/cluster/utils/index.js';
+import { CommandType } from '@blargbot/cluster/utils/index.js';
+import { findRoleColor } from '@blargbot/discord-util';
 import { util } from '@blargbot/formatting';
 import * as Eris from 'eris';
 import moment from 'moment-timezone';
@@ -55,7 +56,7 @@ export class AnnounceCommand extends GuildCommand {
             return cmd.configure.state[configResult.state];
 
         const config = configResult.detail;
-        const colour = discord.getMemberColour(context.message.member);
+        const colour = findRoleColor(context.message.member.roles, context.message.member.guild.roles.values());
         const mentions: Eris.AllowedMentions = config.role.id === config.role.guild.id
             ? { everyone: true }
             : { roles: [config.role.id] };

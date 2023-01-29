@@ -42,11 +42,11 @@ export interface DiscordConfiguration {
 }
 
 export interface EmotesConfiguration {
-    readonly beemovie: string;
-    readonly online: string;
-    readonly away: string;
-    readonly busy: string;
-    readonly offline: string;
+    readonly beemovie: `:${string}:${bigint}`;
+    readonly online: `:${string}:${bigint}`;
+    readonly away: `:${string}:${bigint}`;
+    readonly busy: `:${string}:${bigint}`;
+    readonly offline: `:${string}:${bigint}`;
 }
 
 export interface RolesConfiguration {

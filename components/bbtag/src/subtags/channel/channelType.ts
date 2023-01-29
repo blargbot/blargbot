@@ -1,18 +1,22 @@
-import * as Eris from 'eris';
+import { ChannelType } from 'discord-api-types/v10';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { ChannelNotFoundError } from '../../errors/index.js';
+import type { ChannelService } from '../../services/ChannelService.js';
 import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
+import type { Entities } from '../../types.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.channelType;
 
-@Subtag.id('channelType')
-@Subtag.ctorArgs()
+@Subtag.names('channelType')
+@Subtag.ctorArgs(Subtag.service('channel'))
 export class ChannelTypeSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #channels: ChannelService;
+
+    public constructor(channels: ChannelService) {
         super({
             category: SubtagType.CHANNEL,
             description: tag.description({ types: Object.values(channelTypes) }),
@@ -36,11 +40,13 @@ export class ChannelTypeSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#channels = channels;
     }
 
     public async getChannelType(context: BBTagContext, channelStr: string, quiet: boolean): Promise<typeof channelTypes[keyof typeof channelTypes] | ''> {
         quiet ||= context.scopes.local.quiet ?? false;
-        const channel = await context.queryChannel(channelStr, { noLookup: quiet });
+        const channel = await this.#channels.querySingle(context, channelStr, { noLookup: quiet });
         if (channel === undefined) {
             throw new ChannelNotFoundError(channelStr)
                 .withDisplay(quiet ? '' : undefined);
@@ -49,16 +55,14 @@ export class ChannelTypeSubtag extends CompiledSubtag {
     }
 }
 
-const channelTypes = {
-    [Eris.Constants.ChannelTypes.GUILD_TEXT]: 'text',
-    [Eris.Constants.ChannelTypes.DM]: 'dm',
-    [Eris.Constants.ChannelTypes.GUILD_VOICE]: 'voice',
-    [Eris.Constants.ChannelTypes.GROUP_DM]: 'group-dm',
-    [Eris.Constants.ChannelTypes.GUILD_CATEGORY]: 'category',
-    [Eris.Constants.ChannelTypes.GUILD_NEWS]: 'news',
-    [Eris.Constants.ChannelTypes.GUILD_STORE]: 'store',
-    [Eris.Constants.ChannelTypes.GUILD_NEWS_THREAD]: 'news-thread',
-    [Eris.Constants.ChannelTypes.GUILD_PRIVATE_THREAD]: 'private-thread',
-    [Eris.Constants.ChannelTypes.GUILD_PUBLIC_THREAD]: 'public-thread',
-    [Eris.Constants.ChannelTypes.GUILD_STAGE_VOICE]: 'stage-voice'
+const channelTypes: Record<Entities.Channel['type'], string> = {
+    [ChannelType.GuildText]: 'text',
+    [ChannelType.GuildVoice]: 'voice',
+    [ChannelType.GuildCategory]: 'category',
+    [ChannelType.GuildAnnouncement]: 'news',
+    [ChannelType.AnnouncementThread]: 'news-thread',
+    [ChannelType.PrivateThread]: 'private-thread',
+    [ChannelType.PublicThread]: 'public-thread',
+    [ChannelType.GuildStageVoice]: 'stage-voice',
+    [ChannelType.GuildForum]: 'forum'
 } as const;

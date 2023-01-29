@@ -1,6 +1,8 @@
+import { randomUUID } from 'node:crypto';
+
 import { Subtag } from '@blargbot/bbtag';
 import { UserActivityTypeSubtag } from '@blargbot/bbtag/subtags/user/userActivityType.js';
-import Discord from 'discord-api-types/v9';
+import Discord from 'discord-api-types/v10';
 import moment from 'moment-timezone';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
@@ -19,73 +21,79 @@ runSubtagTests({
                 {
                     expected: 'playing',
                     postSetup(member) {
-                        member.update({
-                            activities: [{
-                                created_at: moment().unix(),
-                                name: 'My test game',
-                                type: Discord.ActivityType.Playing
-                            }]
-                        });
+                        if (member.member === undefined)
+                            throw new Error('User isnt member of guild');
+                        member.member.activities = [{
+                            id: randomUUID(),
+                            created_at: moment().unix(),
+                            name: 'My test game',
+                            type: Discord.ActivityType.Playing
+                        }];
                     }
                 },
                 {
                     expected: 'listening',
                     postSetup(member) {
-                        member.update({
-                            activities: [{
-                                created_at: moment().unix(),
-                                name: 'Some cool music',
-                                type: Discord.ActivityType.Listening
-                            }]
-                        });
+                        if (member.member === undefined)
+                            throw new Error('User isnt member of guild');
+                        member.member.activities = [{
+                            id: randomUUID(),
+                            created_at: moment().unix(),
+                            name: 'Some cool music',
+                            type: Discord.ActivityType.Listening
+                        }];
                     }
                 },
                 {
                     expected: 'competing',
                     postSetup(member) {
-                        member.update({
-                            activities: [{
-                                created_at: moment().unix(),
-                                name: 'Some cool music',
-                                type: Discord.ActivityType.Competing
-                            }]
-                        });
+                        if (member.member === undefined)
+                            throw new Error('User isnt member of guild');
+                        member.member.activities = [{
+                            id: randomUUID(),
+                            created_at: moment().unix(),
+                            name: 'Some cool music',
+                            type: Discord.ActivityType.Competing
+                        }];
                     }
                 },
                 {
                     expected: 'custom',
                     postSetup(member) {
-                        member.update({
-                            activities: [{
-                                created_at: moment().unix(),
-                                name: 'Some cool music',
-                                type: Discord.ActivityType.Custom
-                            }]
-                        });
+                        if (member.member === undefined)
+                            throw new Error('User isnt member of guild');
+                        member.member.activities = [{
+                            id: randomUUID(),
+                            created_at: moment().unix(),
+                            name: 'Some cool music',
+                            type: Discord.ActivityType.Custom
+                        }];
                     }
                 },
                 {
                     expected: 'streaming',
                     postSetup(member) {
-                        member.update({
-                            activities: [{
-                                created_at: moment().unix(),
-                                name: 'Some cool music',
-                                type: Discord.ActivityType.Streaming
-                            }]
-                        });
+                        if (member.member === undefined)
+                            throw new Error('User isnt member of guild');
+                        member.member.activities = [{
+                            id: randomUUID(),
+                            created_at: moment().unix(),
+                            name: 'Some cool music',
+                            type: Discord.ActivityType.Streaming
+                        }];
                     }
                 },
                 {
                     expected: 'watching',
                     postSetup(member) {
-                        member.update({
-                            activities: [{
-                                created_at: moment().unix(),
-                                name: 'Some cool music',
-                                type: Discord.ActivityType.Watching
-                            }]
-                        });
+                        if (member.member === undefined)
+                            throw new Error('User isnt member of guild');
+                        member.member.activities = [{
+                            id: randomUUID(),
+                            created_at: moment().unix(),
+                            name: 'Some cool music',
+                            type: Discord.ActivityType.Watching
+                        }];
                     }
                 },
                 {
@@ -102,73 +110,79 @@ runSubtagTests({
                 {
                     expected: 'playing',
                     postSetup(member) {
-                        member.update({
-                            activities: [{
-                                created_at: moment().unix(),
-                                name: 'My test game',
-                                type: Discord.ActivityType.Playing
-                            }]
-                        });
+                        if (member.member === undefined)
+                            throw new Error('User isnt member of guild');
+                        member.member.activities = [{
+                            id: randomUUID(),
+                            created_at: moment().unix(),
+                            name: 'My test game',
+                            type: Discord.ActivityType.Playing
+                        }];
                     }
                 },
                 {
                     expected: 'listening',
                     postSetup(member) {
-                        member.update({
-                            activities: [{
-                                created_at: moment().unix(),
-                                name: 'Some cool music',
-                                type: Discord.ActivityType.Listening
-                            }]
-                        });
+                        if (member.member === undefined)
+                            throw new Error('User isnt member of guild');
+                        member.member.activities = [{
+                            id: randomUUID(),
+                            created_at: moment().unix(),
+                            name: 'Some cool music',
+                            type: Discord.ActivityType.Listening
+                        }];
                     }
                 },
                 {
                     expected: 'competing',
                     postSetup(member) {
-                        member.update({
-                            activities: [{
-                                created_at: moment().unix(),
-                                name: 'Some cool music',
-                                type: Discord.ActivityType.Competing
-                            }]
-                        });
+                        if (member.member === undefined)
+                            throw new Error('User isnt member of guild');
+                        member.member.activities = [{
+                            id: randomUUID(),
+                            created_at: moment().unix(),
+                            name: 'Some cool music',
+                            type: Discord.ActivityType.Competing
+                        }];
                     }
                 },
                 {
                     expected: 'custom',
                     postSetup(member) {
-                        member.update({
-                            activities: [{
-                                created_at: moment().unix(),
-                                name: 'Some cool music',
-                                type: Discord.ActivityType.Custom
-                            }]
-                        });
+                        if (member.member === undefined)
+                            throw new Error('User isnt member of guild');
+                        member.member.activities = [{
+                            id: randomUUID(),
+                            created_at: moment().unix(),
+                            name: 'Some cool music',
+                            type: Discord.ActivityType.Custom
+                        }];
                     }
                 },
                 {
                     expected: 'streaming',
                     postSetup(member) {
-                        member.update({
-                            activities: [{
-                                created_at: moment().unix(),
-                                name: 'Some cool music',
-                                type: Discord.ActivityType.Streaming
-                            }]
-                        });
+                        if (member.member === undefined)
+                            throw new Error('User isnt member of guild');
+                        member.member.activities = [{
+                            id: randomUUID(),
+                            created_at: moment().unix(),
+                            name: 'Some cool music',
+                            type: Discord.ActivityType.Streaming
+                        }];
                     }
                 },
                 {
                     expected: 'watching',
                     postSetup(member) {
-                        member.update({
-                            activities: [{
-                                created_at: moment().unix(),
-                                name: 'Some cool music',
-                                type: Discord.ActivityType.Watching
-                            }]
-                        });
+                        if (member.member === undefined)
+                            throw new Error('User isnt member of guild');
+                        member.member.activities = [{
+                            id: randomUUID(),
+                            created_at: moment().unix(),
+                            name: 'Some cool music',
+                            type: Discord.ActivityType.Watching
+                        }];
                     }
                 },
                 {

@@ -1,7 +1,9 @@
-import { CommandType, discord, guard, parse } from '@blargbot/cluster/utils/index.js';
+import { CommandType, guard } from '@blargbot/cluster/utils/index.js';
+import type { Snowflake } from '@blargbot/discord-util';
+import { findRoleColor } from '@blargbot/discord-util';
 import type * as Eris from 'eris';
 
-import type { CommandContext} from '../../command/index.js';
+import type { CommandContext } from '../../command/index.js';
 import { GlobalCommand } from '../../command/index.js';
 import templates from '../../text.js';
 import type { CommandResult } from '../../types.js';
@@ -52,7 +54,7 @@ export class UserCommand extends GlobalCommand {
                     thumbnail: {
                         url: member.avatarURL
                     },
-                    color: discord.getMemberColour(member),
+                    color: findRoleColor(member.roles, member.guild.roles.values()),
                     description: cmd.default.embed.description.member({ user: member }),
                     fields: [
                         {
@@ -77,12 +79,12 @@ export class UserCommand extends GlobalCommand {
     }
 }
 
-function getStatusEmoteId(context: CommandContext, member: Eris.Member): string {
+function getStatusEmoteId(context: CommandContext, member: Eris.Member): Snowflake {
     const emote = getStatusEmote(context, member);
-    return parse.entityId(emote) ?? '';
+    return emote.split(':')[2];
 }
 
-function getStatusEmote(context: CommandContext, member: Eris.Member): string {
+function getStatusEmote(context: CommandContext, member: Eris.Member): `:${string}:${bigint}` {
     switch (member.status) {
         case 'dnd': return context.config.discord.emotes.busy;
         case 'idle': return context.config.discord.emotes.away;

@@ -1,7 +1,8 @@
+import type { Entities } from '@blargbot/bbtag';
 import { Subtag } from '@blargbot/bbtag';
 import { UserMentionSubtag } from '@blargbot/bbtag/subtags/user/userMention.js';
+import { argument } from '@blargbot/test-util/mock.js';
 import chai from 'chai';
-import * as Eris from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetUserPropTestCases } from './_getUserPropTest.js';
@@ -19,7 +20,7 @@ runSubtagTests({
                 {
                     expected: '<@12345678900987236>',
                     setup(member) {
-                        member.user.id = '12345678900987236';
+                        member.id = '12345678900987236';
                     },
                     assert(_, __, ctx) {
                         chai.expect(ctx.data.allowedMentions.users).to.deep.equal(['12345678900987236']);
@@ -28,19 +29,19 @@ runSubtagTests({
                 {
                     expected: '<@098765434512212678>',
                     setup(member) {
-                        member.user.id = '098765434512212678';
+                        member.id = '098765434512212678';
                     },
                     assert(_, __, ctx) {
                         chai.expect(ctx.data.allowedMentions.users).to.deep.equal(['098765434512212678']);
                     }
                 },
                 {
-                    expected: '<@876543456782978367654>',
+                    expected: '<@876543456778367654>',
                     setup(member) {
-                        member.user.id = '876543456782978367654';
+                        member.id = '876543456778367654';
                     },
                     assert(_, __, ctx) {
-                        chai.expect(ctx.data.allowedMentions.users).to.deep.equal(['876543456782978367654']);
+                        chai.expect(ctx.data.allowedMentions.users).to.deep.equal(['876543456778367654']);
                     }
                 }
             ]
@@ -76,24 +77,19 @@ runSubtagTests({
             }
         },
         {
-            code: '{usermention;12345678900987236}{usermention;098765434512212678}',
-            expected: '<@12345678900987236><@098765434512212678>',
+            code: '{usermention;12345678900987236}{usermention;98765434512212678}',
+            expected: '<@12345678900987236><@98765434512212678>',
             setup(ctx) {
                 ctx.users.command.id = '12345678900987236';
-                ctx.users.other.id = '098765434512212678';
+                ctx.users.other.id = '98765434512212678';
             },
             postSetup(bbctx, ctx) {
-                const otherMember = ctx.createMock(Eris.Member);
-                const otherUser = ctx.createMock(Eris.User);
-                otherMember.setup(m => m.user, false).thenReturn(otherUser.instance);
-                otherUser.setup(m => m.id).thenReturn('098765434512212678');
-                otherUser.setup(m => m.mention).thenReturn('<@098765434512212678>');
-
-                ctx.util.setup(m => m.getUser('098765434512212678')).verifiable(1).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, '098765434512212678')).verifiable(1).thenResolve([otherMember.instance]);
+                const user = ctx.createMock<Entities.User>();
+                ctx.userService.setup(m => m.querySingle(bbctx, '98765434512212678', argument.isDeepEqual({ noLookup: false }))).verifiable(1).thenResolve(user.instance);
+                user.setup(m => m.id).thenReturn('98765434512212678');
             },
             assert(ctx) {
-                chai.expect(ctx.data.allowedMentions.users).to.deep.equal(['12345678900987236', '098765434512212678']);
+                chai.expect(ctx.data.allowedMentions.users).to.deep.equal(['12345678900987236', '98765434512212678']);
             }
         }
     ]

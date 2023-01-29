@@ -15,7 +15,7 @@ export class DiscordMessageReactionAddHandler extends DiscordEventService<'messa
                 return;
 
             await this.cluster.autoresponses.handleWhitelistApproval(_message, emoji, _user);
-            await this.cluster.awaiter.reactions.tryConsume({ message: _message, user: _user, reaction: Emote.create(emoji) });
+            await this.cluster.awaiter.reactions.tryConsume({ message: _message as never, user: _user, reaction: Emote.create(emoji) });
         });
     }
 

@@ -1,19 +1,23 @@
+import { markup } from '@blargbot/discord-util';
+
 import type { BBTagContext } from '../../BBTagContext.js';
 import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { NotABooleanError, RoleNotFoundError } from '../../errors/index.js';
+import type { RoleService } from '../../services/RoleService.js';
 import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.roleMention;
 
-@Subtag.id('roleMention')
-@Subtag.ctorArgs(Subtag.converter())
+@Subtag.names('roleMention')
+@Subtag.ctorArgs(Subtag.converter(), Subtag.service('role'))
 export class RoleMentionSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;
+    readonly #roles: RoleService;
 
-    public constructor(converter: BBTagValueConverter) {
+    public constructor(converter: BBTagValueConverter, roles: RoleService) {
         super({
             category: SubtagType.ROLE,
             definition: [
@@ -29,6 +33,7 @@ export class RoleMentionSubtag extends CompiledSubtag {
         });
 
         this.#converter = converter;
+        this.#roles = roles;
     }
 
     public async roleMention(
@@ -42,7 +47,7 @@ export class RoleMentionSubtag extends CompiledSubtag {
         if (noPing === undefined)
             throw new NotABooleanError(noPing);
 
-        const role = await context.queryRole(roleId, { noLookup: quiet });
+        const role = await this.#roles.querySingle(context, roleId, { noLookup: quiet });
 
         if (role === undefined) {
             throw new RoleNotFoundError(roleId)
@@ -51,6 +56,6 @@ export class RoleMentionSubtag extends CompiledSubtag {
 
         if (!noPing && !context.data.allowedMentions.roles.includes(role.id))
             context.data.allowedMentions.roles.push(role.id);
-        return role.mention;
+        return markup.role(role.id);
     }
 }

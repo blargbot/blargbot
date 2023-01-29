@@ -8,7 +8,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.join;
 
-@Subtag.id('join')
+@Subtag.names('join')
 @Subtag.ctorArgs(Subtag.arrayTools())
 export class JoinSubtag extends CompiledSubtag {
     readonly #arrayTools: BBTagArrayTools;

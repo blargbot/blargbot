@@ -5,7 +5,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.regexSplit;
 
-@Subtag.id('regexSplit')
+@Subtag.names('regexSplit')
 @Subtag.ctorArgs()
 export class RegexSplitSubtag extends RegexSubtag {
     public constructor() {

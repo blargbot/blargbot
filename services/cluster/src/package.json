@@ -20,6 +20,7 @@
         "@blargbot/core": "workspace:^",
         "@blargbot/database": "workspace:^",
         "@blargbot/discord-emote": "workspace:^",
+        "@blargbot/discord-util": "workspace:^",
         "@blargbot/domain": "workspace:^",
         "@blargbot/flags": "workspace:^",
         "@blargbot/formatting": "workspace:^",

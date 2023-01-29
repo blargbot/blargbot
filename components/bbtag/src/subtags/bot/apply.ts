@@ -10,7 +10,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.apply;
 
-@Subtag.id('apply')
+@Subtag.names('apply')
 @Subtag.ctorArgs(Subtag.arrayTools(), Subtag.converter())
 export class ApplySubtag extends CompiledSubtag {
     readonly #arrayTools: BBTagArrayTools;

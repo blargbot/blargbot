@@ -173,7 +173,7 @@
             "runtimeExecutable": "yarn",
             "cwd": "${fileDirname}",
             "args": [
-                "test",
+                "test:base",
                 "--no-timeouts",
                 "${fileDirname}/${fileBasenameNoExtension}.js"
             ],

@@ -11,7 +11,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.randomInt;
 
-@Subtag.id('randomInt', 'randInt')
+@Subtag.names('randomInt', 'randInt')
 @Subtag.ctorArgs(Subtag.converter())
 export class RandomIntSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;

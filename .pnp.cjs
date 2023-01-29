@@ -68,6 +68,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:components/discord-emote/src"\
       },\
       {\
+        "name": "@blargbot/discord-util",\
+        "reference": "workspace:components/discord-util/src"\
+      },\
+      {\
         "name": "@blargbot/domain",\
         "reference": "workspace:components/domain/src"\
       },\
@@ -130,10 +134,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       {\
         "name": "@types/brainfuck-node",\
         "reference": "workspace:definitions/brainfuck-node"\
-      },\
-      {\
-        "name": "@types/catflake",\
-        "reference": "workspace:definitions/catflake"\
       },\
       {\
         "name": "@types/eris",\
@@ -207,6 +207,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@blargbot/discord-emote", ["workspace:components/discord-emote/src"]],\
       ["@blargbot/discord-gateway", ["workspace:services/discord-gateway/src"]],\
       ["@blargbot/discord-proxy", ["workspace:services/discord-proxy/src"]],\
+      ["@blargbot/discord-util", ["workspace:components/discord-util/src"]],\
       ["@blargbot/domain", ["workspace:components/domain/src"]],\
       ["@blargbot/env", ["workspace:components/env/src"]],\
       ["@blargbot/flags", ["workspace:components/flags/src"]],\
@@ -225,7 +226,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@blargbot/timer", ["workspace:components/timer/src"]],\
       ["@types/blargbot-image-api", ["workspace:definitions/blargbot-image-api"]],\
       ["@types/brainfuck-node", ["workspace:definitions/brainfuck-node"]],\
-      ["@types/catflake", ["workspace:definitions/catflake"]],\
       ["@types/eris", ["workspace:definitions/eris"]],\
       ["@types/rethinkdb", ["workspace:definitions/rethinkdb"]],\
       ["@types/wolken", ["workspace:definitions/wolken"]],\
@@ -325,6 +325,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/cluster", "workspace:services/cluster/src"],\
             ["@blargbot/config", "workspace:components/config/src"],\
             ["@blargbot/core", "workspace:components/core/src"],\
+            ["@blargbot/discord-util", "workspace:components/discord-util/src"],\
             ["@blargbot/domain", "workspace:components/domain/src"],\
             ["@blargbot/formatting", "workspace:components/formatting/src"],\
             ["@blargbot/logger", "workspace:components/logger/src"],\
@@ -335,7 +336,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/jsonwebtoken", "npm:9.0.1"],\
             ["@types/node-fetch", "npm:2.6.2"],\
             ["@types/ws", "npm:8.5.4"],\
-            ["discord-api-types", "npm:0.37.28"],\
+            ["discord-api-types", "npm:0.37.29"],\
             ["express", "npm:4.18.2"],\
             ["express-promise-router", "virtual:0926ebb4e831a070deb72c46365480e8bf00bb1d23db2eaad4f5e1bcd6b12efc0d87e78420817b9e25c8277b307def176634647b2da47b163cfcdc8d2c56d3d1#npm:4.1.1"],\
             ["jsonwebtoken", "npm:9.0.0"],\
@@ -375,6 +376,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/core", "workspace:components/core/src"],\
             ["@blargbot/database", "workspace:components/database/src"],\
             ["@blargbot/discord-emote", "workspace:components/discord-emote/src"],\
+            ["@blargbot/discord-util", "workspace:components/discord-util/src"],\
             ["@blargbot/domain", "workspace:components/domain/src"],\
             ["@blargbot/flags", "workspace:components/flags/src"],\
             ["@blargbot/formatting", "workspace:components/formatting/src"],\
@@ -384,13 +386,11 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/timer", "workspace:components/timer/src"],\
             ["@types/brainfuck-node", "workspace:definitions/brainfuck-node"],\
             ["@types/color", "npm:3.0.3"],\
-            ["@types/eris", "workspace:definitions/eris"],\
             ["@types/node-fetch", "npm:2.6.2"],\
             ["@types/rwlock", "npm:5.0.3"],\
             ["brainfuck-node", "npm:1.0.2"],\
             ["color", "npm:4.2.3"],\
-            ["discord-api-types", "npm:0.37.28"],\
-            ["eris", "npm:0.17.1"],\
+            ["discord-api-types", "npm:0.37.29"],\
             ["html-entities", "npm:2.3.3"],\
             ["moment-timezone", "npm:0.5.40"],\
             ["node-fetch", "npm:3.3.0"],\
@@ -420,6 +420,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/core", "workspace:components/core/src"],\
             ["@blargbot/database", "workspace:components/database/src"],\
             ["@blargbot/discord-emote", "workspace:components/discord-emote/src"],\
+            ["@blargbot/discord-util", "workspace:components/discord-util/src"],\
             ["@blargbot/domain", "workspace:components/domain/src"],\
             ["@blargbot/flags", "workspace:components/flags/src"],\
             ["@blargbot/formatting", "workspace:components/formatting/src"],\
@@ -428,7 +429,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/timer", "workspace:components/timer/src"],\
             ["@types/chai", "npm:4.3.4"],\
             ["@types/chai-datetime", "npm:0.0.37"],\
-            ["@types/eris", "workspace:definitions/eris"],\
             ["@types/express", "npm:4.17.15"],\
             ["@types/mocha", "patch:@types/mocha@npm%3A10.0.1#./.yarn/patches/@types-mocha-npm-10.0.1-7c94e9e170.patch::version=10.0.1&hash=480b76&locator=blargbot%40workspace%3A."],\
             ["chai", "npm:4.3.7"],\
@@ -436,8 +436,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["chai-datetime", "npm:1.8.0"],\
             ["chai-exclude", "virtual:a5d8bf7a2ae8421255e486c145d47ec921f9386c1e92984955811d72f1f9d40aa20fe49fb743ba13dfbf35140c84a591e0cb4c0f5392aa8a19884114e49a1580#npm:2.1.0"],\
             ["cross-env", "npm:7.0.3"],\
-            ["discord-api-types", "npm:0.37.28"],\
-            ["eris", "npm:0.17.1"],\
+            ["discord-api-types", "npm:0.37.29"],\
             ["express", "npm:4.18.2"],\
             ["mocha", "npm:10.2.0"],\
             ["moment-timezone", "npm:0.5.40"],\
@@ -469,6 +468,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/core", "workspace:components/core/src"],\
             ["@blargbot/database", "workspace:components/database/src"],\
             ["@blargbot/discord-emote", "workspace:components/discord-emote/src"],\
+            ["@blargbot/discord-util", "workspace:components/discord-util/src"],\
             ["@blargbot/domain", "workspace:components/domain/src"],\
             ["@blargbot/flags", "workspace:components/flags/src"],\
             ["@blargbot/formatting", "workspace:components/formatting/src"],\
@@ -488,7 +488,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/xml2js", "npm:0.4.11"],\
             ["brainfuck-node", "npm:1.0.2"],\
             ["crypto", "npm:1.0.1"],\
-            ["discord-api-types", "npm:0.37.28"],\
+            ["discord-api-types", "npm:0.37.29"],\
             ["eris", "npm:0.17.1"],\
             ["eventemitter3", "npm:5.0.0"],\
             ["moment-timezone", "npm:0.5.40"],\
@@ -561,6 +561,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/crowdin", "workspace:components/crowdin/src"],\
             ["@blargbot/database", "workspace:components/database/src"],\
             ["@blargbot/discord-emote", "workspace:components/discord-emote/src"],\
+            ["@blargbot/discord-util", "workspace:components/discord-util/src"],\
             ["@blargbot/domain", "workspace:components/domain/src"],\
             ["@blargbot/formatting", "workspace:components/formatting/src"],\
             ["@blargbot/guards", "workspace:components/guards/src"],\
@@ -568,16 +569,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/mapping", "workspace:components/mapping/src"],\
             ["@blargbot/res", "workspace:components/res/src"],\
             ["@blargbot/timer", "workspace:components/timer/src"],\
-            ["@types/catflake", "workspace:definitions/catflake"],\
             ["@types/color", "npm:3.0.3"],\
             ["@types/cron", "npm:2.0.0"],\
             ["@types/eris", "workspace:definitions/eris"],\
             ["@types/safe-regex", "npm:1.1.4"],\
             ["@types/unorm", "npm:1.3.28"],\
             ["airtable", "npm:0.11.6"],\
-            ["catflake", "npm:1.0.0"],\
             ["color", "npm:4.2.3"],\
             ["cron", "npm:2.2.0"],\
+            ["discord-api-types", "npm:0.37.29"],\
             ["eris", "npm:0.17.1"],\
             ["eventemitter3", "npm:5.0.0"],\
             ["limax", "npm:3.0.0"],\
@@ -631,17 +631,16 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/chatlog-types", "workspace:components/chatlog-types/src"],\
             ["@blargbot/config", "workspace:components/config/src"],\
             ["@blargbot/core", "workspace:components/core/src"],\
+            ["@blargbot/discord-util", "workspace:components/discord-util/src"],\
             ["@blargbot/domain", "workspace:components/domain/src"],\
             ["@blargbot/guards", "workspace:components/guards/src"],\
             ["@blargbot/logger", "workspace:components/logger/src"],\
             ["@blargbot/mapping", "workspace:components/mapping/src"],\
-            ["@types/catflake", "workspace:definitions/catflake"],\
             ["@types/pg", "npm:8.6.6"],\
             ["@types/rethinkdb", "workspace:definitions/rethinkdb"],\
             ["@types/sequelize", "npm:4.28.14"],\
             ["airtable", "npm:0.11.6"],\
             ["cassandra-driver", "npm:4.6.4"],\
-            ["catflake", "npm:1.0.0"],\
             ["moment-timezone", "npm:0.5.40"],\
             ["pg", "virtual:02bcd2255a4ed3c91749c2713581f42b29344dad65a4d3d9c455b9d9d7be86b1ca4557c27bb5dd87951b31e8aae22c2579c9e66e3ab4e86e9533c52d1adbbdd4#npm:8.8.0"],\
             ["pg-hstore", "npm:2.3.4"],\
@@ -676,6 +675,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./components/discord-emote/src/",\
           "packageDependencies": [\
             ["@blargbot/discord-emote", "workspace:components/discord-emote/src"],\
+            ["@blargbot/discord-util", "workspace:components/discord-util/src"],\
             ["twemoji", "npm:14.0.2"]\
           ],\
           "linkType": "SOFT"\
@@ -709,6 +709,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/express", "npm:4.17.15"],\
             ["discordeno", "npm:18.0.1"],\
             ["express", "npm:4.18.2"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
+      ["@blargbot/discord-util", [\
+        ["workspace:components/discord-util/src", {\
+          "packageLocation": "./components/discord-util/src/",\
+          "packageDependencies": [\
+            ["@blargbot/discord-util", "workspace:components/discord-util/src"]\
           ],\
           "linkType": "SOFT"\
         }]\
@@ -847,6 +856,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/cluster", "workspace:services/cluster/src"],\
             ["@blargbot/config", "workspace:components/config/src"],\
             ["@blargbot/core", "workspace:components/core/src"],\
+            ["@blargbot/discord-util", "workspace:components/discord-util/src"],\
             ["@blargbot/domain", "workspace:components/domain/src"],\
             ["@blargbot/formatting", "workspace:components/formatting/src"],\
             ["@blargbot/logger", "workspace:components/logger/src"],\
@@ -1434,15 +1444,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/responselike", "npm:1.0.0"]\
           ],\
           "linkType": "HARD"\
-        }]\
-      ]],\
-      ["@types/catflake", [\
-        ["workspace:definitions/catflake", {\
-          "packageLocation": "./definitions/catflake/",\
-          "packageDependencies": [\
-            ["@types/catflake", "workspace:definitions/catflake"]\
-          ],\
-          "linkType": "SOFT"\
         }]\
       ]],\
       ["@types/chai", [\
@@ -2658,15 +2659,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
-      ["big-integer", [\
-        ["npm:1.6.51", {\
-          "packageLocation": "./.yarn/cache/big-integer-npm-1.6.51-1a244d8e1f-3d444173d1.zip/node_modules/big-integer/",\
-          "packageDependencies": [\
-            ["big-integer", "npm:1.6.51"]\
-          ],\
-          "linkType": "HARD"\
-        }]\
-      ]],\
       ["binary-extensions", [\
         ["npm:2.2.0", {\
           "packageLocation": "./.yarn/cache/binary-extensions-npm-2.2.0-180c33fec7-ccd267956c.zip/node_modules/binary-extensions/",\
@@ -3014,16 +3006,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["cat-loggr", "npm:1.2.2"],\
             ["chalk", "npm:2.4.2"],\
             ["dayjs", "npm:1.11.7"]\
-          ],\
-          "linkType": "HARD"\
-        }]\
-      ]],\
-      ["catflake", [\
-        ["npm:1.0.0", {\
-          "packageLocation": "./.yarn/cache/catflake-npm-1.0.0-9d3f33f5e3-521865e02e.zip/node_modules/catflake/",\
-          "packageDependencies": [\
-            ["catflake", "npm:1.0.0"],\
-            ["big-integer", "npm:1.6.51"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -3762,10 +3744,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["discord-api-types", [\
-        ["npm:0.37.28", {\
-          "packageLocation": "./.yarn/cache/discord-api-types-npm-0.37.28-1494662384-c033b9c82d.zip/node_modules/discord-api-types/",\
+        ["npm:0.37.29", {\
+          "packageLocation": "./.yarn/cache/discord-api-types-npm-0.37.29-cebf4f0544-f523f40e95.zip/node_modules/discord-api-types/",\
           "packageDependencies": [\
-            ["discord-api-types", "npm:0.37.28"]\
+            ["discord-api-types", "npm:0.37.29"]\
           ],\
           "linkType": "HARD"\
         }]\

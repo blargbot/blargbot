@@ -15,7 +15,10 @@ runSubtagTests({
         {
             code: '{ccauthor}',
             expected: 'abcdefg',
-            setup(ctx) { ctx.options.authorId = 'abcdefg'; }
+            setup(ctx) {
+                ctx.users.authorizer.id = 'NOPE';
+                ctx.options.authorId = 'abcdefg';
+            }
         }
     ]
 });

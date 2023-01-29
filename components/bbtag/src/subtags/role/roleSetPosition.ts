@@ -1,21 +1,21 @@
-import * as Eris from 'eris';
-
 import type { BBTagContext } from '../../BBTagContext.js';
 import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, NotANumberError, RoleNotFoundError } from '../../errors/index.js';
+import type { RoleService } from '../../services/RoleService.js';
 import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.roleSetPosition;
 
-@Subtag.id('roleSetPosition', 'roleSetPos')
-@Subtag.ctorArgs(Subtag.converter())
+@Subtag.names('roleSetPosition', 'roleSetPos')
+@Subtag.ctorArgs(Subtag.converter(), Subtag.service('role'))
 export class RoleSetPositionSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;
+    readonly #roles: RoleService;
 
-    public constructor(converter: BBTagValueConverter) {
+    public constructor(converter: BBTagValueConverter, roles: RoleService) {
         super({
             category: SubtagType.ROLE,
             definition: [
@@ -29,15 +29,17 @@ export class RoleSetPositionSubtag extends CompiledSubtag {
                 }
             ]
         });
+
         this.#converter = converter;
+        this.#roles = roles;
     }
 
     public async setRolePosition(context: BBTagContext, roleStr: string, positionStr: string, quiet: boolean): Promise<boolean> {
-        const topRole = context.roleEditPosition();
+        const topRole = context.roleEditPosition(context.authorizer);
         if (topRole <= 0)
             throw new BBTagRuntimeError('Author cannot edit roles');
 
-        const role = await context.queryRole(roleStr, { noLookup: quiet });
+        const role = await this.#roles.querySingle(context, roleStr, { noLookup: quiet });
         const pos = this.#converter.int(positionStr);
         if (pos === undefined)
             throw new NotANumberError(positionStr);
@@ -50,17 +52,13 @@ export class RoleSetPositionSubtag extends CompiledSubtag {
         if (pos >= topRole)
             throw new BBTagRuntimeError('Desired position above author');
 
-        try {
-            await role.editPosition(pos);
+        const result = await this.#roles.edit(context, role.id, { position: pos });
+        if (result === undefined)
             return true;
-        } catch (err: unknown) {
-            if (!(err instanceof Eris.DiscordRESTError))
-                throw err;
 
-            if (quiet)
-                return false;
+        if (quiet)
+            return false;
 
-            throw new BBTagRuntimeError('Failed to edit role: no perms', err.message);
-        }
+        throw new BBTagRuntimeError('Failed to edit role: no perms', result.error);
     }
 }

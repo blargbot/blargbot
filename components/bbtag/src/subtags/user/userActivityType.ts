@@ -1,16 +1,19 @@
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { UserNotFoundError } from '../../errors/index.js';
+import type { UserService } from '../../services/UserService.js';
 import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.userActivityType;
 
-@Subtag.id('userActivityType', 'userGameType')
-@Subtag.ctorArgs()
+@Subtag.names('userActivityType', 'userGameType')
+@Subtag.ctorArgs(Subtag.service('user'))
 export class UserActivityTypeSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #users: UserService;
+
+    public constructor(users: UserService) {
         super({
             category: SubtagType.USER,
             description: tag.description({ types: Object.values(activityTypeMap) }),
@@ -33,6 +36,8 @@ export class UserActivityTypeSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#users = users;
     }
 
     public async getUserActivityType(
@@ -41,14 +46,14 @@ export class UserActivityTypeSubtag extends CompiledSubtag {
         quiet: boolean
     ): Promise<typeof activityTypeMap[keyof typeof activityTypeMap]> {
         quiet ||= context.scopes.local.quiet ?? false;
-        const member = await context.queryMember(userId, { noLookup: quiet });
+        const user = await this.#users.querySingle(context, userId, { noLookup: quiet });
 
-        if (member === undefined) {
+        if (user?.member === undefined) {
             throw new UserNotFoundError(userId)
                 .withDisplay(quiet ? '' : undefined);
         }
 
-        const activityId = member.activities?.[0]?.type ?? 'default';
+        const activityId = user.member.activities[0]?.type ?? 'default';
         return activityTypeMap[activityId].toLowerCase();
     }
 }

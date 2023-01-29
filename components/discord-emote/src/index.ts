@@ -2,13 +2,14 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { markup } from '@blargbot/discord-util';
 import twemoji from 'twemoji';
 
 import type discordEmoteDataType from './discordEmoteData.json';
 
 export interface PartialEmoji {
     readonly id?: string | null;
-    readonly name: string;
+    readonly name: string | null;
     readonly animated?: boolean;
 }
 
@@ -26,9 +27,9 @@ export class Emote {
     }
 
     public static create(this: void, data: PartialEmoji): Emote {
-        if (data.id === null || data.id === undefined)
+        if (data.name !== null && (data.id === null || data.id === undefined))
             return Emote.parse(data.name);
-        return Emote.parse(`<${data.animated === true ? 'a' : ''}:${data.name}:${data.id}>`);
+        return Emote.parse(`<${data.animated === true ? 'a' : ''}:${data.name ?? ''}:${data.id ?? ''}>`);
     }
 
     static #findAll(this: void, text: string): [results: Emote[], strict: boolean] {
@@ -82,9 +83,7 @@ export class Emote {
     public toString(): `<${'a' | ''}:${string}:${bigint}>` | string {
         if (this.id === undefined)
             return this.name;
-        if (this.animated)
-            return `<a:${this.name}:${this.id}>`;
-        return `<:${this.name}:${this.id}>`;
+        return markup.customEmoji(this.name, this.id, this.animated);
     }
 }
 

@@ -2,18 +2,20 @@ import type { BBTagContext } from '../../BBTagContext.js';
 import type { BBTagUtilities } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, UserNotFoundError } from '../../errors/index.js';
+import type { UserService } from '../../services/UserService.js';
 import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.kick;
 
-@Subtag.id('kick')
-@Subtag.ctorArgs(Subtag.util())
+@Subtag.names('kick')
+@Subtag.ctorArgs(Subtag.util(), Subtag.service('user'))
 export class KickSubtag extends CompiledSubtag {
     readonly #util: BBTagUtilities;
+    readonly #users: UserService;
 
-    public constructor(util: BBTagUtilities) {
+    public constructor(util: BBTagUtilities, users: UserService) {
         super({
             category: SubtagType.USER,
             description: tag.description,
@@ -38,6 +40,7 @@ export class KickSubtag extends CompiledSubtag {
         });
 
         this.#util = util;
+        this.#users = users;
     }
 
     public async kickMember(
@@ -46,15 +49,15 @@ export class KickSubtag extends CompiledSubtag {
         reason: string,
         noPerms: boolean
     ): Promise<string> {
-        const member = await context.queryMember(userStr, { noLookup: true /* TODO why? */ });
-        if (member === undefined)
+        const user = await this.#users.querySingle(context, userStr, { noLookup: true /* TODO why? */ });
+        if (user === undefined)
             throw new UserNotFoundError(userStr);
 
         if (reason === '')
             reason = 'Tag Kick';
 
-        const authorizer = noPerms ? context.authorizer?.user ?? context.user : context.user;
-        const response = await this.#util.kick(member, context.user, authorizer, reason);
+        const authorizer = noPerms ? context.authorizer ?? context.user : context.user;
+        const response = await this.#util.kick(user, context.user, authorizer, reason);
 
         switch (response) {
             case 'success': //Successful
@@ -62,11 +65,11 @@ export class KickSubtag extends CompiledSubtag {
             case 'noPerms': //Bot doesnt have perms
                 throw new BBTagRuntimeError('Bot has no permissions', 'I don\'t have permission to kick users!');
             case 'memberTooHigh': //Bot cannot kick target
-                throw new BBTagRuntimeError('Bot has no permissions', `I don't have permission to kick ${member.user.username}!`);
+                throw new BBTagRuntimeError('Bot has no permissions', `I don't have permission to kick ${user.username}!`);
             case 'moderatorNoPerms': //User doesnt have perms
                 throw new BBTagRuntimeError('User has no permissions', 'You don\'t have permission to kick users!');
             case 'moderatorTooLow': //User cannot kick target
-                throw new BBTagRuntimeError('User has no permissions', `You don't have permission to kick ${member.user.username}!`);
+                throw new BBTagRuntimeError('User has no permissions', `You don't have permission to kick ${user.username}!`);
         }
     }
 }

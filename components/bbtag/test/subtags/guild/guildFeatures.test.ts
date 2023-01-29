@@ -1,7 +1,6 @@
 import { Subtag } from '@blargbot/bbtag';
 import { GuildFeaturesSubtag } from '@blargbot/bbtag/subtags/guild/guildFeatures.js';
-import type Discord from 'discord-api-types/v9';
-import * as Eris from 'eris';
+import Discord from 'discord-api-types/v10';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
@@ -11,9 +10,9 @@ runSubtagTests({
     cases: [
         {
             code: '{guildfeatures}',
-            expected: JSON.stringify(Eris.Constants.GuildFeatures),
+            expected: JSON.stringify(Object.values(Discord.GuildFeature)),
             setup(ctx) {
-                ctx.guild.features = Eris.Constants.GuildFeatures as Discord.GuildFeature[];
+                ctx.guild.features = Object.values(Discord.GuildFeature);
             }
         },
         {

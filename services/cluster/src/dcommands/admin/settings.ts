@@ -1,6 +1,6 @@
 import type { Cluster } from '@blargbot/cluster';
 import type { CommandResult, GuildCommandContext } from '@blargbot/cluster/types.js';
-import { codeBlock, CommandType, defaultStaff, guard, guildSettings, parse } from '@blargbot/cluster/utils/index.js';
+import { CommandType, defaultStaff, guard, guildSettings, parse } from '@blargbot/cluster/utils/index.js';
 import type { IFormattable, ITranslationSource } from '@blargbot/formatting';
 import { format, FormatString } from '@blargbot/formatting';
 import { hasProperty } from '@blargbot/guards';
@@ -184,7 +184,7 @@ function settingGroup(values: Array<[key: string & keyof typeof guildSettings, v
             const keyLength = Math.max(...mapped.map(([key]) => key.length));
             const content = mapped.map(v => `${v[0].padStart(keyLength, ' ')} : ${v[1]}`)
                 .join('\n');
-            return codeBlock(content);
+            return `\`\`\`\n${content}\`\`\``;
         }
     };
 }

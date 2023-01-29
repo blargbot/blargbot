@@ -71,7 +71,7 @@ export class CensorManager extends ModerationManagerBase {
             delete this.#debugOutput[key];
 
             const result = await this.cluster.bbtag.execute(tag.content, {
-                message: message,
+                message: message as never,
                 rootTagName: 'censor',
                 limit: 'customCommandLimit',
                 inputRaw: message.content,

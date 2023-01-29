@@ -1,6 +1,7 @@
 import type { CommandResult, GuildCommandContext } from '@blargbot/cluster/types.js';
 import { CommandType } from '@blargbot/cluster/utils/index.js';
-import { createSafeRegExp, guard } from '@blargbot/core/utils/index.js';
+import { createSafeRegExp } from '@blargbot/core/utils/index.js';
+import { invite } from '@blargbot/discord-util';
 import * as Eris from 'eris';
 import moment from 'moment-timezone';
 
@@ -137,7 +138,7 @@ async function buildFilter(context: GuildCommandContext, options: TidyOptions): 
     if (options.embeds)
         conditions.push(m => m.embeds.length > 0);
     if (options.invites)
-        conditions.push(m => guard.hasInvite(m.content));
+        conditions.push(m => invite.test(m.content));
     if (options.links)
         conditions.push(m => /https?:\/\/.+?\../.test(m.content));
     if (options.query !== '') {

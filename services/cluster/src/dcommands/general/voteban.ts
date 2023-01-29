@@ -1,5 +1,6 @@
 import type { CommandResult, GuildCommandContext } from '@blargbot/cluster/types.js';
-import { CommandType, discord } from '@blargbot/cluster/utils/index.js';
+import { CommandType } from '@blargbot/cluster/utils/index.js';
+import { findRoleColor } from '@blargbot/discord-util';
 import type * as Eris from 'eris';
 
 import { GuildCommand } from '../../command/index.js';
@@ -68,7 +69,7 @@ export class VoteBanCommand extends GuildCommand {
             embeds: [
                 {
                     author: context.util.embedifyAuthor(user),
-                    color: discord.getMemberColour(user),
+                    color: findRoleColor(user.roles, user.guild.roles.values()),
                     title: cmd.info.embed.title,
                     description: cmd.info.embed.description({
                         user: user.user,

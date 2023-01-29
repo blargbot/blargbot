@@ -1,4 +1,4 @@
-import type { CommandContext} from '../../command/index.js';
+import type { CommandContext } from '../../command/index.js';
 import { GlobalImageCommand } from '../../command/index.js';
 import templates from '../../text.js';
 import type { CommandResult } from '../../types.js';
@@ -24,7 +24,7 @@ export class ShitCommand extends GlobalImageCommand {
     }
 
     public async render(context: CommandContext, text: string, plural: boolean): Promise<CommandResult> {
-        text = await context.util.resolveTags(context, text);
+        text = await context.util.resolveTags(text, context.channel);
         return await this.renderImage(context, 'shit', { text, plural });
     }
 }

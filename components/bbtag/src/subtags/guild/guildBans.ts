@@ -1,21 +1,19 @@
-import * as Eris from 'eris';
-
 import type { BBTagContext } from '../../BBTagContext.js';
-import type { BBTagUtilities } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
+import type { UserService } from '../../services/UserService.js';
 import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.guildBans;
 
-@Subtag.id('guildBans')
-@Subtag.ctorArgs(Subtag.util())
+@Subtag.names('guildBans')
+@Subtag.ctorArgs(Subtag.service('user'))
 export class GuildBansSubtag extends CompiledSubtag {
-    readonly #util: BBTagUtilities;
+    readonly #users: UserService;
 
-    public constructor(util: BBTagUtilities) {
+    public constructor(users: UserService) {
         super({
             category: SubtagType.GUILD,
             definition: [
@@ -30,17 +28,14 @@ export class GuildBansSubtag extends CompiledSubtag {
             ]
         });
 
-        this.#util = util;
+        this.#users = users;
     }
 
     public async getGuildBans(context: BBTagContext): Promise<string[]> {
-        try {
-            return await this.#util.getBannedUsers(context.guild);
-        } catch (err: unknown) {
-            if (!(err instanceof Eris.DiscordRESTError))
-                throw err;
+        const users = await this.#users.findBanned(context);
+        if (users === 'noPerms')
+            throw new BBTagRuntimeError('Missing required permissions');
 
-            throw new BBTagRuntimeError('Missing required permissions', err.message);
-        }
+        return users;
     }
 }

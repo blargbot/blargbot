@@ -1,23 +1,21 @@
-import type { Logger } from '@blargbot/logger';
-import * as Eris from 'eris';
-
 import type { BBTagContext } from '../../BBTagContext.js';
 import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
+import type { MessageService } from '../../services/MessageService.js';
 import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.webhook;
 
-@Subtag.id('webhook')
-@Subtag.ctorArgs(Subtag.converter(), Subtag.logger())
+@Subtag.names('webhook')
+@Subtag.ctorArgs(Subtag.converter(), Subtag.service('message'))
 export class WebhookSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;
-    readonly #logger: Logger;
+    readonly #messages: MessageService;
 
-    public constructor(converter: BBTagValueConverter, logger: Logger) {
+    public constructor(converter: BBTagValueConverter, messages: MessageService) {
         super({
             category: SubtagType.MESSAGE,
             description: tag.description,
@@ -58,32 +56,30 @@ export class WebhookSubtag extends CompiledSubtag {
         });
 
         this.#converter = converter;
-        this.#logger = logger;
+        this.#messages = messages;
     }
 
     public async executeWebhook(context: BBTagContext, webhookID: string, webhookToken: string): Promise<never>;
     public async executeWebhook(context: BBTagContext, webhookID: string, webhookToken: string, content?: string, embedStr?: string, username?: string, avatar?: string, fileStr?: string, fileName?: string): Promise<void>;
     public async executeWebhook(context: BBTagContext, webhookID: string, webhookToken: string, content?: string, embedStr?: string, username?: string, avatar?: string, fileStr?: string, fileName?: string): Promise<void> {
-        try { //TODO Return the webhook message ID on success
-            await context.discord.executeWebhook(webhookID, webhookToken, {
-                username: username ||= undefined,
-                avatarURL: avatar ||= undefined,
-                content: content,
-                embeds: this.#converter.embed(embedStr),
-                file: fileStr === undefined ? undefined : [
-                    {
-                        name: fileName ?? 'file.txt',
-                        file: fileStr.startsWith('buffer')
-                            ? Buffer.from(fileStr.slice(7), 'base64')
-                            : Buffer.from(fileStr)
-                    }
-                ]
-            });
-        } catch (err: unknown) {
-            if (err instanceof Eris.DiscordHTTPError || err instanceof Eris.DiscordRESTError)
-                throw new BBTagRuntimeError(`Error executing webhook: ${err.message}`);
-            this.#logger.error('Error executing webhook', err);
-            throw new BBTagRuntimeError('Error executing webhook: UNKNOWN');
-        }
+        const result = await this.#messages.runWebhook(context, webhookID, webhookToken, {
+            username: username ||= undefined,
+            avatarUrl: avatar ||= undefined,
+            content: content,
+            embeds: this.#converter.embed(embedStr, { allowMalformed: true }),
+            files: fileStr === undefined ? undefined : [
+                {
+                    name: fileName ?? 'file.txt',
+                    file: fileStr.startsWith('buffer')
+                        ? fileStr.slice(7)
+                        : Buffer.from(fileStr).toString('base64')
+                }
+            ]
+        });
+
+        if (result === undefined)
+            return;
+
+        throw new BBTagRuntimeError(`Error executing webhook: ${result.error}`);
     }
 }

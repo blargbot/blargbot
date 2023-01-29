@@ -7,7 +7,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.roundUp;
 
-@Subtag.id('roundUp', 'ceil')
+@Subtag.names('roundUp', 'ceil')
 @Subtag.ctorArgs(Subtag.converter())
 export class RoundUpSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;

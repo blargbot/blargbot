@@ -11,7 +11,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.splice;
 
-@Subtag.id('splice')
+@Subtag.names('splice')
 @Subtag.ctorArgs(Subtag.arrayTools(), Subtag.converter())
 export class SpliceSubtag extends CompiledSubtag {
     readonly #arrayTools: BBTagArrayTools;

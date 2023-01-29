@@ -9,7 +9,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.max;
 
-@Subtag.id('max')
+@Subtag.names('max')
 @Subtag.ctorArgs(Subtag.arrayTools(), Subtag.converter())
 export class MaxSubtag extends CompiledSubtag {
     readonly #arrayTools: BBTagArrayTools;

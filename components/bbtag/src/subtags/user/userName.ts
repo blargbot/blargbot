@@ -1,16 +1,19 @@
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { UserNotFoundError } from '../../errors/index.js';
+import type { UserService } from '../../services/UserService.js';
 import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.userName;
 
-@Subtag.id('userName')
-@Subtag.ctorArgs()
+@Subtag.names('userName')
+@Subtag.ctorArgs(Subtag.service('user'))
 export class UserNameSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #users: UserService;
+
+    public constructor(users: UserService) {
         super({
             category: SubtagType.USER,
             definition: [
@@ -32,6 +35,8 @@ export class UserNameSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#users = users;
     }
 
     public async getUserName(
@@ -40,7 +45,7 @@ export class UserNameSubtag extends CompiledSubtag {
         quiet: boolean
     ): Promise<string> {
         quiet ||= context.scopes.local.quiet ?? false;
-        const user = await context.queryUser(userId, { noLookup: quiet });
+        const user = await this.#users.querySingle(context, userId, { noLookup: quiet });
 
         if (user === undefined) {
             throw new UserNotFoundError(userId)

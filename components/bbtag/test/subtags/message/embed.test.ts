@@ -37,7 +37,7 @@ runSubtagTests({
             assert(ctx) {
                 chai.expect(ctx.data.embeds).to.deep.equal([
                     { title: 'Hello!' },
-                    { fields: [{ name: 'Malformed JSON', value: '{"title":false}' }], malformed: true }
+                    { fields: [{ name: 'Malformed JSON', value: '{"title":false}' }] }
                 ]);
             }
         },

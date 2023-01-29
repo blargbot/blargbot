@@ -1,16 +1,19 @@
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, ChannelNotFoundError } from '../../errors/index.js';
+import type { ChannelService } from '../../services/ChannelService.js';
 import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.channelCategory;
 
-@Subtag.id('channelCategory', 'category')
-@Subtag.ctorArgs()
+@Subtag.names('channelCategory', 'category')
+@Subtag.ctorArgs(Subtag.service('channel'))
 export class ChannelCategorySubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #channels: ChannelService;
+
+    public constructor(channels: ChannelService) {
         super({
             category: SubtagType.CHANNEL,
             definition: [
@@ -32,6 +35,8 @@ export class ChannelCategorySubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#channels = channels;
     }
 
     public async getCategory(
@@ -40,15 +45,15 @@ export class ChannelCategorySubtag extends CompiledSubtag {
         quiet: boolean
     ): Promise<string> {
         quiet ||= context.scopes.local.quiet ?? false;
-        const channel = await context.queryChannel(channelStr, { noLookup: quiet });
+        const channel = await this.#channels.querySingle(context, channelStr, { noLookup: quiet });
         if (channel === undefined)
             throw new ChannelNotFoundError(channelStr)
                 .withDisplay(quiet ? '' : undefined);
 
-        if (typeof channel.parentID !== 'string')
+        if (typeof channel.parent_id !== 'string')
             throw new BBTagRuntimeError('Channel has no parent')
                 .withDisplay('');
 
-        return channel.parentID;
+        return channel.parent_id;
     }
 }

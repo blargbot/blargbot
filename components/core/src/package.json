@@ -14,6 +14,7 @@
         "@blargbot/crowdin": "workspace:^",
         "@blargbot/database": "workspace:^",
         "@blargbot/discord-emote": "workspace:^",
+        "@blargbot/discord-util": "workspace:^",
         "@blargbot/domain": "workspace:^",
         "@blargbot/formatting": "workspace:^",
         "@blargbot/guards": "workspace:^",
@@ -22,9 +23,9 @@
         "@blargbot/res": "workspace:^",
         "@blargbot/timer": "workspace:^",
         "airtable": "^0.11.6",
-        "catflake": "^1.0.0",
         "color": "^4.2.3",
         "cron": "^2.2.0",
+        "discord-api-types": "^0.37.29",
         "eris": "^0.17.1",
         "eventemitter3": "^5.0.0",
         "limax": "^3.0.0",
@@ -34,7 +35,6 @@
         "unorm": "^1.6.0"
     },
     "devDependencies": {
-        "@types/catflake": "workspace:^",
         "@types/color": "^3.0.3",
         "@types/cron": "^2.0.0",
         "@types/eris": "workspace:^",

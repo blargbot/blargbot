@@ -12,7 +12,7 @@ runSubtagTests({
             code: '{userjoinedat}',
             expected: '2021-01-01T00:00:00+00:00',
             setup(ctx) {
-                ctx.members.command.joined_at = '2021-01-01T00:00:00+0000';
+                ctx.users.command.member.joined_at = '2021-01-01T00:00:00+0000';
             }
         },
         ...createGetUserPropTestCases({
@@ -24,13 +24,17 @@ runSubtagTests({
                 {
                     expected: '2021-01-01T00:00:00+00:00',
                     setup(user) {
-                        user.joined_at = '2021-01-01T00:00:00+0000';
+                        if (user.member === undefined)
+                            throw new Error('User isnt member of guild');
+                        user.member.joined_at = '2021-01-01T00:00:00+0000';
                     }
                 },
                 {
                     expected: '2021-12-20T15:12:37+00:00',
                     setup(user) {
-                        user.joined_at = '2021-12-20T15:12:37+00:00';
+                        if (user.member === undefined)
+                            throw new Error('User isnt member of guild');
+                        user.member.joined_at = '2021-12-20T15:12:37+00:00';
                     }
                 }
             ]
@@ -44,13 +48,17 @@ runSubtagTests({
                 {
                     expected: '01/01/2021',
                     setup(user) {
-                        user.joined_at = '2021-01-01T00:00:00+0000';
+                        if (user.member === undefined)
+                            throw new Error('User isnt member of guild');
+                        user.member.joined_at = '2021-01-01T00:00:00+0000';
                     }
                 },
                 {
                     expected: '20/12/2021',
                     setup(user) {
-                        user.joined_at = '2021-12-20T15:12:37+00:00';
+                        if (user.member === undefined)
+                            throw new Error('User isnt member of guild');
+                        user.member.joined_at = '2021-12-20T15:12:37+00:00';
                     }
                 }
             ]

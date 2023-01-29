@@ -1,10 +1,15 @@
 import { Subtag } from '@blargbot/bbtag';
 import { BBTagRuntimeError, MessageNotFoundError } from '@blargbot/bbtag/errors/index.js';
 import { ReactionListSubtag } from '@blargbot/bbtag/subtags/message/reactionList.js';
-import * as Eris from 'eris';
+import { Emote } from '@blargbot/discord-emote';
+import { argument } from '@blargbot/test-util/mock.js';
 
 import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';
 import { createGetMessagePropTestCases } from './_getMessagePropTest.js';
+
+const think = Emote.parse('🤔');
+const notLikeCat = Emote.parse('notlikecat:280110565161041921');
+const fakeEmote = Emote.parse('fakeemote:192612896213677963');
 
 runSubtagTests({
     subtag: Subtag.getDescriptor(ReactionListSubtag),
@@ -14,15 +19,16 @@ runSubtagTests({
             code: '{reactlist}',
             expected: '`No message found`',
             setup(ctx) {
-                ctx.channels.command.id = ctx.message.channel_id = '342756834937659745634';
+                ctx.channels.command.id = ctx.message.channel_id = '3427568349359745634';
             },
             errors: [
-                { start: 0, end: 11, error: new MessageNotFoundError('342756834937659745634', '') }
+                { start: 0, end: 11, error: new MessageNotFoundError('3427568349359745634', '') }
             ]
         },
         ...createGetMessagePropTestCases({
             includeNoArgs: false,
             quiet: false,
+            getQueryOptions: () => ({ noErrors: true, noLookup: true }),
             generateCode(...args) {
                 return `{${['reactlist', ...args].filter(a => a !== undefined).join(';')}}`;
             },
@@ -57,27 +63,27 @@ runSubtagTests({
         ...createGetMessagePropTestCases({
             includeNoArgs: false,
             quiet: false,
+            getQueryOptions: () => ({ noErrors: true, noLookup: true }),
             generateCode(...args) {
                 return `{${['reactlist', ...args, '🤔'].filter(a => a !== undefined).join(';')}}`;
             },
             cases: [
                 {
                     expected: '[]',
-                    setup(channel, message, ctx) {
-                        ctx.discord.setup(m => m.getMessageReaction(channel.id, message.id, '🤔', undefined, undefined, undefined)).thenResolve([]);
+                    postSetup(channel, message, bbctx, ctx) {
+                        ctx.messageService.setup(m => m.getReactors(bbctx, channel.id, message.id, argument.isDeepEqual(think)))
+                            .thenResolve([]);
                     }
                 },
                 {
                     expected: '["23098764238493489238","32847623493687578962","29874394027843984987"]',
-                    setup(channel, message, ctx) {
+                    postSetup(channel, message, bbctx, ctx) {
                         ctx.users.bot.id = '23098764238493489238';
                         ctx.users.other.id = '32847623493687578962';
                         ctx.users.command.id = '29874394027843984987';
-                        const bot = ctx.createUser(ctx.users.bot);
-                        const other = ctx.createUser(ctx.users.other);
-                        const command = ctx.createUser(ctx.users.command);
 
-                        ctx.discord.setup(m => m.getMessageReaction(channel.id, message.id, '🤔', undefined, undefined, undefined)).thenResolve([bot, other, command]);
+                        ctx.messageService.setup(m => m.getReactors(bbctx, channel.id, message.id, argument.isDeepEqual(think)))
+                            .thenResolve([ctx.users.bot.id, ctx.users.other.id, ctx.users.command.id]);
                     }
                 }
             ]
@@ -85,29 +91,32 @@ runSubtagTests({
         ...createGetMessagePropTestCases({
             includeNoArgs: false,
             quiet: false,
+            getQueryOptions: () => ({ noErrors: true, noLookup: true }),
             generateCode(...args) {
                 return `{${['reactlist', ...args, '🤔<:notlikecat:280110565161041921>'].filter(a => a !== undefined).join(';')}}`;
             },
             cases: [
                 {
                     expected: '[]',
-                    setup(channel, message, ctx) {
-                        ctx.discord.setup(m => m.getMessageReaction(channel.id, message.id, '🤔', undefined, undefined, undefined)).thenResolve([]);
-                        ctx.discord.setup(m => m.getMessageReaction(channel.id, message.id, 'notlikecat:280110565161041921', undefined, undefined, undefined)).thenResolve([]);
+                    postSetup(channel, message, bbctx, ctx) {
+
+                        ctx.messageService.setup(m => m.getReactors(bbctx, channel.id, message.id, argument.isDeepEqual(think)))
+                            .thenResolve([]);
+                        ctx.messageService.setup(m => m.getReactors(bbctx, channel.id, message.id, argument.isDeepEqual(notLikeCat)))
+                            .thenResolve([]);
                     }
                 },
                 {
                     expected: '["23098764238493489238","32847623493687578962","29874394027843984987"]',
-                    setup(channel, message, ctx) {
+                    postSetup(channel, message, bbctx, ctx) {
                         ctx.users.bot.id = '23098764238493489238';
                         ctx.users.other.id = '32847623493687578962';
                         ctx.users.command.id = '29874394027843984987';
-                        const bot = ctx.createUser(ctx.users.bot);
-                        const other = ctx.createUser(ctx.users.other);
-                        const command = ctx.createUser(ctx.users.command);
 
-                        ctx.discord.setup(m => m.getMessageReaction(channel.id, message.id, '🤔', undefined, undefined, undefined)).thenResolve([bot, other]);
-                        ctx.discord.setup(m => m.getMessageReaction(channel.id, message.id, 'notlikecat:280110565161041921', undefined, undefined, undefined)).thenResolve([other, command]);
+                        ctx.messageService.setup(m => m.getReactors(bbctx, channel.id, message.id, argument.isDeepEqual(think)))
+                            .thenResolve([ctx.users.bot.id, ctx.users.other.id]);
+                        ctx.messageService.setup(m => m.getReactors(bbctx, channel.id, message.id, argument.isDeepEqual(notLikeCat)))
+                            .thenResolve([ctx.users.other.id, ctx.users.command.id]);
                     }
                 }
             ]
@@ -115,29 +124,31 @@ runSubtagTests({
         ...createGetMessagePropTestCases({
             includeNoArgs: false,
             quiet: false,
+            getQueryOptions: () => ({ noErrors: true, noLookup: true }),
             generateCode(...args) {
                 return `{${['reactlist', ...args, '🤔', '<:notlikecat:280110565161041921>'].filter(a => a !== undefined).join(';')}}`;
             },
             cases: [
                 {
                     expected: '[]',
-                    setup(channel, message, ctx) {
-                        ctx.discord.setup(m => m.getMessageReaction(channel.id, message.id, '🤔', undefined, undefined, undefined)).thenResolve([]);
-                        ctx.discord.setup(m => m.getMessageReaction(channel.id, message.id, 'notlikecat:280110565161041921', undefined, undefined, undefined)).thenResolve([]);
+                    postSetup(channel, message, bbctx, ctx) {
+                        ctx.messageService.setup(m => m.getReactors(bbctx, channel.id, message.id, argument.isDeepEqual(think)))
+                            .thenResolve([]);
+                        ctx.messageService.setup(m => m.getReactors(bbctx, channel.id, message.id, argument.isDeepEqual(notLikeCat)))
+                            .thenResolve([]);
                     }
                 },
                 {
                     expected: '["23098764238493489238","32847623493687578962","29874394027843984987"]',
-                    setup(channel, message, ctx) {
+                    postSetup(channel, message, bbctx, ctx) {
                         ctx.users.bot.id = '23098764238493489238';
                         ctx.users.other.id = '32847623493687578962';
                         ctx.users.command.id = '29874394027843984987';
-                        const bot = ctx.createUser(ctx.users.bot);
-                        const other = ctx.createUser(ctx.users.other);
-                        const command = ctx.createUser(ctx.users.command);
 
-                        ctx.discord.setup(m => m.getMessageReaction(channel.id, message.id, '🤔', undefined, undefined, undefined)).thenResolve([bot, other]);
-                        ctx.discord.setup(m => m.getMessageReaction(channel.id, message.id, 'notlikecat:280110565161041921', undefined, undefined, undefined)).thenResolve([other, command]);
+                        ctx.messageService.setup(m => m.getReactors(bbctx, channel.id, message.id, argument.isDeepEqual(think)))
+                            .thenResolve([ctx.users.bot.id, ctx.users.other.id]);
+                        ctx.messageService.setup(m => m.getReactors(bbctx, channel.id, message.id, argument.isDeepEqual(notLikeCat)))
+                            .thenResolve([ctx.users.other.id, ctx.users.command.id]);
                     }
                 }
             ]
@@ -149,12 +160,13 @@ runSubtagTests({
                 { start: 0, end: 40, error: new BBTagRuntimeError('Invalid Emojis') }
             ],
             postSetup(bbctx, ctx) {
-                const message = ctx.createMessage(SubtagTestContext.createApiMessage({
+                const message = SubtagTestContext.createMessage({
                     id: '92384982642323432343',
                     channel_id: bbctx.channel.id
-                }, ctx.users.command));
+                }, ctx.users.command);
 
-                ctx.util.setup(m => m.getMessage(bbctx.channel, '92384982642323432343', true)).thenResolve(message);
+                ctx.messageService.setup(m => m.get(bbctx, ctx.channels.command.id, '92384982642323432343'))
+                    .thenResolve(message);
             }
         },
         {
@@ -164,14 +176,15 @@ runSubtagTests({
                 { start: 0, end: 64, error: new BBTagRuntimeError('Unknown Emoji: <:fakeemote:192612896213677963>') }
             ],
             postSetup(bbctx, ctx) {
-                const message = ctx.createMessage(SubtagTestContext.createApiMessage({
+                const message = SubtagTestContext.createMessage({
                     id: '92384982642323432343',
                     channel_id: bbctx.channel.id
-                }, ctx.users.command));
+                }, ctx.users.command);
 
-                ctx.util.setup(m => m.getMessage(bbctx.channel, '92384982642323432343', true)).thenResolve(message);
-                ctx.discord.setup(m => m.getMessageReaction(ctx.channels.command.id, message.id, 'fakeemote:192612896213677963', undefined, undefined, undefined))
-                    .thenReject(ctx.createRESTError(Eris.ApiError.UNKNOWN_EMOJI));
+                ctx.messageService.setup(m => m.get(bbctx, ctx.channels.command.id, '92384982642323432343'))
+                    .thenResolve(message);
+                ctx.messageService.setup(m => m.getReactors(bbctx, ctx.channels.command.id, message.id, argument.isDeepEqual(fakeEmote)))
+                    .thenResolve('unknownEmote');
             }
         }
     ]

@@ -1,10 +1,12 @@
-import { isUrl } from '@blargbot/guards';
-import * as Eris from 'eris';
+import { hasFlag, isUrl } from '@blargbot/guards';
+import * as Discord from 'discord-api-types/v10';
 import fetch from 'node-fetch';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
+import type { GuildService } from '../../services/GuildService.js';
+import type { RoleService } from '../../services/RoleService.js';
 import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import type { BBTagArrayTools } from '../../utils/index.js';
@@ -18,12 +20,14 @@ interface EmojiCreateOptions {
     roles: string[];
 }
 
-@Subtag.id('emojiCreate')
-@Subtag.ctorArgs(Subtag.arrayTools())
+@Subtag.names('emojiCreate')
+@Subtag.ctorArgs(Subtag.arrayTools(), Subtag.service('role'), Subtag.service('guild'))
 export class EmojiCreateSubtag extends CompiledSubtag {
     readonly #arrayTools: BBTagArrayTools;
+    readonly #roles: RoleService;
+    readonly #guilds: GuildService;
 
-    public constructor(arrayTools: BBTagArrayTools) {
+    public constructor(arrayTools: BBTagArrayTools, roles: RoleService, guilds: GuildService) {
         super({
             category: SubtagType.GUILD,
             definition: [
@@ -39,6 +43,8 @@ export class EmojiCreateSubtag extends CompiledSubtag {
         });
 
         this.#arrayTools = arrayTools;
+        this.#roles = roles;
+        this.#guilds = guilds;
     }
 
     public async createEmoji(
@@ -47,7 +53,8 @@ export class EmojiCreateSubtag extends CompiledSubtag {
         imageStr: string,
         rolesStr: string
     ): Promise<string> {
-        if (!context.hasPermission('manageEmojisAndStickers'))
+        const permission = context.getPermission(context.authorizer);
+        if (!hasFlag(permission, Discord.PermissionFlagsBits.ManageEmojisAndStickers))
             throw new BBTagRuntimeError('Author cannot create emojis');
 
         const options: EmojiCreateOptions = {
@@ -73,22 +80,17 @@ export class EmojiCreateSubtag extends CompiledSubtag {
         const roleArray = await this.#arrayTools.deserializeOrGetArray(context, rolesStr);
         if (roleArray !== undefined) {
             for (const roleQuery of roleArray.v) {
-                const role = await context.queryRole(roleQuery?.toString() ?? '', { noLookup: true });
+                const role = await this.#roles.querySingle(context, roleQuery?.toString() ?? '', { noLookup: true });
                 if (role !== undefined) {
                     options.roles.push(role.id);
                 }
             }
         }
 
-        try {
-            const emoji = await context.guild.createEmoji({ image: options.image, name: options.name, roles: options.roles }, context.auditReason());
-            return emoji.id;
-        } catch (err: unknown) {
-            if (!(err instanceof Eris.DiscordRESTError))
-                throw err;
+        const result = await this.#guilds.createEmote(context, { image: options.image, name: options.name, roles: options.roles });
+        if ('error' in result)
+            throw new BBTagRuntimeError(`Failed to create emoji: ${result.error}`);
 
-            const parts = err.message.split('\n').map(m => m.trim());
-            throw new BBTagRuntimeError(`Failed to create emoji: ${parts[1] ?? parts[0]}`);
-        }
+        return result.id?.toString() ?? '';
     }
 }

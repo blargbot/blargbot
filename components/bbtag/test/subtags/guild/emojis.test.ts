@@ -1,5 +1,6 @@
 import { Subtag } from '@blargbot/bbtag';
 import { EmojisSubtag } from '@blargbot/bbtag/subtags/guild/emojis.js';
+import { argument } from '@blargbot/test-util/mock.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
@@ -37,22 +38,14 @@ runSubtagTests({
             code: '{emojis;329476274682462386432}',
             expected: '["<:rolerestricted:923846723894624242>"]',
             postSetup(bbctx, ctx) {
-                const role = bbctx.guild.roles.get('329476274682462386432');
-                if (role === undefined)
-                    throw new Error('Failes to locate role under test');
-
-                ctx.util.setup(m => m.findRoles(bbctx.guild, '329476274682462386432')).thenResolve([role]);
+                ctx.roleService.setup(m => m.querySingle(bbctx, '329476274682462386432', argument.isDeepEqual({ noErrors: true, noLookup: true }))).thenResolve(ctx.roles.other);
             }
         },
         {
             code: '{emojis;other}',
             expected: '["<:rolerestricted:923846723894624242>"]',
             postSetup(bbctx, ctx) {
-                const role = bbctx.guild.roles.get('329476274682462386432');
-                if (role === undefined)
-                    throw new Error('Failes to locate role under test');
-
-                ctx.util.setup(m => m.findRoles(bbctx.guild, 'other')).thenResolve([role]);
+                ctx.roleService.setup(m => m.querySingle(bbctx, 'other', argument.isDeepEqual({ noErrors: true, noLookup: true }))).thenResolve(ctx.roles.other);
             }
         }
     ]

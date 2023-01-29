@@ -1,4 +1,5 @@
 import { Emote } from '@blargbot/discord-emote';
+import { markup } from '@blargbot/discord-util';
 import type { IValueResolverTransform } from '@blargbot/formatting';
 import * as Eris from 'eris';
 import moment from 'moment-timezone';
@@ -15,16 +16,16 @@ export const tag: IValueResolverTransform = {
         }
 
         return ctx => {
-            const value = source(ctx);
+            let value = source(ctx);
             if (value === undefined)
                 return undefined;
             if (typeof value === 'number' || typeof value === 'string') {
+                const v = value.toString();
                 switch (format) {
-                    case '@':
-                    case '@&':
-                    case '#':
-                        return `<${format}${value}>`;
-                    case 't':
+                    case '@': return markup.user(v);
+                    case '@&': return markup.role(v);
+                    case '#': return markup.channel(v);
+                    case 't': return markup.timestamp(parseFloat(v));
                     case 't:t':
                     case 't:T':
                     case 't:d':
@@ -32,8 +33,8 @@ export const tag: IValueResolverTransform = {
                     case 't:f':
                     case 't:F':
                     case 't:R': {
-                        const v = typeof value === 'string' ? parseFloat(value) : value;
-                        return `<t:${moment(v).unix()}${format.slice(1)}>`;
+                        const key = format.split(':')[1];
+                        return markup.timestamp[key](parseFloat(v));
                     }
                 }
             }
@@ -43,12 +44,16 @@ export const tag: IValueResolverTransform = {
                 return value.mention;
             if (value instanceof Emote)
                 return value.toString();
-            if (value instanceof Date)
-                return `<t:${moment(value).unix()}:${format ?? 'f'}>`;
             if (moment.isMoment(value))
-                return `<t:${value.unix()}:${format ?? 'f'}>`;
-            if (moment.isDuration(value))
-                return `<t:${moment().add(value).unix()}:R>`;
+                value = value.toDate();
+            if (moment.isDuration(value)) {
+                value = moment().add(value).toDate();
+                format = 'R';
+            }
+            if (value instanceof Date) {
+                const f = format !== undefined && markup.timestamp.isStyle(format) ? format : 'f';
+                return markup.timestamp[f](value);
+            }
             throw new Error('Unrecognised item, failed to get the tag for it');
         };
     }

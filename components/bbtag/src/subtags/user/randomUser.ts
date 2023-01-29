@@ -1,20 +1,20 @@
 import { randChoose } from '@blargbot/core/utils/index.js';
 
 import type { BBTagContext } from '../../BBTagContext.js';
-import type { BBTagUtilities } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
+import type { UserService } from '../../services/UserService.js';
 import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.randomUser;
 
-@Subtag.id('randomUser', 'randUser')
-@Subtag.ctorArgs(Subtag.util())
+@Subtag.names('randomUser', 'randUser')
+@Subtag.ctorArgs(Subtag.service('user'))
 export class RandomUserSubtag extends CompiledSubtag {
-    readonly #util: BBTagUtilities;
+    readonly #users: UserService;
 
-    public constructor(util: BBTagUtilities) {
+    public constructor(users: UserService) {
         super({
             category: SubtagType.USER,
             definition: [
@@ -28,11 +28,12 @@ export class RandomUserSubtag extends CompiledSubtag {
                 }
             ]
         });
-        this.#util = util;
+
+        this.#users = users;
     }
 
     public async randomUser(context: BBTagContext): Promise<string> {
-        await this.#util.ensureMemberCache(context.channel.guild);
-        return randChoose(context.guild.members.values()).id;
+        const users = await this.#users.getAll(context);
+        return randChoose(users).id;
     }
 }

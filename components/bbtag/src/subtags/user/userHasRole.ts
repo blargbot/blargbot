@@ -1,9 +1,8 @@
-import { hasValue } from '@blargbot/guards';
-
 import type { BBTagContext } from '../../BBTagContext.js';
 import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { RoleNotFoundError, UserNotFoundError } from '../../errors/index.js';
+import type { UserService } from '../../services/UserService.js';
 import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import type { BBTagArrayTools } from '../../utils/index.js';
@@ -11,13 +10,14 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.userHasRole;
 
-@Subtag.id('userHasRole', 'hasRole')
-@Subtag.ctorArgs(Subtag.arrayTools(), Subtag.converter())
+@Subtag.names('userHasRole', 'hasRole')
+@Subtag.ctorArgs(Subtag.arrayTools(), Subtag.converter(), Subtag.service('user'))
 export class UserHasRoleSubtag extends CompiledSubtag {
     readonly #arrayTools: BBTagArrayTools;
     readonly #converter: BBTagValueConverter;
+    readonly #users: UserService;
 
-    public constructor(arrayTools: BBTagArrayTools, converter: BBTagValueConverter) {
+    public constructor(arrayTools: BBTagArrayTools, converter: BBTagValueConverter, users: UserService) {
         super({
             category: SubtagType.USER,
             description: tag.description,
@@ -43,6 +43,7 @@ export class UserHasRoleSubtag extends CompiledSubtag {
 
         this.#arrayTools = arrayTools;
         this.#converter = converter;
+        this.#users = users;
     }
 
     public async userHasRole(
@@ -52,20 +53,20 @@ export class UserHasRoleSubtag extends CompiledSubtag {
         quiet: boolean
     ): Promise<boolean> {
         quiet ||= context.scopes.local.quiet ?? false;
-        const member = await context.queryMember(userStr, { noLookup: quiet });
-        if (member === undefined)
+        const user = await this.#users.querySingle(context, userStr, { noLookup: quiet });
+        if (user?.member === undefined)
             throw new UserNotFoundError(userStr)
                 .withDisplay(quiet ? 'false' : undefined);
 
         const arr = this.#arrayTools.deserialize(roleStr) ?? { v: [roleStr] };
         const roleArr = arr.v.map(x => this.#converter.string(x));
-        if (!hasValue(member.guild) || !hasValue(member.roles))
-            return false;
+        const roleIds = new Set(context.guild.roles.map(r => r.id));
 
-        if (roleArr.every(role => member.guild.roles.get(role) === undefined))
+        if (roleArr.every(role => !roleIds.has(role)))
             throw new RoleNotFoundError(roleStr)
                 .withDisplay(quiet ? 'false' : undefined);
 
-        return roleArr.some(r => member.roles.includes(r));
+        const userRoles = new Set(user.member.roles);
+        return roleArr.some(r => userRoles.has(r));
     }
 }

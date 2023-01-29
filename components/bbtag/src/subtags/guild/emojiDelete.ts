@@ -1,18 +1,22 @@
-import * as Eris from 'eris';
+import { hasFlag } from '@blargbot/guards';
+import * as Discord from 'discord-api-types/v10';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
+import type { GuildService } from '../../services/GuildService.js';
 import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.emojiDelete;
 
-@Subtag.id('emojiDelete')
-@Subtag.ctorArgs()
+@Subtag.names('emojiDelete')
+@Subtag.ctorArgs(Subtag.service('guild'))
 export class EmojiDeleteSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #guilds: GuildService;
+
+    public constructor(guilds: GuildService) {
         super({
             category: SubtagType.GUILD,
             definition: [
@@ -26,20 +30,17 @@ export class EmojiDeleteSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#guilds = guilds;
     }
 
     public async deleteEmoji(context: BBTagContext, emojiId: string): Promise<void> {
-        if (!context.hasPermission('manageEmojisAndStickers'))
+        const permission = context.getPermission(context.authorizer);
+        if (!hasFlag(permission, Discord.PermissionFlagsBits.ManageEmojisAndStickers))
             throw new BBTagRuntimeError('Author cannot delete emojis');
 
-        try {
-            await context.guild.deleteEmoji(emojiId, context.auditReason());
-        } catch (err: unknown) {
-            if (!(err instanceof Eris.DiscordRESTError))
-                throw err;
-
-            const parts = err.message.split('\n').map(m => m.trim());
-            throw new BBTagRuntimeError(`Failed to delete emoji: ${parts.length > 1 ? parts[1] : parts[0]}`);
-        }
+        const result = await this.#guilds.deleteEmote(context, emojiId);
+        if (result !== undefined)
+            throw new BBTagRuntimeError(`Failed to delete emoji: ${result.error}`);
     }
 }

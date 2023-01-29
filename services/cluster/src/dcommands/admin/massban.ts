@@ -1,8 +1,8 @@
 import type { CommandResult, GuildCommandContext } from '@blargbot/cluster/types.js';
-import { CommandType, parse } from '@blargbot/cluster/utils/index.js';
+import { CommandType } from '@blargbot/cluster/utils/index.js';
+import { markup, snowflake } from '@blargbot/discord-util';
 import type { FlagResult } from '@blargbot/flags';
 import { util } from '@blargbot/formatting';
-import { hasValue } from '@blargbot/guards';
 
 import { GuildCommand } from '../../command/index.js';
 import templates from '../../text.js';
@@ -29,7 +29,7 @@ export class MassBanCommand extends GuildCommand {
     }
 
     public async massBan(context: GuildCommandContext, userIds: readonly string[], deleteDays: number, flags: FlagResult): Promise<CommandResult> {
-        userIds = userIds.flatMap(u => parse.entityId(u)).filter(hasValue);
+        userIds = userIds.flatMap(u => [...markup.user.findAll(u), u]).filter(snowflake.test);
 
         const reason = flags.r?.merge().value ?? '';
 

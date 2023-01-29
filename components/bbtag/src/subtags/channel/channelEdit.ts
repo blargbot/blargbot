@@ -1,20 +1,25 @@
 import { guard } from '@blargbot/core/utils/index.js';
+import { hasFlag } from '@blargbot/guards';
 import { mapping } from '@blargbot/mapping';
-import * as Eris from 'eris';
+import * as Discord from 'discord-api-types/v10';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
+import type { ChannelService } from '../../services/ChannelService.js';
 import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
+import type { Entities } from '../../types.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.channelEdit;
 
-@Subtag.id('channelEdit')
-@Subtag.ctorArgs()
+@Subtag.names('channelEdit')
+@Subtag.ctorArgs(Subtag.service('channel'))
 export class ChannelEditSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #channels: ChannelService;
+
+    public constructor(channels: ChannelService) {
         super({
             category: SubtagType.CHANNEL,
             definition: [
@@ -28,6 +33,8 @@ export class ChannelEditSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#channels = channels;
     }
 
     public async channelEdit(
@@ -35,12 +42,13 @@ export class ChannelEditSubtag extends CompiledSubtag {
         channelStr: string,
         editJson: string
     ): Promise<string> {
-        const channel = await context.queryChannel(channelStr);
+        const channel = await this.#channels.querySingle(context, channelStr);
 
         if (channel === undefined)
             throw new BBTagRuntimeError('Channel does not exist');//TODO no channel found error
 
-        if (!context.hasPermission(channel, 'manageChannels'))
+        const permission = context.getPermission(context.authorizer, channel);
+        if (!hasFlag(permission, Discord.PermissionFlagsBits.ManageChannels))
             throw new BBTagRuntimeError('Author cannot edit this channel');
 
         const mapping = guard.isThreadChannel(channel) ? mapThreadOptions : mapChannelOptions;
@@ -49,22 +57,20 @@ export class ChannelEditSubtag extends CompiledSubtag {
             throw new BBTagRuntimeError('Invalid JSON');
 
         const options = mapped.value;
-        try {
-            await channel.edit(options, context.auditReason());
-            return channel.id;
-        } catch (err: unknown) {
-            if (!(err instanceof Eris.DiscordRESTError))
-                throw err;
 
-            throw new BBTagRuntimeError('Failed to edit channel: no perms', err.message);
-        }
+        const result = await this.#channels.edit(context, channel.id, options);
+
+        if (result === undefined)
+            return channel.id;
+
+        throw new BBTagRuntimeError('Failed to edit channel: no perms', result.error);
     }
 }
 
 const defaultAutoArchiveDurationMapping = mapping.in(...[60, 1440, 4320, 10080, undefined] as const);
 
 const mapChannelOptions = mapping.json(
-    mapping.object<Eris.EditChannelOptions>({
+    mapping.object<Entities.EditChannel>({
         bitrate: mapping.number.optional,
         name: mapping.string.optional,
         nsfw: mapping.boolean.optional,
@@ -81,13 +87,12 @@ const mapChannelOptions = mapping.json(
         invitable: [undefined],
         ownerID: [undefined],
         videoQualityMode: [undefined],
-        position: [undefined],
-        permissionOverwrites: [undefined]
+        position: [undefined]
     })
 );
 
 const mapThreadOptions = mapping.json(
-    mapping.object<Eris.EditChannelOptions>({
+    mapping.object<Entities.EditChannel>({
         archived: mapping.boolean.optional,
         autoArchiveDuration: mapping.number.chain(defaultAutoArchiveDurationMapping).optional,
         locked: mapping.boolean.optional,
@@ -104,7 +109,6 @@ const mapThreadOptions = mapping.json(
         topic: [undefined],
         userLimit: [undefined],
         videoQualityMode: [undefined],
-        position: [undefined],
-        permissionOverwrites: [undefined]
+        position: [undefined]
     })
 );

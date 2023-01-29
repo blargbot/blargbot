@@ -1,20 +1,23 @@
-import { isUrl } from '@blargbot/guards';
-import * as Eris from 'eris';
+import { hasFlag, isUrl } from '@blargbot/guards';
+import * as Discord from 'discord-api-types/v10';
 import fetch from 'node-fetch';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
+import type { GuildService } from '../../services/GuildService.js';
 import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.guildSetIcon;
 
-@Subtag.id('guildSetIcon')
-@Subtag.ctorArgs()
+@Subtag.names('guildSetIcon')
+@Subtag.ctorArgs(Subtag.service('guild'))
 export class GuildSetIconSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #guilds: GuildService;
+
+    public constructor(guilds: GuildService) {
         super({
             category: SubtagType.GUILD,
             definition: [
@@ -29,10 +32,13 @@ export class GuildSetIconSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#guilds = guilds;
     }
 
     public async setGuildIcon(context: BBTagContext, image: string): Promise<void> {
-        if (!context.hasPermission('manageGuild'))
+        const permission = context.getPermission(context.authorizer);
+        if (!hasFlag(permission, Discord.PermissionFlagsBits.ManageGuild))
             throw new BBTagRuntimeError('Author cannot modify the guild');
 
         if (image.startsWith('<') && image.endsWith('>'))
@@ -45,14 +51,8 @@ export class GuildSetIconSubtag extends CompiledSubtag {
             throw new BBTagRuntimeError('Image was not a buffer or a URL');
         }
 
-        try {
-            await context.guild.edit({ icon: image }, context.auditReason());
-        } catch (err: unknown) {
-            if (!(err instanceof Eris.DiscordRESTError))
-                throw err;
-
-            const parts = err.message.split('\n').map(m => m.trim());
-            throw new BBTagRuntimeError(`Failed to set icon: ${parts[1] ?? parts[0]}`);
-        }
+        const result = await this.#guilds.edit(context, { icon: image });
+        if (result !== undefined)
+            throw new BBTagRuntimeError(`Failed to set icon: ${result.error}`);
     }
 }

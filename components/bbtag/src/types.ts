@@ -2,17 +2,20 @@ import type { Emote } from '@blargbot/discord-emote';
 import type { NamedGuildCommandTag, StoredTag } from '@blargbot/domain/models/index.js';
 import type { FlagDefinition } from '@blargbot/flags';
 import type { IFormattable } from '@blargbot/formatting';
-import type * as Eris from 'eris';
+import type * as Discord from 'discord-api-types/v10';
 import type ReadWriteLock from 'rwlock';
 
 import type { VariableCache } from './Caching.js';
 import type { BBTagRuntimeError } from './errors/index.js';
+import type { Entities } from './index.js';
 import type { SourceMarker, Statement, SubtagCall } from './language/index.js';
 import type { limits, RuntimeLimit } from './limits/index.js';
 import type { ScopeManager } from './ScopeManager.js';
 import type { SubtagCallStack } from './SubtagCallStack.js';
 import type { TagCooldownManager } from './TagCooldownManager.js';
 import type { SubtagType } from './utils/index.js';
+
+export * as Entities from './types.entities.js';
 
 export interface AnalysisResults {
     readonly errors: AnalysisResult[];
@@ -55,8 +58,8 @@ export interface SerializedBBTagContext {
         content: string;
         channel: { id: string; serialized: string; };
         member?: { id: string; serialized: string; };
-        attachments: Eris.Attachment[];
-        embeds: Eris.Embed[];
+        attachments: Entities.Message['attachments'];
+        embeds: Entities.Message['embeds'];
     };
     isCC: boolean;
     scope: BBTagRuntimeScope;
@@ -73,16 +76,6 @@ export interface SerializedBBTagContext {
     limit: SerializedRuntimeLimit;
 }
 
-export type BBTagContextMessage = Pick<Eris.Message<Eris.KnownGuildTextableChannel>,
-    | 'id'
-    | 'createdAt'
-    | 'content'
-    | 'channel'
-    | 'member'
-    | 'author'
-    | 'attachments'
-    | 'embeds'
->
 export interface BBTagContextState {
     query: {
         count: number;
@@ -94,8 +87,11 @@ export interface BBTagContextState {
     ownedMsgs: string[];
     state: BBTagRuntimeState;
     stackSize: number;
-    embeds: undefined | Eris.EmbedOptions[];
-    file: undefined | Eris.FileContent;
+    embeds: undefined | Discord.APIEmbed[];
+    file: undefined | {
+        file: string;
+        name: string;
+    };
     reactions: string[];
     nsfw: undefined | string;
     replace: undefined | { regex: RegExp | string; with: string; };
@@ -137,13 +133,19 @@ export interface FindEntityOptions {
 }
 
 export interface BBTagContextOptions {
-    readonly message: BBTagContextMessage;
+    readonly message: Entities.Message;
+    readonly bot: Entities.User;
+    readonly authorizer: Entities.User;
+    readonly user: Entities.User;
+    readonly channel: Entities.Channel;
+    readonly guild: Entities.Guild;
+    readonly isStaff: boolean;
+
     readonly inputRaw: string;
     readonly flags?: ReadonlyArray<FlagDefinition<string>>;
     readonly isCC: boolean;
     readonly tagVars?: boolean;
     readonly authorId?: string;
-    readonly authorizerId?: string;
     readonly rootTagName?: string;
     readonly tagName?: string;
     readonly cooldown?: number;
@@ -225,7 +227,7 @@ type SubtagReturnTypeValueMap = {
     string: string;
     id: string;
     json: JToken;
-    embed: Eris.Embed;
+    embed: Discord.APIEmbed;
     nothing: undefined;
 }
 
@@ -241,6 +243,7 @@ type SubtagReturnTypeMapHelper = Omit<SubtagReturnTypeAtomicMap, 'nothing'>
     & SubtagReturnTypeUnion<['number', 'number[]']>
     & SubtagReturnTypeUnion<['boolean', 'number']>
     & SubtagReturnTypeUnion<['string', 'nothing']>
+    & SubtagReturnTypeUnion<['id', 'nothing']>
     // & SubtagReturnTypeUnion<['json', 'nothing']>
     & SubtagReturnTypeUnion<['json[]', 'nothing']>
     & SubtagReturnTypeUnion<['json', 'nothing']>
@@ -274,7 +277,7 @@ export interface SubtagProperties<Id extends SubtagType = SubtagType> {
 }
 
 export interface AwaitReactionsResponse {
-    readonly message: Eris.KnownMessage;
+    readonly message: Entities.Message;
     readonly reaction: Emote;
-    readonly user: Eris.User;
+    readonly user: Entities.User;
 }

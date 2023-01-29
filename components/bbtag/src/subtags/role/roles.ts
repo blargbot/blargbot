@@ -1,18 +1,19 @@
-import { hasValue } from '@blargbot/guards';
-
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { UserNotFoundError } from '../../errors/index.js';
+import type { UserService } from '../../services/UserService.js';
 import { Subtag } from '../../Subtag.js';
 import templates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.roles;
 
-@Subtag.id('roles')
-@Subtag.ctorArgs()
+@Subtag.names('roles')
+@Subtag.ctorArgs(Subtag.service('user'))
 export class RolesSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #users: UserService;
+
+    public constructor(users: UserService) {
         super({
             category: SubtagType.ROLE,
             definition: [
@@ -34,6 +35,8 @@ export class RolesSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#users = users;
     }
 
     public getGuildRoles(context: BBTagContext): string[] {
@@ -48,19 +51,16 @@ export class RolesSubtag extends CompiledSubtag {
         quiet: boolean
     ): Promise<string[]> {
         quiet ||= context.scopes.local.quiet ?? false;
-        const member = await context.queryMember(userId, { noLookup: quiet });
+        const user = await this.#users.querySingle(context, userId, { noLookup: quiet });
 
-        if (member === undefined) {
+        if (user?.member === undefined) {
             throw new UserNotFoundError(userId)
                 .withDisplay(quiet ? '' : undefined);
         }
 
-        if (!hasValue(member.guild) || !hasValue(member.roles))
-            return [];
-
-        return member.roles
-            .map(r => ({ r, p: member.guild.roles.get(r)?.position ?? -Infinity }))
-            .sort((a, b) => b.p - a.p)
-            .map(r => r.r);
+        const memberRoles = new Set(user.member.roles);
+        return context.guild.roles.filter(r => memberRoles.has(r.id))
+            .sort((a, b) => b.position - a.position)
+            .map(r => r.id);
     }
 }

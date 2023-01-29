@@ -1,7 +1,7 @@
 import { Subtag } from '@blargbot/bbtag';
 import { MessageTypeSubtag } from '@blargbot/bbtag/subtags/message/messageType.js';
-import { snowflake } from '@blargbot/core/utils/index.js';
-import Discord from 'discord-api-types/v9';
+import { snowflake } from '@blargbot/discord-util';
+import Discord from 'discord-api-types/v10';
 
 import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';
 import { createGetMessagePropTestCases } from './_getMessagePropTest.js';
@@ -41,6 +41,7 @@ const messageTypes: { [P in string & keyof typeof Discord.MessageType]: typeof D
     ['GuildApplicationPremiumSubscription']: Discord.MessageType.GuildApplicationPremiumSubscription
 };
 
+const createSnowflake = snowflake.nextFactory();
 runSubtagTests({
     subtag: Subtag.getDescriptor(MessageTypeSubtag),
     argCountBounds: { min: 0, max: 2 },
@@ -56,7 +57,7 @@ runSubtagTests({
                 expected: value.toString(),
                 setup(_, message) {
                     message.type = value;
-                    message.mentions.push(SubtagTestContext.createApiUser({ id: snowflake.create().toString() }));
+                    message.mentions.push(SubtagTestContext.createUser({ id: createSnowflake() }));
                     Object.defineProperty(message, 'call', { value: {} });
                 }
             }))

@@ -9,7 +9,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.jsonSort;
 
-@Subtag.id('jsonSort', 'jSort')
+@Subtag.names('jsonSort', 'jSort')
 @Subtag.ctorArgs(Subtag.operators(), Subtag.jsonTools(), Subtag.converter())
 export class JsonSortSubtag extends CompiledSubtag {
     readonly #operators: BBTagOperators;

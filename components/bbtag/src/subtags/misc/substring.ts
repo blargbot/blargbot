@@ -10,7 +10,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.substring;
 
-@Subtag.id('substring')
+@Subtag.names('substring')
 @Subtag.ctorArgs(Subtag.converter())
 export class SubstringSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;

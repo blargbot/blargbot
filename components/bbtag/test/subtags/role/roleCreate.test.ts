@@ -1,186 +1,177 @@
+import type { Entities } from '@blargbot/bbtag';
 import { Subtag } from '@blargbot/bbtag';
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
 import { RoleCreateSubtag } from '@blargbot/bbtag/subtags/role/roleCreate.js';
 import { argument } from '@blargbot/test-util/mock.js';
-import * as Eris from 'eris';
+import * as Discord from 'discord-api-types/v10';
 
-import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: Subtag.getDescriptor(RoleCreateSubtag),
     argCountBounds: { min: 1, max: 5 },
     setupEach(ctx) {
-        ctx.roles.authorizer.permissions = Eris.Constants.Permissions.all.toString();
+        ctx.roles.authorizer.permissions = '-1';
     },
     cases: [
         {
             code: '{rolecreate;My role name}',
             expected: '982374624329846',
             postSetup(bbctx, ctx) {
-                const expected = ctx.createRole(bbctx.guild, SubtagTestContext.createApiRole({
-                    id: '982374624329846'
-                }));
+                const expected = ctx.createMock<Entities.Role>();
+                expected.setup(m => m.id).thenReturn('982374624329846');
 
-                ctx.discord.setup(m => m.createRole(ctx.guild.id, argument.isDeepEqual({
+                ctx.roleService.setup(m => m.create(bbctx, argument.isDeepEqual({
                     name: 'My role name',
                     color: 0,
                     permissions: 0n,
                     mentionable: false,
                     hoist: false
-                }), 'Command User#0000')).thenResolve(expected);
+                }))).thenResolve(expected.instance);
             }
         },
         {
             code: '{rolecreate;My role name;red}',
             expected: '982374624329846',
             postSetup(bbctx, ctx) {
-                const expected = ctx.createRole(bbctx.guild, SubtagTestContext.createApiRole({
-                    id: '982374624329846'
-                }));
+                const expected = ctx.createMock<Entities.Role>();
+                expected.setup(m => m.id).thenReturn('982374624329846');
 
-                ctx.discord.setup(m => m.createRole(ctx.guild.id, argument.isDeepEqual({
+                ctx.roleService.setup(m => m.create(bbctx, argument.isDeepEqual({
                     name: 'My role name',
                     color: 0xff0000,
                     permissions: 0n,
                     mentionable: false,
                     hoist: false
-                }), 'Command User#0000')).thenResolve(expected);
+                }))).thenResolve(expected.instance);
             }
         },
         {
             code: '{rolecreate;My role name;;238764}',
             expected: '982374624329846',
             postSetup(bbctx, ctx) {
-                const expected = ctx.createRole(bbctx.guild, SubtagTestContext.createApiRole({
-                    id: '982374624329846'
-                }));
+                const expected = ctx.createMock<Entities.Role>();
+                expected.setup(m => m.id).thenReturn('982374624329846');
 
-                ctx.discord.setup(m => m.createRole(ctx.guild.id, argument.isDeepEqual({
+                ctx.roleService.setup(m => m.create(bbctx, argument.isDeepEqual({
                     name: 'My role name',
                     color: 0,
                     permissions: 238764n,
                     mentionable: false,
                     hoist: false
-                }), 'Command User#0000')).thenResolve(expected);
+                }))).thenResolve(expected.instance);
             }
         },
         {
             code: '{rolecreate;My role name;blue;238764}',
             expected: '982374624329846',
             postSetup(bbctx, ctx) {
-                const expected = ctx.createRole(bbctx.guild, SubtagTestContext.createApiRole({
-                    id: '982374624329846'
-                }));
+                const expected = ctx.createMock<Entities.Role>();
+                expected.setup(m => m.id).thenReturn('982374624329846');
 
-                ctx.discord.setup(m => m.createRole(ctx.guild.id, argument.isDeepEqual({
+                ctx.roleService.setup(m => m.create(bbctx, argument.isDeepEqual({
                     name: 'My role name',
                     color: 0x0000ff,
                     permissions: 238764n,
                     mentionable: false,
                     hoist: false
-                }), 'Command User#0000')).thenResolve(expected);
+                }))).thenResolve(expected.instance);
             }
         },
         {
             code: '{rolecreate;My role name;blue;238764}',
             expected: '982374624329846',
             postSetup(bbctx, ctx) {
-                const expected = ctx.createRole(bbctx.guild, SubtagTestContext.createApiRole({
-                    id: '982374624329846'
-                }));
+                const expected = ctx.createMock<Entities.Role>();
+                expected.setup(m => m.id).thenReturn('982374624329846');
 
-                ctx.discord.setup(m => m.createRole(ctx.guild.id, argument.isDeepEqual({
+                ctx.roleService.setup(m => m.create(bbctx, argument.isDeepEqual({
                     name: 'My role name',
                     color: 0x0000ff,
                     permissions: 238764n,
                     mentionable: false,
                     hoist: false
-                }), 'Command User#0000')).thenResolve(expected);
+                }))).thenResolve(expected.instance);
             }
         },
         {
             code: '{rolecreate;My role name;;;true}',
             expected: '982374624329846',
             postSetup(bbctx, ctx) {
-                const expected = ctx.createRole(bbctx.guild, SubtagTestContext.createApiRole({
-                    id: '982374624329846'
-                }));
+                const expected = ctx.createMock<Entities.Role>();
+                expected.setup(m => m.id).thenReturn('982374624329846');
 
-                ctx.discord.setup(m => m.createRole(ctx.guild.id, argument.isDeepEqual({
+                ctx.roleService.setup(m => m.create(bbctx, argument.isDeepEqual({
                     name: 'My role name',
                     color: 0,
                     permissions: 0n,
                     mentionable: true,
                     hoist: false
-                }), 'Command User#0000')).thenResolve(expected);
+                }))).thenResolve(expected.instance);
             }
         },
         {
             code: '{rolecreate;My role name;;;false}',
             expected: '982374624329846',
             postSetup(bbctx, ctx) {
-                const expected = ctx.createRole(bbctx.guild, SubtagTestContext.createApiRole({
-                    id: '982374624329846'
-                }));
+                const expected = ctx.createMock<Entities.Role>();
+                expected.setup(m => m.id).thenReturn('982374624329846');
 
-                ctx.discord.setup(m => m.createRole(ctx.guild.id, argument.isDeepEqual({
+                ctx.roleService.setup(m => m.create(bbctx, argument.isDeepEqual({
                     name: 'My role name',
                     color: 0,
                     permissions: 0n,
                     mentionable: false,
                     hoist: false
-                }), 'Command User#0000')).thenResolve(expected);
+                }))).thenResolve(expected.instance);
             }
         },
         {
             code: '{rolecreate;My role name;;;;true}',
             expected: '982374624329846',
             postSetup(bbctx, ctx) {
-                const expected = ctx.createRole(bbctx.guild, SubtagTestContext.createApiRole({
-                    id: '982374624329846'
-                }));
+                const expected = ctx.createMock<Entities.Role>();
+                expected.setup(m => m.id).thenReturn('982374624329846');
 
-                ctx.discord.setup(m => m.createRole(ctx.guild.id, argument.isDeepEqual({
+                ctx.roleService.setup(m => m.create(bbctx, argument.isDeepEqual({
                     name: 'My role name',
                     color: 0,
                     permissions: 0n,
                     mentionable: false,
                     hoist: true
-                }), 'Command User#0000')).thenResolve(expected);
+                }))).thenResolve(expected.instance);
             }
         },
         {
             code: '{rolecreate;My role name;;;;false}',
             expected: '982374624329846',
             postSetup(bbctx, ctx) {
-                const expected = ctx.createRole(bbctx.guild, SubtagTestContext.createApiRole({
-                    id: '982374624329846'
-                }));
+                const expected = ctx.createMock<Entities.Role>();
+                expected.setup(m => m.id).thenReturn('982374624329846');
 
-                ctx.discord.setup(m => m.createRole(ctx.guild.id, argument.isDeepEqual({
+                ctx.roleService.setup(m => m.create(bbctx, argument.isDeepEqual({
                     name: 'My role name',
                     color: 0,
                     permissions: 0n,
                     mentionable: false,
                     hoist: false
-                }), 'Command User#0000')).thenResolve(expected);
+                }))).thenResolve(expected.instance);
             }
         },
         {
             code: '{rolecreate;My role name;red;3297864;true;true}',
             expected: '982374624329846',
             postSetup(bbctx, ctx) {
-                const expected = ctx.createRole(bbctx.guild, SubtagTestContext.createApiRole({
-                    id: '982374624329846'
-                }));
+                const expected = ctx.createMock<Entities.Role>();
+                expected.setup(m => m.id).thenReturn('982374624329846');
 
-                ctx.discord.setup(m => m.createRole(ctx.guild.id, argument.isDeepEqual({
+                ctx.roleService.setup(m => m.create(bbctx, argument.isDeepEqual({
                     name: 'My role name',
                     color: 0xff0000,
                     permissions: 3297864n,
                     mentionable: true,
                     hoist: true
-                }), 'Command User#0000')).thenResolve(expected);
+                }))).thenResolve(expected.instance);
             }
         },
         {
@@ -191,9 +182,9 @@ runSubtagTests({
             ],
             setup(ctx) {
                 ctx.roles.authorizer.permissions = (
-                    Eris.Constants.Permissions.all
-                    & ~Eris.Constants.Permissions.administrator
-                    & ~Eris.Constants.Permissions.manageRoles
+                    -1n
+                    & ~Discord.PermissionFlagsBits.Administrator
+                    & ~Discord.PermissionFlagsBits.ManageRoles
                 ).toString();
             }
         },
@@ -211,7 +202,7 @@ runSubtagTests({
                 { start: 0, end: 47, error: new BBTagRuntimeError('Author missing requested permissions') }
             ],
             setup(ctx) {
-                ctx.roles.authorizer.permissions = Eris.Constants.Permissions.manageRoles.toString();
+                ctx.roles.authorizer.permissions = Discord.PermissionFlagsBits.ManageRoles.toString();
             }
         },
         {
@@ -220,15 +211,14 @@ runSubtagTests({
             errors: [
                 { start: 0, end: 47, error: new BBTagRuntimeError('Failed to create role: no perms', 'Test REST error') }
             ],
-            setup(ctx) {
-                const err = ctx.createRESTError(Eris.ApiError.MISSING_PERMISSIONS);
-                ctx.discord.setup(m => m.createRole(ctx.guild.id, argument.isDeepEqual({
+            postSetup(bbctx, ctx) {
+                ctx.roleService.setup(m => m.create(bbctx, argument.isDeepEqual({
                     name: 'My role name',
                     color: 0xff0000,
                     permissions: 3297864n,
                     mentionable: true,
                     hoist: true
-                }), 'Command User#0000')).thenReject(err);
+                }))).thenResolve({ error: 'Test REST error' });
             }
         },
         {
@@ -237,15 +227,14 @@ runSubtagTests({
             errors: [
                 { start: 0, end: 47, error: new BBTagRuntimeError('Failed to create role: no perms', 'Some other error message') }
             ],
-            setup(ctx) {
-                const err = ctx.createRESTError(Eris.ApiError.NOT_AUTHORIZED, 'Some other error message');
-                ctx.discord.setup(m => m.createRole(ctx.guild.id, argument.isDeepEqual({
+            postSetup(bbctx, ctx) {
+                ctx.roleService.setup(m => m.create(bbctx, argument.isDeepEqual({
                     name: 'My role name',
                     color: 0xff0000,
                     permissions: 3297864n,
                     mentionable: true,
                     hoist: true
-                }), 'Command User#0000')).thenReject(err);
+                }))).thenResolve({ error: 'Some other error message' });
             }
         }
     ]

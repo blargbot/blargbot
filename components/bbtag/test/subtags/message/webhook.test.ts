@@ -3,7 +3,6 @@ import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
 import { WebhookSubtag } from '@blargbot/bbtag/subtags/message/webhook.js';
 import { EscapeBBTagSubtag } from '@blargbot/bbtag/subtags/misc/escapeBBTag.js';
 import { argument } from '@blargbot/test-util/mock.js';
-import chai from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
@@ -18,14 +17,14 @@ runSubtagTests({
             errors: [
                 { start: 0, end: 17, error: new BBTagRuntimeError('Error executing webhook: Test error') }
             ],
-            setup(ctx) {
-                ctx.discord.setup(m => m.executeWebhook('abc', 'def', argument.isDeepEqual({
+            postSetup(bbctx, ctx) {
+                ctx.messageService.setup(m => m.runWebhook(bbctx, 'abc', 'def', argument.isDeepEqual({
                     username: undefined,
-                    avatarURL: undefined,
+                    avatarUrl: undefined,
                     content: undefined,
                     embeds: undefined,
-                    file: undefined
-                }))).thenReject(ctx.createRESTError(0, 'Test error'));
+                    files: undefined
+                }))).thenResolve({ error: 'Test error' });
             }
         },
         {
@@ -35,14 +34,14 @@ runSubtagTests({
             errors: [
                 { start: 0, end: 17, error: new BBTagRuntimeError('Error executing webhook: 404 NotFound on POST /webhooks') }
             ],
-            setup(ctx) {
-                ctx.discord.setup(m => m.executeWebhook('abc', 'def', argument.isDeepEqual({
+            postSetup(bbctx, ctx) {
+                ctx.messageService.setup(m => m.runWebhook(bbctx, 'abc', 'def', argument.isDeepEqual({
                     username: undefined,
-                    avatarURL: undefined,
+                    avatarUrl: undefined,
                     content: undefined,
                     embeds: undefined,
-                    file: undefined
-                }))).thenReject(ctx.createHTTPError(404, 'NotFound', 'POST', '/webhooks'));
+                    files: undefined
+                }))).thenResolve({ error: '404 NotFound on POST /webhooks' });
             }
         },
         {
@@ -52,30 +51,27 @@ runSubtagTests({
             errors: [
                 { start: 0, end: 17, error: new BBTagRuntimeError('Error executing webhook: UNKNOWN') }
             ],
-            setup(ctx) {
-                const error = new Error('This should be caught not thrown');
-
-                ctx.logger.setup(m => m.error('Error executing webhook', error)).thenReturn(undefined);
-                ctx.discord.setup(m => m.executeWebhook('abc', 'def', argument.isDeepEqual({
+            postSetup(bbctx, ctx) {
+                ctx.messageService.setup(m => m.runWebhook(bbctx, 'abc', 'def', argument.isDeepEqual({
                     username: undefined,
-                    avatarURL: undefined,
+                    avatarUrl: undefined,
                     content: undefined,
                     embeds: undefined,
-                    file: undefined
-                }))).thenReject(error);
+                    files: undefined
+                }))).thenResolve({ error: 'UNKNOWN' });
             }
         },
         {
             code: '{webhook;abc;def}',
             subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
             expected: '',
-            setup(ctx) {
-                ctx.discord.setup(m => m.executeWebhook('abc', 'def', argument.isDeepEqual({
+            postSetup(bbctx, ctx) {
+                ctx.messageService.setup(m => m.runWebhook(bbctx, 'abc', 'def', argument.isDeepEqual({
                     username: undefined,
-                    avatarURL: undefined,
+                    avatarUrl: undefined,
                     content: undefined,
                     embeds: undefined,
-                    file: undefined
+                    files: undefined
                 }))).thenResolve(undefined);
             }
         },
@@ -83,13 +79,13 @@ runSubtagTests({
             code: '{webhook;abc;def;ghi}',
             subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
             expected: '',
-            setup(ctx) {
-                ctx.discord.setup(m => m.executeWebhook('abc', 'def', argument.isDeepEqual({
+            postSetup(bbctx, ctx) {
+                ctx.messageService.setup(m => m.runWebhook(bbctx, 'abc', 'def', argument.isDeepEqual({
                     username: undefined,
-                    avatarURL: undefined,
+                    avatarUrl: undefined,
                     content: 'ghi',
                     embeds: undefined,
-                    file: undefined
+                    files: undefined
                 }))).thenResolve(undefined);
             }
         },
@@ -97,13 +93,13 @@ runSubtagTests({
             code: '{webhook;abc;def;ghi;{escapebbtag;{"color":"This isnt an embed"}}}',
             subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
             expected: '',
-            setup(ctx) {
-                ctx.discord.setup(m => m.executeWebhook('abc', 'def', argument.isDeepEqual({
+            postSetup(bbctx, ctx) {
+                ctx.messageService.setup(m => m.runWebhook(bbctx, 'abc', 'def', argument.isDeepEqual({
                     username: undefined,
-                    avatarURL: undefined,
+                    avatarUrl: undefined,
                     content: 'ghi',
-                    embeds: [{ fields: [{ name: 'Malformed JSON', value: '{"color":"This isnt an embed"}' }], malformed: true }],
-                    file: undefined
+                    embeds: [{ fields: [{ name: 'Malformed JSON', value: '{"color":"This isnt an embed"}' }] }],
+                    files: undefined
                 }))).thenResolve(undefined);
             }
         },
@@ -111,13 +107,13 @@ runSubtagTests({
             code: '{webhook;abc;def;ghi;{escapebbtag;{"title":"My cool embed"}}}',
             subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
             expected: '',
-            setup(ctx) {
-                ctx.discord.setup(m => m.executeWebhook('abc', 'def', argument.isDeepEqual({
+            postSetup(bbctx, ctx) {
+                ctx.messageService.setup(m => m.runWebhook(bbctx, 'abc', 'def', argument.isDeepEqual({
                     username: undefined,
-                    avatarURL: undefined,
+                    avatarUrl: undefined,
                     content: 'ghi',
                     embeds: [{ title: 'My cool embed' }],
-                    file: undefined
+                    files: undefined
                 }))).thenResolve(undefined);
             }
         },
@@ -125,13 +121,13 @@ runSubtagTests({
             code: '{webhook;abc;def;ghi;{escapebbtag;{"title":"My cool embed"}};jkl}',
             subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
             expected: '',
-            setup(ctx) {
-                ctx.discord.setup(m => m.executeWebhook('abc', 'def', argument.isDeepEqual({
+            postSetup(bbctx, ctx) {
+                ctx.messageService.setup(m => m.runWebhook(bbctx, 'abc', 'def', argument.isDeepEqual({
                     username: 'jkl',
-                    avatarURL: undefined,
+                    avatarUrl: undefined,
                     content: 'ghi',
                     embeds: [{ title: 'My cool embed' }],
-                    file: undefined
+                    files: undefined
                 }))).thenResolve(undefined);
             }
         },
@@ -139,13 +135,13 @@ runSubtagTests({
             code: '{webhook;abc;def;ghi;{escapebbtag;{"title":"My cool embed"}};jkl;mno}',
             subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
             expected: '',
-            setup(ctx) {
-                ctx.discord.setup(m => m.executeWebhook('abc', 'def', argument.isDeepEqual({
+            postSetup(bbctx, ctx) {
+                ctx.messageService.setup(m => m.runWebhook(bbctx, 'abc', 'def', argument.isDeepEqual({
                     username: 'jkl',
-                    avatarURL: 'mno',
+                    avatarUrl: 'mno',
                     content: 'ghi',
                     embeds: [{ title: 'My cool embed' }],
-                    file: undefined
+                    files: undefined
                 }))).thenResolve(undefined);
             }
         },
@@ -153,13 +149,13 @@ runSubtagTests({
             code: '{webhook;abc;def;ghi;{escapebbtag;{"title":"My cool embed"}};jkl;mno;pqrs}',
             subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
             expected: '',
-            setup(ctx) {
-                ctx.discord.setup(m => m.executeWebhook('abc', 'def', argument.isDeepEqual({
+            postSetup(bbctx, ctx) {
+                ctx.messageService.setup(m => m.runWebhook(bbctx, 'abc', 'def', argument.isDeepEqual({
                     username: 'jkl',
-                    avatarURL: 'mno',
+                    avatarUrl: 'mno',
                     content: 'ghi',
                     embeds: [{ title: 'My cool embed' }],
-                    file: [{ file: argument.assert<Buffer>(value => chai.expect(value).to.be.instanceOf(Buffer).and.to.equalBytes([0x70, 0x71, 0x72, 0x73])).value, name: 'file.txt' }]
+                    files: [{ file: 'cHFycw==', name: 'file.txt' }]
                 }))).thenResolve(undefined);
             }
         },
@@ -167,13 +163,13 @@ runSubtagTests({
             code: '{webhook;abc;def;ghi;{escapebbtag;{"title":"My cool embed"}};jkl;mno;buffer:pqrs}',
             subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
             expected: '',
-            setup(ctx) {
-                ctx.discord.setup(m => m.executeWebhook('abc', 'def', argument.isDeepEqual({
+            postSetup(bbctx, ctx) {
+                ctx.messageService.setup(m => m.runWebhook(bbctx, 'abc', 'def', argument.isDeepEqual({
                     username: 'jkl',
-                    avatarURL: 'mno',
+                    avatarUrl: 'mno',
                     content: 'ghi',
                     embeds: [{ title: 'My cool embed' }],
-                    file: [{ file: argument.assert<Buffer>(value => chai.expect(value).to.be.instanceOf(Buffer).and.to.equalBytes([0xa6, 0xaa, 0xec])).value, name: 'file.txt' }]
+                    files: [{ file: 'pqrs', name: 'file.txt' }]
                 }))).thenResolve(undefined);
             }
         },
@@ -181,13 +177,13 @@ runSubtagTests({
             code: '{webhook;abc;def;ghi;{escapebbtag;{"title":"My cool embed"}};jkl;mno;pqrs;tuv}',
             subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
             expected: '',
-            setup(ctx) {
-                ctx.discord.setup(m => m.executeWebhook('abc', 'def', argument.isDeepEqual({
+            postSetup(bbctx, ctx) {
+                ctx.messageService.setup(m => m.runWebhook(bbctx, 'abc', 'def', argument.isDeepEqual({
                     username: 'jkl',
-                    avatarURL: 'mno',
+                    avatarUrl: 'mno',
                     content: 'ghi',
                     embeds: [{ title: 'My cool embed' }],
-                    file: [{ file: argument.assert<Buffer>(value => chai.expect(value).to.be.instanceOf(Buffer).and.to.equalBytes([0x70, 0x71, 0x72, 0x73])).value, name: 'tuv' }]
+                    files: [{ file: 'cHFycw==', name: 'tuv' }]
                 }))).thenResolve(undefined);
             }
         },
@@ -195,13 +191,13 @@ runSubtagTests({
             code: '{webhook;abc;def;ghi;{escapebbtag;{"title":"My cool embed"}};jkl;mno;buffer:pqrs;tuv}',
             subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
             expected: '',
-            setup(ctx) {
-                ctx.discord.setup(m => m.executeWebhook('abc', 'def', argument.isDeepEqual({
+            postSetup(bbctx, ctx) {
+                ctx.messageService.setup(m => m.runWebhook(bbctx, 'abc', 'def', argument.isDeepEqual({
                     username: 'jkl',
-                    avatarURL: 'mno',
+                    avatarUrl: 'mno',
                     content: 'ghi',
                     embeds: [{ title: 'My cool embed' }],
-                    file: [{ file: argument.assert<Buffer>(value => chai.expect(value).to.be.instanceOf(Buffer).and.to.equalBytes([0xa6, 0xaa, 0xec])).value, name: 'tuv' }]
+                    files: [{ file: 'pqrs', name: 'tuv' }]
                 }))).thenResolve(undefined);
             }
         }
