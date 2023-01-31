@@ -7,11 +7,11 @@ import { BBTagRuntimeError, NotAnArrayError, RoleNotFoundError, UserNotFoundErro
 import type { RoleService } from '../../services/RoleService.js';
 import type { UserService } from '../../services/UserService.js';
 import { Subtag } from '../../Subtag.js';
-import templates from '../../text.js';
+import textTemplates from '../../text.js';
 import type { BBTagArrayTools } from '../../utils/index.js';
 import { SubtagType } from '../../utils/index.js';
 
-const tag = templates.subtags.userSetRoles;
+const tag = textTemplates.subtags.userSetRoles;
 
 @Subtag.names('userSetRoles', 'setRoles')
 @Subtag.ctorArgs(Subtag.arrayTools(), Subtag.converter(), Subtag.service('user'), Subtag.service('role'), Subtag.logger())

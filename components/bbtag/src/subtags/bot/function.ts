@@ -3,10 +3,10 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
 import type { Statement } from '../../language/index.js';
 import { Subtag } from '../../Subtag.js';
-import templates from '../../text.js';
+import textTemplates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
-const tag = templates.subtags.function;
+const tag = textTemplates.subtags.function;
 
 @Subtag.names('function', 'func')
 @Subtag.ctorArgs()

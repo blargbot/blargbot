@@ -1,7 +1,5 @@
-import type { SubtagCall } from '@blargbot/bbtag/language/index.js';
-import templates from '@blargbot/bbtag/text.js';
-import type { ExecutionResult } from '@blargbot/bbtag/types.js';
-import { stringify } from '@blargbot/bbtag/utils/stringify.js';
+import type { ExecutionResult, SubtagCall } from '@blargbot/bbtag';
+import { stringify, textTemplates } from '@blargbot/bbtag';
 import type { IFormattable } from '@blargbot/formatting';
 import type * as Eris from 'eris';
 
@@ -19,7 +17,7 @@ export function bbtagDebugOutput(result: ExecutionResult): { content: IFormattab
     }
 
     return {
-        content: templates.debug.summary({
+        content: textTemplates.debug.summary({
             active: result.duration.active,
             committed: result.database.committed,
             database: result.duration.database,

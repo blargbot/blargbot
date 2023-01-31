@@ -1,5 +1,5 @@
 import { Subtag } from '@blargbot/bbtag';
-import { ChannelIdSubtag } from '@blargbot/bbtag/subtags/channel/channelId.js';
+import { ChannelIdSubtag } from '@blargbot/bbtag/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetChannelPropTestCases } from './_getChannelPropTest.js';

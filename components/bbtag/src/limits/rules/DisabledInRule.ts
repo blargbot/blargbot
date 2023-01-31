@@ -3,7 +3,7 @@ import type { IFormattable } from '@blargbot/formatting';
 import type { BBTagContext } from '../../BBTagContext.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
 import type { SubtagCall } from '../../language/index.js';
-import templates from '../../text.js';
+import textTemplates from '../../text.js';
 import type { RuntimeLimitRule } from '../RuntimeLimitRule.js';
 
 export class DisabledInRule implements RuntimeLimitRule {
@@ -22,7 +22,7 @@ export class DisabledInRule implements RuntimeLimitRule {
     }
 
     public displayText(): IFormattable<string> {
-        return templates.limits.rules.disabledIn.default({ subtagNames: this.#subtags });
+        return textTemplates.limits.rules.disabledIn.default({ subtagNames: this.#subtags });
     }
 
     public state(): JToken {

@@ -4,10 +4,10 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
 import type { MessageService } from '../../services/MessageService.js';
 import { Subtag } from '../../Subtag.js';
-import templates from '../../text.js';
+import textTemplates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
-const tag = templates.subtags.webhook;
+const tag = textTemplates.subtags.webhook;
 
 @Subtag.names('webhook')
 @Subtag.ctorArgs(Subtag.converter(), Subtag.service('message'))

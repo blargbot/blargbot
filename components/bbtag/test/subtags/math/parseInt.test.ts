@@ -1,5 +1,5 @@
 import { Subtag } from '@blargbot/bbtag';
-import { ParseIntSubtag } from '@blargbot/bbtag/subtags/math/parseInt.js';
+import { ParseIntSubtag } from '@blargbot/bbtag/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

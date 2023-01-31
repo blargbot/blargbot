@@ -1,6 +1,5 @@
 import { Subtag } from '@blargbot/bbtag';
-import { UriEncodeSubtag } from '@blargbot/bbtag/subtags/misc/uriEncode.js';
-import { SemiSubtag } from '@blargbot/bbtag/subtags/simple/semi.js';
+import { SemiSubtag, UriEncodeSubtag  } from '@blargbot/bbtag/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

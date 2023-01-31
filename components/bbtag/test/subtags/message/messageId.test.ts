@@ -1,5 +1,5 @@
 import { Subtag } from '@blargbot/bbtag';
-import { MessageIdSubtag } from '@blargbot/bbtag/subtags/message/messageId.js';
+import { MessageIdSubtag } from '@blargbot/bbtag/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

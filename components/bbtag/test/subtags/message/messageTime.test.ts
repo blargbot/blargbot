@@ -1,5 +1,5 @@
 import { Subtag } from '@blargbot/bbtag';
-import { MessageTimeSubtag } from '@blargbot/bbtag/subtags/message/messageTime.js';
+import { MessageTimeSubtag } from '@blargbot/bbtag/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetMessagePropTestCases } from './_getMessagePropTest.js';

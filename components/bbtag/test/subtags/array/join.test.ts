@@ -1,7 +1,5 @@
-import { Subtag } from '@blargbot/bbtag';
-import { NotAnArrayError } from '@blargbot/bbtag/errors/index.js';
-import { JoinSubtag } from '@blargbot/bbtag/subtags/array/join.js';
-import { GetSubtag } from '@blargbot/bbtag/subtags/bot/get.js';
+import { NotAnArrayError, Subtag  } from '@blargbot/bbtag';
+import { GetSubtag, JoinSubtag } from '@blargbot/bbtag/subtags';
 import { TagVariableType } from '@blargbot/domain/models/index.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

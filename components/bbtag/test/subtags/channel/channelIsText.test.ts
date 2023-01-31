@@ -1,6 +1,6 @@
 import type { Entities } from '@blargbot/bbtag';
 import { Subtag } from '@blargbot/bbtag';
-import { ChannelIsTextSubtag } from '@blargbot/bbtag/subtags/channel/channelIsText.js';
+import { ChannelIsTextSubtag } from '@blargbot/bbtag/subtags';
 import * as Discord from 'discord-api-types/v10';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

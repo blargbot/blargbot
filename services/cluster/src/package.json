@@ -30,6 +30,7 @@
         "@blargbot/modules": "workspace:^",
         "@blargbot/res": "workspace:^",
         "@blargbot/timer": "workspace:^",
+        "@blargot/catch-decorators": "workspace:^",
         "@hunteroi/versioning": "^1.3.2",
         "brainfuck-node": "^1.0.2",
         "crypto": "^1.0.1",

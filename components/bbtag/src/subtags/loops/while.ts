@@ -2,12 +2,12 @@ import type { SubtagArgument } from '../../arguments/index.js';
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { Subtag } from '../../Subtag.js';
-import templates from '../../text.js';
+import textTemplates from '../../text.js';
 import { BBTagRuntimeState } from '../../types.js';
 import type { BBTagOperators } from '../../utils/index.js';
 import { comparisonOperators, SubtagType } from '../../utils/index.js';
 
-const tag = templates.subtags.while;
+const tag = textTemplates.subtags.while;
 
 @Subtag.names('while')
 @Subtag.ctorArgs(Subtag.operators())

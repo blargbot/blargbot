@@ -1,5 +1,5 @@
 import { Subtag } from '@blargbot/bbtag';
-import { ParseFloatSubtag } from '@blargbot/bbtag/subtags/math/parseFloat.js';
+import { ParseFloatSubtag } from '@blargbot/bbtag/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

@@ -1,6 +1,5 @@
-import { Subtag } from '@blargbot/bbtag';
-import { NotABooleanError, NotANumberError } from '@blargbot/bbtag/errors/index.js';
-import { IncrementSubtag } from '@blargbot/bbtag/subtags/math/increment.js';
+import { NotABooleanError, NotANumberError, Subtag } from '@blargbot/bbtag';
+import { IncrementSubtag } from '@blargbot/bbtag/subtags';
 import { TagVariableType } from '@blargbot/domain/models/index.js';
 import chai from 'chai';
 

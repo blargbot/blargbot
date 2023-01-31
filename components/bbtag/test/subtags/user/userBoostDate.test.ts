@@ -1,6 +1,5 @@
-import { Subtag } from '@blargbot/bbtag';
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
-import { UserBoostDateSubtag } from '@blargbot/bbtag/subtags/user/userBoostDate.js';
+import { BBTagRuntimeError, Subtag  } from '@blargbot/bbtag';
+import { UserBoostDateSubtag } from '@blargbot/bbtag/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetUserPropTestCases } from './_getUserPropTest.js';

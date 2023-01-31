@@ -1,5 +1,5 @@
 import { Subtag } from '@blargbot/bbtag';
-import { QuietSubtag } from '@blargbot/bbtag/subtags/bot/quiet.js';
+import { QuietSubtag } from '@blargbot/bbtag/subtags';
 import chai from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

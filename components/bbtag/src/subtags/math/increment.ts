@@ -3,10 +3,10 @@ import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { NotABooleanError, NotANumberError } from '../../errors/index.js';
 import { Subtag } from '../../Subtag.js';
-import templates from '../../text.js';
+import textTemplates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
-const tag = templates.subtags.increment;
+const tag = textTemplates.subtags.increment;
 
 @Subtag.names('increment')
 @Subtag.ctorArgs(Subtag.converter())

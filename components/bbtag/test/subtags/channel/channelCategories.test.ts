@@ -1,5 +1,5 @@
 import { Subtag } from '@blargbot/bbtag';
-import { ChannelCategoriesSubtag } from '@blargbot/bbtag/subtags/channel/channelCategories.js';
+import { ChannelCategoriesSubtag } from '@blargbot/bbtag/subtags';
 import Discord from 'discord-api-types/v10';
 
 import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';

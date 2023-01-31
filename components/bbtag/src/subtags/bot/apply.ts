@@ -4,11 +4,11 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, UnknownSubtagError } from '../../errors/index.js';
 import type { SubtagCall } from '../../language/index.js';
 import { Subtag } from '../../Subtag.js';
-import templates from '../../text.js';
+import textTemplates from '../../text.js';
 import type { BBTagArrayTools } from '../../utils/index.js';
 import { SubtagType } from '../../utils/index.js';
 
-const tag = templates.subtags.apply;
+const tag = textTemplates.subtags.apply;
 
 @Subtag.names('apply')
 @Subtag.ctorArgs(Subtag.arrayTools(), Subtag.converter())

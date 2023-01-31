@@ -2,10 +2,10 @@ import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import type { RoleService } from '../../services/RoleService.js';
 import { Subtag } from '../../Subtag.js';
-import templates from '../../text.js';
+import textTemplates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
-const tag = templates.subtags.emojis;
+const tag = textTemplates.subtags.emojis;
 
 //TODO IMO this should return an array of emoji IDs instead of an array of emojis
 @Subtag.names('emojis')

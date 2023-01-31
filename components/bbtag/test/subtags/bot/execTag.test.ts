@@ -1,8 +1,5 @@
-import { Subtag } from '@blargbot/bbtag';
-import { BBTagRuntimeError, SubtagStackOverflowError } from '@blargbot/bbtag/errors/index.js';
-import { ExecTagSubtag } from '@blargbot/bbtag/subtags/bot/execTag.js';
-import { JsonSubtag } from '@blargbot/bbtag/subtags/json/index.js';
-import { BBTagRuntimeState } from '@blargbot/bbtag/types.js';
+import { BBTagRuntimeError, BBTagRuntimeState, Subtag, SubtagStackOverflowError  } from '@blargbot/bbtag';
+import { ExecTagSubtag, JsonSubtag } from '@blargbot/bbtag/subtags';
 import chai from 'chai';
 
 import { AssertSubtag, createDescriptor, MarkerError, runSubtagTests } from '../SubtagTestSuite.js';

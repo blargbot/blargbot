@@ -1,5 +1,5 @@
 import { StaffOnlyError } from '../../errors/index.js';
-import templates from '../../text.js';
+import textTemplates from '../../text.js';
 import type { RuntimeLimitRule } from '../RuntimeLimitRule.js';
 
 export const staffOnlyRule: RuntimeLimitRule = Object.seal({
@@ -8,7 +8,7 @@ export const staffOnlyRule: RuntimeLimitRule = Object.seal({
             throw new StaffOnlyError(context.authorizer.id);
     },
     displayText() {
-        return templates.limits.rules.staffOnly.default;
+        return textTemplates.limits.rules.staffOnly.default;
     },
     state() {
         return null;

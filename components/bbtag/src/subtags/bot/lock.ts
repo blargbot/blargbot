@@ -7,10 +7,10 @@ import { BBTagRuntimeError } from '../../errors/index.js';
 import { getLock } from '../../getLock.js';
 import { Subtag } from '../../Subtag.js';
 import { tagVariableScopeProviders } from '../../tagVariableScopeProviders.js';
-import templates from '../../text.js';
+import textTemplates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
-const tag = templates.subtags.lock;
+const tag = textTemplates.subtags.lock;
 
 @Subtag.names('lock')
 @Subtag.ctorArgs()

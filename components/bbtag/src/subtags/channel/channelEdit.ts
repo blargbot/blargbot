@@ -8,11 +8,11 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
 import type { ChannelService } from '../../services/ChannelService.js';
 import { Subtag } from '../../Subtag.js';
-import templates from '../../text.js';
+import textTemplates from '../../text.js';
 import type { Entities } from '../../types.js';
 import { SubtagType } from '../../utils/index.js';
 
-const tag = templates.subtags.channelEdit;
+const tag = textTemplates.subtags.channelEdit;
 
 @Subtag.names('channelEdit')
 @Subtag.ctorArgs(Subtag.service('channel'))

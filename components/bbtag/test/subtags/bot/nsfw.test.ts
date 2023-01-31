@@ -1,5 +1,5 @@
 import { Subtag } from '@blargbot/bbtag';
-import { NsfwSubtag } from '@blargbot/bbtag/subtags/bot/nsfw.js';
+import { NsfwSubtag } from '@blargbot/bbtag/subtags';
 import chai from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

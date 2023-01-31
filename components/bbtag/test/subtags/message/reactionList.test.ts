@@ -1,6 +1,5 @@
-import { Subtag } from '@blargbot/bbtag';
-import { BBTagRuntimeError, MessageNotFoundError } from '@blargbot/bbtag/errors/index.js';
-import { ReactionListSubtag } from '@blargbot/bbtag/subtags/message/reactionList.js';
+import { BBTagRuntimeError, MessageNotFoundError, Subtag  } from '@blargbot/bbtag';
+import { ReactionListSubtag } from '@blargbot/bbtag/subtags';
 import { Emote } from '@blargbot/discord-emote';
 import { argument } from '@blargbot/test-util/mock.js';
 

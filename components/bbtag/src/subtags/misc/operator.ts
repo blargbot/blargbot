@@ -3,13 +3,13 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import type { SubtagSignatureCallableOptions as Options } from '../../compilation/SubtagSignatureCallableOptions.js';
 import { InvalidOperatorError, NotABooleanError, NotANumberError } from '../../errors/index.js';
 import { Subtag } from '../../Subtag.js';
-import templates from '../../text.js';
+import textTemplates from '../../text.js';
 import type { BBTagArrayTools, LogicOperator, NumericOperator, OrdinalOperator, StringOperator } from '../../utils/index.js';
 import { SubtagType } from '../../utils/index.js';
 import type { AggregationOperator, BBTagOperators } from '../../utils/operators.js';
 import { aggregationOperators, logicOperators, numericOperators, ordinalOperators, stringOperators } from '../../utils/operators.js';
 
-const tag = templates.subtags.operator;
+const tag = textTemplates.subtags.operator;
 
 @Subtag.names('operator')
 @Subtag.ctorArgs(Subtag.operators(), Subtag.arrayTools(), Subtag.converter())

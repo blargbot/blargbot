@@ -1,5 +1,5 @@
 import { Subtag } from '@blargbot/bbtag';
-import { GuildFeaturesSubtag } from '@blargbot/bbtag/subtags/guild/guildFeatures.js';
+import { GuildFeaturesSubtag } from '@blargbot/bbtag/subtags';
 import Discord from 'discord-api-types/v10';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

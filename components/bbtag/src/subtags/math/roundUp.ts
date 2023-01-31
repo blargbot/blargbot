@@ -2,10 +2,10 @@ import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { NotANumberError } from '../../errors/index.js';
 import { Subtag } from '../../Subtag.js';
-import templates from '../../text.js';
+import textTemplates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
-const tag = templates.subtags.roundUp;
+const tag = textTemplates.subtags.roundUp;
 
 @Subtag.names('roundUp', 'ceil')
 @Subtag.ctorArgs(Subtag.converter())

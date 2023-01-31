@@ -1,6 +1,6 @@
 import type { Entities } from '@blargbot/bbtag';
 import { Subtag } from '@blargbot/bbtag';
-import { UserMentionSubtag } from '@blargbot/bbtag/subtags/user/userMention.js';
+import { UserMentionSubtag } from '@blargbot/bbtag/subtags';
 import { argument } from '@blargbot/test-util/mock.js';
 import chai from 'chai';
 

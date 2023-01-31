@@ -2,10 +2,10 @@ import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import type { SubtagCall } from '../../language/index.js';
 import { Subtag } from '../../Subtag.js';
-import templates from '../../text.js';
+import textTemplates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
-const tag = templates.subtags.debug;
+const tag = textTemplates.subtags.debug;
 
 @Subtag.names('debug')
 @Subtag.ctorArgs()

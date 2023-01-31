@@ -4,10 +4,10 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
 import type { ChannelService } from '../../services/ChannelService.js';
 import { Subtag } from '../../Subtag.js';
-import templates from '../../text.js';
+import textTemplates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
-const tag = templates.subtags.slowMode;
+const tag = textTemplates.subtags.slowMode;
 
 @Subtag.names('slowMode')
 @Subtag.ctorArgs(Subtag.converter(), Subtag.service('channel'))

@@ -1,5 +1,5 @@
 import { Subtag } from '@blargbot/bbtag';
-import { VoidSubtag } from '@blargbot/bbtag/subtags/misc/void.js';
+import { VoidSubtag } from '@blargbot/bbtag/subtags';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 

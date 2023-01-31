@@ -1,10 +1,10 @@
 import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { Subtag } from '../../Subtag.js';
-import templates from '../../text.js';
+import textTemplates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
-const tag = templates.subtags.numberFormat;
+const tag = textTemplates.subtags.numberFormat;
 
 @Subtag.names('numberFormat', 'numFormat')
 @Subtag.ctorArgs(Subtag.converter())

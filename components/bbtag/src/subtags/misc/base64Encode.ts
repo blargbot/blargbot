@@ -1,9 +1,9 @@
 import { CompiledSubtag } from '../../compilation/index.js';
 import { Subtag } from '../../Subtag.js';
-import templates from '../../text.js';
+import textTemplates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
-const tag = templates.subtags.base64Encode;
+const tag = textTemplates.subtags.base64Encode;
 
 @Subtag.names('base64Encode', 'bToA')
 @Subtag.ctorArgs()

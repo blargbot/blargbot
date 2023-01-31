@@ -4,10 +4,10 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, UserNotFoundError } from '../../errors/index.js';
 import type { UserService } from '../../services/UserService.js';
 import { Subtag } from '../../Subtag.js';
-import templates from '../../text.js';
+import textTemplates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
-const tag = templates.subtags.kick;
+const tag = textTemplates.subtags.kick;
 
 @Subtag.names('kick')
 @Subtag.ctorArgs(Subtag.util(), Subtag.service('user'))
@@ -56,7 +56,7 @@ export class KickSubtag extends CompiledSubtag {
         if (reason === '')
             reason = 'Tag Kick';
 
-        const authorizer = noPerms ? context.authorizer ?? context.user : context.user;
+        const authorizer = noPerms ? context.authorizer : context.user;
         const response = await this.#util.kick(user, context.user, authorizer, reason);
 
         switch (response) {

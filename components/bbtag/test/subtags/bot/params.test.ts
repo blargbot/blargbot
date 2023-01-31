@@ -1,6 +1,5 @@
-import { Subtag } from '@blargbot/bbtag';
-import { BBTagRuntimeError, NotANumberError, NotEnoughArgumentsError } from '@blargbot/bbtag/errors/index.js';
-import { ParamsSubtag } from '@blargbot/bbtag/subtags/bot/params.js';
+import { BBTagRuntimeError, NotANumberError, NotEnoughArgumentsError, Subtag  } from '@blargbot/bbtag';
+import { ParamsSubtag } from '@blargbot/bbtag/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

@@ -1,9 +1,9 @@
 import { RegexSubtag } from '../../RegexSubtag.js';
 import { Subtag } from '../../Subtag.js';
-import templates from '../../text.js';
+import textTemplates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
-const tag = templates.subtags.regexSplit;
+const tag = textTemplates.subtags.regexSplit;
 
 @Subtag.names('regexSplit')
 @Subtag.ctorArgs()

@@ -7,10 +7,10 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, NotANumberError } from '../../errors/index.js';
 import type { ChannelService } from '../../services/ChannelService.js';
 import { Subtag } from '../../Subtag.js';
-import templates from '../../text.js';
+import textTemplates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
-const tag = templates.subtags.channelSetPosition;
+const tag = textTemplates.subtags.channelSetPosition;
 
 @Subtag.names('channelSetPosition', 'channelSetPos')
 @Subtag.ctorArgs(Subtag.converter(), Subtag.service('channel'))

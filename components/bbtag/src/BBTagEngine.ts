@@ -12,7 +12,7 @@ import type { Statement, SubtagCall } from './language/index.js';
 import { parseBBTag } from './language/index.js';
 import type { Subtag } from './Subtag.js';
 import { TagCooldownManager } from './TagCooldownManager.js';
-import templates from './text.js';
+import textTemplates from './text.js';
 import type { AnalysisResults, BBTagContextOptions, ExecutionResult } from './types.js';
 import { BBTagRuntimeState } from './types.js';
 
@@ -183,9 +183,9 @@ export class BBTagEngine {
 
         for (const call of getSubtagCalls(statement)) {
             if (call.name.values.length === 0)
-                result.warnings.push({ location: call.start, message: templates.analysis.unnamed });
+                result.warnings.push({ location: call.start, message: textTemplates.analysis.unnamed });
             else if (call.name.values.some(p => typeof p !== 'string'))
-                result.warnings.push({ location: call.start, message: templates.analysis.dynamic });
+                result.warnings.push({ location: call.start, message: textTemplates.analysis.dynamic });
             else {
                 const subtag = this.subtags.get(call.name.values.join(''));
                 // TODO Detect unknown subtags
@@ -195,7 +195,7 @@ export class BBTagEngine {
                             break;
                     // fallthrough
                     case 'string':
-                        result.warnings.push({ location: call.start, message: templates.analysis.deprecated(subtag) });
+                        result.warnings.push({ location: call.start, message: textTemplates.analysis.deprecated(subtag) });
                 }
             }
         }

@@ -4,10 +4,10 @@ import { ChannelNotFoundError, MessageNotFoundError } from '../../errors/index.j
 import type { ChannelService } from '../../services/ChannelService.js';
 import type { MessageService } from '../../services/MessageService.js';
 import { Subtag } from '../../Subtag.js';
-import templates from '../../text.js';
+import textTemplates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
-const tag = templates.subtags.messageText;
+const tag = textTemplates.subtags.messageText;
 
 @Subtag.names('messageText', 'text')
 @Subtag.ctorArgs(Subtag.service('channel'), Subtag.service('message'))

@@ -10,10 +10,10 @@ import type { ChannelService } from '../../services/ChannelService.js';
 import type { MessageService } from '../../services/MessageService.js';
 import type { UserService } from '../../services/UserService.js';
 import { Subtag } from '../../Subtag.js';
-import templates from '../../text.js';
+import textTemplates from '../../text.js';
 import { overrides, SubtagType } from '../../utils/index.js';
 
-const tag = templates.subtags.waitMessage;
+const tag = textTemplates.subtags.waitMessage;
 
 const defaultCondition = parseBBTag('true');
 

@@ -1,10 +1,10 @@
 import { CompiledSubtag } from '../../compilation/index.js';
 import { Subtag } from '../../Subtag.js';
-import templates from '../../text.js';
+import textTemplates from '../../text.js';
 import type { BBTagArrayTools } from '../../utils/index.js';
 import { SubtagType } from '../../utils/index.js';
 
-const tag = templates.subtags.concat;
+const tag = textTemplates.subtags.concat;
 
 @Subtag.names('concat')
 @Subtag.ctorArgs(Subtag.arrayTools())

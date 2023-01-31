@@ -1,6 +1,5 @@
 import { Subtag } from '@blargbot/bbtag';
-import { EmbedSubtag } from '@blargbot/bbtag/subtags/message/embed.js';
-import { EscapeBBTagSubtag } from '@blargbot/bbtag/subtags/misc/escapeBBTag.js';
+import { EmbedSubtag, EscapeBBTagSubtag } from '@blargbot/bbtag/subtags';
 import chai from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

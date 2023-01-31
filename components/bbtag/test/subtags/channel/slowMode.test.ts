@@ -1,6 +1,5 @@
-import { Subtag } from '@blargbot/bbtag';
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
-import { SlowModeSubtag } from '@blargbot/bbtag/subtags/channel/slowMode.js';
+import { BBTagRuntimeError, Subtag } from '@blargbot/bbtag';
+import { SlowModeSubtag } from '@blargbot/bbtag/subtags';
 import { randChoose } from '@blargbot/core/utils/index.js';
 import { argument } from '@blargbot/test-util/mock.js';
 import * as Discord from 'discord-api-types/v10';

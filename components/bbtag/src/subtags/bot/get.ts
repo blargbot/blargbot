@@ -4,10 +4,10 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, NotANumberError } from '../../errors/index.js';
 import { Subtag } from '../../Subtag.js';
 import { tagVariableScopeProviders } from '../../tagVariableScopeProviders.js';
-import templates from '../../text.js';
+import textTemplates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
-const tag = templates.subtags.get;
+const tag = textTemplates.subtags.get;
 
 @Subtag.names('get')
 @Subtag.ctorArgs(Subtag.converter())

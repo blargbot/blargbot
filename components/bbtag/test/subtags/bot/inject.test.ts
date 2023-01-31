@@ -1,8 +1,5 @@
-import { Subtag } from '@blargbot/bbtag';
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
-import { InjectSubtag } from '@blargbot/bbtag/subtags/bot/inject.js';
-import { LbSubtag } from '@blargbot/bbtag/subtags/simple/lb.js';
-import { RbSubtag } from '@blargbot/bbtag/subtags/simple/rb.js';
+import { BBTagRuntimeError, Subtag  } from '@blargbot/bbtag';
+import { InjectSubtag, LbSubtag, RbSubtag } from '@blargbot/bbtag/subtags';
 import chai from 'chai';
 
 import { AssertSubtag, createDescriptor, runSubtagTests } from '../SubtagTestSuite.js';

@@ -1,8 +1,6 @@
 import type { BBTagContext, Entities } from '@blargbot/bbtag';
-import { Subtag } from '@blargbot/bbtag';
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
-import { ChannelCreateSubtag } from '@blargbot/bbtag/subtags/channel/channelCreate.js';
-import { EscapeBBTagSubtag } from '@blargbot/bbtag/subtags/misc/escapeBBTag.js';
+import { BBTagRuntimeError, Subtag } from '@blargbot/bbtag';
+import { ChannelCreateSubtag, EscapeBBTagSubtag } from '@blargbot/bbtag/subtags';
 import { argument } from '@blargbot/test-util/mock.js';
 import Discord from 'discord-api-types/v10';
 

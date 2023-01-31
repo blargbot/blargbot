@@ -1,10 +1,10 @@
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { Subtag } from '../../Subtag.js';
-import templates from '../../text.js';
+import textTemplates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
-const tag = templates.subtags.reason;
+const tag = textTemplates.subtags.reason;
 
 @Subtag.names('reason')
 @Subtag.ctorArgs()

@@ -1,5 +1,5 @@
 import { Subtag } from '@blargbot/bbtag';
-import { HereMentionSubtag } from '@blargbot/bbtag/subtags/message/hereMention.js';
+import { HereMentionSubtag } from '@blargbot/bbtag/subtags';
 import chai from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

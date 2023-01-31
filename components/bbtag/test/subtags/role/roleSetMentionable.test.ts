@@ -1,6 +1,5 @@
-import { Subtag } from '@blargbot/bbtag';
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
-import { RoleSetMentionableSubtag } from '@blargbot/bbtag/subtags/role/roleSetMentionable.js';
+import { BBTagRuntimeError, Subtag  } from '@blargbot/bbtag';
+import { RoleSetMentionableSubtag } from '@blargbot/bbtag/subtags';
 import { argument } from '@blargbot/test-util/mock.js';
 import * as Discord from 'discord-api-types/v10';
 

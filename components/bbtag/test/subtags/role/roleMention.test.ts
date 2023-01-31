@@ -1,5 +1,5 @@
 import { Subtag } from '@blargbot/bbtag';
-import { RoleMentionSubtag } from '@blargbot/bbtag/subtags/role/roleMention.js';
+import { RoleMentionSubtag } from '@blargbot/bbtag/subtags';
 import { argument } from '@blargbot/test-util/mock.js';
 import chai from 'chai';
 

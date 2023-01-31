@@ -1,7 +1,5 @@
-import { Subtag } from '@blargbot/bbtag';
-import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '@blargbot/bbtag/errors/index.js';
-import { EditSubtag } from '@blargbot/bbtag/subtags/message/edit.js';
-import { EscapeBBTagSubtag } from '@blargbot/bbtag/subtags/misc/escapeBBTag.js';
+import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError, Subtag  } from '@blargbot/bbtag';
+import { EditSubtag, EscapeBBTagSubtag } from '@blargbot/bbtag/subtags';
 import { argument } from '@blargbot/test-util/mock.js';
 import chai from 'chai';
 

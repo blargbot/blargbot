@@ -1,6 +1,5 @@
 import { Subtag } from '@blargbot/bbtag';
-import { SortSubtag } from '@blargbot/bbtag/subtags/array/sort.js';
-import { GetSubtag } from '@blargbot/bbtag/subtags/bot/get.js';
+import { GetSubtag, SortSubtag } from '@blargbot/bbtag/subtags';
 import { TagVariableType } from '@blargbot/domain/models/index.js';
 import { argument } from '@blargbot/test-util/mock.js';
 import chai from 'chai';

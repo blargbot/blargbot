@@ -1,5 +1,5 @@
 import { Subtag } from '@blargbot/bbtag';
-import { LockSubtag } from '@blargbot/bbtag/subtags/bot/lock.js';
+import { LockSubtag } from '@blargbot/bbtag/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

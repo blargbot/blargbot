@@ -1,5 +1,5 @@
 import { Subtag } from '@blargbot/bbtag';
-import { MessageEmbedsSubtag } from '@blargbot/bbtag/subtags/message/messageEmbeds.js';
+import { MessageEmbedsSubtag } from '@blargbot/bbtag/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetMessagePropTestCases } from './_getMessagePropTest.js';

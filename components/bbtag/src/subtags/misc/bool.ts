@@ -2,11 +2,11 @@ import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { InvalidOperatorError } from '../../errors/index.js';
 import { Subtag } from '../../Subtag.js';
-import templates from '../../text.js';
+import textTemplates from '../../text.js';
 import type { BBTagOperators } from '../../utils/index.js';
 import { comparisonOperators, SubtagType } from '../../utils/index.js';
 
-const tag = templates.subtags.bool;
+const tag = textTemplates.subtags.bool;
 
 @Subtag.names('bool')
 @Subtag.ctorArgs(Subtag.operators(), Subtag.converter())

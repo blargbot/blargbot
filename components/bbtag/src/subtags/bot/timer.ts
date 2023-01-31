@@ -3,10 +3,10 @@ import type { BBTagUtilities, BBTagValueConverter } from '../../BBTagUtilities.j
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
 import { Subtag } from '../../Subtag.js';
-import templates from '../../text.js';
+import textTemplates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
-const tag = templates.subtags.timer;
+const tag = textTemplates.subtags.timer;
 
 @Subtag.names('timer')
 @Subtag.ctorArgs(Subtag.util(), Subtag.converter())

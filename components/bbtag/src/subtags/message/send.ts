@@ -8,11 +8,11 @@ import { BBTagRuntimeError, ChannelNotFoundError } from '../../errors/index.js';
 import type { ChannelService } from '../../services/ChannelService.js';
 import type { MessageService } from '../../services/MessageService.js';
 import { Subtag } from '../../Subtag.js';
-import templates from '../../text.js';
+import textTemplates from '../../text.js';
 import type { Entities } from '../../types.js';
 import { SubtagType } from '../../utils/index.js';
 
-const tag = templates.subtags.send;
+const tag = textTemplates.subtags.send;
 
 @Subtag.names('send')
 @Subtag.ctorArgs(Subtag.converter(), Subtag.store('guilds'), Subtag.service('channel'), Subtag.service('message'))

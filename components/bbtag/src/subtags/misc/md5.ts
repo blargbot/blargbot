@@ -2,10 +2,10 @@ import { createHash } from 'node:crypto';
 
 import { CompiledSubtag } from '../../compilation/index.js';
 import { Subtag } from '../../Subtag.js';
-import templates from '../../text.js';
+import textTemplates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
-const tag = templates.subtags.md5;
+const tag = textTemplates.subtags.md5;
 
 @Subtag.names('md5', 'md5encode')
 @Subtag.ctorArgs()

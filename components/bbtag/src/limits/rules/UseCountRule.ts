@@ -3,7 +3,7 @@ import { mapping } from '@blargbot/mapping';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
-import templates from '../../text.js';
+import textTemplates from '../../text.js';
 import type { RuntimeLimitRule } from '../RuntimeLimitRule.js';
 
 export class UseCountRule implements RuntimeLimitRule {
@@ -14,7 +14,7 @@ export class UseCountRule implements RuntimeLimitRule {
 
     public constructor(
         count: number,
-        errorMessage: IFormattable<string> | ((value: { count: number; }) => IFormattable<string>) = templates.limits.rules.useCount.default,
+        errorMessage: IFormattable<string> | ((value: { count: number; }) => IFormattable<string>) = textTemplates.limits.rules.useCount.default,
         error: string | ((subtagName: string) => BBTagRuntimeError) = 'Usage'
     ) {
         this.#initial = count;

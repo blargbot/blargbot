@@ -4,10 +4,10 @@ import { RoleNotFoundError } from '../../errors/index.js';
 import type { RoleService } from '../../services/RoleService.js';
 import type { UserService } from '../../services/UserService.js';
 import { Subtag } from '../../Subtag.js';
-import templates from '../../text.js';
+import textTemplates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
-const tag = templates.subtags.roleSize;
+const tag = textTemplates.subtags.roleSize;
 
 @Subtag.names('roleSize', 'inRole')
 @Subtag.ctorArgs(Subtag.service('role'), Subtag.service('user'))

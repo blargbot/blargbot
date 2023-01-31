@@ -2,10 +2,10 @@ import htmlEntities from 'html-entities';
 
 import { CompiledSubtag } from '../../compilation/index.js';
 import { Subtag } from '../../Subtag.js';
-import templates from '../../text.js';
+import textTemplates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
-const tag = templates.subtags.htmlEncode;
+const tag = textTemplates.subtags.htmlEncode;
 
 @Subtag.names('htmlEncode')
 @Subtag.ctorArgs()

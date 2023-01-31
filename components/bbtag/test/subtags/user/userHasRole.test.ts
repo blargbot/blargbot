@@ -1,6 +1,5 @@
-import { Subtag } from '@blargbot/bbtag';
-import { RoleNotFoundError } from '@blargbot/bbtag/errors/index.js';
-import { UserHasRoleSubtag } from '@blargbot/bbtag/subtags/user/userHasRole.js';
+import { RoleNotFoundError, Subtag  } from '@blargbot/bbtag';
+import { UserHasRoleSubtag } from '@blargbot/bbtag/subtags';
 
 import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';
 import { createGetUserPropTestCases } from './_getUserPropTest.js';

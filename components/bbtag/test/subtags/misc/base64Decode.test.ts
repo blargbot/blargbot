@@ -1,5 +1,5 @@
 import { Subtag } from '@blargbot/bbtag';
-import { Base64DecodeSubtag } from '@blargbot/bbtag/subtags/misc/base64Decode.js';
+import { Base64DecodeSubtag } from '@blargbot/bbtag/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

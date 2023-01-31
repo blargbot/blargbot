@@ -1,7 +1,6 @@
-import { Subtag } from '@blargbot/bbtag';
-import { InvalidOperatorError, NotABooleanError } from '@blargbot/bbtag/errors/index.js';
-import { LogicSubtag } from '@blargbot/bbtag/subtags/misc/logic.js';
-import type { LogicOperator } from '@blargbot/bbtag/utils/index.js';
+import type { LogicOperator } from '@blargbot/bbtag';
+import { InvalidOperatorError, NotABooleanError, Subtag  } from '@blargbot/bbtag';
+import { LogicSubtag } from '@blargbot/bbtag/subtags';
 
 import type { SubtagTestCase } from '../SubtagTestSuite.js';
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';

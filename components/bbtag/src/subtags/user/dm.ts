@@ -6,10 +6,10 @@ import type { ChannelService } from '../../services/ChannelService.js';
 import type { MessageService } from '../../services/MessageService.js';
 import type { UserService } from '../../services/UserService.js';
 import { Subtag } from '../../Subtag.js';
-import templates from '../../text.js';
+import textTemplates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
-const tag = templates.subtags.dm;
+const tag = textTemplates.subtags.dm;
 
 @Subtag.names('dm')
 @Subtag.ctorArgs(Subtag.converter(), Subtag.service('user'), Subtag.service('channel'), Subtag.service('message'))

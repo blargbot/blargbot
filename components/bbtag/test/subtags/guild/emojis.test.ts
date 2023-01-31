@@ -1,5 +1,5 @@
 import { Subtag } from '@blargbot/bbtag';
-import { EmojisSubtag } from '@blargbot/bbtag/subtags/guild/emojis.js';
+import { EmojisSubtag } from '@blargbot/bbtag/subtags';
 import { argument } from '@blargbot/test-util/mock.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

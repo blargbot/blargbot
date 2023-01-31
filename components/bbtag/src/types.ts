@@ -54,18 +54,42 @@ export interface SerializedRuntimeLimit {
 export interface SerializedBBTagContext {
     msg: {
         id: string;
-        timestamp: number;
         content: string;
         channel: { id: string; serialized: string; };
         member?: { id: string; serialized: string; };
-        attachments: Entities.Message['attachments'];
-        embeds: Entities.Message['embeds'];
+        attachments: Discord.APIAttachment[];
+        embeds: Discord.APIEmbed[];
     };
     isCC: boolean;
-    scope: BBTagRuntimeScope;
+    scope: {
+        quiet?: boolean;
+        fallback?: string;
+        noLookupErrors?: boolean;
+        reason?: string;
+        inLock: boolean;
+        paramsarray?: readonly string[];
+        reaction?: string;
+        reactUser?: string;
+        functions: Record<string, Statement | undefined>;
+        isTag: boolean;
+    };
     inputRaw: string;
     flags: ReadonlyArray<FlagDefinition<string>>;
-    data: Pick<BBTagContextState, 'query' | 'ownedMsgs' | 'stackSize' | 'allowedMentions'>;
+    data: {
+        query: {
+            count: number;
+            user: Record<string, string | undefined>;
+            role: Record<string, string | undefined>;
+            channel: Record<string, string | undefined>;
+        };
+        ownedMsgs: string[];
+        stackSize: number;
+        allowedMentions: {
+            users: string[];
+            roles: string[];
+            everybody: boolean;
+        };
+    };
     tagName: string;
     rootTagName: string;
     author: string | undefined;
@@ -105,7 +129,6 @@ export interface BBTagContextState {
         roles: string[];
         everybody: boolean;
     };
-
 }
 
 export interface LocatedRuntimeError {

@@ -1,6 +1,5 @@
-import { Subtag } from '@blargbot/bbtag';
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
-import { RegexSplitSubtag } from '@blargbot/bbtag/subtags/misc/regexSplit.js';
+import { BBTagRuntimeError, Subtag  } from '@blargbot/bbtag';
+import { RegexSplitSubtag } from '@blargbot/bbtag/subtags';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 

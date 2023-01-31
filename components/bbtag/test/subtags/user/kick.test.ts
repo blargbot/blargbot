@@ -1,7 +1,6 @@
 import type { Entities } from '@blargbot/bbtag';
-import { Subtag } from '@blargbot/bbtag';
-import { BBTagRuntimeError, UserNotFoundError } from '@blargbot/bbtag/errors/index.js';
-import { KickSubtag } from '@blargbot/bbtag/subtags/user/kick.js';
+import { BBTagRuntimeError, Subtag, UserNotFoundError } from '@blargbot/bbtag';
+import { KickSubtag } from '@blargbot/bbtag/subtags';
 import { argument } from '@blargbot/test-util/mock.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

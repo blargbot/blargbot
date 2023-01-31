@@ -1,7 +1,5 @@
-import { Subtag } from '@blargbot/bbtag';
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
-import { EmojiCreateSubtag } from '@blargbot/bbtag/subtags/guild/emojiCreate.js';
-import { SemiSubtag } from '@blargbot/bbtag/subtags/simple/semi.js';
+import { BBTagRuntimeError, Subtag  } from '@blargbot/bbtag';
+import { EmojiCreateSubtag, SemiSubtag } from '@blargbot/bbtag/subtags';
 import { Emote } from '@blargbot/discord-emote';
 import { argument } from '@blargbot/test-util/mock.js';
 import * as Discord from 'discord-api-types/v10';

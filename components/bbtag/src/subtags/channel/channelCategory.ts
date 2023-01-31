@@ -3,10 +3,10 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, ChannelNotFoundError } from '../../errors/index.js';
 import type { ChannelService } from '../../services/ChannelService.js';
 import { Subtag } from '../../Subtag.js';
-import templates from '../../text.js';
+import textTemplates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
-const tag = templates.subtags.channelCategory;
+const tag = textTemplates.subtags.channelCategory;
 
 @Subtag.names('channelCategory', 'category')
 @Subtag.ctorArgs(Subtag.service('channel'))

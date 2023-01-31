@@ -3,11 +3,11 @@ import { hasValue } from '@blargbot/guards';
 import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { Subtag } from '../../Subtag.js';
-import templates from '../../text.js';
+import textTemplates from '../../text.js';
 import type { BBTagArrayTools } from '../../utils/index.js';
 import { SubtagType } from '../../utils/index.js';
 
-const tag = templates.subtags.max;
+const tag = textTemplates.subtags.max;
 
 @Subtag.names('max')
 @Subtag.ctorArgs(Subtag.arrayTools(), Subtag.converter())

@@ -3,11 +3,11 @@ import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { NotAnArrayError } from '../../errors/index.js';
 import { Subtag } from '../../Subtag.js';
-import templates from '../../text.js';
+import textTemplates from '../../text.js';
 import type { BBTagArrayTools, BBTagOperators } from '../../utils/index.js';
 import { SubtagType } from '../../utils/index.js';
 
-const tag = templates.subtags.sort;
+const tag = textTemplates.subtags.sort;
 
 @Subtag.names('sort')
 @Subtag.ctorArgs(Subtag.operators(), Subtag.arrayTools(), Subtag.converter())

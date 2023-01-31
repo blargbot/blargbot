@@ -1,7 +1,5 @@
-import { Subtag } from '@blargbot/bbtag';
-import { NotAnArrayError, NotANumberError } from '@blargbot/bbtag/errors/index.js';
-import { SpliceSubtag } from '@blargbot/bbtag/subtags/array/splice.js';
-import { GetSubtag } from '@blargbot/bbtag/subtags/bot/get.js';
+import { NotAnArrayError, NotANumberError, Subtag  } from '@blargbot/bbtag';
+import { GetSubtag, SpliceSubtag } from '@blargbot/bbtag/subtags';
 import { TagVariableType } from '@blargbot/domain/models/index.js';
 import chai from 'chai';
 

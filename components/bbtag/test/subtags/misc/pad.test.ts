@@ -1,6 +1,5 @@
-import { Subtag } from '@blargbot/bbtag';
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
-import { PadSubtag } from '@blargbot/bbtag/subtags/misc/pad.js';
+import { BBTagRuntimeError, Subtag  } from '@blargbot/bbtag';
+import { PadSubtag } from '@blargbot/bbtag/subtags';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 

@@ -1,5 +1,4 @@
-import { Subtag, SubtagType } from '@blargbot/bbtag';
-import templates from '@blargbot/bbtag/text.js';
+import { Subtag, SubtagType, textTemplates } from '@blargbot/bbtag';
 import * as coreTransformers from '@blargbot/core/formatting/index.js';
 import { transformers, util } from '@blargbot/formatting';
 import { quickMock } from '@blargbot/test-util/quickMock.js';
@@ -18,7 +17,7 @@ const subtag = (): Subtag => new TestSubtag({
 });
 
 mocha.describe('BBTag format strings', () => {
-    runFormatTreeTests(templates, {
+    runFormatTreeTests(textTemplates, {
         transformers: {
             ...transformers,
             ...coreTransformers

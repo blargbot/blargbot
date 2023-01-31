@@ -357,11 +357,9 @@ export class BBTagContext implements BBTagContextOptions {
     }
 
     public serialize(): SerializedBBTagContext {
-        const newScope = { ...this.scopes.local };
         return {
             msg: {
                 id: this.message.id,
-                timestamp: this.message.createdAt,
                 content: this.message.content,
                 channel: serializeEntity(this.channel),
                 member: serializeEntity(this.user),
@@ -369,7 +367,7 @@ export class BBTagContext implements BBTagContextOptions {
                 embeds: this.message.embeds
             },
             isCC: this.isCC,
-            scope: newScope,
+            scope: { ...this.scopes.local },
             inputRaw: this.inputRaw,
             data: {
                 allowedMentions: this.data.allowedMentions,
@@ -383,7 +381,7 @@ export class BBTagContext implements BBTagContextOptions {
             tagName: this.tagName,
             tagVars: this.tagVars,
             author: this.authorId,
-            authorizer: this.authorizerId,
+            authorizer: this.authorizer.id,
             limit: this.limit.serialize(),
             tempVars: this.variables.list
                 .filter(v => v.key.startsWith('~'))

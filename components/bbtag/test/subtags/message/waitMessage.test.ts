@@ -1,10 +1,6 @@
-import type { Entities } from '@blargbot/bbtag';
-import { Subtag } from '@blargbot/bbtag';
-import { BBTagRuntimeError, NotANumberError } from '@blargbot/bbtag/errors/index.js';
-import type { MessageService } from '@blargbot/bbtag/services/MessageService.js';
-import { MessageIdSubtag } from '@blargbot/bbtag/subtags/message/messageId.js';
-import { WaitMessageSubtag } from '@blargbot/bbtag/subtags/message/waitMessage.js';
-import { OperatorSubtag } from '@blargbot/bbtag/subtags/misc/operator.js';
+import type { Entities, MessageService } from '@blargbot/bbtag';
+import { BBTagRuntimeError, NotANumberError, Subtag  } from '@blargbot/bbtag';
+import { MessageIdSubtag, OperatorSubtag, WaitMessageSubtag  } from '@blargbot/bbtag/subtags';
 import type { Mock } from '@blargbot/test-util/mock.js';
 import { argument } from '@blargbot/test-util/mock.js';
 import chai from 'chai';

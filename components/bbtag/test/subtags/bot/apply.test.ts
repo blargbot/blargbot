@@ -1,6 +1,5 @@
-import { Subtag } from '@blargbot/bbtag';
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
-import { ApplySubtag } from '@blargbot/bbtag/subtags/bot/apply.js';
+import { BBTagRuntimeError, Subtag  } from '@blargbot/bbtag';
+import { ApplySubtag } from '@blargbot/bbtag/subtags';
 
 import { createDescriptor, EchoArgsSubtag, MarkerError, runSubtagTests, TestDataSubtag } from '../SubtagTestSuite.js';
 

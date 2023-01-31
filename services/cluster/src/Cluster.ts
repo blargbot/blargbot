@@ -1,10 +1,6 @@
 import { inspect } from 'node:util';
 
-import { BBTagEngine, createEmbedParser, Subtag, subtags } from '@blargbot/bbtag';
-import { createBBTagJsonTools } from '@blargbot/bbtag/utils/json.js';
-import { createBBTagOperators } from '@blargbot/bbtag/utils/operators.js';
-import { smartStringCompare } from '@blargbot/bbtag/utils/smartStringCompare.js';
-import { createBBTagArrayTools } from '@blargbot/bbtag/utils/tagArray.js';
+import { BBTagEngine, createBBTagArrayTools, createBBTagJsonTools, createBBTagOperators, createEmbedParser, smartStringCompare, Subtag, subtags } from '@blargbot/bbtag';
 import type { ClusterOptions } from '@blargbot/cluster/types.js';
 import type { Configuration } from '@blargbot/config';
 import { BaseClient } from '@blargbot/core/BaseClient.js';
@@ -31,7 +27,9 @@ import { ClusterUtilities } from './ClusterUtilities.js';
 import type { ClusterWorker } from './ClusterWorker.js';
 import { CommandDocumentationManager } from './managers/documentation/CommandDocumentationManager.js';
 import { AggregateCommandManager, AnnouncementManager, AutoresponseManager, AwaiterManager, BotStaffManager, ContributorManager, CustomCommandManager, DefaultCommandManager, DomainManager, GreetingManager, GuildManager, IntervalManager, ModerationManager, PollManager, PrefixManager, RolemeManager, TimeoutManager, VersionStateManager } from './managers/index.js';
-import { ErisChannelProvider, ErisMemberProvider, ErisRoleProvider, ErisUserProvider } from './utils/bbtag/ErisChannelProvider.js';
+import { ErisBBTagChannelService } from './utils/bbtag/ErisBBTagChannelService.js';
+import { ErisBBTagRoleService } from './utils/bbtag/ErisBBTagRoleService.js';
+import { ErisBBTagUserService } from './utils/bbtag/ErisBBTagUserService.js';
 
 export class Cluster extends BaseClient {
     public readonly id: number;
@@ -160,10 +158,11 @@ export class Cluster extends BaseClient {
                 time: parseTime
             },
             services: {
-                channel: new ErisChannelProvider(this),
-                member: new ErisMemberProvider(this),
-                user: new ErisUserProvider(this),
-                role: new ErisRoleProvider(this)
+                channel: new ErisBBTagChannelService(this),
+                user: new ErisBBTagUserService(this),
+                role: new ErisBBTagRoleService(this),
+                guild: new ErisGuildProvider(this),
+                message: new ErisMessageProvider(this)
             }
         });
         this.intervals = new IntervalManager(this, moment.duration(10, 's'));

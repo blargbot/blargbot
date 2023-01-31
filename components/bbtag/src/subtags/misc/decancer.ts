@@ -2,10 +2,10 @@ import { humanize } from '@blargbot/core/utils/index.js';
 
 import { CompiledSubtag } from '../../compilation/index.js';
 import { Subtag } from '../../Subtag.js';
-import templates from '../../text.js';
+import textTemplates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
-const tag = templates.subtags.decancer;
+const tag = textTemplates.subtags.decancer;
 
 @Subtag.names('decancer')
 @Subtag.ctorArgs()

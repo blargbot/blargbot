@@ -3,10 +3,10 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import { RoleNotFoundError } from '../../errors/index.js';
 import type { RoleService } from '../../services/RoleService.js';
 import { Subtag } from '../../Subtag.js';
-import templates from '../../text.js';
+import textTemplates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
-const tag = templates.subtags.roleName;
+const tag = textTemplates.subtags.roleName;
 
 @Subtag.names('roleName')
 @Subtag.ctorArgs(Subtag.service('role'))

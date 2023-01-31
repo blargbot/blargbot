@@ -1,7 +1,6 @@
 import type { Entities } from '@blargbot/bbtag';
-import { Subtag } from '@blargbot/bbtag';
-import { BBTagRuntimeError, NotANumberError, UserNotFoundError } from '@blargbot/bbtag/errors/index.js';
-import { BanSubtag } from '@blargbot/bbtag/subtags/user/ban.js';
+import { BBTagRuntimeError, NotANumberError, Subtag, UserNotFoundError } from '@blargbot/bbtag';
+import { BanSubtag } from '@blargbot/bbtag/subtags';
 import { argument } from '@blargbot/test-util/mock.js';
 import moment from 'moment-timezone';
 

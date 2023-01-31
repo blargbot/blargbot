@@ -1,10 +1,10 @@
 import { CompiledSubtag } from '../../compilation/index.js';
 import { Subtag } from '../../Subtag.js';
-import templates from '../../text.js';
+import textTemplates from '../../text.js';
 import type { BBTagArrayTools } from '../../utils/index.js';
 import { SubtagType } from '../../utils/index.js';
 
-const tag = templates.subtags.isArray;
+const tag = textTemplates.subtags.isArray;
 
 @Subtag.names('isArray')
 @Subtag.ctorArgs(Subtag.arrayTools())

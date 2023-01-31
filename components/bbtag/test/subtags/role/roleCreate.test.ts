@@ -1,7 +1,6 @@
 import type { Entities } from '@blargbot/bbtag';
-import { Subtag } from '@blargbot/bbtag';
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
-import { RoleCreateSubtag } from '@blargbot/bbtag/subtags/role/roleCreate.js';
+import { BBTagRuntimeError, Subtag  } from '@blargbot/bbtag';
+import { RoleCreateSubtag } from '@blargbot/bbtag/subtags';
 import { argument } from '@blargbot/test-util/mock.js';
 import * as Discord from 'discord-api-types/v10';
 

@@ -1,7 +1,5 @@
-import { Subtag } from '@blargbot/bbtag';
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
-import { JsonSubtag } from '@blargbot/bbtag/subtags/json/json.js';
-import { JsonValuesSubtag } from '@blargbot/bbtag/subtags/json/jsonValues.js';
+import { BBTagRuntimeError, Subtag  } from '@blargbot/bbtag';
+import { JsonSubtag, JsonValuesSubtag } from '@blargbot/bbtag/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

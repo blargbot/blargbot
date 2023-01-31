@@ -1,7 +1,5 @@
-import { Subtag } from '@blargbot/bbtag';
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
-import { GuildSetIconSubtag } from '@blargbot/bbtag/subtags/guild/guildSetIcon.js';
-import { SemiSubtag } from '@blargbot/bbtag/subtags/simple/semi.js';
+import { BBTagRuntimeError, Subtag  } from '@blargbot/bbtag';
+import { GuildSetIconSubtag, SemiSubtag } from '@blargbot/bbtag/subtags';
 import { argument } from '@blargbot/test-util/mock.js';
 import * as Discord from 'discord-api-types/v10';
 

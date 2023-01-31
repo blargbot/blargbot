@@ -1,5 +1,5 @@
 import { Subtag } from '@blargbot/bbtag';
-import { FlagSetSubtag } from '@blargbot/bbtag/subtags/bot/flagSet.js';
+import { FlagSetSubtag } from '@blargbot/bbtag/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

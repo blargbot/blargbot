@@ -1,5 +1,5 @@
 import { Subtag } from '@blargbot/bbtag';
-import { CommentSubtag } from '@blargbot/bbtag/subtags/misc/comment.js';
+import { CommentSubtag } from '@blargbot/bbtag/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

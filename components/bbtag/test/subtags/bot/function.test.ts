@@ -1,7 +1,6 @@
 import type { Statement } from '@blargbot/bbtag';
-import { Subtag } from '@blargbot/bbtag';
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
-import { FunctionSubtag } from '@blargbot/bbtag/subtags/bot/function.js';
+import { BBTagRuntimeError, Subtag  } from '@blargbot/bbtag';
+import { FunctionSubtag } from '@blargbot/bbtag/subtags';
 import chai from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

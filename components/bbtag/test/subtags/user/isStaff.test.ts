@@ -1,7 +1,6 @@
 import type { Entities } from '@blargbot/bbtag';
-import { Subtag } from '@blargbot/bbtag';
-import { UserNotFoundError } from '@blargbot/bbtag/errors/index.js';
-import { IsStaffSubtag } from '@blargbot/bbtag/subtags/user/isStaff.js';
+import { Subtag, UserNotFoundError } from '@blargbot/bbtag';
+import { IsStaffSubtag } from '@blargbot/bbtag/subtags';
 import { argument } from '@blargbot/test-util/mock.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

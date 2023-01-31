@@ -1,6 +1,5 @@
-import { Subtag } from '@blargbot/bbtag';
-import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError, UserNotFoundError } from '@blargbot/bbtag/errors/index.js';
-import { ReactionRemoveSubtag } from '@blargbot/bbtag/subtags/message/reactionRemove.js';
+import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError, Subtag, UserNotFoundError } from '@blargbot/bbtag';
+import { ReactionRemoveSubtag } from '@blargbot/bbtag/subtags';
 import { Emote } from '@blargbot/discord-emote';
 import { argument } from '@blargbot/test-util/mock.js';
 import * as Discord from 'discord-api-types/v10';

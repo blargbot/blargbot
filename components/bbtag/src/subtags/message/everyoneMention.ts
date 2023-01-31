@@ -2,10 +2,10 @@ import type { BBTagContext } from '../../BBTagContext.js';
 import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { Subtag } from '../../Subtag.js';
-import templates from '../../text.js';
+import textTemplates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
-const tag = templates.subtags.everyoneMention;
+const tag = textTemplates.subtags.everyoneMention;
 
 @Subtag.names('everyoneMention', 'everyone')
 @Subtag.ctorArgs(Subtag.converter())

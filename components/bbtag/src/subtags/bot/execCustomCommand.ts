@@ -7,12 +7,12 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
 import { parseBBTag } from '../../language/parseBBTag.js';
 import { Subtag } from '../../Subtag.js';
-import templates from '../../text.js';
+import textTemplates from '../../text.js';
 import { BBTagRuntimeState } from '../../types.js';
 import type { BBTagArrayTools } from '../../utils/index.js';
 import { SubtagType } from '../../utils/index.js';
 
-const tag = templates.subtags.execCustomCommand;
+const tag = textTemplates.subtags.execCustomCommand;
 
 @Subtag.names('execCustomCommand', 'execCC')
 @Subtag.ctorArgs(Subtag.arrayTools(), Subtag.converter(), Subtag.store('guilds'))

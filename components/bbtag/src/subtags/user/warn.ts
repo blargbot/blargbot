@@ -4,10 +4,10 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import { NotANumberError, UserNotFoundError } from '../../errors/index.js';
 import type { UserService } from '../../services/UserService.js';
 import { Subtag } from '../../Subtag.js';
-import templates from '../../text.js';
+import textTemplates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
-const tag = templates.subtags.warn;
+const tag = textTemplates.subtags.warn;
 
 @Subtag.names('warn')
 @Subtag.ctorArgs(Subtag.converter(), Subtag.util(), Subtag.service('user'))

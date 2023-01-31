@@ -1,5 +1,5 @@
 import { Subtag } from '@blargbot/bbtag';
-import { GuildSizeSubtag } from '@blargbot/bbtag/subtags/guild/guildSize.js';
+import { GuildSizeSubtag } from '@blargbot/bbtag/subtags';
 import { snowflake } from '@blargbot/discord-util';
 
 import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';

@@ -1,6 +1,5 @@
-import { Subtag } from '@blargbot/bbtag';
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
-import { ChannelPositionSubtag } from '@blargbot/bbtag/subtags/channel/channelPosition.js';
+import { BBTagRuntimeError, Subtag } from '@blargbot/bbtag';
+import { ChannelPositionSubtag } from '@blargbot/bbtag/subtags';
 import Discord from 'discord-api-types/v10';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

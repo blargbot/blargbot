@@ -1,5 +1,5 @@
 import { Subtag } from '@blargbot/bbtag';
-import { TagAuthorSubtag } from '@blargbot/bbtag/subtags/simple/tagAuthor.js';
+import { TagAuthorSubtag } from '@blargbot/bbtag/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

@@ -1,11 +1,11 @@
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { Subtag } from '../../Subtag.js';
-import templates from '../../text.js';
+import textTemplates from '../../text.js';
 import type { BBTagJsonTools } from '../../utils/index.js';
 import { SubtagType } from '../../utils/index.js';
 
-const tag = templates.subtags.jsonKeys;
+const tag = textTemplates.subtags.jsonKeys;
 
 @Subtag.names('jsonKeys', 'jKeys')
 @Subtag.ctorArgs(Subtag.jsonTools())

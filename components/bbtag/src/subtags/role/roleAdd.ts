@@ -5,11 +5,11 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, RoleNotFoundError, UserNotFoundError } from '../../errors/index.js';
 import type { UserService } from '../../services/UserService.js';
 import { Subtag } from '../../Subtag.js';
-import templates from '../../text.js';
+import textTemplates from '../../text.js';
 import type { BBTagArrayTools } from '../../utils/index.js';
 import { SubtagType } from '../../utils/index.js';
 
-const tag = templates.subtags.roleAdd;
+const tag = textTemplates.subtags.roleAdd;
 
 @Subtag.names('roleAdd', 'addRole')
 @Subtag.ctorArgs(Subtag.arrayTools(), Subtag.service('user'), Subtag.logger())

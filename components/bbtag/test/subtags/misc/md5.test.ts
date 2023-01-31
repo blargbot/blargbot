@@ -1,5 +1,5 @@
 import { Subtag } from '@blargbot/bbtag';
-import { Md5Subtag } from '@blargbot/bbtag/subtags/misc/md5.js';
+import { Md5Subtag } from '@blargbot/bbtag/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

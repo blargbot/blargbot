@@ -3,11 +3,11 @@ import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { NotANumberError } from '../../errors/index.js';
 import { Subtag } from '../../Subtag.js';
-import templates from '../../text.js';
+import textTemplates from '../../text.js';
 import type { BBTagArrayTools } from '../../utils/index.js';
 import { SubtagType } from '../../utils/index.js';
 
-const tag = templates.subtags.indexOf;
+const tag = textTemplates.subtags.indexOf;
 
 @Subtag.names('indexOf')
 @Subtag.ctorArgs(Subtag.arrayTools(), Subtag.converter())

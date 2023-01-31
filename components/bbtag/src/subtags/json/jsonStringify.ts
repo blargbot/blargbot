@@ -3,11 +3,11 @@ import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { NotANumberError } from '../../errors/index.js';
 import { Subtag } from '../../Subtag.js';
-import templates from '../../text.js';
+import textTemplates from '../../text.js';
 import type { BBTagJsonTools } from '../../utils/index.js';
 import { SubtagType } from '../../utils/index.js';
 
-const tag = templates.subtags.jsonStringify;
+const tag = textTemplates.subtags.jsonStringify;
 
 @Subtag.names('jsonStringify', 'jStringify')
 @Subtag.ctorArgs(Subtag.jsonTools(), Subtag.converter())

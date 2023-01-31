@@ -1,16 +1,7 @@
 import { inspect } from 'node:util';
 
-import type { BBTagContextOptions, BBTagRuntimeScope, Entities, LocatedRuntimeError, SourceMarker, SubtagCall } from '@blargbot/bbtag';
-import { BBTagContext, BBTagEngine, parseBBTag, Subtag } from '@blargbot/bbtag';
-import type { BBTagUtilities, InjectionContext, SubtagDescriptor } from '@blargbot/bbtag/BBTagUtilities.js';
-import { BBTagRuntimeError, NotEnoughArgumentsError, TooManyArgumentsError } from '@blargbot/bbtag/errors/index.js';
-import { BaseRuntimeLimit } from '@blargbot/bbtag/limits/BaseRuntimeLimit.js';
-import type { ChannelService } from '@blargbot/bbtag/services/ChannelService.js';
-import type { GuildService } from '@blargbot/bbtag/services/GuildService.js';
-import type { MessageService } from '@blargbot/bbtag/services/MessageService.js';
-import type { RoleService } from '@blargbot/bbtag/services/RoleService.js';
-import type { UserService } from '@blargbot/bbtag/services/UserService.js';
-import { createBBTagArrayTools, createBBTagJsonTools, createBBTagOperators, createEmbedParser, smartStringCompare, SubtagType } from '@blargbot/bbtag/utils/index.js';
+import type { BBTagContextOptions, BBTagRuntimeScope, BBTagUtilities, ChannelService, Entities, GuildService, InjectionContext, LocatedRuntimeError, MessageService, RoleService, SourceMarker, SubtagCall, SubtagDescriptor, UserService } from '@blargbot/bbtag';
+import { BaseRuntimeLimit, BBTagContext, BBTagEngine, BBTagRuntimeError, createBBTagArrayTools, createBBTagJsonTools, createBBTagOperators, createEmbedParser, NotEnoughArgumentsError, parseBBTag, smartStringCompare, Subtag, SubtagType, TooManyArgumentsError } from '@blargbot/bbtag';
 import { smartSplitRanges } from '@blargbot/core/utils/humanize/smartSplit.js';
 import { repeat } from '@blargbot/core/utils/index.js';
 import { parseBigInt } from '@blargbot/core/utils/parse/parseBigInt.js';

@@ -1,7 +1,5 @@
-import { Subtag } from '@blargbot/bbtag';
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
-import { WebhookSubtag } from '@blargbot/bbtag/subtags/message/webhook.js';
-import { EscapeBBTagSubtag } from '@blargbot/bbtag/subtags/misc/escapeBBTag.js';
+import { BBTagRuntimeError, Subtag  } from '@blargbot/bbtag';
+import { EscapeBBTagSubtag, WebhookSubtag  } from '@blargbot/bbtag/subtags';
 import { argument } from '@blargbot/test-util/mock.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

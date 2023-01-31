@@ -16,4 +16,8 @@ export * from './tagVariableScopeProviders.js';
 export * from './types.js';
 export * from './getLock.js';
 export * from './compilation/index.js';
+export * from './services/index.js';
+export * from './text.js';
+export * from './errors/index.js';
+export * from './limits/index.js';
 export * as subtags from './subtags/index.js';

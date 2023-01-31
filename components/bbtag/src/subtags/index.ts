@@ -1,44 +1,12 @@
-import * as array from './array/index.js';
-import * as bot from './bot/index.js';
-import * as channel from './channel/index.js';
-import * as guild from './guild/index.js';
-import * as json from './json/index.js';
-import * as loops from './loops/index.js';
-import * as math from './math/index.js';
-import * as message from './message/index.js';
-import * as misc from './misc/index.js';
-import * as role from './role/index.js';
-import * as simple from './simple/index.js';
-import * as user from './user/index.js';
-
-export {
-    array,
-    bot,
-    channel,
-    guild,
-    json,
-    loops,
-    math,
-    message,
-    misc,
-    role,
-    simple,
-    user
-};
-
-export const all = {
-    ...array,
-    ...bot,
-    ...channel,
-    ...guild,
-    ...json,
-    ...loops,
-    ...math,
-    ...message,
-    ...misc,
-    ...role,
-    ...simple,
-    ...user
-};
-
-export default all;
+export * from './array/index.js';
+export * from './bot/index.js';
+export * from './channel/index.js';
+export * from './guild/index.js';
+export * from './json/index.js';
+export * from './loops/index.js';
+export * from './math/index.js';
+export * from './message/index.js';
+export * from './misc/index.js';
+export * from './role/index.js';
+export * from './simple/index.js';
+export * from './user/index.js';

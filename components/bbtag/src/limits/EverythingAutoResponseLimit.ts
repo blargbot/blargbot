@@ -1,5 +1,5 @@
 import { BBTagRuntimeError, TooManyLoopsError } from '../errors/index.js';
-import templates from '../text.js';
+import textTemplates from '../text.js';
 import { GlobalLimit } from './GlobalLimit.js';
 import { disabledRule, staffOnlyRule, UseCountRule } from './rules/index.js';
 
@@ -40,7 +40,7 @@ export class EverythingAutoResponseLimit extends GlobalLimit {
             .addRules('edit', new UseCountRule(1))
             .addRules('delete', new UseCountRule(2))
             .addRules('reactremove', new UseCountRule(1))
-            .addRules('reactremove:requests', new UseCountRule(20, templates.limits.rules.useCount.requests, 'Request'))
+            .addRules('reactremove:requests', new UseCountRule(20, textTemplates.limits.rules.useCount.requests, 'Request'))
             .addRules('timer', disabledRule)
             .addRules('usersetnick', staffOnlyRule)
             .addRules('waitmessage', disabledRule)
@@ -49,10 +49,10 @@ export class EverythingAutoResponseLimit extends GlobalLimit {
                 'for:loops',
                 'repeat:loops',
                 'while:loops'
-            ], new UseCountRule(1000, templates.limits.rules.useCount.loops, () => new TooManyLoopsError(1000)))
-            .addRules('foreach:loops', new UseCountRule(10000, templates.limits.rules.useCount.loops, () => new TooManyLoopsError(10000)))
-            .addRules('map:loops', new UseCountRule(10000, templates.limits.rules.useCount.loops, () => new TooManyLoopsError(10000)))
-            .addRules('filter:loops', new UseCountRule(10000, templates.limits.rules.useCount.loops, () => new BBTagRuntimeError('Max safeloops reached')))
+            ], new UseCountRule(1000, textTemplates.limits.rules.useCount.loops, () => new TooManyLoopsError(1000)))
+            .addRules('foreach:loops', new UseCountRule(10000, textTemplates.limits.rules.useCount.loops, () => new TooManyLoopsError(10000)))
+            .addRules('map:loops', new UseCountRule(10000, textTemplates.limits.rules.useCount.loops, () => new TooManyLoopsError(10000)))
+            .addRules('filter:loops', new UseCountRule(10000, textTemplates.limits.rules.useCount.loops, () => new BBTagRuntimeError('Max safeloops reached')))
             .addRules('dump', new UseCountRule(5));
     }
 }

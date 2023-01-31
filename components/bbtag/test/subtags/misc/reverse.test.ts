@@ -1,6 +1,5 @@
 import { Subtag } from '@blargbot/bbtag';
-import { GetSubtag } from '@blargbot/bbtag/subtags/bot/get.js';
-import { ReverseSubtag } from '@blargbot/bbtag/subtags/misc/reverse.js';
+import { GetSubtag, ReverseSubtag } from '@blargbot/bbtag/subtags';
 import { TagVariableType } from '@blargbot/domain/models/index.js';
 import chai from 'chai';
 

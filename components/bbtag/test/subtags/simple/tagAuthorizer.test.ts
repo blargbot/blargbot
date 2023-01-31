@@ -1,5 +1,5 @@
 import { Subtag } from '@blargbot/bbtag';
-import { TagAuthorizerSubtag } from '@blargbot/bbtag/subtags/simple/tagAuthorizer.js';
+import { TagAuthorizerSubtag } from '@blargbot/bbtag/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

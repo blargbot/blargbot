@@ -1,11 +1,5 @@
-import { Subtag } from '@blargbot/bbtag';
-import { BBTagRuntimeError, NotANumberError } from '@blargbot/bbtag/errors/index.js';
-import { GetSubtag } from '@blargbot/bbtag/subtags/bot/get.js';
-import { ReturnSubtag } from '@blargbot/bbtag/subtags/bot/return.js';
-import { RepeatSubtag } from '@blargbot/bbtag/subtags/loops/repeat.js';
-import { IncrementSubtag } from '@blargbot/bbtag/subtags/math/increment.js';
-import { IfSubtag } from '@blargbot/bbtag/subtags/misc/if.js';
-import { BBTagRuntimeState } from '@blargbot/bbtag/types.js';
+import { BBTagRuntimeError, BBTagRuntimeState, NotANumberError, Subtag } from '@blargbot/bbtag';
+import { GetSubtag, IfSubtag, IncrementSubtag, RepeatSubtag, ReturnSubtag } from '@blargbot/bbtag/subtags';
 import { TagVariableType } from '@blargbot/domain/models/index.js';
 import chai from 'chai';
 

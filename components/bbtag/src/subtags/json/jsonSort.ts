@@ -3,11 +3,11 @@ import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, NotAnArrayError } from '../../errors/index.js';
 import { Subtag } from '../../Subtag.js';
-import templates from '../../text.js';
+import textTemplates from '../../text.js';
 import type { BBTagJsonTools, BBTagOperators } from '../../utils/index.js';
 import { SubtagType } from '../../utils/index.js';
 
-const tag = templates.subtags.jsonSort;
+const tag = textTemplates.subtags.jsonSort;
 
 @Subtag.names('jsonSort', 'jSort')
 @Subtag.ctorArgs(Subtag.operators(), Subtag.jsonTools(), Subtag.converter())

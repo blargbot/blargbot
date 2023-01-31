@@ -3,7 +3,7 @@ import { FormatString } from '@blargbot/formatting';
 
 import type { Subtag } from './Subtag.js';
 
-export const templates = FormatString.defineTree('bbtag', t => ({
+export const textTemplates = FormatString.defineTree('bbtag', t => ({
     debug: {
         summary: t<{ active: number; committed: number; database: number; total: number; }>(`\`\`\`js
          Execution Time: {active#duration(MS)}ms
@@ -2474,4 +2474,4 @@ Database Execution Time: {database#duration(MS)}ms
     }
 }));
 
-export default templates;
+export default textTemplates;

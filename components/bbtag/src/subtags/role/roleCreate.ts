@@ -4,11 +4,11 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
 import type { RoleService } from '../../services/RoleService.js';
 import { Subtag } from '../../Subtag.js';
-import templates from '../../text.js';
+import textTemplates from '../../text.js';
 import type { Entities } from '../../types.js';
 import { SubtagType } from '../../utils/index.js';
 
-const tag = templates.subtags.roleCreate;
+const tag = textTemplates.subtags.roleCreate;
 
 @Subtag.names('roleCreate')
 @Subtag.ctorArgs(Subtag.converter(), Subtag.service('role'))

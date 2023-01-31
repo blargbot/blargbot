@@ -1,8 +1,6 @@
-import { Subtag } from '@blargbot/bbtag';
-import { InvalidOperatorError } from '@blargbot/bbtag/errors/index.js';
-import { OperatorSubtag } from '@blargbot/bbtag/subtags/misc/operator.js';
-import type { LogicOperator, NumericOperator, OrdinalOperator, StringOperator } from '@blargbot/bbtag/utils/index.js';
-import { ordinalOperators, stringOperators } from '@blargbot/bbtag/utils/index.js';
+import type { LogicOperator, NumericOperator, OrdinalOperator, StringOperator } from '@blargbot/bbtag';
+import { InvalidOperatorError, ordinalOperators, stringOperators, Subtag  } from '@blargbot/bbtag';
+import { OperatorSubtag } from '@blargbot/bbtag/subtags';
 
 import type { SubtagTestCase } from '../SubtagTestSuite.js';
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';

@@ -1,7 +1,6 @@
 import type { Entities } from '@blargbot/bbtag';
-import { Subtag } from '@blargbot/bbtag';
-import { NotANumberError, UserNotFoundError } from '@blargbot/bbtag/errors/index.js';
-import { PardonSubtag } from '@blargbot/bbtag/subtags/user/pardon.js';
+import { NotANumberError, Subtag, UserNotFoundError } from '@blargbot/bbtag';
+import { PardonSubtag } from '@blargbot/bbtag/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

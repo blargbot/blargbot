@@ -7,10 +7,10 @@ import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '.
 import type { ChannelService } from '../../services/ChannelService.js';
 import type { MessageService } from '../../services/MessageService.js';
 import { Subtag } from '../../Subtag.js';
-import templates from '../../text.js';
+import textTemplates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
-const tag = templates.subtags.reactionRemoveAll;
+const tag = textTemplates.subtags.reactionRemoveAll;
 
 @Subtag.names('reactionRemoveAll', 'reactRemoveAll', 'removeReactAll')
 @Subtag.ctorArgs(Subtag.service('channel'), Subtag.service('message'))

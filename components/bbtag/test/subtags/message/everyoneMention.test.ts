@@ -1,5 +1,5 @@
 import { Subtag } from '@blargbot/bbtag';
-import { EveryoneMentionSubtag } from '@blargbot/bbtag/subtags/message/everyoneMention.js';
+import { EveryoneMentionSubtag } from '@blargbot/bbtag/subtags';
 import chai from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

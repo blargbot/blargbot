@@ -1,6 +1,6 @@
 import type { Entities } from '@blargbot/bbtag';
 import { Subtag } from '@blargbot/bbtag';
-import { WarnSubtag } from '@blargbot/bbtag/subtags/user/warn.js';
+import { WarnSubtag } from '@blargbot/bbtag/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

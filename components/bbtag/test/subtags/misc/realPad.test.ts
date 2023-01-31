@@ -1,6 +1,5 @@
-import { Subtag } from '@blargbot/bbtag';
-import { BBTagRuntimeError, NotANumberError } from '@blargbot/bbtag/errors/index.js';
-import { RealPadSubtag } from '@blargbot/bbtag/subtags/misc/realPad.js';
+import { BBTagRuntimeError, NotANumberError, Subtag  } from '@blargbot/bbtag';
+import { RealPadSubtag } from '@blargbot/bbtag/subtags';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 

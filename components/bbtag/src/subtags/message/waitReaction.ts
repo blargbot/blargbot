@@ -10,11 +10,11 @@ import { parseBBTag } from '../../language/index.js';
 import type { MessageService } from '../../services/MessageService.js';
 import type { UserService } from '../../services/UserService.js';
 import { Subtag } from '../../Subtag.js';
-import templates from '../../text.js';
+import textTemplates from '../../text.js';
 import type { BBTagArrayTools } from '../../utils/index.js';
 import { overrides, SubtagType } from '../../utils/index.js';
 
-const tag = templates.subtags.waitReaction;
+const tag = textTemplates.subtags.waitReaction;
 
 const defaultCondition = parseBBTag('true');
 

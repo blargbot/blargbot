@@ -1,6 +1,5 @@
-import type { BBTagContext, Entities, FindEntityOptions } from '@blargbot/bbtag';
-import type { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
-import { RoleNotFoundError } from '@blargbot/bbtag/errors/index.js';
+import type { BBTagContext, BBTagRuntimeError, Entities, FindEntityOptions  } from '@blargbot/bbtag';
+import { RoleNotFoundError } from '@blargbot/bbtag';
 import { argument } from '@blargbot/test-util/mock.js';
 
 import type { SubtagTestCase, SubtagTestContext } from '../SubtagTestSuite.js';

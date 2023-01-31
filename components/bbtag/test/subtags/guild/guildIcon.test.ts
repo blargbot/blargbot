@@ -1,5 +1,5 @@
 import { Subtag } from '@blargbot/bbtag';
-import { GuildIconSubtag } from '@blargbot/bbtag/subtags/guild/guildIcon.js';
+import { GuildIconSubtag } from '@blargbot/bbtag/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
