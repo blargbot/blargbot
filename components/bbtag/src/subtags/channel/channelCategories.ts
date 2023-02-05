@@ -1,4 +1,4 @@
-import { guard } from '@blargbot/core/utils/index.js';
+import { isCategoryChannel } from '@blargbot/discord-util';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
@@ -34,6 +34,6 @@ export class ChannelCategoriesSubtag extends CompiledSubtag {
 
     public async getChannelCategories(context: BBTagContext): Promise<string[]> {
         const channels = await this.#channels.getAll(context);
-        return channels.filter(guard.isCategoryChannel).map(c => c.id);
+        return channels.filter(isCategoryChannel).map(c => c.id);
     }
 }

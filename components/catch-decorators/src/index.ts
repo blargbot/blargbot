@@ -3,15 +3,26 @@ const asyncErrorHandlerMap: unique symbol = Symbol('AsyncErrorHandlerMap');
 
 export type CatchErrorsDecorator<ErrorResult> = <Args extends readonly unknown[], Success>(target: object, key: PropertyKey, descriptor: TypedPropertyDescriptor<(...args: Args) => Success | ErrorResult>) => TypedPropertyDescriptor<(...args: Args) => Success | ErrorResult>;
 export type AsyncCatchErrorsDecorator<ErrorResult> = <Args extends readonly unknown[], Success>(target: object, key: PropertyKey, descriptor: TypedPropertyDescriptor<(...args: Args) => Promise<Success | ErrorResult>>) => TypedPropertyDescriptor<(...args: Args) => Promise<Success | ErrorResult>>;
+
 export interface CatchErrorsDecoratorFactory {
     <Error, ErrorResult>(
         type: abstract new (...args: never) => Error,
         handle: (error: Error) => ErrorResult
     ): CatchErrorsDecorator<ErrorResult>;
 
+    thenThrow<Error>(
+        type: abstract new (...args: never) => Error,
+        handle: (error: Error) => unknown
+    ): CatchErrorsDecorator<never>;
+
     filtered<Error, ErrorResult>(
         filter: (error: unknown) => error is Error,
         handle: (error: Error) => ErrorResult
+    ): CatchErrorsDecorator<ErrorResult>;
+
+    filtered<ErrorResult>(
+        filter: (error: unknown) => boolean,
+        handle: (error: unknown) => ErrorResult
     ): CatchErrorsDecorator<ErrorResult>;
 
     async: AsyncCatchErrorsDecoratorFactory;
@@ -22,18 +33,41 @@ export interface AsyncCatchErrorsDecoratorFactory {
         handle: (error: Error) => ErrorResult
     ): AsyncCatchErrorsDecorator<ErrorResult>;
 
+    thenThrow<Error>(
+        type: abstract new (...args: never) => Error,
+        handle: (error: Error) => unknown
+    ): AsyncCatchErrorsDecorator<never>;
+
     filtered<Error, ErrorResult>(
         filter: (error: unknown) => error is Error,
         handle: (error: Error) => ErrorResult
+    ): AsyncCatchErrorsDecorator<ErrorResult>;
+
+    filtered<ErrorResult>(
+        filter: (error: unknown) => boolean,
+        handle: (error: unknown) => ErrorResult
     ): AsyncCatchErrorsDecorator<ErrorResult>;
 }
 
 export const catchErrors: CatchErrorsDecoratorFactory = Object.assign(createCatchErrorsDecorator, {
     filtered: createCatchFilteredErrorsDecorator,
+    thenThrow: createCatchThrowErrorsDecorator,
     async: Object.assign(createCatchAsyncErrorsDecorator, {
+        thenThrow: createCatchAsyncThrowErrorsDecorator,
         filtered: createCatchAsyncFilteredErrorsDecorator
     })
 });
+
+interface CatchErrorsTools<Error> {
+    ofType<Filtered extends Error>(type: abstract new (...args: never) => Filtered): CatchErrorsBuilder<Filtered>;
+    where(filter: (error: Error) => boolean): CatchErrorsBuilder<Error>;
+    where<Filtered extends Error>(filter: (error: Error) => error is Filtered): CatchErrorsBuilder<Filtered>;
+}
+
+interface CatchErrorsBuilder<Error> extends CatchErrorsTools<Error> {
+    thenThrow(factory: (error: Error) => unknown): CatchErrorsDecorator<never>;
+    thenReturn<Result>(factory: (error: Error) => Result): CatchErrorsDecorator<Result>;
+}
 
 function createCatchFilteredErrorsDecorator<Error, Result>(
     filter: (error: unknown) => error is Error,
@@ -74,11 +108,31 @@ function createCatchErrorsDecorator<Error, Result>(
     return createCatchFilteredErrorsDecorator((err): err is Error => err instanceof type, handle);
 }
 
+function createCatchThrowErrorsDecorator<Error>(
+    type: abstract new (...args: never) => Error,
+    handle: (error: Error) => unknown
+): CatchErrorsDecorator<never> {
+    return createCatchFilteredErrorsDecorator(
+        (err): err is Error => err instanceof type,
+        err => { throw handle(err); }
+    );
+}
+
 function createCatchAsyncErrorsDecorator<Error, Result>(
     type: abstract new (...args: never) => Error,
     handle: (error: Error) => Awaitable<Result>
 ): AsyncCatchErrorsDecorator<Result> {
     return createCatchAsyncFilteredErrorsDecorator((err): err is Error => err instanceof type, handle);
+}
+
+function createCatchAsyncThrowErrorsDecorator<Error>(
+    type: abstract new (...args: never) => Error,
+    handle: (error: Error) => unknown
+): AsyncCatchErrorsDecorator<never> {
+    return createCatchAsyncFilteredErrorsDecorator(
+        (err): err is Error => err instanceof type,
+        err => { throw handle(err); }
+    );
 }
 
 function createErrorCatchingFunction<Args extends readonly unknown[], Result>(impl: (...args: Args) => Result): ErrorHandlingFunction<Args, Result> {

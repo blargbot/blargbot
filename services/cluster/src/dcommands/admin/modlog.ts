@@ -1,6 +1,6 @@
 import type { CommandResult, GuildCommandContext } from '@blargbot/cluster/types.js';
 import { CommandType } from '@blargbot/cluster/utils/index.js';
-import { guard } from '@blargbot/core/utils/index.js';
+import { isGuildChannel, isTextableChannel } from '@blargbot/discord-util';
 import * as Eris from 'eris';
 
 import { GuildCommand } from '../../command/index.js';
@@ -34,9 +34,9 @@ export class ModlogCommand extends GuildCommand {
     }
 
     public async setChannel(context: GuildCommandContext, channel: Eris.KnownChannel | undefined): Promise<CommandResult> {
-        if (channel !== undefined && (!guard.isGuildChannel(channel) || channel.guild !== context.channel.guild))
+        if (channel !== undefined && (!isGuildChannel(channel) || channel.guild !== context.channel.guild))
             return cmd.setChannel.notOnGuild;
-        if (channel !== undefined && !guard.isTextableChannel(channel))
+        if (channel !== undefined && !isTextableChannel(channel))
             return cmd.setChannel.notTextChannel;
 
         await context.database.guilds.setSetting(context.channel.guild.id, 'modlog', channel?.id);
@@ -73,7 +73,7 @@ export class ModlogCommand extends GuildCommand {
 
         for (const [channelid, cases] of Object.entries(toDelete)) {
             const channel = await context.util.getChannel(context.channel.guild, channelid);
-            if (channel === undefined || !guard.isTextableChannel(channel)) {
+            if (channel === undefined || !isTextableChannel(channel)) {
                 missingChannel.push(...cases.map(c => c.caseid));
                 continue;
             }

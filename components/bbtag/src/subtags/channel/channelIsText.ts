@@ -1,4 +1,4 @@
-import { guard } from '@blargbot/core/utils/index.js';
+import { isTextableChannel } from '@blargbot/discord-util';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
@@ -52,6 +52,6 @@ export class ChannelIsTextSubtag extends CompiledSubtag {
             throw new ChannelNotFoundError(channelStr)
                 .withDisplay(quiet ? '' : undefined);
         }
-        return guard.isTextableChannel(channel);
+        return isTextableChannel(channel);
     }
 }

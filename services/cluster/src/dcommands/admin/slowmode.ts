@@ -1,5 +1,5 @@
 import { CommandType } from '@blargbot/cluster/utils/index.js';
-import { guard } from '@blargbot/core/utils/index.js';
+import { isGuildChannel, isTextableChannel } from '@blargbot/discord-util';
 import * as Eris from 'eris';
 import moment from 'moment-timezone';
 
@@ -30,9 +30,9 @@ export class SlowmodeCommand extends GuildCommand {
     }
 
     public async setSlowmode(time: number, channel: Eris.KnownChannel): Promise<CommandResult> {
-        if (!guard.isGuildChannel(channel))
+        if (!isGuildChannel(channel))
             return cmd.errors.notInGuild;
-        if (!guard.isTextableChannel(channel))
+        if (!isTextableChannel(channel))
             return cmd.errors.notTextChannel;
 
         if (time > 120)
@@ -56,9 +56,9 @@ export class SlowmodeCommand extends GuildCommand {
     }
 
     public async disableSlowmode(channel: Eris.KnownChannel): Promise<CommandResult> {
-        if (!guard.isGuildChannel(channel))
+        if (!isGuildChannel(channel))
             return cmd.errors.notInGuild;
-        if (!guard.isTextableChannel(channel))
+        if (!isTextableChannel(channel))
             return cmd.errors.notTextChannel;
 
         try {

@@ -1,5 +1,5 @@
 import type { Api } from '@blargbot/api/Api.js';
-import { guard } from '@blargbot/core/utils/index.js';
+import { isGuildChannel } from '@blargbot/discord-util';
 import type { Dump } from '@blargbot/domain/models/Dump.js';
 import type { DiscordTagSet } from '@blargbot/domain/models/index.js';
 import type Discord from 'discord-api-types/v9';
@@ -27,7 +27,7 @@ export class DumpsRoute extends BaseRoute {
 
         let tags = noTags;
         const channel = await this.#api.util.getChannel(dump.channelid.toString());
-        if (channel !== undefined && guard.isGuildChannel(channel)) {
+        if (channel !== undefined && isGuildChannel(channel)) {
             tags = await this.#api.util.discoverMessageEntities({
                 guildId: channel.guild.id,
                 content: dump.content,

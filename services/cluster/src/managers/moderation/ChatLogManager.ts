@@ -2,7 +2,7 @@ import { randomUUID } from 'node:crypto';
 
 import type { ChatLog, ChatLogIndex, ChatLogSearchOptions } from '@blargbot/chatlog-types';
 import type { Cluster } from '@blargbot/cluster';
-import { guard } from '@blargbot/cluster/utils/index.js';
+import { isGuildChannel } from '@blargbot/discord-util';
 
 export class ChatLogManager {
     public constructor(
@@ -23,7 +23,7 @@ export class ChatLogManager {
 
         let channelName = '';
         let guildName = '';
-        if (channel !== undefined && guard.isGuildChannel(channel)) {
+        if (channel !== undefined && isGuildChannel(channel)) {
             channelName = channel.name;
             guildName = channel.guild.name;
         }

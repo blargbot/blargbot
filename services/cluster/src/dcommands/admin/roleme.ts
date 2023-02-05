@@ -1,5 +1,6 @@
 import type { CommandResult, GuildCommandContext } from '@blargbot/cluster/types.js';
-import { CommandType, guard } from '@blargbot/cluster/utils/index.js';
+import { CommandType } from '@blargbot/cluster/utils/index.js';
+import { isTextableChannel } from '@blargbot/discord-util';
 import type { GuildRolemeEntry } from '@blargbot/domain/models/index.js';
 import type { IFormattable } from '@blargbot/formatting';
 import { util } from '@blargbot/formatting';
@@ -172,7 +173,7 @@ export class RolemeCommand extends GuildCommand {
             const channels = [];
             for (const channelStr of roleme.channels) {
                 const channel = await context.queryChannel({ filter: channelStr });
-                if (channel.state === 'SUCCESS' && guard.isTextableChannel(channel.value))
+                if (channel.state === 'SUCCESS' && isTextableChannel(channel.value))
                     channels.push(channel.value.id);
             }
             if (channels.length === 0)

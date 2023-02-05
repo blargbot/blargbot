@@ -2,6 +2,7 @@ import type { Cluster } from '@blargbot/cluster';
 import type { CommandGetCoreResult, CommandProperties, ICommand } from '@blargbot/cluster/types.js';
 import { CommandType, commandTypeDetails, guard } from '@blargbot/cluster/utils/index.js';
 import { metrics } from '@blargbot/core/Metrics.js';
+import { isGuildChannel } from '@blargbot/discord-util';
 import type { CommandPermissions, NamedGuildCommandTag, StoredTag } from '@blargbot/domain/models/index.js';
 import type { FlagDefinition } from '@blargbot/flags';
 import type { IFormattable } from '@blargbot/formatting';
@@ -25,7 +26,7 @@ export class CustomCommandManager extends CommandManager<NamedGuildCommandTag> {
             return { state: 'NOT_FOUND' };
 
         const guild = location instanceof Eris.Guild ? location
-            : guard.isGuildChannel(location) ? location.guild
+            : isGuildChannel(location) ? location.guild
                 : undefined;
 
         if (guild === undefined)
@@ -50,7 +51,7 @@ export class CustomCommandManager extends CommandManager<NamedGuildCommandTag> {
         if (location === undefined)
             return [];
 
-        const guild = location instanceof Eris.Guild ? location : guard.isGuildChannel(location) ? location.guild : undefined;
+        const guild = location instanceof Eris.Guild ? location : isGuildChannel(location) ? location.guild : undefined;
         if (guild === undefined)
             return [];
 

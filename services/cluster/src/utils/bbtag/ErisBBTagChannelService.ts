@@ -1,5 +1,5 @@
 import type { BBTagContext, ChannelService, Entities, EntityQueryService, FindEntityOptions } from '@blargbot/bbtag';
-import { catchErrors } from '@blargot/catch-decorators';
+import { catchErrors } from '@blargbot/catch-decorators';
 import * as Eris from 'eris';
 
 import type { Cluster } from '../../Cluster.js';
@@ -19,6 +19,7 @@ export class ErisBBTagChannelService implements ChannelService {
             find: (query, ctx) => cluster.util.findChannels(ctx.guild.id, query),
             getById: (id, ctx) => cluster.util.getChannel(ctx.guild.id, id),
             getId: c => c.id,
+            // @ts-expect-error This is only a reference file for now
             pickBest: (choices, query, ctx) => cluster.util.queryChannel({ actors: ctx.user.id, context: ctx.channel, choices, filter: query }),
             alertCancelled: createCancelledAlerter('channel'),
             alertNotFound: createNotFoundAlerter('channel'),
@@ -27,6 +28,7 @@ export class ErisBBTagChannelService implements ChannelService {
     }
 
     #convertToChannel(channel: Eris.KnownGuildChannel): Entities.Channel {
+        throw channel;
     }
 
     public async querySingle(context: BBTagContext, query: string, options?: FindEntityOptions | undefined): Promise<Entities.Channel | undefined> {

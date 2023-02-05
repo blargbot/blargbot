@@ -1,8 +1,8 @@
 import type { CommandResult, GuildCommandContext } from '@blargbot/cluster/types.js';
 import { CommandType, ModerationType } from '@blargbot/cluster/utils/index.js';
-import { guard } from '@blargbot/core/utils/index.js';
+import { isGuildChannel } from '@blargbot/discord-util';
 import type { GuildCensor, GuildTriggerTag } from '@blargbot/domain/models/index.js';
-import type { IFormattable} from '@blargbot/formatting';
+import type { IFormattable } from '@blargbot/formatting';
 import { util } from '@blargbot/formatting';
 import type * as Eris from 'eris';
 
@@ -178,7 +178,7 @@ export class CensorCommand extends GuildCommand {
     }
 
     public async ignoreChannel(context: GuildCommandContext, channel: Eris.KnownChannel, ignored: boolean): Promise<CommandResult> {
-        if (!guard.isGuildChannel(channel) || channel.guild !== context.channel.guild)
+        if (!isGuildChannel(channel) || channel.guild !== context.channel.guild)
             return cmd.exception.channel.notOnServer;
 
         await context.database.guilds.censorIgnoreChannel(context.channel.guild.id, channel.id, ignored);

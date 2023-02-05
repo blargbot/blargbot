@@ -1,8 +1,10 @@
 import type { Cluster } from '@blargbot/cluster';
-import { guard, ModlogColour } from '@blargbot/cluster/utils/index.js';
+import { ModlogColour } from '@blargbot/cluster/utils/index.js';
 import type { BaseUtilities } from '@blargbot/core/BaseUtilities.js';
 import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent.js';
 import type { FormatEmbedAuthor, FormatEmbedField, FormatEmbedOptions } from '@blargbot/core/types.js';
+import { isGuildMessage } from '@blargbot/core/utils/guard/isGuildMessage.js';
+import { isGuildChannel, isTextableChannel } from '@blargbot/discord-util';
 import type { StoredGuildEventLogType } from '@blargbot/domain/models/index.js';
 import type { IFormattable } from '@blargbot/formatting';
 import { hasValue } from '@blargbot/guards';
@@ -145,7 +147,7 @@ export class EventLogManager {
     }
 
     public async messageUpdated(message: Eris.Message<Eris.PossiblyUncachedTextableChannel>, oldMessage: Eris.OldMessage | null): Promise<void> {
-        const guildId = guard.isGuildMessage(message) ? message.channel.guild.id : undefined;
+        const guildId = isGuildMessage(message) ? message.channel.guild.id : undefined;
         if (guildId === undefined)
             return;
 
@@ -388,7 +390,7 @@ export class EventLogManager {
             return undefined;
 
         const channel = await this.#cluster.util.getChannel(channelId);
-        if (channel === undefined || !guard.isGuildChannel(channel) || !guard.isTextableChannel(channel) || channel.guild.id !== guildId)
+        if (channel === undefined || !isGuildChannel(channel) || !isTextableChannel(channel) || channel.guild.id !== guildId)
             return undefined;
 
         return channel;
@@ -407,7 +409,7 @@ export class EventLogManager {
         if (!await this.#cluster.database.guilds.setLogChannel(channel.guild.id, type, undefined))
             return;
 
-        const defaultChannel = channel.guild.channels.find(guard.isTextableChannel);
+        const defaultChannel = channel.guild.channels.find(isTextableChannel);
         if (defaultChannel !== undefined) {
             await this.#cluster.util.send(defaultChannel, new FormattableMessageContent({
                 content: templates.eventLog.disabled({ event: type, channel })

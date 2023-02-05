@@ -1,6 +1,6 @@
 import type { CommandResult, GuildCommandContext } from '@blargbot/cluster/types.js';
 import { CommandType } from '@blargbot/cluster/utils/index.js';
-import { guard } from '@blargbot/core/utils/index.js';
+import { isGuildChannel } from '@blargbot/discord-util';
 import type * as Eris from 'eris';
 
 import { GuildCommand } from '../../command/index.js';
@@ -24,7 +24,7 @@ export class BlacklistCommandBase extends GuildCommand {
     }
 
     public async blacklist(context: GuildCommandContext, channel: Eris.KnownChannel): Promise<CommandResult> {
-        if (!guard.isGuildChannel(channel) || channel.guild !== context.channel.guild)
+        if (!isGuildChannel(channel) || channel.guild !== context.channel.guild)
             return cmd.default.notInServer;
 
         const wasBlacklisted = await context.cluster.database.guilds.getChannelSetting(context.channel.guild.id, channel.id, 'blacklisted') ?? false;

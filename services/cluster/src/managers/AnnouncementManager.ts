@@ -1,3 +1,4 @@
+import { isGuildChannel, isTextableChannel, isThreadChannel } from '@blargbot/discord-util';
 import type { GuildStore } from '@blargbot/domain/stores/index.js';
 import type * as Eris from 'eris';
 
@@ -5,7 +6,6 @@ import type { ClusterUtilities } from '../ClusterUtilities.js';
 import type { Command } from '../command/index.js';
 import templates from '../text.js';
 import type { ICommandManager, Result } from '../types.js';
-import { guard } from '../utils/index.js';
 
 export class AnnouncementManager {
     readonly #database: GuildStore;
@@ -30,7 +30,7 @@ export class AnnouncementManager {
         let channel = await this.#util.getChannel(config.channel);
         const role = await this.#util.getRole(guild.id, config.role);
 
-        if (channel === undefined || !guard.isGuildChannel(channel) || !guard.isTextableChannel(channel) || guard.isThreadChannel(channel) && channel.threadMetadata.archived)
+        if (channel === undefined || !isGuildChannel(channel) || !isTextableChannel(channel) || isThreadChannel(channel) && channel.threadMetadata.archived)
             channel = undefined;
 
         return { channel, role };
@@ -46,7 +46,7 @@ export class AnnouncementManager {
             const result = await this.#util.queryChannel({
                 actors: [user],
                 context: queryChannel,
-                choices: guild.channels.filter(guard.isTextableChannel).values(),
+                choices: guild.channels.filter(isTextableChannel).values(),
                 prompt: templates.announcements.prompt.channel
             });
 
@@ -59,9 +59,9 @@ export class AnnouncementManager {
 
         if (channel === undefined)
             return { state: 'ChannelNotFound' };
-        if (!guard.isGuildChannel(channel) || channel.guild !== guild)
+        if (!isGuildChannel(channel) || channel.guild !== guild)
             return { state: 'ChannelNotInGuild' };
-        if (!guard.isTextableChannel(channel))
+        if (!isTextableChannel(channel))
             return { state: 'ChannelInvalid' };
 
         if (role === undefined) {

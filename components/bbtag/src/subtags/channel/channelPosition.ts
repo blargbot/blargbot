@@ -1,5 +1,4 @@
-import { guard } from '@blargbot/core/utils/index.js';
-import { markup } from '@blargbot/discord-util';
+import { isThreadChannel, markup } from '@blargbot/discord-util';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
@@ -55,7 +54,7 @@ export class ChannelPositionSubtag extends CompiledSubtag {
                 .withDisplay(quiet ? '' : undefined);
         }
 
-        if (guard.isThreadChannel(channel))
+        if (isThreadChannel(channel))
             throw new BBTagRuntimeError('Threads dont have a position', `${markup.channel(channel.id)} is a thread and doesnt have a position`);
 
         return channel.position;

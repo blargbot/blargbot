@@ -1,4 +1,4 @@
-import { guard } from '@blargbot/core/utils/index.js';
+import { isThreadChannel } from '@blargbot/discord-util';
 import { hasFlag } from '@blargbot/guards';
 import { OverwriteType } from 'discord-api-types/v10';
 import * as Discord from 'discord-api-types/v10';
@@ -61,7 +61,7 @@ export class ChannelSetPermissionsSubtag extends CompiledSubtag {
         if (channel === undefined)
             throw new BBTagRuntimeError('Channel does not exist'); //TODO No channel found error
 
-        if (guard.isThreadChannel(channel))
+        if (isThreadChannel(channel))
             throw new BBTagRuntimeError('Cannot set permissions for a thread channel');
 
         const permission = context.getPermission(context.authorizer, channel);

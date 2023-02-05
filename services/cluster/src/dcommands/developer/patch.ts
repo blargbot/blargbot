@@ -1,8 +1,9 @@
-import { CommandType, guard } from '@blargbot/cluster/utils/index.js';
+import { CommandType } from '@blargbot/cluster/utils/index.js';
+import { isGuildChannel, isTextableChannel } from '@blargbot/discord-util';
 import { util } from '@blargbot/formatting';
 import * as Eris from 'eris';
 
-import type { CommandContext} from '../../command/index.js';
+import type { CommandContext } from '../../command/index.js';
 import { GlobalCommand } from '../../command/index.js';
 import templates from '../../text.js';
 import type { CommandResult } from '../../types.js';
@@ -30,7 +31,7 @@ export class PatchCommand extends GlobalCommand {
 
     public async patch(context: CommandContext, features: string | undefined, fixes: string | undefined, notes: string | undefined): Promise<CommandResult> {
         const channel = await context.util.getChannel(context.config.discord.channels.changelog);
-        if (channel === undefined || !guard.isGuildChannel(channel) || !guard.isTextableChannel(channel))
+        if (channel === undefined || !isGuildChannel(channel) || !isTextableChannel(channel))
             return cmd.default.changelogMissing;
 
         if (features === undefined && fixes === undefined && notes === undefined)

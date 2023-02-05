@@ -1,4 +1,4 @@
-import { guard } from '@blargbot/core/utils/index.js';
+import { isTextableChannel } from '@blargbot/discord-util';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
@@ -51,7 +51,7 @@ export class LastMessageIdSubtag extends CompiledSubtag {
         if (channel === undefined)
             throw new ChannelNotFoundError(channelStr);
 
-        if (!guard.isTextableChannel(channel))
+        if (!isTextableChannel(channel))
             throw new BBTagRuntimeError('Channel must be a textable channel');
 
         return 'last_message_id' in channel ? channel.last_message_id ?? undefined : undefined;

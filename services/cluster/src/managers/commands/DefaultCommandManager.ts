@@ -1,8 +1,9 @@
 import type { Cluster } from '@blargbot/cluster';
 import type { CommandGetCoreResult, CommandParameter, CommandProperties, CommandResult, CommandSignature, ICommand } from '@blargbot/cluster/types.js';
-import { commandTypeDetails, guard } from '@blargbot/cluster/utils/index.js';
+import { commandTypeDetails } from '@blargbot/cluster/utils/index.js';
 import { metrics } from '@blargbot/core/Metrics.js';
 import type { NextMiddleware } from '@blargbot/core/types.js';
+import { isGuildChannel } from '@blargbot/discord-util';
 import type { CommandPermissions } from '@blargbot/domain/models/index.js';
 import type { FlagDefinition } from '@blargbot/flags';
 import type { IFormattable } from '@blargbot/formatting';
@@ -42,7 +43,7 @@ export class DefaultCommandManager extends CommandManager<Command> {
             return { state: 'FOUND', detail: new NormalizedCommand(command, { permission: defaultPermission }) };
 
         const guild = location instanceof Eris.Guild ? location
-            : guard.isGuildChannel(location) ? location.guild
+            : isGuildChannel(location) ? location.guild
                 : undefined;
 
         const permissions = guild === undefined ? {} : { ...await this.cluster.database.guilds.getCommandPerms(guild.id, command.name) };

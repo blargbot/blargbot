@@ -1,11 +1,10 @@
-import type { BBTagEngine } from '@blargbot/bbtag';
 import type { Cluster, ClusterUtilities } from '@blargbot/cluster';
 import type { CommandResult, GuildCommandContext, ICommand } from '@blargbot/cluster/types.js';
 import type { Configuration } from '@blargbot/config';
 import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent.js';
 import type { ChoiceQueryOptions, ChoiceQueryResult, ConfirmQuery, MultipleQueryOptions, MultipleQueryResult, SendContent, SendContext, SlimConfirmQueryOptions, SlimEntityFindQueryOptions, SlimEntityPickQueryOptions, SlimEntityQueryOptions, SlimTextQueryOptions, SlimTextQueryOptionsParsed, TextQueryResult } from '@blargbot/core/types.js';
-import { guard } from '@blargbot/core/utils/index.js';
 import type { Database } from '@blargbot/database';
+import { isGuildChannel } from '@blargbot/discord-util';
 import type { IFormattable } from '@blargbot/formatting';
 import { format, util } from '@blargbot/formatting';
 import type { Logger } from '@blargbot/logger';
@@ -13,7 +12,6 @@ import type * as Eris from 'eris';
 
 export class CommandContext<TChannel extends Eris.KnownTextableChannel = Eris.KnownTextableChannel> {
     public get logger(): Logger { return this.cluster.logger; }
-    public get bbtag(): BBTagEngine { return this.cluster.bbtag; }
     public get util(): ClusterUtilities { return this.cluster.util; }
     public get config(): Configuration { return this.cluster.config; }
     public get discord(): Eris.Client { return this.cluster.discord; }
@@ -88,7 +86,7 @@ export class CommandContext<TChannel extends Eris.KnownTextableChannel = Eris.Kn
         if ('guild' in options)
             return await this.util.queryChannel({ ...options, context: this.message.channel, actors: this.author });
 
-        if (guard.isGuildChannel(this.channel))
+        if (isGuildChannel(this.channel))
             return await this.util.queryChannel({ ...options, context: this.message.channel, actors: this.author, guild: this.channel.guild });
 
         throw new Error('Cannot queryChannel without a guild!');
@@ -104,7 +102,7 @@ export class CommandContext<TChannel extends Eris.KnownTextableChannel = Eris.Kn
         if ('guild' in options)
             return await this.util.queryRole({ ...options, context: this.message.channel, actors: this.author });
 
-        if (guard.isGuildChannel(this.channel))
+        if (isGuildChannel(this.channel))
             return await this.util.queryRole({ ...options, context: this.message.channel, actors: this.author, guild: this.channel.guild });
 
         throw new Error('Cannot queryRole without a guild!');
@@ -120,7 +118,7 @@ export class CommandContext<TChannel extends Eris.KnownTextableChannel = Eris.Kn
         if ('guild' in options)
             return await this.util.queryMember({ ...options, context: this.message.channel, actors: this.author });
 
-        if (guard.isGuildChannel(this.channel))
+        if (isGuildChannel(this.channel))
             return await this.util.queryMember({ ...options, context: this.message.channel, actors: this.author, guild: this.channel.guild });
 
         throw new Error('Cannot queryMember without a guild!');
@@ -136,7 +134,7 @@ export class CommandContext<TChannel extends Eris.KnownTextableChannel = Eris.Kn
         if ('guild' in options)
             return await this.util.queryUser({ ...options, context: this.message.channel, actors: this.author });
 
-        if (guard.isGuildChannel(this.channel))
+        if (isGuildChannel(this.channel))
             return await this.util.queryUser({ ...options, context: this.message.channel, actors: this.author, guild: this.channel.guild });
 
         throw new Error('Cannot queryUser without a guild!');

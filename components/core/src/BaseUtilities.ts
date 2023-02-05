@@ -4,7 +4,7 @@ import { CrowdinTranslationSource } from '@blargbot/crowdin';
 import type { Database } from '@blargbot/database';
 import type { Emote } from '@blargbot/discord-emote';
 import type { Snowflake } from '@blargbot/discord-util';
-import { checkEmbedSize, checkMessageSize, markup, snowflake } from '@blargbot/discord-util';
+import { checkEmbedSize, checkMessageSize, isGuildChannel, isPrivateChannel, isTextableChannel, isVoiceChannel, markup, snowflake } from '@blargbot/discord-util';
 import type { DiscordChannelTag, DiscordRoleTag, DiscordTagSet, DiscordUserTag, StoredUser } from '@blargbot/domain/models/index.js';
 import type { IFormattable, IFormatter } from '@blargbot/formatting';
 import { format, Formatter, TranslationMiddleware, util } from '@blargbot/formatting';
@@ -49,7 +49,7 @@ export class BaseUtilities {
             const channel = await this.getChannel(context);
             if (channel === undefined)
                 throw new Error('Channel not found');
-            if (guard.isTextableChannel(channel) && !guard.isVoiceChannel(channel))
+            if (isTextableChannel(channel) && !isVoiceChannel(channel))
                 return channel;
             throw new Error('Channel is not textable');
         }
@@ -131,7 +131,7 @@ export class BaseUtilities {
         const { file: files = [], ...content } = payload[format](formatter);
 
         // Stringifies embeds if we lack permissions to send embeds
-        if (content.embeds !== undefined && guard.isGuildChannel(channel)) {
+        if (content.embeds !== undefined && isGuildChannel(channel)) {
             const member = await this.getMember(channel.guild, this.user.id);
             if (member !== undefined && channel.permissionsOf(member).has('embedLinks') !== true) {
                 content.content = `${content.content ?? ''}${humanize.embed(content.embeds)}`;
@@ -183,7 +183,7 @@ export class BaseUtilities {
                 await this.send(author, {
                     [format](formatter) {
                         return {
-                            content: guard.isGuildChannel(channel)
+                            content: isGuildChannel(channel)
                                 ? templates.utils.send.errors.guild({ channel, message: result })[format](formatter)
                                 : templates.utils.send.errors.dm({ channel, message: result })[format](formatter),
                             messageReference: content.messageReference
@@ -195,7 +195,7 @@ export class BaseUtilities {
         }
     }
 
-    public async addReactions(context: Eris.Message, reactions: Iterable<Emote>): Promise<{ success: Emote[]; failed: Emote[]; }> {
+    public async addReactions(context: { id: string; channel: { id: string; }; }, reactions: Iterable<Emote>): Promise<{ success: Emote[]; failed: Emote[]; }> {
         const results = { success: [] as Emote[], failed: [] as Emote[] };
         const reacted = new Set<string>();
         let done = false;
@@ -210,7 +210,7 @@ export class BaseUtilities {
             }
 
             try {
-                await context.addReaction(api);
+                await this.discord.addMessageReaction(context.channel.id, context.id, api);
                 results.success.push(reaction);
             } catch (e: unknown) {
                 if (e instanceof Eris.DiscordRESTError) {
@@ -233,7 +233,7 @@ export class BaseUtilities {
     }
 
     public async resolveTags(message: string, context?: string | Eris.KnownChannel): Promise<string> {
-        const guildId = typeof context === 'object' ? guard.isGuildChannel(context) ? context.guild.id : undefined : context;
+        const guildId = typeof context === 'object' ? isGuildChannel(context) ? context.guild.id : undefined : context;
         const tags = await this.discoverMessageEntities({ guildId, content: message });
 
         return message.replaceAll(markup.user.pattern.anywhere, v => {
@@ -425,13 +425,13 @@ export class BaseUtilities {
         if (guild === undefined)
             return undefined;
         const channel = guild.channels.get(channelId) ?? await this.#getRestChannel(channelId);
-        return channel !== undefined && guard.isGuildChannel(channel) ? channel : undefined;
+        return channel !== undefined && isGuildChannel(channel) ? channel : undefined;
     }
 
     async #getRestChannel(channelId: string): Promise<Eris.KnownChannel | undefined> {
         try {
             const channel = await this.discord.getRESTChannel(channelId);
-            if (guard.isPrivateChannel(channel)) {
+            if (isPrivateChannel(channel)) {
                 if (this.discord.privateChannels.get(channel.id) !== channel)
                     this.discord.privateChannels.set(channel.id, channel);
             } else {
@@ -462,7 +462,7 @@ export class BaseUtilities {
             return allChannels;
 
         const channel = await this.getChannel(guild, query);
-        if (channel !== undefined && guard.isGuildChannel(channel) && channel.guild.id === guild.id)
+        if (channel !== undefined && isGuildChannel(channel) && channel.guild.id === guild.id)
             return [channel];
 
         return findBest(allChannels, (c) => this.channelMatchScore(c, query));
@@ -471,7 +471,7 @@ export class BaseUtilities {
     public channelMatchScore(channel: Eris.KnownChannel, query: string): number {
         const normalizedQuery = query.toLowerCase();
 
-        if (guard.isGuildChannel(channel)) {
+        if (isGuildChannel(channel)) {
             if (!hasValue(channel.name))
                 return 0;
 
@@ -481,7 +481,7 @@ export class BaseUtilities {
             if (normalizedName.startsWith(normalizedQuery)) return 100;
             if (channel.name.includes(query)) return 10;
             if (normalizedName.includes(normalizedQuery)) return 1;
-        } else if (guard.isPrivateChannel(channel) && 'recipient' in channel) {
+        } else if (isPrivateChannel(channel) && 'recipient' in channel) {
             return this.userMatchScore(channel.recipient, query);
         }
         return 0;
@@ -549,7 +549,7 @@ export class BaseUtilities {
 
         const foundChannel = typeof channel === 'string' ? await this.getChannel(channel) : channel;
 
-        if (foundChannel === undefined || !guard.isTextableChannel(foundChannel) || guard.isVoiceChannel(foundChannel))
+        if (foundChannel === undefined || !isTextableChannel(foundChannel) || isVoiceChannel(foundChannel))
             return undefined;
 
         try {
@@ -886,7 +886,7 @@ const sendErrors = {
     // try to catch the mystery of the autoresponse-object-in-field-value error
     // https://stop-it.get-some.help/9PtuDEm.png
     [Eris.ApiError.INVALID_FORM_BODY](util: BaseUtilities, channel: Eris.TextableChannel, payload: Eris.AdvancedMessageContent, error: Eris.DiscordRESTError) {
-        util.logger.error(`${channel.id}|${guard.isGuildChannel(channel) ? channel.name : 'PRIVATE CHANNEL'}|${JSON.stringify(payload)}`, error);
+        util.logger.error(`${channel.id}|${isGuildChannel(channel) ? channel.name : 'PRIVATE CHANNEL'}|${JSON.stringify(payload)}`, error);
     }
 } as const;
 

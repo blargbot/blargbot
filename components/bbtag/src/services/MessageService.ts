@@ -6,7 +6,7 @@ import type { AwaitReactionsResponse, Entities } from '../types.js';
 export interface MessageService {
     get(context: BBTagContext, channelId: string, messageId: string): Promise<Entities.Message | undefined>;
     delete(context: BBTagContext, channelId: string, messageId: string): Promise<void>;
-    edit(context: BBTagContext, channelId: string, messageId: string, content: Partial<Entities.MessageCreateOptions>): Promise<undefined>;
+    edit(context: BBTagContext, channelId: string, messageId: string, content: Partial<Entities.MessageCreateOptions>): Promise<void>;
     create(context: BBTagContext, channelId: string, content: Entities.MessageCreateOptions): Promise<Entities.Message | { error: string; } | undefined>;
     runWebhook(context: BBTagContext, webhookId: string, webhookToken: string, content: Entities.WebhookCreateOptions): Promise<undefined | { error: string; }>;
 

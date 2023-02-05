@@ -1,6 +1,7 @@
 import type { Cluster } from '@blargbot/cluster';
 import type { CommandResult, GuildCommandContext } from '@blargbot/cluster/types.js';
-import { CommandType, defaultStaff, guard, guildSettings, parse } from '@blargbot/cluster/utils/index.js';
+import { CommandType, defaultStaff, guildSettings, parse } from '@blargbot/cluster/utils/index.js';
+import { isGuildChannel } from '@blargbot/discord-util';
 import type { IFormattable, ITranslationSource } from '@blargbot/formatting';
 import { format, FormatString } from '@blargbot/formatting';
 import { hasProperty } from '@blargbot/guards';
@@ -157,7 +158,7 @@ function resolveChannel(guild: Eris.Guild, channelId: string | undefined): IForm
         return undefined;
     const channel = guild.channels.get(channelId)
         ?? guild.channels.find(c => c.name.toLowerCase() === channelId.toLowerCase());
-    return channel === undefined || !guard.isGuildChannel(channel)
+    return channel === undefined || !isGuildChannel(channel)
         ? cmd.list.channelValue.unknown({ channelId })
         : cmd.list.channelValue.default({ channel });
 }

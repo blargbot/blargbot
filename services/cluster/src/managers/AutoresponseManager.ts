@@ -110,6 +110,7 @@ export class AutoresponseManager {
     async #executeCore(msg: Eris.Message<Eris.KnownGuildTextableChannel>, id: `${number}` | 'everything', tag: GuildTriggerTag, args: string[]): Promise<void> {
         this.#logAutoresponses(msg.channel.guild.id, id);
 
+        // TODO: Queue BBTag request
         const result = await this.#cluster.bbtag.execute(tag.content, {
             message: msg as never,
             limit: id === 'everything' ? 'everythingAutoResponseLimit' : 'generalAutoResponseLimit',

@@ -1,10 +1,8 @@
-import * as Eris from 'eris';
-
-type ThreadType = Eris.KnownThreadChannel['type'];
+type ThreadType = 10 | 11 | 12;
 const threadTypes = new Set(Object.keys<`${ThreadType}`>({
-    [Eris.Constants.ChannelTypes.GUILD_NEWS_THREAD]: null,
-    [Eris.Constants.ChannelTypes.GUILD_PRIVATE_THREAD]: null,
-    [Eris.Constants.ChannelTypes.GUILD_PUBLIC_THREAD]: null
+    [10]: null,
+    [11]: null,
+    [12]: null
 }).map(v => Number(v) as ThreadType));
 
 export function isThreadChannel<T extends { type: number; }>(channel: T): channel is Extract<T, { type: ThreadType; }> {

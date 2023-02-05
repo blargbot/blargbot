@@ -1,6 +1,6 @@
 import type { CommandResult, GuildCommandContext } from '@blargbot/cluster/types.js';
-import { CommandType, guard } from '@blargbot/cluster/utils/index.js';
-import { markup } from '@blargbot/discord-util';
+import { CommandType } from '@blargbot/cluster/utils/index.js';
+import { isGuildChannel, isTextableChannel, markup } from '@blargbot/discord-util';
 import type { StoredGuildEventLogType } from '@blargbot/domain/models/index.js';
 import type { IFormattable } from '@blargbot/formatting';
 import { hasProperty } from '@blargbot/guards';
@@ -67,10 +67,10 @@ export class LogCommand extends GuildCommand {
     }
 
     public async setEventChannel(context: GuildCommandContext, eventnames: readonly string[], channel: Eris.KnownChannel | undefined): Promise<CommandResult> {
-        if (channel !== undefined && (!guard.isGuildChannel(channel) || channel.guild !== context.channel.guild))
+        if (channel !== undefined && (!isGuildChannel(channel) || channel.guild !== context.channel.guild))
             return cmd.enable.notOnGuild;
 
-        if (channel !== undefined && !guard.isTextableChannel(channel))
+        if (channel !== undefined && !isTextableChannel(channel))
             return cmd.enable.notTextChannel;
 
         const validEvents: StoredGuildEventLogType[] = [];

@@ -1,5 +1,5 @@
 import type { CommandPropertiesSet } from '@blargbot/cluster/types.js';
-import { guard } from '@blargbot/cluster/utils/index.js';
+import { isGuildChannel, isPrivateChannel } from '@blargbot/discord-util';
 import * as Eris from 'eris';
 
 import templates from '../../text.js';
@@ -39,7 +39,7 @@ export const commandTypeDetails: CommandPropertiesSet = {
         id: 'NSFW',
         name: templates.commands.categories.nsfw.name,
         isVisible(...[, location]) {
-            if (location instanceof Eris.Guild || location === undefined || guard.isPrivateChannel(location))
+            if (location instanceof Eris.Guild || location === undefined || isPrivateChannel(location))
                 return true;
 
             if ('nsfw' in location)
@@ -74,7 +74,7 @@ export const commandTypeDetails: CommandPropertiesSet = {
             if (location instanceof Eris.Guild)
                 return await util.database.guilds.getSetting(location.id, 'social') ?? false;
 
-            if (location === undefined || !guard.isGuildChannel(location))
+            if (location === undefined || !isGuildChannel(location))
                 return true;
 
             return await util.database.guilds.getSetting(location.guild.id, 'social') ?? false;

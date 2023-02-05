@@ -1,4 +1,4 @@
-import { guard } from '@blargbot/core/utils/index.js';
+import { isThreadChannel } from '@blargbot/discord-util';
 import { hasFlag } from '@blargbot/guards';
 import { mapping } from '@blargbot/mapping';
 import * as Discord from 'discord-api-types/v10';
@@ -51,7 +51,7 @@ export class ChannelEditSubtag extends CompiledSubtag {
         if (!hasFlag(permission, Discord.PermissionFlagsBits.ManageChannels))
             throw new BBTagRuntimeError('Author cannot edit this channel');
 
-        const mapping = guard.isThreadChannel(channel) ? mapThreadOptions : mapChannelOptions;
+        const mapping = isThreadChannel(channel) ? mapThreadOptions : mapChannelOptions;
         const mapped = mapping(editJson);
         if (!mapped.valid)
             throw new BBTagRuntimeError('Invalid JSON');

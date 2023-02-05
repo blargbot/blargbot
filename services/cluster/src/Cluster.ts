@@ -1,6 +1,8 @@
 import { inspect } from 'node:util';
 
-import { BBTagEngine, createBBTagArrayTools, createBBTagJsonTools, createBBTagOperators, createEmbedParser, smartStringCompare, Subtag, subtags } from '@blargbot/bbtag';
+import type { AnalysisResults, ExecutionResult } from '@blargbot/bbtag';
+import { BBTagEngine, createBBTagArrayTools, createBBTagJsonTools, createBBTagOperators, createEmbedParser, smartStringCompare, Subtag } from '@blargbot/bbtag';
+import * as Subtags from '@blargbot/bbtag/subtags';
 import type { ClusterOptions } from '@blargbot/cluster/types.js';
 import type { Configuration } from '@blargbot/config';
 import { BaseClient } from '@blargbot/core/BaseClient.js';
@@ -28,6 +30,8 @@ import type { ClusterWorker } from './ClusterWorker.js';
 import { CommandDocumentationManager } from './managers/documentation/CommandDocumentationManager.js';
 import { AggregateCommandManager, AnnouncementManager, AutoresponseManager, AwaiterManager, BotStaffManager, ContributorManager, CustomCommandManager, DefaultCommandManager, DomainManager, GreetingManager, GuildManager, IntervalManager, ModerationManager, PollManager, PrefixManager, RolemeManager, TimeoutManager, VersionStateManager } from './managers/index.js';
 import { ErisBBTagChannelService } from './utils/bbtag/ErisBBTagChannelService.js';
+import { ErisBBTagGuildService } from './utils/bbtag/ErisBBTagGuildService.js';
+import { ErisBBTagMessageService } from './utils/bbtag/ErisBBTagMessageService.js';
 import { ErisBBTagRoleService } from './utils/bbtag/ErisBBTagRoleService.js';
 import { ErisBBTagUserService } from './utils/bbtag/ErisBBTagUserService.js';
 
@@ -40,7 +44,6 @@ export class Cluster extends BaseClient {
     public readonly timeouts: TimeoutManager;
     public readonly autoresponses: AutoresponseManager;
     public readonly contributors: ContributorManager;
-    public readonly bbtag: BBTagEngine;
     public readonly events: ModuleLoader<BaseService>;
     public readonly botStaff: BotStaffManager;
     public readonly moderation: ModerationManager;
@@ -57,6 +60,12 @@ export class Cluster extends BaseClient {
     public readonly guilds: GuildManager;
     public readonly announcements: AnnouncementManager;
     public readonly parseFlags: FlagParser;
+
+    public readonly bbtag: {
+        execute(...args: unknown[]): Promise<ExecutionResult>;
+        check(content: string): AnalysisResults;
+        subtags: Map<string, Subtag>;
+    };
 
     public constructor(
         worker: ClusterWorker,
@@ -98,6 +107,15 @@ export class Cluster extends BaseClient {
             }
         });
 
+        this.bbtag = {
+            execute() {
+                throw null;
+            },
+            check() {
+                throw null;
+            },
+            subtags: new Map()
+        };
         this.id = options.id;
         this.worker = worker;
         this.createdAt = Object.freeze(moment());
@@ -124,13 +142,13 @@ export class Cluster extends BaseClient {
         const bbtagArrayTools = createBBTagArrayTools({
             convertToInt: parseInt
         });
-        this.bbtag = new BBTagEngine({
+        // @ts-expect-error aaaa
+        const _bbtag = new BBTagEngine({
             config: this.config,
             database: this.database,
-            discord: this.discord,
             logger: this.logger,
             util: new ClusterBBTagUtilities(this),
-            subtags: Object.values(subtags.all)
+            subtags: Object.values(Subtags)
                 .map(Subtag.getDescriptor),
             arrayTools: bbtagArrayTools,
             jsonTools: createBBTagJsonTools({
@@ -161,8 +179,8 @@ export class Cluster extends BaseClient {
                 channel: new ErisBBTagChannelService(this),
                 user: new ErisBBTagUserService(this),
                 role: new ErisBBTagRoleService(this),
-                guild: new ErisGuildProvider(this),
-                message: new ErisMessageProvider(this)
+                guild: new ErisBBTagGuildService(this),
+                message: new ErisBBTagMessageService(this)
             }
         });
         this.intervals = new IntervalManager(this, moment.duration(10, 's'));

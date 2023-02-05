@@ -1,9 +1,10 @@
 import type { ClusterUtilities } from '@blargbot/cluster';
-import { CommandType, commandTypeDetails, guard, randChoose } from '@blargbot/cluster/utils/index.js';
+import { CommandType, commandTypeDetails, randChoose } from '@blargbot/cluster/utils/index.js';
+import { isGuildChannel } from '@blargbot/discord-util';
 import res from '@blargbot/res';
 import * as Eris from 'eris';
 
-import type { CommandContext} from '../../command/index.js';
+import type { CommandContext } from '../../command/index.js';
 import { GlobalImageCommand } from '../../command/index.js';
 import templates from '../../text.js';
 import type { CommandResult } from '../../types.js';
@@ -40,7 +41,7 @@ export class CAHCommand extends GlobalImageCommand {
         if (location === undefined)
             return true;
 
-        const guild = location instanceof Eris.Guild ? location : guard.isGuildChannel(location) ? location.guild : undefined;
+        const guild = location instanceof Eris.Guild ? location : isGuildChannel(location) ? location.guild : undefined;
         if (guild === undefined || await util.database.guilds.getSetting(guild.id, 'cahnsfw') !== true)
             return true;
 

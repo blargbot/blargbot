@@ -3,7 +3,7 @@ import { randomUUID } from 'node:crypto';
 import { sleep } from '@blargbot/async-tools';
 import type { ExecutionResult } from '@blargbot/bbtag';
 import type { Cluster } from '@blargbot/cluster';
-import { guard } from '@blargbot/cluster/utils/index.js';
+import { isTextableChannel } from '@blargbot/discord-util';
 import type { GuildTriggerTag } from '@blargbot/domain/models/index.js';
 import type * as Eris from 'eris';
 import moment from 'moment-timezone';
@@ -67,7 +67,7 @@ export class IntervalManager {
         const member = await this.#cluster.util.getMember(guild, id ?? '');
         if (member === undefined)
             return 'MISSING_AUTHORIZER';
-        const channel = guild.channels.find(guard.isTextableChannel);
+        const channel = guild.channels.find(isTextableChannel);
         if (channel === undefined)
             return 'MISSING_CHANNEL';
 

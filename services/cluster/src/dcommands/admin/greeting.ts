@@ -1,5 +1,6 @@
 import type { CommandResult, GuildCommandContext } from '@blargbot/cluster/types.js';
-import { CommandType, guard } from '@blargbot/cluster/utils/index.js';
+import { CommandType } from '@blargbot/cluster/utils/index.js';
+import { isGuildChannel, isTextableChannel } from '@blargbot/discord-util';
 import type * as Eris from 'eris';
 
 import { GuildCommand } from '../../command/index.js';
@@ -105,9 +106,9 @@ export class GreetingCommand extends GuildCommand {
     }
 
     public async setChannel(context: GuildCommandContext, channel: Eris.KnownChannel): Promise<CommandResult> {
-        if (!guard.isGuildChannel(channel) || channel.guild !== context.channel.guild)
+        if (!isGuildChannel(channel) || channel.guild !== context.channel.guild)
             return cmd.setChannel.notOnGuild;
-        if (!guard.isTextableChannel(channel))
+        if (!isTextableChannel(channel))
             return cmd.setChannel.notTextChannel;
 
         await context.database.guilds.setSetting(context.channel.guild.id, 'greetchan', channel.id);

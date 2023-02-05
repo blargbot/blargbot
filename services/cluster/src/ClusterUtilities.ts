@@ -1,10 +1,10 @@
 import { randomUUID } from 'node:crypto';
 
-import { defaultStaff, guard, parse } from '@blargbot/cluster/utils/index.js';
+import { defaultStaff, parse } from '@blargbot/cluster/utils/index.js';
 import { BaseUtilities } from '@blargbot/core/BaseUtilities.js';
 import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent.js';
 import type { ChoiceQuery, ChoiceQueryOptions, ChoiceQueryResult, ConfirmQuery, ConfirmQueryOptions, EntityFindQueryOptions, EntityPickQueryOptions, EntityQueryOptions, FormatSelectMenuOptions, MultipleQuery, MultipleQueryOptions, MultipleQueryResult, QueryButton, SendContent, TextQuery, TextQueryOptions, TextQueryOptionsParsed, TextQueryResult } from '@blargbot/core/types.js';
-import { findRolePosition } from '@blargbot/discord-util';
+import { findRolePosition, isCategoryChannel, isGuildChannel, isPrivateChannel, isVoiceChannel } from '@blargbot/discord-util';
 import type { IFormattable } from '@blargbot/formatting';
 import { format, util } from '@blargbot/formatting';
 import { hasValue } from '@blargbot/guards';
@@ -494,7 +494,7 @@ export class ClusterUtilities extends BaseUtilities {
                         id: c.id,
                         value: c,
                         details: getChannelLookupSelect(c),
-                        parent: guard.isGuildChannel(c) && c.parentID !== null ? c.guild.channels.get(c.parentID) : undefined
+                        parent: isGuildChannel(c) && c.parentID !== null ? c.guild.channels.get(c.parentID) : undefined
                     },
                     sortKey: 'name' in c ? c.name : c.id
                 }))
@@ -917,23 +917,23 @@ function sortChannels<T extends Eris.KnownChannel>(channels: Iterable<T>): T[] {
     const groups = {} as Record<string, { parent: Eris.KnownCategoryChannel; includeParent: boolean; children: Array<T & Eris.GuildChannel>; } | undefined>;
 
     for (const channel of channels) {
-        if (guard.isPrivateChannel(channel)) {
+        if (isPrivateChannel(channel)) {
             nonGuild.push(channel);
             continue;
         }
 
-        if (!guard.isGuildChannel(channel))
+        if (!isGuildChannel(channel))
             continue;
 
         if (hasValue(channel.parentID)) {
             const parent = channel.guild.channels.get(channel.parentID);
-            if (parent === undefined || !guard.isCategoryChannel(parent)) {
+            if (parent === undefined || !isCategoryChannel(parent)) {
                 nonGroup.push(channel);
             } else {
                 const group = groups[channel.parentID] ??= { parent, includeParent: false, children: [] };
                 group.children.push(channel);
             }
-        } else if (guard.isCategoryChannel(channel)) {
+        } else if (isCategoryChannel(channel)) {
             const group = groups[channel.id] ??= { parent: channel, includeParent: true, children: [] };
             group.includeParent = true;
         } else {
@@ -957,10 +957,10 @@ function sortChannels<T extends Eris.KnownChannel>(channels: Iterable<T>): T[] {
 }
 
 function compareGuildChannels(left: Eris.GuildChannel, right: Eris.GuildChannel): number {
-    return guard.isVoiceChannel(left) ? guard.isVoiceChannel(right)
+    return isVoiceChannel(left) ? isVoiceChannel(right)
         ? left.position - right.position
         : 1
-        : guard.isVoiceChannel(right)
+        : isVoiceChannel(right)
             ? -1
             : left.position - right.position;
 }

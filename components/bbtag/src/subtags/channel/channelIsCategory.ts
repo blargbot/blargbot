@@ -1,4 +1,4 @@
-import { guard } from '@blargbot/core/utils/index.js';
+import { isCategoryChannel } from '@blargbot/discord-util';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
@@ -45,6 +45,6 @@ export class ChannelIsCategorySubtag extends CompiledSubtag {
             throw new ChannelNotFoundError(channelStr)
                 .withDisplay(quiet ? '' : undefined);
         }
-        return guard.isCategoryChannel(channel);
+        return isCategoryChannel(channel);
     }
 }

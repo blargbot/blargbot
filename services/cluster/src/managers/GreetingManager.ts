@@ -2,7 +2,7 @@ import { randomUUID } from 'node:crypto';
 
 import type { ExecutionResult } from '@blargbot/bbtag';
 import type { Cluster } from '@blargbot/cluster';
-import { guard } from '@blargbot/core/utils/index.js';
+import { isTextableChannel } from '@blargbot/discord-util';
 import type { GuildTriggerTag } from '@blargbot/domain/models/index.js';
 import type * as Eris from 'eris';
 import moment from 'moment-timezone';
@@ -84,10 +84,10 @@ export class GreetingManager {
     #findChannel(guild: Eris.Guild, channelId: string | undefined): Eris.KnownGuildTextableChannel | undefined {
         if (channelId !== undefined) {
             const channel = guild.channels.get(channelId);
-            if (channel !== undefined && guard.isTextableChannel(channel))
+            if (channel !== undefined && isTextableChannel(channel))
                 return channel;
         }
 
-        return guild.channels.find(guard.isTextableChannel);
+        return guild.channels.find(isTextableChannel);
     }
 }

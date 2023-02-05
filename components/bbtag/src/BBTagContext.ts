@@ -1,4 +1,4 @@
-import { guard, humanize } from '@blargbot/core/utils/index.js';
+import { humanize } from '@blargbot/core/utils/index.js';
 import { Emote } from '@blargbot/discord-emote';
 import { findRolePosition, permission } from '@blargbot/discord-util';
 import type { NamedGuildCommandTag, StoredTag } from '@blargbot/domain/models/index.js';
@@ -265,13 +265,6 @@ export class BBTagContext implements BBTagContextOptions {
         }));
     }
 
-    // public async getMessage(channel: Entities.Channel, messageId: string, force = false): Promise<Entities.Message | undefined> {
-    //     if (!force && channel.id === this.channel.id && (messageId === this.message.id || messageId === ''))
-    //         return this.message;
-
-    //     return await this.engine.util.getMessage(channel, messageId, force);
-    // }
-
     public getLock(key: string): ReadWriteLock {
         return this.locks[key] ??= new ReadWriteLock();
     }
@@ -328,34 +321,6 @@ export class BBTagContext implements BBTagContextOptions {
         return this.data.cache[cacheKey] = null;
     }
 
-    public static async deserialize(engine: BBTagEngine, obj: SerializedBBTagContext): Promise<BBTagContext> {
-        const message = await this.#getOrFabricateMessage(engine, obj);
-        const limit = new limits[obj.limit.type]();
-        limit.load(obj.limit);
-        const result = new BBTagContext(engine, {
-            inputRaw: obj.inputRaw,
-            message: message,
-            isCC: obj.isCC,
-            flags: obj.flags,
-            rootTagName: obj.rootTagName,
-            tagName: obj.tagName,
-            data: obj.data,
-            authorId: obj.author,
-            authorizerId: obj.authorizer,
-            limit: limit,
-            tagVars: obj.tagVars,
-            prefix: obj.prefix
-        });
-        Object.assign(result.scopes.local, obj.scope);
-
-        result.data.cache = {};
-
-        for (const [key, value] of Object.entries(obj.tempVars))
-            await result.variables.set(key, value);
-
-        return result;
-    }
-
     public serialize(): SerializedBBTagContext {
         return {
             msg: {
@@ -391,58 +356,5 @@ export class BBTagContext implements BBTagContextOptions {
                     return p;
                 }, {})
         };
-    }
-
-    static async #getOrFabricateMessage(engine: BBTagEngine, obj: SerializedBBTagContext): Promise<Entities.Message> {
-        const msg = await engine.util.getMessage(obj.msg.channel.id, obj.msg.id);
-        if (msg !== undefined)
-            return msg;
-
-        const channel = await engine.dependencies.services.channel.get(this, obj.msg.channel.id);
-        if (channel === undefined || !guard.isGuildChannel(channel))
-            throw new Error('Channel must be a guild channel to work with BBTag');
-
-        if (!guard.isTextableChannel(channel))
-            throw new Error('Channel must be able to send and receive messages to work with BBTag');
-
-        const member = await this.#getOrFabricateMember(engine, channel.guild, obj);
-        return {
-            id: obj.msg.id,
-            createdAt: obj.msg.timestamp,
-            content: obj.msg.content,
-            channel: channel,
-            member: member,
-            author: member.user,
-            attachments: obj.msg.attachments,
-            embeds: obj.msg.embeds
-        };
-    }
-
-    static async #getOrFabricateMember(engine: BBTagEngine, guild: Entities.Guild, obj: SerializedBBTagContext): Promise<Entities.User> {
-        if (obj.msg.member === undefined)
-            throw new Error('No user id given');
-
-        const member = await engine.util.getMember(guild, obj.msg.member.id);
-        if (member !== undefined)
-            return member;
-
-        const user = await engine.util.getUser(obj.msg.member.id);
-        if (user === undefined)
-            throw new Error('No user found');
-
-        return new Eris.Member({
-            id: user.id,
-            avatar: null,
-            communication_disabled_until: null,
-            deaf: null,
-            flags: 0,
-            joined_at: null,
-            mute: false,
-            nick: null,
-            premium_since: null,
-            pending: false,
-            roles: [],
-            user: user.toJSON()
-        }, guild, engine.dependencies.discord);
     }
 }

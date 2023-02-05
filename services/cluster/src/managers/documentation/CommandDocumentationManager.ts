@@ -1,6 +1,5 @@
 import type { FormatEmbedField, SendContent } from '@blargbot/core/types.js';
-import { guard } from '@blargbot/core/utils/index.js';
-import { getMessageComponentLimit } from '@blargbot/discord-util';
+import { getMessageComponentLimit, isGuildChannel } from '@blargbot/discord-util';
 import type { IFormattable } from '@blargbot/formatting';
 import { format, util } from '@blargbot/formatting';
 import type * as Eris from 'eris';
@@ -23,7 +22,7 @@ export class CommandDocumentationManager extends DocumentationTreeManager {
     }
 
     protected async getTree(user: Eris.User, channel: Eris.KnownTextableChannel): Promise<Documentation> {
-        const guild = guard.isGuildChannel(channel) ? channel.guild : undefined;
+        const guild = isGuildChannel(channel) ? channel.guild : undefined;
         const categories = new Map<string, DocumentationGroup & { items: Mutable<DocumentationGroup['items']>; }>();
         for await (const item of this.#cluster.commands.list(guild, user)) {
             if (item.state === 'NOT_FOUND')
@@ -230,7 +229,7 @@ export class CommandDocumentationManager extends DocumentationTreeManager {
         if (command.roles.length === 0)
             yield { name: command.category.name, id: `_${command.category.id}` };
 
-        if (guard.isGuildChannel(channel)) {
+        if (isGuildChannel(channel)) {
             for (const roleStr of command.roles) {
                 const role = await this.#cluster.util.getRole(channel.guild, roleStr)
                     ?? channel.guild.roles.find(r => r.name.toLowerCase() === roleStr.toLowerCase());

@@ -1,6 +1,5 @@
 import type { EnsureMutedRoleResult, MuteResult, UnmuteResult } from '@blargbot/cluster/types.js';
-import { guard } from '@blargbot/cluster/utils/index.js';
-import { findRolePosition } from '@blargbot/discord-util';
+import { findRolePosition, isCategoryChannel, isTextableChannel, isThreadChannel, isVoiceChannel } from '@blargbot/discord-util';
 import type { UnmuteEventOptions } from '@blargbot/domain/models/index.js';
 import type { IFormattable } from '@blargbot/formatting';
 import { format } from '@blargbot/formatting';
@@ -89,7 +88,7 @@ export class MuteManager extends ModerationManagerBase {
             return 'unconfigured';
 
         for (const channel of guild.channels.values()) {
-            if (!guard.isThreadChannel(channel))
+            if (!isThreadChannel(channel))
                 await this.#configureChannel(channel, newRole);
         }
         return 'success';
@@ -98,11 +97,11 @@ export class MuteManager extends ModerationManagerBase {
     async #configureChannel(channel: Eris.KnownGuildChannel, mutedRole: Eris.Role): Promise<void> {
         try {
             let deny = 0n;
-            if (guard.isTextableChannel(channel))
+            if (isTextableChannel(channel))
                 deny |= Eris.Constants.Permissions.sendMessages;
-            else if (guard.isVoiceChannel(channel))
+            else if (isVoiceChannel(channel))
                 deny |= Eris.Constants.Permissions.voiceSpeak;
-            else if (guard.isCategoryChannel(channel))
+            else if (isCategoryChannel(channel))
                 deny |= Eris.Constants.Permissions.sendMessages | Eris.Constants.Permissions.voiceSpeak;
             if (deny !== 0n) {
                 const formatter = await this.manager.cluster.util.getFormatter(channel.guild);

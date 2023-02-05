@@ -1,9 +1,7 @@
-import * as Eris from 'eris';
-
-type VoiceType = Eris.VoiceChannel['type'];
+type VoiceType = 2 | 13;
 const voiceTypes = new Set(Object.keys<`${VoiceType}`>({
-    [Eris.Constants.ChannelTypes.GUILD_STAGE_VOICE]: null,
-    [Eris.Constants.ChannelTypes.GUILD_VOICE]: null
+    [2]: null,
+    [13]: null
 
 }).map(v => Number(v) as VoiceType));
 

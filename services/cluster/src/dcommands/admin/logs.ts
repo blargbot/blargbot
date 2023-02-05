@@ -3,7 +3,7 @@ import type { ChatLogSearchOptions } from '@blargbot/chatlog-types';
 import { ChatLogType } from '@blargbot/chatlog-types';
 import type { CommandResult, GuildCommandContext } from '@blargbot/cluster/types.js';
 import { CommandType } from '@blargbot/cluster/utils/index.js';
-import { guard } from '@blargbot/core/utils/index.js';
+import { isGuildChannel } from '@blargbot/discord-util';
 import { hasValue } from '@blargbot/guards';
 
 import { GuildCommand } from '../../command/index.js';
@@ -58,7 +58,7 @@ export class LogsCommand extends GuildCommand {
         if (channel.state !== 'SUCCESS')
             return cmd.default.channelMissing({ channel: options.channel });
 
-        if (!guard.isGuildChannel(channel.value) || channel.value.guild.id !== context.channel.guild.id)
+        if (!isGuildChannel(channel.value) || channel.value.guild.id !== context.channel.guild.id)
             return cmd.default.notOnGuild;
 
         const perms = channel.value.permissionsOf(context.message.member);

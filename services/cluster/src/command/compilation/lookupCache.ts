@@ -1,5 +1,6 @@
 import type { CommandBinderParseResult, CommandBinderStateLookupCache, CommandVariableTypeMap, GuildCommandContext, PrivateCommandContext } from '@blargbot/cluster/types.js';
 import { guard } from '@blargbot/cluster/utils/index.js';
+import { isTextableChannel } from '@blargbot/discord-util';
 import * as Eris from 'eris';
 
 import type { CommandContext } from '../CommandContext.js';
@@ -20,7 +21,7 @@ function getGuildLookupCache<TContext extends GuildCommandContext>(context: TCon
         findChannel: createLookup(
             'channel',
             'a channel',
-            async query => (await context.util.findChannels(context.channel.guild, query)).filter(guard.isTextableChannel),
+            async query => (await context.util.findChannels(context.channel.guild, query)).filter(isTextableChannel),
             async (options, query) => {
                 const result = await context.queryChannel({ choices: options, filter: query });
                 return result.state === 'SUCCESS' ? result.value : undefined;

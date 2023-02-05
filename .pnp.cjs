@@ -32,7 +32,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:components/bbtag/test"\
       },\
       {\
-        "name": "@blargot/catch-decorators",\
+        "name": "@blargbot/catch-decorators",\
         "reference": "workspace:components/catch-decorators/src"\
       },\
       {\
@@ -197,6 +197,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@blargbot/bbtag", ["workspace:components/bbtag/src"]],\
       ["@blargbot/bbtag-runner", ["workspace:services/bbtag-runner/src"]],\
       ["@blargbot/bbtag-tests", ["workspace:components/bbtag/test"]],\
+      ["@blargbot/catch-decorators", ["workspace:components/catch-decorators/src"]],\
       ["@blargbot/chatlog-types", ["workspace:components/chatlog-types/src"]],\
       ["@blargbot/cluster", ["workspace:services/cluster/src"]],\
       ["@blargbot/cluster-tests", ["workspace:services/cluster/test"]],\
@@ -228,7 +229,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@blargbot/res", ["workspace:components/res/src"]],\
       ["@blargbot/test-util", ["workspace:components/test-util/src"]],\
       ["@blargbot/timer", ["workspace:components/timer/src"]],\
-      ["@blargot/catch-decorators", ["workspace:components/catch-decorators/src"]],\
       ["@types/blargbot-image-api", ["workspace:definitions/blargbot-image-api"]],\
       ["@types/brainfuck-node", ["workspace:definitions/brainfuck-node"]],\
       ["@types/eris", ["workspace:definitions/eris"]],\
@@ -377,6 +377,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/bbtag", "workspace:components/bbtag/src"],\
             ["@blargbot/application", "workspace:components/application/src"],\
             ["@blargbot/async-tools", "workspace:components/async-tools/src"],\
+            ["@blargbot/catch-decorators", "workspace:components/catch-decorators/src"],\
             ["@blargbot/config", "workspace:components/config/src"],\
             ["@blargbot/core", "workspace:components/core/src"],\
             ["@blargbot/database", "workspace:components/database/src"],\
@@ -450,6 +451,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "SOFT"\
         }]\
       ]],\
+      ["@blargbot/catch-decorators", [\
+        ["workspace:components/catch-decorators/src", {\
+          "packageLocation": "./components/catch-decorators/src/",\
+          "packageDependencies": [\
+            ["@blargbot/catch-decorators", "workspace:components/catch-decorators/src"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
       ["@blargbot/chatlog-types", [\
         ["workspace:components/chatlog-types/src", {\
           "packageLocation": "./components/chatlog-types/src/",\
@@ -467,6 +477,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/application", "workspace:components/application/src"],\
             ["@blargbot/async-tools", "workspace:components/async-tools/src"],\
             ["@blargbot/bbtag", "workspace:components/bbtag/src"],\
+            ["@blargbot/catch-decorators", "workspace:components/catch-decorators/src"],\
             ["@blargbot/chatlog-types", "workspace:components/chatlog-types/src"],\
             ["@blargbot/collections", "workspace:components/collections/src"],\
             ["@blargbot/config", "workspace:components/config/src"],\
@@ -484,7 +495,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/modules", "workspace:components/modules/src"],\
             ["@blargbot/res", "workspace:components/res/src"],\
             ["@blargbot/timer", "workspace:components/timer/src"],\
-            ["@blargot/catch-decorators", "workspace:components/catch-decorators/src"],\
             ["@hunteroi/versioning", "npm:1.3.2"],\
             ["@types/brainfuck-node", "workspace:definitions/brainfuck-node"],\
             ["@types/eris", "workspace:definitions/eris"],\
@@ -945,15 +955,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./components/timer/src/",\
           "packageDependencies": [\
             ["@blargbot/timer", "workspace:components/timer/src"]\
-          ],\
-          "linkType": "SOFT"\
-        }]\
-      ]],\
-      ["@blargot/catch-decorators", [\
-        ["workspace:components/catch-decorators/src", {\
-          "packageLocation": "./components/catch-decorators/src/",\
-          "packageDependencies": [\
-            ["@blargot/catch-decorators", "workspace:components/catch-decorators/src"]\
           ],\
           "linkType": "SOFT"\
         }]\

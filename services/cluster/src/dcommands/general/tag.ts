@@ -192,7 +192,7 @@ export class TagCommand extends GuildCommand {
 
         await context.database.tags.incrementUses(match.name, 1);
 
-        const result = await context.bbtag.execute(match.content, {
+        const result = await context.cluster.bbtag.execute(match.content, {
             message: context.message as never,
             inputRaw: input ?? '',
             isCC: false,
@@ -218,7 +218,7 @@ export class TagCommand extends GuildCommand {
         input: string,
         debug: boolean
     ): Promise<CommandResult> {
-        const result = await context.bbtag.execute(content, {
+        const result = await context.cluster.bbtag.execute(content, {
             message: context.message as never,
             inputRaw: input,
             isCC: false,
@@ -609,7 +609,7 @@ export class TagCommand extends GuildCommand {
         if (content === undefined)
             return;
 
-        const analysis = context.bbtag.check(content);
+        const analysis = context.cluster.bbtag.check(content);
         const errors = [];
         for (const error of analysis.errors)
             errors.push(cmd.errors.bbtagError(error));

@@ -1,5 +1,5 @@
 import type { BBTagContext, Entities, EntityQueryService, FindEntityOptions, RoleService } from '@blargbot/bbtag';
-import { catchErrors } from '@blargot/catch-decorators';
+import { catchErrors } from '@blargbot/catch-decorators';
 import * as Eris from 'eris';
 
 import type { Cluster } from '../../Cluster.js';
@@ -19,6 +19,7 @@ export class ErisBBTagRoleService implements RoleService {
             find: (query, ctx) => cluster.util.findRoles(ctx.guild.id, query),
             getById: (id, ctx) => cluster.util.getRole(ctx.guild.id, id),
             getId: c => c.id,
+            // @ts-expect-error This is only a reference file for now
             pickBest: (choices, query, ctx) => cluster.util.queryRole({ actors: ctx.user.id, context: ctx.channel, choices, filter: query }),
             alertCancelled: createCancelledAlerter('role'),
             alertNotFound: createNotFoundAlerter('role'),
@@ -27,7 +28,8 @@ export class ErisBBTagRoleService implements RoleService {
 
     }
 
-    #convertToRole(channel: Eris.Role): Entities.Role {
+    #convertToRole(role: Eris.Role): Entities.Role {
+        throw role;
     }
 
     @catchErisRESTErrors
