@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 
-import type { ExecutionResult } from '@blargbot/bbtag';
+import type { ExecutionResult } from '@bbtag/blargbot';
 import type { Cluster } from '@blargbot/cluster';
 import { isTextableChannel } from '@blargbot/discord-util';
 import type { GuildTriggerTag } from '@blargbot/domain/models/index.js';

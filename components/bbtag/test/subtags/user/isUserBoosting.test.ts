@@ -1,5 +1,5 @@
-import { Subtag } from '@blargbot/bbtag';
-import { IsUserBoostingSubtag } from '@blargbot/bbtag/subtags';
+import { Subtag } from '@bbtag/blargbot';
+import { IsUserBoostingSubtag } from '@bbtag/blargbot/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetUserPropTestCases } from './_getUserPropTest.js';

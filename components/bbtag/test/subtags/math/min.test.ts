@@ -1,5 +1,5 @@
-import { Subtag } from '@blargbot/bbtag';
-import { MinSubtag } from '@blargbot/bbtag/subtags';
+import { Subtag } from '@bbtag/blargbot';
+import { MinSubtag } from '@bbtag/blargbot/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

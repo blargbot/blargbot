@@ -1,5 +1,5 @@
-import { Subtag } from '@blargbot/bbtag';
-import { RolesSubtag } from '@blargbot/bbtag/subtags';
+import { Subtag } from '@bbtag/blargbot';
+import { RolesSubtag } from '@bbtag/blargbot/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetUserPropTestCases } from '../user/_getUserPropTest.js';

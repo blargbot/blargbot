@@ -1,5 +1,5 @@
-import { NotAnArrayError, NotANumberError, Subtag  } from '@blargbot/bbtag';
-import { SliceSubtag } from '@blargbot/bbtag/subtags';
+import { NotAnArrayError, NotANumberError, Subtag } from '@bbtag/blargbot';
+import { SliceSubtag } from '@bbtag/blargbot/subtags';
 import { TagVariableType } from '@blargbot/domain/models/index.js';
 import chai from 'chai';
 

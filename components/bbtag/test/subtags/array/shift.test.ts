@@ -1,5 +1,5 @@
-import { NotAnArrayError, Subtag  } from '@blargbot/bbtag';
-import { GetSubtag, ShiftSubtag } from '@blargbot/bbtag/subtags';
+import { NotAnArrayError, Subtag } from '@bbtag/blargbot';
+import { GetSubtag, ShiftSubtag } from '@bbtag/blargbot/subtags';
 import { TagVariableType } from '@blargbot/domain/models/index.js';
 import { argument } from '@blargbot/test-util/mock.js';
 import chai from 'chai';

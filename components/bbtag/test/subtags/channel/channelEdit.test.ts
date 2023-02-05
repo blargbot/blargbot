@@ -1,5 +1,5 @@
-import { BBTagRuntimeError, Subtag } from '@blargbot/bbtag';
-import { ChannelEditSubtag, EscapeBBTagSubtag } from '@blargbot/bbtag/subtags';
+import { BBTagRuntimeError, Subtag } from '@bbtag/blargbot';
+import { ChannelEditSubtag, EscapeBBTagSubtag } from '@bbtag/blargbot/subtags';
 import { argument } from '@blargbot/test-util/mock.js';
 import Discord from 'discord-api-types/v10';
 

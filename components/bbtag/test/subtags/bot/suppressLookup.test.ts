@@ -1,5 +1,5 @@
-import { NotABooleanError, Subtag  } from '@blargbot/bbtag';
-import { SuppressLookupSubtag } from '@blargbot/bbtag/subtags';
+import { NotABooleanError, Subtag } from '@bbtag/blargbot';
+import { SuppressLookupSubtag } from '@bbtag/blargbot/subtags';
 import chai from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

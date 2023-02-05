@@ -1,5 +1,5 @@
-import { BBTagRuntimeError, NotANumberError, Subtag  } from '@blargbot/bbtag';
-import { RoleSetPositionSubtag } from '@blargbot/bbtag/subtags';
+import { BBTagRuntimeError, NotANumberError, Subtag } from '@bbtag/blargbot';
+import { RoleSetPositionSubtag } from '@bbtag/blargbot/subtags';
 import { argument } from '@blargbot/test-util/mock.js';
 import * as Discord from 'discord-api-types/v10';
 

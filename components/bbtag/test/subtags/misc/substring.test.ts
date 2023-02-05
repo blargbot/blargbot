@@ -1,5 +1,5 @@
-import { NotANumberError, Subtag  } from '@blargbot/bbtag';
-import { SubstringSubtag } from '@blargbot/bbtag/subtags';
+import { NotANumberError, Subtag } from '@bbtag/blargbot';
+import { SubstringSubtag } from '@bbtag/blargbot/subtags';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 

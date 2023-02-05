@@ -1,5 +1,5 @@
-import { BBTagRuntimeError, Subtag  } from '@blargbot/bbtag';
-import { ParamsArraySubtag } from '@blargbot/bbtag/subtags';
+import { BBTagRuntimeError, Subtag } from '@bbtag/blargbot';
+import { ParamsArraySubtag } from '@bbtag/blargbot/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

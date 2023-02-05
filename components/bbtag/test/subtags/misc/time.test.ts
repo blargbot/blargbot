@@ -1,5 +1,5 @@
-import { BBTagRuntimeError, Subtag  } from '@blargbot/bbtag';
-import { TimeSubtag } from '@blargbot/bbtag/subtags';
+import { BBTagRuntimeError, Subtag } from '@bbtag/blargbot';
+import { TimeSubtag } from '@bbtag/blargbot/subtags';
 import moment from 'moment-timezone';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

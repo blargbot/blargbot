@@ -1,5 +1,5 @@
-import { Subtag } from '@blargbot/bbtag';
-import { EscapeBBTagSubtag, HtmlEncodeSubtag } from '@blargbot/bbtag/subtags';
+import { Subtag } from '@bbtag/blargbot';
+import { EscapeBBTagSubtag, HtmlEncodeSubtag } from '@bbtag/blargbot/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

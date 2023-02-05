@@ -24,11 +24,11 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:components/async-tools/src"\
       },\
       {\
-        "name": "@blargbot/bbtag",\
+        "name": "@bbtag/blargbot",\
         "reference": "workspace:components/bbtag/src"\
       },\
       {\
-        "name": "@blargbot/bbtag-tests",\
+        "name": "@bbtag/blargbot-tests",\
         "reference": "workspace:components/bbtag/test"\
       },\
       {\
@@ -156,7 +156,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:services/api/src"\
       },\
       {\
-        "name": "@blargbot/bbtag-runner",\
+        "name": "@blargbot/bbtag",\
         "reference": "workspace:services/bbtag-runner/src"\
       },\
       {\
@@ -191,12 +191,12 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
     "enableTopLevelFallback": true,\
     "ignorePatternData": "(^(?:\\\\.yarn\\\\/sdks(?:\\\\/(?!\\\\.{1,2}(?:\\\\/|$))(?:(?:(?!(?:^|\\\\/)\\\\.{1,2}(?:\\\\/|$)).)*?)|$))$)",\
     "fallbackExclusionList": [\
+      ["@bbtag/blargbot", ["workspace:components/bbtag/src"]],\
+      ["@bbtag/blargbot-tests", ["workspace:components/bbtag/test"]],\
       ["@blargbot/api", ["workspace:services/api/src"]],\
       ["@blargbot/application", ["workspace:components/application/src"]],\
       ["@blargbot/async-tools", ["workspace:components/async-tools/src"]],\
-      ["@blargbot/bbtag", ["workspace:components/bbtag/src"]],\
-      ["@blargbot/bbtag-runner", ["workspace:services/bbtag-runner/src"]],\
-      ["@blargbot/bbtag-tests", ["workspace:components/bbtag/test"]],\
+      ["@blargbot/bbtag", ["workspace:services/bbtag-runner/src"]],\
       ["@blargbot/catch-decorators", ["workspace:components/catch-decorators/src"]],\
       ["@blargbot/chatlog-types", ["workspace:components/chatlog-types/src"]],\
       ["@blargbot/cluster", ["workspace:services/cluster/src"]],\
@@ -310,6 +310,76 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["@bbtag/blargbot", [\
+        ["workspace:components/bbtag/src", {\
+          "packageLocation": "./components/bbtag/src/",\
+          "packageDependencies": [\
+            ["@bbtag/blargbot", "workspace:components/bbtag/src"],\
+            ["@blargbot/application", "workspace:components/application/src"],\
+            ["@blargbot/async-tools", "workspace:components/async-tools/src"],\
+            ["@blargbot/catch-decorators", "workspace:components/catch-decorators/src"],\
+            ["@blargbot/config", "workspace:components/config/src"],\
+            ["@blargbot/core", "workspace:components/core/src"],\
+            ["@blargbot/database", "workspace:components/database/src"],\
+            ["@blargbot/discord-emote", "workspace:components/discord-emote/src"],\
+            ["@blargbot/discord-util", "workspace:components/discord-util/src"],\
+            ["@blargbot/domain", "workspace:components/domain/src"],\
+            ["@blargbot/flags", "workspace:components/flags/src"],\
+            ["@blargbot/formatting", "workspace:components/formatting/src"],\
+            ["@blargbot/guards", "workspace:components/guards/src"],\
+            ["@blargbot/logger", "workspace:components/logger/src"],\
+            ["@blargbot/mapping", "workspace:components/mapping/src"],\
+            ["@blargbot/timer", "workspace:components/timer/src"],\
+            ["@types/brainfuck-node", "workspace:definitions/brainfuck-node"],\
+            ["@types/color", "npm:3.0.3"],\
+            ["@types/node-fetch", "npm:2.6.2"],\
+            ["@types/rwlock", "npm:5.0.3"],\
+            ["brainfuck-node", "npm:1.0.2"],\
+            ["color", "npm:4.2.3"],\
+            ["discord-api-types", "npm:0.37.29"],\
+            ["html-entities", "npm:2.3.3"],\
+            ["moment-timezone", "npm:0.5.40"],\
+            ["node-fetch", "npm:3.3.0"],\
+            ["rwlock", "npm:5.0.0"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
+      ["@bbtag/blargbot-tests", [\
+        ["workspace:components/bbtag/test", {\
+          "packageLocation": "./components/bbtag/test/",\
+          "packageDependencies": [\
+            ["@bbtag/blargbot-tests", "workspace:components/bbtag/test"],\
+            ["@bbtag/blargbot", "workspace:components/bbtag/src"],\
+            ["@blargbot/config", "workspace:components/config/src"],\
+            ["@blargbot/core", "workspace:components/core/src"],\
+            ["@blargbot/database", "workspace:components/database/src"],\
+            ["@blargbot/discord-emote", "workspace:components/discord-emote/src"],\
+            ["@blargbot/discord-util", "workspace:components/discord-util/src"],\
+            ["@blargbot/domain", "workspace:components/domain/src"],\
+            ["@blargbot/flags", "workspace:components/flags/src"],\
+            ["@blargbot/formatting", "workspace:components/formatting/src"],\
+            ["@blargbot/logger", "workspace:components/logger/src"],\
+            ["@blargbot/test-util", "workspace:components/test-util/src"],\
+            ["@blargbot/timer", "workspace:components/timer/src"],\
+            ["@types/chai", "npm:4.3.4"],\
+            ["@types/chai-datetime", "npm:0.0.37"],\
+            ["@types/express", "npm:4.17.15"],\
+            ["@types/mocha", "patch:@types/mocha@npm%3A10.0.1#./.yarn/patches/@types-mocha-npm-10.0.1-7c94e9e170.patch::version=10.0.1&hash=480b76&locator=blargbot%40workspace%3A."],\
+            ["chai", "npm:4.3.7"],\
+            ["chai-bytes", "virtual:46ef25479f059694cfec012b02ad4ed77ebd3d6a8c99c916fe0465551ca5f61094e1570a733c750aeb17061e1743cf5a3bbfe139d12466a3fa07da8412a9c186#npm:0.1.2"],\
+            ["chai-datetime", "npm:1.8.0"],\
+            ["chai-exclude", "virtual:46ef25479f059694cfec012b02ad4ed77ebd3d6a8c99c916fe0465551ca5f61094e1570a733c750aeb17061e1743cf5a3bbfe139d12466a3fa07da8412a9c186#npm:2.1.0"],\
+            ["cross-env", "npm:7.0.3"],\
+            ["discord-api-types", "npm:0.37.29"],\
+            ["express", "npm:4.18.2"],\
+            ["mocha", "npm:10.2.0"],\
+            ["moment-timezone", "npm:0.5.40"],\
+            ["ts-mockito", "npm:2.6.1"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
       ["@bcoe/v8-coverage", [\
         ["npm:0.2.3", {\
           "packageLocation": "./.yarn/cache/@bcoe-v8-coverage-npm-0.2.3-9e27b3c57e-850f930553.zip/node_modules/@bcoe/v8-coverage/",\
@@ -324,8 +394,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./services/api/src/",\
           "packageDependencies": [\
             ["@blargbot/api", "workspace:services/api/src"],\
+            ["@bbtag/blargbot", "workspace:components/bbtag/src"],\
             ["@blargbot/application", "workspace:components/application/src"],\
-            ["@blargbot/bbtag", "workspace:components/bbtag/src"],\
             ["@blargbot/chatlog-types", "workspace:components/chatlog-types/src"],\
             ["@blargbot/cluster", "workspace:services/cluster/src"],\
             ["@blargbot/config", "workspace:components/config/src"],\
@@ -371,82 +441,12 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["@blargbot/bbtag", [\
-        ["workspace:components/bbtag/src", {\
-          "packageLocation": "./components/bbtag/src/",\
-          "packageDependencies": [\
-            ["@blargbot/bbtag", "workspace:components/bbtag/src"],\
-            ["@blargbot/application", "workspace:components/application/src"],\
-            ["@blargbot/async-tools", "workspace:components/async-tools/src"],\
-            ["@blargbot/catch-decorators", "workspace:components/catch-decorators/src"],\
-            ["@blargbot/config", "workspace:components/config/src"],\
-            ["@blargbot/core", "workspace:components/core/src"],\
-            ["@blargbot/database", "workspace:components/database/src"],\
-            ["@blargbot/discord-emote", "workspace:components/discord-emote/src"],\
-            ["@blargbot/discord-util", "workspace:components/discord-util/src"],\
-            ["@blargbot/domain", "workspace:components/domain/src"],\
-            ["@blargbot/flags", "workspace:components/flags/src"],\
-            ["@blargbot/formatting", "workspace:components/formatting/src"],\
-            ["@blargbot/guards", "workspace:components/guards/src"],\
-            ["@blargbot/logger", "workspace:components/logger/src"],\
-            ["@blargbot/mapping", "workspace:components/mapping/src"],\
-            ["@blargbot/timer", "workspace:components/timer/src"],\
-            ["@types/brainfuck-node", "workspace:definitions/brainfuck-node"],\
-            ["@types/color", "npm:3.0.3"],\
-            ["@types/node-fetch", "npm:2.6.2"],\
-            ["@types/rwlock", "npm:5.0.3"],\
-            ["brainfuck-node", "npm:1.0.2"],\
-            ["color", "npm:4.2.3"],\
-            ["discord-api-types", "npm:0.37.29"],\
-            ["html-entities", "npm:2.3.3"],\
-            ["moment-timezone", "npm:0.5.40"],\
-            ["node-fetch", "npm:3.3.0"],\
-            ["rwlock", "npm:5.0.0"]\
-          ],\
-          "linkType": "SOFT"\
-        }]\
-      ]],\
-      ["@blargbot/bbtag-runner", [\
         ["workspace:services/bbtag-runner/src", {\
           "packageLocation": "./services/bbtag-runner/src/",\
           "packageDependencies": [\
-            ["@blargbot/bbtag-runner", "workspace:services/bbtag-runner/src"],\
+            ["@blargbot/bbtag", "workspace:services/bbtag-runner/src"],\
             ["@blargbot/application", "workspace:components/application/src"],\
             ["@blargbot/env", "workspace:components/env/src"]\
-          ],\
-          "linkType": "SOFT"\
-        }]\
-      ]],\
-      ["@blargbot/bbtag-tests", [\
-        ["workspace:components/bbtag/test", {\
-          "packageLocation": "./components/bbtag/test/",\
-          "packageDependencies": [\
-            ["@blargbot/bbtag-tests", "workspace:components/bbtag/test"],\
-            ["@blargbot/bbtag", "workspace:components/bbtag/src"],\
-            ["@blargbot/config", "workspace:components/config/src"],\
-            ["@blargbot/core", "workspace:components/core/src"],\
-            ["@blargbot/database", "workspace:components/database/src"],\
-            ["@blargbot/discord-emote", "workspace:components/discord-emote/src"],\
-            ["@blargbot/discord-util", "workspace:components/discord-util/src"],\
-            ["@blargbot/domain", "workspace:components/domain/src"],\
-            ["@blargbot/flags", "workspace:components/flags/src"],\
-            ["@blargbot/formatting", "workspace:components/formatting/src"],\
-            ["@blargbot/logger", "workspace:components/logger/src"],\
-            ["@blargbot/test-util", "workspace:components/test-util/src"],\
-            ["@blargbot/timer", "workspace:components/timer/src"],\
-            ["@types/chai", "npm:4.3.4"],\
-            ["@types/chai-datetime", "npm:0.0.37"],\
-            ["@types/express", "npm:4.17.15"],\
-            ["@types/mocha", "patch:@types/mocha@npm%3A10.0.1#./.yarn/patches/@types-mocha-npm-10.0.1-7c94e9e170.patch::version=10.0.1&hash=480b76&locator=blargbot%40workspace%3A."],\
-            ["chai", "npm:4.3.7"],\
-            ["chai-bytes", "virtual:a5d8bf7a2ae8421255e486c145d47ec921f9386c1e92984955811d72f1f9d40aa20fe49fb743ba13dfbf35140c84a591e0cb4c0f5392aa8a19884114e49a1580#npm:0.1.2"],\
-            ["chai-datetime", "npm:1.8.0"],\
-            ["chai-exclude", "virtual:a5d8bf7a2ae8421255e486c145d47ec921f9386c1e92984955811d72f1f9d40aa20fe49fb743ba13dfbf35140c84a591e0cb4c0f5392aa8a19884114e49a1580#npm:2.1.0"],\
-            ["cross-env", "npm:7.0.3"],\
-            ["discord-api-types", "npm:0.37.29"],\
-            ["express", "npm:4.18.2"],\
-            ["mocha", "npm:10.2.0"],\
-            ["moment-timezone", "npm:0.5.40"],\
-            ["ts-mockito", "npm:2.6.1"]\
           ],\
           "linkType": "SOFT"\
         }]\
@@ -474,9 +474,9 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./services/cluster/src/",\
           "packageDependencies": [\
             ["@blargbot/cluster", "workspace:services/cluster/src"],\
+            ["@bbtag/blargbot", "workspace:components/bbtag/src"],\
             ["@blargbot/application", "workspace:components/application/src"],\
             ["@blargbot/async-tools", "workspace:components/async-tools/src"],\
-            ["@blargbot/bbtag", "workspace:components/bbtag/src"],\
             ["@blargbot/catch-decorators", "workspace:components/catch-decorators/src"],\
             ["@blargbot/chatlog-types", "workspace:components/chatlog-types/src"],\
             ["@blargbot/collections", "workspace:components/collections/src"],\
@@ -521,7 +521,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./services/cluster/test/",\
           "packageDependencies": [\
             ["@blargbot/cluster-tests", "workspace:services/cluster/test"],\
-            ["@blargbot/bbtag", "workspace:components/bbtag/src"],\
+            ["@bbtag/blargbot", "workspace:components/bbtag/src"],\
             ["@blargbot/cluster", "workspace:services/cluster/src"],\
             ["@blargbot/core", "workspace:components/core/src"],\
             ["@blargbot/domain", "workspace:components/domain/src"],\
@@ -571,8 +571,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./components/core/src/",\
           "packageDependencies": [\
             ["@blargbot/core", "workspace:components/core/src"],\
+            ["@bbtag/blargbot", "workspace:components/bbtag/src"],\
             ["@blargbot/async-tools", "workspace:components/async-tools/src"],\
-            ["@blargbot/bbtag", "workspace:components/bbtag/src"],\
             ["@blargbot/config", "workspace:components/config/src"],\
             ["@blargbot/crowdin", "workspace:components/crowdin/src"],\
             ["@blargbot/database", "workspace:components/database/src"],\
@@ -3050,10 +3050,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],\
           "linkType": "SOFT"\
         }],\
-        ["virtual:a5d8bf7a2ae8421255e486c145d47ec921f9386c1e92984955811d72f1f9d40aa20fe49fb743ba13dfbf35140c84a591e0cb4c0f5392aa8a19884114e49a1580#npm:0.1.2", {\
-          "packageLocation": "./.yarn/__virtual__/chai-bytes-virtual-53d82f6b0b/0/cache/chai-bytes-npm-0.1.2-0756b83d81-6fedd3a508.zip/node_modules/chai-bytes/",\
+        ["virtual:46ef25479f059694cfec012b02ad4ed77ebd3d6a8c99c916fe0465551ca5f61094e1570a733c750aeb17061e1743cf5a3bbfe139d12466a3fa07da8412a9c186#npm:0.1.2", {\
+          "packageLocation": "./.yarn/__virtual__/chai-bytes-virtual-ba1d81e224/0/cache/chai-bytes-npm-0.1.2-0756b83d81-6fedd3a508.zip/node_modules/chai-bytes/",\
           "packageDependencies": [\
-            ["chai-bytes", "virtual:a5d8bf7a2ae8421255e486c145d47ec921f9386c1e92984955811d72f1f9d40aa20fe49fb743ba13dfbf35140c84a591e0cb4c0f5392aa8a19884114e49a1580#npm:0.1.2"],\
+            ["chai-bytes", "virtual:46ef25479f059694cfec012b02ad4ed77ebd3d6a8c99c916fe0465551ca5f61094e1570a733c750aeb17061e1743cf5a3bbfe139d12466a3fa07da8412a9c186#npm:0.1.2"],\
             ["@types/chai", "npm:4.3.4"],\
             ["chai", "npm:4.3.7"]\
           ],\
@@ -3082,10 +3082,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],\
           "linkType": "SOFT"\
         }],\
-        ["virtual:a5d8bf7a2ae8421255e486c145d47ec921f9386c1e92984955811d72f1f9d40aa20fe49fb743ba13dfbf35140c84a591e0cb4c0f5392aa8a19884114e49a1580#npm:2.1.0", {\
-          "packageLocation": "./.yarn/__virtual__/chai-exclude-virtual-0c0d7efa76/0/cache/chai-exclude-npm-2.1.0-47ff9dee55-29d964d9f6.zip/node_modules/chai-exclude/",\
+        ["virtual:46ef25479f059694cfec012b02ad4ed77ebd3d6a8c99c916fe0465551ca5f61094e1570a733c750aeb17061e1743cf5a3bbfe139d12466a3fa07da8412a9c186#npm:2.1.0", {\
+          "packageLocation": "./.yarn/__virtual__/chai-exclude-virtual-bb11d28d5a/0/cache/chai-exclude-npm-2.1.0-47ff9dee55-29d964d9f6.zip/node_modules/chai-exclude/",\
           "packageDependencies": [\
-            ["chai-exclude", "virtual:a5d8bf7a2ae8421255e486c145d47ec921f9386c1e92984955811d72f1f9d40aa20fe49fb743ba13dfbf35140c84a591e0cb4c0f5392aa8a19884114e49a1580#npm:2.1.0"],\
+            ["chai-exclude", "virtual:46ef25479f059694cfec012b02ad4ed77ebd3d6a8c99c916fe0465551ca5f61094e1570a733c750aeb17061e1743cf5a3bbfe139d12466a3fa07da8412a9c186#npm:2.1.0"],\
             ["@types/chai", "npm:4.3.4"],\
             ["chai", "npm:4.3.7"],\
             ["fclone", "npm:1.0.11"]\

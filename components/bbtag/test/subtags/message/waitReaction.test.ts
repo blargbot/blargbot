@@ -1,6 +1,6 @@
-import type { AwaitReactionsResponse, Entities, MessageService  } from '@blargbot/bbtag';
-import { BBTagRuntimeError, Subtag  } from '@blargbot/bbtag';
-import { MessageIdSubtag, OperatorSubtag, ReactionSubtag, ReactionUserSubtag, WaitReactionSubtag  } from '@blargbot/bbtag/subtags';
+import type { AwaitReactionsResponse, Entities, MessageService } from '@bbtag/blargbot';
+import { BBTagRuntimeError, Subtag } from '@bbtag/blargbot';
+import { MessageIdSubtag, OperatorSubtag, ReactionSubtag, ReactionUserSubtag, WaitReactionSubtag } from '@bbtag/blargbot/subtags';
 import { Emote } from '@blargbot/discord-emote';
 import { argument } from '@blargbot/test-util/mock.js';
 import chai from 'chai';

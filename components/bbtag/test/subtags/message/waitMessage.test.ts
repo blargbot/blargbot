@@ -1,6 +1,6 @@
-import type { Entities, MessageService } from '@blargbot/bbtag';
-import { BBTagRuntimeError, NotANumberError, Subtag  } from '@blargbot/bbtag';
-import { MessageIdSubtag, OperatorSubtag, WaitMessageSubtag  } from '@blargbot/bbtag/subtags';
+import type { Entities, MessageService } from '@bbtag/blargbot';
+import { BBTagRuntimeError, NotANumberError, Subtag } from '@bbtag/blargbot';
+import { MessageIdSubtag, OperatorSubtag, WaitMessageSubtag } from '@bbtag/blargbot/subtags';
 import type { Mock } from '@blargbot/test-util/mock.js';
 import { argument } from '@blargbot/test-util/mock.js';
 import chai from 'chai';

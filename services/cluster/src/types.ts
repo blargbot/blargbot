@@ -1,4 +1,4 @@
-import type { SubtagOptions } from '@blargbot/bbtag';
+import type { SubtagOptions } from '@bbtag/blargbot';
 import type { CommandType, ModerationType } from '@blargbot/cluster/utils/index.js';
 import type { EvalRequest, EvalResult, GlobalEvalResult, IMiddleware, MasterEvalRequest, SendContent } from '@blargbot/core/types.js';
 import type { CommandPermissions, GuildSettingDocs, GuildSourceCommandTag, NamedGuildCommandTag } from '@blargbot/domain/models/index.js';

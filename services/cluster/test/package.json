@@ -12,7 +12,7 @@
         "test:base": "cross-env TZ=utc mocha --config mocharc.json --recursive --parallel --reporter dot"
     },
     "dependencies": {
-        "@blargbot/bbtag": "workspace:^",
+        "@bbtag/blargbot": "workspace:^",
         "@blargbot/cluster": "workspace:^",
         "@blargbot/core": "workspace:^",
         "@blargbot/domain": "workspace:^",

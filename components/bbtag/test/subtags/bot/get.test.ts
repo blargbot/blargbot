@@ -1,5 +1,5 @@
-import { BBTagRuntimeError, NotANumberError, Subtag  } from '@blargbot/bbtag';
-import { GetSubtag } from '@blargbot/bbtag/subtags';
+import { BBTagRuntimeError, NotANumberError, Subtag } from '@bbtag/blargbot';
+import { GetSubtag } from '@bbtag/blargbot/subtags';
 import { TagVariableType } from '@blargbot/domain/models/index.js';
 
 import type { SubtagTestCase, SubtagTestContext } from '../SubtagTestSuite.js';

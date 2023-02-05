@@ -1,5 +1,5 @@
-import { BBTagRuntimeError, BBTagRuntimeState, Subtag, SubtagStackOverflowError  } from '@blargbot/bbtag';
-import { ExecTagSubtag, JsonSubtag } from '@blargbot/bbtag/subtags';
+import { BBTagRuntimeError, BBTagRuntimeState, Subtag, SubtagStackOverflowError } from '@bbtag/blargbot';
+import { ExecTagSubtag, JsonSubtag } from '@bbtag/blargbot/subtags';
 import chai from 'chai';
 
 import { AssertSubtag, createDescriptor, MarkerError, runSubtagTests } from '../SubtagTestSuite.js';

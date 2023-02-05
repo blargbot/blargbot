@@ -1,5 +1,5 @@
-import { Subtag } from '@blargbot/bbtag';
-import { LangSubtag } from '@blargbot/bbtag/subtags';
+import { Subtag } from '@bbtag/blargbot';
+import { LangSubtag } from '@bbtag/blargbot/subtags';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 

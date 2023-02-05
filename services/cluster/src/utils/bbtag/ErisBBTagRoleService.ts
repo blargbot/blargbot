@@ -1,4 +1,4 @@
-import type { BBTagContext, Entities, EntityQueryService, FindEntityOptions, RoleService } from '@blargbot/bbtag';
+import type { BBTagContext, Entities, EntityQueryService, FindEntityOptions, RoleService } from '@bbtag/blargbot';
 import { catchErrors } from '@blargbot/catch-decorators';
 import * as Eris from 'eris';
 

@@ -1,5 +1,5 @@
-import { Subtag } from '@blargbot/bbtag';
-import { MaxSubtag } from '@blargbot/bbtag/subtags';
+import { Subtag } from '@bbtag/blargbot';
+import { MaxSubtag } from '@bbtag/blargbot/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

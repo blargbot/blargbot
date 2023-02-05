@@ -1,7 +1,7 @@
 import 'chai-exclude';
 
-import { Subtag } from '@blargbot/bbtag';
-import { RandomChooseSubtag } from '@blargbot/bbtag/subtags';
+import { Subtag } from '@bbtag/blargbot';
+import { RandomChooseSubtag } from '@bbtag/blargbot/subtags';
 import chai from 'chai';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';

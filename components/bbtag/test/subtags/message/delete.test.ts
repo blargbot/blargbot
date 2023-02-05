@@ -1,5 +1,5 @@
-import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError, Subtag  } from '@blargbot/bbtag';
-import { DeleteSubtag } from '@blargbot/bbtag/subtags';
+import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError, Subtag } from '@bbtag/blargbot';
+import { DeleteSubtag } from '@bbtag/blargbot/subtags';
 import chai from 'chai';
 
 import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';

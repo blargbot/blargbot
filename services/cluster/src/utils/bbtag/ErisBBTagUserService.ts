@@ -1,4 +1,4 @@
-import type { BBTagContext, Entities, EntityQueryService, FindEntityOptions, UserService } from '@blargbot/bbtag';
+import type { BBTagContext, Entities, EntityQueryService, FindEntityOptions, UserService } from '@bbtag/blargbot';
 import type * as Eris from 'eris';
 
 import type { Cluster } from '../../Cluster.js';

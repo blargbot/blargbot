@@ -1,4 +1,4 @@
-import type { SerializedBBTagContext } from '@blargbot/bbtag';
+import type { SerializedBBTagContext } from '@bbtag/blargbot';
 import type { Cluster } from '@blargbot/cluster';
 import { TimeoutEventService } from '@blargbot/cluster/serviceTypes/index.js';
 import type { StoredEvent } from '@blargbot/domain/models/index.js';

@@ -1,5 +1,5 @@
-import { Subtag } from '@blargbot/bbtag';
-import { ConcatSubtag, GetSubtag } from '@blargbot/bbtag/subtags';
+import { Subtag } from '@bbtag/blargbot';
+import { ConcatSubtag, GetSubtag } from '@bbtag/blargbot/subtags';
 import { TagVariableType } from '@blargbot/domain/models/index.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

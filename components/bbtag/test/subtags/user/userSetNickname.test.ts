@@ -1,8 +1,8 @@
 import { randomUUID } from 'node:crypto';
 
-import type { Entities } from '@blargbot/bbtag';
-import { Subtag, UserNotFoundError } from '@blargbot/bbtag';
-import { UserSetNickSubtag } from '@blargbot/bbtag/subtags';
+import type { Entities } from '@bbtag/blargbot';
+import { Subtag, UserNotFoundError } from '@bbtag/blargbot';
+import { UserSetNickSubtag } from '@bbtag/blargbot/subtags';
 import { argument } from '@blargbot/test-util/mock.js';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';

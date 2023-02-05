@@ -1,5 +1,5 @@
-import { BBTagRuntimeError, BBTagRuntimeState, Subtag  } from '@blargbot/bbtag';
-import { CommentSubtag, FilterSubtag, GetSubtag, IfSubtag, LengthSubtag, OperatorSubtag, ReturnSubtag } from '@blargbot/bbtag/subtags';
+import { BBTagRuntimeError, BBTagRuntimeState, Subtag } from '@bbtag/blargbot';
+import { CommentSubtag, FilterSubtag, GetSubtag, IfSubtag, LengthSubtag, OperatorSubtag, ReturnSubtag } from '@bbtag/blargbot/subtags';
 import { TagVariableType } from '@blargbot/domain/models/index.js';
 import chai from 'chai';
 

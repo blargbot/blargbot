@@ -1,5 +1,5 @@
-import { BBTagRuntimeError, NotANumberError, Subtag } from '@blargbot/bbtag';
-import { ChannelSetPositionSubtag } from '@blargbot/bbtag/subtags';
+import { BBTagRuntimeError, NotANumberError, Subtag } from '@bbtag/blargbot';
+import { ChannelSetPositionSubtag } from '@bbtag/blargbot/subtags';
 import { randChoose } from '@blargbot/core/utils/index.js';
 import { argument } from '@blargbot/test-util/mock.js';
 import Discord from 'discord-api-types/v10';

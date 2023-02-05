@@ -1,8 +1,8 @@
 import { inspect } from 'node:util';
 
-import type { AnalysisResults, ExecutionResult } from '@blargbot/bbtag';
-import { BBTagEngine, createBBTagArrayTools, createBBTagJsonTools, createBBTagOperators, createEmbedParser, smartStringCompare, Subtag } from '@blargbot/bbtag';
-import * as Subtags from '@blargbot/bbtag/subtags';
+import type { AnalysisResults, ExecutionResult } from '@bbtag/blargbot';
+import { BBTagEngine, createBBTagArrayTools, createBBTagJsonTools, createBBTagOperators, createEmbedParser, smartStringCompare, Subtag } from '@bbtag/blargbot';
+import * as Subtags from '@bbtag/blargbot/subtags';
 import type { ClusterOptions } from '@blargbot/cluster/types.js';
 import type { Configuration } from '@blargbot/config';
 import { BaseClient } from '@blargbot/core/BaseClient.js';

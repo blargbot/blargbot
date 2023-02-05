@@ -1,5 +1,5 @@
-import { Subtag } from '@blargbot/bbtag';
-import { JsonCleanSubtag, JsonSubtag  } from '@blargbot/bbtag/subtags';
+import { Subtag } from '@bbtag/blargbot';
+import { JsonCleanSubtag, JsonSubtag } from '@bbtag/blargbot/subtags';
 import { TagVariableType } from '@blargbot/domain/models/index.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

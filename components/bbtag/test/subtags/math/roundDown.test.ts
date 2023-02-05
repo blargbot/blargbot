@@ -1,5 +1,5 @@
-import { NotANumberError, Subtag } from '@blargbot/bbtag';
-import { RoundDownSubtag } from '@blargbot/bbtag/subtags';
+import { NotANumberError, Subtag } from '@bbtag/blargbot';
+import { RoundDownSubtag } from '@bbtag/blargbot/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

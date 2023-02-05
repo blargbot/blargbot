@@ -1,4 +1,4 @@
-import { Subtag, SubtagType, textTemplates } from '@blargbot/bbtag';
+import { Subtag, SubtagType, textTemplates } from '@bbtag/blargbot';
 import * as coreTransformers from '@blargbot/core/formatting/index.js';
 import { transformers, util } from '@blargbot/formatting';
 import { quickMock } from '@blargbot/test-util/quickMock.js';

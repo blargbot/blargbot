@@ -1,5 +1,5 @@
 {
-    "name": "@blargbot/bbtag-runner",
+    "name": "@blargbot/bbtag",
     "version": "1.0.0",
     "private": true,
     "type": "module",

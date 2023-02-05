@@ -1,5 +1,5 @@
-import { BBTagRuntimeError, RoleNotFoundError, Subtag, UserNotFoundError } from '@blargbot/bbtag';
-import { RoleAddSubtag } from '@blargbot/bbtag/subtags';
+import { BBTagRuntimeError, RoleNotFoundError, Subtag, UserNotFoundError } from '@bbtag/blargbot';
+import { RoleAddSubtag } from '@bbtag/blargbot/subtags';
 import { argument } from '@blargbot/test-util/mock.js';
 import * as Discord from 'discord-api-types/v10';
 

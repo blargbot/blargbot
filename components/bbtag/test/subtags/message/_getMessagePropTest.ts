@@ -1,5 +1,5 @@
-import type { BBTagContext, BBTagRuntimeError, Entities, FindEntityOptions  } from '@blargbot/bbtag';
-import { ChannelNotFoundError, MessageNotFoundError } from '@blargbot/bbtag';
+import type { BBTagContext, BBTagRuntimeError, Entities, FindEntityOptions } from '@bbtag/blargbot';
+import { ChannelNotFoundError, MessageNotFoundError } from '@bbtag/blargbot';
 import { snowflake } from '@blargbot/discord-util';
 import { argument } from '@blargbot/test-util/mock.js';
 import type Discord from 'discord-api-types/v10';

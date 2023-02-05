@@ -1,5 +1,5 @@
-import { Subtag } from '@blargbot/bbtag';
-import { ChannelIsNsfwSubtag } from '@blargbot/bbtag/subtags';
+import { Subtag } from '@bbtag/blargbot';
+import { ChannelIsNsfwSubtag } from '@bbtag/blargbot/subtags';
 import type Discord from 'discord-api-types/v10';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

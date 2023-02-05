@@ -11,9 +11,9 @@
         "start": "node ./index.js"
     },
     "dependencies": {
+        "@bbtag/blargbot": "workspace:^",
         "@blargbot/application": "workspace:^",
         "@blargbot/async-tools": "workspace:^",
-        "@blargbot/bbtag": "workspace:^",
         "@blargbot/catch-decorators": "workspace:^",
         "@blargbot/chatlog-types": "workspace:^",
         "@blargbot/collections": "workspace:^",

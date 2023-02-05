@@ -1,5 +1,5 @@
-import type { Subtag, SubtagSignature, SubtagSignatureParameter, SubtagSignatureValueParameter, SubtagType } from '@blargbot/bbtag';
-import { limits, tagTypeDetails, tagVariableScopeProviders } from '@blargbot/bbtag';
+import type { Subtag, SubtagSignature, SubtagSignatureParameter, SubtagSignatureValueParameter, SubtagType } from '@bbtag/blargbot';
+import { limits, tagTypeDetails, tagVariableScopeProviders } from '@bbtag/blargbot';
 import type { SendContent } from '@blargbot/core/types.js';
 import type { IFormattable } from '@blargbot/formatting';
 import { hasValue } from '@blargbot/guards';

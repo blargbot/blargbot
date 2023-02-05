@@ -1,6 +1,6 @@
-import type { Entities } from '@blargbot/bbtag';
-import { BBTagRuntimeError, Subtag, UserNotFoundError } from '@blargbot/bbtag';
-import { UnbanSubtag } from '@blargbot/bbtag/subtags';
+import type { Entities } from '@bbtag/blargbot';
+import { BBTagRuntimeError, Subtag, UserNotFoundError } from '@bbtag/blargbot';
+import { UnbanSubtag } from '@bbtag/blargbot/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

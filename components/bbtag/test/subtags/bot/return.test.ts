@@ -1,5 +1,5 @@
-import { BBTagRuntimeState, Subtag  } from '@blargbot/bbtag';
-import { ReturnSubtag } from '@blargbot/bbtag/subtags';
+import { BBTagRuntimeState, Subtag } from '@bbtag/blargbot';
+import { ReturnSubtag } from '@bbtag/blargbot/subtags';
 import chai from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

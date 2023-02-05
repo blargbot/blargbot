@@ -1,4 +1,4 @@
-import type { BBTagContext, Entities, GuildService } from '@blargbot/bbtag';
+import type { BBTagContext, Entities, GuildService } from '@bbtag/blargbot';
 import { catchErrors } from '@blargbot/catch-decorators';
 import { Emote } from '@blargbot/discord-emote';
 import * as Eris from 'eris';

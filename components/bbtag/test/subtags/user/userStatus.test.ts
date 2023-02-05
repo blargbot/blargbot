@@ -1,5 +1,5 @@
-import { Subtag } from '@blargbot/bbtag';
-import { UserStatusSubtag } from '@blargbot/bbtag/subtags';
+import { Subtag } from '@bbtag/blargbot';
+import { UserStatusSubtag } from '@bbtag/blargbot/subtags';
 import * as Discord from 'discord-api-types/v10';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

@@ -1,5 +1,5 @@
-import { Subtag } from '@blargbot/bbtag';
-import { SetSubtag } from '@blargbot/bbtag/subtags';
+import { Subtag } from '@bbtag/blargbot';
+import { SetSubtag } from '@bbtag/blargbot/subtags';
 import { snowflake } from '@blargbot/discord-util';
 import type { TagVariableScope } from '@blargbot/domain/models/index.js';
 import { TagVariableType } from '@blargbot/domain/models/index.js';

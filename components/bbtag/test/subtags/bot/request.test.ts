@@ -1,8 +1,8 @@
 import { Server } from 'node:http';
 import { promisify } from 'node:util';
 
-import { BBTagRuntimeError, Subtag  } from '@blargbot/bbtag';
-import { EscapeBBTagSubtag, RequestSubtag  } from '@blargbot/bbtag/subtags';
+import { BBTagRuntimeError, Subtag } from '@bbtag/blargbot';
+import { EscapeBBTagSubtag, RequestSubtag } from '@bbtag/blargbot/subtags';
 import chai, { expect } from 'chai';
 import express from 'express';
 

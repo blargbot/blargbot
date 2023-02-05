@@ -1,6 +1,6 @@
-import { BBTagRuntimeError, Subtag  } from '@blargbot/bbtag';
-import type { ColorFormat } from '@blargbot/bbtag/subtags';
-import { ColorSubtag } from '@blargbot/bbtag/subtags';
+import { BBTagRuntimeError, Subtag } from '@bbtag/blargbot';
+import type { ColorFormat } from '@bbtag/blargbot/subtags';
+import { ColorSubtag } from '@bbtag/blargbot/subtags';
 import { TagVariableType } from '@blargbot/domain/models/index.js';
 
 import type { SubtagTestCase } from '../SubtagTestSuite.js';

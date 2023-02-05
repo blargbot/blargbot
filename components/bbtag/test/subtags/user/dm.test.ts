@@ -1,6 +1,6 @@
-import type { Entities } from '@blargbot/bbtag';
-import { Subtag, UserNotFoundError } from '@blargbot/bbtag';
-import { DMSubtag, EscapeBBTagSubtag  } from '@blargbot/bbtag/subtags';
+import type { Entities } from '@bbtag/blargbot';
+import { Subtag, UserNotFoundError } from '@bbtag/blargbot';
+import { DMSubtag, EscapeBBTagSubtag } from '@bbtag/blargbot/subtags';
 import { argument } from '@blargbot/test-util/mock.js';
 import { randomUUID } from 'crypto';
 

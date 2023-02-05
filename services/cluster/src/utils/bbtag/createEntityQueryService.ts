@@ -1,4 +1,4 @@
-import type { BBTagContext, EntityQueryService, FindEntityOptions } from '@blargbot/bbtag';
+import type { BBTagContext, EntityQueryService, FindEntityOptions } from '@bbtag/blargbot';
 
 export type SelectResult<T> =
     | { readonly state: 'NO_OPTIONS' | 'TIMED_OUT' | 'CANCELLED' | 'FAILED'; }

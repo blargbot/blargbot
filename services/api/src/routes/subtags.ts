@@ -1,7 +1,7 @@
 import type { Api } from '@blargbot/api/Api.js';
 import { BaseRoute } from '@blargbot/api/BaseRoute.js';
 import type { ApiResponse } from '@blargbot/api/types.js';
-import { tagTypeDetails } from '@blargbot/bbtag';
+import { tagTypeDetails } from '@bbtag/blargbot';
 import type { SubtagListResult } from '@blargbot/cluster/types.js';
 import { format } from '@blargbot/formatting';
 

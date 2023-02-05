@@ -1,5 +1,5 @@
-import { Subtag } from '@blargbot/bbtag';
-import { CommitSubtag } from '@blargbot/bbtag/subtags';
+import { Subtag } from '@bbtag/blargbot';
+import { CommitSubtag } from '@bbtag/blargbot/subtags';
 import { TagVariableType } from '@blargbot/domain/models/index.js';
 import { argument } from '@blargbot/test-util/mock.js';
 

@@ -8,8 +8,8 @@
         "./*": "./*"
     },
     "dependencies": {
+        "@bbtag/blargbot": "workspace:^",
         "@blargbot/async-tools": "workspace:^",
-        "@blargbot/bbtag": "workspace:^",
         "@blargbot/config": "workspace:^",
         "@blargbot/crowdin": "workspace:^",
         "@blargbot/database": "workspace:^",

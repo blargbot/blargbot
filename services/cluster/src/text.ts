@@ -1,4 +1,4 @@
-import type { AnalysisResult } from '@blargbot/bbtag';
+import type { AnalysisResult } from '@bbtag/blargbot';
 import type { FlagDefinition } from '@blargbot/flags';
 import type { IFormattable } from '@blargbot/formatting';
 import { FormatString } from '@blargbot/formatting';

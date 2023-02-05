@@ -1,5 +1,5 @@
-import { BBTagRuntimeError, NotAnArrayError, Subtag  } from '@blargbot/bbtag';
-import { JsonSortSubtag, JsonSubtag  } from '@blargbot/bbtag/subtags';
+import { BBTagRuntimeError, NotAnArrayError, Subtag } from '@bbtag/blargbot';
+import { JsonSortSubtag, JsonSubtag } from '@bbtag/blargbot/subtags';
 import { TagVariableType } from '@blargbot/domain/models/index.js';
 import chai from 'chai';
 

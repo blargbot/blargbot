@@ -1,5 +1,5 @@
-import { Subtag } from '@blargbot/bbtag';
-import { MessageTypeSubtag } from '@blargbot/bbtag/subtags';
+import { Subtag } from '@bbtag/blargbot';
+import { MessageTypeSubtag } from '@bbtag/blargbot/subtags';
 import { snowflake } from '@blargbot/discord-util';
 import Discord from 'discord-api-types/v10';
 

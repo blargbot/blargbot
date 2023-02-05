@@ -1,5 +1,5 @@
-import { Subtag } from '@blargbot/bbtag';
-import { SwitchSubtag } from '@blargbot/bbtag/subtags';
+import { Subtag } from '@bbtag/blargbot';
+import { SwitchSubtag } from '@bbtag/blargbot/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

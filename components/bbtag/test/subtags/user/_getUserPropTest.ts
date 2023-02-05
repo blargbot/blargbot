@@ -1,5 +1,5 @@
-import type { BBTagContext, BBTagRuntimeError, Entities, FindEntityOptions  } from '@blargbot/bbtag';
-import { UserNotFoundError } from '@blargbot/bbtag';
+import type { BBTagContext, BBTagRuntimeError, Entities, FindEntityOptions } from '@bbtag/blargbot';
+import { UserNotFoundError } from '@bbtag/blargbot';
 import { argument } from '@blargbot/test-util/mock.js';
 
 import type { SubtagTestCase, SubtagTestContext } from '../SubtagTestSuite.js';

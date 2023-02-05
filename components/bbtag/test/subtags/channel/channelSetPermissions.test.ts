@@ -1,6 +1,6 @@
-import type { Entities } from '@blargbot/bbtag';
-import { BBTagRuntimeError, Subtag } from '@blargbot/bbtag';
-import { ChannelSetPermissionsSubtag } from '@blargbot/bbtag/subtags';
+import type { Entities } from '@bbtag/blargbot';
+import { BBTagRuntimeError, Subtag } from '@bbtag/blargbot';
+import { ChannelSetPermissionsSubtag } from '@bbtag/blargbot/subtags';
 import { argument } from '@blargbot/test-util/mock.js';
 import Discord from 'discord-api-types/v10';
 

@@ -1,4 +1,4 @@
-import type { AwaitReactionsResponse } from '@blargbot/bbtag';
+import type { AwaitReactionsResponse } from '@bbtag/blargbot';
 import type { Logger } from '@blargbot/logger';
 
 import { AwaiterFactoryBase } from './AwaiterFactoryBase.js';

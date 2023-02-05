@@ -1,5 +1,5 @@
-import { Subtag } from '@blargbot/bbtag';
-import { DecancerSubtag } from '@blargbot/bbtag/subtags';
+import { Subtag } from '@bbtag/blargbot';
+import { DecancerSubtag } from '@bbtag/blargbot/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

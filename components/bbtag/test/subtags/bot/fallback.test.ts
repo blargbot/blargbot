@@ -1,5 +1,5 @@
-import { Subtag, UnknownSubtagError } from '@blargbot/bbtag';
-import { FallbackSubtag } from '@blargbot/bbtag/subtags';
+import { Subtag, UnknownSubtagError } from '@bbtag/blargbot';
+import { FallbackSubtag } from '@bbtag/blargbot/subtags';
 import chai from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

@@ -1,4 +1,4 @@
-import type { BBTagContext } from '@blargbot/bbtag';
+import type { BBTagContext } from '@bbtag/blargbot';
 
 export function createCancelledAlerter(type: string): (query: string, context: BBTagContext) => Promise<void> {
     return async function cancelled(query, ctx) {

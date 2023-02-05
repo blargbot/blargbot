@@ -1,5 +1,5 @@
-import { InvalidOperatorError, NotABooleanError, Subtag  } from '@blargbot/bbtag';
-import { IfSubtag } from '@blargbot/bbtag/subtags';
+import { InvalidOperatorError, NotABooleanError, Subtag } from '@bbtag/blargbot';
+import { IfSubtag } from '@bbtag/blargbot/subtags';
 
 import type { SubtagTestCase } from '../SubtagTestSuite.js';
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';

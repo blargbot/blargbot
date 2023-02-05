@@ -1,4 +1,4 @@
-import type { ExecutionResult } from '@blargbot/bbtag';
+import type { ExecutionResult } from '@bbtag/blargbot';
 import type { Cluster } from '@blargbot/cluster';
 import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent.js';
 import { guard } from '@blargbot/core/utils/index.js';

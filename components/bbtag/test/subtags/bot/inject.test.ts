@@ -1,5 +1,5 @@
-import { BBTagRuntimeError, Subtag  } from '@blargbot/bbtag';
-import { InjectSubtag, LbSubtag, RbSubtag } from '@blargbot/bbtag/subtags';
+import { BBTagRuntimeError, Subtag } from '@bbtag/blargbot';
+import { InjectSubtag, LbSubtag, RbSubtag } from '@bbtag/blargbot/subtags';
 import chai from 'chai';
 
 import { AssertSubtag, createDescriptor, runSubtagTests } from '../SubtagTestSuite.js';

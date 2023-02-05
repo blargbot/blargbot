@@ -1,5 +1,5 @@
-import { Subtag } from '@blargbot/bbtag';
-import { SpaceSubtag, TrimSubtag } from '@blargbot/bbtag/subtags';
+import { Subtag } from '@bbtag/blargbot';
+import { SpaceSubtag, TrimSubtag } from '@bbtag/blargbot/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

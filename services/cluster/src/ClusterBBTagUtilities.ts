@@ -1,4 +1,4 @@
-import type { BBTagContext, BBTagUtilities, Entities } from '@blargbot/bbtag';
+import type { BBTagContext, BBTagUtilities, Entities } from '@bbtag/blargbot';
 import { util } from '@blargbot/formatting';
 import moment from 'moment-timezone';
 

@@ -1,6 +1,6 @@
-import type { NumericOperator } from '@blargbot/bbtag';
-import { InvalidOperatorError, NotANumberError, Subtag  } from '@blargbot/bbtag';
-import { MathSubtag } from '@blargbot/bbtag/subtags';
+import type { NumericOperator } from '@bbtag/blargbot';
+import { InvalidOperatorError, NotANumberError, Subtag } from '@bbtag/blargbot';
+import { MathSubtag } from '@bbtag/blargbot/subtags';
 
 import type { SubtagTestCase } from '../SubtagTestSuite.js';
 import { runSubtagTests } from '../SubtagTestSuite.js';

@@ -1,5 +1,5 @@
-import { NotABooleanError, NotANumberError, Subtag  } from '@blargbot/bbtag';
-import { DecrementSubtag } from '@blargbot/bbtag/subtags';
+import { NotABooleanError, NotANumberError, Subtag } from '@bbtag/blargbot';
+import { DecrementSubtag } from '@bbtag/blargbot/subtags';
 import { TagVariableType } from '@blargbot/domain/models/index.js';
 import chai from 'chai';
 

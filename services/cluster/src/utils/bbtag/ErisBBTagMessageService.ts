@@ -1,4 +1,4 @@
-import type { AwaitReactionsResponse, BBTagContext, Entities, MessageService } from '@blargbot/bbtag';
+import type { AwaitReactionsResponse, BBTagContext, Entities, MessageService } from '@bbtag/blargbot';
 import { catchErrors } from '@blargbot/catch-decorators';
 import type { Emote } from '@blargbot/discord-emote';
 import * as Eris from 'eris';

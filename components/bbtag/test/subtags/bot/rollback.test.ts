@@ -1,6 +1,6 @@
-import type { BBTagContext } from '@blargbot/bbtag';
-import { Subtag } from '@blargbot/bbtag';
-import { RollbackSubtag } from '@blargbot/bbtag/subtags';
+import type { BBTagContext } from '@bbtag/blargbot';
+import { Subtag } from '@bbtag/blargbot';
+import { RollbackSubtag } from '@bbtag/blargbot/subtags';
 import { TagVariableType } from '@blargbot/domain/models/index.js';
 import chai from 'chai';
 
