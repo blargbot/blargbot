@@ -176,8 +176,16 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:services/discord-gateway/src"\
       },\
       {\
+        "name": "@blargbot/discord-message-stream",\
+        "reference": "workspace:services/discord-message-stream/src"\
+      },\
+      {\
         "name": "@blargbot/discord-proxy",\
         "reference": "workspace:services/discord-proxy/src"\
+      },\
+      {\
+        "name": "@blargbot/discord-reaction-stream",\
+        "reference": "workspace:services/discord-reaction-stream/src"\
       },\
       {\
         "name": "@blargbot/image-generator",\
@@ -211,7 +219,9 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@blargbot/discord-chatlog", ["workspace:services/discord-chatlog/src"]],\
       ["@blargbot/discord-emote", ["workspace:components/discord-emote/src"]],\
       ["@blargbot/discord-gateway", ["workspace:services/discord-gateway/src"]],\
+      ["@blargbot/discord-message-stream", ["workspace:services/discord-message-stream/src"]],\
       ["@blargbot/discord-proxy", ["workspace:services/discord-proxy/src"]],\
+      ["@blargbot/discord-reaction-stream", ["workspace:services/discord-reaction-stream/src"]],\
       ["@blargbot/discord-util", ["workspace:components/discord-util/src"]],\
       ["@blargbot/domain", ["workspace:components/domain/src"]],\
       ["@blargbot/env", ["workspace:components/env/src"]],\
@@ -714,6 +724,23 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "SOFT"\
         }]\
       ]],\
+      ["@blargbot/discord-message-stream", [\
+        ["workspace:services/discord-message-stream/src", {\
+          "packageLocation": "./services/discord-message-stream/src/",\
+          "packageDependencies": [\
+            ["@blargbot/discord-message-stream", "workspace:services/discord-message-stream/src"],\
+            ["@blargbot/application", "workspace:components/application/src"],\
+            ["@blargbot/env", "workspace:components/env/src"],\
+            ["@blargbot/message-broker", "virtual:aeac885bc2b91a1efa105c8fa69acf0299e4576631579d685c094479047c752b3d0be6af05bbe3225c98430520b2f21ca58c6dc42717d3d3ba0d508a26b1816e#workspace:components/message-broker/src"],\
+            ["@types/amqplib", "npm:0.10.1"],\
+            ["@types/express", "npm:4.17.15"],\
+            ["amqplib", "npm:0.10.3"],\
+            ["discordeno", "npm:18.0.1"],\
+            ["express", "npm:4.18.2"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
       ["@blargbot/discord-proxy", [\
         ["workspace:services/discord-proxy/src", {\
           "packageLocation": "./services/discord-proxy/src/",\
@@ -723,6 +750,23 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/config", "workspace:components/config/src"],\
             ["@blargbot/env", "workspace:components/env/src"],\
             ["@types/express", "npm:4.17.15"],\
+            ["discordeno", "npm:18.0.1"],\
+            ["express", "npm:4.18.2"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
+      ["@blargbot/discord-reaction-stream", [\
+        ["workspace:services/discord-reaction-stream/src", {\
+          "packageLocation": "./services/discord-reaction-stream/src/",\
+          "packageDependencies": [\
+            ["@blargbot/discord-reaction-stream", "workspace:services/discord-reaction-stream/src"],\
+            ["@blargbot/application", "workspace:components/application/src"],\
+            ["@blargbot/env", "workspace:components/env/src"],\
+            ["@blargbot/message-broker", "virtual:aeac885bc2b91a1efa105c8fa69acf0299e4576631579d685c094479047c752b3d0be6af05bbe3225c98430520b2f21ca58c6dc42717d3d3ba0d508a26b1816e#workspace:components/message-broker/src"],\
+            ["@types/amqplib", "npm:0.10.1"],\
+            ["@types/express", "npm:4.17.15"],\
+            ["amqplib", "npm:0.10.3"],\
             ["discordeno", "npm:18.0.1"],\
             ["express", "npm:4.18.2"]\
           ],\

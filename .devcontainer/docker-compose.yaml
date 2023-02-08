@@ -12,33 +12,37 @@ services:
 
   discord-proxy:
     <<: *env-file
-    build:
-      context: ..
-      target: discord-proxy
+    build: ../services/discord-proxy/src
 
   discord-gateway:
     <<: *env-file
-    build:
-      context: ..
-      target: discord-gateway
+    build: ../services/discord-gateway/src
     depends_on:
       - discord-proxy
       - rabbitmq
 
+  discord-message-stream:
+    <<: *env-file
+    build: ../services/discord-message-stream/src
+    depends_on:
+      - rabbitmq
+
+  discord-reaction-stream:
+    <<: *env-file
+    build: ../services/discord-reaction-stream/src
+    depends_on:
+      - rabbitmq
+
   discord-chatlog:
     <<: *env-file
-    build:
-      context: ..
-      target: discord-chatlog
+    build: ../services/discord-chatlog/src
     depends_on:
       - cassandra
       - rabbitmq
 
   image-generator:
     <<: *env-file
-    build:
-      context: ..
-      target: image-generator
+    build: ../services/image-generator/src
     depends_on:
       - rabbitmq
 

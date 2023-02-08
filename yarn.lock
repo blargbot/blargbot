@@ -407,6 +407,21 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@blargbot/discord-message-stream@workspace:services/discord-message-stream/src":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/discord-message-stream@workspace:services/discord-message-stream/src"
+  dependencies:
+    "@blargbot/application": "workspace:^"
+    "@blargbot/env": "workspace:^"
+    "@blargbot/message-broker": "workspace:^"
+    "@types/amqplib": ^0.10.1
+    "@types/express": ^4.17.15
+    amqplib: ^0.10.3
+    discordeno: ^18.0.1
+    express: ^4.18.2
+  languageName: unknown
+  linkType: soft
+
 "@blargbot/discord-proxy@workspace:services/discord-proxy/src":
   version: 0.0.0-use.local
   resolution: "@blargbot/discord-proxy@workspace:services/discord-proxy/src"
@@ -415,6 +430,21 @@ __metadata:
     "@blargbot/config": "workspace:^"
     "@blargbot/env": "workspace:^"
     "@types/express": ^4.17.15
+    discordeno: ^18.0.1
+    express: ^4.18.2
+  languageName: unknown
+  linkType: soft
+
+"@blargbot/discord-reaction-stream@workspace:services/discord-reaction-stream/src":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/discord-reaction-stream@workspace:services/discord-reaction-stream/src"
+  dependencies:
+    "@blargbot/application": "workspace:^"
+    "@blargbot/env": "workspace:^"
+    "@blargbot/message-broker": "workspace:^"
+    "@types/amqplib": ^0.10.1
+    "@types/express": ^4.17.15
+    amqplib: ^0.10.3
     discordeno: ^18.0.1
     express: ^4.18.2
   languageName: unknown
