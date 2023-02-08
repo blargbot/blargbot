@@ -46,6 +46,13 @@ services:
     depends_on:
       - rabbitmq
 
+  user-settings:
+    <<: *env-file
+    build: ../services/user-settings/src
+    depends_on:
+      - postgres
+      - redis
+
   rabbitmq:
     <<: *env-file
     build: ../infra/rabbitmq
@@ -93,9 +100,18 @@ services:
     volumes:
       - rethink:/data
 
+  redis:
+    <<: *env-file
+    build: ../infra/redis
+    ports:
+      - 5004:6379
+    volumes:
+      - redis:/data
+
 volumes:
   rabbitmq:
   rethink:
   cassandra:
   postgres:
   pgadmin:
+  redis:

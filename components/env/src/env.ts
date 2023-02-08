@@ -17,7 +17,17 @@ const envVarDeclaration = {
     cassandraContactPoints: [String, /^CASSANDRA_CONTACT_POINT_(\d+)$/, (a, b) => Number(a[1]) - Number(b[1])],
     cassandraKeyspace: [String, 'CASSANDRA_KEYSPACE'],
     cassandraUsername: [String, 'CASSANDRA_USER'],
-    cassandraPassword: [String, 'CASSANDRA_PASSWORD']
+    cassandraPassword: [String, 'CASSANDRA_PASSWORD'],
+
+    redisUrl: [String, 'REDIS_URL'],
+    redisUsername: [String, 'REDIS_USERNAME'],
+    redisPassword: [String, 'REDIS_PASSWORD'],
+    redisTTL: [Number, 'REDIS_TTL'],
+
+    postgresHost: [String, 'POSTGRES_HOST'],
+    postgresDatabase: [String, 'POSTGRES_DB'],
+    postgresUser: [String, 'POSTGRES_USER'],
+    postgresPassword: [String, 'POSTGRES_PASSWORD']
 } as const satisfies {
     readonly [key: string]:
     | readonly [(value: string) => unknown, string, string?]
