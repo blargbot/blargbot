@@ -35,7 +35,7 @@ export default class RestProxyApplication extends Application {
     }
 
     protected async stop(): Promise<void> {
-        await new Promise<void>((res, rej) => this.#server.close(err => err === undefined ? res() : rej()));
+        await new Promise<void>((res, rej) => this.#server.close(err => err === undefined ? res() : rej(err)));
     }
 }
 
