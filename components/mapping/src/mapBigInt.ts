@@ -10,8 +10,6 @@ export const mapBigInt = createMapping<bigint>(value => {
             default: return result.failed;
         }
     } catch (e: unknown) {
-        if (e instanceof RangeError)
-            return result.failed;
-        throw e;
+        return result.failed;
     }
 });
