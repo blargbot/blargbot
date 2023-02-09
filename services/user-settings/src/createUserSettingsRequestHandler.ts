@@ -2,6 +2,7 @@ import { mapping } from '@blargbot/mapping';
 import type { NextFunction, Request, RequestHandler, Response } from 'express';
 
 import type { UserSettings } from './UserSettings.js';
+import { userSerializer } from './UserSettings.js';
 import type { UserSettingsService } from './UserSettingsService.js';
 
 export function createUserSettingsRequestHandler(service: UserSettingsService): RequestHandler<{ userId: string; }> {
@@ -23,7 +24,10 @@ export function createUserSettingsRequestHandler(service: UserSettingsService): 
         const userId = mappedUserId.value;
         switch (request.method) {
             case 'GET':
-                return void response.status(200).send(await service.getSettings(userId));
+                return void response
+                    .status(200)
+                    .contentType('application/json')
+                    .end(userSerializer.write(await service.getSettings(userId)));
             case 'DELETE':
                 await service.clearSettings(userId);
                 return void response.status(201).end();
@@ -43,7 +47,7 @@ export function createUserSettingsRequestHandler(service: UserSettingsService): 
 }
 
 const mapUpdate = mapping.object<Partial<UserSettings>>({
-    dontdmerrors: mapping.boolean.optional,
+    dontDmErrors: mapping.boolean.optional,
     prefixes: mapping.array(mapping.string).optional,
-    timezone: mapping.string.optional
+    timezone: mapping.string.nullish
 });

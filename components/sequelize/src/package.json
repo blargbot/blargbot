@@ -1,0 +1,15 @@
+{
+    "name": "@blargbot/sequelize",
+    "version": "1.0.0",
+    "private": true,
+    "type": "module",
+    "exports": {
+        ".": "./index.js"
+    },
+    "dependencies": {
+        "@sequelize/core": "^7.0.0-alpha.10",
+        "pg": "^8.9.0",
+        "pg-hstore": "^2.3.4",
+        "postgres-array": "^3.0.2"
+    }
+}

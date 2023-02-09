@@ -10,8 +10,8 @@ import type { RestProxyOptions } from './RestProxyOptions.js';
 const requestLimit = 50 << 20; // 50MB
 
 @Application.hostIfEntrypoint(() => [{
-    url: env.restProxyUrl,
-    secret: env.restProxySecret,
+    url: env.discordProxyUrl,
+    secret: env.discordProxySecret,
     token: env.discordToken,
     port: env.appPort
 }])

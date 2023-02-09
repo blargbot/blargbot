@@ -3,8 +3,8 @@ import { TagVariableType } from '@blargbot/domain/models/index.js';
 import type { TagVariableStore } from '@blargbot/domain/stores/index.js';
 import { hasValue } from '@blargbot/guards';
 import type { Logger } from '@blargbot/logger';
-import type { FindOptions, WhereAttributeHashValue } from 'sequelize';
-import { ENUM, Op, STRING, TEXT } from 'sequelize';
+import type { FindOptions, WhereAttributeHashValue } from '@blargbot/sequelize';
+import { DataTypes, Op } from '@blargbot/sequelize';
 
 import type { PostgresDb } from '../clients/index.js';
 import { PostgresDbTable } from '../tables/PostgresDbTable.js';
@@ -18,22 +18,22 @@ export class PostgresDbTagVariableStore implements TagVariableStore {
     ) {
         this.#table = new PostgresDbTable<BBTagVariable>(postgres, 'bbtag_variable', {
             name: {
-                type: STRING,
+                type: DataTypes.STRING,
                 primaryKey: true,
                 allowNull: false
             },
             type: {
-                type: ENUM(...Object.values(TagVariableType)),
+                type: DataTypes.ENUM(...Object.values(TagVariableType)),
                 primaryKey: true,
                 allowNull: false
             },
             scope: {
-                type: STRING,
+                type: DataTypes.STRING,
                 primaryKey: true,
                 allowNull: false
             },
             content: {
-                type: TEXT,
+                type: DataTypes.TEXT,
                 allowNull: false
             }
         });
@@ -62,23 +62,23 @@ export class PostgresDbTagVariableStore implements TagVariableStore {
     }
 
     public async upsert(values: Record<string, JToken | undefined>, scope: TagVariableScope): Promise<void> {
-        const trans = await this.postgres.transaction();
-        for (const [key, value] of Object.entries(values)) {
-            const query = {
-                name: key.substring(0, 255),
-                scope: variableScopeToId(scope),
-                type: scope.type
-            };
-            try {
-                if (hasValue(value))
-                    await this.#table.upsert({ ...query, content: JSON.stringify(value) });
-                else
-                    await this.#table.destroy({ where: query });
-            } catch (err: unknown) {
-                this.logger.error(query, err);
+        await this.postgres.transaction(async () => {
+            for (const [key, value] of Object.entries(values)) {
+                const query = {
+                    name: key.substring(0, 255),
+                    scope: variableScopeToId(scope),
+                    type: scope.type
+                };
+                try {
+                    if (hasValue(value))
+                        await this.#table.upsert({ ...query, content: JSON.stringify(value) });
+                    else
+                        await this.#table.destroy({ where: query });
+                } catch (err: unknown) {
+                    this.logger.error(query, err);
+                }
             }
-        }
-        return await trans.commit();
+        });
     }
 
     public async get(name: string, scope: TagVariableScope): Promise<JToken | undefined> {

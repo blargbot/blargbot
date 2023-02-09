@@ -18,8 +18,8 @@ import { createDiscordRestClient } from './DiscordRestClient.js';
         managerId: randomUUID()
     },
     rest: {
-        url: env.restProxyUrl,
-        secret: env.restProxySecret
+        url: env.discordProxyUrl,
+        secret: env.discordProxySecret
     },
     token: env.discordToken,
     shardsPerWorker: env.shardsPerWorker

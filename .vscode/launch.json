@@ -7,14 +7,15 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "node: discord-gateway",
+            "name": "node: current service",
             "skipFiles": [
                 "<node_internals>/**",
                 "**/node_modules/**",
             ],
             "console": "integratedTerminal",
             "runtimeExecutable": "yarn",
-            "args": "workspace @blargbot/discord-gateway start",
+            "cwd": "${fileDirname}",
+            "args": "start",
             "envFile": "${workspaceFolder}/.env",
             "preLaunchTask": {
                 "type": "npm",
@@ -22,112 +23,7 @@
             }
         },
         {
-            "type": "node",
-            "request": "launch",
-            "name": "node: discord-proxy",
-            "skipFiles": [
-                "<node_internals>/**",
-                "**/node_modules/**",
-            ],
-            "console": "integratedTerminal",
-            "runtimeExecutable": "yarn",
-            "args": "workspace @blargbot/discord-proxy start",
-            "envFile": "${workspaceFolder}/.env",
-            "preLaunchTask": {
-                "type": "npm",
-                "script": "watch"
-            }
-        },
-        {
-            "type": "node",
-            "request": "launch",
-            "name": "node: discord-chatlog",
-            "skipFiles": [
-                "<node_internals>/**",
-                "**/node_modules/**",
-            ],
-            "console": "integratedTerminal",
-            "runtimeExecutable": "yarn",
-            "args": "workspace @blargbot/discord-chatlog start",
-            "envFile": "${workspaceFolder}/.env",
-            "preLaunchTask": {
-                "type": "npm",
-                "script": "watch"
-            }
-        },
-        {
-            "type": "node",
-            "request": "launch",
-            "name": "node: image-generator",
-            "skipFiles": [
-                "<node_internals>/**",
-                "**/node_modules/**",
-            ],
-            "console": "integratedTerminal",
-            "runtimeExecutable": "yarn",
-            "args": "workspace @blargbot/image-generator start",
-            "envFile": "${workspaceFolder}/.env",
-            "preLaunchTask": {
-                "type": "npm",
-                "script": "watch"
-            }
-        },
-        {
-            "type": "node",
-            "request": "launch",
-            "name": "node: master",
-            "skipFiles": [
-                "<node_internals>/**",
-                "**/node_modules/**",
-            ],
-            "console": "integratedTerminal",
-            "runtimeExecutable": "yarn",
-            "args": "workspace @blargbot/master start",
-            "preLaunchTask": {
-                "type": "npm",
-                "script": "watch"
-            }
-        },
-        {
-            "type": "node",
-            "request": "launch",
-            "name": "node: cluster",
-            "skipFiles": [
-                "<node_internals>/**",
-                "**/node_modules/**",
-            ],
-            "console": "integratedTerminal",
-            "runtimeExecutable": "yarn",
-            "args": "workspace @blargbot/cluster start",
-            "env": {
-                "CLUSTER_ID": "0",
-                "SHARDS_MAX": "1",
-                "SHARDS_FIRST": "0",
-                "SHARDS_LAST": "0"
-            },
-            "preLaunchTask": {
-                "type": "npm",
-                "script": "watch"
-            }
-        },
-        {
-            "type": "node",
-            "request": "launch",
-            "name": "node: api",
-            "skipFiles": [
-                "<node_internals>/**",
-                "**/node_modules/**",
-            ],
-            "console": "integratedTerminal",
-            "runtimeExecutable": "yarn",
-            "args": "workspace @blargbot/api start",
-            "preLaunchTask": {
-                "type": "npm",
-                "script": "watch"
-            }
-        },
-        {
-            "name": "node: current",
+            "name": "node: current file",
             "type": "node",
             "request": "launch",
             "console": "integratedTerminal",
@@ -168,7 +64,28 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "mocha: current",
+            "name": "mocha: current project",
+            "console": "integratedTerminal",
+            "runtimeExecutable": "yarn",
+            "cwd": "${fileDirname}",
+            "args": [
+                "test",
+                "--no-timeouts",
+                "--recursive"
+            ],
+            "skipFiles": [
+                "<node_internals>/**",
+                "**/node_modules/**",
+            ],
+            "preLaunchTask": {
+                "type": "npm",
+                "script": "watch"
+            }
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "mocha: current file",
             "console": "integratedTerminal",
             "runtimeExecutable": "yarn",
             "cwd": "${fileDirname}",

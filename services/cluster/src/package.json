@@ -50,6 +50,6 @@
         "@types/node-fetch": "^2.6.2",
         "@types/wolken": "workspace:^",
         "@types/xml2js": "^0.4.11",
-        "discord-api-types": "^0.37.28"
+        "discord-api-types": "^0.37.32"
     }
 }

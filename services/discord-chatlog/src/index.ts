@@ -18,6 +18,9 @@ import { DiscordChatlogService } from './DiscordChatlogService.js';
         keyspace: env.cassandraKeyspace,
         username: env.cassandraUsername,
         password: env.cassandraPassword
+    },
+    guildSettings: {
+        url: env.guildSettingsUrl
     }
 }])
 export class DiscordChatlogApplication extends Application {
@@ -30,7 +33,9 @@ export class DiscordChatlogApplication extends Application {
 
         this.#messages = new DiscordChatlogMessageBroker(options.messages);
         this.#database = new DiscordChatlogDatabase(options.database);
-        this.#service = new DiscordChatlogService(this.#messages, this.#database);
+        this.#service = new DiscordChatlogService(this.#messages, this.#database, {
+            guildSettingsUrl: options.guildSettings.url
+        });
     }
 
     protected override async start(): Promise<void> {
@@ -53,4 +58,7 @@ export class DiscordChatlogApplication extends Application {
 export interface DiscordChatlogApplicationOptions {
     readonly messages: DiscordChatlogMessageBrokerOptions;
     readonly database: DiscordChatlogDatabaseOptions;
+    readonly guildSettings: {
+        readonly url: string;
+    };
 }

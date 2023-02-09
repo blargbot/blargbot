@@ -1,11 +1,11 @@
 import type { PostgresConfiguration } from '@blargbot/config';
 import type { Logger } from '@blargbot/logger';
-import type { Model, ModelAttributes, ModelStatic, QueryInterface, Transaction } from 'sequelize';
-import { Sequelize } from 'sequelize';
+import type { AbstractQueryGenerator, Model, ModelAttributes, ModelStatic, Transaction } from '@blargbot/sequelize';
+import { Sequelize } from '@blargbot/sequelize';
 
 export class PostgresDb {
     readonly #sequelize: Sequelize;
-    readonly #escape: QueryInterface['escape'];
+    readonly #escape: AbstractQueryGenerator['escape'];
 
     public constructor(
         public readonly logger: Logger,
@@ -21,7 +21,7 @@ export class PostgresDb {
                 logging: this.logger.database
             }
         );
-        const qi = this.#sequelize.getQueryInterface().queryGenerator as QueryInterface;
+        const qi = this.#sequelize.getQueryInterface().queryGenerator;
         this.#escape = qi.escape.bind(qi);
     }
 
@@ -29,8 +29,8 @@ export class PostgresDb {
         return this.#sequelize.define<Model<T>>(name, attributes);
     }
 
-    public async transaction(): Promise<Transaction> {
-        return await this.#sequelize.transaction();
+    public async transaction<T>(callback: (t: Transaction) => Awaitable<T>): Promise<T> {
+        return await this.#sequelize.transaction(callback);
     }
 
     public async connect(): Promise<void> {

@@ -2,10 +2,13 @@ import getEnvVar from './getEnvVar.js';
 import getEnvVars from './getEnvVars.js';
 
 const envVarDeclaration = {
+    discordProxyUrl: [String, 'DISCORD_PROXY_URL'],
+    discordProxySecret: [String, 'DISCORD_PROXY_SECRET'],
+    guildSettingsUrl: [String, 'GUILD_SETTINGS_URL'],
+    userSettingsUrl: [String, 'USER_SETTINGS_URL'],
+
     appPort: [Number, 'APP_PORT', '80'],
     discordToken: [String, 'DISCORD_TOKEN'],
-    restProxyUrl: [String, 'REST_PROXY_URL'],
-    restProxySecret: [String, 'REST_PROXY_SECRET'],
     shardsPerWorker: [Number, 'SHARDS_PER_WORKER'],
     rabbitHost: [String, 'RABBITMQ_HOST'],
     rabbitPassword: [String, 'RABBITMQ_PASSWORD'],
@@ -16,7 +19,7 @@ const envVarDeclaration = {
 
     cassandraContactPoints: [String, /^CASSANDRA_CONTACT_POINT_(\d+)$/, (a, b) => Number(a[1]) - Number(b[1])],
     cassandraKeyspace: [String, 'CASSANDRA_KEYSPACE'],
-    cassandraUsername: [String, 'CASSANDRA_USER'],
+    cassandraUsername: [String, 'CASSANDRA_USERNAME'],
     cassandraPassword: [String, 'CASSANDRA_PASSWORD'],
 
     redisUrl: [String, 'REDIS_URL'],

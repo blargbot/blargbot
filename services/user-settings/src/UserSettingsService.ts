@@ -1,3 +1,4 @@
+import { defaultSettings } from './defaultSettings.js';
 import type { IUserSettingsCache } from './IUserSettingsCache.js';
 import type { IUserSettingsDatabase } from './IUserSettingsDatabase.js';
 import type { UserSettings } from './UserSettings.js';
@@ -12,7 +13,7 @@ export class UserSettingsService {
     }
 
     public async getSettings(userId: bigint): Promise<UserSettings> {
-        return await this.#cache.upsert(userId, this.#getSettings.bind(this));
+        return await this.#cache.getOrAdd(userId, this.#getSettings.bind(this));
     }
 
     public async updateSettings(userId: bigint, value: Partial<UserSettings>): Promise<void> {
@@ -26,10 +27,6 @@ export class UserSettingsService {
     }
 
     async #getSettings(userId: bigint): Promise<UserSettings> {
-        return await this.#database.get(userId) ?? {
-            dontdmerrors: false,
-            prefixes: [],
-            timezone: undefined
-        };
+        return await this.#database.get(userId) ?? defaultSettings();
     }
 }

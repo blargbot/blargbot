@@ -1,6 +1,8 @@
 import { ChatLogType } from '@blargbot/chatlog-types';
+import { guildSerializer } from '@blargbot/guild-settings';
 import type { MessageHandle } from '@blargbot/message-broker';
 import type * as discordeno from 'discordeno';
+import fetch from 'node-fetch';
 
 import type DiscordChatlogDatabase from './DiscordChatlogDatabase.js';
 import type { DiscordChatlogMessageBroker } from './DiscordChatlogMessageBroker.js';
@@ -9,10 +11,12 @@ export class DiscordChatlogService {
     readonly #messages: DiscordChatlogMessageBroker;
     readonly #database: DiscordChatlogDatabase;
     readonly #handles: Set<MessageHandle>;
+    readonly #guildSettings: string;
 
-    public constructor(messages: DiscordChatlogMessageBroker, database: DiscordChatlogDatabase) {
+    public constructor(messages: DiscordChatlogMessageBroker, database: DiscordChatlogDatabase, options: DiscordChatlogServiceOptions) {
         this.#messages = messages;
         this.#database = database;
+        this.#guildSettings = options.guildSettingsUrl;
         this.#handles = new Set();
     }
 
@@ -34,8 +38,10 @@ export class DiscordChatlogService {
         if (message.guild_id === undefined)
             return false;
 
-        // TODO: guild setting;
-        return await Promise.resolve(true);
+        const settingsResponse = await fetch(new URL(message.guild_id, this.#guildSettings).toString());
+        const body = await settingsResponse.json();
+        const settings = guildSerializer.read(JSON.stringify(body));
+        return settings.enableChatlogging;
     }
 
     async #handleMessageCreate(message: discordeno.DiscordMessage): Promise<void> {
@@ -85,4 +91,8 @@ export class DiscordChatlogService {
             chatlogs.map(chatlog => this.#database.add(chatlog, ChatLogType.DELETE))
         );
     }
+}
+
+interface DiscordChatlogServiceOptions {
+    readonly guildSettingsUrl: string;
 }

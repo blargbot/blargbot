@@ -2,15 +2,20 @@ import { Server } from 'node:http';
 
 import Application from '@blargbot/application';
 import env from '@blargbot/env';
+import { RedisCache } from '@blargbot/redis-cache';
+import { Sequelize } from '@blargbot/sequelize';
 import express from 'express';
 import type { RedisClientType } from 'redis';
 import { createClient as createRedisClient } from 'redis';
-import { Sequelize } from 'sequelize';
 
 import { createUserSettingsRequestHandler } from './createUserSettingsRequestHandler.js';
-import { UserSettingsRedisCache } from './UserSettingsRedisCache.js';
+import type { UserSettings } from './UserSettings.js';
+import { userSerializer } from './UserSettings.js';
 import UserSettingsSequelizeDatabase from './UserSettingsSequelizeDatabase.js';
 import { UserSettingsService } from './UserSettingsService.js';
+
+export type { UserSettings };
+export { userSerializer };
 
 @Application.hostIfEntrypoint(() => [{
     port: env.appPort,
@@ -32,7 +37,7 @@ import { UserSettingsService } from './UserSettingsService.js';
 export class UserSettingsApplication extends Application {
     readonly #redis: RedisClientType;
     readonly #postgres: Sequelize;
-    readonly #cache: UserSettingsRedisCache;
+    readonly #cache: RedisCache<bigint, UserSettings>;
     readonly #database: UserSettingsSequelizeDatabase;
     readonly #service: UserSettingsService;
     readonly #app: express.Express;
@@ -58,7 +63,11 @@ export class UserSettingsApplication extends Application {
             }
         );
 
-        this.#cache = new UserSettingsRedisCache(this.#redis, { ttlS: options.redis.ttl });
+        this.#cache = new RedisCache<bigint, UserSettings>(this.#redis, {
+            ttlS: options.redis.ttl,
+            keyFactory: userId => `user_settings:${userId}`,
+            serializer: userSerializer
+        });
         this.#database = new UserSettingsSequelizeDatabase(this.#postgres);
         this.#service = new UserSettingsService(this.#database, this.#cache);
 

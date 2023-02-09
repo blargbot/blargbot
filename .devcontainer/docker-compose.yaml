@@ -3,73 +3,158 @@ x-env_file:
   env_file:
     - ../.env
 
+x-rabbit-env:
+  &rabbit-env
+  RABBITMQ_HOST: rabbitmq
+  RABBITMQ_USERNAME: blargbot
+  RABBITMQ_PASSWORD: SomePassword
+
+x-discord-proxy-env:
+  &discord-proxy-env
+  DISCORD_PROXY_URL: http://discord-proxy
+  DISCORD_PROXY_SECRET: ThisIsSomeRandomStringThatYouShouldProbablyChange
+
+x-guild-settings-env:
+  &guild-settings-env
+  GUILD_SETTINGS_URL: http://guild-settings
+
+x-user-settings-env:
+  &user-settings-env
+  USER_SETTINGS_URL: http://user-settings
+
+x-rethinkdb-env:
+  &rethinkdb-env
+  RETHINKDB_DATABASE: blargbot
+  RETHINKDB_USERNAME: blargbot
+  RETHINKDB_PASSWORD: SomePassword
+
+x-cassandra-env:
+  &cassandra-env
+  CASSANDRA_CONTACT_POINT_0: cassandra
+  CASSANDRA_KEYSPACE: blargbot
+  CASSANDRA_USERNAME: blargbot
+  CASSANDRA_PASSWORD: SomePassword
+
+x-postgres-env:
+  &postgres-env
+  POSTGRES_HOST: postgres
+  POSTGRES_DB: blargbot
+  POSTGRES_USER: blargbot
+  POSTGRES_PASSWORD: SomePassword
+
+x-redis-env:
+  &redis-env
+  REDIS_URL: redis://redis
+  REDIS_USERNAME: blargbot
+  REDIS_PASSWORD: SomePassword
+  REDIS_TTL: 300
+
 version: '3.5'
 
 services:
   editor:
+    <<: *env-file
     build: editor
     init: true
+    environment:
+      <<: *discord-proxy-env
+      <<: *rabbit-env
+      <<: *cassandra-env
+      <<: *guild-settings-env
+      <<: *postgres-env
+      <<: *cassandra-env
+      <<: *rethinkdb-env
+      <<: *redis-env
 
   discord-proxy:
     <<: *env-file
     build: ../services/discord-proxy/src
+    environment:
+      <<: *discord-proxy-env
 
   discord-gateway:
     <<: *env-file
     build: ../services/discord-gateway/src
+    environment:
+      <<: *discord-proxy-env
+      <<: *rabbit-env
+      SHARDS_PER_WORKER: 4
     depends_on:
       - discord-proxy
       - rabbitmq
 
   discord-message-stream:
-    <<: *env-file
     build: ../services/discord-message-stream/src
+    environment:
+      <<: *rabbit-env
     depends_on:
       - rabbitmq
 
   discord-reaction-stream:
-    <<: *env-file
     build: ../services/discord-reaction-stream/src
+    environment:
+      <<: *rabbit-env
     depends_on:
       - rabbitmq
 
   discord-chatlog:
-    <<: *env-file
     build: ../services/discord-chatlog/src
+    environment:
+      <<: *cassandra-env
+      <<: *rabbit-env
+      <<: *guild-settings-env
     depends_on:
       - cassandra
       - rabbitmq
+      - guild-settings
 
   image-generator:
     <<: *env-file
     build: ../services/image-generator/src
+    environment:
+      <<: *rabbit-env
+      IMAGE_API_URL: https://api.blargbot.xyz/api/v1/image
     depends_on:
       - rabbitmq
 
   user-settings:
-    <<: *env-file
     build: ../services/user-settings/src
+    environment:
+      <<: *postgres-env
+      <<: *redis-env
+    depends_on:
+      - postgres
+      - redis
+
+  guild-settings:
+    build: ../services/guild-settings/src
+    environment:
+      <<: *postgres-env
+      <<: *redis-env
     depends_on:
       - postgres
       - redis
 
   rabbitmq:
-    <<: *env-file
     build: ../infra/rabbitmq
+    environment:
+      <<: *rabbit-env
     volumes:
       - rabbitmq:/var/lib/rabbitmq
     ports:
       - 5000:15672
 
   postgres:
-    <<: *env-file
     build: ../infra/postgres
+    environment:
+      <<: *postgres-env
     volumes:
       - postgres:/var/lib/postgresql/data
 
   pgadmin:
     image: dpage/pgadmin4
     environment:
+      <<: *postgres-env
       PGADMIN_DEFAULT_EMAIL: admin@admin.com
       PGADMIN_DEFAULT_PASSWORD: root
     ports:
@@ -78,31 +163,33 @@ services:
       - pgadmin:/var/lib/pgadmin
 
   cassandra:
-    <<: *env-file
     build: ../infra/cassandra
+    environment:
+      <<: *cassandra-env
     volumes:
       - cassandra:/var/lib/cassandra
 
   cassandra-web:
     image: ipushc/cassandra-web
     environment:
+      <<: *cassandra-env
       CASSANDRA_HOST: cassandra
-      CASSANDRA_USERNAME: blargbot
-      CASSANDRA_PASSWORD: SomePassword
     ports:
       - 5003:8083
 
   rethinkdb:
-    <<: *env-file
     build: ../infra/rethinkdb
+    environment:
+      <<: *rethinkdb-env
     ports:
       - 5001:8080
     volumes:
       - rethink:/data
 
   redis:
-    <<: *env-file
     build: ../infra/redis
+    environment:
+      <<: *redis-env
     ports:
       - 5004:6379
     volumes:

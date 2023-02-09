@@ -1,6 +1,7 @@
-import type { Model, ModelStatic, Sequelize } from 'sequelize';
-import { ARRAY, BIGINT, BOOLEAN, STRING } from 'sequelize';
+import type { AttributeOptions, DataType, Model, ModelStatic, Sequelize } from '@blargbot/sequelize';
+import { DataTypes } from '@blargbot/sequelize';
 
+import { defaultSettings } from './defaultSettings.js';
 import type { IUserSettingsDatabase } from './IUserSettingsDatabase.js';
 import type { UserSettings } from './UserSettings.js';
 
@@ -12,24 +13,17 @@ export default class UserSettingsSequelizeDatabase implements IUserSettingsDatab
     readonly #model: ModelStatic<Model<UserSettingsTable>>;
 
     public constructor(sequelize: Pick<Sequelize, 'define'>) {
+        const x = defaultSettings();
         this.#model = sequelize.define<Model<UserSettingsTable>>('user_settings', {
             userId: {
-                type: BIGINT,
+                type: DataTypes.BIGINT,
                 primaryKey: true,
+                unique: true,
                 allowNull: false
             },
-            dontdmerrors: {
-                type: BOOLEAN,
-                defaultValue: false
-            },
-            prefixes: {
-                type: ARRAY(STRING),
-                defaultValue: () => []
-            },
-            timezone: {
-                type: STRING,
-                allowNull: true
-            }
+            ...makeColumn('dontDmErrors', DataTypes.BOOLEAN, x),
+            ...makeColumn('prefixes', DataTypes.ARRAY(DataTypes.STRING), x),
+            ...makeColumn('timezone', DataTypes.STRING, x)
         });
     }
 
@@ -45,11 +39,21 @@ export default class UserSettingsSequelizeDatabase implements IUserSettingsDatab
     }
 
     public async update(userId: bigint, value: UserSettings): Promise<void> {
-        await this.#model.update({ ...value, userId }, { where: { userId } });
+        await this.#model.upsert({ ...value, userId });
     }
 
     public async delete(userId: bigint): Promise<void> {
         await this.#model.destroy({ where: { userId } });
     }
 
+}
+
+function makeColumn<Name extends keyof M, M extends object>(name: Name, type: DataType, base: M): { [P in Name]: AttributeOptions<Model<M>> } {
+    return {
+        [name]: {
+            type,
+            allowNull: base[name] as unknown === null,
+            defaultValue: base[name]
+        }
+    } as { [P in Name]: AttributeOptions<Model<M>> };
 }

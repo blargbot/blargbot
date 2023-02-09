@@ -1,0 +1,12 @@
+{
+    "name": "@blargbot/redis-cache",
+    "version": "1.0.0",
+    "private": true,
+    "type": "module",
+    "exports": {
+        ".": "./index.js"
+    },
+    "dependencies": {
+        "redis": "^4.6.4"
+    }
+}

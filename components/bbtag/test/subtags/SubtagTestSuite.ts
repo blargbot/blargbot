@@ -355,6 +355,7 @@ export class SubtagTestContext {
                 joined_at: new Date().toISOString(),
                 mute: false,
                 roles: [],
+                flags: 0,
                 ...settings.member
             }
         };

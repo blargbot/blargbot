@@ -1,4 +1,4 @@
-import type { CreationAttributes, FindOptions, Model, ModelAttributes, ModelStatic } from 'sequelize';
+import type { CreationAttributes, FindOptions, Model, ModelAttributes, ModelStatic } from '@blargbot/sequelize';
 
 import type { PostgresDb } from '../clients/index.js';
 
