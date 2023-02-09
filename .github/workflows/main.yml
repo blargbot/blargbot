@@ -17,12 +17,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Add configuration files
-        run: |
-          echo "import { Configruation } from './components/config/src/Configuration.js';
-          declare const config: Configuration;
-          export = config;" >> config.json.d.ts
-
       - name: Install Node
         uses: actions/setup-node@v3
         with:
