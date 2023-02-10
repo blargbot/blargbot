@@ -20,6 +20,10 @@ x-mod-log-env:
   &mod-log-env
   MOD_LOG_URL: http://mod-log
 
+x-user-warnings-env:
+  &user-warnings-env
+  USER_WARNINGS_URL: http://user-warnings
+
 x-rabbit-env:
   &rabbit-env
   RABBITMQ_HOST: rabbitmq
@@ -65,6 +69,7 @@ services:
       <<: *guild-settings-env
       <<: *user-settings-env
       <<: *mod-log-env
+      <<: *user-warnings-env
       <<: *rabbit-env
       <<: *cassandra-env
       <<: *postgres-env
@@ -143,6 +148,13 @@ services:
 
   mod-log:
     build: ../services/mod-log/src
+    environment:
+      <<: *postgres-env
+    depends_on:
+      - postgres
+
+  user-warnings:
+    build: ../services/user-warnings/src
     environment:
       <<: *postgres-env
     depends_on:

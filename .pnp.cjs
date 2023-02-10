@@ -222,6 +222,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       {\
         "name": "@blargbot/user-settings",\
         "reference": "workspace:services/user-settings/src"\
+      },\
+      {\
+        "name": "@blargbot/user-warnings",\
+        "reference": "workspace:services/user-warnings/src"\
       }\
     ],\
     "enableTopLevelFallback": true,\
@@ -274,6 +278,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@blargbot/test-util", ["workspace:components/test-util/src"]],\
       ["@blargbot/timer", ["workspace:components/timer/src"]],\
       ["@blargbot/user-settings", ["workspace:services/user-settings/src"]],\
+      ["@blargbot/user-warnings", ["workspace:services/user-warnings/src"]],\
       ["@types/blargbot-image-api", ["workspace:definitions/blargbot-image-api"]],\
       ["@types/brainfuck-node", ["workspace:definitions/brainfuck-node"]],\
       ["@types/eris", ["workspace:definitions/eris"]],\
@@ -1130,6 +1135,21 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/serialization", "workspace:components/serialization/src"],\
             ["@types/pg", "npm:8.6.6"],\
             ["redis", "npm:4.6.4"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
+      ["@blargbot/user-warnings", [\
+        ["workspace:services/user-warnings/src", {\
+          "packageLocation": "./services/user-warnings/src/",\
+          "packageDependencies": [\
+            ["@blargbot/user-warnings", "workspace:services/user-warnings/src"],\
+            ["@blargbot/application", "workspace:components/application/src"],\
+            ["@blargbot/env", "workspace:components/env/src"],\
+            ["@blargbot/express", "workspace:components/express/src"],\
+            ["@blargbot/mapping", "workspace:components/mapping/src"],\
+            ["@blargbot/sequelize", "workspace:components/sequelize/src"],\
+            ["@types/pg", "npm:8.6.6"]\
           ],\
           "linkType": "SOFT"\
         }]\

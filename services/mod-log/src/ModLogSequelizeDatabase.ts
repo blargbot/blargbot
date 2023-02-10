@@ -23,12 +23,12 @@ export default class ModLogSequelizeDatabase implements IModLogEntryDatabase {
         const y = defaultModLogIndex;
         this.#modLogIndex = sequelize.define<Model<ModLogIndex>>('moderation_log_index', {
             ...makeColumn('guildId', DataTypes.BIGINT, y, { primaryKey: true, unique: true }),
-            ...makeColumn('lastCaseId', DataTypes.INTEGER({ unsigned: true }), y)
+            ...makeColumn('lastCaseId', DataTypes.INTEGER, y)
         });
         const x = defaultModLogEntry;
         this.#modLog = sequelize.define<Model<ModLogEntryTable>>('moderation_log', {
             ...makeColumn('guildId', DataTypes.BIGINT, x, { primaryKey: true }),
-            ...makeColumn('caseId', DataTypes.INTEGER({ unsigned: true }), x, { primaryKey: true }),
+            ...makeColumn('caseId', DataTypes.INTEGER, x, { primaryKey: true }),
             ...makeColumn('channelId', DataTypes.BIGINT, x),
             ...makeColumn('messageId', DataTypes.BIGINT, x),
             ...makeColumn('moderatorId', DataTypes.BIGINT, x),

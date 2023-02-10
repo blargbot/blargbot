@@ -1,0 +1,22 @@
+{
+    "name": "@blargbot/user-warnings",
+    "version": "1.0.0",
+    "private": true,
+    "type": "module",
+    "exports": {
+        ".": "./index.js"
+    },
+    "scripts": {
+        "start": "node ./index.js"
+    },
+    "dependencies": {
+        "@blargbot/application": "workspace:^",
+        "@blargbot/env": "workspace:^",
+        "@blargbot/express": "workspace:^",
+        "@blargbot/mapping": "workspace:^",
+        "@blargbot/sequelize": "workspace:^"
+    },
+    "devDependencies": {
+        "@types/pg": "^8.6.6"
+    }
+}

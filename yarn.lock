@@ -709,6 +709,19 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@blargbot/user-warnings@workspace:services/user-warnings/src":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/user-warnings@workspace:services/user-warnings/src"
+  dependencies:
+    "@blargbot/application": "workspace:^"
+    "@blargbot/env": "workspace:^"
+    "@blargbot/express": "workspace:^"
+    "@blargbot/mapping": "workspace:^"
+    "@blargbot/sequelize": "workspace:^"
+    "@types/pg": ^8.6.6
+  languageName: unknown
+  linkType: soft
+
 "@deno/shim-deno-test@npm:^0.3.2":
   version: 0.3.3
   resolution: "@deno/shim-deno-test@npm:0.3.3"

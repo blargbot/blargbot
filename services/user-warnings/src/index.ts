@@ -5,14 +5,9 @@ import env from '@blargbot/env';
 import express from '@blargbot/express';
 import { Sequelize } from '@blargbot/sequelize';
 
-import { createModLogRequestHandler } from './createModLogRequestHandler.js';
-import type { ModLogEntry } from './ModLogEntry.js';
-import { modLogEntrySerializer } from './ModLogEntry.js';
-import ModLogSequelizeDatabase from './ModLogSequelizeDatabase.js';
-import { ModLogService } from './ModLogService.js';
-
-export type { ModLogEntry };
-export { modLogEntrySerializer };
+import { createModLogRequestHandler } from './createUserWarningRequestHandler.js';
+import UserWarningSequelizeDatabase from './UserWarningSequelizeDatabase.js';
+import { UserWarningService } from './UserWarningService.js';
 
 @Application.hostIfEntrypoint(() => [{
     port: env.appPort,
@@ -27,8 +22,8 @@ export { modLogEntrySerializer };
 }])
 export class UserSettingsApplication extends Application {
     readonly #postgres: Sequelize;
-    readonly #database: ModLogSequelizeDatabase;
-    readonly #service: ModLogService;
+    readonly #database: UserWarningSequelizeDatabase;
+    readonly #service: UserWarningService;
     readonly #app: express.Express;
     readonly #server: Server;
     readonly #port: number;
@@ -47,8 +42,8 @@ export class UserSettingsApplication extends Application {
             }
         );
 
-        this.#database = new ModLogSequelizeDatabase(this.#postgres);
-        this.#service = new ModLogService(this.#database);
+        this.#database = new UserWarningSequelizeDatabase(this.#postgres);
+        this.#service = new UserWarningService(this.#database);
 
         this.#app = express()
             .use(express.urlencoded({ extended: true }))
