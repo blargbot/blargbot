@@ -1,3 +1,4 @@
+import type { AttributeOptions, DataType, Model } from '@sequelize/core';
 import { DataTypes as CoreDataTypes } from '@sequelize/core';
 
 export * from '@sequelize/core';
@@ -18,3 +19,14 @@ export const DataTypes = {
         }
     }
 };
+
+export function makeColumn<Name extends keyof M, M extends object>(name: Name, type: DataType, base: M, rest?: Partial<AttributeOptions<Model<M>>>): { [P in Name]: AttributeOptions<Model<M>> } {
+    return {
+        [name]: {
+            type,
+            allowNull: base[name] as unknown === null,
+            defaultValue: base[name],
+            ...rest
+        }
+    } as { [P in Name]: AttributeOptions<Model<M>> };
+}

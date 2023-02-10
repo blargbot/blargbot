@@ -84,6 +84,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:components/env/src"\
       },\
       {\
+        "name": "@blargbot/express",\
+        "reference": "workspace:components/express/src"\
+      },\
+      {\
         "name": "@blargbot/flags",\
         "reference": "workspace:components/flags/src"\
       },\
@@ -212,6 +216,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:services/master/src"\
       },\
       {\
+        "name": "@blargbot/mod-log",\
+        "reference": "workspace:services/mod-log/src"\
+      },\
+      {\
         "name": "@blargbot/user-settings",\
         "reference": "workspace:services/user-settings/src"\
       }\
@@ -245,6 +253,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@blargbot/discord-util", ["workspace:components/discord-util/src"]],\
       ["@blargbot/domain", ["workspace:components/domain/src"]],\
       ["@blargbot/env", ["workspace:components/env/src"]],\
+      ["@blargbot/express", ["workspace:components/express/src"]],\
       ["@blargbot/flags", ["workspace:components/flags/src"]],\
       ["@blargbot/formatting", ["workspace:components/formatting/src"]],\
       ["@blargbot/guards", ["workspace:components/guards/src"]],\
@@ -256,6 +265,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@blargbot/mapping", ["workspace:components/mapping/src"]],\
       ["@blargbot/master", ["workspace:services/master/src"]],\
       ["@blargbot/message-broker", ["virtual:aeac885bc2b91a1efa105c8fa69acf0299e4576631579d685c094479047c752b3d0be6af05bbe3225c98430520b2f21ca58c6dc42717d3d3ba0d508a26b1816e#workspace:components/message-broker/src", "workspace:components/message-broker/src"]],\
+      ["@blargbot/mod-log", ["workspace:services/mod-log/src"]],\
       ["@blargbot/modules", ["workspace:components/modules/src"]],\
       ["@blargbot/redis-cache", ["workspace:components/redis-cache/src"]],\
       ["@blargbot/res", ["workspace:components/res/src"]],\
@@ -830,6 +840,17 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "SOFT"\
         }]\
       ]],\
+      ["@blargbot/express", [\
+        ["workspace:components/express/src", {\
+          "packageLocation": "./components/express/src/",\
+          "packageDependencies": [\
+            ["@blargbot/express", "workspace:components/express/src"],\
+            ["@types/express", "npm:4.17.17"],\
+            ["express", "npm:4.18.2"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
       ["@blargbot/flags", [\
         ["workspace:components/flags/src", {\
           "packageLocation": "./components/flags/src/",\
@@ -882,13 +903,12 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/guild-settings", "workspace:services/guild-settings/src"],\
             ["@blargbot/application", "workspace:components/application/src"],\
             ["@blargbot/env", "workspace:components/env/src"],\
+            ["@blargbot/express", "workspace:components/express/src"],\
             ["@blargbot/mapping", "workspace:components/mapping/src"],\
             ["@blargbot/redis-cache", "workspace:components/redis-cache/src"],\
             ["@blargbot/sequelize", "workspace:components/sequelize/src"],\
             ["@blargbot/serialization", "workspace:components/serialization/src"],\
-            ["@types/express", "npm:4.17.17"],\
             ["@types/pg", "npm:8.6.6"],\
-            ["express", "npm:4.18.2"],\
             ["redis", "npm:4.6.4"]\
           ],\
           "linkType": "SOFT"\
@@ -1002,6 +1022,22 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "SOFT"\
         }]\
       ]],\
+      ["@blargbot/mod-log", [\
+        ["workspace:services/mod-log/src", {\
+          "packageLocation": "./services/mod-log/src/",\
+          "packageDependencies": [\
+            ["@blargbot/mod-log", "workspace:services/mod-log/src"],\
+            ["@blargbot/application", "workspace:components/application/src"],\
+            ["@blargbot/env", "workspace:components/env/src"],\
+            ["@blargbot/express", "workspace:components/express/src"],\
+            ["@blargbot/mapping", "workspace:components/mapping/src"],\
+            ["@blargbot/sequelize", "workspace:components/sequelize/src"],\
+            ["@blargbot/serialization", "workspace:components/serialization/src"],\
+            ["@types/pg", "npm:8.6.6"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
       ["@blargbot/modules", [\
         ["workspace:components/modules/src", {\
           "packageLocation": "./components/modules/src/",\
@@ -1087,13 +1123,12 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/user-settings", "workspace:services/user-settings/src"],\
             ["@blargbot/application", "workspace:components/application/src"],\
             ["@blargbot/env", "workspace:components/env/src"],\
+            ["@blargbot/express", "workspace:components/express/src"],\
             ["@blargbot/mapping", "workspace:components/mapping/src"],\
             ["@blargbot/redis-cache", "workspace:components/redis-cache/src"],\
             ["@blargbot/sequelize", "workspace:components/sequelize/src"],\
             ["@blargbot/serialization", "workspace:components/serialization/src"],\
-            ["@types/express", "npm:4.17.17"],\
             ["@types/pg", "npm:8.6.6"],\
-            ["express", "npm:4.18.2"],\
             ["redis", "npm:4.6.4"]\
           ],\
           "linkType": "SOFT"\

@@ -1,49 +1,35 @@
+import express, { asyncHandler } from '@blargbot/express';
 import { mapping } from '@blargbot/mapping';
-import type { NextFunction, Request, RequestHandler, Response } from 'express';
 
 import type { GuildSettings } from './GuildSettings.js';
 import { guildSerializer } from './GuildSettings.js';
 import type { GuildSettingsService } from './GuildSettingsService.js';
 
-export function createGuildSettingsRequestHandler(service: GuildSettingsService): RequestHandler<{ guildId: string; }> {
-    return function handleRequest(request, response, next) {
-        void handleRequestAsync(request, response, next)
-            .catch(err => {
-                response.status(500).send({
-                    message: 'Internal server error'
-                });
-                console.error(request.url, err);
-            });
-    };
+export function createGuildSettingsRequestHandler(service: GuildSettingsService): express.RequestHandler {
+    const router = express.Router();
 
-    async function handleRequestAsync(request: Request<{ guildId: string; }>, response: Response, next: NextFunction): Promise<void> {
-        const mappedGuildId = mapping.bigInt(request.params.guildId);
-        if (!mappedGuildId.valid)
-            return next();
-
-        const guildId = mappedGuildId.value;
-        switch (request.method) {
-            case 'GET':
-                return void response
-                    .status(200)
-                    .contentType('application/json')
-                    .end(guildSerializer.write(await service.getSettings(guildId)));
-            case 'DELETE':
-                await service.clearSettings(guildId);
-                return void response.status(201).end();
-            case 'PATCH': {
-                const mapped = mapUpdate(request.body);
-                if (!mapped.valid)
-                    return void response.status(400).send({
-                        error: 'Request body is invalid'
-                    });
-
-                await service.updateSettings(guildId, mapped.value);
-                return void response.status(201).end();
+    router.route('/:guildId(\\d+)')
+        .get(asyncHandler(async (req, res) => {
+            res.status(200)
+                .contentType('application/json')
+                .end(guildSerializer.write(await service.getSettings(BigInt(req.params.guildId))));
+        }))
+        .patch(asyncHandler(async (req, res) => {
+            const mapped = mapUpdate(req.body);
+            if (!mapped.valid) {
+                res.status(400).send({ error: 'Request body is invalid' });
+                return;
             }
-            default: return next();
-        }
-    }
+
+            await service.updateSettings(BigInt(req.params.guildId), mapped.value);
+            res.status(201).end();
+        }))
+        .delete(asyncHandler(async (req, res) => {
+            await service.clearSettings(BigInt(req.params.guildId));
+            res.status(201).end();
+        }));
+
+    return router;
 }
 
 const mapUpdate = mapping.object<Partial<GuildSettings>>({
@@ -71,5 +57,7 @@ const mapUpdate = mapping.object<Partial<GuildSettings>>({
     staffPerms: mapping.bigInt.optional,
     tableFlip: mapping.boolean.optional,
     timeoutWarnCount: mapping.number.nullish,
-    timeoutOverridePerms: mapping.bigInt.nullish
+    timeoutOverridePerms: mapping.bigInt.nullish,
+    announceChannel: mapping.bigInt.nullish,
+    announceRole: mapping.bigInt.nullish
 });

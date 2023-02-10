@@ -1,7 +1,11 @@
 import type { IJsonConverterType } from '@blargbot/serialization';
 import { json } from '@blargbot/serialization';
 
-export type GuildSettings = Readonly<IJsonConverterType<typeof guildSerializer>>;
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface GuildSettings extends Readonly<IJsonConverterType<typeof guildSerializer>> {
+
+}
+
 export const guildSerializer = json.object({
     maxAllowedMentions: json.number.nullable,
     actOnLimitsOnly: json.boolean,
@@ -27,5 +31,7 @@ export const guildSerializer = json.object({
     mutedRole: json.bigint.nullable,
     banWarnCount: json.number.nullable,
     kickWarnCount: json.number.nullable,
-    timeoutWarnCount: json.number.nullable
+    timeoutWarnCount: json.number.nullable,
+    announceChannel: json.bigint.nullable,
+    announceRole: json.bigint.nullable
 });

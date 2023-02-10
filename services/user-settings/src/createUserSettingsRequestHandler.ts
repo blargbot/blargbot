@@ -1,49 +1,34 @@
+import express, { asyncHandler } from '@blargbot/express';
 import { mapping } from '@blargbot/mapping';
-import type { NextFunction, Request, RequestHandler, Response } from 'express';
 
 import type { UserSettings } from './UserSettings.js';
 import { userSerializer } from './UserSettings.js';
 import type { UserSettingsService } from './UserSettingsService.js';
 
-export function createUserSettingsRequestHandler(service: UserSettingsService): RequestHandler<{ userId: string; }> {
-    return function handleRequest(request, response, next) {
-        void handleRequestAsync(request, response, next)
-            .catch(err => {
-                response.status(500).send({
-                    message: 'Internal server error'
-                });
-                console.error(request.url, err);
-            });
-    };
-
-    async function handleRequestAsync(request: Request<{ userId: string; }>, response: Response, next: NextFunction): Promise<void> {
-        const mappedUserId = mapping.bigInt(request.params.userId);
-        if (!mappedUserId.valid)
-            return next();
-
-        const userId = mappedUserId.value;
-        switch (request.method) {
-            case 'GET':
-                return void response
-                    .status(200)
-                    .contentType('application/json')
-                    .end(userSerializer.write(await service.getSettings(userId)));
-            case 'DELETE':
-                await service.clearSettings(userId);
-                return void response.status(201).end();
-            case 'PATCH': {
-                const mapped = mapUpdate(request.body);
-                if (!mapped.valid)
-                    return void response.status(400).send({
-                        error: 'Request body is invalid'
-                    });
-
-                await service.updateSettings(userId, mapped.value);
-                return void response.status(201).end();
+export function createUserSettingsRequestHandler(service: UserSettingsService): express.RequestHandler {
+    const router = express.Router();
+    router.route('/:userId(\\d+)')
+        .get(asyncHandler(async (req, res) => {
+            res.status(200)
+                .contentType('application/json')
+                .end(userSerializer.write(await service.getSettings(BigInt(req.params.userId))));
+        }))
+        .patch(asyncHandler(async (req, res) => {
+            const mapped = mapUpdate(req.body);
+            if (!mapped.valid) {
+                res.status(400).send({ error: 'Request body is invalid' });
+                return;
             }
-            default: return next();
-        }
-    }
+
+            await service.updateSettings(BigInt(req.params.userId), mapped.value);
+            res.status(204).end();
+        }))
+        .delete(asyncHandler(async (req, res) => {
+            await service.clearSettings(BigInt(req.params.userId));
+            res.status(204).end();
+        }));
+
+    return router;
 }
 
 const mapUpdate = mapping.object<Partial<UserSettings>>({

@@ -3,12 +3,6 @@ x-env_file:
   env_file:
     - ../.env
 
-x-rabbit-env:
-  &rabbit-env
-  RABBITMQ_HOST: rabbitmq
-  RABBITMQ_USERNAME: blargbot
-  RABBITMQ_PASSWORD: SomePassword
-
 x-discord-proxy-env:
   &discord-proxy-env
   DISCORD_PROXY_URL: http://discord-proxy
@@ -21,6 +15,16 @@ x-guild-settings-env:
 x-user-settings-env:
   &user-settings-env
   USER_SETTINGS_URL: http://user-settings
+
+x-mod-log-env:
+  &mod-log-env
+  MOD_LOG_URL: http://mod-log
+
+x-rabbit-env:
+  &rabbit-env
+  RABBITMQ_HOST: rabbitmq
+  RABBITMQ_USERNAME: blargbot
+  RABBITMQ_PASSWORD: SomePassword
 
 x-rethinkdb-env:
   &rethinkdb-env
@@ -58,9 +62,11 @@ services:
     init: true
     environment:
       <<: *discord-proxy-env
+      <<: *guild-settings-env
+      <<: *user-settings-env
+      <<: *mod-log-env
       <<: *rabbit-env
       <<: *cassandra-env
-      <<: *guild-settings-env
       <<: *postgres-env
       <<: *cassandra-env
       <<: *rethinkdb-env
@@ -134,6 +140,13 @@ services:
     depends_on:
       - postgres
       - redis
+
+  mod-log:
+    build: ../services/mod-log/src
+    environment:
+      <<: *postgres-env
+    depends_on:
+      - postgres
 
   rabbitmq:
     build: ../infra/rabbitmq

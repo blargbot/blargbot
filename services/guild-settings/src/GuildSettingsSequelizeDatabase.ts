@@ -1,5 +1,5 @@
-import type { AttributeOptions, DataType, Model, ModelStatic, Sequelize } from '@blargbot/sequelize';
-import { DataTypes } from '@blargbot/sequelize';
+import type { Model, ModelStatic, Sequelize } from '@blargbot/sequelize';
+import { DataTypes, makeColumn } from '@blargbot/sequelize';
 
 import { defaultSettings } from './defaultSettings.js';
 import type { GuildSettings } from './GuildSettings.js';
@@ -13,14 +13,12 @@ export default class GuildSettingsSequelizeDatabase implements IGuildSettingsDat
     readonly #model: ModelStatic<Model<GuildSettingsTable>>;
 
     public constructor(sequelize: Pick<Sequelize, 'define'>) {
-        const x = defaultSettings();
+        const x = {
+            ...defaultSettings(),
+            guildId: undefined as bigint | undefined
+        };
         this.#model = sequelize.define<Model<GuildSettingsTable>>('guild_settings', {
-            guildId: {
-                type: DataTypes.BIGINT,
-                primaryKey: true,
-                unique: true,
-                allowNull: false
-            },
+            ...makeColumn('guildId', DataTypes.BIGINT, x, { primaryKey: true, unique: true }),
             ...makeColumn('maxAllowedMentions', DataTypes.INTEGER, x),
             ...makeColumn('actOnLimitsOnly', DataTypes.BOOLEAN, x),
             ...makeColumn('cahNsfw', DataTypes.BOOLEAN, x),
@@ -41,18 +39,14 @@ export default class GuildSettingsSequelizeDatabase implements IGuildSettingsDat
             ...makeColumn('greetChannel', DataTypes.BIGINT, x),
             ...makeColumn('farewellChannel', DataTypes.BIGINT, x),
             ...makeColumn('modLogChannel', DataTypes.BIGINT, x),
+            ...makeColumn('announceChannel', DataTypes.BIGINT, x),
+            ...makeColumn('announceRole', DataTypes.BIGINT, x),
             ...makeColumn('adminRole', DataTypes.BIGINT, x),
             ...makeColumn('mutedRole', DataTypes.BIGINT, x),
             ...makeColumn('banWarnCount', DataTypes.INTEGER, x),
             ...makeColumn('kickWarnCount', DataTypes.INTEGER, x),
             ...makeColumn('timeoutWarnCount', DataTypes.INTEGER, x)
         });
-    }
-
-    public async sync(): Promise<void> {
-        console.log('Syncing guild_settings model');
-        await this.#model.sync();
-        console.log('guild_settings model syncronised');
     }
 
     public async get(guildId: bigint): Promise<GuildSettings | undefined> {
@@ -68,14 +62,4 @@ export default class GuildSettingsSequelizeDatabase implements IGuildSettingsDat
         await this.#model.destroy({ where: { guildId } });
     }
 
-}
-
-function makeColumn<Name extends keyof M, M extends object>(name: Name, type: DataType, base: M): { [P in Name]: AttributeOptions<Model<M>> } {
-    return {
-        [name]: {
-            type,
-            allowNull: base[name] as unknown === null,
-            defaultValue: base[name]
-        } as AttributeOptions<Model<M>>
-    } as { [P in Name]: AttributeOptions<Model<M>> };
 }

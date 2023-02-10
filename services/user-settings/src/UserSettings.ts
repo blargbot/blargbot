@@ -1,7 +1,11 @@
 import type { IJsonConverterType } from '@blargbot/serialization';
 import { json } from '@blargbot/serialization';
 
-export type UserSettings = Readonly<IJsonConverterType<typeof userSerializer>>;
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface UserSettings extends Readonly<IJsonConverterType<typeof userSerializer>> {
+
+}
+
 export const userSerializer = json.object({
     dontDmErrors: json.boolean,
     prefixes: json.array(json.string),

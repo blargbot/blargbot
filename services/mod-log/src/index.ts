@@ -3,28 +3,19 @@ import { Server } from 'node:http';
 import Application from '@blargbot/application';
 import env from '@blargbot/env';
 import express from '@blargbot/express';
-import { RedisCache } from '@blargbot/redis-cache';
 import { Sequelize } from '@blargbot/sequelize';
-import type { RedisClientType } from 'redis';
-import { createClient as createRedisClient } from 'redis';
 
-import { createUserSettingsRequestHandler } from './createUserSettingsRequestHandler.js';
-import type { UserSettings } from './UserSettings.js';
-import { userSerializer } from './UserSettings.js';
-import UserSettingsSequelizeDatabase from './UserSettingsSequelizeDatabase.js';
-import { UserSettingsService } from './UserSettingsService.js';
+import { createModLogRequestHandler } from './createModLogRequestHandler.js';
+import type { ModLogEntry } from './ModLogEntry.js';
+import { modLogEntrySerializer } from './ModLogEntry.js';
+import ModLogSequelizeDatabase from './ModLogSequelizeDatabase.js';
+import { ModLogService } from './ModLogService.js';
 
-export type { UserSettings };
-export { userSerializer };
+export type { ModLogEntry as UserSettings };
+export { modLogEntrySerializer as userSerializer };
 
 @Application.hostIfEntrypoint(() => [{
     port: env.appPort,
-    redis: {
-        url: env.redisUrl,
-        password: env.redisPassword,
-        username: env.redisUsername,
-        ttl: env.redisTTL
-    },
     postgres: {
         user: env.postgresUser,
         pass: env.postgresPassword,
@@ -35,11 +26,9 @@ export { userSerializer };
     }
 }])
 export class UserSettingsApplication extends Application {
-    readonly #redis: RedisClientType;
     readonly #postgres: Sequelize;
-    readonly #cache: RedisCache<bigint, UserSettings>;
-    readonly #database: UserSettingsSequelizeDatabase;
-    readonly #service: UserSettingsService;
+    readonly #database: ModLogSequelizeDatabase;
+    readonly #service: ModLogService;
     readonly #app: express.Express;
     readonly #server: Server;
     readonly #port: number;
@@ -48,11 +37,6 @@ export class UserSettingsApplication extends Application {
         super();
 
         this.#port = options.port;
-        this.#redis = createRedisClient({
-            url: options.redis.url,
-            username: options.redis.username,
-            password: options.redis.password
-        });
         this.#postgres = new Sequelize(
             options.postgres.database,
             options.postgres.user,
@@ -63,47 +47,30 @@ export class UserSettingsApplication extends Application {
             }
         );
 
-        this.#cache = new RedisCache<bigint, UserSettings>(this.#redis, {
-            ttlS: options.redis.ttl,
-            keyFactory: userId => `user_settings:${userId}`,
-            serializer: userSerializer
-        });
-        this.#database = new UserSettingsSequelizeDatabase(this.#postgres);
-        this.#service = new UserSettingsService(this.#database, this.#cache);
+        this.#database = new ModLogSequelizeDatabase(this.#postgres);
+        this.#service = new ModLogService(this.#database);
 
         this.#app = express()
             .use(express.urlencoded({ extended: true }))
             .use(express.json())
-            .all('/*', createUserSettingsRequestHandler(this.#service));
+            .all('/*', createModLogRequestHandler(this.#service));
         this.#server = new Server(this.#app.bind(this.#app));
     }
 
     protected async start(): Promise<void> {
-        await Promise.all([
-            this.#redis.connect().then(() => console.log('Redis connected')),
-            this.#postgres.authenticate().then(() => console.log('Postgres connected'))
-        ]);
+        await this.#postgres.authenticate().then(() => console.log('Postgres connected'));
         await this.#postgres.sync({ alter: true }).then(() => console.log('Database models synced'));
         await new Promise<void>(res => this.#server.listen(this.#port, res));
     }
 
     protected async stop(): Promise<void> {
         await new Promise<void>((res, rej) => this.#server.close(err => err === undefined ? res() : rej(err)));
-        await Promise.all([
-            this.#redis.disconnect().then(() => console.log('Redis disconnected')),
-            this.#postgres.close().then(() => console.log('Postgres disconnected'))
-        ]);
+        await this.#postgres.close().then(() => console.log('Postgres disconnected'));
     }
 }
 
 export interface UserSettingsApplicationOptions {
     readonly port: number;
-    readonly redis: {
-        readonly url: string;
-        readonly password: string;
-        readonly username: string;
-        readonly ttl: number;
-    };
     readonly postgres: {
         readonly user: string;
         readonly pass: string;

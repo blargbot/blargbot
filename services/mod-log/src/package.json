@@ -1,5 +1,5 @@
 {
-    "name": "@blargbot/user-settings",
+    "name": "@blargbot/mod-log",
     "version": "1.0.0",
     "private": true,
     "type": "module",
@@ -14,10 +14,8 @@
         "@blargbot/env": "workspace:^",
         "@blargbot/express": "workspace:^",
         "@blargbot/mapping": "workspace:^",
-        "@blargbot/redis-cache": "workspace:^",
         "@blargbot/sequelize": "workspace:^",
-        "@blargbot/serialization": "workspace:^",
-        "redis": "^4.6.4"
+        "@blargbot/serialization": "workspace:^"
     },
     "devDependencies": {
         "@types/pg": "^8.6.6"

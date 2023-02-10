@@ -2,9 +2,9 @@ import { Server } from 'node:http';
 
 import Application from '@blargbot/application';
 import env from '@blargbot/env';
+import express from '@blargbot/express';
 import { RedisCache } from '@blargbot/redis-cache';
 import { Sequelize } from '@blargbot/sequelize';
-import express from 'express';
 import type { RedisClientType } from 'redis';
 import { createClient as createRedisClient } from 'redis';
 
@@ -74,7 +74,7 @@ export class GuildSettingsApplication extends Application {
         this.#app = express()
             .use(express.urlencoded({ extended: true }))
             .use(express.json())
-            .all('/:guildId', createGuildSettingsRequestHandler(this.#service));
+            .all('/*', createGuildSettingsRequestHandler(this.#service));
         this.#server = new Server(this.#app.bind(this.#app));
     }
 
@@ -83,7 +83,7 @@ export class GuildSettingsApplication extends Application {
             this.#redis.connect().then(() => console.log('Redis connected')),
             this.#postgres.authenticate().then(() => console.log('Postgres connected'))
         ]);
-        await this.#database.sync();
+        await this.#postgres.sync({ alter: true }).then(() => console.log('Database models synced'));
         await new Promise<void>(res => this.#server.listen(this.#port, res));
     }
 

@@ -474,6 +474,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@blargbot/express@workspace:^, @blargbot/express@workspace:components/express/src":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/express@workspace:components/express/src"
+  dependencies:
+    "@types/express": ^4.17.17
+    express: ^4.18.2
+  languageName: unknown
+  linkType: soft
+
 "@blargbot/flags@workspace:^, @blargbot/flags@workspace:components/flags/src":
   version: 0.0.0-use.local
   resolution: "@blargbot/flags@workspace:components/flags/src"
@@ -515,13 +524,12 @@ __metadata:
   dependencies:
     "@blargbot/application": "workspace:^"
     "@blargbot/env": "workspace:^"
+    "@blargbot/express": "workspace:^"
     "@blargbot/mapping": "workspace:^"
     "@blargbot/redis-cache": "workspace:^"
     "@blargbot/sequelize": "workspace:^"
     "@blargbot/serialization": "workspace:^"
-    "@types/express": ^4.17.17
     "@types/pg": ^8.6.6
-    express: ^4.18.2
     redis: ^4.6.4
   languageName: unknown
   linkType: soft
@@ -610,6 +618,20 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@blargbot/mod-log@workspace:services/mod-log/src":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/mod-log@workspace:services/mod-log/src"
+  dependencies:
+    "@blargbot/application": "workspace:^"
+    "@blargbot/env": "workspace:^"
+    "@blargbot/express": "workspace:^"
+    "@blargbot/mapping": "workspace:^"
+    "@blargbot/sequelize": "workspace:^"
+    "@blargbot/serialization": "workspace:^"
+    "@types/pg": ^8.6.6
+  languageName: unknown
+  linkType: soft
+
 "@blargbot/modules@workspace:^, @blargbot/modules@workspace:components/modules/src":
   version: 0.0.0-use.local
   resolution: "@blargbot/modules@workspace:components/modules/src"
@@ -677,13 +699,12 @@ __metadata:
   dependencies:
     "@blargbot/application": "workspace:^"
     "@blargbot/env": "workspace:^"
+    "@blargbot/express": "workspace:^"
     "@blargbot/mapping": "workspace:^"
     "@blargbot/redis-cache": "workspace:^"
     "@blargbot/sequelize": "workspace:^"
     "@blargbot/serialization": "workspace:^"
-    "@types/express": ^4.17.17
     "@types/pg": ^8.6.6
-    express: ^4.18.2
     redis: ^4.6.4
   languageName: unknown
   linkType: soft

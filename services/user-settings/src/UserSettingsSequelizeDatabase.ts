@@ -1,5 +1,5 @@
-import type { AttributeOptions, DataType, Model, ModelStatic, Sequelize } from '@blargbot/sequelize';
-import { DataTypes } from '@blargbot/sequelize';
+import type { Model, ModelStatic, Sequelize } from '@blargbot/sequelize';
+import { DataTypes, makeColumn } from '@blargbot/sequelize';
 
 import { defaultSettings } from './defaultSettings.js';
 import type { IUserSettingsDatabase } from './IUserSettingsDatabase.js';
@@ -13,24 +13,16 @@ export default class UserSettingsSequelizeDatabase implements IUserSettingsDatab
     readonly #model: ModelStatic<Model<UserSettingsTable>>;
 
     public constructor(sequelize: Pick<Sequelize, 'define'>) {
-        const x = defaultSettings();
+        const x = {
+            ...defaultSettings(),
+            userId: undefined as bigint | undefined
+        };
         this.#model = sequelize.define<Model<UserSettingsTable>>('user_settings', {
-            userId: {
-                type: DataTypes.BIGINT,
-                primaryKey: true,
-                unique: true,
-                allowNull: false
-            },
+            ...makeColumn('userId', DataTypes.BIGINT, x, { primaryKey: true, unique: true }),
             ...makeColumn('dontDmErrors', DataTypes.BOOLEAN, x),
             ...makeColumn('prefixes', DataTypes.ARRAY(DataTypes.STRING), x),
             ...makeColumn('timezone', DataTypes.STRING, x)
         });
-    }
-
-    public async sync(): Promise<void> {
-        console.log('Syncing user_settings model');
-        await this.#model.sync();
-        console.log('user_settings model syncronised');
     }
 
     public async get(userId: bigint): Promise<UserSettings | undefined> {
@@ -46,14 +38,4 @@ export default class UserSettingsSequelizeDatabase implements IUserSettingsDatab
         await this.#model.destroy({ where: { userId } });
     }
 
-}
-
-function makeColumn<Name extends keyof M, M extends object>(name: Name, type: DataType, base: M): { [P in Name]: AttributeOptions<Model<M>> } {
-    return {
-        [name]: {
-            type,
-            allowNull: base[name] as unknown === null,
-            defaultValue: base[name]
-        }
-    } as { [P in Name]: AttributeOptions<Model<M>> };
 }

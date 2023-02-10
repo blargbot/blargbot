@@ -25,5 +25,7 @@ export const defaultSettings = (): GuildSettings => ({
     modLogChannel: null,
     mutedRole: null,
     timeoutOverridePerms: null,
-    timeoutWarnCount: null
+    timeoutWarnCount: null,
+    announceChannel: null,
+    announceRole: null
 });
