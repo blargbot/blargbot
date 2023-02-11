@@ -65,7 +65,6 @@ version: '3.5'
 
 services:
   editor:
-    <<: *env-file
     build: editor
     init: true
     environment:
@@ -81,16 +80,16 @@ services:
       <<: *cassandra-env
       <<: *rethinkdb-env
       <<: *redis-env
+    <<: *env-file
 
   discord-proxy:
-    <<: *env-file
-    build: ../services/discord-proxy/src
+    image: blargbot/discord-proxy
     environment:
       <<: *discord-proxy-env
+    <<: *env-file
 
   discord-gateway:
-    <<: *env-file
-    build: ../services/discord-gateway/src
+    image: blargbot/discord-gateway
     environment:
       <<: *discord-proxy-env
       <<: *rabbit-env
@@ -98,23 +97,24 @@ services:
     depends_on:
       - discord-proxy
       - rabbitmq
+    <<: *env-file
 
   discord-message-stream:
-    build: ../services/discord-message-stream/src
+    image: blargbot/discord-message-stream
     environment:
       <<: *rabbit-env
     depends_on:
       - rabbitmq
 
   discord-reaction-stream:
-    build: ../services/discord-reaction-stream/src
+    image: blargbot/discord-reaction-stream
     environment:
       <<: *rabbit-env
     depends_on:
       - rabbitmq
 
   discord-chatlog:
-    build: ../services/discord-chatlog/src
+    image: blargbot/discord-chatlog
     environment:
       <<: *cassandra-env
       <<: *rabbit-env
@@ -125,16 +125,16 @@ services:
       - guild-settings
 
   image-generator:
-    <<: *env-file
-    build: ../services/image-generator/src
+    image: blargbot/image-generator
     environment:
       <<: *rabbit-env
       IMAGE_API_URL: https://api.blargbot.xyz/api/v1/image
     depends_on:
       - rabbitmq
+    <<: *env-file
 
   user-settings:
-    build: ../services/user-settings/src
+    image: blargbot/user-settings
     environment:
       <<: *postgres-env
       <<: *redis-env
@@ -143,7 +143,7 @@ services:
       - redis
 
   guild-settings:
-    build: ../services/guild-settings/src
+    image: blargbot/guild-settings
     environment:
       <<: *postgres-env
       <<: *redis-env
@@ -152,7 +152,7 @@ services:
       - redis
 
   event-log-settings:
-    build: ../services/event-log-settings/src
+    image: blargbot/event-log-settings
     environment:
       <<: *postgres-env
       <<: *redis-env
@@ -161,21 +161,21 @@ services:
       - redis
 
   mod-log:
-    build: ../services/mod-log/src
+    image: blargbot/mod-log
     environment:
       <<: *postgres-env
     depends_on:
       - postgres
 
   user-warnings:
-    build: ../services/user-warnings/src
+    image: blargbot/user-warnings
     environment:
       <<: *postgres-env
     depends_on:
       - postgres
 
   rabbitmq:
-    build: ../infra/rabbitmq
+    image: blargbot/rabbitmq
     environment:
       <<: *rabbit-env
     volumes:
@@ -184,7 +184,7 @@ services:
       - 5000:15672
 
   postgres:
-    build: ../infra/postgres
+    image: blargbot/postgres
     environment:
       <<: *postgres-env
     volumes:
@@ -202,7 +202,7 @@ services:
       - pgadmin:/var/lib/pgadmin
 
   cassandra:
-    build: ../infra/cassandra
+    image: blargbot/cassandra
     environment:
       <<: *cassandra-env
     volumes:
@@ -217,7 +217,7 @@ services:
       - 5003:8083
 
   rethinkdb:
-    build: ../infra/rethinkdb
+    image: blargbot/rethinkdb
     environment:
       <<: *rethinkdb-env
     ports:
@@ -226,7 +226,7 @@ services:
       - rethink:/data
 
   redis:
-    build: ../infra/redis
+    image: blargbot/redis
     environment:
       <<: *redis-env
     ports:

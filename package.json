@@ -33,6 +33,7 @@
         "ci": "yarn rebuild && yarn run rebuild && yarn run lint && yarn run coverage",
         "coverage": "c8 yarn test",
         "build": "tsc --build --force",
+        "build:docker": "./build/build",
         "watch": "tsc --watch",
         "rebuild": "yarn run clean && yarn run build",
         "lint": "eslint --ext .ts,.mts,.cts ./",

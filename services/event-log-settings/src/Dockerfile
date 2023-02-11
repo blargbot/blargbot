@@ -1,6 +1,4 @@
 FROM node:lts-alpine
-COPY --from=blargbot/repo /app /app
+COPY --from=blargbot/repo /app/out/services/event-log-settings /app/
 WORKDIR /app
-RUN yarn workspaces focus @blargbot/event-log-settings --production
-WORKDIR /app/services/event-log-settings/src
-ENTRYPOINT [ "yarn", "run", "start" ]
+ENTRYPOINT [ "npm", "run", "start" ]

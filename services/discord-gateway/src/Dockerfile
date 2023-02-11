@@ -1,6 +1,4 @@
 FROM node:lts-alpine
-COPY --from=blargbot/repo /app /app
+COPY --from=blargbot/repo /app/out/services/discord-gateway /app/
 WORKDIR /app
-RUN yarn workspaces focus @blargbot/discord-gateway --production
-WORKDIR /app/services/discord-gateway/src
-ENTRYPOINT [ "yarn", "run", "start" ]
+ENTRYPOINT [ "npm", "run", "start" ]

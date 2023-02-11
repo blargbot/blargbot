@@ -1,0 +1,6 @@
+#!/bin/bash
+if [[ "$(docker images -q blargbot/repo 2> /dev/null)" == "" ]]; then
+  docker build -t blargbot/repo ..
+fi
+
+(cd ../build && docker compose build)

@@ -14,7 +14,7 @@
 			]
 		}
 	},
-	"initializeCommand": "cd .devcontainer && ./init.sh",
+	"initializeCommand": "cd .devcontainer && ./init",
 	"features": {
 		"ghcr.io/devcontainers/features/docker-from-docker:1": {}
 	}

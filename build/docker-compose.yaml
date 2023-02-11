@@ -1,0 +1,66 @@
+version: '3.5'
+
+services:
+  discord-proxy:
+    build: ../services/discord-proxy/src
+    image: blargbot/discord-proxy
+
+  discord-gateway:
+    build: ../services/discord-gateway/src
+    image: blargbot/discord-gateway
+
+  discord-message-stream:
+    build: ../services/discord-message-stream/src
+    image: blargbot/discord-message-stream
+
+  discord-reaction-stream:
+    build: ../services/discord-reaction-stream/src
+    image: blargbot/discord-reaction-stream
+
+  discord-chatlog:
+    build: ../services/discord-chatlog/src
+    image: blargbot/discord-chatlog
+
+  image-generator:
+    build: ../services/image-generator/src
+    image: blargbot/image-generator
+
+  user-settings:
+    build: ../services/user-settings/src
+    image: blargbot/user-settings
+
+  guild-settings:
+    build: ../services/guild-settings/src
+    image: blargbot/guild-settings
+
+  event-log-settings:
+    build: ../services/event-log-settings/src
+    image: blargbot/event-log-settings
+
+  mod-log:
+    build: ../services/mod-log/src
+    image: blargbot/mod-log
+
+  user-warnings:
+    build: ../services/user-warnings/src
+    image: blargbot/user-warnings
+
+  rabbitmq:
+    build: ../infra/rabbitmq
+    image: blargbot/rabbitmq
+
+  postgres:
+    build: ../infra/postgres
+    image: blargbot/postgres
+
+  cassandra:
+    build: ../infra/cassandra
+    image: blargbot/cassandra
+
+  rethinkdb:
+    build: ../infra/rethinkdb
+    image: blargbot/rethinkdb
+
+  redis:
+    build: ../infra/redis
+    image: blargbot/redis
