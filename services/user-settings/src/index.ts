@@ -3,7 +3,7 @@ import { Server } from 'node:http';
 import Application from '@blargbot/application';
 import env from '@blargbot/env';
 import express from '@blargbot/express';
-import { RedisCache } from '@blargbot/redis-cache';
+import { RedisKVCache } from '@blargbot/redis-cache';
 import { Sequelize } from '@blargbot/sequelize';
 import type { RedisClientType } from 'redis';
 import { createClient as createRedisClient } from 'redis';
@@ -37,7 +37,7 @@ export { userSerializer };
 export class UserSettingsApplication extends Application {
     readonly #redis: RedisClientType;
     readonly #postgres: Sequelize;
-    readonly #cache: RedisCache<bigint, UserSettings>;
+    readonly #cache: RedisKVCache<bigint, UserSettings>;
     readonly #database: UserSettingsSequelizeDatabase;
     readonly #service: UserSettingsService;
     readonly #app: express.Express;
@@ -63,7 +63,7 @@ export class UserSettingsApplication extends Application {
             }
         );
 
-        this.#cache = new RedisCache<bigint, UserSettings>(this.#redis, {
+        this.#cache = new RedisKVCache<bigint, UserSettings>(this.#redis, {
             ttlS: options.redis.ttl,
             keyFactory: userId => `user_settings:${userId}`,
             serializer: userSerializer

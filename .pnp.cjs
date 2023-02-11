@@ -204,6 +204,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:services/discord-reaction-stream/src"\
       },\
       {\
+        "name": "@blargbot/event-log-settings",\
+        "reference": "workspace:services/event-log-settings/src"\
+      },\
+      {\
         "name": "@blargbot/guild-settings",\
         "reference": "workspace:services/guild-settings/src"\
       },\
@@ -257,6 +261,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@blargbot/discord-util", ["workspace:components/discord-util/src"]],\
       ["@blargbot/domain", ["workspace:components/domain/src"]],\
       ["@blargbot/env", ["workspace:components/env/src"]],\
+      ["@blargbot/event-log-settings", ["workspace:services/event-log-settings/src"]],\
       ["@blargbot/express", ["workspace:components/express/src"]],\
       ["@blargbot/flags", ["workspace:components/flags/src"]],\
       ["@blargbot/formatting", ["workspace:components/formatting/src"]],\
@@ -845,6 +850,23 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "SOFT"\
         }]\
       ]],\
+      ["@blargbot/event-log-settings", [\
+        ["workspace:services/event-log-settings/src", {\
+          "packageLocation": "./services/event-log-settings/src/",\
+          "packageDependencies": [\
+            ["@blargbot/event-log-settings", "workspace:services/event-log-settings/src"],\
+            ["@blargbot/application", "workspace:components/application/src"],\
+            ["@blargbot/env", "workspace:components/env/src"],\
+            ["@blargbot/express", "workspace:components/express/src"],\
+            ["@blargbot/mapping", "workspace:components/mapping/src"],\
+            ["@blargbot/redis-cache", "workspace:components/redis-cache/src"],\
+            ["@blargbot/sequelize", "workspace:components/sequelize/src"],\
+            ["@blargbot/serialization", "workspace:components/serialization/src"],\
+            ["redis", "npm:4.6.4"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
       ["@blargbot/express", [\
         ["workspace:components/express/src", {\
           "packageLocation": "./components/express/src/",\
@@ -913,7 +935,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/redis-cache", "workspace:components/redis-cache/src"],\
             ["@blargbot/sequelize", "workspace:components/sequelize/src"],\
             ["@blargbot/serialization", "workspace:components/serialization/src"],\
-            ["@types/pg", "npm:8.6.6"],\
             ["redis", "npm:4.6.4"]\
           ],\
           "linkType": "SOFT"\
@@ -1037,8 +1058,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/express", "workspace:components/express/src"],\
             ["@blargbot/mapping", "workspace:components/mapping/src"],\
             ["@blargbot/sequelize", "workspace:components/sequelize/src"],\
-            ["@blargbot/serialization", "workspace:components/serialization/src"],\
-            ["@types/pg", "npm:8.6.6"]\
+            ["@blargbot/serialization", "workspace:components/serialization/src"]\
           ],\
           "linkType": "SOFT"\
         }]\
@@ -1133,7 +1153,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/redis-cache", "workspace:components/redis-cache/src"],\
             ["@blargbot/sequelize", "workspace:components/sequelize/src"],\
             ["@blargbot/serialization", "workspace:components/serialization/src"],\
-            ["@types/pg", "npm:8.6.6"],\
             ["redis", "npm:4.6.4"]\
           ],\
           "linkType": "SOFT"\
@@ -1148,8 +1167,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/env", "workspace:components/env/src"],\
             ["@blargbot/express", "workspace:components/express/src"],\
             ["@blargbot/mapping", "workspace:components/mapping/src"],\
-            ["@blargbot/sequelize", "workspace:components/sequelize/src"],\
-            ["@types/pg", "npm:8.6.6"]\
+            ["@blargbot/sequelize", "workspace:components/sequelize/src"]\
           ],\
           "linkType": "SOFT"\
         }]\

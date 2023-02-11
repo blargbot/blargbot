@@ -17,7 +17,7 @@ export class DiscordReactionStreamMessageBroker extends MessageBroker {
 
     public async pushReaction(message: discordeno.DiscordMessageReactionAdd): Promise<void> {
         const emoteId = message.emoji.id ?? message.emoji.name ?? '';
-        await this.sendMessage(DiscordReactionStreamMessageBroker.#reactionStream, `${message.channel_id}.${message.message_id}.${message.user_id}.${emoteId}`, this.jsonToBlob(message));
+        await this.sendMessage(DiscordReactionStreamMessageBroker.#reactionStream, `${message.message_id}.${message.user_id}.${emoteId}`, this.jsonToBlob(message));
     }
 
     public async handleReactionAdd(handler: (message: discordeno.DiscordMessageReactionAdd, msg: ConsumeMessage) => Awaitable<void>): Promise<MessageHandle> {

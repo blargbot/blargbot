@@ -5,17 +5,13 @@ import env from '@blargbot/env';
 import express from '@blargbot/express';
 import { RedisKVCache } from '@blargbot/redis-cache';
 import { Sequelize } from '@blargbot/sequelize';
+import { json } from '@blargbot/serialization';
 import type { RedisClientType } from 'redis';
 import { createClient as createRedisClient } from 'redis';
 
-import { createGuildSettingsRequestHandler } from './createGuildSettingsRequestHandler.js';
-import type { GuildSettings } from './GuildSettings.js';
-import { guildSerializer } from './GuildSettings.js';
-import GuildSettingsSequelizeDatabase from './GuildSettingsSequelizeDatabase.js';
-import { GuildSettingsService } from './GuildSettingsService.js';
-
-export type { GuildSettings };
-export { guildSerializer };
+import { createModLogRequestHandler } from './createUserWarningRequestHandler.js';
+import GuildEventLogSequelizeDatabase from './GuildEventLogSequelizeDatabase.js';
+import { GuildEventLog } from './GuildEventLogService.js';
 
 @Application.hostIfEntrypoint(() => [{
     port: env.appPort,
@@ -34,17 +30,17 @@ export { guildSerializer };
         }
     }
 }])
-export class GuildSettingsApplication extends Application {
+export class UserSettingsApplication extends Application {
     readonly #redis: RedisClientType;
     readonly #postgres: Sequelize;
-    readonly #cache: RedisKVCache<bigint, GuildSettings>;
-    readonly #database: GuildSettingsSequelizeDatabase;
-    readonly #service: GuildSettingsService;
+    readonly #database: GuildEventLogSequelizeDatabase;
+    readonly #service: GuildEventLog;
     readonly #app: express.Express;
     readonly #server: Server;
     readonly #port: number;
+    readonly #cache: RedisKVCache<{ guildId: bigint; event: string; }, bigint | null>;
 
-    public constructor(options: GuildSettingsApplicationOptions) {
+    public constructor(options: EventLogSettingsApplicationOptions) {
         super();
 
         this.#port = options.port;
@@ -63,18 +59,18 @@ export class GuildSettingsApplication extends Application {
             }
         );
 
-        this.#cache = new RedisKVCache<bigint, GuildSettings>(this.#redis, {
+        this.#cache = new RedisKVCache<{ guildId: bigint; event: string; }, bigint | null>(this.#redis, {
             ttlS: options.redis.ttl,
-            keyFactory: guildId => `guild_settings:${guildId}`,
-            serializer: guildSerializer
+            keyFactory: ({ guildId, event }) => `event_log:${guildId}:${event}`,
+            serializer: json.bigint.nullable
         });
-        this.#database = new GuildSettingsSequelizeDatabase(this.#postgres);
-        this.#service = new GuildSettingsService(this.#database, this.#cache);
+        this.#database = new GuildEventLogSequelizeDatabase(this.#postgres);
+        this.#service = new GuildEventLog(this.#database, this.#cache);
 
         this.#app = express()
             .use(express.urlencoded({ extended: true }))
             .use(express.json())
-            .all('/*', createGuildSettingsRequestHandler(this.#service));
+            .all('/*', createModLogRequestHandler(this.#service));
         this.#server = new Server(this.#app.bind(this.#app));
     }
 
@@ -96,7 +92,7 @@ export class GuildSettingsApplication extends Application {
     }
 }
 
-export interface GuildSettingsApplicationOptions {
+export interface EventLogSettingsApplicationOptions {
     readonly port: number;
     readonly redis: {
         readonly url: string;

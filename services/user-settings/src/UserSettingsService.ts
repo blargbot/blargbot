@@ -1,13 +1,14 @@
+import type { IKVCache } from '@blargbot/redis-cache';
+
 import { defaultSettings } from './defaultSettings.js';
-import type { IUserSettingsCache } from './IUserSettingsCache.js';
 import type { IUserSettingsDatabase } from './IUserSettingsDatabase.js';
 import type { UserSettings } from './UserSettings.js';
 
 export class UserSettingsService {
     readonly #database: IUserSettingsDatabase;
-    readonly #cache: IUserSettingsCache;
+    readonly #cache: IKVCache<bigint, UserSettings>;
 
-    public constructor(database: IUserSettingsDatabase, cache: IUserSettingsCache) {
+    public constructor(database: IUserSettingsDatabase, cache: IKVCache<bigint, UserSettings>) {
         this.#database = database;
         this.#cache = cache;
     }

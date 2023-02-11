@@ -18,8 +18,5 @@
         "@blargbot/sequelize": "workspace:^",
         "@blargbot/serialization": "workspace:^",
         "redis": "^4.6.4"
-    },
-    "devDependencies": {
-        "@types/pg": "^8.6.6"
     }
 }

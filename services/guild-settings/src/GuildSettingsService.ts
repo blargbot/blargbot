@@ -1,13 +1,14 @@
+import type { IKVCache } from '@blargbot/redis-cache';
+
 import { defaultSettings } from './defaultSettings.js';
 import type { GuildSettings } from './GuildSettings.js';
-import type { IGuildSettingsCache } from './IGuildSettingsCache.js';
 import type { IGuildSettingsDatabase } from './IGuildSettingsDatabase.js';
 
 export class GuildSettingsService {
     readonly #database: IGuildSettingsDatabase;
-    readonly #cache: IGuildSettingsCache;
+    readonly #cache: IKVCache<bigint, GuildSettings>;
 
-    public constructor(database: IGuildSettingsDatabase, cache: IGuildSettingsCache) {
+    public constructor(database: IGuildSettingsDatabase, cache: IKVCache<bigint, GuildSettings>) {
         this.#database = database;
         this.#cache = cache;
     }

@@ -474,6 +474,21 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@blargbot/event-log-settings@workspace:services/event-log-settings/src":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/event-log-settings@workspace:services/event-log-settings/src"
+  dependencies:
+    "@blargbot/application": "workspace:^"
+    "@blargbot/env": "workspace:^"
+    "@blargbot/express": "workspace:^"
+    "@blargbot/mapping": "workspace:^"
+    "@blargbot/redis-cache": "workspace:^"
+    "@blargbot/sequelize": "workspace:^"
+    "@blargbot/serialization": "workspace:^"
+    redis: ^4.6.4
+  languageName: unknown
+  linkType: soft
+
 "@blargbot/express@workspace:^, @blargbot/express@workspace:components/express/src":
   version: 0.0.0-use.local
   resolution: "@blargbot/express@workspace:components/express/src"
@@ -529,7 +544,6 @@ __metadata:
     "@blargbot/redis-cache": "workspace:^"
     "@blargbot/sequelize": "workspace:^"
     "@blargbot/serialization": "workspace:^"
-    "@types/pg": ^8.6.6
     redis: ^4.6.4
   languageName: unknown
   linkType: soft
@@ -628,7 +642,6 @@ __metadata:
     "@blargbot/mapping": "workspace:^"
     "@blargbot/sequelize": "workspace:^"
     "@blargbot/serialization": "workspace:^"
-    "@types/pg": ^8.6.6
   languageName: unknown
   linkType: soft
 
@@ -704,7 +717,6 @@ __metadata:
     "@blargbot/redis-cache": "workspace:^"
     "@blargbot/sequelize": "workspace:^"
     "@blargbot/serialization": "workspace:^"
-    "@types/pg": ^8.6.6
     redis: ^4.6.4
   languageName: unknown
   linkType: soft
@@ -718,7 +730,6 @@ __metadata:
     "@blargbot/express": "workspace:^"
     "@blargbot/mapping": "workspace:^"
     "@blargbot/sequelize": "workspace:^"
-    "@types/pg": ^8.6.6
   languageName: unknown
   linkType: soft
 

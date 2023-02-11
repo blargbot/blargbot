@@ -16,6 +16,10 @@ x-user-settings-env:
   &user-settings-env
   USER_SETTINGS_URL: http://user-settings
 
+x-event-log-settings-env:
+  &event-log-settings-env
+  EVENT_LOG_SETTINGS_URL: http://event-log-settings
+
 x-mod-log-env:
   &mod-log-env
   MOD_LOG_URL: http://mod-log
@@ -67,6 +71,7 @@ services:
     environment:
       <<: *discord-proxy-env
       <<: *guild-settings-env
+      <<: *event-log-settings-env
       <<: *user-settings-env
       <<: *mod-log-env
       <<: *user-warnings-env
@@ -139,6 +144,15 @@ services:
 
   guild-settings:
     build: ../services/guild-settings/src
+    environment:
+      <<: *postgres-env
+      <<: *redis-env
+    depends_on:
+      - postgres
+      - redis
+
+  event-log-settings:
+    build: ../services/event-log-settings/src
     environment:
       <<: *postgres-env
       <<: *redis-env
