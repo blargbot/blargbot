@@ -88,7 +88,7 @@ export class DiscordMemberCacheMessageBroker extends MessageBroker {
         return await this.handleMessage({
             exchange: DiscordMemberCacheMessageBroker.#eventsName,
             queue: DiscordMemberCacheMessageBroker.#memberChunk,
-            filter: `*.${discordeno.GatewayOpcodes.Dispatch}.GUILD_MEMBERs_CHUNK`,
+            filter: `*.${discordeno.GatewayOpcodes.Dispatch}.GUILD_MEMBERS_CHUNK`,
             async handle(data, msg) {
                 await handler(await this.#getMessageDetails(data), msg);
             }
