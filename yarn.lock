@@ -401,10 +401,24 @@ __metadata:
     "@blargbot/env": "workspace:^"
     "@blargbot/message-broker": "workspace:^"
     "@types/amqplib": ^0.10.1
-    "@types/express": ^4.17.17
     amqplib: ^0.10.3
     discordeno: ^18.0.1
-    express: ^4.18.2
+  languageName: unknown
+  linkType: soft
+
+"@blargbot/discord-guild-cache@workspace:services/discord-guild-cache/src":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/discord-guild-cache@workspace:services/discord-guild-cache/src"
+  dependencies:
+    "@blargbot/application": "workspace:^"
+    "@blargbot/env": "workspace:^"
+    "@blargbot/express": "workspace:^"
+    "@blargbot/message-broker": "workspace:^"
+    "@blargbot/redis-cache": "workspace:^"
+    "@types/amqplib": ^0.10.1
+    amqplib: ^0.10.3
+    discordeno: ^18.0.1
+    redis: ^4.6.4
   languageName: unknown
   linkType: soft
 
@@ -659,6 +673,7 @@ __metadata:
   resolution: "@blargbot/redis-cache@workspace:components/redis-cache/src"
   dependencies:
     redis: ^4.6.4
+    redis-lock: ^1.0.0
   languageName: unknown
   linkType: soft
 
@@ -6248,6 +6263,13 @@ __metadata:
     indent-string: ^5.0.0
     strip-indent: ^4.0.0
   checksum: 6944e7b1d8f3fd28c2515f5c605b9f7f0ea0f4edddf41890bbbdd4d9ee35abb7540c3b278f03ff827bd278bb6ff4a5bd8692ca406b748c5c1c3ce7355e9fbf8f
+  languageName: node
+  linkType: hard
+
+"redis-lock@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "redis-lock@npm:1.0.0"
+  checksum: de66373e067d54f94d4636d4f99be958272387d73f26aba200c87d722c07915ba2402d24fff8d9557257e6fde6f59a8c15841eca09f668ad49b0969138ccb48b
   languageName: node
   linkType: hard
 

@@ -11,7 +11,7 @@ import { createClient as createRedisClient } from 'redis';
 
 import { createModLogRequestHandler } from './createUserWarningRequestHandler.js';
 import GuildEventLogSequelizeDatabase from './GuildEventLogSequelizeDatabase.js';
-import { GuildEventLog } from './GuildEventLogService.js';
+import { GuildEventLogService } from './GuildEventLogService.js';
 
 @Application.hostIfEntrypoint(() => [{
     port: env.appPort,
@@ -34,7 +34,7 @@ export class UserSettingsApplication extends Application {
     readonly #redis: RedisClientType;
     readonly #postgres: Sequelize;
     readonly #database: GuildEventLogSequelizeDatabase;
-    readonly #service: GuildEventLog;
+    readonly #service: GuildEventLogService;
     readonly #app: express.Express;
     readonly #server: Server;
     readonly #port: number;
@@ -61,11 +61,12 @@ export class UserSettingsApplication extends Application {
 
         this.#cache = new RedisKVCache<{ guildId: bigint; event: string; }, bigint | null>(this.#redis, {
             ttlS: options.redis.ttl,
-            keyFactory: ({ guildId, event }) => `event_log:${guildId}:${event}`,
+            keyspace: 'event_log',
+            keyFactory: ({ guildId, event }) => `${guildId}:${event}`,
             serializer: json.bigint.nullable
         });
         this.#database = new GuildEventLogSequelizeDatabase(this.#postgres);
-        this.#service = new GuildEventLog(this.#database, this.#cache);
+        this.#service = new GuildEventLogService(this.#database, this.#cache);
 
         this.#app = express()
             .use(express.urlencoded({ extended: true }))

@@ -67,6 +67,7 @@ declare global {
         create<T, U>(o: T, properties: { [P in keyof U]: TypedPropertyDescriptor<U[P]> }): T & U;
         create<T extends object>(value: T): T;
         fromEntries<TKey extends PropertyKey, TValue>(entries: Iterable<readonly [TKey, TValue]>): { [P in TKey]: TValue };
+        fromEntries<TProp extends readonly [PropertyKey, unknown]>(entries: Iterable<TProp>): { [P in TProp as P[0]]: P[1]; };
 
         defineProperties<T, U>(o: T, properties: { [P in keyof U]: TypedPropertyDescriptor<U[P]> }): T & U;
         defineProperty<T, Key extends PropertyKey, U>(o: T, key: Key, attributes: TypedPropertyDescriptor<U>): T & { [P in Key]: U; };

@@ -124,6 +124,15 @@ services:
       - rabbitmq
       - guild-settings
 
+  discord-guild-cache:
+    image: blargbot/discord-guild-cache
+    environment:
+      <<: *rabbit-env
+      <<: *redis-env
+    depends_on:
+      - rabbitmq
+      - redis
+
   image-generator:
     image: blargbot/image-generator
     environment:

@@ -8,7 +8,7 @@ await Promise.all(services.map(async s => {
     const source = path.resolve(`services/${s}/src`);
     const dest = path.resolve(`out/services/${s}`);
     await hoistDependencies(source, dest)
-    await removeModuleSymlinks(dest)
+    await resolveModuleSymlinks(dest)
     await removeNestedNodeModules(dest)
 }))
 
@@ -24,7 +24,7 @@ async function removeNestedNodeModules(source) {
     }))
 }
 
-async function removeModuleSymlinks(source) {
+async function resolveModuleSymlinks(source) {
     const modules = await discoverNodeModules(source);
     await Promise.all(modules.map(async ({ location }) => {
 

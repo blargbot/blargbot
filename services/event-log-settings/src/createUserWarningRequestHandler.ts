@@ -1,9 +1,9 @@
 import express, { asyncHandler } from '@blargbot/express';
 import { mapping } from '@blargbot/mapping';
 
-import type { GuildEventLog } from './GuildEventLogService.js';
+import type { GuildEventLogService } from './GuildEventLogService.js';
 
-export function createModLogRequestHandler(service: GuildEventLog): express.RequestHandler {
+export function createModLogRequestHandler(service: GuildEventLogService): express.RequestHandler {
     const router = express.Router();
 
     router.route('/:guildId(\\d+)')

@@ -1,21 +1,23 @@
 {
-    "name": "@blargbot/discord-gateway",
+    "name": "@blargbot/discord-guild-cache",
     "version": "1.0.0",
     "private": true,
     "type": "module",
     "exports": {
-        "./manager": "./manager/index.js",
-        "./worker": "./worker/index.js"
+        ".": "./index.js"
     },
     "scripts": {
-        "start": "node ./manager/index.js"
+        "start": "node ./index.js"
     },
     "dependencies": {
         "@blargbot/application": "workspace:^",
         "@blargbot/env": "workspace:^",
+        "@blargbot/express": "workspace:^",
         "@blargbot/message-broker": "workspace:^",
+        "@blargbot/redis-cache": "workspace:^",
         "amqplib": "^0.10.3",
-        "discordeno": "^18.0.1"
+        "discordeno": "^18.0.1",
+        "redis": "^4.6.4"
     },
     "devDependencies": {
         "@types/amqplib": "^0.10.1"

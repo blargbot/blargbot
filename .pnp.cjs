@@ -192,6 +192,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:services/discord-gateway/src"\
       },\
       {\
+        "name": "@blargbot/discord-guild-cache",\
+        "reference": "workspace:services/discord-guild-cache/src"\
+      },\
+      {\
         "name": "@blargbot/discord-message-stream",\
         "reference": "workspace:services/discord-message-stream/src"\
       },\
@@ -255,6 +259,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@blargbot/discord-chatlog", ["workspace:services/discord-chatlog/src"]],\
       ["@blargbot/discord-emote", ["workspace:components/discord-emote/src"]],\
       ["@blargbot/discord-gateway", ["workspace:services/discord-gateway/src"]],\
+      ["@blargbot/discord-guild-cache", ["workspace:services/discord-guild-cache/src"]],\
       ["@blargbot/discord-message-stream", ["workspace:services/discord-message-stream/src"]],\
       ["@blargbot/discord-proxy", ["workspace:services/discord-proxy/src"]],\
       ["@blargbot/discord-reaction-stream", ["workspace:services/discord-reaction-stream/src"]],\
@@ -762,10 +767,26 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/env", "workspace:components/env/src"],\
             ["@blargbot/message-broker", "virtual:aeac885bc2b91a1efa105c8fa69acf0299e4576631579d685c094479047c752b3d0be6af05bbe3225c98430520b2f21ca58c6dc42717d3d3ba0d508a26b1816e#workspace:components/message-broker/src"],\
             ["@types/amqplib", "npm:0.10.1"],\
-            ["@types/express", "npm:4.17.17"],\
+            ["amqplib", "npm:0.10.3"],\
+            ["discordeno", "npm:18.0.1"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
+      ["@blargbot/discord-guild-cache", [\
+        ["workspace:services/discord-guild-cache/src", {\
+          "packageLocation": "./services/discord-guild-cache/src/",\
+          "packageDependencies": [\
+            ["@blargbot/discord-guild-cache", "workspace:services/discord-guild-cache/src"],\
+            ["@blargbot/application", "workspace:components/application/src"],\
+            ["@blargbot/env", "workspace:components/env/src"],\
+            ["@blargbot/express", "workspace:components/express/src"],\
+            ["@blargbot/message-broker", "virtual:aeac885bc2b91a1efa105c8fa69acf0299e4576631579d685c094479047c752b3d0be6af05bbe3225c98430520b2f21ca58c6dc42717d3d3ba0d508a26b1816e#workspace:components/message-broker/src"],\
+            ["@blargbot/redis-cache", "workspace:components/redis-cache/src"],\
+            ["@types/amqplib", "npm:0.10.1"],\
             ["amqplib", "npm:0.10.3"],\
             ["discordeno", "npm:18.0.1"],\
-            ["express", "npm:4.18.2"]\
+            ["redis", "npm:4.6.4"]\
           ],\
           "linkType": "SOFT"\
         }]\
@@ -1079,7 +1100,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./components/redis-cache/src/",\
           "packageDependencies": [\
             ["@blargbot/redis-cache", "workspace:components/redis-cache/src"],\
-            ["redis", "npm:4.6.4"]\
+            ["redis", "npm:4.6.4"],\
+            ["redis-lock", "npm:1.0.0"]\
           ],\
           "linkType": "SOFT"\
         }]\
@@ -7721,6 +7743,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@redis/json", "virtual:cf0b9304409b8d9d40e8aa0bde0e2d3f03d8c21913fca5b6484ddade829b8bd726f00789e5c6edf1aaf0ad83e199f8cfdafe48706813c3e0e02814e63c067941#npm:1.0.4"],\
             ["@redis/search", "virtual:cf0b9304409b8d9d40e8aa0bde0e2d3f03d8c21913fca5b6484ddade829b8bd726f00789e5c6edf1aaf0ad83e199f8cfdafe48706813c3e0e02814e63c067941#npm:1.1.1"],\
             ["@redis/time-series", "virtual:cf0b9304409b8d9d40e8aa0bde0e2d3f03d8c21913fca5b6484ddade829b8bd726f00789e5c6edf1aaf0ad83e199f8cfdafe48706813c3e0e02814e63c067941#npm:1.0.4"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["redis-lock", [\
+        ["npm:1.0.0", {\
+          "packageLocation": "./.yarn/cache/redis-lock-npm-1.0.0-3a8f410b2d-de66373e06.zip/node_modules/redis-lock/",\
+          "packageDependencies": [\
+            ["redis-lock", "npm:1.0.0"]\
           ],\
           "linkType": "HARD"\
         }]\

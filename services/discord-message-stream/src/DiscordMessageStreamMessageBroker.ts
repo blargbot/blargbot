@@ -12,7 +12,10 @@ export class DiscordMessageStreamMessageBroker extends MessageBroker {
     }
 
     public override async onceConnected(channel: amqplib.Channel): Promise<void> {
-        await channel.assertExchange(DiscordMessageStreamMessageBroker.#messageStream, 'topic', { durable: true });
+        await Promise.all([
+            channel.assertExchange(DiscordMessageStreamMessageBroker.#eventsName, 'topic', { durable: true }),
+            channel.assertExchange(DiscordMessageStreamMessageBroker.#messageStream, 'topic', { durable: true })
+        ]);
     }
 
     public async pushMessage(message: discordeno.DiscordMessage): Promise<void> {

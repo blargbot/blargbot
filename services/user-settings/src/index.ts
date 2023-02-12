@@ -65,7 +65,7 @@ export class UserSettingsApplication extends Application {
 
         this.#cache = new RedisKVCache<bigint, UserSettings>(this.#redis, {
             ttlS: options.redis.ttl,
-            keyFactory: userId => `user_settings:${userId}`,
+            keyspace: 'user_settings',
             serializer: userSerializer
         });
         this.#database = new UserSettingsSequelizeDatabase(this.#postgres);

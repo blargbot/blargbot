@@ -2,7 +2,7 @@ import type { IKVCache } from '@blargbot/redis-cache';
 
 import type { IGuildEventLogDatabase } from './IGuildEventLogDatabase.js';
 
-export class GuildEventLog {
+export class GuildEventLogService {
     readonly #database: IGuildEventLogDatabase;
     readonly #cache: IKVCache<{ guildId: bigint; event: string; }, bigint | null>;
 

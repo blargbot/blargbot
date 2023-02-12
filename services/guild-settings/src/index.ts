@@ -65,7 +65,7 @@ export class GuildSettingsApplication extends Application {
 
         this.#cache = new RedisKVCache<bigint, GuildSettings>(this.#redis, {
             ttlS: options.redis.ttl,
-            keyFactory: guildId => `guild_settings:${guildId}`,
+            keyspace: 'guild_settings',
             serializer: guildSerializer
         });
         this.#database = new GuildSettingsSequelizeDatabase(this.#postgres);
