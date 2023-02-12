@@ -196,6 +196,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:services/discord-guild-cache/src"\
       },\
       {\
+        "name": "@blargbot/discord-member-cache",\
+        "reference": "workspace:services/discord-member-cache/src"\
+      },\
+      {\
         "name": "@blargbot/discord-message-stream",\
         "reference": "workspace:services/discord-message-stream/src"\
       },\
@@ -260,6 +264,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@blargbot/discord-emote", ["workspace:components/discord-emote/src"]],\
       ["@blargbot/discord-gateway", ["workspace:services/discord-gateway/src"]],\
       ["@blargbot/discord-guild-cache", ["workspace:services/discord-guild-cache/src"]],\
+      ["@blargbot/discord-member-cache", ["workspace:services/discord-member-cache/src"]],\
       ["@blargbot/discord-message-stream", ["workspace:services/discord-message-stream/src"]],\
       ["@blargbot/discord-proxy", ["workspace:services/discord-proxy/src"]],\
       ["@blargbot/discord-reaction-stream", ["workspace:services/discord-reaction-stream/src"]],\
@@ -778,6 +783,24 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./services/discord-guild-cache/src/",\
           "packageDependencies": [\
             ["@blargbot/discord-guild-cache", "workspace:services/discord-guild-cache/src"],\
+            ["@blargbot/application", "workspace:components/application/src"],\
+            ["@blargbot/env", "workspace:components/env/src"],\
+            ["@blargbot/express", "workspace:components/express/src"],\
+            ["@blargbot/message-broker", "virtual:aeac885bc2b91a1efa105c8fa69acf0299e4576631579d685c094479047c752b3d0be6af05bbe3225c98430520b2f21ca58c6dc42717d3d3ba0d508a26b1816e#workspace:components/message-broker/src"],\
+            ["@blargbot/redis-cache", "workspace:components/redis-cache/src"],\
+            ["@types/amqplib", "npm:0.10.1"],\
+            ["amqplib", "npm:0.10.3"],\
+            ["discordeno", "npm:18.0.1"],\
+            ["redis", "npm:4.6.4"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
+      ["@blargbot/discord-member-cache", [\
+        ["workspace:services/discord-member-cache/src", {\
+          "packageLocation": "./services/discord-member-cache/src/",\
+          "packageDependencies": [\
+            ["@blargbot/discord-member-cache", "workspace:services/discord-member-cache/src"],\
             ["@blargbot/application", "workspace:components/application/src"],\
             ["@blargbot/env", "workspace:components/env/src"],\
             ["@blargbot/express", "workspace:components/express/src"],\

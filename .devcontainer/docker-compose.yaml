@@ -133,6 +133,15 @@ services:
       - rabbitmq
       - redis
 
+  discord-member-cache:
+    image: blargbot/discord-member-cache
+    environment:
+      <<: *rabbit-env
+      <<: *redis-env
+    depends_on:
+      - rabbitmq
+      - redis
+
   image-generator:
     image: blargbot/image-generator
     environment:

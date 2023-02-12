@@ -28,14 +28,14 @@ export class RedisKVCache<Key, Value> implements IKVCache<Key, Value> {
 
     public async size(): Promise<number> {
         let size = 0;
-        for await (const _ of this.#redis.scanIterator({ MATCH: `${this.#keyspace}:*` }))
+        for await (const _ of this.#redis.scanIterator({ MATCH: `${this.#keyspace}:*`, TYPE: 'string' }))
             size++;
         return size;
     }
 
     public async clear(): Promise<void> {
         const ops = new Set();
-        for await (const element of this.#redis.scanIterator({ MATCH: `${this.#keyspace}:*` })) {
+        for await (const element of this.#redis.scanIterator({ MATCH: `${this.#keyspace}:*`, TYPE: 'string' })) {
             const p = this.#redis.del(element).catch(() => 0);
             ops.add(p);
             p.finally(ops.delete.bind(ops, p));
@@ -83,15 +83,10 @@ export class RedisKVCache<Key, Value> implements IKVCache<Key, Value> {
 
     public async getOrAdd(key: Key, factory: (key: Key) => Awaitable<Value>): Promise<Value> {
         const strKey = this.#toKey(key);
-        const release = await this.#lock(strKey);
-        try {
-            let result = await this.#get(strKey);
-            if (result === undefined)
-                await this.#set(strKey, result = await factory(key));
-            return result;
-        } finally {
-            await release();
-        }
+        let result: Value | undefined = await this.#get(strKey);
+        if (result === undefined)
+            await this.#set(strKey, result = await factory(key));
+        return result;
     }
 
     public async delete(key: Key): Promise<void> {
@@ -105,10 +100,12 @@ export class RedisKVCache<Key, Value> implements IKVCache<Key, Value> {
     }
 }
 
+type Mapping<Name extends string, In, Out, AutoMappable> = (In extends AutoMappable
+    ? { readonly [P in Name]?: (key: In) => Out; }
+    : { readonly [P in Name]: (key: In) => Out; })
+
 type RedisKVCacheOptions<Key, Value> = RedisKVCacheOptionsBase<Value>
-    & (Key extends string | number | bigint | boolean
-        ? { readonly keyFactory?: (key: Key) => string; }
-        : { readonly keyFactory: (key: Key) => string; })
+    & Mapping<'keyFactory', Key, string, string | number | bigint | boolean>
 
 export interface RedisKVCacheOptionsBase<Value> {
     readonly keyspace: string;
