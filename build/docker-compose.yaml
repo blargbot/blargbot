@@ -29,6 +29,10 @@ services:
     build: ../services/discord-member-cache/src
     image: blargbot/discord-member-cache
 
+  discord-role-cache:
+    build: ../services/discord-role-cache/src
+    image: blargbot/discord-role-cache
+
   image-generator:
     build: ../services/image-generator/src
     image: blargbot/image-generator

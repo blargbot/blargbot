@@ -142,6 +142,15 @@ services:
       - rabbitmq
       - redis
 
+  discord-role-cache:
+    image: blargbot/discord-role-cache
+    environment:
+      <<: *rabbit-env
+      <<: *redis-env
+    depends_on:
+      - rabbitmq
+      - redis
+
   image-generator:
     image: blargbot/image-generator
     environment:

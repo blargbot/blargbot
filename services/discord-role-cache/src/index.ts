@@ -4,14 +4,14 @@ import Application from '@blargbot/application';
 import env from '@blargbot/env';
 import express from '@blargbot/express';
 import { RedisKKVCache } from '@blargbot/redis-cache';
+import type * as discordeno from 'discordeno';
 import type { RedisClientType } from 'redis';
 import { createClient as createRedisClient } from 'redis';
 
-import { createMemberCacheRequestHandler } from './createMemberCacheRequestHandler.js';
-import type { DiscordMemberCacheMessageBrokerOptions } from './DiscordMemberCacheMessageBroker.js';
-import { DiscordMemberCacheMessageBroker } from './DiscordMemberCacheMessageBroker.js';
-import { DiscordMemberCacheService } from './DiscordMemberCacheService.js';
-import type { SlimDiscordMember } from './SlimDiscordMember.js';
+import { createRoleCacheRequestHandler } from './createRoleCacheRequestHandler.js';
+import type { DiscordRoleCacheMessageBrokerOptions } from './DiscordRoleCacheMessageBroker.js';
+import { DiscordRoleCacheMessageBroker } from './DiscordRoleCacheMessageBroker.js';
+import { DiscordRoleCacheService } from './DiscordRoleCacheService.js';
 
 @Application.hostIfEntrypoint(() => [{
     port: env.appPort,
@@ -26,14 +26,14 @@ import type { SlimDiscordMember } from './SlimDiscordMember.js';
         password: env.rabbitPassword
     }
 }])
-export class DiscordMemberCacheApplication extends Application {
+export class DiscordRoleCacheApplication extends Application {
     readonly #redis: RedisClientType;
-    readonly #messages: DiscordMemberCacheMessageBroker;
-    readonly #service: DiscordMemberCacheService;
+    readonly #messages: DiscordRoleCacheMessageBroker;
+    readonly #service: DiscordRoleCacheService;
     readonly #app: express.Express;
     readonly #server: Server;
     readonly #port: number;
-    readonly #cache: RedisKKVCache<bigint, bigint, SlimDiscordMember>;
+    readonly #cache: RedisKKVCache<bigint, bigint, discordeno.DiscordRole>;
 
     public constructor(options: DiscordChatlogApplicationOptions) {
         super();
@@ -45,18 +45,18 @@ export class DiscordMemberCacheApplication extends Application {
             password: options.redis.password
         });
 
-        this.#cache = new RedisKKVCache<bigint, bigint, SlimDiscordMember>(this.#redis, {
+        this.#cache = new RedisKKVCache<bigint, bigint, discordeno.DiscordRole>(this.#redis, {
             ttlS: null,
-            keyspace: 'discord_members',
+            keyspace: 'discord_roles',
             key2Reader: v => BigInt(v)
         });
-        this.#messages = new DiscordMemberCacheMessageBroker(options.messages);
-        this.#service = new DiscordMemberCacheService(this.#messages, this.#cache);
+        this.#messages = new DiscordRoleCacheMessageBroker(options.messages);
+        this.#service = new DiscordRoleCacheService(this.#messages, this.#cache);
 
         this.#app = express()
             .use(express.urlencoded({ extended: true }))
             .use(express.json())
-            .all('/*', createMemberCacheRequestHandler(this.#service));
+            .all('/*', createRoleCacheRequestHandler(this.#service));
         this.#server = new Server(this.#app.bind(this.#app));
     }
 
@@ -81,7 +81,7 @@ export class DiscordMemberCacheApplication extends Application {
 
 export interface DiscordChatlogApplicationOptions {
     readonly port: number;
-    readonly messages: DiscordMemberCacheMessageBrokerOptions;
+    readonly messages: DiscordRoleCacheMessageBrokerOptions;
     readonly redis: {
         readonly url: string;
         readonly password: string;

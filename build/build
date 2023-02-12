@@ -1,7 +1,9 @@
 #!/bin/bash
+set -e
+
 buildDir="$(dirname "$0")"
 repoDir="$(dirname "$buildDir")"
 
-docker image rm blargbot/repo || true \
-&& docker build -t blargbot/repo "$repoDir" \
-&& docker compose -f "$buildDir/docker-compose.yaml" build
+docker image rm blargbot/repo || true
+docker build -t blargbot/repo "$repoDir"
+docker compose -f "$buildDir/docker-compose.yaml" build

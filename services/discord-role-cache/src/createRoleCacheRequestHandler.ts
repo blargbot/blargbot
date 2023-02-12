@@ -1,13 +1,13 @@
 import express, { asyncHandler } from '@blargbot/express';
 
-import type { DiscordMemberCacheService } from './DiscordMemberCacheService.js';
+import type { DiscordRoleCacheService } from './DiscordRoleCacheService.js';
 
-export function createMemberCacheRequestHandler(service: DiscordMemberCacheService): express.RequestHandler {
+export function createRoleCacheRequestHandler(service: DiscordRoleCacheService): express.RequestHandler {
     const router = express.Router();
 
-    router.route('/:guildId(\\d+)/:userId(\\d+)')
+    router.route('/:guildId(\\d+)/:roleId(\\d+)')
         .get(asyncHandler(async (req, res) => {
-            const result = await service.getMember(BigInt(req.params.guildId), BigInt(req.params.userId));
+            const result = await service.getRole(BigInt(req.params.guildId), BigInt(req.params.roleId));
             if (result === undefined)
                 res.status(404).end();
             else
@@ -16,17 +16,17 @@ export function createMemberCacheRequestHandler(service: DiscordMemberCacheServi
 
     router.route('/:guildId(\\d+)')
         .get(asyncHandler(async (req, res) => {
-            const result = await service.getAllMembers(BigInt(req.params.guildId));
+            const result = await service.getAllRoles(BigInt(req.params.guildId));
             res.status(200).send(result);
         }))
         .delete(asyncHandler(async (req, res) => {
-            await service.deleteAllMembers(BigInt(req.params.guildId));
+            await service.deleteAllRoles(BigInt(req.params.guildId));
             res.status(204).end();
         }));
 
     router.route('/')
         .delete(asyncHandler(async (_, res) => {
-            await service.deleteAllMembers();
+            await service.deleteAllRoles();
             res.status(204).end();
         }));
 

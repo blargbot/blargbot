@@ -212,6 +212,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:services/discord-reaction-stream/src"\
       },\
       {\
+        "name": "@blargbot/discord-role-cache",\
+        "reference": "workspace:services/discord-role-cache/src"\
+      },\
+      {\
         "name": "@blargbot/event-log-settings",\
         "reference": "workspace:services/event-log-settings/src"\
       },\
@@ -268,6 +272,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@blargbot/discord-message-stream", ["workspace:services/discord-message-stream/src"]],\
       ["@blargbot/discord-proxy", ["workspace:services/discord-proxy/src"]],\
       ["@blargbot/discord-reaction-stream", ["workspace:services/discord-reaction-stream/src"]],\
+      ["@blargbot/discord-role-cache", ["workspace:services/discord-role-cache/src"]],\
       ["@blargbot/discord-util", ["workspace:components/discord-util/src"]],\
       ["@blargbot/domain", ["workspace:components/domain/src"]],\
       ["@blargbot/env", ["workspace:components/env/src"]],\
@@ -859,6 +864,24 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["amqplib", "npm:0.10.3"],\
             ["discordeno", "npm:18.0.1"],\
             ["express", "npm:4.18.2"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
+      ["@blargbot/discord-role-cache", [\
+        ["workspace:services/discord-role-cache/src", {\
+          "packageLocation": "./services/discord-role-cache/src/",\
+          "packageDependencies": [\
+            ["@blargbot/discord-role-cache", "workspace:services/discord-role-cache/src"],\
+            ["@blargbot/application", "workspace:components/application/src"],\
+            ["@blargbot/env", "workspace:components/env/src"],\
+            ["@blargbot/express", "workspace:components/express/src"],\
+            ["@blargbot/message-broker", "virtual:aeac885bc2b91a1efa105c8fa69acf0299e4576631579d685c094479047c752b3d0be6af05bbe3225c98430520b2f21ca58c6dc42717d3d3ba0d508a26b1816e#workspace:components/message-broker/src"],\
+            ["@blargbot/redis-cache", "workspace:components/redis-cache/src"],\
+            ["@types/amqplib", "npm:0.10.1"],\
+            ["amqplib", "npm:0.10.3"],\
+            ["discordeno", "npm:18.0.1"],\
+            ["redis", "npm:4.6.4"]\
           ],\
           "linkType": "SOFT"\
         }]\
