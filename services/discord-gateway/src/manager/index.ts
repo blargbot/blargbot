@@ -12,6 +12,7 @@ import { createDiscordRestClient } from './DiscordRestClient.js';
 
 @Application.hostIfEntrypoint(() => [{
     messages: {
+        prefetch: env.rabbitPrefetch,
         hostname: env.rabbitHost,
         username: env.rabbitUsername,
         password: env.rabbitPassword,

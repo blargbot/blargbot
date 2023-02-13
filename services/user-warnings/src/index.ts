@@ -20,7 +20,7 @@ import { UserWarningService } from './UserWarningService.js';
         }
     }
 }])
-export class UserSettingsApplication extends Application {
+export class UserWarningsApplication extends Application {
     readonly #postgres: Sequelize;
     readonly #database: UserWarningSequelizeDatabase;
     readonly #service: UserWarningService;
@@ -28,7 +28,7 @@ export class UserSettingsApplication extends Application {
     readonly #server: Server;
     readonly #port: number;
 
-    public constructor(options: UserSettingsApplicationOptions) {
+    public constructor(options: UserWarningsApplicationOptions) {
         super();
 
         this.#port = options.port;
@@ -64,7 +64,7 @@ export class UserSettingsApplication extends Application {
     }
 }
 
-export interface UserSettingsApplicationOptions {
+export interface UserWarningsApplicationOptions {
     readonly port: number;
     readonly postgres: {
         readonly user: string;

@@ -10,6 +10,7 @@ const envVarDeclaration = {
     appPort: [Number, 'APP_PORT', '80'],
     discordToken: [String, 'DISCORD_TOKEN'],
     shardsPerWorker: [Number, 'SHARDS_PER_WORKER'],
+    rabbitPrefetch: [v => v === '' ? undefined : Number(v), 'RABBITMQ_PREFETCH', ''],
     rabbitHost: [String, 'RABBITMQ_HOST'],
     rabbitPassword: [String, 'RABBITMQ_PASSWORD'],
     rabbitUsername: [String, 'RABBITMQ_USERNAME'],

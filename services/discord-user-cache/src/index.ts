@@ -3,13 +3,13 @@ import { Server } from 'node:http';
 import Application from '@blargbot/application';
 import env from '@blargbot/env';
 import express from '@blargbot/express';
+import type { ConnectionOptions } from '@blargbot/message-broker';
 import { RedisKVCache } from '@blargbot/redis-cache';
 import type * as discordeno from 'discordeno';
 import type { RedisClientType } from 'redis';
 import { createClient as createRedisClient } from 'redis';
 
 import { createUserCacheRequestHandler } from './createUserCacheRequestHandler.js';
-import type { DiscordUserCacheMessageBrokerOptions } from './DiscordUserCacheMessageBroker.js';
 import { DiscordUserCacheMessageBroker } from './DiscordUserCacheMessageBroker.js';
 import { DiscordUserCacheService } from './DiscordUserCacheService.js';
 
@@ -21,6 +21,7 @@ import { DiscordUserCacheService } from './DiscordUserCacheService.js';
         username: env.redisUsername
     },
     messages: {
+        prefetch: env.rabbitPrefetch,
         hostname: env.rabbitHost,
         username: env.rabbitUsername,
         password: env.rabbitPassword
@@ -35,7 +36,7 @@ export class DiscordUserCacheApplication extends Application {
     readonly #port: number;
     readonly #cache: RedisKVCache<bigint, discordeno.DiscordUser>;
 
-    public constructor(options: DiscordChatlogApplicationOptions) {
+    public constructor(options: DiscordUserCacheApplicationOptions) {
         super();
 
         this.#port = options.port;
@@ -78,9 +79,9 @@ export class DiscordUserCacheApplication extends Application {
     }
 }
 
-export interface DiscordChatlogApplicationOptions {
+export interface DiscordUserCacheApplicationOptions {
     readonly port: number;
-    readonly messages: DiscordUserCacheMessageBrokerOptions;
+    readonly messages: ConnectionOptions;
     readonly redis: {
         readonly url: string;
         readonly password: string;

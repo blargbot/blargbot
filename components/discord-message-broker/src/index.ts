@@ -1,68 +1,67 @@
-import type { ConsumeMessage, MessageHandle } from '@blargbot/message-broker';
+import type { ConsumeMessage, HandleMessageOptions, MessageHandle } from '@blargbot/message-broker';
 import type MessageBroker from '@blargbot/message-broker';
 import type amqplib from 'amqplib';
 import * as discordeno from 'discordeno';
 
 export interface DiscordMessageBrokerMixinType<
-    Events extends discordeno.GatewayDispatchEventNames,
-    Args extends readonly unknown[],
-    Type extends MessageBroker
+    Events extends readonly discordeno.GatewayDispatchEventNames[],
+    Type extends abstract new (...args: never) => MessageBroker
 > {
-    new(eventExchange: string, serviceName: string, ...args: Args): Type & DiscordMessageBrokerMixin<Events>;
+    new(...args: ConstructorParameters<Type>): DiscordMessageBrokerMixin<Events, Type>;
 }
 
-export type DiscordMessageBrokerMixin<Events extends discordeno.GatewayDispatchEventNames> = {
-    [P in Events as DispatchEventRuntimeConfig[P]]: (handler: (message: DispatchEventTypeConfig[P], msg: ConsumeMessage) => Awaitable<void>) => Promise<MessageHandle>
+export interface DiscordMessageBrokerMixinOptions<
+    Events extends readonly discordeno.GatewayDispatchEventNames[],
+    Type extends abstract new (...args: never) => MessageBroker
+> {
+    readonly type: Type;
+    readonly events: Events;
+    readonly serviceName: string;
+    readonly eventExchange: string;
+}
+
+export type DiscordMessageBrokerMixin<Events extends readonly discordeno.GatewayDispatchEventNames[], Type extends abstract new (...args: never) => MessageBroker> = InstanceType<Type> & {
+    [P in Events[number]as `handle${SnakeCaseToPascalCase<P>}`]: HandleMessageFunction<P, InstanceType<Type>>
 }
 
 export function discordMessageBrokerMixin<
-    Events extends discordeno.GatewayDispatchEventNames,
-    Args extends readonly unknown[],
-    Type extends MessageBroker
->(type: abstract new (...args: Args) => Type, ...events: Events[]): DiscordMessageBrokerMixinType<Events, Args, Type>
-export function discordMessageBrokerMixin<
-    Events extends discordeno.GatewayDispatchEventNames,
-    Args extends readonly unknown[]
->(type: abstract new (...args: Args) => MessageBroker, ...events: Events[]): DiscordMessageBrokerMixinType<Events, Args, MessageBroker> {
-    const result = class extends type {
-        readonly #serviceName: string;
-        readonly #eventExchange: string;
-        readonly [x: string]: unknown;
-
-        public constructor(eventExchange: string, serviceName: string, ...args: Args) {
-            super(...args);
-            this.#eventExchange = eventExchange;
-            this.#serviceName = serviceName;
-
-            for (const event of events) {
-                const handler = dispatchEventNameConfig[event];
-                //@ts-expect-error Not sure why its complaining here, the index signature is defined as unknown
-                this[handler] = {
-                    async[handler](this: InstanceType<typeof result>, handler: (message: unknown, msg: ConsumeMessage) => Awaitable<void>): Promise<MessageHandle> {
-                        return await this.handleMessage({
-                            exchange: this.#eventExchange,
-                            queue: `${event}[${this.#serviceName}]`,
-                            filter: `*.${discordeno.GatewayOpcodes.Dispatch}.${event}`,
-                            async handle(data, msg) {
-                                const message = await this.blobToJson<{ event: { d: unknown; }; }>(data);
-                                await handler(message.event.d, msg);
-                            }
-                        });
-                    }
-                }[handler].bind(this);
-            }
-        }
-
+    Events extends [] | readonly discordeno.GatewayDispatchEventNames[],
+    Type extends abstract new (...args: never) => Instance,
+    Instance extends MessageBroker
+>(options: DiscordMessageBrokerMixinOptions<Events, Type>): DiscordMessageBrokerMixinType<Events, Type> {
+    const { type, eventExchange, serviceName } = options;
+    // @ts-expect-error Not sure why I must provide a constructor definition?
+    class DiscordMessageBrokerMixin extends type {
         public override async onceConnected(channel: amqplib.Channel): Promise<void> {
-            await channel.assertExchange(this.#eventExchange, 'topic', { durable: true });
+            await channel.assertExchange(eventExchange, 'topic', { durable: true });
         }
-    };
+    }
 
-    return result as unknown as DiscordMessageBrokerMixinType<Events, Args, MessageBroker>;
+    for (const event of options.events) {
+        const handlerName = `handle${snakeCaseToPascalCase(event)}`;
+        Object.defineProperty(DiscordMessageBrokerMixin.prototype, handlerName, {
+            value: async function (this: Instance, handler: (message: DispatchEventTypeConfig[typeof event], msg: ConsumeMessage) => Awaitable<void>, options?: HandleGatewayEventOptions<Instance>): Promise<MessageHandle> {
+                return await this.handleMessage({
+                    ...options,
+                    exchange: eventExchange,
+                    queue: `${event}[${serviceName}]`,
+                    filter: `*.${discordeno.GatewayOpcodes.Dispatch}.${event}`,
+                    handle: async (data, msg) => {
+                        const message = await this.blobToJson<{ event: { d: DispatchEventTypeConfig[typeof event]; }; }>(data);
+                        await handler(message.event.d, msg);
+                    }
+                });
+            }
+        });
+    }
+
+    return DiscordMessageBrokerMixin as unknown as DiscordMessageBrokerMixinType<Events, Type>;
 }
 
-type DispatchEventRuntimeConfig = {
-    [P in discordeno.GatewayDispatchEventNames]: `handle${SnakeCaseToPascalCase<P>}`;
+type HandleGatewayEventOptions<This> = Omit<HandleMessageOptions<This>, 'queue' | 'exchange' | 'filter' | 'handle'>;
+
+interface HandleMessageFunction<Event extends discordeno.GatewayDispatchEventNames, This> {
+    (this: This, handler: (message: DispatchEventTypeConfig[Event], msg: ConsumeMessage) => Awaitable<void>, options?: HandleGatewayEventOptions<This>): Promise<MessageHandle>;
 }
 
 type DispatchEventTypeConfig = VerifyAllEventsAreSet<{
@@ -128,58 +127,7 @@ type SnakeCaseToPascalCase<Input extends string> =
     ? `${UppercaseFirst<Lowercase<A>>}${SnakeCaseToPascalCase<B>}`
     : UppercaseFirst<Lowercase<Input>>
 
-const dispatchEventNameConfig: DispatchEventRuntimeConfig = {
-    READY: 'handleReady',
-    CHANNEL_CREATE: 'handleChannelCreate',
-    CHANNEL_DELETE: 'handleChannelDelete',
-    CHANNEL_PINS_UPDATE: 'handleChannelPinsUpdate',
-    CHANNEL_UPDATE: 'handleChannelUpdate',
-    GUILD_AUDIT_LOG_ENTRY_CREATE: 'handleGuildAuditLogEntryCreate',
-    GUILD_BAN_ADD: 'handleGuildBanAdd',
-    GUILD_BAN_REMOVE: 'handleGuildBanRemove',
-    GUILD_CREATE: 'handleGuildCreate',
-    GUILD_DELETE: 'handleGuildDelete',
-    GUILD_EMOJIS_UPDATE: 'handleGuildEmojisUpdate',
-    GUILD_INTEGRATIONS_UPDATE: 'handleGuildIntegrationsUpdate',
-    GUILD_MEMBER_ADD: 'handleGuildMemberAdd',
-    GUILD_MEMBER_REMOVE: 'handleGuildMemberRemove',
-    GUILD_MEMBER_UPDATE: 'handleGuildMemberUpdate',
-    GUILD_MEMBERS_CHUNK: 'handleGuildMembersChunk',
-    GUILD_ROLE_CREATE: 'handleGuildRoleCreate',
-    GUILD_ROLE_DELETE: 'handleGuildRoleDelete',
-    GUILD_ROLE_UPDATE: 'handleGuildRoleUpdate',
-    GUILD_UPDATE: 'handleGuildUpdate',
-    GUILD_SCHEDULED_EVENT_CREATE: 'handleGuildScheduledEventCreate',
-    GUILD_SCHEDULED_EVENT_DELETE: 'handleGuildScheduledEventDelete',
-    GUILD_SCHEDULED_EVENT_UPDATE: 'handleGuildScheduledEventUpdate',
-    GUILD_SCHEDULED_EVENT_USER_ADD: 'handleGuildScheduledEventUserAdd',
-    GUILD_SCHEDULED_EVENT_USER_REMOVE: 'handleGuildScheduledEventUserRemove',
-    INTERACTION_CREATE: 'handleInteractionCreate',
-    INVITE_CREATE: 'handleInviteCreate',
-    INVITE_DELETE: 'handleInviteDelete',
-    MESSAGE_CREATE: 'handleMessageCreate',
-    MESSAGE_DELETE_BULK: 'handleMessageDeleteBulk',
-    MESSAGE_DELETE: 'handleMessageDelete',
-    MESSAGE_REACTION_ADD: 'handleMessageReactionAdd',
-    MESSAGE_REACTION_REMOVE_ALL: 'handleMessageReactionRemoveAll',
-    MESSAGE_REACTION_REMOVE_EMOJI: 'handleMessageReactionRemoveEmoji',
-    MESSAGE_REACTION_REMOVE: 'handleMessageReactionRemove',
-    MESSAGE_UPDATE: 'handleMessageUpdate',
-    PRESENCE_UPDATE: 'handlePresenceUpdate',
-    TYPING_START: 'handleTypingStart',
-    USER_UPDATE: 'handleUserUpdate',
-    VOICE_SERVER_UPDATE: 'handleVoiceServerUpdate',
-    VOICE_STATE_UPDATE: 'handleVoiceStateUpdate',
-    WEBHOOKS_UPDATE: 'handleWebhooksUpdate',
-    INTEGRATION_CREATE: 'handleIntegrationCreate',
-    INTEGRATION_UPDATE: 'handleIntegrationUpdate',
-    INTEGRATION_DELETE: 'handleIntegrationDelete',
-    STAGE_INSTANCE_CREATE: 'handleStageInstanceCreate',
-    STAGE_INSTANCE_UPDATE: 'handleStageInstanceUpdate',
-    STAGE_INSTANCE_DELETE: 'handleStageInstanceDelete',
-    THREAD_CREATE: 'handleThreadCreate',
-    THREAD_UPDATE: 'handleThreadUpdate',
-    THREAD_DELETE: 'handleThreadDelete',
-    THREAD_LIST_SYNC: 'handleThreadListSync',
-    THREAD_MEMBERS_UPDATE: 'handleThreadMembersUpdate'
-};
+function snakeCaseToPascalCase<Input extends string>(input: Input): SnakeCaseToPascalCase<Input>
+function snakeCaseToPascalCase(input: string): string {
+    return input.toLowerCase().split('_').map(x => `${x.slice(0, 1).toUpperCase()}${x.slice(1)}`).join('');
+}

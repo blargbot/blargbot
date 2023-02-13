@@ -363,6 +363,24 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@blargbot/discord-channel-cache@workspace:services/discord-channel-cache/src":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/discord-channel-cache@workspace:services/discord-channel-cache/src"
+  dependencies:
+    "@blargbot/application": "workspace:^"
+    "@blargbot/discord-message-broker": "workspace:^"
+    "@blargbot/env": "workspace:^"
+    "@blargbot/express": "workspace:^"
+    "@blargbot/guards": "workspace:^"
+    "@blargbot/message-broker": "workspace:^"
+    "@blargbot/redis-cache": "workspace:^"
+    "@blargbot/serialization": "workspace:^"
+    amqplib: ^0.10.3
+    discordeno: ^18.0.1
+    redis: ^4.6.4
+  languageName: unknown
+  linkType: soft
+
 "@blargbot/discord-chatlog@workspace:services/discord-chatlog/src":
   version: 0.0.0-use.local
   resolution: "@blargbot/discord-chatlog@workspace:services/discord-chatlog/src"
@@ -445,6 +463,23 @@ __metadata:
     discordeno: ^18.0.1
   peerDependencies:
     amqplib: ^0.10.3
+  languageName: unknown
+  linkType: soft
+
+"@blargbot/discord-message-cache@workspace:services/discord-message-cache/src":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/discord-message-cache@workspace:services/discord-message-cache/src"
+  dependencies:
+    "@blargbot/application": "workspace:^"
+    "@blargbot/discord-message-broker": "workspace:^"
+    "@blargbot/env": "workspace:^"
+    "@blargbot/express": "workspace:^"
+    "@blargbot/message-broker": "workspace:^"
+    "@blargbot/redis-cache": "workspace:^"
+    "@blargbot/serialization": "workspace:^"
+    amqplib: ^0.10.3
+    discordeno: ^18.0.1
+    redis: ^4.6.4
   languageName: unknown
   linkType: soft
 

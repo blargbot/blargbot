@@ -1,5 +1,6 @@
 import Application from '@blargbot/application';
 import env from '@blargbot/env';
+import type { ConnectionOptions } from '@blargbot/message-broker';
 
 import ArtGenerator from './generators/art.js';
 import type { ApiImageGeneratorConfig } from './generators/base/ApiImageGenerator.js';
@@ -23,16 +24,16 @@ import StupidGenerator from './generators/stupid.js';
 import TheSearchGenerator from './generators/thesearch.js';
 import TruthGenerator from './generators/truth.js';
 import ImageGeneratorManager from './ImageGeneratorManager.js';
-import type { ImageMessageBrokerOptions } from './ImageMessageBroker.js';
 import { ImageMessageBroker } from './ImageMessageBroker.js';
 
 export interface ImageGeneratorApplicationOptions {
-    readonly messages: ImageMessageBrokerOptions;
+    readonly messages: ConnectionOptions;
     readonly api: ApiImageGeneratorConfig;
 }
 
 @Application.hostIfEntrypoint(() => [{
     messages: {
+        prefetch: env.rabbitPrefetch,
         hostname: env.rabbitHost,
         username: env.rabbitUsername,
         password: env.rabbitPassword

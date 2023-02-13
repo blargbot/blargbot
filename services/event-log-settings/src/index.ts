@@ -30,7 +30,7 @@ import { GuildEventLogService } from './GuildEventLogService.js';
         }
     }
 }])
-export class UserSettingsApplication extends Application {
+export class EventLogSettingsApplication extends Application {
     readonly #redis: RedisClientType;
     readonly #postgres: Sequelize;
     readonly #database: GuildEventLogSequelizeDatabase;

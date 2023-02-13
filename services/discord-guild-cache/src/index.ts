@@ -3,12 +3,12 @@ import { Server } from 'node:http';
 import Application from '@blargbot/application';
 import env from '@blargbot/env';
 import express from '@blargbot/express';
+import type { ConnectionOptions } from '@blargbot/message-broker';
 import { RedisKVCache } from '@blargbot/redis-cache';
 import type { RedisClientType } from 'redis';
 import { createClient as createRedisClient } from 'redis';
 
 import { createGuildCacheRequestHandler } from './createGuildCacheRequestHandler.js';
-import type { DiscordGuildCacheMessageBrokerOptions } from './DiscordGuildCacheMessageBroker.js';
 import { DiscordGuildCacheMessageBroker } from './DiscordGuildCacheMessageBroker.js';
 import { DiscordGuildCacheService } from './DiscordGuildCacheService.js';
 import type { SlimDiscordGuild } from './SlimDiscordGuild.js';
@@ -21,6 +21,7 @@ import type { SlimDiscordGuild } from './SlimDiscordGuild.js';
         username: env.redisUsername
     },
     messages: {
+        prefetch: env.rabbitPrefetch,
         hostname: env.rabbitHost,
         username: env.rabbitUsername,
         password: env.rabbitPassword
@@ -35,7 +36,7 @@ export class DiscordGuildCacheApplication extends Application {
     readonly #port: number;
     readonly #cache: RedisKVCache<bigint, SlimDiscordGuild>;
 
-    public constructor(options: DiscordChatlogApplicationOptions) {
+    public constructor(options: DiscordGuildCacheApplicationOptions) {
         super();
 
         this.#port = options.port;
@@ -78,9 +79,9 @@ export class DiscordGuildCacheApplication extends Application {
     }
 }
 
-export interface DiscordChatlogApplicationOptions {
+export interface DiscordGuildCacheApplicationOptions {
     readonly port: number;
-    readonly messages: DiscordGuildCacheMessageBrokerOptions;
+    readonly messages: ConnectionOptions;
     readonly redis: {
         readonly url: string;
         readonly password: string;

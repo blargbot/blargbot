@@ -3,13 +3,13 @@ import { Server } from 'node:http';
 import Application from '@blargbot/application';
 import env from '@blargbot/env';
 import express from '@blargbot/express';
+import type { ConnectionOptions } from '@blargbot/message-broker';
 import { RedisKKVCache } from '@blargbot/redis-cache';
 import type * as discordeno from 'discordeno';
 import type { RedisClientType } from 'redis';
 import { createClient as createRedisClient } from 'redis';
 
 import { createRoleCacheRequestHandler } from './createRoleCacheRequestHandler.js';
-import type { DiscordRoleCacheMessageBrokerOptions } from './DiscordRoleCacheMessageBroker.js';
 import { DiscordRoleCacheMessageBroker } from './DiscordRoleCacheMessageBroker.js';
 import { DiscordRoleCacheService } from './DiscordRoleCacheService.js';
 
@@ -21,6 +21,7 @@ import { DiscordRoleCacheService } from './DiscordRoleCacheService.js';
         username: env.redisUsername
     },
     messages: {
+        prefetch: env.rabbitPrefetch,
         hostname: env.rabbitHost,
         username: env.rabbitUsername,
         password: env.rabbitPassword
@@ -35,7 +36,7 @@ export class DiscordRoleCacheApplication extends Application {
     readonly #port: number;
     readonly #cache: RedisKKVCache<bigint, bigint, discordeno.DiscordRole>;
 
-    public constructor(options: DiscordChatlogApplicationOptions) {
+    public constructor(options: DiscordRoleCacheApplicationOptions) {
         super();
 
         this.#port = options.port;
@@ -79,9 +80,9 @@ export class DiscordRoleCacheApplication extends Application {
     }
 }
 
-export interface DiscordChatlogApplicationOptions {
+export interface DiscordRoleCacheApplicationOptions {
     readonly port: number;
-    readonly messages: DiscordRoleCacheMessageBrokerOptions;
+    readonly messages: ConnectionOptions;
     readonly redis: {
         readonly url: string;
         readonly password: string;

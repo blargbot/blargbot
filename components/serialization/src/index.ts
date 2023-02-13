@@ -3,6 +3,7 @@ import { booleanConverter } from './converters/booleanConverter.js';
 import { createJsonArrayConverter } from './converters/createJsonArrayConverter.js';
 import { createJsonObjectConverter } from './converters/createJsonObjectConverter.js';
 import { createJsonUnionConverter } from './converters/createJsonUnionConverter.js';
+import { dateConverter } from './converters/dateConverter.js';
 import { nullConverter } from './converters/nullConverter.js';
 import { numberConverter } from './converters/numberConverter.js';
 import { regexConverter } from './converters/regexConverter.js';
@@ -27,5 +28,6 @@ export const json = {
     string: stringConverter,
     null: nullConverter,
     undefined: undefinedConverter,
-    regex: regexConverter
+    regex: regexConverter,
+    date: dateConverter
 } as const;

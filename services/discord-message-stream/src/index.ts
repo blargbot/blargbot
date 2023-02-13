@@ -1,12 +1,13 @@
 import Application from '@blargbot/application';
 import env from '@blargbot/env';
+import type { ConnectionOptions } from '@blargbot/message-broker';
 
-import type { DiscordMessageStreamMessageBrokerOptions } from './DiscordMessageStreamMessageBroker.js';
 import { DiscordMessageStreamMessageBroker } from './DiscordMessageStreamMessageBroker.js';
 import { DiscordMessageStreamService } from './DiscordMessageStreamService.js';
 
 @Application.hostIfEntrypoint(() => [{
     messages: {
+        prefetch: env.rabbitPrefetch,
         hostname: env.rabbitHost,
         username: env.rabbitUsername,
         password: env.rabbitPassword
@@ -16,7 +17,7 @@ export class DiscordMessageStreamApplication extends Application {
     readonly #messages: DiscordMessageStreamMessageBroker;
     readonly #service: DiscordMessageStreamService;
 
-    public constructor(options: DiscordChatlogApplicationOptions) {
+    public constructor(options: DiscordMessageStreamApplicationOptions) {
         super();
 
         this.#messages = new DiscordMessageStreamMessageBroker(options.messages);
@@ -34,6 +35,6 @@ export class DiscordMessageStreamApplication extends Application {
     }
 }
 
-export interface DiscordChatlogApplicationOptions {
-    readonly messages: DiscordMessageStreamMessageBrokerOptions;
+export interface DiscordMessageStreamApplicationOptions {
+    readonly messages: ConnectionOptions;
 }

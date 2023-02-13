@@ -6,10 +6,6 @@ import type amqplib from 'amqplib';
 export class ImageMessageBroker extends MessageBroker {
     static readonly #imageRequest = 'image-generate';
 
-    public constructor(options: ImageMessageBrokerOptions) {
-        super(options);
-    }
-
     protected override async onceConnected(channel: amqplib.Channel): Promise<void> {
         await channel.assertExchange(ImageMessageBroker.#imageRequest, 'topic');
     }
@@ -24,10 +20,4 @@ export class ImageMessageBroker extends MessageBroker {
             }
         });
     }
-}
-
-export interface ImageMessageBrokerOptions {
-    readonly hostname: string;
-    readonly username: string;
-    readonly password: string;
 }

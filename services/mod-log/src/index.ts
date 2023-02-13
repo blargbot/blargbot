@@ -25,7 +25,7 @@ export { modLogEntrySerializer };
         }
     }
 }])
-export class UserSettingsApplication extends Application {
+export class ModLogApplication extends Application {
     readonly #postgres: Sequelize;
     readonly #database: ModLogSequelizeDatabase;
     readonly #service: ModLogService;
@@ -33,7 +33,7 @@ export class UserSettingsApplication extends Application {
     readonly #server: Server;
     readonly #port: number;
 
-    public constructor(options: UserSettingsApplicationOptions) {
+    public constructor(options: ModLogApplicationOptions) {
         super();
 
         this.#port = options.port;
@@ -69,7 +69,7 @@ export class UserSettingsApplication extends Application {
     }
 }
 
-export interface UserSettingsApplicationOptions {
+export interface ModLogApplicationOptions {
     readonly port: number;
     readonly postgres: {
         readonly user: string;

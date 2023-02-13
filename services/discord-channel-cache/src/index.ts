@@ -4,14 +4,15 @@ import Application from '@blargbot/application';
 import env from '@blargbot/env';
 import express from '@blargbot/express';
 import type { ConnectionOptions } from '@blargbot/message-broker';
-import { RedisKKVCache } from '@blargbot/redis-cache';
+import { RedisKSCache, RedisKVCache } from '@blargbot/redis-cache';
+import { json } from '@blargbot/serialization';
+import type * as discordeno from 'discordeno';
 import type { RedisClientType } from 'redis';
 import { createClient as createRedisClient } from 'redis';
 
-import { createPresenceCacheRequestHandler } from './createPresenceCacheRequestHandler.js';
-import { DiscordPresenceCacheMessageBroker } from './DiscordPresenceCacheMessageBroker.js';
-import { DiscordPresenceCacheService } from './DiscordPresenceCacheService.js';
-import type { DiscordUserPresence } from './DiscordUserPresence.js';
+import { createMemberCacheRequestHandler } from './createChannelCacheRequestHandler.js';
+import { DiscordChannelCacheMessageBroker } from './DiscordChannelCacheMessageBroker.js';
+import { DiscordChannelCacheService } from './DiscordChannelCacheService.js';
 
 @Application.hostIfEntrypoint(() => [{
     port: env.appPort,
@@ -27,16 +28,15 @@ import type { DiscordUserPresence } from './DiscordUserPresence.js';
         password: env.rabbitPassword
     }
 }])
-export class DiscordPresenceCacheApplication extends Application {
+export class DiscordChannelCacheApplication extends Application {
     readonly #redis: RedisClientType;
-    readonly #messages: DiscordPresenceCacheMessageBroker;
-    readonly #service: DiscordPresenceCacheService;
+    readonly #messages: DiscordChannelCacheMessageBroker;
+    readonly #service: DiscordChannelCacheService;
     readonly #app: express.Express;
     readonly #server: Server;
     readonly #port: number;
-    readonly #cache: RedisKKVCache<bigint, bigint, DiscordUserPresence>;
 
-    public constructor(options: DiscordPresenceCacheApplicationOptions) {
+    public constructor(options: DiscordChannelCacheApplicationOptions) {
         super();
 
         this.#port = options.port;
@@ -46,18 +46,24 @@ export class DiscordPresenceCacheApplication extends Application {
             password: options.redis.password
         });
 
-        this.#cache = new RedisKKVCache<bigint, bigint, DiscordUserPresence>(this.#redis, {
-            ttlS: null,
-            keyspace: 'discord_presence',
-            key2Reader: v => BigInt(v)
-        });
-        this.#messages = new DiscordPresenceCacheMessageBroker(options.messages);
-        this.#service = new DiscordPresenceCacheService(this.#messages, this.#cache);
+        this.#messages = new DiscordChannelCacheMessageBroker(options.messages);
+        this.#service = new DiscordChannelCacheService(
+            this.#messages,
+            new RedisKVCache<bigint, discordeno.DiscordChannel>(this.#redis, {
+                ttlS: null,
+                keyspace: 'discord_channels'
+            }),
+            new RedisKSCache<bigint, bigint>(this.#redis, {
+                ttlS: null,
+                keyspace: 'discord_channels:guilds',
+                serializer: json.bigint
+            })
+        );
 
         this.#app = express()
             .use(express.urlencoded({ extended: true }))
             .use(express.json())
-            .all('/*', createPresenceCacheRequestHandler(this.#service));
+            .all('/*', createMemberCacheRequestHandler(this.#service));
         this.#server = new Server(this.#app.bind(this.#app));
     }
 
@@ -80,7 +86,7 @@ export class DiscordPresenceCacheApplication extends Application {
     }
 }
 
-export interface DiscordPresenceCacheApplicationOptions {
+export interface DiscordChannelCacheApplicationOptions {
     readonly port: number;
     readonly messages: ConnectionOptions;
     readonly redis: {

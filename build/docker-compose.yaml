@@ -25,6 +25,14 @@ services:
     build: ../services/discord-guild-cache/src
     image: blargbot/discord-guild-cache
 
+  discord-channel-cache:
+    build: ../services/discord-channel-cache/src
+    image: blargbot/discord-channel-cache
+
+  discord-message-cache:
+    build: ../services/discord-message-cache/src
+    image: blargbot/discord-message-cache
+
   discord-member-cache:
     build: ../services/discord-member-cache/src
     image: blargbot/discord-member-cache

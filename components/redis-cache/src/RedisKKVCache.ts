@@ -2,12 +2,13 @@ import type { RedisClientType } from 'redis';
 import type { RedisLockProvider } from 'redis-lock';
 import createRedisLock from 'redis-lock';
 
+import type { ConditionalProp } from './ConditionalProp.js';
 import type { IKKVCache } from './IKKVCache.js';
 import type { ISerializer } from './ISerializer.js';
 
 export class RedisKKVCache<Key1, Key2, Value> implements IKKVCache<Key1, Key2, Value> {
     readonly #redis: RedisClientType;
-    readonly #ttlS?: number;
+    readonly #expire: (key: string) => Promise<unknown>;
     readonly #toKey1: (key: Key1) => string;
     readonly #serializer: ISerializer<Value>;
     readonly #lock: RedisLockProvider;
@@ -18,7 +19,8 @@ export class RedisKKVCache<Key1, Key2, Value> implements IKKVCache<Key1, Key2, V
     public constructor(redis: RedisClientType, options: RedisKKVCacheOptions<Key1, Key2, Value>) {
         this.#redis = redis;
         this.#lock = createRedisLock(redis);
-        this.#ttlS = options.ttlS ?? undefined;
+        const ttl = options.ttlS;
+        this.#expire = ttl === null ? () => Promise.resolve() : k => this.#redis.expire(k, ttl);
         const toKey1 = options.key1Factory ?? (v => v.toString());
         const toKey2 = options.key2Factory ?? (v => v.toString());
         const fromKey2 = options.key2Reader ?? (v => v as Key2);
@@ -64,8 +66,7 @@ export class RedisKKVCache<Key1, Key2, Value> implements IKKVCache<Key1, Key2, V
 
     async #set(key1: string, key2: string, value: Value): Promise<void> {
         await this.#redis.hSet(key1, key2, this.#serializer.write(value));
-        if (this.#ttlS !== undefined)
-            await this.#redis.expire(key1, this.#ttlS);
+        await this.#expire(key1);
     }
 
     public async setAll(key1: Key1, entries: Iterable<[key2: Key2, value: Value]>): Promise<void> {
@@ -80,8 +81,7 @@ export class RedisKKVCache<Key1, Key2, Value> implements IKKVCache<Key1, Key2, V
 
     async #setAll(key1: string, entries: Record<string, string>): Promise<void> {
         await this.#redis.hSet(key1, entries);
-        if (this.#ttlS !== undefined)
-            await this.#redis.expire(key1, this.#ttlS);
+        await this.#expire(key1);
     }
 
     public async getOrAdd(key1: Key1, key2: Key2, factory: (key1: Key1, key2: Key2) => Awaitable<Value>): Promise<Value> {
@@ -211,16 +211,12 @@ export class RedisKKVCache<Key1, Key2, Value> implements IKKVCache<Key1, Key2, V
     }
 }
 
-type Mapping<Name extends string, In, Out, AutoMappable> = (In extends AutoMappable
-    ? { readonly [P in Name]?: (key: In) => Out; }
-    : { readonly [P in Name]: (key: In) => Out; })
+export type RedisKKVCacheOptions<Key1, Key2, Value> = RedisKKVCacheOptionsBase<Value>
+    & ConditionalProp<'key1Factory', Key1, string, string | number | bigint | boolean>
+    & ConditionalProp<'key2Factory', Key2, string, string | number | bigint | boolean>
+    & ConditionalProp<'key2Reader', string, Key2, string>
 
-type RedisKKVCacheOptions<Key1, Key2, Value> = RedisKKVCacheOptionsBase<Value>
-    & Mapping<'key1Factory', Key1, string, string | number | bigint | boolean>
-    & Mapping<'key2Factory', Key2, string, string | number | bigint | boolean>
-    & Mapping<'key2Reader', string, Key2, string>
-
-export interface RedisKKVCacheOptionsBase<Value> {
+interface RedisKKVCacheOptionsBase<Value> {
     readonly keyspace: string;
     readonly ttlS: number | null;
     readonly serializer?: ISerializer<Value>;

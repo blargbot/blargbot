@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 
-import type { ConsumeMessage, MessageHandle } from '@blargbot/message-broker';
+import type { ConnectionOptions, ConsumeMessage, MessageHandle } from '@blargbot/message-broker';
 import MessageBroker from '@blargbot/message-broker';
 import type amqplib from 'amqplib';
 import type * as discordeno from 'discordeno';
@@ -15,8 +15,9 @@ export class GatewayMessageBroker extends MessageBroker {
     public readonly managerId: string;
 
     public constructor(options: GatewayMessageBrokerOptions) {
-        super(options);
-        this.managerId = options.managerId;
+        const { managerId, ...opts } = options;
+        super(opts);
+        this.managerId = managerId;
     }
 
     public override async onceConnected(channel: amqplib.Channel): Promise<void> {
@@ -87,10 +88,7 @@ export class GatewayMessageBroker extends MessageBroker {
     }
 }
 
-export interface GatewayMessageBrokerOptions {
-    readonly hostname: string;
-    readonly username: string;
-    readonly password: string;
+export interface GatewayMessageBrokerOptions extends ConnectionOptions {
     readonly managerId: string;
 }
 

@@ -12,6 +12,7 @@ export const workerPath = fileURLToPath(import.meta.url);
 
 @Application.hostIfEntrypoint(() => [{
     messages: {
+        prefetch: env.rabbitPrefetch,
         hostname: env.rabbitHost,
         password: env.rabbitPassword,
         username: env.rabbitUsername,

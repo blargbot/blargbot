@@ -4,14 +4,17 @@ import amqplib from 'amqplib';
 
 export default abstract class MessageBroker {
     readonly #replies: Map<string, { res(value: amqplib.ConsumeMessage): void; rej(err: unknown): void; }>;
-    readonly #options: amqplib.Options.Connect;
+    readonly #options: ConnectionOptions;
     readonly #socketOptions: unknown;
+    readonly #prefetch: (c: amqplib.Channel) => Promise<unknown>;
     #connection?: Promise<amqplib.Channel>;
     #replyListener?: Promise<void>;
     #attemptReconnect: boolean;
 
-    public constructor(options: amqplib.Options.Connect, socketOptions?: unknown) {
-        this.#options = options;
+    public constructor(options: ConnectionOptions, socketOptions?: unknown) {
+        const { prefetch, ...opt } = options;
+        this.#options = opt;
+        this.#prefetch = prefetch === undefined ? () => Promise.resolve() : c => c.prefetch(prefetch);
         this.#socketOptions = socketOptions;
         this.#replies = new Map();
         this.#attemptReconnect = false;
@@ -34,6 +37,7 @@ export default abstract class MessageBroker {
             console.log('Connected to message bus');
 
             await this.onceConnected(channel);
+            await this.#prefetch(channel);
             this.#attemptReconnect = true;
             return channel;
         } catch (err) {
@@ -141,14 +145,7 @@ export default abstract class MessageBroker {
         }
     }
 
-    protected async handleMessage<This extends this>(this: This, options: {
-        queue: string;
-        filter: string | Iterable<string>;
-        handle: (this: This, data: Blob, message: ConsumeMessage) => Awaitable<Blob | void>;
-        queueArgs?: amqplib.Options.AssertQueue;
-        consumeArgs?: amqplib.Options.Consume;
-        exchange?: string;
-    }): Promise<MessageHandle> {
+    protected async handleMessage<This extends this>(this: This, options: HandleMessageOptions<This>): Promise<MessageHandle> {
         const h = this.#handleMessage.bind(this, options.handle.bind(this));
         const channel = await this.getChannel();
         await channel.assertQueue(options.queue, options.queueArgs);
@@ -189,6 +186,19 @@ export default abstract class MessageBroker {
             throw new Error('Blob content was declared to be of type \'application/json\' but is not valid json');
         }
     }
+}
+
+export interface ConnectionOptions extends amqplib.Options.Connect {
+    readonly prefetch?: number;
+}
+
+export interface HandleMessageOptions<This> {
+    queue: string;
+    filter: string | Iterable<string>;
+    handle: (this: This, data: Blob, message: ConsumeMessage) => Awaitable<Blob | void>;
+    queueArgs?: amqplib.Options.AssertQueue;
+    consumeArgs?: amqplib.Options.Consume;
+    exchange?: string;
 }
 
 export class ConsumeMessage implements amqplib.ConsumeMessage {

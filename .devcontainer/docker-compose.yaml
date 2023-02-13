@@ -33,6 +33,7 @@ x-rabbit-env:
   RABBITMQ_HOST: rabbitmq
   RABBITMQ_USERNAME: blargbot
   RABBITMQ_PASSWORD: SomePassword
+  RABBITMQ_PREFETCH: 9999
 
 x-rethinkdb-env:
   &rethinkdb-env
@@ -126,6 +127,24 @@ services:
 
   discord-guild-cache:
     image: blargbot/discord-guild-cache
+    environment:
+      <<: *rabbit-env
+      <<: *redis-env
+    depends_on:
+      - rabbitmq
+      - redis
+
+  discord-channel-cache:
+    image: blargbot/discord-channel-cache
+    environment:
+      <<: *rabbit-env
+      <<: *redis-env
+    depends_on:
+      - rabbitmq
+      - redis
+
+  discord-message-cache:
+    image: blargbot/discord-message-cache
     environment:
       <<: *rabbit-env
       <<: *redis-env

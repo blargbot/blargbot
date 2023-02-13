@@ -2,6 +2,7 @@ import type { RedisClientType } from 'redis';
 import type { RedisLockProvider } from 'redis-lock';
 import createRedisLock from 'redis-lock';
 
+import type { ConditionalProp } from './ConditionalProp.js';
 import type { IKVCache } from './IKVCache.js';
 import type { ISerializer } from './ISerializer.js';
 
@@ -100,14 +101,10 @@ export class RedisKVCache<Key, Value> implements IKVCache<Key, Value> {
     }
 }
 
-type Mapping<Name extends string, In, Out, AutoMappable> = (In extends AutoMappable
-    ? { readonly [P in Name]?: (key: In) => Out; }
-    : { readonly [P in Name]: (key: In) => Out; })
+export type RedisKVCacheOptions<Key, Value> = RedisKVCacheOptionsBase<Value>
+    & ConditionalProp<'keyFactory', Key, string, string | number | bigint | boolean>
 
-type RedisKVCacheOptions<Key, Value> = RedisKVCacheOptionsBase<Value>
-    & Mapping<'keyFactory', Key, string, string | number | bigint | boolean>
-
-export interface RedisKVCacheOptionsBase<Value> {
+interface RedisKVCacheOptionsBase<Value> {
     readonly keyspace: string;
     readonly ttlS: number | null;
     readonly serializer?: ISerializer<Value>;

@@ -1,14 +1,15 @@
 import Application from '@blargbot/application';
 import env from '@blargbot/env';
+import type { ConnectionOptions } from '@blargbot/message-broker';
 
 import type { DiscordChatlogDatabaseOptions } from './DiscordChatlogDatabase.js';
 import DiscordChatlogDatabase from './DiscordChatlogDatabase.js';
-import type { DiscordChatlogMessageBrokerOptions } from './DiscordChatlogMessageBroker.js';
 import { DiscordChatlogMessageBroker } from './DiscordChatlogMessageBroker.js';
 import { DiscordChatlogService } from './DiscordChatlogService.js';
 
 @Application.hostIfEntrypoint(() => [{
     messages: {
+        prefetch: env.rabbitPrefetch,
         hostname: env.rabbitHost,
         username: env.rabbitUsername,
         password: env.rabbitPassword
@@ -56,7 +57,7 @@ export class DiscordChatlogApplication extends Application {
 }
 
 export interface DiscordChatlogApplicationOptions {
-    readonly messages: DiscordChatlogMessageBrokerOptions;
+    readonly messages: ConnectionOptions;
     readonly database: DiscordChatlogDatabaseOptions;
     readonly guildSettings: {
         readonly url: string;

@@ -1,12 +1,13 @@
 import Application from '@blargbot/application';
 import env from '@blargbot/env';
+import type { ConnectionOptions } from '@blargbot/message-broker';
 
-import type { DiscordReactionStreamMessageBrokerOptions } from './DiscordReactionStreamMessageBroker.js';
 import { DiscordReactionStreamMessageBroker } from './DiscordReactionStreamMessageBroker.js';
 import { DiscordReactionStreamService } from './DiscordReactionStreamService.js';
 
 @Application.hostIfEntrypoint(() => [{
     messages: {
+        prefetch: env.rabbitPrefetch,
         hostname: env.rabbitHost,
         username: env.rabbitUsername,
         password: env.rabbitPassword
@@ -16,7 +17,7 @@ export class DiscordReactionStreamApplication extends Application {
     readonly #messages: DiscordReactionStreamMessageBroker;
     readonly #service: DiscordReactionStreamService;
 
-    public constructor(options: DiscordChatlogApplicationOptions) {
+    public constructor(options: DiscordReactionStreamApplicationOptions) {
         super();
 
         this.#messages = new DiscordReactionStreamMessageBroker(options.messages);
@@ -34,6 +35,6 @@ export class DiscordReactionStreamApplication extends Application {
     }
 }
 
-export interface DiscordChatlogApplicationOptions {
-    readonly messages: DiscordReactionStreamMessageBrokerOptions;
+export interface DiscordReactionStreamApplicationOptions {
+    readonly messages: ConnectionOptions;
 }
