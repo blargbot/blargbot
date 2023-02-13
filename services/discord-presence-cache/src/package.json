@@ -1,5 +1,5 @@
 {
-    "name": "@blargbot/discord-guild-cache",
+    "name": "@blargbot/discord-presence-cache",
     "version": "1.0.0",
     "private": true,
     "type": "module",

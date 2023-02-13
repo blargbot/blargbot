@@ -20,9 +20,9 @@ export class DiscordRoleCacheService {
             this.#messages.handleGuildCreate(this.#handleGuildCreate.bind(this)).then(h => this.#handles.add(h)),
             this.#messages.handleGuildUpdate(this.#handleGuildUpdate.bind(this)).then(h => this.#handles.add(h)),
             this.#messages.handleGuildDelete(this.#handleGuildDelete.bind(this)).then(h => this.#handles.add(h)),
-            this.#messages.handleRoleCreate(this.#handleRoleCreate.bind(this)).then(h => this.#handles.add(h)),
-            this.#messages.handleRoleUpdate(this.#handleRoleUpdate.bind(this)).then(h => this.#handles.add(h)),
-            this.#messages.handleRoleDelete(this.#handleRoleDelete.bind(this)).then(h => this.#handles.add(h))
+            this.#messages.handleGuildRoleCreate(this.#handleGuildRoleCreate.bind(this)).then(h => this.#handles.add(h)),
+            this.#messages.handleGuildRoleUpdate(this.#handleGuildRoleUpdate.bind(this)).then(h => this.#handles.add(h)),
+            this.#messages.handleGuildRoleDelete(this.#handleGuildRoleDelete.bind(this)).then(h => this.#handles.add(h))
         ]);
     }
 
@@ -67,15 +67,15 @@ export class DiscordRoleCacheService {
         await this.#cache.deleteAll(BigInt(guild.id));
     }
 
-    async #handleRoleCreate(message: discordeno.DiscordGuildRoleCreate): Promise<void> {
+    async #handleGuildRoleCreate(message: discordeno.DiscordGuildRoleCreate): Promise<void> {
         await this.#cache.set(BigInt(message.guild_id), BigInt(message.role.id), message.role);
     }
 
-    async #handleRoleUpdate(message: discordeno.DiscordGuildRoleUpdate): Promise<void> {
+    async #handleGuildRoleUpdate(message: discordeno.DiscordGuildRoleUpdate): Promise<void> {
         await this.#cache.set(BigInt(message.guild_id), BigInt(message.role.id), message.role);
     }
 
-    async #handleRoleDelete(role: discordeno.DiscordGuildRoleDelete): Promise<void> {
+    async #handleGuildRoleDelete(role: discordeno.DiscordGuildRoleDelete): Promise<void> {
         await this.#cache.delete(BigInt(role.guild_id), BigInt(role.role_id));
     }
 }

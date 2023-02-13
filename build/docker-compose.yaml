@@ -33,6 +33,10 @@ services:
     build: ../services/discord-user-cache/src
     image: blargbot/discord-user-cache
 
+  discord-presence-cache:
+    build: ../services/discord-presence-cache/src
+    image: blargbot/discord-presence-cache
+
   discord-role-cache:
     build: ../services/discord-role-cache/src
     image: blargbot/discord-role-cache

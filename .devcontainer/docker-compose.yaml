@@ -151,6 +151,15 @@ services:
       - rabbitmq
       - redis
 
+  discord-presence-cache:
+    image: blargbot/discord-presence-cache
+    environment:
+      <<: *rabbit-env
+      <<: *redis-env
+    depends_on:
+      - rabbitmq
+      - redis
+
   discord-role-cache:
     image: blargbot/discord-role-cache
     environment:

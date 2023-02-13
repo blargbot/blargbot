@@ -14,7 +14,7 @@ export class DiscordReactionStreamService {
 
     public async start(): Promise<void> {
         await Promise.all([
-            this.#messages.handleReactionAdd(this.#handleReactionAdd.bind(this)).then(h => this.#handles.add(h))
+            this.#messages.handleMessageReactionAdd(this.#handleMessageReactionAdd.bind(this)).then(h => this.#handles.add(h))
         ]);
     }
 
@@ -23,7 +23,7 @@ export class DiscordReactionStreamService {
             .map(h => h.disconnect().finally(() => this.#handles.delete(h))));
     }
 
-    async #handleReactionAdd(reaction: discordeno.DiscordMessageReactionAdd): Promise<void> {
+    async #handleMessageReactionAdd(reaction: discordeno.DiscordMessageReactionAdd): Promise<void> {
         await this.#messages.pushReaction(reaction);
     }
 }

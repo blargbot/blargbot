@@ -22,10 +22,10 @@ export class DiscordMemberCacheService {
             this.#messages.handleGuildCreate(this.#handleGuildCreate.bind(this)).then(h => this.#handles.add(h)),
             this.#messages.handleGuildUpdate(this.#handleGuildUpdate.bind(this)).then(h => this.#handles.add(h)),
             this.#messages.handleGuildDelete(this.#handleGuildDelete.bind(this)).then(h => this.#handles.add(h)),
-            this.#messages.handleMemberAdd(this.#handleMemberAdd.bind(this)).then(h => this.#handles.add(h)),
-            this.#messages.handleMemberRemove(this.#handleMemberRemove.bind(this)).then(h => this.#handles.add(h)),
-            this.#messages.handleMemberUpdate(this.#handleMemberUpdate.bind(this)).then(h => this.#handles.add(h)),
-            this.#messages.handleMembersChunk(this.#handleMembersChunk.bind(this)).then(h => this.#handles.add(h))
+            this.#messages.handleGuildMemberAdd(this.#handleGuildMemberAdd.bind(this)).then(h => this.#handles.add(h)),
+            this.#messages.handleGuildMemberRemove(this.#handleGuildMemberRemove.bind(this)).then(h => this.#handles.add(h)),
+            this.#messages.handleGuildMemberUpdate(this.#handleGuildMemberUpdate.bind(this)).then(h => this.#handles.add(h)),
+            this.#messages.handleGuildMembersChunk(this.#handleGuildMembersChunk.bind(this)).then(h => this.#handles.add(h))
         ]);
     }
 
@@ -70,22 +70,22 @@ export class DiscordMemberCacheService {
         await this.#cache.deleteAll(BigInt(guild.id));
     }
 
-    async #handleMemberAdd(member: discordeno.DiscordGuildMemberAdd): Promise<void> {
+    async #handleGuildMemberAdd(member: discordeno.DiscordGuildMemberAdd): Promise<void> {
         await this.#cache.set(BigInt(member.guild_id), BigInt(member.user.id), toSlimDiscordMember(member));
     }
 
-    async #handleMemberRemove(member: discordeno.DiscordGuildMemberRemove): Promise<void> {
+    async #handleGuildMemberRemove(member: discordeno.DiscordGuildMemberRemove): Promise<void> {
         await this.#cache.delete(BigInt(member.guild_id), BigInt(member.user.id));
     }
 
-    async #handleMemberUpdate(member: discordeno.DiscordGuildMemberUpdate): Promise<void> {
+    async #handleGuildMemberUpdate(member: discordeno.DiscordGuildMemberUpdate): Promise<void> {
         await this.#cache.upsert(BigInt(member.guild_id), BigInt(member.user.id), toSlimDiscordMember(member), (update, current) => ({
             ...current,
             ...update
         }));
     }
 
-    async #handleMembersChunk(chunk: discordeno.DiscordGuildMembersChunk): Promise<void> {
+    async #handleGuildMembersChunk(chunk: discordeno.DiscordGuildMembersChunk): Promise<void> {
         await this.#cache.setAll(BigInt(chunk.guild_id), chunk.members.map(m => [BigInt(m.user.id), toSlimDiscordMember(m)]));
     }
 }

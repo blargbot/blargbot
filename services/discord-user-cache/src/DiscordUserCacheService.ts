@@ -19,14 +19,14 @@ export class DiscordUserCacheService {
         await Promise.all([
             this.#messages.handleGuildCreate(this.#handleGuildCreate.bind(this)).then(h => this.#handles.add(h)),
             this.#messages.handleGuildUpdate(this.#handleGuildUpdate.bind(this)).then(h => this.#handles.add(h)),
-            this.#messages.handleMemberAdd(this.#handleMemberAdd.bind(this)).then(h => this.#handles.add(h)),
-            this.#messages.handleMembersChunk(this.#handleMembersChunk.bind(this)).then(h => this.#handles.add(h)),
+            this.#messages.handleGuildMemberAdd(this.#handleGuildMemberAdd.bind(this)).then(h => this.#handles.add(h)),
+            this.#messages.handleGuildMembersChunk(this.#handleGuildMembersChunk.bind(this)).then(h => this.#handles.add(h)),
             this.#messages.handleUserUpdate(this.#handleUserUpdate.bind(this)).then(h => this.#handles.add(h)),
             this.#messages.handleReady(this.#handleReady.bind(this)).then(h => this.#handles.add(h)),
-            this.#messages.handleBanAdd(this.#handleBanAdd.bind(this)).then(h => this.#handles.add(h)),
-            this.#messages.handleBanRemove(this.#handleBanRemove.bind(this)).then(h => this.#handles.add(h)),
-            this.#messages.handleInteraction(this.#handleInteraction.bind(this)).then(h => this.#handles.add(h)),
-            this.#messages.handlePresence(this.#handlePresence.bind(this)).then(h => this.#handles.add(h))
+            this.#messages.handleGuildBanAdd(this.#handleGuildBanAdd.bind(this)).then(h => this.#handles.add(h)),
+            this.#messages.handleGuildBanRemove(this.#handleGuildBanRemove.bind(this)).then(h => this.#handles.add(h)),
+            this.#messages.handleInteractionCreate(this.#handleInteractionCreate.bind(this)).then(h => this.#handles.add(h)),
+            this.#messages.handlePresenceUpdate(this.#handlePresenceUpdate.bind(this)).then(h => this.#handles.add(h))
         ]);
     }
 
@@ -65,11 +65,11 @@ export class DiscordUserCacheService {
         await this.#upsertGuild(guild);
     }
 
-    async #handleMemberAdd(member: discordeno.DiscordGuildMemberAdd): Promise<void> {
+    async #handleGuildMemberAdd(member: discordeno.DiscordGuildMemberAdd): Promise<void> {
         await this.#cache.set(BigInt(member.user.id), member.user);
     }
 
-    async #handleMembersChunk(chunk: discordeno.DiscordGuildMembersChunk): Promise<void> {
+    async #handleGuildMembersChunk(chunk: discordeno.DiscordGuildMembersChunk): Promise<void> {
         await Promise.all(chunk.members
             .map(u => this.#cache.set(BigInt(u.user.id), u.user))
         );
@@ -83,22 +83,22 @@ export class DiscordUserCacheService {
         await this.#cache.set(BigInt(message.user.id), message.user);
     }
 
-    async #handleBanAdd(message: discordeno.DiscordGuildBanAddRemove): Promise<void> {
+    async #handleGuildBanAdd(message: discordeno.DiscordGuildBanAddRemove): Promise<void> {
         await this.#cache.set(BigInt(message.user.id), message.user);
     }
 
-    async #handleBanRemove(message: discordeno.DiscordGuildBanAddRemove): Promise<void> {
+    async #handleGuildBanRemove(message: discordeno.DiscordGuildBanAddRemove): Promise<void> {
         await this.#cache.set(BigInt(message.user.id), message.user);
     }
 
-    async #handleInteraction(message: discordeno.DiscordInteraction): Promise<void> {
+    async #handleInteractionCreate(message: discordeno.DiscordInteraction): Promise<void> {
         if (message.user === undefined)
             return;
 
         await this.#cache.set(BigInt(message.user.id), message.user);
     }
 
-    async #handlePresence(message: discordeno.DiscordPresenceUpdate): Promise<void> {
+    async #handlePresenceUpdate(message: discordeno.DiscordPresenceUpdate): Promise<void> {
         await this.#cache.set(BigInt(message.user.id), message.user);
     }
 
