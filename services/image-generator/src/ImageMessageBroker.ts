@@ -18,7 +18,6 @@ export class ImageMessageBroker extends MessageBroker {
         return await this.handleMessage({
             exchange: ImageMessageBroker.#imageRequest,
             queue: ImageMessageBroker.#imageRequest,
-            queueArgs: { autoDelete: true },
             filter: '*',
             async handle(data, msg) {
                 return await handler(msg.fields.routingKey as keyof ImageOptionsMap, await this.blobToJson(data), msg);
