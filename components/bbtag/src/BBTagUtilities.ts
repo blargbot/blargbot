@@ -1,5 +1,4 @@
-import type { Configuration } from '@blargbot/config';
-import type { Database } from '@blargbot/database';
+import type { TagVariableScope } from '@blargbot/domain/models/index.js';
 import type { FlagParser } from '@blargbot/flags';
 import type { Logger } from '@blargbot/logger';
 import type moment from 'moment-timezone';
@@ -20,17 +19,19 @@ import type { BBTagArrayTools } from './utils/tagArray.js';
 
 export interface InjectionContext {
     readonly logger: Logger;
-    readonly database: Database;
     readonly subtags: Iterable<SubtagDescriptor>;
-    readonly config: Configuration;
     readonly util: BBTagUtilities;
     readonly parseFlags: FlagParser;
     readonly operators: BBTagOperators;
     readonly arrayTools: BBTagArrayTools;
     readonly jsonTools: BBTagJsonTools;
 
+    readonly variables: VariablesStore;
     readonly converter: BBTagValueConverter;
     readonly services: BBTagQueryServices;
+    readonly warnings: WarningService;
+    readonly sources: SourceProvider;
+    readonly timezones: TimezoneProvider;
 }
 
 export interface BBTagQueryServices {
@@ -39,6 +40,11 @@ export interface BBTagQueryServices {
     readonly channel: ChannelService;
     readonly message: MessageService;
     readonly guild: GuildService;
+}
+
+export interface VariablesStore {
+    get(scope: TagVariableScope, name: string): Promise<JToken | undefined>;
+    set(entries: Iterable<{ scope: TagVariableScope; name: string; value: JToken | undefined; }>): Promise<void>;
 }
 
 export interface SubtagDescriptor<T extends Subtag = Subtag> {
@@ -66,8 +72,6 @@ export interface BBTagUtilities {
 
     isUserStaff(member: Entities.User): Promise<boolean>;
 
-    warn(member: Entities.User, moderator: Entities.User, count: number, reason?: string): Promise<number>;
-    pardon(member: Entities.User, moderator: Entities.User, count: number, reason?: string): Promise<number>;
     ban(guild: Entities.Guild, user: Entities.User, moderator: Entities.User, authorizer: Entities.User, deleteDays: number, reason: string, duration: moment.Duration): Promise<'success' | 'alreadyBanned' | 'noPerms' | 'memberTooHigh' | 'moderatorNoPerms' | 'moderatorTooLow'>;
     unban(guild: Entities.Guild, user: Entities.User, moderator: Entities.User, authorizer: Entities.User, reason?: string): Promise<'success' | 'notBanned' | 'noPerms' | 'moderatorNoPerms'>;
     timeout(member: Entities.User, moderator: Entities.User, authorizer: Entities.User, duration: moment.Duration, reason?: string): Promise<'success' | 'alreadyTimedOut' | 'noPerms' | 'memberTooHigh' | 'moderatorNoPerms' | 'moderatorTooLow'>;
@@ -80,4 +84,18 @@ export interface BBTagUtilities {
     canRequestDomain(domain: string): boolean;
     generateDumpPage(payload: Entities.MessageCreateOptions, channel: Entities.Channel): Promise<string>;
     websiteLink(path?: string): string;
+}
+
+export interface WarningService {
+    warn(context: BBTagContext, member: Entities.User, moderator: Entities.User, count: number, reason?: string): Promise<number>;
+    pardon(context: BBTagContext, member: Entities.User, moderator: Entities.User, count: number, reason?: string): Promise<number>;
+    count(context: BBTagContext, member: Entities.User): Promise<number>;
+}
+
+export interface SourceProvider {
+    get(context: BBTagContext, type: 'tag' | 'cc', name: string): Promise<{ content: string; cooldonw?: number; } | undefined>;
+}
+
+export interface TimezoneProvider {
+    get(context: BBTagContext, userId: string): Promise<string | undefined>;
 }

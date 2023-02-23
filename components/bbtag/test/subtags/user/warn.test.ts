@@ -12,7 +12,7 @@ runSubtagTests({
             code: '{warn}',
             expected: '1',
             postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.warn(bbctx.user, bbctx.user, 1, 'Tag Warning'))
+                ctx.warnings.setup(m => m.warn(bbctx, bbctx.user, bbctx.user, 1, 'Tag Warning'))
                     .verifiable(1)
                     .thenResolve(1);
             }
@@ -21,7 +21,7 @@ runSubtagTests({
             code: '{warn}',
             expected: '7',
             postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.warn(bbctx.user, bbctx.user, 1, 'Tag Warning'))
+                ctx.warnings.setup(m => m.warn(bbctx, bbctx.user, bbctx.user, 1, 'Tag Warning'))
                     .verifiable(1)
                     .thenResolve(7);
             }
@@ -30,7 +30,7 @@ runSubtagTests({
             code: '{warn;}',
             expected: '2',
             postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.warn(bbctx.user, bbctx.user, 1, 'Tag Warning'))
+                ctx.warnings.setup(m => m.warn(bbctx, bbctx.user, bbctx.user, 1, 'Tag Warning'))
                     .verifiable(1)
                     .thenResolve(2);
             }
@@ -43,7 +43,7 @@ runSubtagTests({
                 ctx.userService.setup(m => m.querySingle(bbctx, 'other user'))
                     .thenResolve(member.instance);
 
-                ctx.util.setup(m => m.warn(member.instance, bbctx.user, 1, 'Tag Warning'))
+                ctx.warnings.setup(m => m.warn(bbctx, member.instance, bbctx.user, 1, 'Tag Warning'))
                     .verifiable(1)
                     .thenResolve(5);
             }
@@ -52,7 +52,7 @@ runSubtagTests({
             code: '{warn;;6}',
             expected: '29',
             postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.warn(bbctx.user, bbctx.user, 6, 'Tag Warning'))
+                ctx.warnings.setup(m => m.warn(bbctx, bbctx.user, bbctx.user, 6, 'Tag Warning'))
                     .verifiable(1)
                     .thenResolve(29);
             }
@@ -65,7 +65,7 @@ runSubtagTests({
                 ctx.userService.setup(m => m.querySingle(bbctx, 'other user'))
                     .thenResolve(member.instance);
 
-                ctx.util.setup(m => m.warn(member.instance, bbctx.user, 9, 'Tag Warning'))
+                ctx.warnings.setup(m => m.warn(bbctx, member.instance, bbctx.user, 9, 'Tag Warning'))
                     .verifiable(1)
                     .thenResolve(9);
             }
@@ -74,7 +74,7 @@ runSubtagTests({
             code: '{warn;;;My custom reason}',
             expected: '16',
             postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.warn(bbctx.user, bbctx.user, 1, 'My custom reason'))
+                ctx.warnings.setup(m => m.warn(bbctx, bbctx.user, bbctx.user, 1, 'My custom reason'))
                     .verifiable(1)
                     .thenResolve(16);
             }
@@ -87,7 +87,7 @@ runSubtagTests({
                 ctx.userService.setup(m => m.querySingle(bbctx, 'other user'))
                     .thenResolve(member.instance);
 
-                ctx.util.setup(m => m.warn(member.instance, bbctx.user, 6, 'My custom reason'))
+                ctx.warnings.setup(m => m.warn(bbctx, member.instance, bbctx.user, 6, 'My custom reason'))
                     .verifiable(1)
                     .thenResolve(22);
             }

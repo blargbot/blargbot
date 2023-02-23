@@ -1,5 +1,4 @@
 import type { Emote } from '@blargbot/discord-emote';
-import type { NamedGuildCommandTag, StoredTag } from '@blargbot/domain/models/index.js';
 import type { FlagDefinition } from '@blargbot/flags';
 import type { IFormattable } from '@blargbot/formatting';
 import type * as Discord from 'discord-api-types/v10';
@@ -122,7 +121,7 @@ export interface BBTagContextState {
     break: number;
     continue: number;
     subtags: Record<string, number[] | undefined>;
-    cache: Record<string, NamedGuildCommandTag | StoredTag | null>;
+    cache: Record<string, { content: string; cooldown?: number; } | null>;
     subtagCount: number;
     allowedMentions: {
         users: string[];

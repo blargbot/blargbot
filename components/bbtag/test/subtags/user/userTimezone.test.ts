@@ -16,20 +16,20 @@ runSubtagTests({
             cases: [
                 {
                     expected: 'UTC',
-                    setup(member, ctx) {
-                        ctx.userTable.setup(m => m.getProp(member.id, 'timezone')).thenResolve(undefined);
+                    postSetup(member, bbctx, ctx) {
+                        ctx.timezones.setup(m => m.get(bbctx, member.id)).thenResolve(undefined);
                     }
                 },
                 {
                     expected: 'abc',
-                    setup(member, ctx) {
-                        ctx.userTable.setup(m => m.getProp(member.id, 'timezone')).thenResolve('abc');
+                    postSetup(member, bbctx, ctx) {
+                        ctx.timezones.setup(m => m.get(bbctx, member.id)).thenResolve('abc');
                     }
                 },
                 {
                     expected: 'Etc/UTC',
-                    setup(member, ctx) {
-                        ctx.userTable.setup(m => m.getProp(member.id, 'timezone')).thenResolve('Etc/UTC');
+                    postSetup(member, bbctx, ctx) {
+                        ctx.timezones.setup(m => m.get(bbctx, member.id)).thenResolve('Etc/UTC');
                     }
                 }
             ]

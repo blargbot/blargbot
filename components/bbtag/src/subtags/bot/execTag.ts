@@ -1,5 +1,4 @@
 import { humanize } from '@blargbot/core/utils/index.js';
-import type { TagStore } from '@blargbot/domain/stores/TagStore.js';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import type { BBTagValueConverter } from '../../BBTagUtilities.js';
@@ -15,13 +14,12 @@ import { SubtagType } from '../../utils/index.js';
 const tag = textTemplates.subtags.execTag;
 
 @Subtag.names('execTag', 'exec')
-@Subtag.ctorArgs(Subtag.arrayTools(), Subtag.converter(), Subtag.store('tags'))
+@Subtag.ctorArgs(Subtag.arrayTools(), Subtag.converter())
 export class ExecTagSubtag extends CompiledSubtag {
     readonly #arrayTools: BBTagArrayTools;
     readonly #converter: BBTagValueConverter;
-    readonly #tags: TagStore;
 
-    public constructor(arrayTools: BBTagArrayTools, converter: BBTagValueConverter, tags: TagStore) {
+    public constructor(arrayTools: BBTagArrayTools, converter: BBTagValueConverter) {
         super({
             category: SubtagType.BOT,
             definition: [
@@ -38,12 +36,11 @@ export class ExecTagSubtag extends CompiledSubtag {
 
         this.#arrayTools = arrayTools;
         this.#converter = converter;
-        this.#tags = tags;
     }
 
     public async execTag(context: BBTagContext, name: string, args: string[]): Promise<string> {
         const tagName = name;
-        const tag = await context.getTag('tag', tagName, (key) => this.#tags.get(key));
+        const tag = await context.getTag('tag', tagName);
 
         if (tag === null)
             throw new BBTagRuntimeError(`Tag not found: ${tagName}`);

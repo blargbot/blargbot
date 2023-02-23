@@ -12,7 +12,11 @@ export class GuildEventLogService {
     }
 
     public async getEventLogChannel(guildId: bigint, event: string): Promise<bigint | null> {
-        return await this.#cache.getOrAdd({ guildId, event }, x => this.#database.get(x.guildId, x.event));
+        let result = await this.#cache.get({ guildId, event });
+        if (result === undefined)
+            await this.#cache.set({ guildId, event }, result = await this.#database.get(guildId, event));
+
+        return result;
     }
 
     public async getAllEventLogChannels(guildId: bigint): Promise<Record<string, bigint>> {

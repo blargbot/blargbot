@@ -122,7 +122,6 @@ runSubtagTests({
             expected: '239476239742340234',
             setup(ctx) {
                 ctx.options.isCC = true;
-                ctx.guildTable.setup(m => m.getSetting(ctx.guild.id, 'disableeveryone')).thenResolve(false);
             },
             postSetup(bbctx, ctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
@@ -161,7 +160,6 @@ runSubtagTests({
             expected: '239476239742340234',
             setup(ctx) {
                 ctx.options.isCC = true;
-                ctx.guildTable.setup(m => m.getSetting(ctx.guild.id, 'disableeveryone')).thenResolve(false);
             },
             postSetup(bbctx, ctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
@@ -271,7 +269,6 @@ runSubtagTests({
             expected: '239476239742340234',
             setup(ctx) {
                 ctx.options.isCC = true;
-                ctx.guildTable.setup(m => m.getSetting(ctx.guild.id, 'disableeveryone')).thenResolve(false);
             },
             postSetup(bbctx, ctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
@@ -346,7 +343,6 @@ runSubtagTests({
             expected: '239476239742340234',
             setup(ctx) {
                 ctx.options.isCC = true;
-                ctx.guildTable.setup(m => m.getSetting(ctx.guild.id, 'disableeveryone')).thenResolve(false);
             },
             postSetup(bbctx, ctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
@@ -421,7 +417,6 @@ runSubtagTests({
             expected: '239476239742340234',
             setup(ctx) {
                 ctx.options.isCC = true;
-                ctx.guildTable.setup(m => m.getSetting(ctx.guild.id, 'disableeveryone')).thenResolve(false);
             },
             postSetup(bbctx, ctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
@@ -502,7 +497,6 @@ runSubtagTests({
             expected: '239476239742340234',
             setup(ctx) {
                 ctx.options.isCC = true;
-                ctx.guildTable.setup(m => m.getSetting(ctx.guild.id, 'disableeveryone')).thenResolve(false);
             },
             postSetup(bbctx, ctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
@@ -577,7 +571,6 @@ runSubtagTests({
             expected: '239476239742340234',
             setup(ctx) {
                 ctx.options.isCC = true;
-                ctx.guildTable.setup(m => m.getSetting(ctx.guild.id, 'disableeveryone')).thenResolve(false);
             },
             postSetup(bbctx, ctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];

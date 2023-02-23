@@ -34,11 +34,7 @@ runSubtagTests({
                 ctx.options.inputRaw = 'This is some input text';
                 ctx.options.data = { stackSize: 100 };
                 ctx.tags['otherSubtag'] = {
-                    author: '212097368371683623',
                     content: '{assert}{eval}',
-                    name: 'otherSubtag',
-                    lastmodified: new Date(),
-                    uses: 0,
                     cooldown: 7
                 };
             },
@@ -79,11 +75,7 @@ runSubtagTests({
                 ctx.options.inputRaw = 'This is some input text';
                 ctx.options.data = { stackSize: 100 };
                 ctx.tags['otherSubtag'] = {
-                    author: '212097368371683623',
-                    content: '{assert}{eval}',
-                    name: 'otherSubtag',
-                    lastmodified: new Date(),
-                    uses: 0
+                    content: '{assert}{eval}'
                 };
             },
             assert(ctx) {
@@ -122,11 +114,7 @@ runSubtagTests({
                 ctx.options.inputRaw = 'This is some input text';
                 ctx.options.data = { stackSize: 100 };
                 ctx.tags['otherSubtag'] = {
-                    author: '212097368371683623',
                     content: '{assert}{eval}',
-                    name: 'otherSubtag',
-                    lastmodified: new Date(),
-                    uses: 0,
                     cooldown: 7
                 };
             },
@@ -166,11 +154,7 @@ runSubtagTests({
                 ctx.options.inputRaw = 'This is some input text';
                 ctx.options.data = { stackSize: 100 };
                 ctx.tags['otherSubtag'] = {
-                    author: '212097368371683623',
                     content: '{assert}{eval}',
-                    name: 'otherSubtag',
-                    lastmodified: new Date(),
-                    uses: 0,
                     cooldown: 7
                 };
             },
@@ -201,11 +185,7 @@ runSubtagTests({
             setup(ctx) {
                 ctx.options.data = { stackSize: 200 };
                 ctx.tags['otherSubtag'] = {
-                    author: '212097368371683623',
                     content: '{fail}',
-                    name: 'otherSubtag',
-                    lastmodified: new Date(),
-                    uses: 0,
                     cooldown: 7
                 };
             },
@@ -241,11 +221,7 @@ runSubtagTests({
                 ctx.options.inputRaw = 'This is some input text';
                 ctx.options.data = { stackSize: 100 };
                 ctx.tags['otherSubtag'] = {
-                    author: '212097368371683623',
                     content: '{assert}{eval}',
-                    name: 'otherSubtag',
-                    lastmodified: new Date(),
-                    uses: 0,
                     cooldown: 7
                 };
             },
@@ -289,11 +265,7 @@ runSubtagTests({
                 ctx.options.inputRaw = 'This is some input text';
                 ctx.options.data = { stackSize: 100 };
                 ctx.tags['otherSubtag'] = {
-                    author: '212097368371683623',
                     content: '{assert}{eval}',
-                    name: 'otherSubtag',
-                    lastmodified: new Date(),
-                    uses: 0,
                     cooldown: 7
                 };
             },
@@ -337,11 +309,7 @@ runSubtagTests({
                 ctx.options.inputRaw = 'This is some input text';
                 ctx.options.data = { stackSize: 100 };
                 ctx.tags['otherSubtag'] = {
-                    author: '212097368371683623',
                     content: '{assert}{eval}',
-                    name: 'otherSubtag',
-                    lastmodified: new Date(),
-                    uses: 0,
                     cooldown: 7
                 };
             },

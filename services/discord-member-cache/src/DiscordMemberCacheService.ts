@@ -79,10 +79,7 @@ export class DiscordMemberCacheService {
     }
 
     async #handleGuildMemberUpdate(member: discordeno.DiscordGuildMemberUpdate): Promise<void> {
-        await this.#cache.upsert(BigInt(member.guild_id), BigInt(member.user.id), toSlimDiscordMember(member), (update, current) => ({
-            ...current,
-            ...update
-        }));
+        await this.#cache.set(BigInt(member.guild_id), BigInt(member.user.id), toSlimDiscordMember(member));
     }
 
     async #handleGuildMembersChunk(chunk: discordeno.DiscordGuildMembersChunk): Promise<void> {

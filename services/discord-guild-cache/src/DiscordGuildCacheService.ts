@@ -43,10 +43,7 @@ export class DiscordGuildCacheService {
     }
 
     async #upsertGuild(guild: discordeno.DiscordGuild): Promise<void> {
-        await this.#cache.upsert(BigInt(guild.id), toSlimDiscordGuild(guild), (update, current) => ({
-            ...current,
-            ...update
-        }));
+        await this.#cache.set(BigInt(guild.id), toSlimDiscordGuild(guild));
     }
 
     async #handleGuildCreate(guild: discordeno.DiscordGuild): Promise<void> {

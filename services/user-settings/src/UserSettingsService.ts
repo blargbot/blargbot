@@ -14,7 +14,11 @@ export class UserSettingsService {
     }
 
     public async getSettings(userId: bigint): Promise<UserSettings> {
-        return await this.#cache.getOrAdd(userId, this.#getSettings.bind(this));
+        let result = await this.#cache.get(userId);
+        if (result === undefined)
+            await this.#cache.set(userId, result = await this.#getSettings(userId));
+
+        return result;
     }
 
     public async updateSettings(userId: bigint, value: Partial<UserSettings>): Promise<void> {

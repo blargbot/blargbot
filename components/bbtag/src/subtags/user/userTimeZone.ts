@@ -1,8 +1,7 @@
-import type { UserStore } from '@blargbot/domain/stores/UserStore.js';
-
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { UserNotFoundError } from '../../errors/index.js';
+import type { TimezoneProvider } from '../../index.js';
 import type { UserService } from '../../services/UserService.js';
 import { Subtag } from '../../Subtag.js';
 import textTemplates from '../../text.js';
@@ -11,12 +10,12 @@ import { SubtagType } from '../../utils/index.js';
 const tag = textTemplates.subtags.userTimeZone;
 
 @Subtag.names('userTimeZone')
-@Subtag.ctorArgs(Subtag.store('users'), Subtag.service('user'))
+@Subtag.ctorArgs(Subtag.inject('timezones'), Subtag.service('user'))
 export class UserTimezoneSubtag extends CompiledSubtag {
-    readonly #userSettings: UserStore;
+    readonly #timezones: TimezoneProvider;
     readonly #users: UserService;
 
-    public constructor(userSettings: UserStore, users: UserService) {
+    public constructor(timezones: TimezoneProvider, users: UserService) {
         super({
             category: SubtagType.USER,
             definition: [
@@ -39,7 +38,7 @@ export class UserTimezoneSubtag extends CompiledSubtag {
             ]
         });
 
-        this.#userSettings = userSettings;
+        this.#timezones = timezones;
         this.#users = users;
     }
 
@@ -56,7 +55,6 @@ export class UserTimezoneSubtag extends CompiledSubtag {
                 .withDisplay(quiet ? '' : undefined);
         }
 
-        const userTimezone = await this.#userSettings.getProp(user.id, 'timezone');
-        return userTimezone ?? 'UTC';
+        return await this.#timezones.get(context, user.id) ?? 'UTC';
     }
 }

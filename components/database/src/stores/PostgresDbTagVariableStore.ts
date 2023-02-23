@@ -61,11 +61,13 @@ export class PostgresDbTagVariableStore implements TagVariableStore {
         };
     }
 
-    public async upsert(values: Record<string, JToken | undefined>, scope: TagVariableScope): Promise<void> {
+    public async upsert(entries: Iterable<{ name: string; scope: TagVariableScope; value: JToken | undefined; }>): Promise<void> {
         await this.postgres.transaction(async () => {
-            for (const [key, value] of Object.entries(values)) {
+            for (const { name, scope, value } of entries) {
+                if (scope.type === 'TEMPORARY')
+                    continue;
                 const query = {
-                    name: key.substring(0, 255),
+                    name: name.substring(0, 255),
                     scope: variableScopeToId(scope),
                     type: scope.type
                 };
@@ -108,10 +110,12 @@ function variableScopeToId(scope: TagVariableScope): string {
     switch (scope.type) {
         case TagVariableType.AUTHOR: return scope.authorId;
         case TagVariableType.GLOBAL: return '';
+        case 'TEMPORARY': return '';
         case TagVariableType.GUILD_CC: return scope.guildId;
         case TagVariableType.GUILD_TAG: return scope.guildId;
         case TagVariableType.LOCAL_CC: return `${scope.guildId}_${scope.name}`;
         case TagVariableType.LOCAL_TAG: return scope.name;
+
     }
 }
 
@@ -128,6 +132,7 @@ function idToVariableScope(id: string, type: TagVariableScope['type']): TagVaria
             return { type, guildId: id.slice(0, splitAt), name: id.slice(splitAt + 1) };
         }
         case TagVariableType.LOCAL_TAG: return { type, name: id };
+        case 'TEMPORARY': return { type };
     }
 }
 
@@ -135,6 +140,7 @@ function variableScopeToFilter(scope: TagVariableScopeFilter): WhereAttributeHas
     switch (scope.type) {
         case TagVariableType.AUTHOR: return scope.authorId;
         case TagVariableType.GLOBAL: return scope.type;
+        case 'TEMPORARY': return undefined;
         case TagVariableType.GUILD_TAG: return scope.guildId;
         case TagVariableType.GUILD_CC: return scope.guildId;
         case TagVariableType.LOCAL_TAG: return scope.name;

@@ -20,7 +20,7 @@ export const tagVariableScopeProviders: readonly TagVariableScopeProvider[] = [
         description: textTemplates.subtag.variables.author.description,
         getScope: (context) => context.authorId !== undefined
             ? { type: TagVariableType.AUTHOR, authorId: context.authorId }
-            : undefined
+            : { type: 'TEMPORARY' }
     },
     {
         name: textTemplates.subtag.variables.global.name,
@@ -32,7 +32,7 @@ export const tagVariableScopeProviders: readonly TagVariableScopeProvider[] = [
         name: textTemplates.subtag.variables.temporary.name,
         prefix: '~',
         description: textTemplates.subtag.variables.temporary.description,
-        getScope: () => undefined
+        getScope: () => ({ type: 'TEMPORARY' })
     },
     {
         name: textTemplates.subtag.variables.local.name,
@@ -48,5 +48,5 @@ export interface TagVariableScopeProvider {
     readonly name: IFormattable<string>;
     readonly prefix: string;
     readonly description: IFormattable<string>;
-    getScope(context: BBTagContext): TagVariableScope | undefined;
+    getScope(context: BBTagContext): TagVariableScope;
 }

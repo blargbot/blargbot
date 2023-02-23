@@ -1,7 +1,6 @@
 import { humanize } from '@blargbot/core/utils/index.js';
 import { Emote } from '@blargbot/discord-emote';
 import { findRolePosition, permission } from '@blargbot/discord-util';
-import type { NamedGuildCommandTag, StoredTag } from '@blargbot/domain/models/index.js';
 import type { FlagDefinition, FlagResult } from '@blargbot/flags';
 import { hasFlag } from '@blargbot/guards';
 import { Timer } from '@blargbot/timer';
@@ -21,7 +20,6 @@ import { ScopeManager } from './ScopeManager.js';
 import type { Subtag } from './Subtag.js';
 import { SubtagCallStack } from './SubtagCallStack.js';
 import { TagCooldownManager } from './TagCooldownManager.js';
-import { tagVariableScopeProviders } from './tagVariableScopeProviders.js';
 import type { BBTagContextOptions, BBTagContextState, BBTagRuntimeScope, Entities, LocatedRuntimeError, RuntimeDebugEntry, SerializedBBTagContext } from './types.js';
 import { BBTagRuntimeState } from './types.js';
 
@@ -110,7 +108,7 @@ export class BBTagContext implements BBTagContextOptions {
         this.debug = [];
         this.scopes = options.scopes ?? new ScopeManager();
         this.callStack = options.callStack ?? new SubtagCallStack();
-        this.variables = options.variables ?? new VariableCache(this, tagVariableScopeProviders, this.engine.database.tagVariables, this.engine.logger);
+        this.variables = options.variables ?? new VariableCache(this, engine.variables);
         this.execTimer = new Timer();
         this.dbTimer = new Timer();
         this.dbObjectsCommitted = 0;
@@ -270,14 +268,7 @@ export class BBTagContext implements BBTagContextOptions {
     }
 
     async #sendOutput(text: string): Promise<string | undefined> {
-        let disableEveryone = true;
-        if (this.isCC) {
-            disableEveryone = await this.engine.database.guilds.getSetting(this.guild.id, 'disableeveryone') ?? false;
-            disableEveryone ||= !this.data.allowedMentions.everybody;
-
-            this.engine.logger.log('Allowed mentions:', this.data.allowedMentions, disableEveryone);
-        }
-
+        const disableEveryone = !this.isCC || !this.data.allowedMentions.everybody;
         const response = await this.engine.dependencies.services.message.create(this, this.channel.id, {
             content: text,
             embeds: this.data.embeds !== undefined ? this.data.embeds : undefined,
@@ -309,13 +300,11 @@ export class BBTagContext implements BBTagContextOptions {
         return this.data.outputMessage ??= await this.#sendOutput(text);
     }
 
-    public async getTag(type: 'tag', key: string, resolver: (key: string) => Promise<StoredTag | undefined>): Promise<StoredTag | null>;
-    public async getTag(type: 'cc', key: string, resolver: (key: string) => Promise<NamedGuildCommandTag | undefined>): Promise<NamedGuildCommandTag | null>;
-    public async getTag(type: string, key: string, resolver: (key: string) => Promise<NamedGuildCommandTag | StoredTag | undefined>): Promise<NamedGuildCommandTag | StoredTag | null> {
+    public async getTag(type: 'tag' | 'cc', key: string): Promise<{ content: string; cooldown?: number; } | null> {
         const cacheKey = `${type}_${key}`;
         if (cacheKey in this.data.cache)
             return this.data.cache[cacheKey];
-        const fetchedValue = await resolver(key);
+        const fetchedValue = await this.engine.dependencies.sources.get(this, type, key);
         if (fetchedValue !== undefined)
             return this.data.cache[cacheKey] = fetchedValue;
         return this.data.cache[cacheKey] = null;

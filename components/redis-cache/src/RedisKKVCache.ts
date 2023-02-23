@@ -34,117 +34,42 @@ export class RedisKKVCache<Key1, Key2, Value> implements IKKVCache<Key1, Key2, V
         };
     }
 
-    public get(key1: Key1, key2: Key2): Promise<Value | undefined> {
-        return this.#get(this.#toKey1(key1), this.#toKey2(key2));
+    public async lock(...args: [key1: Key1, key2: Key2] | [key1: Key1]): Promise<() => Promise<void>> {
+        return await this.#lock(args.length === 1
+            ? this.#toKey1(args[0])
+            : `${this.#toKey1(args[0])}:${this.#toKey2(args[1])}`);
     }
 
-    async #get(key1: string, key2: string): Promise<Value | undefined> {
-        const resultStr = await this.#redis.hGet(key1, key2);
+    public async get(key1: Key1, key2: Key2): Promise<Value | undefined> {
+        const resultStr = await this.#redis.hGet(this.#toKey1(key1), this.#toKey2(key2));
         if (resultStr === undefined)
             return undefined;
         return this.#serializer.read(resultStr);
     }
 
-    public getAll(key1: Key1): Promise<Map<Key2, Value>> {
-        return this.#getAll(this.#toKey1(key1));
-    }
-
-    async #getAll(key1: string): Promise<Map<Key2, Value>> {
-        const result = await this.#redis.hGetAll(key1);
+    public async getAll(key1: Key1): Promise<Map<Key2, Value>> {
+        const result = await this.#redis.hGetAll(this.#toKey1(key1));
         return this.#toMap(result);
     }
 
     public async set(key1: Key1, key2: Key2, value: Value): Promise<void> {
-        const strKey = this.#toKey1(key1);
-        const release = await this.#lock(strKey);
-        try {
-            await this.#set(strKey, this.#toKey2(key2), value);
-        } finally {
-            await release();
-        }
-    }
-
-    async #set(key1: string, key2: string, value: Value): Promise<void> {
-        await this.#redis.hSet(key1, key2, this.#serializer.write(value));
-        await this.#expire(key1);
+        const strKey1 = this.#toKey1(key1);
+        await this.#redis.hSet(strKey1, this.#toKey2(key2), this.#serializer.write(value));
+        await this.#expire(strKey1);
     }
 
     public async setAll(key1: Key1, entries: Iterable<[key2: Key2, value: Value]>): Promise<void> {
-        const strKey = this.#toKey1(key1);
-        const release = await this.#lock(strKey);
-        try {
-            await this.#setAll(strKey, this.#toRecord(entries));
-        } finally {
-            await release();
-        }
-    }
-
-    async #setAll(key1: string, entries: Record<string, string>): Promise<void> {
-        await this.#redis.hSet(key1, entries);
-        await this.#expire(key1);
-    }
-
-    public async getOrAdd(key1: Key1, key2: Key2, factory: (key1: Key1, key2: Key2) => Awaitable<Value>): Promise<Value> {
         const strKey1 = this.#toKey1(key1);
-        const strKey2 = this.#toKey2(key2);
-        let result = await this.#get(strKey1, strKey2);
-        if (result === undefined) {
-            const release = await this.#lock(strKey1);
-            try {
-                await this.#set(strKey1, strKey2, result = await factory(key1, key2));
-            } finally {
-                await release();
-            }
-        }
-        return result;
-    }
-
-    public async getOrAddAll(key1: Key1, keys: Iterable<Key2>, factory: (key1: Key1, key2: Key2) => Awaitable<Value>): Promise<Map<Key2, Value>>;
-    public async getOrAddAll(key1: Key1, entries: Iterable<[key2: Key2, value: (key1: Key1, key2: Key2) => Awaitable<Value>]>): Promise<Map<Key2, Value>>;
-    public async getOrAddAll(key1: Key1, ...args: [entries: Iterable<[key2: Key2, value: (key1: Key1, key2: Key2) => Awaitable<Value>]>] | [keys: Iterable<Key2>, factory: (key1: Key1, key2: Key2) => Awaitable<Value>]): Promise<Map<Key2, Value>> {
-        const entries = args.length === 1 ? args[0] : Array.from(args[0], e => [e, args[1]] as const);
-        const strKey1 = this.#toKey1(key1);
-        const dict = await this.#redis.hGetAll(strKey1);
-        const result = this.#toMap(dict);
-        const toSet = new Map();
-        await Promise.all(Array.from(entries, async ([key2, factory]) => {
-            const strKey2 = this.#toKey2(key2);
-            if (strKey2 in dict)
-                return;
-
-            const value = await factory(key1, key2);
-            toSet.set(key2, value);
-            result.set(key2, value);
-        }));
-        if (toSet.size > 0) {
-            const release = await this.#lock(strKey1);
-            try {
-                await this.#setAll(strKey1, this.#toRecord(toSet));
-            } finally {
-                await release();
-            }
-        }
-        return result;
+        await this.#redis.hSet(strKey1, this.#toRecord(entries));
+        await this.#expire(strKey1);
     }
 
     public async delete(key1: Key1, key2: Key2): Promise<void> {
-        const strKey = this.#toKey1(key1);
-        const release = await this.#lock(strKey);
-        try {
-            await this.#redis.hDel(strKey, this.#toKey2(key2));
-        } finally {
-            await release();
-        }
+        await this.#redis.hDel(this.#toKey1(key1), this.#toKey2(key2));
     }
 
     public async deleteAll(key1: Key1): Promise<void> {
-        const strKey = this.#toKey1(key1);
-        const release = await this.#lock(strKey);
-        try {
-            await this.#redis.del(strKey);
-        } finally {
-            await release();
-        }
+        await this.#redis.del(this.#toKey1(key1));
     }
 
     public async clear(): Promise<void> {
@@ -163,37 +88,6 @@ export class RedisKKVCache<Key1, Key2, Value> implements IKKVCache<Key1, Key2, V
             size++;
 
         return size;
-    }
-
-    public async upsert(key1: Key1, key2: Key2, update: Value, merge: (update: Value, current: Value) => Value): Promise<Value> {
-        const strKey1 = this.#toKey1(key1);
-        const release = await this.#lock(strKey1);
-        try {
-            const strKey2 = this.#toKey2(key2);
-            const current = await this.#get(strKey1, strKey2);
-            const result = current === undefined ? update : merge(update, current);
-            await this.#set(strKey1, strKey2, result);
-            return result;
-        } finally {
-            await release();
-        }
-    }
-
-    public async upsertAll(key1: Key1, getUpdates: (current: Map<Key2, Value>) => Iterable<[Key2, Value]>): Promise<Map<Key2, Value>> {
-        const strKey1 = this.#toKey1(key1);
-        const release = await this.#lock(strKey1);
-        try {
-            const current = await this.#getAll(strKey1);
-            const toSet = new Map();
-            for (const [key2, value] of getUpdates(current)) {
-                toSet.set(key2, value);
-                current.set(key2, value);
-            }
-            await this.#setAll(strKey1, this.#toRecord(toSet));
-            return current;
-        } finally {
-            await release();
-        }
     }
 
     #toRecord(items: Iterable<[Key2, Value]>): Record<string, string> {

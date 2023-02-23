@@ -12,8 +12,7 @@ runSubtagTests({
             code: '{pardon}',
             expected: '0',
             postSetup(bbctx, ctx) {
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                ctx.util.setup(m => m.pardon(bbctx.user, bbctx.user, 1, 'Tag Pardon'))
+                ctx.warnings.setup(m => m.pardon(bbctx, bbctx.user, bbctx.user, 1, 'Tag Pardon'))
                     .verifiable(1)
                     .thenResolve(0);
             }
@@ -22,8 +21,7 @@ runSubtagTests({
             code: '{pardon}',
             expected: '5',
             postSetup(bbctx, ctx) {
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                ctx.util.setup(m => m.pardon(bbctx.user, bbctx.user, 1, 'Tag Pardon'))
+                ctx.warnings.setup(m => m.pardon(bbctx, bbctx.user, bbctx.user, 1, 'Tag Pardon'))
                     .verifiable(1)
                     .thenResolve(5);
             }
@@ -32,8 +30,7 @@ runSubtagTests({
             code: '{pardon;}',
             expected: '3',
             postSetup(bbctx, ctx) {
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                ctx.util.setup(m => m.pardon(bbctx.user, bbctx.user, 1, 'Tag Pardon'))
+                ctx.warnings.setup(m => m.pardon(bbctx, bbctx.user, bbctx.user, 1, 'Tag Pardon'))
                     .verifiable(1)
                     .thenResolve(3);
             }
@@ -44,7 +41,7 @@ runSubtagTests({
             postSetup(bbctx, ctx) {
                 const user = ctx.createMock<Entities.User>();
                 ctx.userService.setup(m => m.querySingle(bbctx, 'other user')).verifiable(1).thenResolve(user.instance);
-                ctx.util.setup(m => m.pardon(user.instance, bbctx.user, 1, 'Tag Pardon'))
+                ctx.warnings.setup(m => m.pardon(bbctx, user.instance, bbctx.user, 1, 'Tag Pardon'))
                     .verifiable(1)
                     .thenResolve(7);
             }
@@ -53,7 +50,7 @@ runSubtagTests({
             code: '{pardon;;6}',
             expected: '26',
             postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.pardon(bbctx.user, bbctx.user, 6, 'Tag Pardon'))
+                ctx.warnings.setup(m => m.pardon(bbctx, bbctx.user, bbctx.user, 6, 'Tag Pardon'))
                     .verifiable(1)
                     .thenResolve(26);
             }
@@ -64,7 +61,7 @@ runSubtagTests({
             postSetup(bbctx, ctx) {
                 const user = ctx.createMock<Entities.User>();
                 ctx.userService.setup(m => m.querySingle(bbctx, 'other user')).verifiable(1).thenResolve(user.instance);
-                ctx.util.setup(m => m.pardon(user.instance, bbctx.user, 9, 'Tag Pardon'))
+                ctx.warnings.setup(m => m.pardon(bbctx, user.instance, bbctx.user, 9, 'Tag Pardon'))
                     .verifiable(1)
                     .thenResolve(0);
             }
@@ -75,7 +72,7 @@ runSubtagTests({
             postSetup(bbctx, ctx) {
                 const user = ctx.createMock<Entities.User>();
                 ctx.userService.setup(m => m.querySingle(bbctx, 'other user')).verifiable(1).thenResolve(user.instance);
-                ctx.util.setup(m => m.pardon(user.instance, bbctx.user, 8, 'Because I felt like it'))
+                ctx.warnings.setup(m => m.pardon(bbctx, user.instance, bbctx.user, 8, 'Because I felt like it'))
                     .verifiable(1)
                     .thenResolve(6);
             }

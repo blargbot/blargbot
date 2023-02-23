@@ -1,4 +1,3 @@
-import type { GuildStore } from '@blargbot/domain/stores/GuildStore.js';
 import * as Discord from 'discord-api-types/v10';
 
 import type { BBTagContext } from '../../BBTagContext.js';
@@ -15,14 +14,13 @@ import { SubtagType } from '../../utils/index.js';
 const tag = textTemplates.subtags.send;
 
 @Subtag.names('send')
-@Subtag.ctorArgs(Subtag.converter(), Subtag.store('guilds'), Subtag.service('channel'), Subtag.service('message'))
+@Subtag.ctorArgs(Subtag.converter(), Subtag.service('channel'), Subtag.service('message'))
 export class SendSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;
-    readonly #guilds: GuildStore;
     readonly #channels: ChannelService;
     readonly #messages: MessageService;
 
-    public constructor(converter: BBTagValueConverter, guilds: GuildStore, channels: ChannelService, messages: MessageService) {
+    public constructor(converter: BBTagValueConverter, channels: ChannelService, messages: MessageService) {
         super({
             category: SubtagType.MESSAGE,
             description: tag.description,
@@ -55,7 +53,6 @@ export class SendSubtag extends CompiledSubtag {
         });
 
         this.#converter = converter;
-        this.#guilds = guilds;
         this.#channels = channels;
         this.#messages = messages;
     }
@@ -72,9 +69,7 @@ export class SendSubtag extends CompiledSubtag {
                 file.file = Buffer.from(file.file).toString('base64');
         }
 
-        const disableEveryone = !context.isCC
-            || (await this.#guilds.getSetting(context.guild.id, 'disableeveryone')
-                ?? !context.data.allowedMentions.everybody);
+        const disableEveryone = !context.isCC || !context.data.allowedMentions.everybody;
 
         const result = await this.#messages.create(context, channel.id, {
             content: message,

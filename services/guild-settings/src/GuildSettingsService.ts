@@ -14,7 +14,11 @@ export class GuildSettingsService {
     }
 
     public async getSettings(guildId: bigint): Promise<GuildSettings> {
-        return await this.#cache.getOrAdd(guildId, this.#getSettings.bind(this));
+        let result = await this.#cache.get(guildId);
+        if (result === undefined)
+            await this.#cache.set(guildId, result = await this.#getSettings(guildId));
+
+        return result;
     }
 
     public async updateSettings(guildId: bigint, value: Partial<GuildSettings>): Promise<void> {

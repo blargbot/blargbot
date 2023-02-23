@@ -32,25 +32,31 @@ export class DiscordMessageCacheService {
         return await this.#cache.get(channelId);
     }
 
-    async #setLastMessageTime(channelId: string, messageId: string | null = null): Promise<void> {
-        if (messageId === null)
-            await this.#cache.delete(BigInt(channelId));
-        else
-            await this.#cache.set(BigInt(channelId), BigInt(messageId));
+    async #setLastMessageTime(values: Iterable<[channelId: string, messageId: string | null]>): Promise<void> {
+        const promises = [];
+        const toSet = [];
+        for (const [channelId, messageId] of values) {
+            if (messageId === null)
+                promises.push(this.#cache.delete(BigInt(channelId)));
+            else
+                toSet.push([BigInt(channelId), BigInt(messageId)] as const);
+        }
+        promises.push(this.#cache.setAll(toSet));
+        await Promise.all(promises);
     }
 
     async #handleGuildCreate(message: discordeno.DiscordGuild): Promise<void> {
         if (message.channels === undefined)
             return;
 
-        await Promise.all(message.channels.map(c => this.#setLastMessageTime(c.id, c.last_message_id)));
+        await this.#setLastMessageTime(message.channels.map(c => [c.id, c.last_message_id ?? null]));
     }
 
     async #handleChannelCreate(message: discordeno.DiscordChannel): Promise<void> {
-        await this.#setLastMessageTime(message.id, message.last_message_id);
+        await this.#setLastMessageTime([[message.id, message.last_message_id ?? null]]);
     }
 
     async #handleMessageCreate(message: discordeno.DiscordMessage): Promise<void> {
-        await this.#setLastMessageTime(message.channel_id, message.id);
+        await this.#setLastMessageTime([[message.channel_id, message.id]]);
     }
 }

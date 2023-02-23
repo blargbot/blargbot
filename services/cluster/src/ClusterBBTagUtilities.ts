@@ -45,13 +45,15 @@ export class ClusterBBTagUtilities implements BBTagUtilities {
         return this.cluster.util.isUserStaff(member);
     }
 
-    public async warn(member: Entities.User, moderator: Entities.User, count: number, reason?: string): Promise<number> {
+    public async warn(ctx: BBTagContext, member: Entities.User, moderator: Entities.User, count: number, reason?: string): Promise<number> {
+        ctx;
         // @ts-expect-error This is only a reference file for now
         const result = await this.cluster.moderation.warns.warn(member, moderator, this.cluster.discord.user, count, util.literal(reason));
         return result.warnings;
     }
 
-    public async pardon(member: Entities.User, moderator: Entities.User, count: number, reason?: string): Promise<number> {
+    public async pardon(ctx: BBTagContext, member: Entities.User, moderator: Entities.User, count: number, reason?: string): Promise<number> {
+        ctx;
         // @ts-expect-error This is only a reference file for now
         const result = await this.cluster.moderation.warns.pardon(member, moderator, count, util.literal(reason));
         return result.warnings;

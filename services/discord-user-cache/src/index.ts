@@ -48,7 +48,8 @@ export class DiscordUserCacheApplication extends Application {
 
         this.#cache = new RedisKVCache<bigint, discordeno.DiscordUser>(this.#redis, {
             ttlS: null,
-            keyspace: 'discord_users'
+            keyspace: 'discord_users',
+            lockRetryMs: 1
         });
         this.#messages = new DiscordUserCacheMessageBroker(options.messages);
         this.#service = new DiscordUserCacheService(this.#messages, this.#cache);

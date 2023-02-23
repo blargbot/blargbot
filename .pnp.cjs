@@ -413,9 +413,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/application", "workspace:components/application/src"],\
             ["@blargbot/async-tools", "workspace:components/async-tools/src"],\
             ["@blargbot/catch-decorators", "workspace:components/catch-decorators/src"],\
-            ["@blargbot/config", "workspace:components/config/src"],\
             ["@blargbot/core", "workspace:components/core/src"],\
-            ["@blargbot/database", "workspace:components/database/src"],\
             ["@blargbot/discord-emote", "workspace:components/discord-emote/src"],\
             ["@blargbot/discord-util", "workspace:components/discord-util/src"],\
             ["@blargbot/domain", "workspace:components/domain/src"],\

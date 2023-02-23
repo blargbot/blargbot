@@ -16,20 +16,14 @@ runSubtagTests({
             cases: [
                 {
                     expected: '0',
-                    setup(member, ctx) {
-                        ctx.guildTable.setup(m => m.getWarnings(ctx.guild.id, member.id)).thenResolve(undefined);
-                    }
-                },
-                {
-                    expected: '0',
-                    setup(member, ctx) {
-                        ctx.guildTable.setup(m => m.getWarnings(ctx.guild.id, member.id)).thenResolve(0);
+                    postSetup(member, bbctx, ctx) {
+                        ctx.warnings.setup(m => m.count(bbctx, member)).thenResolve(0);
                     }
                 },
                 {
                     expected: '1234',
-                    setup(member, ctx) {
-                        ctx.guildTable.setup(m => m.getWarnings(ctx.guild.id, member.id)).thenResolve(1234);
+                    postSetup(member, bbctx, ctx) {
+                        ctx.warnings.setup(m => m.count(bbctx, member)).thenResolve(1234);
                     }
                 }
             ]

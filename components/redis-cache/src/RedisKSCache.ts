@@ -28,6 +28,10 @@ export class RedisKSCache<Key, Value> implements IKSCache<Key, Value> {
         };
     }
 
+    public async lock(key: Key): Promise<() => Promise<void>> {
+        return await this.#lock(this.#toKey(key));
+    }
+
     public async list(key: Key): Promise<Value[]> {
         const result = [];
         for await (const element of this.#redis.sScanIterator(this.#toKey(key)))
@@ -37,46 +41,26 @@ export class RedisKSCache<Key, Value> implements IKSCache<Key, Value> {
 
     public async add(key: Key, value: Value): Promise<void> {
         const strKey = this.#toKey(key);
-        const release = await this.#lock(strKey);
-        try {
-            await this.#redis.sAdd(strKey, this.#serializer.write(value));
-            await this.#expire(strKey);
-        } finally {
-            await release();
-        }
+        await this.#redis.sAdd(strKey, this.#serializer.write(value));
+        await this.#expire(strKey);
     }
 
     public async addAll(key: Key, values: Iterable<Value>): Promise<void> {
         const strKey = this.#toKey(key);
-        const release = await this.#lock(strKey);
-        try {
-            await this.#redis.sAdd(strKey, Array.from(values, v => this.#serializer.write(v)));
-            await this.#expire(strKey);
-        } finally {
-            await release();
-        }
+        await this.#redis.sAdd(strKey, Array.from(values, v => this.#serializer.write(v)));
+        await this.#expire(strKey);
     }
 
     public async remove(key: Key, value: Value): Promise<void> {
         const strKey = this.#toKey(key);
-        const release = await this.#lock(strKey);
-        try {
-            await this.#redis.sRem(strKey, this.#serializer.write(value));
-            await this.#expire(strKey);
-        } finally {
-            await release();
-        }
+        await this.#redis.sRem(strKey, this.#serializer.write(value));
+        await this.#expire(strKey);
     }
 
     public async removeAll(key: Key, values: Iterable<Value>): Promise<void> {
         const strKey = this.#toKey(key);
-        const release = await this.#lock(strKey);
-        try {
-            await this.#redis.sRem(strKey, Array.from(values, v => this.#serializer.write(v)));
-            await this.#expire(strKey);
-        } finally {
-            await release();
-        }
+        await this.#redis.sRem(strKey, Array.from(values, v => this.#serializer.write(v)));
+        await this.#expire(strKey);
     }
 
     public async has(key: Key, value: Value): Promise<boolean> {
@@ -98,23 +82,18 @@ export class RedisKSCache<Key, Value> implements IKSCache<Key, Value> {
     }
 
     public async clear(key?: Key): Promise<void> {
-        if (key === undefined) {
-            const ops = new Set();
-            for await (const element of this.#redis.scanIterator({ MATCH: `${this.#keyspace}:*`, TYPE: 'set' })) {
-                const p = this.#redis.del(element).catch(() => 0);
-                ops.add(p);
-                p.finally(ops.delete.bind(ops, p));
-            }
-            await Promise.all(ops);
-        } else {
-            const strKey = this.#toKey(key);
-            const release = await this.#lock(strKey);
-            try {
-                await this.#redis.del(this.#toKey(key));
-            } finally {
-                await release();
-            }
+        if (key !== undefined) {
+            await this.#redis.del(this.#toKey(key));
+            return;
         }
+
+        const ops = new Set();
+        for await (const element of this.#redis.scanIterator({ MATCH: `${this.#keyspace}:*`, TYPE: 'set' })) {
+            const p = this.#redis.del(element).catch(() => 0);
+            ops.add(p);
+            p.finally(ops.delete.bind(ops, p));
+        }
+        await Promise.all(ops);
     }
 
     public async size(key?: Key): Promise<number> {

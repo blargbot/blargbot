@@ -56,10 +56,10 @@ export class DiscordChannelCacheService {
     }
 
     async #addChannels(channels: discordeno.DiscordChannel[], guildId?: string): Promise<void> {
-        const promises = channels.map(c => this.#channelCache.set(BigInt(c.id), { ...c, guild_id: guildId }));
+        const setChannels = this.#channelCache.setAll(channels.map(c => [BigInt(c.id), { ...c, guild_id: guildId }]));
         if (guildId !== undefined)
-            promises.push(this.#guildIndex.addAll(BigInt(guildId), channels.map(c => BigInt(c.id))));
-        await Promise.all(promises);
+            await this.#guildIndex.addAll(BigInt(guildId), channels.map(c => BigInt(c.id)));
+        await setChannels;
     }
 
     async #clearCache(guildId: bigint): Promise<void> {

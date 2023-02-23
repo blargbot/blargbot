@@ -51,6 +51,8 @@ export class DiscordUserCacheService {
         if (guild.members === undefined)
             return;
 
+        console.log('Found guild with', guild.members.length, 'users');
+
         await Promise.all(guild.members
             .filter(hasUser)
             .map(u => this.#cache.set(BigInt(u.user.id), u.user))

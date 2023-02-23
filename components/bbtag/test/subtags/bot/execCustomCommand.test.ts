@@ -1,4 +1,4 @@
-import { BBTagRuntimeError, BBTagRuntimeState, Subtag, SubtagStackOverflowError } from '@bbtag/blargbot';
+import { BBTagRuntimeError, BBTagRuntimeState, Subtag, SubtagStackOverflowError, UnknownSubtagError } from '@bbtag/blargbot';
 import { ExecCustomCommandSubtag, JsonSubtag } from '@bbtag/blargbot/subtags';
 import chai from 'chai';
 
@@ -34,8 +34,6 @@ runSubtagTests({
                 ctx.options.inputRaw = 'This is some input text';
                 ctx.options.data = { stackSize: 100 };
                 ctx.ccommands['othersubtag'] = {
-                    id: '0',
-                    author: '212097368371683623',
                     content: '{assert}{eval}',
                     cooldown: 7
                 };
@@ -77,8 +75,6 @@ runSubtagTests({
                 ctx.options.inputRaw = 'This is some input text';
                 ctx.options.data = { stackSize: 100 };
                 ctx.ccommands['othersubtag'] = {
-                    id: '0',
-                    author: '212097368371683623',
                     content: '{assert}{eval}'
                 };
             },
@@ -118,8 +114,6 @@ runSubtagTests({
                 ctx.options.inputRaw = 'This is some input text';
                 ctx.options.data = { stackSize: 100 };
                 ctx.ccommands['othersubtag'] = {
-                    id: '0',
-                    author: '212097368371683623',
                     content: '{assert}{eval}',
                     cooldown: 7
                 };
@@ -160,8 +154,6 @@ runSubtagTests({
                 ctx.options.inputRaw = 'This is some input text';
                 ctx.options.data = { stackSize: 100 };
                 ctx.ccommands['othersubtag'] = {
-                    id: '0',
-                    author: '212097368371683623',
                     content: '{assert}{eval}',
                     cooldown: 7
                 };
@@ -186,16 +178,13 @@ runSubtagTests({
         },
         {
             code: '{execcc;othersubtag}',
-            expected: '`Cannot execcc imported tag: othersubtag`',
+            expected: '`Unknown subtag assert`',
             errors: [
-                { start: 0, end: 20, error: new BBTagRuntimeError('Cannot execcc imported tag: othersubtag') }
+                { start: 0, end: 8, error: new UnknownSubtagError('assert') }
             ],
             setup(ctx) {
                 ctx.ccommands['othersubtag'] = {
-                    id: '0',
-                    author: '212097368371683623',
-                    content: '{assert}{eval}',
-                    alias: 'otherSubtag',
+                    content: '{assert}',
                     cooldown: 7
                 };
             }
@@ -209,8 +198,6 @@ runSubtagTests({
             setup(ctx) {
                 ctx.options.data = { stackSize: 200 };
                 ctx.ccommands['othersubtag'] = {
-                    id: '0',
-                    author: '212097368371683623',
                     content: '{fail}',
                     cooldown: 7
                 };
@@ -247,8 +234,6 @@ runSubtagTests({
                 ctx.options.inputRaw = 'This is some input text';
                 ctx.options.data = { stackSize: 100 };
                 ctx.ccommands['othersubtag'] = {
-                    id: '0',
-                    author: '212097368371683623',
                     content: '{assert}{eval}',
                     cooldown: 7
                 };
@@ -293,8 +278,6 @@ runSubtagTests({
                 ctx.options.inputRaw = 'This is some input text';
                 ctx.options.data = { stackSize: 100 };
                 ctx.ccommands['othersubtag'] = {
-                    id: '0',
-                    author: '212097368371683623',
                     content: '{assert}{eval}',
                     cooldown: 7
                 };
@@ -339,8 +322,6 @@ runSubtagTests({
                 ctx.options.inputRaw = 'This is some input text';
                 ctx.options.data = { stackSize: 100 };
                 ctx.ccommands['othersubtag'] = {
-                    id: '0',
-                    author: '212097368371683623',
                     content: '{assert}{eval}',
                     cooldown: 7
                 };

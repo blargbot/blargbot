@@ -1,5 +1,4 @@
 import { metrics } from '@blargbot/core/Metrics.js';
-import type { Database } from '@blargbot/database';
 import type { IFormattable } from '@blargbot/formatting';
 import { hasValue } from '@blargbot/guards';
 import type { Logger } from '@blargbot/logger';
@@ -7,7 +6,7 @@ import { Timer } from '@blargbot/timer';
 
 import type { BBTagContext } from './BBTagContext.js';
 import type { BBTagEngine } from './BBTagEngine.js';
-import type { BBTagQueryServices, BBTagUtilities, BBTagValueConverter, SubtagDescriptor } from './BBTagUtilities.js';
+import type { BBTagQueryServices, BBTagUtilities, BBTagValueConverter, InjectionContext, SubtagDescriptor } from './BBTagUtilities.js';
 import type { SubtagCall } from './language/index.js';
 import type { SubtagOptions, SubtagSignature } from './types.js';
 import type { BBTagArrayTools, BBTagJsonTools, BBTagOperators, SubtagType } from './utils/index.js';
@@ -59,20 +58,16 @@ export abstract class Subtag implements SubtagOptions<IFormattable<string>> {
         };
     }
 
+    public static inject<T extends keyof InjectionContext>(key: T): (engine: BBTagEngine) => InjectionContext[T] {
+        return e => e.dependencies[key];
+    }
+
     public static converter(): (engine: BBTagEngine) => BBTagValueConverter {
         return e => e.dependencies.converter;
     }
 
     public static service<T extends keyof BBTagQueryServices>(type: T): (engine: BBTagEngine) => BBTagQueryServices[T] {
         return e => e.dependencies.services[type];
-    }
-
-    public static store(): (engine: BBTagEngine) => Database;
-    public static store<T extends keyof Database>(type: T): (engine: BBTagEngine) => Database[T];
-    public static store<T extends keyof Database>(type?: T): (engine: BBTagEngine) => Database[T] | Database {
-        if (type === undefined)
-            return e => e.dependencies.database;
-        return e => e.dependencies.database[type];
     }
 
     public static util(): (engine: BBTagEngine) => BBTagUtilities {

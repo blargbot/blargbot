@@ -142,12 +142,38 @@ export class Cluster extends BaseClient {
         const bbtagArrayTools = createBBTagArrayTools({
             convertToInt: parseInt
         });
-        // @ts-expect-error aaaa
-        const _bbtag = new BBTagEngine({
-            config: this.config,
-            database: this.database,
+        const util = new ClusterBBTagUtilities(this);
+        const bbtag = new BBTagEngine({
+            warnings: {
+                count: async (ctx, user) => await this.database.guilds.getWarnings(ctx.guild.id, user.id) ?? 0,
+                pardon: (...args) => util.pardon(...args),
+                warn: (...args) => util.warn(...args)
+            },
+            sources: {
+                get: async (ctx, type, name) => {
+                    if (type === 'cc') {
+                        const ccommand = await this.database.guilds.getCommand(ctx.guild.id, name);
+                        if (ccommand === undefined)
+                            return undefined;
+
+                        if (!('alias' in ccommand))
+                            return ccommand;
+
+                        name = ccommand.alias;
+                    }
+
+                    return await this.database.tags.get(name);
+                }
+            },
+            timezones: {
+                get: (_ctx, userId) => this.database.users.getProp(userId, 'timezone')
+            },
+            variables: {
+                get: (scope, name) => this.database.tagVariables.get(name, scope),
+                set: (entries) => this.database.tagVariables.upsert(entries)
+            },
             logger: this.logger,
-            util: new ClusterBBTagUtilities(this),
+            util,
             subtags: Object.values(Subtags)
                 .map(Subtag.getDescriptor),
             arrayTools: bbtagArrayTools,
@@ -183,6 +209,7 @@ export class Cluster extends BaseClient {
                 message: new ErisBBTagMessageService(this)
             }
         });
+        bbtag;
         this.intervals = new IntervalManager(this, moment.duration(10, 's'));
         this.rolemes = new RolemeManager(this);
         this.help = new CommandDocumentationManager(this);

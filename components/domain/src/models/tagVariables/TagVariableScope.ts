@@ -5,6 +5,7 @@ export type TagVariableScope =
     | GuildTagVariableScope
     | AuthorVariableScope
     | GlobalVariableScope
+    | TemporaryVariableScope
     | LocalCCVariableScope
     | LocalTagVariableScope
 
@@ -33,6 +34,10 @@ export interface AuthorVariableScope {
 
 export interface GlobalVariableScope {
     readonly type: TagVariableType.GLOBAL;
+}
+
+export interface TemporaryVariableScope {
+    readonly type: 'TEMPORARY';
 }
 
 export interface LocalTagVariableScope {

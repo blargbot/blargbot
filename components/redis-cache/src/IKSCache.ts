@@ -9,4 +9,5 @@ export interface IKSCache<Key, Value> {
     hasAny(key: Key, values: Iterable<Value>): Awaitable<boolean>;
     clear(key?: Key): Awaitable<void>;
     size(key?: Key): Awaitable<number>;
+    lock(key: Key): Promise<() => Promise<void>>;
 }

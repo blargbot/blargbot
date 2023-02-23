@@ -1,6 +1,7 @@
 import type { AwaitReactionsResponse, BBTagContext, Entities, MessageService } from '@bbtag/blargbot';
 import { catchErrors } from '@blargbot/catch-decorators';
 import type { Emote } from '@blargbot/discord-emote';
+import { AllowedMentionsTypes } from 'discord-api-types/v10';
 import * as Eris from 'eris';
 
 import type { Cluster } from '../../Cluster.js';
@@ -41,6 +42,12 @@ export class ErisBBTagMessageService implements MessageService {
     @catchErrors.async(Eris.DiscordRESTError, err => ({ error: err.message }))
     @catchErrors.async.filtered(() => true, () => ({ error: 'UNKNOWN' }))
     public async create(context: BBTagContext, channelId: string, content: Entities.MessageCreateOptions): Promise<Entities.Message | { error: string; } | undefined> {
+        if (content.allowed_mentions?.parse !== undefined) {
+            const everyoneIndex = content.allowed_mentions.parse.indexOf(AllowedMentionsTypes.Everyone);
+            if (everyoneIndex !== -1 && await this.#cluster.database.guilds.getSetting(context.guild.id, 'disableeveryone') === true)
+                content.allowed_mentions.parse.splice(everyoneIndex, 1);
+        }
+
         const message = context.data.nsfw === undefined
             // @ts-expect-error This is only a reference file for now
             ? await this.#cluster.discord.createMessage(channelId, content)

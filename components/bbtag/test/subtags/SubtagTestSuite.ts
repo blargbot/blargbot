@@ -1,6 +1,6 @@
 import { inspect } from 'node:util';
 
-import type { BBTagContextOptions, BBTagRuntimeScope, BBTagUtilities, ChannelService, Entities, GuildService, InjectionContext, LocatedRuntimeError, MessageService, RoleService, SourceMarker, SubtagCall, SubtagDescriptor, UserService } from '@bbtag/blargbot';
+import type { BBTagContextOptions, BBTagRuntimeScope, BBTagUtilities, ChannelService, Entities, GuildService, InjectionContext, LocatedRuntimeError, MessageService, RoleService, SourceMarker, SourceProvider, SubtagCall, SubtagDescriptor, TimezoneProvider, UserService, VariablesStore, WarningService } from '@bbtag/blargbot';
 import { BaseRuntimeLimit, BBTagContext, BBTagEngine, BBTagRuntimeError, createBBTagArrayTools, createBBTagJsonTools, createBBTagOperators, createEmbedParser, NotEnoughArgumentsError, parseBBTag, smartStringCompare, Subtag, SubtagType, TooManyArgumentsError } from '@bbtag/blargbot';
 import { smartSplitRanges } from '@blargbot/core/utils/humanize/smartSplit.js';
 import { repeat } from '@blargbot/core/utils/index.js';
@@ -12,10 +12,8 @@ import { parseFloat } from '@blargbot/core/utils/parse/parseFloat.js';
 import { parseInt as bbtagParseInt } from '@blargbot/core/utils/parse/parseInt.js';
 import { parseString } from '@blargbot/core/utils/parse/parseString.js';
 import { parseTime } from '@blargbot/core/utils/parse/parseTime.js';
-import { Database } from '@blargbot/database';
 import { snowflake } from '@blargbot/discord-util';
-import type { GuildCommandTag, StoredTag, TagVariableScope } from '@blargbot/domain/models/index.js';
-import type { GuildStore, TagStore, TagVariableStore, UserStore } from '@blargbot/domain/stores/index.js';
+import type { TagVariableScope } from '@blargbot/domain/models/index.js';
 import { createFlagParser } from '@blargbot/flags';
 import type { Logger } from '@blargbot/logger';
 import { argument, Mock } from '@blargbot/test-util/mock.js';
@@ -103,12 +101,11 @@ export class SubtagTestContext {
     public readonly timer = new Timer();
     public readonly dependencies = this.createMock<InjectionContext>();
     public readonly util = this.createMock<BBTagUtilities>();
+    public readonly warnings = this.createMock<WarningService>();
     public readonly logger = this.createMock<Logger>(undefined, false);
-    public readonly database = this.createMock(Database);
-    public readonly tagVariablesTable = this.createMock<TagVariableStore>();
-    public readonly tagsTable = this.createMock<TagStore>();
-    public readonly guildTable = this.createMock<GuildStore>();
-    public readonly userTable = this.createMock<UserStore>();
+    public readonly tagVariablesTable = this.createMock<VariablesStore>();
+    public readonly timezones = this.createMock<TimezoneProvider>();
+    public readonly sources = this.createMock<SourceProvider>();
     public readonly limit = this.createMock(BaseRuntimeLimit);
     public readonly channelService = this.createMock<ChannelService>();
     public readonly roleService = this.createMock<RoleService>();
@@ -118,8 +115,8 @@ export class SubtagTestContext {
     public isStaff = false;
     public readonly ownedMessages: string[] = [];
 
-    public readonly ccommands: Record<string, GuildCommandTag>;
-    public readonly tags: Record<string, StoredTag>;
+    public readonly ccommands: Record<string, { content: string; cooldown?: number; }>;
+    public readonly tags: Record<string, { content: string; cooldown?: number; }>;
     public readonly tagVariables: MapByValue<{ scope: TagVariableScope; name: string; }, JToken>;
     public readonly rootScope: BBTagRuntimeScope = { functions: {}, inLock: false, isTag: true };
 
@@ -189,10 +186,13 @@ export class SubtagTestContext {
             convertToInt: parseInt
         });
 
-        this.dependencies.setup(m => m.database, false).thenReturn(this.database.instance);
+        this.dependencies.setup(m => m.warnings, false).thenReturn(this.warnings.instance);
+        this.dependencies.setup(m => m.sources, false).thenReturn(this.sources.instance);
+        this.dependencies.setup(m => m.timezones, false).thenReturn(this.timezones.instance);
         this.dependencies.setup(m => m.logger, false).thenReturn(this.logger.instance);
         this.dependencies.setup(m => m.util, false).thenReturn(this.util.instance);
         this.dependencies.setup(m => m.arrayTools, false).thenReturn(bbtagArrayTools);
+        this.dependencies.setup(m => m.variables, false).thenReturn(this.tagVariablesTable.instance);
         this.dependencies.setup(m => m.services, false).thenReturn({
             channel: this.channelService.instance,
             message: this.messageService.instance,
@@ -227,17 +227,12 @@ export class SubtagTestContext {
             time: parseTime
         });
 
-        this.database.setup(m => m.tagVariables, false).thenReturn(this.tagVariablesTable.instance);
-        this.database.setup(m => m.guilds, false).thenReturn(this.guildTable.instance);
-        this.database.setup(m => m.users, false).thenReturn(this.userTable.instance);
-        this.database.setup(m => m.tags, false).thenReturn(this.tagsTable.instance);
-
-        this.tagVariablesTable.setup(m => m.get(argument.isTypeof('string').value, tsMockito.anything() as never), false)
-            .thenCall((...[name, scope]: Parameters<TagVariableStore['get']>) => this.tagVariables.get({ scope, name }));
+        this.tagVariablesTable.setup(m => m.get(tsMockito.anything() as never, tsMockito.anything() as never), false)
+            .thenCall((...[scope, name]: Parameters<VariablesStore['get']>) => this.tagVariables.get({ scope, name }));
         if (this.testCase.setupSaveVariables !== false) {
-            this.tagVariablesTable.setup(m => m.upsert(tsMockito.anything() as never, tsMockito.anything() as never), false)
-                .thenCall((...[values, scope]: Parameters<TagVariableStore['upsert']>) => {
-                    for (const [name, value] of Object.entries(values)) {
+            this.tagVariablesTable.setup(m => m.set(tsMockito.anything() as never), false)
+                .thenCall((...[values]: Parameters<VariablesStore['set']>) => {
+                    for (const { name, scope, value } of values) {
                         if (value !== undefined)
                             this.tagVariables.set({ scope, name }, value);
                         else
@@ -245,11 +240,6 @@ export class SubtagTestContext {
                     }
                 });
         }
-
-        this.tagsTable.setup(m => m.get(argument.isTypeof('string').value), false)
-            .thenCall((...args: Parameters<TagStore['get']>) => this.tags[args[0]]);
-        this.guildTable.setup(m => m.getCommand(this.guild.id, argument.isTypeof('string').value), false)
-            .thenCall((...args: Parameters<GuildStore['getCommand']>) => this.ccommands[args[1]]);
 
         this.dependencies.setup(c => c.subtags, false).thenReturn(subtags);
     }
@@ -309,6 +299,10 @@ export class SubtagTestContext {
         this.channelService.setup(m => m.querySingle(context, this.channels.command.id, argument.any().value as undefined), false).thenResolve(this.channels.command);
         this.messageService.setup(m => m.get(context, this.channels.command.id, ''), false).thenResolve(this.message);
         this.messageService.setup(m => m.get(context, this.channels.command.id, this.message.id), false).thenResolve(this.message);
+        this.sources.setup(m => m.get(context, 'tag', argument.isTypeof('string').value), false)
+            .thenCall((...args: Parameters<SourceProvider['get']>) => this.tags[args[2]]);
+        this.sources.setup(m => m.get(context, 'cc', argument.isTypeof('string').value), false)
+            .thenCall((...args: Parameters<SourceProvider['get']>) => this.ccommands[args[2]]);
 
         context.data.ownedMsgs.push(...this.ownedMessages);
         Object.assign(context.scopes.root, this.rootScope);

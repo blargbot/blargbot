@@ -19,7 +19,6 @@ runSubtagTests({
             expected: '0987654331234567',
             setup(ctx) {
                 ctx.options.isCC = true;
-                ctx.guildTable.setup(m => m.getSetting(ctx.guild.id, 'disableeveryone')).thenResolve(false);
             },
             postSetup(bbctx, ctx) {
                 const embeds = [{ title: 'abc' }];
@@ -99,7 +98,6 @@ runSubtagTests({
             expected: '0987654331234567',
             setup(ctx) {
                 ctx.options.isCC = true;
-                ctx.guildTable.setup(m => m.getSetting(ctx.guild.id, 'disableeveryone')).thenResolve(false);
             },
             postSetup(bbctx, ctx) {
                 const embeds = [{ title: 'abc' }];

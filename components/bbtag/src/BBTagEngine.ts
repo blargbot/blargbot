@@ -1,5 +1,4 @@
 import { sleep } from '@blargbot/async-tools';
-import type { Database } from '@blargbot/database';
 import { markup } from '@blargbot/discord-util';
 import type { Logger } from '@blargbot/logger';
 import { Timer } from '@blargbot/timer';
@@ -7,19 +6,21 @@ import moment from 'moment-timezone';
 
 import { BBTagContext } from './BBTagContext.js';
 import type { BBTagUtilities, InjectionContext } from './BBTagUtilities.js';
+import { BBTagVariableProvider, VariableNameParser } from './Caching.js';
 import { BBTagRuntimeError, InternalServerError, SubtagStackOverflowError, TagCooldownError } from './errors/index.js';
 import type { Statement, SubtagCall } from './language/index.js';
 import { parseBBTag } from './language/index.js';
 import type { Subtag } from './Subtag.js';
 import { TagCooldownManager } from './TagCooldownManager.js';
+import { tagVariableScopeProviders } from './tagVariableScopeProviders.js';
 import textTemplates from './text.js';
 import type { AnalysisResults, BBTagContextOptions, ExecutionResult } from './types.js';
 import { BBTagRuntimeState } from './types.js';
 
 export class BBTagEngine {
     readonly #cooldowns: TagCooldownManager;
+    public readonly variables: BBTagVariableProvider;
     public get logger(): Logger { return this.dependencies.logger; }
-    public get database(): Database { return this.dependencies.database; }
     public get util(): BBTagUtilities { return this.dependencies.util; }
     public readonly subtags: ReadonlyMap<string, Subtag>;
 
@@ -27,6 +28,7 @@ export class BBTagEngine {
         public readonly dependencies: InjectionContext
     ) {
         this.#cooldowns = new TagCooldownManager();
+        this.variables = new BBTagVariableProvider(new VariableNameParser(tagVariableScopeProviders), dependencies.variables);
         const subtags = new Map<string, Subtag>();
         this.subtags = subtags;
         for (const descriptor of dependencies.subtags) {

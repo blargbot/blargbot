@@ -1,5 +1,5 @@
 import type { BBTagContext } from '../../BBTagContext.js';
-import type { BBTagUtilities, BBTagValueConverter } from '../../BBTagUtilities.js';
+import type { BBTagValueConverter, WarningService } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { NotANumberError, UserNotFoundError } from '../../errors/index.js';
 import type { UserService } from '../../services/UserService.js';
@@ -10,13 +10,13 @@ import { SubtagType } from '../../utils/index.js';
 const tag = textTemplates.subtags.warn;
 
 @Subtag.names('warn')
-@Subtag.ctorArgs(Subtag.converter(), Subtag.util(), Subtag.service('user'))
+@Subtag.ctorArgs(Subtag.converter(), Subtag.inject('warnings'), Subtag.service('user'))
 export class WarnSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;
-    readonly #util: BBTagUtilities;
+    readonly #warnings: WarningService;
     readonly #users: UserService;
 
-    public constructor(converter: BBTagValueConverter, util: BBTagUtilities, users: UserService) {
+    public constructor(converter: BBTagValueConverter, warnings: WarningService, users: UserService) {
         super({
             category: SubtagType.USER,
             description: tag.description,
@@ -41,7 +41,7 @@ export class WarnSubtag extends CompiledSubtag {
         });
 
         this.#converter = converter;
-        this.#util = util;
+        this.#warnings = warnings;
         this.#users = users;
     }
 
@@ -61,6 +61,6 @@ export class WarnSubtag extends CompiledSubtag {
         if (count === undefined)
             throw new NotANumberError(countStr);
 
-        return await this.#util.warn(user, context.user, count, reason !== '' ? reason : 'Tag Warning');
+        return await this.#warnings.warn(context, user, context.user, count, reason !== '' ? reason : 'Tag Warning');
     }
 }

@@ -1,5 +1,4 @@
 import { humanize } from '@blargbot/core/utils/index.js';
-import type { GuildStore } from '@blargbot/domain/stores/GuildStore.js';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import type { BBTagValueConverter } from '../../BBTagUtilities.js';
@@ -15,13 +14,12 @@ import { SubtagType } from '../../utils/index.js';
 const tag = textTemplates.subtags.execCustomCommand;
 
 @Subtag.names('execCustomCommand', 'execCC')
-@Subtag.ctorArgs(Subtag.arrayTools(), Subtag.converter(), Subtag.store('guilds'))
+@Subtag.ctorArgs(Subtag.arrayTools(), Subtag.converter())
 export class ExecCustomCommandSubtag extends CompiledSubtag {
     readonly #arrayTools: BBTagArrayTools;
     readonly #converter: BBTagValueConverter;
-    readonly #guilds: GuildStore;
 
-    public constructor(arrayTools: BBTagArrayTools, converter: BBTagValueConverter, guilds: GuildStore) {
+    public constructor(arrayTools: BBTagArrayTools, converter: BBTagValueConverter) {
         super({
             category: SubtagType.BOT,
             definition: [
@@ -38,17 +36,13 @@ export class ExecCustomCommandSubtag extends CompiledSubtag {
 
         this.#arrayTools = arrayTools;
         this.#converter = converter;
-        this.#guilds = guilds;
     }
 
     public async execCustomCommand(context: BBTagContext, name: string, args: string[]): Promise<string> {
         const tagName = name.toLowerCase();
-        const ccommand = await context.getTag('cc', tagName, (key) => this.#guilds.getCommand(context.guild.id, key));
-
+        const ccommand = await context.getTag('cc', tagName);
         if (ccommand === null)
             throw new BBTagRuntimeError(`CCommand not found: ${tagName}`);
-        if ('alias' in ccommand)
-            throw new BBTagRuntimeError(`Cannot execcc imported tag: ${tagName}`);
 
         let input = args[0] ?? '';
         if (args.length > 1)
