@@ -436,6 +436,21 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@blargbot/discord-interaction-stream@workspace:services/discord-interaction-stream/src":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/discord-interaction-stream@workspace:services/discord-interaction-stream/src"
+  dependencies:
+    "@blargbot/application": "workspace:^"
+    "@blargbot/discord-message-broker": "workspace:^"
+    "@blargbot/env": "workspace:^"
+    "@blargbot/express": "workspace:^"
+    "@blargbot/message-broker": "workspace:^"
+    "@types/amqplib": ^0.10.1
+    amqplib: ^0.10.3
+    discordeno: ^18.0.1
+  languageName: unknown
+  linkType: soft
+
 "@blargbot/discord-member-cache@workspace:services/discord-member-cache/src":
   version: 0.0.0-use.local
   resolution: "@blargbot/discord-member-cache@workspace:services/discord-member-cache/src"

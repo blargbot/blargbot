@@ -17,6 +17,10 @@ services:
     build: ../services/discord-reaction-stream/src
     image: blargbot/discord-reaction-stream
 
+  discord-interaction-stream:
+    build: ../services/discord-interaction-stream/src
+    image: blargbot/discord-interaction-stream
+
   discord-chatlog:
     build: ../services/discord-chatlog/src
     image: blargbot/discord-chatlog

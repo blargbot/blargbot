@@ -114,6 +114,13 @@ services:
     depends_on:
       - rabbitmq
 
+  discord-interaction-stream:
+    image: blargbot/discord-interaction-stream
+    environment:
+      <<: *rabbit-env
+    depends_on:
+      - rabbitmq
+
   discord-chatlog:
     image: blargbot/discord-chatlog
     environment:

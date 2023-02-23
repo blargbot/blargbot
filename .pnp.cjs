@@ -204,6 +204,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:services/discord-guild-cache/src"\
       },\
       {\
+        "name": "@blargbot/discord-interaction-stream",\
+        "reference": "workspace:services/discord-interaction-stream/src"\
+      },\
+      {\
         "name": "@blargbot/discord-member-cache",\
         "reference": "workspace:services/discord-member-cache/src"\
       },\
@@ -289,6 +293,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@blargbot/discord-emote", ["workspace:components/discord-emote/src"]],\
       ["@blargbot/discord-gateway", ["workspace:services/discord-gateway/src"]],\
       ["@blargbot/discord-guild-cache", ["workspace:services/discord-guild-cache/src"]],\
+      ["@blargbot/discord-interaction-stream", ["workspace:services/discord-interaction-stream/src"]],\
       ["@blargbot/discord-member-cache", ["workspace:services/discord-member-cache/src"]],\
       ["@blargbot/discord-message-broker", ["virtual:253c4dda1733e7dbc61aae51f57d452b0623faab352da869fcaa5f1f988885d07900027b9b09dd7bd8cbe80fe188464fb36902fcdebe51088ed2a712e8210eff#workspace:components/discord-message-broker/src", "workspace:components/discord-message-broker/src"]],\
       ["@blargbot/discord-message-cache", ["workspace:services/discord-message-cache/src"]],\
@@ -838,6 +843,23 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["amqplib", "npm:0.10.3"],\
             ["discordeno", "npm:18.0.1"],\
             ["redis", "npm:4.6.4"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
+      ["@blargbot/discord-interaction-stream", [\
+        ["workspace:services/discord-interaction-stream/src", {\
+          "packageLocation": "./services/discord-interaction-stream/src/",\
+          "packageDependencies": [\
+            ["@blargbot/discord-interaction-stream", "workspace:services/discord-interaction-stream/src"],\
+            ["@blargbot/application", "workspace:components/application/src"],\
+            ["@blargbot/discord-message-broker", "virtual:253c4dda1733e7dbc61aae51f57d452b0623faab352da869fcaa5f1f988885d07900027b9b09dd7bd8cbe80fe188464fb36902fcdebe51088ed2a712e8210eff#workspace:components/discord-message-broker/src"],\
+            ["@blargbot/env", "workspace:components/env/src"],\
+            ["@blargbot/express", "workspace:components/express/src"],\
+            ["@blargbot/message-broker", "virtual:253c4dda1733e7dbc61aae51f57d452b0623faab352da869fcaa5f1f988885d07900027b9b09dd7bd8cbe80fe188464fb36902fcdebe51088ed2a712e8210eff#workspace:components/message-broker/src"],\
+            ["@types/amqplib", "npm:0.10.1"],\
+            ["amqplib", "npm:0.10.3"],\
+            ["discordeno", "npm:18.0.1"]\
           ],\
           "linkType": "SOFT"\
         }]\
