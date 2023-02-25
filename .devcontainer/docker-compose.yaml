@@ -1,3 +1,10 @@
+x-health-check:
+  &health-check
+  healthcheck:
+    interval: 10s
+    timeout: 5s
+    retries: 5
+
 x-env_file:
   &env-file
   env_file:
@@ -68,6 +75,7 @@ services:
   editor:
     build: editor
     init: true
+    <<: *env-file
     environment:
       <<: *discord-proxy-env
       <<: *guild-settings-env
@@ -81,45 +89,51 @@ services:
       <<: *cassandra-env
       <<: *rethinkdb-env
       <<: *redis-env
-    <<: *env-file
 
   discord-proxy:
     image: blargbot/discord-proxy
+    <<: *env-file
     environment:
       <<: *discord-proxy-env
-    <<: *env-file
 
   discord-gateway:
     image: blargbot/discord-gateway
+    <<: *env-file
     environment:
       <<: *discord-proxy-env
       <<: *rabbit-env
       SHARDS_PER_WORKER: 4
     depends_on:
-      - discord-proxy
-      - rabbitmq
-    <<: *env-file
+      discord-proxy:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+    profiles:
+      - donotstart
 
   discord-message-stream:
     image: blargbot/discord-message-stream
     environment:
       <<: *rabbit-env
     depends_on:
-      - rabbitmq
+      rabbitmq:
+        condition: service_healthy
 
   discord-reaction-stream:
     image: blargbot/discord-reaction-stream
     environment:
       <<: *rabbit-env
     depends_on:
-      - rabbitmq
+      rabbitmq:
+        condition: service_healthy
 
   discord-interaction-stream:
     image: blargbot/discord-interaction-stream
     environment:
       <<: *rabbit-env
     depends_on:
-      - rabbitmq
+      rabbitmq:
+        condition: service_healthy
 
   discord-chatlog:
     image: blargbot/discord-chatlog
@@ -128,9 +142,12 @@ services:
       <<: *rabbit-env
       <<: *guild-settings-env
     depends_on:
-      - cassandra
-      - rabbitmq
-      - guild-settings
+      cassandra:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      guild-settings:
+        condition: service_started
 
   discord-guild-cache:
     image: blargbot/discord-guild-cache
@@ -138,8 +155,10 @@ services:
       <<: *rabbit-env
       <<: *redis-env
     depends_on:
-      - rabbitmq
-      - redis
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
 
   discord-channel-cache:
     image: blargbot/discord-channel-cache
@@ -147,8 +166,10 @@ services:
       <<: *rabbit-env
       <<: *redis-env
     depends_on:
-      - rabbitmq
-      - redis
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
 
   discord-message-cache:
     image: blargbot/discord-message-cache
@@ -156,8 +177,10 @@ services:
       <<: *rabbit-env
       <<: *redis-env
     depends_on:
-      - rabbitmq
-      - redis
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
 
   discord-member-cache:
     image: blargbot/discord-member-cache
@@ -165,8 +188,10 @@ services:
       <<: *rabbit-env
       <<: *redis-env
     depends_on:
-      - rabbitmq
-      - redis
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
 
   discord-user-cache:
     image: blargbot/discord-user-cache
@@ -174,8 +199,10 @@ services:
       <<: *rabbit-env
       <<: *redis-env
     depends_on:
-      - rabbitmq
-      - redis
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
 
   discord-presence-cache:
     image: blargbot/discord-presence-cache
@@ -183,8 +210,10 @@ services:
       <<: *rabbit-env
       <<: *redis-env
     depends_on:
-      - rabbitmq
-      - redis
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
 
   discord-role-cache:
     image: blargbot/discord-role-cache
@@ -192,17 +221,20 @@ services:
       <<: *rabbit-env
       <<: *redis-env
     depends_on:
-      - rabbitmq
-      - redis
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
 
   image-generator:
     image: blargbot/image-generator
+    <<: *env-file
     environment:
       <<: *rabbit-env
       IMAGE_API_URL: https://api.blargbot.xyz/api/v1/image
     depends_on:
-      - rabbitmq
-    <<: *env-file
+      rabbitmq:
+        condition: service_healthy
 
   user-settings:
     image: blargbot/user-settings
@@ -210,8 +242,10 @@ services:
       <<: *postgres-env
       <<: *redis-env
     depends_on:
-      - postgres
-      - redis
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
 
   guild-settings:
     image: blargbot/guild-settings
@@ -219,8 +253,10 @@ services:
       <<: *postgres-env
       <<: *redis-env
     depends_on:
-      - postgres
-      - redis
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
 
   event-log-settings:
     image: blargbot/event-log-settings
@@ -228,25 +264,30 @@ services:
       <<: *postgres-env
       <<: *redis-env
     depends_on:
-      - postgres
-      - redis
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
 
   mod-log:
     image: blargbot/mod-log
     environment:
       <<: *postgres-env
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
 
   user-warnings:
     image: blargbot/user-warnings
     environment:
       <<: *postgres-env
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
 
   rabbitmq:
     image: blargbot/rabbitmq
+    <<: *health-check
     environment:
       <<: *rabbit-env
     volumes:
@@ -256,6 +297,7 @@ services:
 
   postgres:
     image: blargbot/postgres
+    <<: *health-check
     environment:
       <<: *postgres-env
     volumes:
@@ -271,9 +313,13 @@ services:
       - 5002:80
     volumes:
       - pgadmin:/var/lib/pgadmin
+    depends_on:
+      postgres:
+        condition: service_healthy
 
   cassandra:
     image: blargbot/cassandra
+    <<: *health-check
     environment:
       <<: *cassandra-env
     volumes:
@@ -286,6 +332,9 @@ services:
       CASSANDRA_HOST: cassandra
     ports:
       - 5003:8083
+    depends_on:
+      cassandra:
+        condition: service_healthy
 
   rethinkdb:
     image: blargbot/rethinkdb
@@ -298,6 +347,7 @@ services:
 
   redis:
     image: blargbot/redis
+    <<: *health-check
     environment:
       <<: *redis-env
     ports:
