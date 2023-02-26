@@ -1,6 +1,5 @@
-import { NotABooleanError, NotANumberError, Subtag } from '@bbtag/blargbot';
+import { NotABooleanError, NotANumberError, Subtag, TagVariableType } from '@bbtag/blargbot';
 import { DecrementSubtag } from '@bbtag/blargbot/subtags';
-import { TagVariableType } from '@bbtag/blargbot'
 import chai from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

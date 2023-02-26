@@ -1,7 +1,7 @@
 import { Subtag } from '@bbtag/blargbot';
 import { MessageTypeSubtag } from '@bbtag/blargbot/subtags';
-import { snowflake } from '@blargbot/discord-util';
 import Discord from '@blargbot/discord-types';
+import { snowflake } from '@blargbot/discord-util';
 
 import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';
 import { createGetMessagePropTestCases } from './_getMessagePropTest.js';

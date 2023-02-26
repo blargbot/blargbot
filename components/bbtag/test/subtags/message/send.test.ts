@@ -1,8 +1,8 @@
 import { BBTagRuntimeError, ChannelNotFoundError, Subtag } from '@bbtag/blargbot';
 import { EscapeBBTagSubtag, SendSubtag } from '@bbtag/blargbot/subtags';
+import Discord from '@blargbot/discord-types';
 import { argument } from '@blargbot/test-util/mock.js';
 import chai from 'chai';
-import Discord from '@blargbot/discord-types';
 
 import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';
 

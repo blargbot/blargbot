@@ -1,11 +1,10 @@
 import { Emote } from '@blargbot/discord-emote';
+import Discord, { AllowedMentionsTypes } from '@blargbot/discord-types';
 import { findRolePosition, permission } from '@blargbot/discord-util';
 import { hasFlag } from '@blargbot/guards';
 import type { FlagDefinition, FlagResult } from '@blargbot/input';
 import { parseInput } from '@blargbot/input';
 import { Timer } from '@blargbot/timer';
-import Discord from '@blargbot/discord-types';
-import { AllowedMentionsTypes } from '@blargbot/discord-types';
 import type moment from 'moment-timezone';
 import ReadWriteLock from 'rwlock';
 

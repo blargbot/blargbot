@@ -1,8 +1,8 @@
 import type { Entities } from '@bbtag/blargbot';
 import { BBTagRuntimeError, Subtag } from '@bbtag/blargbot';
 import { RoleCreateSubtag } from '@bbtag/blargbot/subtags';
-import { argument } from '@blargbot/test-util/mock.js';
 import Discord from '@blargbot/discord-types';
+import { argument } from '@blargbot/test-util/mock.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

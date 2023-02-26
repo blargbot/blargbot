@@ -2,8 +2,8 @@ import { randomInt } from 'node:crypto';
 
 import { BBTagRuntimeError, NotANumberError, Subtag } from '@bbtag/blargbot';
 import { ChannelSetPositionSubtag } from '@bbtag/blargbot/subtags';
-import { argument } from '@blargbot/test-util/mock.js';
 import Discord from '@blargbot/discord-types';
+import { argument } from '@blargbot/test-util/mock.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

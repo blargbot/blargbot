@@ -1,9 +1,9 @@
 import { BBTagRuntimeError, Subtag } from '@bbtag/blargbot';
 import { ReactionAddSubtag } from '@bbtag/blargbot/subtags';
 import { Emote } from '@blargbot/discord-emote';
+import Discord from '@blargbot/discord-types';
 import { argument } from '@blargbot/test-util/mock.js';
 import chai from 'chai';
-import Discord from '@blargbot/discord-types';
 
 import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';
 import { createGetMessagePropTestCases } from './_getMessagePropTest.js';

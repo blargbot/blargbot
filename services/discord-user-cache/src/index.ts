@@ -1,11 +1,11 @@
 import { Server } from 'node:http';
 
 import Application from '@blargbot/application';
+import type Discord from '@blargbot/discord-types';
 import env from '@blargbot/env';
 import express from '@blargbot/express';
 import type { ConnectionOptions } from '@blargbot/message-broker';
 import { RedisKVCache } from '@blargbot/redis-cache';
-import type Discord from '@blargbot/discord-types';
 import type { RedisClientType } from 'redis';
 import { createClient as createRedisClient } from 'redis';
 

@@ -1,7 +1,7 @@
+import Discord from '@blargbot/discord-types';
 import type { ConsumeMessage, HandleMessageOptions, MessageHandle } from '@blargbot/message-broker';
 import type MessageBroker from '@blargbot/message-broker';
 import type amqplib from 'amqplib';
-import Discord from '@blargbot/discord-types';
 
 export interface DiscordMessageBrokerMixinType<
     Events extends readonly DispatchEvent[],

@@ -1,8 +1,8 @@
 import type { BBTagContext, BBTagRuntimeError, Entities, FindEntityOptions } from '@bbtag/blargbot';
 import { ChannelNotFoundError, MessageNotFoundError } from '@bbtag/blargbot';
+import type Discord from '@blargbot/discord-types';
 import { snowflake } from '@blargbot/discord-util';
 import { argument } from '@blargbot/test-util/mock.js';
-import type Discord from '@blargbot/discord-types';
 
 import type { SubtagTestCase } from '../SubtagTestSuite.js';
 import { SubtagTestContext } from '../SubtagTestSuite.js';

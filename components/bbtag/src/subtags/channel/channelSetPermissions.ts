@@ -1,7 +1,6 @@
+import Discord, { OverwriteType } from '@blargbot/discord-types';
 import { isThreadChannel } from '@blargbot/discord-util';
 import { hasFlag } from '@blargbot/guards';
-import { OverwriteType } from '@blargbot/discord-types';
-import Discord from '@blargbot/discord-types';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import type { BBTagValueConverter } from '../../BBTagUtilities.js';

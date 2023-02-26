@@ -1,6 +1,5 @@
-import { BBTagRuntimeError, Subtag } from '@bbtag/blargbot';
+import { BBTagRuntimeError, Subtag, TagVariableType } from '@bbtag/blargbot';
 import { JsonSetSubtag, JsonSubtag } from '@bbtag/blargbot/subtags';
-import { TagVariableType } from '@bbtag/blargbot'
 import chai from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

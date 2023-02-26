@@ -1,5 +1,5 @@
-import type { MessageHandle } from '@blargbot/message-broker';
 import type Discord from '@blargbot/discord-types';
+import type { MessageHandle } from '@blargbot/message-broker';
 
 import type { DiscordMessageStreamMessageBroker } from './DiscordMessageStreamMessageBroker.js';
 

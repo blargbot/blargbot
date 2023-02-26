@@ -1,7 +1,7 @@
+import type Discord from '@blargbot/discord-types';
 import { overflowMessageContent } from '@blargbot/discord-util';
 import type { TypeMapping } from '@blargbot/mapping';
 import { mapping } from '@blargbot/mapping';
-import type Discord from '@blargbot/discord-types';
 
 import type { BBTagValueConverter } from '../BBTagUtilities.js';
 

@@ -1,8 +1,7 @@
-import { Subtag } from '@bbtag/blargbot';
+import type { TagVariableScope } from '@bbtag/blargbot';
+import { Subtag, TagVariableType } from '@bbtag/blargbot';
 import { SetSubtag } from '@bbtag/blargbot/subtags';
 import { snowflake } from '@blargbot/discord-util';
-import type { TagVariableScope } from '@bbtag/blargbot'
-import { TagVariableType } from '@bbtag/blargbot'
 import { argument } from '@blargbot/test-util/mock.js';
 import chai from 'chai';
 

@@ -1,8 +1,8 @@
 import type { Api } from '@blargbot/api/Api.js';
+import type Discord from '@blargbot/discord-types';
 import { isGuildChannel } from '@blargbot/discord-util';
 import type { Dump } from '@blargbot/domain/models/Dump.js';
 import type { DiscordTagSet } from '@blargbot/domain/models/index.js';
-import type Discord from '@blargbot/discord-types';
 
 import { BaseRoute } from '../BaseRoute.js';
 import type { ApiResponse } from '../types.js';

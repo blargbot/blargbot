@@ -17,10 +17,10 @@ import { parseFloat } from '@blargbot/core/utils/parse/parseFloat.js';
 import { parseInt } from '@blargbot/core/utils/parse/parseInt.js';
 import { parseString } from '@blargbot/core/utils/parse/parseString.js';
 import { parseTime } from '@blargbot/core/utils/parse/parseTime.js';
+import Discord from '@blargbot/discord-types';
 import type { Logger } from '@blargbot/logger';
 import { ModuleLoader } from '@blargbot/modules';
 import { Timer } from '@blargbot/timer';
-import Discord from '@blargbot/discord-types';
 import moment from 'moment-timezone';
 
 import { ClusterBBTagUtilities } from './ClusterBBTagUtilities.js';

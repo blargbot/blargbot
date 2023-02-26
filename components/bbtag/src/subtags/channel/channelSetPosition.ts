@@ -1,5 +1,5 @@
-import { hasFlag } from '@blargbot/guards';
 import Discord from '@blargbot/discord-types';
+import { hasFlag } from '@blargbot/guards';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import type { BBTagValueConverter } from '../../BBTagUtilities.js';

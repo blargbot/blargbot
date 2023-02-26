@@ -3,6 +3,7 @@ import type { FormatEmbedAuthor, SendContent, SendContext } from '@blargbot/core
 import { CrowdinTranslationSource } from '@blargbot/crowdin';
 import type { Database } from '@blargbot/database';
 import type { Emote } from '@blargbot/discord-emote';
+import type Discord from '@blargbot/discord-types';
 import type { Snowflake } from '@blargbot/discord-util';
 import { checkEmbedSize, checkMessageSize, isGuildChannel, isPrivateChannel, isTextableChannel, isVoiceChannel, markup, snowflake } from '@blargbot/discord-util';
 import type { DiscordChannelTag, DiscordRoleTag, DiscordTagSet, DiscordUserTag, StoredUser } from '@blargbot/domain/models/index.js';
@@ -10,7 +11,6 @@ import type { IFormattable, IFormatter } from '@blargbot/formatting';
 import { format, Formatter, TranslationMiddleware, util } from '@blargbot/formatting';
 import { hasProperty, hasValue } from '@blargbot/guards';
 import type { Logger } from '@blargbot/logger';
-import type Discord from '@blargbot/discord-types';
 import * as Eris from 'eris';
 import moment from 'moment-timezone';
 

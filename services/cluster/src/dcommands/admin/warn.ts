@@ -1,7 +1,7 @@
 import type { CommandResult, GuildCommandContext } from '@blargbot/cluster/types.js';
 import { CommandType, parse } from '@blargbot/cluster/utils/index.js';
-import type { FlagResult } from '@blargbot/input';
 import { util } from '@blargbot/formatting';
+import type { FlagResult } from '@blargbot/input';
 import type * as Eris from 'eris';
 
 import { GuildCommand } from '../../command/index.js';

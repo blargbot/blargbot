@@ -1,7 +1,7 @@
 import type { AnalysisResult } from '@bbtag/blargbot';
-import type { FlagDefinition } from '@blargbot/input';
 import type { IFormattable } from '@blargbot/formatting';
 import { FormatString } from '@blargbot/formatting';
+import type { FlagDefinition } from '@blargbot/input';
 import type * as Eris from 'eris';
 import type moment from 'moment-timezone';
 

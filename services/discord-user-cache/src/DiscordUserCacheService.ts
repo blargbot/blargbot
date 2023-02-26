@@ -1,6 +1,6 @@
+import type Discord from '@blargbot/discord-types';
 import type { MessageHandle } from '@blargbot/message-broker';
 import type { IKVCache } from '@blargbot/redis-cache';
-import type Discord from '@blargbot/discord-types';
 
 import type { DiscordUserCacheMessageBroker } from './DiscordUserCacheMessageBroker.js';
 

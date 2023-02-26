@@ -11,6 +11,7 @@
         "@blargbot/catch-decorators": "workspace:^",
         "@blargbot/decancer": "workspace:^",
         "@blargbot/discord-emote": "workspace:^",
+        "@blargbot/discord-types": "workspace:^",
         "@blargbot/discord-util": "workspace:^",
         "@blargbot/domain": "workspace:^",
         "@blargbot/formatting": "workspace:^",
@@ -28,7 +29,6 @@
     },
     "devDependencies": {
         "@blargbot/application": "workspace:^",
-        "@blargbot/discord-types": "workspace:^",
         "@types/brainfuck-node": "workspace:^",
         "@types/color": "^3.0.3",
         "@types/node-fetch": "^2.6.2",

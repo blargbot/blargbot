@@ -1,7 +1,7 @@
 import { Emote } from '@blargbot/discord-emote';
+import Discord from '@blargbot/discord-types';
 import { snowflake } from '@blargbot/discord-util';
 import { hasFlag } from '@blargbot/guards';
-import Discord from '@blargbot/discord-types';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';

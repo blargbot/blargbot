@@ -1,6 +1,5 @@
-import { Subtag } from '@bbtag/blargbot';
+import { Subtag, TagVariableType } from '@bbtag/blargbot';
 import { GetSubtag, ReverseSubtag } from '@bbtag/blargbot/subtags';
-import { TagVariableType } from '@bbtag/blargbot'
 import chai from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

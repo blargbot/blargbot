@@ -1,7 +1,7 @@
 import { ChatLogType } from '@blargbot/chatlog-types';
+import type Discord from '@blargbot/discord-types';
 import { guildSerializer } from '@blargbot/guild-settings';
 import type { MessageHandle } from '@blargbot/message-broker';
-import type Discord from '@blargbot/discord-types';
 import fetch from 'node-fetch';
 
 import type DiscordChatlogDatabase from './DiscordChatlogDatabase.js';

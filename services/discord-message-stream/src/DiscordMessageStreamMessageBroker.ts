@@ -1,7 +1,7 @@
 import { discordMessageBrokerMixin } from '@blargbot/discord-message-broker';
+import type Discord from '@blargbot/discord-types';
 import MessageBroker from '@blargbot/message-broker';
 import type amqplib from 'amqplib';
-import type Discord from '@blargbot/discord-types';
 
 export class DiscordMessageStreamMessageBroker extends discordMessageBrokerMixin({
     type: MessageBroker,
