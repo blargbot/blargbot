@@ -1,4 +1,4 @@
-import { randChoose } from '@blargbot/core/utils/index.js';
+import { randomInt } from 'node:crypto';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
@@ -34,6 +34,6 @@ export class RandomUserSubtag extends CompiledSubtag {
 
     public async randomUser(context: BBTagContext): Promise<string> {
         const users = await this.#users.getAll(context);
-        return randChoose(users).id;
+        return users[randomInt(users.length)].id;
     }
 }

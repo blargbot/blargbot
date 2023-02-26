@@ -24,7 +24,7 @@ export abstract class CompiledSubtag extends Subtag {
         this.#handler = compileSignatures(signatures.map(s => s.implementation).filter(hasValue));
     }
 
-    protected executeCore(context: BBTagContext, subtagName: string, subtag: SubtagCall): AsyncIterable<string | undefined> {
+    public override execute(context: BBTagContext, subtagName: string, subtag: SubtagCall): AsyncIterable<string | undefined> {
         return this.#handler.execute(context, subtagName, subtag);
     }
 }

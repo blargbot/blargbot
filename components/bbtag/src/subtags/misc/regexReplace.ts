@@ -28,7 +28,7 @@ export class RegexReplaceSubtag extends RegexSubtag {
                     exampleCode: tag.text.exampleCode,
                     exampleOut: tag.text.exampleOut,
                     returns: 'string',
-                    execute: (_, [text, regex, replaceWith]) => this.regexReplace(text.value, regex.raw, replaceWith.value)
+                    execute: (ctx, [text, regex, replaceWith]) => this.regexReplace(ctx, text.value, regex.raw, replaceWith.value)
                 }
             ]
         });
@@ -36,13 +36,13 @@ export class RegexReplaceSubtag extends RegexSubtag {
 
     public setOutputReplacement(context: BBTagContext, regexStr: string, replacement: string): void {
         context.data.replace = {
-            regex: this.createRegex(regexStr),
+            regex: this.createRegex(context, regexStr),
             with: replacement
         };
     }
 
-    public regexReplace(text: string, regexStr: string, replaceWith: string): string {
-        const regex = this.createRegex(regexStr);
+    public regexReplace(context: BBTagContext, text: string, regexStr: string, replaceWith: string): string {
+        const regex = this.createRegex(context, regexStr);
         return text.replace(regex, replaceWith);
     }
 }

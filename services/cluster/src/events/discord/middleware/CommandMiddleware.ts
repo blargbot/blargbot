@@ -3,6 +3,7 @@ import type { CommandResult } from '@blargbot/cluster/types.js';
 import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent.js';
 import type { IMiddleware, NextMiddleware } from '@blargbot/core/types.js';
 import { humanize, runMiddleware } from '@blargbot/core/utils/index.js';
+import { splitInput } from '@blargbot/input';
 import type * as Eris from 'eris';
 
 import { CommandContext } from '../../../command/index.js';
@@ -26,9 +27,9 @@ export class CommandMiddleware implements IMiddleware<Eris.KnownMessage, boolean
             return await next();
 
         const commandText = message.content.slice(prefix.length);
-        const parts = humanize.smartSplit(commandText, 2);
-        const commandName = (parts[0] ?? '').toLowerCase();
-        const argsString = parts[1] ?? '';
+        const parts = [...splitInput(commandText, 2)];
+        const commandName = (parts[0]?.value ?? '').toLowerCase();
+        const argsString = parts[1]?.value ?? '';
 
         const result = await this.#cluster.commands.get(commandName, message.channel, message.author);
         switch (result.state) {

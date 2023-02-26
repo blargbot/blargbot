@@ -5,7 +5,7 @@ import { metrics } from '@blargbot/core/Metrics.js';
 import type { NextMiddleware } from '@blargbot/core/types.js';
 import { isGuildChannel } from '@blargbot/discord-util';
 import type { CommandPermissions } from '@blargbot/domain/models/index.js';
-import type { FlagDefinition } from '@blargbot/flags';
+import type { FlagDefinition } from '@blargbot/input';
 import type { IFormattable } from '@blargbot/formatting';
 import { hasValue } from '@blargbot/guards';
 import { ModuleLoader } from '@blargbot/modules';

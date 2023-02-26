@@ -1,12 +1,9 @@
-export function shuffle(array: unknown[]): void {
-    let i = 0;
-    let j = 0;
-    let temp = null;
+import { randomInt } from 'node:crypto';
 
-    for (i = array.length - 1; i > 0; i -= 1) {
-        j = Math.floor(Math.random() * (i + 1));
-        temp = array[i];
-        array[i] = array[j];
-        array[j] = temp;
+export function shuffle(array: unknown[]): void {
+    // Swap each position in the array with another random position
+    for (let i = 0; i < array.length; i++) {
+        const j = randomInt(array.length);
+        [array[i], array[j]] = [array[j], array[i]];
     }
 }

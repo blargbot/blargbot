@@ -1,6 +1,6 @@
 import type { Emote } from '@blargbot/discord-emote';
-import type { FlagDefinition } from '@blargbot/flags';
 import type { IFormattable } from '@blargbot/formatting';
+import type { FlagDefinition } from '@blargbot/input';
 import type * as Discord from 'discord-api-types/v10';
 import type ReadWriteLock from 'rwlock';
 

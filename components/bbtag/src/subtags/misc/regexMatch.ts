@@ -1,3 +1,4 @@
+import type { BBTagContext } from '../../BBTagContext.js';
 import { RegexSubtag } from '../../RegexSubtag.js';
 import { Subtag } from '../../Subtag.js';
 import textTemplates from '../../text.js';
@@ -18,14 +19,14 @@ export class RegexMatchSubtag extends RegexSubtag {
                     exampleCode: tag.default.exampleCode,
                     exampleOut: tag.default.exampleOut,
                     returns: 'string[]',
-                    execute: (_, [text, regex]) => this.regexMatch(text.value, regex.raw)
+                    execute: (ctx, [text, regex]) => this.regexMatch(ctx, text.value, regex.raw)
                 }
             ]
         });
     }
 
-    public regexMatch(text: string, regexStr: string): string[] {
-        const regex = this.createRegex(regexStr);
+    public regexMatch(ctx: BBTagContext, text: string, regexStr: string): string[] {
+        const regex = this.createRegex(ctx, regexStr);
         const matches = text.match(regex);
         if (matches === null)
             return [];

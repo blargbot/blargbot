@@ -5,10 +5,11 @@ import type { CommandResult, CustomCommandShrinkwrap, GuildCommandContext, Guild
 import { CommandType, guard } from '@blargbot/cluster/utils/index.js';
 import type { Configuration } from '@blargbot/config';
 import type { NamedGuildCommandTag, NamedGuildSourceCommandTag } from '@blargbot/domain/models/index.js';
-import type { FlagDefinition } from '@blargbot/flags';
 import type { IFormattable } from '@blargbot/formatting';
 import { util } from '@blargbot/formatting';
 import { hasValue, isAlphanumeric } from '@blargbot/guards';
+import type { FlagDefinition } from '@blargbot/input';
+import { parseInput } from '@blargbot/input';
 import { mapping } from '@blargbot/mapping';
 import type * as Eris from 'eris';
 import moment from 'moment-timezone';
@@ -394,7 +395,7 @@ export class CustomCommandCommand extends GuildCommand {
         if (guard.isGuildImportedCommandTag(match))
             return cmd.errors.isAlias({ commandName: match.name, tagName: match.alias });
 
-        const { _, ...addFlags } = context.cluster.parseFlags([], flagsRaw);
+        const { flags: { _, ...addFlags } } = parseInput([], flagsRaw);
         const flags = [...match.flags ?? []];
         for (const [flag, args] of Object.entries(addFlags)) {
             if (args === undefined || args.length === 0)
@@ -423,7 +424,7 @@ export class CustomCommandCommand extends GuildCommand {
         if (guard.isGuildImportedCommandTag(match))
             return cmd.errors.isAlias({ commandName: match.name, tagName: match.alias });
 
-        const { _, ...removeFlags } = context.cluster.parseFlags([], flagsRaw);
+        const { flags: { _, ...removeFlags } } = parseInput([], flagsRaw);
         const flags = [...match.flags ?? []]
             .filter(f => removeFlags[f.flag] === undefined);
 

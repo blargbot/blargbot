@@ -1,4 +1,4 @@
-import { humanize } from '@blargbot/core/utils/index.js';
+import { joinInput } from '@blargbot/input';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import type { BBTagValueConverter } from '../../BBTagUtilities.js';
@@ -47,7 +47,7 @@ export class ExecTagSubtag extends CompiledSubtag {
 
         let input = args[0] ?? '';
         if (args.length > 1)
-            input = humanize.smartSplit.inverse(this.#arrayTools.flattenArray(args).map(x => this.#converter.string(x)));
+            input = joinInput(this.#arrayTools.flattenArray(args).map(x => this.#converter.string(x)));
 
         return await context.withScope(true, () => context.withChild({
             tagName,

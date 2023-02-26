@@ -1,6 +1,7 @@
+import { randomInt } from 'node:crypto';
+
 import { BBTagRuntimeError, Subtag } from '@bbtag/blargbot';
 import { SlowModeSubtag } from '@bbtag/blargbot/subtags';
-import { randChoose } from '@blargbot/core/utils/index.js';
 import { argument } from '@blargbot/test-util/mock.js';
 import * as Discord from 'discord-api-types/v10';
 
@@ -35,7 +36,8 @@ runSubtagTests({
             code: '{slowmode;2342543235325252345}',
             expected: '',
             postSetup(bbctx, ctx) {
-                const channel = randChoose(Object.values(ctx.channels));
+                const choices = Object.values(ctx.channels);
+                const channel = choices[randomInt(choices.length)];
                 ctx.channelService.setup(m => m.querySingle(bbctx, '2342543235325252345', argument.isDeepEqual({ noLookup: true })))
                     .thenResolve(channel);
                 ctx.channelService.setup(m => m.edit(bbctx, channel.id, argument.isDeepEqual({ rateLimitPerUser: 0 })))
@@ -46,7 +48,8 @@ runSubtagTests({
             code: '{slowmode;2342543235325252345;37645}',
             expected: '',
             postSetup(bbctx, ctx) {
-                const channel = randChoose(Object.values(ctx.channels));
+                const choices = Object.values(ctx.channels);
+                const channel = choices[randomInt(choices.length)];
                 ctx.channelService.setup(m => m.querySingle(bbctx, '2342543235325252345', argument.isDeepEqual({ noLookup: true })))
                     .thenResolve(channel);
                 ctx.channelService.setup(m => m.edit(bbctx, channel.id, argument.isDeepEqual({ rateLimitPerUser: 21600 })))
@@ -57,7 +60,8 @@ runSubtagTests({
             code: '{slowmode;2342543235325252345;this is some random text}',
             expected: '',
             postSetup(bbctx, ctx) {
-                const channel = randChoose(Object.values(ctx.channels));
+                const choices = Object.values(ctx.channels);
+                const channel = choices[randomInt(choices.length)];
                 ctx.channelService.setup(m => m.querySingle(bbctx, '2342543235325252345', argument.isDeepEqual({ noLookup: true })))
                     .thenResolve(channel);
                 ctx.channelService.setup(m => m.edit(bbctx, channel.id, argument.isDeepEqual({ rateLimitPerUser: 0 })))
@@ -71,7 +75,8 @@ runSubtagTests({
                 { start: 0, end: 30, error: new BBTagRuntimeError('Missing required permissions', 'Test REST error') }
             ],
             postSetup(bbctx, ctx) {
-                const channel = randChoose(Object.values(ctx.channels));
+                const choices = Object.values(ctx.channels);
+                const channel = choices[randomInt(choices.length)];
                 ctx.channelService.setup(m => m.querySingle(bbctx, '2342543235325252345', argument.isDeepEqual({ noLookup: true })))
                     .thenResolve(channel);
                 ctx.channelService.setup(m => m.edit(bbctx, channel.id, argument.isDeepEqual({ rateLimitPerUser: 0 })))
@@ -85,7 +90,8 @@ runSubtagTests({
                 { start: 0, end: 30, error: new BBTagRuntimeError('Missing required permissions', 'Some other error message') }
             ],
             postSetup(bbctx, ctx) {
-                const channel = randChoose(Object.values(ctx.channels));
+                const choices = Object.values(ctx.channels);
+                const channel = choices[randomInt(choices.length)];
                 ctx.channelService.setup(m => m.querySingle(bbctx, '2342543235325252345', argument.isDeepEqual({ noLookup: true })))
                     .thenResolve(channel);
                 ctx.channelService.setup(m => m.edit(bbctx, channel.id, argument.isDeepEqual({ rateLimitPerUser: 0 })))

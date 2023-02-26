@@ -7,7 +7,7 @@ import mocha from 'mocha';
 
 @Subtag.names('')
 class TestSubtag extends Subtag {
-    protected executeCore: Subtag['executeCore'] = () => {
+    public override execute: Subtag['execute'] = () => {
         throw new Error('Method not implemented');
     };
 }

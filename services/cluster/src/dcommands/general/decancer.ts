@@ -1,7 +1,8 @@
-import { CommandType, guard, humanize } from '@blargbot/cluster/utils/index.js';
+import { CommandType, guard } from '@blargbot/cluster/utils/index.js';
+import { decancer } from '@blargbot/decancer';
 import type * as Eris from 'eris';
 
-import type { CommandContext} from '../../command/index.js';
+import type { CommandContext } from '../../command/index.js';
 import { GlobalCommand } from '../../command/index.js';
 import templates from '../../text.js';
 import type { CommandResult } from '../../types.js';
@@ -39,7 +40,7 @@ export class DecancerCommand extends GlobalCommand {
         if (!await context.util.isUserStaff(context.message.member))
             return this.decancerText(member.nick ?? member.username);
 
-        const decancered = humanize.decancer(member.nick ?? member.username);
+        const decancered = decancer(member.nick ?? member.username);
         try {
             await member.edit({ nick: decancered });
             member.nick = decancered;
@@ -50,7 +51,7 @@ export class DecancerCommand extends GlobalCommand {
     }
 
     public decancerText(text: string, decancered?: string): CommandResult {
-        decancered ??= humanize.decancer(text);
+        decancered ??= decancer(text);
         return cmd.text.success({ text, result: decancered });
     }
 

@@ -3,77 +3,74 @@ import { isAlphanumeric } from '@blargbot/guards';
 import type { FlagDefinition } from './FlagDefinition.js';
 import type { FlagResult } from './FlagResult.js';
 import type { FlagResultValueSet } from './FlagResultValueSet.js';
+import { splitInput } from './splitInput.js';
 
-export interface FlagParser {
-    (definitions: Iterable<FlagDefinition<unknown>>, text: string, strict?: boolean): FlagResult;
+export interface InputParser {
+    (definitions: Iterable<FlagDefinition<unknown>>, text: string, strict?: boolean): { args: string[]; flags: FlagResult; };
 }
 
-export interface FlagParserOptions {
-    splitter: (text: string) => Iterable<{ start: number; end: number; value: string; }>;
-}
+export function parseInput(definitions: Iterable<FlagDefinition<unknown>>, text: string, strict = false): { args: string[]; flags: FlagResult; } {
+    let currentFlag: keyof FlagResult = '_';
+    let currentGroup: StringRange[] = [];
+    const defArr = [...definitions];
+    const resultGroups: FlagResultGroups = { _: [] };
+    const flagMap = new Map(defArr.map(d => [d.word, d.flag]));
+    const flagKeys = new Set<string>(defArr.map(d => d.flag));
+    const args = [];
 
-export function createFlagParser(options: FlagParserOptions): FlagParser {
-    return function parseFlags(definitions: Iterable<FlagDefinition<unknown>>, text: string, strict = false): FlagResult {
-        let currentFlag: keyof FlagResult = '_';
-        let currentGroup: StringRange[] = [];
-        const defArr = [...definitions];
-        const resultGroups: FlagResultGroups = { _: [] };
-        const flagMap = new Map(defArr.map(d => [d.word, d.flag]));
-        const flagKeys = new Set<string>(defArr.map(d => d.flag));
-
-        for (const { start, end, value } of options.splitter(text)) {
-            const offset = text[start] === '"' && text[end - 1] === '"' ? 1 : 0;
-            if (!/^--?[a-z0-9]|^--$/i.test(value)) {
-                currentGroup.push({ start, end, value });
-            } else if (text[start] !== '"' && text[start] !== value[0]) {
-                currentGroup.push({ start, end, value });
-            } else if (value === '--') {
-                if (currentFlag !== '_') {
-                    pushFlagGroup(resultGroups, currentFlag, currentGroup);
-                    currentFlag = '_';
-                    currentGroup = [];
-                } else {
-                    currentGroup.push({ start, end, value });
-                }
-            } else if (value.startsWith('--')) {
-                const flagStr = value.split(' ')[0];
-                const flag = flagMap.get(flagStr.slice(2));
-                if (flag === undefined) {
-                    currentGroup.push({ start, end, value });
-                } else if (currentFlag !== flag) {
-                    pushFlagGroup(resultGroups, currentFlag, currentGroup);
-                    currentFlag = flag;
-                    currentGroup = [];
-                }
-                if (flagStr.length < value.length)
-                    currentGroup.push({ start: start + flagStr.length + 1, end, value: value.slice(flagStr.length + 1) });
+    for (const { start, end, value } of splitInput(text)) {
+        args.push(value);
+        const offset = text[start] === '"' && text[end - 1] === '"' ? 1 : 0;
+        if (!/^--?[a-z0-9]|^--$/i.test(value)) {
+            currentGroup.push({ start, end, value });
+        } else if (text[start] !== '"' && text[start] !== value[0]) {
+            currentGroup.push({ start, end, value });
+        } else if (value === '--') {
+            if (currentFlag !== '_') {
+                pushFlagGroup(resultGroups, currentFlag, currentGroup);
+                currentFlag = '_';
+                currentGroup = [];
             } else {
-                let flagMatched = !strict;
-                const flagStr = value.split(' ')[0];
-                for (const char of flagStr.slice(1)) {
-                    flagMatched ||= flagKeys.has(char);
-                    if (isAlphanumeric(char) && currentFlag !== char && (!strict || flagKeys.has(char))) {
-                        flagMatched = true;
-                        pushFlagGroup(resultGroups, currentFlag, currentGroup);
-                        currentFlag = char;
-                        currentGroup = [];
-                    }
-                }
-                if (!flagMatched)
-                    currentGroup.push({ start, end, value });
-                else if (flagStr.length < value.length)
-                    currentGroup.push({ start: start + offset + flagStr.length + 1, end: end - offset, value: value.slice(flagStr.length + 1) });
+                currentGroup.push({ start, end, value });
             }
+        } else if (value.startsWith('--')) {
+            const flagStr = value.split(' ')[0];
+            const flag = flagMap.get(flagStr.slice(2));
+            if (flag === undefined) {
+                currentGroup.push({ start, end, value });
+            } else if (currentFlag !== flag) {
+                pushFlagGroup(resultGroups, currentFlag, currentGroup);
+                currentFlag = flag;
+                currentGroup = [];
+            }
+            if (flagStr.length < value.length)
+                currentGroup.push({ start: start + flagStr.length + 1, end, value: value.slice(flagStr.length + 1) });
+        } else {
+            let flagMatched = !strict;
+            const flagStr = value.split(' ')[0];
+            for (const char of flagStr.slice(1)) {
+                flagMatched ||= flagKeys.has(char);
+                if (isAlphanumeric(char) && currentFlag !== char && (!strict || flagKeys.has(char))) {
+                    flagMatched = true;
+                    pushFlagGroup(resultGroups, currentFlag, currentGroup);
+                    currentFlag = char;
+                    currentGroup = [];
+                }
+            }
+            if (!flagMatched)
+                currentGroup.push({ start, end, value });
+            else if (flagStr.length < value.length)
+                currentGroup.push({ start: start + offset + flagStr.length + 1, end: end - offset, value: value.slice(flagStr.length + 1) });
         }
+    }
 
-        pushFlagGroup(resultGroups, currentFlag, currentGroup);
+    pushFlagGroup(resultGroups, currentFlag, currentGroup);
 
-        const result: Mutable<FlagResult> = { _: toFlagResultSet(text, resultGroups._) };
-        for (const [key, group] of Object.entries(resultGroups))
-            result[key] = toFlagResultSet(text, group ?? []);
+    const result: Mutable<FlagResult> = { _: toFlagResultSet(text, resultGroups._) };
+    for (const [key, group] of Object.entries(resultGroups))
+        result[key] = toFlagResultSet(text, group ?? []);
 
-        return result;
-    };
+    return { args, flags: result };
 }
 
 type StringRange = { start: number; end: number; value: string; };

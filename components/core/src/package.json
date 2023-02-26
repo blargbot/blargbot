@@ -13,6 +13,7 @@
         "@blargbot/config": "workspace:^",
         "@blargbot/crowdin": "workspace:^",
         "@blargbot/database": "workspace:^",
+        "@blargbot/decancer": "workspace:^",
         "@blargbot/discord-emote": "workspace:^",
         "@blargbot/discord-util": "workspace:^",
         "@blargbot/domain": "workspace:^",
@@ -28,17 +29,14 @@
         "discord-api-types": "^0.37.32",
         "eris": "^0.17.1",
         "eventemitter3": "^5.0.0",
-        "limax": "^3.0.0",
         "moment-timezone": "^0.5.40",
         "prom-client": "^14.1.1",
-        "safe-regex": "^2.1.1",
-        "unorm": "^1.6.0"
+        "safe-regex": "^2.1.1"
     },
     "devDependencies": {
         "@types/color": "^3.0.3",
         "@types/cron": "^2.0.0",
         "@types/eris": "workspace:^",
-        "@types/safe-regex": "^1.1.4",
-        "@types/unorm": "^1.3.28"
+        "@types/safe-regex": "^1.1.4"
     }
 }

@@ -2,8 +2,7 @@ import { inspect } from 'node:util';
 
 import type { BBTagContextOptions, BBTagRuntimeScope, BBTagUtilities, ChannelService, Entities, GuildService, InjectionContext, LocatedRuntimeError, MessageService, RoleService, SourceMarker, SourceProvider, SubtagCall, SubtagDescriptor, TimezoneProvider, UserService, VariablesStore, WarningService } from '@bbtag/blargbot';
 import { BaseRuntimeLimit, BBTagContext, BBTagEngine, BBTagRuntimeError, createBBTagArrayTools, createBBTagJsonTools, createBBTagOperators, createEmbedParser, NotEnoughArgumentsError, parseBBTag, smartStringCompare, Subtag, SubtagType, TooManyArgumentsError } from '@bbtag/blargbot';
-import { smartSplitRanges } from '@blargbot/core/utils/humanize/smartSplit.js';
-import { repeat } from '@blargbot/core/utils/index.js';
+import { createSafeRegExp, repeat } from '@blargbot/core/utils/index.js';
 import { parseBigInt } from '@blargbot/core/utils/parse/parseBigInt.js';
 import { parseBoolean } from '@blargbot/core/utils/parse/parseBoolean.js';
 import { parseColor } from '@blargbot/core/utils/parse/parseColor.js';
@@ -14,7 +13,6 @@ import { parseString } from '@blargbot/core/utils/parse/parseString.js';
 import { parseTime } from '@blargbot/core/utils/parse/parseTime.js';
 import { snowflake } from '@blargbot/discord-util';
 import type { TagVariableScope } from '@blargbot/domain/models/index.js';
-import { createFlagParser } from '@blargbot/flags';
 import type { Logger } from '@blargbot/logger';
 import { argument, Mock } from '@blargbot/test-util/mock.js';
 // import { argument, Mock } from '@blargbot/test-util/mock.js';
@@ -209,9 +207,6 @@ export class SubtagTestContext {
             convertToString: parseString,
             parseArray: v => bbtagArrayTools.deserialize(v)?.v
         }));
-        this.dependencies.setup(m => m.parseFlags, false).thenReturn(createFlagParser({
-            splitter: smartSplitRanges
-        }));
         this.dependencies.setup(m => m.converter, false).thenReturn({
             int: bbtagParseInt,
             float: parseFloat,
@@ -224,7 +219,8 @@ export class SubtagTestContext {
             }),
             bigInt: parseBigInt,
             color: parseColor,
-            time: parseTime
+            time: parseTime,
+            regex: createSafeRegExp
         });
 
         this.tagVariablesTable.setup(m => m.get(tsMockito.anything() as never, tsMockito.anything() as never), false)
@@ -480,7 +476,7 @@ export class TestDataSubtag extends Subtag {
         });
     }
 
-    protected async * executeCore(_: unknown, __: unknown, subtag: SubtagCall): AsyncIterable<string> {
+    public override async * execute(_: unknown, __: unknown, subtag: SubtagCall): AsyncIterable<string> {
         if (subtag.args.length !== 1)
             throw new RangeError(`Subtag ${this.name} must be given 1 argument!`);
         const key = subtag.args[0].source;
@@ -504,7 +500,7 @@ export class EvalSubtag extends Subtag {
         });
     }
 
-    protected executeCore(_context: BBTagContext, _subtagName: string, subtag: SubtagCall): never {
+    public override execute(_context: BBTagContext, _subtagName: string, subtag: SubtagCall): never {
         throw new MarkerError('eval', subtag.start.index);
     }
 }
@@ -513,7 +509,7 @@ export class EvalSubtag extends Subtag {
 export class AssertSubtag extends Subtag {
     readonly #assertion: (context: BBTagContext, subtagName: string, subtag: SubtagCall) => Awaitable<string>;
 
-    public constructor(assertion: (...args: Parameters<Subtag['executeCore']>) => Awaitable<string>) {
+    public constructor(assertion: (...args: Parameters<Subtag['execute']>) => Awaitable<string>) {
         super({
             category: SubtagType.SIMPLE,
             hidden: true,
@@ -523,7 +519,7 @@ export class AssertSubtag extends Subtag {
         this.#assertion = assertion;
     }
 
-    protected async * executeCore(context: BBTagContext, subtagName: string, subtag: SubtagCall): AsyncIterable<string> {
+    public override async * execute(context: BBTagContext, subtagName: string, subtag: SubtagCall): AsyncIterable<string> {
         yield await this.#assertion(context, subtagName, subtag);
     }
 }
@@ -539,7 +535,7 @@ export class FailTestSubtag extends Subtag {
         });
     }
 
-    public executeCore(_context: BBTagContext, _subtagName: string, subtag: SubtagCall): never {
+    public override execute(_context: BBTagContext, _subtagName: string, subtag: SubtagCall): never {
         throw new RangeError(`Subtag ${subtag.source} was evaluated when it wasnt supposed to!`);
     }
 }
@@ -558,7 +554,7 @@ export class LimitedTestSubtag extends Subtag {
         this.#limit = limit;
     }
 
-    protected executeCore(context: BBTagContext): never {
+    public override execute(context: BBTagContext): never {
         const count = this.#counts.get(context) ?? 0;
         this.#counts.set(context, count + 1);
 
@@ -579,7 +575,7 @@ export class EchoArgsSubtag extends Subtag {
         });
     }
 
-    protected async * executeCore(_: BBTagContext, __: string, subtag: SubtagCall): AsyncIterable<string> {
+    public override async * execute(_: BBTagContext, __: string, subtag: SubtagCall): AsyncIterable<string> {
         await Promise.resolve();
         yield '[';
         yield JSON.stringify(subtag.name.source);

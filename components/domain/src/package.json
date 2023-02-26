@@ -9,8 +9,8 @@
     },
     "dependencies": {
         "@blargbot/chatlog-types": "workspace:^",
-        "@blargbot/flags": "workspace:^",
         "@blargbot/formatting": "workspace:^",
+        "@blargbot/input": "workspace:^",
         "moment-timezone": "^0.5.40"
     }
 }

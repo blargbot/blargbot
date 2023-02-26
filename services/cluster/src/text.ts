@@ -1,5 +1,5 @@
 import type { AnalysisResult } from '@bbtag/blargbot';
-import type { FlagDefinition } from '@blargbot/flags';
+import type { FlagDefinition } from '@blargbot/input';
 import type { IFormattable } from '@blargbot/formatting';
 import { FormatString } from '@blargbot/formatting';
 import type * as Eris from 'eris';

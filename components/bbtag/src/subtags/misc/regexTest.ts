@@ -1,3 +1,4 @@
+import type { BBTagContext } from '../../BBTagContext.js';
 import { RegexSubtag } from '../../RegexSubtag.js';
 import { Subtag } from '../../Subtag.js';
 import textTemplates from '../../text.js';
@@ -18,14 +19,14 @@ export class RegexTestSubtag extends RegexSubtag {
                     exampleCode: tag.default.exampleCode,
                     exampleOut: tag.default.exampleOut,
                     returns: 'boolean',
-                    execute: (_, [text, regex]) => this.regexTest(text.value, regex.raw)
+                    execute: (ctx, [text, regex]) => this.regexTest(ctx, text.value, regex.raw)
                 }
             ]
         });
     }
 
-    public regexTest(text: string, regexStr: string): boolean {
-        const regex = this.createRegex(regexStr);
+    public regexTest(context: BBTagContext, text: string, regexStr: string): boolean {
+        const regex = this.createRegex(context, regexStr);
         return regex.test(text);
     }
 }

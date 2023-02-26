@@ -1,5 +1,6 @@
+import { randomInt } from 'node:crypto';
+
 import { Lazy } from '@blargbot/core/Lazy.js';
-import { randInt } from '@blargbot/core/utils/index.js';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import type { BBTagValueConverter } from '../../BBTagUtilities.js';
@@ -48,6 +49,6 @@ export class RandomIntSubtag extends CompiledSubtag {
         if (max === undefined)
             throw new NotANumberError(maxStr);
 
-        return randInt(min, max);
+        return randomInt(min, max);
     }
 }

@@ -1,4 +1,4 @@
-import { humanize } from '@blargbot/core/utils/index.js';
+import { decancer } from '@blargbot/decancer';
 
 import { CompiledSubtag } from '../../compilation/index.js';
 import { Subtag } from '../../Subtag.js';
@@ -27,6 +27,6 @@ export class DecancerSubtag extends CompiledSubtag {
     }
 
     public decancer(text: string): string {
-        return humanize.decancer(text);
+        return decancer(text);
     }
 }

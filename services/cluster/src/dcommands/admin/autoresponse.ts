@@ -357,8 +357,8 @@ export class AutoResponseCommand extends GuildCommand {
 
     #validateRegex(context: GuildCommandContext, pattern: string): CommandResult {
         const result = createSafeRegExp(pattern);
-        if (result.state !== 'success')
-            return templates.regex[result.state];
+        if (!result.success)
+            return templates.regex[result.reason];
 
         const testPhrases = [];
         for (const set of [letters, numbers, symbols, holyShitSymbols]) {
@@ -366,8 +366,8 @@ export class AutoResponseCommand extends GuildCommand {
                 testPhrases.push(randChoose(set, randInt(5, 25)).join(''));
             }
         }
-        context.logger.log('Testing the regex', result.regex, 'with the following phrases:\n', testPhrases);
-        const res = testPhrases.map(p => result.regex.test(p)).filter(p => p === true).length;
+        context.logger.log('Testing the regex', result.value, 'with the following phrases:\n', testPhrases);
+        const res = testPhrases.map(p => result.value.test(p)).filter(p => p === true).length;
         return res !== testPhrases.length
             ? undefined
             : templates.regex.matchesEverything;

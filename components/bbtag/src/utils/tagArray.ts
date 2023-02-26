@@ -1,7 +1,7 @@
-import { getRange } from '@blargbot/core/utils/index.js';
 import { mapping } from '@blargbot/mapping';
 
 import type { BBTagContext } from '../BBTagContext.js';
+import { BBTagRuntimeError, NotANumberError } from '../index.js';
 import type { BBTagArray } from '../types.js';
 
 export interface BBTagArrayTools {
@@ -18,6 +18,10 @@ export interface BBTagArrayToolsOptions {
 }
 
 export function createBBTagArrayTools(options: BBTagArrayToolsOptions): BBTagArrayTools {
+    const {
+        convertToInt
+    } = options;
+
     const tools: BBTagArrayTools = {
         serialize(array: JArray | BBTagArray, varName?: string): string {
             if (Array.isArray(array)) {
@@ -36,11 +40,22 @@ export function createBBTagArrayTools(options: BBTagArrayToolsOptions): BBTagArr
         deserialize(value: string): BBTagArray | undefined {
             let result = mapBBTagArrayOrJson(value);
             if (!result.valid) {
-                value = value.replace(
+                result = mapBBTagArrayOrJson(value.replace(
                     /([[,]\s*)(\d+)\s*\.\.\.\s*(\d+)(\s*[\],])/gi,
-                    (_, ...[before, from, to, after]: string[]) =>
-                        before + getRange(options.convertToInt(from) ?? NaN, options.convertToInt(to) ?? NaN).join(',') + after);
-                result = mapBBTagArrayOrJson(value);
+                    (_, ...[before, fromStr, toStr, after]: string[]) => {
+                        const from = convertToInt(fromStr);
+                        if (from === undefined)
+                            throw new NotANumberError(fromStr);
+                        const to = convertToInt(toStr);
+                        if (to === undefined)
+                            throw new NotANumberError(toStr);
+                        const count = Math.abs(from - to);
+                        if (count > 200)
+                            throw new BBTagRuntimeError('Range cannot be more than 200 numbers long');
+                        const step = from < to ? 1 : -1;
+                        return `${before}${Array.from({ length: count }, (_, i) => from + step * i).join(',')}${after}`;
+                    }
+                ));
             }
 
             if (!result.valid)

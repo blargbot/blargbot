@@ -1,8 +1,8 @@
-import { humanize } from '@blargbot/core/utils/index.js';
 import { Emote } from '@blargbot/discord-emote';
 import { findRolePosition, permission } from '@blargbot/discord-util';
-import type { FlagDefinition, FlagResult } from '@blargbot/flags';
 import { hasFlag } from '@blargbot/guards';
+import type { FlagDefinition, FlagResult } from '@blargbot/input';
+import { parseInput } from '@blargbot/input';
 import { Timer } from '@blargbot/timer';
 import * as Discord from 'discord-api-types/v10';
 import { AllowedMentionsTypes } from 'discord-api-types/v10';
@@ -91,8 +91,10 @@ export class BBTagContext implements BBTagContextOptions {
         this.message = options.message;
         this.prefix = options.prefix;
         this.inputRaw = options.inputRaw;
-        this.input = humanize.smartSplit(options.inputRaw);
         this.flags = options.flags ?? [];
+        const { args, flags } = parseInput(this.flags, options.inputRaw);
+        this.input = args;
+        this.flaggedInput = flags;
         this.isCC = options.isCC;
         this.tagVars = options.tagVars ?? !this.isCC;
         this.authorId = options.authorId;
@@ -103,7 +105,6 @@ export class BBTagContext implements BBTagContextOptions {
         this.locks = options.locks ?? {};
         this.limit = typeof options.limit === 'string' ? new limits[options.limit](this.guild) : options.limit;
         this.silent = options.silent ?? false;
-        this.flaggedInput = engine.dependencies.parseFlags(this.flags, this.inputRaw);
         this.errors = [];
         this.debug = [];
         this.scopes = options.scopes ?? new ScopeManager();

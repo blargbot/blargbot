@@ -1,11 +1,10 @@
 import type { TagVariableScope } from '@blargbot/domain/models/index.js';
-import type { FlagParser } from '@blargbot/flags';
 import type { Logger } from '@blargbot/logger';
 import type moment from 'moment-timezone';
 
 import type { BBTagContext } from './BBTagContext.js';
 import type { BBTagEngine } from './BBTagEngine.js';
-import type { EmbedParser } from './index.js';
+import type { EmbedParser, SubtagCall } from './index.js';
 import type { ChannelService } from './services/ChannelService.js';
 import type { GuildService } from './services/GuildService.js';
 import type { MessageService } from './services/MessageService.js';
@@ -21,7 +20,6 @@ export interface InjectionContext {
     readonly logger: Logger;
     readonly subtags: Iterable<SubtagDescriptor>;
     readonly util: BBTagUtilities;
-    readonly parseFlags: FlagParser;
     readonly operators: BBTagOperators;
     readonly arrayTools: BBTagArrayTools;
     readonly jsonTools: BBTagJsonTools;
@@ -32,6 +30,11 @@ export interface InjectionContext {
     readonly warnings: WarningService;
     readonly sources: SourceProvider;
     readonly timezones: TimezoneProvider;
+    readonly middleware: Iterable<SubtagInvocationMiddleware>;
+}
+
+export interface SubtagInvocationMiddleware {
+    (subtag: Subtag, context: BBTagContext, subtagName: string, call: SubtagCall): AsyncIterable<string | undefined>;
 }
 
 export interface BBTagQueryServices {
@@ -65,6 +68,7 @@ export interface BBTagValueConverter {
     bigInt(this: void, s: string | number | bigint): bigint | undefined;
     color(this: void, text: number | 'random' | string): number | undefined;
     time(this: void, text: 'now' | 'today' | 'tomorrow' | 'yesterday' | string, format?: string, timezone?: string): moment.Moment;
+    regex(this: void, text: string): { success: true; value: RegExp; } | { success: false; reason: 'tooLong' | 'invalid' | 'unsafe'; };
 }
 
 export interface BBTagUtilities {

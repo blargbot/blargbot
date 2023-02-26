@@ -1,5 +1,5 @@
 import { CommandType, guard } from '@blargbot/cluster/utils/index.js';
-import type { FlagResult } from '@blargbot/flags';
+import type { FlagResult } from '@blargbot/input';
 import type { IFormattable } from '@blargbot/formatting';
 import { util } from '@blargbot/formatting';
 import moment from 'moment-timezone';

@@ -68,6 +68,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:components/database/src"\
       },\
       {\
+        "name": "@blargbot/decancer",\
+        "reference": "workspace:components/decancer/src"\
+      },\
+      {\
         "name": "@blargbot/discord-emote",\
         "reference": "workspace:components/discord-emote/src"\
       },\
@@ -92,10 +96,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:components/express/src"\
       },\
       {\
-        "name": "@blargbot/flags",\
-        "reference": "workspace:components/flags/src"\
-      },\
-      {\
         "name": "@blargbot/formatting",\
         "reference": "workspace:components/formatting/src"\
       },\
@@ -110,6 +110,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       {\
         "name": "@blargbot/image-types",\
         "reference": "workspace:components/image-types/src"\
+      },\
+      {\
+        "name": "@blargbot/input",\
+        "reference": "workspace:components/input/src"\
       },\
       {\
         "name": "@blargbot/logger",\
@@ -288,6 +292,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@blargbot/core-tests", ["workspace:components/core/test"]],\
       ["@blargbot/crowdin", ["workspace:components/crowdin/src"]],\
       ["@blargbot/database", ["workspace:components/database/src"]],\
+      ["@blargbot/decancer", ["workspace:components/decancer/src"]],\
       ["@blargbot/discord-channel-cache", ["workspace:services/discord-channel-cache/src"]],\
       ["@blargbot/discord-chatlog", ["workspace:services/discord-chatlog/src"]],\
       ["@blargbot/discord-emote", ["workspace:components/discord-emote/src"]],\
@@ -308,13 +313,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@blargbot/env", ["workspace:components/env/src"]],\
       ["@blargbot/event-log-settings", ["workspace:services/event-log-settings/src"]],\
       ["@blargbot/express", ["workspace:components/express/src"]],\
-      ["@blargbot/flags", ["workspace:components/flags/src"]],\
       ["@blargbot/formatting", ["workspace:components/formatting/src"]],\
       ["@blargbot/guards", ["workspace:components/guards/src"]],\
       ["@blargbot/guards-tests", ["workspace:components/guards/test"]],\
       ["@blargbot/guild-settings", ["workspace:services/guild-settings/src"]],\
       ["@blargbot/image-generator", ["workspace:services/image-generator/src"]],\
       ["@blargbot/image-types", ["workspace:components/image-types/src"]],\
+      ["@blargbot/input", ["workspace:components/input/src"]],\
       ["@blargbot/logger", ["workspace:components/logger/src"]],\
       ["@blargbot/mapping", ["workspace:components/mapping/src"]],\
       ["@blargbot/master", ["workspace:services/master/src"]],\
@@ -419,12 +424,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/async-tools", "workspace:components/async-tools/src"],\
             ["@blargbot/catch-decorators", "workspace:components/catch-decorators/src"],\
             ["@blargbot/core", "workspace:components/core/src"],\
+            ["@blargbot/decancer", "workspace:components/decancer/src"],\
             ["@blargbot/discord-emote", "workspace:components/discord-emote/src"],\
             ["@blargbot/discord-util", "workspace:components/discord-util/src"],\
             ["@blargbot/domain", "workspace:components/domain/src"],\
-            ["@blargbot/flags", "workspace:components/flags/src"],\
             ["@blargbot/formatting", "workspace:components/formatting/src"],\
             ["@blargbot/guards", "workspace:components/guards/src"],\
+            ["@blargbot/input", "workspace:components/input/src"],\
             ["@blargbot/logger", "workspace:components/logger/src"],\
             ["@blargbot/mapping", "workspace:components/mapping/src"],\
             ["@blargbot/timer", "workspace:components/timer/src"],\
@@ -455,8 +461,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/discord-emote", "workspace:components/discord-emote/src"],\
             ["@blargbot/discord-util", "workspace:components/discord-util/src"],\
             ["@blargbot/domain", "workspace:components/domain/src"],\
-            ["@blargbot/flags", "workspace:components/flags/src"],\
             ["@blargbot/formatting", "workspace:components/formatting/src"],\
+            ["@blargbot/input", "workspace:components/input/src"],\
             ["@blargbot/logger", "workspace:components/logger/src"],\
             ["@blargbot/test-util", "workspace:components/test-util/src"],\
             ["@blargbot/timer", "workspace:components/timer/src"],\
@@ -581,13 +587,14 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/config", "workspace:components/config/src"],\
             ["@blargbot/core", "workspace:components/core/src"],\
             ["@blargbot/database", "workspace:components/database/src"],\
+            ["@blargbot/decancer", "workspace:components/decancer/src"],\
             ["@blargbot/discord-emote", "workspace:components/discord-emote/src"],\
             ["@blargbot/discord-util", "workspace:components/discord-util/src"],\
             ["@blargbot/domain", "workspace:components/domain/src"],\
-            ["@blargbot/flags", "workspace:components/flags/src"],\
             ["@blargbot/formatting", "workspace:components/formatting/src"],\
             ["@blargbot/guards", "workspace:components/guards/src"],\
             ["@blargbot/image-types", "workspace:components/image-types/src"],\
+            ["@blargbot/input", "workspace:components/input/src"],\
             ["@blargbot/logger", "workspace:components/logger/src"],\
             ["@blargbot/mapping", "workspace:components/mapping/src"],\
             ["@blargbot/modules", "workspace:components/modules/src"],\
@@ -674,6 +681,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/config", "workspace:components/config/src"],\
             ["@blargbot/crowdin", "workspace:components/crowdin/src"],\
             ["@blargbot/database", "workspace:components/database/src"],\
+            ["@blargbot/decancer", "workspace:components/decancer/src"],\
             ["@blargbot/discord-emote", "workspace:components/discord-emote/src"],\
             ["@blargbot/discord-util", "workspace:components/discord-util/src"],\
             ["@blargbot/domain", "workspace:components/domain/src"],\
@@ -687,18 +695,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/cron", "npm:2.0.0"],\
             ["@types/eris", "workspace:definitions/eris"],\
             ["@types/safe-regex", "npm:1.1.4"],\
-            ["@types/unorm", "npm:1.3.28"],\
             ["airtable", "npm:0.11.6"],\
             ["color", "npm:4.2.3"],\
             ["cron", "npm:2.2.0"],\
             ["discord-api-types", "npm:0.37.32"],\
             ["eris", "npm:0.17.1"],\
             ["eventemitter3", "npm:5.0.0"],\
-            ["limax", "npm:3.0.0"],\
             ["moment-timezone", "npm:0.5.40"],\
             ["prom-client", "npm:14.1.1"],\
-            ["safe-regex", "npm:2.1.1"],\
-            ["unorm", "npm:1.6.0"]\
+            ["safe-regex", "npm:2.1.1"]\
           ],\
           "linkType": "SOFT"\
         }]\
@@ -758,6 +763,18 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["cassandra-driver", "npm:4.6.4"],\
             ["moment-timezone", "npm:0.5.40"],\
             ["rethinkdb", "npm:2.4.2"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
+      ["@blargbot/decancer", [\
+        ["workspace:components/decancer/src", {\
+          "packageLocation": "./components/decancer/src/",\
+          "packageDependencies": [\
+            ["@blargbot/decancer", "workspace:components/decancer/src"],\
+            ["@types/unorm", "npm:1.3.28"],\
+            ["limax", "npm:3.0.0"],\
+            ["unorm", "npm:1.6.0"]\
           ],\
           "linkType": "SOFT"\
         }]\
@@ -1045,8 +1062,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["@blargbot/domain", "workspace:components/domain/src"],\
             ["@blargbot/chatlog-types", "workspace:components/chatlog-types/src"],\
-            ["@blargbot/flags", "workspace:components/flags/src"],\
             ["@blargbot/formatting", "workspace:components/formatting/src"],\
+            ["@blargbot/input", "workspace:components/input/src"],\
             ["moment-timezone", "npm:0.5.40"]\
           ],\
           "linkType": "SOFT"\
@@ -1085,16 +1102,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/express", "workspace:components/express/src"],\
             ["@types/express", "npm:4.17.17"],\
             ["express", "npm:4.18.2"]\
-          ],\
-          "linkType": "SOFT"\
-        }]\
-      ]],\
-      ["@blargbot/flags", [\
-        ["workspace:components/flags/src", {\
-          "packageLocation": "./components/flags/src/",\
-          "packageDependencies": [\
-            ["@blargbot/flags", "workspace:components/flags/src"],\
-            ["@blargbot/guards", "workspace:components/guards/src"]\
           ],\
           "linkType": "SOFT"\
         }]\
@@ -1181,6 +1188,16 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./components/image-types/src/",\
           "packageDependencies": [\
             ["@blargbot/image-types", "workspace:components/image-types/src"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
+      ["@blargbot/input", [\
+        ["workspace:components/input/src", {\
+          "packageLocation": "./components/input/src/",\
+          "packageDependencies": [\
+            ["@blargbot/input", "workspace:components/input/src"],\
+            ["@blargbot/guards", "workspace:components/guards/src"]\
           ],\
           "linkType": "SOFT"\
         }]\

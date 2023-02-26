@@ -1,0 +1,16 @@
+{
+    "name": "@blargbot/decancer",
+    "version": "1.0.0",
+    "private": true,
+    "type": "module",
+    "exports": {
+        ".": "./index.js"
+    },
+    "dependencies": {
+        "limax": "^3.0.0",
+        "unorm": "^1.6.0"
+    },
+    "devDependencies": {
+        "@types/unorm": "^1.3.28"
+    }
+}

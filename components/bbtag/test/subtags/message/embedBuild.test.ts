@@ -1,19 +1,18 @@
 import { InvalidEmbedError, Subtag } from '@bbtag/blargbot';
 import { EmbedBuildSubtag } from '@bbtag/blargbot/subtags';
-import { repeat } from '@blargbot/core/utils/index.js';
 import moment from 'moment-timezone';
 
 import { createDescriptor, runSubtagTests, TestDataSubtag } from '../SubtagTestSuite.js';
 
 const testData = {
-    '256': repeat(256, 'a').join(''),
-    '257': repeat(257, 'a').join(''),
-    '1024': repeat(1024, 'a').join(''),
-    '1025': repeat(1025, 'a').join(''),
-    '2048': repeat(2048, 'a').join(''),
-    '2049': repeat(2049, 'a').join(''),
-    '4096': repeat(4096, 'a').join(''),
-    '4097': repeat(4097, 'a').join('')
+    '256': new Array(256).fill('a').join(''),
+    '257': new Array(257).fill('a').join(''),
+    '1024': new Array(1024).fill('a').join(''),
+    '1025': new Array(1025).fill('a').join(''),
+    '2048': new Array(2048).fill('a').join(''),
+    '2049': new Array(2049).fill('a').join(''),
+    '4096': new Array(4096).fill('a').join(''),
+    '4097': new Array(4097).fill('a').join('')
 };
 
 runSubtagTests({
@@ -105,11 +104,11 @@ runSubtagTests({
             expected: /^{"fields":\[{"name":"a{256}","value":"def"}]}$/
         },
         {
-            code: `{buildembed;${repeat(25, 'fields.name: abc;fields.value: def').join(';')}}`,
+            code: `{buildembed;${new Array(25).fill('fields.name: abc;fields.value: def').join(';')}}`,
             expected: /^{"fields":\[(?:{"name":"abc","value":"def"},?){25}]}$/
         },
         {
-            code: `{buildembed;${repeat(25, 'fields.name: abc;fields.value: def').join(';')};fields.name: abc}`,
+            code: `{buildembed;${new Array(25).fill('fields.name: abc;fields.value: def').join(';')};fields.name: abc}`,
             expected: '`Invalid embed: Too many fields`',
             errors: [
                 { start: 0, end: 904, error: new InvalidEmbedError('Too many fields') }

@@ -1,25 +1,25 @@
 import isSafeRegex from 'safe-regex';
 
-export function createSafeRegExp(term: string): { state: 'success'; regex: RegExp; } | { state: 'tooLong' | 'invalid' | 'unsafe'; } {
+export function createSafeRegExp(term: string): { success: true; value: RegExp; } | { success: false; reason: 'tooLong' | 'invalid' | 'unsafe'; } {
     if (term.length > 2000)
-        return { state: 'tooLong' };
+        return { success: false, reason: 'tooLong' };
 
     const match = /^\/?(?<body>.+?)\/(?<flags>[igmsuy]*)$/.exec(term);
     if (match === null)
-        return { state: 'invalid' };
+        return { success: false, reason: 'invalid' };
 
     const { body, flags } = match.groups ?? {};
     const result = new RegExp(body, flags);
 
     if (!isSafeRegex(result))
-        return { state: 'unsafe' };
+        return { success: false, reason: 'unsafe' };
 
-    return { state: 'success', regex: result };
+    return { success: true, value: result };
 }
 
 export function matchRegexSafe(term: string, text: string): string[] | undefined {
     const result = createSafeRegExp(term);
-    if (result.state !== 'success')
+    if (!result.success)
         return undefined;
-    return text.match(result.regex)?.map((s: string | undefined) => s ?? '') ?? undefined;
+    return text.match(result.value)?.map((s: string | undefined) => s ?? '') ?? undefined;
 }

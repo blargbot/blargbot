@@ -1,6 +1,7 @@
+import { randomInt } from 'node:crypto';
+
 import { BBTagRuntimeError, NotANumberError, Subtag } from '@bbtag/blargbot';
 import { ChannelSetPositionSubtag } from '@bbtag/blargbot/subtags';
-import { randChoose } from '@blargbot/core/utils/index.js';
 import { argument } from '@blargbot/test-util/mock.js';
 import Discord from 'discord-api-types/v10';
 
@@ -17,7 +18,8 @@ runSubtagTests({
             code: '{channelsetpos;239874692346327846;123}',
             expected: '',
             postSetup(bbctx, ctx) {
-                const channel = randChoose(Object.values(ctx.channels));
+                const choices = Object.values(ctx.channels);
+                const channel = choices[randomInt(choices.length)];
                 ctx.channelService.setup(m => m.edit(bbctx, channel.id, argument.isDeepEqual({ position: 123 }))).thenResolve(undefined);
                 ctx.channelService.setup(m => m.querySingle(bbctx, '239874692346327846')).thenResolve(channel);
             }
@@ -29,7 +31,8 @@ runSubtagTests({
                 { start: 0, end: 38, error: new NotANumberError('abc') }
             ],
             postSetup(bbctx, ctx) {
-                const channel = randChoose(Object.values(ctx.channels));
+                const choices = Object.values(ctx.channels);
+                const channel = choices[randomInt(choices.length)];
                 ctx.channelService.setup(m => m.querySingle(bbctx, '239874692346327846')).thenResolve(channel);
             }
         },
@@ -53,7 +56,8 @@ runSubtagTests({
                 ctx.roles.authorizer.permissions = '0';
             },
             postSetup(bbctx, ctx) {
-                const channel = randChoose(Object.values(ctx.channels));
+                const choices = Object.values(ctx.channels);
+                const channel = choices[randomInt(choices.length)];
                 ctx.channelService.setup(m => m.querySingle(bbctx, '239874692346327846')).thenResolve(channel);
             }
         },
@@ -64,7 +68,8 @@ runSubtagTests({
                 { start: 0, end: 38, error: new BBTagRuntimeError('Failed to move channel: no perms', 'Test REST error') }
             ],
             postSetup(bbctx, ctx) {
-                const channel = randChoose(Object.values(ctx.channels));
+                const choices = Object.values(ctx.channels);
+                const channel = choices[randomInt(choices.length)];
                 ctx.channelService.setup(m => m.querySingle(bbctx, '239874692346327846')).thenResolve(channel);
                 ctx.channelService.setup(m => m.edit(bbctx, channel.id, argument.isDeepEqual({ position: 123 })))
                     .thenResolve({ error: 'Test REST error' });
@@ -77,7 +82,8 @@ runSubtagTests({
                 { start: 0, end: 38, error: new BBTagRuntimeError('Failed to move channel: no perms', 'Some other error message') }
             ],
             postSetup(bbctx, ctx) {
-                const channel = randChoose(Object.values(ctx.channels));
+                const choices = Object.values(ctx.channels);
+                const channel = choices[randomInt(choices.length)];
                 ctx.channelService.setup(m => m.querySingle(bbctx, '239874692346327846')).thenResolve(channel);
                 ctx.channelService.setup(m => m.edit(bbctx, channel.id, argument.isDeepEqual({ position: 123 })))
                     .thenResolve({ error: 'Some other error message' });

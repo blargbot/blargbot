@@ -6,9 +6,9 @@ import * as Subtags from '@bbtag/blargbot/subtags';
 import type { ClusterOptions } from '@blargbot/cluster/types.js';
 import type { Configuration } from '@blargbot/config';
 import { BaseClient } from '@blargbot/core/BaseClient.js';
+import { metrics } from '@blargbot/core/Metrics.js';
 import { BaseService } from '@blargbot/core/serviceTypes/index.js';
 import type { EvalResult } from '@blargbot/core/types.js';
-import { smartSplitRanges } from '@blargbot/core/utils/humanize/smartSplit.js';
 import { parseBigInt } from '@blargbot/core/utils/parse/parseBigInt.js';
 import { parseBoolean } from '@blargbot/core/utils/parse/parseBoolean.js';
 import { parseColor } from '@blargbot/core/utils/parse/parseColor.js';
@@ -17,10 +17,9 @@ import { parseFloat } from '@blargbot/core/utils/parse/parseFloat.js';
 import { parseInt } from '@blargbot/core/utils/parse/parseInt.js';
 import { parseString } from '@blargbot/core/utils/parse/parseString.js';
 import { parseTime } from '@blargbot/core/utils/parse/parseTime.js';
-import type { FlagParser } from '@blargbot/flags';
-import { createFlagParser } from '@blargbot/flags';
 import type { Logger } from '@blargbot/logger';
 import { ModuleLoader } from '@blargbot/modules';
+import { Timer } from '@blargbot/timer';
 import Discord from 'discord-api-types/v9';
 import moment from 'moment-timezone';
 
@@ -34,6 +33,7 @@ import { ErisBBTagGuildService } from './utils/bbtag/ErisBBTagGuildService.js';
 import { ErisBBTagMessageService } from './utils/bbtag/ErisBBTagMessageService.js';
 import { ErisBBTagRoleService } from './utils/bbtag/ErisBBTagRoleService.js';
 import { ErisBBTagUserService } from './utils/bbtag/ErisBBTagUserService.js';
+import { createSafeRegExp } from './utils/index.js';
 
 export class Cluster extends BaseClient {
     public readonly id: number;
@@ -59,7 +59,6 @@ export class Cluster extends BaseClient {
     public readonly version: VersionStateManager;
     public readonly guilds: GuildManager;
     public readonly announcements: AnnouncementManager;
-    public readonly parseFlags: FlagParser;
 
     public readonly bbtag: {
         execute(...args: unknown[]): Promise<ExecutionResult>;
@@ -136,9 +135,6 @@ export class Cluster extends BaseClient {
         this.botStaff = new BotStaffManager(this);
         this.moderation = new ModerationManager(this);
         this.greetings = new GreetingManager(this);
-        this.parseFlags = createFlagParser({
-            splitter: smartSplitRanges
-        });
         const bbtagArrayTools = createBBTagArrayTools({
             convertToInt: parseInt
         });
@@ -186,7 +182,6 @@ export class Cluster extends BaseClient {
                 convertToString: parseString,
                 parseArray: v => bbtagArrayTools.deserialize(v)?.v
             }),
-            parseFlags: this.parseFlags,
             converter: {
                 int: parseInt,
                 float: parseFloat,
@@ -199,7 +194,8 @@ export class Cluster extends BaseClient {
                 }),
                 bigInt: parseBigInt,
                 color: parseColor,
-                time: parseTime
+                time: parseTime,
+                regex: createSafeRegExp
             },
             services: {
                 channel: new ErisBBTagChannelService(this),
@@ -207,7 +203,21 @@ export class Cluster extends BaseClient {
                 role: new ErisBBTagRoleService(this),
                 guild: new ErisBBTagGuildService(this),
                 message: new ErisBBTagMessageService(this)
-            }
+            },
+            middleware: [
+                async function* (subtag, ctx, name, call) {
+                    const timer = new Timer().start();
+                    try {
+                        yield* subtag.execute(ctx, name, call);
+                    } finally {
+                        timer.end();
+                        metrics.subtagLatency.labels(subtag.name).observe(timer.elapsed);
+                        metrics.subtagCounter.labels(subtag.name).inc();
+                        const debugPerf = ctx.data.subtags[subtag.name] ??= [];
+                        debugPerf.push(timer.elapsed);
+                    }
+                }
+            ]
         });
         bbtag;
         this.intervals = new IntervalManager(this, moment.duration(10, 's'));

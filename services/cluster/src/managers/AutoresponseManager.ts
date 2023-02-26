@@ -1,9 +1,10 @@
 import type { Cluster } from '@blargbot/cluster';
 import type { WhitelistResponse } from '@blargbot/cluster/types.js';
-import { guard, humanize } from '@blargbot/cluster/utils/index.js';
+import { guard } from '@blargbot/cluster/utils/index.js';
 import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent.js';
 import type { GuildTriggerTag } from '@blargbot/domain/models/index.js';
 import { hasProperty } from '@blargbot/guards';
+import { joinInput } from '@blargbot/input';
 import { mapping } from '@blargbot/mapping';
 import type * as Eris from 'eris';
 
@@ -116,7 +117,7 @@ export class AutoresponseManager {
             limit: id === 'everything' ? 'everythingAutoResponseLimit' : 'generalAutoResponseLimit',
             authorId: tag.author ?? undefined,
             authorizerId: tag.authorizer ?? undefined,
-            inputRaw: args.length === 1 ? msg.content : humanize.smartSplit.inverse(args),
+            inputRaw: args.length === 1 ? msg.content : joinInput(args),
             isCC: true,
             rootTagName: `_autoresponse_${id}`,
             silent: id === 'everything'

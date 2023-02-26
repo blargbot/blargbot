@@ -6,6 +6,7 @@ import { overflowMessageContent } from '@blargbot/discord-util';
 import type { StoredTag } from '@blargbot/domain/models/index.js';
 import type { IFormattable } from '@blargbot/formatting';
 import { util } from '@blargbot/formatting';
+import { parseInput } from '@blargbot/input';
 import type * as Eris from 'eris';
 import moment from 'moment-timezone';
 import fetch from 'node-fetch';
@@ -561,7 +562,7 @@ export class TagCommand extends GuildCommand {
         if ('response' in match)
             return match.response;
 
-        const { _, ...addFlags } = context.cluster.parseFlags([], flagsRaw);
+        const { flags: { _, ...addFlags } } = parseInput([], flagsRaw);
         const flags = [...match.flags ?? []];
         for (const [flag, args] of Object.entries(addFlags)) {
             if (args === undefined || args.length === 0)
@@ -587,7 +588,7 @@ export class TagCommand extends GuildCommand {
         if ('response' in match)
             return match.response;
 
-        const { _, ...removeFlags } = context.cluster.parseFlags([], flagsRaw);
+        const { flags: { _, ...removeFlags } } = parseInput([], flagsRaw);
         const flags = [...match.flags ?? []]
             .filter(f => removeFlags[f.flag] === undefined);
 

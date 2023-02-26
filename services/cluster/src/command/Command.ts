@@ -2,7 +2,7 @@ import type { ClusterUtilities } from '@blargbot/cluster/ClusterUtilities.js';
 import type { CommandBaseOptions, CommandResult, CommandSignature } from '@blargbot/cluster/types.js';
 import type { CommandType } from '@blargbot/cluster/utils/index.js';
 import type { IMiddleware, NextMiddleware } from '@blargbot/core/types.js';
-import type { FlagDefinition } from '@blargbot/flags';
+import type { FlagDefinition } from '@blargbot/input';
 import type { IFormattable } from '@blargbot/formatting';
 import type * as Eris from 'eris';
 
