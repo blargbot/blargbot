@@ -1,6 +1,5 @@
-import { Subtag } from '@bbtag/blargbot';
+import { Subtag, TagVariableType } from '@bbtag/blargbot';
 import { CommitSubtag } from '@bbtag/blargbot/subtags';
-import { TagVariableType } from '@blargbot/domain/models/index.js';
 import { argument } from '@blargbot/test-util/mock.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
@@ -19,8 +18,8 @@ runSubtagTests({
                 ctx.tagVariablesTable.setup(m => m.set(argument.isDeepEqual([
                     { name: 'var1', value: 5, scope: { type: TagVariableType.LOCAL_TAG, name: 'commitTest' } },
                     { name: 'var2', value: 'abc', scope: { type: TagVariableType.LOCAL_TAG, name: 'commitTest' } },
-                    { name: 'var3', value: 5, scope: { type: 'TEMPORARY' } },
-                    { name: 'var4', value: 'abc', scope: { type: 'TEMPORARY' } },
+                    { name: 'var3', value: 5, scope: { type: TagVariableType.TEMP } },
+                    { name: 'var4', value: 'abc', scope: { type: TagVariableType.TEMP } },
                     { name: 'var5', value: 5, scope: { type: TagVariableType.GLOBAL } },
                     { name: 'var6', value: 'abc', scope: { type: TagVariableType.GLOBAL } },
                     { name: 'var7', value: 5, scope: { type: TagVariableType.AUTHOR, authorId: ctx.users.command.id } },
@@ -53,8 +52,8 @@ runSubtagTests({
                 ctx.tagVariablesTable.setup(m => m.set(argument.isDeepEqual([
                     { name: 'var1', value: 5, scope: { type: TagVariableType.LOCAL_CC, guildId: ctx.guild.id, name: 'commitTest' } },
                     { name: 'var2', value: 'abc', scope: { type: TagVariableType.LOCAL_CC, guildId: ctx.guild.id, name: 'commitTest' } },
-                    { name: 'var3', value: 5, scope: { type: 'TEMPORARY' } },
-                    { name: 'var4', value: 'abc', scope: { type: 'TEMPORARY' } },
+                    { name: 'var3', value: 5, scope: { type: TagVariableType.TEMP } },
+                    { name: 'var4', value: 'abc', scope: { type: TagVariableType.TEMP } },
                     { name: 'var5', value: 5, scope: { type: TagVariableType.GLOBAL } },
                     { name: 'var6', value: 'abc', scope: { type: TagVariableType.GLOBAL } },
                     { name: 'var7', value: 5, scope: { type: TagVariableType.AUTHOR, authorId: ctx.users.command.id } },
@@ -85,7 +84,7 @@ runSubtagTests({
 
                 ctx.tagVariablesTable.setup(m => m.set(argument.isDeepEqual([
                     { name: 'var1', value: 5, scope: { type: TagVariableType.LOCAL_TAG, name: 'commitTest' } },
-                    { name: 'var3', value: 5, scope: { type: 'TEMPORARY' } },
+                    { name: 'var3', value: 5, scope: { type: TagVariableType.TEMP } },
                     { name: 'var5', value: 5, scope: { type: TagVariableType.GLOBAL } },
                     { name: 'var7', value: 5, scope: { type: TagVariableType.AUTHOR, authorId: ctx.users.command.id } },
                     { name: 'var9', value: 5, scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id } }
@@ -114,7 +113,7 @@ runSubtagTests({
 
                 ctx.tagVariablesTable.setup(m => m.set(argument.isDeepEqual([
                     { name: 'var2', value: 'abc', scope: { type: TagVariableType.LOCAL_CC, guildId: ctx.guild.id, name: 'commitTest' } },
-                    { name: 'var4', value: 'abc', scope: { type: 'TEMPORARY' } },
+                    { name: 'var4', value: 'abc', scope: { type: TagVariableType.TEMP } },
                     { name: 'var6', value: 'abc', scope: { type: TagVariableType.GLOBAL } },
                     { name: 'var8', value: 'abc', scope: { type: TagVariableType.AUTHOR, authorId: ctx.users.command.id } },
                     { name: 'var10', value: 'abc', scope: { type: TagVariableType.GUILD_CC, guildId: ctx.guild.id } }

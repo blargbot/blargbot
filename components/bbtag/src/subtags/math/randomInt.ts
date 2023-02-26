@@ -1,7 +1,5 @@
 import { randomInt } from 'node:crypto';
 
-import { Lazy } from '@blargbot/core/Lazy.js';
-
 import type { BBTagContext } from '../../BBTagContext.js';
 import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
@@ -9,6 +7,7 @@ import { NotANumberError } from '../../errors/index.js';
 import { Subtag } from '../../Subtag.js';
 import textTemplates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
+import { Lazy } from '../../utils/Lazy.js';
 
 const tag = textTemplates.subtags.randomInt;
 
@@ -41,14 +40,18 @@ export class RandomIntSubtag extends CompiledSubtag {
         maxStr: string
     ): number {
         const fallback = new Lazy(() => this.#converter.int(context.scopes.local.fallback ?? ''));
-        const min = this.#converter.int(minStr) ?? fallback.value;
+        let min = this.#converter.int(minStr) ?? fallback.value;
         if (min === undefined)
             throw new NotANumberError(minStr);
 
-        const max = this.#converter.int(maxStr) ?? fallback.value;
+        let max = this.#converter.int(maxStr) ?? fallback.value;
         if (max === undefined)
             throw new NotANumberError(maxStr);
 
+        if (min > max)
+            [min, max] = [max, min];
+        else if (min === max)
+            return min;
         return randomInt(min, max);
     }
 }

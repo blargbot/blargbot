@@ -1,8 +1,8 @@
-import type { StoredGuild, StoredUser} from '@blargbot/domain/models/index.js';
-import { TagVariableType } from '@blargbot/domain/models/index.js';
+import { TagVariableType } from '@bbtag/blargbot';
+import type { StoredGuild, StoredUser } from '@blargbot/domain/models/index.js';
 import * as Eris from 'eris';
 
-import type { CommandContext} from '../../command/index.js';
+import type { CommandContext } from '../../command/index.js';
 import { GlobalCommand } from '../../command/index.js';
 import templates from '../../text.js';
 import type { CommandResult, GuildCommandContext, PrivateCommandContext } from '../../types.js';

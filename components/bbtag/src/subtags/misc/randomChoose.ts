@@ -1,4 +1,4 @@
-import { randChoose } from '@blargbot/core/utils/index.js';
+import { randomInt } from 'node:crypto';
 
 import type { SubtagArgument } from '../../arguments/index.js';
 import type { BBTagContext } from '../../BBTagContext.js';
@@ -42,7 +42,10 @@ export class RandomChooseSubtag extends CompiledSubtag {
     }
 
     public async randChooseArg(choices: readonly SubtagArgument[]): Promise<string> {
-        return await randChoose(choices).wait();
+        if (choices.length === 0)
+            return '';
+
+        return await choices[randomInt(choices.length)].wait();
     }
 
     public async randChoose(context: BBTagContext, arrayStr: string): Promise<JToken> {
@@ -50,6 +53,9 @@ export class RandomChooseSubtag extends CompiledSubtag {
         if (choices === undefined)
             return arrayStr;
 
-        return randChoose(choices.v);
+        if (choices.v.length === 0)
+            return '';
+
+        return choices.v[randomInt(choices.v.length)];
     }
 }

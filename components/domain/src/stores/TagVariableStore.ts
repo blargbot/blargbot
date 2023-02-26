@@ -1,4 +1,4 @@
-import type { TagVariableScope, TagVariableScopeFilter } from '../models/index.js';
+import type { TagVariableScope, TagVariableScopeFilter } from '@bbtag/blargbot';
 
 export interface TagVariableStore {
     upsert(entries: Iterable<{ name: string; scope: TagVariableScope; value: JToken | undefined; }>): Promise<void>;

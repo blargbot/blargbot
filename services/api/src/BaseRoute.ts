@@ -1,7 +1,6 @@
 import type { IncomingMessage } from 'node:http';
 
 import type { Api } from '@blargbot/api/Api.js';
-import { Lazy } from '@blargbot/core/Lazy.js';
 import asyncRouter from 'express-promise-router';
 import type { IRoute } from 'express-serve-static-core';
 import { WebSocketServer } from 'ws';
@@ -69,15 +68,17 @@ export class BaseRoute {
             if (ws !== undefined)
                 this.#bindWebsocket(api, fullPath, ws);
 
-            const router = new Lazy(() => {
-                const router = asyncRouter();
-                api.app.use(baseRoute, router);
-                return router.route(route);
-            });
+            let routeHandler: IRoute<Route> | undefined;
             for (const [method, handler] of Object.entries(http)) {
                 if (handler === undefined)
                     continue;
-                this.#bindRoute(api, router.value, method, middleware, handler);
+
+                if (routeHandler === undefined) {
+                    const router = asyncRouter();
+                    api.app.use(baseRoute, router);
+                    routeHandler = router.route(route);
+                }
+                this.#bindRoute(api, routeHandler, method, middleware, handler);
             }
         });
         return this;

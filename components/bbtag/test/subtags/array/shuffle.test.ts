@@ -1,6 +1,5 @@
-import { NotAnArrayError, Subtag } from '@bbtag/blargbot';
+import { NotAnArrayError, Subtag, TagVariableType } from '@bbtag/blargbot';
 import { GetSubtag, ShuffleSubtag } from '@bbtag/blargbot/subtags';
-import { TagVariableType } from '@blargbot/domain/models/index.js';
 import chai from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

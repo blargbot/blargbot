@@ -1,9 +1,9 @@
-import type { TagVariableScope } from '@blargbot/domain/models/index.js';
-import { TagVariableType } from '@blargbot/domain/models/index.js';
 import type { IFormattable } from '@blargbot/formatting';
 
 import type { BBTagContext } from './BBTagContext.js';
 import textTemplates from './text.js';
+import type { TagVariableScope } from './variables/TagVariableScope.js';
+import { TagVariableType } from './variables/TagVariableType.js';
 
 export const tagVariableScopeProviders: readonly TagVariableScopeProvider[] = [
     {
@@ -20,7 +20,7 @@ export const tagVariableScopeProviders: readonly TagVariableScopeProvider[] = [
         description: textTemplates.subtag.variables.author.description,
         getScope: (context) => context.authorId !== undefined
             ? { type: TagVariableType.AUTHOR, authorId: context.authorId }
-            : { type: 'TEMPORARY' }
+            : { type: TagVariableType.TEMP }
     },
     {
         name: textTemplates.subtag.variables.global.name,
@@ -32,7 +32,7 @@ export const tagVariableScopeProviders: readonly TagVariableScopeProvider[] = [
         name: textTemplates.subtag.variables.temporary.name,
         prefix: '~',
         description: textTemplates.subtag.variables.temporary.description,
-        getScope: () => ({ type: 'TEMPORARY' })
+        getScope: () => ({ type: TagVariableType.TEMP })
     },
     {
         name: textTemplates.subtag.variables.local.name,

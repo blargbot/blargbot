@@ -1,6 +1,5 @@
-import { AggregateBBTagError, BBTagRuntimeError, BBTagRuntimeState, InvalidOperatorError, NotANumberError, Subtag } from '@bbtag/blargbot';
+import { AggregateBBTagError, BBTagRuntimeError, BBTagRuntimeState, InvalidOperatorError, NotANumberError, Subtag, TagVariableType } from '@bbtag/blargbot';
 import { ForSubtag, GetSubtag, IfSubtag, OperatorSubtag, ReturnSubtag, SetSubtag } from '@bbtag/blargbot/subtags';
-import { TagVariableType } from '@blargbot/domain/models/index.js';
 import chai from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

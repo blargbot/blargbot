@@ -8,6 +8,7 @@
         "./*": "./*"
     },
     "dependencies": {
+        "@bbtag/blargbot": "workspace:^",
         "@blargbot/async-tools": "workspace:^",
         "@blargbot/chatlog-types": "workspace:^",
         "@blargbot/config": "workspace:^",

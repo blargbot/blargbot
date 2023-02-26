@@ -92,7 +92,6 @@ __metadata:
     "@blargbot/application": "workspace:^"
     "@blargbot/async-tools": "workspace:^"
     "@blargbot/catch-decorators": "workspace:^"
-    "@blargbot/core": "workspace:^"
     "@blargbot/decancer": "workspace:^"
     "@blargbot/discord-emote": "workspace:^"
     "@blargbot/discord-util": "workspace:^"
@@ -341,6 +340,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@blargbot/database@workspace:components/database/src"
   dependencies:
+    "@bbtag/blargbot": "workspace:^"
     "@blargbot/async-tools": "workspace:^"
     "@blargbot/chatlog-types": "workspace:^"
     "@blargbot/config": "workspace:^"
@@ -607,6 +607,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@blargbot/domain@workspace:components/domain/src"
   dependencies:
+    "@bbtag/blargbot": "workspace:^"
     "@blargbot/chatlog-types": "workspace:^"
     "@blargbot/formatting": "workspace:^"
     "@blargbot/input": "workspace:^"

@@ -1,4 +1,4 @@
-import { shuffle } from '@blargbot/core/utils/index.js';
+import { randomInt } from 'node:crypto';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
@@ -43,7 +43,7 @@ export class ShuffleSubtag extends CompiledSubtag {
     }
 
     public shuffleInput(context: BBTagContext): void {
-        shuffle(context.input);
+        this.#shuffle(context.input);
     }
 
     public async shuffle(context: BBTagContext, array: string): Promise<JArray | undefined> {
@@ -51,11 +51,18 @@ export class ShuffleSubtag extends CompiledSubtag {
         if (arr === undefined)
             throw new NotAnArrayError(array);
 
-        shuffle(arr.v);
+        this.#shuffle(arr.v);
         if (arr.n === undefined)
             return arr.v;
 
         await context.variables.set(arr.n, arr.v);
         return undefined;
+    }
+
+    #shuffle<T>(array: T[]): void {
+        for (let i = 0; i < array.length; i++) {
+            const j = randomInt(array.length);
+            [array[i], array[j]] = [array[j], array[i]];
+        }
     }
 }

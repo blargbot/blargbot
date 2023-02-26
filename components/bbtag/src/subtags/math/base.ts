@@ -1,4 +1,3 @@
-import { Lazy } from '@blargbot/core/Lazy.js';
 import { isBetween } from '@blargbot/guards';
 
 import type { BBTagContext } from '../../BBTagContext.js';
@@ -8,6 +7,7 @@ import { BBTagRuntimeError, NotANumberError } from '../../errors/index.js';
 import { Subtag } from '../../Subtag.js';
 import textTemplates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
+import { Lazy } from '../../utils/Lazy.js';
 
 const tag = textTemplates.subtags.base;
 
@@ -51,7 +51,6 @@ export class BaseNumberSubtag extends CompiledSubtag {
 
         if (!isBetween(origin, 2, 36, true) && fallback.value !== undefined) origin = fallback.value;
         if (!isBetween(radix, 2, 36, true) && fallback.value !== undefined) radix = fallback.value;
-
         if (!isBetween(origin, 2, 36, true) || !isBetween(radix, 2, 36, true))
             throw new BBTagRuntimeError('Base must be between 2 and 36');
 

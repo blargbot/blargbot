@@ -4,5 +4,6 @@ export enum TagVariableType {
     GUILD_CC = 'GUILD_CC',
     GUILD_TAG = 'GUILD_TAG',
     LOCAL_TAG = 'LOCAL_TAG',
-    LOCAL_CC = 'LOCAL_CC'
+    LOCAL_CC = 'LOCAL_CC',
+    TEMP = 'TEMPORARY'
 }

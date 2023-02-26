@@ -1,5 +1,6 @@
-import type { BBTagVariable, TagVariableScope, TagVariableScopeFilter } from '@blargbot/domain/models/index.js';
-import { TagVariableType } from '@blargbot/domain/models/index.js';
+import type { TagVariableScope, TagVariableScopeFilter } from '@bbtag/blargbot';
+import { TagVariableType } from '@bbtag/blargbot';
+import type { BBTagVariable } from '@blargbot/domain/models/index.js';
 import type { TagVariableStore } from '@blargbot/domain/stores/index.js';
 import { hasValue } from '@blargbot/guards';
 import type { Logger } from '@blargbot/logger';
@@ -23,7 +24,7 @@ export class PostgresDbTagVariableStore implements TagVariableStore {
                 allowNull: false
             },
             type: {
-                type: DataTypes.ENUM(...Object.values(TagVariableType)),
+                type: DataTypes.ENUM(...Object.values(TagVariableType).filter(v => v !== TagVariableType.TEMP)),
                 primaryKey: true,
                 allowNull: false
             },
@@ -64,7 +65,7 @@ export class PostgresDbTagVariableStore implements TagVariableStore {
     public async upsert(entries: Iterable<{ name: string; scope: TagVariableScope; value: JToken | undefined; }>): Promise<void> {
         await this.postgres.transaction(async () => {
             for (const { name, scope, value } of entries) {
-                if (scope.type === 'TEMPORARY')
+                if (scope.type === TagVariableType.TEMP)
                     continue;
                 const query = {
                     name: name.substring(0, 255),
@@ -110,7 +111,7 @@ function variableScopeToId(scope: TagVariableScope): string {
     switch (scope.type) {
         case TagVariableType.AUTHOR: return scope.authorId;
         case TagVariableType.GLOBAL: return '';
-        case 'TEMPORARY': return '';
+        case TagVariableType.TEMP: return '';
         case TagVariableType.GUILD_CC: return scope.guildId;
         case TagVariableType.GUILD_TAG: return scope.guildId;
         case TagVariableType.LOCAL_CC: return `${scope.guildId}_${scope.name}`;
@@ -132,7 +133,7 @@ function idToVariableScope(id: string, type: TagVariableScope['type']): TagVaria
             return { type, guildId: id.slice(0, splitAt), name: id.slice(splitAt + 1) };
         }
         case TagVariableType.LOCAL_TAG: return { type, name: id };
-        case 'TEMPORARY': return { type };
+        case TagVariableType.TEMP: return { type };
     }
 }
 
@@ -140,7 +141,7 @@ function variableScopeToFilter(scope: TagVariableScopeFilter): WhereAttributeHas
     switch (scope.type) {
         case TagVariableType.AUTHOR: return scope.authorId;
         case TagVariableType.GLOBAL: return scope.type;
-        case 'TEMPORARY': return undefined;
+        case TagVariableType.TEMP: return undefined;
         case TagVariableType.GUILD_TAG: return scope.guildId;
         case TagVariableType.GUILD_CC: return scope.guildId;
         case TagVariableType.LOCAL_TAG: return scope.name;

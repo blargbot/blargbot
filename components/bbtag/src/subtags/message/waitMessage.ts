@@ -1,5 +1,3 @@
-import { clamp } from '@blargbot/core/utils/index.js';
-
 import type { BBTagContext } from '../../BBTagContext.js';
 import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
@@ -68,9 +66,14 @@ export class WaitMessageSubtag extends CompiledSubtag {
         const users = await context.bulkLookup(userStr, i => this.#users.querySingle(context, i, { noLookup: true }), UserNotFoundError)
             ?? [context.user];
 
-        const timeout = clamp(this.#converter.float(timeoutStr) ?? NaN, 0, 300);
-        if (isNaN(timeout))
+        let timeout = this.#converter.float(timeoutStr);
+        if (timeout === undefined)
             throw new NotANumberError(timeoutStr);
+
+        if (timeout < 0)
+            timeout = 0;
+        else if (timeout > 300)
+            timeout = 300;
 
         if (condition.values.length === 0)
             condition = defaultCondition;

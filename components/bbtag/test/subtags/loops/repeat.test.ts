@@ -1,6 +1,5 @@
-import { BBTagRuntimeError, BBTagRuntimeState, NotANumberError, Subtag } from '@bbtag/blargbot';
+import { BBTagRuntimeError, BBTagRuntimeState, NotANumberError, Subtag, TagVariableType } from '@bbtag/blargbot';
 import { GetSubtag, IfSubtag, IncrementSubtag, RepeatSubtag, ReturnSubtag } from '@bbtag/blargbot/subtags';
-import { TagVariableType } from '@blargbot/domain/models/index.js';
 import chai from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

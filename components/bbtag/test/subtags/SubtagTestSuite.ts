@@ -1,6 +1,6 @@
 import { inspect } from 'node:util';
 
-import type { BBTagContextOptions, BBTagRuntimeScope, BBTagUtilities, ChannelService, Entities, GuildService, InjectionContext, LocatedRuntimeError, MessageService, RoleService, SourceMarker, SourceProvider, SubtagCall, SubtagDescriptor, TimezoneProvider, UserService, VariablesStore, WarningService } from '@bbtag/blargbot';
+import type { BBTagContextOptions, BBTagRuntimeScope, BBTagUtilities, ChannelService, Entities, GuildService, InjectionContext, LocatedRuntimeError, MessageService, RoleService, SourceMarker, SourceProvider, SubtagCall, SubtagDescriptor, TagVariableScope, TimezoneProvider, UserService, VariablesStore, WarningService } from '@bbtag/blargbot';
 import { BaseRuntimeLimit, BBTagContext, BBTagEngine, BBTagRuntimeError, createBBTagArrayTools, createBBTagJsonTools, createBBTagOperators, createEmbedParser, NotEnoughArgumentsError, parseBBTag, smartStringCompare, Subtag, SubtagType, TooManyArgumentsError } from '@bbtag/blargbot';
 import { createSafeRegExp, repeat } from '@blargbot/core/utils/index.js';
 import { parseBigInt } from '@blargbot/core/utils/parse/parseBigInt.js';
@@ -12,7 +12,6 @@ import { parseInt as bbtagParseInt } from '@blargbot/core/utils/parse/parseInt.j
 import { parseString } from '@blargbot/core/utils/parse/parseString.js';
 import { parseTime } from '@blargbot/core/utils/parse/parseTime.js';
 import { snowflake } from '@blargbot/discord-util';
-import type { TagVariableScope } from '@blargbot/domain/models/index.js';
 import type { Logger } from '@blargbot/logger';
 import { argument, Mock } from '@blargbot/test-util/mock.js';
 // import { argument, Mock } from '@blargbot/test-util/mock.js';

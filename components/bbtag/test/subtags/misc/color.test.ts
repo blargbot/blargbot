@@ -1,7 +1,7 @@
 import { BBTagRuntimeError, Subtag } from '@bbtag/blargbot';
 import type { ColorFormat } from '@bbtag/blargbot/subtags';
 import { ColorSubtag } from '@bbtag/blargbot/subtags';
-import { TagVariableType } from '@blargbot/domain/models/index.js';
+import { TagVariableType } from '@bbtag/blargbot'
 
 import type { SubtagTestCase } from '../SubtagTestSuite.js';
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';

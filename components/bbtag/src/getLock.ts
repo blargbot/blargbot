@@ -1,6 +1,7 @@
-import type { TagVariableScope } from '@blargbot/domain/models/index.js';
-import { TagVariableType } from '@blargbot/domain/models/index.js';
 import ReadWriteLock from 'rwlock';
+
+import type { TagVariableScope } from './variables/TagVariableScope.js';
+import { TagVariableType } from './variables/TagVariableType.js';
 
 const locks: Record<string, ReadWriteLock | undefined> = {};
 
@@ -10,7 +11,7 @@ export function getLock(scope: TagVariableScope, name: string): ReadWriteLock {
 
 function getLockId(scope: TagVariableScope, name: string): string {
     switch (scope.type) {
-        case 'TEMPORARY': return `TEMP_${name}`;
+        case TagVariableType.TEMP: return `TEMP_${name}`;
         case TagVariableType.AUTHOR: return `${scope.type}_${scope.authorId}_${name}`;
         case TagVariableType.GLOBAL: return `${scope.type}_${name}`;
         case TagVariableType.GUILD_CC: return `${scope.type}_${scope.guildId}_${name}`;

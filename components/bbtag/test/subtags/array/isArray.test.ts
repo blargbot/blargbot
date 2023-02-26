@@ -1,6 +1,5 @@
-import { Subtag } from '@bbtag/blargbot';
+import { Subtag, TagVariableType } from '@bbtag/blargbot';
 import { GetSubtag, IsArraySubtag } from '@bbtag/blargbot/subtags';
-import { TagVariableType } from '@blargbot/domain/models/index.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

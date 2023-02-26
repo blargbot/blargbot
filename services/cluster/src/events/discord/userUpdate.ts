@@ -1,5 +1,4 @@
 import type { Cluster } from '@blargbot/cluster';
-import { Lazy } from '@blargbot/core/Lazy.js';
 import { DiscordEventService } from '@blargbot/core/serviceTypes/index.js';
 import { hasValue } from '@blargbot/guards';
 import * as Eris from 'eris';
@@ -19,12 +18,12 @@ export class DiscordUserUpdateHandler extends DiscordEventService<'userUpdate'> 
             return;
         }
 
-        const fullOldUser = new Lazy(() => new Eris.User({ ...oldUser }, this.cluster.discord));
+        const fullOldUser = new Eris.User({ ...oldUser }, this.cluster.discord);
         if (oldUser.username !== user.username || oldUser.discriminator !== user.discriminator)
-            promises.push(this.#modlogTagUpdate(user, fullOldUser.value));
+            promises.push(this.#modlogTagUpdate(user, fullOldUser));
 
         if (oldUser.avatar !== user.avatar)
-            promises.push(this.#modlogAvatarUpdate(user, fullOldUser.value));
+            promises.push(this.#modlogAvatarUpdate(user, fullOldUser));
 
         await Promise.all(promises);
     }

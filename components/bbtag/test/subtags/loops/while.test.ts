@@ -1,6 +1,6 @@
 import { BBTagRuntimeError, BBTagRuntimeState, Subtag } from '@bbtag/blargbot';
 import { DecrementSubtag, GetSubtag, IfSubtag, IncrementSubtag, OperatorSubtag, ReturnSubtag, SetSubtag, WhileSubtag } from '@bbtag/blargbot/subtags';
-import { TagVariableType } from '@blargbot/domain/models/index.js';
+import { TagVariableType } from '@bbtag/blargbot'
 import chai from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

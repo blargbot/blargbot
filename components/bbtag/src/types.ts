@@ -4,7 +4,6 @@ import type { FlagDefinition } from '@blargbot/input';
 import type * as Discord from 'discord-api-types/v10';
 import type ReadWriteLock from 'rwlock';
 
-import type { VariableCache } from './Caching.js';
 import type { BBTagRuntimeError } from './errors/index.js';
 import type { Entities } from './index.js';
 import type { SourceMarker, Statement, SubtagCall } from './language/index.js';
@@ -13,8 +12,12 @@ import type { ScopeManager } from './ScopeManager.js';
 import type { SubtagCallStack } from './SubtagCallStack.js';
 import type { TagCooldownManager } from './TagCooldownManager.js';
 import type { SubtagType } from './utils/index.js';
+import type { VariableCache } from './variables/Caching.js';
 
 export * as Entities from './types.entities.js';
+
+export * from './variables/TagVariableScope.js';
+export * from './variables/TagVariableType.js';
 
 export interface AnalysisResults {
     readonly errors: AnalysisResult[];

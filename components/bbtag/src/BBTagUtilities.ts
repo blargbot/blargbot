@@ -1,4 +1,3 @@
-import type { TagVariableScope } from '@blargbot/domain/models/index.js';
 import type { Logger } from '@blargbot/logger';
 import type moment from 'moment-timezone';
 
@@ -15,6 +14,7 @@ import type { Entities } from './types.js';
 import type { BBTagJsonTools } from './utils/json.js';
 import type { BBTagOperators } from './utils/operators.js';
 import type { BBTagArrayTools } from './utils/tagArray.js';
+import type { TagVariableScope } from './variables/TagVariableScope.js';
 
 export interface InjectionContext {
     readonly logger: Logger;

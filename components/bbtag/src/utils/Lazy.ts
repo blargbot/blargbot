@@ -1,8 +1,9 @@
 export class Lazy<T> {
-    #value?: T;
     readonly #factory: () => T;
     public get value(): T {
-        return this.#value ??= this.#factory();
+        const value = this.#factory();
+        Object.defineProperty(this, 'value', { value });
+        return value;
     }
 
     public constructor(factory: () => T) {

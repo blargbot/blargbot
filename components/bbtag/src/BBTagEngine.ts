@@ -6,7 +6,6 @@ import moment from 'moment-timezone';
 
 import { BBTagContext } from './BBTagContext.js';
 import type { BBTagUtilities, InjectionContext } from './BBTagUtilities.js';
-import { BBTagVariableProvider, VariableNameParser } from './Caching.js';
 import { BBTagRuntimeError, InternalServerError, SubtagStackOverflowError, TagCooldownError } from './errors/index.js';
 import type { Statement, SubtagCall } from './language/index.js';
 import { parseBBTag } from './language/index.js';
@@ -16,6 +15,7 @@ import { tagVariableScopeProviders } from './tagVariableScopeProviders.js';
 import textTemplates from './text.js';
 import type { AnalysisResults, BBTagContextOptions, ExecutionResult } from './types.js';
 import { BBTagRuntimeState } from './types.js';
+import { BBTagVariableProvider, VariableNameParser } from './variables/Caching.js';
 
 export class BBTagEngine {
     readonly #cooldowns: TagCooldownManager;

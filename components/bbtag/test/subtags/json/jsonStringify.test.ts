@@ -1,6 +1,6 @@
 import { NotANumberError, Subtag } from '@bbtag/blargbot';
 import { JsonStringifySubtag, JsonSubtag } from '@bbtag/blargbot/subtags';
-import { TagVariableType } from '@blargbot/domain/models/index.js';
+import { TagVariableType } from '@bbtag/blargbot'
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

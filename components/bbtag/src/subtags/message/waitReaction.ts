@@ -1,4 +1,3 @@
-import { clamp } from '@blargbot/core/utils/index.js';
 import { Emote } from '@blargbot/discord-emote';
 
 import type { BBTagContext } from '../../BBTagContext.js';
@@ -81,9 +80,13 @@ export class WaitReactionSubtag extends CompiledSubtag {
             parsedReactions = undefined;
         }
 
-        const timeout = clamp(this.#converter.float(timeoutStr) ?? NaN, 0, 300);
-        if (isNaN(timeout))
+        let timeout = this.#converter.float(timeoutStr);
+        if (timeout === undefined)
             throw new NotANumberError(timeoutStr);
+        if (timeout < 0)
+            timeout = 0;
+        else if (timeout > 300)
+            timeout = 300;
 
         if (condition.values.length === 0)
             condition = defaultCondition;

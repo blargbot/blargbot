@@ -423,7 +423,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/application", "workspace:components/application/src"],\
             ["@blargbot/async-tools", "workspace:components/async-tools/src"],\
             ["@blargbot/catch-decorators", "workspace:components/catch-decorators/src"],\
-            ["@blargbot/core", "workspace:components/core/src"],\
             ["@blargbot/decancer", "workspace:components/decancer/src"],\
             ["@blargbot/discord-emote", "workspace:components/discord-emote/src"],\
             ["@blargbot/discord-util", "workspace:components/discord-util/src"],\
@@ -746,6 +745,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./components/database/src/",\
           "packageDependencies": [\
             ["@blargbot/database", "workspace:components/database/src"],\
+            ["@bbtag/blargbot", "workspace:components/bbtag/src"],\
             ["@blargbot/async-tools", "workspace:components/async-tools/src"],\
             ["@blargbot/chatlog-types", "workspace:components/chatlog-types/src"],\
             ["@blargbot/config", "workspace:components/config/src"],\
@@ -1061,6 +1061,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./components/domain/src/",\
           "packageDependencies": [\
             ["@blargbot/domain", "workspace:components/domain/src"],\
+            ["@bbtag/blargbot", "workspace:components/bbtag/src"],\
             ["@blargbot/chatlog-types", "workspace:components/chatlog-types/src"],\
             ["@blargbot/formatting", "workspace:components/formatting/src"],\
             ["@blargbot/input", "workspace:components/input/src"],\

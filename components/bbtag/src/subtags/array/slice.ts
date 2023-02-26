@@ -1,5 +1,3 @@
-import { Lazy } from '@blargbot/core/Lazy.js';
-
 import type { BBTagContext } from '../../BBTagContext.js';
 import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
@@ -8,6 +6,7 @@ import { Subtag } from '../../Subtag.js';
 import textTemplates from '../../text.js';
 import type { BBTagArrayTools } from '../../utils/index.js';
 import { SubtagType } from '../../utils/index.js';
+import { Lazy } from '../../utils/Lazy.js';
 
 const tag = textTemplates.subtags.slice;
 

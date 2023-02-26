@@ -10,7 +10,6 @@ import type moment from 'moment-timezone';
 import ReadWriteLock from 'rwlock';
 
 import type { BBTagEngine } from './BBTagEngine.js';
-import { VariableCache } from './Caching.js';
 import type { BBTagRuntimeError } from './errors/index.js';
 import { SubtagStackOverflowError, UnknownSubtagError } from './errors/index.js';
 import type { Statement, SubtagCall } from './language/index.js';
@@ -22,6 +21,7 @@ import { SubtagCallStack } from './SubtagCallStack.js';
 import { TagCooldownManager } from './TagCooldownManager.js';
 import type { BBTagContextOptions, BBTagContextState, BBTagRuntimeScope, Entities, LocatedRuntimeError, RuntimeDebugEntry, SerializedBBTagContext } from './types.js';
 import { BBTagRuntimeState } from './types.js';
+import { VariableCache } from './variables/Caching.js';
 
 function serializeEntity(entity: { id: string; }): { id: string; serialized: string; }
 function serializeEntity(entity?: { id: string; }): { id: string; serialized: string; } | undefined

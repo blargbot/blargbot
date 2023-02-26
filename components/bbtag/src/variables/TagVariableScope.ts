@@ -37,7 +37,7 @@ export interface GlobalVariableScope {
 }
 
 export interface TemporaryVariableScope {
-    readonly type: 'TEMPORARY';
+    readonly type: TagVariableType.TEMP;
 }
 
 export interface LocalTagVariableScope {
