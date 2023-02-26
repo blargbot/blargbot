@@ -183,6 +183,7 @@ export class SubtagTestContext {
             convertToInt: parseInt
         });
 
+        this.dependencies.setup(m => m.middleware, false).thenReturn([]);
         this.dependencies.setup(m => m.warnings, false).thenReturn(this.warnings.instance);
         this.dependencies.setup(m => m.sources, false).thenReturn(this.sources.instance);
         this.dependencies.setup(m => m.timezones, false).thenReturn(this.timezones.instance);

@@ -34,7 +34,14 @@ export interface InjectionContext {
 }
 
 export interface SubtagInvocationMiddleware {
-    (subtag: Subtag, context: BBTagContext, subtagName: string, call: SubtagCall): AsyncIterable<string | undefined>;
+    (context: SubtagInvocationContext, next: () => AsyncIterable<string | undefined>): AsyncIterable<string | undefined>;
+}
+
+export interface SubtagInvocationContext {
+    readonly subtag: Subtag;
+    readonly context: BBTagContext;
+    readonly subtagName: string;
+    readonly call: SubtagCall;
 }
 
 export interface BBTagQueryServices {

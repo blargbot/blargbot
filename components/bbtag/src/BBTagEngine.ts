@@ -5,7 +5,7 @@ import { Timer } from '@blargbot/timer';
 import moment from 'moment-timezone';
 
 import { BBTagContext } from './BBTagContext.js';
-import type { BBTagUtilities, InjectionContext } from './BBTagUtilities.js';
+import type { BBTagUtilities, InjectionContext, SubtagInvocationContext } from './BBTagUtilities.js';
 import { BBTagRuntimeError, InternalServerError, SubtagStackOverflowError, TagCooldownError } from './errors/index.js';
 import type { Statement, SubtagCall } from './language/index.js';
 import { parseBBTag } from './language/index.js';
@@ -19,6 +19,8 @@ import { BBTagVariableProvider, VariableNameParser } from './variables/Caching.j
 
 export class BBTagEngine {
     readonly #cooldowns: TagCooldownManager;
+    readonly #callSubtag: (context: SubtagInvocationContext) => AsyncIterable<string | undefined>;
+
     public readonly variables: BBTagVariableProvider;
     public get logger(): Logger { return this.dependencies.logger; }
     public get util(): BBTagUtilities { return this.dependencies.util; }
@@ -28,6 +30,10 @@ export class BBTagEngine {
         public readonly dependencies: InjectionContext
     ) {
         this.#cooldowns = new TagCooldownManager();
+        this.#callSubtag = [...dependencies.middleware].reduce<(ctx: SubtagInvocationContext) => AsyncIterable<string | undefined>>(
+            (p, c) => (ctx) => c(ctx, p.bind(null, ctx)),
+        /**/(ctx) => ctx.subtag.execute(ctx.context, ctx.subtagName, ctx.call)
+        );
         this.variables = new BBTagVariableProvider(new VariableNameParser(tagVariableScopeProviders), dependencies.variables);
         const subtags = new Map<string, Subtag>();
         this.subtags = subtags;
@@ -110,17 +116,17 @@ export class BBTagEngine {
         };
     }
 
-    async * #evalSubtag(bbtag: SubtagCall, context: BBTagContext): AsyncIterable<string> {
-        const name = (await context.withScope(() => joinResults(this.#evalStatement(bbtag.name, context)))).toLowerCase();
+    async * #evalSubtag(call: SubtagCall, context: BBTagContext): AsyncIterable<string> {
+        const subtagName = (await context.withScope(() => joinResults(this.#evalStatement(call.name, context)))).toLowerCase();
 
         try {
-            const subtag = context.getSubtag(name);
+            const subtag = context.getSubtag(subtagName);
             await context.limit.check(context, subtag.name);
 
-            context.callStack.push(subtag.name, bbtag);
+            context.callStack.push(subtag.name, call);
 
             try {
-                for await (const item of subtag.execute(context, name, bbtag)) {
+                for await (const item of this.#callSubtag({ subtag, context, subtagName, call })) {
                     // allow the eventloop to process other stuff every 1000 subtag calls
                     if (++context.data.subtagCount % 1000 === 0)
                         await sleep(0);
@@ -130,8 +136,8 @@ export class BBTagEngine {
                 }
             } catch (err: unknown) {
                 yield err instanceof BBTagRuntimeError
-                    ? context.addError(err, bbtag)
-                    : this.#logError(context, err, bbtag);
+                    ? context.addError(err, call)
+                    : this.#logError(context, err, call);
             } finally {
                 context.callStack.pop();
             }
@@ -139,7 +145,7 @@ export class BBTagEngine {
         } catch (err: unknown) {
             if (!(err instanceof BBTagRuntimeError))
                 throw err;
-            yield context.addError(err, bbtag);
+            yield context.addError(err, call);
         }
 
     }
