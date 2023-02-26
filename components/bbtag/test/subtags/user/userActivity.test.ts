@@ -2,7 +2,7 @@ import { randomUUID } from 'node:crypto';
 
 import { Subtag } from '@bbtag/blargbot';
 import { UserActivitySubtag } from '@bbtag/blargbot/subtags';
-import Discord from 'discord-api-types/v10';
+import Discord from '@blargbot/discord-types';
 import moment from 'moment-timezone';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

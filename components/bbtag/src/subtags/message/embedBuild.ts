@@ -1,7 +1,7 @@
 import type { MessageComponent } from '@blargbot/discord-util';
 import { checkEmbedSize, getMessageComponentLimit } from '@blargbot/discord-util';
 import { hasProperty, isUrl } from '@blargbot/guards';
-import type * as Discord from 'discord-api-types/v10';
+import type Discord from '@blargbot/discord-types';
 
 import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';

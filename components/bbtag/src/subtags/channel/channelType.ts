@@ -1,4 +1,4 @@
-import { ChannelType } from 'discord-api-types/v10';
+import { ChannelType } from '@blargbot/discord-types';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';

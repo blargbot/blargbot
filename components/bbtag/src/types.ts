@@ -1,7 +1,7 @@
 import type { Emote } from '@blargbot/discord-emote';
 import type { IFormattable } from '@blargbot/formatting';
 import type { FlagDefinition } from '@blargbot/input';
-import type * as Discord from 'discord-api-types/v10';
+import type Discord from '@blargbot/discord-types';
 import type ReadWriteLock from 'rwlock';
 
 import type { BBTagRuntimeError } from './errors/index.js';

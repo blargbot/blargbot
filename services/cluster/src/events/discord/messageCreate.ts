@@ -4,7 +4,7 @@ import type { Cluster } from '@blargbot/cluster';
 import { guard, runMiddleware } from '@blargbot/cluster/utils/index.js';
 import { DiscordEventService } from '@blargbot/core/serviceTypes/index.js';
 import type { IMiddleware } from '@blargbot/core/types.js';
-import Discord from 'discord-api-types/v9';
+import Discord from '@blargbot/discord-types';
 import type * as Eris from 'eris';
 import moment from 'moment-timezone';
 

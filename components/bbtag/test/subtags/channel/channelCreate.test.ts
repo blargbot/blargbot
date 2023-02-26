@@ -2,7 +2,7 @@ import type { BBTagContext, Entities } from '@bbtag/blargbot';
 import { BBTagRuntimeError, Subtag } from '@bbtag/blargbot';
 import { ChannelCreateSubtag, EscapeBBTagSubtag } from '@bbtag/blargbot/subtags';
 import { argument } from '@blargbot/test-util/mock.js';
-import Discord from 'discord-api-types/v10';
+import Discord from '@blargbot/discord-types';
 
 import type { SubtagTestContext } from '../SubtagTestSuite.js';
 import { runSubtagTests } from '../SubtagTestSuite.js';

@@ -6,7 +6,7 @@ import express from '@blargbot/express';
 import type { ConnectionOptions } from '@blargbot/message-broker';
 import { RedisKSCache, RedisKVCache } from '@blargbot/redis-cache';
 import { json } from '@blargbot/serialization';
-import type * as discordeno from 'discordeno';
+import type Discord from '@blargbot/discord-types';
 import type { RedisClientType } from 'redis';
 import { createClient as createRedisClient } from 'redis';
 
@@ -49,7 +49,7 @@ export class DiscordChannelCacheApplication extends Application {
         this.#messages = new DiscordChannelCacheMessageBroker(options.messages);
         this.#service = new DiscordChannelCacheService(
             this.#messages,
-            new RedisKVCache<bigint, discordeno.DiscordChannel>(this.#redis, {
+            new RedisKVCache<bigint, Discord.APIChannel>(this.#redis, {
                 ttlS: null,
                 keyspace: 'discord_channels'
             }),

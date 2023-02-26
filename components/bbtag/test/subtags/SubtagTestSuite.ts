@@ -20,7 +20,7 @@ import chai from 'chai';
 import chaiBytes from 'chai-bytes';
 import chaiDateTime from 'chai-datetime';
 import chaiExclude from 'chai-exclude';
-import Discord from 'discord-api-types/v10';
+import Discord from '@blargbot/discord-types';
 import mocha from 'mocha';
 import moment from 'moment-timezone';
 import tsMockito from 'ts-mockito';

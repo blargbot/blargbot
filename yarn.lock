@@ -61,6 +61,7 @@ __metadata:
     "@blargbot/core": "workspace:^"
     "@blargbot/database": "workspace:^"
     "@blargbot/discord-emote": "workspace:^"
+    "@blargbot/discord-types": "workspace:^"
     "@blargbot/discord-util": "workspace:^"
     "@blargbot/domain": "workspace:^"
     "@blargbot/formatting": "workspace:^"
@@ -77,10 +78,9 @@ __metadata:
     chai-datetime: ^1.8.0
     chai-exclude: ^2.1.0
     cross-env: ^7.0.3
-    discord-api-types: ^0.37.32
     express: ^4.18.2
     mocha: ^10.2.0
-    moment-timezone: ^0.5.40
+    moment-timezone: ^0.5.41
     ts-mockito: ^2.6.1
   languageName: unknown
   linkType: soft
@@ -94,6 +94,7 @@ __metadata:
     "@blargbot/catch-decorators": "workspace:^"
     "@blargbot/decancer": "workspace:^"
     "@blargbot/discord-emote": "workspace:^"
+    "@blargbot/discord-types": "workspace:^"
     "@blargbot/discord-util": "workspace:^"
     "@blargbot/domain": "workspace:^"
     "@blargbot/formatting": "workspace:^"
@@ -108,9 +109,8 @@ __metadata:
     "@types/rwlock": ^5.0.3
     brainfuck-node: ^1.0.2
     color: ^4.2.3
-    discord-api-types: ^0.37.32
     html-entities: ^2.3.3
-    moment-timezone: ^0.5.40
+    moment-timezone: ^0.5.41
     node-fetch: ^3.3.0
     rwlock: ^5.0.0
   languageName: unknown
@@ -133,6 +133,7 @@ __metadata:
     "@blargbot/cluster": "workspace:^"
     "@blargbot/config": "workspace:^"
     "@blargbot/core": "workspace:^"
+    "@blargbot/discord-types": "workspace:^"
     "@blargbot/discord-util": "workspace:^"
     "@blargbot/domain": "workspace:^"
     "@blargbot/formatting": "workspace:^"
@@ -144,13 +145,12 @@ __metadata:
     "@types/jsonwebtoken": ^9.0.1
     "@types/node-fetch": ^2.6.2
     "@types/ws": ^8.5.4
-    discord-api-types: ^0.37.32
     express: ^4.18.2
     express-promise-router: ^4.1.1
     jsonwebtoken: ^9.0.0
     node-fetch: ^3.3.0
     prom-client: ^14.1.1
-    ws: ^8.12.0
+    ws: ^8.12.1
   languageName: unknown
   linkType: soft
 
@@ -204,7 +204,7 @@ __metadata:
     cross-env: ^7.0.3
     eris: ^0.17.1
     mocha: ^10.2.0
-    moment-timezone: ^0.5.40
+    moment-timezone: ^0.5.41
   languageName: unknown
   linkType: soft
 
@@ -223,6 +223,7 @@ __metadata:
     "@blargbot/database": "workspace:^"
     "@blargbot/decancer": "workspace:^"
     "@blargbot/discord-emote": "workspace:^"
+    "@blargbot/discord-types": "workspace:^"
     "@blargbot/discord-util": "workspace:^"
     "@blargbot/domain": "workspace:^"
     "@blargbot/formatting": "workspace:^"
@@ -243,10 +244,9 @@ __metadata:
     "@types/xml2js": ^0.4.11
     brainfuck-node: ^1.0.2
     crypto: ^1.0.1
-    discord-api-types: ^0.37.32
     eris: ^0.17.1
     eventemitter3: ^5.0.0
-    moment-timezone: ^0.5.40
+    moment-timezone: ^0.5.41
     node-fetch: ^3.3.0
     prom-client: ^14.1.1
     wolken: ^0.2.1
@@ -302,6 +302,7 @@ __metadata:
     "@blargbot/database": "workspace:^"
     "@blargbot/decancer": "workspace:^"
     "@blargbot/discord-emote": "workspace:^"
+    "@blargbot/discord-types": "workspace:^"
     "@blargbot/discord-util": "workspace:^"
     "@blargbot/domain": "workspace:^"
     "@blargbot/formatting": "workspace:^"
@@ -317,10 +318,9 @@ __metadata:
     airtable: ^0.11.6
     color: ^4.2.3
     cron: ^2.2.0
-    discord-api-types: ^0.37.32
     eris: ^0.17.1
     eventemitter3: ^5.0.0
-    moment-timezone: ^0.5.40
+    moment-timezone: ^0.5.41
     prom-client: ^14.1.1
     safe-regex: ^2.1.1
   languageName: unknown
@@ -356,7 +356,7 @@ __metadata:
     "@types/sequelize": ^4.28.14
     airtable: ^0.11.6
     cassandra-driver: ^4.6.4
-    moment-timezone: ^0.5.40
+    moment-timezone: ^0.5.41
     rethinkdb: ^2.4.2
   languageName: unknown
   linkType: soft
@@ -377,6 +377,7 @@ __metadata:
   dependencies:
     "@blargbot/application": "workspace:^"
     "@blargbot/discord-message-broker": "workspace:^"
+    "@blargbot/discord-types": "workspace:^"
     "@blargbot/env": "workspace:^"
     "@blargbot/express": "workspace:^"
     "@blargbot/guards": "workspace:^"
@@ -384,8 +385,7 @@ __metadata:
     "@blargbot/redis-cache": "workspace:^"
     "@blargbot/serialization": "workspace:^"
     amqplib: ^0.10.3
-    discordeno: ^18.0.1
-    redis: ^4.6.4
+    redis: ^4.6.5
   languageName: unknown
   linkType: soft
 
@@ -396,6 +396,7 @@ __metadata:
     "@blargbot/application": "workspace:^"
     "@blargbot/chatlog-types": "workspace:^"
     "@blargbot/discord-message-broker": "workspace:^"
+    "@blargbot/discord-types": "workspace:^"
     "@blargbot/env": "workspace:^"
     "@blargbot/guild-settings": "workspace:^"
     "@blargbot/mapping": "workspace:^"
@@ -403,7 +404,6 @@ __metadata:
     "@types/node-fetch": ^2.6.2
     amqplib: ^0.10.3
     cassandra-driver: ^4.6.4
-    discordeno: ^18.0.1
     node-fetch: ^3.3.0
   languageName: unknown
   linkType: soft
@@ -436,13 +436,13 @@ __metadata:
   dependencies:
     "@blargbot/application": "workspace:^"
     "@blargbot/discord-message-broker": "workspace:^"
+    "@blargbot/discord-types": "workspace:^"
     "@blargbot/env": "workspace:^"
     "@blargbot/express": "workspace:^"
     "@blargbot/message-broker": "workspace:^"
     "@blargbot/redis-cache": "workspace:^"
     amqplib: ^0.10.3
-    discordeno: ^18.0.1
-    redis: ^4.6.4
+    redis: ^4.6.5
   languageName: unknown
   linkType: soft
 
@@ -452,12 +452,12 @@ __metadata:
   dependencies:
     "@blargbot/application": "workspace:^"
     "@blargbot/discord-message-broker": "workspace:^"
+    "@blargbot/discord-types": "workspace:^"
     "@blargbot/env": "workspace:^"
     "@blargbot/express": "workspace:^"
     "@blargbot/message-broker": "workspace:^"
     "@types/amqplib": ^0.10.1
     amqplib: ^0.10.3
-    discordeno: ^18.0.1
   languageName: unknown
   linkType: soft
 
@@ -467,13 +467,13 @@ __metadata:
   dependencies:
     "@blargbot/application": "workspace:^"
     "@blargbot/discord-message-broker": "workspace:^"
+    "@blargbot/discord-types": "workspace:^"
     "@blargbot/env": "workspace:^"
     "@blargbot/express": "workspace:^"
     "@blargbot/message-broker": "workspace:^"
     "@blargbot/redis-cache": "workspace:^"
     amqplib: ^0.10.3
-    discordeno: ^18.0.1
-    redis: ^4.6.4
+    redis: ^4.6.5
   languageName: unknown
   linkType: soft
 
@@ -481,9 +481,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@blargbot/discord-message-broker@workspace:components/discord-message-broker/src"
   dependencies:
+    "@blargbot/discord-types": "workspace:^"
     "@blargbot/message-broker": "workspace:^"
     "@types/amqplib": ^0.10.1
-    discordeno: ^18.0.1
   peerDependencies:
     amqplib: ^0.10.3
   languageName: unknown
@@ -495,14 +495,14 @@ __metadata:
   dependencies:
     "@blargbot/application": "workspace:^"
     "@blargbot/discord-message-broker": "workspace:^"
+    "@blargbot/discord-types": "workspace:^"
     "@blargbot/env": "workspace:^"
     "@blargbot/express": "workspace:^"
     "@blargbot/message-broker": "workspace:^"
     "@blargbot/redis-cache": "workspace:^"
     "@blargbot/serialization": "workspace:^"
     amqplib: ^0.10.3
-    discordeno: ^18.0.1
-    redis: ^4.6.4
+    redis: ^4.6.5
   languageName: unknown
   linkType: soft
 
@@ -512,12 +512,12 @@ __metadata:
   dependencies:
     "@blargbot/application": "workspace:^"
     "@blargbot/discord-message-broker": "workspace:^"
+    "@blargbot/discord-types": "workspace:^"
     "@blargbot/env": "workspace:^"
     "@blargbot/express": "workspace:^"
     "@blargbot/message-broker": "workspace:^"
     "@types/amqplib": ^0.10.1
     amqplib: ^0.10.3
-    discordeno: ^18.0.1
   languageName: unknown
   linkType: soft
 
@@ -527,13 +527,13 @@ __metadata:
   dependencies:
     "@blargbot/application": "workspace:^"
     "@blargbot/discord-message-broker": "workspace:^"
+    "@blargbot/discord-types": "workspace:^"
     "@blargbot/env": "workspace:^"
     "@blargbot/express": "workspace:^"
     "@blargbot/message-broker": "workspace:^"
     "@blargbot/redis-cache": "workspace:^"
     amqplib: ^0.10.3
-    discordeno: ^18.0.1
-    redis: ^4.6.4
+    redis: ^4.6.5
   languageName: unknown
   linkType: soft
 
@@ -556,12 +556,12 @@ __metadata:
   dependencies:
     "@blargbot/application": "workspace:^"
     "@blargbot/discord-message-broker": "workspace:^"
+    "@blargbot/discord-types": "workspace:^"
     "@blargbot/env": "workspace:^"
     "@blargbot/express": "workspace:^"
     "@blargbot/message-broker": "workspace:^"
     "@types/amqplib": ^0.10.1
     amqplib: ^0.10.3
-    discordeno: ^18.0.1
   languageName: unknown
   linkType: soft
 
@@ -571,13 +571,21 @@ __metadata:
   dependencies:
     "@blargbot/application": "workspace:^"
     "@blargbot/discord-message-broker": "workspace:^"
+    "@blargbot/discord-types": "workspace:^"
     "@blargbot/env": "workspace:^"
     "@blargbot/express": "workspace:^"
     "@blargbot/message-broker": "workspace:^"
     "@blargbot/redis-cache": "workspace:^"
     amqplib: ^0.10.3
-    discordeno: ^18.0.1
-    redis: ^4.6.4
+    redis: ^4.6.5
+  languageName: unknown
+  linkType: soft
+
+"@blargbot/discord-types@workspace:^, @blargbot/discord-types@workspace:components/discord-types/src":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/discord-types@workspace:components/discord-types/src"
+  dependencies:
+    discord-api-types: ^0.37.35
   languageName: unknown
   linkType: soft
 
@@ -587,13 +595,13 @@ __metadata:
   dependencies:
     "@blargbot/application": "workspace:^"
     "@blargbot/discord-message-broker": "workspace:^"
+    "@blargbot/discord-types": "workspace:^"
     "@blargbot/env": "workspace:^"
     "@blargbot/express": "workspace:^"
     "@blargbot/message-broker": "workspace:^"
     "@blargbot/redis-cache": "workspace:^"
     amqplib: ^0.10.3
-    discordeno: ^18.0.1
-    redis: ^4.6.4
+    redis: ^4.6.5
   languageName: unknown
   linkType: soft
 
@@ -611,7 +619,7 @@ __metadata:
     "@blargbot/chatlog-types": "workspace:^"
     "@blargbot/formatting": "workspace:^"
     "@blargbot/input": "workspace:^"
-    moment-timezone: ^0.5.40
+    moment-timezone: ^0.5.41
   languageName: unknown
   linkType: soft
 
@@ -632,7 +640,7 @@ __metadata:
     "@blargbot/redis-cache": "workspace:^"
     "@blargbot/sequelize": "workspace:^"
     "@blargbot/serialization": "workspace:^"
-    redis: ^4.6.4
+    redis: ^4.6.5
   languageName: unknown
   linkType: soft
 
@@ -683,7 +691,7 @@ __metadata:
     "@blargbot/redis-cache": "workspace:^"
     "@blargbot/sequelize": "workspace:^"
     "@blargbot/serialization": "workspace:^"
-    redis: ^4.6.4
+    redis: ^4.6.5
   languageName: unknown
   linkType: soft
 
@@ -729,8 +737,8 @@ __metadata:
   resolution: "@blargbot/logger@workspace:components/logger/src"
   dependencies:
     "@blargbot/config": "workspace:^"
-    "@sentry/node": ^7.37.0
-    "@sentry/tracing": ^7.37.0
+    "@sentry/node": ^7.38.0
+    "@sentry/tracing": ^7.38.0
     cat-loggr: ^1.2.2
   languageName: unknown
   linkType: soft
@@ -739,7 +747,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@blargbot/mapping@workspace:components/mapping/src"
   dependencies:
-    moment-timezone: ^0.5.40
+    moment-timezone: ^0.5.41
   languageName: unknown
   linkType: soft
 
@@ -762,7 +770,7 @@ __metadata:
     "@types/eris": "workspace:^"
     "@types/node-fetch": ^2.6.2
     eris: ^0.17.1
-    moment-timezone: ^0.5.40
+    moment-timezone: ^0.5.41
     node-fetch: ^3.3.0
     prom-client: ^14.1.1
     strip-ansi: ^7.0.1
@@ -805,7 +813,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@blargbot/redis-cache@workspace:components/redis-cache/src"
   dependencies:
-    redis: ^4.6.4
+    redis: ^4.6.5
     redis-lock: ^1.0.0
   languageName: unknown
   linkType: soft
@@ -820,7 +828,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@blargbot/sequelize@workspace:components/sequelize/src"
   dependencies:
-    "@sequelize/core": ^7.0.0-alpha.10
+    "@sequelize/core": ^7.0.0-alpha.21
     pg: ^8.9.0
     pg-hstore: ^2.3.4
     postgres-array: ^3.0.2
@@ -865,7 +873,7 @@ __metadata:
     "@blargbot/redis-cache": "workspace:^"
     "@blargbot/sequelize": "workspace:^"
     "@blargbot/serialization": "workspace:^"
-    redis: ^4.6.4
+    redis: ^4.6.5
   languageName: unknown
   linkType: soft
 
@@ -905,9 +913,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@eslint/eslintrc@npm:^1.4.1":
-  version: 1.4.1
-  resolution: "@eslint/eslintrc@npm:1.4.1"
+"@eslint/eslintrc@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "@eslint/eslintrc@npm:2.0.0"
   dependencies:
     ajv: ^6.12.4
     debug: ^4.3.2
@@ -918,7 +926,14 @@ __metadata:
     js-yaml: ^4.1.0
     minimatch: ^3.1.2
     strip-json-comments: ^3.1.1
-  checksum: cd3e5a8683db604739938b1c1c8b77927dc04fce3e28e0c88e7f2cd4900b89466baf83dfbad76b2b9e4d2746abdd00dd3f9da544d3e311633d8693f327d04cd7
+  checksum: 31119c8ca06723d80384f18f5c78e0530d8e6306ad36379868650131a8b10dd7cffd7aff79a5deb3a2e9933660823052623d268532bae9538ded53d5b19a69a6
+  languageName: node
+  linkType: hard
+
+"@eslint/js@npm:8.35.0":
+  version: 8.35.0
+  resolution: "@eslint/js@npm:8.35.0"
+  checksum: 6687ceff659a6d617e37823f809dc9c4b096535961a81acead27d26b1a51a4cf608a5e59d831ddd57f24f6f8bb99340a4a0e19f9c99b390fbb4b275f51ed5f5e
   languageName: node
   linkType: hard
 
@@ -1214,14 +1229,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@redis/client@npm:1.5.5":
-  version: 1.5.5
-  resolution: "@redis/client@npm:1.5.5"
+"@redis/client@npm:1.5.6":
+  version: 1.5.6
+  resolution: "@redis/client@npm:1.5.6"
   dependencies:
     cluster-key-slot: 1.1.2
     generic-pool: 3.9.0
     yallist: 4.0.0
-  checksum: 16ae814ea1eb28cb7f30d4fda1aa3b0ab81de515e5c23e54092ecfaded3a30f261d5b2171eb63f153f059b69e885c5d86d802368b52c741eca443885d14c4b79
+  checksum: df03f77d43e95fa4016b0c434cbdbc1822d2f30b2bfba1b046f7f4d0a6ee9ad15f350e56d6f8030b82b47e1cfa1444e7c43d659e27777ac8b66a1d95e6707f6b
   languageName: node
   linkType: hard
 
@@ -1243,12 +1258,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@redis/search@npm:1.1.1":
-  version: 1.1.1
-  resolution: "@redis/search@npm:1.1.1"
+"@redis/search@npm:1.1.2":
+  version: 1.1.2
+  resolution: "@redis/search@npm:1.1.2"
   peerDependencies:
     "@redis/client": ^1.0.0
-  checksum: 5c574679e803530d0b1a704eb7c22292849e0a36dfc9a84a5359051f9da6e0dab72e11ade5654a69d9984bb45d2f7cdf901111135247670824013145cf28d326
+  checksum: fc3c0bd62c150ea7f8b3f08b0e67893b4e8df71b4820d750de6ba00ccff3720fdc5d4f50618e385c9e183c784635185e2e98a3e6c3d20ac30f2c60996f38b992
   languageName: node
   linkType: hard
 
@@ -1261,62 +1276,62 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sentry/core@npm:7.37.0":
-  version: 7.37.0
-  resolution: "@sentry/core@npm:7.37.0"
+"@sentry/core@npm:7.38.0":
+  version: 7.38.0
+  resolution: "@sentry/core@npm:7.38.0"
   dependencies:
-    "@sentry/types": 7.37.0
-    "@sentry/utils": 7.37.0
+    "@sentry/types": 7.38.0
+    "@sentry/utils": 7.38.0
     tslib: ^1.9.3
-  checksum: ec3ef143aa8d38c51207bc85841416d20cf6c6bd2ef9cdb072f7f06084e6505ede0b58a086eea37bb35169fb593b1119502c3ac7f9eaf8e1513887f75feae7ae
+  checksum: afa7325e076863403f48aaad5e11265a33205a576fa5e7a4ef9bff77259c0039f825daaeedc82ef5060a12bf4c298c2c84bb65ba2640dc81c65c57d470a4eb90
   languageName: node
   linkType: hard
 
-"@sentry/node@npm:^7.37.0":
-  version: 7.37.0
-  resolution: "@sentry/node@npm:7.37.0"
+"@sentry/node@npm:^7.38.0":
+  version: 7.38.0
+  resolution: "@sentry/node@npm:7.38.0"
   dependencies:
-    "@sentry/core": 7.37.0
-    "@sentry/types": 7.37.0
-    "@sentry/utils": 7.37.0
+    "@sentry/core": 7.38.0
+    "@sentry/types": 7.38.0
+    "@sentry/utils": 7.38.0
     cookie: ^0.4.1
     https-proxy-agent: ^5.0.0
     lru_map: ^0.3.3
     tslib: ^1.9.3
-  checksum: c013ed890017c1318c6de016293e4de4b06499243126a9e13dd86c053f8d0e2d95a07748dc2014e162191b7f51e7f1f34d12895d500747d7eef2d6fa385116fb
+  checksum: b8c8983f27763791ed2fab410a2bd36bf2744695a1b773e5e316b30de70b4609cdebd21621d8f3bcc5857694b6e8ef6e8dc62f36642d3e200c9a1be4a4e14188
   languageName: node
   linkType: hard
 
-"@sentry/tracing@npm:^7.37.0":
-  version: 7.37.0
-  resolution: "@sentry/tracing@npm:7.37.0"
+"@sentry/tracing@npm:^7.38.0":
+  version: 7.38.0
+  resolution: "@sentry/tracing@npm:7.38.0"
   dependencies:
-    "@sentry/core": 7.37.0
-    "@sentry/types": 7.37.0
-    "@sentry/utils": 7.37.0
+    "@sentry/core": 7.38.0
+    "@sentry/types": 7.38.0
+    "@sentry/utils": 7.38.0
     tslib: ^1.9.3
-  checksum: 45a0023a0d0f19b9bb1dc2a686dfd5549c642cbc157c9e69d22893c14dc1803de18da3486389b390b94085e0e92065d53515443e71818fcb28951b539be77b34
+  checksum: 74231ebf1059a1b73a886fcbcb2dba9a93e9a4b7e10caab51995ec95fd645a8b4dcfb90c7085ef548cf4e92b13cd180e3b14bb678aee50393b29a260c6268de8
   languageName: node
   linkType: hard
 
-"@sentry/types@npm:7.37.0":
-  version: 7.37.0
-  resolution: "@sentry/types@npm:7.37.0"
-  checksum: cb8b71cd6f3332a7a084dd73d3174a99135b1442c3c4467fba84f1fb1f7de755c0f6f53813aeaae1a261e39447e5ad8083e7bf1160e37661baced928522ce7b4
+"@sentry/types@npm:7.38.0":
+  version: 7.38.0
+  resolution: "@sentry/types@npm:7.38.0"
+  checksum: 8e2e3352ce787f96854fd791b0f1c6476067e727bde3a0660422d9c75a6c1f7e32304b13d05ac287bd93ef4c5172f011abbc7e0b2052854c883f5098ff27cfc0
   languageName: node
   linkType: hard
 
-"@sentry/utils@npm:7.37.0":
-  version: 7.37.0
-  resolution: "@sentry/utils@npm:7.37.0"
+"@sentry/utils@npm:7.38.0":
+  version: 7.38.0
+  resolution: "@sentry/utils@npm:7.38.0"
   dependencies:
-    "@sentry/types": 7.37.0
+    "@sentry/types": 7.38.0
     tslib: ^1.9.3
-  checksum: da7825eb743880c7665355c93f93f8201978239eae46eaacf4a08f847efd1d0ee3b6be547c0d658145bf7d6bfdcd5d7def3227f14221cc3e295895b019b25fbe
+  checksum: b2f2d397f3e17a4bfd29adea2a95f7a34c0f558221004ea16a17f98e4e29b73f986ea0e4d00a9621fa69f69e56cdd75df64b448159e49357fb5ab4b2756c9e37
   languageName: node
   linkType: hard
 
-"@sequelize/core@npm:^7.0.0-alpha.10":
+"@sequelize/core@npm:^7.0.0-alpha.21":
   version: 7.0.0-alpha.21
   resolution: "@sequelize/core@npm:7.0.0-alpha.21"
   dependencies:
@@ -1700,10 +1715,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^18.13.0":
-  version: 18.13.0
-  resolution: "@types/node@npm:18.13.0"
-  checksum: 4ea10f8802848b01672bce938f678b6774ca2cee0c9774f12275ab064ae07818419c3e2e41d6257ce7ba846d1ea26c63214aa1dfa4166fa3746291752b8c6416
+"@types/node@npm:^18.14.1":
+  version: 18.14.1
+  resolution: "@types/node@npm:18.14.1"
+  checksum: 58556bbdb0050e44a4934742c1da2530812782c06d266a758e669e44c5aa196166c5fce45fdb03f016876717e3840478b3220129bb77367f979607564047f0a3
   languageName: node
   linkType: hard
 
@@ -1858,13 +1873,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/eslint-plugin@npm:^5.51.0":
-  version: 5.51.0
-  resolution: "@typescript-eslint/eslint-plugin@npm:5.51.0"
+"@typescript-eslint/eslint-plugin@npm:^5.53.0":
+  version: 5.53.0
+  resolution: "@typescript-eslint/eslint-plugin@npm:5.53.0"
   dependencies:
-    "@typescript-eslint/scope-manager": 5.51.0
-    "@typescript-eslint/type-utils": 5.51.0
-    "@typescript-eslint/utils": 5.51.0
+    "@typescript-eslint/scope-manager": 5.53.0
+    "@typescript-eslint/type-utils": 5.53.0
+    "@typescript-eslint/utils": 5.53.0
     debug: ^4.3.4
     grapheme-splitter: ^1.0.4
     ignore: ^5.2.0
@@ -1878,43 +1893,43 @@ __metadata:
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: 5351d8cec13bd9867ce4aaf7052aa31c9ca867fc89c620fc0fe5718ac2cbc165903275db59974324d98e45df0d33a73a4367d236668772912731031a672cfdcd
+  checksum: 12dffe65969d8e5248c86a700fe46a737e55ecafb276933e747b4731eab6266fe55e2d43a34b8b340179fe248e127d861cd016a7614b1b9804cd0687c99616d1
   languageName: node
   linkType: hard
 
-"@typescript-eslint/parser@npm:^5.51.0":
-  version: 5.51.0
-  resolution: "@typescript-eslint/parser@npm:5.51.0"
+"@typescript-eslint/parser@npm:^5.53.0":
+  version: 5.53.0
+  resolution: "@typescript-eslint/parser@npm:5.53.0"
   dependencies:
-    "@typescript-eslint/scope-manager": 5.51.0
-    "@typescript-eslint/types": 5.51.0
-    "@typescript-eslint/typescript-estree": 5.51.0
+    "@typescript-eslint/scope-manager": 5.53.0
+    "@typescript-eslint/types": 5.53.0
+    "@typescript-eslint/typescript-estree": 5.53.0
     debug: ^4.3.4
   peerDependencies:
     eslint: ^6.0.0 || ^7.0.0 || ^8.0.0
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: 096ec819132839febd4f390c4bbf31687e06191092c244dbd189a64cd7383fbaba728f2765e8809cd9834c0069163ab38b0e5f0f6360157d831647d4c295f8cd
+  checksum: 979e5d63793a9e64998b1f956ba0f00f8a2674db3a664fafce7b2433323f5248bd776af8305e2419d73a9d94c55176fee099abc5c153b4cc52e5765c725c1edd
   languageName: node
   linkType: hard
 
-"@typescript-eslint/scope-manager@npm:5.51.0":
-  version: 5.51.0
-  resolution: "@typescript-eslint/scope-manager@npm:5.51.0"
+"@typescript-eslint/scope-manager@npm:5.53.0":
+  version: 5.53.0
+  resolution: "@typescript-eslint/scope-manager@npm:5.53.0"
   dependencies:
-    "@typescript-eslint/types": 5.51.0
-    "@typescript-eslint/visitor-keys": 5.51.0
-  checksum: b3c9f48b6b7a7ae2ebcad4745ef91e4727776b2cf56d31be6456b1aa063aa649539e20f9fffa83cad9ccaaa9c492f2354a1c15526a2b789e235ec58b3a82d22c
+    "@typescript-eslint/types": 5.53.0
+    "@typescript-eslint/visitor-keys": 5.53.0
+  checksum: 51f31dc01e95908611f402441f58404da80a338c0237b2b82f4a7b0b2e8868c4bfe8f7cf44b2567dd56533de609156a5d4ac54bb1f9f09c7014b99428aef2543
   languageName: node
   linkType: hard
 
-"@typescript-eslint/type-utils@npm:5.51.0":
-  version: 5.51.0
-  resolution: "@typescript-eslint/type-utils@npm:5.51.0"
+"@typescript-eslint/type-utils@npm:5.53.0":
+  version: 5.53.0
+  resolution: "@typescript-eslint/type-utils@npm:5.53.0"
   dependencies:
-    "@typescript-eslint/typescript-estree": 5.51.0
-    "@typescript-eslint/utils": 5.51.0
+    "@typescript-eslint/typescript-estree": 5.53.0
+    "@typescript-eslint/utils": 5.53.0
     debug: ^4.3.4
     tsutils: ^3.21.0
   peerDependencies:
@@ -1922,23 +1937,23 @@ __metadata:
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: ab9747b0c629cfaaab903eed8ce1e39d34d69a402ce5faf2f1fff2bbb461bdbe034044b1368ba67ba8e5c1c512172e07d83c8a563635d8de811bf148d95c7dec
+  checksum: 52c40967c5fabd58c2ae8bf519ef89e4feb511e4df630aeaeac8335661a79b6b3a32d30a61a5f1d8acc703f21c4d90751a5d41cda1b35d08867524da11bc2e1d
   languageName: node
   linkType: hard
 
-"@typescript-eslint/types@npm:5.51.0":
-  version: 5.51.0
-  resolution: "@typescript-eslint/types@npm:5.51.0"
-  checksum: b31021a0866f41ba5d71b6c4c7e20cc9b99d49c93bb7db63b55b2e51542fb75b4e27662ee86350da3c1318029e278a5a807facaf4cb5aeea724be8b0e021e836
+"@typescript-eslint/types@npm:5.53.0":
+  version: 5.53.0
+  resolution: "@typescript-eslint/types@npm:5.53.0"
+  checksum: b0eaf23de4ab13697d4d2095838c959a3f410c30f0d19091e5ca08e62320c3cc3c72bcb631823fb6a4fbb31db0a059e386a0801244930d0a88a6a698e5f46548
   languageName: node
   linkType: hard
 
-"@typescript-eslint/typescript-estree@npm:5.51.0":
-  version: 5.51.0
-  resolution: "@typescript-eslint/typescript-estree@npm:5.51.0"
+"@typescript-eslint/typescript-estree@npm:5.53.0":
+  version: 5.53.0
+  resolution: "@typescript-eslint/typescript-estree@npm:5.53.0"
   dependencies:
-    "@typescript-eslint/types": 5.51.0
-    "@typescript-eslint/visitor-keys": 5.51.0
+    "@typescript-eslint/types": 5.53.0
+    "@typescript-eslint/visitor-keys": 5.53.0
     debug: ^4.3.4
     globby: ^11.1.0
     is-glob: ^4.0.3
@@ -1947,35 +1962,35 @@ __metadata:
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: aec23e5cab48ee72fefa6d1ac266639ebabf6cebec1e0207ad47011d3a48186ac9a632c8e34c3bac896155f54895a497230c11d789fd81263b08eb267d7113ce
+  checksum: 6e119c8e4167c8495d728c5556a834545a9c064918dd5e7b79b0d836726f4f8e2a0297b0ac82bf2b71f1e5427552217d0b59d8fb1406fd79bd3bf91b75dca873
   languageName: node
   linkType: hard
 
-"@typescript-eslint/utils@npm:5.51.0":
-  version: 5.51.0
-  resolution: "@typescript-eslint/utils@npm:5.51.0"
+"@typescript-eslint/utils@npm:5.53.0":
+  version: 5.53.0
+  resolution: "@typescript-eslint/utils@npm:5.53.0"
   dependencies:
     "@types/json-schema": ^7.0.9
     "@types/semver": ^7.3.12
-    "@typescript-eslint/scope-manager": 5.51.0
-    "@typescript-eslint/types": 5.51.0
-    "@typescript-eslint/typescript-estree": 5.51.0
+    "@typescript-eslint/scope-manager": 5.53.0
+    "@typescript-eslint/types": 5.53.0
+    "@typescript-eslint/typescript-estree": 5.53.0
     eslint-scope: ^5.1.1
     eslint-utils: ^3.0.0
     semver: ^7.3.7
   peerDependencies:
     eslint: ^6.0.0 || ^7.0.0 || ^8.0.0
-  checksum: c6e28c942fbac5500f0e8ed67ef304b484ba296486e55306f78fb090dc9d5bb1f25a0bedc065e14680041eadce5e95fa10aab618cb0c316599ec987e6ea72442
+  checksum: 18e6bac14ae853385a74123759850bca367904723e170c37416fc014673eb714afb6bb090367bff61494a8387e941b6af65ee5f4f845f7177fabb4df85e01643
   languageName: node
   linkType: hard
 
-"@typescript-eslint/visitor-keys@npm:5.51.0":
-  version: 5.51.0
-  resolution: "@typescript-eslint/visitor-keys@npm:5.51.0"
+"@typescript-eslint/visitor-keys@npm:5.53.0":
+  version: 5.53.0
+  resolution: "@typescript-eslint/visitor-keys@npm:5.53.0"
   dependencies:
-    "@typescript-eslint/types": 5.51.0
+    "@typescript-eslint/types": 5.53.0
     eslint-visitor-keys: ^3.3.0
-  checksum: b49710f3c6b3b62a846a163afffd81be5eb2b1f44e25bec51ff3c9f4c3b579d74aa4cbd3753b4fc09ea3dbc64a7062f9c658c08d22bb2740a599cb703d876220
+  checksum: 090695883c15364c6f401e97f56b13db0f31c1114f3bd22562bd41734864d27f6a3c80de33957e9dedab2d5f94b0f4480ba3fde1d4574e74dca4593917b7b54a
   languageName: node
   linkType: hard
 
@@ -2443,13 +2458,13 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "blargbot@workspace:."
   dependencies:
-    "@types/node": ^18.13.0
-    "@typescript-eslint/eslint-plugin": ^5.51.0
-    "@typescript-eslint/parser": ^5.51.0
+    "@types/node": ^18.14.1
+    "@typescript-eslint/eslint-plugin": ^5.53.0
+    "@typescript-eslint/parser": ^5.53.0
     "@yarnpkg/sdks": ^3.0.0-rc.39
-    c8: ^7.12.0
+    c8: ^7.13.0
     del-cli: ^5.0.0
-    eslint: ^8.33.0
+    eslint: ^8.35.0
     eslint-plugin-import: ^2.27.5
     eslint-plugin-simple-import-sort: ^10.0.0
     typescript: ^4.9.5
@@ -2579,9 +2594,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"c8@npm:^7.12.0":
-  version: 7.12.0
-  resolution: "c8@npm:7.12.0"
+"c8@npm:^7.13.0":
+  version: 7.13.0
+  resolution: "c8@npm:7.13.0"
   dependencies:
     "@bcoe/v8-coverage": ^0.2.3
     "@istanbuljs/schema": ^0.1.3
@@ -2597,7 +2612,7 @@ __metadata:
     yargs-parser: ^20.2.9
   bin:
     c8: bin/c8.js
-  checksum: 3b7fa9ad7cff2cb0bb579467e6b544498fbd46e9353a809ad3b8cf749df4beadd074cde277356b0552f3c8055b1b3ec3ebaf2209e9ad4bdefed92dbf64d283ab
+  checksum: 491abf4cf3097cdcfd24dbac49162f1383861c22c77fdd9280bcd38240e1e07d2c6a59da5d4df59a61a8204e2fc297d31fd526e495faf8d2f20dcc12a37b144c
   languageName: node
   linkType: hard
 
@@ -3325,10 +3340,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"discord-api-types@npm:^0.37.32":
-  version: 0.37.32
-  resolution: "discord-api-types@npm:0.37.32"
-  checksum: 0d45e5741af8d01f48d81fa417f6cb69bd8647c0c8c0d2bd8f5500e6f1dbe8d8cc62b224522de1cb996125d79de198ad34bb51181daf63e48f659b46eadc2e0a
+"discord-api-types@npm:^0.37.35":
+  version: 0.37.35
+  resolution: "discord-api-types@npm:0.37.35"
+  checksum: 0a65234eefb9675c6faf82f42be6b0a4ee75bf8b2c901eecefea6ca539cd4e2a501b7fc195415884912fdb5040c98727dbd0c5a1f6bc15951948be37d1be162b
   languageName: node
   linkType: hard
 
@@ -3665,11 +3680,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint@npm:^8.33.0":
-  version: 8.33.0
-  resolution: "eslint@npm:8.33.0"
+"eslint@npm:^8.35.0":
+  version: 8.35.0
+  resolution: "eslint@npm:8.35.0"
   dependencies:
-    "@eslint/eslintrc": ^1.4.1
+    "@eslint/eslintrc": ^2.0.0
+    "@eslint/js": 8.35.0
     "@humanwhocodes/config-array": ^0.11.8
     "@humanwhocodes/module-importer": ^1.0.1
     "@nodelib/fs.walk": ^1.2.8
@@ -3683,7 +3699,7 @@ __metadata:
     eslint-utils: ^3.0.0
     eslint-visitor-keys: ^3.3.0
     espree: ^9.4.0
-    esquery: ^1.4.0
+    esquery: ^1.4.2
     esutils: ^2.0.2
     fast-deep-equal: ^3.1.3
     file-entry-cache: ^6.0.1
@@ -3710,7 +3726,7 @@ __metadata:
     text-table: ^0.2.0
   bin:
     eslint: bin/eslint.js
-  checksum: 727e63ab8b7acf281442323c5971f6afdd5b656fbcebc4476cf54e35af51b2f180617433fc5e1952f0449ca3f43a905527f9407ea4b8a7ea7562fc9c3f278d4c
+  checksum: 6212173691d90b1bc94dd3d640e1f210374b30c3905fc0a15e501cf71c6ca52aa3d80ea7a9a245adaaed26d6019169e01fb6881b3f2885b188d37069c749308c
   languageName: node
   linkType: hard
 
@@ -3735,12 +3751,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"esquery@npm:^1.4.0":
-  version: 1.4.0
-  resolution: "esquery@npm:1.4.0"
+"esquery@npm:^1.4.2":
+  version: 1.4.2
+  resolution: "esquery@npm:1.4.2"
   dependencies:
     estraverse: ^5.1.0
-  checksum: a0807e17abd7fbe5fbd4fab673038d6d8a50675cdae6b04fbaa520c34581be0c5fa24582990e8acd8854f671dd291c78bb2efb9e0ed5b62f33bac4f9cf820210
+  checksum: 2f4ad89c5aafaca61cc2c15e256190f0d6deb4791cae6552d3cb4b1eb8867958cdf27a56aaa3272ff17435e3eaa19ee0d4129fac336ca6373d7354d7b5da7966
   languageName: node
   linkType: hard
 
@@ -5590,16 +5606,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"moment-timezone@npm:^0.5.40":
-  version: 0.5.40
-  resolution: "moment-timezone@npm:0.5.40"
+"moment-timezone@npm:^0.5.41":
+  version: 0.5.41
+  resolution: "moment-timezone@npm:0.5.41"
   dependencies:
-    moment: ">= 2.9.0"
-  checksum: 6f6be5412b37fd937bb143efe74bf65b2c3f115fd967a6dc13b717a126ed6dd198bff6db6e179d69a089e20ac03ce7622c6b5598dd585005195554487a91b528
+    moment: ^2.29.4
+  checksum: 30bf42265f749d4d17e78cf94f49d8354d9fbf2dea060a5b89895979642035734512a23cb7a90c0e93593bc11eb698b78b601b7dd5d9a708eb7c4f733a927a71
   languageName: node
   linkType: hard
 
-"moment@npm:>= 2.9.0":
+"moment@npm:^2.29.4":
   version: 2.29.4
   resolution: "moment@npm:2.29.4"
   checksum: 0ec3f9c2bcba38dc2451b1daed5daded747f17610b92427bebe1d08d48d8b7bdd8d9197500b072d14e326dd0ccf3e326b9e3d07c5895d3d49e39b6803b76e80e
@@ -6406,17 +6422,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"redis@npm:^4.6.4":
-  version: 4.6.4
-  resolution: "redis@npm:4.6.4"
+"redis@npm:^4.6.5":
+  version: 4.6.5
+  resolution: "redis@npm:4.6.5"
   dependencies:
     "@redis/bloom": 1.2.0
-    "@redis/client": 1.5.5
+    "@redis/client": 1.5.6
     "@redis/graph": 1.1.0
     "@redis/json": 1.0.4
-    "@redis/search": 1.1.1
+    "@redis/search": 1.1.2
     "@redis/time-series": 1.0.4
-  checksum: b9263985de512a381d419b471bf040989dda80df070d7f548669e6c241a33ca789273ed7834a74e2408b610bb20089ab210fe4493415cf269b8549a29824ccb2
+  checksum: 81696673a4c3acefcde310289ac83f40fe974af76f6d2f2a682befd6486128f8870f48b9e6fee1213cecfba9ac705649d27b750e853809d734cccce05868f1b7
   languageName: node
   linkType: hard
 
@@ -7611,7 +7627,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ws@npm:^8.12.0, ws@npm:^8.2.3, ws@npm:^8.4.0":
+"ws@npm:^8.12.1":
+  version: 8.12.1
+  resolution: "ws@npm:8.12.1"
+  peerDependencies:
+    bufferutil: ^4.0.1
+    utf-8-validate: ">=5.0.2"
+  peerDependenciesMeta:
+    bufferutil:
+      optional: true
+    utf-8-validate:
+      optional: true
+  checksum: 97301c1c4d838fc81bd413f370f75c12aabe44527b31323b761eab3043a9ecb7e32ffd668548382c9a6a5ad3a1c3a9249608e8338e6b939f2f9540f1e21970b5
+  languageName: node
+  linkType: hard
+
+"ws@npm:^8.2.3, ws@npm:^8.4.0":
   version: 8.12.0
   resolution: "ws@npm:8.12.0"
   peerDependencies:

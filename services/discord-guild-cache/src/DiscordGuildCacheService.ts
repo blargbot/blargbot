@@ -1,6 +1,6 @@
 import type { MessageHandle } from '@blargbot/message-broker';
 import type { IKVCache } from '@blargbot/redis-cache';
-import type * as discordeno from 'discordeno';
+import type Discord from '@blargbot/discord-types';
 
 import type { DiscordGuildCacheMessageBroker } from './DiscordGuildCacheMessageBroker.js';
 import type { SlimDiscordGuild } from './SlimDiscordGuild.js';
@@ -42,19 +42,19 @@ export class DiscordGuildCacheService {
         return await this.#cache.size();
     }
 
-    async #upsertGuild(guild: discordeno.DiscordGuild): Promise<void> {
+    async #upsertGuild(guild: Discord.APIGuild): Promise<void> {
         await this.#cache.set(BigInt(guild.id), toSlimDiscordGuild(guild));
     }
 
-    async #handleGuildCreate(guild: discordeno.DiscordGuild): Promise<void> {
+    async #handleGuildCreate(guild: Discord.GatewayGuildCreateDispatchData): Promise<void> {
         await this.#upsertGuild(guild);
     }
 
-    async #handleGuildUpdate(guild: discordeno.DiscordGuild): Promise<void> {
+    async #handleGuildUpdate(guild: Discord.GatewayGuildUpdateDispatchData): Promise<void> {
         await this.#upsertGuild(guild);
     }
 
-    async #handleGuildDelete(guild: discordeno.DiscordUnavailableGuild): Promise<void> {
+    async #handleGuildDelete(guild: Discord.GatewayGuildDeleteDispatchData): Promise<void> {
         await this.#cache.delete(BigInt(guild.id));
     }
 }

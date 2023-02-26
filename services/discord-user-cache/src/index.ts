@@ -5,7 +5,7 @@ import env from '@blargbot/env';
 import express from '@blargbot/express';
 import type { ConnectionOptions } from '@blargbot/message-broker';
 import { RedisKVCache } from '@blargbot/redis-cache';
-import type * as discordeno from 'discordeno';
+import type Discord from '@blargbot/discord-types';
 import type { RedisClientType } from 'redis';
 import { createClient as createRedisClient } from 'redis';
 
@@ -34,7 +34,6 @@ export class DiscordUserCacheApplication extends Application {
     readonly #app: express.Express;
     readonly #server: Server;
     readonly #port: number;
-    readonly #cache: RedisKVCache<bigint, discordeno.DiscordUser>;
 
     public constructor(options: DiscordUserCacheApplicationOptions) {
         super();
@@ -46,13 +45,14 @@ export class DiscordUserCacheApplication extends Application {
             password: options.redis.password
         });
 
-        this.#cache = new RedisKVCache<bigint, discordeno.DiscordUser>(this.#redis, {
-            ttlS: null,
-            keyspace: 'discord_users',
-            lockRetryMs: 1
-        });
         this.#messages = new DiscordUserCacheMessageBroker(options.messages);
-        this.#service = new DiscordUserCacheService(this.#messages, this.#cache);
+        this.#service = new DiscordUserCacheService(this.#messages,
+            new RedisKVCache<bigint, Discord.APIUser>(this.#redis, {
+                ttlS: null,
+                keyspace: 'discord_users',
+                lockRetryMs: 1
+            })
+        );
 
         this.#app = express()
             .use(express.urlencoded({ extended: true }))

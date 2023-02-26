@@ -12,6 +12,6 @@
         "@blargbot/chatlog-types": "workspace:^",
         "@blargbot/formatting": "workspace:^",
         "@blargbot/input": "workspace:^",
-        "moment-timezone": "^0.5.40"
+        "moment-timezone": "^0.5.41"
     }
 }

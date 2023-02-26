@@ -1,5 +1,5 @@
 import { hasFlag, isUrl } from '@blargbot/guards';
-import * as Discord from 'discord-api-types/v10';
+import Discord from '@blargbot/discord-types';
 import fetch from 'node-fetch';
 
 import type { BBTagContext } from '../../BBTagContext.js';

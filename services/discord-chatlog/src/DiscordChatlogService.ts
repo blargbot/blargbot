@@ -1,7 +1,7 @@
 import { ChatLogType } from '@blargbot/chatlog-types';
 import { guildSerializer } from '@blargbot/guild-settings';
 import type { MessageHandle } from '@blargbot/message-broker';
-import type * as discordeno from 'discordeno';
+import type Discord from '@blargbot/discord-types';
 import fetch from 'node-fetch';
 
 import type DiscordChatlogDatabase from './DiscordChatlogDatabase.js';
@@ -34,7 +34,7 @@ export class DiscordChatlogService {
             .map(h => h.disconnect().finally(() => this.#handles.delete(h))));
     }
 
-    async #shouldChatlog(message: Pick<discordeno.DiscordMessage, 'guild_id' | 'channel_id'>): Promise<boolean> {
+    async #shouldChatlog(message: Pick<Discord.GatewayMessageCreateDispatchData, 'guild_id' | 'channel_id'>): Promise<boolean> {
         if (message.guild_id === undefined)
             return false;
 
@@ -44,14 +44,14 @@ export class DiscordChatlogService {
         return settings.enableChatlogging;
     }
 
-    async #handleMessageCreate(message: discordeno.DiscordMessage): Promise<void> {
+    async #handleMessageCreate(message: Discord.GatewayMessageCreateDispatchData): Promise<void> {
         if (!await this.#shouldChatlog(message))
             return;
 
         await this.#database.add({
             attachments: message.attachments.map(a => a.url),
             channelid: message.channel_id,
-            content: message.content ?? '',
+            content: message.content,
             embeds: message.embeds,
             guildid: message.guild_id ?? '0',
             msgid: message.id,
@@ -59,30 +59,30 @@ export class DiscordChatlogService {
         }, ChatLogType.CREATE);
     }
 
-    async #handleMessageUpdate(message: discordeno.DiscordMessage): Promise<void> {
+    async #handleMessageUpdate(message: Discord.GatewayMessageUpdateDispatchData): Promise<void> {
         if (!await this.#shouldChatlog(message))
             return;
 
         await this.#database.add({
-            attachments: message.attachments.map(a => a.url),
+            attachments: message.attachments?.map(a => a.url) ?? [],
             channelid: message.channel_id,
             content: message.content ?? '',
-            embeds: message.embeds,
+            embeds: message.embeds ?? [],
             guildid: message.guild_id ?? '0',
             msgid: message.id,
-            userid: message.author.id
+            userid: message.author?.id ?? ''
         }, ChatLogType.UPDATE);
 
     }
 
-    async #handleMessageDelete(message: discordeno.DiscordMessageDelete): Promise<void> {
+    async #handleMessageDelete(message: Discord.GatewayMessageDeleteDispatchData): Promise<void> {
         await this.#handleMessageDeleteBulk({
             ...message,
             ids: [message.id]
         });
     }
 
-    async #handleMessageDeleteBulk(message: discordeno.DiscordMessageDeleteBulk): Promise<void> {
+    async #handleMessageDeleteBulk(message: Discord.GatewayMessageDeleteBulkDispatchData): Promise<void> {
         if (!await this.#shouldChatlog(message))
             return;
 

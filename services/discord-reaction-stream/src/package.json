@@ -12,11 +12,11 @@
     "dependencies": {
         "@blargbot/application": "workspace:^",
         "@blargbot/discord-message-broker": "workspace:^",
+        "@blargbot/discord-types": "workspace:^",
         "@blargbot/env": "workspace:^",
         "@blargbot/express": "workspace:^",
         "@blargbot/message-broker": "workspace:^",
-        "amqplib": "^0.10.3",
-        "discordeno": "^18.0.1"
+        "amqplib": "^0.10.3"
     },
     "devDependencies": {
         "@types/amqplib": "^0.10.1"

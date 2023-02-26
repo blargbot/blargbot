@@ -20,7 +20,7 @@ import { parseTime } from '@blargbot/core/utils/parse/parseTime.js';
 import type { Logger } from '@blargbot/logger';
 import { ModuleLoader } from '@blargbot/modules';
 import { Timer } from '@blargbot/timer';
-import Discord from 'discord-api-types/v9';
+import Discord from '@blargbot/discord-types';
 import moment from 'moment-timezone';
 
 import { ClusterBBTagUtilities } from './ClusterBBTagUtilities.js';
@@ -205,15 +205,15 @@ export class Cluster extends BaseClient {
                 message: new ErisBBTagMessageService(this)
             },
             middleware: [
-                async function* (subtag, ctx, name, call) {
+                async function* ({ subtag, context }, next) {
                     const timer = new Timer().start();
                     try {
-                        yield* subtag.execute(ctx, name, call);
+                        yield* next();
                     } finally {
                         timer.end();
                         metrics.subtagLatency.labels(subtag.name).observe(timer.elapsed);
                         metrics.subtagCounter.labels(subtag.name).inc();
-                        const debugPerf = ctx.data.subtags[subtag.name] ??= [];
+                        const debugPerf = context.data.subtags[subtag.name] ??= [];
                         debugPerf.push(timer.elapsed);
                     }
                 }

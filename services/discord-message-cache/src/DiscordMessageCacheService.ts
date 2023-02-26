@@ -1,6 +1,6 @@
 import type { MessageHandle } from '@blargbot/message-broker';
 import type { IKVCache } from '@blargbot/redis-cache';
-import type * as discordeno from 'discordeno';
+import type Discord from '@blargbot/discord-types';
 
 import type { DiscordMessageCacheMessageBroker } from './DiscordMessageCacheMessageBroker.js';
 
@@ -45,18 +45,19 @@ export class DiscordMessageCacheService {
         await Promise.all(promises);
     }
 
-    async #handleGuildCreate(message: discordeno.DiscordGuild): Promise<void> {
-        if (message.channels === undefined)
-            return;
-
-        await this.#setLastMessageTime(message.channels.map(c => [c.id, c.last_message_id ?? null]));
+    async #handleGuildCreate(message: Discord.GatewayGuildCreateDispatchData): Promise<void> {
+        await this.#setLastMessageTime(message.channels.map(c => [c.id, getLastMessageId(c)]));
     }
 
-    async #handleChannelCreate(message: discordeno.DiscordChannel): Promise<void> {
-        await this.#setLastMessageTime([[message.id, message.last_message_id ?? null]]);
+    async #handleChannelCreate(message: Discord.GatewayChannelCreateDispatchData): Promise<void> {
+        await this.#setLastMessageTime([[message.id, getLastMessageId(message)]]);
     }
 
-    async #handleMessageCreate(message: discordeno.DiscordMessage): Promise<void> {
+    async #handleMessageCreate(message: Discord.GatewayMessageCreateDispatchData): Promise<void> {
         await this.#setLastMessageTime([[message.channel_id, message.id]]);
     }
+}
+
+function getLastMessageId(channel: Discord.APIChannel): string | null {
+    return 'last_message_id' in channel ? channel.last_message_id ?? null : null;
 }

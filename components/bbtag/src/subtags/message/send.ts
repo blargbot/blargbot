@@ -1,4 +1,4 @@
-import * as Discord from 'discord-api-types/v10';
+import Discord from '@blargbot/discord-types';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import type { BBTagValueConverter } from '../../BBTagUtilities.js';

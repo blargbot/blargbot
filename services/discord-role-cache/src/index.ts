@@ -5,7 +5,7 @@ import env from '@blargbot/env';
 import express from '@blargbot/express';
 import type { ConnectionOptions } from '@blargbot/message-broker';
 import { RedisKKVCache } from '@blargbot/redis-cache';
-import type * as discordeno from 'discordeno';
+import type Discord from '@blargbot/discord-types';
 import type { RedisClientType } from 'redis';
 import { createClient as createRedisClient } from 'redis';
 
@@ -34,7 +34,6 @@ export class DiscordRoleCacheApplication extends Application {
     readonly #app: express.Express;
     readonly #server: Server;
     readonly #port: number;
-    readonly #cache: RedisKKVCache<bigint, bigint, discordeno.DiscordRole>;
 
     public constructor(options: DiscordRoleCacheApplicationOptions) {
         super();
@@ -46,13 +45,14 @@ export class DiscordRoleCacheApplication extends Application {
             password: options.redis.password
         });
 
-        this.#cache = new RedisKKVCache<bigint, bigint, discordeno.DiscordRole>(this.#redis, {
-            ttlS: null,
-            keyspace: 'discord_roles',
-            key2Reader: v => BigInt(v)
-        });
         this.#messages = new DiscordRoleCacheMessageBroker(options.messages);
-        this.#service = new DiscordRoleCacheService(this.#messages, this.#cache);
+        this.#service = new DiscordRoleCacheService(this.#messages,
+            new RedisKKVCache<bigint, bigint, Discord.APIRole>(this.#redis, {
+                ttlS: null,
+                keyspace: 'discord_roles',
+                key2Reader: v => BigInt(v)
+            })
+        );
 
         this.#app = express()
             .use(express.urlencoded({ extended: true }))

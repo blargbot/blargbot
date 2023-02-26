@@ -7,7 +7,6 @@ export class DiscordMemberCacheMessageBroker extends discordMessageBrokerMixin({
     serviceName: 'discord-member-cache',
     events: [
         'GUILD_CREATE',
-        'GUILD_UPDATE',
         'GUILD_DELETE',
         'GUILD_MEMBER_ADD',
         'GUILD_MEMBER_REMOVE',

@@ -1,5 +1,5 @@
 import type { MessageHandle } from '@blargbot/message-broker';
-import type * as discordeno from 'discordeno';
+import type Discord from '@blargbot/discord-types';
 
 import type { DiscordMessageStreamMessageBroker } from './DiscordMessageStreamMessageBroker.js';
 
@@ -23,7 +23,7 @@ export class DiscordMessageStreamService {
             .map(h => h.disconnect().finally(() => this.#handles.delete(h))));
     }
 
-    async #handleMessageCreate(message: discordeno.DiscordMessage): Promise<void> {
+    async #handleMessageCreate(message: Discord.GatewayMessageCreateDispatchData): Promise<void> {
         await this.#messages.pushMessage(message);
     }
 }

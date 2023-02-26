@@ -22,16 +22,16 @@
         "brainfuck-node": "^1.0.2",
         "color": "^4.2.3",
         "html-entities": "^2.3.3",
-        "moment-timezone": "^0.5.40",
+        "moment-timezone": "^0.5.41",
         "node-fetch": "^3.3.0",
         "rwlock": "^5.0.0"
     },
     "devDependencies": {
         "@blargbot/application": "workspace:^",
+        "@blargbot/discord-types": "workspace:^",
         "@types/brainfuck-node": "workspace:^",
         "@types/color": "^3.0.3",
         "@types/node-fetch": "^2.6.2",
-        "@types/rwlock": "^5.0.3",
-        "discord-api-types": "^0.37.32"
+        "@types/rwlock": "^5.0.3"
     }
 }

@@ -1,19 +1,19 @@
 import { hasValue } from '@blargbot/guards';
 import type { MessageHandle } from '@blargbot/message-broker';
 import type { IKSCache, IKVCache } from '@blargbot/redis-cache';
-import type * as discordeno from 'discordeno';
+import type Discord from '@blargbot/discord-types';
 
 import type { DiscordChannelCacheMessageBroker } from './DiscordChannelCacheMessageBroker.js';
 
 export class DiscordChannelCacheService {
     readonly #messages: DiscordChannelCacheMessageBroker;
     readonly #handles: Set<MessageHandle>;
-    readonly #channelCache: IKVCache<bigint, discordeno.DiscordChannel>;
+    readonly #channelCache: IKVCache<bigint, Discord.APIChannel>;
     readonly #guildIndex: IKSCache<bigint, bigint>;
 
     public constructor(
         messages: DiscordChannelCacheMessageBroker,
-        channelCache: IKVCache<bigint, discordeno.DiscordChannel>,
+        channelCache: IKVCache<bigint, Discord.APIChannel>,
         guildIndex: IKSCache<bigint, bigint>
     ) {
         this.#messages = messages;
@@ -36,17 +36,17 @@ export class DiscordChannelCacheService {
         ]);
     }
 
-    public async getChannel(channelId: bigint): Promise<discordeno.DiscordChannel | undefined> {
+    public async getChannel(channelId: bigint): Promise<Discord.APIChannel | undefined> {
         return await this.#channelCache.get(channelId);
     }
 
-    public async getGuildChannel(guildId: bigint, channelId: bigint): Promise<discordeno.DiscordChannel | undefined> {
+    public async getGuildChannel(guildId: bigint, channelId: bigint): Promise<Discord.APIChannel | undefined> {
         if (!await this.#guildIndex.has(guildId, channelId))
             return undefined;
         return await this.#channelCache.get(channelId);
     }
 
-    public async getGuildChannels(guildId: bigint): Promise<discordeno.DiscordChannel[]> {
+    public async getGuildChannels(guildId: bigint): Promise<Discord.APIChannel[]> {
         const channelIds = await this.#guildIndex.list(guildId);
         return (await Promise.all(channelIds.map(c => this.#channelCache.get(c)))).filter(hasValue);
     }
@@ -55,11 +55,16 @@ export class DiscordChannelCacheService {
         await this.#clearCache(guildId);
     }
 
-    async #addChannels(channels: discordeno.DiscordChannel[], guildId?: string): Promise<void> {
-        const setChannels = this.#channelCache.setAll(channels.map(c => [BigInt(c.id), { ...c, guild_id: guildId }]));
-        if (guildId !== undefined)
-            await this.#guildIndex.addAll(BigInt(guildId), channels.map(c => BigInt(c.id)));
-        await setChannels;
+    async #addChannels(channels: Discord.APIChannel[]): Promise<void> {
+        const promises = [this.#channelCache.setAll(channels.map(c => [BigInt(c.id), c]))];
+        const byGuild = channels.reduce<Record<string, bigint[]>>((acc, c) => {
+            if ('guild_id' in c && c.guild_id !== undefined)
+                (acc[c.guild_id] ??= []).push(BigInt(c.id));
+            return acc;
+        }, {});
+        for (const [guildId, channels] of Object.entries(byGuild))
+            promises.push(this.#guildIndex.addAll(BigInt(guildId), channels));
+        await Promise.all(promises);
     }
 
     async #clearCache(guildId: bigint): Promise<void> {
@@ -73,49 +78,49 @@ export class DiscordChannelCacheService {
         ]);
     }
 
-    async #deleteChannel(channel: discordeno.DiscordChannel): Promise<void> {
+    async #deleteChannel(channel: Discord.APIChannel): Promise<void> {
         const channelId = BigInt(channel.id);
         const promises = [this.#channelCache.delete(channelId)];
-        if (channel.guild_id !== undefined)
+        if ('guild_id' in channel && channel.guild_id !== undefined)
             promises.push(this.#guildIndex.remove(BigInt(channel.guild_id), channelId));
         await Promise.all(promises);
     }
 
-    async #handleGuildCreate(message: discordeno.DiscordGuild): Promise<void> {
+    async #handleGuildCreate(message: Discord.GatewayGuildCreateDispatchData): Promise<void> {
         await this.#clearCache(BigInt(message.id));
-        await this.#addChannels([...message.channels ?? [], ...message.threads ?? []], message.id);
+        await this.#addChannels([...message.channels, ...message.threads]);
     }
 
-    async #handleGuildDelete(message: discordeno.DiscordUnavailableGuild): Promise<void> {
+    async #handleGuildDelete(message: Discord.GatewayGuildDeleteDispatchData): Promise<void> {
         await this.#clearCache(BigInt(message.id));
     }
 
-    async #handleChannelCreate(message: discordeno.DiscordChannel): Promise<void> {
-        await this.#addChannels([message], message.guild_id);
+    async #handleChannelCreate(message: Discord.GatewayChannelCreateDispatchData): Promise<void> {
+        await this.#addChannels([message]);
     }
 
-    async #handleChannelDelete(message: discordeno.DiscordChannel): Promise<void> {
+    async #handleChannelDelete(message: Discord.GatewayChannelDeleteDispatchData): Promise<void> {
         await this.#deleteChannel(message);
     }
 
-    async #handleChannelUpdate(message: discordeno.DiscordChannel): Promise<void> {
-        await this.#addChannels([message], message.guild_id);
+    async #handleChannelUpdate(message: Discord.GatewayChannelUpdateDispatchData): Promise<void> {
+        await this.#addChannels([message]);
     }
 
-    async #handleThreadCreate(message: discordeno.DiscordChannel): Promise<void> {
-        await this.#addChannels([message], message.guild_id);
+    async #handleThreadCreate(message: Discord.APIChannel): Promise<void> {
+        await this.#addChannels([message]);
     }
 
-    async #handleThreadDelete(message: discordeno.DiscordChannel): Promise<void> {
+    async #handleThreadDelete(message: Discord.GatewayThreadDeleteDispatchData): Promise<void> {
         await this.#deleteChannel(message);
     }
 
-    async #handleThreadListSync(message: discordeno.DiscordThreadListSync): Promise<void> {
+    async #handleThreadListSync(message: Discord.GatewayThreadListSyncDispatchData): Promise<void> {
         await this.#addChannels(message.threads);
     }
 
-    async #handleThreadUpdate(message: discordeno.DiscordChannel): Promise<void> {
-        await this.#addChannels([message], message.guild_id);
+    async #handleThreadUpdate(message: Discord.GatewayThreadUpdateDispatchData): Promise<void> {
+        await this.#addChannels([message]);
     }
 
     public async stop(): Promise<void> {

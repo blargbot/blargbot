@@ -1,4 +1,4 @@
-import Discord from 'discord-api-types/v10';
+import Discord from '@blargbot/discord-types';
 
 import { BBTagRuntimeError } from './BBTagRuntimeError.js';
 

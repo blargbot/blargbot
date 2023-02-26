@@ -1,7 +1,7 @@
 import { hasFlag, hasProperty } from '@blargbot/guards';
 import { mapping } from '@blargbot/mapping';
-import { ChannelType, OverwriteType } from 'discord-api-types/v10';
-import * as Discord from 'discord-api-types/v10';
+import { ChannelType, OverwriteType } from '@blargbot/discord-types';
+import Discord from '@blargbot/discord-types';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';

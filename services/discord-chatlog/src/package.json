@@ -13,13 +13,13 @@
         "@blargbot/application": "workspace:^",
         "@blargbot/chatlog-types": "workspace:^",
         "@blargbot/discord-message-broker": "workspace:^",
+        "@blargbot/discord-types": "workspace:^",
         "@blargbot/env": "workspace:^",
         "@blargbot/guild-settings": "workspace:^",
         "@blargbot/mapping": "workspace:^",
         "@blargbot/message-broker": "workspace:^",
         "amqplib": "^0.10.3",
         "cassandra-driver": "^4.6.4",
-        "discordeno": "^18.0.1",
         "node-fetch": "^3.3.0"
     },
     "devDependencies": {

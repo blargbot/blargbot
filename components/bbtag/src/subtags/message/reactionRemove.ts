@@ -1,6 +1,6 @@
 import { Emote } from '@blargbot/discord-emote';
 import { hasFlag } from '@blargbot/guards';
-import * as Discord from 'discord-api-types/v10';
+import Discord from '@blargbot/discord-types';
 
 import type { SubtagArgumentArray } from '../../arguments/index.js';
 import type { BBTagContext } from '../../BBTagContext.js';

@@ -1,5 +1,5 @@
 import type { MessageHandle } from '@blargbot/message-broker';
-import type * as discordeno from 'discordeno';
+import type Discord from '@blargbot/discord-types';
 
 import type { DiscordInteractionStreamMessageBroker } from './DiscordInteractionStreamMessageBroker.js';
 
@@ -23,7 +23,7 @@ export class DiscordInteractionStreamService {
             .map(h => h.disconnect().finally(() => this.#handles.delete(h))));
     }
 
-    async #handleInteractionCreate(message: discordeno.DiscordInteraction): Promise<void> {
+    async #handleInteractionCreate(message: Discord.GatewayInteractionCreateDispatchData): Promise<void> {
         await this.#messages.pushInteraction(message);
     }
 }

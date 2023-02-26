@@ -1,6 +1,6 @@
 import type { MessageHandle } from '@blargbot/message-broker';
 import type { IKKVCache } from '@blargbot/redis-cache';
-import type * as discordeno from 'discordeno';
+import type Discord from '@blargbot/discord-types';
 
 import type { DiscordPresenceCacheMessageBroker } from './DiscordPresenceCacheMessageBroker.js';
 import type { DiscordUserPresence } from './DiscordUserPresence.js';
@@ -46,26 +46,23 @@ export class DiscordPresenceCacheService {
         return await this.#cache.size(guildId);
     }
 
-    async #handlePresenceUpdate(message: discordeno.DiscordPresenceUpdate): Promise<void> {
+    async #handlePresenceUpdate(message: Discord.GatewayPresenceUpdateDispatchData): Promise<void> {
         await this.#cache.set(BigInt(message.guild_id), BigInt(message.user.id), toDiscordUserPresence(message));
     }
 
-    async #handleGuildCreate(guild: discordeno.DiscordGuild): Promise<void> {
-        if (guild.presences === undefined)
-            return;
-
+    async #handleGuildCreate(guild: Discord.GatewayGuildCreateDispatchData): Promise<void> {
         await this.#cache.setAll(BigInt(guild.id), guild.presences.filter(hasUser).map(p => [BigInt(p.user.id), toDiscordUserPresence(p)]));
     }
 
-    async #handleGuildDelete(guild: discordeno.DiscordUnavailableGuild): Promise<void> {
+    async #handleGuildDelete(guild: Discord.GatewayGuildDeleteDispatchData): Promise<void> {
         await this.#cache.deleteAll(BigInt(guild.id));
     }
 
-    async #handleGuildMemberRemove(member: discordeno.DiscordGuildMemberRemove): Promise<void> {
+    async #handleGuildMemberRemove(member: Discord.GatewayGuildMemberRemoveDispatchData): Promise<void> {
         await this.#cache.delete(BigInt(member.guild_id), BigInt(member.user.id));
     }
 
-    async #handleGuildMembersChunk(chunk: discordeno.DiscordGuildMembersChunk): Promise<void> {
+    async #handleGuildMembersChunk(chunk: Discord.GatewayGuildMembersChunkDispatchData): Promise<void> {
         if (chunk.presences === undefined)
             return;
 
@@ -74,6 +71,6 @@ export class DiscordPresenceCacheService {
 
 }
 
-function hasUser<T extends { user?: discordeno.DiscordUser; }>(member: T): member is T & discordeno.DiscordMemberWithUser {
+function hasUser<T extends { user?: unknown; }>(member: T): member is T & { user: Exclude<T['user'], undefined>; } {
     return member.user !== undefined;
 }

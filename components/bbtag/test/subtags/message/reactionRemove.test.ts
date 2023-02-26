@@ -2,7 +2,7 @@ import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError, Subtag, 
 import { ReactionRemoveSubtag } from '@bbtag/blargbot/subtags';
 import { Emote } from '@blargbot/discord-emote';
 import { argument } from '@blargbot/test-util/mock.js';
-import * as Discord from 'discord-api-types/v10';
+import Discord from '@blargbot/discord-types';
 
 import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';
 

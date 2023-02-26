@@ -1,6 +1,6 @@
 import { BBTagRuntimeError, Subtag } from '@bbtag/blargbot';
 import { EmojiDeleteSubtag } from '@bbtag/blargbot/subtags';
-import * as Discord from 'discord-api-types/v10';
+import Discord from '@blargbot/discord-types';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

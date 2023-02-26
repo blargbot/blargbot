@@ -1,0 +1,12 @@
+{
+    "name": "@blargbot/discord-types",
+    "version": "1.0.0",
+    "private": true,
+    "type": "module",
+    "exports": {
+        ".": "./index.js"
+    },
+    "dependencies": {
+        "discord-api-types": "^0.37.35"
+    }
+}

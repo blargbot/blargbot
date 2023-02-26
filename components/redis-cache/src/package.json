@@ -7,7 +7,7 @@
         ".": "./index.js"
     },
     "dependencies": {
-        "redis": "^4.6.4",
+        "redis": "^4.6.5",
         "redis-lock": "^1.0.0"
     }
 }

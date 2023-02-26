@@ -24,7 +24,7 @@
         "@blargbot/res": "workspace:^",
         "@blargbot/timer": "workspace:^",
         "eris": "^0.17.1",
-        "moment-timezone": "^0.5.40",
+        "moment-timezone": "^0.5.41",
         "node-fetch": "^3.3.0",
         "prom-client": "^14.1.1",
         "strip-ansi": "^7.0.1"

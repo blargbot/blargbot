@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-empty-interface */
-import type * as Discord from 'discord-api-types/v10';
+import type Discord from '@blargbot/discord-types';
 
 export interface User extends Discord.APIUser {
     member?: Member;

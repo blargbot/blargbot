@@ -4,7 +4,7 @@ import type { ApiResponse } from '@blargbot/api/types.js';
 import type { ChatLog, ChatLogIndex } from '@blargbot/chatlog-types';
 import { markup } from '@blargbot/discord-util';
 import type { DiscordTagSet } from '@blargbot/domain/models/index.js';
-import type Discord from 'discord-api-types/v9';
+import type Discord from '@blargbot/discord-types';
 
 export class ChatLogsRoute extends BaseRoute {
     readonly #api: Api;

@@ -1,7 +1,7 @@
 import { discordMessageBrokerMixin } from '@blargbot/discord-message-broker';
 import MessageBroker from '@blargbot/message-broker';
 import type amqplib from 'amqplib';
-import type * as discordeno from 'discordeno';
+import Discord from '@blargbot/discord-types';
 
 export class DiscordInteractionStreamMessageBroker extends discordMessageBrokerMixin({
     type: MessageBroker,
@@ -19,9 +19,19 @@ export class DiscordInteractionStreamMessageBroker extends discordMessageBrokerM
         ]);
     }
 
-    public async pushInteraction(interaction: discordeno.DiscordInteraction): Promise<void> {
-        const data: Partial<NonNullable<discordeno.DiscordInteraction['data']>> = interaction.data ?? {};
-        const route = `${interaction.type}.${data.custom_id ?? data.id ?? '-'}.${interaction.channel_id ?? '-'}.${interaction.user?.id ?? '-'}`;
+    public async pushInteraction(interaction: Discord.GatewayInteractionCreateDispatchData): Promise<void> {
+        const route = `${interaction.type}.${this.#getInteractionId(interaction) ?? '-'}.${interaction.channel_id ?? '-'}.${interaction.user?.id ?? '-'}`;
         await this.sendMessage(DiscordInteractionStreamMessageBroker.#interactionStream, route, this.jsonToBlob(interaction));
+    }
+
+    #getInteractionId(interaction: Discord.GatewayInteractionCreateDispatchData): string | undefined {
+        switch (interaction.type) {
+            case Discord.InteractionType.ApplicationCommand: return interaction.id;
+            case Discord.InteractionType.ApplicationCommandAutocomplete: return interaction.id;
+            case Discord.InteractionType.MessageComponent: return interaction.data.custom_id;
+            case Discord.InteractionType.ModalSubmit: return interaction.data.custom_id;
+            case Discord.InteractionType.Ping: return interaction.id;
+            default: return interaction;
+        }
     }
 }

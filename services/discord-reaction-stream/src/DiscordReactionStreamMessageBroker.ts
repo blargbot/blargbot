@@ -1,7 +1,7 @@
 import { discordMessageBrokerMixin } from '@blargbot/discord-message-broker';
 import MessageBroker from '@blargbot/message-broker';
 import type amqplib from 'amqplib';
-import type * as discordeno from 'discordeno';
+import type Discord from '@blargbot/discord-types';
 
 export class DiscordReactionStreamMessageBroker extends discordMessageBrokerMixin({
     type: MessageBroker,
@@ -20,7 +20,7 @@ export class DiscordReactionStreamMessageBroker extends discordMessageBrokerMixi
         ]);
     }
 
-    public async pushReaction(message: discordeno.DiscordMessageReactionAdd): Promise<void> {
+    public async pushReaction(message: Discord.GatewayMessageReactionAddDispatchData): Promise<void> {
         const emoteId = message.emoji.id ?? message.emoji.name ?? '';
         await this.sendMessage(DiscordReactionStreamMessageBroker.#reactionStream, `${message.message_id}.${message.user_id}.${emoteId}`, this.jsonToBlob(message));
     }

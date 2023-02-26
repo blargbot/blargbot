@@ -10,7 +10,7 @@ import type { IFormattable, IFormatter } from '@blargbot/formatting';
 import { format, Formatter, TranslationMiddleware, util } from '@blargbot/formatting';
 import { hasProperty, hasValue } from '@blargbot/guards';
 import type { Logger } from '@blargbot/logger';
-import type * as Discord from 'discord-api-types/v10';
+import type Discord from '@blargbot/discord-types';
 import * as Eris from 'eris';
 import moment from 'moment-timezone';
 

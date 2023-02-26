@@ -1,6 +1,6 @@
 import type { MessageHandle } from '@blargbot/message-broker';
 import type { IKKVCache } from '@blargbot/redis-cache';
-import type * as discordeno from 'discordeno';
+import type Discord from '@blargbot/discord-types';
 
 import type { DiscordMemberCacheMessageBroker } from './DiscordMemberCacheMessageBroker.js';
 import type { SlimDiscordMember } from './SlimDiscordMember.js';
@@ -20,7 +20,6 @@ export class DiscordMemberCacheService {
     public async start(): Promise<void> {
         await Promise.all([
             this.#messages.handleGuildCreate(this.#handleGuildCreate.bind(this)).then(h => this.#handles.add(h)),
-            this.#messages.handleGuildUpdate(this.#handleGuildUpdate.bind(this)).then(h => this.#handles.add(h)),
             this.#messages.handleGuildDelete(this.#handleGuildDelete.bind(this)).then(h => this.#handles.add(h)),
             this.#messages.handleGuildMemberAdd(this.#handleGuildMemberAdd.bind(this)).then(h => this.#handles.add(h)),
             this.#messages.handleGuildMemberRemove(this.#handleGuildMemberRemove.bind(this)).then(h => this.#handles.add(h)),
@@ -52,41 +51,39 @@ export class DiscordMemberCacheService {
         return await this.#cache.size(guildId);
     }
 
-    async #upsertGuild(guild: discordeno.DiscordGuild): Promise<void> {
-        if (guild.members === undefined)
-            return;
+    async #upsertGuild(guild: Discord.GatewayGuildCreateDispatchData): Promise<void> {
         await this.#cache.setAll(BigInt(guild.id), guild.members.filter(hasUser).map(m => [BigInt(m.user.id), toSlimDiscordMember(m)]));
     }
 
-    async #handleGuildCreate(guild: discordeno.DiscordGuild): Promise<void> {
+    async #handleGuildCreate(guild: Discord.GatewayGuildCreateDispatchData): Promise<void> {
         await this.#upsertGuild(guild);
     }
 
-    async #handleGuildUpdate(guild: discordeno.DiscordGuild): Promise<void> {
-        await this.#upsertGuild(guild);
-    }
-
-    async #handleGuildDelete(guild: discordeno.DiscordUnavailableGuild): Promise<void> {
+    async #handleGuildDelete(guild: Discord.GatewayGuildDeleteDispatchData): Promise<void> {
         await this.#cache.deleteAll(BigInt(guild.id));
     }
 
-    async #handleGuildMemberAdd(member: discordeno.DiscordGuildMemberAdd): Promise<void> {
+    async #handleGuildMemberAdd(member: Discord.GatewayGuildMemberAddDispatchData): Promise<void> {
+        if (!hasUser(member))
+            return;
         await this.#cache.set(BigInt(member.guild_id), BigInt(member.user.id), toSlimDiscordMember(member));
     }
 
-    async #handleGuildMemberRemove(member: discordeno.DiscordGuildMemberRemove): Promise<void> {
+    async #handleGuildMemberRemove(member: Discord.GatewayGuildMemberRemoveDispatchData): Promise<void> {
         await this.#cache.delete(BigInt(member.guild_id), BigInt(member.user.id));
     }
 
-    async #handleGuildMemberUpdate(member: discordeno.DiscordGuildMemberUpdate): Promise<void> {
+    async #handleGuildMemberUpdate(member: Discord.GatewayGuildMemberUpdateDispatchData): Promise<void> {
+        if (!hasUser(member))
+            return;
         await this.#cache.set(BigInt(member.guild_id), BigInt(member.user.id), toSlimDiscordMember(member));
     }
 
-    async #handleGuildMembersChunk(chunk: discordeno.DiscordGuildMembersChunk): Promise<void> {
-        await this.#cache.setAll(BigInt(chunk.guild_id), chunk.members.map(m => [BigInt(m.user.id), toSlimDiscordMember(m)]));
+    async #handleGuildMembersChunk(chunk: Discord.GatewayGuildMembersChunkDispatchData): Promise<void> {
+        await this.#cache.setAll(BigInt(chunk.guild_id), chunk.members.filter(hasUser).map(m => [BigInt(m.user.id), toSlimDiscordMember(m)]));
     }
 }
 
-function hasUser<T extends discordeno.DiscordMember>(member: T): member is T & discordeno.DiscordMemberWithUser {
+function hasUser<T extends { user?: unknown; }>(member: T): member is T & { user: Exclude<T['user'], undefined>; } {
     return member.user !== undefined;
 }

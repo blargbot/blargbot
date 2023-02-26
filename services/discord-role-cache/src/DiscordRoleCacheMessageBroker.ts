@@ -7,7 +7,6 @@ export class DiscordRoleCacheMessageBroker extends discordMessageBrokerMixin({
     serviceName: 'discord-role-cache',
     events: [
         'GUILD_CREATE',
-        'GUILD_UPDATE',
         'GUILD_DELETE',
         'GUILD_ROLE_CREATE',
         'GUILD_ROLE_DELETE',

@@ -1,11 +1,11 @@
-import type * as discordeno from 'discordeno';
+import type Discord from '@blargbot/discord-types';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface SlimDiscordGuild extends SlimDiscordGuildHelper {
 
 }
 
-export function toSlimDiscordGuild(guild: discordeno.DiscordGuild): SlimDiscordGuild {
+export function toSlimDiscordGuild(guild: Discord.APIGuild): SlimDiscordGuild {
     return Object.fromEntries(
         Object.entries(guild)
             .filter(isWhitelistedProp)
@@ -15,13 +15,13 @@ export function toSlimDiscordGuild(guild: discordeno.DiscordGuild): SlimDiscordG
 type WhitelistedTypes = null | boolean | string | number | undefined;
 type WhitelistedProps = typeof whitelistedProps[number];
 
-type AllowedProps = keyof discordeno.DiscordGuild extends infer P ? P extends keyof discordeno.DiscordGuild ?
+type AllowedProps = keyof Discord.APIGuild extends infer P ? P extends keyof Discord.APIGuild ?
     | (P extends WhitelistedProps ? P : never)
-    | (discordeno.DiscordGuild[P] extends WhitelistedTypes ? P : never)
+    | (Discord.APIGuild[P] extends WhitelistedTypes ? P : never)
     : never : never
 
 type SlimDiscordGuildHelper = {
-    [P in AllowedProps]: discordeno.DiscordGuild[P]
+    [P in AllowedProps]: Discord.APIGuild[P]
 }
 
 type SlimDiscordGuildProp = { [P in keyof SlimDiscordGuild]: [P, SlimDiscordGuild[P]] }[keyof SlimDiscordGuild];

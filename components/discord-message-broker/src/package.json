@@ -6,8 +6,8 @@
         ".": "./index.js"
     },
     "dependencies": {
-        "@blargbot/message-broker": "workspace:^",
-        "discordeno": "^18.0.1"
+        "@blargbot/discord-types": "workspace:^",
+        "@blargbot/message-broker": "workspace:^"
     },
     "peerDependencies": {
         "amqplib": "^0.10.3"

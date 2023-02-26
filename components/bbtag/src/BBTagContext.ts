@@ -4,8 +4,8 @@ import { hasFlag } from '@blargbot/guards';
 import type { FlagDefinition, FlagResult } from '@blargbot/input';
 import { parseInput } from '@blargbot/input';
 import { Timer } from '@blargbot/timer';
-import * as Discord from 'discord-api-types/v10';
-import { AllowedMentionsTypes } from 'discord-api-types/v10';
+import Discord from '@blargbot/discord-types';
+import { AllowedMentionsTypes } from '@blargbot/discord-types';
 import type moment from 'moment-timezone';
 import ReadWriteLock from 'rwlock';
 

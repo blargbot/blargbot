@@ -1,7 +1,7 @@
 import { BBTagRuntimeError, RoleNotFoundError, Subtag, UserNotFoundError } from '@bbtag/blargbot';
 import { RoleRemoveSubtag } from '@bbtag/blargbot/subtags';
 import { argument } from '@blargbot/test-util/mock.js';
-import * as Discord from 'discord-api-types/v10';
+import Discord from '@blargbot/discord-types';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

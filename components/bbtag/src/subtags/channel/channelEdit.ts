@@ -1,7 +1,7 @@
 import { isThreadChannel } from '@blargbot/discord-util';
 import { hasFlag } from '@blargbot/guards';
 import { mapping } from '@blargbot/mapping';
-import * as Discord from 'discord-api-types/v10';
+import Discord from '@blargbot/discord-types';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';

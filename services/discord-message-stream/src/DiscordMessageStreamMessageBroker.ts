@@ -1,7 +1,7 @@
 import { discordMessageBrokerMixin } from '@blargbot/discord-message-broker';
 import MessageBroker from '@blargbot/message-broker';
 import type amqplib from 'amqplib';
-import type * as discordeno from 'discordeno';
+import type Discord from '@blargbot/discord-types';
 
 export class DiscordMessageStreamMessageBroker extends discordMessageBrokerMixin({
     type: MessageBroker,
@@ -19,7 +19,7 @@ export class DiscordMessageStreamMessageBroker extends discordMessageBrokerMixin
         ]);
     }
 
-    public async pushMessage(message: discordeno.DiscordMessage): Promise<void> {
+    public async pushMessage(message: Discord.APIMessage): Promise<void> {
         await this.sendMessage(DiscordMessageStreamMessageBroker.#messageStream, `${message.channel_id}.${message.author.id}`, this.jsonToBlob(message));
     }
 }

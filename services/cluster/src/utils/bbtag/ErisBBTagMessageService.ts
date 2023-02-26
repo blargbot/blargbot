@@ -1,7 +1,7 @@
 import type { AwaitReactionsResponse, BBTagContext, Entities, MessageService } from '@bbtag/blargbot';
 import { catchErrors } from '@blargbot/catch-decorators';
 import type { Emote } from '@blargbot/discord-emote';
-import { AllowedMentionsTypes } from 'discord-api-types/v10';
+import { AllowedMentionsTypes } from '@blargbot/discord-types';
 import * as Eris from 'eris';
 
 import type { Cluster } from '../../Cluster.js';

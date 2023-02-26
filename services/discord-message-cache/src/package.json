@@ -12,13 +12,13 @@
     "dependencies": {
         "@blargbot/application": "workspace:^",
         "@blargbot/discord-message-broker": "workspace:^",
+        "@blargbot/discord-types": "workspace:^",
         "@blargbot/env": "workspace:^",
         "@blargbot/express": "workspace:^",
         "@blargbot/message-broker": "workspace:^",
         "@blargbot/redis-cache": "workspace:^",
         "@blargbot/serialization": "workspace:^",
         "amqplib": "^0.10.3",
-        "discordeno": "^18.0.1",
-        "redis": "^4.6.4"
+        "redis": "^4.6.5"
     }
 }
