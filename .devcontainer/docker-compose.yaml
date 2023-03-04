@@ -277,6 +277,26 @@ services:
       postgres:
         condition: service_healthy
 
+  timeouts:
+    image: blargbot/timeouts
+    environment:
+      <<: *postgres-env
+      <<: *rabbit-env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+  timeout-clock:
+    image: blargbot/timeout-clock
+    environment:
+      <<: *rabbit-env
+      TIMEOUT_CRON: '*/10 * * * * *'
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
   user-warnings:
     image: blargbot/user-warnings
     environment:

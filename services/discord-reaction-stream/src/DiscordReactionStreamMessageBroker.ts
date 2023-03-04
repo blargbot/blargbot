@@ -22,6 +22,6 @@ export class DiscordReactionStreamMessageBroker extends discordMessageBrokerMixi
 
     public async pushReaction(message: Discord.GatewayMessageReactionAddDispatchData): Promise<void> {
         const emoteId = message.emoji.id ?? message.emoji.name ?? '';
-        await this.sendMessage(DiscordReactionStreamMessageBroker.#reactionStream, `${message.message_id}.${message.user_id}.${emoteId}`, this.jsonToBlob(message));
+        await this.publish(DiscordReactionStreamMessageBroker.#reactionStream, `${message.message_id}.${message.user_id}.${emoteId}`, this.jsonToBlob(message));
     }
 }

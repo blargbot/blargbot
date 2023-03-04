@@ -106,10 +106,16 @@ export default abstract class MessageBroker {
         await channel?.close();
     }
 
-    protected async sendMessage(exchange: string, filter: string, message: Blob, options?: amqplib.Options.Publish): Promise<void> {
+    protected async publish(exchange: string, filter: string, message: Blob, options?: amqplib.Options.Publish): Promise<void> {
         const channel = await this.getChannel();
         const buffer = Buffer.from(await message.arrayBuffer());
         channel.publish(exchange, filter, buffer, { ...options, contentType: message.type });
+    }
+
+    protected async send(queue: string, message: Blob, options?: amqplib.Options.Publish): Promise<void> {
+        const channel = await this.getChannel();
+        const buffer = Buffer.from(await message.arrayBuffer());
+        channel.sendToQueue(queue, buffer, { ...options, contentType: message.type });
     }
 
     protected async sendRequest(exchange: string, filter: string, message: Blob, options?: amqplib.Options.Publish): Promise<Blob> {
@@ -132,7 +138,7 @@ export default abstract class MessageBroker {
             const payload = new Blob([msg.content], { type: msg.properties.contentType as string });
             const result = await impl(payload, msg);
             if (result !== undefined && typeof msg.properties.replyTo === 'string') {
-                await this.sendMessage('', msg.properties.replyTo, result, {
+                await this.publish('', msg.properties.replyTo, result, {
                     headers: {
                         ['x-response-id']: msg.properties.headers['x-request-id'] as string | undefined
                     }

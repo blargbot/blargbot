@@ -13,7 +13,7 @@ export function createModLogRequestHandler(service: GuildEventLogService): expre
         }))
         .delete(asyncHandler(async (req, res) => {
             await service.clearEventLogChannels(BigInt(req.params.guildId));
-            res.status(201).end();
+            res.status(204).end();
         }));
 
     router.route('/:guildId(\\d+)/:event')
@@ -38,7 +38,7 @@ export function createModLogRequestHandler(service: GuildEventLogService): expre
         }))
         .delete(asyncHandler(async (req, res) => {
             await service.deleteEventLogChannel(BigInt(req.params.guildId), req.params.event);
-            res.status(201).end();
+            res.status(204).end();
         }));
 
     return router;

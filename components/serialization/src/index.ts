@@ -1,5 +1,6 @@
 import { bigintConverter } from './converters/bigintConverter.js';
 import { booleanConverter } from './converters/booleanConverter.js';
+import { bufferConverter } from './converters/bufferConverter.js';
 import { createJsonArrayConverter } from './converters/createJsonArrayConverter.js';
 import { createJsonObjectConverter } from './converters/createJsonObjectConverter.js';
 import { createJsonUnionConverter } from './converters/createJsonUnionConverter.js';
@@ -9,6 +10,7 @@ import { numberConverter } from './converters/numberConverter.js';
 import { regexConverter } from './converters/regexConverter.js';
 import { stringConverter } from './converters/stringConverter.js';
 import { undefinedConverter } from './converters/undefinedConverter.js';
+import { unknownConverter } from './converters/unknownConverter.js';
 
 export * from './IJsonConverter.js';
 export * from './IJsonConverterImpl.js';
@@ -29,5 +31,7 @@ export const json = {
     null: nullConverter,
     undefined: undefinedConverter,
     regex: regexConverter,
-    date: dateConverter
+    date: dateConverter,
+    buffer: bufferConverter,
+    unknown: unknownConverter
 } as const;

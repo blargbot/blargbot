@@ -20,7 +20,7 @@ export const DataTypes = {
     }
 };
 
-export function makeColumn<Name extends keyof M, M extends object>(name: Name, type: DataType, base: M, rest?: Partial<AttributeOptions<Model<M>>>): { [P in Name]: AttributeOptions<Model<M>> } {
+export function makeColumn<Name extends keyof M, M extends object>(name: Name, type: DataType, base: Partial<M>, rest?: Partial<AttributeOptions<Model<M>>>): { [P in Name]: AttributeOptions<Model<M>> } {
     return {
         [name]: {
             type,

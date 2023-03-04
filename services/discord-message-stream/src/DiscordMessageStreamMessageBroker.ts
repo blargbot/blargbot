@@ -20,6 +20,6 @@ export class DiscordMessageStreamMessageBroker extends discordMessageBrokerMixin
     }
 
     public async pushMessage(message: Discord.APIMessage): Promise<void> {
-        await this.sendMessage(DiscordMessageStreamMessageBroker.#messageStream, `${message.channel_id}.${message.author.id}`, this.jsonToBlob(message));
+        await this.publish(DiscordMessageStreamMessageBroker.#messageStream, `${message.channel_id}.${message.author.id}`, this.jsonToBlob(message));
     }
 }

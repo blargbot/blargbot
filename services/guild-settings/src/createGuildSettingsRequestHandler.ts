@@ -22,11 +22,11 @@ export function createGuildSettingsRequestHandler(service: GuildSettingsService)
             }
 
             await service.updateSettings(BigInt(req.params.guildId), mapped.value);
-            res.status(201).end();
+            res.status(204).end();
         }))
         .delete(asyncHandler(async (req, res) => {
             await service.clearSettings(BigInt(req.params.guildId));
-            res.status(201).end();
+            res.status(204).end();
         }));
 
     return router;

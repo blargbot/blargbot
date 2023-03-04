@@ -73,6 +73,14 @@ services:
     build: ../services/mod-log/src
     image: blargbot/mod-log
 
+  timeouts:
+    build: ../services/timeouts/src
+    image: blargbot/timeouts
+
+  timeout-clock:
+    build: ../services/timeout-clock/src
+    image: blargbot/timeout-clock
+
   user-warnings:
     build: ../services/user-warnings/src
     image: blargbot/user-warnings

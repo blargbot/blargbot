@@ -1,4 +1,4 @@
-import { randomUUID } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
 
 import type { ConnectionOptions, ConsumeMessage, MessageHandle } from '@blargbot/message-broker';
 import MessageBroker from '@blargbot/message-broker';
@@ -37,15 +37,19 @@ export class GatewayMessageBroker extends MessageBroker {
     }
 
     public async sendWorkerCommand<Type extends keyof WorkerMessageTypes>(type: Type, workerId: number, message: WorkerMessageTypes[Type]): Promise<void> {
-        await this.sendMessage(GatewayMessageBroker.#commandsName, `${this.managerId}.worker.${workerId}.${type}`, this.jsonToBlob(message));
+        await this.publish(GatewayMessageBroker.#commandsName, `${this.managerId}.worker.${workerId}.${type}`, this.jsonToBlob(message));
     }
 
     public async sendManagerCommand<Type extends keyof ManagerMessageTypes>(type: Type, message: ManagerMessageTypes[Type]): Promise<void> {
-        await this.sendMessage(GatewayMessageBroker.#commandsName, `${this.managerId}.manager.${type}`, this.jsonToBlob(message));
+        await this.publish(GatewayMessageBroker.#commandsName, `${this.managerId}.manager.${type}`, this.jsonToBlob(message));
     }
 
     public async sendGatewayEvent(shardId: number, lastShardId: number, event: discordeno.DiscordGatewayPayload): Promise<void> {
-        await this.sendMessage(GatewayMessageBroker.#eventsDedupeName, `${shardId}/${lastShardId}.${event.op}.${event.t ?? '-'}`, this.jsonToBlob({ shardId, lastShardId, event }));
+        await this.publish(GatewayMessageBroker.#eventsDedupeName, `${shardId}/${lastShardId}.${event.op}.${event.t ?? '-'}`, this.jsonToBlob({ shardId, lastShardId, event }), {
+            headers: {
+                'x-deduplication-header': createHash('md5').update(JSON.stringify(event.d)).digest('hex')
+            }
+        });
     }
 
     public async handleWorkerCommand<Type extends keyof WorkerMessageTypes>(type: Type, workerId: number | '*', handler: (message: WorkerMessageTypes[Type], msg: ConsumeMessage) => Awaitable<void>): Promise<MessageHandle> {

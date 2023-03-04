@@ -9,7 +9,7 @@ export function createModLogRequestHandler(service: UserWarningService): express
     router.route('/:guildId(\\d+)')
         .delete(asyncHandler(async (req, res) => {
             await service.clearWarnings(BigInt(req.params.guildId));
-            res.status(201).end();
+            res.status(204).end();
         }));
 
     router.route('/:guildId(\\d+)/:userId(\\d+)')
@@ -29,7 +29,7 @@ export function createModLogRequestHandler(service: UserWarningService): express
         }))
         .delete(asyncHandler(async (req, res) => {
             await service.clearWarnings(BigInt(req.params.guildId), BigInt(req.params.userId));
-            res.status(201).end();
+            res.status(204).end();
         }));
 
     return router;

@@ -21,7 +21,7 @@ export class DiscordInteractionStreamMessageBroker extends discordMessageBrokerM
 
     public async pushInteraction(interaction: Discord.GatewayInteractionCreateDispatchData): Promise<void> {
         const route = `${interaction.type}.${this.#getInteractionId(interaction) ?? '-'}.${interaction.channel_id ?? '-'}.${interaction.user?.id ?? '-'}`;
-        await this.sendMessage(DiscordInteractionStreamMessageBroker.#interactionStream, route, this.jsonToBlob(interaction));
+        await this.publish(DiscordInteractionStreamMessageBroker.#interactionStream, route, this.jsonToBlob(interaction));
     }
 
     #getInteractionId(interaction: Discord.GatewayInteractionCreateDispatchData): string | undefined {

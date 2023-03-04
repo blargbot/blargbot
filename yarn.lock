@@ -856,6 +856,35 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@blargbot/timeout-clock@workspace:services/timeout-clock/src":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/timeout-clock@workspace:services/timeout-clock/src"
+  dependencies:
+    "@blargbot/application": "workspace:^"
+    "@blargbot/env": "workspace:^"
+    "@blargbot/message-broker": "workspace:^"
+    "@types/amqplib": ^0.10.1
+    "@types/cron": ^2.0.0
+    amqplib: ^0.10.3
+    cron: ^2.2.0
+  languageName: unknown
+  linkType: soft
+
+"@blargbot/timeouts@workspace:services/timeouts/src":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/timeouts@workspace:services/timeouts/src"
+  dependencies:
+    "@blargbot/application": "workspace:^"
+    "@blargbot/env": "workspace:^"
+    "@blargbot/express": "workspace:^"
+    "@blargbot/message-broker": "workspace:^"
+    "@blargbot/sequelize": "workspace:^"
+    "@blargbot/serialization": "workspace:^"
+    "@types/amqplib": ^0.10.1
+    amqplib: ^0.10.3
+  languageName: unknown
+  linkType: soft
+
 "@blargbot/timer@workspace:^, @blargbot/timer@workspace:components/timer/src":
   version: 0.0.0-use.local
   resolution: "@blargbot/timer@workspace:components/timer/src"

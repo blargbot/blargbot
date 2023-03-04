@@ -268,6 +268,14 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:services/mod-log/src"\
       },\
       {\
+        "name": "@blargbot/timeout-clock",\
+        "reference": "workspace:services/timeout-clock/src"\
+      },\
+      {\
+        "name": "@blargbot/timeouts",\
+        "reference": "workspace:services/timeouts/src"\
+      },\
+      {\
         "name": "@blargbot/user-settings",\
         "reference": "workspace:services/user-settings/src"\
       },\
@@ -336,6 +344,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@blargbot/sequelize", ["workspace:components/sequelize/src"]],\
       ["@blargbot/serialization", ["workspace:components/serialization/src"]],\
       ["@blargbot/test-util", ["workspace:components/test-util/src"]],\
+      ["@blargbot/timeout-clock", ["workspace:services/timeout-clock/src"]],\
+      ["@blargbot/timeouts", ["workspace:services/timeouts/src"]],\
       ["@blargbot/timer", ["workspace:components/timer/src"]],\
       ["@blargbot/user-settings", ["workspace:services/user-settings/src"]],\
       ["@blargbot/user-warnings", ["workspace:services/user-warnings/src"]],\
@@ -1385,6 +1395,39 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["chai", "npm:4.3.7"],\
             ["mocha", "npm:10.2.0"],\
             ["ts-mockito", "npm:2.6.1"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
+      ["@blargbot/timeout-clock", [\
+        ["workspace:services/timeout-clock/src", {\
+          "packageLocation": "./services/timeout-clock/src/",\
+          "packageDependencies": [\
+            ["@blargbot/timeout-clock", "workspace:services/timeout-clock/src"],\
+            ["@blargbot/application", "workspace:components/application/src"],\
+            ["@blargbot/env", "workspace:components/env/src"],\
+            ["@blargbot/message-broker", "virtual:253c4dda1733e7dbc61aae51f57d452b0623faab352da869fcaa5f1f988885d07900027b9b09dd7bd8cbe80fe188464fb36902fcdebe51088ed2a712e8210eff#workspace:components/message-broker/src"],\
+            ["@types/amqplib", "npm:0.10.1"],\
+            ["@types/cron", "npm:2.0.0"],\
+            ["amqplib", "npm:0.10.3"],\
+            ["cron", "npm:2.2.0"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
+      ["@blargbot/timeouts", [\
+        ["workspace:services/timeouts/src", {\
+          "packageLocation": "./services/timeouts/src/",\
+          "packageDependencies": [\
+            ["@blargbot/timeouts", "workspace:services/timeouts/src"],\
+            ["@blargbot/application", "workspace:components/application/src"],\
+            ["@blargbot/env", "workspace:components/env/src"],\
+            ["@blargbot/express", "workspace:components/express/src"],\
+            ["@blargbot/message-broker", "virtual:253c4dda1733e7dbc61aae51f57d452b0623faab352da869fcaa5f1f988885d07900027b9b09dd7bd8cbe80fe188464fb36902fcdebe51088ed2a712e8210eff#workspace:components/message-broker/src"],\
+            ["@blargbot/sequelize", "workspace:components/sequelize/src"],\
+            ["@blargbot/serialization", "workspace:components/serialization/src"],\
+            ["@types/amqplib", "npm:0.10.1"],\
+            ["amqplib", "npm:0.10.3"]\
           ],\
           "linkType": "SOFT"\
         }]\

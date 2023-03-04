@@ -1,0 +1,24 @@
+{
+    "name": "@blargbot/timeouts",
+    "version": "1.0.0",
+    "private": true,
+    "type": "module",
+    "exports": {
+        ".": "./index.js"
+    },
+    "scripts": {
+        "start": "node ./index.js"
+    },
+    "dependencies": {
+        "@blargbot/application": "workspace:^",
+        "@blargbot/env": "workspace:^",
+        "@blargbot/express": "workspace:^",
+        "@blargbot/message-broker": "workspace:^",
+        "@blargbot/sequelize": "workspace:^",
+        "@blargbot/serialization": "workspace:^",
+        "amqplib": "^0.10.3"
+    },
+    "devDependencies": {
+        "@types/amqplib": "^0.10.1"
+    }
+}

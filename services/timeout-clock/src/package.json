@@ -1,0 +1,23 @@
+{
+    "name": "@blargbot/timeout-clock",
+    "version": "1.0.0",
+    "private": true,
+    "type": "module",
+    "exports": {
+        ".": "./index.js"
+    },
+    "scripts": {
+        "start": "node ./index.js"
+    },
+    "dependencies": {
+        "@blargbot/application": "workspace:^",
+        "@blargbot/env": "workspace:^",
+        "@blargbot/message-broker": "workspace:^",
+        "amqplib": "^0.10.3",
+        "cron": "^2.2.0"
+    },
+    "devDependencies": {
+        "@types/amqplib": "^0.10.1",
+        "@types/cron": "^2.0.0"
+    }
+}

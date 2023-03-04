@@ -51,7 +51,7 @@ export function createModLogRequestHandler(service: ModLogService): express.Requ
         }))
         .delete(asyncHandler(async (req, res) => {
             await service.deleteModLog(BigInt(req.params.guildId), Number(req.params.caseId));
-            res.status(201).end();
+            res.status(204).end();
         }));
 
     return router;
