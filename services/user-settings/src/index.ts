@@ -5,17 +5,14 @@ import env from '@blargbot/env';
 import express from '@blargbot/express';
 import { RedisKVCache } from '@blargbot/redis-cache';
 import { Sequelize } from '@blargbot/sequelize';
+import type { UserSettings } from '@blargbot/user-settings-contract';
+import userSettings from '@blargbot/user-settings-contract';
 import type { RedisClientType } from 'redis';
 import { createClient as createRedisClient } from 'redis';
 
 import { createUserSettingsRequestHandler } from './createUserSettingsRequestHandler.js';
-import type { UserSettings } from './UserSettings.js';
-import { userSerializer } from './UserSettings.js';
 import UserSettingsSequelizeDatabase from './UserSettingsSequelizeDatabase.js';
 import { UserSettingsService } from './UserSettingsService.js';
-
-export type { UserSettings };
-export { userSerializer };
 
 @Application.hostIfEntrypoint(() => [{
     port: env.appPort,
@@ -66,7 +63,7 @@ export class UserSettingsApplication extends Application {
         this.#cache = new RedisKVCache<bigint, UserSettings>(this.#redis, {
             ttlS: options.redis.ttl,
             keyspace: 'user_settings',
-            serializer: userSerializer
+            serializer: userSettings
         });
         this.#database = new UserSettingsSequelizeDatabase(this.#postgres);
         this.#service = new UserSettingsService(this.#database, this.#cache);

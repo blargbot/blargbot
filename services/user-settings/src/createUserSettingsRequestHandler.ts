@@ -1,8 +1,8 @@
 import express, { asyncHandler } from '@blargbot/express';
 import { mapping } from '@blargbot/mapping';
+import type { UserSettings } from '@blargbot/user-settings-contract';
+import userSettings from '@blargbot/user-settings-contract';
 
-import type { UserSettings } from './UserSettings.js';
-import { userSerializer } from './UserSettings.js';
 import type { UserSettingsService } from './UserSettingsService.js';
 
 export function createUserSettingsRequestHandler(service: UserSettingsService): express.RequestHandler {
@@ -11,7 +11,7 @@ export function createUserSettingsRequestHandler(service: UserSettingsService): 
         .get(asyncHandler(async (req, res) => {
             res.status(200)
                 .contentType('application/json')
-                .end(userSerializer.write(await service.getSettings(BigInt(req.params.userId))));
+                .end(userSettings.write(await service.getSettings(BigInt(req.params.userId))));
         }))
         .patch(asyncHandler(async (req, res) => {
             const mapped = mapUpdate(req.body);

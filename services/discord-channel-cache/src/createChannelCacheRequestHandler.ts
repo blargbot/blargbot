@@ -13,6 +13,14 @@ export function createMemberCacheRequestHandler(service: DiscordChannelCacheServ
             else
                 res.status(200).send(result);
         }));
+    router.route('/:channelId(\\d+)/guild-id')
+        .get(asyncHandler(async (req, res) => {
+            const result = await service.getChannelGuild(BigInt(req.params.channelId));
+            if (result === undefined)
+                res.status(404).end();
+            else
+                res.status(200).send({ guildId: result.toString() });
+        }));
 
     router.route('/guilds/:guildId(\\d+)')
         .get(asyncHandler(async (req, res) => {

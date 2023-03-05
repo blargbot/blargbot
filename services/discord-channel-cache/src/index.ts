@@ -55,7 +55,12 @@ export class DiscordChannelCacheApplication extends Application {
             }),
             new RedisKSCache<bigint, bigint>(this.#redis, {
                 ttlS: null,
-                keyspace: 'discord_channels:guilds',
+                keyspace: 'discord_channels:guild_to_channels',
+                serializer: json.bigint
+            }),
+            new RedisKVCache<bigint, bigint>(this.#redis, {
+                ttlS: null,
+                keyspace: 'discord_channels:channel_to_guild',
                 serializer: json.bigint
             })
         );

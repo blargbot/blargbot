@@ -3,19 +3,16 @@ import { Server } from 'node:http';
 import Application from '@blargbot/application';
 import env from '@blargbot/env';
 import express from '@blargbot/express';
+import type { GuildSettings } from '@blargbot/guild-settings-contract';
+import guildSettings from '@blargbot/guild-settings-contract';
 import { RedisKVCache } from '@blargbot/redis-cache';
 import { Sequelize } from '@blargbot/sequelize';
 import type { RedisClientType } from 'redis';
 import { createClient as createRedisClient } from 'redis';
 
 import { createGuildSettingsRequestHandler } from './createGuildSettingsRequestHandler.js';
-import type { GuildSettings } from './GuildSettings.js';
-import { guildSerializer } from './GuildSettings.js';
 import GuildSettingsSequelizeDatabase from './GuildSettingsSequelizeDatabase.js';
 import { GuildSettingsService } from './GuildSettingsService.js';
-
-export type { GuildSettings };
-export { guildSerializer };
 
 @Application.hostIfEntrypoint(() => [{
     port: env.appPort,
@@ -66,7 +63,7 @@ export class GuildSettingsApplication extends Application {
         this.#cache = new RedisKVCache<bigint, GuildSettings>(this.#redis, {
             ttlS: options.redis.ttl,
             keyspace: 'guild_settings',
-            serializer: guildSerializer
+            serializer: guildSettings
         });
         this.#database = new GuildSettingsSequelizeDatabase(this.#postgres);
         this.#service = new GuildSettingsService(this.#database, this.#cache);

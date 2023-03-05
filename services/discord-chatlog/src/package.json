@@ -15,7 +15,7 @@
         "@blargbot/discord-message-broker": "workspace:^",
         "@blargbot/discord-types": "workspace:^",
         "@blargbot/env": "workspace:^",
-        "@blargbot/guild-settings": "workspace:^",
+        "@blargbot/guild-settings-contract": "workspace:^",
         "@blargbot/mapping": "workspace:^",
         "@blargbot/message-broker": "workspace:^",
         "amqplib": "^0.10.3",

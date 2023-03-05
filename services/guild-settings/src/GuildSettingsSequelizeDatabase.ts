@@ -1,8 +1,8 @@
+import type { GuildSettings } from '@blargbot/guild-settings-contract';
 import type { Model, ModelStatic, Sequelize } from '@blargbot/sequelize';
 import { DataTypes, makeColumn } from '@blargbot/sequelize';
 
 import { defaultSettings } from './defaultSettings.js';
-import type { GuildSettings } from './GuildSettings.js';
 import type { IGuildSettingsDatabase } from './IGuildSettingsDatabase.js';
 
 interface GuildSettingsTable extends GuildSettings {

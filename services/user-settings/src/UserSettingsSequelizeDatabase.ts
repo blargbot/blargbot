@@ -1,9 +1,9 @@
 import type { Model, ModelStatic, Sequelize } from '@blargbot/sequelize';
 import { DataTypes, makeColumn } from '@blargbot/sequelize';
+import type { UserSettings } from '@blargbot/user-settings-contract';
 
 import { defaultSettings } from './defaultSettings.js';
 import type { IUserSettingsDatabase } from './IUserSettingsDatabase.js';
-import type { UserSettings } from './UserSettings.js';
 
 interface UserSettingsTable extends UserSettings {
     readonly userId: bigint;

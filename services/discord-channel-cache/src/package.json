@@ -13,6 +13,7 @@
         "@blargbot/application": "workspace:^",
         "@blargbot/discord-message-broker": "workspace:^",
         "@blargbot/discord-types": "workspace:^",
+        "@blargbot/discord-util": "workspace:^",
         "@blargbot/env": "workspace:^",
         "@blargbot/express": "workspace:^",
         "@blargbot/guards": "workspace:^",

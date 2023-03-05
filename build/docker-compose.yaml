@@ -81,6 +81,10 @@ services:
     build: ../services/timeout-clock/src
     image: blargbot/timeout-clock
 
+  command-message-parser:
+    build: ../services/command-message-parser/src
+    image: blargbot/command-message-parser
+
   user-warnings:
     build: ../services/user-warnings/src
     image: blargbot/user-warnings

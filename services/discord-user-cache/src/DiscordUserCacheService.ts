@@ -7,11 +7,17 @@ import type { DiscordUserCacheMessageBroker } from './DiscordUserCacheMessageBro
 export class DiscordUserCacheService {
     readonly #messages: DiscordUserCacheMessageBroker;
     readonly #handles: Set<MessageHandle>;
-    readonly #cache: IKVCache<bigint, Discord.APIUser>;
+    readonly #userCache: IKVCache<bigint, Discord.APIUser>;
+    readonly #selfCache: IKVCache<'@self', bigint>;
 
-    public constructor(messages: DiscordUserCacheMessageBroker, cache: IKVCache<bigint, Discord.APIUser>) {
+    public constructor(
+        messages: DiscordUserCacheMessageBroker,
+        userCache: IKVCache<bigint, Discord.APIUser>,
+        selfCache: IKVCache<'@self', bigint>
+    ) {
         this.#messages = messages;
-        this.#cache = cache;
+        this.#userCache = userCache;
+        this.#selfCache = selfCache;
         this.#handles = new Set();
     }
 
@@ -34,21 +40,28 @@ export class DiscordUserCacheService {
     }
 
     public async getUser(userId: bigint): Promise<Discord.APIUser | undefined> {
-        return await this.#cache.get(userId);
+        return await this.#userCache.get(userId);
+    }
+
+    public async getSelf(): Promise<Discord.APIUser | undefined> {
+        const selfId = await this.#selfCache.get('@self');
+        if (selfId === undefined)
+            return undefined;
+        return await this.#userCache.get(selfId);
     }
 
     public async clear(): Promise<void> {
-        await this.#cache.clear();
+        await this.#userCache.clear();
     }
 
     public async getUserCount(): Promise<number> {
-        return await this.#cache.size();
+        return await this.#userCache.size();
     }
 
     async #upsertGuild(guild: Discord.GatewayGuildCreateDispatchData): Promise<void> {
         await Promise.all(guild.members
             .filter(hasUser)
-            .map(u => this.#cache.set(BigInt(u.user.id), u.user))
+            .map(u => this.#userCache.set(BigInt(u.user.id), u.user))
         );
     }
 
@@ -59,37 +72,40 @@ export class DiscordUserCacheService {
     async #handleGuildMemberAdd(member: Discord.GatewayGuildMemberAddDispatchData): Promise<void> {
         if (!hasUser(member))
             return;
-        await this.#cache.set(BigInt(member.user.id), member.user);
+        await this.#userCache.set(BigInt(member.user.id), member.user);
     }
 
     async #handleGuildMembersChunk(chunk: Discord.GatewayGuildMembersChunkDispatchData): Promise<void> {
         await Promise.all(chunk.members
             .filter(hasUser)
-            .map(u => this.#cache.set(BigInt(u.user.id), u.user))
+            .map(u => this.#userCache.set(BigInt(u.user.id), u.user))
         );
     }
 
     async #handleUserUpdate(message: Discord.GatewayUserUpdateDispatchData): Promise<void> {
-        await this.#cache.set(BigInt(message.id), message);
+        await this.#userCache.set(BigInt(message.id), message);
     }
 
     async #handleReady(message: Discord.GatewayReadyDispatchData): Promise<void> {
-        await this.#cache.set(BigInt(message.user.id), message.user);
+        await Promise.all([
+            this.#userCache.set(BigInt(message.user.id), message.user),
+            this.#selfCache.set('@self', BigInt(message.user.id))
+        ]);
     }
 
     async #handleGuildBanAdd(message: Discord.GatewayGuildBanAddDispatchData): Promise<void> {
-        await this.#cache.set(BigInt(message.user.id), message.user);
+        await this.#userCache.set(BigInt(message.user.id), message.user);
     }
 
     async #handleGuildBanRemove(message: Discord.GatewayGuildBanRemoveDispatchData): Promise<void> {
-        await this.#cache.set(BigInt(message.user.id), message.user);
+        await this.#userCache.set(BigInt(message.user.id), message.user);
     }
 
     async #handleInteractionCreate(message: Discord.GatewayInteractionCreateDispatchData): Promise<void> {
         if (message.user === undefined)
             return;
 
-        await this.#cache.set(BigInt(message.user.id), message.user);
+        await this.#userCache.set(BigInt(message.user.id), message.user);
     }
 }
 

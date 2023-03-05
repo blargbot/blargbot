@@ -1,4 +1,4 @@
-import type { UserSettings } from './UserSettings.js';
+import type { UserSettings } from '@blargbot/user-settings-contract';
 
 export const defaultSettings = (): UserSettings => ({
     dontDmErrors: false,

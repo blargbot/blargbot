@@ -1,6 +1,6 @@
 import { ChatLogType } from '@blargbot/chatlog-types';
 import type Discord from '@blargbot/discord-types';
-import { guildSerializer } from '@blargbot/guild-settings';
+import guildSettings from '@blargbot/guild-settings-contract';
 import type { MessageHandle } from '@blargbot/message-broker';
 import fetch from 'node-fetch';
 
@@ -40,7 +40,7 @@ export class DiscordChatlogService {
 
         const settingsResponse = await fetch(new URL(message.guild_id, this.#guildSettings).toString());
         const body = await settingsResponse.json();
-        const settings = guildSerializer.read(JSON.stringify(body));
+        const settings = guildSettings.read(JSON.stringify(body));
         return settings.enableChatlogging;
     }
 

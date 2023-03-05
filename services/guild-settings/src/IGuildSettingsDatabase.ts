@@ -1,4 +1,4 @@
-import type { GuildSettings } from './GuildSettings.js';
+import type { GuildSettings } from '@blargbot/guild-settings-contract';
 
 export interface IGuildSettingsDatabase {
     get(guildId: bigint): Awaitable<GuildSettings | undefined>;

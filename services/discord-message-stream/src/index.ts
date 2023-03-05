@@ -11,6 +11,12 @@ import { DiscordMessageStreamService } from './DiscordMessageStreamService.js';
         hostname: env.rabbitHost,
         username: env.rabbitUsername,
         password: env.rabbitPassword
+    },
+    discordChannelCache: {
+        url: env.discordChannelCacheUrl
+    },
+    discordGuildCache: {
+        url: env.discordGuildCacheUrl
     }
 }])
 export class DiscordMessageStreamApplication extends Application {
@@ -21,7 +27,10 @@ export class DiscordMessageStreamApplication extends Application {
         super();
 
         this.#messages = new DiscordMessageStreamMessageBroker(options.messages);
-        this.#service = new DiscordMessageStreamService(this.#messages);
+        this.#service = new DiscordMessageStreamService(this.#messages, {
+            discordChannelCacheUrl: options.discordChannelCache.url,
+            discordGuildCacheUrl: options.discordGuildCache.url
+        });
     }
 
     protected override async start(): Promise<void> {
@@ -37,4 +46,10 @@ export class DiscordMessageStreamApplication extends Application {
 
 export interface DiscordMessageStreamApplicationOptions {
     readonly messages: ConnectionOptions;
+    readonly discordChannelCache: {
+        readonly url: string;
+    };
+    readonly discordGuildCache: {
+        readonly url: string;
+    };
 }

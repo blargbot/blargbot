@@ -19,9 +19,21 @@ x-guild-settings-env:
   &guild-settings-env
   GUILD_SETTINGS_URL: http://guild-settings
 
+x-discord-guild-cache-env:
+  &discord-guild-cache-env
+  DISCORD_GUILD_CACHE_URL: http://discord-guild-cache
+
 x-user-settings-env:
   &user-settings-env
   USER_SETTINGS_URL: http://user-settings
+
+x-discord-user-cache-env:
+  &discord-user-cache-env
+  DISCORD_USER_CACHE_URL: http://discord-user-cache
+
+x-discord-channel-cache-env:
+  &discord-channel-cache-env
+  DISCORD_CHANNEL_CACHE_URL: http://discord-channel-cache
 
 x-event-log-settings-env:
   &event-log-settings-env
@@ -79,16 +91,19 @@ services:
     environment:
       <<: *discord-proxy-env
       <<: *guild-settings-env
+      <<: *discord-guild-cache-env
       <<: *event-log-settings-env
       <<: *user-settings-env
+      <<: *discord-user-cache-env
+      <<: *discord-channel-cache-env
       <<: *mod-log-env
       <<: *user-warnings-env
       <<: *rabbit-env
       <<: *cassandra-env
       <<: *postgres-env
-      <<: *cassandra-env
       <<: *rethinkdb-env
       <<: *redis-env
+      COMMAND_PREFIX: d!
 
   discord-proxy:
     image: blargbot/discord-proxy
@@ -108,13 +123,13 @@ services:
         condition: service_started
       rabbitmq:
         condition: service_healthy
-    profiles:
-      - donotstart
 
   discord-message-stream:
     image: blargbot/discord-message-stream
     environment:
       <<: *rabbit-env
+      <<: *discord-guild-cache-env
+      <<: *discord-channel-cache-env
     depends_on:
       rabbitmq:
         condition: service_healthy
@@ -293,6 +308,18 @@ services:
     environment:
       <<: *rabbit-env
       TIMEOUT_CRON: '*/10 * * * * *'
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
+  command-message-parser:
+    image: blargbot/command-message-parser
+    environment:
+      <<: *rabbit-env
+      <<: *guild-settings-env
+      <<: *user-settings-env
+      <<: *discord-user-cache-env
+      COMMAND_PREFIX: d!
     depends_on:
       rabbitmq:
         condition: service_healthy

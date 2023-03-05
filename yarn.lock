@@ -260,6 +260,29 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@blargbot/command-message-parser@workspace:services/command-message-parser/src":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/command-message-parser@workspace:services/command-message-parser/src"
+  dependencies:
+    "@blargbot/application": "workspace:^"
+    "@blargbot/current-user-accessor": "workspace:^"
+    "@blargbot/discord-message-stream-contract": "workspace:^"
+    "@blargbot/discord-util": "workspace:^"
+    "@blargbot/env": "workspace:^"
+    "@blargbot/guards": "workspace:^"
+    "@blargbot/guild-settings-contract": "workspace:^"
+    "@blargbot/input": "workspace:^"
+    "@blargbot/mapping": "workspace:^"
+    "@blargbot/message-broker": "workspace:^"
+    "@blargbot/message-command-contract": "workspace:^"
+    "@blargbot/user-settings-contract": "workspace:^"
+    "@types/amqplib": ^0.10.1
+    "@types/node-fetch": ^2.6.2
+    amqplib: ^0.10.3
+    node-fetch: ^3.3.0
+  languageName: unknown
+  linkType: soft
+
 "@blargbot/config@workspace:^, @blargbot/config@workspace:components/config/src":
   version: 0.0.0-use.local
   resolution: "@blargbot/config@workspace:components/config/src"
@@ -336,6 +359,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@blargbot/current-user-accessor@workspace:^, @blargbot/current-user-accessor@workspace:components/current-user-accessor/src":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/current-user-accessor@workspace:components/current-user-accessor/src"
+  dependencies:
+    "@blargbot/discord-types": "workspace:^"
+  languageName: unknown
+  linkType: soft
+
 "@blargbot/database@workspace:^, @blargbot/database@workspace:components/database/src":
   version: 0.0.0-use.local
   resolution: "@blargbot/database@workspace:components/database/src"
@@ -378,6 +409,7 @@ __metadata:
     "@blargbot/application": "workspace:^"
     "@blargbot/discord-message-broker": "workspace:^"
     "@blargbot/discord-types": "workspace:^"
+    "@blargbot/discord-util": "workspace:^"
     "@blargbot/env": "workspace:^"
     "@blargbot/express": "workspace:^"
     "@blargbot/guards": "workspace:^"
@@ -398,7 +430,7 @@ __metadata:
     "@blargbot/discord-message-broker": "workspace:^"
     "@blargbot/discord-types": "workspace:^"
     "@blargbot/env": "workspace:^"
-    "@blargbot/guild-settings": "workspace:^"
+    "@blargbot/guild-settings-contract": "workspace:^"
     "@blargbot/mapping": "workspace:^"
     "@blargbot/message-broker": "workspace:^"
     "@types/node-fetch": ^2.6.2
@@ -506,18 +538,29 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@blargbot/discord-message-stream-contract@workspace:^, @blargbot/discord-message-stream-contract@workspace:contracts/discord-message-stream/src":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/discord-message-stream-contract@workspace:contracts/discord-message-stream/src"
+  dependencies:
+    "@blargbot/discord-types": "workspace:^"
+  languageName: unknown
+  linkType: soft
+
 "@blargbot/discord-message-stream@workspace:services/discord-message-stream/src":
   version: 0.0.0-use.local
   resolution: "@blargbot/discord-message-stream@workspace:services/discord-message-stream/src"
   dependencies:
     "@blargbot/application": "workspace:^"
     "@blargbot/discord-message-broker": "workspace:^"
+    "@blargbot/discord-message-stream-contract": "workspace:^"
     "@blargbot/discord-types": "workspace:^"
     "@blargbot/env": "workspace:^"
     "@blargbot/express": "workspace:^"
     "@blargbot/message-broker": "workspace:^"
     "@types/amqplib": ^0.10.1
+    "@types/node-fetch": ^2.6.2
     amqplib: ^0.10.3
+    node-fetch: ^3.3.0
   languageName: unknown
   linkType: soft
 
@@ -600,6 +643,7 @@ __metadata:
     "@blargbot/express": "workspace:^"
     "@blargbot/message-broker": "workspace:^"
     "@blargbot/redis-cache": "workspace:^"
+    "@blargbot/serialization": "workspace:^"
     amqplib: ^0.10.3
     redis: ^4.6.5
   languageName: unknown
@@ -680,13 +724,22 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@blargbot/guild-settings@workspace:^, @blargbot/guild-settings@workspace:services/guild-settings/src":
+"@blargbot/guild-settings-contract@workspace:^, @blargbot/guild-settings-contract@workspace:contracts/guild-settings/src":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/guild-settings-contract@workspace:contracts/guild-settings/src"
+  dependencies:
+    "@blargbot/serialization": "workspace:^"
+  languageName: unknown
+  linkType: soft
+
+"@blargbot/guild-settings@workspace:services/guild-settings/src":
   version: 0.0.0-use.local
   resolution: "@blargbot/guild-settings@workspace:services/guild-settings/src"
   dependencies:
     "@blargbot/application": "workspace:^"
     "@blargbot/env": "workspace:^"
     "@blargbot/express": "workspace:^"
+    "@blargbot/guild-settings-contract": "workspace:^"
     "@blargbot/mapping": "workspace:^"
     "@blargbot/redis-cache": "workspace:^"
     "@blargbot/sequelize": "workspace:^"
@@ -784,6 +837,15 @@ __metadata:
     "@types/amqplib": ^0.10.1
   peerDependencies:
     amqplib: ^0.10.3
+  languageName: unknown
+  linkType: soft
+
+"@blargbot/message-command-contract@workspace:^, @blargbot/message-command-contract@workspace:contracts/message-command/src":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/message-command-contract@workspace:contracts/message-command/src"
+  dependencies:
+    "@blargbot/discord-message-stream-contract": "workspace:^"
+    "@blargbot/input": "workspace:^"
   languageName: unknown
   linkType: soft
 
@@ -891,6 +953,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@blargbot/user-settings-contract@workspace:^, @blargbot/user-settings-contract@workspace:contracts/user-settings/src":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/user-settings-contract@workspace:contracts/user-settings/src"
+  dependencies:
+    "@blargbot/serialization": "workspace:^"
+  languageName: unknown
+  linkType: soft
+
 "@blargbot/user-settings@workspace:services/user-settings/src":
   version: 0.0.0-use.local
   resolution: "@blargbot/user-settings@workspace:services/user-settings/src"
@@ -902,6 +972,7 @@ __metadata:
     "@blargbot/redis-cache": "workspace:^"
     "@blargbot/sequelize": "workspace:^"
     "@blargbot/serialization": "workspace:^"
+    "@blargbot/user-settings-contract": "workspace:^"
     redis: ^4.6.5
   languageName: unknown
   linkType: soft
@@ -2496,6 +2567,7 @@ __metadata:
     eslint: ^8.35.0
     eslint-plugin-import: ^2.27.5
     eslint-plugin-simple-import-sort: ^10.0.0
+    node-fetch: ^3.3.0
     typescript: ^4.9.5
   languageName: unknown
   linkType: soft

@@ -5,7 +5,10 @@ const envVarDeclaration = {
     discordProxyUrl: [String, 'DISCORD_PROXY_URL'],
     discordProxySecret: [String, 'DISCORD_PROXY_SECRET'],
     guildSettingsUrl: [String, 'GUILD_SETTINGS_URL'],
+    discordGuildCacheUrl: [String, 'DISCORD_GUILD_CACHE_URL'],
     userSettingsUrl: [String, 'USER_SETTINGS_URL'],
+    discordUserCacheUrl: [String, 'DISCORD_USER_CACHE_URL'],
+    discordChannelCacheUrl: [String, 'DISCORD_CHANNEL_CACHE_URL'],
 
     appPort: [Number, 'APP_PORT', '80'],
     discordToken: [String, 'DISCORD_TOKEN'],

@@ -1,5 +1,5 @@
 {
-    "name": "@blargbot/discord-message-stream",
+    "name": "@blargbot/command-message-parser",
     "version": "1.0.0",
     "private": true,
     "type": "module",
@@ -11,12 +11,17 @@
     },
     "dependencies": {
         "@blargbot/application": "workspace:^",
-        "@blargbot/discord-message-broker": "workspace:^",
+        "@blargbot/current-user-accessor": "workspace:^",
         "@blargbot/discord-message-stream-contract": "workspace:^",
-        "@blargbot/discord-types": "workspace:^",
+        "@blargbot/discord-util": "workspace:^",
         "@blargbot/env": "workspace:^",
-        "@blargbot/express": "workspace:^",
+        "@blargbot/guards": "workspace:^",
+        "@blargbot/guild-settings-contract": "workspace:^",
+        "@blargbot/input": "workspace:^",
+        "@blargbot/mapping": "workspace:^",
         "@blargbot/message-broker": "workspace:^",
+        "@blargbot/message-command-contract": "workspace:^",
+        "@blargbot/user-settings-contract": "workspace:^",
         "amqplib": "^0.10.3",
         "node-fetch": "^3.3.0"
     },

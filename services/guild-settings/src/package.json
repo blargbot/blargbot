@@ -13,6 +13,7 @@
         "@blargbot/application": "workspace:^",
         "@blargbot/env": "workspace:^",
         "@blargbot/express": "workspace:^",
+        "@blargbot/guild-settings-contract": "workspace:^",
         "@blargbot/mapping": "workspace:^",
         "@blargbot/redis-cache": "workspace:^",
         "@blargbot/sequelize": "workspace:^",

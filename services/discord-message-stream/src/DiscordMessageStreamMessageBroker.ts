@@ -1,5 +1,5 @@
 import { discordMessageBrokerMixin } from '@blargbot/discord-message-broker';
-import type Discord from '@blargbot/discord-types';
+import type { ExtendedMessage } from '@blargbot/discord-message-stream-contract';
 import MessageBroker from '@blargbot/message-broker';
 import type amqplib from 'amqplib';
 
@@ -12,6 +12,7 @@ export class DiscordMessageStreamMessageBroker extends discordMessageBrokerMixin
     ]
 }) {
     static readonly #messageStream = 'discord-message-stream' as const;
+
     public override async onceConnected(channel: amqplib.Channel): Promise<void> {
         await Promise.all([
             super.onceConnected(channel),
@@ -19,7 +20,7 @@ export class DiscordMessageStreamMessageBroker extends discordMessageBrokerMixin
         ]);
     }
 
-    public async pushMessage(message: Discord.APIMessage): Promise<void> {
-        await this.publish(DiscordMessageStreamMessageBroker.#messageStream, `${message.channel_id}.${message.author.id}`, this.jsonToBlob(message));
+    public async pushMessage(message: ExtendedMessage): Promise<void> {
+        await this.publish(DiscordMessageStreamMessageBroker.#messageStream, `${message.guild_id ?? 'dm'}.${message.channel_id}.${message.author.id}`, this.jsonToBlob(message));
     }
 }

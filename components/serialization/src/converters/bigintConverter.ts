@@ -5,7 +5,7 @@ export const bigintConverter = makeJsonConverter<bigint>({
     fromJson(value) {
         if (typeof value !== 'string' || !/^[+-]?\d+$/.test(value))
             return failed(`Value is not a bigint ${String(value)}`);
-        return success(BigInt(value.slice(0, -1)));
+        return success(BigInt(value));
     },
     test(value): value is bigint {
         return typeof value === 'bigint';

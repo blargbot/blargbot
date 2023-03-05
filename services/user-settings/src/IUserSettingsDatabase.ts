@@ -1,4 +1,4 @@
-import type { UserSettings } from './UserSettings.js';
+import type { UserSettings } from '@blargbot/user-settings-contract';
 
 export interface IUserSettingsDatabase {
     get(userId: bigint): Awaitable<UserSettings | undefined>;

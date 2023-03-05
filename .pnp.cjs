@@ -64,6 +64,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:components/crowdin/src"\
       },\
       {\
+        "name": "@blargbot/current-user-accessor",\
+        "reference": "workspace:components/current-user-accessor/src"\
+      },\
+      {\
         "name": "@blargbot/database",\
         "reference": "workspace:components/database/src"\
       },\
@@ -160,6 +164,22 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:components/timer/src"\
       },\
       {\
+        "name": "@blargbot/discord-message-stream-contract",\
+        "reference": "workspace:contracts/discord-message-stream/src"\
+      },\
+      {\
+        "name": "@blargbot/guild-settings-contract",\
+        "reference": "workspace:contracts/guild-settings/src"\
+      },\
+      {\
+        "name": "@blargbot/message-command-contract",\
+        "reference": "workspace:contracts/message-command/src"\
+      },\
+      {\
+        "name": "@blargbot/user-settings-contract",\
+        "reference": "workspace:contracts/user-settings/src"\
+      },\
+      {\
         "name": "@types/blargbot-image-api",\
         "reference": "workspace:definitions/blargbot-image-api"\
       },\
@@ -194,6 +214,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       {\
         "name": "@blargbot/cluster-tests",\
         "reference": "workspace:services/cluster/test"\
+      },\
+      {\
+        "name": "@blargbot/command-message-parser",\
+        "reference": "workspace:services/command-message-parser/src"\
       },\
       {\
         "name": "@blargbot/discord-channel-cache",\
@@ -298,11 +322,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@blargbot/cluster", ["workspace:services/cluster/src"]],\
       ["@blargbot/cluster-tests", ["workspace:services/cluster/test"]],\
       ["@blargbot/collections", ["workspace:components/collections/src"]],\
+      ["@blargbot/command-message-parser", ["workspace:services/command-message-parser/src"]],\
       ["@blargbot/config", ["workspace:components/config/src"]],\
       ["@blargbot/container-id", ["workspace:components/container-id/src"]],\
       ["@blargbot/core", ["workspace:components/core/src"]],\
       ["@blargbot/core-tests", ["workspace:components/core/test"]],\
       ["@blargbot/crowdin", ["workspace:components/crowdin/src"]],\
+      ["@blargbot/current-user-accessor", ["workspace:components/current-user-accessor/src"]],\
       ["@blargbot/database", ["workspace:components/database/src"]],\
       ["@blargbot/decancer", ["workspace:components/decancer/src"]],\
       ["@blargbot/discord-channel-cache", ["workspace:services/discord-channel-cache/src"]],\
@@ -315,6 +341,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@blargbot/discord-message-broker", ["virtual:253c4dda1733e7dbc61aae51f57d452b0623faab352da869fcaa5f1f988885d07900027b9b09dd7bd8cbe80fe188464fb36902fcdebe51088ed2a712e8210eff#workspace:components/discord-message-broker/src", "workspace:components/discord-message-broker/src"]],\
       ["@blargbot/discord-message-cache", ["workspace:services/discord-message-cache/src"]],\
       ["@blargbot/discord-message-stream", ["workspace:services/discord-message-stream/src"]],\
+      ["@blargbot/discord-message-stream-contract", ["workspace:contracts/discord-message-stream/src"]],\
       ["@blargbot/discord-presence-cache", ["workspace:services/discord-presence-cache/src"]],\
       ["@blargbot/discord-proxy", ["workspace:services/discord-proxy/src"]],\
       ["@blargbot/discord-reaction-stream", ["workspace:services/discord-reaction-stream/src"]],\
@@ -330,13 +357,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@blargbot/guards", ["workspace:components/guards/src"]],\
       ["@blargbot/guards-tests", ["workspace:components/guards/test"]],\
       ["@blargbot/guild-settings", ["workspace:services/guild-settings/src"]],\
+      ["@blargbot/guild-settings-contract", ["workspace:contracts/guild-settings/src"]],\
       ["@blargbot/image-generator", ["workspace:services/image-generator/src"]],\
       ["@blargbot/image-types", ["workspace:components/image-types/src"]],\
       ["@blargbot/input", ["workspace:components/input/src"]],\
       ["@blargbot/logger", ["workspace:components/logger/src"]],\
       ["@blargbot/mapping", ["workspace:components/mapping/src"]],\
       ["@blargbot/master", ["workspace:services/master/src"]],\
-      ["@blargbot/message-broker", ["virtual:253c4dda1733e7dbc61aae51f57d452b0623faab352da869fcaa5f1f988885d07900027b9b09dd7bd8cbe80fe188464fb36902fcdebe51088ed2a712e8210eff#workspace:components/message-broker/src", "virtual:f6e7ec6f3ac682ea64449875ef62b474d3c11ec9a6e844bca09eb9b05e557c6728dcc90e1548f3efe3f20554b1c8da1921f0bcda771a22a621aa900fba0bc556#workspace:components/message-broker/src", "workspace:components/message-broker/src"]],\
+      ["@blargbot/message-broker", ["virtual:79a260e68795947f4e1430abbee69e1b27ff4307677439968501fa67329e14da0124be298abcae1a73421fb54e0c4652203814fcea54a3f2b8dbe95da3ff4e62#workspace:components/message-broker/src", "virtual:f6e7ec6f3ac682ea64449875ef62b474d3c11ec9a6e844bca09eb9b05e557c6728dcc90e1548f3efe3f20554b1c8da1921f0bcda771a22a621aa900fba0bc556#workspace:components/message-broker/src", "workspace:components/message-broker/src"]],\
+      ["@blargbot/message-command-contract", ["workspace:contracts/message-command/src"]],\
       ["@blargbot/mod-log", ["workspace:services/mod-log/src"]],\
       ["@blargbot/modules", ["workspace:components/modules/src"]],\
       ["@blargbot/redis-cache", ["workspace:components/redis-cache/src"]],\
@@ -348,6 +377,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@blargbot/timeouts", ["workspace:services/timeouts/src"]],\
       ["@blargbot/timer", ["workspace:components/timer/src"]],\
       ["@blargbot/user-settings", ["workspace:services/user-settings/src"]],\
+      ["@blargbot/user-settings-contract", ["workspace:contracts/user-settings/src"]],\
       ["@blargbot/user-warnings", ["workspace:services/user-warnings/src"]],\
       ["@types/blargbot-image-api", ["workspace:definitions/blargbot-image-api"]],\
       ["@types/brainfuck-node", ["workspace:definitions/brainfuck-node"]],\
@@ -372,6 +402,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["eslint", "npm:8.35.0"],\
             ["eslint-plugin-import", "virtual:292b3c08d83803def12837ade3f3c25353a4445005ce950bbdba7bad8f40a92ecccd2d8b57fa590cf1089759faf68705b69f281662cb52a640c3c6f3bc1b0575#npm:2.27.5"],\
             ["eslint-plugin-simple-import-sort", "virtual:292b3c08d83803def12837ade3f3c25353a4445005ce950bbdba7bad8f40a92ecccd2d8b57fa590cf1089759faf68705b69f281662cb52a640c3c6f3bc1b0575#npm:10.0.0"],\
+            ["node-fetch", "npm:3.3.0"],\
             ["typescript", "patch:typescript@npm%3A4.9.5#~builtin<compat/typescript>::version=4.9.5&hash=23ec76"]\
           ],\
           "linkType": "SOFT"\
@@ -667,6 +698,31 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "SOFT"\
         }]\
       ]],\
+      ["@blargbot/command-message-parser", [\
+        ["workspace:services/command-message-parser/src", {\
+          "packageLocation": "./services/command-message-parser/src/",\
+          "packageDependencies": [\
+            ["@blargbot/command-message-parser", "workspace:services/command-message-parser/src"],\
+            ["@blargbot/application", "workspace:components/application/src"],\
+            ["@blargbot/current-user-accessor", "workspace:components/current-user-accessor/src"],\
+            ["@blargbot/discord-message-stream-contract", "workspace:contracts/discord-message-stream/src"],\
+            ["@blargbot/discord-util", "workspace:components/discord-util/src"],\
+            ["@blargbot/env", "workspace:components/env/src"],\
+            ["@blargbot/guards", "workspace:components/guards/src"],\
+            ["@blargbot/guild-settings-contract", "workspace:contracts/guild-settings/src"],\
+            ["@blargbot/input", "workspace:components/input/src"],\
+            ["@blargbot/mapping", "workspace:components/mapping/src"],\
+            ["@blargbot/message-broker", "virtual:79a260e68795947f4e1430abbee69e1b27ff4307677439968501fa67329e14da0124be298abcae1a73421fb54e0c4652203814fcea54a3f2b8dbe95da3ff4e62#workspace:components/message-broker/src"],\
+            ["@blargbot/message-command-contract", "workspace:contracts/message-command/src"],\
+            ["@blargbot/user-settings-contract", "workspace:contracts/user-settings/src"],\
+            ["@types/amqplib", "npm:0.10.1"],\
+            ["@types/node-fetch", "npm:2.6.2"],\
+            ["amqplib", "npm:0.10.3"],\
+            ["node-fetch", "npm:3.3.0"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
       ["@blargbot/config", [\
         ["workspace:components/config/src", {\
           "packageLocation": "./components/config/src/",\
@@ -755,6 +811,16 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "SOFT"\
         }]\
       ]],\
+      ["@blargbot/current-user-accessor", [\
+        ["workspace:components/current-user-accessor/src", {\
+          "packageLocation": "./components/current-user-accessor/src/",\
+          "packageDependencies": [\
+            ["@blargbot/current-user-accessor", "workspace:components/current-user-accessor/src"],\
+            ["@blargbot/discord-types", "workspace:components/discord-types/src"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
       ["@blargbot/database", [\
         ["workspace:components/database/src", {\
           "packageLocation": "./components/database/src/",\
@@ -802,10 +868,11 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/application", "workspace:components/application/src"],\
             ["@blargbot/discord-message-broker", "virtual:253c4dda1733e7dbc61aae51f57d452b0623faab352da869fcaa5f1f988885d07900027b9b09dd7bd8cbe80fe188464fb36902fcdebe51088ed2a712e8210eff#workspace:components/discord-message-broker/src"],\
             ["@blargbot/discord-types", "workspace:components/discord-types/src"],\
+            ["@blargbot/discord-util", "workspace:components/discord-util/src"],\
             ["@blargbot/env", "workspace:components/env/src"],\
             ["@blargbot/express", "workspace:components/express/src"],\
             ["@blargbot/guards", "workspace:components/guards/src"],\
-            ["@blargbot/message-broker", "virtual:253c4dda1733e7dbc61aae51f57d452b0623faab352da869fcaa5f1f988885d07900027b9b09dd7bd8cbe80fe188464fb36902fcdebe51088ed2a712e8210eff#workspace:components/message-broker/src"],\
+            ["@blargbot/message-broker", "virtual:79a260e68795947f4e1430abbee69e1b27ff4307677439968501fa67329e14da0124be298abcae1a73421fb54e0c4652203814fcea54a3f2b8dbe95da3ff4e62#workspace:components/message-broker/src"],\
             ["@blargbot/redis-cache", "workspace:components/redis-cache/src"],\
             ["@blargbot/serialization", "workspace:components/serialization/src"],\
             ["amqplib", "npm:0.10.3"],\
@@ -824,9 +891,9 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/discord-message-broker", "virtual:253c4dda1733e7dbc61aae51f57d452b0623faab352da869fcaa5f1f988885d07900027b9b09dd7bd8cbe80fe188464fb36902fcdebe51088ed2a712e8210eff#workspace:components/discord-message-broker/src"],\
             ["@blargbot/discord-types", "workspace:components/discord-types/src"],\
             ["@blargbot/env", "workspace:components/env/src"],\
-            ["@blargbot/guild-settings", "workspace:services/guild-settings/src"],\
+            ["@blargbot/guild-settings-contract", "workspace:contracts/guild-settings/src"],\
             ["@blargbot/mapping", "workspace:components/mapping/src"],\
-            ["@blargbot/message-broker", "virtual:253c4dda1733e7dbc61aae51f57d452b0623faab352da869fcaa5f1f988885d07900027b9b09dd7bd8cbe80fe188464fb36902fcdebe51088ed2a712e8210eff#workspace:components/message-broker/src"],\
+            ["@blargbot/message-broker", "virtual:79a260e68795947f4e1430abbee69e1b27ff4307677439968501fa67329e14da0124be298abcae1a73421fb54e0c4652203814fcea54a3f2b8dbe95da3ff4e62#workspace:components/message-broker/src"],\
             ["@types/node-fetch", "npm:2.6.2"],\
             ["amqplib", "npm:0.10.3"],\
             ["cassandra-driver", "npm:4.6.4"],\
@@ -853,7 +920,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/discord-gateway", "workspace:services/discord-gateway/src"],\
             ["@blargbot/application", "workspace:components/application/src"],\
             ["@blargbot/env", "workspace:components/env/src"],\
-            ["@blargbot/message-broker", "virtual:253c4dda1733e7dbc61aae51f57d452b0623faab352da869fcaa5f1f988885d07900027b9b09dd7bd8cbe80fe188464fb36902fcdebe51088ed2a712e8210eff#workspace:components/message-broker/src"],\
+            ["@blargbot/message-broker", "virtual:79a260e68795947f4e1430abbee69e1b27ff4307677439968501fa67329e14da0124be298abcae1a73421fb54e0c4652203814fcea54a3f2b8dbe95da3ff4e62#workspace:components/message-broker/src"],\
             ["@types/amqplib", "npm:0.10.1"],\
             ["amqplib", "npm:0.10.3"],\
             ["discordeno", "npm:18.0.1"]\
@@ -871,7 +938,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/discord-types", "workspace:components/discord-types/src"],\
             ["@blargbot/env", "workspace:components/env/src"],\
             ["@blargbot/express", "workspace:components/express/src"],\
-            ["@blargbot/message-broker", "virtual:253c4dda1733e7dbc61aae51f57d452b0623faab352da869fcaa5f1f988885d07900027b9b09dd7bd8cbe80fe188464fb36902fcdebe51088ed2a712e8210eff#workspace:components/message-broker/src"],\
+            ["@blargbot/message-broker", "virtual:79a260e68795947f4e1430abbee69e1b27ff4307677439968501fa67329e14da0124be298abcae1a73421fb54e0c4652203814fcea54a3f2b8dbe95da3ff4e62#workspace:components/message-broker/src"],\
             ["@blargbot/redis-cache", "workspace:components/redis-cache/src"],\
             ["amqplib", "npm:0.10.3"],\
             ["redis", "npm:4.6.5"]\
@@ -889,7 +956,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/discord-types", "workspace:components/discord-types/src"],\
             ["@blargbot/env", "workspace:components/env/src"],\
             ["@blargbot/express", "workspace:components/express/src"],\
-            ["@blargbot/message-broker", "virtual:253c4dda1733e7dbc61aae51f57d452b0623faab352da869fcaa5f1f988885d07900027b9b09dd7bd8cbe80fe188464fb36902fcdebe51088ed2a712e8210eff#workspace:components/message-broker/src"],\
+            ["@blargbot/message-broker", "virtual:79a260e68795947f4e1430abbee69e1b27ff4307677439968501fa67329e14da0124be298abcae1a73421fb54e0c4652203814fcea54a3f2b8dbe95da3ff4e62#workspace:components/message-broker/src"],\
             ["@types/amqplib", "npm:0.10.1"],\
             ["amqplib", "npm:0.10.3"]\
           ],\
@@ -906,7 +973,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/discord-types", "workspace:components/discord-types/src"],\
             ["@blargbot/env", "workspace:components/env/src"],\
             ["@blargbot/express", "workspace:components/express/src"],\
-            ["@blargbot/message-broker", "virtual:253c4dda1733e7dbc61aae51f57d452b0623faab352da869fcaa5f1f988885d07900027b9b09dd7bd8cbe80fe188464fb36902fcdebe51088ed2a712e8210eff#workspace:components/message-broker/src"],\
+            ["@blargbot/message-broker", "virtual:79a260e68795947f4e1430abbee69e1b27ff4307677439968501fa67329e14da0124be298abcae1a73421fb54e0c4652203814fcea54a3f2b8dbe95da3ff4e62#workspace:components/message-broker/src"],\
             ["@blargbot/redis-cache", "workspace:components/redis-cache/src"],\
             ["amqplib", "npm:0.10.3"],\
             ["redis", "npm:4.6.5"]\
@@ -920,7 +987,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["@blargbot/discord-message-broker", "virtual:253c4dda1733e7dbc61aae51f57d452b0623faab352da869fcaa5f1f988885d07900027b9b09dd7bd8cbe80fe188464fb36902fcdebe51088ed2a712e8210eff#workspace:components/discord-message-broker/src"],\
             ["@blargbot/discord-types", "workspace:components/discord-types/src"],\
-            ["@blargbot/message-broker", "virtual:253c4dda1733e7dbc61aae51f57d452b0623faab352da869fcaa5f1f988885d07900027b9b09dd7bd8cbe80fe188464fb36902fcdebe51088ed2a712e8210eff#workspace:components/message-broker/src"],\
+            ["@blargbot/message-broker", "virtual:79a260e68795947f4e1430abbee69e1b27ff4307677439968501fa67329e14da0124be298abcae1a73421fb54e0c4652203814fcea54a3f2b8dbe95da3ff4e62#workspace:components/message-broker/src"],\
             ["@types/amqplib", "npm:0.10.1"],\
             ["amqplib", "npm:0.10.3"]\
           ],\
@@ -950,7 +1017,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/discord-types", "workspace:components/discord-types/src"],\
             ["@blargbot/env", "workspace:components/env/src"],\
             ["@blargbot/express", "workspace:components/express/src"],\
-            ["@blargbot/message-broker", "virtual:253c4dda1733e7dbc61aae51f57d452b0623faab352da869fcaa5f1f988885d07900027b9b09dd7bd8cbe80fe188464fb36902fcdebe51088ed2a712e8210eff#workspace:components/message-broker/src"],\
+            ["@blargbot/message-broker", "virtual:79a260e68795947f4e1430abbee69e1b27ff4307677439968501fa67329e14da0124be298abcae1a73421fb54e0c4652203814fcea54a3f2b8dbe95da3ff4e62#workspace:components/message-broker/src"],\
             ["@blargbot/redis-cache", "workspace:components/redis-cache/src"],\
             ["@blargbot/serialization", "workspace:components/serialization/src"],\
             ["amqplib", "npm:0.10.3"],\
@@ -966,12 +1033,25 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/discord-message-stream", "workspace:services/discord-message-stream/src"],\
             ["@blargbot/application", "workspace:components/application/src"],\
             ["@blargbot/discord-message-broker", "virtual:253c4dda1733e7dbc61aae51f57d452b0623faab352da869fcaa5f1f988885d07900027b9b09dd7bd8cbe80fe188464fb36902fcdebe51088ed2a712e8210eff#workspace:components/discord-message-broker/src"],\
+            ["@blargbot/discord-message-stream-contract", "workspace:contracts/discord-message-stream/src"],\
             ["@blargbot/discord-types", "workspace:components/discord-types/src"],\
             ["@blargbot/env", "workspace:components/env/src"],\
             ["@blargbot/express", "workspace:components/express/src"],\
-            ["@blargbot/message-broker", "virtual:253c4dda1733e7dbc61aae51f57d452b0623faab352da869fcaa5f1f988885d07900027b9b09dd7bd8cbe80fe188464fb36902fcdebe51088ed2a712e8210eff#workspace:components/message-broker/src"],\
+            ["@blargbot/message-broker", "virtual:79a260e68795947f4e1430abbee69e1b27ff4307677439968501fa67329e14da0124be298abcae1a73421fb54e0c4652203814fcea54a3f2b8dbe95da3ff4e62#workspace:components/message-broker/src"],\
             ["@types/amqplib", "npm:0.10.1"],\
-            ["amqplib", "npm:0.10.3"]\
+            ["@types/node-fetch", "npm:2.6.2"],\
+            ["amqplib", "npm:0.10.3"],\
+            ["node-fetch", "npm:3.3.0"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
+      ["@blargbot/discord-message-stream-contract", [\
+        ["workspace:contracts/discord-message-stream/src", {\
+          "packageLocation": "./contracts/discord-message-stream/src/",\
+          "packageDependencies": [\
+            ["@blargbot/discord-message-stream-contract", "workspace:contracts/discord-message-stream/src"],\
+            ["@blargbot/discord-types", "workspace:components/discord-types/src"]\
           ],\
           "linkType": "SOFT"\
         }]\
@@ -986,7 +1066,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/discord-types", "workspace:components/discord-types/src"],\
             ["@blargbot/env", "workspace:components/env/src"],\
             ["@blargbot/express", "workspace:components/express/src"],\
-            ["@blargbot/message-broker", "virtual:253c4dda1733e7dbc61aae51f57d452b0623faab352da869fcaa5f1f988885d07900027b9b09dd7bd8cbe80fe188464fb36902fcdebe51088ed2a712e8210eff#workspace:components/message-broker/src"],\
+            ["@blargbot/message-broker", "virtual:79a260e68795947f4e1430abbee69e1b27ff4307677439968501fa67329e14da0124be298abcae1a73421fb54e0c4652203814fcea54a3f2b8dbe95da3ff4e62#workspace:components/message-broker/src"],\
             ["@blargbot/redis-cache", "workspace:components/redis-cache/src"],\
             ["amqplib", "npm:0.10.3"],\
             ["redis", "npm:4.6.5"]\
@@ -1019,7 +1099,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/discord-types", "workspace:components/discord-types/src"],\
             ["@blargbot/env", "workspace:components/env/src"],\
             ["@blargbot/express", "workspace:components/express/src"],\
-            ["@blargbot/message-broker", "virtual:253c4dda1733e7dbc61aae51f57d452b0623faab352da869fcaa5f1f988885d07900027b9b09dd7bd8cbe80fe188464fb36902fcdebe51088ed2a712e8210eff#workspace:components/message-broker/src"],\
+            ["@blargbot/message-broker", "virtual:79a260e68795947f4e1430abbee69e1b27ff4307677439968501fa67329e14da0124be298abcae1a73421fb54e0c4652203814fcea54a3f2b8dbe95da3ff4e62#workspace:components/message-broker/src"],\
             ["@types/amqplib", "npm:0.10.1"],\
             ["amqplib", "npm:0.10.3"]\
           ],\
@@ -1036,7 +1116,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/discord-types", "workspace:components/discord-types/src"],\
             ["@blargbot/env", "workspace:components/env/src"],\
             ["@blargbot/express", "workspace:components/express/src"],\
-            ["@blargbot/message-broker", "virtual:253c4dda1733e7dbc61aae51f57d452b0623faab352da869fcaa5f1f988885d07900027b9b09dd7bd8cbe80fe188464fb36902fcdebe51088ed2a712e8210eff#workspace:components/message-broker/src"],\
+            ["@blargbot/message-broker", "virtual:79a260e68795947f4e1430abbee69e1b27ff4307677439968501fa67329e14da0124be298abcae1a73421fb54e0c4652203814fcea54a3f2b8dbe95da3ff4e62#workspace:components/message-broker/src"],\
             ["@blargbot/redis-cache", "workspace:components/redis-cache/src"],\
             ["amqplib", "npm:0.10.3"],\
             ["redis", "npm:4.6.5"]\
@@ -1064,8 +1144,9 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/discord-types", "workspace:components/discord-types/src"],\
             ["@blargbot/env", "workspace:components/env/src"],\
             ["@blargbot/express", "workspace:components/express/src"],\
-            ["@blargbot/message-broker", "virtual:253c4dda1733e7dbc61aae51f57d452b0623faab352da869fcaa5f1f988885d07900027b9b09dd7bd8cbe80fe188464fb36902fcdebe51088ed2a712e8210eff#workspace:components/message-broker/src"],\
+            ["@blargbot/message-broker", "virtual:79a260e68795947f4e1430abbee69e1b27ff4307677439968501fa67329e14da0124be298abcae1a73421fb54e0c4652203814fcea54a3f2b8dbe95da3ff4e62#workspace:components/message-broker/src"],\
             ["@blargbot/redis-cache", "workspace:components/redis-cache/src"],\
+            ["@blargbot/serialization", "workspace:components/serialization/src"],\
             ["amqplib", "npm:0.10.3"],\
             ["redis", "npm:4.6.5"]\
           ],\
@@ -1175,11 +1256,22 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/application", "workspace:components/application/src"],\
             ["@blargbot/env", "workspace:components/env/src"],\
             ["@blargbot/express", "workspace:components/express/src"],\
+            ["@blargbot/guild-settings-contract", "workspace:contracts/guild-settings/src"],\
             ["@blargbot/mapping", "workspace:components/mapping/src"],\
             ["@blargbot/redis-cache", "workspace:components/redis-cache/src"],\
             ["@blargbot/sequelize", "workspace:components/sequelize/src"],\
             ["@blargbot/serialization", "workspace:components/serialization/src"],\
             ["redis", "npm:4.6.5"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
+      ["@blargbot/guild-settings-contract", [\
+        ["workspace:contracts/guild-settings/src", {\
+          "packageLocation": "./contracts/guild-settings/src/",\
+          "packageDependencies": [\
+            ["@blargbot/guild-settings-contract", "workspace:contracts/guild-settings/src"],\
+            ["@blargbot/serialization", "workspace:components/serialization/src"]\
           ],\
           "linkType": "SOFT"\
         }]\
@@ -1192,7 +1284,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/application", "workspace:components/application/src"],\
             ["@blargbot/env", "workspace:components/env/src"],\
             ["@blargbot/image-types", "workspace:components/image-types/src"],\
-            ["@blargbot/message-broker", "virtual:253c4dda1733e7dbc61aae51f57d452b0623faab352da869fcaa5f1f988885d07900027b9b09dd7bd8cbe80fe188464fb36902fcdebe51088ed2a712e8210eff#workspace:components/message-broker/src"],\
+            ["@blargbot/message-broker", "virtual:79a260e68795947f4e1430abbee69e1b27ff4307677439968501fa67329e14da0124be298abcae1a73421fb54e0c4652203814fcea54a3f2b8dbe95da3ff4e62#workspace:components/message-broker/src"],\
             ["@types/amqplib", "npm:0.10.1"],\
             ["@types/gifencoder", "npm:2.0.1"],\
             ["@types/gm", "npm:1.25.0"],\
@@ -1280,14 +1372,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["@blargbot/message-broker", [\
-        ["virtual:253c4dda1733e7dbc61aae51f57d452b0623faab352da869fcaa5f1f988885d07900027b9b09dd7bd8cbe80fe188464fb36902fcdebe51088ed2a712e8210eff#workspace:components/message-broker/src", {\
-          "packageLocation": "./.yarn/__virtual__/@blargbot-message-broker-virtual-df6050cd6d/1/components/message-broker/src/",\
+        ["virtual:79a260e68795947f4e1430abbee69e1b27ff4307677439968501fa67329e14da0124be298abcae1a73421fb54e0c4652203814fcea54a3f2b8dbe95da3ff4e62#workspace:components/message-broker/src", {\
+          "packageLocation": "./.yarn/__virtual__/@blargbot-message-broker-virtual-14b0c2937c/1/components/message-broker/src/",\
           "packageDependencies": [\
-            ["@blargbot/message-broker", "virtual:253c4dda1733e7dbc61aae51f57d452b0623faab352da869fcaa5f1f988885d07900027b9b09dd7bd8cbe80fe188464fb36902fcdebe51088ed2a712e8210eff#workspace:components/message-broker/src"],\
+            ["@blargbot/message-broker", "virtual:79a260e68795947f4e1430abbee69e1b27ff4307677439968501fa67329e14da0124be298abcae1a73421fb54e0c4652203814fcea54a3f2b8dbe95da3ff4e62#workspace:components/message-broker/src"],\
             ["@types/amqplib", "npm:0.10.1"],\
             ["amqplib", "npm:0.10.3"]\
           ],\
           "packagePeers": [\
+            "@types/amqplib",\
             "amqplib"\
           ],\
           "linkType": "SOFT"\
@@ -1310,6 +1403,17 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["@blargbot/message-broker", "workspace:components/message-broker/src"],\
             ["@types/amqplib", "npm:0.10.1"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
+      ["@blargbot/message-command-contract", [\
+        ["workspace:contracts/message-command/src", {\
+          "packageLocation": "./contracts/message-command/src/",\
+          "packageDependencies": [\
+            ["@blargbot/message-command-contract", "workspace:contracts/message-command/src"],\
+            ["@blargbot/discord-message-stream-contract", "workspace:contracts/discord-message-stream/src"],\
+            ["@blargbot/input", "workspace:components/input/src"]\
           ],\
           "linkType": "SOFT"\
         }]\
@@ -1406,7 +1510,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/timeout-clock", "workspace:services/timeout-clock/src"],\
             ["@blargbot/application", "workspace:components/application/src"],\
             ["@blargbot/env", "workspace:components/env/src"],\
-            ["@blargbot/message-broker", "virtual:253c4dda1733e7dbc61aae51f57d452b0623faab352da869fcaa5f1f988885d07900027b9b09dd7bd8cbe80fe188464fb36902fcdebe51088ed2a712e8210eff#workspace:components/message-broker/src"],\
+            ["@blargbot/message-broker", "virtual:79a260e68795947f4e1430abbee69e1b27ff4307677439968501fa67329e14da0124be298abcae1a73421fb54e0c4652203814fcea54a3f2b8dbe95da3ff4e62#workspace:components/message-broker/src"],\
             ["@types/amqplib", "npm:0.10.1"],\
             ["@types/cron", "npm:2.0.0"],\
             ["amqplib", "npm:0.10.3"],\
@@ -1423,7 +1527,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/application", "workspace:components/application/src"],\
             ["@blargbot/env", "workspace:components/env/src"],\
             ["@blargbot/express", "workspace:components/express/src"],\
-            ["@blargbot/message-broker", "virtual:253c4dda1733e7dbc61aae51f57d452b0623faab352da869fcaa5f1f988885d07900027b9b09dd7bd8cbe80fe188464fb36902fcdebe51088ed2a712e8210eff#workspace:components/message-broker/src"],\
+            ["@blargbot/message-broker", "virtual:79a260e68795947f4e1430abbee69e1b27ff4307677439968501fa67329e14da0124be298abcae1a73421fb54e0c4652203814fcea54a3f2b8dbe95da3ff4e62#workspace:components/message-broker/src"],\
             ["@blargbot/sequelize", "workspace:components/sequelize/src"],\
             ["@blargbot/serialization", "workspace:components/serialization/src"],\
             ["@types/amqplib", "npm:0.10.1"],\
@@ -1453,7 +1557,18 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/redis-cache", "workspace:components/redis-cache/src"],\
             ["@blargbot/sequelize", "workspace:components/sequelize/src"],\
             ["@blargbot/serialization", "workspace:components/serialization/src"],\
+            ["@blargbot/user-settings-contract", "workspace:contracts/user-settings/src"],\
             ["redis", "npm:4.6.5"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
+      ["@blargbot/user-settings-contract", [\
+        ["workspace:contracts/user-settings/src", {\
+          "packageLocation": "./contracts/user-settings/src/",\
+          "packageDependencies": [\
+            ["@blargbot/user-settings-contract", "workspace:contracts/user-settings/src"],\
+            ["@blargbot/serialization", "workspace:components/serialization/src"]\
           ],\
           "linkType": "SOFT"\
         }]\
@@ -3436,6 +3551,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["eslint", "npm:8.35.0"],\
             ["eslint-plugin-import", "virtual:292b3c08d83803def12837ade3f3c25353a4445005ce950bbdba7bad8f40a92ecccd2d8b57fa590cf1089759faf68705b69f281662cb52a640c3c6f3bc1b0575#npm:2.27.5"],\
             ["eslint-plugin-simple-import-sort", "virtual:292b3c08d83803def12837ade3f3c25353a4445005ce950bbdba7bad8f40a92ecccd2d8b57fa590cf1089759faf68705b69f281662cb52a640c3c6f3bc1b0575#npm:10.0.0"],\
+            ["node-fetch", "npm:3.3.0"],\
             ["typescript", "patch:typescript@npm%3A4.9.5#~builtin<compat/typescript>::version=4.9.5&hash=23ec76"]\
           ],\
           "linkType": "SOFT"\

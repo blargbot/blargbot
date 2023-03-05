@@ -6,6 +6,7 @@ import env from '@blargbot/env';
 import express from '@blargbot/express';
 import type { ConnectionOptions } from '@blargbot/message-broker';
 import { RedisKVCache } from '@blargbot/redis-cache';
+import { json } from '@blargbot/serialization';
 import type { RedisClientType } from 'redis';
 import { createClient as createRedisClient } from 'redis';
 
@@ -51,6 +52,11 @@ export class DiscordUserCacheApplication extends Application {
                 ttlS: null,
                 keyspace: 'discord_users',
                 lockRetryMs: 1
+            }),
+            new RedisKVCache<'@self', bigint>(this.#redis, {
+                ttlS: null,
+                keyspace: 'discord_self',
+                serializer: json.bigint
             })
         );
 

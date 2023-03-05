@@ -14,6 +14,15 @@ export function createUserCacheRequestHandler(service: DiscordUserCacheService):
                 res.status(200).send(result);
         }));
 
+    router.route('/@self')
+        .get(asyncHandler(async (_, res) => {
+            const result = await service.getSelf();
+            if (result === undefined)
+                res.status(404).end();
+            else
+                res.status(200).send(result);
+        }));
+
     router.route('/')
         .get(asyncHandler(async (_, res) => {
             const userCount = await service.getUserCount();

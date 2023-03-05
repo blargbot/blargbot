@@ -1,18 +1,26 @@
-export function* splitInput(source: string, limit = 0): Generator<SplitInputItem, void, undefined> {
+export function* splitInput(source: string, limit = 0): Generator<StringSlice, void, undefined> {
     if (limit <= 0)
         return yield* splitInputIter(source);
 
     const iter = splitInputIter(source);
-    for (let i = 0; i < limit; i++) {
+    for (let i = 0; i < limit - 1; i++) {
         const next = iter.next();
         if (next.done === true)
             return;
 
         yield next.value;
     }
+
+    const remainder = [];
+    let next;
+    while ((next = iter.next()).done !== true) {
+        remainder.push(next.value);
+    }
+    if (remainder.length > 0)
+        yield aggregateSlices(remainder);
 }
 
-function* splitInputIter(source: string): Generator<SplitInputItem, void, undefined> {
+function* splitInputIter(source: string): Generator<StringSlice, void, undefined> {
     const tokens = [...tokenize(source)];
     if (tokens.length === 0)
         return;
@@ -30,14 +38,7 @@ function* splitInputIter(source: string): Generator<SplitInputItem, void, undefi
         * digestRanges() {
             if (this.ranges.length === 0)
                 return;
-
-            const ranges = this.ranges.splice(0, this.ranges.length);
-            yield {
-                start: Math.min(...ranges.map(t => t.start)),
-                end: Math.max(...ranges.map(t => t.end)),
-                ranges: ranges,
-                value: ranges.map(r => r.content).join('')
-            };
+            yield aggregateSlices(this.ranges.splice(0, this.ranges.length));
         }
     };
 
@@ -47,25 +48,26 @@ function* splitInputIter(source: string): Generator<SplitInputItem, void, undefi
     yield* ctx.digestRanges();
 }
 
-interface SplitInputItem {
-    readonly ranges: readonly CharRange[];
-    get value(): string;
-    get start(): number;
-    get end(): number;
+function aggregateSlices(ranges: readonly StringSlice[]): StringSlice {
+    return {
+        start: Math.min(...ranges.map(t => t.start)),
+        end: Math.max(...ranges.map(t => t.end)),
+        value: ranges.map(r => r.value).join('')
+    };
 }
 
-interface CharRange {
+export interface StringSlice {
     readonly start: number;
     readonly end: number;
-    readonly content: string;
+    readonly value: string;
 }
 
 interface SplitInputContext {
-    readonly ranges: CharRange[];
+    readonly ranges: StringSlice[];
     index: number;
     readonly tokenCount: number;
     getToken(offset?: number): SplitInputToken;
-    digestRanges(): Generator<SplitInputItem>;
+    digestRanges(): Generator<StringSlice>;
 }
 
 const enum SplitInputTokenType {
@@ -129,7 +131,7 @@ function* tokenize(source: string): Generator<SplitInputToken> {
 }
 
 const noTokens = (function* () { /* NO-OP */ })();
-const tokenHandlers: Record<SplitInputTokenType, (context: SplitInputContext) => Generator<SplitInputItem>> = {
+const tokenHandlers: Record<SplitInputTokenType, (context: SplitInputContext) => Generator<StringSlice>> = {
     [SplitInputTokenType.BREAK](ctx) {
         return ctx.digestRanges();
     },
@@ -156,7 +158,7 @@ const tokenHandlers: Record<SplitInputTokenType, (context: SplitInputContext) =>
         ctx.ranges.push({
             start: startToken.start,
             end: endToken.end,
-            content: tokens.map(t => t.content).join('')
+            value: tokens.map(t => t.content).join('')
         });
         return noTokens;
     },
@@ -165,7 +167,7 @@ const tokenHandlers: Record<SplitInputTokenType, (context: SplitInputContext) =>
         ctx.ranges.push({
             start: token.start,
             end: token.end,
-            content: token.content
+            value: token.content
         });
         return noTokens;
     }

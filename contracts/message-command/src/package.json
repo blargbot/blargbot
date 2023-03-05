@@ -1,0 +1,13 @@
+{
+    "name": "@blargbot/message-command-contract",
+    "version": "1.0.0",
+    "private": true,
+    "type": "module",
+    "exports": {
+        ".": "./index.js"
+    },
+    "dependencies": {
+        "@blargbot/discord-message-stream-contract": "workspace:^",
+        "@blargbot/input": "workspace:^"
+    }
+}

@@ -1,8 +1,8 @@
 import type { IKVCache } from '@blargbot/redis-cache';
+import type { UserSettings } from '@blargbot/user-settings-contract';
 
 import { defaultSettings } from './defaultSettings.js';
 import type { IUserSettingsDatabase } from './IUserSettingsDatabase.js';
-import type { UserSettings } from './UserSettings.js';
 
 export class UserSettingsService {
     readonly #database: IUserSettingsDatabase;

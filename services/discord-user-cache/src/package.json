@@ -17,6 +17,7 @@
         "@blargbot/express": "workspace:^",
         "@blargbot/message-broker": "workspace:^",
         "@blargbot/redis-cache": "workspace:^",
+        "@blargbot/serialization": "workspace:^",
         "amqplib": "^0.10.3",
         "redis": "^4.6.5"
     }

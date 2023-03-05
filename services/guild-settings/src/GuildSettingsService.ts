@@ -1,7 +1,7 @@
+import type { GuildSettings } from '@blargbot/guild-settings-contract';
 import type { IKVCache } from '@blargbot/redis-cache';
 
 import { defaultSettings } from './defaultSettings.js';
-import type { GuildSettings } from './GuildSettings.js';
 import type { IGuildSettingsDatabase } from './IGuildSettingsDatabase.js';
 
 export class GuildSettingsService {

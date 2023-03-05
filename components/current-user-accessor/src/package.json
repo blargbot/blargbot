@@ -1,0 +1,12 @@
+{
+    "name": "@blargbot/current-user-accessor",
+    "version": "1.0.0",
+    "private": true,
+    "type": "module",
+    "exports": {
+        ".": "./index.js"
+    },
+    "dependencies": {
+        "@blargbot/discord-types": "workspace:^"
+    }
+}
