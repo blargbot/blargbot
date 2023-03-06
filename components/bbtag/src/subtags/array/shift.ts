@@ -9,7 +9,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = textTemplates.subtags.shift;
 
 @Subtag.names('shift')
-@Subtag.ctorArgs(Subtag.arrayTools())
+@Subtag.ctorArgs('arrayTools')
 export class ShiftSubtag extends CompiledSubtag {
     readonly #arrayTools: BBTagArrayTools;
 

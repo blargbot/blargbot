@@ -9,7 +9,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = textTemplates.subtags.roleDelete;
 
 @Subtag.names('roleDelete')
-@Subtag.ctorArgs(Subtag.service('role'))
+@Subtag.ctorArgs('role')
 export class RoleDeleteSubtag extends CompiledSubtag {
     readonly #roles: RoleService;
 

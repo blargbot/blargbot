@@ -9,9 +9,9 @@ runSubtagTests({
     cases: [
         {
             code: '{prefix}',
-            expected: 'b!',
+            expected: 'd!',
             setup(ctx) {
-                ctx.util.setup(m => m.defaultPrefix, false).thenReturn('b!');
+                ctx.dependencies.defaultPrefix = 'd!';
             }
         },
         {

@@ -1,7 +1,7 @@
 import { inspect } from 'node:util';
 
 import type { AnalysisResults, ExecutionResult } from '@bbtag/blargbot';
-import { BBTagEngine, createBBTagArrayTools, createBBTagJsonTools, createBBTagOperators, createEmbedParser, smartStringCompare, Subtag } from '@bbtag/blargbot';
+import { BBTagEngine, createBBTagArrayTools, createBBTagJsonTools, createBBTagOperators, createValueConverter, DefaultLockService, InProcessCooldownService, smartStringCompare, Subtag } from '@bbtag/blargbot';
 import * as Subtags from '@bbtag/blargbot/subtags';
 import type { ClusterOptions } from '@blargbot/cluster/types.js';
 import type { Configuration } from '@blargbot/config';
@@ -9,31 +9,29 @@ import { BaseClient } from '@blargbot/core/BaseClient.js';
 import { metrics } from '@blargbot/core/Metrics.js';
 import { BaseService } from '@blargbot/core/serviceTypes/index.js';
 import type { EvalResult } from '@blargbot/core/types.js';
-import { parseBigInt } from '@blargbot/core/utils/parse/parseBigInt.js';
-import { parseBoolean } from '@blargbot/core/utils/parse/parseBoolean.js';
-import { parseColor } from '@blargbot/core/utils/parse/parseColor.js';
-import { parseDuration } from '@blargbot/core/utils/parse/parseDuration.js';
-import { parseFloat } from '@blargbot/core/utils/parse/parseFloat.js';
-import { parseInt } from '@blargbot/core/utils/parse/parseInt.js';
-import { parseString } from '@blargbot/core/utils/parse/parseString.js';
-import { parseTime } from '@blargbot/core/utils/parse/parseTime.js';
+import { createSafeRegExp } from '@blargbot/core/utils/createSafeRegExp.js';
 import Discord from '@blargbot/discord-types';
 import type { Logger } from '@blargbot/logger';
 import { ModuleLoader } from '@blargbot/modules';
 import { Timer } from '@blargbot/timer';
 import moment from 'moment-timezone';
+import ReadWriteLock from 'rwlock';
 
-import { ClusterBBTagUtilities } from './ClusterBBTagUtilities.js';
 import { ClusterUtilities } from './ClusterUtilities.js';
 import type { ClusterWorker } from './ClusterWorker.js';
 import { CommandDocumentationManager } from './managers/documentation/CommandDocumentationManager.js';
 import { AggregateCommandManager, AnnouncementManager, AutoresponseManager, AwaiterManager, BotStaffManager, ContributorManager, CustomCommandManager, DefaultCommandManager, DomainManager, GreetingManager, GuildManager, IntervalManager, ModerationManager, PollManager, PrefixManager, RolemeManager, TimeoutManager, VersionStateManager } from './managers/index.js';
+import { ClusterDeferredExecutionService } from './utils/bbtag/ClusterDeferredExecutionService.js';
+import { ClusterDomainFilterService } from './utils/bbtag/ClusterDomainFilterService.js';
+import { ClusterDumpService } from './utils/bbtag/ClusterDumpService.js';
+import { ClusterModlogService } from './utils/bbtag/ClusterModlogService.js';
+import { ClusterStaffService } from './utils/bbtag/ClusterStaffService.js';
+import { ClusterWarningService } from './utils/bbtag/ClusterWarningService.js';
 import { ErisBBTagChannelService } from './utils/bbtag/ErisBBTagChannelService.js';
 import { ErisBBTagGuildService } from './utils/bbtag/ErisBBTagGuildService.js';
 import { ErisBBTagMessageService } from './utils/bbtag/ErisBBTagMessageService.js';
 import { ErisBBTagRoleService } from './utils/bbtag/ErisBBTagRoleService.js';
 import { ErisBBTagUserService } from './utils/bbtag/ErisBBTagUserService.js';
-import { createSafeRegExp } from './utils/index.js';
 
 export class Cluster extends BaseClient {
     public readonly id: number;
@@ -135,16 +133,34 @@ export class Cluster extends BaseClient {
         this.botStaff = new BotStaffManager(this);
         this.moderation = new ModerationManager(this);
         this.greetings = new GreetingManager(this);
-        const bbtagArrayTools = createBBTagArrayTools({
-            convertToInt: parseInt
+        const converter = createValueConverter({
+            regex: createSafeRegExp,
+            colors: {}
         });
-        const util = new ClusterBBTagUtilities(this);
+        const bbtagArrayTools = createBBTagArrayTools({
+            convertToInt: converter.int
+        });
         const bbtag = new BBTagEngine({
-            warnings: {
-                count: async (ctx, user) => await this.database.guilds.getWarnings(ctx.guild.id, user.id) ?? 0,
-                pardon: (...args) => util.pardon(...args),
-                warn: (...args) => util.warn(...args)
-            },
+            defaultPrefix: this.config.discord.defaultPrefix,
+            defer: new ClusterDeferredExecutionService(this),
+            domains: new ClusterDomainFilterService(this),
+            dump: new ClusterDumpService(this),
+            modLog: new ClusterModlogService(this),
+            staff: new ClusterStaffService(this),
+            warnings: new ClusterWarningService(this),
+            lock: new DefaultLockService({
+                createLock() {
+                    const lock = new ReadWriteLock();
+                    return {
+                        acquire(exclusive) {
+                            return new Promise(res => exclusive
+                                ? lock.writeLock(res)
+                                : lock.readLock(res));
+                        }
+                    };
+                }
+            }),
+            cooldown: new InProcessCooldownService(),
             sources: {
                 get: async (ctx, type, name) => {
                     if (type === 'cc') {
@@ -168,42 +184,31 @@ export class Cluster extends BaseClient {
                 get: (scope, name) => this.database.tagVariables.get(name, scope),
                 set: (entries) => this.database.tagVariables.upsert(entries)
             },
-            logger: this.logger,
-            util,
+            logger: {
+                error: (...args) => this.logger.error(...args),
+                info: (...args) => this.logger.bbtag(...args)
+            },
             subtags: Object.values(Subtags)
                 .map(Subtag.getDescriptor),
             arrayTools: bbtagArrayTools,
             jsonTools: createBBTagJsonTools({
-                convertToInt: parseInt,
+                convertToInt: converter.int,
                 isTagArray: bbtagArrayTools.isTagArray
             }),
             operators: createBBTagOperators({
                 compare: smartStringCompare,
-                convertToString: parseString,
+                convertToString: converter.string,
                 parseArray: v => bbtagArrayTools.deserialize(v)?.v
             }),
-            converter: {
-                int: parseInt,
-                float: parseFloat,
-                string: parseString,
-                boolean: parseBoolean,
-                duration: parseDuration,
-                embed: createEmbedParser({
-                    convertToColor: parseColor,
-                    convertToNumber: parseInt
-                }),
-                bigInt: parseBigInt,
-                color: parseColor,
-                time: parseTime,
-                regex: createSafeRegExp
-            },
-            services: {
-                channel: new ErisBBTagChannelService(this),
-                user: new ErisBBTagUserService(this),
-                role: new ErisBBTagRoleService(this),
-                guild: new ErisBBTagGuildService(this),
-                message: new ErisBBTagMessageService(this)
-            },
+            converter: createValueConverter({
+                regex: createSafeRegExp,
+                colors: {}
+            }),
+            channel: new ErisBBTagChannelService(this),
+            user: new ErisBBTagUserService(this),
+            role: new ErisBBTagRoleService(this),
+            guild: new ErisBBTagGuildService(this),
+            message: new ErisBBTagMessageService(this),
             middleware: [
                 async function* ({ subtag, context }, next) {
                     const timer = new Timer().start();

@@ -59,7 +59,6 @@ __metadata:
     "@bbtag/blargbot": "workspace:^"
     "@blargbot/config": "workspace:^"
     "@blargbot/core": "workspace:^"
-    "@blargbot/database": "workspace:^"
     "@blargbot/discord-emote": "workspace:^"
     "@blargbot/discord-types": "workspace:^"
     "@blargbot/discord-util": "workspace:^"
@@ -96,23 +95,20 @@ __metadata:
     "@blargbot/discord-emote": "workspace:^"
     "@blargbot/discord-types": "workspace:^"
     "@blargbot/discord-util": "workspace:^"
-    "@blargbot/domain": "workspace:^"
     "@blargbot/formatting": "workspace:^"
     "@blargbot/guards": "workspace:^"
     "@blargbot/input": "workspace:^"
-    "@blargbot/logger": "workspace:^"
     "@blargbot/mapping": "workspace:^"
     "@blargbot/timer": "workspace:^"
+    "@blargbot/user-regex": "workspace:^"
     "@types/brainfuck-node": "workspace:^"
     "@types/color": ^3.0.3
     "@types/node-fetch": ^2.6.2
-    "@types/rwlock": ^5.0.3
     brainfuck-node: ^1.0.2
     color: ^4.2.3
     html-entities: ^2.3.3
     moment-timezone: ^0.5.41
     node-fetch: ^3.3.0
-    rwlock: ^5.0.0
   languageName: unknown
   linkType: soft
 
@@ -170,8 +166,13 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@blargbot/bbtag@workspace:services/bbtag-runner/src"
   dependencies:
+    "@bbtag/blargbot": "workspace:^"
     "@blargbot/application": "workspace:^"
+    "@blargbot/discord-emote": "workspace:^"
     "@blargbot/env": "workspace:^"
+    "@blargbot/message-broker": "workspace:^"
+    "@types/amqplib": ^0.10.1
+    amqplib: ^0.10.3
   languageName: unknown
   linkType: soft
 
@@ -235,11 +236,13 @@ __metadata:
     "@blargbot/modules": "workspace:^"
     "@blargbot/res": "workspace:^"
     "@blargbot/timer": "workspace:^"
+    "@blargbot/user-regex": "workspace:^"
     "@hunteroi/versioning": ^1.3.2
     "@types/brainfuck-node": "workspace:^"
     "@types/eris": "workspace:^"
     "@types/md5": ^2.3.2
     "@types/node-fetch": ^2.6.2
+    "@types/rwlock": ^5
     "@types/wolken": "workspace:^"
     "@types/xml2js": ^0.4.11
     brainfuck-node: ^1.0.2
@@ -249,6 +252,7 @@ __metadata:
     moment-timezone: ^0.5.41
     node-fetch: ^3.3.0
     prom-client: ^14.1.1
+    rwlock: ^5.0.0
     wolken: ^0.2.1
     xml2js: ^0.4.23
   languageName: unknown
@@ -330,14 +334,15 @@ __metadata:
     "@blargbot/domain": "workspace:^"
     "@blargbot/formatting": "workspace:^"
     "@blargbot/guards": "workspace:^"
+    "@blargbot/input": "workspace:^"
     "@blargbot/logger": "workspace:^"
     "@blargbot/mapping": "workspace:^"
     "@blargbot/res": "workspace:^"
     "@blargbot/timer": "workspace:^"
+    "@blargbot/user-regex": "workspace:^"
     "@types/color": ^3.0.3
     "@types/cron": ^2.0.0
     "@types/eris": "workspace:^"
-    "@types/safe-regex": ^1.1.4
     airtable: ^0.11.6
     color: ^4.2.3
     cron: ^2.2.0
@@ -345,7 +350,6 @@ __metadata:
     eventemitter3: ^5.0.0
     moment-timezone: ^0.5.41
     prom-client: ^14.1.1
-    safe-regex: ^2.1.1
   languageName: unknown
   linkType: soft
 
@@ -782,6 +786,9 @@ __metadata:
   resolution: "@blargbot/input@workspace:components/input/src"
   dependencies:
     "@blargbot/guards": "workspace:^"
+    moment-timezone: "*"
+  peerDependencies:
+    moment-timezone: "*"
   languageName: unknown
   linkType: soft
 
@@ -950,6 +957,15 @@ __metadata:
 "@blargbot/timer@workspace:^, @blargbot/timer@workspace:components/timer/src":
   version: 0.0.0-use.local
   resolution: "@blargbot/timer@workspace:components/timer/src"
+  languageName: unknown
+  linkType: soft
+
+"@blargbot/user-regex@workspace:^, @blargbot/user-regex@workspace:components/user-regex/src":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/user-regex@workspace:components/user-regex/src"
+  dependencies:
+    "@types/safe-regex": ^1.1.4
+    safe-regex: ^2.1.1
   languageName: unknown
   linkType: soft
 
@@ -1869,7 +1885,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@types/rwlock@npm:^5.0.3":
+"@types/rwlock@npm:^5":
   version: 5.0.3
   resolution: "@types/rwlock@npm:5.0.3"
   checksum: 3b8edc841ce58bb7a599b9a8d5f80e8ec571adfc03c7000b93693eee2f9ca0f7ce6f355341b787846a9ffac69a2e2f70c431310cc4ac8e7682d649085ad80ad0
@@ -5707,7 +5723,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"moment-timezone@npm:^0.5.41":
+"moment-timezone@npm:*, moment-timezone@npm:^0.5.41":
   version: 0.5.41
   resolution: "moment-timezone@npm:0.5.41"
   dependencies:

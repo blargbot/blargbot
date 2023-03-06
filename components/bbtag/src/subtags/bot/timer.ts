@@ -1,20 +1,21 @@
 import type { BBTagContext } from '../../BBTagContext.js';
-import type { BBTagUtilities, BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
+import type { DeferredExecutionService } from '../../services/DeferredExecutionService.js';
 import { Subtag } from '../../Subtag.js';
 import textTemplates from '../../text.js';
-import { SubtagType } from '../../utils/index.js';
+import { resolveDuration, SubtagType } from '../../utils/index.js';
+import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.timer;
 
 @Subtag.names('timer')
-@Subtag.ctorArgs(Subtag.util(), Subtag.converter())
+@Subtag.ctorArgs('defer', 'converter')
 export class TimerSubtag extends CompiledSubtag {
-    readonly #util: BBTagUtilities;
+    readonly #defer: DeferredExecutionService;
     readonly #converter: BBTagValueConverter;
 
-    public constructor(util: BBTagUtilities, converter: BBTagValueConverter) {
+    public constructor(defer: DeferredExecutionService, converter: BBTagValueConverter) {
         super({
             category: SubtagType.BOT,
             definition: [
@@ -29,15 +30,15 @@ export class TimerSubtag extends CompiledSubtag {
             ]
         });
 
-        this.#util = util;
+        this.#defer = defer;
         this.#converter = converter;
     }
 
     public async queueTimer(context: BBTagContext, code: string, durationStr: string): Promise<void> {
-        const duration = this.#converter.duration(durationStr);
+        const duration = resolveDuration(this.#converter.duration(durationStr))?.asMilliseconds();
 
-        if (duration === undefined || duration.asMilliseconds() <= 0)
+        if (duration === undefined || duration <= 0)
             throw new BBTagRuntimeError('Invalid duration');
-        await this.#util.setTimeout(context, code, duration);
+        await this.#defer.defer(context, code, duration);
     }
 }

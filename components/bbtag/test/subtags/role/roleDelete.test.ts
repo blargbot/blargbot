@@ -24,7 +24,7 @@ runSubtagTests({
                 {
                     expected: '',
                     postSetup(role, bbctx, ctx) {
-                        ctx.roleService.setup(m => m.delete(bbctx, role.id)).thenResolve(undefined);
+                        ctx.dependencies.role.setup(m => m.delete(bbctx, role.id)).thenResolve(undefined);
                     }
                 }
             ]
@@ -46,7 +46,7 @@ runSubtagTests({
                 { start: 0, end: 26, error: new BBTagRuntimeError('Role above author') }
             ],
             postSetup(bbctx, ctx) {
-                ctx.roleService.setup(m => m.querySingle(bbctx, '3298746326924', argument.isDeepEqual({ noErrors: false, noLookup: false }))).thenResolve(ctx.roles.top);
+                ctx.dependencies.role.setup(m => m.querySingle(bbctx, '3298746326924', argument.isDeepEqual({ noErrors: false, noLookup: false }))).thenResolve(ctx.roles.top);
             }
         },
         {
@@ -56,8 +56,8 @@ runSubtagTests({
                 { start: 0, end: 26, error: new BBTagRuntimeError('Failed to delete role: no perms', 'Test REST error') }
             ],
             postSetup(bbctx, ctx) {
-                ctx.roleService.setup(m => m.querySingle(bbctx, '3298746326924', argument.isDeepEqual({ noErrors: false, noLookup: false }))).thenResolve(ctx.roles.other);
-                ctx.roleService.setup(m => m.delete(bbctx, ctx.roles.other.id)).thenResolve({ error: 'Test REST error' });
+                ctx.dependencies.role.setup(m => m.querySingle(bbctx, '3298746326924', argument.isDeepEqual({ noErrors: false, noLookup: false }))).thenResolve(ctx.roles.other);
+                ctx.dependencies.role.setup(m => m.delete(bbctx, ctx.roles.other.id)).thenResolve({ error: 'Test REST error' });
             }
         },
         {
@@ -67,8 +67,8 @@ runSubtagTests({
                 { start: 0, end: 26, error: new BBTagRuntimeError('Failed to delete role: no perms', 'Some other error message') }
             ],
             postSetup(bbctx, ctx) {
-                ctx.roleService.setup(m => m.querySingle(bbctx, '3298746326924', argument.isDeepEqual({ noErrors: false, noLookup: false }))).thenResolve(ctx.roles.other);
-                ctx.roleService.setup(m => m.delete(bbctx, ctx.roles.other.id)).thenResolve({ error: 'Some other error message' });
+                ctx.dependencies.role.setup(m => m.querySingle(bbctx, '3298746326924', argument.isDeepEqual({ noErrors: false, noLookup: false }))).thenResolve(ctx.roles.other);
+                ctx.dependencies.role.setup(m => m.delete(bbctx, ctx.roles.other.id)).thenResolve({ error: 'Some other error message' });
             }
         }
     ]

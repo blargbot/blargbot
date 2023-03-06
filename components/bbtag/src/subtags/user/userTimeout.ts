@@ -12,7 +12,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = textTemplates.subtags.userTimeout;
 
 @Subtag.names('userTimeout', 'timedoutUntil', 'userTimedoutUntil', 'memberTimeout', 'memberTimedoutUntil')
-@Subtag.ctorArgs(Subtag.service('user'))
+@Subtag.ctorArgs('user')
 export class UserTimeoutSubtag extends CompiledSubtag {
     readonly #users: UserService;
 

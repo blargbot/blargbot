@@ -10,7 +10,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = textTemplates.subtags.map;
 
 @Subtag.names('map')
-@Subtag.ctorArgs(Subtag.arrayTools())
+@Subtag.ctorArgs('arrayTools')
 export class MapSubtag extends CompiledSubtag {
     readonly #arrayTools: BBTagArrayTools;
 

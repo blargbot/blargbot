@@ -17,13 +17,13 @@ runSubtagTests({
                 {
                     expected: '0',
                     postSetup(member, bbctx, ctx) {
-                        ctx.warnings.setup(m => m.count(bbctx, member)).thenResolve(0);
+                        ctx.dependencies.warnings.setup(m => m.count(bbctx, member)).thenResolve(0);
                     }
                 },
                 {
                     expected: '1234',
                     postSetup(member, bbctx, ctx) {
-                        ctx.warnings.setup(m => m.count(bbctx, member)).thenResolve(1234);
+                        ctx.dependencies.warnings.setup(m => m.count(bbctx, member)).thenResolve(1234);
                     }
                 }
             ]

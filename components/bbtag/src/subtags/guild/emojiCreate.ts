@@ -21,7 +21,7 @@ interface EmojiCreateOptions {
 }
 
 @Subtag.names('emojiCreate')
-@Subtag.ctorArgs(Subtag.arrayTools(), Subtag.service('role'), Subtag.service('guild'))
+@Subtag.ctorArgs('arrayTools', 'role', 'guild')
 export class EmojiCreateSubtag extends CompiledSubtag {
     readonly #arrayTools: BBTagArrayTools;
     readonly #roles: RoleService;

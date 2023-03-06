@@ -37,8 +37,8 @@ runSubtagTests({
                 bbctx.data.allowedMentions.users = userMentions;
                 bbctx.data.reactions = emotes.map(m => m.toString());
 
-                ctx.messageService.setup(m => m.addReactions(bbctx, message.channel_id, message.id, argument.isDeepEqual(emotes))).thenResolve({ success: emotes, failed: [] });
-                ctx.messageService.setup(m => m.create(bbctx, bbctx.message.channel_id, argument.isDeepEqual({
+                ctx.dependencies.message.setup(m => m.addReactions(bbctx, message.channel_id, message.id, argument.isDeepEqual(emotes))).thenResolve({ success: emotes, failed: [] });
+                ctx.dependencies.message.setup(m => m.create(bbctx, bbctx.message.channel_id, argument.isDeepEqual({
                     content: '',
                     embeds: embeds,
                     files: files,
@@ -78,8 +78,8 @@ runSubtagTests({
                 bbctx.data.reactions = emotes.map(m => m.toString());
                 bbctx.data.nsfw = 'This is the nsfw message';
 
-                ctx.messageService.setup(m => m.addReactions(bbctx, message.channel_id, message.id, argument.isDeepEqual(emotes))).thenResolve({ success: emotes, failed: [] });
-                ctx.messageService.setup(m => m.create(bbctx, bbctx.message.channel_id, argument.isDeepEqual({
+                ctx.dependencies.message.setup(m => m.addReactions(bbctx, message.channel_id, message.id, argument.isDeepEqual(emotes))).thenResolve({ success: emotes, failed: [] });
+                ctx.dependencies.message.setup(m => m.create(bbctx, bbctx.message.channel_id, argument.isDeepEqual({
                     content: '',
                     embeds: embeds,
                     files: files,
@@ -117,8 +117,8 @@ runSubtagTests({
                 bbctx.data.reactions = emotes.map(m => m.toString());
                 bbctx.data.nsfw = 'This is the nsfw message';
 
-                ctx.messageService.setup(m => m.addReactions(bbctx, message.channel_id, message.id, argument.isDeepEqual(emotes))).thenResolve({ success: emotes, failed: [] });
-                ctx.messageService.setup(m => m.create(bbctx, bbctx.message.channel_id, argument.isDeepEqual({
+                ctx.dependencies.message.setup(m => m.addReactions(bbctx, message.channel_id, message.id, argument.isDeepEqual(emotes))).thenResolve({ success: emotes, failed: [] });
+                ctx.dependencies.message.setup(m => m.create(bbctx, bbctx.message.channel_id, argument.isDeepEqual({
                     content: 'This is my message content',
                     embeds: embeds,
                     files: files,
@@ -158,8 +158,8 @@ runSubtagTests({
                 bbctx.data.reactions = emotes.map(m => m.toString());
                 bbctx.data.nsfw = 'This is the nsfw message';
 
-                ctx.messageService.setup(m => m.addReactions(bbctx, message.channel_id, message.id, argument.isDeepEqual(emotes))).thenResolve({ success: emotes, failed: [] });
-                ctx.messageService.setup(m => m.create(bbctx, bbctx.message.channel_id, argument.isDeepEqual({
+                ctx.dependencies.message.setup(m => m.addReactions(bbctx, message.channel_id, message.id, argument.isDeepEqual(emotes))).thenResolve({ success: emotes, failed: [] });
+                ctx.dependencies.message.setup(m => m.create(bbctx, bbctx.message.channel_id, argument.isDeepEqual({
                     content: 'This is my message content',
                     embeds: embeds,
                     files: files,
@@ -193,8 +193,8 @@ runSubtagTests({
                 bbctx.data.reactions = [];
                 bbctx.data.nsfw = undefined;
 
-                ctx.messageService.setup(m => m.addReactions(bbctx, message.channel_id, message.id, argument.isDeepEqual([]))).thenResolve({ success: [], failed: [] });
-                ctx.messageService.setup(m => m.create(bbctx, bbctx.message.channel_id, argument.isDeepEqual({
+                ctx.dependencies.message.setup(m => m.addReactions(bbctx, message.channel_id, message.id, argument.isDeepEqual([]))).thenResolve({ success: [], failed: [] });
+                ctx.dependencies.message.setup(m => m.create(bbctx, bbctx.message.channel_id, argument.isDeepEqual({
                     content: 'This is my message content',
                     embeds: [],
                     files: undefined,

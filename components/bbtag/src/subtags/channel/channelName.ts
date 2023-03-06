@@ -9,7 +9,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = textTemplates.subtags.channelName;
 
 @Subtag.names('channelName', 'categoryName')
-@Subtag.ctorArgs(Subtag.service('channel'))
+@Subtag.ctorArgs('channel')
 export class ChannelNameSubtag extends CompiledSubtag {
     readonly #channels: ChannelService;
 

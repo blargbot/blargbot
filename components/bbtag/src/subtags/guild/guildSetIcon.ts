@@ -13,7 +13,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = textTemplates.subtags.guildSetIcon;
 
 @Subtag.names('guildSetIcon')
-@Subtag.ctorArgs(Subtag.service('guild'))
+@Subtag.ctorArgs('guild')
 export class GuildSetIconSubtag extends CompiledSubtag {
     readonly #guilds: GuildService;
 

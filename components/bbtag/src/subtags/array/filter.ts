@@ -1,17 +1,17 @@
 import type { SubtagArgument } from '../../arguments/index.js';
 import type { BBTagContext } from '../../BBTagContext.js';
-import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { Subtag } from '../../Subtag.js';
 import textTemplates from '../../text.js';
 import { BBTagRuntimeState } from '../../types.js';
 import type { BBTagArrayTools } from '../../utils/index.js';
 import { overrides, SubtagType } from '../../utils/index.js';
+import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.filter;
 
 @Subtag.names('filter')
-@Subtag.ctorArgs(Subtag.arrayTools(), Subtag.converter())
+@Subtag.ctorArgs('arrayTools', 'converter')
 export class FilterSubtag extends CompiledSubtag {
     readonly #arrayTools: BBTagArrayTools;
     readonly #converter: BBTagValueConverter;

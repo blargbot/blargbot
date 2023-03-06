@@ -18,7 +18,7 @@ runSubtagTests({
             code: '{slowmode}',
             expected: '',
             postSetup(bbctx, ctx) {
-                ctx.channelService.setup(m => m.edit(bbctx, ctx.channels.command.id, argument.isDeepEqual({ rateLimitPerUser: 0 })))
+                ctx.dependencies.channel.setup(m => m.edit(bbctx, ctx.channels.command.id, argument.isDeepEqual({ rateLimitPerUser: 0 })))
                     .thenResolve(undefined);
             }
         },
@@ -26,9 +26,9 @@ runSubtagTests({
             code: '{slowmode;1234}',
             expected: '',
             postSetup(bbctx, ctx) {
-                ctx.channelService.setup(m => m.querySingle(bbctx, '1234', argument.isDeepEqual({ noLookup: true })))
+                ctx.dependencies.channel.setup(m => m.querySingle(bbctx, '1234', argument.isDeepEqual({ noLookup: true })))
                     .thenResolve();
-                ctx.channelService.setup(m => m.edit(bbctx, ctx.channels.command.id, argument.isDeepEqual({ rateLimitPerUser: 1234 })))
+                ctx.dependencies.channel.setup(m => m.edit(bbctx, ctx.channels.command.id, argument.isDeepEqual({ rateLimitPerUser: 1234 })))
                     .thenResolve(undefined);
             }
         },
@@ -38,9 +38,9 @@ runSubtagTests({
             postSetup(bbctx, ctx) {
                 const choices = Object.values(ctx.channels);
                 const channel = choices[randomInt(choices.length)];
-                ctx.channelService.setup(m => m.querySingle(bbctx, '2342543235325252345', argument.isDeepEqual({ noLookup: true })))
+                ctx.dependencies.channel.setup(m => m.querySingle(bbctx, '2342543235325252345', argument.isDeepEqual({ noLookup: true })))
                     .thenResolve(channel);
-                ctx.channelService.setup(m => m.edit(bbctx, channel.id, argument.isDeepEqual({ rateLimitPerUser: 0 })))
+                ctx.dependencies.channel.setup(m => m.edit(bbctx, channel.id, argument.isDeepEqual({ rateLimitPerUser: 0 })))
                     .thenResolve(undefined);
             }
         },
@@ -50,9 +50,9 @@ runSubtagTests({
             postSetup(bbctx, ctx) {
                 const choices = Object.values(ctx.channels);
                 const channel = choices[randomInt(choices.length)];
-                ctx.channelService.setup(m => m.querySingle(bbctx, '2342543235325252345', argument.isDeepEqual({ noLookup: true })))
+                ctx.dependencies.channel.setup(m => m.querySingle(bbctx, '2342543235325252345', argument.isDeepEqual({ noLookup: true })))
                     .thenResolve(channel);
-                ctx.channelService.setup(m => m.edit(bbctx, channel.id, argument.isDeepEqual({ rateLimitPerUser: 21600 })))
+                ctx.dependencies.channel.setup(m => m.edit(bbctx, channel.id, argument.isDeepEqual({ rateLimitPerUser: 21600 })))
                     .thenResolve(undefined);
             }
         },
@@ -62,9 +62,9 @@ runSubtagTests({
             postSetup(bbctx, ctx) {
                 const choices = Object.values(ctx.channels);
                 const channel = choices[randomInt(choices.length)];
-                ctx.channelService.setup(m => m.querySingle(bbctx, '2342543235325252345', argument.isDeepEqual({ noLookup: true })))
+                ctx.dependencies.channel.setup(m => m.querySingle(bbctx, '2342543235325252345', argument.isDeepEqual({ noLookup: true })))
                     .thenResolve(channel);
-                ctx.channelService.setup(m => m.edit(bbctx, channel.id, argument.isDeepEqual({ rateLimitPerUser: 0 })))
+                ctx.dependencies.channel.setup(m => m.edit(bbctx, channel.id, argument.isDeepEqual({ rateLimitPerUser: 0 })))
                     .thenResolve(undefined);
             }
         },
@@ -77,9 +77,9 @@ runSubtagTests({
             postSetup(bbctx, ctx) {
                 const choices = Object.values(ctx.channels);
                 const channel = choices[randomInt(choices.length)];
-                ctx.channelService.setup(m => m.querySingle(bbctx, '2342543235325252345', argument.isDeepEqual({ noLookup: true })))
+                ctx.dependencies.channel.setup(m => m.querySingle(bbctx, '2342543235325252345', argument.isDeepEqual({ noLookup: true })))
                     .thenResolve(channel);
-                ctx.channelService.setup(m => m.edit(bbctx, channel.id, argument.isDeepEqual({ rateLimitPerUser: 0 })))
+                ctx.dependencies.channel.setup(m => m.edit(bbctx, channel.id, argument.isDeepEqual({ rateLimitPerUser: 0 })))
                     .thenResolve({ error: 'Test REST error' });
             }
         },
@@ -92,9 +92,9 @@ runSubtagTests({
             postSetup(bbctx, ctx) {
                 const choices = Object.values(ctx.channels);
                 const channel = choices[randomInt(choices.length)];
-                ctx.channelService.setup(m => m.querySingle(bbctx, '2342543235325252345', argument.isDeepEqual({ noLookup: true })))
+                ctx.dependencies.channel.setup(m => m.querySingle(bbctx, '2342543235325252345', argument.isDeepEqual({ noLookup: true })))
                     .thenResolve(channel);
-                ctx.channelService.setup(m => m.edit(bbctx, channel.id, argument.isDeepEqual({ rateLimitPerUser: 0 })))
+                ctx.dependencies.channel.setup(m => m.edit(bbctx, channel.id, argument.isDeepEqual({ rateLimitPerUser: 0 })))
                     .thenResolve({ error: 'Some other error message' });
             }
         }

@@ -1,6 +1,5 @@
 import type { SubtagArgument } from '../../arguments/index.js';
 import type { BBTagContext } from '../../BBTagContext.js';
-import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { AggregateBBTagError, BBTagRuntimeError, InvalidOperatorError, NotANumberError } from '../../errors/index.js';
 import { Subtag } from '../../Subtag.js';
@@ -8,11 +7,12 @@ import textTemplates from '../../text.js';
 import { BBTagRuntimeState } from '../../types.js';
 import type { BBTagOperators, OrdinalOperator } from '../../utils/index.js';
 import { comparisonOperators, SubtagType } from '../../utils/index.js';
+import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.for;
 
 @Subtag.names('for')
-@Subtag.ctorArgs(Subtag.operators(), Subtag.converter())
+@Subtag.ctorArgs('operators', 'converter')
 export class ForSubtag extends CompiledSubtag {
     readonly #operators: BBTagOperators;
     readonly #converter: BBTagValueConverter;

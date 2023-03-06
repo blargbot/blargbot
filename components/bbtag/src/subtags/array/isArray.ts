@@ -7,7 +7,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = textTemplates.subtags.isArray;
 
 @Subtag.names('isArray')
-@Subtag.ctorArgs(Subtag.arrayTools())
+@Subtag.ctorArgs('arrayTools')
 export class IsArraySubtag extends CompiledSubtag {
     readonly #arrayTools: BBTagArrayTools;
 

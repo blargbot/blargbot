@@ -1,22 +1,23 @@
 import type { BBTagContext } from '../../BBTagContext.js';
-import type { BBTagUtilities, BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { UserNotFoundError } from '../../errors/index.js';
+import type { ModLogService } from '../../services/ModLogService.js';
 import type { UserService } from '../../services/UserService.js';
 import { Subtag } from '../../Subtag.js';
 import textTemplates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
+import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.modLog;
 
 @Subtag.names('modLog')
-@Subtag.ctorArgs(Subtag.util(), Subtag.converter(), Subtag.service('user'))
+@Subtag.ctorArgs('modLog', 'converter', 'user')
 export class ModLogSubtag extends CompiledSubtag {
-    readonly #util: BBTagUtilities;
+    readonly #modLog: ModLogService;
     readonly #converter: BBTagValueConverter;
     readonly #users: UserService;
 
-    public constructor(util: BBTagUtilities, converter: BBTagValueConverter, users: UserService) {
+    public constructor(modLog: ModLogService, converter: BBTagValueConverter, users: UserService) {
         super({
             category: SubtagType.BOT,
             description: tag.description,
@@ -32,7 +33,7 @@ export class ModLogSubtag extends CompiledSubtag {
             ]
         });
 
-        this.#util = util;
+        this.#modLog = modLog;
         this.#converter = converter;
         this.#users = users;
     }
@@ -54,6 +55,6 @@ export class ModLogSubtag extends CompiledSubtag {
         //TODO no user found for this?
         const mod = await this.#users.querySingle(context, modStr) ?? context.user;
 
-        await this.#util.addModLog(context.guild, action, user, mod, reason, color);
+        await this.#modLog.addModLog(context.guild, action, user, mod, reason, color);
     }
 }

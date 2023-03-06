@@ -14,7 +14,7 @@ const tag = textTemplates.subtags.color;
 export type ColorFormat = keyof typeof colorConverters;
 
 @Subtag.names('color')
-@Subtag.ctorArgs(Subtag.arrayTools())
+@Subtag.ctorArgs('arrayTools')
 export class ColorSubtag extends CompiledSubtag {
     readonly #arrayTools: BBTagArrayTools;
 

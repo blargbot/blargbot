@@ -1,5 +1,4 @@
 import type { BBTagContext } from '../../BBTagContext.js';
-import type { BBTagUtilities } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, UserNotFoundError } from '../../errors/index.js';
 import type { UserService } from '../../services/UserService.js';
@@ -10,12 +9,11 @@ import { SubtagType } from '../../utils/index.js';
 const tag = textTemplates.subtags.unban;
 
 @Subtag.names('unban')
-@Subtag.ctorArgs(Subtag.util(), Subtag.service('user'))
+@Subtag.ctorArgs('user')
 export class UnbanSubtag extends CompiledSubtag {
-    readonly #util: BBTagUtilities;
     readonly #users: UserService;
 
-    public constructor(util: BBTagUtilities, users: UserService) {
+    public constructor(users: UserService) {
         super({
             category: SubtagType.USER,
             definition: [
@@ -38,7 +36,6 @@ export class UnbanSubtag extends CompiledSubtag {
             ]
         });
 
-        this.#util = util;
         this.#users = users;
     }
 
@@ -57,7 +54,7 @@ export class UnbanSubtag extends CompiledSubtag {
             reason = 'Tag Unban';
 
         const authorizer = noPerms ? context.authorizer : context.user;
-        const result = await this.#util.unban(context.guild, user, context.user, authorizer, reason);
+        const result = await this.#users.unban(context.guild, user, context.user, authorizer, reason);
 
         switch (result) {
             case 'success': return true;

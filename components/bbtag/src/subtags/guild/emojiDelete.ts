@@ -12,7 +12,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = textTemplates.subtags.emojiDelete;
 
 @Subtag.names('emojiDelete')
-@Subtag.ctorArgs(Subtag.service('guild'))
+@Subtag.ctorArgs('guild')
 export class EmojiDeleteSubtag extends CompiledSubtag {
     readonly #guilds: GuildService;
 

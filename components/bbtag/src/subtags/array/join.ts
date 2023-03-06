@@ -9,7 +9,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = textTemplates.subtags.join;
 
 @Subtag.names('join')
-@Subtag.ctorArgs(Subtag.arrayTools())
+@Subtag.ctorArgs('arrayTools')
 export class JoinSubtag extends CompiledSubtag {
     readonly #arrayTools: BBTagArrayTools;
 

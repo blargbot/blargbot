@@ -11,7 +11,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = textTemplates.subtags.userBoostDate;
 
 @Subtag.names('userBoostDate')
-@Subtag.ctorArgs(Subtag.service('user'))
+@Subtag.ctorArgs('user')
 export class UserBoostDateSubtag extends CompiledSubtag {
     readonly #users: UserService;
 

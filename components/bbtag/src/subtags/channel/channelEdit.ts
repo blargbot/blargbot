@@ -15,7 +15,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = textTemplates.subtags.channelEdit;
 
 @Subtag.names('channelEdit')
-@Subtag.ctorArgs(Subtag.service('channel'))
+@Subtag.ctorArgs('channel')
 export class ChannelEditSubtag extends CompiledSubtag {
     readonly #channels: ChannelService;
 

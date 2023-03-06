@@ -12,7 +12,7 @@ runSubtagTests({
             code: '{channelcategories}',
             expected: '[]',
             postSetup(bbctx, ctx) {
-                ctx.channelService.setup(m => m.getAll(bbctx)).thenResolve(Object.values(ctx.channels));
+                ctx.dependencies.channel.setup(m => m.getAll(bbctx)).thenResolve(Object.values(ctx.channels));
             }
         },
 
@@ -30,7 +30,7 @@ runSubtagTests({
                 });
             },
             postSetup(bbctx, ctx) {
-                ctx.channelService.setup(m => m.getAll(bbctx)).thenResolve(Object.values(ctx.channels));
+                ctx.dependencies.channel.setup(m => m.getAll(bbctx)).thenResolve(Object.values(ctx.channels));
             }
         }
     ]

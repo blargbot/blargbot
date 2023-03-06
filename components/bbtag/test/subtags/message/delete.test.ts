@@ -15,7 +15,7 @@ runSubtagTests({
                 ctx.isStaff = false;
             },
             postSetup(bbctx, ctx) {
-                ctx.messageService.setup(m => m.delete(bbctx, ctx.channels.command.id, ctx.message.id)).thenResolve();
+                ctx.dependencies.message.setup(m => m.delete(bbctx, ctx.channels.command.id, ctx.message.id)).thenResolve();
             }
         },
         {
@@ -27,7 +27,7 @@ runSubtagTests({
                 ctx.isStaff = false;
             },
             postSetup(bbctx, ctx) {
-                ctx.messageService.setup(m => m.delete(bbctx, ctx.channels.command.id, ctx.message.id)).thenResolve();
+                ctx.dependencies.message.setup(m => m.delete(bbctx, ctx.channels.command.id, ctx.message.id)).thenResolve();
             }
         },
         {
@@ -55,8 +55,8 @@ runSubtagTests({
                     id: '1234567890123456'
                 }, ctx.users.command);
 
-                ctx.messageService.setup(m => m.get(bbctx, bbctx.channel.id, message.id)).thenResolve(message);
-                ctx.messageService.setup(m => m.delete(bbctx, ctx.channels.command.id, '1234567890123456')).thenResolve();
+                ctx.dependencies.message.setup(m => m.get(bbctx, bbctx.channel.id, message.id)).thenResolve(message);
+                ctx.dependencies.message.setup(m => m.delete(bbctx, ctx.channels.command.id, '1234567890123456')).thenResolve();
             }
         },
         {
@@ -72,8 +72,8 @@ runSubtagTests({
                     id: '1234567890123456'
                 }, ctx.users.command);
 
-                ctx.messageService.setup(m => m.get(bbctx, bbctx.channel.id, message.id)).thenResolve(message);
-                ctx.messageService.setup(m => m.delete(bbctx, ctx.channels.command.id, '1234567890123456')).thenResolve();
+                ctx.dependencies.message.setup(m => m.get(bbctx, bbctx.channel.id, message.id)).thenResolve(message);
+                ctx.dependencies.message.setup(m => m.delete(bbctx, ctx.channels.command.id, '1234567890123456')).thenResolve();
             }
         },
         {
@@ -97,7 +97,7 @@ runSubtagTests({
                 ctx.message.channel_id = ctx.channels.command.id = '9876543212345678';
             },
             postSetup(bbctx, ctx) {
-                ctx.messageService.setup(m => m.get(bbctx, bbctx.channel.id, '1234567890123456')).thenResolve(undefined);
+                ctx.dependencies.message.setup(m => m.get(bbctx, bbctx.channel.id, '1234567890123456')).thenResolve(undefined);
             },
             errors: [
                 { start: 0, end: 25, error: new MessageNotFoundError('9876543212345678', '1234567890123456').withDisplay('') }
@@ -113,7 +113,7 @@ runSubtagTests({
                 ctx.isStaff = false;
             },
             postSetup(bbctx, ctx) {
-                ctx.messageService.setup(m => m.delete(bbctx, ctx.channels.command.id, ctx.message.id)).thenResolve();
+                ctx.dependencies.message.setup(m => m.delete(bbctx, ctx.channels.command.id, ctx.message.id)).thenResolve();
             }
         },
         {
@@ -146,9 +146,9 @@ runSubtagTests({
                     id: '1234567890123456'
                 }, ctx.users.command);
 
-                ctx.channelService.setup(m => m.querySingle(bbctx, '987654322123456142')).thenResolve(channel);
-                ctx.messageService.setup(m => m.get(bbctx, channel.id, message.id)).thenResolve(message);
-                ctx.messageService.setup(m => m.delete(bbctx, channel.id, '1234567890123456')).thenResolve();
+                ctx.dependencies.channel.setup(m => m.querySingle(bbctx, '987654322123456142')).thenResolve(channel);
+                ctx.dependencies.message.setup(m => m.get(bbctx, channel.id, message.id)).thenResolve(message);
+                ctx.dependencies.message.setup(m => m.delete(bbctx, channel.id, '1234567890123456')).thenResolve();
             }
         },
         {
@@ -159,7 +159,7 @@ runSubtagTests({
                 ctx.isStaff = true;
             },
             postSetup(bbctx, ctx) {
-                ctx.channelService.setup(m => m.querySingle(bbctx, '987654322123456142')).thenResolve(undefined);
+                ctx.dependencies.channel.setup(m => m.querySingle(bbctx, '987654322123456142')).thenResolve(undefined);
             },
             errors: [
                 { start: 0, end: 44, error: new ChannelNotFoundError('987654322123456142') }

@@ -8,7 +8,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = textTemplates.subtags.guildMembers;
 
 @Subtag.names('guildMembers')
-@Subtag.ctorArgs(Subtag.service('user'))
+@Subtag.ctorArgs('user')
 export class GuildMembersSubtag extends CompiledSubtag {
     readonly #users: UserService;
 

@@ -9,7 +9,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = textTemplates.subtags.pop;
 
 @Subtag.names('pop')
-@Subtag.ctorArgs(Subtag.arrayTools())
+@Subtag.ctorArgs('arrayTools')
 export class PopSubtag extends CompiledSubtag {
     readonly #arrayTools: BBTagArrayTools;
 

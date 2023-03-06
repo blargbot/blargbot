@@ -9,7 +9,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = textTemplates.subtags.userIsBot;
 
 @Subtag.names('userIsBot', 'userBot')
-@Subtag.ctorArgs(Subtag.service('user'))
+@Subtag.ctorArgs('user')
 export class UserIsBotSubtag extends CompiledSubtag {
     readonly #users: UserService;
 

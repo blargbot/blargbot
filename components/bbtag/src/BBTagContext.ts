@@ -5,8 +5,6 @@ import { hasFlag } from '@blargbot/guards';
 import type { FlagDefinition, FlagResult } from '@blargbot/input';
 import { parseInput } from '@blargbot/input';
 import { Timer } from '@blargbot/timer';
-import type moment from 'moment-timezone';
-import ReadWriteLock from 'rwlock';
 
 import type { BBTagEngine } from './BBTagEngine.js';
 import type { BBTagRuntimeError } from './errors/index.js';
@@ -17,7 +15,6 @@ import { limits } from './limits/index.js';
 import { ScopeManager } from './ScopeManager.js';
 import type { Subtag } from './Subtag.js';
 import { SubtagCallStack } from './SubtagCallStack.js';
-import { TagCooldownManager } from './TagCooldownManager.js';
 import type { BBTagContextOptions, BBTagContextState, BBTagRuntimeScope, Entities, LocatedRuntimeError, RuntimeDebugEntry, SerializedBBTagContext } from './types.js';
 import { BBTagRuntimeState } from './types.js';
 import { VariableCache } from './variables/Caching.js';
@@ -45,8 +42,6 @@ export class BBTagContext implements BBTagContextOptions {
     public readonly rootTagName: string;
     public readonly tagName: string;
     public readonly cooldown: number;
-    public readonly cooldowns: TagCooldownManager;
-    public readonly locks: Record<string, ReadWriteLock | undefined>;
     public readonly limit: RuntimeLimit;
     public readonly silent: boolean;
     public readonly execTimer: Timer;
@@ -71,7 +66,6 @@ export class BBTagContext implements BBTagContextOptions {
 
     public get parent(): BBTagContext | undefined { return this.#parent; }
     public get totalElapsed(): number { return this.execTimer.elapsed + this.dbTimer.elapsed; }
-    public get cooldownEnd(): moment.Moment { return this.cooldowns.get(this); }
 
     public constructor(
         engine: BBTagEngine,
@@ -100,8 +94,6 @@ export class BBTagContext implements BBTagContextOptions {
         this.rootTagName = options.rootTagName ?? options.tagName ?? 'unknown';
         this.tagName = options.tagName ?? this.rootTagName;
         this.cooldown = options.cooldown ?? 0;
-        this.cooldowns = options.cooldowns ?? new TagCooldownManager();
-        this.locks = options.locks ?? {};
         this.limit = typeof options.limit === 'string' ? new limits[options.limit](this.guild) : options.limit;
         this.silent = options.silent ?? false;
         this.errors = [];
@@ -263,13 +255,9 @@ export class BBTagContext implements BBTagContextOptions {
         }));
     }
 
-    public getLock(key: string): ReadWriteLock {
-        return this.locks[key] ??= new ReadWriteLock();
-    }
-
     async #sendOutput(text: string): Promise<string | undefined> {
         const disableEveryone = !this.isCC || !this.data.allowedMentions.everybody;
-        const response = await this.engine.dependencies.services.message.create(this, this.channel.id, {
+        const response = await this.engine.dependencies.message.create(this, this.channel.id, {
             content: text,
             embeds: this.data.embeds !== undefined ? this.data.embeds : undefined,
             allowed_mentions: {
@@ -290,7 +278,7 @@ export class BBTagContext implements BBTagContextOptions {
         }
 
         this.data.ownedMsgs.push(response.id);
-        await this.engine.dependencies.services.message.addReactions(this, this.channel.id, response.id, [...new Set(this.data.reactions)].map(Emote.parse));
+        await this.engine.dependencies.message.addReactions(this, this.channel.id, response.id, [...new Set(this.data.reactions)].map(Emote.parse));
         return response.id;
     }
 

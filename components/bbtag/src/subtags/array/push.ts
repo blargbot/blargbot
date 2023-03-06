@@ -9,7 +9,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = textTemplates.subtags.push;
 
 @Subtag.names('push')
-@Subtag.ctorArgs(Subtag.arrayTools())
+@Subtag.ctorArgs('arrayTools')
 export class PushSubtag extends CompiledSubtag {
     readonly #arrayTools: BBTagArrayTools;
 

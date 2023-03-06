@@ -1,15 +1,15 @@
-import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { NotANumberError } from '../../errors/index.js';
 import { Subtag } from '../../Subtag.js';
 import textTemplates from '../../text.js';
 import type { BBTagArrayTools } from '../../utils/index.js';
 import { SubtagType } from '../../utils/index.js';
+import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.absolute;
 
 @Subtag.names('absolute', 'abs')
-@Subtag.ctorArgs(Subtag.arrayTools(), Subtag.converter())
+@Subtag.ctorArgs('arrayTools', 'converter')
 export class AbsoluteSubtag extends CompiledSubtag {
     readonly #arrayTools: BBTagArrayTools;
     readonly #converter: BBTagValueConverter;

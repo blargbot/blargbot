@@ -13,7 +13,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = textTemplates.subtags.messageEditTime;
 
 @Subtag.names('messageEditTime')
-@Subtag.ctorArgs(Subtag.service('channel'), Subtag.service('message'))
+@Subtag.ctorArgs('channel', 'message')
 export class MessageEditTimeSubtag extends CompiledSubtag {
     readonly #channels: ChannelService;
     readonly #messages: MessageService;

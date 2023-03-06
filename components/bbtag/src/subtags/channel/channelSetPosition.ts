@@ -2,18 +2,18 @@ import Discord from '@blargbot/discord-types';
 import { hasFlag } from '@blargbot/guards';
 
 import type { BBTagContext } from '../../BBTagContext.js';
-import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, NotANumberError } from '../../errors/index.js';
 import type { ChannelService } from '../../services/ChannelService.js';
 import { Subtag } from '../../Subtag.js';
 import textTemplates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
+import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.channelSetPosition;
 
 @Subtag.names('channelSetPosition', 'channelSetPos')
-@Subtag.ctorArgs(Subtag.converter(), Subtag.service('channel'))
+@Subtag.ctorArgs('converter', 'channel')
 export class ChannelSetPositionSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;
     readonly #channels: ChannelService;

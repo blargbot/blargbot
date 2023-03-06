@@ -10,7 +10,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = textTemplates.subtags.messageAttachments;
 
 @Subtag.names('messageAttachments', 'attachments')
-@Subtag.ctorArgs(Subtag.service('channel'), Subtag.service('message'))
+@Subtag.ctorArgs('channel', 'message')
 export class MessageAttachmentsSubtag extends CompiledSubtag {
     readonly #channels: ChannelService;
     readonly #messages: MessageService;

@@ -11,7 +11,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = textTemplates.subtags.shuffle;
 
 @Subtag.names('shuffle')
-@Subtag.ctorArgs(Subtag.arrayTools())
+@Subtag.ctorArgs('arrayTools')
 export class ShuffleSubtag extends CompiledSubtag {
     readonly #arrayTools: BBTagArrayTools;
 

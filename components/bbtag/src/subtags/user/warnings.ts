@@ -1,8 +1,8 @@
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { UserNotFoundError } from '../../errors/index.js';
-import type { WarningService } from '../../index.js';
 import type { UserService } from '../../services/UserService.js';
+import type { WarningService } from '../../services/WarningService.js';
 import { Subtag } from '../../Subtag.js';
 import textTemplates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
@@ -10,7 +10,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = textTemplates.subtags.warnings;
 
 @Subtag.names('warnings')
-@Subtag.ctorArgs(Subtag.inject('warnings'), Subtag.service('user'))
+@Subtag.ctorArgs('warnings', 'user')
 export class WarningsSubtag extends CompiledSubtag {
     readonly #users: UserService;
     readonly #warnings: WarningService;

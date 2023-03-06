@@ -2,14 +2,8 @@ import type { Entities } from '@bbtag/blargbot';
 import { BBTagRuntimeError, Subtag, UserNotFoundError } from '@bbtag/blargbot';
 import { TimeoutSubtag } from '@bbtag/blargbot/subtags';
 import { argument } from '@blargbot/test-util/mock.js';
-import moment from 'moment-timezone';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
-
-function isDuration(ms: number): moment.Duration {
-    return argument.is(moment.isDuration).and(x =>
-        x.asMilliseconds() === ms).value;
-}
 
 runSubtagTests({
     subtag: Subtag.getDescriptor(TimeoutSubtag),
@@ -29,7 +23,7 @@ runSubtagTests({
                 { start: 0, end: 16, error: new UserNotFoundError('abc') }
             ],
             postSetup(bbctx, ctx) {
-                ctx.userService.setup(m => m.querySingle(bbctx, 'abc', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(undefined);
+                ctx.dependencies.user.setup(m => m.querySingle(bbctx, 'abc', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(undefined);
             }
         },
         {
@@ -37,8 +31,8 @@ runSubtagTests({
             expected: 'Success',
             postSetup(bbctx, ctx) {
                 const user = ctx.createMock<Entities.User>();
-                ctx.userService.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
-                ctx.util.setup(x => x.timeout(user.instance, bbctx.user, bbctx.user, isDuration(1000), 'Tag Timeout'))
+                ctx.dependencies.user.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
+                ctx.dependencies.user.setup(x => x.mute(user.instance, bbctx.user, bbctx.user, 1000, 'Tag Timeout'))
                     .verifiable(1)
                     .thenResolve('success');
             }
@@ -48,8 +42,8 @@ runSubtagTests({
             expected: 'Success',
             postSetup(bbctx, ctx) {
                 const user = ctx.createMock<Entities.User>();
-                ctx.userService.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
-                ctx.util.setup(x => x.timeout(user.instance, bbctx.user, bbctx.user, isDuration(2505600000), 'Tag Timeout'))
+                ctx.dependencies.user.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
+                ctx.dependencies.user.setup(x => x.mute(user.instance, bbctx.user, bbctx.user, 2505600000, 'Tag Timeout'))
                     .verifiable(1)
                     .thenResolve('success');
             }
@@ -70,8 +64,8 @@ runSubtagTests({
             postSetup(bbctx, ctx) {
                 const user = ctx.createMock<Entities.User>();
                 user.setup(m => m.username).thenReturn('other user');
-                ctx.userService.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
-                ctx.util.setup(x => x.clearTimeout(user.instance, bbctx.user, bbctx.user, 'Tag Timeout'))
+                ctx.dependencies.user.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
+                ctx.dependencies.user.setup(x => x.unmute(user.instance, bbctx.user, bbctx.user, 'Tag Timeout'))
                     .verifiable(1)
                     .thenResolve('notTimedOut');
             }
@@ -85,8 +79,8 @@ runSubtagTests({
             postSetup(bbctx, ctx) {
                 const user = ctx.createMock<Entities.User>();
                 user.setup(m => m.username).thenReturn('other user');
-                ctx.userService.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
-                ctx.util.setup(x => x.timeout(user.instance, bbctx.user, bbctx.user, isDuration(1000), 'Tag Timeout'))
+                ctx.dependencies.user.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
+                ctx.dependencies.user.setup(x => x.mute(user.instance, bbctx.user, bbctx.user, 1000, 'Tag Timeout'))
                     .verifiable(1)
                     .thenResolve('alreadyTimedOut');
             }
@@ -99,8 +93,8 @@ runSubtagTests({
             ],
             postSetup(bbctx, ctx) {
                 const user = ctx.createMock<Entities.User>();
-                ctx.userService.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
-                ctx.util.setup(x => x.timeout(user.instance, bbctx.user, bbctx.user, isDuration(1000), 'Tag Timeout'))
+                ctx.dependencies.user.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
+                ctx.dependencies.user.setup(x => x.mute(user.instance, bbctx.user, bbctx.user, 1000, 'Tag Timeout'))
                     .verifiable(1)
                     .thenResolve('noPerms');
             }
@@ -114,8 +108,8 @@ runSubtagTests({
             postSetup(bbctx, ctx) {
                 const user = ctx.createMock<Entities.User>();
                 user.setup(m => m.username).thenReturn('other user');
-                ctx.userService.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
-                ctx.util.setup(x => x.timeout(user.instance, bbctx.user, bbctx.user, isDuration(1000), 'Tag Timeout'))
+                ctx.dependencies.user.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
+                ctx.dependencies.user.setup(x => x.mute(user.instance, bbctx.user, bbctx.user, 1000, 'Tag Timeout'))
                     .verifiable(1)
                     .thenResolve('memberTooHigh');
             }
@@ -128,8 +122,8 @@ runSubtagTests({
             ],
             postSetup(bbctx, ctx) {
                 const user = ctx.createMock<Entities.User>();
-                ctx.userService.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
-                ctx.util.setup(x => x.timeout(user.instance, bbctx.user, bbctx.user, isDuration(1000), 'Tag Timeout'))
+                ctx.dependencies.user.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
+                ctx.dependencies.user.setup(x => x.mute(user.instance, bbctx.user, bbctx.user, 1000, 'Tag Timeout'))
                     .verifiable(1)
                     .thenResolve('moderatorNoPerms');
             }
@@ -143,8 +137,8 @@ runSubtagTests({
             postSetup(bbctx, ctx) {
                 const user = ctx.createMock<Entities.User>();
                 user.setup(m => m.username).thenReturn('other user');
-                ctx.userService.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
-                ctx.util.setup(x => x.timeout(user.instance, bbctx.user, bbctx.user, isDuration(1000), 'Tag Timeout'))
+                ctx.dependencies.user.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
+                ctx.dependencies.user.setup(x => x.mute(user.instance, bbctx.user, bbctx.user, 1000, 'Tag Timeout'))
                     .verifiable(1)
                     .thenResolve('moderatorTooLow');
             }

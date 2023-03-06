@@ -9,7 +9,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = textTemplates.subtags.userDiscriminator;
 
 @Subtag.names('userDiscriminator', 'userDiscrim')
-@Subtag.ctorArgs(Subtag.service('user'))
+@Subtag.ctorArgs('user')
 export class UserDiscriminatorSubtag extends CompiledSubtag {
     readonly #users: UserService;
 

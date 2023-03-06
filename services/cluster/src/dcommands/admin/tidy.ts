@@ -1,6 +1,6 @@
 import type { CommandResult, GuildCommandContext } from '@blargbot/cluster/types.js';
 import { CommandType } from '@blargbot/cluster/utils/index.js';
-import { createSafeRegExp } from '@blargbot/core/utils/index.js';
+import { createSafeRegExp } from '@blargbot/core/utils/createSafeRegExp.js';
 import { invite } from '@blargbot/discord-util';
 import * as Eris from 'eris';
 import moment from 'moment-timezone';

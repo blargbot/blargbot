@@ -1,15 +1,15 @@
-import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { InvalidOperatorError, NotABooleanError } from '../../errors/index.js';
 import { Subtag } from '../../Subtag.js';
 import textTemplates from '../../text.js';
 import type { BBTagOperators, LogicOperator } from '../../utils/index.js';
 import { logicOperators, SubtagType } from '../../utils/index.js';
+import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.logic;
 
 @Subtag.names('logic')
-@Subtag.ctorArgs(Subtag.operators(), Subtag.converter())
+@Subtag.ctorArgs('operators', 'converter')
 export class LogicSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;
     readonly #operators: BBTagOperators;

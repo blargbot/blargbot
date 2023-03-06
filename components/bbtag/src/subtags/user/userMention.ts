@@ -1,18 +1,18 @@
 import { markup } from '@blargbot/discord-util';
 
 import type { BBTagContext } from '../../BBTagContext.js';
-import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { NotABooleanError, UserNotFoundError } from '../../errors/index.js';
 import type { UserService } from '../../services/UserService.js';
 import { Subtag } from '../../Subtag.js';
 import textTemplates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
+import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.userMention;
 
 @Subtag.names('userMention')
-@Subtag.ctorArgs(Subtag.converter(), Subtag.service('user'))
+@Subtag.ctorArgs('converter', 'user')
 export class UserMentionSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;
     readonly #users: UserService;

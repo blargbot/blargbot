@@ -12,7 +12,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = textTemplates.subtags.channelDelete;
 
 @Subtag.names('channelDelete')
-@Subtag.ctorArgs(Subtag.service('channel'))
+@Subtag.ctorArgs('channel')
 export class ChannelDeleteSubtag extends CompiledSubtag {
     readonly #channels: ChannelService;
 

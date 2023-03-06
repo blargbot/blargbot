@@ -2,25 +2,26 @@ import type { TypeMapping } from '@blargbot/mapping';
 import { mapping } from '@blargbot/mapping';
 import fetch from 'node-fetch';
 
-import type { BBTagUtilities, BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
+import type { DomainFilterService } from '../../services/DomainFilterService.js';
 import { Subtag } from '../../Subtag.js';
 import textTemplates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
+import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.request;
 
 const domainRegex = /^https?:\/\/(.+?)(?:\/.?|$)/i;
 
 @Subtag.names('request')
-@Subtag.ctorArgs(Subtag.util(), Subtag.converter())
+@Subtag.ctorArgs('domains', 'converter')
 export class RequestSubtag extends CompiledSubtag {
-    readonly #util: BBTagUtilities;
+    readonly #domains: DomainFilterService;
     readonly #converter: BBTagValueConverter;
     readonly #mapOptions: TypeMapping<RequestOptions>;
 
-    public constructor(util: BBTagUtilities, converter: BBTagValueConverter) {
+    public constructor(domains: DomainFilterService, converter: BBTagValueConverter) {
         super({
             category: SubtagType.BOT,
             description: tag.description,
@@ -36,7 +37,7 @@ export class RequestSubtag extends CompiledSubtag {
             ]
         });
 
-        this.#util = util;
+        this.#domains = domains;
         this.#converter = converter;
         this.#mapOptions = createMapOptions(this.#converter);
     }
@@ -51,7 +52,7 @@ export class RequestSubtag extends CompiledSubtag {
             throw new BBTagRuntimeError(`A domain could not be extracted from url: ${url}`);
 
         const domain = domainMatch[1];
-        if (!this.#util.canRequestDomain(domain))
+        if (!this.#domains.canRequestDomain(domain))
             throw new BBTagRuntimeError(`Domain is not whitelisted: ${domain}`);
 
         const request = {

@@ -7,7 +7,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = textTemplates.subtags.concat;
 
 @Subtag.names('concat')
-@Subtag.ctorArgs(Subtag.arrayTools())
+@Subtag.ctorArgs('arrayTools')
 export class ConcatSubtag extends CompiledSubtag {
     readonly #arrayTools: BBTagArrayTools;
 

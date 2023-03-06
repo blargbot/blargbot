@@ -7,7 +7,14 @@
         ".": "./index.js"
     },
     "dependencies": {
+        "@bbtag/blargbot": "workspace:^",
         "@blargbot/application": "workspace:^",
-        "@blargbot/env": "workspace:^"
+        "@blargbot/discord-emote": "workspace:^",
+        "@blargbot/env": "workspace:^",
+        "@blargbot/message-broker": "workspace:^",
+        "amqplib": "^0.10.3"
+    },
+    "devDependencies": {
+        "@types/amqplib": "^0.10.1"
     }
 }

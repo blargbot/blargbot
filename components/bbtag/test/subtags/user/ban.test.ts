@@ -2,14 +2,8 @@ import type { Entities } from '@bbtag/blargbot';
 import { BBTagRuntimeError, NotANumberError, Subtag, UserNotFoundError } from '@bbtag/blargbot';
 import { BanSubtag } from '@bbtag/blargbot/subtags';
 import { argument } from '@blargbot/test-util/mock.js';
-import moment from 'moment-timezone';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
-
-function isDuration(ms: number): moment.Duration {
-    return argument.is(moment.isDuration).and(x =>
-        x.asMilliseconds() === ms).value;
-}
 
 runSubtagTests({
     subtag: Subtag.getDescriptor(BanSubtag),
@@ -22,7 +16,7 @@ runSubtagTests({
                 { start: 0, end: 9, error: new UserNotFoundError('abc') }
             ],
             postSetup(bbctx, ctx) {
-                ctx.userService.setup(m => m.querySingle(bbctx, 'abc', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(undefined);
+                ctx.dependencies.user.setup(m => m.querySingle(bbctx, 'abc', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(undefined);
             }
         },
         {
@@ -30,8 +24,8 @@ runSubtagTests({
             expected: 'true',
             postSetup(bbctx, ctx) {
                 const user = ctx.createMock<Entities.User>();
-                ctx.userService.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
-                ctx.util.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, bbctx.user, 1, 'Tag Ban', isDuration(Infinity)))
+                ctx.dependencies.user.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
+                ctx.dependencies.user.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, bbctx.user, 1, 'Tag Ban', Infinity))
                     .verifiable(1)
                     .thenResolve('success');
             }
@@ -41,8 +35,8 @@ runSubtagTests({
             expected: 'true',
             postSetup(bbctx, ctx) {
                 const user = ctx.createMock<Entities.User>();
-                ctx.userService.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
-                ctx.util.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, bbctx.user, 1, 'Tag Ban', isDuration(Infinity)))
+                ctx.dependencies.user.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
+                ctx.dependencies.user.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, bbctx.user, 1, 'Tag Ban', Infinity))
                     .verifiable(1)
                     .thenResolve('alreadyBanned');
             }
@@ -55,8 +49,8 @@ runSubtagTests({
             ],
             postSetup(bbctx, ctx) {
                 const user = ctx.createMock<Entities.User>();
-                ctx.userService.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
-                ctx.util.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, bbctx.user, 1, 'Tag Ban', isDuration(Infinity)))
+                ctx.dependencies.user.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
+                ctx.dependencies.user.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, bbctx.user, 1, 'Tag Ban', Infinity))
                     .verifiable(1)
                     .thenResolve('memberTooHigh');
             }
@@ -69,8 +63,8 @@ runSubtagTests({
             ],
             postSetup(bbctx, ctx) {
                 const user = ctx.createMock<Entities.User>();
-                ctx.userService.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
-                ctx.util.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, bbctx.user, 1, 'Tag Ban', isDuration(Infinity)))
+                ctx.dependencies.user.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
+                ctx.dependencies.user.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, bbctx.user, 1, 'Tag Ban', Infinity))
                     .verifiable(1)
                     .thenResolve('moderatorNoPerms');
             }
@@ -83,8 +77,8 @@ runSubtagTests({
             ],
             postSetup(bbctx, ctx) {
                 const user = ctx.createMock<Entities.User>();
-                ctx.userService.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
-                ctx.util.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, bbctx.user, 1, 'Tag Ban', isDuration(Infinity)))
+                ctx.dependencies.user.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
+                ctx.dependencies.user.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, bbctx.user, 1, 'Tag Ban', Infinity))
                     .verifiable(1)
                     .thenResolve('moderatorTooLow');
             }
@@ -97,8 +91,8 @@ runSubtagTests({
             ],
             postSetup(bbctx, ctx) {
                 const user = ctx.createMock<Entities.User>();
-                ctx.userService.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
-                ctx.util.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, bbctx.user, 1, 'Tag Ban', isDuration(Infinity)))
+                ctx.dependencies.user.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
+                ctx.dependencies.user.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, bbctx.user, 1, 'Tag Ban', Infinity))
                     .verifiable(1)
                     .thenResolve('noPerms');
             }
@@ -108,8 +102,8 @@ runSubtagTests({
             expected: 'true',
             postSetup(bbctx, ctx) {
                 const user = ctx.createMock<Entities.User>();
-                ctx.userService.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
-                ctx.util.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, bbctx.user, 5, 'Tag Ban', isDuration(Infinity)))
+                ctx.dependencies.user.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
+                ctx.dependencies.user.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, bbctx.user, 5, 'Tag Ban', Infinity))
                     .verifiable(1)
                     .thenResolve('success');
             }
@@ -119,8 +113,8 @@ runSubtagTests({
             expected: 'true',
             postSetup(bbctx, ctx) {
                 const user = ctx.createMock<Entities.User>();
-                ctx.userService.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
-                ctx.util.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, bbctx.user, -1, 'Tag Ban', isDuration(Infinity)))
+                ctx.dependencies.user.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
+                ctx.dependencies.user.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, bbctx.user, -1, 'Tag Ban', Infinity))
                     .verifiable(1)
                     .thenResolve('success');
             }
@@ -133,7 +127,7 @@ runSubtagTests({
             ],
             postSetup(bbctx, ctx) {
                 const user = ctx.createMock<Entities.User>();
-                ctx.userService.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
+                ctx.dependencies.user.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
             }
         },
         {
@@ -141,8 +135,8 @@ runSubtagTests({
             expected: 'true',
             postSetup(bbctx, ctx) {
                 const user = ctx.createMock<Entities.User>();
-                ctx.userService.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
-                ctx.util.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, bbctx.user, 1, 'My custom reason', isDuration(Infinity)))
+                ctx.dependencies.user.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
+                ctx.dependencies.user.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, bbctx.user, 1, 'My custom reason', Infinity))
                     .verifiable(1)
                     .thenResolve('success');
             }
@@ -152,8 +146,8 @@ runSubtagTests({
             expected: 'true',
             postSetup(bbctx, ctx) {
                 const user = ctx.createMock<Entities.User>();
-                ctx.userService.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
-                ctx.util.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, bbctx.user, 7, 'My custom reason', isDuration(Infinity)))
+                ctx.dependencies.user.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
+                ctx.dependencies.user.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, bbctx.user, 7, 'My custom reason', Infinity))
                     .verifiable(1)
                     .thenResolve('success');
             }
@@ -163,8 +157,8 @@ runSubtagTests({
             expected: '432000000',
             postSetup(bbctx, ctx) {
                 const user = ctx.createMock<Entities.User>();
-                ctx.userService.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
-                ctx.util.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, bbctx.user, 1, 'Tag Ban', isDuration(432000000)))
+                ctx.dependencies.user.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
+                ctx.dependencies.user.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, bbctx.user, 1, 'Tag Ban', 432000000))
                     .verifiable(1)
                     .thenResolve('success');
             }
@@ -174,8 +168,8 @@ runSubtagTests({
             expected: '7200000',
             postSetup(bbctx, ctx) {
                 const user = ctx.createMock<Entities.User>();
-                ctx.userService.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
-                ctx.util.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, bbctx.user, 7, 'My custom reason', isDuration(7200000)))
+                ctx.dependencies.user.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
+                ctx.dependencies.user.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, bbctx.user, 7, 'My custom reason', 7200000))
                     .verifiable(1)
                     .thenResolve('success');
             }
@@ -185,8 +179,8 @@ runSubtagTests({
             expected: 'true',
             postSetup(bbctx, ctx) {
                 const user = ctx.createMock<Entities.User>();
-                ctx.userService.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
-                ctx.util.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, ctx.users.authorizer, 1, 'Tag Ban', isDuration(Infinity)))
+                ctx.dependencies.user.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
+                ctx.dependencies.user.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, ctx.users.authorizer, 1, 'Tag Ban', Infinity))
                     .verifiable(1)
                     .thenResolve('success');
             }
@@ -196,8 +190,8 @@ runSubtagTests({
             expected: 'true',
             postSetup(bbctx, ctx) {
                 const user = ctx.createMock<Entities.User>();
-                ctx.userService.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
-                ctx.util.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, ctx.users.authorizer, 1, 'Tag Ban', isDuration(Infinity)))
+                ctx.dependencies.user.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
+                ctx.dependencies.user.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, ctx.users.authorizer, 1, 'Tag Ban', Infinity))
                     .verifiable(1)
                     .thenResolve('success');
             }
@@ -207,8 +201,8 @@ runSubtagTests({
             expected: 'true',
             postSetup(bbctx, ctx) {
                 const user = ctx.createMock<Entities.User>();
-                ctx.userService.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
-                ctx.util.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, ctx.users.authorizer, 1, 'Tag Ban', isDuration(Infinity)))
+                ctx.dependencies.user.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
+                ctx.dependencies.user.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, ctx.users.authorizer, 1, 'Tag Ban', Infinity))
                     .verifiable(1)
                     .thenResolve('success');
             }
@@ -218,8 +212,8 @@ runSubtagTests({
             expected: '7230000',
             postSetup(bbctx, ctx) {
                 const user = ctx.createMock<Entities.User>();
-                ctx.userService.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
-                ctx.util.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, ctx.users.authorizer, 4, 'My custom reason', isDuration(7230000)))
+                ctx.dependencies.user.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
+                ctx.dependencies.user.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, ctx.users.authorizer, 4, 'My custom reason', 7230000))
                     .verifiable(1)
                     .thenResolve('success');
             }

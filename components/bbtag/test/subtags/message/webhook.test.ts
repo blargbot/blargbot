@@ -16,7 +16,7 @@ runSubtagTests({
                 { start: 0, end: 17, error: new BBTagRuntimeError('Error executing webhook: Test error') }
             ],
             postSetup(bbctx, ctx) {
-                ctx.messageService.setup(m => m.runWebhook(bbctx, 'abc', 'def', argument.isDeepEqual({
+                ctx.dependencies.message.setup(m => m.runWebhook(bbctx, 'abc', 'def', argument.isDeepEqual({
                     username: undefined,
                     avatarUrl: undefined,
                     content: undefined,
@@ -33,7 +33,7 @@ runSubtagTests({
                 { start: 0, end: 17, error: new BBTagRuntimeError('Error executing webhook: 404 NotFound on POST /webhooks') }
             ],
             postSetup(bbctx, ctx) {
-                ctx.messageService.setup(m => m.runWebhook(bbctx, 'abc', 'def', argument.isDeepEqual({
+                ctx.dependencies.message.setup(m => m.runWebhook(bbctx, 'abc', 'def', argument.isDeepEqual({
                     username: undefined,
                     avatarUrl: undefined,
                     content: undefined,
@@ -50,7 +50,7 @@ runSubtagTests({
                 { start: 0, end: 17, error: new BBTagRuntimeError('Error executing webhook: UNKNOWN') }
             ],
             postSetup(bbctx, ctx) {
-                ctx.messageService.setup(m => m.runWebhook(bbctx, 'abc', 'def', argument.isDeepEqual({
+                ctx.dependencies.message.setup(m => m.runWebhook(bbctx, 'abc', 'def', argument.isDeepEqual({
                     username: undefined,
                     avatarUrl: undefined,
                     content: undefined,
@@ -64,7 +64,7 @@ runSubtagTests({
             subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
             expected: '',
             postSetup(bbctx, ctx) {
-                ctx.messageService.setup(m => m.runWebhook(bbctx, 'abc', 'def', argument.isDeepEqual({
+                ctx.dependencies.message.setup(m => m.runWebhook(bbctx, 'abc', 'def', argument.isDeepEqual({
                     username: undefined,
                     avatarUrl: undefined,
                     content: undefined,
@@ -78,7 +78,7 @@ runSubtagTests({
             subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
             expected: '',
             postSetup(bbctx, ctx) {
-                ctx.messageService.setup(m => m.runWebhook(bbctx, 'abc', 'def', argument.isDeepEqual({
+                ctx.dependencies.message.setup(m => m.runWebhook(bbctx, 'abc', 'def', argument.isDeepEqual({
                     username: undefined,
                     avatarUrl: undefined,
                     content: 'ghi',
@@ -92,7 +92,7 @@ runSubtagTests({
             subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
             expected: '',
             postSetup(bbctx, ctx) {
-                ctx.messageService.setup(m => m.runWebhook(bbctx, 'abc', 'def', argument.isDeepEqual({
+                ctx.dependencies.message.setup(m => m.runWebhook(bbctx, 'abc', 'def', argument.isDeepEqual({
                     username: undefined,
                     avatarUrl: undefined,
                     content: 'ghi',
@@ -106,7 +106,7 @@ runSubtagTests({
             subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
             expected: '',
             postSetup(bbctx, ctx) {
-                ctx.messageService.setup(m => m.runWebhook(bbctx, 'abc', 'def', argument.isDeepEqual({
+                ctx.dependencies.message.setup(m => m.runWebhook(bbctx, 'abc', 'def', argument.isDeepEqual({
                     username: undefined,
                     avatarUrl: undefined,
                     content: 'ghi',
@@ -120,7 +120,7 @@ runSubtagTests({
             subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
             expected: '',
             postSetup(bbctx, ctx) {
-                ctx.messageService.setup(m => m.runWebhook(bbctx, 'abc', 'def', argument.isDeepEqual({
+                ctx.dependencies.message.setup(m => m.runWebhook(bbctx, 'abc', 'def', argument.isDeepEqual({
                     username: 'jkl',
                     avatarUrl: undefined,
                     content: 'ghi',
@@ -134,7 +134,7 @@ runSubtagTests({
             subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
             expected: '',
             postSetup(bbctx, ctx) {
-                ctx.messageService.setup(m => m.runWebhook(bbctx, 'abc', 'def', argument.isDeepEqual({
+                ctx.dependencies.message.setup(m => m.runWebhook(bbctx, 'abc', 'def', argument.isDeepEqual({
                     username: 'jkl',
                     avatarUrl: 'mno',
                     content: 'ghi',
@@ -148,7 +148,7 @@ runSubtagTests({
             subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
             expected: '',
             postSetup(bbctx, ctx) {
-                ctx.messageService.setup(m => m.runWebhook(bbctx, 'abc', 'def', argument.isDeepEqual({
+                ctx.dependencies.message.setup(m => m.runWebhook(bbctx, 'abc', 'def', argument.isDeepEqual({
                     username: 'jkl',
                     avatarUrl: 'mno',
                     content: 'ghi',
@@ -162,7 +162,7 @@ runSubtagTests({
             subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
             expected: '',
             postSetup(bbctx, ctx) {
-                ctx.messageService.setup(m => m.runWebhook(bbctx, 'abc', 'def', argument.isDeepEqual({
+                ctx.dependencies.message.setup(m => m.runWebhook(bbctx, 'abc', 'def', argument.isDeepEqual({
                     username: 'jkl',
                     avatarUrl: 'mno',
                     content: 'ghi',
@@ -176,7 +176,7 @@ runSubtagTests({
             subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
             expected: '',
             postSetup(bbctx, ctx) {
-                ctx.messageService.setup(m => m.runWebhook(bbctx, 'abc', 'def', argument.isDeepEqual({
+                ctx.dependencies.message.setup(m => m.runWebhook(bbctx, 'abc', 'def', argument.isDeepEqual({
                     username: 'jkl',
                     avatarUrl: 'mno',
                     content: 'ghi',
@@ -190,7 +190,7 @@ runSubtagTests({
             subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
             expected: '',
             postSetup(bbctx, ctx) {
-                ctx.messageService.setup(m => m.runWebhook(bbctx, 'abc', 'def', argument.isDeepEqual({
+                ctx.dependencies.message.setup(m => m.runWebhook(bbctx, 'abc', 'def', argument.isDeepEqual({
                     username: 'jkl',
                     avatarUrl: 'mno',
                     content: 'ghi',

@@ -9,7 +9,7 @@ const tag = textTemplates.subtags.emojis;
 
 //TODO IMO this should return an array of emoji IDs instead of an array of emojis
 @Subtag.names('emojis')
-@Subtag.ctorArgs(Subtag.service('role'))
+@Subtag.ctorArgs('role')
 export class EmojisSubtag extends CompiledSubtag {
     readonly #roles: RoleService;
 

@@ -1,16 +1,16 @@
 import type { BBTagContext } from '../../BBTagContext.js';
-import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, NotAnArrayError } from '../../errors/index.js';
 import { Subtag } from '../../Subtag.js';
 import textTemplates from '../../text.js';
 import type { BBTagJsonTools, BBTagOperators } from '../../utils/index.js';
 import { SubtagType } from '../../utils/index.js';
+import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.jsonSort;
 
 @Subtag.names('jsonSort', 'jSort')
-@Subtag.ctorArgs(Subtag.operators(), Subtag.jsonTools(), Subtag.converter())
+@Subtag.ctorArgs('operators', 'jsonTools', 'converter')
 export class JsonSortSubtag extends CompiledSubtag {
     readonly #operators: BBTagOperators;
     readonly #jsonTools: BBTagJsonTools;

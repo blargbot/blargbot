@@ -1,5 +1,4 @@
 import type { BBTagContext } from '../../BBTagContext.js';
-import type { BBTagUtilities } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, UserNotFoundError } from '../../errors/index.js';
 import type { UserService } from '../../services/UserService.js';
@@ -10,12 +9,11 @@ import { SubtagType } from '../../utils/index.js';
 const tag = textTemplates.subtags.kick;
 
 @Subtag.names('kick')
-@Subtag.ctorArgs(Subtag.util(), Subtag.service('user'))
+@Subtag.ctorArgs('user')
 export class KickSubtag extends CompiledSubtag {
-    readonly #util: BBTagUtilities;
     readonly #users: UserService;
 
-    public constructor(util: BBTagUtilities, users: UserService) {
+    public constructor(users: UserService) {
         super({
             category: SubtagType.USER,
             description: tag.description,
@@ -39,7 +37,6 @@ export class KickSubtag extends CompiledSubtag {
             ]
         });
 
-        this.#util = util;
         this.#users = users;
     }
 
@@ -57,7 +54,7 @@ export class KickSubtag extends CompiledSubtag {
             reason = 'Tag Kick';
 
         const authorizer = noPerms ? context.authorizer : context.user;
-        const response = await this.#util.kick(user, context.user, authorizer, reason);
+        const response = await this.#users.kick(user, context.user, authorizer, reason);
 
         switch (response) {
             case 'success': //Successful

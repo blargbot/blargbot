@@ -9,7 +9,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = textTemplates.subtags.roleColor;
 
 @Subtag.names('roleColor')
-@Subtag.ctorArgs(Subtag.service('role'))
+@Subtag.ctorArgs('role')
 export class RoleColorSubtag extends CompiledSubtag {
     readonly #roles: RoleService;
 

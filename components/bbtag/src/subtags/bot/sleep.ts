@@ -1,19 +1,19 @@
 import { sleep } from '@blargbot/async-tools';
 import moment from 'moment-timezone';
 
-import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
 import { Subtag } from '../../Subtag.js';
 import textTemplates from '../../text.js';
-import { SubtagType } from '../../utils/index.js';
+import { resolveDuration, SubtagType } from '../../utils/index.js';
+import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.sleep;
 
 const maxSleep = moment.duration(5, 'minutes');
 
 @Subtag.names('sleep')
-@Subtag.ctorArgs(Subtag.converter())
+@Subtag.ctorArgs('converter')
 export class SleepSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;
 
@@ -36,13 +36,14 @@ export class SleepSubtag extends CompiledSubtag {
     }
 
     public async sleep(duration: string): Promise<void> {
-        let delay = this.#converter.duration(duration);
+        let delay = resolveDuration(this.#converter.duration(duration))?.asMilliseconds();
         if (delay === undefined)
             throw new BBTagRuntimeError('Invalid duration');
 
-        if (delay.asMilliseconds() > maxSleep.asMilliseconds())
-            delay = maxSleep;
+        const max = resolveDuration(maxSleep).asMilliseconds();
+        if (delay > max)
+            delay = max;
 
-        await sleep(delay.asMilliseconds());
+        await sleep(delay);
     }
 }

@@ -1,9 +1,9 @@
 import { hasValue } from '@blargbot/guards';
 
 import type { BBTagContext } from '../BBTagContext.js';
-import type { VariablesStore } from '../BBTagUtilities.js';
-import type { TagVariableScopeProvider } from '../tagVariableScopeProviders.js';
+import type { VariablesStore } from '../services/VariablesStore.js';
 import type { TagVariableScope } from './TagVariableScope.js';
+import type { TagVariableScopeProvider } from './tagVariableScopeProviders.js';
 
 export interface VariableReference {
     readonly key: string;

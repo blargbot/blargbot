@@ -18,7 +18,7 @@ runSubtagTests({
                 ctx.users.bot.id = '23746392746789426394';
             },
             postSetup(bbctx, ctx) {
-                ctx.userService.setup(m => m.getAll(bbctx)).thenResolve(Object.values(ctx.users));
+                ctx.dependencies.user.setup(m => m.getAll(bbctx)).thenResolve(Object.values(ctx.users));
             }
         }
     ]

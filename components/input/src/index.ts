@@ -1,3 +1,4 @@
+export * from './parser/index.js';
 export * from './FlagDefinition.js';
 export * from './InputParser.js';
 export * from './FlagResult.js';

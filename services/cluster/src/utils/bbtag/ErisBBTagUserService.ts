@@ -1,4 +1,5 @@
 import type { BBTagContext, Entities, EntityQueryService, FindEntityOptions, UserService } from '@bbtag/blargbot';
+import { util } from '@blargbot/formatting';
 import type * as Eris from 'eris';
 
 import type { Cluster } from '../../Cluster.js';
@@ -62,5 +63,30 @@ export class ErisBBTagUserService implements UserService {
 
     public async edit(context: BBTagContext, userId: string, update: Partial<Entities.Member>, reason?: string): Promise<void> {
         await this.#cluster.discord.editGuildMember(context.guild.id, userId, update, reason ?? context.auditReason());
+    }
+
+    public mute(member: Entities.User, moderator: Entities.User, authorizer: Entities.User, durationMs: number, reason?: string | undefined): Promise<'noPerms' | 'success' | 'alreadyTimedOut' | 'memberTooHigh' | 'moderatorNoPerms' | 'moderatorTooLow'> {
+        // @ts-expect-error This is only a reference file for now
+        return this.#cluster.moderation.timeouts.timeout(member, moderator, authorizer, durationMs, util.literal(reason));
+    }
+
+    public unmute(member: Entities.User, moderator: Entities.User, authorizer: Entities.User, reason?: string | undefined): Promise<'noPerms' | 'success' | 'moderatorNoPerms' | 'notTimedOut'> {
+        // @ts-expect-error This is only a reference file for now
+        return this.#cluster.moderation.timeouts.clearTimeout(member, moderator, authorizer, util.literal(reason));
+    }
+
+    public ban(guild: Entities.Guild, user: Entities.User, moderator: Entities.User, authorizer: Entities.User, deleteDays: number, reason: string, durationMs: number): Promise<'success' | 'alreadyBanned' | 'noPerms' | 'memberTooHigh' | 'moderatorNoPerms' | 'moderatorTooLow'> {
+        // @ts-expect-error This is only a reference file for now
+        return this.#cluster.moderation.bans.ban(guild, user, moderator, authorizer, deleteDays, util.literal(reason), durationMs);
+    }
+
+    public unban(guild: Entities.Guild, user: Entities.User, moderator: Entities.User, authorizer: Entities.User, reason?: string): Promise<'success' | 'noPerms' | 'moderatorNoPerms' | 'notBanned'> {
+        // @ts-expect-error This is only a reference file for now
+        return this.#cluster.moderation.bans.unban(guild, user, moderator, authorizer, util.literal(reason));
+    }
+
+    public kick(member: Entities.User, moderator: Entities.User, authorizer: Entities.User, reason?: string): Promise<'success' | 'noPerms' | 'memberTooHigh' | 'moderatorNoPerms' | 'moderatorTooLow'> {
+        // @ts-expect-error This is only a reference file for now
+        return this.#cluster.moderation.bans.kick(member, moderator, authorizer, util.literal(reason));
     }
 }

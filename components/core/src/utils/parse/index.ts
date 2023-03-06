@@ -4,7 +4,6 @@ import { parseColor } from './parseColor.js';
 import { parseDuration } from './parseDuration.js';
 import { parseFloat } from './parseFloat.js';
 import { parseInt } from './parseInt.js';
-import { parseString } from './parseString.js';
 import { parseTime } from './parseTime.js';
 import { parseUrl } from './parseUrl.js';
 
@@ -15,7 +14,6 @@ export const parse = {
     int: parseInt,
     bigInt: parseBigInt,
     boolean: parseBoolean,
-    string: parseString,
     time: parseTime,
     url: parseUrl
 };

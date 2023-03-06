@@ -11,7 +11,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = textTemplates.subtags.userJoinedAt;
 
 @Subtag.names('userJoinedAt')
-@Subtag.ctorArgs(Subtag.service('user'))
+@Subtag.ctorArgs('user')
 export class UserJoinedAtSubtag extends CompiledSubtag {
     readonly #users: UserService;
 

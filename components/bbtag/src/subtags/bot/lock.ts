@@ -1,21 +1,21 @@
-import type ReadWriteLock from 'rwlock';
-
 import type { SubtagArgument } from '../../arguments/index.js';
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
-import { getLock } from '../../getLock.js';
+import type { LockService } from '../../services/LockService.js';
 import { Subtag } from '../../Subtag.js';
-import { tagVariableScopeProviders } from '../../tagVariableScopeProviders.js';
 import textTemplates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
+import { tagVariableScopeProviders } from '../../variables/tagVariableScopeProviders.js';
 
 const tag = textTemplates.subtags.lock;
 
 @Subtag.names('lock')
-@Subtag.ctorArgs()
+@Subtag.ctorArgs('lock')
 export class LockSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #lock: LockService;
+
+    public constructor(lock: LockService) {
         super({
             category: SubtagType.BOT,
             definition: [
@@ -29,6 +29,8 @@ export class LockSubtag extends CompiledSubtag {
                 }
             ]
         });
+
+        this.#lock = lock;
     }
 
     public async lock(
@@ -54,20 +56,15 @@ export class LockSubtag extends CompiledSubtag {
             throw new Error('Missing default variable scope!');
 
         const scope = provider.getScope(context);
-        const lock = getLock(scope, key.substring(provider.prefix.length));
-        const release = await lockAsync(lock, `${mode}Lock`);
+        const release = await this.#lock.acquire(scope, key.substring(provider.prefix.length), mode === 'write');
         try {
             context.scopes.local.inLock = true;
             return await code.wait();
         } finally {
             context.scopes.local.inLock = false;
-            release();
+            await release();
         }
     }
-}
-
-function lockAsync(lock: ReadWriteLock, mode: 'readLock' | 'writeLock'): Promise<() => void> {
-    return new Promise(resolve => lock[mode](release => resolve(release)));
 }
 
 function isValidLockMode(mode: string): mode is 'read' | 'write' {

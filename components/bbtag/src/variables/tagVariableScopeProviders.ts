@@ -1,9 +1,9 @@
 import type { IFormattable } from '@blargbot/formatting';
 
-import type { BBTagContext } from './BBTagContext.js';
-import textTemplates from './text.js';
-import type { TagVariableScope } from './variables/TagVariableScope.js';
-import { TagVariableType } from './variables/TagVariableType.js';
+import type { BBTagContext } from '../BBTagContext.js';
+import textTemplates from '../text.js';
+import type { TagVariableScope } from './TagVariableScope.js';
+import { TagVariableType } from './TagVariableType.js';
 
 export const tagVariableScopeProviders: readonly TagVariableScopeProvider[] = [
     {

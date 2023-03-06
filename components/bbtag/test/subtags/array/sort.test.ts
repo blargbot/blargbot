@@ -78,7 +78,7 @@ runSubtagTests({
             setup(ctx) {
                 ctx.options.tagName = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, ['this', 'is', 'arr1']);
-                ctx.tagVariablesTable.setup(m => m.set(argument.isDeepEqual([{ name: 'arr1', value: ['arr1', 'is', 'this'], scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' } }]))).thenResolve(undefined);
+                ctx.dependencies.variables.setup(m => m.set(argument.isDeepEqual([{ name: 'arr1', value: ['arr1', 'is', 'this'], scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' } }]))).thenResolve(undefined);
             },
             async assert(bbctx) {
                 chai.expect((await bbctx.variables.get('arr1')).value).to.deep.equal(['arr1', 'is', 'this']);

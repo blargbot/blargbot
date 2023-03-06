@@ -1,8 +1,7 @@
-import type { Logger } from '@blargbot/logger';
-
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, RoleNotFoundError, UserNotFoundError } from '../../errors/index.js';
+import type { BBTagLogger } from '../../services/BBTagLogger.js';
 import type { UserService } from '../../services/UserService.js';
 import { Subtag } from '../../Subtag.js';
 import textTemplates from '../../text.js';
@@ -12,13 +11,13 @@ import { SubtagType } from '../../utils/index.js';
 const tag = textTemplates.subtags.roleRemove;
 
 @Subtag.names('roleRemove', 'removeRole')
-@Subtag.ctorArgs(Subtag.arrayTools(), Subtag.service('user'), Subtag.logger())
+@Subtag.ctorArgs('arrayTools', 'user', 'logger')
 export class RoleRemoveSubtag extends CompiledSubtag {
     readonly #arrayTools: BBTagArrayTools;
     readonly #users: UserService;
-    readonly #logger: Logger;
+    readonly #logger: BBTagLogger;
 
-    public constructor(arrayTools: BBTagArrayTools, users: UserService, logger: Logger) {
+    public constructor(arrayTools: BBTagArrayTools, users: UserService, logger: BBTagLogger) {
         super({
             category: SubtagType.ROLE,
             description: tag.description,

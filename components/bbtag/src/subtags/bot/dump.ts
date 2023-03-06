@@ -1,6 +1,6 @@
 import type { BBTagContext } from '../../BBTagContext.js';
-import type { BBTagUtilities } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
+import type { DumpService } from '../../services/DumpService.js';
 import { Subtag } from '../../Subtag.js';
 import textTemplates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
@@ -8,11 +8,11 @@ import { SubtagType } from '../../utils/index.js';
 const tag = textTemplates.subtags.dump;
 
 @Subtag.names('dump')
-@Subtag.ctorArgs(Subtag.util())
+@Subtag.ctorArgs('dump')
 export class DumpSubtag extends CompiledSubtag {
-    readonly #util: BBTagUtilities;
+    readonly #dump: DumpService;
 
-    public constructor(util: BBTagUtilities) {
+    public constructor(dump: DumpService) {
         super({
             category: SubtagType.BOT,
             definition: [
@@ -27,11 +27,10 @@ export class DumpSubtag extends CompiledSubtag {
             ]
         });
 
-        this.#util = util;
+        this.#dump = dump;
     }
 
     public async createDump(context: BBTagContext, text: string): Promise<string> {
-        const id = await this.#util.generateDumpPage({ content: text }, context.channel);
-        return this.#util.websiteLink(`dumps/${id}`);
+        return await this.#dump.generateDumpPage({ content: text }, context.channel);
     }
 }

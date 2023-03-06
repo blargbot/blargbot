@@ -17,7 +17,7 @@ runSubtagTests({
                 { start: 0, end: 30, error: new ChannelNotFoundError('1923681361978632931') }
             ],
             postSetup(bbctx, ctx) {
-                ctx.channelService.setup(m => m.querySingle(bbctx, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve();
+                ctx.dependencies.channel.setup(m => m.querySingle(bbctx, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve();
             }
         },
         {
@@ -38,8 +38,8 @@ runSubtagTests({
                 bbctx.data.allowedMentions.roles = roleMentions;
                 bbctx.data.allowedMentions.users = userMentions;
 
-                ctx.channelService.setup(m => m.querySingle(bbctx, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
-                ctx.messageService.setup(m => m.create(bbctx, general.id, argument.isDeepEqual({
+                ctx.dependencies.channel.setup(m => m.querySingle(bbctx, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
+                ctx.dependencies.message.setup(m => m.create(bbctx, general.id, argument.isDeepEqual({
                     content: 'abc',
                     embeds: undefined,
                     files: undefined,
@@ -70,8 +70,8 @@ runSubtagTests({
                 bbctx.data.allowedMentions.roles = roleMentions;
                 bbctx.data.allowedMentions.users = userMentions;
 
-                ctx.channelService.setup(m => m.querySingle(bbctx, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
-                ctx.messageService.setup(m => m.create(bbctx, general.id, argument.isDeepEqual({
+                ctx.dependencies.channel.setup(m => m.querySingle(bbctx, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
+                ctx.dependencies.message.setup(m => m.create(bbctx, general.id, argument.isDeepEqual({
                     content: 'abc',
                     embeds: undefined,
                     files: undefined,
@@ -102,8 +102,8 @@ runSubtagTests({
                 bbctx.data.allowedMentions.roles = roleMentions;
                 bbctx.data.allowedMentions.users = userMentions;
 
-                ctx.channelService.setup(m => m.querySingle(bbctx, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
-                ctx.messageService.setup(m => m.create(bbctx, general.id, argument.isDeepEqual({
+                ctx.dependencies.channel.setup(m => m.querySingle(bbctx, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
+                ctx.dependencies.message.setup(m => m.create(bbctx, general.id, argument.isDeepEqual({
                     content: 'abc',
                     embeds: undefined,
                     files: undefined,
@@ -137,8 +137,8 @@ runSubtagTests({
                 bbctx.data.allowedMentions.roles = roleMentions;
                 bbctx.data.allowedMentions.users = userMentions;
 
-                ctx.channelService.setup(m => m.querySingle(bbctx, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
-                ctx.messageService.setup(m => m.create(bbctx, general.id, argument.isDeepEqual({
+                ctx.dependencies.channel.setup(m => m.querySingle(bbctx, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
+                ctx.dependencies.message.setup(m => m.create(bbctx, general.id, argument.isDeepEqual({
                     content: 'abc',
                     embeds: undefined,
                     files: undefined,
@@ -175,8 +175,8 @@ runSubtagTests({
                 bbctx.data.allowedMentions.roles = roleMentions;
                 bbctx.data.allowedMentions.users = userMentions;
 
-                ctx.channelService.setup(m => m.querySingle(bbctx, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
-                ctx.messageService.setup(m => m.create(bbctx, general.id, argument.isDeepEqual({
+                ctx.dependencies.channel.setup(m => m.querySingle(bbctx, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
+                ctx.dependencies.message.setup(m => m.create(bbctx, general.id, argument.isDeepEqual({
                     content: undefined,
                     embeds: [{ title: 'New embed!' }],
                     files: undefined,
@@ -212,8 +212,8 @@ runSubtagTests({
                 bbctx.data.allowedMentions.roles = roleMentions;
                 bbctx.data.allowedMentions.users = userMentions;
 
-                ctx.channelService.setup(m => m.querySingle(bbctx, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
-                ctx.messageService.setup(m => m.create(bbctx, general.id, argument.isDeepEqual({
+                ctx.dependencies.channel.setup(m => m.querySingle(bbctx, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
+                ctx.dependencies.message.setup(m => m.create(bbctx, general.id, argument.isDeepEqual({
                     content: 'abc',
                     embeds: undefined,
                     files: undefined,
@@ -248,8 +248,8 @@ runSubtagTests({
                 bbctx.data.allowedMentions.roles = roleMentions;
                 bbctx.data.allowedMentions.users = userMentions;
 
-                ctx.channelService.setup(m => m.querySingle(bbctx, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
-                ctx.messageService.setup(m => m.create(bbctx, general.id, argument.isDeepEqual({
+                ctx.dependencies.channel.setup(m => m.querySingle(bbctx, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
+                ctx.dependencies.message.setup(m => m.create(bbctx, general.id, argument.isDeepEqual({
                     content: undefined,
                     embeds: [{ title: 'New embed!' }],
                     files: undefined,
@@ -284,8 +284,8 @@ runSubtagTests({
                 bbctx.data.allowedMentions.roles = roleMentions;
                 bbctx.data.allowedMentions.users = userMentions;
 
-                ctx.channelService.setup(m => m.querySingle(bbctx, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
-                ctx.messageService.setup(m => m.create(bbctx, general.id, argument.isDeepEqual({
+                ctx.dependencies.channel.setup(m => m.querySingle(bbctx, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
+                ctx.dependencies.message.setup(m => m.create(bbctx, general.id, argument.isDeepEqual({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
                     files: undefined,
@@ -322,8 +322,8 @@ runSubtagTests({
                 bbctx.data.allowedMentions.roles = roleMentions;
                 bbctx.data.allowedMentions.users = userMentions;
 
-                ctx.channelService.setup(m => m.querySingle(bbctx, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
-                ctx.messageService.setup(m => m.create(bbctx, general.id, argument.isDeepEqual({
+                ctx.dependencies.channel.setup(m => m.querySingle(bbctx, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
+                ctx.dependencies.message.setup(m => m.create(bbctx, general.id, argument.isDeepEqual({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
                     files: undefined,
@@ -358,8 +358,8 @@ runSubtagTests({
                 bbctx.data.allowedMentions.roles = roleMentions;
                 bbctx.data.allowedMentions.users = userMentions;
 
-                ctx.channelService.setup(m => m.querySingle(bbctx, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
-                ctx.messageService.setup(m => m.create(bbctx, general.id, argument.isDeepEqual({
+                ctx.dependencies.channel.setup(m => m.querySingle(bbctx, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
+                ctx.dependencies.message.setup(m => m.create(bbctx, general.id, argument.isDeepEqual({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
                     files: [{ file: 'bXkgZmlsZSBjb250ZW50', name: 'file.txt' }],
@@ -396,8 +396,8 @@ runSubtagTests({
                 bbctx.data.allowedMentions.roles = roleMentions;
                 bbctx.data.allowedMentions.users = userMentions;
 
-                ctx.channelService.setup(m => m.querySingle(bbctx, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
-                ctx.messageService.setup(m => m.create(bbctx, general.id, argument.isDeepEqual({
+                ctx.dependencies.channel.setup(m => m.querySingle(bbctx, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
+                ctx.dependencies.message.setup(m => m.create(bbctx, general.id, argument.isDeepEqual({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
                     files: [{ file: 'bXkgZmlsZSBjb250ZW50', name: 'file.txt' }],
@@ -432,8 +432,8 @@ runSubtagTests({
                 bbctx.data.allowedMentions.roles = roleMentions;
                 bbctx.data.allowedMentions.users = userMentions;
 
-                ctx.channelService.setup(m => m.querySingle(bbctx, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
-                ctx.messageService.setup(m => m.create(bbctx, general.id, argument.isDeepEqual({
+                ctx.dependencies.channel.setup(m => m.querySingle(bbctx, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
+                ctx.dependencies.message.setup(m => m.create(bbctx, general.id, argument.isDeepEqual({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
                     files: [{
@@ -473,8 +473,8 @@ runSubtagTests({
                 bbctx.data.allowedMentions.roles = roleMentions;
                 bbctx.data.allowedMentions.users = userMentions;
 
-                ctx.channelService.setup(m => m.querySingle(bbctx, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
-                ctx.messageService.setup(m => m.create(bbctx, general.id, argument.isDeepEqual({
+                ctx.dependencies.channel.setup(m => m.querySingle(bbctx, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
+                ctx.dependencies.message.setup(m => m.create(bbctx, general.id, argument.isDeepEqual({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
                     files: [{
@@ -512,8 +512,8 @@ runSubtagTests({
                 bbctx.data.allowedMentions.roles = roleMentions;
                 bbctx.data.allowedMentions.users = userMentions;
 
-                ctx.channelService.setup(m => m.querySingle(bbctx, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
-                ctx.messageService.setup(m => m.create(bbctx, general.id, argument.isDeepEqual({
+                ctx.dependencies.channel.setup(m => m.querySingle(bbctx, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
+                ctx.dependencies.message.setup(m => m.create(bbctx, general.id, argument.isDeepEqual({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
                     files: [{ file: 'bXkgZmlsZSBjb250ZW50', name: 'test.zip' }],
@@ -550,8 +550,8 @@ runSubtagTests({
                 bbctx.data.allowedMentions.roles = roleMentions;
                 bbctx.data.allowedMentions.users = userMentions;
 
-                ctx.channelService.setup(m => m.querySingle(bbctx, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
-                ctx.messageService.setup(m => m.create(bbctx, general.id, argument.isDeepEqual({
+                ctx.dependencies.channel.setup(m => m.querySingle(bbctx, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
+                ctx.dependencies.message.setup(m => m.create(bbctx, general.id, argument.isDeepEqual({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
                     files: [{ file: 'bXkgZmlsZSBjb250ZW50', name: 'test.zip' }],
@@ -586,8 +586,8 @@ runSubtagTests({
                 bbctx.data.allowedMentions.roles = roleMentions;
                 bbctx.data.allowedMentions.users = userMentions;
 
-                ctx.channelService.setup(m => m.querySingle(bbctx, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
-                ctx.messageService.setup(m => m.create(bbctx, general.id, argument.isDeepEqual({
+                ctx.dependencies.channel.setup(m => m.querySingle(bbctx, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
+                ctx.dependencies.message.setup(m => m.create(bbctx, general.id, argument.isDeepEqual({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
                     files: [{
@@ -627,8 +627,8 @@ runSubtagTests({
                 bbctx.data.allowedMentions.roles = roleMentions;
                 bbctx.data.allowedMentions.users = userMentions;
 
-                ctx.channelService.setup(m => m.querySingle(bbctx, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
-                ctx.messageService.setup(m => m.create(bbctx, general.id, argument.isDeepEqual({
+                ctx.dependencies.channel.setup(m => m.querySingle(bbctx, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
+                ctx.dependencies.message.setup(m => m.create(bbctx, general.id, argument.isDeepEqual({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
                     files: [{

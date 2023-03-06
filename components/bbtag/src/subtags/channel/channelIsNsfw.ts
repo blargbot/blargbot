@@ -9,7 +9,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = textTemplates.subtags.channelIsNsfw;
 
 @Subtag.names('channelIsNsfw', 'isNsfw')
-@Subtag.ctorArgs(Subtag.service('channel'))
+@Subtag.ctorArgs('channel')
 export class ChannelIsNsfwSubtag extends CompiledSubtag {
     readonly #channels: ChannelService;
 

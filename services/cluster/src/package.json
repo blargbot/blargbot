@@ -32,6 +32,7 @@
         "@blargbot/modules": "workspace:^",
         "@blargbot/res": "workspace:^",
         "@blargbot/timer": "workspace:^",
+        "@blargbot/user-regex": "workspace:^",
         "@hunteroi/versioning": "^1.3.2",
         "brainfuck-node": "^1.0.2",
         "crypto": "^1.0.1",
@@ -40,6 +41,7 @@
         "moment-timezone": "^0.5.41",
         "node-fetch": "^3.3.0",
         "prom-client": "^14.1.1",
+        "rwlock": "^5.0.0",
         "wolken": "^0.2.1",
         "xml2js": "^0.4.23"
     },
@@ -50,6 +52,7 @@
         "@types/eris": "workspace:^",
         "@types/md5": "^2.3.2",
         "@types/node-fetch": "^2.6.2",
+        "@types/rwlock": "^5",
         "@types/wolken": "workspace:^",
         "@types/xml2js": "^0.4.11"
     }

@@ -1,7 +1,7 @@
 import type { BBTagContext } from '../../BBTagContext.js';
-import type { BBTagUtilities } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { UserNotFoundError } from '../../errors/index.js';
+import type { StaffService } from '../../services/StaffService.js';
 import type { UserService } from '../../services/UserService.js';
 import { Subtag } from '../../Subtag.js';
 import textTemplates from '../../text.js';
@@ -10,12 +10,12 @@ import { SubtagType } from '../../utils/index.js';
 const tag = textTemplates.subtags.isStaff;
 
 @Subtag.names('isStaff', 'isMod')
-@Subtag.ctorArgs(Subtag.util(), Subtag.service('user'))
+@Subtag.ctorArgs('staff', 'user')
 export class IsStaffSubtag extends CompiledSubtag {
-    readonly #util: BBTagUtilities;
+    readonly #staff: StaffService;
     readonly #users: UserService;
 
-    public constructor(util: BBTagUtilities, users: UserService) {
+    public constructor(staff: StaffService, users: UserService) {
         super({
             category: SubtagType.USER,
             definition: [
@@ -38,7 +38,7 @@ export class IsStaffSubtag extends CompiledSubtag {
             ]
         });
 
-        this.#util = util;
+        this.#staff = staff;
         this.#users = users;
     }
 
@@ -51,6 +51,6 @@ export class IsStaffSubtag extends CompiledSubtag {
                 .withDisplay(quiet ? '' : undefined);
         }
 
-        return await this.#util.isUserStaff(member);
+        return await this.#staff.isUserStaff(member);
     }
 }

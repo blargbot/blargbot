@@ -14,7 +14,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = textTemplates.subtags.reactionList;
 
 @Subtag.names('reactionList', 'reactList', 'listReact')
-@Subtag.ctorArgs(Subtag.service('channel'), Subtag.service('message'))
+@Subtag.ctorArgs('channel', 'message')
 export class ReactionListSubtag extends CompiledSubtag {
     readonly #channels: ChannelService;
     readonly #messages: MessageService;

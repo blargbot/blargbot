@@ -1,22 +1,21 @@
 import type { BBTagContext } from '../../BBTagContext.js';
-import type { BBTagUtilities, BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, UserNotFoundError } from '../../errors/index.js';
 import type { UserService } from '../../services/UserService.js';
 import { Subtag } from '../../Subtag.js';
 import textTemplates from '../../text.js';
-import { SubtagType } from '../../utils/index.js';
+import { resolveDuration, SubtagType } from '../../utils/index.js';
+import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.timeout;
 
 @Subtag.names('timeout')
-@Subtag.ctorArgs(Subtag.util(), Subtag.converter(), Subtag.service('user'))
+@Subtag.ctorArgs('converter', 'user')
 export class TimeoutSubtag extends CompiledSubtag {
-    readonly #util: BBTagUtilities;
     readonly #converter: BBTagValueConverter;
     readonly #users: UserService;
 
-    public constructor(util: BBTagUtilities, converter: BBTagValueConverter, users: UserService) {
+    public constructor(converter: BBTagValueConverter, users: UserService) {
         super({
             category: SubtagType.USER,
             description: tag.description,
@@ -40,7 +39,6 @@ export class TimeoutSubtag extends CompiledSubtag {
             ]
         });
 
-        this.#util = util;
         this.#converter = converter;
         this.#users = users;
     }
@@ -64,9 +62,10 @@ export class TimeoutSubtag extends CompiledSubtag {
             reason = 'Tag Timeout';
 
         const authorizer = noPerms ? context.authorizer : context.user;
-        const response = delay.asMilliseconds() !== 0
-            ? await this.#util.timeout(user, context.user, authorizer, delay, reason)
-            : await this.#util.clearTimeout(user, context.user, authorizer, reason);
+        const delayMs = resolveDuration(delay).asMilliseconds();
+        const response = delayMs !== 0
+            ? await this.#users.mute(user, context.user, authorizer, delayMs, reason)
+            : await this.#users.unmute(user, context.user, authorizer, reason);
 
         switch (response) {
             case 'success':

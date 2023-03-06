@@ -3,7 +3,7 @@ import { overflowMessageContent } from '@blargbot/discord-util';
 import type { TypeMapping } from '@blargbot/mapping';
 import { mapping } from '@blargbot/mapping';
 
-import type { BBTagValueConverter } from '../BBTagUtilities.js';
+import type { BBTagValueConverter } from './valueConverter.js';
 
 export interface EmbedParserOptions {
     convertToColor: BBTagValueConverter['color'];

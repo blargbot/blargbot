@@ -1,16 +1,16 @@
 import type { BBTagContext } from '../../BBTagContext.js';
-import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
 import type { MessageService } from '../../services/MessageService.js';
 import { Subtag } from '../../Subtag.js';
 import textTemplates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
+import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.webhook;
 
 @Subtag.names('webhook')
-@Subtag.ctorArgs(Subtag.converter(), Subtag.service('message'))
+@Subtag.ctorArgs('converter', 'message')
 export class WebhookSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;
     readonly #messages: MessageService;

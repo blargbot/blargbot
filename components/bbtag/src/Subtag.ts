@@ -1,13 +1,13 @@
 import type { IFormattable } from '@blargbot/formatting';
 import { hasValue } from '@blargbot/guards';
-import type { Logger } from '@blargbot/logger';
 
 import type { BBTagContext } from './BBTagContext.js';
 import type { BBTagEngine } from './BBTagEngine.js';
-import type { BBTagQueryServices, BBTagUtilities, BBTagValueConverter, InjectionContext, SubtagDescriptor } from './BBTagUtilities.js';
-import type { SubtagCall } from './language/index.js';
+import type { InjectionContext } from './InjectionContext.js';
+import type { SubtagCall } from './language/SubtagCall.js';
+import type { SubtagDescriptor } from './services/SubtagDescriptor.js';
 import type { SubtagOptions, SubtagSignature } from './types.js';
-import type { BBTagArrayTools, BBTagJsonTools, BBTagOperators, SubtagType } from './utils/index.js';
+import type { SubtagType } from './utils/subtagType.js';
 
 const factoryKey: unique symbol = Symbol();
 
@@ -44,51 +44,18 @@ export abstract class Subtag implements SubtagOptions<IFormattable<string>> {
         };
     }
 
-    public static ctorArgs<Args extends readonly unknown[]>(...args: { [P in keyof Args]: (engine: BBTagEngine) => Args[P] }): (type: new (...args: Args) => Subtag) => void
-    public static ctorArgs(...args: ReadonlyArray<(engine: BBTagEngine) => unknown>): (type: new (...args: readonly unknown[]) => Subtag) => void {
+    public static ctorArgs<Args extends readonly SubtagCtorArgDescriptor[]>(...args: Args): (type: new (...args: ToSubtagCtorArgs<Args>) => Subtag) => void
+    public static ctorArgs(...args: readonly SubtagCtorArgDescriptor[]): (type: new (...args: readonly unknown[]) => Subtag) => void {
+        const argFactories = args.map<SubtagCtorArgFactory<unknown>>(a => typeof a === 'string' ? e => e.dependencies[a] : a);
+
         return type => {
             Object.defineProperty(type, factoryKey, {
                 configurable: false,
                 enumerable: false,
                 writable: false,
-                value: (engine: BBTagEngine) => new type(...args.map(x => x(engine)))
+                value: (engine: BBTagEngine) => new type(...argFactories.map(x => x(engine)))
             });
         };
-    }
-
-    public static inject<T extends keyof InjectionContext>(key: T): (engine: BBTagEngine) => InjectionContext[T] {
-        return e => e.dependencies[key];
-    }
-
-    public static converter(): (engine: BBTagEngine) => BBTagValueConverter {
-        return e => e.dependencies.converter;
-    }
-
-    public static service<T extends keyof BBTagQueryServices>(type: T): (engine: BBTagEngine) => BBTagQueryServices[T] {
-        return e => e.dependencies.services[type];
-    }
-
-    public static util(): (engine: BBTagEngine) => BBTagUtilities {
-        return e => e.dependencies.util;
-    }
-
-    public static logger(): (engine: BBTagEngine) => Logger {
-        return e => e.dependencies.logger;
-    }
-
-    public static arrayTools(): (engine: BBTagEngine) => BBTagArrayTools {
-        return e => e.dependencies.arrayTools;
-    }
-    public static jsonTools(): (engine: BBTagEngine) => BBTagJsonTools {
-        return e => e.dependencies.jsonTools;
-    }
-
-    public static operators(): (engine: BBTagEngine) => BBTagOperators;
-    public static operators<T extends keyof BBTagOperators>(method: T): (engine: BBTagEngine) => BBTagOperators[T];
-    public static operators<T extends keyof BBTagOperators>(type?: T): (engine: BBTagEngine) => BBTagOperators[T] | BBTagOperators {
-        if (type === undefined)
-            return e => e.dependencies.operators;
-        return e => e.dependencies.operators[type];
     }
 
     public static getDescriptor<T extends Subtag>(this: void, type: new (...args: never) => T): SubtagDescriptor<T>;
@@ -126,4 +93,12 @@ export abstract class Subtag implements SubtagOptions<IFormattable<string>> {
     }
 
     public abstract execute(context: BBTagContext, subtagName: string, subtag: SubtagCall): AsyncIterable<string | undefined>;
+}
+
+type SubtagCtorArgFactory<T> = (engine: BBTagEngine) => T
+type SubtagCtorArgDescriptor = keyof InjectionContext | SubtagCtorArgFactory<unknown>;
+type ToSubtagCtorArgs<T extends readonly SubtagCtorArgDescriptor[]> = {
+    [P in keyof T]:
+    | T[P] extends keyof InjectionContext ? BBTagEngine['dependencies'][T[P]] : never
+    | T[P] extends SubtagCtorArgFactory<infer R> ? R : never
 }

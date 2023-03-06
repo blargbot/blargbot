@@ -10,7 +10,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = textTemplates.subtags.randomUser;
 
 @Subtag.names('randomUser', 'randUser')
-@Subtag.ctorArgs(Subtag.service('user'))
+@Subtag.ctorArgs('user')
 export class RandomUserSubtag extends CompiledSubtag {
     readonly #users: UserService;
 

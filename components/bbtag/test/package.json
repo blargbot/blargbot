@@ -15,7 +15,6 @@
         "@bbtag/blargbot": "workspace:^",
         "@blargbot/config": "workspace:^",
         "@blargbot/core": "workspace:^",
-        "@blargbot/database": "workspace:^",
         "@blargbot/discord-emote": "workspace:^",
         "@blargbot/discord-util": "workspace:^",
         "@blargbot/domain": "workspace:^",

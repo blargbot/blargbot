@@ -1,16 +1,16 @@
 import type { BBTagContext } from '../../BBTagContext.js';
-import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { NotAnArrayError } from '../../errors/index.js';
 import { Subtag } from '../../Subtag.js';
 import textTemplates from '../../text.js';
 import type { BBTagArrayTools, BBTagOperators } from '../../utils/index.js';
 import { SubtagType } from '../../utils/index.js';
+import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.sort;
 
 @Subtag.names('sort')
-@Subtag.ctorArgs(Subtag.operators(), Subtag.arrayTools(), Subtag.converter())
+@Subtag.ctorArgs('operators', 'arrayTools', 'converter')
 export class SortSubtag extends CompiledSubtag {
     readonly #operators: BBTagOperators;
     readonly #arrayTools: BBTagArrayTools;

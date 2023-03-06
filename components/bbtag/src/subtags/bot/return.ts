@@ -1,15 +1,15 @@
 import type { BBTagContext } from '../../BBTagContext.js';
-import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { Subtag } from '../../Subtag.js';
 import textTemplates from '../../text.js';
 import { BBTagRuntimeState } from '../../types.js';
 import { SubtagType } from '../../utils/index.js';
+import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.return;
 
 @Subtag.names('return')
-@Subtag.ctorArgs(Subtag.converter())
+@Subtag.ctorArgs('converter')
 export class ReturnSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;
 

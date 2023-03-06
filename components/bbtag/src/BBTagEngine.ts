@@ -1,35 +1,52 @@
 import { sleep } from '@blargbot/async-tools';
 import { markup } from '@blargbot/discord-util';
-import type { Logger } from '@blargbot/logger';
 import { Timer } from '@blargbot/timer';
 import moment from 'moment-timezone';
 
 import { BBTagContext } from './BBTagContext.js';
-import type { BBTagUtilities, InjectionContext, SubtagInvocationContext } from './BBTagUtilities.js';
 import { BBTagRuntimeError, InternalServerError, SubtagStackOverflowError, TagCooldownError } from './errors/index.js';
+import { createBBTagArrayTools, createBBTagJsonTools, createBBTagOperators, smartStringCompare } from './index.js';
+import type { InjectionContext } from './InjectionContext.js';
 import type { Statement, SubtagCall } from './language/index.js';
 import { parseBBTag } from './language/index.js';
+import type { BBTagLogger } from './services/BBTagLogger.js';
+import type { SubtagInvocationContext } from './services/SubtagInvocationMiddleware.js';
 import type { Subtag } from './Subtag.js';
-import { TagCooldownManager } from './TagCooldownManager.js';
-import { tagVariableScopeProviders } from './tagVariableScopeProviders.js';
 import textTemplates from './text.js';
 import type { AnalysisResults, BBTagContextOptions, ExecutionResult } from './types.js';
 import { BBTagRuntimeState } from './types.js';
 import { BBTagVariableProvider, VariableNameParser } from './variables/Caching.js';
+import { tagVariableScopeProviders } from './variables/tagVariableScopeProviders.js';
 
 export class BBTagEngine {
-    readonly #cooldowns: TagCooldownManager;
     readonly #callSubtag: (context: SubtagInvocationContext) => AsyncIterable<string | undefined>;
 
+    public readonly dependencies: { [P in keyof InjectionContext]-?: NonNullable<InjectionContext[P]> };
     public readonly variables: BBTagVariableProvider;
-    public get logger(): Logger { return this.dependencies.logger; }
-    public get util(): BBTagUtilities { return this.dependencies.util; }
+    public readonly logger: BBTagLogger;
     public readonly subtags: ReadonlyMap<string, Subtag>;
 
     public constructor(
-        public readonly dependencies: InjectionContext
+        dependencies: InjectionContext
     ) {
-        this.#cooldowns = new TagCooldownManager();
+        const converter = dependencies.converter;
+        const arrayTools = dependencies.arrayTools ?? createBBTagArrayTools({ convertToInt: converter.int });
+        this.dependencies = {
+            ...dependencies,
+            logger: dependencies.logger ?? console,
+            converter,
+            arrayTools,
+            operators: dependencies.operators ?? createBBTagOperators({
+                compare: smartStringCompare,
+                convertToString: converter.string,
+                parseArray: v => arrayTools.deserialize(v)?.v
+            }),
+            jsonTools: dependencies.jsonTools ?? createBBTagJsonTools({
+                convertToInt: converter.int,
+                isTagArray: arrayTools.isTagArray
+            })
+        };
+        this.logger = this.dependencies.logger;
         this.#callSubtag = [...dependencies.middleware].reduce<(ctx: SubtagInvocationContext) => AsyncIterable<string | undefined>>(
             (p, c) => (ctx) => c(ctx, p.bind(null, ctx)),
         /**/(ctx) => ctx.subtag.execute(ctx.context, ctx.subtagName, ctx.call)
@@ -57,15 +74,16 @@ export class BBTagEngine {
     public async execute(source: string, options: BBTagContextOptions): Promise<ExecutionResult>
     public async execute(source: string, options: BBTagContext, caller: SubtagCall): Promise<ExecutionResult>
     public async execute(source: string, options: BBTagContextOptions | BBTagContext, caller?: SubtagCall): Promise<ExecutionResult> {
-        this.logger.bbtag(`Start running ${options.isCC ? 'CC' : 'tag'} ${options.rootTagName ?? ''}`);
+        this.logger.info(`Start running ${options.isCC ? 'CC' : 'tag'} ${options.rootTagName ?? ''}`);
         const timer = new Timer().start();
         const bbtag = parseBBTag(source, options instanceof BBTagContext);
-        this.logger.bbtag(`Parsed bbtag in ${timer.poll(true)}ms`);
-        const context = options instanceof BBTagContext ? options : new BBTagContext(this, { cooldowns: this.#cooldowns, ...options });
-        this.logger.bbtag(`Created context in ${timer.poll(true)}ms`);
+        this.logger.info(`Parsed bbtag in ${timer.poll(true)}ms`);
+        const context = options instanceof BBTagContext ? options : new BBTagContext(this, options);
+        this.logger.info(`Created context in ${timer.poll(true)}ms`);
         let content: string;
-        if (context.cooldownEnd.isAfter(moment())) {
-            const remaining = moment.duration(context.cooldownEnd.diff(moment()));
+        const cooldown = await this.dependencies.cooldown.getCooldown(context, context.isCC ? 'cc' : 'tag', context.tagName, context.cooldown);
+        if (moment().isSameOrBefore(cooldown)) {
+            const remaining = moment.duration(-moment().diff(cooldown));
             if (context.data.stackSize === 0)
                 await context.sendOutput(`This ${context.isCC ? 'custom command' : 'tag'} is currently under cooldown. Please try again ${markup.timestamp.relative(moment().add(remaining).toDate())}.`);
             content = context.addError(new TagCooldownError(context.tagName, context.isCC, remaining), caller);
@@ -73,7 +91,7 @@ export class BBTagEngine {
             context.data.state = BBTagRuntimeState.ABORT;
             content = context.addError(new SubtagStackOverflowError(context.data.stackSize), caller);
         } else {
-            context.cooldowns.set(context);
+            await this.dependencies.cooldown.setCooldown(context, context.isCC ? 'cc' : 'tag', context.tagName);
             context.execTimer.start();
             content = await context.withStack(async () => {
                 const result = await joinResults(this.#evalStatement(bbtag, context));
@@ -82,12 +100,12 @@ export class BBTagEngine {
                 return result;
             });
             context.execTimer.end();
-            this.logger.bbtag(`Tag run complete in ${timer.poll(true)}ms`);
+            this.logger.info(`Tag run complete in ${timer.poll(true)}ms`);
             if (context.data.stackSize === 0) {
                 await context.variables.persist();
-                this.logger.bbtag(`Saved variables in ${timer.poll(true)}ms`);
+                this.logger.info(`Saved variables in ${timer.poll(true)}ms`);
                 await context.sendOutput(content);
-                this.logger.bbtag(`Sent final output in ${timer.poll(true)}ms`);
+                this.logger.info(`Sent final output in ${timer.poll(true)}ms`);
             }
         }
 

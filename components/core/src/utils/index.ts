@@ -1,5 +1,4 @@
 export * from './cpuLoad.js';
-export * from './createRegExp.js';
 export * from './getRange.js';
 export * from './guard/index.js';
 export * from './humanize/index.js';

@@ -11,7 +11,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = textTemplates.subtags.lastMessageId;
 
 @Subtag.names('lastMessageId')
-@Subtag.ctorArgs(Subtag.service('channel'))
+@Subtag.ctorArgs('channel')
 export class LastMessageIdSubtag extends CompiledSubtag {
     readonly #channels: ChannelService;
 

@@ -5,7 +5,7 @@ const alphanumeric = `${letters}${numbers}` as const;
 const alphanumericMap: { [P in Alphanumeric]: 0 } = Object.fromEntries(alphanumeric.split('').map(l => [l, 0] as const));
 const alphanumericLookup = new Set<string>(Object.keys(alphanumericMap));
 
-export const isAlphanumeric = Object.assign(function isFlagChar(value: string): value is Alphanumeric {
+export const isAlphanumeric = Object.assign(function isAlphanumeric(value: string): value is Alphanumeric {
     return alphanumericLookup.has(value);
 }, {
     characters: alphanumeric.split('')

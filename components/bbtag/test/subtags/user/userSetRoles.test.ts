@@ -18,7 +18,7 @@ runSubtagTests({
             code: '{usersetroles}',
             expected: 'true',
             postSetup(bbctx, ctx) {
-                ctx.userService.setup(m => m.edit(bbctx, ctx.users.command.id, argument.isDeepEqual({ roles: [] }))).thenResolve(undefined);
+                ctx.dependencies.user.setup(m => m.edit(bbctx, ctx.users.command.id, argument.isDeepEqual({ roles: [] }))).thenResolve(undefined);
             }
         },
         ...createGetUserPropTestCases({
@@ -30,7 +30,7 @@ runSubtagTests({
                 {
                     expected: 'true',
                     postSetup(member, bbctx, ctx) {
-                        ctx.userService.setup(m => m.edit(bbctx, member.id, argument.isDeepEqual({ roles: [] }))).thenResolve(undefined);
+                        ctx.dependencies.user.setup(m => m.edit(bbctx, member.id, argument.isDeepEqual({ roles: [] }))).thenResolve(undefined);
                     }
                 }
             ]
@@ -48,9 +48,9 @@ runSubtagTests({
                         ctx.roles.bot.id = '234967249876489624';
                     },
                     postSetup(member, bbctx, ctx, q) {
-                        ctx.roleService.setup(m => m.querySingle(bbctx, '283674284762348926', argument.isDeepEqual({ noLookup: q }))).thenResolve(ctx.roles.other);
-                        ctx.roleService.setup(m => m.querySingle(bbctx, '234967249876489624', argument.isDeepEqual({ noLookup: q }))).thenResolve(ctx.roles.bot);
-                        ctx.userService.setup(m => m.edit(bbctx, member.id, argument.isDeepEqual({ roles: ['283674284762348926', '234967249876489624'] }))).thenResolve(undefined);
+                        ctx.dependencies.role.setup(m => m.querySingle(bbctx, '283674284762348926', argument.isDeepEqual({ noLookup: q }))).thenResolve(ctx.roles.other);
+                        ctx.dependencies.role.setup(m => m.querySingle(bbctx, '234967249876489624', argument.isDeepEqual({ noLookup: q }))).thenResolve(ctx.roles.bot);
+                        ctx.dependencies.user.setup(m => m.edit(bbctx, member.id, argument.isDeepEqual({ roles: ['283674284762348926', '234967249876489624'] }))).thenResolve(undefined);
                     }
                 }
             ]
@@ -86,7 +86,7 @@ runSubtagTests({
                 { start: 0, end: 31, error: new RoleNotFoundError('unknown role') }
             ],
             postSetup(bbctx, ctx) {
-                ctx.roleService.setup(m => m.querySingle(bbctx, 'unknown role', argument.isDeepEqual({ noLookup: false }))).thenResolve(undefined);
+                ctx.dependencies.role.setup(m => m.querySingle(bbctx, 'unknown role', argument.isDeepEqual({ noLookup: false }))).thenResolve(undefined);
             }
         },
         {
@@ -96,7 +96,7 @@ runSubtagTests({
                 { start: 0, end: 34, error: new RoleNotFoundError('unknown role').withDisplay('false') }
             ],
             postSetup(bbctx, ctx) {
-                ctx.roleService.setup(m => m.querySingle(bbctx, 'unknown role', argument.isDeepEqual({ noLookup: true }))).thenResolve(undefined);
+                ctx.dependencies.role.setup(m => m.querySingle(bbctx, 'unknown role', argument.isDeepEqual({ noLookup: true }))).thenResolve(undefined);
             }
         }
     ]

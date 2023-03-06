@@ -8,5 +8,11 @@
     },
     "dependencies": {
         "@blargbot/guards": "workspace:^"
+    },
+    "peerDependencies": {
+        "moment-timezone": "*"
+    },
+    "devDependencies": {
+        "moment-timezone": "*"
     }
 }

@@ -1,5 +1,4 @@
 import type { BBTagContext } from '../../BBTagContext.js';
-import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, UnknownSubtagError } from '../../errors/index.js';
 import type { SubtagCall } from '../../language/index.js';
@@ -7,11 +6,12 @@ import { Subtag } from '../../Subtag.js';
 import textTemplates from '../../text.js';
 import type { BBTagArrayTools } from '../../utils/index.js';
 import { SubtagType } from '../../utils/index.js';
+import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.apply;
 
 @Subtag.names('apply')
-@Subtag.ctorArgs(Subtag.arrayTools(), Subtag.converter())
+@Subtag.ctorArgs('arrayTools', 'converter')
 export class ApplySubtag extends CompiledSubtag {
     readonly #arrayTools: BBTagArrayTools;
     readonly #converter: BBTagValueConverter;

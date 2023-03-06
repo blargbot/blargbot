@@ -34,7 +34,7 @@ runSubtagTests({
                 ctx.roles.other.id = '347865137576334534';
             },
             postSetup(bbctx, ctx) {
-                ctx.roleService.setup(m => m.querySingle(bbctx, 'other role', argument.isDeepEqual({ noLookup: false }))).thenResolve(ctx.roles.other);
+                ctx.dependencies.role.setup(m => m.querySingle(bbctx, 'other role', argument.isDeepEqual({ noLookup: false }))).thenResolve(ctx.roles.other);
             },
             assert(bbctx) {
                 chai.expect(bbctx.data.allowedMentions.roles).to.deep.equal(['347865137576334534']);
@@ -47,7 +47,7 @@ runSubtagTests({
                 ctx.roles.other.id = '347865137576334534';
             },
             postSetup(bbctx, ctx) {
-                ctx.roleService.setup(m => m.querySingle(bbctx, 'other role', argument.isDeepEqual({ noLookup: false }))).thenResolve(ctx.roles.other);
+                ctx.dependencies.role.setup(m => m.querySingle(bbctx, 'other role', argument.isDeepEqual({ noLookup: false }))).thenResolve(ctx.roles.other);
             },
             assert(bbctx) {
                 chai.expect(bbctx.data.allowedMentions.roles).to.deep.equal([]);
@@ -60,7 +60,7 @@ runSubtagTests({
                 ctx.roles.other.id = '347865137576334534';
             },
             postSetup(bbctx, ctx) {
-                ctx.roleService.setup(m => m.querySingle(bbctx, 'other role', argument.isDeepEqual({ noLookup: false }))).thenResolve(ctx.roles.other);
+                ctx.dependencies.role.setup(m => m.querySingle(bbctx, 'other role', argument.isDeepEqual({ noLookup: false }))).thenResolve(ctx.roles.other);
             },
             assert(bbctx) {
                 chai.expect(bbctx.data.allowedMentions.roles).to.deep.equal(['347865137576334534']);

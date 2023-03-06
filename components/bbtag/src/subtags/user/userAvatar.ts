@@ -11,7 +11,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = textTemplates.subtags.userAvatar;
 
 @Subtag.names('userAvatar')
-@Subtag.ctorArgs(Subtag.service('user'))
+@Subtag.ctorArgs('user')
 export class UserAvatarSubtag extends CompiledSubtag {
     readonly #users: UserService;
 

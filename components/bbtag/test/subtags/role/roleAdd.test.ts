@@ -17,7 +17,7 @@ runSubtagTests({
             expected: 'true',
             postSetup(bbctx, ctx) {
                 ctx.roles.other.id = '3298746326924';
-                ctx.userService.setup(m => m.edit(bbctx, ctx.users.command.id, argument.isDeepEqual({ roles: [ctx.roles.everyone.id, ctx.roles.command.id, ctx.roles.other.id] }))).thenResolve();
+                ctx.dependencies.user.setup(m => m.edit(bbctx, ctx.users.command.id, argument.isDeepEqual({ roles: [ctx.roles.everyone.id, ctx.roles.command.id, ctx.roles.other.id] }))).thenResolve();
             }
         },
         {
@@ -34,7 +34,7 @@ runSubtagTests({
             postSetup(bbctx, ctx) {
                 ctx.roles.other.id = '3298746326924';
                 ctx.roles.bot.id = '9238476938485';
-                ctx.userService.setup(m => m.edit(bbctx, ctx.users.command.id, argument.isDeepEqual({ roles: [ctx.roles.everyone.id, ctx.roles.command.id, ctx.roles.other.id, ctx.roles.bot.id] }))).thenResolve();
+                ctx.dependencies.user.setup(m => m.edit(bbctx, ctx.users.command.id, argument.isDeepEqual({ roles: [ctx.roles.everyone.id, ctx.roles.command.id, ctx.roles.other.id, ctx.roles.bot.id] }))).thenResolve();
             }
         },
         {
@@ -43,7 +43,7 @@ runSubtagTests({
             postSetup(bbctx, ctx) {
                 ctx.roles.other.id = '3298746326924';
                 ctx.roles.bot.id = '9238476938485';
-                ctx.userService.setup(m => m.edit(bbctx, ctx.users.command.id, argument.isDeepEqual({ roles: [ctx.roles.everyone.id, ctx.roles.command.id, ctx.roles.other.id] }))).thenResolve();
+                ctx.dependencies.user.setup(m => m.edit(bbctx, ctx.users.command.id, argument.isDeepEqual({ roles: [ctx.roles.everyone.id, ctx.roles.command.id, ctx.roles.other.id] }))).thenResolve();
             }
         },
         {
@@ -78,8 +78,8 @@ runSubtagTests({
             expected: 'true',
             postSetup(bbctx, ctx) {
                 ctx.roles.bot.id = '3298746326924';
-                ctx.userService.setup(m => m.edit(bbctx, ctx.users.other.id, argument.isDeepEqual({ roles: [ctx.roles.everyone.id, ctx.roles.other.id, ctx.roles.bot.id] }))).thenResolve();
-                ctx.userService.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: false }))).thenResolve(ctx.users.other);
+                ctx.dependencies.user.setup(m => m.edit(bbctx, ctx.users.other.id, argument.isDeepEqual({ roles: [ctx.roles.everyone.id, ctx.roles.other.id, ctx.roles.bot.id] }))).thenResolve();
+                ctx.dependencies.user.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: false }))).thenResolve(ctx.users.other);
             }
         },
         {
@@ -89,7 +89,7 @@ runSubtagTests({
                 { start: 0, end: 34, error: new UserNotFoundError('other user') }
             ],
             postSetup(bbctx, ctx) {
-                ctx.userService.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: false }))).thenResolve(undefined);
+                ctx.dependencies.user.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: false }))).thenResolve(undefined);
             }
         },
         {
@@ -102,7 +102,7 @@ runSubtagTests({
                 ctx.rootScope.quiet = true;
             },
             postSetup(bbctx, ctx) {
-                ctx.userService.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).thenResolve(undefined);
+                ctx.dependencies.user.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).thenResolve(undefined);
             }
         },
         {
@@ -112,7 +112,7 @@ runSubtagTests({
                 { start: 0, end: 36, error: new UserNotFoundError('other user').withDisplay('false') }
             ],
             postSetup(bbctx, ctx) {
-                ctx.userService.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).thenResolve(undefined);
+                ctx.dependencies.user.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).thenResolve(undefined);
             }
         }
     ]

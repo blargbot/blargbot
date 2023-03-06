@@ -9,7 +9,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = textTemplates.subtags.userStatus;
 
 @Subtag.names('userStatus')
-@Subtag.ctorArgs(Subtag.service('user'))
+@Subtag.ctorArgs('user')
 export class UserStatusSubtag extends CompiledSubtag {
     readonly #users: UserService;
 

@@ -85,7 +85,7 @@ runSubtagTests({
             },
             postSetup(bbctx, ctx) {
                 const user = ctx.createMock<Entities.User>();
-                ctx.userService.setup(m => m.querySingle(bbctx, '98765434512212678', argument.isDeepEqual({ noLookup: false }))).verifiable(1).thenResolve(user.instance);
+                ctx.dependencies.user.setup(m => m.querySingle(bbctx, '98765434512212678', argument.isDeepEqual({ noLookup: false }))).verifiable(1).thenResolve(user.instance);
                 user.setup(m => m.id).thenReturn('98765434512212678');
             },
             assert(ctx) {

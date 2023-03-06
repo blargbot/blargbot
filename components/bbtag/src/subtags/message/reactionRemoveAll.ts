@@ -13,7 +13,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = textTemplates.subtags.reactionRemoveAll;
 
 @Subtag.names('reactionRemoveAll', 'reactRemoveAll', 'removeReactAll')
-@Subtag.ctorArgs(Subtag.service('channel'), Subtag.service('message'))
+@Subtag.ctorArgs('channel', 'message')
 export class ReactionRemoveAllSubtag extends CompiledSubtag {
     readonly #channels: ChannelService;
     readonly #messages: MessageService;

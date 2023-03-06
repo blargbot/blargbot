@@ -1,21 +1,10 @@
 import { inspect } from 'node:util';
 
-import type { BBTagContextOptions, BBTagRuntimeScope, BBTagUtilities, ChannelService, Entities, GuildService, InjectionContext, LocatedRuntimeError, MessageService, RoleService, SourceMarker, SourceProvider, SubtagCall, SubtagDescriptor, TagVariableScope, TimezoneProvider, UserService, VariablesStore, WarningService } from '@bbtag/blargbot';
-import { BaseRuntimeLimit, BBTagContext, BBTagEngine, BBTagRuntimeError, createBBTagArrayTools, createBBTagJsonTools, createBBTagOperators, createEmbedParser, NotEnoughArgumentsError, parseBBTag, smartStringCompare, Subtag, SubtagType, TooManyArgumentsError } from '@bbtag/blargbot';
-import { createSafeRegExp, repeat } from '@blargbot/core/utils/index.js';
-import { parseBigInt } from '@blargbot/core/utils/parse/parseBigInt.js';
-import { parseBoolean } from '@blargbot/core/utils/parse/parseBoolean.js';
-import { parseColor } from '@blargbot/core/utils/parse/parseColor.js';
-import { parseDuration } from '@blargbot/core/utils/parse/parseDuration.js';
-import { parseFloat } from '@blargbot/core/utils/parse/parseFloat.js';
-import { parseInt as bbtagParseInt } from '@blargbot/core/utils/parse/parseInt.js';
-import { parseString } from '@blargbot/core/utils/parse/parseString.js';
-import { parseTime } from '@blargbot/core/utils/parse/parseTime.js';
+import type { BBTagArray, BBTagArrayTools, BBTagContextOptions, BBTagRuntimeScope, BBTagValueConverter, Entities, InjectionContext, LocatedRuntimeError, SourceMarker, SourceProvider, SubtagCall, SubtagDescriptor, SubtagInvocationMiddleware, TagVariableScope, VariablesStore } from '@bbtag/blargbot';
+import { BaseRuntimeLimit, BBTagContext, BBTagEngine, BBTagRuntimeError, createBBTagArrayTools, createBBTagJsonTools, createBBTagOperators, createValueConverter, NotEnoughArgumentsError, parseBBTag, smartStringCompare, Subtag, SubtagType, TooManyArgumentsError } from '@bbtag/blargbot';
 import Discord from '@blargbot/discord-types';
 import { snowflake } from '@blargbot/discord-util';
-import type { Logger } from '@blargbot/logger';
 import { argument, Mock } from '@blargbot/test-util/mock.js';
-// import { argument, Mock } from '@blargbot/test-util/mock.js';
 import { Timer } from '@blargbot/timer';
 import chai from 'chai';
 import chaiBytes from 'chai-bytes';
@@ -96,19 +85,55 @@ export class SubtagTestContext {
     readonly #allMocks: Array<Mock<unknown>> = [];
     #isCreated = false;
     public readonly timer = new Timer();
-    public readonly dependencies = this.createMock<InjectionContext>();
-    public readonly util = this.createMock<BBTagUtilities>();
-    public readonly warnings = this.createMock<WarningService>();
-    public readonly logger = this.createMock<Logger>(undefined, false);
-    public readonly tagVariablesTable = this.createMock<VariablesStore>();
-    public readonly timezones = this.createMock<TimezoneProvider>();
-    public readonly sources = this.createMock<SourceProvider>();
+    get #converter(): BBTagValueConverter {
+        return this.dependencies.converter;
+    }
+    get #arrayTools(): BBTagArrayTools {
+        return this.dependencies.arrayTools;
+    }
+    public readonly dependencies = {
+        defaultPrefix: 'b!',
+        subtags: [] as SubtagDescriptor[],
+        middleware: [] as SubtagInvocationMiddleware[],
+        converter: createValueConverter({
+            colors: {
+                blue: 0x0000ff,
+                green: 0x008001,
+                red: 0xff0000
+            },
+            regexMaxLength: 2000
+        }),
+        arrayTools: createBBTagArrayTools({
+            convertToInt: v => this.#converter.int(v)
+        }),
+        operators: createBBTagOperators({
+            compare: smartStringCompare,
+            convertToString: v => this.#converter.string(v),
+            parseArray: v => this.#arrayTools.deserialize(v)?.v
+        }),
+        jsonTools: createBBTagJsonTools({
+            convertToInt: v => this.#converter.int(v),
+            isTagArray: (v): v is BBTagArray => this.#arrayTools.isTagArray(v)
+        }),
+        variables: this.createMock(),
+        user: this.createMock(),
+        channel: this.createMock(),
+        guild: this.createMock(),
+        role: this.createMock(),
+        lock: this.createMock(),
+        message: this.createMock(),
+        sources: this.createMock(),
+        cooldown: this.createMock(),
+        timezones: this.createMock(),
+        warnings: this.createMock(),
+        modLog: this.createMock(),
+        dump: this.createMock(),
+        domains: this.createMock(),
+        defer: this.createMock(),
+        staff: this.createMock(),
+        logger: this.createMock()
+    } satisfies { [P in keyof InjectionContext]-?: Mock<NonNullable<InjectionContext[P]>> | InjectionContext[P] };
     public readonly limit = this.createMock(BaseRuntimeLimit);
-    public readonly channelService = this.createMock<ChannelService>();
-    public readonly roleService = this.createMock<RoleService>();
-    public readonly userService = this.createMock<UserService>();
-    public readonly guildService = this.createMock<GuildService>();
-    public readonly messageService = this.createMock<MessageService>();
     public isStaff = false;
     public readonly ownedMessages: string[] = [];
 
@@ -174,59 +199,15 @@ export class SubtagTestContext {
 
         const args = new Array(100).fill(argument.any().value) as unknown[];
         for (let i = 0; i < args.length; i++) {
-            this.logger.setup(m => m.error(...args.slice(0, i)), false).thenCall((...args: unknown[]) => {
+            this.dependencies.logger.setup(m => m.error(...args.slice(0, i)), false).thenCall((...args: unknown[]) => {
                 throw args.find(x => x instanceof Error) ?? new Error(`Unexpected logger error: ${inspect(args)}`);
             });
         }
 
-        const bbtagArrayTools = createBBTagArrayTools({
-            convertToInt: parseInt
-        });
-
-        this.dependencies.setup(m => m.middleware, false).thenReturn([]);
-        this.dependencies.setup(m => m.warnings, false).thenReturn(this.warnings.instance);
-        this.dependencies.setup(m => m.sources, false).thenReturn(this.sources.instance);
-        this.dependencies.setup(m => m.timezones, false).thenReturn(this.timezones.instance);
-        this.dependencies.setup(m => m.logger, false).thenReturn(this.logger.instance);
-        this.dependencies.setup(m => m.util, false).thenReturn(this.util.instance);
-        this.dependencies.setup(m => m.arrayTools, false).thenReturn(bbtagArrayTools);
-        this.dependencies.setup(m => m.variables, false).thenReturn(this.tagVariablesTable.instance);
-        this.dependencies.setup(m => m.services, false).thenReturn({
-            channel: this.channelService.instance,
-            message: this.messageService.instance,
-            role: this.roleService.instance,
-            user: this.userService.instance,
-            guild: this.guildService.instance
-        });
-        this.dependencies.setup(m => m.jsonTools, false).thenReturn(createBBTagJsonTools({
-            convertToInt: bbtagParseInt,
-            isTagArray: bbtagArrayTools.isTagArray
-        }));
-        this.dependencies.setup(m => m.operators, false).thenReturn(createBBTagOperators({
-            compare: smartStringCompare,
-            convertToString: parseString,
-            parseArray: v => bbtagArrayTools.deserialize(v)?.v
-        }));
-        this.dependencies.setup(m => m.converter, false).thenReturn({
-            int: bbtagParseInt,
-            float: parseFloat,
-            string: parseString,
-            boolean: parseBoolean,
-            duration: parseDuration,
-            embed: createEmbedParser({
-                convertToColor: parseColor,
-                convertToNumber: bbtagParseInt
-            }),
-            bigInt: parseBigInt,
-            color: parseColor,
-            time: parseTime,
-            regex: createSafeRegExp
-        });
-
-        this.tagVariablesTable.setup(m => m.get(tsMockito.anything() as never, tsMockito.anything() as never), false)
+        this.dependencies.variables.setup(m => m.get(tsMockito.anything() as never, tsMockito.anything() as never), false)
             .thenCall((...[scope, name]: Parameters<VariablesStore['get']>) => this.tagVariables.get({ scope, name }));
         if (this.testCase.setupSaveVariables !== false) {
-            this.tagVariablesTable.setup(m => m.set(tsMockito.anything() as never), false)
+            this.dependencies.variables.setup(m => m.set(tsMockito.anything() as never), false)
                 .thenCall((...[values]: Parameters<VariablesStore['set']>) => {
                     for (const { name, scope, value } of values) {
                         if (value !== undefined)
@@ -237,7 +218,7 @@ export class SubtagTestContext {
                 });
         }
 
-        this.dependencies.setup(c => c.subtags, false).thenReturn(subtags);
+        this.dependencies.subtags.push(...subtags);
     }
 
     // eslint-disable-next-line @typescript-eslint/ban-types
@@ -268,7 +249,12 @@ export class SubtagTestContext {
             throw new Error('Cannot create multiple contexts from 1 mock');
         this.#isCreated = true;
 
-        const engine = new BBTagEngine(this.dependencies.instance);
+        const engine = new BBTagEngine(
+            Object.fromEntries(
+                Object.entries(this.dependencies)
+                    .map(([key, val]) => [key, val instanceof Mock ? val.instance : val])
+            ) as InjectionContext
+        );
 
         const context = new BBTagContext(engine, {
             bot: this.users.bot,
@@ -285,19 +271,19 @@ export class SubtagTestContext {
             ...this.options
         });
 
-        this.userService.setup(m => m.querySingle(context, ''), false).thenResolve(this.users.command);
-        this.userService.setup(m => m.querySingle(context, '', argument.any().value as undefined), false).thenResolve(this.users.command);
-        this.userService.setup(m => m.querySingle(context, this.users.command.id), false).thenResolve(this.users.command);
-        this.userService.setup(m => m.querySingle(context, this.users.command.id, argument.any().value as undefined), false).thenResolve(this.users.command);
-        this.channelService.setup(m => m.querySingle(context, ''), false).thenResolve(this.channels.command);
-        this.channelService.setup(m => m.querySingle(context, '', argument.any().value as undefined), false).thenResolve(this.channels.command);
-        this.channelService.setup(m => m.querySingle(context, this.channels.command.id), false).thenResolve(this.channels.command);
-        this.channelService.setup(m => m.querySingle(context, this.channels.command.id, argument.any().value as undefined), false).thenResolve(this.channels.command);
-        this.messageService.setup(m => m.get(context, this.channels.command.id, ''), false).thenResolve(this.message);
-        this.messageService.setup(m => m.get(context, this.channels.command.id, this.message.id), false).thenResolve(this.message);
-        this.sources.setup(m => m.get(context, 'tag', argument.isTypeof('string').value), false)
+        this.dependencies.user.setup(m => m.querySingle(context, ''), false).thenResolve(this.users.command);
+        this.dependencies.user.setup(m => m.querySingle(context, '', argument.any().value as undefined), false).thenResolve(this.users.command);
+        this.dependencies.user.setup(m => m.querySingle(context, this.users.command.id), false).thenResolve(this.users.command);
+        this.dependencies.user.setup(m => m.querySingle(context, this.users.command.id, argument.any().value as undefined), false).thenResolve(this.users.command);
+        this.dependencies.channel.setup(m => m.querySingle(context, ''), false).thenResolve(this.channels.command);
+        this.dependencies.channel.setup(m => m.querySingle(context, '', argument.any().value as undefined), false).thenResolve(this.channels.command);
+        this.dependencies.channel.setup(m => m.querySingle(context, this.channels.command.id), false).thenResolve(this.channels.command);
+        this.dependencies.channel.setup(m => m.querySingle(context, this.channels.command.id, argument.any().value as undefined), false).thenResolve(this.channels.command);
+        this.dependencies.message.setup(m => m.get(context, this.channels.command.id, ''), false).thenResolve(this.message);
+        this.dependencies.message.setup(m => m.get(context, this.channels.command.id, this.message.id), false).thenResolve(this.message);
+        this.dependencies.sources.setup(m => m.get(context, 'tag', argument.isTypeof('string').value), false)
             .thenCall((...args: Parameters<SourceProvider['get']>) => this.tags[args[2]]);
-        this.sources.setup(m => m.get(context, 'cc', argument.isTypeof('string').value), false)
+        this.dependencies.sources.setup(m => m.get(context, 'cc', argument.isTypeof('string').value), false)
             .thenCall((...args: Parameters<SourceProvider['get']>) => this.ccommands[args[2]]);
 
         context.data.ownedMsgs.push(...this.ownedMessages);
@@ -775,7 +761,7 @@ function getExpectation(testCase: SubtagTestCase): Exclude<SubtagTestCase['expec
 export function* notEnoughArgumentsTestCases(subtagName: string, minArgCount: number, noEval: number[]): Generator<SubtagTestCase> {
     const noEvalLookup = new Set(noEval);
     for (let i = 0; i < minArgCount; i++) {
-        const codeParts = repeat(i, j => {
+        const codeParts = Array.from({ length: i }, (_, j) => {
             const start = 2 + subtagName.length + 7 * j;
             return [noEvalLookup.has(j), { start, end: start + 6, error: new MarkerError('eval', start) }] as const;
         });
@@ -788,7 +774,7 @@ export function* notEnoughArgumentsTestCases(subtagName: string, minArgCount: nu
             ]
         };
     }
-    const codeParts = repeat(minArgCount, j => {
+    const codeParts = Array.from({ length: minArgCount }, (_, j) => {
         const start = 2 + subtagName.length + 7 * j;
         return [noEvalLookup.has(j), { start, end: start + 6, error: new MarkerError('eval', start) }] as const;
     });
@@ -807,7 +793,7 @@ export function* notEnoughArgumentsTestCases(subtagName: string, minArgCount: nu
 
 export function* tooManyArgumentsTestCases(subtagName: string, maxArgCount: number, noEval: number[]): Generator<SubtagTestCase> {
     const noEvalLookup = new Set(noEval);
-    const codeParts = repeat(maxArgCount + 1, j => {
+    const codeParts = Array.from({ length: maxArgCount + 1 }, (_, j) => {
         const start = 2 + subtagName.length + 7 * j;
         return [noEvalLookup.has(j), { start, end: start + 6, error: new MarkerError('eval', start) }] as const;
     });

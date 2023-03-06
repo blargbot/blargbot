@@ -1,7 +1,5 @@
 import { BBTagRuntimeError, Subtag } from '@bbtag/blargbot';
 import { TimerSubtag } from '@bbtag/blargbot/subtags';
-import { argument } from '@blargbot/test-util/mock.js';
-import moment from 'moment-timezone';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
@@ -14,7 +12,7 @@ runSubtagTests({
             retries: 3,
             expected: '',
             postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.setTimeout(bbctx, 'abc{fail}', argument.isDeepEqual(moment.duration(10, 's')))).thenResolve(undefined);
+                ctx.dependencies.defer.setup(m => m.defer(bbctx, 'abc{fail}', 10000)).thenResolve(undefined);
             }
         },
         {

@@ -8,7 +8,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = textTemplates.subtags.jsonSet;
 
 @Subtag.names('jsonSet', 'jSet')
-@Subtag.ctorArgs(Subtag.jsonTools())
+@Subtag.ctorArgs('jsonTools')
 export class JsonSetSubtag extends CompiledSubtag {
     readonly #jsonTools: BBTagJsonTools;
 

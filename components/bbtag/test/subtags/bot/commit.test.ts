@@ -15,7 +15,7 @@ runSubtagTests({
             setup(ctx) {
                 ctx.options.rootTagName = 'commitTest';
 
-                ctx.tagVariablesTable.setup(m => m.set(argument.isDeepEqual([
+                ctx.dependencies.variables.setup(m => m.set(argument.isDeepEqual([
                     { name: 'var1', value: 5, scope: { type: TagVariableType.LOCAL_TAG, name: 'commitTest' } },
                     { name: 'var2', value: 'abc', scope: { type: TagVariableType.LOCAL_TAG, name: 'commitTest' } },
                     { name: 'var3', value: 5, scope: { type: TagVariableType.TEMP } },
@@ -49,7 +49,7 @@ runSubtagTests({
                 ctx.options.rootTagName = 'commitTest';
                 ctx.options.isCC = true;
 
-                ctx.tagVariablesTable.setup(m => m.set(argument.isDeepEqual([
+                ctx.dependencies.variables.setup(m => m.set(argument.isDeepEqual([
                     { name: 'var1', value: 5, scope: { type: TagVariableType.LOCAL_CC, guildId: ctx.guild.id, name: 'commitTest' } },
                     { name: 'var2', value: 'abc', scope: { type: TagVariableType.LOCAL_CC, guildId: ctx.guild.id, name: 'commitTest' } },
                     { name: 'var3', value: 5, scope: { type: TagVariableType.TEMP } },
@@ -82,7 +82,7 @@ runSubtagTests({
             setup(ctx) {
                 ctx.options.rootTagName = 'commitTest';
 
-                ctx.tagVariablesTable.setup(m => m.set(argument.isDeepEqual([
+                ctx.dependencies.variables.setup(m => m.set(argument.isDeepEqual([
                     { name: 'var1', value: 5, scope: { type: TagVariableType.LOCAL_TAG, name: 'commitTest' } },
                     { name: 'var3', value: 5, scope: { type: TagVariableType.TEMP } },
                     { name: 'var5', value: 5, scope: { type: TagVariableType.GLOBAL } },
@@ -111,7 +111,7 @@ runSubtagTests({
                 ctx.options.rootTagName = 'commitTest';
                 ctx.options.isCC = true;
 
-                ctx.tagVariablesTable.setup(m => m.set(argument.isDeepEqual([
+                ctx.dependencies.variables.setup(m => m.set(argument.isDeepEqual([
                     { name: 'var2', value: 'abc', scope: { type: TagVariableType.LOCAL_CC, guildId: ctx.guild.id, name: 'commitTest' } },
                     { name: 'var4', value: 'abc', scope: { type: TagVariableType.TEMP } },
                     { name: 'var6', value: 'abc', scope: { type: TagVariableType.GLOBAL } },

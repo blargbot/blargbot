@@ -98,7 +98,7 @@ function* createTestCases(setups: Array<{ varName: string; prefix: string; db?: 
                 setupSaveVariables: false,
                 async setup(ctx, ...args) {
                     if (db !== undefined) {
-                        ctx.tagVariablesTable.setup(m => m.set(argument.isDeepEqual([{ name: varName, value, scope: db }])))
+                        ctx.dependencies.variables.setup(m => m.set(argument.isDeepEqual([{ name: varName, value, scope: db }])))
                             .thenResolve(undefined);
                         ctx.tagVariables.set({ scope: db, name: varName }, createSnowflake());
                     }

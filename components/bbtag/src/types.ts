@@ -2,7 +2,6 @@ import type { Emote } from '@blargbot/discord-emote';
 import type Discord from '@blargbot/discord-types';
 import type { IFormattable } from '@blargbot/formatting';
 import type { FlagDefinition } from '@blargbot/input';
-import type ReadWriteLock from 'rwlock';
 
 import type { BBTagRuntimeError } from './errors/index.js';
 import type { Entities } from './index.js';
@@ -10,7 +9,6 @@ import type { SourceMarker, Statement, SubtagCall } from './language/index.js';
 import type { limits, RuntimeLimit } from './limits/index.js';
 import type { ScopeManager } from './ScopeManager.js';
 import type { SubtagCallStack } from './SubtagCallStack.js';
-import type { TagCooldownManager } from './TagCooldownManager.js';
 import type { SubtagType } from './utils/index.js';
 import type { VariableCache } from './variables/Caching.js';
 
@@ -174,8 +172,6 @@ export interface BBTagContextOptions {
     readonly rootTagName?: string;
     readonly tagName?: string;
     readonly cooldown?: number;
-    readonly cooldowns?: TagCooldownManager;
-    readonly locks?: Record<string, ReadWriteLock | undefined>;
     readonly limit: RuntimeLimit | keyof typeof limits;
     readonly silent?: boolean;
     readonly data?: Partial<BBTagContextState>;

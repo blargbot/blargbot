@@ -13,7 +13,7 @@ runSubtagTests({
             code: '{guildsize}',
             expected: '123',
             postSetup(bbctx, ctx) {
-                ctx.userService.setup(m => m.getAll(bbctx))
+                ctx.dependencies.user.setup(m => m.getAll(bbctx))
                     .thenResolve(Array.from({ length: 123 }, () => SubtagTestContext.createMember({ id: createSnowflake() })));
             }
         }

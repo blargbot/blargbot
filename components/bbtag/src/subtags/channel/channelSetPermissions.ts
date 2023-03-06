@@ -3,7 +3,6 @@ import { isThreadChannel } from '@blargbot/discord-util';
 import { hasFlag } from '@blargbot/guards';
 
 import type { BBTagContext } from '../../BBTagContext.js';
-import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
 import type { ChannelService } from '../../services/ChannelService.js';
@@ -11,11 +10,12 @@ import { Subtag } from '../../Subtag.js';
 import textTemplates from '../../text.js';
 import type { Entities } from '../../types.js';
 import { SubtagType } from '../../utils/index.js';
+import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.channelSetPermissions;
 
 @Subtag.names('channelSetPermissions', 'channelSetPerms')
-@Subtag.ctorArgs(Subtag.converter(), Subtag.service('channel'))
+@Subtag.ctorArgs('converter', 'channel')
 export class ChannelSetPermissionsSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;
     readonly #channels: ChannelService;

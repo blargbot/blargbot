@@ -1,15 +1,15 @@
 import type { SubtagArgument } from '../../arguments/index.js';
-import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { Subtag } from '../../Subtag.js';
 import textTemplates from '../../text.js';
 import type { BBTagArrayTools } from '../../utils/index.js';
 import { SubtagType } from '../../utils/index.js';
+import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.switch;
 
 @Subtag.names('switch')
-@Subtag.ctorArgs(Subtag.arrayTools(), Subtag.converter())
+@Subtag.ctorArgs('arrayTools', 'converter')
 export class SwitchSubtag extends CompiledSubtag {
     readonly #arrayTools: BBTagArrayTools;
     readonly #converter: BBTagValueConverter;

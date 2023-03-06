@@ -1,13 +1,13 @@
-import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { Subtag } from '../../Subtag.js';
 import textTemplates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
+import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.parseFloat;
 
 @Subtag.names('parseFloat')
-@Subtag.ctorArgs(Subtag.converter())
+@Subtag.ctorArgs('converter')
 export class ParseFloatSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;
 

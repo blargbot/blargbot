@@ -1,4 +1,3 @@
-import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import type { SubtagSignatureCallableOptions as Options } from '../../compilation/SubtagSignatureCallableOptions.js';
 import { InvalidOperatorError, NotABooleanError, NotANumberError } from '../../errors/index.js';
@@ -8,11 +7,12 @@ import type { BBTagArrayTools, LogicOperator, NumericOperator, OrdinalOperator, 
 import { SubtagType } from '../../utils/index.js';
 import type { AggregationOperator, BBTagOperators } from '../../utils/operators.js';
 import { aggregationOperators, logicOperators, numericOperators, ordinalOperators, stringOperators } from '../../utils/operators.js';
+import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.operator;
 
 @Subtag.names('operator')
-@Subtag.ctorArgs(Subtag.operators(), Subtag.arrayTools(), Subtag.converter())
+@Subtag.ctorArgs('operators', 'arrayTools', 'converter')
 export class OperatorSubtag extends CompiledSubtag {
     readonly #operators: BBTagOperators;
     readonly #arrayTools: BBTagArrayTools;

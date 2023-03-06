@@ -1,5 +1,4 @@
 import type { BBTagContext } from '../../BBTagContext.js';
-import type { BBTagValueConverter } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, ChannelNotFoundError, NotANumberError, UserNotFoundError } from '../../errors/index.js';
 import type { Statement } from '../../language/index.js';
@@ -10,13 +9,14 @@ import type { UserService } from '../../services/UserService.js';
 import { Subtag } from '../../Subtag.js';
 import textTemplates from '../../text.js';
 import { overrides, SubtagType } from '../../utils/index.js';
+import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.waitMessage;
 
 const defaultCondition = parseBBTag('true');
 
 @Subtag.names('waitMessage')
-@Subtag.ctorArgs(Subtag.service('user'), Subtag.service('channel'), Subtag.service('message'), Subtag.converter())
+@Subtag.ctorArgs('user', 'channel', 'message', 'converter')
 export class WaitMessageSubtag extends CompiledSubtag {
     readonly #users: UserService;
     readonly #converter: BBTagValueConverter;

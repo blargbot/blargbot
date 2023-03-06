@@ -21,7 +21,7 @@ runSubtagTests({
                 const channel = ctx.createMock<Entities.Channel>();
                 channel.setup(m => m.id).thenReturn('28376128632132');
 
-                ctx.channelService.setup(m => m.create(bbctx, argument.isDeepEqual({
+                ctx.dependencies.channel.setup(m => m.create(bbctx, argument.isDeepEqual({
                     type: Discord.ChannelType.GuildText,
                     name: 'My new channel',
                     bitrate: undefined,
@@ -50,7 +50,7 @@ runSubtagTests({
                     channel.setup(m => m.type, false).thenReturn(code);
                     channel.setup(m => m.id).thenReturn('28376128632132');
 
-                    ctx.channelService.setup(m => m.create(bbctx, argument.isDeepEqual({
+                    ctx.dependencies.channel.setup(m => m.create(bbctx, argument.isDeepEqual({
                         name: 'My new channel',
                         type: code,
                         bitrate: undefined,
@@ -72,7 +72,7 @@ runSubtagTests({
                     channel.setup(m => m.type, false).thenReturn(code);
                     channel.setup(m => m.id).thenReturn('28376128632132');
 
-                    ctx.channelService.setup(m => m.create(bbctx, argument.isDeepEqual({
+                    ctx.dependencies.channel.setup(m => m.create(bbctx, argument.isDeepEqual({
                         name: 'My new channel',
                         type: code,
                         bitrate: undefined,
@@ -116,7 +116,7 @@ runSubtagTests({
                     channel.setup(m => m.type, false).thenReturn(code);
                     channel.setup(m => m.id).thenReturn('28376128632132');
 
-                    ctx.channelService.setup(m => m.create(bbctx, argument.isDeepEqual({
+                    ctx.dependencies.channel.setup(m => m.create(bbctx, argument.isDeepEqual({
                         name: 'My new channel',
                         type: code,
                         bitrate: 1234,
@@ -173,7 +173,7 @@ runSubtagTests({
                     channel.setup(m => m.type, false).thenReturn(code);
                     channel.setup(m => m.id).thenReturn('28376128632132');
 
-                    ctx.channelService.setup(m => m.create(bbctx, argument.isDeepEqual({
+                    ctx.dependencies.channel.setup(m => m.create(bbctx, argument.isDeepEqual({
                         name: 'My new channel',
                         type: code,
                         bitrate: 1234,
@@ -216,7 +216,7 @@ runSubtagTests({
                 channel.setup(m => m.type, false).thenReturn(Discord.ChannelType.GuildText);
                 channel.setup(m => m.id).thenReturn('28376128632132');
 
-                ctx.channelService.setup(m => m.create(bbctx, argument.isDeepEqual({
+                ctx.dependencies.channel.setup(m => m.create(bbctx, argument.isDeepEqual({
                     name: 'My new channel',
                     type: Discord.ChannelType.GuildText,
                     bitrate: undefined,
@@ -280,7 +280,7 @@ runSubtagTests({
                 channel.setup(m => m.type, false).thenReturn(Discord.ChannelType.GuildText);
                 channel.setup(m => m.id).thenReturn('28376128632132');
 
-                ctx.channelService.setup(m => m.create(bbctx, argument.isDeepEqual({
+                ctx.dependencies.channel.setup(m => m.create(bbctx, argument.isDeepEqual({
                     name: 'My new channel',
                     type: Discord.ChannelType.GuildText,
                     bitrate: undefined,
@@ -300,7 +300,7 @@ runSubtagTests({
                 { start: 0, end: 30, error: new BBTagRuntimeError('Failed to create channel: no perms', 'Test REST error') }
             ],
             postSetup(bbctx, ctx) {
-                ctx.channelService.setup(m => m.create(bbctx, argument.isDeepEqual({
+                ctx.dependencies.channel.setup(m => m.create(bbctx, argument.isDeepEqual({
                     name: 'My new channel',
                     type: Discord.ChannelType.GuildText,
                     bitrate: undefined,
@@ -320,7 +320,7 @@ runSubtagTests({
                 { start: 0, end: 30, error: new BBTagRuntimeError('Failed to create channel: no perms', 'Some other error message') }
             ],
             postSetup(bbctx, ctx) {
-                ctx.channelService.setup(m => m.create(bbctx, argument.isDeepEqual({
+                ctx.dependencies.channel.setup(m => m.create(bbctx, argument.isDeepEqual({
                     name: 'My new channel',
                     type: Discord.ChannelType.GuildText,
                     bitrate: undefined,

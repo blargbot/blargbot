@@ -36,7 +36,7 @@ runSubtagTests({
                 {
                     expected: '',
                     postSetup(channel, message, bbctx, ctx) {
-                        ctx.messageService.setup(m => m.addReactions(bbctx, channel.id, message.id, argument.isDeepEqual([think])))
+                        ctx.dependencies.message.setup(m => m.addReactions(bbctx, channel.id, message.id, argument.isDeepEqual([think])))
                             .thenResolve({ success: [think], failed: [] });
                     }
                 },
@@ -70,7 +70,7 @@ runSubtagTests({
                 {
                     expected: '',
                     postSetup(channel, message, bbctx, ctx) {
-                        ctx.messageService.setup(m => m.addReactions(bbctx, channel.id, message.id, argument.isDeepEqual([think, notLikeCat])))
+                        ctx.dependencies.message.setup(m => m.addReactions(bbctx, channel.id, message.id, argument.isDeepEqual([think, notLikeCat])))
                             .thenResolve({ success: [think, notLikeCat], failed: [] });
                     }
                 }
@@ -97,7 +97,7 @@ runSubtagTests({
                 {
                     expected: '',
                     postSetup(channel, message, bbctx, ctx) {
-                        ctx.messageService.setup(m => m.addReactions(bbctx, channel.id, message.id, argument.isDeepEqual([think, notLikeCat])))
+                        ctx.dependencies.message.setup(m => m.addReactions(bbctx, channel.id, message.id, argument.isDeepEqual([think, notLikeCat])))
                             .thenResolve({ success: [think, notLikeCat], failed: [] });
                     }
                 }
@@ -126,8 +126,8 @@ runSubtagTests({
                     channel_id: bbctx.channel.id
                 }, ctx.users.command);
 
-                ctx.messageService.setup(m => m.get(bbctx, ctx.channels.command.id, message.id)).thenResolve(message);
-                ctx.messageService.setup(m => m.addReactions(bbctx, ctx.channels.command.id, message.id, argument.isDeepEqual([think])))
+                ctx.dependencies.message.setup(m => m.get(bbctx, ctx.channels.command.id, message.id)).thenResolve(message);
+                ctx.dependencies.message.setup(m => m.addReactions(bbctx, ctx.channels.command.id, message.id, argument.isDeepEqual([think])))
                     .thenResolve({ success: [], failed: [think] });
             },
             errors: [

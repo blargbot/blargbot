@@ -8,7 +8,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = textTemplates.subtags.reverse;
 
 @Subtag.names('reverse')
-@Subtag.ctorArgs(Subtag.arrayTools())
+@Subtag.ctorArgs('arrayTools')
 export class ReverseSubtag extends CompiledSubtag {
     readonly #arrayTools: BBTagArrayTools;
 

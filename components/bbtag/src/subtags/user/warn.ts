@@ -1,16 +1,17 @@
 import type { BBTagContext } from '../../BBTagContext.js';
-import type { BBTagValueConverter, WarningService } from '../../BBTagUtilities.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { NotANumberError, UserNotFoundError } from '../../errors/index.js';
 import type { UserService } from '../../services/UserService.js';
+import type { WarningService } from '../../services/WarningService.js';
 import { Subtag } from '../../Subtag.js';
 import textTemplates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
+import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.warn;
 
 @Subtag.names('warn')
-@Subtag.ctorArgs(Subtag.converter(), Subtag.inject('warnings'), Subtag.service('user'))
+@Subtag.ctorArgs('converter', 'warnings', 'user')
 export class WarnSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;
     readonly #warnings: WarningService;

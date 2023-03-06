@@ -15,7 +15,7 @@ runSubtagTests({
             code: '{usersetnick;abc}',
             expected: '',
             postSetup(bbctx, ctx) {
-                ctx.userService.setup(m => m.edit(bbctx, ctx.users.command.id, argument.isDeepEqual({ nick: 'abc' }))).thenResolve(undefined);
+                ctx.dependencies.user.setup(m => m.edit(bbctx, ctx.users.command.id, argument.isDeepEqual({ nick: 'abc' }))).thenResolve(undefined);
             }
         },
         {
@@ -25,10 +25,10 @@ runSubtagTests({
                 const member = ctx.createMock<Entities.User>();
                 const userId = randomUUID();
                 member.setup(m => m.id).thenReturn(userId);
-                ctx.userService.setup(m => m.querySingle(bbctx, 'other user'))
+                ctx.dependencies.user.setup(m => m.querySingle(bbctx, 'other user'))
                     .verifiable(1)
                     .thenResolve(member.instance);
-                ctx.userService.setup(m => m.edit(bbctx, userId, argument.isDeepEqual({ nick: 'abc' })))
+                ctx.dependencies.user.setup(m => m.edit(bbctx, userId, argument.isDeepEqual({ nick: 'abc' })))
                     .verifiable(1)
                     .thenResolve();
             }
@@ -40,10 +40,10 @@ runSubtagTests({
                 const member = ctx.createMock<Entities.User>();
                 const userId = randomUUID();
                 member.setup(m => m.id).thenReturn(userId);
-                ctx.userService.setup(m => m.querySingle(bbctx, 'blargbot'))
+                ctx.dependencies.user.setup(m => m.querySingle(bbctx, 'blargbot'))
                     .verifiable(1)
                     .thenResolve(member.instance);
-                ctx.userService.setup(m => m.edit(bbctx, userId, argument.isDeepEqual({ nick: 'abc' })))
+                ctx.dependencies.user.setup(m => m.edit(bbctx, userId, argument.isDeepEqual({ nick: 'abc' })))
                     .verifiable(1)
                     .thenResolve();
             }
@@ -56,7 +56,7 @@ runSubtagTests({
                 { start: 0, end: 33, error: new UserNotFoundError('unknown user') }
             ],
             postSetup(bbctx, ctx) {
-                ctx.userService.setup(m => m.querySingle(bbctx, 'unknown user'))
+                ctx.dependencies.user.setup(m => m.querySingle(bbctx, 'unknown user'))
                     .verifiable(1)
                     .thenResolve(undefined);
             }
