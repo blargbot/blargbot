@@ -1,4 +1,5 @@
 import { connectionToService, hostIfEntrypoint, ServiceHost } from '@blargbot/application';
+import { fullContainerId } from '@blargbot/container-id';
 import env from '@blargbot/env';
 import type { ConnectionOptions } from '@blargbot/message-hub';
 import { MessageHub } from '@blargbot/message-hub';
@@ -21,20 +22,34 @@ export class ImageGeneratorApplication extends ServiceHost {
     public constructor(options: ImageGeneratorApplicationOptions) {
         const messages = new MessageHub(options.messages);
         const imageBroker = new ImageMessageBroker(messages);
+        const metrics = new MetricsService(new MetricsMessageBroker(messages), {
+            serviceName: 'bbtag-runner',
+            instanceId: fullContainerId
+        });
+        const subtagLatency = metrics.histogram({
+            name: 'bot_subtag_latency_ms',
+            help: 'Latency of subtag execution',
+            labelNames: ['subtag'],
+            buckets: [0, 5, 10, 100, 500, 1000, 2000, 5000]
+        });
+        const subtagCount = metrics.counter({
+            name: 'bot_subtag_counter',
+            help: 'Subtags executed',
+            labelNames: ['subtag']
+        });
         const engine = createBBTagEngine({
             defaultPrefix: options.defaultPrefix,
             metrics: {
                 subtagUsed(name, duration) {
-                    name;
-                    duration;
-                    throw null;
+                    subtagLatency.labels(name).observe(duration);
+                    subtagCount.labels(name).inc();
                 }
             }
         });
 
         super([
             connectionToService(messages, 'rabbitmq'),
-            new MetricsService(new MetricsMessageBroker(messages, 'bbtag-runner', '0'))
+            metrics
         ]);
 
         imageBroker;

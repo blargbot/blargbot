@@ -607,6 +607,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/bbtag", "workspace:services/bbtag-runner/src"],\
             ["@bbtag/blargbot", "workspace:components/bbtag/src"],\
             ["@blargbot/application", "workspace:components/application/src"],\
+            ["@blargbot/container-id", "workspace:components/container-id/src"],\
             ["@blargbot/discord-emote", "workspace:components/discord-emote/src"],\
             ["@blargbot/env", "workspace:components/env/src"],\
             ["@blargbot/message-hub", "workspace:components/message-hub/src"],\
@@ -1038,12 +1039,14 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["@blargbot/discord-message-stream", "workspace:services/discord-message-stream/src"],\
             ["@blargbot/application", "workspace:components/application/src"],\
+            ["@blargbot/container-id", "workspace:components/container-id/src"],\
             ["@blargbot/discord-gateway-client", "workspace:services/discord-gateway/client"],\
             ["@blargbot/discord-message-stream-contract", "workspace:contracts/discord-message-stream/src"],\
             ["@blargbot/discord-types", "workspace:components/discord-types/src"],\
             ["@blargbot/env", "workspace:components/env/src"],\
             ["@blargbot/express", "workspace:components/express/src"],\
             ["@blargbot/message-hub", "workspace:components/message-hub/src"],\
+            ["@blargbot/metrics-client", "workspace:services/metrics/client"],\
             ["@types/amqplib", "npm:0.10.1"],\
             ["@types/node-fetch", "npm:2.6.2"],\
             ["amqplib", "npm:0.10.3"],\
@@ -1419,6 +1422,11 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./services/metrics/src/",\
           "packageDependencies": [\
             ["@blargbot/metrics", "workspace:services/metrics/src"],\
+            ["@blargbot/application", "workspace:components/application/src"],\
+            ["@blargbot/env", "workspace:components/env/src"],\
+            ["@blargbot/express", "workspace:components/express/src"],\
+            ["@blargbot/message-hub", "workspace:components/message-hub/src"],\
+            ["@blargbot/metrics-client", "workspace:services/metrics/client"],\
             ["prom-client", "npm:14.2.0"]\
           ],\
           "linkType": "SOFT"\

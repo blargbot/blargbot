@@ -73,6 +73,10 @@ services:
     build: ../services/mod-log/src
     image: blargbot/mod-log
 
+  metrics:
+    build: ../services/metrics/src
+    image: blargbot/metrics
+
   timeouts:
     build: ../services/timeouts/src
     image: blargbot/timeouts

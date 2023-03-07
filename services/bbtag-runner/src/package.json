@@ -9,6 +9,7 @@
     "dependencies": {
         "@bbtag/blargbot": "workspace:^",
         "@blargbot/application": "workspace:^",
+        "@blargbot/container-id": "workspace:^",
         "@blargbot/discord-emote": "workspace:^",
         "@blargbot/env": "workspace:^",
         "@blargbot/message-hub": "workspace:^",

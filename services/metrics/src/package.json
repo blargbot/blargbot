@@ -6,7 +6,15 @@
     "exports": {
         ".": "./index.js"
     },
+    "scripts": {
+        "start": "node ./index.js"
+    },
     "dependencies": {
+        "@blargbot/application": "workspace:^",
+        "@blargbot/env": "workspace:^",
+        "@blargbot/express": "workspace:^",
+        "@blargbot/message-hub": "workspace:^",
+        "@blargbot/metrics-client": "workspace:^",
         "prom-client": "^14.2.0"
     }
 }

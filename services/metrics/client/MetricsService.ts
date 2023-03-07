@@ -2,6 +2,8 @@ import prom from 'prom-client';
 
 import type { MetricsMessageBroker } from './MetricsMessageBroker.js';
 
+export type { Counter, Gauge, Histogram, Summary } from 'prom-client';
+
 export class MetricsService {
     readonly #messages: MetricsMessageBroker;
     readonly #registry: prom.Registry;
@@ -9,9 +11,17 @@ export class MetricsService {
 
     #timer?: NodeJS.Timer;
 
-    public constructor(messages: MetricsMessageBroker, options: MetricsServiceOptions = {}) {
+    public constructor(messages: MetricsMessageBroker, options: MetricsServiceOptions) {
         this.#messages = messages;
         this.#registry = options.registry ?? new prom.Registry();
+
+        prom.collectDefaultMetrics({
+            register: this.#registry,
+            labels: {
+                serviceName: options.serviceName.replaceAll('-', '_'),
+                instanceId: options.instanceId
+            }
+        });
 
         this.#interval = options.postIntervalMs ?? 30000;
     }
@@ -60,4 +70,6 @@ export class MetricsService {
 export interface MetricsServiceOptions {
     readonly postIntervalMs?: number;
     readonly registry?: prom.Registry;
+    readonly serviceName: string;
+    readonly instanceId: string;
 }

@@ -292,6 +292,14 @@ services:
       postgres:
         condition: service_healthy
 
+  metrics:
+    image: blargbot/metrics
+    environment:
+      <<: *rabbit-env
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
   timeouts:
     image: blargbot/timeouts
     environment:

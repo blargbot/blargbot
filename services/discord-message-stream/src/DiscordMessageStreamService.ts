@@ -1,6 +1,7 @@
 import type { PartialDiscordGatewayMessageBroker } from '@blargbot/discord-gateway-client';
 import type Discord from '@blargbot/discord-types';
 import type { MessageHandle } from '@blargbot/message-hub';
+import type { Counter, MetricsService } from '@blargbot/metrics-client';
 import fetch from 'node-fetch';
 
 import type { DiscordMessageStreamMessageBroker } from './DiscordMessageStreamMessageBroker.js';
@@ -15,8 +16,13 @@ export class DiscordMessageStreamService {
     readonly #discordChannelCache: string;
     readonly #discordGuildCache: string;
     readonly #gateway: DiscordGatewayMessageBroker;
+    readonly #messageCount: Counter;
 
-    public constructor(messages: DiscordMessageStreamMessageBroker, gateway: DiscordGatewayMessageBroker, options: DiscordMessageStreamServiceOptions) {
+    public constructor(messages: DiscordMessageStreamMessageBroker, gateway: DiscordGatewayMessageBroker, metrics: MetricsService, options: DiscordMessageStreamServiceOptions) {
+        this.#messageCount = metrics.counter({
+            name: 'bot_message_counter',
+            help: 'Messages the bot sees'
+        });
         this.#messages = messages;
         this.#gateway = gateway;
         this.#discordChannelCache = options.discordChannelCacheUrl;
@@ -36,6 +42,8 @@ export class DiscordMessageStreamService {
     }
 
     async #handleMessageCreate(message: Discord.GatewayMessageCreateDispatchData): Promise<void> {
+        this.#messageCount.inc();
+
         const [channel, guild] = await Promise.all([
             this.#getChannel(message.channel_id),
             this.#getGuildForChannel(message.channel_id)
