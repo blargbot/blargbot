@@ -1,27 +1,33 @@
+import type { PartialDiscordGatewayMessageBroker } from '@blargbot/discord-gateway-client';
 import type Discord from '@blargbot/discord-types';
-import type { MessageHandle } from '@blargbot/message-broker';
+import type { MessageHandle } from '@blargbot/message-hub';
 import type { IKVCache } from '@blargbot/redis-cache';
 
-import type { DiscordGuildCacheMessageBroker } from './DiscordGuildCacheMessageBroker.js';
 import type { SlimDiscordGuild } from './SlimDiscordGuild.js';
 import { toSlimDiscordGuild } from './SlimDiscordGuild.js';
 
+type DiscordGatewayMessageBroker = PartialDiscordGatewayMessageBroker<
+    | 'GUILD_CREATE'
+    | 'GUILD_UPDATE'
+    | 'GUILD_DELETE'
+>;
+
 export class DiscordGuildCacheService {
-    readonly #messages: DiscordGuildCacheMessageBroker;
+    readonly #gateway: DiscordGatewayMessageBroker;
     readonly #handles: Set<MessageHandle>;
     readonly #cache: IKVCache<bigint, SlimDiscordGuild>;
 
-    public constructor(messages: DiscordGuildCacheMessageBroker, cache: IKVCache<bigint, SlimDiscordGuild>) {
-        this.#messages = messages;
+    public constructor(gateway: DiscordGatewayMessageBroker, cache: IKVCache<bigint, SlimDiscordGuild>) {
+        this.#gateway = gateway;
         this.#cache = cache;
         this.#handles = new Set();
     }
 
     public async start(): Promise<void> {
         await Promise.all([
-            this.#messages.handleGuildCreate(this.#handleGuildCreate.bind(this)).then(h => this.#handles.add(h)),
-            this.#messages.handleGuildUpdate(this.#handleGuildUpdate.bind(this)).then(h => this.#handles.add(h)),
-            this.#messages.handleGuildDelete(this.#handleGuildDelete.bind(this)).then(h => this.#handles.add(h))
+            this.#gateway.handleGuildCreate(this.#handleGuildCreate.bind(this)).then(h => this.#handles.add(h)),
+            this.#gateway.handleGuildUpdate(this.#handleGuildUpdate.bind(this)).then(h => this.#handles.add(h)),
+            this.#gateway.handleGuildDelete(this.#handleGuildDelete.bind(this)).then(h => this.#handles.add(h))
         ]);
     }
 

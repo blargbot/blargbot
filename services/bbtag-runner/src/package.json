@@ -11,7 +11,8 @@
         "@blargbot/application": "workspace:^",
         "@blargbot/discord-emote": "workspace:^",
         "@blargbot/env": "workspace:^",
-        "@blargbot/message-broker": "workspace:^",
+        "@blargbot/message-hub": "workspace:^",
+        "@blargbot/metrics-client": "workspace:^",
         "amqplib": "^0.10.3"
     },
     "devDependencies": {

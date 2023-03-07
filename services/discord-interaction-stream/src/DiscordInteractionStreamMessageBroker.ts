@@ -1,27 +1,21 @@
-import { discordMessageBrokerMixin } from '@blargbot/discord-message-broker';
 import Discord from '@blargbot/discord-types';
-import MessageBroker from '@blargbot/message-broker';
-import type amqplib from 'amqplib';
+import type { MessageHub } from '@blargbot/message-hub';
+import { jsonToBlob } from '@blargbot/message-hub';
 
-export class DiscordInteractionStreamMessageBroker extends discordMessageBrokerMixin({
-    type: MessageBroker,
-    eventExchange: 'discord-gateway-events',
-    serviceName: 'discord-interaction-stream',
-    events: [
-        'INTERACTION_CREATE'
-    ]
-}) {
+export class DiscordInteractionStreamMessageBroker {
     static readonly #interactionStream = 'discord-interaction-stream' as const;
-    public override async onceConnected(channel: amqplib.Channel): Promise<void> {
-        await Promise.all([
-            super.onceConnected(channel),
-            channel.assertExchange(DiscordInteractionStreamMessageBroker.#interactionStream, 'topic', { durable: true })
-        ]);
+
+    readonly #messages: MessageHub;
+
+    public constructor(messages: MessageHub) {
+        this.#messages = messages;
+
+        this.#messages.onConnected(c => c.assertExchange(DiscordInteractionStreamMessageBroker.#interactionStream, 'topic', { durable: true }));
     }
 
     public async pushInteraction(interaction: Discord.GatewayInteractionCreateDispatchData): Promise<void> {
         const route = `${interaction.type}.${this.#getInteractionId(interaction) ?? '-'}.${interaction.channel_id ?? '-'}.${interaction.user?.id ?? '-'}`;
-        await this.publish(DiscordInteractionStreamMessageBroker.#interactionStream, route, this.jsonToBlob(interaction));
+        await this.#messages.publish(DiscordInteractionStreamMessageBroker.#interactionStream, route, jsonToBlob(interaction));
     }
 
     #getInteractionId(interaction: Discord.GatewayInteractionCreateDispatchData): string | undefined {

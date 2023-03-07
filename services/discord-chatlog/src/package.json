@@ -12,12 +12,12 @@
     "dependencies": {
         "@blargbot/application": "workspace:^",
         "@blargbot/chatlog-types": "workspace:^",
-        "@blargbot/discord-message-broker": "workspace:^",
+        "@blargbot/discord-gateway-client": "workspace:^",
         "@blargbot/discord-types": "workspace:^",
         "@blargbot/env": "workspace:^",
         "@blargbot/guild-settings-contract": "workspace:^",
         "@blargbot/mapping": "workspace:^",
-        "@blargbot/message-broker": "workspace:^",
+        "@blargbot/message-hub": "workspace:^",
         "amqplib": "^0.10.3",
         "cassandra-driver": "^4.6.4",
         "node-fetch": "^3.3.0"

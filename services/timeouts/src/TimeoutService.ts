@@ -1,4 +1,4 @@
-import type { MessageHandle } from '@blargbot/message-broker';
+import type { MessageHandle } from '@blargbot/message-hub';
 
 import type { ITimeoutRecordDatabase } from './ITimeoutRecordDatabase.js';
 import type { TimeoutDetails, TimeoutRecord } from './TimeoutDetails.js';

@@ -1,15 +1,12 @@
 {
-    "name": "@blargbot/discord-message-broker",
+    "name": "@blargbot/message-hub",
     "version": "1.0.0",
+    "private": true,
     "type": "module",
     "exports": {
         ".": "./index.js"
     },
     "dependencies": {
-        "@blargbot/discord-types": "workspace:^",
-        "@blargbot/message-broker": "workspace:^"
-    },
-    "peerDependencies": {
         "amqplib": "^0.10.3"
     },
     "devDependencies": {

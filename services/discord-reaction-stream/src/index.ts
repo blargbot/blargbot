@@ -1,11 +1,13 @@
-import Application from '@blargbot/application';
+import { connectionToService, hostIfEntrypoint, ServiceHost } from '@blargbot/application';
+import { DiscordGatewayMessageBroker } from '@blargbot/discord-gateway-client';
 import env from '@blargbot/env';
-import type { ConnectionOptions } from '@blargbot/message-broker';
+import type { ConnectionOptions } from '@blargbot/message-hub';
+import { MessageHub } from '@blargbot/message-hub';
 
 import { DiscordReactionStreamMessageBroker } from './DiscordReactionStreamMessageBroker.js';
 import { DiscordReactionStreamService } from './DiscordReactionStreamService.js';
 
-@Application.hostIfEntrypoint(() => [{
+@hostIfEntrypoint(() => [{
     messages: {
         prefetch: env.rabbitPrefetch,
         hostname: env.rabbitHost,
@@ -13,25 +15,17 @@ import { DiscordReactionStreamService } from './DiscordReactionStreamService.js'
         password: env.rabbitPassword
     }
 }])
-export class DiscordReactionStreamApplication extends Application {
-    readonly #messages: DiscordReactionStreamMessageBroker;
-    readonly #service: DiscordReactionStreamService;
-
+export class DiscordReactionStreamApplication extends ServiceHost {
     public constructor(options: DiscordReactionStreamApplicationOptions) {
-        super();
-
-        this.#messages = new DiscordReactionStreamMessageBroker(options.messages);
-        this.#service = new DiscordReactionStreamService(this.#messages);
-    }
-
-    protected override async start(): Promise<void> {
-        await this.#messages.connect();
-        await this.#service.start();
-    }
-
-    protected override async stop(): Promise<void> {
-        await this.#service.stop();
-        await this.#messages.disconnect();
+        const messages = new MessageHub(options.messages);
+        const service = new DiscordReactionStreamService(
+            new DiscordReactionStreamMessageBroker(messages),
+            new DiscordGatewayMessageBroker(messages, 'discord-reaction-stream')
+        );
+        super([
+            connectionToService(messages, 'rabbitmq'),
+            service
+        ]);
     }
 }
 

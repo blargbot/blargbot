@@ -1,6 +1,4 @@
-import { Server } from 'node:http';
-
-import Application from '@blargbot/application';
+import { hostIfEntrypoint, ServiceHost, webService } from '@blargbot/application';
 import env from '@blargbot/env';
 import express from 'express';
 
@@ -9,33 +7,23 @@ import type { RestProxyOptions } from './RestProxyOptions.js';
 
 const requestLimit = 50 << 20; // 50MB
 
-@Application.hostIfEntrypoint(() => [{
+@hostIfEntrypoint(() => [{
     url: env.discordProxyUrl,
     secret: env.discordProxySecret,
     token: env.discordToken,
     port: env.appPort
 }])
-export default class RestProxyApplication extends Application {
-    readonly #app: express.Express;
-    readonly #server: Server;
-    readonly #port: number;
-
+export default class RestProxyApplication extends ServiceHost {
     public constructor(options: RestProxyApplicationOptions) {
-        super();
-        this.#port = options.port;
-        this.#app = express()
-            .use(express.urlencoded({ extended: true }))
-            .use(express.json({ limit: requestLimit }))
-            .all('/*', createRestProxy(options));
-        this.#server = new Server(this.#app.bind(this.#app));
-    }
-
-    protected async start(): Promise<void> {
-        await new Promise<void>(res => this.#server.listen(this.#port, res));
-    }
-
-    protected async stop(): Promise<void> {
-        await new Promise<void>((res, rej) => this.#server.close(err => err === undefined ? res() : rej(err)));
+        super([
+            webService(
+                express()
+                    .use(express.urlencoded({ extended: true }))
+                    .use(express.json({ limit: requestLimit }))
+                    .all('/*', createRestProxy(options)),
+                options.port
+            )
+        ]);
     }
 }
 

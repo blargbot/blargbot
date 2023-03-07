@@ -1,11 +1,13 @@
-import Application from '@blargbot/application';
+import { connectionToService, hostIfEntrypoint, ServiceHost } from '@blargbot/application';
+import { DiscordGatewayMessageBroker } from '@blargbot/discord-gateway-client';
 import env from '@blargbot/env';
-import type { ConnectionOptions } from '@blargbot/message-broker';
+import type { ConnectionOptions } from '@blargbot/message-hub';
+import { MessageHub } from '@blargbot/message-hub';
 
 import { DiscordInteractionStreamMessageBroker } from './DiscordInteractionStreamMessageBroker.js';
 import { DiscordInteractionStreamService } from './DiscordInteractionStreamService.js';
 
-@Application.hostIfEntrypoint(() => [{
+@hostIfEntrypoint(() => [{
     messages: {
         prefetch: env.rabbitPrefetch,
         hostname: env.rabbitHost,
@@ -13,25 +15,18 @@ import { DiscordInteractionStreamService } from './DiscordInteractionStreamServi
         password: env.rabbitPassword
     }
 }])
-export class DiscordInteractionStreamApplication extends Application {
-    readonly #messages: DiscordInteractionStreamMessageBroker;
-    readonly #service: DiscordInteractionStreamService;
-
+export class DiscordInteractionStreamApplication extends ServiceHost {
     public constructor(options: DiscordInteractionStreamApplicationOptions) {
-        super();
+        const messages = new MessageHub(options.messages);
+        const service = new DiscordInteractionStreamService(
+            new DiscordInteractionStreamMessageBroker(messages),
+            new DiscordGatewayMessageBroker(messages, 'discord-interaction-stream')
+        );
 
-        this.#messages = new DiscordInteractionStreamMessageBroker(options.messages);
-        this.#service = new DiscordInteractionStreamService(this.#messages);
-    }
-
-    protected override async start(): Promise<void> {
-        await this.#messages.connect();
-        await this.#service.start();
-    }
-
-    protected override async stop(): Promise<void> {
-        await this.#service.stop();
-        await this.#messages.disconnect();
+        super([
+            connectionToService(messages, 'rabbitmq'),
+            service
+        ]);
     }
 }
 

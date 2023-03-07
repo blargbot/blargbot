@@ -1,26 +1,19 @@
-import { discordMessageBrokerMixin } from '@blargbot/discord-message-broker';
 import type { ExtendedMessage } from '@blargbot/discord-message-stream-contract';
-import MessageBroker from '@blargbot/message-broker';
-import type amqplib from 'amqplib';
+import type { MessageHub } from '@blargbot/message-hub';
+import { jsonToBlob } from '@blargbot/message-hub';
 
-export class DiscordMessageStreamMessageBroker extends discordMessageBrokerMixin({
-    type: MessageBroker,
-    eventExchange: 'discord-gateway-events',
-    serviceName: 'discord-message-stream',
-    events: [
-        'MESSAGE_CREATE'
-    ]
-}) {
+export class DiscordMessageStreamMessageBroker {
     static readonly #messageStream = 'discord-message-stream' as const;
 
-    public override async onceConnected(channel: amqplib.Channel): Promise<void> {
-        await Promise.all([
-            super.onceConnected(channel),
-            channel.assertExchange(DiscordMessageStreamMessageBroker.#messageStream, 'topic', { durable: true })
-        ]);
+    readonly #messages: MessageHub;
+
+    public constructor(messages: MessageHub) {
+        this.#messages = messages;
+
+        this.#messages.onConnected(c => c.assertExchange(DiscordMessageStreamMessageBroker.#messageStream, 'topic', { durable: true }));
     }
 
     public async pushMessage(message: ExtendedMessage): Promise<void> {
-        await this.publish(DiscordMessageStreamMessageBroker.#messageStream, `${message.guild_id ?? 'dm'}.${message.channel_id}.${message.author.id}`, this.jsonToBlob(message));
+        await this.#messages.publish(DiscordMessageStreamMessageBroker.#messageStream, `${message.guild_id ?? 'dm'}.${message.channel_id}.${message.author.id}`, jsonToBlob(message));
     }
 }

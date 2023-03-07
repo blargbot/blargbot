@@ -1,22 +1,23 @@
 import type { Entities } from '@bbtag/blargbot';
-import type { ConsumeMessage, MessageHandle } from '@blargbot/message-broker';
-import MessageBroker from '@blargbot/message-broker';
-import type amqplib from 'amqplib';
+import type { ConsumeMessage, MessageHandle, MessageHub } from '@blargbot/message-hub';
+import { blobToJson } from '@blargbot/message-hub';
 
-export class ImageMessageBroker extends MessageBroker {
+export class ImageMessageBroker {
     static readonly #bbtagRequest = 'bbtag-requests';
+    readonly #messages: MessageHub;
 
-    protected override async onceConnected(channel: amqplib.Channel): Promise<void> {
-        await channel.assertExchange(ImageMessageBroker.#bbtagRequest, 'direct');
+    public constructor(messages: MessageHub) {
+        this.#messages = messages;
+        this.#messages.onConnected(c => c.assertExchange(ImageMessageBroker.#bbtagRequest, 'direct'));
     }
 
     public async handleBBTagExecutionRequest(handler: (message: BBTagExecutionRequest, msg: ConsumeMessage) => Awaitable<void>): Promise<MessageHandle> {
-        return await this.handleMessage({
+        return await this.#messages.handleMessage({
             exchange: ImageMessageBroker.#bbtagRequest,
             queue: ImageMessageBroker.#bbtagRequest,
             filter: '*',
             async handle(data, msg) {
-                return await handler(await this.blobToJson(data), msg);
+                return await handler(await blobToJson(data), msg);
             }
         });
     }

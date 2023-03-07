@@ -1,27 +1,20 @@
-import { discordMessageBrokerMixin } from '@blargbot/discord-message-broker';
 import type Discord from '@blargbot/discord-types';
-import MessageBroker from '@blargbot/message-broker';
-import type amqplib from 'amqplib';
+import type { MessageHub } from '@blargbot/message-hub';
+import { jsonToBlob } from '@blargbot/message-hub';
 
-export class DiscordReactionStreamMessageBroker extends discordMessageBrokerMixin({
-    type: MessageBroker,
-    eventExchange: 'discord-gateway-events',
-    serviceName: 'discord-reaction-stream',
-    events: [
-        'MESSAGE_REACTION_ADD'
-    ]
-}) {
+export class DiscordReactionStreamMessageBroker {
     static readonly #reactionStream = 'discord-reaction-stream' as const;
 
-    public override async onceConnected(channel: amqplib.Channel): Promise<void> {
-        await Promise.all([
-            super.onceConnected(channel),
-            channel.assertExchange(DiscordReactionStreamMessageBroker.#reactionStream, 'topic', { durable: true })
-        ]);
+    readonly #messages: MessageHub;
+
+    public constructor(messages: MessageHub) {
+        this.#messages = messages;
+
+        this.#messages.onConnected(c => c.assertExchange(DiscordReactionStreamMessageBroker.#reactionStream, 'topic', { durable: true }));
     }
 
     public async pushReaction(message: Discord.GatewayMessageReactionAddDispatchData): Promise<void> {
         const emoteId = message.emoji.id ?? message.emoji.name ?? '';
-        await this.publish(DiscordReactionStreamMessageBroker.#reactionStream, `${message.message_id}.${message.user_id}.${emoteId}`, this.jsonToBlob(message));
+        await this.#messages.publish(DiscordReactionStreamMessageBroker.#reactionStream, `${message.message_id}.${message.user_id}.${emoteId}`, jsonToBlob(message));
     }
 }

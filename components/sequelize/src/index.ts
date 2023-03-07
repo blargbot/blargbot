@@ -1,4 +1,4 @@
-import type { AttributeOptions, DataType, Model } from '@sequelize/core';
+import type { AttributeOptions, DataType, Model, QueryOptions, Sequelize, SyncOptions } from '@sequelize/core';
 import { DataTypes as CoreDataTypes } from '@sequelize/core';
 
 export * from '@sequelize/core';
@@ -29,4 +29,21 @@ export function makeColumn<Name extends keyof M, M extends object>(name: Name, t
             ...rest
         }
     } as { [P in Name]: AttributeOptions<Model<M>> };
+}
+
+export function sequelizeToService(sequelize: Sequelize, options: { syncOptions?: SyncOptions; authOptions?: QueryOptions; }): { start(): Promise<void>; stop(): Promise<void>; } {
+    return {
+        async start() {
+            await sequelize.authenticate(options.authOptions);
+            console.log('Database connected');
+            if (options.syncOptions !== undefined) {
+                await sequelize.sync(options.syncOptions);
+                console.log('Database models syncronized');
+            }
+        },
+        async stop() {
+            await sequelize.close();
+            console.log('Database disconnected');
+        }
+    };
 }

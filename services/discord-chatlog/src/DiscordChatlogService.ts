@@ -1,20 +1,27 @@
 import { ChatLogType } from '@blargbot/chatlog-types';
+import type { PartialDiscordGatewayMessageBroker } from '@blargbot/discord-gateway-client';
 import type Discord from '@blargbot/discord-types';
 import guildSettings from '@blargbot/guild-settings-contract';
-import type { MessageHandle } from '@blargbot/message-broker';
+import type { MessageHandle } from '@blargbot/message-hub';
 import fetch from 'node-fetch';
 
 import type DiscordChatlogDatabase from './DiscordChatlogDatabase.js';
-import type { DiscordChatlogMessageBroker } from './DiscordChatlogMessageBroker.js';
+
+type DiscordGatewayMessageBroker = PartialDiscordGatewayMessageBroker<
+    | 'MESSAGE_CREATE'
+    | 'MESSAGE_UPDATE'
+    | 'MESSAGE_DELETE'
+    | 'MESSAGE_DELETE_BULK'
+>;
 
 export class DiscordChatlogService {
-    readonly #messages: DiscordChatlogMessageBroker;
+    readonly #gateway: DiscordGatewayMessageBroker;
     readonly #database: DiscordChatlogDatabase;
     readonly #handles: Set<MessageHandle>;
     readonly #guildSettings: string;
 
-    public constructor(messages: DiscordChatlogMessageBroker, database: DiscordChatlogDatabase, options: DiscordChatlogServiceOptions) {
-        this.#messages = messages;
+    public constructor(gateway: DiscordGatewayMessageBroker, database: DiscordChatlogDatabase, options: DiscordChatlogServiceOptions) {
+        this.#gateway = gateway;
         this.#database = database;
         this.#guildSettings = options.guildSettingsUrl;
         this.#handles = new Set();
@@ -22,10 +29,10 @@ export class DiscordChatlogService {
 
     public async start(): Promise<void> {
         await Promise.all([
-            this.#messages.handleMessageCreate(this.#handleMessageCreate.bind(this)).then(h => this.#handles.add(h)),
-            this.#messages.handleMessageUpdate(this.#handleMessageUpdate.bind(this)).then(h => this.#handles.add(h)),
-            this.#messages.handleMessageDelete(this.#handleMessageDelete.bind(this)).then(h => this.#handles.add(h)),
-            this.#messages.handleMessageDeleteBulk(this.#handleMessageDeleteBulk.bind(this)).then(h => this.#handles.add(h))
+            this.#gateway.handleMessageCreate(this.#handleMessageCreate.bind(this)).then(h => this.#handles.add(h)),
+            this.#gateway.handleMessageUpdate(this.#handleMessageUpdate.bind(this)).then(h => this.#handles.add(h)),
+            this.#gateway.handleMessageDelete(this.#handleMessageDelete.bind(this)).then(h => this.#handles.add(h)),
+            this.#gateway.handleMessageDeleteBulk(this.#handleMessageDeleteBulk.bind(this)).then(h => this.#handles.add(h))
         ]);
     }
 

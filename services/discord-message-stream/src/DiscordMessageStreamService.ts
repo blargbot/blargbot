@@ -1,17 +1,24 @@
+import type { PartialDiscordGatewayMessageBroker } from '@blargbot/discord-gateway-client';
 import type Discord from '@blargbot/discord-types';
-import type { MessageHandle } from '@blargbot/message-broker';
+import type { MessageHandle } from '@blargbot/message-hub';
 import fetch from 'node-fetch';
 
 import type { DiscordMessageStreamMessageBroker } from './DiscordMessageStreamMessageBroker.js';
+
+type DiscordGatewayMessageBroker = PartialDiscordGatewayMessageBroker<
+    | 'MESSAGE_CREATE'
+>;
 
 export class DiscordMessageStreamService {
     readonly #messages: DiscordMessageStreamMessageBroker;
     readonly #handles: Set<MessageHandle>;
     readonly #discordChannelCache: string;
     readonly #discordGuildCache: string;
+    readonly #gateway: DiscordGatewayMessageBroker;
 
-    public constructor(messages: DiscordMessageStreamMessageBroker, options: DiscordMessageStreamServiceOptions) {
+    public constructor(messages: DiscordMessageStreamMessageBroker, gateway: DiscordGatewayMessageBroker, options: DiscordMessageStreamServiceOptions) {
         this.#messages = messages;
+        this.#gateway = gateway;
         this.#discordChannelCache = options.discordChannelCacheUrl;
         this.#discordGuildCache = options.discordGuildCacheUrl;
         this.#handles = new Set();
@@ -19,7 +26,7 @@ export class DiscordMessageStreamService {
 
     public async start(): Promise<void> {
         await Promise.all([
-            this.#messages.handleMessageCreate(this.#handleMessageCreate.bind(this)).then(h => this.#handles.add(h))
+            this.#gateway.handleMessageCreate(this.#handleMessageCreate.bind(this)).then(h => this.#handles.add(h))
         ]);
     }
 

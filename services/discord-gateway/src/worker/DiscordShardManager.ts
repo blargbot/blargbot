@@ -1,4 +1,4 @@
-import type { MessageHandle } from '@blargbot/message-broker';
+import type { MessageHandle } from '@blargbot/message-hub';
 import * as discordeno from 'discordeno';
 
 import type { GatewayMessageBroker } from '../GatewayMessageBroker.js';

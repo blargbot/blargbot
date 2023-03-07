@@ -1,22 +1,25 @@
 import type { ImageOptionsMap } from '@blargbot/image-types';
-import type { ConsumeMessage, MessageHandle } from '@blargbot/message-broker';
-import MessageBroker from '@blargbot/message-broker';
-import type amqplib from 'amqplib';
+import type { ConsumeMessage, MessageHandle, MessageHub } from '@blargbot/message-hub';
+import { blobToJson } from '@blargbot/message-hub';
 
-export class ImageMessageBroker extends MessageBroker {
+export class ImageMessageBroker {
     static readonly #imageRequest = 'image-generate';
 
-    protected override async onceConnected(channel: amqplib.Channel): Promise<void> {
-        await channel.assertExchange(ImageMessageBroker.#imageRequest, 'topic');
+    readonly #messages: MessageHub;
+
+    public constructor(messages: MessageHub) {
+        this.#messages = messages;
+
+        this.#messages.onConnected(c => c.assertExchange(ImageMessageBroker.#imageRequest, 'topic'));
     }
 
     public async handleImageRequest(handler: <P extends keyof ImageOptionsMap>(type: P, message: ImageOptionsMap[P], msg: ConsumeMessage) => Awaitable<Blob>): Promise<MessageHandle> {
-        return await this.handleMessage({
+        return await this.#messages.handleMessage({
             exchange: ImageMessageBroker.#imageRequest,
             queue: ImageMessageBroker.#imageRequest,
             filter: '*',
             async handle(data, msg) {
-                return await handler(msg.fields.routingKey as keyof ImageOptionsMap, await this.blobToJson(data), msg);
+                return await handler(msg.fields.routingKey as keyof ImageOptionsMap, await blobToJson(data), msg);
             }
         });
     }

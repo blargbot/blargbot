@@ -1,4 +1,4 @@
-import type { MessageHandle } from '@blargbot/message-broker';
+import type { MessageHandle } from '@blargbot/message-hub';
 import * as discordeno from 'discordeno';
 
 import type { GatewayMessageBroker } from '../GatewayMessageBroker.js';
@@ -10,7 +10,7 @@ export interface DiscordGatewayManager {
 }
 
 export interface DiscordGatewayManagerOptions {
-    readonly gatewayBot: discordeno.GetGatewayBot;
+    readonly client: discordeno.Bot;
     readonly messages: GatewayMessageBroker;
     readonly token: string;
     readonly shardsPerWorker: number;
@@ -18,11 +18,11 @@ export interface DiscordGatewayManagerOptions {
 
 export function createDiscordGatewayManager(options: DiscordGatewayManagerOptions): DiscordGatewayManager {
     const workers = new GatewayWorkerManager(options.messages);
-    const manager = createGatewayManager(options, workers);
     let requestIdentify: MessageHandle | undefined;
 
     return {
         async start() {
+            const manager = await createGatewayManager(options, workers);
             manager.prepareBuckets();
             requestIdentify ??= await options.messages.handleManagerCommand('requestIdentify', async ({ shardId, workerId }) => {
                 await manager.manager.requestIdentify(shardId);
@@ -45,9 +45,9 @@ export function createDiscordGatewayManager(options: DiscordGatewayManagerOption
     };
 }
 
-function createGatewayManager(options: DiscordGatewayManagerOptions, workers: GatewayWorkerManager): discordeno.GatewayManager {
+async function createGatewayManager(options: DiscordGatewayManagerOptions, workers: GatewayWorkerManager): Promise<discordeno.GatewayManager> {
     return discordeno.createGatewayManager({
-        gatewayBot: options.gatewayBot,
+        gatewayBot: await options.client.helpers.getGatewayBot(),
         gatewayConfig: {
             token: options.token
         },

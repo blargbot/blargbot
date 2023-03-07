@@ -19,8 +19,8 @@
         "@blargbot/guild-settings-contract": "workspace:^",
         "@blargbot/input": "workspace:^",
         "@blargbot/mapping": "workspace:^",
-        "@blargbot/message-broker": "workspace:^",
         "@blargbot/message-command-contract": "workspace:^",
+        "@blargbot/message-hub": "workspace:^",
         "@blargbot/user-settings-contract": "workspace:^",
         "amqplib": "^0.10.3",
         "node-fetch": "^3.3.0"

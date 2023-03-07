@@ -1,25 +1,36 @@
+import type { PartialDiscordGatewayMessageBroker } from '@blargbot/discord-gateway-client';
 import type Discord from '@blargbot/discord-types';
 import { isGuildChannel } from '@blargbot/discord-util';
 import { hasValue } from '@blargbot/guards';
-import type { MessageHandle } from '@blargbot/message-broker';
+import type { MessageHandle } from '@blargbot/message-hub';
 import type { IKSCache, IKVCache } from '@blargbot/redis-cache';
 
-import type { DiscordChannelCacheMessageBroker } from './DiscordChannelCacheMessageBroker.js';
+type DiscordGatewayMessageBroker = PartialDiscordGatewayMessageBroker<
+    | 'GUILD_CREATE'
+    | 'GUILD_DELETE'
+    | 'CHANNEL_CREATE'
+    | 'CHANNEL_UPDATE'
+    | 'CHANNEL_DELETE'
+    | 'THREAD_CREATE'
+    | 'THREAD_UPDATE'
+    | 'THREAD_DELETE'
+    | 'THREAD_LIST_SYNC'
+>;
 
 export class DiscordChannelCacheService {
-    readonly #messages: DiscordChannelCacheMessageBroker;
+    readonly #gateway: DiscordGatewayMessageBroker;
     readonly #handles: Set<MessageHandle>;
     readonly #channelCache: IKVCache<bigint, Discord.APIChannel>;
     readonly #guildIndex: IKSCache<bigint, bigint>;
     readonly #channelGuildMap: IKVCache<bigint, bigint>;
 
     public constructor(
-        messages: DiscordChannelCacheMessageBroker,
+        gateway: DiscordGatewayMessageBroker,
         channelCache: IKVCache<bigint, Discord.APIChannel>,
         guildIndex: IKSCache<bigint, bigint>,
         channelGuildMap: IKVCache<bigint, bigint>
     ) {
-        this.#messages = messages;
+        this.#gateway = gateway;
         this.#channelCache = channelCache;
         this.#guildIndex = guildIndex;
         this.#channelGuildMap = channelGuildMap;
@@ -28,15 +39,15 @@ export class DiscordChannelCacheService {
 
     public async start(): Promise<void> {
         await Promise.all([
-            this.#messages.handleGuildCreate(this.#handleGuildCreate.bind(this)).then(h => this.#handles.add(h)),
-            this.#messages.handleGuildDelete(this.#handleGuildDelete.bind(this)).then(h => this.#handles.add(h)),
-            this.#messages.handleChannelCreate(this.#handleChannelCreate.bind(this)).then(h => this.#handles.add(h)),
-            this.#messages.handleChannelDelete(this.#handleChannelDelete.bind(this)).then(h => this.#handles.add(h)),
-            this.#messages.handleChannelUpdate(this.#handleChannelUpdate.bind(this)).then(h => this.#handles.add(h)),
-            this.#messages.handleThreadCreate(this.#handleThreadCreate.bind(this)).then(h => this.#handles.add(h)),
-            this.#messages.handleThreadDelete(this.#handleThreadDelete.bind(this)).then(h => this.#handles.add(h)),
-            this.#messages.handleThreadListSync(this.#handleThreadListSync.bind(this)).then(h => this.#handles.add(h)),
-            this.#messages.handleThreadUpdate(this.#handleThreadUpdate.bind(this)).then(h => this.#handles.add(h))
+            this.#gateway.handleGuildCreate(this.#handleGuildCreate.bind(this)).then(h => this.#handles.add(h)),
+            this.#gateway.handleGuildDelete(this.#handleGuildDelete.bind(this)).then(h => this.#handles.add(h)),
+            this.#gateway.handleChannelCreate(this.#handleChannelCreate.bind(this)).then(h => this.#handles.add(h)),
+            this.#gateway.handleChannelDelete(this.#handleChannelDelete.bind(this)).then(h => this.#handles.add(h)),
+            this.#gateway.handleChannelUpdate(this.#handleChannelUpdate.bind(this)).then(h => this.#handles.add(h)),
+            this.#gateway.handleThreadCreate(this.#handleThreadCreate.bind(this)).then(h => this.#handles.add(h)),
+            this.#gateway.handleThreadDelete(this.#handleThreadDelete.bind(this)).then(h => this.#handles.add(h)),
+            this.#gateway.handleThreadListSync(this.#handleThreadListSync.bind(this)).then(h => this.#handles.add(h)),
+            this.#gateway.handleThreadUpdate(this.#handleThreadUpdate.bind(this)).then(h => this.#handles.add(h))
         ]);
     }
 

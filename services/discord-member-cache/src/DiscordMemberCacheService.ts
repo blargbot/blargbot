@@ -1,30 +1,39 @@
+import type { PartialDiscordGatewayMessageBroker } from '@blargbot/discord-gateway-client';
 import type Discord from '@blargbot/discord-types';
-import type { MessageHandle } from '@blargbot/message-broker';
+import type { MessageHandle } from '@blargbot/message-hub';
 import type { IKKVCache } from '@blargbot/redis-cache';
 
-import type { DiscordMemberCacheMessageBroker } from './DiscordMemberCacheMessageBroker.js';
 import type { SlimDiscordMember } from './SlimDiscordMember.js';
 import { toSlimDiscordMember } from './SlimDiscordMember.js';
 
+type DiscordGatewayMessageBroker = PartialDiscordGatewayMessageBroker<
+    | 'GUILD_CREATE'
+    | 'GUILD_DELETE'
+    | 'GUILD_MEMBER_ADD'
+    | 'GUILD_MEMBER_REMOVE'
+    | 'GUILD_MEMBER_UPDATE'
+    | 'GUILD_MEMBERS_CHUNK'
+>;
+
 export class DiscordMemberCacheService {
-    readonly #messages: DiscordMemberCacheMessageBroker;
+    readonly #gateway: DiscordGatewayMessageBroker;
     readonly #handles: Set<MessageHandle>;
     readonly #cache: IKKVCache<bigint, bigint, SlimDiscordMember>;
 
-    public constructor(messages: DiscordMemberCacheMessageBroker, cache: IKKVCache<bigint, bigint, SlimDiscordMember>) {
-        this.#messages = messages;
+    public constructor(gateway: DiscordGatewayMessageBroker, cache: IKKVCache<bigint, bigint, SlimDiscordMember>) {
+        this.#gateway = gateway;
         this.#cache = cache;
         this.#handles = new Set();
     }
 
     public async start(): Promise<void> {
         await Promise.all([
-            this.#messages.handleGuildCreate(this.#handleGuildCreate.bind(this)).then(h => this.#handles.add(h)),
-            this.#messages.handleGuildDelete(this.#handleGuildDelete.bind(this)).then(h => this.#handles.add(h)),
-            this.#messages.handleGuildMemberAdd(this.#handleGuildMemberAdd.bind(this)).then(h => this.#handles.add(h)),
-            this.#messages.handleGuildMemberRemove(this.#handleGuildMemberRemove.bind(this)).then(h => this.#handles.add(h)),
-            this.#messages.handleGuildMemberUpdate(this.#handleGuildMemberUpdate.bind(this)).then(h => this.#handles.add(h)),
-            this.#messages.handleGuildMembersChunk(this.#handleGuildMembersChunk.bind(this)).then(h => this.#handles.add(h))
+            this.#gateway.handleGuildCreate(this.#handleGuildCreate.bind(this)).then(h => this.#handles.add(h)),
+            this.#gateway.handleGuildDelete(this.#handleGuildDelete.bind(this)).then(h => this.#handles.add(h)),
+            this.#gateway.handleGuildMemberAdd(this.#handleGuildMemberAdd.bind(this)).then(h => this.#handles.add(h)),
+            this.#gateway.handleGuildMemberRemove(this.#handleGuildMemberRemove.bind(this)).then(h => this.#handles.add(h)),
+            this.#gateway.handleGuildMemberUpdate(this.#handleGuildMemberUpdate.bind(this)).then(h => this.#handles.add(h)),
+            this.#gateway.handleGuildMembersChunk(this.#handleGuildMembersChunk.bind(this)).then(h => this.#handles.add(h))
         ]);
     }
 

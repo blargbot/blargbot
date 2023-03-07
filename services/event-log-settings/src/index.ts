@@ -1,10 +1,8 @@
-import { Server } from 'node:http';
-
-import Application from '@blargbot/application';
+import { connectionToService, hostIfEntrypoint, ServiceHost, webService } from '@blargbot/application';
 import env from '@blargbot/env';
 import express from '@blargbot/express';
 import { RedisKVCache } from '@blargbot/redis-cache';
-import { Sequelize } from '@blargbot/sequelize';
+import { Sequelize, sequelizeToService } from '@blargbot/sequelize';
 import { json } from '@blargbot/serialization';
 import type { RedisClientType } from 'redis';
 import { createClient as createRedisClient } from 'redis';
@@ -13,7 +11,7 @@ import { createModLogRequestHandler } from './createUserWarningRequestHandler.js
 import GuildEventLogSequelizeDatabase from './GuildEventLogSequelizeDatabase.js';
 import { GuildEventLogService } from './GuildEventLogService.js';
 
-@Application.hostIfEntrypoint(() => [{
+@hostIfEntrypoint(() => [{
     port: env.appPort,
     redis: {
         url: env.redisUrl,
@@ -30,26 +28,9 @@ import { GuildEventLogService } from './GuildEventLogService.js';
         }
     }
 }])
-export class EventLogSettingsApplication extends Application {
-    readonly #redis: RedisClientType;
-    readonly #postgres: Sequelize;
-    readonly #database: GuildEventLogSequelizeDatabase;
-    readonly #service: GuildEventLogService;
-    readonly #app: express.Express;
-    readonly #server: Server;
-    readonly #port: number;
-    readonly #cache: RedisKVCache<{ guildId: bigint; event: string; }, bigint | null>;
-
+export class EventLogSettingsApplication extends ServiceHost {
     public constructor(options: EventLogSettingsApplicationOptions) {
-        super();
-
-        this.#port = options.port;
-        this.#redis = createRedisClient({
-            url: options.redis.url,
-            username: options.redis.username,
-            password: options.redis.password
-        });
-        this.#postgres = new Sequelize(
+        const database = new Sequelize(
             options.postgres.database,
             options.postgres.user,
             options.postgres.pass,
@@ -58,37 +39,32 @@ export class EventLogSettingsApplication extends Application {
                 dialect: 'postgres'
             }
         );
-
-        this.#cache = new RedisKVCache<{ guildId: bigint; event: string; }, bigint | null>(this.#redis, {
-            ttlS: options.redis.ttl,
-            keyspace: 'event_log',
-            keyFactory: ({ guildId, event }) => `${guildId}:${event}`,
-            serializer: json.bigint.nullable
+        const redis: RedisClientType = createRedisClient({
+            url: options.redis.url,
+            username: options.redis.username,
+            password: options.redis.password
         });
-        this.#database = new GuildEventLogSequelizeDatabase(this.#postgres);
-        this.#service = new GuildEventLogService(this.#database, this.#cache);
 
-        this.#app = express()
-            .use(express.urlencoded({ extended: true }))
-            .use(express.json())
-            .all('/*', createModLogRequestHandler(this.#service));
-        this.#server = new Server(this.#app.bind(this.#app));
-    }
-
-    protected async start(): Promise<void> {
-        await Promise.all([
-            this.#redis.connect().then(() => console.log('Redis connected')),
-            this.#postgres.authenticate().then(() => console.log('Postgres connected'))
-        ]);
-        await this.#postgres.sync({ alter: true }).then(() => console.log('Database models synced'));
-        await new Promise<void>(res => this.#server.listen(this.#port, res));
-    }
-
-    protected async stop(): Promise<void> {
-        await new Promise<void>((res, rej) => this.#server.close(err => err === undefined ? res() : rej(err)));
-        await Promise.all([
-            this.#redis.disconnect().then(() => console.log('Redis disconnected')),
-            this.#postgres.close().then(() => console.log('Postgres disconnected'))
+        super([
+            connectionToService(redis, 'redis'),
+            sequelizeToService(database, {
+                syncOptions: { alter: true }
+            }),
+            webService(
+                express()
+                    .use(express.urlencoded({ extended: true }))
+                    .use(express.json())
+                    .all('/*', createModLogRequestHandler(new GuildEventLogService(
+                        new GuildEventLogSequelizeDatabase(database),
+                        new RedisKVCache<{ guildId: bigint; event: string; }, bigint | null>(redis, {
+                            ttlS: options.redis.ttl,
+                            keyspace: 'event_log',
+                            keyFactory: ({ guildId, event }) => `${guildId}:${event}`,
+                            serializer: json.bigint.nullable
+                        })
+                    ))),
+                options.port
+            )
         ]);
     }
 }

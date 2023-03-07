@@ -1,6 +1,7 @@
-import Application from '@blargbot/application';
+import { connectionToService, hostIfEntrypoint, ServiceHost } from '@blargbot/application';
 import env from '@blargbot/env';
-import type { ConnectionOptions } from '@blargbot/message-broker';
+import type { ConnectionOptions } from '@blargbot/message-hub';
+import { MessageHub } from '@blargbot/message-hub';
 
 import ArtGenerator from './generators/art.js';
 import type { ApiImageGeneratorConfig } from './generators/base/ApiImageGenerator.js';
@@ -31,7 +32,7 @@ export interface ImageGeneratorApplicationOptions {
     readonly api: ApiImageGeneratorConfig;
 }
 
-@Application.hostIfEntrypoint(() => [{
+@hostIfEntrypoint(() => [{
     messages: {
         prefetch: env.rabbitPrefetch,
         hostname: env.rabbitHost,
@@ -43,45 +44,37 @@ export interface ImageGeneratorApplicationOptions {
         token: env.imageApiToken
     }
 }])
-export class ImageGeneratorApplication extends Application {
-    readonly #messages: ImageMessageBroker;
-    readonly #generators: ImageGeneratorManager;
-
+export class ImageGeneratorApplication extends ServiceHost {
     public constructor(options: ImageGeneratorApplicationOptions) {
-        super();
+        const messages = new MessageHub(options.messages);
 
-        this.#messages = new ImageMessageBroker(options.messages);
-        this.#generators = new ImageGeneratorManager(this.#messages, {
-            art: new ArtGenerator(),
-            cah: new CardsAgainstHumanityGenerator(),
-            caption: new CaptionGenerator(),
-            clint: new ClintGenerator(options.api),
-            clippy: new ClippyGenerator(),
-            clyde: new ClydeGenerator(),
-            color: new ColorGenerator(options.api),
-            delete: new DeleteGenerator(options.api),
-            distort: new DistortGenerator(),
-            emoji: new EmojiGenerator(),
-            free: new FreeGenerator(),
-            linus: new LinusGenerator(options.api),
-            pccheck: new PCCheckGenerator(options.api),
-            pixelate: new PixelateGenerator(),
-            shit: new ShitGenerator(options.api),
-            sonicsays: new SonicSaysGenerator(options.api),
-            starvstheforcesof: new StarVsTheForcesOfGenerator(),
-            stupid: new StupidGenerator(),
-            thesearch: new TheSearchGenerator(options.api),
-            truth: new TruthGenerator()
-        });
-    }
-
-    protected override async start(): Promise<void> {
-        await this.#messages.connect();
-        await this.#generators.start();
-    }
-
-    protected override async stop(): Promise<void> {
-        await this.#generators.stop();
-        await this.#messages.disconnect();
+        super([
+            connectionToService(messages, 'rabbitmq'),
+            new ImageGeneratorManager(
+                new ImageMessageBroker(messages),
+                {
+                    art: new ArtGenerator(),
+                    cah: new CardsAgainstHumanityGenerator(),
+                    caption: new CaptionGenerator(),
+                    clint: new ClintGenerator(options.api),
+                    clippy: new ClippyGenerator(),
+                    clyde: new ClydeGenerator(),
+                    color: new ColorGenerator(options.api),
+                    delete: new DeleteGenerator(options.api),
+                    distort: new DistortGenerator(),
+                    emoji: new EmojiGenerator(),
+                    free: new FreeGenerator(),
+                    linus: new LinusGenerator(options.api),
+                    pccheck: new PCCheckGenerator(options.api),
+                    pixelate: new PixelateGenerator(),
+                    shit: new ShitGenerator(options.api),
+                    sonicsays: new SonicSaysGenerator(options.api),
+                    starvstheforcesof: new StarVsTheForcesOfGenerator(),
+                    stupid: new StupidGenerator(),
+                    thesearch: new TheSearchGenerator(options.api),
+                    truth: new TruthGenerator()
+                }
+            )
+        ]);
     }
 }

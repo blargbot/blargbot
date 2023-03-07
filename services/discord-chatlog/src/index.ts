@@ -1,13 +1,14 @@
-import Application from '@blargbot/application';
+import { connectionToService, hostIfEntrypoint, ServiceHost } from '@blargbot/application';
+import { DiscordGatewayMessageBroker } from '@blargbot/discord-gateway-client';
 import env from '@blargbot/env';
-import type { ConnectionOptions } from '@blargbot/message-broker';
+import type { ConnectionOptions } from '@blargbot/message-hub';
+import { MessageHub } from '@blargbot/message-hub';
 
 import type { DiscordChatlogDatabaseOptions } from './DiscordChatlogDatabase.js';
 import DiscordChatlogDatabase from './DiscordChatlogDatabase.js';
-import { DiscordChatlogMessageBroker } from './DiscordChatlogMessageBroker.js';
 import { DiscordChatlogService } from './DiscordChatlogService.js';
 
-@Application.hostIfEntrypoint(() => [{
+@hostIfEntrypoint(() => [{
     messages: {
         prefetch: env.rabbitPrefetch,
         hostname: env.rabbitHost,
@@ -24,34 +25,21 @@ import { DiscordChatlogService } from './DiscordChatlogService.js';
         url: env.guildSettingsUrl
     }
 }])
-export class DiscordChatlogApplication extends Application {
-    readonly #messages: DiscordChatlogMessageBroker;
-    readonly #database: DiscordChatlogDatabase;
-    readonly #service: DiscordChatlogService;
-
+export class DiscordChatlogApplication extends ServiceHost {
     public constructor(options: DiscordChatlogApplicationOptions) {
-        super();
-
-        this.#messages = new DiscordChatlogMessageBroker(options.messages);
-        this.#database = new DiscordChatlogDatabase(options.database);
-        this.#service = new DiscordChatlogService(this.#messages, this.#database, {
-            guildSettingsUrl: options.guildSettings.url
-        });
-    }
-
-    protected override async start(): Promise<void> {
-        await Promise.all([
-            this.#messages.connect(),
-            this.#database.connect()
-        ]);
-        await this.#service.start();
-    }
-
-    protected override async stop(): Promise<void> {
-        await this.#service.stop();
-        await Promise.all([
-            this.#messages.disconnect(),
-            this.#database.disconnect()
+        const messages = new MessageHub(options.messages);
+        const database = new DiscordChatlogDatabase(options.database);
+        const service = new DiscordChatlogService(
+            new DiscordGatewayMessageBroker(messages, 'discord-chatlog'),
+            database,
+            {
+                guildSettingsUrl: options.guildSettings.url
+            }
+        );
+        super([
+            connectionToService(messages, 'rabbitmq'),
+            connectionToService(database, 'cassandra'),
+            service
         ]);
     }
 }

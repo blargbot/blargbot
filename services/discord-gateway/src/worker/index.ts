@@ -1,59 +1,56 @@
 import { fileURLToPath } from 'node:url';
 
-import Application from '@blargbot/application';
+import { connectionToService, hostIfEntrypoint, ServiceHost } from '@blargbot/application';
 import env from '@blargbot/env';
+import type { ConnectionOptions } from '@blargbot/message-hub';
+import { MessageHub } from '@blargbot/message-hub';
 
-import type { GatewayMessageBrokerOptions } from '../GatewayMessageBroker.js';
 import { GatewayMessageBroker } from '../GatewayMessageBroker.js';
-import type { DiscordShardManager } from './DiscordShardManager.js';
 import { createDiscordShardManager } from './DiscordShardManager.js';
 
 export const workerPath = fileURLToPath(import.meta.url);
 
-@Application.hostIfEntrypoint(() => [{
+@hostIfEntrypoint(() => [{
     messages: {
         prefetch: env.rabbitPrefetch,
         hostname: env.rabbitHost,
         password: env.rabbitPassword,
-        username: env.rabbitUsername,
-        managerId: env.get(String, 'MANAGER_ID')
+        username: env.rabbitUsername
     },
+    managerId: env.get(String, 'MANAGER_ID'),
     lastShardId: env.get(Number, 'LAST_SHARD_ID'),
     workerId: env.get(Number, 'WORKER_ID'),
     token: env.discordToken
 }])
-export class DiscordGatewayWorkerApplication extends Application {
-    readonly #options: DiscordGatewayWorkerApplicationOptions;
-    readonly #messages: GatewayMessageBroker;
-    readonly #manager: DiscordShardManager;
-
+export class DiscordGatewayWorkerApplication extends ServiceHost {
     public constructor(options: DiscordGatewayWorkerApplicationOptions) {
-        super();
-        this.#options = options;
-        this.#messages = new GatewayMessageBroker(this.#options.messages);
-        this.#manager = createDiscordShardManager({
-            messages: this.#messages,
+
+        const messages = new MessageHub(options.messages);
+        const manager = createDiscordShardManager({
+            messages: new GatewayMessageBroker(messages, { managerId: options.managerId }),
             lastShardId: options.lastShardId,
             token: options.token,
             workerId: options.workerId
         });
-    }
 
-    protected override async start(): Promise<void> {
-        await this.#messages.connect();
-        await this.#manager.start();
-        process.send?.('started');
-    }
-
-    protected override async stop(): Promise<void> {
-        await this.#manager.stop();
-        await this.#messages.disconnect();
-        process.send?.('stopped');
+        super([
+            connectionToService(messages, 'rabbitmq'),
+            manager,
+            {
+                start() {
+                    process.send?.('started');
+                },
+                stop() {
+                    process.send?.('stopped');
+                }
+            }
+        ]);
     }
 }
 
 interface DiscordGatewayWorkerApplicationOptions {
-    readonly messages: GatewayMessageBrokerOptions;
+    readonly messages: ConnectionOptions;
+    readonly managerId: string;
     readonly lastShardId: number;
     readonly workerId: number;
     readonly token: string;

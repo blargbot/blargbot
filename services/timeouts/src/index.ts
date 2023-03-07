@@ -1,10 +1,9 @@
-import { Server } from 'node:http';
-
-import Application from '@blargbot/application';
+import { connectionToService, hostIfEntrypoint, ServiceHost, webService } from '@blargbot/application';
 import env from '@blargbot/env';
 import express from '@blargbot/express';
-import type { ConnectionOptions } from '@blargbot/message-broker';
-import { Sequelize } from '@blargbot/sequelize';
+import type { ConnectionOptions } from '@blargbot/message-hub';
+import { MessageHub } from '@blargbot/message-hub';
+import { Sequelize, sequelizeToService } from '@blargbot/sequelize';
 
 import { createTimeoutRequestHandler } from './createTimeoutRequestHandler.js';
 import type { TimeoutRecord } from './TimeoutDetails.js';
@@ -16,7 +15,7 @@ import { TimeoutService } from './TimeoutService.js';
 export type { TimeoutRecord as GuildSettings };
 export { timeoutRecordSerializer as timeoutSerializer };
 
-@Application.hostIfEntrypoint(() => [{
+@hostIfEntrypoint(() => [{
     port: env.appPort,
     messages: {
         prefetch: env.rabbitPrefetch,
@@ -33,20 +32,10 @@ export { timeoutRecordSerializer as timeoutSerializer };
         }
     }
 }])
-export class GuildSettingsApplication extends Application {
-    readonly #postgres: Sequelize;
-    readonly #database: TimeoutSequelizeDatabase;
-    readonly #messages: TimeoutMessageBroker;
-    readonly #service: TimeoutService;
-    readonly #app: express.Express;
-    readonly #server: Server;
-    readonly #port: number;
-
+export class GuildSettingsApplication extends ServiceHost {
     public constructor(options: GuildSettingsApplicationOptions) {
-        super();
-
-        this.#port = options.port;
-        this.#postgres = new Sequelize(
+        const messages = new MessageHub(options.messages);
+        const database = new Sequelize(
             options.postgres.database,
             options.postgres.user,
             options.postgres.pass,
@@ -55,34 +44,24 @@ export class GuildSettingsApplication extends Application {
                 dialect: 'postgres'
             }
         );
+        const service = new TimeoutService(
+            new TimeoutSequelizeDatabase(database),
+            new TimeoutMessageBroker(messages)
+        );
 
-        this.#database = new TimeoutSequelizeDatabase(this.#postgres);
-        this.#messages = new TimeoutMessageBroker(options.messages);
-        this.#service = new TimeoutService(this.#database, this.#messages);
-
-        this.#app = express()
-            .use(express.urlencoded({ extended: true }))
-            .use(express.json())
-            .all('/*', createTimeoutRequestHandler(this.#service));
-        this.#server = new Server(this.#app.bind(this.#app));
-    }
-
-    protected async start(): Promise<void> {
-        await Promise.all([
-            this.#messages.connect().then(() => console.log('Messages connected')),
-            this.#postgres.authenticate().then(() => console.log('Postgres connected'))
-        ]);
-        await this.#postgres.sync({ alter: true }).then(() => console.log('Database models synced'));
-        await this.#service.start();
-        await new Promise<void>(res => this.#server.listen(this.#port, res));
-    }
-
-    protected async stop(): Promise<void> {
-        await new Promise<void>((res, rej) => this.#server.close(err => err === undefined ? res() : rej(err)));
-        await this.#service.stop();
-        await Promise.all([
-            this.#messages.disconnect().then(() => console.log('Messages disconnected')),
-            this.#postgres.close().then(() => console.log('Postgres disconnected'))
+        super([
+            sequelizeToService(database, {
+                syncOptions: { alter: true }
+            }),
+            connectionToService(messages, 'rabbitmq'),
+            service,
+            webService(
+                express()
+                    .use(express.urlencoded({ extended: true }))
+                    .use(express.json())
+                    .all('/*', createTimeoutRequestHandler(service)),
+                options.port
+            )
         ]);
     }
 }

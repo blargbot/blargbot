@@ -1,27 +1,34 @@
+import type { PartialDiscordGatewayMessageBroker } from '@blargbot/discord-gateway-client';
 import type Discord from '@blargbot/discord-types';
-import type { MessageHandle } from '@blargbot/message-broker';
+import type { MessageHandle } from '@blargbot/message-hub';
 import type { IKKVCache } from '@blargbot/redis-cache';
 
-import type { DiscordRoleCacheMessageBroker } from './DiscordRoleCacheMessageBroker.js';
+type DiscordGatewayMessageBroker = PartialDiscordGatewayMessageBroker<
+    | 'GUILD_CREATE'
+    | 'GUILD_DELETE'
+    | 'GUILD_ROLE_CREATE'
+    | 'GUILD_ROLE_DELETE'
+    | 'GUILD_ROLE_UPDATE'
+>;
 
 export class DiscordRoleCacheService {
-    readonly #messages: DiscordRoleCacheMessageBroker;
+    readonly #gateway: DiscordGatewayMessageBroker;
     readonly #handles: Set<MessageHandle>;
     readonly #cache: IKKVCache<bigint, bigint, Discord.APIRole>;
 
-    public constructor(messages: DiscordRoleCacheMessageBroker, cache: IKKVCache<bigint, bigint, Discord.APIRole>) {
-        this.#messages = messages;
+    public constructor(gateway: DiscordGatewayMessageBroker, cache: IKKVCache<bigint, bigint, Discord.APIRole>) {
+        this.#gateway = gateway;
         this.#cache = cache;
         this.#handles = new Set();
     }
 
     public async start(): Promise<void> {
         await Promise.all([
-            this.#messages.handleGuildCreate(this.#handleGuildCreate.bind(this)).then(h => this.#handles.add(h)),
-            this.#messages.handleGuildDelete(this.#handleGuildDelete.bind(this)).then(h => this.#handles.add(h)),
-            this.#messages.handleGuildRoleCreate(this.#handleGuildRoleCreate.bind(this)).then(h => this.#handles.add(h)),
-            this.#messages.handleGuildRoleUpdate(this.#handleGuildRoleUpdate.bind(this)).then(h => this.#handles.add(h)),
-            this.#messages.handleGuildRoleDelete(this.#handleGuildRoleDelete.bind(this)).then(h => this.#handles.add(h))
+            this.#gateway.handleGuildCreate(this.#handleGuildCreate.bind(this)).then(h => this.#handles.add(h)),
+            this.#gateway.handleGuildDelete(this.#handleGuildDelete.bind(this)).then(h => this.#handles.add(h)),
+            this.#gateway.handleGuildRoleCreate(this.#handleGuildRoleCreate.bind(this)).then(h => this.#handles.add(h)),
+            this.#gateway.handleGuildRoleUpdate(this.#handleGuildRoleUpdate.bind(this)).then(h => this.#handles.add(h)),
+            this.#gateway.handleGuildRoleDelete(this.#handleGuildRoleDelete.bind(this)).then(h => this.#handles.add(h))
         ]);
     }
 

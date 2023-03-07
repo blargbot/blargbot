@@ -1,12 +1,13 @@
-import Application from '@blargbot/application';
+import { connectionToService, hostIfEntrypoint, ServiceHost } from '@blargbot/application';
 import { CurrentUserAccessor } from '@blargbot/current-user-accessor';
 import env from '@blargbot/env';
-import type { ConnectionOptions } from '@blargbot/message-broker';
+import type { ConnectionOptions } from '@blargbot/message-hub';
+import { MessageHub } from '@blargbot/message-hub';
 
-import { DCommandMessageParserMessageBroker } from './CommandMessageParserMessageBroker.js';
+import { CommandMessageParserMessageBroker } from './CommandMessageParserMessageBroker.js';
 import { CommandMessageParserService } from './CommandMessageParserService.js';
 
-@Application.hostIfEntrypoint(() => [{
+@hostIfEntrypoint(() => [{
     defaultPrefix: env.get(String, 'COMMAND_PREFIX'),
     discordUserCache: {
         url: env.discordUserCacheUrl
@@ -24,37 +25,26 @@ import { CommandMessageParserService } from './CommandMessageParserService.js';
         url: env.userSettingsUrl
     }
 }])
-export class CommandMessageParserApplication extends Application {
-    readonly #messages: DCommandMessageParserMessageBroker;
-    readonly #service: CommandMessageParserService;
-
+export class CommandMessageParserApplication extends ServiceHost {
     public constructor(options: DiscordChatlogApplicationOptions) {
-        super();
+        const messages = new MessageHub(options.messages);
 
-        this.#messages = new DCommandMessageParserMessageBroker(options.messages);
-        this.#service = new CommandMessageParserService(
-            this.#messages,
-            new CurrentUserAccessor({
-                userCacheUrl: options.discordUserCache.url,
-                refreshInterval: options.discordUserCache.refreshInterval,
-                retryInterval: options.discordUserCache.retryInterval
-            }),
-            {
-                guildSettingsUrl: options.guildSettings.url,
-                userSettingsUrl: options.userSettings.url,
-                defaultPrefix: options.defaultPrefix
-            }
-        );
-    }
-
-    protected override async start(): Promise<void> {
-        await this.#messages.connect();
-        await this.#service.start();
-    }
-
-    protected override async stop(): Promise<void> {
-        await this.#service.stop();
-        await this.#messages.disconnect();
+        super([
+            connectionToService(messages, 'rabbitmq'),
+            new CommandMessageParserService(
+                new CommandMessageParserMessageBroker(messages),
+                new CurrentUserAccessor({
+                    userCacheUrl: options.discordUserCache.url,
+                    refreshInterval: options.discordUserCache.refreshInterval,
+                    retryInterval: options.discordUserCache.retryInterval
+                }),
+                {
+                    guildSettingsUrl: options.guildSettings.url,
+                    userSettingsUrl: options.userSettings.url,
+                    defaultPrefix: options.defaultPrefix
+                }
+            )
+        ]);
     }
 }
 

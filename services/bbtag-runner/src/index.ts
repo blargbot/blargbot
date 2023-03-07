@@ -1,12 +1,13 @@
-import type { BBTagEngine } from '@bbtag/blargbot';
-import Application from '@blargbot/application';
+import { connectionToService, hostIfEntrypoint, ServiceHost } from '@blargbot/application';
 import env from '@blargbot/env';
-import type { ConnectionOptions } from '@blargbot/message-broker';
+import type { ConnectionOptions } from '@blargbot/message-hub';
+import { MessageHub } from '@blargbot/message-hub';
+import { MetricsMessageBroker, MetricsService } from '@blargbot/metrics-client';
 
 import { createBBTagEngine } from './createBBTagEngine.js';
 import { ImageMessageBroker } from './ImageMessageBroker.js';
 
-@Application.hostIfEntrypoint(() => [{
+@hostIfEntrypoint(() => [{
     defaultPrefix: env.get(String, 'COMMAND_PREFIX'),
     messages: {
         prefetch: env.rabbitPrefetch,
@@ -15,14 +16,12 @@ import { ImageMessageBroker } from './ImageMessageBroker.js';
         password: env.rabbitPassword
     }
 }])
-export class ImageGeneratorApplication extends Application {
-    readonly #messages: ImageMessageBroker;
-    readonly #engine: BBTagEngine;
+export class ImageGeneratorApplication extends ServiceHost {
 
     public constructor(options: ImageGeneratorApplicationOptions) {
-        super();
-
-        this.#engine = createBBTagEngine({
+        const messages = new MessageHub(options.messages);
+        const imageBroker = new ImageMessageBroker(messages);
+        const engine = createBBTagEngine({
             defaultPrefix: options.defaultPrefix,
             metrics: {
                 subtagUsed(name, duration) {
@@ -33,16 +32,13 @@ export class ImageGeneratorApplication extends Application {
             }
         });
 
-        this.#messages = new ImageMessageBroker(options.messages);
-    }
+        super([
+            connectionToService(messages, 'rabbitmq'),
+            new MetricsService(new MetricsMessageBroker(messages, 'bbtag-runner', '0'))
+        ]);
 
-    protected override async start(): Promise<void> {
-        this.#engine;
-        await this.#messages.connect();
-    }
-
-    protected override async stop(): Promise<void> {
-        await this.#messages.disconnect();
+        imageBroker;
+        engine;
     }
 }
 

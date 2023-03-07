@@ -1,0 +1,12 @@
+{
+    "name": "@blargbot/metrics",
+    "version": "1.0.0",
+    "private": true,
+    "type": "module",
+    "exports": {
+        ".": "./index.js"
+    },
+    "dependencies": {
+        "prom-client": "^14.2.0"
+    }
+}

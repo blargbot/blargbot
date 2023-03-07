@@ -21,6 +21,7 @@ declare global {
     type PropertiesOfType<T, P> = { [K in PropertyNamesOfType<T, P>]: T[K] }
     type Intersect<T1, T2> = { [K in (keyof T1 & keyof T2)]: T1[K] extends T2[K] ? T2[K] extends T1[K] ? T1[K] : never : never };
 
+    type PropertiesOf<T> = { [P in keyof T]: readonly [P, T[P]] }[keyof T];
     type AnyPropertyKey<T> = T extends infer R ? keyof R : never;
     type WithProp<T, Prop extends AnyPropertyKey<T>> = T extends infer R ? Prop extends keyof R ? R : never : never;
     type RequiredProps<T, Props extends AnyPropertyKey<T>> = T extends infer R ? Required<Pick<R, Props>> & Omit<R, Props> : never;

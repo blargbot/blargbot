@@ -12,7 +12,7 @@
     "dependencies": {
         "@blargbot/application": "workspace:^",
         "@blargbot/env": "workspace:^",
-        "@blargbot/message-broker": "workspace:^",
+        "@blargbot/message-hub": "workspace:^",
         "amqplib": "^0.10.3",
         "canvas": "^2.11.0",
         "gifencoder": "^2.0.1",

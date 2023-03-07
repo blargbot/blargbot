@@ -9,6 +9,7 @@
         "bbtag/*/test",
         "services/*/src",
         "services/*/test",
+        "services/*/client",
         "components/*/src",
         "components/*/test",
         "contracts/*/src",

@@ -1,51 +1,56 @@
 import { createHash, randomUUID } from 'node:crypto';
 
-import type { ConnectionOptions, ConsumeMessage, MessageHandle } from '@blargbot/message-broker';
-import MessageBroker from '@blargbot/message-broker';
-import type amqplib from 'amqplib';
+import type { DiscordGatewayMessage } from '@blargbot/discord-gateway-client';
+import { DiscordGatewayMessageBroker } from '@blargbot/discord-gateway-client';
+import type { ConsumeMessage, MessageHandle, MessageHub } from '@blargbot/message-hub';
+import { blobToJson, jsonToBlob } from '@blargbot/message-hub';
 import type * as discordeno from 'discordeno';
 
-export class GatewayMessageBroker extends MessageBroker {
+export class GatewayMessageBroker {
     static readonly #baseName = 'discord-gateway' as const;
     static readonly #commandsName = `${this.#baseName}-command` as const;
     static readonly #requestsName = `${this.#baseName}-requests` as const;
-    static readonly #eventsName = `${this.#baseName}-events` as const;
-    static readonly #eventsDedupeName = `${this.#eventsName}-dedupe` as const;
+    static readonly #eventsDedupeName = `${DiscordGatewayMessageBroker.eventExchange[0]}-dedupe` as const;
 
+    readonly #messages: MessageHub;
     public readonly managerId: string;
 
-    public constructor(options: GatewayMessageBrokerOptions) {
-        const { managerId, ...opts } = options;
-        super(opts);
-        this.managerId = managerId;
-    }
+    public constructor(messages: MessageHub, options: GatewayMessageBrokerOptions) {
+        this.#messages = messages;
+        this.managerId = options.managerId;
 
-    public override async onceConnected(channel: amqplib.Channel): Promise<void> {
-        await Promise.all([
-            channel.assertExchange(GatewayMessageBroker.#commandsName, 'topic', { durable: true }),
-            channel.assertExchange(GatewayMessageBroker.#requestsName, 'topic', { durable: true }),
-            channel.assertExchange(GatewayMessageBroker.#eventsName, 'topic', { durable: true }),
-            channel.assertExchange(GatewayMessageBroker.#eventsDedupeName, 'x-message-deduplication', {
-                durable: true,
-                arguments: {
-                    'x-cache-size': 1000,
-                    'x-cache-ttl': 500
-                }
-            })
-        ]);
-        await channel.bindExchange(GatewayMessageBroker.#eventsName, GatewayMessageBroker.#eventsDedupeName, '#');
+        this.#messages.onConnected(async c => {
+            await Promise.all([
+                c.assertExchange(GatewayMessageBroker.#commandsName, 'topic', { durable: true }),
+                c.assertExchange(GatewayMessageBroker.#requestsName, 'topic', { durable: true }),
+                c.assertExchange(...DiscordGatewayMessageBroker.eventExchange),
+                c.assertExchange(GatewayMessageBroker.#eventsDedupeName, 'x-message-deduplication', {
+                    durable: true,
+                    arguments: {
+                        'x-cache-size': 1000,
+                        'x-cache-ttl': 500
+                    }
+                })
+            ]);
+            await c.bindExchange(DiscordGatewayMessageBroker.eventExchange[0], GatewayMessageBroker.#eventsDedupeName, '#');
+        });
     }
 
     public async sendWorkerCommand<Type extends keyof WorkerMessageTypes>(type: Type, workerId: number, message: WorkerMessageTypes[Type]): Promise<void> {
-        await this.publish(GatewayMessageBroker.#commandsName, `${this.managerId}.worker.${workerId}.${type}`, this.jsonToBlob(message));
+        await this.#messages.publish(GatewayMessageBroker.#commandsName, `${this.managerId}.worker.${workerId}.${type}`, jsonToBlob(message));
     }
 
     public async sendManagerCommand<Type extends keyof ManagerMessageTypes>(type: Type, message: ManagerMessageTypes[Type]): Promise<void> {
-        await this.publish(GatewayMessageBroker.#commandsName, `${this.managerId}.manager.${type}`, this.jsonToBlob(message));
+        await this.#messages.publish(GatewayMessageBroker.#commandsName, `${this.managerId}.manager.${type}`, jsonToBlob(message));
     }
 
     public async sendGatewayEvent(shardId: number, lastShardId: number, event: discordeno.DiscordGatewayPayload): Promise<void> {
-        await this.publish(GatewayMessageBroker.#eventsDedupeName, `${shardId}/${lastShardId}.${event.op}.${event.t ?? '-'}`, this.jsonToBlob({ shardId, lastShardId, event }), {
+        const message: DiscordGatewayMessage<discordeno.DiscordGatewayPayload> = {
+            lastShard: lastShardId,
+            payload: event,
+            shard: shardId
+        };
+        await this.#messages.publish(GatewayMessageBroker.#eventsDedupeName, `${shardId}/${lastShardId}.${event.op}.${event.t ?? '-'}`, jsonToBlob(message), {
             headers: {
                 'x-deduplication-header': createHash('md5').update(JSON.stringify(event.d)).digest('hex')
             }
@@ -53,46 +58,46 @@ export class GatewayMessageBroker extends MessageBroker {
     }
 
     public async handleWorkerCommand<Type extends keyof WorkerMessageTypes>(type: Type, workerId: number | '*', handler: (message: WorkerMessageTypes[Type], msg: ConsumeMessage) => Awaitable<void>): Promise<MessageHandle> {
-        return await this.handleMessage({
+        return await this.#messages.handleMessage({
             exchange: GatewayMessageBroker.#commandsName,
             queue: `${GatewayMessageBroker.#commandsName}-${type}-${randomUUID()}`,
             queueArgs: { autoDelete: true },
             filter: `${this.managerId}.worker.${workerId}.${type}`,
             async handle(data, msg) {
-                await handler(await this.blobToJson(data), msg);
+                await handler(await blobToJson(data), msg);
             },
             consumeArgs: { noAck: true }
         });
     }
 
     public async handleManagerCommand<Type extends keyof ManagerMessageTypes>(type: Type, handler: (message: ManagerMessageTypes[Type], msg: ConsumeMessage) => Awaitable<void>): Promise<MessageHandle> {
-        return await this.handleMessage({
+        return await this.#messages.handleMessage({
             exchange: GatewayMessageBroker.#commandsName,
             queue: `${GatewayMessageBroker.#commandsName}-manager-${type}-${randomUUID()}`,
             queueArgs: { autoDelete: true },
             filter: `${this.managerId}.manager.${type}`,
             async handle(data, msg) {
-                await handler(await this.blobToJson(data), msg);
+                await handler(await blobToJson(data), msg);
             },
             consumeArgs: { noAck: true }
         });
     }
 
     public async handleGatewayRequest(shardId: number, lastShardId: number, handler: (message: discordeno.ShardSocketRequest, msg: ConsumeMessage) => Awaitable<void>): Promise<MessageHandle> {
-        return await this.handleMessage({
+        return await this.#messages.handleMessage({
             exchange: GatewayMessageBroker.#requestsName,
             queue: `${GatewayMessageBroker.#requestsName}-${shardId}-${lastShardId}`,
             queueArgs: { autoDelete: true },
             filter: `${shardId}/${lastShardId}`,
             async handle(data, msg) {
-                await handler(await this.blobToJson(data), msg);
+                await handler(await blobToJson(data), msg);
             },
             consumeArgs: { noAck: true }
         });
     }
 }
 
-export interface GatewayMessageBrokerOptions extends ConnectionOptions {
+export interface GatewayMessageBrokerOptions {
     readonly managerId: string;
 }
 

@@ -1,10 +1,8 @@
-import { Server } from 'node:http';
-
-import Application from '@blargbot/application';
+import { connectionToService, hostIfEntrypoint, ServiceHost, webService } from '@blargbot/application';
 import env from '@blargbot/env';
 import express from '@blargbot/express';
 import { RedisKVCache } from '@blargbot/redis-cache';
-import { Sequelize } from '@blargbot/sequelize';
+import { Sequelize, sequelizeToService } from '@blargbot/sequelize';
 import type { UserSettings } from '@blargbot/user-settings-contract';
 import userSettings from '@blargbot/user-settings-contract';
 import type { RedisClientType } from 'redis';
@@ -14,7 +12,7 @@ import { createUserSettingsRequestHandler } from './createUserSettingsRequestHan
 import UserSettingsSequelizeDatabase from './UserSettingsSequelizeDatabase.js';
 import { UserSettingsService } from './UserSettingsService.js';
 
-@Application.hostIfEntrypoint(() => [{
+@hostIfEntrypoint(() => [{
     port: env.appPort,
     redis: {
         url: env.redisUrl,
@@ -31,26 +29,9 @@ import { UserSettingsService } from './UserSettingsService.js';
         }
     }
 }])
-export class UserSettingsApplication extends Application {
-    readonly #redis: RedisClientType;
-    readonly #postgres: Sequelize;
-    readonly #cache: RedisKVCache<bigint, UserSettings>;
-    readonly #database: UserSettingsSequelizeDatabase;
-    readonly #service: UserSettingsService;
-    readonly #app: express.Express;
-    readonly #server: Server;
-    readonly #port: number;
-
+export class UserSettingsApplication extends ServiceHost {
     public constructor(options: UserSettingsApplicationOptions) {
-        super();
-
-        this.#port = options.port;
-        this.#redis = createRedisClient({
-            url: options.redis.url,
-            username: options.redis.username,
-            password: options.redis.password
-        });
-        this.#postgres = new Sequelize(
+        const database = new Sequelize(
             options.postgres.database,
             options.postgres.user,
             options.postgres.pass,
@@ -59,36 +40,30 @@ export class UserSettingsApplication extends Application {
                 dialect: 'postgres'
             }
         );
-
-        this.#cache = new RedisKVCache<bigint, UserSettings>(this.#redis, {
-            ttlS: options.redis.ttl,
-            keyspace: 'user_settings',
-            serializer: userSettings
+        const redis: RedisClientType = createRedisClient({
+            url: options.redis.url,
+            username: options.redis.username,
+            password: options.redis.password
         });
-        this.#database = new UserSettingsSequelizeDatabase(this.#postgres);
-        this.#service = new UserSettingsService(this.#database, this.#cache);
 
-        this.#app = express()
-            .use(express.urlencoded({ extended: true }))
-            .use(express.json())
-            .all('/*', createUserSettingsRequestHandler(this.#service));
-        this.#server = new Server(this.#app.bind(this.#app));
-    }
-
-    protected async start(): Promise<void> {
-        await Promise.all([
-            this.#redis.connect().then(() => console.log('Redis connected')),
-            this.#postgres.authenticate().then(() => console.log('Postgres connected'))
-        ]);
-        await this.#postgres.sync({ alter: true }).then(() => console.log('Database models synced'));
-        await new Promise<void>(res => this.#server.listen(this.#port, res));
-    }
-
-    protected async stop(): Promise<void> {
-        await new Promise<void>((res, rej) => this.#server.close(err => err === undefined ? res() : rej(err)));
-        await Promise.all([
-            this.#redis.disconnect().then(() => console.log('Redis disconnected')),
-            this.#postgres.close().then(() => console.log('Postgres disconnected'))
+        super([
+            connectionToService(redis, 'redis'),
+            sequelizeToService(database, {
+                syncOptions: { alter: true }
+            }),
+            webService(
+                express()
+                    .use(express.urlencoded({ extended: true }))
+                    .use(express.json())
+                    .all('/*', createUserSettingsRequestHandler(new UserSettingsService(
+                        new UserSettingsSequelizeDatabase(database),
+                        new RedisKVCache<bigint, UserSettings>(redis, {
+                            ttlS: options.redis.ttl,
+                            keyspace: 'user_settings',
+                            serializer: userSettings
+                        })))),
+                options.port
+            )
         ]);
     }
 }

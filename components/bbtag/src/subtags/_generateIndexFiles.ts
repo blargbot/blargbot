@@ -2,10 +2,10 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import Application from '@blargbot/application';
+import { hostIfEntrypoint, ScriptHost } from '@blargbot/application';
 
-@Application.hostIfEntrypoint()
-export class GenerateIndexFilesScript extends Application.Script {
+@hostIfEntrypoint()
+export class GenerateIndexFilesScript extends ScriptHost {
     public constructor() {
         super();
     }

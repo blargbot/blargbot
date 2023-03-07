@@ -5,15 +5,15 @@ import { hasValue } from '@blargbot/guards';
 import type { GuildSettings } from '@blargbot/guild-settings-contract';
 import guildSettings from '@blargbot/guild-settings-contract';
 import { splitInput } from '@blargbot/input';
-import type { MessageHandle } from '@blargbot/message-broker';
+import type { MessageHandle } from '@blargbot/message-hub';
 import type { UserSettings } from '@blargbot/user-settings-contract';
 import userSettings from '@blargbot/user-settings-contract';
 import fetch from 'node-fetch';
 
-import type { DCommandMessageParserMessageBroker } from './CommandMessageParserMessageBroker.js';
+import type { CommandMessageParserMessageBroker } from './CommandMessageParserMessageBroker.js';
 
 export class CommandMessageParserService {
-    readonly #messages: DCommandMessageParserMessageBroker;
+    readonly #messages: CommandMessageParserMessageBroker;
     readonly #handles: Set<MessageHandle>;
     readonly #guildSettings: string;
     readonly #userSettings: string;
@@ -21,7 +21,7 @@ export class CommandMessageParserService {
     readonly #user: ICurrentUserAccessor;
 
     public constructor(
-        messages: DCommandMessageParserMessageBroker,
+        messages: CommandMessageParserMessageBroker,
         user: ICurrentUserAccessor,
         options: CommandMessageParserServiceOptions
     ) {

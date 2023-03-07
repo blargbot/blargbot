@@ -1,23 +1,22 @@
 import { randomUUID } from 'node:crypto';
 
-import Application from '@blargbot/application';
+import { connectionToService, hostIfEntrypoint, ServiceHost } from '@blargbot/application';
 import env from '@blargbot/env';
-import type * as discordeno from 'discordeno';
+import type { ConnectionOptions } from '@blargbot/message-hub';
+import { MessageHub } from '@blargbot/message-hub';
 
-import type { GatewayMessageBrokerOptions } from '../GatewayMessageBroker.js';
 import { GatewayMessageBroker } from '../GatewayMessageBroker.js';
-import type { DiscordGatewayManager } from './DiscordGatewayManager.js';
 import { createDiscordGatewayManager } from './DiscordGatewayManager.js';
 import { createDiscordRestClient } from './DiscordRestClient.js';
 
-@Application.hostIfEntrypoint(() => [{
+@hostIfEntrypoint(() => [{
     messages: {
         prefetch: env.rabbitPrefetch,
         hostname: env.rabbitHost,
         username: env.rabbitUsername,
-        password: env.rabbitPassword,
-        managerId: randomUUID()
+        password: env.rabbitPassword
     },
+    managerId: randomUUID(),
     rest: {
         url: env.discordProxyUrl,
         secret: env.discordProxySecret
@@ -25,54 +24,30 @@ import { createDiscordRestClient } from './DiscordRestClient.js';
     token: env.discordToken,
     shardsPerWorker: env.shardsPerWorker
 }])
-export class DiscordGatewayApplication extends Application {
-    readonly #options: DiscordGatewayApplicationOptions;
-    readonly #client: discordeno.Bot;
-    readonly #messages: GatewayMessageBroker;
-
-    #managerVal?: DiscordGatewayManager;
-    get #manager(): DiscordGatewayManager {
-        if (this.#managerVal === undefined)
-            throw new Error('Application not started yet');
-        return this.#managerVal;
-    }
-    set #manager(value: DiscordGatewayManager | undefined) {
-        if (this.#managerVal !== undefined)
-            throw new Error('Application already started');
-        this.#managerVal = value;
-    }
-
+export class DiscordGatewayApplication extends ServiceHost {
     public constructor(options: DiscordGatewayApplicationOptions) {
-        super();
-        this.#options = options;
-        this.#messages = new GatewayMessageBroker(this.#options.messages);
-        this.#client = createDiscordRestClient({
-            token: this.#options.token,
-            url: this.#options.rest.url,
-            secret: this.#options.rest.secret
+        const messages = new MessageHub(options.messages);
+        const manager = createDiscordGatewayManager({
+            messages: new GatewayMessageBroker(messages, { managerId: options.managerId }),
+            client: createDiscordRestClient({
+                token: options.token,
+                url: options.rest.url,
+                secret: options.rest.secret
+            }),
+            shardsPerWorker: options.shardsPerWorker,
+            token: options.token
         });
-    }
 
-    protected override async start(): Promise<void> {
-        await this.#messages.connect();
-        this.#manager = createDiscordGatewayManager({
-            messages: this.#messages,
-            gatewayBot: await this.#client.helpers.getGatewayBot(),
-            shardsPerWorker: this.#options.shardsPerWorker,
-            token: this.#options.token
-        });
-        await this.#manager.start();
-    }
-
-    protected override async stop(): Promise<void> {
-        await this.#manager.stop();
-        await this.#messages.disconnect();
-        this.#manager = undefined;
+        super([
+            connectionToService(messages, 'rabbitmq'),
+            manager
+        ]);
     }
 }
 
 export interface DiscordGatewayApplicationOptions {
-    readonly messages: GatewayMessageBrokerOptions;
+    readonly messages: ConnectionOptions;
+    readonly managerId: string;
     readonly rest: {
         readonly secret: string;
         readonly url: string;

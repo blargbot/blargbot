@@ -1,11 +1,12 @@
-import Application from '@blargbot/application';
+import { connectionToService, hostIfEntrypoint, ServiceHost } from '@blargbot/application';
 import env from '@blargbot/env';
-import type { ConnectionOptions } from '@blargbot/message-broker';
+import type { ConnectionOptions } from '@blargbot/message-hub';
+import { MessageHub } from '@blargbot/message-hub';
 
 import { TimeoutMessageBroker } from './TimeoutMessageBroker.js';
 import { TimeoutService } from './TimeoutService.js';
 
-@Application.hostIfEntrypoint(() => [{
+@hostIfEntrypoint(() => [{
     cron: env.get(String, 'TIMEOUT_CRON'),
     messages: {
         prefetch: env.rabbitPrefetch,
@@ -14,25 +15,17 @@ import { TimeoutService } from './TimeoutService.js';
         password: env.rabbitPassword
     }
 }])
-export class GuildSettingsApplication extends Application {
-    readonly #messages: TimeoutMessageBroker;
-    readonly #service: TimeoutService;
-
+export class TimeoutClockApplication extends ServiceHost {
     public constructor(options: GuildSettingsApplicationOptions) {
-        super();
+        const messages = new MessageHub(options.messages);
 
-        this.#messages = new TimeoutMessageBroker(options.messages);
-        this.#service = new TimeoutService(options.cron, this.#messages);
-    }
-
-    protected async start(): Promise<void> {
-        await this.#messages.connect();
-        this.#service.start();
-    }
-
-    protected async stop(): Promise<void> {
-        this.#service.stop();
-        await this.#messages.disconnect();
+        super([
+            connectionToService(messages, 'rabbitmq'),
+            new TimeoutService(
+                options.cron,
+                new TimeoutMessageBroker(messages)
+            )
+        ]);
     }
 }
 

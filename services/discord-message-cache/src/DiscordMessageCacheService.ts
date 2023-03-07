@@ -1,25 +1,30 @@
+import type { PartialDiscordGatewayMessageBroker } from '@blargbot/discord-gateway-client';
 import type Discord from '@blargbot/discord-types';
-import type { MessageHandle } from '@blargbot/message-broker';
+import type { MessageHandle } from '@blargbot/message-hub';
 import type { IKVCache } from '@blargbot/redis-cache';
 
-import type { DiscordMessageCacheMessageBroker } from './DiscordMessageCacheMessageBroker.js';
+type DiscordGatewayMessageBroker = PartialDiscordGatewayMessageBroker<
+    | 'GUILD_CREATE'
+    | 'CHANNEL_CREATE'
+    | 'MESSAGE_CREATE'
+>;
 
 export class DiscordMessageCacheService {
-    readonly #messages: DiscordMessageCacheMessageBroker;
+    readonly #gateway: DiscordGatewayMessageBroker;
     readonly #handles: Set<MessageHandle>;
     readonly #cache: IKVCache<bigint, bigint>;
 
-    public constructor(messages: DiscordMessageCacheMessageBroker, cache: IKVCache<bigint, bigint>) {
-        this.#messages = messages;
+    public constructor(gateway: DiscordGatewayMessageBroker, cache: IKVCache<bigint, bigint>) {
+        this.#gateway = gateway;
         this.#cache = cache;
         this.#handles = new Set();
     }
 
     public async start(): Promise<void> {
         await Promise.all([
-            this.#messages.handleGuildCreate(this.#handleGuildCreate.bind(this)).then(h => this.#handles.add(h)),
-            this.#messages.handleChannelCreate(this.#handleChannelCreate.bind(this)).then(h => this.#handles.add(h)),
-            this.#messages.handleMessageCreate(this.#handleMessageCreate.bind(this)).then(h => this.#handles.add(h))
+            this.#gateway.handleGuildCreate(this.#handleGuildCreate.bind(this)).then(h => this.#handles.add(h)),
+            this.#gateway.handleChannelCreate(this.#handleChannelCreate.bind(this)).then(h => this.#handles.add(h)),
+            this.#gateway.handleMessageCreate(this.#handleMessageCreate.bind(this)).then(h => this.#handles.add(h))
         ]);
     }
 

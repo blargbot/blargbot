@@ -1,15 +1,13 @@
-import { Server } from 'node:http';
-
-import Application from '@blargbot/application';
+import { hostIfEntrypoint, ServiceHost, webService } from '@blargbot/application';
 import env from '@blargbot/env';
 import express from '@blargbot/express';
-import { Sequelize } from '@blargbot/sequelize';
+import { Sequelize, sequelizeToService } from '@blargbot/sequelize';
 
 import { createModLogRequestHandler } from './createUserWarningRequestHandler.js';
 import UserWarningSequelizeDatabase from './UserWarningSequelizeDatabase.js';
 import { UserWarningService } from './UserWarningService.js';
 
-@Application.hostIfEntrypoint(() => [{
+@hostIfEntrypoint(() => [{
     port: env.appPort,
     postgres: {
         user: env.postgresUser,
@@ -20,19 +18,9 @@ import { UserWarningService } from './UserWarningService.js';
         }
     }
 }])
-export class UserWarningsApplication extends Application {
-    readonly #postgres: Sequelize;
-    readonly #database: UserWarningSequelizeDatabase;
-    readonly #service: UserWarningService;
-    readonly #app: express.Express;
-    readonly #server: Server;
-    readonly #port: number;
-
+export class UserWarningsApplication extends ServiceHost {
     public constructor(options: UserWarningsApplicationOptions) {
-        super();
-
-        this.#port = options.port;
-        this.#postgres = new Sequelize(
+        const database = new Sequelize(
             options.postgres.database,
             options.postgres.user,
             options.postgres.pass,
@@ -42,25 +30,18 @@ export class UserWarningsApplication extends Application {
             }
         );
 
-        this.#database = new UserWarningSequelizeDatabase(this.#postgres);
-        this.#service = new UserWarningService(this.#database);
-
-        this.#app = express()
-            .use(express.urlencoded({ extended: true }))
-            .use(express.json())
-            .all('/*', createModLogRequestHandler(this.#service));
-        this.#server = new Server(this.#app.bind(this.#app));
-    }
-
-    protected async start(): Promise<void> {
-        await this.#postgres.authenticate().then(() => console.log('Postgres connected'));
-        await this.#postgres.sync({ alter: true }).then(() => console.log('Database models synced'));
-        await new Promise<void>(res => this.#server.listen(this.#port, res));
-    }
-
-    protected async stop(): Promise<void> {
-        await new Promise<void>((res, rej) => this.#server.close(err => err === undefined ? res() : rej(err)));
-        await this.#postgres.close().then(() => console.log('Postgres disconnected'));
+        super([
+            sequelizeToService(database, {
+                syncOptions: { alter: true }
+            }),
+            webService(
+                express()
+                    .use(express.urlencoded({ extended: true }))
+                    .use(express.json())
+                    .all('/*', createModLogRequestHandler(new UserWarningService(new UserWarningSequelizeDatabase(database)))),
+                options.port
+            )
+        ]);
     }
 }
 
