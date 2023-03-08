@@ -11,7 +11,9 @@
     "dependencies": {
         "@blargbot/application": "workspace:^",
         "@blargbot/config": "workspace:^",
+        "@blargbot/container-id": "workspace:^",
         "@blargbot/env": "workspace:^",
+        "@blargbot/metrics-client": "workspace:^",
         "discordeno": "^18.0.1",
         "express": "^4.18.2"
     },

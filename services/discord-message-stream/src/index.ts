@@ -4,7 +4,7 @@ import { DiscordGatewayMessageBroker } from '@blargbot/discord-gateway-client';
 import env from '@blargbot/env';
 import type { ConnectionOptions } from '@blargbot/message-hub';
 import { MessageHub } from '@blargbot/message-hub';
-import { MetricsMessageBroker, MetricsService } from '@blargbot/metrics-client';
+import { MetricsClient } from '@blargbot/metrics-client';
 
 import { DiscordMessageStreamMessageBroker } from './DiscordMessageStreamMessageBroker.js';
 import { DiscordMessageStreamService } from './DiscordMessageStreamService.js';
@@ -25,14 +25,12 @@ import { DiscordMessageStreamService } from './DiscordMessageStreamService.js';
 }])
 export class DiscordMessageStreamApplication extends ServiceHost {
     public constructor(options: DiscordMessageStreamApplicationOptions) {
+        const serviceName = 'discord-message-stream';
         const messages = new MessageHub(options.messages);
-        const metrics = new MetricsService(new MetricsMessageBroker(messages), {
-            serviceName: 'discord-message-stream',
-            instanceId: fullContainerId
-        });
+        const metrics = new MetricsClient({ serviceName, instanceId: fullContainerId });
         const service = new DiscordMessageStreamService(
             new DiscordMessageStreamMessageBroker(messages),
-            new DiscordGatewayMessageBroker(messages, 'discord-message-stream'),
+            new DiscordGatewayMessageBroker(messages, serviceName),
             metrics,
             {
                 discordChannelCacheUrl: options.discordChannelCache.url,

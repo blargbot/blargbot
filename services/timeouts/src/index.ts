@@ -1,8 +1,10 @@
 import { connectionToService, hostIfEntrypoint, ServiceHost, webService } from '@blargbot/application';
+import { fullContainerId } from '@blargbot/container-id';
 import env from '@blargbot/env';
 import express from '@blargbot/express';
 import type { ConnectionOptions } from '@blargbot/message-hub';
 import { MessageHub } from '@blargbot/message-hub';
+import { MetricsClient } from '@blargbot/metrics-client';
 import { Sequelize, sequelizeToService } from '@blargbot/sequelize';
 
 import { createTimeoutRequestHandler } from './createTimeoutRequestHandler.js';
@@ -34,7 +36,9 @@ export { timeoutRecordSerializer as timeoutSerializer };
 }])
 export class GuildSettingsApplication extends ServiceHost {
     public constructor(options: GuildSettingsApplicationOptions) {
+        const serviceName = 'timeouts';
         const messages = new MessageHub(options.messages);
+        const metrics = new MetricsClient({ serviceName, instanceId: fullContainerId });
         const database = new Sequelize(
             options.postgres.database,
             options.postgres.user,
@@ -54,6 +58,7 @@ export class GuildSettingsApplication extends ServiceHost {
                 syncOptions: { alter: true }
             }),
             connectionToService(messages, 'rabbitmq'),
+            metrics,
             service,
             webService(
                 express()

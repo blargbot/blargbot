@@ -10,6 +10,10 @@ x-env_file:
   env_file:
     - ../.env
 
+x-metrics-env:
+  &metrics-env
+  METRICS_URL: http://metrics
+
 x-discord-proxy-env:
   &discord-proxy-env
   DISCORD_PROXY_URL: http://discord-proxy
@@ -89,6 +93,7 @@ services:
     init: true
     <<: *env-file
     environment:
+      <<: *metrics-env
       <<: *discord-proxy-env
       <<: *guild-settings-env
       <<: *discord-guild-cache-env
@@ -109,12 +114,14 @@ services:
     image: blargbot/discord-proxy
     <<: *env-file
     environment:
+      <<: *metrics-env
       <<: *discord-proxy-env
 
   discord-gateway:
     image: blargbot/discord-gateway
     <<: *env-file
     environment:
+      <<: *metrics-env
       <<: *discord-proxy-env
       <<: *rabbit-env
       SHARDS_PER_WORKER: 4
@@ -127,6 +134,7 @@ services:
   discord-message-stream:
     image: blargbot/discord-message-stream
     environment:
+      <<: *metrics-env
       <<: *rabbit-env
       <<: *discord-guild-cache-env
       <<: *discord-channel-cache-env
@@ -137,6 +145,7 @@ services:
   discord-reaction-stream:
     image: blargbot/discord-reaction-stream
     environment:
+      <<: *metrics-env
       <<: *rabbit-env
     depends_on:
       rabbitmq:
@@ -145,6 +154,7 @@ services:
   discord-interaction-stream:
     image: blargbot/discord-interaction-stream
     environment:
+      <<: *metrics-env
       <<: *rabbit-env
     depends_on:
       rabbitmq:
@@ -153,6 +163,7 @@ services:
   discord-chatlog:
     image: blargbot/discord-chatlog
     environment:
+      <<: *metrics-env
       <<: *cassandra-env
       <<: *rabbit-env
       <<: *guild-settings-env
@@ -167,6 +178,7 @@ services:
   discord-guild-cache:
     image: blargbot/discord-guild-cache
     environment:
+      <<: *metrics-env
       <<: *rabbit-env
       <<: *redis-env
     depends_on:
@@ -178,6 +190,7 @@ services:
   discord-channel-cache:
     image: blargbot/discord-channel-cache
     environment:
+      <<: *metrics-env
       <<: *rabbit-env
       <<: *redis-env
     depends_on:
@@ -189,6 +202,7 @@ services:
   discord-message-cache:
     image: blargbot/discord-message-cache
     environment:
+      <<: *metrics-env
       <<: *rabbit-env
       <<: *redis-env
     depends_on:
@@ -200,6 +214,7 @@ services:
   discord-member-cache:
     image: blargbot/discord-member-cache
     environment:
+      <<: *metrics-env
       <<: *rabbit-env
       <<: *redis-env
     depends_on:
@@ -211,6 +226,7 @@ services:
   discord-user-cache:
     image: blargbot/discord-user-cache
     environment:
+      <<: *metrics-env
       <<: *rabbit-env
       <<: *redis-env
     depends_on:
@@ -222,6 +238,7 @@ services:
   discord-presence-cache:
     image: blargbot/discord-presence-cache
     environment:
+      <<: *metrics-env
       <<: *rabbit-env
       <<: *redis-env
     depends_on:
@@ -233,6 +250,7 @@ services:
   discord-role-cache:
     image: blargbot/discord-role-cache
     environment:
+      <<: *metrics-env
       <<: *rabbit-env
       <<: *redis-env
     depends_on:
@@ -245,6 +263,7 @@ services:
     image: blargbot/image-generator
     <<: *env-file
     environment:
+      <<: *metrics-env
       <<: *rabbit-env
       IMAGE_API_URL: https://api.blargbot.xyz/api/v1/image
     depends_on:
@@ -254,6 +273,7 @@ services:
   user-settings:
     image: blargbot/user-settings
     environment:
+      <<: *metrics-env
       <<: *postgres-env
       <<: *redis-env
     depends_on:
@@ -265,6 +285,7 @@ services:
   guild-settings:
     image: blargbot/guild-settings
     environment:
+      <<: *metrics-env
       <<: *postgres-env
       <<: *redis-env
     depends_on:
@@ -276,6 +297,7 @@ services:
   event-log-settings:
     image: blargbot/event-log-settings
     environment:
+      <<: *metrics-env
       <<: *postgres-env
       <<: *redis-env
     depends_on:
@@ -287,6 +309,7 @@ services:
   mod-log:
     image: blargbot/mod-log
     environment:
+      <<: *metrics-env
       <<: *postgres-env
     depends_on:
       postgres:
@@ -295,14 +318,12 @@ services:
   metrics:
     image: blargbot/metrics
     environment:
-      <<: *rabbit-env
-    depends_on:
-      rabbitmq:
-        condition: service_healthy
+      <<: *metrics-env
 
   timeouts:
     image: blargbot/timeouts
     environment:
+      <<: *metrics-env
       <<: *postgres-env
       <<: *rabbit-env
     depends_on:
@@ -314,6 +335,7 @@ services:
   timeout-clock:
     image: blargbot/timeout-clock
     environment:
+      <<: *metrics-env
       <<: *rabbit-env
       TIMEOUT_CRON: '*/10 * * * * *'
     depends_on:
@@ -323,6 +345,7 @@ services:
   command-message-parser:
     image: blargbot/command-message-parser
     environment:
+      <<: *metrics-env
       <<: *rabbit-env
       <<: *guild-settings-env
       <<: *user-settings-env
@@ -335,6 +358,7 @@ services:
   user-warnings:
     image: blargbot/user-warnings
     environment:
+      <<: *metrics-env
       <<: *postgres-env
     depends_on:
       postgres:

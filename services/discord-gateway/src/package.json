@@ -12,9 +12,11 @@
     },
     "dependencies": {
         "@blargbot/application": "workspace:^",
+        "@blargbot/container-id": "workspace:^",
         "@blargbot/discord-gateway-client": "workspace:^",
         "@blargbot/env": "workspace:^",
         "@blargbot/message-hub": "workspace:^",
+        "@blargbot/metrics-client": "workspace:^",
         "amqplib": "^0.10.3",
         "discordeno": "^18.0.1"
     },

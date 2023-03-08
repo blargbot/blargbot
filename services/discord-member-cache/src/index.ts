@@ -1,9 +1,11 @@
 import { connectionToService, hostIfEntrypoint, ServiceHost, webService } from '@blargbot/application';
+import { fullContainerId } from '@blargbot/container-id';
 import { DiscordGatewayMessageBroker } from '@blargbot/discord-gateway-client';
 import env from '@blargbot/env';
 import express from '@blargbot/express';
 import type { ConnectionOptions } from '@blargbot/message-hub';
 import { MessageHub } from '@blargbot/message-hub';
+import { MetricsClient } from '@blargbot/metrics-client';
 import { RedisKKVCache } from '@blargbot/redis-cache';
 import type { RedisClientType } from 'redis';
 import { createClient as createRedisClient } from 'redis';
@@ -28,7 +30,9 @@ import type { SlimDiscordMember } from './SlimDiscordMember.js';
 }])
 export class DiscordMemberCacheApplication extends ServiceHost {
     public constructor(options: DiscordMemberCacheApplicationOptions) {
+        const serviceName = 'discord-member-cache';
         const messages = new MessageHub(options.messages);
+        const metrics = new MetricsClient({ serviceName, instanceId: fullContainerId });
         const redis: RedisClientType = createRedisClient({
             url: options.redis.url,
             username: options.redis.username,
@@ -36,7 +40,7 @@ export class DiscordMemberCacheApplication extends ServiceHost {
         });
 
         const service = new DiscordMemberCacheService(
-            new DiscordGatewayMessageBroker(messages, 'discord-member-cache'),
+            new DiscordGatewayMessageBroker(messages, serviceName),
             new RedisKKVCache<bigint, bigint, SlimDiscordMember>(redis, {
                 ttlS: null,
                 keyspace: 'discord_members',
@@ -47,6 +51,7 @@ export class DiscordMemberCacheApplication extends ServiceHost {
         super([
             connectionToService(redis, 'redis'),
             connectionToService(messages, 'rabbitmq'),
+            metrics,
             service,
             webService(
                 express()

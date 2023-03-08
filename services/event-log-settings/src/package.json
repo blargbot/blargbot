@@ -11,9 +11,11 @@
     },
     "dependencies": {
         "@blargbot/application": "workspace:^",
+        "@blargbot/container-id": "workspace:^",
         "@blargbot/env": "workspace:^",
         "@blargbot/express": "workspace:^",
         "@blargbot/mapping": "workspace:^",
+        "@blargbot/metrics-client": "workspace:^",
         "@blargbot/redis-cache": "workspace:^",
         "@blargbot/sequelize": "workspace:^",
         "@blargbot/serialization": "workspace:^",

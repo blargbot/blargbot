@@ -725,6 +725,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["@blargbot/command-message-parser", "workspace:services/command-message-parser/src"],\
             ["@blargbot/application", "workspace:components/application/src"],\
+            ["@blargbot/container-id", "workspace:components/container-id/src"],\
             ["@blargbot/current-user-accessor", "workspace:components/current-user-accessor/src"],\
             ["@blargbot/discord-message-stream-contract", "workspace:contracts/discord-message-stream/src"],\
             ["@blargbot/discord-util", "workspace:components/discord-util/src"],\
@@ -735,6 +736,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/mapping", "workspace:components/mapping/src"],\
             ["@blargbot/message-command-contract", "workspace:contracts/message-command/src"],\
             ["@blargbot/message-hub", "workspace:components/message-hub/src"],\
+            ["@blargbot/metrics-client", "workspace:services/metrics/client"],\
             ["@blargbot/user-settings-contract", "workspace:contracts/user-settings/src"],\
             ["@types/amqplib", "npm:0.10.1"],\
             ["@types/node-fetch", "npm:2.6.2"],\
@@ -887,6 +889,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["@blargbot/discord-channel-cache", "workspace:services/discord-channel-cache/src"],\
             ["@blargbot/application", "workspace:components/application/src"],\
+            ["@blargbot/container-id", "workspace:components/container-id/src"],\
             ["@blargbot/discord-gateway-client", "workspace:services/discord-gateway/client"],\
             ["@blargbot/discord-types", "workspace:components/discord-types/src"],\
             ["@blargbot/discord-util", "workspace:components/discord-util/src"],\
@@ -894,6 +897,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/express", "workspace:components/express/src"],\
             ["@blargbot/guards", "workspace:components/guards/src"],\
             ["@blargbot/message-hub", "workspace:components/message-hub/src"],\
+            ["@blargbot/metrics-client", "workspace:services/metrics/client"],\
             ["@blargbot/redis-cache", "workspace:components/redis-cache/src"],\
             ["@blargbot/serialization", "workspace:components/serialization/src"],\
             ["amqplib", "npm:0.10.3"],\
@@ -909,12 +913,14 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/discord-chatlog", "workspace:services/discord-chatlog/src"],\
             ["@blargbot/application", "workspace:components/application/src"],\
             ["@blargbot/chatlog-types", "workspace:components/chatlog-types/src"],\
+            ["@blargbot/container-id", "workspace:components/container-id/src"],\
             ["@blargbot/discord-gateway-client", "workspace:services/discord-gateway/client"],\
             ["@blargbot/discord-types", "workspace:components/discord-types/src"],\
             ["@blargbot/env", "workspace:components/env/src"],\
             ["@blargbot/guild-settings-contract", "workspace:contracts/guild-settings/src"],\
             ["@blargbot/mapping", "workspace:components/mapping/src"],\
             ["@blargbot/message-hub", "workspace:components/message-hub/src"],\
+            ["@blargbot/metrics-client", "workspace:services/metrics/client"],\
             ["@types/node-fetch", "npm:2.6.2"],\
             ["amqplib", "npm:0.10.3"],\
             ["cassandra-driver", "npm:4.6.4"],\
@@ -940,9 +946,11 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["@blargbot/discord-gateway", "workspace:services/discord-gateway/src"],\
             ["@blargbot/application", "workspace:components/application/src"],\
+            ["@blargbot/container-id", "workspace:components/container-id/src"],\
             ["@blargbot/discord-gateway-client", "workspace:services/discord-gateway/client"],\
             ["@blargbot/env", "workspace:components/env/src"],\
             ["@blargbot/message-hub", "workspace:components/message-hub/src"],\
+            ["@blargbot/metrics-client", "workspace:services/metrics/client"],\
             ["@types/amqplib", "npm:0.10.1"],\
             ["amqplib", "npm:0.10.3"],\
             ["discordeno", "npm:18.0.1"]\
@@ -967,11 +975,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["@blargbot/discord-guild-cache", "workspace:services/discord-guild-cache/src"],\
             ["@blargbot/application", "workspace:components/application/src"],\
+            ["@blargbot/container-id", "workspace:components/container-id/src"],\
             ["@blargbot/discord-gateway-client", "workspace:services/discord-gateway/client"],\
             ["@blargbot/discord-types", "workspace:components/discord-types/src"],\
             ["@blargbot/env", "workspace:components/env/src"],\
             ["@blargbot/express", "workspace:components/express/src"],\
             ["@blargbot/message-hub", "workspace:components/message-hub/src"],\
+            ["@blargbot/metrics-client", "workspace:services/metrics/client"],\
             ["@blargbot/redis-cache", "workspace:components/redis-cache/src"],\
             ["amqplib", "npm:0.10.3"],\
             ["redis", "npm:4.6.5"]\
@@ -985,11 +995,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["@blargbot/discord-interaction-stream", "workspace:services/discord-interaction-stream/src"],\
             ["@blargbot/application", "workspace:components/application/src"],\
+            ["@blargbot/container-id", "workspace:components/container-id/src"],\
             ["@blargbot/discord-gateway-client", "workspace:services/discord-gateway/client"],\
             ["@blargbot/discord-types", "workspace:components/discord-types/src"],\
             ["@blargbot/env", "workspace:components/env/src"],\
             ["@blargbot/express", "workspace:components/express/src"],\
             ["@blargbot/message-hub", "workspace:components/message-hub/src"],\
+            ["@blargbot/metrics-client", "workspace:services/metrics/client"],\
             ["@types/amqplib", "npm:0.10.1"],\
             ["amqplib", "npm:0.10.3"]\
           ],\
@@ -1002,11 +1014,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["@blargbot/discord-member-cache", "workspace:services/discord-member-cache/src"],\
             ["@blargbot/application", "workspace:components/application/src"],\
+            ["@blargbot/container-id", "workspace:components/container-id/src"],\
             ["@blargbot/discord-gateway-client", "workspace:services/discord-gateway/client"],\
             ["@blargbot/discord-types", "workspace:components/discord-types/src"],\
             ["@blargbot/env", "workspace:components/env/src"],\
             ["@blargbot/express", "workspace:components/express/src"],\
             ["@blargbot/message-hub", "workspace:components/message-hub/src"],\
+            ["@blargbot/metrics-client", "workspace:services/metrics/client"],\
             ["@blargbot/redis-cache", "workspace:components/redis-cache/src"],\
             ["amqplib", "npm:0.10.3"],\
             ["redis", "npm:4.6.5"]\
@@ -1020,11 +1034,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["@blargbot/discord-message-cache", "workspace:services/discord-message-cache/src"],\
             ["@blargbot/application", "workspace:components/application/src"],\
+            ["@blargbot/container-id", "workspace:components/container-id/src"],\
             ["@blargbot/discord-gateway-client", "workspace:services/discord-gateway/client"],\
             ["@blargbot/discord-types", "workspace:components/discord-types/src"],\
             ["@blargbot/env", "workspace:components/env/src"],\
             ["@blargbot/express", "workspace:components/express/src"],\
             ["@blargbot/message-hub", "workspace:components/message-hub/src"],\
+            ["@blargbot/metrics-client", "workspace:services/metrics/client"],\
             ["@blargbot/redis-cache", "workspace:components/redis-cache/src"],\
             ["@blargbot/serialization", "workspace:components/serialization/src"],\
             ["amqplib", "npm:0.10.3"],\
@@ -1071,11 +1087,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["@blargbot/discord-presence-cache", "workspace:services/discord-presence-cache/src"],\
             ["@blargbot/application", "workspace:components/application/src"],\
+            ["@blargbot/container-id", "workspace:components/container-id/src"],\
             ["@blargbot/discord-gateway-client", "workspace:services/discord-gateway/client"],\
             ["@blargbot/discord-types", "workspace:components/discord-types/src"],\
             ["@blargbot/env", "workspace:components/env/src"],\
             ["@blargbot/express", "workspace:components/express/src"],\
             ["@blargbot/message-hub", "workspace:components/message-hub/src"],\
+            ["@blargbot/metrics-client", "workspace:services/metrics/client"],\
             ["@blargbot/redis-cache", "workspace:components/redis-cache/src"],\
             ["amqplib", "npm:0.10.3"],\
             ["redis", "npm:4.6.5"]\
@@ -1090,7 +1108,9 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/discord-proxy", "workspace:services/discord-proxy/src"],\
             ["@blargbot/application", "workspace:components/application/src"],\
             ["@blargbot/config", "workspace:components/config/src"],\
+            ["@blargbot/container-id", "workspace:components/container-id/src"],\
             ["@blargbot/env", "workspace:components/env/src"],\
+            ["@blargbot/metrics-client", "workspace:services/metrics/client"],\
             ["@types/express", "npm:4.17.17"],\
             ["discordeno", "npm:18.0.1"],\
             ["express", "npm:4.18.2"]\
@@ -1104,11 +1124,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["@blargbot/discord-reaction-stream", "workspace:services/discord-reaction-stream/src"],\
             ["@blargbot/application", "workspace:components/application/src"],\
+            ["@blargbot/container-id", "workspace:components/container-id/src"],\
             ["@blargbot/discord-gateway-client", "workspace:services/discord-gateway/client"],\
             ["@blargbot/discord-types", "workspace:components/discord-types/src"],\
             ["@blargbot/env", "workspace:components/env/src"],\
             ["@blargbot/express", "workspace:components/express/src"],\
             ["@blargbot/message-hub", "workspace:components/message-hub/src"],\
+            ["@blargbot/metrics-client", "workspace:services/metrics/client"],\
             ["@types/amqplib", "npm:0.10.1"],\
             ["amqplib", "npm:0.10.3"]\
           ],\
@@ -1121,11 +1143,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["@blargbot/discord-role-cache", "workspace:services/discord-role-cache/src"],\
             ["@blargbot/application", "workspace:components/application/src"],\
+            ["@blargbot/container-id", "workspace:components/container-id/src"],\
             ["@blargbot/discord-gateway-client", "workspace:services/discord-gateway/client"],\
             ["@blargbot/discord-types", "workspace:components/discord-types/src"],\
             ["@blargbot/env", "workspace:components/env/src"],\
             ["@blargbot/express", "workspace:components/express/src"],\
             ["@blargbot/message-hub", "workspace:components/message-hub/src"],\
+            ["@blargbot/metrics-client", "workspace:services/metrics/client"],\
             ["@blargbot/redis-cache", "workspace:components/redis-cache/src"],\
             ["amqplib", "npm:0.10.3"],\
             ["redis", "npm:4.6.5"]\
@@ -1149,11 +1173,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["@blargbot/discord-user-cache", "workspace:services/discord-user-cache/src"],\
             ["@blargbot/application", "workspace:components/application/src"],\
+            ["@blargbot/container-id", "workspace:components/container-id/src"],\
             ["@blargbot/discord-gateway-client", "workspace:services/discord-gateway/client"],\
             ["@blargbot/discord-types", "workspace:components/discord-types/src"],\
             ["@blargbot/env", "workspace:components/env/src"],\
             ["@blargbot/express", "workspace:components/express/src"],\
             ["@blargbot/message-hub", "workspace:components/message-hub/src"],\
+            ["@blargbot/metrics-client", "workspace:services/metrics/client"],\
             ["@blargbot/redis-cache", "workspace:components/redis-cache/src"],\
             ["@blargbot/serialization", "workspace:components/serialization/src"],\
             ["amqplib", "npm:0.10.3"],\
@@ -1200,9 +1226,11 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["@blargbot/event-log-settings", "workspace:services/event-log-settings/src"],\
             ["@blargbot/application", "workspace:components/application/src"],\
+            ["@blargbot/container-id", "workspace:components/container-id/src"],\
             ["@blargbot/env", "workspace:components/env/src"],\
             ["@blargbot/express", "workspace:components/express/src"],\
             ["@blargbot/mapping", "workspace:components/mapping/src"],\
+            ["@blargbot/metrics-client", "workspace:services/metrics/client"],\
             ["@blargbot/redis-cache", "workspace:components/redis-cache/src"],\
             ["@blargbot/sequelize", "workspace:components/sequelize/src"],\
             ["@blargbot/serialization", "workspace:components/serialization/src"],\
@@ -1263,10 +1291,12 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["@blargbot/guild-settings", "workspace:services/guild-settings/src"],\
             ["@blargbot/application", "workspace:components/application/src"],\
+            ["@blargbot/container-id", "workspace:components/container-id/src"],\
             ["@blargbot/env", "workspace:components/env/src"],\
             ["@blargbot/express", "workspace:components/express/src"],\
             ["@blargbot/guild-settings-contract", "workspace:contracts/guild-settings/src"],\
             ["@blargbot/mapping", "workspace:components/mapping/src"],\
+            ["@blargbot/metrics-client", "workspace:services/metrics/client"],\
             ["@blargbot/redis-cache", "workspace:components/redis-cache/src"],\
             ["@blargbot/sequelize", "workspace:components/sequelize/src"],\
             ["@blargbot/serialization", "workspace:components/serialization/src"],\
@@ -1291,9 +1321,11 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["@blargbot/image-generator", "workspace:services/image-generator/src"],\
             ["@blargbot/application", "workspace:components/application/src"],\
+            ["@blargbot/container-id", "workspace:components/container-id/src"],\
             ["@blargbot/env", "workspace:components/env/src"],\
             ["@blargbot/image-types", "workspace:components/image-types/src"],\
             ["@blargbot/message-hub", "workspace:components/message-hub/src"],\
+            ["@blargbot/metrics-client", "workspace:services/metrics/client"],\
             ["@types/amqplib", "npm:0.10.1"],\
             ["@types/gifencoder", "npm:2.0.1"],\
             ["@types/gm", "npm:1.25.0"],\
@@ -1423,9 +1455,9 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["@blargbot/metrics", "workspace:services/metrics/src"],\
             ["@blargbot/application", "workspace:components/application/src"],\
+            ["@blargbot/container-id", "workspace:components/container-id/src"],\
             ["@blargbot/env", "workspace:components/env/src"],\
             ["@blargbot/express", "workspace:components/express/src"],\
-            ["@blargbot/message-hub", "workspace:components/message-hub/src"],\
             ["@blargbot/metrics-client", "workspace:services/metrics/client"],\
             ["prom-client", "npm:14.2.0"]\
           ],\
@@ -1449,9 +1481,11 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["@blargbot/mod-log", "workspace:services/mod-log/src"],\
             ["@blargbot/application", "workspace:components/application/src"],\
+            ["@blargbot/container-id", "workspace:components/container-id/src"],\
             ["@blargbot/env", "workspace:components/env/src"],\
             ["@blargbot/express", "workspace:components/express/src"],\
             ["@blargbot/mapping", "workspace:components/mapping/src"],\
+            ["@blargbot/metrics-client", "workspace:services/metrics/client"],\
             ["@blargbot/sequelize", "workspace:components/sequelize/src"],\
             ["@blargbot/serialization", "workspace:components/serialization/src"]\
           ],\
@@ -1534,8 +1568,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["@blargbot/timeout-clock", "workspace:services/timeout-clock/src"],\
             ["@blargbot/application", "workspace:components/application/src"],\
+            ["@blargbot/container-id", "workspace:components/container-id/src"],\
             ["@blargbot/env", "workspace:components/env/src"],\
             ["@blargbot/message-hub", "workspace:components/message-hub/src"],\
+            ["@blargbot/metrics-client", "workspace:services/metrics/client"],\
             ["@types/amqplib", "npm:0.10.1"],\
             ["@types/cron", "npm:2.0.0"],\
             ["amqplib", "npm:0.10.3"],\
@@ -1550,9 +1586,11 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["@blargbot/timeouts", "workspace:services/timeouts/src"],\
             ["@blargbot/application", "workspace:components/application/src"],\
+            ["@blargbot/container-id", "workspace:components/container-id/src"],\
             ["@blargbot/env", "workspace:components/env/src"],\
             ["@blargbot/express", "workspace:components/express/src"],\
             ["@blargbot/message-hub", "workspace:components/message-hub/src"],\
+            ["@blargbot/metrics-client", "workspace:services/metrics/client"],\
             ["@blargbot/sequelize", "workspace:components/sequelize/src"],\
             ["@blargbot/serialization", "workspace:components/serialization/src"],\
             ["@types/amqplib", "npm:0.10.1"],\
@@ -1587,9 +1625,11 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["@blargbot/user-settings", "workspace:services/user-settings/src"],\
             ["@blargbot/application", "workspace:components/application/src"],\
+            ["@blargbot/container-id", "workspace:components/container-id/src"],\
             ["@blargbot/env", "workspace:components/env/src"],\
             ["@blargbot/express", "workspace:components/express/src"],\
             ["@blargbot/mapping", "workspace:components/mapping/src"],\
+            ["@blargbot/metrics-client", "workspace:services/metrics/client"],\
             ["@blargbot/redis-cache", "workspace:components/redis-cache/src"],\
             ["@blargbot/sequelize", "workspace:components/sequelize/src"],\
             ["@blargbot/serialization", "workspace:components/serialization/src"],\
@@ -1615,9 +1655,11 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["@blargbot/user-warnings", "workspace:services/user-warnings/src"],\
             ["@blargbot/application", "workspace:components/application/src"],\
+            ["@blargbot/container-id", "workspace:components/container-id/src"],\
             ["@blargbot/env", "workspace:components/env/src"],\
             ["@blargbot/express", "workspace:components/express/src"],\
             ["@blargbot/mapping", "workspace:components/mapping/src"],\
+            ["@blargbot/metrics-client", "workspace:services/metrics/client"],\
             ["@blargbot/sequelize", "workspace:components/sequelize/src"]\
           ],\
           "linkType": "SOFT"\

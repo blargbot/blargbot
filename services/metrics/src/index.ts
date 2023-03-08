@@ -1,37 +1,27 @@
-import { connectionToService, hostIfEntrypoint, ServiceHost, webService } from '@blargbot/application';
+import { hostIfEntrypoint, ServiceHost, webService } from '@blargbot/application';
+import { fullContainerId } from '@blargbot/container-id';
 import env from '@blargbot/env';
 import express from '@blargbot/express';
-import type { ConnectionOptions } from '@blargbot/message-hub';
-import { MessageHub } from '@blargbot/message-hub';
+import { MetricsClient } from '@blargbot/metrics-client';
 
 import { createMetricsRequestHandler } from './createMetricsRequestHandler.js';
-import { MetricsMessageBroker } from './MetricsMessageBroker.js';
 import { MetricsService } from './MetricsService.js';
 
 @hostIfEntrypoint(() => [{
-    port: env.appPort,
-    messages: {
-        prefetch: env.rabbitPrefetch,
-        hostname: env.rabbitHost,
-        username: env.rabbitUsername,
-        password: env.rabbitPassword
-    }
+    port: env.appPort
 }])
 export class MetricsApplication extends ServiceHost {
     public constructor(options: MetricsApplicationOptions) {
-        const messages = new MessageHub(options.messages);
-        const service = new MetricsService(
-            new MetricsMessageBroker(messages)
-        );
+        const serviceName = 'metrics';
+        const metrics = new MetricsClient({ serviceName, instanceId: fullContainerId });
 
         super([
-            connectionToService(messages, 'rabbitmq'),
-            service,
+            metrics,
             webService(
                 express()
                     .use(express.urlencoded({ extended: true }))
                     .use(express.json())
-                    .all('/*', createMetricsRequestHandler(service)),
+                    .all('/*', createMetricsRequestHandler(new MetricsService())),
                 options.port
             )
         ]);
@@ -39,6 +29,5 @@ export class MetricsApplication extends ServiceHost {
 }
 
 export interface MetricsApplicationOptions {
-    readonly messages: ConnectionOptions;
     readonly port: number;
 }

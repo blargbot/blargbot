@@ -11,8 +11,10 @@
     },
     "dependencies": {
         "@blargbot/application": "workspace:^",
+        "@blargbot/container-id": "workspace:^",
         "@blargbot/env": "workspace:^",
         "@blargbot/message-hub": "workspace:^",
+        "@blargbot/metrics-client": "workspace:^",
         "amqplib": "^0.10.3",
         "canvas": "^2.11.0",
         "gifencoder": "^2.0.1",

@@ -1,9 +1,11 @@
 import { fileURLToPath } from 'node:url';
 
 import { connectionToService, hostIfEntrypoint, ServiceHost } from '@blargbot/application';
+import { fullContainerId } from '@blargbot/container-id';
 import env from '@blargbot/env';
 import type { ConnectionOptions } from '@blargbot/message-hub';
 import { MessageHub } from '@blargbot/message-hub';
+import { MetricsClient } from '@blargbot/metrics-client';
 
 import { GatewayMessageBroker } from '../GatewayMessageBroker.js';
 import { createDiscordShardManager } from './DiscordShardManager.js';
@@ -24,8 +26,9 @@ export const workerPath = fileURLToPath(import.meta.url);
 }])
 export class DiscordGatewayWorkerApplication extends ServiceHost {
     public constructor(options: DiscordGatewayWorkerApplicationOptions) {
-
+        const serviceName = 'discord-gateway-worker';
         const messages = new MessageHub(options.messages);
+        const metrics = new MetricsClient({ serviceName, instanceId: `${fullContainerId}(${options.workerId})` });
         const manager = createDiscordShardManager({
             messages: new GatewayMessageBroker(messages, { managerId: options.managerId }),
             lastShardId: options.lastShardId,
@@ -35,6 +38,7 @@ export class DiscordGatewayWorkerApplication extends ServiceHost {
 
         super([
             connectionToService(messages, 'rabbitmq'),
+            metrics,
             manager,
             {
                 start() {

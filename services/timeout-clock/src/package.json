@@ -11,8 +11,10 @@
     },
     "dependencies": {
         "@blargbot/application": "workspace:^",
+        "@blargbot/container-id": "workspace:^",
         "@blargbot/env": "workspace:^",
         "@blargbot/message-hub": "workspace:^",
+        "@blargbot/metrics-client": "workspace:^",
         "amqplib": "^0.10.3",
         "cron": "^2.2.0"
     },

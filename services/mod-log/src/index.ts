@@ -1,6 +1,8 @@
 import { hostIfEntrypoint, ServiceHost, webService } from '@blargbot/application';
+import { fullContainerId } from '@blargbot/container-id';
 import env from '@blargbot/env';
 import express from '@blargbot/express';
+import { MetricsClient } from '@blargbot/metrics-client';
 import { Sequelize, sequelizeToService } from '@blargbot/sequelize';
 
 import { createModLogRequestHandler } from './createModLogRequestHandler.js';
@@ -25,6 +27,8 @@ export { modLogEntrySerializer };
 }])
 export class ModLogApplication extends ServiceHost {
     public constructor(options: ModLogApplicationOptions) {
+        const serviceName = 'mod-log';
+        const metrics = new MetricsClient({ serviceName, instanceId: fullContainerId });
         const database = new Sequelize(
             options.postgres.database,
             options.postgres.user,
@@ -36,6 +40,7 @@ export class ModLogApplication extends ServiceHost {
         );
 
         super([
+            metrics,
             sequelizeToService(database, {
                 syncOptions: { alter: true }
             }),

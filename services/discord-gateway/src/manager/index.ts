@@ -1,9 +1,11 @@
 import { randomUUID } from 'node:crypto';
 
 import { connectionToService, hostIfEntrypoint, ServiceHost } from '@blargbot/application';
+import { fullContainerId } from '@blargbot/container-id';
 import env from '@blargbot/env';
 import type { ConnectionOptions } from '@blargbot/message-hub';
 import { MessageHub } from '@blargbot/message-hub';
+import { MetricsClient } from '@blargbot/metrics-client';
 
 import { GatewayMessageBroker } from '../GatewayMessageBroker.js';
 import { createDiscordGatewayManager } from './DiscordGatewayManager.js';
@@ -26,7 +28,9 @@ import { createDiscordRestClient } from './DiscordRestClient.js';
 }])
 export class DiscordGatewayApplication extends ServiceHost {
     public constructor(options: DiscordGatewayApplicationOptions) {
+        const serviceName = 'discord-gateway-manager';
         const messages = new MessageHub(options.messages);
+        const metrics = new MetricsClient({ serviceName, instanceId: fullContainerId });
         const manager = createDiscordGatewayManager({
             messages: new GatewayMessageBroker(messages, { managerId: options.managerId }),
             client: createDiscordRestClient({
@@ -40,6 +44,7 @@ export class DiscordGatewayApplication extends ServiceHost {
 
         super([
             connectionToService(messages, 'rabbitmq'),
+            metrics,
             manager
         ]);
     }

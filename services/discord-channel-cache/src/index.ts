@@ -1,10 +1,12 @@
 import { connectionToService, hostIfEntrypoint, ServiceHost, webService } from '@blargbot/application';
+import { fullContainerId } from '@blargbot/container-id';
 import { DiscordGatewayMessageBroker } from '@blargbot/discord-gateway-client';
 import type Discord from '@blargbot/discord-types';
 import env from '@blargbot/env';
 import express from '@blargbot/express';
 import type { ConnectionOptions } from '@blargbot/message-hub';
 import { MessageHub } from '@blargbot/message-hub';
+import { MetricsClient } from '@blargbot/metrics-client';
 import { RedisKSCache, RedisKVCache } from '@blargbot/redis-cache';
 import { json } from '@blargbot/serialization';
 import type { RedisClientType } from 'redis';
@@ -29,14 +31,16 @@ import { DiscordChannelCacheService } from './DiscordChannelCacheService.js';
 }])
 export class DiscordChannelCacheApplication extends ServiceHost {
     public constructor(options: DiscordChannelCacheApplicationOptions) {
+        const serviceName = 'discord-channel-cache';
         const messages = new MessageHub(options.messages);
+        const metrics = new MetricsClient({ serviceName, instanceId: fullContainerId });
         const redis: RedisClientType = createRedisClient({
             url: options.redis.url,
             username: options.redis.username,
             password: options.redis.password
         });
         const service = new DiscordChannelCacheService(
-            new DiscordGatewayMessageBroker(messages, 'discord-channel-cache'),
+            new DiscordGatewayMessageBroker(messages, serviceName),
             new RedisKVCache<bigint, Discord.APIChannel>(redis, {
                 ttlS: null,
                 keyspace: 'discord_channels'
@@ -56,6 +60,7 @@ export class DiscordChannelCacheApplication extends ServiceHost {
         super([
             connectionToService(redis, 'redis'),
             connectionToService(messages, 'rabbitmq'),
+            metrics,
             service,
             webService(
                 express()

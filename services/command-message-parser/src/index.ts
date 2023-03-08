@@ -1,8 +1,10 @@
 import { connectionToService, hostIfEntrypoint, ServiceHost } from '@blargbot/application';
+import { fullContainerId } from '@blargbot/container-id';
 import { CurrentUserAccessor } from '@blargbot/current-user-accessor';
 import env from '@blargbot/env';
 import type { ConnectionOptions } from '@blargbot/message-hub';
 import { MessageHub } from '@blargbot/message-hub';
+import { MetricsClient } from '@blargbot/metrics-client';
 
 import { CommandMessageParserMessageBroker } from './CommandMessageParserMessageBroker.js';
 import { CommandMessageParserService } from './CommandMessageParserService.js';
@@ -27,10 +29,13 @@ import { CommandMessageParserService } from './CommandMessageParserService.js';
 }])
 export class CommandMessageParserApplication extends ServiceHost {
     public constructor(options: DiscordChatlogApplicationOptions) {
+        const serviceName = 'command-message-parser';
         const messages = new MessageHub(options.messages);
+        const metrics = new MetricsClient({ serviceName, instanceId: fullContainerId });
 
         super([
             connectionToService(messages, 'rabbitmq'),
+            metrics,
             new CommandMessageParserService(
                 new CommandMessageParserMessageBroker(messages),
                 new CurrentUserAccessor({

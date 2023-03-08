@@ -1,10 +1,12 @@
 import { connectionToService, hostIfEntrypoint, ServiceHost, webService } from '@blargbot/application';
+import { fullContainerId } from '@blargbot/container-id';
 import { DiscordGatewayMessageBroker } from '@blargbot/discord-gateway-client';
 import type Discord from '@blargbot/discord-types';
 import env from '@blargbot/env';
 import express from '@blargbot/express';
 import type { ConnectionOptions } from '@blargbot/message-hub';
 import { MessageHub } from '@blargbot/message-hub';
+import { MetricsClient } from '@blargbot/metrics-client';
 import { RedisKKVCache } from '@blargbot/redis-cache';
 import type { RedisClientType } from 'redis';
 import { createClient as createRedisClient } from 'redis';
@@ -28,7 +30,9 @@ import { DiscordRoleCacheService } from './DiscordRoleCacheService.js';
 }])
 export class DiscordRoleCacheApplication extends ServiceHost {
     public constructor(options: DiscordRoleCacheApplicationOptions) {
+        const serviceName = 'discord-role-cache';
         const messages = new MessageHub(options.messages);
+        const metrics = new MetricsClient({ serviceName, instanceId: fullContainerId });
         const redis: RedisClientType = createRedisClient({
             url: options.redis.url,
             username: options.redis.username,
@@ -36,7 +40,7 @@ export class DiscordRoleCacheApplication extends ServiceHost {
         });
 
         const service = new DiscordRoleCacheService(
-            new DiscordGatewayMessageBroker(messages, 'discord-role-cache'),
+            new DiscordGatewayMessageBroker(messages, serviceName),
             new RedisKKVCache<bigint, bigint, Discord.APIRole>(redis, {
                 ttlS: null,
                 keyspace: 'discord_roles',
@@ -47,6 +51,7 @@ export class DiscordRoleCacheApplication extends ServiceHost {
         super([
             connectionToService(redis, 'redis'),
             connectionToService(messages, 'rabbitmq'),
+            metrics,
             service,
             webService(
                 express()

@@ -11,6 +11,7 @@
     },
     "dependencies": {
         "@blargbot/application": "workspace:^",
+        "@blargbot/container-id": "workspace:^",
         "@blargbot/discord-gateway-client": "workspace:^",
         "@blargbot/discord-types": "workspace:^",
         "@blargbot/discord-util": "workspace:^",
@@ -18,6 +19,7 @@
         "@blargbot/express": "workspace:^",
         "@blargbot/guards": "workspace:^",
         "@blargbot/message-hub": "workspace:^",
+        "@blargbot/metrics-client": "workspace:^",
         "@blargbot/redis-cache": "workspace:^",
         "@blargbot/serialization": "workspace:^",
         "amqplib": "^0.10.3",
