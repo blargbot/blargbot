@@ -1,5 +1,4 @@
-import amqplib from 'amqplib';
-
+import type amqplib from 'amqplib';
 
 export class ConsumeMessage implements amqplib.ConsumeMessage {
     readonly #channel: amqplib.Channel;
