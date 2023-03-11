@@ -119,6 +119,12 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@blargbot/api-client@workspace:^, @blargbot/api-client@workspace:components/api-client/src":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/api-client@workspace:components/api-client/src"
+  languageName: unknown
+  linkType: soft
+
 "@blargbot/api@workspace:^, @blargbot/api@workspace:services/api/src":
   version: 0.0.0-use.local
   resolution: "@blargbot/api@workspace:services/api/src"
@@ -372,6 +378,7 @@ __metadata:
   resolution: "@blargbot/current-user-accessor@workspace:components/current-user-accessor/src"
   dependencies:
     "@blargbot/discord-types": "workspace:^"
+    "@blargbot/discord-user-cache-client": "workspace:^"
   languageName: unknown
   linkType: soft
 
@@ -662,6 +669,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@blargbot/discord-user-cache-client@workspace:^, @blargbot/discord-user-cache-client@workspace:services/discord-user-cache/client":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/discord-user-cache-client@workspace:services/discord-user-cache/client"
+  dependencies:
+    "@blargbot/api-client": "workspace:^"
+    "@blargbot/discord-types": "workspace:^"
+  languageName: unknown
+  linkType: soft
+
 "@blargbot/discord-user-cache@workspace:services/discord-user-cache/src":
   version: 0.0.0-use.local
   resolution: "@blargbot/discord-user-cache@workspace:services/discord-user-cache/src"
@@ -670,6 +686,7 @@ __metadata:
     "@blargbot/container-id": "workspace:^"
     "@blargbot/discord-gateway-client": "workspace:^"
     "@blargbot/discord-types": "workspace:^"
+    "@blargbot/discord-user-cache-client": "workspace:^"
     "@blargbot/env": "workspace:^"
     "@blargbot/express": "workspace:^"
     "@blargbot/message-hub": "workspace:^"
@@ -893,6 +910,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@blargbot/metrics-client@workspace:services/metrics/client"
   dependencies:
+    "@blargbot/api-client": "workspace:^"
     "@blargbot/message-hub": "workspace:^"
     prom-client: ^14.2.0
   languageName: unknown

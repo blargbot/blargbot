@@ -1,23 +1,29 @@
-import type { IncomingMessage } from 'http';
-import { request } from 'http';
 import prom from 'prom-client';
+
+import { MetricsHttpClient } from './MetricsHttpClient.js';
 
 export type { Counter, Gauge, Histogram, Summary } from 'prom-client';
 
 export class MetricsClient {
-    readonly #metricsUrl: URL;
+    readonly #client: MetricsHttpClient;
     readonly #registry: prom.Registry;
     readonly #interval: number;
+    readonly #scopeLabels: Record<NonNullable<MetricOptions['scope']>, object>;
 
     #timer?: NodeJS.Timer;
 
-    readonly #scopeLabels: Record<NonNullable<MetricOptions['scope']>, object>;
-
     public constructor(options: MetricsServiceOptions) {
-        const metricsUrl = options.metricsUrl ?? process.env['METRICS_URL'];
-        if (metricsUrl === undefined)
-            throw new Error('metricsUrl must be supplied when there is no METRICS_URL environment variable');
-        this.#metricsUrl = new URL(`${options.serviceName}/${options.instanceId}`, metricsUrl);
+        if (options.client !== undefined) {
+            this.#client = options.client;
+        } else {
+            const metricsUrl = options.metricsUrl ?? process.env['METRICS_URL'];
+            if (metricsUrl === undefined)
+                throw new Error('metricsUrl must be supplied when there is no METRICS_URL environment variable');
+            this.#client = new MetricsHttpClient(metricsUrl, {
+                serviceName: options.serviceName,
+                instanceId: options.instanceId
+            });
+        }
         this.#scopeLabels = {
             global: {},
             service: { serviceName: options.serviceName },
@@ -49,20 +55,10 @@ export class MetricsClient {
 
     async #sendMetrics(): Promise<void> {
         const metrics = await this.#registry.getMetricsAsJSON();
-        const response = await new Promise<IncomingMessage>(res => request(this.#metricsUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        }, res).end(JSON.stringify(metrics)));
-        const data = await new Promise<Buffer>((res, rej) => {
-            const chunks: Uint8Array[] = [];
-            response.on('data', c => chunks.push(c as Uint8Array));
-            response.on('end', () => res(Buffer.concat(chunks)));
-            response.on('error', err => rej(err));
-        });
-        if (response.statusCode !== 204) {
-            console.error('Failed to submit metrics', response.statusCode, response.statusMessage, data.toString('utf8').slice(0, 200));
+        try {
+            await this.#client.postMetrics(metrics);
+        } catch (err) {
+            console.error('Failed to submit metrics', err);
         }
     }
 
@@ -120,6 +116,7 @@ export class MetricsClient {
 
 export interface MetricsServiceOptions {
     readonly metricsUrl?: string;
+    readonly client?: MetricsHttpClient;
     readonly serviceName: string;
     readonly instanceId: string;
     readonly postIntervalMs?: number;

@@ -16,6 +16,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:."\
       },\
       {\
+        "name": "@blargbot/api-client",\
+        "reference": "workspace:components/api-client/src"\
+      },\
+      {\
         "name": "@blargbot/application",\
         "reference": "workspace:components/application/src"\
       },\
@@ -272,6 +276,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:services/discord-role-cache/src"\
       },\
       {\
+        "name": "@blargbot/discord-user-cache-client",\
+        "reference": "workspace:services/discord-user-cache/client"\
+      },\
+      {\
         "name": "@blargbot/discord-user-cache",\
         "reference": "workspace:services/discord-user-cache/src"\
       },\
@@ -326,6 +334,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@bbtag/blargbot", ["workspace:components/bbtag/src"]],\
       ["@bbtag/blargbot-tests", ["workspace:components/bbtag/test"]],\
       ["@blargbot/api", ["workspace:services/api/src"]],\
+      ["@blargbot/api-client", ["workspace:components/api-client/src"]],\
       ["@blargbot/application", ["workspace:components/application/src"]],\
       ["@blargbot/async-tools", ["workspace:components/async-tools/src"]],\
       ["@blargbot/bbtag", ["workspace:services/bbtag-runner/src"]],\
@@ -360,6 +369,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@blargbot/discord-role-cache", ["workspace:services/discord-role-cache/src"]],\
       ["@blargbot/discord-types", ["workspace:components/discord-types/src"]],\
       ["@blargbot/discord-user-cache", ["workspace:services/discord-user-cache/src"]],\
+      ["@blargbot/discord-user-cache-client", ["workspace:services/discord-user-cache/client"]],\
       ["@blargbot/discord-util", ["workspace:components/discord-util/src"]],\
       ["@blargbot/domain", ["workspace:components/domain/src"]],\
       ["@blargbot/env", ["workspace:components/env/src"]],\
@@ -578,6 +588,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["node-fetch", "npm:3.3.0"],\
             ["prom-client", "npm:14.1.1"],\
             ["ws", "virtual:0926ebb4e831a070deb72c46365480e8bf00bb1d23db2eaad4f5e1bcd6b12efc0d87e78420817b9e25c8277b307def176634647b2da47b163cfcdc8d2c56d3d1#npm:8.12.1"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
+      ["@blargbot/api-client", [\
+        ["workspace:components/api-client/src", {\
+          "packageLocation": "./components/api-client/src/",\
+          "packageDependencies": [\
+            ["@blargbot/api-client", "workspace:components/api-client/src"]\
           ],\
           "linkType": "SOFT"\
         }]\
@@ -839,7 +858,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./components/current-user-accessor/src/",\
           "packageDependencies": [\
             ["@blargbot/current-user-accessor", "workspace:components/current-user-accessor/src"],\
-            ["@blargbot/discord-types", "workspace:components/discord-types/src"]\
+            ["@blargbot/discord-types", "workspace:components/discord-types/src"],\
+            ["@blargbot/discord-user-cache-client", "workspace:services/discord-user-cache/client"]\
           ],\
           "linkType": "SOFT"\
         }]\
@@ -1176,6 +1196,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/container-id", "workspace:components/container-id/src"],\
             ["@blargbot/discord-gateway-client", "workspace:services/discord-gateway/client"],\
             ["@blargbot/discord-types", "workspace:components/discord-types/src"],\
+            ["@blargbot/discord-user-cache-client", "workspace:services/discord-user-cache/client"],\
             ["@blargbot/env", "workspace:components/env/src"],\
             ["@blargbot/express", "workspace:components/express/src"],\
             ["@blargbot/message-hub", "workspace:components/message-hub/src"],\
@@ -1184,6 +1205,17 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/serialization", "workspace:components/serialization/src"],\
             ["amqplib", "npm:0.10.3"],\
             ["redis", "npm:4.6.5"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
+      ["@blargbot/discord-user-cache-client", [\
+        ["workspace:services/discord-user-cache/client", {\
+          "packageLocation": "./services/discord-user-cache/client/",\
+          "packageDependencies": [\
+            ["@blargbot/discord-user-cache-client", "workspace:services/discord-user-cache/client"],\
+            ["@blargbot/api-client", "workspace:components/api-client/src"],\
+            ["@blargbot/discord-types", "workspace:components/discord-types/src"]\
           ],\
           "linkType": "SOFT"\
         }]\
@@ -1469,6 +1501,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./services/metrics/client/",\
           "packageDependencies": [\
             ["@blargbot/metrics-client", "workspace:services/metrics/client"],\
+            ["@blargbot/api-client", "workspace:components/api-client/src"],\
             ["@blargbot/message-hub", "workspace:components/message-hub/src"],\
             ["prom-client", "npm:14.2.0"]\
           ],\

@@ -14,6 +14,7 @@
         "@blargbot/container-id": "workspace:^",
         "@blargbot/discord-gateway-client": "workspace:^",
         "@blargbot/discord-types": "workspace:^",
+        "@blargbot/discord-user-cache-client": "workspace:^",
         "@blargbot/env": "workspace:^",
         "@blargbot/express": "workspace:^",
         "@blargbot/message-hub": "workspace:^",

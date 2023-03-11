@@ -1,16 +1,13 @@
 {
-    "name": "@blargbot/metrics-client",
+    "name": "@blargbot/discord-user-cache-client",
     "version": "1.0.0",
     "private": true,
     "type": "module",
     "exports": {
         ".": "./index.js"
     },
-    "devDependencies": {
-        "@blargbot/message-hub": "workspace:^"
-    },
     "dependencies": {
         "@blargbot/api-client": "workspace:^",
-        "prom-client": "^14.2.0"
+        "@blargbot/discord-types": "workspace:^"
     }
 }
