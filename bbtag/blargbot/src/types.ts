@@ -1,4 +1,5 @@
 import type { SourceMarker, Statement, SubtagCall } from '@bbtag/language';
+import type { IVariableCache } from '@bbtag/variables';
 import type { Emote } from '@blargbot/discord-emote';
 import type Discord from '@blargbot/discord-types';
 import type { IFormattable } from '@blargbot/formatting';
@@ -10,7 +11,6 @@ import type { limits, RuntimeLimit } from './limits/index.js';
 import type { ScopeManager } from './ScopeManager.js';
 import type { SubtagCallStack } from './SubtagCallStack.js';
 import type { SubtagType } from './utils/index.js';
-import type { VariableCache } from './variables/Caching.js';
 
 export * as Entities from './types.entities.js';
 
@@ -176,7 +176,7 @@ export interface BBTagContextOptions {
     readonly silent?: boolean;
     readonly data?: Partial<BBTagContextState>;
     readonly scopes?: ScopeManager;
-    readonly variables?: VariableCache;
+    readonly variables?: IVariableCache;
     readonly callStack?: SubtagCallStack;
     readonly prefix?: string;
 }

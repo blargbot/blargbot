@@ -1,8 +1,5 @@
-import type { IFormattable } from '@blargbot/formatting';
-
-import type { BBTagContext } from '../BBTagContext.js';
 import textTemplates from '../text.js';
-import type { TagVariableScope } from './TagVariableScope.js';
+import type { TagVariableScopeProvider } from './TagVariableScopeProvider.js';
 import { TagVariableType } from './TagVariableType.js';
 
 export const tagVariableScopeProviders: readonly TagVariableScopeProvider[] = [
@@ -43,10 +40,3 @@ export const tagVariableScopeProviders: readonly TagVariableScopeProvider[] = [
             : { type: TagVariableType.LOCAL_CC, name: context.rootTagName, guildId: context.guild.id }
     }
 ];
-
-export interface TagVariableScopeProvider {
-    readonly name: IFormattable<string>;
-    readonly prefix: string;
-    readonly description: IFormattable<string>;
-    getScope(context: BBTagContext): TagVariableScope;
-}

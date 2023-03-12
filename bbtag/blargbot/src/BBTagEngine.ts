@@ -1,5 +1,6 @@
 import type { Statement, SubtagCall } from '@bbtag/language';
 import { parseBBTag } from '@bbtag/language';
+import { VariableNameParser, VariableProvider } from '@bbtag/variables';
 import { sleep } from '@blargbot/async-tools';
 import { markup } from '@blargbot/discord-util';
 import { Timer } from '@blargbot/timer';
@@ -13,16 +14,15 @@ import type { BBTagLogger } from './services/BBTagLogger.js';
 import type { SubtagInvocationContext } from './services/SubtagInvocationMiddleware.js';
 import type { Subtag } from './Subtag.js';
 import textTemplates from './text.js';
-import type { AnalysisResults, BBTagContextOptions, ExecutionResult } from './types.js';
+import type { AnalysisResults, BBTagContextOptions, ExecutionResult, TagVariableScope } from './types.js';
 import { BBTagRuntimeState } from './types.js';
-import { BBTagVariableProvider, VariableNameParser } from './variables/Caching.js';
 import { tagVariableScopeProviders } from './variables/tagVariableScopeProviders.js';
 
 export class BBTagEngine {
     readonly #callSubtag: (context: SubtagInvocationContext) => AsyncIterable<string | undefined>;
 
     public readonly dependencies: { [P in keyof InjectionContext]-?: NonNullable<InjectionContext[P]> };
-    public readonly variables: BBTagVariableProvider;
+    public readonly variables: VariableProvider<BBTagContext, TagVariableScope>;
     public readonly logger: BBTagLogger;
     public readonly subtags: ReadonlyMap<string, Subtag>;
 
@@ -51,7 +51,40 @@ export class BBTagEngine {
             (p, c) => (ctx) => c(ctx, p.bind(null, ctx)),
         /**/(ctx) => ctx.subtag.execute(ctx.context, ctx.subtagName, ctx.call)
         );
-        this.variables = new BBTagVariableProvider(new VariableNameParser(tagVariableScopeProviders), dependencies.variables);
+        this.variables = new VariableProvider(
+            new VariableNameParser(tagVariableScopeProviders),
+            dependencies.variables,
+            [
+                {
+                    async get(context, _variable, next) {
+                        const execRunning = context.execTimer.running;
+                        if (execRunning)
+                            context.execTimer.end();
+                        context.dbTimer.resume();
+                        try {
+                            return await next();
+                        } finally {
+                            context.dbTimer.end();
+                            if (execRunning)
+                                context.execTimer.resume();
+                        }
+                    },
+                    async set(context, values, next) {
+                        const execRunning = context.execTimer.running;
+                        if (execRunning)
+                            context.execTimer.end();
+                        context.dbTimer.resume();
+                        try {
+                            return await next();
+                        } finally {
+                            context.dbObjectsCommitted += [...values].length;
+                            context.dbTimer.end();
+                            if (execRunning)
+                                context.execTimer.resume();
+                        }
+                    }
+                }
+            ]);
         const subtags = new Map<string, Subtag>();
         this.subtags = subtags;
         for (const descriptor of dependencies.subtags) {
@@ -124,7 +157,7 @@ export class BBTagEngine {
             },
             database: {
                 committed: context.dbObjectsCommitted,
-                values: context.variables.list.reduce<JObject>((v, c) => {
+                values: context.variables.cached.reduce<JObject>((v, c) => {
                     if (c.value !== undefined)
                         v[c.key] = c.value;
                     return v;

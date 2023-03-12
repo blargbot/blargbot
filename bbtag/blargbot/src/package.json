@@ -8,6 +8,7 @@
     },
     "dependencies": {
         "@bbtag/language": "workspace:^",
+        "@bbtag/variables": "workspace:^",
         "@blargbot/async-tools": "workspace:^",
         "@blargbot/catch-decorators": "workspace:^",
         "@blargbot/decancer": "workspace:^",

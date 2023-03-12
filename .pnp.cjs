@@ -28,6 +28,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:bbtag/language/src"\
       },\
       {\
+        "name": "@bbtag/variables",\
+        "reference": "workspace:bbtag/variables/src"\
+      },\
+      {\
         "name": "@blargbot/api-client",\
         "reference": "workspace:components/api-client/src"\
       },\
@@ -370,6 +374,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@bbtag/blargbot", ["workspace:bbtag/blargbot/src"]],\
       ["@bbtag/blargbot-tests", ["workspace:bbtag/blargbot/test"]],\
       ["@bbtag/language", ["workspace:bbtag/language/src"]],\
+      ["@bbtag/variables", ["workspace:bbtag/variables/src"]],\
       ["@blargbot/api", ["workspace:services/api/src"]],\
       ["@blargbot/api-client", ["workspace:components/api-client/src"]],\
       ["@blargbot/application", ["workspace:components/application/src"]],\
@@ -536,6 +541,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["@bbtag/blargbot", "workspace:bbtag/blargbot/src"],\
             ["@bbtag/language", "workspace:bbtag/language/src"],\
+            ["@bbtag/variables", "workspace:bbtag/variables/src"],\
             ["@blargbot/application", "workspace:components/application/src"],\
             ["@blargbot/async-tools", "workspace:components/async-tools/src"],\
             ["@blargbot/catch-decorators", "workspace:components/catch-decorators/src"],\
@@ -568,6 +574,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@bbtag/blargbot-tests", "workspace:bbtag/blargbot/test"],\
             ["@bbtag/blargbot", "workspace:bbtag/blargbot/src"],\
             ["@bbtag/language", "workspace:bbtag/language/src"],\
+            ["@bbtag/variables", "workspace:bbtag/variables/src"],\
             ["@blargbot/config", "workspace:components/config/src"],\
             ["@blargbot/core", "workspace:components/core/src"],\
             ["@blargbot/discord-emote", "workspace:components/discord-emote/src"],\
@@ -601,6 +608,16 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./bbtag/language/src/",\
           "packageDependencies": [\
             ["@bbtag/language", "workspace:bbtag/language/src"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
+      ["@bbtag/variables", [\
+        ["workspace:bbtag/variables/src", {\
+          "packageLocation": "./bbtag/variables/src/",\
+          "packageDependencies": [\
+            ["@bbtag/variables", "workspace:bbtag/variables/src"],\
+            ["@blargbot/guards", "workspace:components/guards/src"]\
           ],\
           "linkType": "SOFT"\
         }]\
@@ -681,6 +698,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/bbtag", "workspace:services/bbtag-runner/src"],\
             ["@bbtag/blargbot", "workspace:bbtag/blargbot/src"],\
             ["@bbtag/language", "workspace:bbtag/language/src"],\
+            ["@bbtag/variables", "workspace:bbtag/variables/src"],\
             ["@blargbot/application", "workspace:components/application/src"],\
             ["@blargbot/bbtag-runner-client", "workspace:services/bbtag-runner/client"],\
             ["@blargbot/container-id", "workspace:components/container-id/src"],\
@@ -731,6 +749,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/cluster", "workspace:services/cluster/src"],\
             ["@bbtag/blargbot", "workspace:bbtag/blargbot/src"],\
             ["@bbtag/language", "workspace:bbtag/language/src"],\
+            ["@bbtag/variables", "workspace:bbtag/variables/src"],\
             ["@blargbot/application", "workspace:components/application/src"],\
             ["@blargbot/async-tools", "workspace:components/async-tools/src"],\
             ["@blargbot/catch-decorators", "workspace:components/catch-decorators/src"],\
@@ -782,6 +801,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["@blargbot/cluster-tests", "workspace:services/cluster/test"],\
             ["@bbtag/blargbot", "workspace:bbtag/blargbot/src"],\
+            ["@bbtag/variables", "workspace:bbtag/variables/src"],\
             ["@blargbot/cluster", "workspace:services/cluster/src"],\
             ["@blargbot/core", "workspace:components/core/src"],\
             ["@blargbot/domain", "workspace:components/domain/src"],\

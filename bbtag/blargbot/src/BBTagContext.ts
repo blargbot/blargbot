@@ -1,4 +1,6 @@
 import type { Statement, SubtagCall } from '@bbtag/language';
+import type { IVariableCache } from '@bbtag/variables';
+import { VariableCache } from '@bbtag/variables';
 import { Emote } from '@blargbot/discord-emote';
 import Discord, { AllowedMentionsTypes } from '@blargbot/discord-types';
 import { findRolePosition, permission } from '@blargbot/discord-util';
@@ -17,7 +19,6 @@ import type { Subtag } from './Subtag.js';
 import { SubtagCallStack } from './SubtagCallStack.js';
 import type { BBTagContextOptions, BBTagContextState, BBTagRuntimeScope, Entities, LocatedRuntimeError, RuntimeDebugEntry, SerializedBBTagContext } from './types.js';
 import { BBTagRuntimeState } from './types.js';
-import { VariableCache } from './variables/Caching.js';
 
 function serializeEntity(entity: { id: string; }): { id: string; serialized: string; }
 function serializeEntity(entity?: { id: string; }): { id: string; serialized: string; } | undefined
@@ -50,7 +51,7 @@ export class BBTagContext implements BBTagContextOptions {
     public readonly errors: LocatedRuntimeError[];
     public readonly debug: RuntimeDebugEntry[];
     public readonly scopes: ScopeManager;
-    public readonly variables: VariableCache;
+    public readonly variables: IVariableCache;
     public dbObjectsCommitted: number;
     public readonly data: BBTagContextState;
     public readonly callStack: SubtagCallStack;
@@ -325,7 +326,7 @@ export class BBTagContext implements BBTagContextOptions {
             author: this.authorId,
             authorizer: this.authorizer.id,
             limit: this.limit.serialize(),
-            tempVars: this.variables.list
+            tempVars: this.variables.cached
                 .filter(v => v.key.startsWith('~'))
                 .reduce<JObject>((p, v) => {
                     if (v.value !== undefined)

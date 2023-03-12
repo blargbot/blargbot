@@ -1,90 +1,36 @@
 import { hasValue } from '@blargbot/guards';
 
-import type { BBTagContext } from '../BBTagContext.js';
-import type { VariablesStore } from '../services/VariablesStore.js';
-import type { TagVariableScope } from './TagVariableScope.js';
-import type { TagVariableScopeProvider } from './tagVariableScopeProviders.js';
+import type { IVariableCache } from './IVariableCache.js';
+import type { VariableProvider } from './VariableProvider.js';
+import type { VariableReference } from './VariableReference.js';
 
-export interface VariableReference {
-    readonly key: string;
-    get value(): undefined | JToken;
-}
+export class VariableCache<Context, Scope> implements IVariableCache {
+    readonly #cache: Record<string, CacheEntry<Context> | undefined>;
+    readonly #provider: VariableProvider<Context, Scope>;
+    readonly #context: Context;
 
-interface ValueSource {
-    isEqual(other: JToken | undefined): boolean;
-    get(): JToken | undefined;
-}
-
-export class VariableNameParser {
-    readonly #scopes: TagVariableScopeProvider[];
-
-    public constructor(scopes: Iterable<TagVariableScopeProvider>) {
-        this.#scopes = [...scopes].sort((a, b) => b.prefix.length - a.prefix.length);
-    }
-
-    public parse(context: BBTagContext, variable: string): { scope: TagVariableScope; name: string; } {
-        const provider = this.#scopes.find(s => variable.startsWith(s.prefix));
-        if (provider === undefined)
-            throw new Error('Missing default variable scope');
-
-        return {
-            scope: provider.getScope(context),
-            name: variable.slice(provider.prefix.length)
-        };
-    }
-
-}
-
-export class BBTagVariableProvider {
-    readonly #parser: VariableNameParser;
-    readonly #database: VariablesStore;
-
-    public constructor(parser: VariableNameParser, database: VariablesStore) {
-        this.#parser = parser;
-        this.#database = database;
-    }
-
-    public async get(context: BBTagContext, variable: string): Promise<{ scope: TagVariableScope; value: JToken | undefined; }> {
-        const { scope, name } = this.#parser.parse(context, variable);
-        return { scope, value: await this.#database.get(scope, name) };
-    }
-
-    public async set(context: BBTagContext, values: Iterable<{ name: string; value: JToken | undefined; }>): Promise<void> {
-        const toSet = Array.from(values, ({ name, value }) => ({ ...this.#parser.parse(context, name), value }));
-        if (toSet.length === 0)
-            return;
-
-        await this.#database.set(toSet);
-    }
-}
-
-export class VariableCache {
-    readonly #cache: Record<string, CacheEntry | undefined>;
-    readonly #provider: BBTagVariableProvider;
-    readonly #context: BBTagContext;
-
-    public get list(): VariableReference[] {
+    public get cached(): VariableReference[] {
         return Object.values(this.#cache)
             .filter(hasValue)
             .map(v => v.reference);
     }
 
     public constructor(
-        context: BBTagContext,
-        provider: BBTagVariableProvider
+        context: Context,
+        provider: VariableProvider<Context, Scope>
     ) {
         this.#context = context;
         this.#cache = {};
         this.#provider = provider;
     }
 
-    #getCached(variables?: string[]): CacheEntry[] {
+    #getCached(variables?: string[]): Array<CacheEntry<Context>> {
         if (variables === undefined)
             return Object.values(this.#cache).filter(hasValue);
         return variables.map(k => this.#cache[k]).filter(hasValue);
     }
 
-    async #getEntry(variable: string): Promise<CacheEntry> {
+    async #getEntry(variable: string): Promise<CacheEntry<Context>> {
         const forced = variable.startsWith('!');
         if (forced)
             variable = variable.slice(1);
@@ -119,10 +65,6 @@ export class VariableCache {
     }
 
     public async persist(variables?: string[]): Promise<void> {
-        const execRunning = this.#context.execTimer.running;
-        if (execRunning)
-            this.#context.execTimer.end();
-        this.#context.dbTimer.resume();
         const updates = this.#getCached(variables)
             .filter(e => e.changed)
             .map(e => {
@@ -130,14 +72,10 @@ export class VariableCache {
                 return { name: e.key, value: e.value === '' ? undefined : e.value };
             });
         await this.#provider.set(this.#context, updates);
-        this.#context.dbObjectsCommitted += updates.length;
-        this.#context.dbTimer.end();
-        if (execRunning)
-            this.#context.execTimer.resume();
     }
 }
 
-class CacheEntry {
+class CacheEntry<Context> {
     #initialValue: ValueSource;
     public value: JToken | undefined;
 
@@ -145,7 +83,7 @@ class CacheEntry {
     public get changed(): boolean { return !this.#initialValue.isEqual(this.value); }
 
     public constructor(
-        public readonly context: BBTagContext,
+        public readonly context: Context,
         public readonly key: string,
         value: JToken | undefined
     ) {
@@ -182,4 +120,9 @@ class CacheEntry {
             get: () => JSON.parse(jdata)
         };
     }
+}
+
+interface ValueSource {
+    isEqual(other: JToken | undefined): boolean;
+    get(): JToken | undefined;
 }

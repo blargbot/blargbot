@@ -13,6 +13,7 @@
     },
     "dependencies": {
         "@bbtag/blargbot": "workspace:^",
+        "@bbtag/variables": "workspace:^",
         "@blargbot/cluster": "workspace:^",
         "@blargbot/core": "workspace:^",
         "@blargbot/domain": "workspace:^",

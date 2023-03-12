@@ -58,6 +58,7 @@ __metadata:
   dependencies:
     "@bbtag/blargbot": "workspace:^"
     "@bbtag/language": "workspace:^"
+    "@bbtag/variables": "workspace:^"
     "@blargbot/config": "workspace:^"
     "@blargbot/core": "workspace:^"
     "@blargbot/discord-emote": "workspace:^"
@@ -90,6 +91,7 @@ __metadata:
   resolution: "@bbtag/blargbot@workspace:bbtag/blargbot/src"
   dependencies:
     "@bbtag/language": "workspace:^"
+    "@bbtag/variables": "workspace:^"
     "@blargbot/application": "workspace:^"
     "@blargbot/async-tools": "workspace:^"
     "@blargbot/catch-decorators": "workspace:^"
@@ -117,6 +119,14 @@ __metadata:
 "@bbtag/language@workspace:^, @bbtag/language@workspace:bbtag/language/src":
   version: 0.0.0-use.local
   resolution: "@bbtag/language@workspace:bbtag/language/src"
+  languageName: unknown
+  linkType: soft
+
+"@bbtag/variables@workspace:^, @bbtag/variables@workspace:bbtag/variables/src":
+  version: 0.0.0-use.local
+  resolution: "@bbtag/variables@workspace:bbtag/variables/src"
+  dependencies:
+    "@blargbot/guards": "workspace:^"
   languageName: unknown
   linkType: soft
 
@@ -191,6 +201,7 @@ __metadata:
   dependencies:
     "@bbtag/blargbot": "workspace:^"
     "@bbtag/language": "workspace:^"
+    "@bbtag/variables": "workspace:^"
     "@blargbot/application": "workspace:^"
     "@blargbot/bbtag-runner-client": "workspace:^"
     "@blargbot/container-id": "workspace:^"
@@ -221,6 +232,7 @@ __metadata:
   resolution: "@blargbot/cluster-tests@workspace:services/cluster/test"
   dependencies:
     "@bbtag/blargbot": "workspace:^"
+    "@bbtag/variables": "workspace:^"
     "@blargbot/cluster": "workspace:^"
     "@blargbot/core": "workspace:^"
     "@blargbot/domain": "workspace:^"
@@ -243,6 +255,7 @@ __metadata:
   dependencies:
     "@bbtag/blargbot": "workspace:^"
     "@bbtag/language": "workspace:^"
+    "@bbtag/variables": "workspace:^"
     "@blargbot/application": "workspace:^"
     "@blargbot/async-tools": "workspace:^"
     "@blargbot/catch-decorators": "workspace:^"
